@@ -15,7 +15,7 @@
 
 namespace FastyBird\Module\Devices\Queries\Configuration;
 
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Module\Devices\Exceptions;
 use Flow\JSONPath;
 use Ramsey\Uuid;
@@ -23,7 +23,7 @@ use Ramsey\Uuid;
 /**
  * Find channels configuration query
  *
- * @template T of MetadataEntities\DevicesModule\Channel
+ * @template T of MetadataDocuments\DevicesModule\Channel
  * @extends  QueryObject<T>
  *
  * @package        FastyBird:DevicesModule!
@@ -56,7 +56,7 @@ class FindChannels extends QueryObject
 		$this->filter[] = '.[?(@.identifier =~ /^[\w\d\-_]+' . $identifier . '$/)]';
 	}
 
-	public function forDevice(MetadataEntities\DevicesModule\Device $device): void
+	public function forDevice(MetadataDocuments\DevicesModule\Device $device): void
 	{
 		$this->filter[] = '.[?(@.device == ' . $device->getId()->toString() . ')]';
 	}

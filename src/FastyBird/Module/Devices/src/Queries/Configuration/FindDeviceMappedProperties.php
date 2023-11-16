@@ -15,13 +15,13 @@
 
 namespace FastyBird\Module\Devices\Queries\Configuration;
 
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 
 /**
  * Find device mapped properties entities query
  *
- * @template T of MetadataEntities\DevicesModule\DeviceMappedProperty
+ * @template T of MetadataDocuments\DevicesModule\DeviceMappedProperty
  * @extends  FindDeviceProperties<T>
  *
  * @package        FastyBird:DevicesModule!

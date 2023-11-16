@@ -28,7 +28,7 @@ export enum ConditionOperator {
 	BELOW = 'below',
 }
 
-export interface TriggerEntity {
+export interface TriggerDocument {
 	id: string;
 	type: TriggerType;
 	name: string;
@@ -39,14 +39,14 @@ export interface TriggerEntity {
 	is_fulfilled?: boolean | null;
 }
 
-export interface TriggerControlEntity {
+export interface TriggerControlDocument {
 	id: string;
 	name: string;
 	trigger: string;
 	owner: string | null;
 }
 
-export interface ActionEntity {
+export interface ActionDocument {
 	id: string;
 	type: ActionType;
 	enabled: boolean;
@@ -59,7 +59,7 @@ export interface ActionEntity {
 	is_triggered?: boolean | null;
 }
 
-export interface ConditionEntity {
+export interface ConditionDocument {
 	id: string;
 	type: ConditionType;
 	enabled: boolean;
@@ -76,7 +76,7 @@ export interface ConditionEntity {
 	is_fulfilled?: boolean | null;
 }
 
-export interface NotificationEntity {
+export interface NotificationDocument {
 	id: string;
 	type: NotificationType;
 	enabled: boolean;

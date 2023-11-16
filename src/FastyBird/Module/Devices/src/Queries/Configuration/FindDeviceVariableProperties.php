@@ -15,7 +15,7 @@
 
 namespace FastyBird\Module\Devices\Queries\Configuration;
 
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions;
 use Ramsey\Uuid;
@@ -23,7 +23,7 @@ use Ramsey\Uuid;
 /**
  * Find device variable properties entities query
  *
- * @template T of MetadataEntities\DevicesModule\DeviceVariableProperty
+ * @template T of MetadataDocuments\DevicesModule\DeviceVariableProperty
  * @extends  FindDeviceProperties<T>
  *
  * @package        FastyBird:DevicesModule!
@@ -44,7 +44,7 @@ class FindDeviceVariableProperties extends FindDeviceProperties
 	 * @throws Exceptions\InvalidState
 	 */
 	public function forParent(
-		MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceVariableProperty $parent,
+		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceVariableProperty $parent,
 	): void
 	{
 		throw new Exceptions\InvalidState('Searching by parent is not allowed for this type of property');

@@ -6,7 +6,7 @@ import { v4 as uuid } from 'uuid';
 import { format } from 'date-fns';
 import get from 'lodash/get';
 
-import exchangeEntitySchema from '@fastybird/metadata-library/resources/schemas/modules/accounts-module/entity.account.json';
+import exchangeEntitySchema from '../../../../../Library/Metadata/resources/schemas/modules/accounts-module/document.account.json';
 import {
 	AccountEntity as ExchangeEntity,
 	AccountsModuleRoutes as RoutingKeys,

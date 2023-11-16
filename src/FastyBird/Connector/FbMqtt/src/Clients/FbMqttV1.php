@@ -23,7 +23,7 @@ use FastyBird\Connector\FbMqtt\Entities;
 use FastyBird\Connector\FbMqtt\Exceptions;
 use FastyBird\Connector\FbMqtt\Writers;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
@@ -99,7 +99,7 @@ final class FbMqttV1 extends Client
 	 */
 	public function writeDeviceProperty(
 		Entities\FbMqttDevice $device,
-		DevicesEntities\Devices\Properties\Dynamic|MetadataEntities\DevicesModule\DeviceDynamicProperty $property,
+		DevicesEntities\Devices\Properties\Dynamic|MetadataDocuments\DevicesModule\DeviceDynamicProperty $property,
 	): Promise\PromiseInterface
 	{
 		$state = $this->devicePropertiesStates->getValue($property);
@@ -125,7 +125,7 @@ final class FbMqttV1 extends Client
 	public function writeChannelProperty(
 		Entities\FbMqttDevice $device,
 		DevicesEntities\Channels\Channel $channel,
-		DevicesEntities\Channels\Properties\Dynamic|MetadataEntities\DevicesModule\ChannelDynamicProperty $property,
+		DevicesEntities\Channels\Properties\Dynamic|MetadataDocuments\DevicesModule\ChannelDynamicProperty $property,
 	): Promise\PromiseInterface
 	{
 		$state = $this->channelPropertiesStates->getValue($property);

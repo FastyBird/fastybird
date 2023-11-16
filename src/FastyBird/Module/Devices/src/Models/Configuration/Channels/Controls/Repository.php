@@ -15,7 +15,7 @@
 
 namespace FastyBird\Module\Devices\Models\Configuration\Channels\Controls;
 
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
@@ -37,13 +37,13 @@ final class Repository
 
 	public function __construct(
 		private readonly Models\Configuration\Builder $builder,
-		private readonly MetadataEntities\EntityFactory $entityFactory,
+		private readonly MetadataDocuments\DocumentFactory $entityFactory,
 	)
 	{
 	}
 
 	/**
-	 * @param Queries\Configuration\FindChannelControls<MetadataEntities\DevicesModule\ChannelControl> $queryObject
+	 * @param Queries\Configuration\FindChannelControls<MetadataDocuments\DevicesModule\ChannelControl> $queryObject
 	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
@@ -52,7 +52,7 @@ final class Repository
 	 */
 	public function findOneBy(
 		Queries\Configuration\FindChannelControls $queryObject,
-	): MetadataEntities\DevicesModule\ChannelControl|null
+	): MetadataDocuments\DevicesModule\ChannelControl|null
 	{
 		try {
 			$space = $this->builder
@@ -68,13 +68,13 @@ final class Repository
 			return null;
 		}
 
-		return $this->entityFactory->create(MetadataEntities\DevicesModule\ChannelControl::class, $result[0]);
+		return $this->entityFactory->create(MetadataDocuments\DevicesModule\ChannelControl::class, $result[0]);
 	}
 
 	/**
-	 * @param Queries\Configuration\FindChannelControls<MetadataEntities\DevicesModule\ChannelControl> $queryObject
+	 * @param Queries\Configuration\FindChannelControls<MetadataDocuments\DevicesModule\ChannelControl> $queryObject
 	 *
-	 * @return array<MetadataEntities\DevicesModule\ChannelControl>
+	 * @return array<MetadataDocuments\DevicesModule\ChannelControl>
 	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
@@ -99,8 +99,8 @@ final class Repository
 		}
 
 		return array_map(
-			fn (stdClass $item): MetadataEntities\DevicesModule\ChannelControl => $this->entityFactory->create(
-				MetadataEntities\DevicesModule\ChannelControl::class,
+			fn (stdClass $item): MetadataDocuments\DevicesModule\ChannelControl => $this->entityFactory->create(
+				MetadataDocuments\DevicesModule\ChannelControl::class,
 				$item,
 			),
 			$result,

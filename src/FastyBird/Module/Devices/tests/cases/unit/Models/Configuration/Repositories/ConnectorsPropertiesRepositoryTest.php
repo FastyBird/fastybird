@@ -4,7 +4,7 @@ namespace FastyBird\Module\Devices\Tests\Cases\Unit\Models\Configuration\Reposit
 
 use Error;
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
@@ -100,25 +100,31 @@ final class ConnectorsPropertiesRepositoryTest extends DbTestCase
 
 		$findQuery = new Queries\Configuration\FindConnectorProperties();
 
-		$entities = $repository->findAllBy($findQuery, MetadataEntities\DevicesModule\ConnectorDynamicProperty::class);
+		$entities = $repository->findAllBy($findQuery, MetadataDocuments\DevicesModule\ConnectorDynamicProperty::class);
 
 		self::assertCount(0, $entities);
 
 		$findQuery = new Queries\Configuration\FindConnectorProperties();
 
-		$entities = $repository->findAllBy($findQuery, MetadataEntities\DevicesModule\ConnectorVariableProperty::class);
+		$entities = $repository->findAllBy(
+			$findQuery,
+			MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
+		);
 
 		self::assertCount(2, $entities);
 
 		$findQuery = new Queries\Configuration\FindConnectorDynamicProperties();
 
-		$entities = $repository->findAllBy($findQuery, MetadataEntities\DevicesModule\ConnectorDynamicProperty::class);
+		$entities = $repository->findAllBy($findQuery, MetadataDocuments\DevicesModule\ConnectorDynamicProperty::class);
 
 		self::assertCount(0, $entities);
 
 		$findQuery = new Queries\Configuration\FindConnectorVariableProperties();
 
-		$entities = $repository->findAllBy($findQuery, MetadataEntities\DevicesModule\ConnectorVariableProperty::class);
+		$entities = $repository->findAllBy(
+			$findQuery,
+			MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
+		);
 
 		self::assertCount(2, $entities);
 	}
@@ -141,7 +147,7 @@ final class ConnectorsPropertiesRepositoryTest extends DbTestCase
 
 		$connector = $devicesRepository->findOneBy($findQuery);
 
-		self::assertInstanceOf(MetadataEntities\DevicesModule\Connector::class, $connector);
+		self::assertInstanceOf(MetadataDocuments\DevicesModule\Connector::class, $connector);
 		self::assertSame('blank', $connector->getIdentifier());
 
 		$repository = $this->getContainer()->getByType(Models\Configuration\Connectors\Properties\Repository::class);

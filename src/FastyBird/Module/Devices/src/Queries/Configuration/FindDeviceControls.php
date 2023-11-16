@@ -15,14 +15,14 @@
 
 namespace FastyBird\Module\Devices\Queries\Configuration;
 
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use Flow\JSONPath;
 use Ramsey\Uuid;
 
 /**
  * Find devices controls configuration query
  *
- * @template T of MetadataEntities\DevicesModule\DeviceControl
+ * @template T of MetadataDocuments\DevicesModule\DeviceControl
  * @extends  QueryObject<T>
  *
  * @package        FastyBird:DevicesModule!
@@ -50,7 +50,7 @@ class FindDeviceControls extends QueryObject
 		$this->filter[] = '.[?(@.name == ' . $name . ')]';
 	}
 
-	public function forDevice(MetadataEntities\DevicesModule\Device $device): void
+	public function forDevice(MetadataDocuments\DevicesModule\Device $device): void
 	{
 		$this->filter[] = '.[?(@.device == ' . $device->getId()->toString() . ')]';
 	}

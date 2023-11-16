@@ -4,7 +4,7 @@ namespace FastyBird\Module\Devices\Tests\Cases\Unit\Models\Configuration\Reposit
 
 use Error;
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
@@ -100,7 +100,7 @@ final class DevicesControlsRepositoryTest extends DbTestCase
 
 		$device = $devicesRepository->findOneBy($findQuery);
 
-		self::assertInstanceOf(MetadataEntities\DevicesModule\Device::class, $device);
+		self::assertInstanceOf(MetadataDocuments\DevicesModule\Device::class, $device);
 		self::assertSame('first-device', $device->getIdentifier());
 
 		$repository = $this->getContainer()->getByType(Models\Configuration\Devices\Controls\Repository::class);

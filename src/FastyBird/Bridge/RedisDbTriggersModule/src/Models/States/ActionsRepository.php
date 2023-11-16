@@ -16,7 +16,7 @@
 namespace FastyBird\Bridge\RedisDbTriggersModule\Models\States;
 
 use FastyBird\Bridge\RedisDbTriggersModule\States;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Module\Triggers\Entities as TriggersEntities;
 use FastyBird\Module\Triggers\Models as TriggersModels;
 use FastyBird\Plugin\RedisDb\Exceptions as RedisDbExceptions;
@@ -58,7 +58,7 @@ class ActionsRepository implements TriggersModels\States\IActionsRepository
 	 * @throws RedisDbExceptions\InvalidState
 	 */
 	public function findOne(
-		MetadataEntities\TriggersModule\Action|TriggersEntities\Actions\Action $action,
+		MetadataDocuments\TriggersModule\Action|TriggersEntities\Actions\Action $action,
 	): States\Action|null
 	{
 		return $this->stateRepository->findOne($action->getId(), $this->database);

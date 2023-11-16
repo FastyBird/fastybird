@@ -5,7 +5,7 @@ import Ajv from 'ajv/dist/2020';
 import { v4 as uuid } from 'uuid';
 import get from 'lodash/get';
 
-import exchangeEntitySchema from '@fastybird/metadata-library/resources/schemas/modules/accounts-module/entity.identity.json';
+import exchangeEntitySchema from '../../../../../Library/Metadata/resources/schemas/modules/accounts-module/document.identity.json';
 import {
 	IdentityEntity as ExchangeEntity,
 	AccountsModuleRoutes as RoutingKeys,

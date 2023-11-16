@@ -15,7 +15,7 @@
 
 namespace FastyBird\Module\Devices\Models\Configuration\Channels;
 
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
@@ -38,13 +38,13 @@ final class Repository
 
 	public function __construct(
 		private readonly Models\Configuration\Builder $builder,
-		private readonly MetadataEntities\EntityFactory $entityFactory,
+		private readonly MetadataDocuments\DocumentFactory $entityFactory,
 	)
 	{
 	}
 
 	/**
-	 * @template T of MetadataEntities\DevicesModule\Channel
+	 * @template T of MetadataDocuments\DevicesModule\Channel
 	 *
 	 * @param Queries\Configuration\FindChannels<T> $queryObject
 	 * @param class-string<T> $type
@@ -56,8 +56,8 @@ final class Repository
 	 */
 	public function findOneBy(
 		Queries\Configuration\FindChannels $queryObject,
-		string $type = MetadataEntities\DevicesModule\Channel::class,
-	): MetadataEntities\DevicesModule\Channel|null
+		string $type = MetadataDocuments\DevicesModule\Channel::class,
+	): MetadataDocuments\DevicesModule\Channel|null
 	{
 		try {
 			$space = $this->builder
@@ -77,7 +77,7 @@ final class Repository
 	}
 
 	/**
-	 * @template T of MetadataEntities\DevicesModule\Channel
+	 * @template T of MetadataDocuments\DevicesModule\Channel
 	 *
 	 * @param Queries\Configuration\FindChannels<T> $queryObject
 	 * @param class-string<T> $type
@@ -90,7 +90,7 @@ final class Repository
 	 */
 	public function findAllBy(
 		Queries\Configuration\FindChannels $queryObject,
-		string $type = MetadataEntities\DevicesModule\Channel::class,
+		string $type = MetadataDocuments\DevicesModule\Channel::class,
 	): array
 	{
 		try {
@@ -108,7 +108,7 @@ final class Repository
 		}
 
 		return array_map(
-			fn (stdClass $item): MetadataEntities\DevicesModule\Channel => $this->entityFactory->create($type, $item),
+			fn (stdClass $item): MetadataDocuments\DevicesModule\Channel => $this->entityFactory->create($type, $item),
 			$result,
 		);
 	}

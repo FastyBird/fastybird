@@ -15,7 +15,7 @@
 
 namespace FastyBird\Module\Devices\Models\Configuration\Devices;
 
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
@@ -38,13 +38,13 @@ final class Repository
 
 	public function __construct(
 		private readonly Models\Configuration\Builder $builder,
-		private readonly MetadataEntities\EntityFactory $entityFactory,
+		private readonly MetadataDocuments\DocumentFactory $entityFactory,
 	)
 	{
 	}
 
 	/**
-	 * @template T of MetadataEntities\DevicesModule\Device
+	 * @template T of MetadataDocuments\DevicesModule\Device
 	 *
 	 * @param Queries\Configuration\FindDevices<T> $queryObject
 	 * @param class-string<T> $type
@@ -58,8 +58,8 @@ final class Repository
 	 */
 	public function findOneBy(
 		Queries\Configuration\FindDevices $queryObject,
-		string $type = MetadataEntities\DevicesModule\Device::class,
-	): MetadataEntities\DevicesModule\Device|null
+		string $type = MetadataDocuments\DevicesModule\Device::class,
+	): MetadataDocuments\DevicesModule\Device|null
 	{
 		try {
 			$space = $this->builder
@@ -79,7 +79,7 @@ final class Repository
 	}
 
 	/**
-	 * @template T of MetadataEntities\DevicesModule\Device
+	 * @template T of MetadataDocuments\DevicesModule\Device
 	 *
 	 * @param Queries\Configuration\FindDevices<T> $queryObject
 	 * @param class-string<T> $type
@@ -92,7 +92,7 @@ final class Repository
 	 */
 	public function findAllBy(
 		Queries\Configuration\FindDevices $queryObject,
-		string $type = MetadataEntities\DevicesModule\Device::class,
+		string $type = MetadataDocuments\DevicesModule\Device::class,
 	): array
 	{
 		try {
@@ -110,7 +110,7 @@ final class Repository
 		}
 
 		return array_map(
-			fn (stdClass $item): MetadataEntities\DevicesModule\Device => $this->entityFactory->create($type, $item),
+			fn (stdClass $item): MetadataDocuments\DevicesModule\Device => $this->entityFactory->create($type, $item),
 			$result,
 		);
 	}

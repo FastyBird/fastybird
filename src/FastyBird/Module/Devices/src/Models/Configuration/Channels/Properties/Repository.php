@@ -15,7 +15,7 @@
 
 namespace FastyBird\Module\Devices\Models\Configuration\Channels\Properties;
 
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions;
@@ -33,7 +33,7 @@ use function is_string;
 /**
  * Channels properties configuration repository
  *
- * @phpstan-type SupportedClasses MetadataEntities\DevicesModule\ChannelDynamicProperty|MetadataEntities\DevicesModule\ChannelVariableProperty|MetadataEntities\DevicesModule\ChannelMappedProperty
+ * @phpstan-type SupportedClasses MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelVariableProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Models
@@ -44,7 +44,7 @@ final class Repository
 
 	public function __construct(
 		private readonly Models\Configuration\Builder $builder,
-		private readonly MetadataEntities\EntityFactory $entityFactory,
+		private readonly MetadataDocuments\DocumentFactory $entityFactory,
 	)
 	{
 	}
@@ -66,7 +66,7 @@ final class Repository
 		Queries\Configuration\FindChannelProperties $queryObject,
 		string|null $type = null,
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-	): MetadataEntities\DevicesModule\ChannelDynamicProperty|MetadataEntities\DevicesModule\ChannelVariableProperty|MetadataEntities\DevicesModule\ChannelMappedProperty|null
+	): MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelVariableProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty|null
 	{
 		try {
 			$space = $this->builder
@@ -74,13 +74,13 @@ final class Repository
 				->find('.properties.*');
 
 			if (is_string($type)) {
-				if ($type === MetadataEntities\DevicesModule\ChannelDynamicProperty::class) {
+				if ($type === MetadataDocuments\DevicesModule\ChannelDynamicProperty::class) {
 					$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_DYNAMIC . '")]');
 
-				} elseif ($type === MetadataEntities\DevicesModule\ChannelVariableProperty::class) {
+				} elseif ($type === MetadataDocuments\DevicesModule\ChannelVariableProperty::class) {
 					$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_VARIABLE . '")]');
 
-				} elseif ($type === MetadataEntities\DevicesModule\ChannelMappedProperty::class) {
+				} elseif ($type === MetadataDocuments\DevicesModule\ChannelMappedProperty::class) {
 					$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_MAPPED . '")]');
 				}
 			} else {
@@ -107,9 +107,9 @@ final class Repository
 		} else {
 			foreach (
 				[
-					MetadataEntities\DevicesModule\ChannelDynamicProperty::class,
-					MetadataEntities\DevicesModule\ChannelVariableProperty::class,
-					MetadataEntities\DevicesModule\ChannelMappedProperty::class,
+					MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
+					MetadataDocuments\DevicesModule\ChannelVariableProperty::class,
+					MetadataDocuments\DevicesModule\ChannelMappedProperty::class,
 				] as $class
 			) {
 				try {
@@ -146,13 +146,13 @@ final class Repository
 				->find('.properties.*');
 
 			if (is_string($type)) {
-				if ($type === MetadataEntities\DevicesModule\ChannelDynamicProperty::class) {
+				if ($type === MetadataDocuments\DevicesModule\ChannelDynamicProperty::class) {
 					$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_DYNAMIC . '")]');
 
-				} elseif ($type === MetadataEntities\DevicesModule\ChannelVariableProperty::class) {
+				} elseif ($type === MetadataDocuments\DevicesModule\ChannelVariableProperty::class) {
 					$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_VARIABLE . '")]');
 
-				} elseif ($type === MetadataEntities\DevicesModule\ChannelMappedProperty::class) {
+				} elseif ($type === MetadataDocuments\DevicesModule\ChannelMappedProperty::class) {
 					$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_MAPPED . '")]');
 				}
 			} else {
@@ -177,15 +177,15 @@ final class Repository
 		return array_filter(
 			array_map(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				function (stdClass $item) use ($type): MetadataEntities\DevicesModule\ChannelDynamicProperty|MetadataEntities\DevicesModule\ChannelVariableProperty|MetadataEntities\DevicesModule\ChannelMappedProperty|null {
+				function (stdClass $item) use ($type): MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelVariableProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty|null {
 					if (is_string($type)) {
 						return $this->entityFactory->create($type, $item);
 					} else {
 						foreach (
 							[
-								MetadataEntities\DevicesModule\ChannelDynamicProperty::class,
-								MetadataEntities\DevicesModule\ChannelVariableProperty::class,
-								MetadataEntities\DevicesModule\ChannelMappedProperty::class,
+								MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
+								MetadataDocuments\DevicesModule\ChannelVariableProperty::class,
+								MetadataDocuments\DevicesModule\ChannelMappedProperty::class,
 							] as $class
 						) {
 							try {

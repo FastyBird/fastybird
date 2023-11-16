@@ -122,7 +122,7 @@ export enum PropertyCategory {
 	GENERIC = 'generic',
 }
 
-export interface ConnectorEntity {
+export interface ConnectorDocument {
 	id: string;
 	type: string;
 	category: ConnectorCategory;
@@ -136,7 +136,7 @@ export interface ConnectorEntity {
 	owner: string | null;
 }
 
-export interface ConnectorPropertyEntity {
+export interface ConnectorPropertyDocument {
 	id: string;
 	type: PropertyType;
 	category: PropertyCategory;
@@ -159,14 +159,14 @@ export interface ConnectorPropertyEntity {
 	owner: string | null;
 }
 
-export interface ConnectorControlEntity {
+export interface ConnectorControlDocument {
 	id: string;
 	name: string;
 	connector: string;
 	owner: string | null;
 }
 
-export interface DeviceEntity {
+export interface DeviceDocument {
 	id: string;
 	type: string;
 	category: DeviceCategory;
@@ -182,7 +182,7 @@ export interface DeviceEntity {
 	owner: string | null;
 }
 
-export interface DevicePropertyEntity {
+export interface DevicePropertyDocument {
 	id: string;
 	type: PropertyType;
 	category: PropertyCategory;
@@ -206,14 +206,14 @@ export interface DevicePropertyEntity {
 	owner: string | null;
 }
 
-export interface DeviceControlEntity {
+export interface DeviceControlDocument {
 	id: string;
 	name: string;
 	device: string;
 	owner: string | null;
 }
 
-export interface ChannelEntity {
+export interface ChannelDocument {
 	id: string;
 	type: string;
 	category: ChannelCategory;
@@ -226,7 +226,7 @@ export interface ChannelEntity {
 	owner: string | null;
 }
 
-export interface ChannelPropertyEntity {
+export interface ChannelPropertyDocument {
 	id: string;
 	type: PropertyType;
 	category: PropertyCategory;
@@ -250,7 +250,7 @@ export interface ChannelPropertyEntity {
 	owner: string | null;
 }
 
-export interface ChannelControlEntity {
+export interface ChannelControlDocument {
 	id: string;
 	name: string;
 	channel: string;

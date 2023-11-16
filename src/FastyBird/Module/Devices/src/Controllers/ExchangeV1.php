@@ -16,10 +16,10 @@
 namespace FastyBird\Module\Devices\Controllers;
 
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
-use FastyBird\Library\Exchange\Entities as ExchangeEntities;
+use FastyBird\Library\Exchange\Documents as ExchangeEntities;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Metadata;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Loaders as MetadataLoaders;
 use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
@@ -59,7 +59,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 		private readonly Utilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly MetadataLoaders\SchemaLoader $schemaLoader,
 		private readonly MetadataSchemas\Validator $jsonValidator,
-		private readonly ExchangeEntities\EntityFactory $entityFactory,
+		private readonly ExchangeEntities\DocumentFactory $entityFactory,
 		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
@@ -107,7 +107,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 					WebSocketsWAMP\Application\Application::MSG_EVENT,
 					$topic->getId(),
 					Utils\Json::encode([
-						'routing_key' => MetadataTypes\RoutingKey::ROUTE_DEVICE_PROPERTY_ENTITY_REPORTED,
+						'routing_key' => MetadataTypes\RoutingKey::DEVICE_PROPERTY_DOCUMENT_REPORTED,
 						'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
 						'data' => array_merge(
 							$deviceProperty->toArray(),
@@ -139,7 +139,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 					WebSocketsWAMP\Application\Application::MSG_EVENT,
 					$topic->getId(),
 					Utils\Json::encode([
-						'routing_key' => MetadataTypes\RoutingKey::ROUTE_CHANNEL_PROPERTY_ENTITY_REPORTED,
+						'routing_key' => MetadataTypes\RoutingKey::CHANNEL_PROPERTY_DOCUMENT_REPORTED,
 						'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
 						'data' => array_merge(
 							$channelProperty->toArray(),
@@ -168,7 +168,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 					WebSocketsWAMP\Application\Application::MSG_EVENT,
 					$topic->getId(),
 					Utils\Json::encode([
-						'routing_key' => MetadataTypes\RoutingKey::ROUTE_CONNECTOR_PROPERTY_ENTITY_REPORTED,
+						'routing_key' => MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_DOCUMENT_REPORTED,
 						'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
 						'data' => array_merge(
 							$connectorProperty->toArray(),
@@ -241,11 +241,11 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 					MetadataTypes\RoutingKey::get($args['routing_key']),
 				);
 
-				if ($entity instanceof MetadataEntities\Actions\ActionConnectorProperty) {
+				if ($entity instanceof MetadataDocuments\Actions\ActionConnectorProperty) {
 					$this->handleConnectorAction($client, $topic, $entity);
-				} elseif ($entity instanceof MetadataEntities\Actions\ActionDeviceProperty) {
+				} elseif ($entity instanceof MetadataDocuments\Actions\ActionDeviceProperty) {
 					$this->handleDeviceAction($client, $topic, $entity);
-				} elseif ($entity instanceof MetadataEntities\Actions\ActionChannelProperty) {
+				} elseif ($entity instanceof MetadataDocuments\Actions\ActionChannelProperty) {
 					$this->handleChannelAction($client, $topic, $entity);
 				}
 
@@ -307,7 +307,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	private function handleConnectorAction(
 		WebSocketsWAMP\Entities\Clients\IClient $client,
 		WebSocketsWAMP\Entities\Topics\ITopic $topic,
-		MetadataEntities\Actions\ActionConnectorProperty $entity,
+		MetadataDocuments\Actions\ActionConnectorProperty $entity,
 	): void
 	{
 		if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_SET)) {
@@ -342,7 +342,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				: null;
 
 			$publishRoutingKey = MetadataTypes\RoutingKey::get(
-				MetadataTypes\RoutingKey::ROUTE_CONNECTOR_PROPERTY_ENTITY_REPORTED,
+				MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_DOCUMENT_REPORTED,
 			);
 
 			$responseEntity = $this->entityFactory->create(
@@ -359,7 +359,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				WebSocketsWAMP\Application\Application::MSG_EVENT,
 				$topic->getId(),
 				Utils\Json::encode([
-					'routing_key' => MetadataTypes\RoutingKey::ROUTE_CONNECTOR_PROPERTY_ENTITY_REPORTED,
+					'routing_key' => MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_DOCUMENT_REPORTED,
 					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
 					'data' => $responseEntity->toArray(),
 				]),
@@ -379,7 +379,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	private function handleDeviceAction(
 		WebSocketsWAMP\Entities\Clients\IClient $client,
 		WebSocketsWAMP\Entities\Topics\ITopic $topic,
-		MetadataEntities\Actions\ActionDeviceProperty $entity,
+		MetadataDocuments\Actions\ActionDeviceProperty $entity,
 	): void
 	{
 		if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_SET)) {
@@ -417,7 +417,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				? $this->devicePropertiesStates->readValue($property) : null;
 
 			$publishRoutingKey = MetadataTypes\RoutingKey::get(
-				MetadataTypes\RoutingKey::ROUTE_DEVICE_PROPERTY_ENTITY_REPORTED,
+				MetadataTypes\RoutingKey::DEVICE_PROPERTY_DOCUMENT_REPORTED,
 			);
 
 			$responseEntity = $this->entityFactory->create(
@@ -434,7 +434,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				WebSocketsWAMP\Application\Application::MSG_EVENT,
 				$topic->getId(),
 				Utils\Json::encode([
-					'routing_key' => MetadataTypes\RoutingKey::ROUTE_CONNECTOR_PROPERTY_ENTITY_REPORTED,
+					'routing_key' => MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_DOCUMENT_REPORTED,
 					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
 					'data' => $responseEntity->toArray(),
 				]),
@@ -454,7 +454,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	private function handleChannelAction(
 		WebSocketsWAMP\Entities\Clients\IClient $client,
 		WebSocketsWAMP\Entities\Topics\ITopic $topic,
-		MetadataEntities\Actions\ActionChannelProperty $entity,
+		MetadataDocuments\Actions\ActionChannelProperty $entity,
 	): void
 	{
 		if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_SET)) {
@@ -492,7 +492,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				? $this->channelPropertiesStates->readValue($property) : null;
 
 			$publishRoutingKey = MetadataTypes\RoutingKey::get(
-				MetadataTypes\RoutingKey::ROUTE_CHANNEL_PROPERTY_ENTITY_REPORTED,
+				MetadataTypes\RoutingKey::CHANNEL_PROPERTY_DOCUMENT_REPORTED,
 			);
 
 			$responseEntity = $this->entityFactory->create(
@@ -509,7 +509,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				WebSocketsWAMP\Application\Application::MSG_EVENT,
 				$topic->getId(),
 				Utils\Json::encode([
-					'routing_key' => MetadataTypes\RoutingKey::ROUTE_CONNECTOR_PROPERTY_ENTITY_REPORTED,
+					'routing_key' => MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_DOCUMENT_REPORTED,
 					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
 					'data' => $responseEntity->toArray(),
 				]),

@@ -15,7 +15,7 @@
 
 namespace FastyBird\Module\Devices\Models\Configuration\Devices\Properties;
 
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions;
@@ -33,7 +33,7 @@ use function is_string;
 /**
  * Devices properties configuration repository
  *
- * @phpstan-type SupportedClasses MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceVariableProperty|MetadataEntities\DevicesModule\DeviceMappedProperty
+ * @phpstan-type SupportedClasses MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceVariableProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Models
@@ -44,7 +44,7 @@ final class Repository
 
 	public function __construct(
 		private readonly Models\Configuration\Builder $builder,
-		private readonly MetadataEntities\EntityFactory $entityFactory,
+		private readonly MetadataDocuments\DocumentFactory $entityFactory,
 	)
 	{
 	}
@@ -66,7 +66,7 @@ final class Repository
 		Queries\Configuration\FindDeviceProperties $queryObject,
 		string|null $type = null,
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-	): MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceVariableProperty|MetadataEntities\DevicesModule\DeviceMappedProperty|null
+	): MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceVariableProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty|null
 	{
 		try {
 			$space = $this->builder
@@ -74,13 +74,13 @@ final class Repository
 				->find('.properties.*');
 
 			if (is_string($type)) {
-				if ($type === MetadataEntities\DevicesModule\DeviceDynamicProperty::class) {
+				if ($type === MetadataDocuments\DevicesModule\DeviceDynamicProperty::class) {
 					$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_DYNAMIC . '")]');
 
-				} elseif ($type === MetadataEntities\DevicesModule\DeviceVariableProperty::class) {
+				} elseif ($type === MetadataDocuments\DevicesModule\DeviceVariableProperty::class) {
 					$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_VARIABLE . '")]');
 
-				} elseif ($type === MetadataEntities\DevicesModule\DeviceMappedProperty::class) {
+				} elseif ($type === MetadataDocuments\DevicesModule\DeviceMappedProperty::class) {
 					$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_MAPPED . '")]');
 				}
 			} else {
@@ -107,9 +107,9 @@ final class Repository
 		} else {
 			foreach (
 				[
-					MetadataEntities\DevicesModule\DeviceDynamicProperty::class,
-					MetadataEntities\DevicesModule\DeviceVariableProperty::class,
-					MetadataEntities\DevicesModule\DeviceMappedProperty::class,
+					MetadataDocuments\DevicesModule\DeviceDynamicProperty::class,
+					MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+					MetadataDocuments\DevicesModule\DeviceMappedProperty::class,
 				] as $class
 			) {
 				try {
@@ -146,13 +146,13 @@ final class Repository
 				->find('.properties.*');
 
 			if (is_string($type)) {
-				if ($type === MetadataEntities\DevicesModule\DeviceDynamicProperty::class) {
+				if ($type === MetadataDocuments\DevicesModule\DeviceDynamicProperty::class) {
 					$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_DYNAMIC . '")]');
 
-				} elseif ($type === MetadataEntities\DevicesModule\DeviceVariableProperty::class) {
+				} elseif ($type === MetadataDocuments\DevicesModule\DeviceVariableProperty::class) {
 					$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_VARIABLE . '")]');
 
-				} elseif ($type === MetadataEntities\DevicesModule\DeviceMappedProperty::class) {
+				} elseif ($type === MetadataDocuments\DevicesModule\DeviceMappedProperty::class) {
 					$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_MAPPED . '")]');
 				}
 			} else {
@@ -177,15 +177,15 @@ final class Repository
 		return array_filter(
 			array_map(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				function (stdClass $item) use ($type): MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceVariableProperty|MetadataEntities\DevicesModule\DeviceMappedProperty|null {
+				function (stdClass $item) use ($type): MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceVariableProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty|null {
 					if (is_string($type)) {
 						return $this->entityFactory->create($type, $item);
 					} else {
 						foreach (
 							[
-								MetadataEntities\DevicesModule\DeviceDynamicProperty::class,
-								MetadataEntities\DevicesModule\DeviceVariableProperty::class,
-								MetadataEntities\DevicesModule\DeviceMappedProperty::class,
+								MetadataDocuments\DevicesModule\DeviceDynamicProperty::class,
+								MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+								MetadataDocuments\DevicesModule\DeviceMappedProperty::class,
 							] as $class
 						) {
 							try {

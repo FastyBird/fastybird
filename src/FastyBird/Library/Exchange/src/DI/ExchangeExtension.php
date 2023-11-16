@@ -17,7 +17,7 @@ namespace FastyBird\Library\Exchange\DI;
 
 use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
 use FastyBird\Library\Exchange\Consumers;
-use FastyBird\Library\Exchange\Entities;
+use FastyBird\Library\Exchange\Documents;
 use FastyBird\Library\Exchange\Publisher;
 use Nette;
 use Nette\DI;
@@ -64,7 +64,7 @@ class ExchangeExtension extends DI\CompilerExtension
 			->setType(Publisher\Container::class);
 
 		$builder->addDefinition($this->prefix('entityFactory'), new DI\Definitions\ServiceDefinition())
-			->setType(Entities\EntityFactory::class);
+			->setType(Documents\DocumentFactory::class);
 	}
 
 	/**

@@ -17,116 +17,116 @@ export enum MessageRoutes {
 
 export enum AccountsModuleRoutes {
 	// Accounts
-	ACCOUNT_ENTITY_REPORTED = 'fb.exchange.module.entity.reported.account',
-	ACCOUNT_ENTITY_CREATED = 'fb.exchange.module.entity.created.account',
-	ACCOUNT_ENTITY_UPDATED = 'fb.exchange.module.entity.updated.account',
-	ACCOUNT_ENTITY_DELETED = 'fb.exchange.module.entity.deleted.account',
+	ACCOUNT_DOCUMENT_REPORTED = 'fb.exchange.module.document.reported.account',
+	ACCOUNT_DOCUMENT_CREATED = 'fb.exchange.module.document.created.account',
+	ACCOUNT_DOCUMENT_UPDATED = 'fb.exchange.module.document.updated.account',
+	ACCOUNT_DOCUMENT_DELETED = 'fb.exchange.module.document.deleted.account',
 
 	// Emails
-	EMAIL_ENTITY_REPORTED = 'fb.exchange.module.entity.reported.email',
-	EMAIL_ENTITY_CREATED = 'fb.exchange.module.entity.created.email',
-	EMAIL_ENTITY_UPDATED = 'fb.exchange.module.entity.updated.email',
-	EMAIL_ENTITY_DELETED = 'fb.exchange.module.entity.deleted.email',
+	EMAIL_DOCUMENT_REPORTED = 'fb.exchange.module.document.reported.email',
+	EMAIL_DOCUMENT_CREATED = 'fb.exchange.module.document.created.email',
+	EMAIL_DOCUMENT_UPDATED = 'fb.exchange.module.document.updated.email',
+	EMAIL_DOCUMENT_DELETED = 'fb.exchange.module.document.deleted.email',
 
 	// Identities
-	IDENTITY_ENTITY_REPORTED = 'fb.exchange.module.entity.reported.identity',
-	IDENTITY_ENTITY_CREATED = 'fb.exchange.module.entity.created.identity',
-	IDENTITY_ENTITY_UPDATED = 'fb.exchange.module.entity.updated.identity',
-	IDENTITY_ENTITY_DELETED = 'fb.exchange.module.entity.deleted.identity',
+	IDENTITY_DOCUMENT_REPORTED = 'fb.exchange.module.document.reported.identity',
+	IDENTITY_DOCUMENT_CREATED = 'fb.exchange.module.document.created.identity',
+	IDENTITY_DOCUMENT_UPDATED = 'fb.exchange.module.document.updated.identity',
+	IDENTITY_DOCUMENT_DELETED = 'fb.exchange.module.document.deleted.identity',
 
 	// Roles
-	ROLE_ENTITY_REPORTED = 'fb.exchange.module.entity.reported.role',
-	ROLE_ENTITY_CREATED = 'fb.exchange.module.entity.created.role',
-	ROLE_ENTITY_UPDATED = 'fb.exchange.module.entity.updated.role',
-	ROLE_ENTITY_DELETED = 'fb.exchange.module.entity.deleted.role',
+	ROLE_DOCUMENT_REPORTED = 'fb.exchange.module.document.reported.role',
+	ROLE_DOCUMENT_CREATED = 'fb.exchange.module.document.created.role',
+	ROLE_DOCUMENT_UPDATED = 'fb.exchange.module.document.updated.role',
+	ROLE_DOCUMENT_DELETED = 'fb.exchange.module.document.deleted.role',
 }
 
 export enum DevicesModuleRoutes {
 	// Devices
-	DEVICE_ENTITY_REPORTED = 'fb.exchange.module.entity.reported.device',
-	DEVICE_ENTITY_CREATED = 'fb.exchange.module.entity.created.device',
-	DEVICE_ENTITY_UPDATED = 'fb.exchange.module.entity.updated.device',
-	DEVICE_ENTITY_DELETED = 'fb.exchange.module.entity.deleted.device',
+	DEVICE_DOCUMENT_REPORTED = 'fb.exchange.module.document.reported.device',
+	DEVICE_DOCUMENT_CREATED = 'fb.exchange.module.document.created.device',
+	DEVICE_DOCUMENT_UPDATED = 'fb.exchange.module.document.updated.device',
+	DEVICE_DOCUMENT_DELETED = 'fb.exchange.module.document.deleted.device',
 
 	// Device's properties
-	DEVICE_PROPERTY_ENTITY_REPORTED = 'fb.exchange.module.entity.reported.device.property',
-	DEVICE_PROPERTY_ENTITY_CREATED = 'fb.exchange.module.entity.created.device.property',
-	DEVICE_PROPERTY_ENTITY_UPDATED = 'fb.exchange.module.entity.updated.device.property',
-	DEVICE_PROPERTY_ENTITY_DELETED = 'fb.exchange.module.entity.deleted.device.property',
+	DEVICE_PROPERTY_DOCUMENT_REPORTED = 'fb.exchange.module.document.reported.device.property',
+	DEVICE_PROPERTY_DOCUMENT_CREATED = 'fb.exchange.module.document.created.device.property',
+	DEVICE_PROPERTY_DOCUMENT_UPDATED = 'fb.exchange.module.document.updated.device.property',
+	DEVICE_PROPERTY_DOCUMENT_DELETED = 'fb.exchange.module.document.deleted.device.property',
 
 	// Device's control
-	DEVICE_CONTROL_ENTITY_REPORTED = 'fb.exchange.module.entity.reported.device.control',
-	DEVICE_CONTROL_ENTITY_CREATED = 'fb.exchange.module.entity.created.device.control',
-	DEVICE_CONTROL_ENTITY_UPDATED = 'fb.exchange.module.entity.updated.device.control',
-	DEVICE_CONTROL_ENTITY_DELETED = 'fb.exchange.module.entity.deleted.device.control',
+	DEVICE_CONTROL_DOCUMENT_REPORTED = 'fb.exchange.module.document.reported.device.control',
+	DEVICE_CONTROL_DOCUMENT_CREATED = 'fb.exchange.module.document.created.device.control',
+	DEVICE_CONTROL_DOCUMENT_UPDATED = 'fb.exchange.module.document.updated.device.control',
+	DEVICE_CONTROL_DOCUMENT_DELETED = 'fb.exchange.module.document.deleted.device.control',
 
 	// Channels
-	CHANNEL_ENTITY_REPORTED = 'fb.exchange.module.entity.reported.channel',
-	CHANNEL_ENTITY_CREATED = 'fb.exchange.module.entity.created.channel',
-	CHANNEL_ENTITY_UPDATED = 'fb.exchange.module.entity.updated.channel',
-	CHANNEL_ENTITY_DELETED = 'fb.exchange.module.entity.deleted.channel',
+	CHANNEL_DOCUMENT_REPORTED = 'fb.exchange.module.document.reported.channel',
+	CHANNEL_DOCUMENT_CREATED = 'fb.exchange.module.document.created.channel',
+	CHANNEL_DOCUMENT_UPDATED = 'fb.exchange.module.document.updated.channel',
+	CHANNEL_DOCUMENT_DELETED = 'fb.exchange.module.document.deleted.channel',
 
 	// Channel's properties
-	CHANNEL_PROPERTY_ENTITY_REPORTED = 'fb.exchange.module.entity.reported.channel.property',
-	CHANNEL_PROPERTY_ENTITY_CREATED = 'fb.exchange.module.entity.created.channel.property',
-	CHANNEL_PROPERTY_ENTITY_UPDATED = 'fb.exchange.module.entity.updated.channel.property',
-	CHANNEL_PROPERTY_ENTITY_DELETED = 'fb.exchange.module.entity.deleted.channel.property',
+	CHANNEL_PROPERTY_DOCUMENT_REPORTED = 'fb.exchange.module.document.reported.channel.property',
+	CHANNEL_PROPERTY_DOCUMENT_CREATED = 'fb.exchange.module.document.created.channel.property',
+	CHANNEL_PROPERTY_DOCUMENT_UPDATED = 'fb.exchange.module.document.updated.channel.property',
+	CHANNEL_PROPERTY_DOCUMENT_DELETED = 'fb.exchange.module.document.deleted.channel.property',
 
 	// Channel's control
-	CHANNEL_CONTROL_ENTITY_REPORTED = 'fb.exchange.module.entity.reported.channel.control',
-	CHANNEL_CONTROL_ENTITY_CREATED = 'fb.exchange.module.entity.created.channel.control',
-	CHANNEL_CONTROL_ENTITY_UPDATED = 'fb.exchange.module.entity.updated.channel.control',
-	CHANNEL_CONTROL_ENTITY_DELETED = 'fb.exchange.module.entity.deleted.channel.control',
+	CHANNEL_CONTROL_DOCUMENT_REPORTED = 'fb.exchange.module.document.reported.channel.control',
+	CHANNEL_CONTROL_DOCUMENT_CREATED = 'fb.exchange.module.document.created.channel.control',
+	CHANNEL_CONTROL_DOCUMENT_UPDATED = 'fb.exchange.module.document.updated.channel.control',
+	CHANNEL_CONTROL_DOCUMENT_DELETED = 'fb.exchange.module.document.deleted.channel.control',
 
 	// Connectors
-	CONNECTOR_ENTITY_REPORTED = 'fb.exchange.module.entity.reported.connector',
-	CONNECTOR_ENTITY_CREATED = 'fb.exchange.module.entity.created.connector',
-	CONNECTOR_ENTITY_UPDATED = 'fb.exchange.module.entity.updated.connector',
-	CONNECTOR_ENTITY_DELETED = 'fb.exchange.module.entity.deleted.connector',
+	CONNECTOR_DOCUMENT_REPORTED = 'fb.exchange.module.document.reported.connector',
+	CONNECTOR_DOCUMENT_CREATED = 'fb.exchange.module.document.created.connector',
+	CONNECTOR_DOCUMENT_UPDATED = 'fb.exchange.module.document.updated.connector',
+	CONNECTOR_DOCUMENT_DELETED = 'fb.exchange.module.document.deleted.connector',
 
 	// Connector's properties
-	CONNECTOR_PROPERTY_ENTITY_REPORTED = 'fb.exchange.module.entity.reported.connector.property',
-	CONNECTOR_PROPERTY_ENTITY_CREATED = 'fb.exchange.module.entity.created.connector.property',
-	CONNECTOR_PROPERTY_ENTITY_UPDATED = 'fb.exchange.module.entity.updated.connector.property',
-	CONNECTOR_PROPERTY_ENTITY_DELETED = 'fb.exchange.module.entity.deleted.connector.property',
+	CONNECTOR_PROPERTY_DOCUMENT_REPORTED = 'fb.exchange.module.document.reported.connector.property',
+	CONNECTOR_PROPERTY_DOCUMENT_CREATED = 'fb.exchange.module.document.created.connector.property',
+	CONNECTOR_PROPERTY_DOCUMENT_UPDATED = 'fb.exchange.module.document.updated.connector.property',
+	CONNECTOR_PROPERTY_DOCUMENT_DELETED = 'fb.exchange.module.document.deleted.connector.property',
 
 	// Connector's control
-	CONNECTOR_CONTROL_ENTITY_REPORTED = 'fb.exchange.module.entity.reported.connector.control',
-	CONNECTOR_CONTROL_ENTITY_CREATED = 'fb.exchange.module.entity.created.connector.control',
-	CONNECTOR_CONTROL_ENTITY_UPDATED = 'fb.exchange.module.entity.updated.connector.control',
-	CONNECTOR_CONTROL_ENTITY_DELETED = 'fb.exchange.module.entity.deleted.connector.control',
+	CONNECTOR_CONTROL_DOCUMENT_REPORTED = 'fb.exchange.module.document.reported.connector.control',
+	CONNECTOR_CONTROL_DOCUMENT_CREATED = 'fb.exchange.module.document.created.connector.control',
+	CONNECTOR_CONTROL_DOCUMENT_UPDATED = 'fb.exchange.module.document.updated.connector.control',
+	CONNECTOR_CONTROL_DOCUMENT_DELETED = 'fb.exchange.module.document.deleted.connector.control',
 }
 
 export enum TriggersModuleRoutes {
 	// Triggers
-	TRIGGER_ENTITY_REPORTED = 'fb.exchange.module.entity.reported.trigger',
-	TRIGGER_ENTITY_CREATED = 'fb.exchange.module.entity.created.trigger',
-	TRIGGER_ENTITY_UPDATED = 'fb.exchange.module.entity.updated.trigger',
-	TRIGGER_ENTITY_DELETED = 'fb.exchange.module.entity.deleted.trigger',
+	TRIGGER_DOCUMENT_REPORTED = 'fb.exchange.module.document.reported.trigger',
+	TRIGGER_DOCUMENT_CREATED = 'fb.exchange.module.document.created.trigger',
+	TRIGGER_DOCUMENT_UPDATED = 'fb.exchange.module.document.updated.trigger',
+	TRIGGER_DOCUMENT_DELETED = 'fb.exchange.module.document.deleted.trigger',
 
 	// Trigger's control
-	TRIGGER_CONTROL_ENTITY_REPORTED = 'fb.exchange.module.entity.reported.trigger.control',
-	TRIGGER_CONTROL_ENTITY_CREATED = 'fb.exchange.module.entity.created.trigger.control',
-	TRIGGER_CONTROL_ENTITY_UPDATED = 'fb.exchange.module.entity.updated.trigger.control',
-	TRIGGER_CONTROL_ENTITY_DELETED = 'fb.exchange.module.entity.deleted.trigger.control',
+	TRIGGER_CONTROL_DOCUMENT_REPORTED = 'fb.exchange.module.document.reported.trigger.control',
+	TRIGGER_CONTROL_DOCUMENT_CREATED = 'fb.exchange.module.document.created.trigger.control',
+	TRIGGER_CONTROL_DOCUMENT_UPDATED = 'fb.exchange.module.document.updated.trigger.control',
+	TRIGGER_CONTROL_DOCUMENT_DELETED = 'fb.exchange.module.document.deleted.trigger.control',
 
 	// Actions
-	TRIGGER_ACTION_ENTITY_REPORTED = 'fb.exchange.module.entity.reported.trigger.action',
-	TRIGGER_ACTION_ENTITY_CREATED = 'fb.exchange.module.entity.created.trigger.action',
-	TRIGGER_ACTION_ENTITY_UPDATED = 'fb.exchange.module.entity.updated.trigger.action',
-	TRIGGER_ACTION_ENTITY_DELETED = 'fb.exchange.module.entity.deleted.trigger.action',
+	TRIGGER_ACTION_DOCUMENT_REPORTED = 'fb.exchange.module.document.reported.trigger.action',
+	TRIGGER_ACTION_DOCUMENT_CREATED = 'fb.exchange.module.document.created.trigger.action',
+	TRIGGER_ACTION_DOCUMENT_UPDATED = 'fb.exchange.module.document.updated.trigger.action',
+	TRIGGER_ACTION_DOCUMENT_DELETED = 'fb.exchange.module.document.deleted.trigger.action',
 
 	// Notifications
-	TRIGGER_NOTIFICATION_ENTITY_REPORTED = 'fb.exchange.module.entity.reported.trigger.notification',
-	TRIGGER_NOTIFICATION_ENTITY_CREATED = 'fb.exchange.module.entity.created.trigger.notification',
-	TRIGGER_NOTIFICATION_ENTITY_UPDATED = 'fb.exchange.module.entity.updated.trigger.notification',
-	TRIGGER_NOTIFICATION_ENTITY_DELETED = 'fb.exchange.module.entity.deleted.trigger.notification',
+	TRIGGER_NOTIFICATION_DOCUMENT_REPORTED = 'fb.exchange.module.document.reported.trigger.notification',
+	TRIGGER_NOTIFICATION_DOCUMENT_CREATED = 'fb.exchange.module.document.created.trigger.notification',
+	TRIGGER_NOTIFICATION_DOCUMENT_UPDATED = 'fb.exchange.module.document.updated.trigger.notification',
+	TRIGGER_NOTIFICATION_DOCUMENT_DELETED = 'fb.exchange.module.document.deleted.trigger.notification',
 
 	// Conditions
-	TRIGGER_CONDITION_ENTITY_REPORTED = 'fb.exchange.module.entity.reported.trigger.condition',
-	TRIGGER_CONDITION_ENTITY_CREATED = 'fb.exchange.module.entity.created.trigger.condition',
-	TRIGGER_CONDITION_ENTITY_UPDATED = 'fb.exchange.module.entity.updated.trigger.condition',
-	TRIGGER_CONDITION_ENTITY_DELETED = 'fb.exchange.module.entity.deleted.trigger.condition',
+	TRIGGER_CONDITION_DOCUMENT_REPORTED = 'fb.exchange.module.document.reported.trigger.condition',
+	TRIGGER_CONDITION_DOCUMENT_CREATED = 'fb.exchange.module.document.created.trigger.condition',
+	TRIGGER_CONDITION_DOCUMENT_UPDATED = 'fb.exchange.module.document.updated.trigger.condition',
+	TRIGGER_CONDITION_DOCUMENT_DELETED = 'fb.exchange.module.document.deleted.trigger.condition',
 }
 
 export enum UiModuleRoutes {}

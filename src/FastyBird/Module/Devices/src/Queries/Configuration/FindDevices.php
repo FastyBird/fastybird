@@ -15,7 +15,7 @@
 
 namespace FastyBird\Module\Devices\Queries\Configuration;
 
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Module\Devices\Exceptions;
 use Flow\JSONPath;
 use Ramsey\Uuid;
@@ -23,7 +23,7 @@ use Ramsey\Uuid;
 /**
  * Find devices configuration query
  *
- * @template T of MetadataEntities\DevicesModule\Device
+ * @template T of MetadataDocuments\DevicesModule\Device
  * @extends  QueryObject<T>
  *
  * @package        FastyBird:DevicesModule!
@@ -56,7 +56,7 @@ class FindDevices extends QueryObject
 		$this->filter[] = '.[?(@.identifier =~ /^[\w\d\-_]+' . $identifier . '$/)]';
 	}
 
-	public function forConnector(MetadataEntities\DevicesModule\Connector $connector): void
+	public function forConnector(MetadataDocuments\DevicesModule\Connector $connector): void
 	{
 		$this->filter[] = '.[?(@.connector == ' . $connector->getId()->toString() . ')]';
 	}
@@ -66,12 +66,12 @@ class FindDevices extends QueryObject
 		$this->filter[] = '.[?(@.connector == ' . $connectorId->toString() . ')]';
 	}
 
-	public function forParent(MetadataEntities\DevicesModule\Device $parent): void
+	public function forParent(MetadataDocuments\DevicesModule\Device $parent): void
 	{
 		$this->filter[] = '.[?(@.parents in "' . $parent->getId()->toString() . '")]';
 	}
 
-	public function forChild(MetadataEntities\DevicesModule\Device $child): void
+	public function forChild(MetadataDocuments\DevicesModule\Device $child): void
 	{
 		$this->filter[] = '.[?(@.children in "' . $child->getId()->toString() . '")]';
 	}

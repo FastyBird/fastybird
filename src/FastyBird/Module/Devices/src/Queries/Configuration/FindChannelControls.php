@@ -15,14 +15,14 @@
 
 namespace FastyBird\Module\Devices\Queries\Configuration;
 
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use Flow\JSONPath;
 use Ramsey\Uuid;
 
 /**
  * Find channels controls configuration query
  *
- * @template T of MetadataEntities\DevicesModule\ChannelControl
+ * @template T of MetadataDocuments\DevicesModule\ChannelControl
  * @extends  QueryObject<T>
  *
  * @package        FastyBird:DevicesModule!
@@ -50,7 +50,7 @@ class FindChannelControls extends QueryObject
 		$this->filter[] = '.[?(@.name == ' . $name . ')]';
 	}
 
-	public function forChannel(MetadataEntities\DevicesModule\Channel $channel): void
+	public function forChannel(MetadataDocuments\DevicesModule\Channel $channel): void
 	{
 		$this->filter[] = '.[?(@.channel == ' . $channel->getId()->toString() . ')]';
 	}

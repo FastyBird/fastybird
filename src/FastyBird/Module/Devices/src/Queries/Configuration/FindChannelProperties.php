@@ -15,14 +15,14 @@
 
 namespace FastyBird\Module\Devices\Queries\Configuration;
 
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use Flow\JSONPath;
 use Ramsey\Uuid;
 
 /**
  * Find channels properties configuration query
  *
- * @template T of MetadataEntities\DevicesModule\ChannelDynamicProperty|MetadataEntities\DevicesModule\ChannelVariableProperty|MetadataEntities\DevicesModule\ChannelMappedProperty
+ * @template T of MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelVariableProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty
  * @extends  QueryObject<T>
  *
  * @package        FastyBird:DevicesModule!
@@ -60,7 +60,7 @@ class FindChannelProperties extends QueryObject
 		$this->filter[] = '.[?(@.identifier =~ /^[\w\d\-_]+' . $identifier . '$/)]';
 	}
 
-	public function forChannel(MetadataEntities\DevicesModule\Channel $channel): void
+	public function forChannel(MetadataDocuments\DevicesModule\Channel $channel): void
 	{
 		$this->filter[] = '.[?(@.channel == ' . $channel->getId()->toString() . ')]';
 	}
@@ -71,7 +71,7 @@ class FindChannelProperties extends QueryObject
 	}
 
 	public function forParent(
-		MetadataEntities\DevicesModule\ChannelDynamicProperty|MetadataEntities\DevicesModule\ChannelVariableProperty $parent,
+		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelVariableProperty $parent,
 	): void
 	{
 		$this->filter[] = '.[?(@.parent == ' . $parent->getId()->toString() . ')]';

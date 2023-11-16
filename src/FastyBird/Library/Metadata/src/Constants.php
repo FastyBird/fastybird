@@ -134,15 +134,15 @@ final class Constants
 
 	public const MESSAGE_BUS_TRIGGER_MESSAGE_ROUTING_KEY = self::MESSAGE_BUS_PREFIX_KEY . '.message.trigger';
 
-	public const MESSAGE_BUS_ENTITY_PREFIX_KEY = self::MESSAGE_BUS_PREFIX_KEY . '.module.entity';
+	public const MESSAGE_BUS_DOCUMENT_PREFIX_KEY = self::MESSAGE_BUS_PREFIX_KEY . '.module.document';
 
-	public const MESSAGE_BUS_ENTITY_REPORTED_KEY = 'reported';
+	public const MESSAGE_BUS_DOCUMENT_REPORTED_KEY = 'reported';
 
-	public const MESSAGE_BUS_ENTITY_CREATED_KEY = 'created';
+	public const MESSAGE_BUS_DOCUMENT_CREATED_KEY = 'created';
 
-	public const MESSAGE_BUS_ENTITY_UPDATED_KEY = 'updated';
+	public const MESSAGE_BUS_DOCUMENT_UPDATED_KEY = 'updated';
 
-	public const MESSAGE_BUS_ENTITY_DELETED_KEY = 'deleted';
+	public const MESSAGE_BUS_DOCUMENT_DELETED_KEY = 'deleted';
 
 	/**
 	 * MODULES
@@ -153,246 +153,246 @@ final class Constants
 	 */
 
 	// Accounts
-	public const MESSAGE_BUS_ACCOUNT_ENTITY_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_REPORTED_KEY . '.account';
+	public const MESSAGE_BUS_ACCOUNT_DOCUMENT_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_REPORTED_KEY . '.account';
 
-	public const MESSAGE_BUS_ACCOUNT_ENTITY_CREATED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_CREATED_KEY . '.account';
+	public const MESSAGE_BUS_ACCOUNT_DOCUMENT_CREATED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_CREATED_KEY . '.account';
 
-	public const MESSAGE_BUS_ACCOUNT_ENTITY_UPDATED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_UPDATED_KEY . '.account';
+	public const MESSAGE_BUS_ACCOUNT_DOCUMENT_UPDATED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_UPDATED_KEY . '.account';
 
-	public const MESSAGE_BUS_ACCOUNT_ENTITY_DELETED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_DELETED_KEY . '.account';
+	public const MESSAGE_BUS_ACCOUNT_DOCUMENT_DELETED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_DELETED_KEY . '.account';
 
 	// Emails
-	public const MESSAGE_BUS_EMAIL_ENTITY_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_REPORTED_KEY . '.email';
+	public const MESSAGE_BUS_EMAIL_DOCUMENT_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_REPORTED_KEY . '.email';
 
-	public const MESSAGE_BUS_EMAIL_ENTITY_CREATED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_CREATED_KEY . '.email';
+	public const MESSAGE_BUS_EMAIL_DOCUMENT_CREATED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_CREATED_KEY . '.email';
 
-	public const MESSAGE_BUS_EMAIL_ENTITY_UPDATED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_UPDATED_KEY . '.email';
+	public const MESSAGE_BUS_EMAIL_DOCUMENT_UPDATED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_UPDATED_KEY . '.email';
 
-	public const MESSAGE_BUS_EMAIL_ENTITY_DELETED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_DELETED_KEY . '.email';
+	public const MESSAGE_BUS_EMAIL_DOCUMENT_DELETED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_DELETED_KEY . '.email';
 
 	// Identities
-	public const MESSAGE_BUS_IDENTITY_ENTITY_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_REPORTED_KEY . '.identity';
+	public const MESSAGE_BUS_IDENTITY_DOCUMENT_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_REPORTED_KEY . '.identity';
 
-	public const MESSAGE_BUS_IDENTITY_ENTITY_CREATED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_CREATED_KEY . '.identity';
+	public const MESSAGE_BUS_IDENTITY_DOCUMENT_CREATED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_CREATED_KEY . '.identity';
 
-	public const MESSAGE_BUS_IDENTITY_ENTITY_UPDATED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_UPDATED_KEY . '.identity';
+	public const MESSAGE_BUS_IDENTITY_DOCUMENT_UPDATED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_UPDATED_KEY . '.identity';
 
-	public const MESSAGE_BUS_IDENTITY_ENTITY_DELETED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_DELETED_KEY . '.identity';
+	public const MESSAGE_BUS_IDENTITY_DOCUMENT_DELETED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_DELETED_KEY . '.identity';
 
 	// Roles
-	public const MESSAGE_BUS_ROLE_ENTITY_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_REPORTED_KEY . '.role';
+	public const MESSAGE_BUS_ROLE_DOCUMENT_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_REPORTED_KEY . '.role';
 
-	public const MESSAGE_BUS_ROLE_ENTITY_CREATED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_CREATED_KEY . '.role';
+	public const MESSAGE_BUS_ROLE_DOCUMENT_CREATED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_CREATED_KEY . '.role';
 
-	public const MESSAGE_BUS_ROLE_ENTITY_UPDATED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_UPDATED_KEY . '.role';
+	public const MESSAGE_BUS_ROLE_DOCUMENT_UPDATED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_UPDATED_KEY . '.role';
 
-	public const MESSAGE_BUS_ROLE_ENTITY_DELETED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_DELETED_KEY . '.role';
+	public const MESSAGE_BUS_ROLE_DOCUMENT_DELETED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_DELETED_KEY . '.role';
 
 	/**
 	 * Devices module
 	 */
 
 	// Devices
-	public const MESSAGE_BUS_DEVICE_ENTITY_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_REPORTED_KEY . '.device';
+	public const MESSAGE_BUS_DEVICE_DOCUMENT_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_REPORTED_KEY . '.device';
 
-	public const MESSAGE_BUS_DEVICE_ENTITY_CREATED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_CREATED_KEY . '.device';
+	public const MESSAGE_BUS_DEVICE_DOCUMENT_CREATED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_CREATED_KEY . '.device';
 
-	public const MESSAGE_BUS_DEVICE_ENTITY_UPDATED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_UPDATED_KEY . '.device';
+	public const MESSAGE_BUS_DEVICE_DOCUMENT_UPDATED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_UPDATED_KEY . '.device';
 
-	public const MESSAGE_BUS_DEVICE_ENTITY_DELETED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_DELETED_KEY . '.device';
+	public const MESSAGE_BUS_DEVICE_DOCUMENT_DELETED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_DELETED_KEY . '.device';
 
 	// Devices properties
-	public const MESSAGE_BUS_DEVICE_PROPERTY_ENTITY_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_REPORTED_KEY . '.device.property';
+	public const MESSAGE_BUS_DEVICE_PROPERTY_DOCUMENT_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_REPORTED_KEY . '.device.property';
 
-	public const MESSAGE_BUS_DEVICE_PROPERTY_ENTITY_CREATED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_CREATED_KEY . '.device.property';
+	public const MESSAGE_BUS_DEVICE_PROPERTY_DOCUMENT_CREATED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_CREATED_KEY . '.device.property';
 
-	public const MESSAGE_BUS_DEVICE_PROPERTY_ENTITY_UPDATED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_UPDATED_KEY . '.device.property';
+	public const MESSAGE_BUS_DEVICE_PROPERTY_DOCUMENT_UPDATED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_UPDATED_KEY . '.device.property';
 
-	public const MESSAGE_BUS_DEVICE_PROPERTY_ENTITY_DELETED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_DELETED_KEY . '.device.property';
+	public const MESSAGE_BUS_DEVICE_PROPERTY_DOCUMENT_DELETED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_DELETED_KEY . '.device.property';
 
 	// Devices control
-	public const MESSAGE_BUS_DEVICE_CONTROL_ENTITY_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_REPORTED_KEY . '.device.control';
+	public const MESSAGE_BUS_DEVICE_CONTROL_DOCUMENT_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_REPORTED_KEY . '.device.control';
 
-	public const MESSAGE_BUS_DEVICE_CONTROL_ENTITY_CREATED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_CREATED_KEY . '.device.control';
+	public const MESSAGE_BUS_DEVICE_CONTROL_DOCUMENT_CREATED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_CREATED_KEY . '.device.control';
 
-	public const MESSAGE_BUS_DEVICE_CONTROL_ENTITY_UPDATED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_UPDATED_KEY . '.device.control';
+	public const MESSAGE_BUS_DEVICE_CONTROL_DOCUMENT_UPDATED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_UPDATED_KEY . '.device.control';
 
-	public const MESSAGE_BUS_DEVICE_CONTROL_ENTITY_DELETED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_DELETED_KEY . '.device.control';
+	public const MESSAGE_BUS_DEVICE_CONTROL_DOCUMENT_DELETED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_DELETED_KEY . '.device.control';
 
 	// Channels
-	public const MESSAGE_BUS_CHANNEL_ENTITY_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_REPORTED_KEY . '.channel';
+	public const MESSAGE_BUS_CHANNEL_DOCUMENT_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_REPORTED_KEY . '.channel';
 
-	public const MESSAGE_BUS_CHANNEL_ENTITY_CREATED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_CREATED_KEY . '.channel';
+	public const MESSAGE_BUS_CHANNEL_DOCUMENT_CREATED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_CREATED_KEY . '.channel';
 
-	public const MESSAGE_BUS_CHANNEL_ENTITY_UPDATED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_UPDATED_KEY . '.channel';
+	public const MESSAGE_BUS_CHANNEL_DOCUMENT_UPDATED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_UPDATED_KEY . '.channel';
 
-	public const MESSAGE_BUS_CHANNEL_ENTITY_DELETED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_DELETED_KEY . '.channel';
+	public const MESSAGE_BUS_CHANNEL_DOCUMENT_DELETED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_DELETED_KEY . '.channel';
 
 	// Channels properties
-	public const MESSAGE_BUS_CHANNEL_PROPERTY_ENTITY_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_REPORTED_KEY . '.channel.property';
+	public const MESSAGE_BUS_CHANNEL_PROPERTY_DOCUMENT_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_REPORTED_KEY . '.channel.property';
 
-	public const MESSAGE_BUS_CHANNEL_PROPERTY_ENTITY_CREATED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_CREATED_KEY . '.channel.property';
+	public const MESSAGE_BUS_CHANNEL_PROPERTY_DOCUMENT_CREATED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_CREATED_KEY . '.channel.property';
 
-	public const MESSAGE_BUS_CHANNEL_PROPERTY_ENTITY_UPDATED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_UPDATED_KEY . '.channel.property';
+	public const MESSAGE_BUS_CHANNEL_PROPERTY_DOCUMENT_UPDATED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_UPDATED_KEY . '.channel.property';
 
-	public const MESSAGE_BUS_CHANNEL_PROPERTY_ENTITY_DELETED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_DELETED_KEY . '.channel.property';
+	public const MESSAGE_BUS_CHANNEL_PROPERTY_DOCUMENT_DELETED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_DELETED_KEY . '.channel.property';
 
 	// Channels control
-	public const MESSAGE_BUS_CHANNEL_CONTROL_ENTITY_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_REPORTED_KEY . '.channel.control';
+	public const MESSAGE_BUS_CHANNEL_CONTROL_DOCUMENT_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_REPORTED_KEY . '.channel.control';
 
-	public const MESSAGE_BUS_CHANNEL_CONTROL_ENTITY_CREATED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_CREATED_KEY . '.channel.control';
+	public const MESSAGE_BUS_CHANNEL_CONTROL_DOCUMENT_CREATED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_CREATED_KEY . '.channel.control';
 
-	public const MESSAGE_BUS_CHANNEL_CONTROL_ENTITY_UPDATED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_UPDATED_KEY . '.channel.control';
+	public const MESSAGE_BUS_CHANNEL_CONTROL_DOCUMENT_UPDATED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_UPDATED_KEY . '.channel.control';
 
-	public const MESSAGE_BUS_CHANNEL_CONTROL_ENTITY_DELETED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_DELETED_KEY . '.channel.control';
+	public const MESSAGE_BUS_CHANNEL_CONTROL_DOCUMENT_DELETED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_DELETED_KEY . '.channel.control';
 
 	// Connectors
-	public const MESSAGE_BUS_CONNECTOR_ENTITY_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_REPORTED_KEY . '.connector';
+	public const MESSAGE_BUS_CONNECTOR_DOCUMENT_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_REPORTED_KEY . '.connector';
 
-	public const MESSAGE_BUS_CONNECTOR_ENTITY_CREATED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_CREATED_KEY . '.connector';
+	public const MESSAGE_BUS_CONNECTOR_DOCUMENT_CREATED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_CREATED_KEY . '.connector';
 
-	public const MESSAGE_BUS_CONNECTOR_ENTITY_UPDATED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_UPDATED_KEY . '.connector';
+	public const MESSAGE_BUS_CONNECTOR_DOCUMENT_UPDATED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_UPDATED_KEY . '.connector';
 
-	public const MESSAGE_BUS_CONNECTOR_ENTITY_DELETED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_DELETED_KEY . '.connector';
+	public const MESSAGE_BUS_CONNECTOR_DOCUMENT_DELETED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_DELETED_KEY . '.connector';
 
 	// Connectors properties
-	public const MESSAGE_BUS_CONNECTOR_PROPERTY_ENTITY_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_REPORTED_KEY . '.connector.property';
+	public const MESSAGE_BUS_CONNECTOR_PROPERTY_DOCUMENT_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_REPORTED_KEY . '.connector.property';
 
-	public const MESSAGE_BUS_CONNECTOR_PROPERTY_ENTITY_CREATED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_CREATED_KEY . '.connector.property';
+	public const MESSAGE_BUS_CONNECTOR_PROPERTY_DOCUMENT_CREATED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_CREATED_KEY . '.connector.property';
 
-	public const MESSAGE_BUS_CONNECTOR_PROPERTY_ENTITY_UPDATED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_UPDATED_KEY . '.connector.property';
+	public const MESSAGE_BUS_CONNECTOR_PROPERTY_DOCUMENT_UPDATED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_UPDATED_KEY . '.connector.property';
 
-	public const MESSAGE_BUS_CONNECTOR_PROPERTY_ENTITY_DELETED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_DELETED_KEY . '.connector.property';
+	public const MESSAGE_BUS_CONNECTOR_PROPERTY_DOCUMENT_DELETED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_DELETED_KEY . '.connector.property';
 
 	// Connectors control
-	public const MESSAGE_BUS_CONNECTOR_CONTROL_ENTITY_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_REPORTED_KEY . '.connector.control';
+	public const MESSAGE_BUS_CONNECTOR_CONTROL_DOCUMENT_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_REPORTED_KEY . '.connector.control';
 
-	public const MESSAGE_BUS_CONNECTOR_CONTROL_ENTITY_CREATED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_CREATED_KEY . '.connector.control';
+	public const MESSAGE_BUS_CONNECTOR_CONTROL_DOCUMENT_CREATED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_CREATED_KEY . '.connector.control';
 
-	public const MESSAGE_BUS_CONNECTOR_CONTROL_ENTITY_UPDATED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_UPDATED_KEY . '.connector.control';
+	public const MESSAGE_BUS_CONNECTOR_CONTROL_DOCUMENT_UPDATED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_UPDATED_KEY . '.connector.control';
 
-	public const MESSAGE_BUS_CONNECTOR_CONTROL_ENTITY_DELETED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_DELETED_KEY . '.connector.control';
+	public const MESSAGE_BUS_CONNECTOR_CONTROL_DOCUMENT_DELETED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_DELETED_KEY . '.connector.control';
 
 	/**
 	 * Triggers module
 	 */
 
 	// Triggers
-	public const MESSAGE_BUS_TRIGGER_ENTITY_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_REPORTED_KEY . '.trigger';
+	public const MESSAGE_BUS_TRIGGER_DOCUMENT_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_REPORTED_KEY . '.trigger';
 
-	public const MESSAGE_BUS_TRIGGER_ENTITY_CREATED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_CREATED_KEY . '.trigger';
+	public const MESSAGE_BUS_TRIGGER_DOCUMENT_CREATED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_CREATED_KEY . '.trigger';
 
-	public const MESSAGE_BUS_TRIGGER_ENTITY_UPDATED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_UPDATED_KEY . '.trigger';
+	public const MESSAGE_BUS_TRIGGER_DOCUMENT_UPDATED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_UPDATED_KEY . '.trigger';
 
-	public const MESSAGE_BUS_TRIGGER_ENTITY_DELETED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_DELETED_KEY . '.trigger';
+	public const MESSAGE_BUS_TRIGGER_DOCUMENT_DELETED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_DELETED_KEY . '.trigger';
 
 	// Triggers control
-	public const MESSAGE_BUS_TRIGGER_CONTROL_ENTITY_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_REPORTED_KEY . '.trigger.control';
+	public const MESSAGE_BUS_TRIGGER_CONTROL_DOCUMENT_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_REPORTED_KEY . '.trigger.control';
 
-	public const MESSAGE_BUS_TRIGGER_CONTROL_ENTITY_CREATED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_CREATED_KEY . '.trigger.control';
+	public const MESSAGE_BUS_TRIGGER_CONTROL_DOCUMENT_CREATED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_CREATED_KEY . '.trigger.control';
 
-	public const MESSAGE_BUS_TRIGGER_CONTROL_ENTITY_UPDATED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_UPDATED_KEY . '.trigger.control';
+	public const MESSAGE_BUS_TRIGGER_CONTROL_DOCUMENT_UPDATED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_UPDATED_KEY . '.trigger.control';
 
-	public const MESSAGE_BUS_TRIGGER_CONTROL_ENTITY_DELETED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_DELETED_KEY . '.trigger.control';
+	public const MESSAGE_BUS_TRIGGER_CONTROL_DOCUMENT_DELETED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_DELETED_KEY . '.trigger.control';
 
 	// Triggers actions
-	public const MESSAGE_BUS_TRIGGER_ACTION_ENTITY_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_REPORTED_KEY . '.trigger.action';
+	public const MESSAGE_BUS_TRIGGER_ACTION_DOCUMENT_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_REPORTED_KEY . '.trigger.action';
 
-	public const MESSAGE_BUS_TRIGGER_ACTION_ENTITY_CREATED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_CREATED_KEY . '.trigger.action';
+	public const MESSAGE_BUS_TRIGGER_ACTION_DOCUMENT_CREATED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_CREATED_KEY . '.trigger.action';
 
-	public const MESSAGE_BUS_TRIGGER_ACTION_ENTITY_UPDATED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_UPDATED_KEY . '.trigger.action';
+	public const MESSAGE_BUS_TRIGGER_ACTION_DOCUMENT_UPDATED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_UPDATED_KEY . '.trigger.action';
 
-	public const MESSAGE_BUS_TRIGGER_ACTION_ENTITY_DELETED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_DELETED_KEY . '.trigger.action';
+	public const MESSAGE_BUS_TRIGGER_ACTION_DOCUMENT_DELETED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_DELETED_KEY . '.trigger.action';
 
 	// Triggers notifications
-	public const MESSAGE_BUS_TRIGGER_NOTIFICATION_ENTITY_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_REPORTED_KEY . '.trigger.notification';
+	public const MESSAGE_BUS_TRIGGER_NOTIFICATION_DOCUMENT_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_REPORTED_KEY . '.trigger.notification';
 
-	public const MESSAGE_BUS_TRIGGER_NOTIFICATION_ENTITY_CREATED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_CREATED_KEY . '.trigger.notification';
+	public const MESSAGE_BUS_TRIGGER_NOTIFICATION_DOCUMENT_CREATED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_CREATED_KEY . '.trigger.notification';
 
-	public const MESSAGE_BUS_TRIGGER_NOTIFICATION_ENTITY_UPDATED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_UPDATED_KEY . '.trigger.notification';
+	public const MESSAGE_BUS_TRIGGER_NOTIFICATION_DOCUMENT_UPDATED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_UPDATED_KEY . '.trigger.notification';
 
-	public const MESSAGE_BUS_TRIGGER_NOTIFICATION_ENTITY_DELETED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_DELETED_KEY . '.trigger.notification';
+	public const MESSAGE_BUS_TRIGGER_NOTIFICATION_DOCUMENT_DELETED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_DELETED_KEY . '.trigger.notification';
 
 	// Triggers conditions
-	public const MESSAGE_BUS_TRIGGER_CONDITION_ENTITY_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_REPORTED_KEY . '.trigger.condition';
+	public const MESSAGE_BUS_TRIGGER_CONDITION_DOCUMENT_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_REPORTED_KEY . '.trigger.condition';
 
-	public const MESSAGE_BUS_TRIGGER_CONDITION_ENTITY_CREATED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_CREATED_KEY . '.trigger.condition';
+	public const MESSAGE_BUS_TRIGGER_CONDITION_DOCUMENT_CREATED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_CREATED_KEY . '.trigger.condition';
 
-	public const MESSAGE_BUS_TRIGGER_CONDITION_ENTITY_UPDATED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_UPDATED_KEY . '.trigger.condition';
+	public const MESSAGE_BUS_TRIGGER_CONDITION_DOCUMENT_UPDATED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_UPDATED_KEY . '.trigger.condition';
 
-	public const MESSAGE_BUS_TRIGGER_CONDITION_ENTITY_DELETED_ROUTING_KEY = self::MESSAGE_BUS_ENTITY_PREFIX_KEY . '.'
-	. self::MESSAGE_BUS_ENTITY_DELETED_KEY . '.trigger.condition';
+	public const MESSAGE_BUS_TRIGGER_CONDITION_DOCUMENT_DELETED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_DELETED_KEY . '.trigger.condition';
 
 	/*
 	 * JSON schemas mapping
@@ -414,167 +414,167 @@ final class Constants
 		self::MESSAGE_BUS_TRIGGER_CONTROL_ACTION_ROUTING_KEY => self::RESOURCES_FOLDER . DS
 			. 'schemas' . DS . 'actions' . DS . 'action.trigger.control.json',
 
-		self::MESSAGE_BUS_ACCOUNT_ENTITY_REPORTED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'accounts-module' . DS . 'entity.account.json',
-		self::MESSAGE_BUS_ACCOUNT_ENTITY_CREATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'accounts-module' . DS . 'entity.account.json',
-		self::MESSAGE_BUS_ACCOUNT_ENTITY_UPDATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'accounts-module' . DS . 'entity.account.json',
-		self::MESSAGE_BUS_ACCOUNT_ENTITY_DELETED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'accounts-module' . DS . 'entity.account.json',
+		self::MESSAGE_BUS_ACCOUNT_DOCUMENT_REPORTED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'accounts-module' . DS . 'document.account.json',
+		self::MESSAGE_BUS_ACCOUNT_DOCUMENT_CREATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'accounts-module' . DS . 'document.account.json',
+		self::MESSAGE_BUS_ACCOUNT_DOCUMENT_UPDATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'accounts-module' . DS . 'document.account.json',
+		self::MESSAGE_BUS_ACCOUNT_DOCUMENT_DELETED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'accounts-module' . DS . 'document.account.json',
 
-		self::MESSAGE_BUS_EMAIL_ENTITY_REPORTED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'accounts-module' . DS . 'entity.email.json',
-		self::MESSAGE_BUS_EMAIL_ENTITY_CREATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'accounts-module' . DS . 'entity.email.json',
-		self::MESSAGE_BUS_EMAIL_ENTITY_UPDATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'accounts-module' . DS . 'entity.email.json',
-		self::MESSAGE_BUS_EMAIL_ENTITY_DELETED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'accounts-module' . DS . 'entity.email.json',
+		self::MESSAGE_BUS_EMAIL_DOCUMENT_REPORTED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'accounts-module' . DS . 'document.email.json',
+		self::MESSAGE_BUS_EMAIL_DOCUMENT_CREATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'accounts-module' . DS . 'document.email.json',
+		self::MESSAGE_BUS_EMAIL_DOCUMENT_UPDATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'accounts-module' . DS . 'document.email.json',
+		self::MESSAGE_BUS_EMAIL_DOCUMENT_DELETED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'accounts-module' . DS . 'document.email.json',
 
-		self::MESSAGE_BUS_IDENTITY_ENTITY_REPORTED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'accounts-module' . DS . 'entity.identity.json',
-		self::MESSAGE_BUS_IDENTITY_ENTITY_CREATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'accounts-module' . DS . 'entity.identity.json',
-		self::MESSAGE_BUS_IDENTITY_ENTITY_UPDATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'accounts-module' . DS . 'entity.identity.json',
-		self::MESSAGE_BUS_IDENTITY_ENTITY_DELETED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'accounts-module' . DS . 'entity.identity.json',
+		self::MESSAGE_BUS_IDENTITY_DOCUMENT_REPORTED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'accounts-module' . DS . 'document.identity.json',
+		self::MESSAGE_BUS_IDENTITY_DOCUMENT_CREATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'accounts-module' . DS . 'document.identity.json',
+		self::MESSAGE_BUS_IDENTITY_DOCUMENT_UPDATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'accounts-module' . DS . 'document.identity.json',
+		self::MESSAGE_BUS_IDENTITY_DOCUMENT_DELETED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'accounts-module' . DS . 'document.identity.json',
 
-		self::MESSAGE_BUS_ROLE_ENTITY_REPORTED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'accounts-module' . DS . 'entity.role.json',
-		self::MESSAGE_BUS_ROLE_ENTITY_CREATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'accounts-module' . DS . 'entity.role.json',
-		self::MESSAGE_BUS_ROLE_ENTITY_UPDATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'accounts-module' . DS . 'entity.role.json',
-		self::MESSAGE_BUS_ROLE_ENTITY_DELETED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'accounts-module' . DS . 'entity.role.json',
+		self::MESSAGE_BUS_ROLE_DOCUMENT_REPORTED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'accounts-module' . DS . 'document.role.json',
+		self::MESSAGE_BUS_ROLE_DOCUMENT_CREATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'accounts-module' . DS . 'document.role.json',
+		self::MESSAGE_BUS_ROLE_DOCUMENT_UPDATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'accounts-module' . DS . 'document.role.json',
+		self::MESSAGE_BUS_ROLE_DOCUMENT_DELETED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'accounts-module' . DS . 'document.role.json',
 
-		self::MESSAGE_BUS_DEVICE_ENTITY_REPORTED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'entity.device.json',
-		self::MESSAGE_BUS_DEVICE_ENTITY_CREATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'entity.device.json',
-		self::MESSAGE_BUS_DEVICE_ENTITY_UPDATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'entity.device.json',
-		self::MESSAGE_BUS_DEVICE_ENTITY_DELETED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'entity.device.json',
+		self::MESSAGE_BUS_DEVICE_DOCUMENT_REPORTED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.device.json',
+		self::MESSAGE_BUS_DEVICE_DOCUMENT_CREATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.device.json',
+		self::MESSAGE_BUS_DEVICE_DOCUMENT_UPDATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.device.json',
+		self::MESSAGE_BUS_DEVICE_DOCUMENT_DELETED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.device.json',
 
-		self::MESSAGE_BUS_DEVICE_PROPERTY_ENTITY_REPORTED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'entity.device.property.json',
-		self::MESSAGE_BUS_DEVICE_PROPERTY_ENTITY_CREATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'entity.device.property.json',
-		self::MESSAGE_BUS_DEVICE_PROPERTY_ENTITY_UPDATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'entity.device.property.json',
-		self::MESSAGE_BUS_DEVICE_PROPERTY_ENTITY_DELETED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'entity.device.property.json',
+		self::MESSAGE_BUS_DEVICE_PROPERTY_DOCUMENT_REPORTED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.device.property.json',
+		self::MESSAGE_BUS_DEVICE_PROPERTY_DOCUMENT_CREATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.device.property.json',
+		self::MESSAGE_BUS_DEVICE_PROPERTY_DOCUMENT_UPDATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.device.property.json',
+		self::MESSAGE_BUS_DEVICE_PROPERTY_DOCUMENT_DELETED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.device.property.json',
 
-		self::MESSAGE_BUS_DEVICE_CONTROL_ENTITY_REPORTED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'entity.device.control.json',
-		self::MESSAGE_BUS_DEVICE_CONTROL_ENTITY_CREATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'entity.device.control.json',
-		self::MESSAGE_BUS_DEVICE_CONTROL_ENTITY_UPDATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'entity.device.control.json',
-		self::MESSAGE_BUS_DEVICE_CONTROL_ENTITY_DELETED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'entity.device.control.json',
+		self::MESSAGE_BUS_DEVICE_CONTROL_DOCUMENT_REPORTED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.device.control.json',
+		self::MESSAGE_BUS_DEVICE_CONTROL_DOCUMENT_CREATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.device.control.json',
+		self::MESSAGE_BUS_DEVICE_CONTROL_DOCUMENT_UPDATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.device.control.json',
+		self::MESSAGE_BUS_DEVICE_CONTROL_DOCUMENT_DELETED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.device.control.json',
 
-		self::MESSAGE_BUS_CHANNEL_ENTITY_REPORTED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'entity.channel.json',
-		self::MESSAGE_BUS_CHANNEL_ENTITY_CREATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'entity.channel.json',
-		self::MESSAGE_BUS_CHANNEL_ENTITY_UPDATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'entity.channel.json',
-		self::MESSAGE_BUS_CHANNEL_ENTITY_DELETED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'entity.channel.json',
+		self::MESSAGE_BUS_CHANNEL_DOCUMENT_REPORTED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.channel.json',
+		self::MESSAGE_BUS_CHANNEL_DOCUMENT_CREATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.channel.json',
+		self::MESSAGE_BUS_CHANNEL_DOCUMENT_UPDATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.channel.json',
+		self::MESSAGE_BUS_CHANNEL_DOCUMENT_DELETED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.channel.json',
 
-		self::MESSAGE_BUS_CHANNEL_PROPERTY_ENTITY_REPORTED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'entity.channel.property.json',
-		self::MESSAGE_BUS_CHANNEL_PROPERTY_ENTITY_CREATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'entity.channel.property.json',
-		self::MESSAGE_BUS_CHANNEL_PROPERTY_ENTITY_UPDATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'entity.channel.property.json',
-		self::MESSAGE_BUS_CHANNEL_PROPERTY_ENTITY_DELETED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'entity.channel.property.json',
+		self::MESSAGE_BUS_CHANNEL_PROPERTY_DOCUMENT_REPORTED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.channel.property.json',
+		self::MESSAGE_BUS_CHANNEL_PROPERTY_DOCUMENT_CREATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.channel.property.json',
+		self::MESSAGE_BUS_CHANNEL_PROPERTY_DOCUMENT_UPDATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.channel.property.json',
+		self::MESSAGE_BUS_CHANNEL_PROPERTY_DOCUMENT_DELETED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.channel.property.json',
 
-		self::MESSAGE_BUS_CHANNEL_CONTROL_ENTITY_REPORTED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'entity.channel.control.json',
-		self::MESSAGE_BUS_CHANNEL_CONTROL_ENTITY_CREATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'entity.channel.control.json',
-		self::MESSAGE_BUS_CHANNEL_CONTROL_ENTITY_UPDATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'entity.channel.control.json',
-		self::MESSAGE_BUS_CHANNEL_CONTROL_ENTITY_DELETED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'entity.channel.control.json',
+		self::MESSAGE_BUS_CHANNEL_CONTROL_DOCUMENT_REPORTED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.channel.control.json',
+		self::MESSAGE_BUS_CHANNEL_CONTROL_DOCUMENT_CREATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.channel.control.json',
+		self::MESSAGE_BUS_CHANNEL_CONTROL_DOCUMENT_UPDATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.channel.control.json',
+		self::MESSAGE_BUS_CHANNEL_CONTROL_DOCUMENT_DELETED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.channel.control.json',
 
-		self::MESSAGE_BUS_CONNECTOR_ENTITY_REPORTED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'entity.connector.json',
-		self::MESSAGE_BUS_CONNECTOR_ENTITY_CREATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'entity.connector.json',
-		self::MESSAGE_BUS_CONNECTOR_ENTITY_UPDATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'entity.connector.json',
-		self::MESSAGE_BUS_CONNECTOR_ENTITY_DELETED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'entity.connector.json',
+		self::MESSAGE_BUS_CONNECTOR_DOCUMENT_REPORTED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.connector.json',
+		self::MESSAGE_BUS_CONNECTOR_DOCUMENT_CREATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.connector.json',
+		self::MESSAGE_BUS_CONNECTOR_DOCUMENT_UPDATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.connector.json',
+		self::MESSAGE_BUS_CONNECTOR_DOCUMENT_DELETED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.connector.json',
 
-		self::MESSAGE_BUS_CONNECTOR_PROPERTY_ENTITY_REPORTED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'entity.connector.property.json',
-		self::MESSAGE_BUS_CONNECTOR_PROPERTY_ENTITY_CREATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'entity.connector.property.json',
-		self::MESSAGE_BUS_CONNECTOR_PROPERTY_ENTITY_UPDATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'entity.connector.property.json',
-		self::MESSAGE_BUS_CONNECTOR_PROPERTY_ENTITY_DELETED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'entity.connector.property.json',
+		self::MESSAGE_BUS_CONNECTOR_PROPERTY_DOCUMENT_REPORTED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.connector.property.json',
+		self::MESSAGE_BUS_CONNECTOR_PROPERTY_DOCUMENT_CREATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.connector.property.json',
+		self::MESSAGE_BUS_CONNECTOR_PROPERTY_DOCUMENT_UPDATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.connector.property.json',
+		self::MESSAGE_BUS_CONNECTOR_PROPERTY_DOCUMENT_DELETED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.connector.property.json',
 
-		self::MESSAGE_BUS_CONNECTOR_CONTROL_ENTITY_REPORTED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'entity.connector.control.json',
-		self::MESSAGE_BUS_CONNECTOR_CONTROL_ENTITY_CREATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'entity.connector.control.json',
-		self::MESSAGE_BUS_CONNECTOR_CONTROL_ENTITY_UPDATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'entity.connector.control.json',
-		self::MESSAGE_BUS_CONNECTOR_CONTROL_ENTITY_DELETED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'entity.connector.control.json',
+		self::MESSAGE_BUS_CONNECTOR_CONTROL_DOCUMENT_REPORTED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.connector.control.json',
+		self::MESSAGE_BUS_CONNECTOR_CONTROL_DOCUMENT_CREATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.connector.control.json',
+		self::MESSAGE_BUS_CONNECTOR_CONTROL_DOCUMENT_UPDATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.connector.control.json',
+		self::MESSAGE_BUS_CONNECTOR_CONTROL_DOCUMENT_DELETED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.connector.control.json',
 
-		self::MESSAGE_BUS_TRIGGER_ENTITY_REPORTED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'triggers-module' . DS . 'entity.trigger.json',
-		self::MESSAGE_BUS_TRIGGER_ENTITY_CREATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'triggers-module' . DS . 'entity.trigger.json',
-		self::MESSAGE_BUS_TRIGGER_ENTITY_UPDATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'triggers-module' . DS . 'entity.trigger.json',
-		self::MESSAGE_BUS_TRIGGER_ENTITY_DELETED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'triggers-module' . DS . 'entity.trigger.json',
+		self::MESSAGE_BUS_TRIGGER_DOCUMENT_REPORTED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'triggers-module' . DS . 'document.trigger.json',
+		self::MESSAGE_BUS_TRIGGER_DOCUMENT_CREATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'triggers-module' . DS . 'document.trigger.json',
+		self::MESSAGE_BUS_TRIGGER_DOCUMENT_UPDATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'triggers-module' . DS . 'document.trigger.json',
+		self::MESSAGE_BUS_TRIGGER_DOCUMENT_DELETED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'triggers-module' . DS . 'document.trigger.json',
 
-		self::MESSAGE_BUS_TRIGGER_CONTROL_ENTITY_REPORTED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'triggers-module' . DS . 'entity.trigger.control.json',
-		self::MESSAGE_BUS_TRIGGER_CONTROL_ENTITY_CREATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'triggers-module' . DS . 'entity.trigger.control.json',
-		self::MESSAGE_BUS_TRIGGER_CONTROL_ENTITY_UPDATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'triggers-module' . DS . 'entity.trigger.control.json',
-		self::MESSAGE_BUS_TRIGGER_CONTROL_ENTITY_DELETED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'triggers-module' . DS . 'entity.trigger.control.json',
+		self::MESSAGE_BUS_TRIGGER_CONTROL_DOCUMENT_REPORTED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'triggers-module' . DS . 'document.trigger.control.json',
+		self::MESSAGE_BUS_TRIGGER_CONTROL_DOCUMENT_CREATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'triggers-module' . DS . 'document.trigger.control.json',
+		self::MESSAGE_BUS_TRIGGER_CONTROL_DOCUMENT_UPDATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'triggers-module' . DS . 'document.trigger.control.json',
+		self::MESSAGE_BUS_TRIGGER_CONTROL_DOCUMENT_DELETED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'triggers-module' . DS . 'document.trigger.control.json',
 
-		self::MESSAGE_BUS_TRIGGER_ACTION_ENTITY_REPORTED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'triggers-module' . DS . 'entity.action.json',
-		self::MESSAGE_BUS_TRIGGER_ACTION_ENTITY_CREATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'triggers-module' . DS . 'entity.action.json',
-		self::MESSAGE_BUS_TRIGGER_ACTION_ENTITY_UPDATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'triggers-module' . DS . 'entity.action.json',
-		self::MESSAGE_BUS_TRIGGER_ACTION_ENTITY_DELETED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'triggers-module' . DS . 'entity.action.json',
+		self::MESSAGE_BUS_TRIGGER_ACTION_DOCUMENT_REPORTED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'triggers-module' . DS . 'document.action.json',
+		self::MESSAGE_BUS_TRIGGER_ACTION_DOCUMENT_CREATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'triggers-module' . DS . 'document.action.json',
+		self::MESSAGE_BUS_TRIGGER_ACTION_DOCUMENT_UPDATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'triggers-module' . DS . 'document.action.json',
+		self::MESSAGE_BUS_TRIGGER_ACTION_DOCUMENT_DELETED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'triggers-module' . DS . 'document.action.json',
 
-		self::MESSAGE_BUS_TRIGGER_NOTIFICATION_ENTITY_REPORTED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'triggers-module' . DS . 'entity.notification.json',
-		self::MESSAGE_BUS_TRIGGER_NOTIFICATION_ENTITY_CREATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'triggers-module' . DS . 'entity.notification.json',
-		self::MESSAGE_BUS_TRIGGER_NOTIFICATION_ENTITY_UPDATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'triggers-module' . DS . 'entity.notification.json',
-		self::MESSAGE_BUS_TRIGGER_NOTIFICATION_ENTITY_DELETED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'triggers-module' . DS . 'entity.notification.json',
+		self::MESSAGE_BUS_TRIGGER_NOTIFICATION_DOCUMENT_REPORTED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'triggers-module' . DS . 'document.notification.json',
+		self::MESSAGE_BUS_TRIGGER_NOTIFICATION_DOCUMENT_CREATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'triggers-module' . DS . 'document.notification.json',
+		self::MESSAGE_BUS_TRIGGER_NOTIFICATION_DOCUMENT_UPDATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'triggers-module' . DS . 'document.notification.json',
+		self::MESSAGE_BUS_TRIGGER_NOTIFICATION_DOCUMENT_DELETED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'triggers-module' . DS . 'document.notification.json',
 
-		self::MESSAGE_BUS_TRIGGER_CONDITION_ENTITY_REPORTED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'triggers-module' . DS . 'entity.condition.json',
-		self::MESSAGE_BUS_TRIGGER_CONDITION_ENTITY_CREATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'triggers-module' . DS . 'entity.condition.json',
-		self::MESSAGE_BUS_TRIGGER_CONDITION_ENTITY_UPDATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'triggers-module' . DS . 'entity.condition.json',
-		self::MESSAGE_BUS_TRIGGER_CONDITION_ENTITY_DELETED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
-			. 'schemas' . DS . 'modules' . DS . 'triggers-module' . DS . 'entity.condition.json',
+		self::MESSAGE_BUS_TRIGGER_CONDITION_DOCUMENT_REPORTED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'triggers-module' . DS . 'document.condition.json',
+		self::MESSAGE_BUS_TRIGGER_CONDITION_DOCUMENT_CREATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'triggers-module' . DS . 'document.condition.json',
+		self::MESSAGE_BUS_TRIGGER_CONDITION_DOCUMENT_UPDATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'triggers-module' . DS . 'document.condition.json',
+		self::MESSAGE_BUS_TRIGGER_CONDITION_DOCUMENT_DELETED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'triggers-module' . DS . 'document.condition.json',
 	];
 
 	/**

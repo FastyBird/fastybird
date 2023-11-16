@@ -4,7 +4,7 @@ namespace FastyBird\Module\Devices\Tests\Cases\Unit\Models\Configuration\Reposit
 
 use Error;
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
@@ -99,37 +99,37 @@ final class ChannelsPropertiesRepositoryTest extends DbTestCase
 
 		$findQuery = new Queries\Configuration\FindChannelProperties();
 
-		$entities = $repository->findAllBy($findQuery, MetadataEntities\DevicesModule\ChannelDynamicProperty::class);
+		$entities = $repository->findAllBy($findQuery, MetadataDocuments\DevicesModule\ChannelDynamicProperty::class);
 
 		self::assertCount(3, $entities);
 
 		$findQuery = new Queries\Configuration\FindChannelProperties();
 
-		$entities = $repository->findAllBy($findQuery, MetadataEntities\DevicesModule\ChannelVariableProperty::class);
+		$entities = $repository->findAllBy($findQuery, MetadataDocuments\DevicesModule\ChannelVariableProperty::class);
 
 		self::assertCount(0, $entities);
 
 		$findQuery = new Queries\Configuration\FindChannelProperties();
 
-		$entities = $repository->findAllBy($findQuery, MetadataEntities\DevicesModule\ChannelMappedProperty::class);
+		$entities = $repository->findAllBy($findQuery, MetadataDocuments\DevicesModule\ChannelMappedProperty::class);
 
 		self::assertCount(0, $entities);
 
 		$findQuery = new Queries\Configuration\FindChannelDynamicProperties();
 
-		$entities = $repository->findAllBy($findQuery, MetadataEntities\DevicesModule\ChannelDynamicProperty::class);
+		$entities = $repository->findAllBy($findQuery, MetadataDocuments\DevicesModule\ChannelDynamicProperty::class);
 
 		self::assertCount(3, $entities);
 
 		$findQuery = new Queries\Configuration\FindChannelVariableProperties();
 
-		$entities = $repository->findAllBy($findQuery, MetadataEntities\DevicesModule\ChannelVariableProperty::class);
+		$entities = $repository->findAllBy($findQuery, MetadataDocuments\DevicesModule\ChannelVariableProperty::class);
 
 		self::assertCount(0, $entities);
 
 		$findQuery = new Queries\Configuration\FindChannelMappedProperties();
 
-		$entities = $repository->findAllBy($findQuery, MetadataEntities\DevicesModule\ChannelMappedProperty::class);
+		$entities = $repository->findAllBy($findQuery, MetadataDocuments\DevicesModule\ChannelMappedProperty::class);
 
 		self::assertCount(0, $entities);
 	}
@@ -152,7 +152,7 @@ final class ChannelsPropertiesRepositoryTest extends DbTestCase
 
 		$channel = $devicesRepository->findOneBy($findQuery);
 
-		self::assertInstanceOf(MetadataEntities\DevicesModule\Channel::class, $channel);
+		self::assertInstanceOf(MetadataDocuments\DevicesModule\Channel::class, $channel);
 		self::assertSame('channel-one', $channel->getIdentifier());
 
 		$repository = $this->getContainer()->getByType(Models\Configuration\Channels\Properties\Repository::class);

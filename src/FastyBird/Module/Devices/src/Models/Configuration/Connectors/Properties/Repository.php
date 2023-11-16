@@ -15,7 +15,7 @@
 
 namespace FastyBird\Module\Devices\Models\Configuration\Connectors\Properties;
 
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions;
@@ -33,7 +33,7 @@ use function is_string;
 /**
  * Connectors properties configuration repository
  *
- * @phpstan-type SupportedClasses MetadataEntities\DevicesModule\ConnectorDynamicProperty|MetadataEntities\DevicesModule\ConnectorVariableProperty
+ * @phpstan-type SupportedClasses MetadataDocuments\DevicesModule\ConnectorDynamicProperty|MetadataDocuments\DevicesModule\ConnectorVariableProperty
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Models
@@ -44,7 +44,7 @@ final class Repository
 
 	public function __construct(
 		private readonly Models\Configuration\Builder $builder,
-		private readonly MetadataEntities\EntityFactory $entityFactory,
+		private readonly MetadataDocuments\DocumentFactory $entityFactory,
 	)
 	{
 	}
@@ -65,7 +65,7 @@ final class Repository
 	public function findOneBy(
 		Queries\Configuration\FindConnectorProperties $queryObject,
 		string|null $type = null,
-	): MetadataEntities\DevicesModule\ConnectorDynamicProperty|MetadataEntities\DevicesModule\ConnectorVariableProperty|null
+	): MetadataDocuments\DevicesModule\ConnectorDynamicProperty|MetadataDocuments\DevicesModule\ConnectorVariableProperty|null
 	{
 		try {
 			$space = $this->builder
@@ -73,10 +73,10 @@ final class Repository
 				->find('.properties.*');
 
 			if (is_string($type)) {
-				if ($type === MetadataEntities\DevicesModule\ConnectorDynamicProperty::class) {
+				if ($type === MetadataDocuments\DevicesModule\ConnectorDynamicProperty::class) {
 					$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_DYNAMIC . '")]');
 
-				} elseif ($type === MetadataEntities\DevicesModule\ConnectorVariableProperty::class) {
+				} elseif ($type === MetadataDocuments\DevicesModule\ConnectorVariableProperty::class) {
 					$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_VARIABLE . '")]');
 				}
 			} else {
@@ -103,8 +103,8 @@ final class Repository
 		} else {
 			foreach (
 				[
-					MetadataEntities\DevicesModule\ConnectorDynamicProperty::class,
-					MetadataEntities\DevicesModule\ConnectorVariableProperty::class,
+					MetadataDocuments\DevicesModule\ConnectorDynamicProperty::class,
+					MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
 				] as $class
 			) {
 				try {
@@ -141,10 +141,10 @@ final class Repository
 				->find('.properties.*');
 
 			if (is_string($type)) {
-				if ($type === MetadataEntities\DevicesModule\ConnectorDynamicProperty::class) {
+				if ($type === MetadataDocuments\DevicesModule\ConnectorDynamicProperty::class) {
 					$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_DYNAMIC . '")]');
 
-				} elseif ($type === MetadataEntities\DevicesModule\ConnectorVariableProperty::class) {
+				} elseif ($type === MetadataDocuments\DevicesModule\ConnectorVariableProperty::class) {
 					$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_VARIABLE . '")]');
 				}
 			} else {
@@ -169,14 +169,14 @@ final class Repository
 		return array_filter(
 			array_map(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				function (stdClass $item) use ($type): MetadataEntities\DevicesModule\ConnectorDynamicProperty|MetadataEntities\DevicesModule\ConnectorVariableProperty|null {
+				function (stdClass $item) use ($type): MetadataDocuments\DevicesModule\ConnectorDynamicProperty|MetadataDocuments\DevicesModule\ConnectorVariableProperty|null {
 					if (is_string($type)) {
 						return $this->entityFactory->create($type, $item);
 					} else {
 						foreach (
 							[
-								MetadataEntities\DevicesModule\ConnectorDynamicProperty::class,
-								MetadataEntities\DevicesModule\ConnectorVariableProperty::class,
+								MetadataDocuments\DevicesModule\ConnectorDynamicProperty::class,
+								MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
 							] as $class
 						) {
 							try {

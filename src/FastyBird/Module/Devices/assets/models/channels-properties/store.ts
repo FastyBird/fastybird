@@ -6,7 +6,7 @@ import { v4 as uuid } from 'uuid';
 import get from 'lodash/get';
 import isEqual from 'lodash/isEqual';
 
-import exchangeEntitySchema from '@fastybird/metadata-library/resources/schemas/modules/devices-module/entity.channel.property.json';
+import exchangeEntitySchema from '../../../../../Library/Metadata/resources/schemas/modules/devices-module/document.channel.property.json';
 import {
 	ChannelPropertyEntity as ExchangeEntity,
 	DevicesModuleRoutes as RoutingKeys,

@@ -24,7 +24,7 @@ use FastyBird\Connector\HomeKit\Protocol;
 use FastyBird\Connector\HomeKit\Queries;
 use FastyBird\Connector\HomeKit\Types;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
@@ -503,7 +503,7 @@ final class Http implements Server
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function setSharedKey(
-		DevicesEntities\Connectors\Properties\Property|MetadataEntities\DevicesModule\ConnectorVariableProperty $property,
+		DevicesEntities\Connectors\Properties\Property|MetadataDocuments\DevicesModule\ConnectorVariableProperty $property,
 	): void
 	{
 		if (
@@ -512,7 +512,7 @@ final class Http implements Server
 					$property instanceof DevicesEntities\Connectors\Properties\Variable
 					&& $property->getConnector()->getId()->equals($this->connector->getId())
 				) || (
-					$property instanceof MetadataEntities\DevicesModule\ConnectorVariableProperty
+					$property instanceof MetadataDocuments\DevicesModule\ConnectorVariableProperty
 					&& $property->getConnector()->equals($this->connector->getId())
 				)
 			)

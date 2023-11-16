@@ -15,7 +15,7 @@
 
 namespace FastyBird\Module\Devices\Models\Configuration\Connectors;
 
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
@@ -38,13 +38,13 @@ final class Repository
 
 	public function __construct(
 		private readonly Models\Configuration\Builder $builder,
-		private readonly MetadataEntities\EntityFactory $entityFactory,
+		private readonly MetadataDocuments\DocumentFactory $entityFactory,
 	)
 	{
 	}
 
 	/**
-	 * @template T of MetadataEntities\DevicesModule\Connector
+	 * @template T of MetadataDocuments\DevicesModule\Connector
 	 *
 	 * @param Queries\Configuration\FindConnectors<T> $queryObject
 	 * @param class-string<T> $type
@@ -58,8 +58,8 @@ final class Repository
 	 */
 	public function findOneBy(
 		Queries\Configuration\FindConnectors $queryObject,
-		string $type = MetadataEntities\DevicesModule\Connector::class,
-	): MetadataEntities\DevicesModule\Connector|null
+		string $type = MetadataDocuments\DevicesModule\Connector::class,
+	): MetadataDocuments\DevicesModule\Connector|null
 	{
 		try {
 			$space = $this->builder
@@ -79,7 +79,7 @@ final class Repository
 	}
 
 	/**
-	 * @template T of MetadataEntities\DevicesModule\Connector
+	 * @template T of MetadataDocuments\DevicesModule\Connector
 	 *
 	 * @param Queries\Configuration\FindConnectors<T> $queryObject
 	 * @param class-string<T> $type
@@ -92,7 +92,7 @@ final class Repository
 	 */
 	public function findAllBy(
 		Queries\Configuration\FindConnectors $queryObject,
-		string $type = MetadataEntities\DevicesModule\Connector::class,
+		string $type = MetadataDocuments\DevicesModule\Connector::class,
 	): array
 	{
 		try {
@@ -110,7 +110,10 @@ final class Repository
 		}
 
 		return array_map(
-			fn (stdClass $item): MetadataEntities\DevicesModule\Connector => $this->entityFactory->create($type, $item),
+			fn (stdClass $item): MetadataDocuments\DevicesModule\Connector => $this->entityFactory->create(
+				$type,
+				$item,
+			),
 			$result,
 		);
 	}

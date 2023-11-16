@@ -15,13 +15,13 @@
 
 namespace FastyBird\Module\Devices\Queries\Configuration;
 
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 
 /**
  * Find connector variable properties entities query
  *
- * @template T of MetadataEntities\DevicesModule\ConnectorVariableProperty
+ * @template T of MetadataDocuments\DevicesModule\ConnectorVariableProperty
  * @extends  FindConnectorProperties<T>
  *
  * @package        FastyBird:DevicesModule!

@@ -15,7 +15,7 @@
 
 namespace FastyBird\Module\Devices\Models\Configuration\Connectors\Controls;
 
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
@@ -37,13 +37,13 @@ final class Repository
 
 	public function __construct(
 		private readonly Models\Configuration\Builder $builder,
-		private readonly MetadataEntities\EntityFactory $entityFactory,
+		private readonly MetadataDocuments\DocumentFactory $entityFactory,
 	)
 	{
 	}
 
 	/**
-	 * @param Queries\Configuration\FindConnectorControls<MetadataEntities\DevicesModule\ConnectorControl> $queryObject
+	 * @param Queries\Configuration\FindConnectorControls<MetadataDocuments\DevicesModule\ConnectorControl> $queryObject
 	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
@@ -52,7 +52,7 @@ final class Repository
 	 */
 	public function findOneBy(
 		Queries\Configuration\FindConnectorControls $queryObject,
-	): MetadataEntities\DevicesModule\ConnectorControl|null
+	): MetadataDocuments\DevicesModule\ConnectorControl|null
 	{
 		try {
 			$space = $this->builder
@@ -68,13 +68,13 @@ final class Repository
 			return null;
 		}
 
-		return $this->entityFactory->create(MetadataEntities\DevicesModule\ConnectorControl::class, $result[0]);
+		return $this->entityFactory->create(MetadataDocuments\DevicesModule\ConnectorControl::class, $result[0]);
 	}
 
 	/**
-	 * @param Queries\Configuration\FindConnectorControls<MetadataEntities\DevicesModule\ConnectorControl> $queryObject
+	 * @param Queries\Configuration\FindConnectorControls<MetadataDocuments\DevicesModule\ConnectorControl> $queryObject
 	 *
-	 * @return array<MetadataEntities\DevicesModule\ConnectorControl>
+	 * @return array<MetadataDocuments\DevicesModule\ConnectorControl>
 	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
@@ -99,8 +99,8 @@ final class Repository
 		}
 
 		return array_map(
-			fn (stdClass $item): MetadataEntities\DevicesModule\ConnectorControl => $this->entityFactory->create(
-				MetadataEntities\DevicesModule\ConnectorControl::class,
+			fn (stdClass $item): MetadataDocuments\DevicesModule\ConnectorControl => $this->entityFactory->create(
+				MetadataDocuments\DevicesModule\ConnectorControl::class,
 				$item,
 			),
 			$result,

@@ -499,10 +499,10 @@
         "version" : "*",
         "metadata" : {
           "exchange" : [
-            "fb.exchange.module.entity.deleted.channel",
-            "fb.exchange.module.entity.*.channel.property",
-            "fb.exchange.module.entity.deleted.device",
-            "fb.exchange.module.entity.*.device.property"
+            "fb.exchange.module.document.deleted.channel",
+            "fb.exchange.module.document.*.channel.property",
+            "fb.exchange.module.document.deleted.device",
+            "fb.exchange.module.document.*.device.property"
           ],
           "routes" : [
             {
@@ -706,15 +706,15 @@
         "version" : "*",
         "metadata" : {
           "exchange" : [
-            "fb.exchange.module.entity.*.device",
-            "fb.exchange.module.entity.*.device.*",
-            "fb.exchange.module.entity.*.channel",
-            "fb.exchange.module.entity.*.channel.*",
-            "fb.exchange.module.entity.*.account",
-            "fb.exchange.module.entity.*.email",
-            "fb.exchange.module.entity.*.identity",
-            "fb.exchange.module.entity.*.trigger",
-            "fb.exchange.module.entity.*.trigger.*"
+            "fb.exchange.module.document.*.device",
+            "fb.exchange.module.document.*.device.*",
+            "fb.exchange.module.document.*.channel",
+            "fb.exchange.module.document.*.channel.*",
+            "fb.exchange.module.document.*.account",
+            "fb.exchange.module.document.*.email",
+            "fb.exchange.module.document.*.identity",
+            "fb.exchange.module.document.*.trigger",
+            "fb.exchange.module.document.*.trigger.*"
           ]
         }
       }

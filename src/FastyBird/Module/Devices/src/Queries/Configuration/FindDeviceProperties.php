@@ -15,14 +15,14 @@
 
 namespace FastyBird\Module\Devices\Queries\Configuration;
 
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use Flow\JSONPath;
 use Ramsey\Uuid;
 
 /**
  * Find devices properties configuration query
  *
- * @template T of MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceVariableProperty|MetadataEntities\DevicesModule\DeviceMappedProperty
+ * @template T of MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceVariableProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty
  * @extends  QueryObject<T>
  *
  * @package        FastyBird:DevicesModule!
@@ -60,7 +60,7 @@ class FindDeviceProperties extends QueryObject
 		$this->filter[] = '.[?(@.identifier =~ /^[\w\d\-_]+' . $identifier . '$/)]';
 	}
 
-	public function forDevice(MetadataEntities\DevicesModule\Device $device): void
+	public function forDevice(MetadataDocuments\DevicesModule\Device $device): void
 	{
 		$this->filter[] = '.[?(@.device == ' . $device->getId()->toString() . ')]';
 	}
@@ -71,7 +71,7 @@ class FindDeviceProperties extends QueryObject
 	}
 
 	public function forParent(
-		MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceVariableProperty $parent,
+		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceVariableProperty $parent,
 	): void
 	{
 		$this->filter[] = '.[?(@.parent == ' . $parent->getId()->toString() . ')]';

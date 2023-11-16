@@ -15,14 +15,14 @@
 
 namespace FastyBird\Module\Devices\Queries\Configuration;
 
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use Flow\JSONPath;
 use Ramsey\Uuid;
 
 /**
  * Find connectors properties configuration query
  *
- * @template T of MetadataEntities\DevicesModule\ConnectorDynamicProperty|MetadataEntities\DevicesModule\ConnectorVariableProperty
+ * @template T of MetadataDocuments\DevicesModule\ConnectorDynamicProperty|MetadataDocuments\DevicesModule\ConnectorVariableProperty
  * @extends  QueryObject<T>
  *
  * @package        FastyBird:DevicesModule!
@@ -60,7 +60,7 @@ class FindConnectorProperties extends QueryObject
 		$this->filter[] = '.[?(@.identifier =~ /^[\w\d\-_]+' . $identifier . '$/)]';
 	}
 
-	public function forConnector(MetadataEntities\DevicesModule\Connector $connector): void
+	public function forConnector(MetadataDocuments\DevicesModule\Connector $connector): void
 	{
 		$this->filter[] = '.[?(@.connector == ' . $connector->getId()->toString() . ')]';
 	}

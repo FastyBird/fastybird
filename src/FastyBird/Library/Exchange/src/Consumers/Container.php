@@ -17,7 +17,7 @@ namespace FastyBird\Library\Exchange\Consumers;
 
 use FastyBird\Library\Exchange\Events;
 use FastyBird\Library\Exchange\Exceptions;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Psr\EventDispatcher as PsrEventDispatcher;
 use SplObjectStorage;
@@ -46,7 +46,7 @@ class Container implements Consumer
 	public function consume(
 		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|MetadataTypes\AutomatorSource $source,
 		MetadataTypes\RoutingKey $routingKey,
-		MetadataEntities\Entity|null $entity,
+		MetadataDocuments\Document|null $entity,
 	): void
 	{
 		$this->dispatcher?->dispatch(new Events\BeforeMessageConsumed($source, $routingKey, $entity));

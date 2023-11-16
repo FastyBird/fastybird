@@ -16,9 +16,9 @@
 namespace FastyBird\Module\Devices\Subscribers;
 
 use Exception;
-use FastyBird\Library\Exchange\Entities as ExchangeEntities;
+use FastyBird\Library\Exchange\Documents as ExchangeEntities;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities;
@@ -53,7 +53,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 		private readonly Utilities\ConnectorPropertiesStates $connectorPropertiesStates,
 		private readonly Utilities\DevicePropertiesStates $devicePropertiesStates,
 		private readonly Utilities\ChannelPropertiesStates $channelPropertiesStates,
-		private readonly ExchangeEntities\EntityFactory $entityFactory,
+		private readonly ExchangeEntities\DocumentFactory $entityFactory,
 		private readonly ExchangePublisher\Publisher $publisher,
 	)
 	{
@@ -152,28 +152,28 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
 	private function processEntity(
-		MetadataEntities\DevicesModule\DynamicProperty|MetadataEntities\DevicesModule\MappedProperty|Entities\Connectors\Properties\Dynamic|Entities\Devices\Properties\Dynamic|Entities\Channels\Properties\Dynamic|Entities\Devices\Properties\Mapped|Entities\Channels\Properties\Mapped $property,
+		MetadataDocuments\DevicesModule\DynamicProperty|MetadataDocuments\DevicesModule\MappedProperty|Entities\Connectors\Properties\Dynamic|Entities\Devices\Properties\Dynamic|Entities\Channels\Properties\Dynamic|Entities\Devices\Properties\Mapped|Entities\Channels\Properties\Mapped $property,
 	): void
 	{
 		$state = null;
 
 		if (
-			$property instanceof MetadataEntities\DevicesModule\ConnectorDynamicProperty
+			$property instanceof MetadataDocuments\DevicesModule\ConnectorDynamicProperty
 			|| $property instanceof Entities\Connectors\Properties\Dynamic
 		) {
 			$state = $this->connectorPropertiesStates->readValue($property);
 
 		} elseif (
-			$property instanceof MetadataEntities\DevicesModule\DeviceDynamicProperty
-			|| $property instanceof MetadataEntities\DevicesModule\DeviceMappedProperty
+			$property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
+			|| $property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
 			|| $property instanceof Entities\Devices\Properties\Dynamic
 			|| $property instanceof Entities\Devices\Properties\Mapped
 		) {
 			$state = $this->devicePropertiesStates->readValue($property);
 
 		} elseif (
-			$property instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty
-			|| $property instanceof MetadataEntities\DevicesModule\ChannelMappedProperty
+			$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+			|| $property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
 			|| $property instanceof Entities\Channels\Properties\Dynamic
 			|| $property instanceof Entities\Channels\Properties\Mapped
 		) {
@@ -200,36 +200,36 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
 	private function publishEntity(
-		MetadataEntities\DevicesModule\DynamicProperty|MetadataEntities\DevicesModule\VariableProperty|MetadataEntities\DevicesModule\MappedProperty|Entities\Property $property,
+		MetadataDocuments\DevicesModule\DynamicProperty|MetadataDocuments\DevicesModule\VariableProperty|MetadataDocuments\DevicesModule\MappedProperty|Entities\Property $property,
 		States\ConnectorProperty|States\ChannelProperty|States\DeviceProperty|null $state = null,
 	): void
 	{
 		if (
-			$property instanceof MetadataEntities\DevicesModule\ConnectorDynamicProperty
+			$property instanceof MetadataDocuments\DevicesModule\ConnectorDynamicProperty
 			|| $property instanceof Entities\Connectors\Properties\Dynamic
 		) {
 			$routingKey = MetadataTypes\RoutingKey::get(
-				MetadataTypes\RoutingKey::ROUTE_CONNECTOR_PROPERTY_ENTITY_REPORTED,
+				MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_DOCUMENT_REPORTED,
 			);
 
 		} elseif (
-			$property instanceof MetadataEntities\DevicesModule\DeviceDynamicProperty
-			|| $property instanceof MetadataEntities\DevicesModule\DeviceMappedProperty
+			$property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
+			|| $property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
 			|| $property instanceof Entities\Devices\Properties\Dynamic
 			|| $property instanceof Entities\Devices\Properties\Mapped
 		) {
 			$routingKey = MetadataTypes\RoutingKey::get(
-				MetadataTypes\RoutingKey::ROUTE_DEVICE_PROPERTY_ENTITY_REPORTED,
+				MetadataTypes\RoutingKey::DEVICE_PROPERTY_DOCUMENT_REPORTED,
 			);
 
 		} elseif (
-			$property instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty
-			|| $property instanceof MetadataEntities\DevicesModule\ChannelMappedProperty
+			$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+			|| $property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
 			|| $property instanceof Entities\Channels\Properties\Dynamic
 			|| $property instanceof Entities\Channels\Properties\Mapped
 		) {
 			$routingKey = MetadataTypes\RoutingKey::get(
-				MetadataTypes\RoutingKey::ROUTE_CHANNEL_PROPERTY_ENTITY_REPORTED,
+				MetadataTypes\RoutingKey::CHANNEL_PROPERTY_DOCUMENT_REPORTED,
 			);
 
 		} else {
@@ -257,17 +257,17 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	 * @throws Exceptions\InvalidState
 	 */
 	private function findChildren(
-		MetadataEntities\DevicesModule\DynamicProperty|MetadataEntities\DevicesModule\MappedProperty|Entities\Connectors\Properties\Dynamic|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped $property,
+		MetadataDocuments\DevicesModule\DynamicProperty|MetadataDocuments\DevicesModule\MappedProperty|Entities\Connectors\Properties\Dynamic|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped $property,
 	): array
 	{
 		if (
-			$property instanceof MetadataEntities\DevicesModule\ConnectorDynamicProperty
+			$property instanceof MetadataDocuments\DevicesModule\ConnectorDynamicProperty
 			|| $property instanceof Entities\Connectors\Properties\Dynamic
 		) {
 			return [];
 		} elseif (
-			$property instanceof MetadataEntities\DevicesModule\DeviceDynamicProperty
-			|| $property instanceof MetadataEntities\DevicesModule\DeviceMappedProperty
+			$property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
+			|| $property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
 			|| $property instanceof Entities\Devices\Properties\Dynamic
 			|| $property instanceof Entities\Devices\Properties\Mapped
 		) {
@@ -279,8 +279,8 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 				Entities\Devices\Properties\Mapped::class,
 			);
 		} elseif (
-			$property instanceof MetadataEntities\DevicesModule\ChannelDynamicProperty
-			|| $property instanceof MetadataEntities\DevicesModule\ChannelMappedProperty
+			$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+			|| $property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
 			|| $property instanceof Entities\Channels\Properties\Dynamic
 			|| $property instanceof Entities\Channels\Properties\Mapped
 		) {

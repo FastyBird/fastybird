@@ -15,13 +15,13 @@
 
 namespace FastyBird\Module\Devices\Queries\Configuration;
 
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use Flow\JSONPath;
 
 /**
  * Configuration query object
  *
- * @template T of MetadataEntities\Entity
+ * @template T of MetadataDocuments\Document
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Queries

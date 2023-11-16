@@ -4,7 +4,7 @@ namespace FastyBird\Module\Devices\Tests\Cases\Unit\Models\Configuration\Reposit
 
 use Error;
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
@@ -100,37 +100,37 @@ final class DevicesPropertiesRepositoryTest extends DbTestCase
 
 		$findQuery = new Queries\Configuration\FindDeviceProperties();
 
-		$entities = $repository->findAllBy($findQuery, MetadataEntities\DevicesModule\DeviceDynamicProperty::class);
+		$entities = $repository->findAllBy($findQuery, MetadataDocuments\DevicesModule\DeviceDynamicProperty::class);
 
 		self::assertCount(2, $entities);
 
 		$findQuery = new Queries\Configuration\FindDeviceProperties();
 
-		$entities = $repository->findAllBy($findQuery, MetadataEntities\DevicesModule\DeviceVariableProperty::class);
+		$entities = $repository->findAllBy($findQuery, MetadataDocuments\DevicesModule\DeviceVariableProperty::class);
 
 		self::assertCount(13, $entities);
 
 		$findQuery = new Queries\Configuration\FindDeviceProperties();
 
-		$entities = $repository->findAllBy($findQuery, MetadataEntities\DevicesModule\DeviceMappedProperty::class);
+		$entities = $repository->findAllBy($findQuery, MetadataDocuments\DevicesModule\DeviceMappedProperty::class);
 
 		self::assertCount(0, $entities);
 
 		$findQuery = new Queries\Configuration\FindDeviceDynamicProperties();
 
-		$entities = $repository->findAllBy($findQuery, MetadataEntities\DevicesModule\DeviceDynamicProperty::class);
+		$entities = $repository->findAllBy($findQuery, MetadataDocuments\DevicesModule\DeviceDynamicProperty::class);
 
 		self::assertCount(2, $entities);
 
 		$findQuery = new Queries\Configuration\FindDeviceVariableProperties();
 
-		$entities = $repository->findAllBy($findQuery, MetadataEntities\DevicesModule\DeviceVariableProperty::class);
+		$entities = $repository->findAllBy($findQuery, MetadataDocuments\DevicesModule\DeviceVariableProperty::class);
 
 		self::assertCount(13, $entities);
 
 		$findQuery = new Queries\Configuration\FindDeviceMappedProperties();
 
-		$entities = $repository->findAllBy($findQuery, MetadataEntities\DevicesModule\DeviceMappedProperty::class);
+		$entities = $repository->findAllBy($findQuery, MetadataDocuments\DevicesModule\DeviceMappedProperty::class);
 
 		self::assertCount(0, $entities);
 	}
@@ -153,7 +153,7 @@ final class DevicesPropertiesRepositoryTest extends DbTestCase
 
 		$device = $devicesRepository->findOneBy($findQuery);
 
-		self::assertInstanceOf(MetadataEntities\DevicesModule\Device::class, $device);
+		self::assertInstanceOf(MetadataDocuments\DevicesModule\Device::class, $device);
 		self::assertSame('first-device', $device->getIdentifier());
 
 		$repository = $this->getContainer()->getByType(Models\Configuration\Devices\Properties\Repository::class);

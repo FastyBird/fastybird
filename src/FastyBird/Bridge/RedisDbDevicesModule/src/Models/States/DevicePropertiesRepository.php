@@ -16,7 +16,7 @@
 namespace FastyBird\Bridge\RedisDbDevicesModule\Models\States;
 
 use FastyBird\Bridge\RedisDbDevicesModule\States;
-use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Plugin\RedisDb\Exceptions as RedisDbExceptions;
@@ -59,7 +59,7 @@ class DevicePropertiesRepository implements DevicesModels\States\IDeviceProperti
 	 */
 	public function findOne(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		MetadataEntities\DevicesModule\DeviceDynamicProperty|MetadataEntities\DevicesModule\DeviceMappedProperty|DevicesEntities\Devices\Properties\Dynamic|DevicesEntities\Devices\Properties\Mapped $property,
+		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty|DevicesEntities\Devices\Properties\Dynamic|DevicesEntities\Devices\Properties\Mapped $property,
 	): States\DeviceProperty|null
 	{
 		return $this->stateRepository->findOne($property->getId(), $this->database);

@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Document unique uuid v4 identifier"
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "active",
+        "blocked",
+        "deleted",
+        "invalid"
+      ]
+    },
+    "uid": {
+      "type": "string"
+    },
+    "hash": {
+      "type": "string",
+      "default": null
+    },
+    "account": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Identity owner account unique uuid v4 identifier"
+    }
+  },
+  "required": [
+    "id",
+    "state",
+    "uid",
+    "account"
+  ]
+}

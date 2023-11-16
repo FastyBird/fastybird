@@ -13,7 +13,7 @@ export enum IdentityState {
 	INVALID = 'invalid',
 }
 
-export interface AccountEntity {
+export interface AccountDocument {
 	id: string;
 	first_name: string;
 	last_name: string;
@@ -26,7 +26,7 @@ export interface AccountEntity {
 	roles: string[];
 }
 
-export interface EmailEntity {
+export interface EmailDocument {
 	id: string;
 	address: string;
 	default: boolean;
@@ -36,7 +36,7 @@ export interface EmailEntity {
 	account: string;
 }
 
-export interface IdentityEntity {
+export interface IdentityDocument {
 	id: string;
 	state: IdentityState;
 	uid: string;
@@ -44,7 +44,7 @@ export interface IdentityEntity {
 	account: string;
 }
 
-export interface RoleEntity {
+export interface RoleDocument {
 	id: string;
 	name: string;
 	description: string;

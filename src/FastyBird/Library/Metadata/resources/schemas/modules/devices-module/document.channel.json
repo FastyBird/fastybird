@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Document unique uuid v4 identifier"
+    },
+    "type": {
+      "type": "string",
+      "description": "Channel type"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "generic"
+      ],
+      "description": "Channel category"
+    },
+    "identifier": {
+      "type": "string",
+      "description": "Unique human readable identifier"
+    },
+    "name": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string"
+        }
+      ],
+      "default": null
+    },
+    "comment": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string"
+        }
+      ],
+      "default": null
+    },
+    "device": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Device unique uuid v4 identifier"
+    },
+    "properties": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "description": "Property documents uuid v4 identifiers",
+      "default": []
+    },
+    "controls": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "description": "Control documents uuid v4 identifiers",
+      "default": []
+    },
+    "owner": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "format": "uuid"
+        }
+      ],
+      "description": "Document owner uuid v4 identifier"
+    }
+  },
+  "required": [
+    "id",
+    "type",
+    "category",
+    "identifier",
+    "name",
+    "comment",
+    "device",
+    "properties",
+    "controls"
+  ]
+}
