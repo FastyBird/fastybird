@@ -1,0 +1,168 @@
+<?php declare(strict_types = 1);
+
+namespace FastyBird\Module\Devices\Tests\Cases\Unit\Models\Configuration\Repositories;
+
+use Error;
+use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Metadata\Entities as MetadataEntities;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Module\Devices\Exceptions;
+use FastyBird\Module\Devices\Models;
+use FastyBird\Module\Devices\Queries;
+use FastyBird\Module\Devices\Tests\Cases\Unit\DbTestCase;
+use Nette;
+use Ramsey\Uuid;
+use RuntimeException;
+
+final class DevicesPropertiesRepositoryTest extends DbTestCase
+{
+
+	/**
+	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws Exceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws Nette\DI\MissingServiceException
+	 * @throws RuntimeException
+	 * @throws Error
+	 */
+	public function testReadOne(): void
+	{
+		$repository = $this->getContainer()->getByType(Models\Configuration\Devices\Properties\Repository::class);
+
+		$findQuery = new Queries\Configuration\FindDeviceProperties();
+		$findQuery->byIdentifier('uptime');
+
+		$entity = $repository->findOneBy($findQuery);
+
+		self::assertIsObject($entity);
+		self::assertSame('uptime', $entity->getIdentifier());
+
+		$findQuery = new Queries\Configuration\FindDeviceProperties();
+		$findQuery->startWithIdentifier('up');
+
+		$entity = $repository->findOneBy($findQuery);
+
+		self::assertIsObject($entity);
+		self::assertSame('uptime', $entity->getIdentifier());
+
+		$findQuery = new Queries\Configuration\FindDeviceProperties();
+		$findQuery->endWithIdentifier('ime');
+
+		$entity = $repository->findOneBy($findQuery);
+
+		self::assertIsObject($entity);
+		self::assertSame('uptime', $entity->getIdentifier());
+
+		$findQuery = new Queries\Configuration\FindDeviceProperties();
+		$findQuery->byIdentifier('invalid');
+
+		$entity = $repository->findOneBy($findQuery);
+
+		self::assertNull($entity);
+
+		$findQuery = new Queries\Configuration\FindDeviceProperties();
+		$findQuery->byId(Uuid\Uuid::fromString('bbcccf8c-33ab-431b-a795-d7bb38b6b6db'));
+
+		$entity = $repository->findOneBy($findQuery);
+
+		self::assertIsObject($entity);
+		self::assertSame('uptime', $entity->getIdentifier());
+
+		$findQuery = new Queries\Configuration\FindDeviceProperties();
+		$findQuery->byDeviceId(Uuid\Uuid::fromString('69786d15-fDd0c-4d9f-9378-33287c2009fa'));
+
+		$entity = $repository->findOneBy($findQuery);
+
+		self::assertIsObject($entity);
+		self::assertSame('uptime', $entity->getIdentifier());
+	}
+
+	/**
+	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws Exceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws Nette\DI\MissingServiceException
+	 * @throws RuntimeException
+	 * @throws Error
+	 */
+	public function testReadAll(): void
+	{
+		$repository = $this->getContainer()->getByType(Models\Configuration\Devices\Properties\Repository::class);
+
+		$findQuery = new Queries\Configuration\FindDeviceProperties();
+
+		$entities = $repository->findAllBy($findQuery);
+
+		self::assertCount(15, $entities);
+
+		$findQuery = new Queries\Configuration\FindDeviceProperties();
+
+		$entities = $repository->findAllBy($findQuery, MetadataEntities\DevicesModule\DeviceDynamicProperty::class);
+
+		self::assertCount(2, $entities);
+
+		$findQuery = new Queries\Configuration\FindDeviceProperties();
+
+		$entities = $repository->findAllBy($findQuery, MetadataEntities\DevicesModule\DeviceVariableProperty::class);
+
+		self::assertCount(13, $entities);
+
+		$findQuery = new Queries\Configuration\FindDeviceProperties();
+
+		$entities = $repository->findAllBy($findQuery, MetadataEntities\DevicesModule\DeviceMappedProperty::class);
+
+		self::assertCount(0, $entities);
+
+		$findQuery = new Queries\Configuration\FindDeviceDynamicProperties();
+
+		$entities = $repository->findAllBy($findQuery, MetadataEntities\DevicesModule\DeviceDynamicProperty::class);
+
+		self::assertCount(2, $entities);
+
+		$findQuery = new Queries\Configuration\FindDeviceVariableProperties();
+
+		$entities = $repository->findAllBy($findQuery, MetadataEntities\DevicesModule\DeviceVariableProperty::class);
+
+		self::assertCount(13, $entities);
+
+		$findQuery = new Queries\Configuration\FindDeviceMappedProperties();
+
+		$entities = $repository->findAllBy($findQuery, MetadataEntities\DevicesModule\DeviceMappedProperty::class);
+
+		self::assertCount(0, $entities);
+	}
+
+	/**
+	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws Exceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws Nette\DI\MissingServiceException
+	 * @throws RuntimeException
+	 * @throws Error
+	 */
+	public function testReadAllByDevice(): void
+	{
+		$devicesRepository = $this->getContainer()->getByType(Models\Configuration\Devices\Repository::class);
+
+		$findQuery = new Queries\Configuration\FindDevices();
+		$findQuery->byId(Uuid\Uuid::fromString('69786d15-fDd0c-4d9f-9378-33287c2009fa'));
+
+		$device = $devicesRepository->findOneBy($findQuery);
+
+		self::assertInstanceOf(MetadataEntities\DevicesModule\Device::class, $device);
+		self::assertSame('first-device', $device->getIdentifier());
+
+		$repository = $this->getContainer()->getByType(Models\Configuration\Devices\Properties\Repository::class);
+
+		$findQuery = new Queries\Configuration\FindDeviceProperties();
+		$findQuery->forDevice($device);
+
+		$entities = $repository->findAllBy($findQuery);
+
+		self::assertCount(10, $entities);
+	}
+
+}
