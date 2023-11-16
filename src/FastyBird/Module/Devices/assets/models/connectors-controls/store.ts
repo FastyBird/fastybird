@@ -391,10 +391,10 @@ export const useConnectorControls = defineStore<string, IConnectorControlsState,
 			async socketData(payload: IConnectorControlsSocketDataActionPayload): Promise<boolean> {
 				if (
 					![
-						RoutingKeys.CONNECTOR_CONTROL_ENTITY_REPORTED,
-						RoutingKeys.CONNECTOR_CONTROL_ENTITY_CREATED,
-						RoutingKeys.CONNECTOR_CONTROL_ENTITY_UPDATED,
-						RoutingKeys.CONNECTOR_CONTROL_ENTITY_DELETED,
+						RoutingKeys.CONNECTOR_CONTROL_DOCUMENT_REPORTED,
+						RoutingKeys.CONNECTOR_CONTROL_DOCUMENT_CREATED,
+						RoutingKeys.CONNECTOR_CONTROL_DOCUMENT_UPDATED,
+						RoutingKeys.CONNECTOR_CONTROL_DOCUMENT_DELETED,
 					].includes(payload.routingKey as RoutingKeys)
 				) {
 					return false;
@@ -412,7 +412,7 @@ export const useConnectorControls = defineStore<string, IConnectorControlsState,
 					return false;
 				}
 
-				if (payload.routingKey === RoutingKeys.CONNECTOR_CONTROL_ENTITY_DELETED) {
+				if (payload.routingKey === RoutingKeys.CONNECTOR_CONTROL_DOCUMENT_DELETED) {
 					if (body.id in this.data) {
 						delete this.data[body.id];
 					}

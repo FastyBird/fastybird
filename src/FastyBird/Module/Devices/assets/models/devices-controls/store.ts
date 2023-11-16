@@ -390,10 +390,10 @@ export const useDeviceControls = defineStore<string, IDeviceControlsState, IDevi
 			async socketData(payload: IDeviceControlsSocketDataActionPayload): Promise<boolean> {
 				if (
 					![
-						RoutingKeys.DEVICE_CONTROL_ENTITY_REPORTED,
-						RoutingKeys.DEVICE_CONTROL_ENTITY_CREATED,
-						RoutingKeys.DEVICE_CONTROL_ENTITY_UPDATED,
-						RoutingKeys.DEVICE_CONTROL_ENTITY_DELETED,
+						RoutingKeys.DEVICE_CONTROL_DOCUMENT_REPORTED,
+						RoutingKeys.DEVICE_CONTROL_DOCUMENT_CREATED,
+						RoutingKeys.DEVICE_CONTROL_DOCUMENT_UPDATED,
+						RoutingKeys.DEVICE_CONTROL_DOCUMENT_DELETED,
 					].includes(payload.routingKey as RoutingKeys)
 				) {
 					return false;
@@ -411,7 +411,7 @@ export const useDeviceControls = defineStore<string, IDeviceControlsState, IDevi
 					return false;
 				}
 
-				if (payload.routingKey === RoutingKeys.DEVICE_CONTROL_ENTITY_DELETED) {
+				if (payload.routingKey === RoutingKeys.DEVICE_CONTROL_DOCUMENT_DELETED) {
 					if (body.id in this.data) {
 						delete this.data[body.id];
 					}

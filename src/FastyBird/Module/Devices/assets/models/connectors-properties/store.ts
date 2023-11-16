@@ -521,10 +521,10 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 			async socketData(payload: IConnectorPropertiesSocketDataActionPayload): Promise<boolean> {
 				if (
 					![
-						RoutingKeys.CONNECTOR_PROPERTY_ENTITY_REPORTED,
-						RoutingKeys.CONNECTOR_PROPERTY_ENTITY_CREATED,
-						RoutingKeys.CONNECTOR_PROPERTY_ENTITY_UPDATED,
-						RoutingKeys.CONNECTOR_PROPERTY_ENTITY_DELETED,
+						RoutingKeys.CONNECTOR_PROPERTY_DOCUMENT_REPORTED,
+						RoutingKeys.CONNECTOR_PROPERTY_DOCUMENT_CREATED,
+						RoutingKeys.CONNECTOR_PROPERTY_DOCUMENT_UPDATED,
+						RoutingKeys.CONNECTOR_PROPERTY_DOCUMENT_DELETED,
 					].includes(payload.routingKey as RoutingKeys)
 				) {
 					return false;
@@ -542,12 +542,12 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 					return false;
 				}
 
-				if (payload.routingKey === RoutingKeys.CONNECTOR_PROPERTY_ENTITY_DELETED) {
+				if (payload.routingKey === RoutingKeys.CONNECTOR_PROPERTY_DOCUMENT_DELETED) {
 					if (body.id in this.data) {
 						delete this.data[body.id];
 					}
 				} else {
-					if (payload.routingKey === RoutingKeys.CONNECTOR_PROPERTY_ENTITY_UPDATED && this.semaphore.updating.includes(body.id)) {
+					if (payload.routingKey === RoutingKeys.CONNECTOR_PROPERTY_DOCUMENT_UPDATED && this.semaphore.updating.includes(body.id)) {
 						return true;
 					}
 

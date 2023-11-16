@@ -532,10 +532,10 @@ export const useChannels = defineStore<string, IChannelsState, IChannelsGetters,
 		async socketData(payload: IChannelsSocketDataActionPayload): Promise<boolean> {
 			if (
 				![
-					RoutingKeys.CHANNEL_ENTITY_REPORTED,
-					RoutingKeys.CHANNEL_ENTITY_CREATED,
-					RoutingKeys.CHANNEL_ENTITY_UPDATED,
-					RoutingKeys.CHANNEL_ENTITY_DELETED,
+					RoutingKeys.CHANNEL_DOCUMENT_REPORTED,
+					RoutingKeys.CHANNEL_DOCUMENT_CREATED,
+					RoutingKeys.CHANNEL_DOCUMENT_UPDATED,
+					RoutingKeys.CHANNEL_DOCUMENT_DELETED,
 				].includes(payload.routingKey as RoutingKeys)
 			) {
 				return false;
@@ -553,7 +553,7 @@ export const useChannels = defineStore<string, IChannelsState, IChannelsGetters,
 				return false;
 			}
 
-			if (payload.routingKey === RoutingKeys.CHANNEL_ENTITY_DELETED) {
+			if (payload.routingKey === RoutingKeys.CHANNEL_DOCUMENT_DELETED) {
 				if (body.id in this.data) {
 					const recordToDelete = this.data[body.id];
 
@@ -566,7 +566,7 @@ export const useChannels = defineStore<string, IChannelsState, IChannelsGetters,
 					channelControlsStore.unset({ channel: recordToDelete });
 				}
 			} else {
-				if (payload.routingKey === RoutingKeys.CHANNEL_ENTITY_UPDATED && this.semaphore.updating.includes(body.id)) {
+				if (payload.routingKey === RoutingKeys.CHANNEL_DOCUMENT_UPDATED && this.semaphore.updating.includes(body.id)) {
 					return true;
 				}
 

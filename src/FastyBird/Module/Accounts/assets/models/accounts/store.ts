@@ -409,10 +409,10 @@ export const useAccounts = defineStore('accounts_module_accounts', {
 		async socketData(payload: IAccountsSocketDataActionPayload): Promise<boolean> {
 			if (
 				![
-					RoutingKeys.ACCOUNT_ENTITY_REPORTED,
-					RoutingKeys.ACCOUNT_ENTITY_CREATED,
-					RoutingKeys.ACCOUNT_ENTITY_UPDATED,
-					RoutingKeys.ACCOUNT_ENTITY_DELETED,
+					RoutingKeys.ACCOUNT_DOCUMENT_REPORTED,
+					RoutingKeys.ACCOUNT_DOCUMENT_CREATED,
+					RoutingKeys.ACCOUNT_DOCUMENT_UPDATED,
+					RoutingKeys.ACCOUNT_DOCUMENT_DELETED,
 				].includes(payload.routingKey as RoutingKeys)
 			) {
 				return false;
@@ -432,12 +432,12 @@ export const useAccounts = defineStore('accounts_module_accounts', {
 
 			if (
 				!Object.keys(this.data).includes(body.id) &&
-				(payload.routingKey === RoutingKeys.ACCOUNT_ENTITY_UPDATED || payload.routingKey === RoutingKeys.ACCOUNT_ENTITY_DELETED)
+				(payload.routingKey === RoutingKeys.ACCOUNT_DOCUMENT_UPDATED || payload.routingKey === RoutingKeys.ACCOUNT_DOCUMENT_DELETED)
 			) {
 				throw new Error('accounts-module.accounts.update.failed');
 			}
 
-			if (payload.routingKey === RoutingKeys.ACCOUNT_ENTITY_DELETED) {
+			if (payload.routingKey === RoutingKeys.ACCOUNT_DOCUMENT_DELETED) {
 				const recordToDelete = this.data[body.id];
 
 				delete this.data[body.id];
@@ -448,7 +448,7 @@ export const useAccounts = defineStore('accounts_module_accounts', {
 				emailsStore.unset({ account: recordToDelete });
 				identitiesStore.unset({ account: recordToDelete });
 			} else {
-				if (payload.routingKey === RoutingKeys.ACCOUNT_ENTITY_UPDATED && this.semaphore.updating.includes(body.id)) {
+				if (payload.routingKey === RoutingKeys.ACCOUNT_DOCUMENT_UPDATED && this.semaphore.updating.includes(body.id)) {
 					return true;
 				}
 

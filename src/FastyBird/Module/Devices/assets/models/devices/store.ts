@@ -550,10 +550,10 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 		async socketData(payload: IDevicesSocketDataActionPayload): Promise<boolean> {
 			if (
 				![
-					RoutingKeys.DEVICE_ENTITY_REPORTED,
-					RoutingKeys.DEVICE_ENTITY_CREATED,
-					RoutingKeys.DEVICE_ENTITY_UPDATED,
-					RoutingKeys.DEVICE_ENTITY_DELETED,
+					RoutingKeys.DEVICE_DOCUMENT_REPORTED,
+					RoutingKeys.DEVICE_DOCUMENT_CREATED,
+					RoutingKeys.DEVICE_DOCUMENT_UPDATED,
+					RoutingKeys.DEVICE_DOCUMENT_DELETED,
 				].includes(payload.routingKey as RoutingKeys)
 			) {
 				return false;
@@ -567,7 +567,7 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 				return false;
 			}
 
-			if (payload.routingKey === RoutingKeys.DEVICE_ENTITY_DELETED) {
+			if (payload.routingKey === RoutingKeys.DEVICE_DOCUMENT_DELETED) {
 				if (body.id in this.data) {
 					const recordToDelete = this.data[body.id];
 
@@ -582,7 +582,7 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 					deviceControlsStore.unset({ device: recordToDelete });
 				}
 			} else {
-				if (payload.routingKey === RoutingKeys.DEVICE_ENTITY_UPDATED && this.semaphore.updating.includes(body.id)) {
+				if (payload.routingKey === RoutingKeys.DEVICE_DOCUMENT_UPDATED && this.semaphore.updating.includes(body.id)) {
 					return true;
 				}
 

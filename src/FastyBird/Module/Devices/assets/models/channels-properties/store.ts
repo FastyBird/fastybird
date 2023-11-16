@@ -641,10 +641,10 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 			async socketData(payload: IChannelPropertiesSocketDataActionPayload): Promise<boolean> {
 				if (
 					![
-						RoutingKeys.CHANNEL_PROPERTY_ENTITY_REPORTED,
-						RoutingKeys.CHANNEL_PROPERTY_ENTITY_CREATED,
-						RoutingKeys.CHANNEL_PROPERTY_ENTITY_UPDATED,
-						RoutingKeys.CHANNEL_PROPERTY_ENTITY_DELETED,
+						RoutingKeys.CHANNEL_PROPERTY_DOCUMENT_REPORTED,
+						RoutingKeys.CHANNEL_PROPERTY_DOCUMENT_CREATED,
+						RoutingKeys.CHANNEL_PROPERTY_DOCUMENT_UPDATED,
+						RoutingKeys.CHANNEL_PROPERTY_DOCUMENT_DELETED,
 					].includes(payload.routingKey as RoutingKeys)
 				) {
 					return false;
@@ -662,12 +662,12 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 					return false;
 				}
 
-				if (payload.routingKey === RoutingKeys.CHANNEL_PROPERTY_ENTITY_DELETED) {
+				if (payload.routingKey === RoutingKeys.CHANNEL_PROPERTY_DOCUMENT_DELETED) {
 					if (body.id in this.data) {
 						delete this.data[body.id];
 					}
 				} else {
-					if (payload.routingKey === RoutingKeys.CHANNEL_PROPERTY_ENTITY_UPDATED && this.semaphore.updating.includes(body.id)) {
+					if (payload.routingKey === RoutingKeys.CHANNEL_PROPERTY_DOCUMENT_UPDATED && this.semaphore.updating.includes(body.id)) {
 						return true;
 					}
 
