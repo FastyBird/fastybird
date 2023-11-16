@@ -36,10 +36,9 @@ final class PublisherTest extends TestCase
 				'created' => $now->format(DATE_ATOM),
 				'data' => [
 					'action' => MetadataTypes\PropertyAction::ACTION_SET,
+					'channel' => '06a64596-ca03-478b-ad1e-4f53731e66a5',
 					'property' => '60d754c2-4590-4eff-af1e-5c45f4234c7b',
 					'expected_value' => 10,
-					'device' => '593397b2-fd40-4da2-a66a-3687ca50761b',
-					'channel' => '06a64596-ca03-478b-ad1e-4f53731e66a5',
 				],
 			]))
 			->willReturn(true);
@@ -63,7 +62,6 @@ final class PublisherTest extends TestCase
 			MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::DEVICE_DOCUMENT_UPDATED),
 			new MetadataDocuments\Actions\ActionChannelProperty(
 				MetadataTypes\PropertyAction::get(MetadataTypes\PropertyAction::ACTION_SET),
-				Uuid\Uuid::fromString('593397b2-fd40-4da2-a66a-3687ca50761b'),
 				Uuid\Uuid::fromString('06a64596-ca03-478b-ad1e-4f53731e66a5'),
 				Uuid\Uuid::fromString('60d754c2-4590-4eff-af1e-5c45f4234c7b'),
 				10,

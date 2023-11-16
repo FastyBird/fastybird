@@ -19,8 +19,10 @@ use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Library\Metadata\Documents;
 use FastyBird\Library\Metadata\Exceptions;
 use FastyBird\Library\Metadata\Types;
+use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_merge;
+use function sprintf;
 
 /**
  * Channel property action document
@@ -30,25 +32,32 @@ use function array_merge;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ActionChannelProperty extends ActionProperty
+final class ActionChannelProperty implements Documents\Document
 {
 
 	public function __construct(
-		Types\PropertyAction $action,
-		#[BootstrapObjectMapper\Rules\UuidValue()]
-		private readonly Uuid\UuidInterface $device,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\PropertyAction::class)]
+		private readonly Types\PropertyAction $action,
 		#[BootstrapObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $channel,
-		Uuid\UuidInterface $property,
-		bool|float|int|string|null $expectedValue = null,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $property,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('expected_value')]
+		private readonly bool|float|int|string|null $expectedValue = null,
 	)
 	{
-		parent::__construct($action, $property, $expectedValue);
 	}
 
-	public function getDevice(): Uuid\UuidInterface
+	public function getAction(): Types\PropertyAction
 	{
-		return $this->device;
+		return $this->action;
 	}
 
 	public function getChannel(): Uuid\UuidInterface
@@ -56,15 +65,43 @@ final class ActionChannelProperty extends ActionProperty
 		return $this->channel;
 	}
 
+	public function getProperty(): Uuid\UuidInterface
+	{
+		return $this->property;
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
+	public function getExpectedValue(): float|bool|int|string|null
+	{
+		if (!$this->getAction()->equalsValue(Types\PropertyAction::ACTION_SET)) {
+			throw new Exceptions\InvalidState(
+				sprintf('Expected value is available only for action: %s', Types\PropertyAction::ACTION_SET),
+			);
+		}
+
+		return $this->expectedValue;
+	}
+
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
 	public function toArray(): array
 	{
-		return array_merge(parent::toArray(), [
-			'device' => $this->getDevice()->toString(),
+		$data = [
+			'action' => $this->getAction()->getValue(),
 			'channel' => $this->getChannel()->toString(),
-		]);
+			'property' => $this->getProperty()->toString(),
+		];
+
+		if ($this->getAction()->equalsValue(Types\PropertyAction::ACTION_SET)) {
+			$data = array_merge($data, [
+				'expected_value' => $this->getExpectedValue(),
+			]);
+		}
+
+		return $data;
 	}
 
 	/**

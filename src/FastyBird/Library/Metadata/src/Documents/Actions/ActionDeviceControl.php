@@ -18,8 +18,8 @@ namespace FastyBird\Library\Metadata\Documents\Actions;
 use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Library\Metadata\Documents;
 use FastyBird\Library\Metadata\Types;
+use Orisai\ObjectMapper;
 use Ramsey\Uuid;
-use function array_merge;
 
 /**
  * Device control action document
@@ -29,18 +29,32 @@ use function array_merge;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ActionDeviceControl extends ActionControl
+final class ActionDeviceControl implements Documents\Document
 {
 
 	public function __construct(
-		Types\ControlAction $action,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\ControlAction::class)]
+		private readonly Types\ControlAction $action,
 		#[BootstrapObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $device,
-		Uuid\UuidInterface $control,
-		bool|float|int|string|null $expectedValue = null,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $control,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('expected_value')]
+		private readonly bool|float|int|string|null $expectedValue = null,
 	)
 	{
-		parent::__construct($action, $control, $expectedValue);
+	}
+
+	public function getAction(): Types\ControlAction
+	{
+		return $this->action;
 	}
 
 	public function getDevice(): Uuid\UuidInterface
@@ -48,11 +62,24 @@ final class ActionDeviceControl extends ActionControl
 		return $this->device;
 	}
 
+	public function getControl(): Uuid\UuidInterface
+	{
+		return $this->control;
+	}
+
+	public function getExpectedValue(): float|bool|int|string|null
+	{
+		return $this->expectedValue;
+	}
+
 	public function toArray(): array
 	{
-		return array_merge(parent::toArray(), [
+		return [
+			'action' => $this->getAction()->getValue(),
 			'device' => $this->getDevice()->toString(),
-		]);
+			'control' => $this->getControl()->toString(),
+			'expected_value' => $this->getExpectedValue(),
+		];
 	}
 
 	/**

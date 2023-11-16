@@ -8,11 +8,6 @@
         "set"
       ]
     },
-    "device": {
-      "type": "string",
-      "format": "uuid",
-      "description": "Device unique uuid v4 identifier"
-    },
     "channel": {
       "type": "string",
       "format": "uuid",
@@ -42,7 +37,6 @@
   },
   "required": [
     "action",
-    "device",
     "channel",
     "control"
   ]
