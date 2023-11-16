@@ -15,7 +15,6 @@
 
 namespace FastyBird\Module\Devices;
 
-use FastyBird\Automator\DevicesModule\DI;
 use Monolog;
 use Psr\Log;
 
@@ -37,7 +36,7 @@ final class Logger implements Log\LoggerInterface
 	)
 	{
 		$this->logger = $logger instanceof Monolog\Logger ? $logger->withName(
-			DI\DevicesModuleExtension::NAME,
+			DI\DevicesExtension::NAME,
 		) : $logger;
 	}
 
