@@ -15,6 +15,7 @@
 
 namespace FastyBird\Connector\Virtual\Queue\Consumers;
 
+use Doctrine\DBAL;
 use FastyBird\Connector\Virtual;
 use FastyBird\Connector\Virtual\Entities;
 use FastyBird\Connector\Virtual\Queries;
@@ -56,9 +57,12 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 	}
 
 	/**
+	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws DevicesExceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function consume(Entities\Messages\Entity $entity): bool
 	{

@@ -16,6 +16,7 @@
 namespace FastyBird\Module\Devices\Commands;
 
 use BadMethodCallException;
+use Doctrine\DBAL;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Exchange\Exchange as ExchangeExchange;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -625,9 +626,12 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 	}
 
 	/**
+	 * @throws DBAL\Exception
 	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function resetConnector(
 		Entities\Connectors\Connector $connector,
@@ -653,9 +657,12 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 	}
 
 	/**
+	 * @throws DBAL\Exception
 	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function resetDevice(
 		Entities\Devices\Device $device,

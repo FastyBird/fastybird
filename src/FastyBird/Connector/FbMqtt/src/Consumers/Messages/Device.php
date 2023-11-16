@@ -68,6 +68,7 @@ final class Device implements Consumers\Consumer
 	 * @throws DevicesExceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function consume(Entities\Messages\Entity $entity): bool
 	{
@@ -159,10 +160,13 @@ final class Device implements Consumers\Consumer
 	/**
 	 * @phpstan-param Utils\ArrayHash<string> $properties
 	 *
+	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws DevicesExceptions\Runtime
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function setDeviceProperties(
 		DevicesEntities\Devices\Device $device,

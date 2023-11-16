@@ -15,6 +15,8 @@
 
 namespace FastyBird\Module\Devices\Utilities;
 
+use Doctrine\DBAL;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities;
@@ -40,49 +42,70 @@ final class ConnectorConnection
 	use Nette\SmartObject;
 
 	public function __construct(
-		private readonly Models\Entities\Connectors\Properties\PropertiesRepository $repository,
-		private readonly Models\Entities\Connectors\Properties\PropertiesManager $manager,
+		private readonly Models\Entities\Connectors\ConnectorsRepository $connectorsEntitiesRepository,
+		private readonly Models\Entities\Connectors\Properties\PropertiesManager $connectorsPropertiesEntitiesManager,
+		private readonly Models\Configuration\Connectors\Properties\Repository $connectorsPropertiesConfigurationRepository,
 		private readonly ConnectorPropertiesStates $propertiesStates,
+		private readonly Database $databaseHelper,
 	)
 	{
 	}
 
 	/**
+	 * @throws DBAL\Exception
 	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function setState(
-		Entities\Connectors\Connector $connector,
+		Entities\Connectors\Connector|MetadataDocuments\DevicesModule\Connector $connector,
 		MetadataTypes\ConnectionState $state,
 	): bool
 	{
-		$findConnectorPropertyQuery = new Queries\Entities\FindConnectorProperties();
-		$findConnectorPropertyQuery->forConnector($connector);
+		$findConnectorPropertyQuery = new Queries\Configuration\FindConnectorDynamicProperties();
+		$findConnectorPropertyQuery->byConnectorId($connector->getId());
 		$findConnectorPropertyQuery->byIdentifier(MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_STATE);
 
-		$property = $this->repository->findOneBy($findConnectorPropertyQuery);
+		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
+			$findConnectorPropertyQuery,
+			MetadataDocuments\DevicesModule\ConnectorDynamicProperty::class,
+		);
 
 		if ($property === null) {
-			$property = $this->manager->create(Utils\ArrayHash::from([
-				'connector' => $connector,
-				'entity' => Entities\Connectors\Properties\Dynamic::class,
-				'identifier' => MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_STATE,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
-				'unit' => null,
-				'format' => [
-					MetadataTypes\ConnectionState::STATE_RUNNING,
-					MetadataTypes\ConnectionState::STATE_STOPPED,
-					MetadataTypes\ConnectionState::STATE_UNKNOWN,
-					MetadataTypes\ConnectionState::STATE_SLEEPING,
-					MetadataTypes\ConnectionState::STATE_ALERT,
-				],
-				'settable' => false,
-				'queryable' => false,
-			]));
-		}
+			$property = $this->databaseHelper->transaction(
+				function () use ($connector): Entities\Connectors\Properties\Dynamic {
+					if (!$connector instanceof Entities\Connectors\Connector) {
+						$findConnectorQuery = new Queries\Entities\FindConnectors();
+						$findConnectorQuery->byId($connector->getId());
 
-		assert($property instanceof Entities\Connectors\Properties\Dynamic);
+						$connector = $this->connectorsEntitiesRepository->findOneBy($findConnectorQuery);
+						assert($connector instanceof Entities\Connectors\Connector);
+					}
+
+					$property = $this->connectorsPropertiesEntitiesManager->create(Utils\ArrayHash::from([
+						'connector' => $connector,
+						'entity' => Entities\Connectors\Properties\Dynamic::class,
+						'identifier' => MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_STATE,
+						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
+						'unit' => null,
+						'format' => [
+							MetadataTypes\ConnectionState::STATE_RUNNING,
+							MetadataTypes\ConnectionState::STATE_STOPPED,
+							MetadataTypes\ConnectionState::STATE_UNKNOWN,
+							MetadataTypes\ConnectionState::STATE_SLEEPING,
+							MetadataTypes\ConnectionState::STATE_ALERT,
+						],
+						'settable' => false,
+						'queryable' => false,
+					]));
+					assert($property instanceof Entities\Connectors\Properties\Dynamic);
+
+					return $property;
+				},
+			);
+		}
 
 		$this->propertiesStates->writeValue(
 			$property,
@@ -101,18 +124,22 @@ final class ConnectorConnection
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getState(
-		Entities\Connectors\Connector $connector,
+		Entities\Connectors\Connector|MetadataDocuments\DevicesModule\Connector $connector,
 	): MetadataTypes\ConnectionState
 	{
-		$findPropertyQuery = new Queries\Entities\FindConnectorProperties();
-		$findPropertyQuery->forConnector($connector);
-		$findPropertyQuery->byIdentifier(MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_STATE);
+		$findConnectorPropertyQuery = new Queries\Configuration\FindConnectorDynamicProperties();
+		$findConnectorPropertyQuery->byConnectorId($connector->getId());
+		$findConnectorPropertyQuery->byIdentifier(MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_STATE);
 
-		$property = $this->repository->findOneBy($findPropertyQuery);
+		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
+			$findConnectorPropertyQuery,
+			MetadataDocuments\DevicesModule\ConnectorDynamicProperty::class,
+		);
 
-		if ($property instanceof Entities\Connectors\Properties\Dynamic) {
+		if ($property instanceof MetadataDocuments\DevicesModule\ConnectorDynamicProperty) {
 			$state = $this->propertiesStates->readValue($property);
 
 			if (

@@ -15,6 +15,7 @@
 
 namespace FastyBird\Connector\HomeKit\Servers;
 
+use Doctrine\DBAL;
 use FastyBird\Connector\HomeKit;
 use FastyBird\Connector\HomeKit\Clients;
 use FastyBird\Connector\HomeKit\Entities;
@@ -95,12 +96,15 @@ final class Http implements Server
 	}
 
 	/**
+	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws DevicesExceptions\Runtime
 	 * @throws DevicesExceptions\Terminate
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 * @throws Nette\IOException
 	 */
 	public function connect(): void
