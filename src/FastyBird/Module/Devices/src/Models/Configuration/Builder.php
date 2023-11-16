@@ -38,6 +38,8 @@ use const DIRECTORY_SEPARATOR;
 final class Builder
 {
 
+	private JSONPath\JSONPath|null $configuration = null;
+
 	private DataSources\DefaultDataSource $dataSource;
 
 	public function __construct(
@@ -135,9 +137,13 @@ final class Builder
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function load(): JSONPath\JSONPath
+	public function load(bool $force = false): JSONPath\JSONPath
 	{
-		return new JSONPath\JSONPath($this->decode());
+		if ($this->configuration === null || $force) {
+			$this->configuration = new JSONPath\JSONPath($this->decode());
+		}
+
+		return $this->configuration;
 	}
 
 	/**
