@@ -122,6 +122,7 @@ final class Message extends Evenement\EventEmitter
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_RABBITMQ,
 				'type' => 'messages-handler',
 				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'data' => $data,
 			]);
 
 			return self::MESSAGE_REJECT;

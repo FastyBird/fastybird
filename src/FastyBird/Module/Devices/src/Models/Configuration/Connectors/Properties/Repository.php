@@ -30,17 +30,21 @@ use function array_map;
 use function implode;
 use function is_array;
 use function is_string;
+use function serialize;
 
 /**
  * Connectors properties configuration repository
  *
  * @phpstan-type SupportedClasses MetadataDocuments\DevicesModule\ConnectorDynamicProperty|MetadataDocuments\DevicesModule\ConnectorVariableProperty
  *
+ * @template T of MetadataDocuments\DevicesModule\ConnectorDynamicProperty|MetadataDocuments\DevicesModule\ConnectorVariableProperty
+ * @extends  Models\Configuration\Repository<T|SupportedClasses>
+ *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Models
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Repository
+final class Repository extends Models\Configuration\Repository
 {
 
 	public function __construct(
@@ -51,12 +55,12 @@ final class Repository
 	}
 
 	/**
-	 * @template T of SupportedClasses
+	 * @template Doc of SupportedClasses
 	 *
-	 * @param Queries\Configuration\FindConnectorProperties<T> $queryObject
-	 * @param class-string<T>|null $type
+	 * @param Queries\Configuration\FindConnectorProperties<Doc> $queryObject
+	 * @param class-string<Doc>|null $type
 	 *
-	 * @return ($type is class-string<T> ? T|null : SupportedClasses|null)
+	 * @return ($type is class-string<Doc> ? Doc|null : SupportedClasses|null)
 	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
@@ -68,6 +72,12 @@ final class Repository
 		string|null $type = null,
 	): MetadataDocuments\DevicesModule\ConnectorDynamicProperty|MetadataDocuments\DevicesModule\ConnectorVariableProperty|null
 	{
+		$document = $this->loadCacheOne(serialize($queryObject->toString() . $type));
+
+		if ($document !== false) {
+			return $document;
+		}
+
 		try {
 			$space = $this->builder
 				->load()
@@ -96,36 +106,40 @@ final class Repository
 		$result = $queryObject->fetch($space);
 
 		if (!is_array($result) || $result === []) {
-			return null;
-		}
-
-		if (is_string($type)) {
-			return $this->entityFactory->create($type, $result[0]);
+			$document = null;
 		} else {
-			foreach (
-				[
-					MetadataDocuments\DevicesModule\ConnectorDynamicProperty::class,
-					MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
-				] as $class
-			) {
-				try {
-					return $this->entityFactory->create($class, $result[0]);
-				} catch (Throwable) {
-					// Just ignore it
+			if (is_string($type)) {
+				$document = $this->entityFactory->create($type, $result[0]);
+			} else {
+				foreach (
+					[
+						MetadataDocuments\DevicesModule\ConnectorDynamicProperty::class,
+						MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
+					] as $class
+				) {
+					try {
+						$document = $this->entityFactory->create($class, $result[0]);
+
+						break;
+					} catch (Throwable) {
+						$document = null;
+					}
 				}
 			}
 		}
 
-		return null;
+		$this->writeCacheOne(serialize($queryObject->toString() . $type), $document);
+
+		return $document;
 	}
 
 	/**
-	 * @template T of SupportedClasses
+	 * @template Doc of SupportedClasses
 	 *
-	 * @param Queries\Configuration\FindConnectorProperties<T> $queryObject
-	 * @param class-string<T>|null $type
+	 * @param Queries\Configuration\FindConnectorProperties<Doc> $queryObject
+	 * @param class-string<Doc>|null $type
 	 *
-	 * @return ($type is class-string<T> ? array<T> : array<SupportedClasses>)
+	 * @return ($type is class-string<Doc> ? array<Doc> : array<SupportedClasses>)
 	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
@@ -136,6 +150,12 @@ final class Repository
 		string|null $type = null,
 	): array
 	{
+		$documents = $this->loadCacheAll(serialize($queryObject->toString() . $type));
+
+		if ($documents !== false) {
+			return $documents;
+		}
+
 		try {
 			$space = $this->builder
 				->load()
@@ -167,7 +187,7 @@ final class Repository
 			return [];
 		}
 
-		return array_filter(
+		$documents = array_filter(
 			array_map(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				function (stdClass $item) use ($type): MetadataDocuments\DevicesModule\ConnectorDynamicProperty|MetadataDocuments\DevicesModule\ConnectorVariableProperty|null {
@@ -194,6 +214,10 @@ final class Repository
 			),
 			static fn ($item): bool => $item !== null,
 		);
+
+		$this->writeCacheAll(serialize($queryObject->toString() . $type), $documents);
+
+		return $documents;
 	}
 
 }

@@ -35,7 +35,7 @@ class ShellyDevice extends DevicesEntities\Devices\Device
 
 	public const TYPE = 'shelly';
 
-	private const STATE_READING_DELAY = 120.0;
+	public const STATE_READING_DELAY = 120.0;
 
 	public function getType(): string
 	{

@@ -25,16 +25,20 @@ use Flow\JSONPath;
 use stdClass;
 use function array_map;
 use function is_array;
+use function serialize;
 
 /**
  * Connectors configuration repository
+ *
+ * @template T of MetadataDocuments\DevicesModule\Connector
+ * @extends  Models\Configuration\Repository<T>
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Models
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Repository
+final class Repository extends Models\Configuration\Repository
 {
 
 	public function __construct(
@@ -45,8 +49,6 @@ final class Repository
 	}
 
 	/**
-	 * @template T of MetadataDocuments\DevicesModule\Connector
-	 *
 	 * @param Queries\Configuration\FindConnectors<T> $queryObject
 	 * @param class-string<T> $type
 	 *
@@ -62,6 +64,12 @@ final class Repository
 		string $type = MetadataDocuments\DevicesModule\Connector::class,
 	): MetadataDocuments\DevicesModule\Connector|null
 	{
+		$document = $this->loadCacheOne(serialize($queryObject->toString() . $type));
+
+		if ($document !== false) {
+			return $document;
+		}
+
 		try {
 			$space = $this->builder
 				->load()
@@ -76,12 +84,14 @@ final class Repository
 			return null;
 		}
 
-		return $this->entityFactory->create($type, $result[0]);
+		$document = $this->entityFactory->create($type, $result[0]);
+
+		$this->writeCacheOne(serialize($queryObject->toString() . $type), $document);
+
+		return $document;
 	}
 
 	/**
-	 * @template T of MetadataDocuments\DevicesModule\Connector
-	 *
 	 * @param Queries\Configuration\FindConnectors<T> $queryObject
 	 * @param class-string<T> $type
 	 *
@@ -96,6 +106,12 @@ final class Repository
 		string $type = MetadataDocuments\DevicesModule\Connector::class,
 	): array
 	{
+		$documents = $this->loadCacheAll(serialize($queryObject->toString() . $type));
+
+		if ($documents !== false) {
+			return $documents;
+		}
+
 		try {
 			$space = $this->builder
 				->load()
@@ -110,13 +126,17 @@ final class Repository
 			return [];
 		}
 
-		return array_map(
+		$documents = array_map(
 			fn (stdClass $item): MetadataDocuments\DevicesModule\Connector => $this->entityFactory->create(
 				$type,
 				$item,
 			),
 			$result,
 		);
+
+		$this->writeCacheAll(serialize($queryObject->toString() . $type), $documents);
+
+		return $documents;
 	}
 
 }

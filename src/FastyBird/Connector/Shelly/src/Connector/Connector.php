@@ -79,6 +79,7 @@ final class Connector implements DevicesConnectors\Connector
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function execute(): void
 	{

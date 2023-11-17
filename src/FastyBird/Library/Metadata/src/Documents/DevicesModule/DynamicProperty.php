@@ -167,7 +167,9 @@ abstract class DynamicProperty extends Property
 			'queryable' => $this->isQueryable(),
 			'actual_value' => $this->getActualValue(),
 			'expected_value' => $this->getExpectedValue(),
-			'pending' => $this->getPending(),
+			'pending' => $this->getPending() instanceof DateTimeInterface
+				? $this->getPending()->format(DateTimeInterface::ATOM)
+				: $this->getPending(),
 			'valid' => $this->isValid(),
 		]);
 	}
