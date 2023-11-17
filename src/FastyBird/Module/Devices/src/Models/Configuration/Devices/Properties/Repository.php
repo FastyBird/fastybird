@@ -72,7 +72,7 @@ final class Repository extends Models\Configuration\Repository
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 	): MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceVariableProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty|null
 	{
-		$document = $this->loadCacheOne($queryObject->toString());
+		$document = $this->loadCacheOne(serialize($queryObject->toString() . $type));
 
 		if ($document !== false) {
 			return $document;
@@ -132,7 +132,7 @@ final class Repository extends Models\Configuration\Repository
 			}
 		}
 
-		$this->writeCacheOne($queryObject->toString(), $document);
+		$this->writeCacheOne(serialize($queryObject->toString() . $type), $document);
 
 		return $document;
 	}
@@ -154,7 +154,7 @@ final class Repository extends Models\Configuration\Repository
 		string|null $type = null,
 	): array
 	{
-		$documents = $this->loadCacheAll($queryObject->toString());
+		$documents = $this->loadCacheAll(serialize($queryObject->toString() . $type));
 
 		if ($documents !== false) {
 			return $documents;
@@ -223,7 +223,7 @@ final class Repository extends Models\Configuration\Repository
 			static fn ($item): bool => $item !== null,
 		);
 
-		$this->writeCacheAll($queryObject->toString(), $documents);
+		$this->writeCacheAll(serialize($queryObject->toString() . $type), $documents);
 
 		return $documents;
 	}

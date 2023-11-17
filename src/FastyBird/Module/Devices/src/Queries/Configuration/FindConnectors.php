@@ -16,7 +16,9 @@
 namespace FastyBird\Module\Devices\Queries\Configuration;
 
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Module\Devices\Exceptions;
 use Flow\JSONPath;
+use Nette\Utils;
 use Ramsey\Uuid;
 use function serialize;
 
@@ -60,9 +62,16 @@ class FindConnectors extends QueryObject
 		return $filtered;
 	}
 
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
 	public function toString(): string
 	{
-		return serialize($this->filter);
+		try {
+			return serialize(Utils\Json::encode($this->filter));
+		} catch (Utils\JsonException) {
+			throw new Exceptions\InvalidState('Cache key could not be generated');
+		}
 	}
 
 }

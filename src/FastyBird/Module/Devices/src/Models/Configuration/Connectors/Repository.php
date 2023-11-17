@@ -63,7 +63,7 @@ final class Repository extends Models\Configuration\Repository
 		string $type = MetadataDocuments\DevicesModule\Connector::class,
 	): MetadataDocuments\DevicesModule\Connector|null
 	{
-		$document = $this->loadCacheOne($queryObject->toString());
+		$document = $this->loadCacheOne(serialize($queryObject->toString() . $type));
 
 		if ($document !== false) {
 			return $document;
@@ -85,7 +85,7 @@ final class Repository extends Models\Configuration\Repository
 
 		$document = $this->entityFactory->create($type, $result[0]);
 
-		$this->writeCacheOne($queryObject->toString(), $document);
+		$this->writeCacheOne(serialize($queryObject->toString() . $type), $document);
 
 		return $document;
 	}
@@ -105,7 +105,7 @@ final class Repository extends Models\Configuration\Repository
 		string $type = MetadataDocuments\DevicesModule\Connector::class,
 	): array
 	{
-		$documents = $this->loadCacheAll($queryObject->toString());
+		$documents = $this->loadCacheAll(serialize($queryObject->toString() . $type));
 
 		if ($documents !== false) {
 			return $documents;
@@ -133,7 +133,7 @@ final class Repository extends Models\Configuration\Repository
 			$result,
 		);
 
-		$this->writeCacheAll($queryObject->toString(), $documents);
+		$this->writeCacheAll(serialize($queryObject->toString() . $type), $documents);
 
 		return $documents;
 	}
