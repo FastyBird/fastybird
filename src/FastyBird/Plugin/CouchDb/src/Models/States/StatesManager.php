@@ -41,7 +41,6 @@ use function method_exists;
 use function property_exists;
 use function serialize;
 use function sprintf;
-use const DATE_ATOM;
 
 /**
  * States manager
@@ -64,10 +63,11 @@ class StatesManager
 	private array $retries = [];
 
 	/**
-	 * @phpstan-param class-string<T> $entity
+	 * @param class-string<T> $entity
 	 */
 	public function __construct(
 		private readonly Connections\Connection $client,
+		private readonly States\StateFactory $stateFactory,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly string $entity = States\State::class,
 		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
@@ -77,8 +77,6 @@ class StatesManager
 	}
 
 	/**
-	 * @phpstan-return T
-	 *
 	 * @throws Exceptions\InvalidState
 	 */
 	public function create(
@@ -89,7 +87,7 @@ class StatesManager
 		try {
 			$doc = $this->createDoc($id, $values, $this->entity::getCreateFields());
 
-			$state = States\StateFactory::create($this->entity, $doc);
+			$state = $this->stateFactory->create($this->entity, $doc);
 
 		} catch (Throwable $ex) {
 			$this->logger->error('Document could not be created', [
@@ -110,10 +108,6 @@ class StatesManager
 	}
 
 	/**
-	 * @phpstan-param T $state
-	 *
-	 * @phpstan-return T
-	 *
 	 * @throws Exceptions\InvalidState
 	 */
 	public function update(
@@ -124,7 +118,7 @@ class StatesManager
 		try {
 			$doc = $this->updateDoc($state, $values, $state::getUpdateFields());
 
-			$updatedState = States\StateFactory::create($state::class, $doc);
+			$updatedState = $this->stateFactory->create($state::class, $doc);
 
 		} catch (Exceptions\NotUpdated) {
 			return $state;
@@ -146,9 +140,6 @@ class StatesManager
 		return $updatedState;
 	}
 
-	/**
-	 * @phpstan-param T $state
-	 */
 	public function delete(States\State $state): bool
 	{
 		$result = $this->deleteDoc($state->getId());
@@ -191,7 +182,7 @@ class StatesManager
 	}
 
 	/**
-	 * @phpstan-param array<string>|array<string, int|string|bool|null> $fields
+	 * @param array<string>|array<string, int|string|bool|null> $fields
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
@@ -225,7 +216,7 @@ class StatesManager
 						$value = $values->offsetGet($field);
 
 						if ($value instanceof DateTimeInterface) {
-							$value = $value->format(DATE_ATOM);
+							$value = $value->format(DateTimeInterface::ATOM);
 						} elseif ($value instanceof Utils\ArrayHash) {
 							$value = (array) $value;
 						} elseif ($value instanceof Consistence\Enum\Enum) {
@@ -238,7 +229,7 @@ class StatesManager
 					}
 				} else {
 					if ($field === States\State::CREATED_AT_FIELD) {
-						$value = $this->dateTimeFactory->getNow()->format(DATE_ATOM);
+						$value = $this->dateTimeFactory->getNow()->format(DateTimeInterface::ATOM);
 					}
 				}
 
@@ -270,8 +261,7 @@ class StatesManager
 	}
 
 	/**
-	 * @phpstan-param T $state
-	 * @phpstan-param array<string> $fields
+	 * @param array<string> $fields
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
@@ -293,7 +283,7 @@ class StatesManager
 					$value = $values->offsetGet($field);
 
 					if ($value instanceof DateTimeInterface) {
-						$value = $value->format(DATE_ATOM);
+						$value = $value->format(DateTimeInterface::ATOM);
 
 					} elseif ($value instanceof Utils\ArrayHash) {
 						$value = (array) $value;
@@ -312,7 +302,7 @@ class StatesManager
 					}
 				} else {
 					if ($field === States\State::UPDATED_AT_FIELD) {
-						$doc->set($field, $this->dateTimeFactory->getNow()->format(DATE_ATOM));
+						$doc->set($field, $this->dateTimeFactory->getNow()->format(DateTimeInterface::ATOM));
 					}
 				}
 			}

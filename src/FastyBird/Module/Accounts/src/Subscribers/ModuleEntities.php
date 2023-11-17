@@ -236,7 +236,7 @@ final class ModuleEntities implements Common\EventSubscriber
 	}
 
 	/**
-	 * @phpstan-param class-string<Entities\Entity> $class
+	 * @param class-string<Entities\Entity> $class
 	 */
 	private function validateEntity(Entities\Entity $entity, string $class): bool
 	{

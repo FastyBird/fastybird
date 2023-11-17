@@ -41,7 +41,7 @@ class ChannelPropertiesRepository implements DevicesModels\States\IChannelProper
 	private RedisDbModels\States\StatesRepository $stateRepository;
 
 	/**
-	 * @phpstan-param RedisDbModels\States\StatesRepositoryFactory<States\ChannelProperty> $stateRepositoryFactory
+	 * @param RedisDbModels\States\StatesRepositoryFactory<States\ChannelProperty> $stateRepositoryFactory
 	 *
 	 * @throws RedisDbExceptions\InvalidArgument
 	 */

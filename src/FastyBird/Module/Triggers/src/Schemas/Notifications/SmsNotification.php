@@ -23,7 +23,8 @@ use function array_merge;
 /**
  * SMS notification entity schema
  *
- * @extends Notification<Entities\Notifications\SmsNotification>
+ * @template T of Entities\Notifications\SmsNotification
+ * @extends  Notification<T>
  *
  * @package        FastyBird:TriggersModule!
  * @subpackage     Schemas

@@ -42,7 +42,7 @@ class ConnectorPropertiesManager implements DevicesModels\States\IConnectorPrope
 	private RedisDbModels\States\StatesManager $statesManager;
 
 	/**
-	 * @phpstan-param RedisDbModels\States\StatesManagerFactory<States\ConnectorProperty> $statesManagerFactory
+	 * @param RedisDbModels\States\StatesManagerFactory<States\ConnectorProperty> $statesManagerFactory
 	 *
 	 * @throws RedisDbExceptions\InvalidArgument
 	 */

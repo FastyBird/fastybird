@@ -93,9 +93,9 @@ final class TriggersRepository
 	}
 
 	/**
-	 * @phpstan-param class-string<Entities\Triggers\Trigger> $type
+	 * @param class-string<Entities\Triggers\Trigger> $type
 	 *
-	 * @phpstan-return DoctrineOrmQuery\ResultSet<Entities\Triggers\Trigger>
+	 * @return DoctrineOrmQuery\ResultSet<Entities\Triggers\Trigger>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */

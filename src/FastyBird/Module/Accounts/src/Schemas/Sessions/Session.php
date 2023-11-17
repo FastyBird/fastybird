@@ -15,6 +15,7 @@
 
 namespace FastyBird\Module\Accounts\Schemas\Sessions;
 
+use DateTimeInterface;
 use FastyBird\JsonApi\Schemas as JsonApis;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Accounts;
@@ -23,12 +24,12 @@ use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\Module\Accounts\Router;
 use IPub\SlimRouter\Routing;
 use Neomerx\JsonApi;
-use const DATE_ATOM;
 
 /**
  * Session entity schema
  *
- * @extends    JsonApis\JsonApi<Entities\Tokens\AccessToken>
+ * @template T of Entities\Tokens\AccessToken
+ * @extends  JsonApis\JsonApi<T>
  *
  * @package        FastyBird:AccountsModule!
  * @subpackage     Schemas
@@ -62,7 +63,7 @@ final class Session extends JsonApis\JsonApi
 	}
 
 	/**
-	 * @phpstan-param Entities\Tokens\AccessToken $resource
+	 * @param T $resource
 	 *
 	 * @return iterable<string, string|null>
 	 *
@@ -75,14 +76,14 @@ final class Session extends JsonApis\JsonApi
 	{
 		return [
 			'token' => $resource->getToken(),
-			'expiration' => $resource->getValidTill()?->format(DATE_ATOM),
+			'expiration' => $resource->getValidTill()?->format(DateTimeInterface::ATOM),
 			'token_type' => 'Bearer',
 			'refresh' => $resource->getRefreshToken()?->getToken(),
 		];
 	}
 
 	/**
-	 * @phpstan-param Entities\Tokens\AccessToken $resource
+	 * @param T $resource
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -96,9 +97,9 @@ final class Session extends JsonApis\JsonApi
 	}
 
 	/**
-	 * @phpstan-param Entities\Tokens\AccessToken $resource
+	 * @param T $resource
 	 *
-	 * @phpstan-return iterable<string, array<int, (Entities\Accounts\Account|bool)>>
+	 * @return iterable<string, array<int, (Entities\Accounts\Account|bool)>>
 	 *
 	 * @throws Exceptions\InvalidState
 	 *
@@ -119,7 +120,7 @@ final class Session extends JsonApis\JsonApi
 	}
 
 	/**
-	 * @phpstan-param Entities\Tokens\AccessToken $resource
+	 * @param T $resource
 	 *
 	 * @throws Exceptions\InvalidState
 	 *
@@ -149,7 +150,7 @@ final class Session extends JsonApis\JsonApi
 	}
 
 	/**
-	 * @phpstan-param Entities\Tokens\AccessToken $resource
+	 * @param T $resource
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */

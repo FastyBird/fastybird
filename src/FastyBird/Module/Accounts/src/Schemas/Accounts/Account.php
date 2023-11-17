@@ -15,6 +15,7 @@
 
 namespace FastyBird\Module\Accounts\Schemas\Accounts;
 
+use DateTimeInterface;
 use FastyBird\JsonApi\Schemas as JsonApis;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Accounts;
@@ -25,12 +26,12 @@ use Neomerx\JsonApi;
 use function count;
 use function intval;
 use function strval;
-use const DATE_ATOM;
 
 /**
  * Account entity schema
  *
- * @extends JsonApis\JsonApi<Entities\Accounts\Account>
+ * @template T of Entities\Accounts\Account
+ * @extends JsonApis\JsonApi<T>
  *
  * @package        FastyBird:AccountsModule!
  * @subpackage     Schemas
@@ -68,9 +69,9 @@ final class Account extends JsonApis\JsonApi
 	}
 
 	/**
-	 * @phpstan-param Entities\Accounts\Account $resource
+	 * @param T $resource
 	 *
-	 * @phpstan-return iterable<string, (int|string|array<string, string|null>|null)>
+	 * @return iterable<string, (int|string|array<string, string|null>|null)>
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -99,13 +100,13 @@ final class Account extends JsonApis\JsonApi
 
 			'state' => strval($resource->getState()->getValue()),
 
-			'last_visit' => $resource->getLastVisit()?->format(DATE_ATOM),
-			'registered' => $resource->getCreatedAt()?->format(DATE_ATOM),
+			'last_visit' => $resource->getLastVisit()?->format(DateTimeInterface::ATOM),
+			'registered' => $resource->getCreatedAt()?->format(DateTimeInterface::ATOM),
 		];
 	}
 
 	/**
-	 * @phpstan-param Entities\Accounts\Account $resource
+	 * @param T $resource
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -124,9 +125,9 @@ final class Account extends JsonApis\JsonApi
 	}
 
 	/**
-	 * @phpstan-param Entities\Accounts\Account $resource
+	 * @param T $resource
 	 *
-	 * @phpstan-return iterable<string, array<int, (array<Entities\Identities\Identity>|array<Entities\Roles\Role>|array<Entities\Emails\Email>|bool)>>
+	 * @return iterable<string, array<int, (array<Entities\Identities\Identity>|array<Entities\Roles\Role>|array<Entities\Emails\Email>|bool)>>
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -155,7 +156,7 @@ final class Account extends JsonApis\JsonApi
 	}
 
 	/**
-	 * @phpstan-param Entities\Accounts\Account $resource
+	 * @param T $resource
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -198,7 +199,7 @@ final class Account extends JsonApis\JsonApi
 	}
 
 	/**
-	 * @phpstan-param Entities\Accounts\Account $resource
+	 * @param T $resource
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */

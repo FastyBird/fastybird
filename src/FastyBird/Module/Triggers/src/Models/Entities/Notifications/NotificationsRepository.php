@@ -93,9 +93,9 @@ final class NotificationsRepository
 	}
 
 	/**
-	 * @phpstan-param class-string<Entities\Notifications\Notification> $type
+	 * @param class-string<Entities\Notifications\Notification> $type
 	 *
-	 * @phpstan-return DoctrineOrmQuery\ResultSet<Entities\Notifications\Notification>
+	 * @return DoctrineOrmQuery\ResultSet<Entities\Notifications\Notification>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */

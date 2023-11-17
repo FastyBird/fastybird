@@ -41,6 +41,7 @@ class StatesManagerFactory
 
 	public function __construct(
 		private readonly Clients\Client $client,
+		private readonly States\StateFactory $stateFactory,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
@@ -49,9 +50,9 @@ class StatesManagerFactory
 	}
 
 	/**
-	 * @phpstan-param class-string<T> $entity
+	 * @param class-string<T> $entity
 	 *
-	 * @phpstan-return StatesManager<T>
+	 * @return StatesManager<T>
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 */
@@ -61,7 +62,14 @@ class StatesManagerFactory
 			throw new Exceptions\InvalidArgument(sprintf('Provided entity class %s does not exists', $entity));
 		}
 
-		return new StatesManager($this->client, $this->dateTimeFactory, $entity, $this->dispatcher, $this->logger);
+		return new StatesManager(
+			$this->client,
+			$this->stateFactory,
+			$this->dateTimeFactory,
+			$entity,
+			$this->dispatcher,
+			$this->logger,
+		);
 	}
 
 }

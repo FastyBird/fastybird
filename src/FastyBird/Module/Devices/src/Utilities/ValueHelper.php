@@ -37,7 +37,6 @@ use function is_numeric;
 use function round;
 use function sprintf;
 use function strval;
-use const DATE_ATOM;
 
 /**
  * Value helpers
@@ -394,7 +393,7 @@ final class ValueHelper
 	): bool|float|int|string|null
 	{
 		if ($value instanceof DateTimeInterface) {
-			return $value->format(DATE_ATOM);
+			return $value->format(DateTimeInterface::ATOM);
 		} elseif ($value instanceof Consistence\Enum\Enum) {
 			return is_numeric($value->getValue()) ? $value->getValue() : strval($value->getValue());
 		}

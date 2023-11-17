@@ -50,6 +50,7 @@ class StatesRepository
 	 */
 	public function __construct(
 		private readonly Clients\Client|Redis\RedisClient $client,
+		private readonly States\StateFactory $stateFactory,
 		private readonly string $entity = States\State::class,
 		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
@@ -70,7 +71,7 @@ class StatesRepository
 			return null;
 		}
 
-		return States\StateFactory::create($this->entity, $raw);
+		return $this->stateFactory->create($this->entity, $raw);
 	}
 
 	/**

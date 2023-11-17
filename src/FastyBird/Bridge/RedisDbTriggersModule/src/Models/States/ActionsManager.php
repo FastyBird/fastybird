@@ -42,7 +42,7 @@ class ActionsManager implements TriggersModels\States\IActionsManager
 	private RedisDbModels\States\StatesManager $statesManager;
 
 	/**
-	 * @phpstan-param RedisDbModels\States\StatesManagerFactory<States\Action> $statesManagerFactory
+	 * @param RedisDbModels\States\StatesManagerFactory<States\Action> $statesManagerFactory
 	 *
 	 * @throws RedisDbExceptions\InvalidArgument
 	 */

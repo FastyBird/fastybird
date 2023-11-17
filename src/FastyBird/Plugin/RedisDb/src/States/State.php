@@ -15,8 +15,8 @@
 
 namespace FastyBird\Plugin\RedisDb\States;
 
-use FastyBird\Plugin\RedisDb\Exceptions;
-use Nette;
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 
 /**
@@ -27,27 +27,20 @@ use Ramsey\Uuid;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class State
+class State implements ObjectMapper\MappedObject
 {
-
-	use Nette\SmartObject;
 
 	public const CREATED_AT_FIELD = 'createdAt';
 
 	public const UPDATED_AT_FIELD = 'updatedAt';
 
-	private Uuid\UuidInterface $id;
-
-	/**
-	 * @throws Exceptions\InvalidState
-	 */
-	public function __construct(string $id, private readonly string $raw)
+	public function __construct(
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $id,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		private readonly string $raw,
+	)
 	{
-		if (!Uuid\Uuid::isValid($id)) {
-			throw new Exceptions\InvalidState('Provided state id is not valid');
-		}
-
-		$this->id = Uuid\Uuid::fromString($id);
 	}
 
 	/**

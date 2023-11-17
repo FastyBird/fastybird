@@ -85,7 +85,7 @@ class FindIdentities extends DoctrineOrmQuery\QueryObject
 	}
 
 	/**
-	 * @phpstan-param ORM\EntityRepository<Entities\Identities\Identity> $repository
+	 * @param ORM\EntityRepository<Entities\Identities\Identity> $repository
 	 */
 	protected function doCreateQuery(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{
@@ -93,7 +93,7 @@ class FindIdentities extends DoctrineOrmQuery\QueryObject
 	}
 
 	/**
-	 * @phpstan-param ORM\EntityRepository<Entities\Identities\Identity> $repository
+	 * @param ORM\EntityRepository<Entities\Identities\Identity> $repository
 	 */
 	private function createBasicDql(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{
@@ -111,7 +111,7 @@ class FindIdentities extends DoctrineOrmQuery\QueryObject
 	}
 
 	/**
-	 * @phpstan-param ORM\EntityRepository<Entities\Identities\Identity> $repository
+	 * @param ORM\EntityRepository<Entities\Identities\Identity> $repository
 	 */
 	protected function doCreateCountQuery(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{

@@ -41,7 +41,7 @@ class DevicePropertiesRepository implements DevicesModels\States\IDeviceProperti
 	private RedisDbModels\States\StatesRepository $stateRepository;
 
 	/**
-	 * @phpstan-param RedisDbModels\States\StatesRepositoryFactory<States\DeviceProperty> $stateRepositoryFactory
+	 * @param RedisDbModels\States\StatesRepositoryFactory<States\DeviceProperty> $stateRepositoryFactory
 	 *
 	 * @throws RedisDbExceptions\InvalidArgument
 	 */

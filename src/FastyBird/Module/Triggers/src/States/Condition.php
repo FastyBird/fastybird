@@ -30,8 +30,6 @@ interface Condition
 
 	public function getId(): Uuid\UuidInterface;
 
-	public function setFulfilled(bool $result): void;
-
 	public function isFulfilled(): bool;
 
 }

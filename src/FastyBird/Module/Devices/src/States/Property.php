@@ -17,6 +17,7 @@ namespace FastyBird\Module\Devices\States;
 
 use DateTimeInterface;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 
 /**
@@ -27,7 +28,7 @@ use Ramsey\Uuid;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-interface Property
+interface Property extends ObjectMapper\MappedObject
 {
 
 	public const ACTUAL_VALUE_KEY = 'actualValue';
@@ -40,39 +41,23 @@ interface Property
 
 	public const CREATED_AT_KEY = 'createdAt';
 
-	public const UPDATED_AT_KEY = '$updatedAt';
+	public const UPDATED_AT_KEY = 'updatedAt';
 
 	public function getId(): Uuid\UuidInterface;
-
-	public function setActualValue(
-		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $actual,
-	): void;
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 	public function getActualValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null;
-
-	public function setExpectedValue(
-		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $expected,
-	): void;
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 	public function getExpectedValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null;
-
-	public function setPending(bool|string $pending): void;
 
 	public function getPending(): bool|DateTimeInterface;
 
 	public function isPending(): bool;
 
-	public function setValid(bool $valid): void;
-
 	public function isValid(): bool;
 
 	public function getCreatedAt(): DateTimeInterface|null;
 
-	public function setCreatedAt(string|null $createdAt = null): void;
-
 	public function getUpdatedAt(): DateTimeInterface|null;
-
-	public function setUpdatedAt(string|null $updatedAt = null): void;
 
 	/**
 	 * @return array<string, mixed>

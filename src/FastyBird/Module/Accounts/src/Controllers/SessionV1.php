@@ -54,8 +54,8 @@ final class SessionV1 extends BaseV1
 {
 
 	/**
-	 * @phpstan-param SimpleAuthModels\Tokens\TokenRepository<SimpleAuthEntities\Tokens\Token> $tokenRepository
-	 * @phpstan-param SimpleAuthModels\Tokens\TokensManager<SimpleAuthEntities\Tokens\Token> $tokensManager
+	 * @param SimpleAuthModels\Tokens\TokenRepository<SimpleAuthEntities\Tokens\Token> $tokenRepository
+	 * @param SimpleAuthModels\Tokens\TokensManager<SimpleAuthEntities\Tokens\Token> $tokensManager
 	 */
 	public function __construct(
 		private readonly SimpleAuthModels\Tokens\TokenRepository $tokenRepository,
@@ -493,7 +493,7 @@ final class SessionV1 extends BaseV1
 	}
 
 	/**
-	 * @phpstan-param array<string> $roles
+	 * @param array<string> $roles
 	 */
 	private function createToken(
 		Uuid\UuidInterface $userId,

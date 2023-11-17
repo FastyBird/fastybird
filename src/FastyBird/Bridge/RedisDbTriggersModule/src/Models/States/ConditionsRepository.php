@@ -41,7 +41,7 @@ class ConditionsRepository implements TriggersModels\States\IConditionsRepositor
 	private RedisDbModels\States\StatesRepository $stateRepository;
 
 	/**
-	 * @phpstan-param RedisDbModels\States\StatesRepositoryFactory<States\Condition> $stateRepositoryFactory
+	 * @param RedisDbModels\States\StatesRepositoryFactory<States\Condition> $stateRepositoryFactory
 	 *
 	 * @throws RedisDbExceptions\InvalidArgument
 	 */

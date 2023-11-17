@@ -15,11 +15,11 @@
 
 namespace FastyBird\Bridge\RedisDbTriggersModule\States;
 
-use DateTimeImmutable;
 use DateTimeInterface;
-use Exception;
 use FastyBird\Module\Triggers\States as TriggersStates;
 use FastyBird\Plugin\RedisDb\States as RedisDbStates;
+use Orisai\ObjectMapper;
+use Ramsey\Uuid;
 use function array_merge;
 
 /**
@@ -33,46 +33,42 @@ use function array_merge;
 class Condition extends RedisDbStates\State implements TriggersStates\Condition
 {
 
-	private bool $validationResult = false;
-
-	private string|null $createdAt = null;
-
-	private string|null $updatedAt = null;
+	public function __construct(
+		Uuid\UuidInterface $id,
+		string $raw,
+		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
+		#[ObjectMapper\Modifiers\FieldName('validation_result')]
+		private readonly bool $validationResult = false,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('created_at')]
+		private readonly DateTimeInterface|null $createdAt = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('updated_at')]
+		private readonly DateTimeInterface|null $updatedAt = null,
+	)
+	{
+		parent::__construct($id, $raw);
+	}
 
 	public function isFulfilled(): bool
 	{
 		return $this->validationResult;
 	}
 
-	public function setFulfilled(bool $result): void
-	{
-		$this->validationResult = $result;
-	}
-
-	/**
-	 * @throws Exception
-	 */
 	public function getCreatedAt(): DateTimeInterface|null
 	{
-		return $this->createdAt !== null ? new DateTimeImmutable($this->createdAt) : null;
+		return $this->createdAt;
 	}
 
-	public function setCreatedAt(string|null $createdAt = null): void
-	{
-		$this->createdAt = $createdAt;
-	}
-
-	/**
-	 * @throws Exception
-	 */
 	public function getUpdatedAt(): DateTimeInterface|null
 	{
-		return $this->updatedAt !== null ? new DateTimeImmutable($this->updatedAt) : null;
-	}
-
-	public function setUpdatedAt(string|null $updatedAt = null): void
-	{
-		$this->updatedAt = $updatedAt;
+		return $this->updatedAt;
 	}
 
 	public static function getCreateFields(): array
@@ -80,8 +76,8 @@ class Condition extends RedisDbStates\State implements TriggersStates\Condition
 		return [
 			0 => 'id',
 			'validationResult' => false,
-			'createdAt' => null,
-			'updatedAt' => null,
+			self::CREATED_AT_FIELD => null,
+			self::UPDATED_AT_FIELD => null,
 		];
 	}
 
@@ -89,14 +85,12 @@ class Condition extends RedisDbStates\State implements TriggersStates\Condition
 	{
 		return [
 			'validationResult',
-			'updatedAt',
+			self::UPDATED_AT_FIELD,
 		];
 	}
 
 	/**
 	 * {@inheritDoc}
-	 *
-	 * @throws Exception
 	 */
 	public function toArray(): array
 	{

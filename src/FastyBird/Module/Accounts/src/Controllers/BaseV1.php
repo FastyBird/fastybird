@@ -248,7 +248,7 @@ abstract class BaseV1
 	}
 
 	/**
-	 * @phpstan-param DoctrineCrud\Entities\IEntity|array<DoctrineCrud\Entities\IEntity>|ResultSet<Entities\Entity>|null $data
+	 * @param DoctrineCrud\Entities\IEntity|array<DoctrineCrud\Entities\IEntity>|ResultSet<Entities\Entity>|null $data
 	 *
 	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 * @throws Exception

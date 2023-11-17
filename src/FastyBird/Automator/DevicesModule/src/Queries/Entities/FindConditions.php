@@ -138,7 +138,7 @@ class FindConditions extends TriggersQueries\Entities\FindConditions
 	}
 
 	/**
-	 * @phpstan-param ORM\EntityRepository<T> $repository
+	 * @param ORM\EntityRepository<T> $repository
 	 */
 	protected function createBasicDql(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{

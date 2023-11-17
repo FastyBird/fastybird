@@ -52,6 +52,7 @@ class StatesRepository
 	 */
 	public function __construct(
 		private readonly Connections\Connection $client,
+		private readonly States\StateFactory $stateFactory,
 		private readonly string $entity = States\State::class,
 		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
@@ -59,8 +60,6 @@ class StatesRepository
 	}
 
 	/**
-	 * @phpstan-return T|null
-	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws InvalidArgumentException
@@ -73,7 +72,7 @@ class StatesRepository
 			return null;
 		}
 
-		return States\StateFactory::create($this->entity, $doc);
+		return $this->stateFactory->create($this->entity, $doc);
 	}
 
 	/**

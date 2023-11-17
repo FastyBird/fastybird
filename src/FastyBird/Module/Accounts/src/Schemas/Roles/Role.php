@@ -30,7 +30,8 @@ use function count;
 /**
  * Role entity schema
  *
- * @extends  JsonApis\JsonApi<Entities\Roles\Role>
+ * @template T of Entities\Roles\Role
+ * @extends  JsonApis\JsonApi<T>
  *
  * @package        FastyBird:AccountsModule!
  * @subpackage     Schemas
@@ -69,7 +70,7 @@ final class Role extends JsonApis\JsonApi
 	}
 
 	/**
-	 * @phpstan-param Entities\Roles\Role $resource
+	 * @param T $resource
 	 *
 	 * @return iterable<string, string|bool>
 	 *
@@ -91,7 +92,7 @@ final class Role extends JsonApis\JsonApi
 	}
 
 	/**
-	 * @phpstan-param Entities\Roles\Role $resource
+	 * @param T $resource
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -110,9 +111,9 @@ final class Role extends JsonApis\JsonApi
 	}
 
 	/**
-	 * @phpstan-param Entities\Roles\Role $resource
+	 * @param T $resource
 	 *
-	 * @phpstan-return iterable<string, array<int, (Entities\Roles\Role|array<Entities\Roles\Role>|bool)>>
+	 * @return iterable<string, mixed>
 	 *
 	 * @throws Exception
 	 *
@@ -143,7 +144,7 @@ final class Role extends JsonApis\JsonApi
 	}
 
 	/**
-	 * @phpstan-param Entities\Roles\Role $resource
+	 * @param T $resource
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -183,7 +184,7 @@ final class Role extends JsonApis\JsonApi
 	}
 
 	/**
-	 * @phpstan-param Entities\Roles\Role $resource
+	 * @param T $resource
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -214,7 +215,7 @@ final class Role extends JsonApis\JsonApi
 	}
 
 	/**
-	 * @phpstan-return array<Entities\Roles\Role>
+	 * @return array<Entities\Roles\Role>
 	 *
 	 * @throws Exception
 	 */

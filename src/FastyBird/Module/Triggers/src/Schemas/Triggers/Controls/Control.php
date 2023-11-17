@@ -27,7 +27,8 @@ use Neomerx\JsonApi;
 /**
  * Trigger control entity schema
  *
- * @extends JsonApiSchemas\JsonApi<Entities\Triggers\Controls\Control>
+ * @template T of Entities\Triggers\Controls\Control
+ * @extends  JsonApiSchemas\JsonApi<T>
  *
  * @package        FastyBird:TriggersModule!
  * @subpackage     Schemas

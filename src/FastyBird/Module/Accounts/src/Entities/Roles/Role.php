@@ -136,7 +136,7 @@ class Role implements Entities\Entity,
 	}
 
 	/**
-	 * @phpstan-param array<Role> $children
+	 * @param array<Role> $children
 	 */
 	public function setChildren(array $children): void
 	{

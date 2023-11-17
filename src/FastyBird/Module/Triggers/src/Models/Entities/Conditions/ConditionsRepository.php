@@ -49,8 +49,8 @@ final class ConditionsRepository
 	}
 
 	/**
-	 * @phpstan-param Queries\Entities\FindConditions<Entities\Conditions\Condition> $queryObject
-	 * @phpstan-param class-string<Entities\Conditions\Condition> $type
+	 * @param Queries\Entities\FindConditions<Entities\Conditions\Condition> $queryObject
+	 * @param class-string<Entities\Conditions\Condition> $type
 	 *
 	 * @throws Exceptions\InvalidState
 	 */

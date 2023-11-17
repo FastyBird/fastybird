@@ -14,7 +14,7 @@ final class ApiV1ParserTest extends BaseTestCase
 {
 
 	/**
-	 * @phpstan-param array<string, bool|float|int|string|array<string>> $expected
+	 * @param array<string, bool|float|int|string|array<string>> $expected
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\ParseMessage
@@ -86,7 +86,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	}
 
 	/**
-	 * @phpstan-param array<string, bool|float|int|string|array<string>> $expected
+	 * @param array<string, bool|float|int|string|array<string>> $expected
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\ParseMessage
@@ -158,7 +158,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	}
 
 	/**
-	 * @phpstan-param array<string, bool|float|int|string|array<string>> $expected
+	 * @param array<string, bool|float|int|string|array<string>> $expected
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\ParseMessage
@@ -212,7 +212,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	}
 
 	/**
-	 * @phpstan-param array<string, bool|float|int|string|array<string>> $expected
+	 * @param array<string, bool|float|int|string|array<string>> $expected
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\ParseMessage
@@ -258,7 +258,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	}
 
 	/**
-	 * @phpstan-param array<string, bool|float|int|string|array<string>> $expected
+	 * @param array<string, bool|float|int|string|array<string>> $expected
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\ParseMessage
@@ -324,7 +324,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	}
 
 	/**
-	 * @phpstan-param class-string<Throwable> $exception
+	 * @param class-string<Throwable> $exception
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\ParseMessage
@@ -365,7 +365,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	}
 
 	/**
-	 * @phpstan-param class-string<Throwable> $exception
+	 * @param class-string<Throwable> $exception
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\ParseMessage
@@ -406,7 +406,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	}
 
 	/**
-	 * @phpstan-param class-string<Throwable> $exception
+	 * @param class-string<Throwable> $exception
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\ParseMessage
@@ -447,7 +447,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	}
 
 	/**
-	 * @phpstan-param array<string, bool|float|int|string|array<string>> $expected
+	 * @param array<string, bool|float|int|string|array<string>> $expected
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\ParseMessage
@@ -513,7 +513,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	}
 
 	/**
-	 * @phpstan-param array<string, bool|float|int|string|array<string>> $expected
+	 * @param array<string, bool|float|int|string|array<string>> $expected
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\ParseMessage
@@ -560,7 +560,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	}
 
 	/**
-	 * @phpstan-param array<string, bool|float|int|string|array<string>> $expected
+	 * @param array<string, bool|float|int|string|array<string>> $expected
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\ParseMessage
@@ -629,7 +629,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	}
 
 	/**
-	 * @phpstan-param class-string<Throwable> $exception
+	 * @param class-string<Throwable> $exception
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\ParseMessage

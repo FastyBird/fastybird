@@ -42,7 +42,7 @@ class ChannelPropertiesManager implements DevicesModels\States\IChannelPropertie
 	private RedisDbModels\States\StatesManager $statesManager;
 
 	/**
-	 * @phpstan-param RedisDbModels\States\StatesManagerFactory<States\ChannelProperty> $statesManagerFactory
+	 * @param RedisDbModels\States\StatesManagerFactory<States\ChannelProperty> $statesManagerFactory
 	 *
 	 * @throws RedisDbExceptions\InvalidArgument
 	 */

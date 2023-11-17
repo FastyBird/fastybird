@@ -150,7 +150,7 @@ final class Channel implements Consumers\Consumer
 	}
 
 	/**
-	 * @phpstan-param Utils\ArrayHash<string> $properties
+	 * @param Utils\ArrayHash<string> $properties
 	 *
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
@@ -189,7 +189,7 @@ final class Channel implements Consumers\Consumer
 	}
 
 	/**
-	 * @phpstan-param Utils\ArrayHash<string> $controls
+	 * @param Utils\ArrayHash<string> $controls
 	 *
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException

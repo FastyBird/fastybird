@@ -22,6 +22,7 @@ use FastyBird\Plugin\RedisDb\Connections;
 use FastyBird\Plugin\RedisDb\Handlers;
 use FastyBird\Plugin\RedisDb\Models;
 use FastyBird\Plugin\RedisDb\Publishers;
+use FastyBird\Plugin\RedisDb\States;
 use FastyBird\Plugin\RedisDb\Utilities;
 use Nette\DI;
 use Nette\Schema;
@@ -98,6 +99,9 @@ class RedisDbExtension extends DI\CompilerExtension
 			->setArguments([
 				'channel' => $configuration->exchange->channel,
 			]);
+
+		$builder->addDefinition($this->prefix('states.factory'), new DI\Definitions\ServiceDefinition())
+			->setType(States\StateFactory::class);
 
 		$builder->addDefinition($this->prefix('models.statesManagerFactory'), new DI\Definitions\ServiceDefinition())
 			->setType(Models\States\StatesManagerFactory::class);

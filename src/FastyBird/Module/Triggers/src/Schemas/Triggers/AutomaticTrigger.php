@@ -29,7 +29,8 @@ use function count;
 /**
  * Automatic trigger entity schema
  *
- * @extends Trigger<Entities\Triggers\AutomaticTrigger>
+ * @template T of Entities\Triggers\AutomaticTrigger
+ * @extends  Trigger<T>
  *
  * @package        FastyBird:TriggersModule!
  * @subpackage     Schemas

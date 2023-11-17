@@ -42,7 +42,7 @@ class DevicePropertiesManager implements DevicesModels\States\IDevicePropertiesM
 	private RedisDbModels\States\StatesManager $statesManager;
 
 	/**
-	 * @phpstan-param RedisDbModels\States\StatesManagerFactory<States\DeviceProperty> $statesManagerFactory
+	 * @param RedisDbModels\States\StatesManagerFactory<States\DeviceProperty> $statesManagerFactory
 	 *
 	 * @throws RedisDbExceptions\InvalidArgument
 	 */

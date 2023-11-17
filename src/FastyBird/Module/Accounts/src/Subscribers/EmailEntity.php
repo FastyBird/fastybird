@@ -101,7 +101,7 @@ final class EmailEntity implements Common\EventSubscriber
 			}
 
 			if ($object instanceof Entities\Emails\Email && $object->isDefault()) {
-				/** @phpstan-var ORM\Mapping\ClassMetadata<Entities\Emails\Email> $classMetadata */
+				/** @var ORM\Mapping\ClassMetadata<Entities\Emails\Email> $classMetadata */
 				$classMetadata = $manager->getClassMetadata($object::class);
 
 				// Check if entity was set as default
@@ -113,7 +113,7 @@ final class EmailEntity implements Common\EventSubscriber
 	}
 
 	/**
-	 * @phpstan-param ORM\Mapping\ClassMetadata<Entities\Emails\Email> $classMetadata
+	 * @param ORM\Mapping\ClassMetadata<Entities\Emails\Email> $classMetadata
 	 */
 	private function setAsDefault(
 		ORM\UnitOfWork $uow,

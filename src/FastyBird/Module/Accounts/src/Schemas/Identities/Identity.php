@@ -27,7 +27,8 @@ use function strval;
 /**
  * Identity entity schema
  *
- * @extends JsonApis\JsonApi<Entities\Identities\Identity>
+ * @template T of Entities\Identities\Identity
+ * @extends JsonApis\JsonApi<T>
  *
  * @package        FastyBird:AccountsModule!
  * @subpackage     Schemas
@@ -61,9 +62,9 @@ final class Identity extends JsonApis\JsonApi
 	}
 
 	/**
-	 * @phpstan-param Entities\Identities\Identity $resource
+	 * @param T $resource
 	 *
-	 * @phpstan-return iterable<string, string>
+	 * @return iterable<string, string>
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -79,7 +80,7 @@ final class Identity extends JsonApis\JsonApi
 	}
 
 	/**
-	 * @phpstan-param Entities\Identities\Identity $resource
+	 * @param T $resource
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -99,9 +100,9 @@ final class Identity extends JsonApis\JsonApi
 	}
 
 	/**
-	 * @phpstan-param Entities\Identities\Identity $resource
+	 * @param T $resource
 	 *
-	 * @phpstan-return iterable<string, array<int, (Entities\Accounts\Account|bool)>>
+	 * @return iterable<string, array<int, (Entities\Accounts\Account|bool)>>
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -120,7 +121,7 @@ final class Identity extends JsonApis\JsonApi
 	}
 
 	/**
-	 * @phpstan-param Entities\Identities\Identity $resource
+	 * @param T $resource
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -146,7 +147,7 @@ final class Identity extends JsonApis\JsonApi
 	}
 
 	/**
-	 * @phpstan-param Entities\Identities\Identity $resource
+	 * @param T $resource
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */

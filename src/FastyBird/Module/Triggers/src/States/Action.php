@@ -30,8 +30,6 @@ interface Action
 
 	public function getId(): Uuid\UuidInterface;
 
-	public function setTriggered(bool $result): void;
-
 	public function isTriggered(): bool;
 
 }

@@ -2,23 +2,43 @@
 
 namespace FastyBird\Plugin\RedisDb\Tests\Fixtures;
 
-use DateTimeImmutable;
 use DateTimeInterface;
-use Exception;
 use FastyBird\Plugin\RedisDb\States;
+use Orisai\ObjectMapper;
+use Ramsey\Uuid;
 use function array_merge;
-use const DATE_ATOM;
 
 class CustomState extends States\State
 {
 
-	private string|null $value = null;
-
-	private string|null $camelCased = null;
-
-	private string|null $created = null;
-
-	private string|null $updated = null;
+	public function __construct(
+		Uuid\UuidInterface $id,
+		string $raw,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		private readonly string|null $value = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('camel_cased')]
+		private readonly string|null $camelCased = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		private readonly DateTimeInterface|null $created = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		private readonly DateTimeInterface|null $updated = null,
+	)
+	{
+		parent::__construct($id, $raw);
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -53,8 +73,8 @@ class CustomState extends States\State
 		return array_merge([
 			'value' => $this->getValue(),
 			'camel_cased' => $this->getCamelCased(),
-			'created' => $this->getCreated()?->format(DATE_ATOM),
-			'updated' => $this->getUpdated()?->format(DATE_ATOM),
+			'created' => $this->getCreated()?->format(DateTimeInterface::ATOM),
+			'updated' => $this->getUpdated()?->format(DateTimeInterface::ATOM),
 		], parent::toArray());
 	}
 
@@ -63,45 +83,19 @@ class CustomState extends States\State
 		return $this->value;
 	}
 
-	public function setValue(string|null $value): void
-	{
-		$this->value = $value;
-	}
-
 	public function getCamelCased(): string|null
 	{
 		return $this->camelCased;
 	}
 
-	public function setCamelCased(string|null $camelCased): void
-	{
-		$this->camelCased = $camelCased;
-	}
-
-	/**
-	 * @throws Exception
-	 */
 	public function getCreated(): DateTimeInterface|null
 	{
-		return $this->created !== null ? new DateTimeImmutable($this->created) : null;
+		return $this->created;
 	}
 
-	public function setCreated(string|null $created): void
-	{
-		$this->created = $created;
-	}
-
-	/**
-	 * @throws Exception
-	 */
 	public function getUpdated(): DateTimeInterface|null
 	{
-		return $this->updated !== null ? new DateTimeImmutable($this->updated) : null;
-	}
-
-	public function setUpdated(string|null $updated): void
-	{
-		$this->updated = $updated;
+		return $this->updated;
 	}
 
 }

@@ -35,7 +35,7 @@ class MdnsResultStorage extends SplObjectStorage
 	use Nette\SmartObject;
 
 	/**
-	 * @phpstan-param ValueObjects\MdnsResult $object
+	 * @param ValueObjects\MdnsResult $object
 	 */
 	public function getHash(object $object): string
 	{

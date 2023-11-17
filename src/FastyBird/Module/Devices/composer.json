@@ -127,6 +127,9 @@
       },
       "dg/bypass-finals": {
         "Bug: mkdir check": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/dg-bypass-finals-src-nativewrapper-php.patch"
+      },
+      "softcreatr/jsonpath": {
+        "Feature: enable extended queries": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/softcreatr-jsonpath-src-filters-querymatchfilter-php.patch"
       }
     }
   },

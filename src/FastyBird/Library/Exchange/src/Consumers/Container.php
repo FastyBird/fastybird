@@ -91,7 +91,7 @@ class Container implements Consumer
 	}
 
 	/**
-	 * @phpstan-param class-string<Consumer> $name
+	 * @param class-string<Consumer> $name
 	 */
 	public function enable(string $name): void
 	{
@@ -115,7 +115,7 @@ class Container implements Consumer
 	}
 
 	/**
-	 * @phpstan-param class-string<Consumer> $name
+	 * @param class-string<Consumer> $name
 	 */
 	public function disable(string $name): void
 	{

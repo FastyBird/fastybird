@@ -15,18 +15,16 @@
 
 namespace FastyBird\Bridge\RedisDbDevicesModule\States;
 
-use DateTime;
-use DateTimeImmutable;
 use DateTimeInterface;
-use Exception;
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use FastyBird\Plugin\RedisDb\States as RedisDbStates;
-use Nette\Utils;
+use Orisai\ObjectMapper;
+use Ramsey\Uuid;
 use function array_merge;
 use function is_bool;
-use function is_string;
 
 /**
  * Property state
@@ -39,68 +37,84 @@ use function is_string;
 class Property extends RedisDbStates\State implements DevicesStates\Property
 {
 
-	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-	private bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $actualValue = null;
-	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-	private bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $expectedValue = null;
+	public function __construct(
+		Uuid\UuidInterface $id,
+		string $raw,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(castBoolLike: true),
+			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
+			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\ButtonPayload::class),
+			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\SwitchPayload::class),
+			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\CoverPayload::class),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('actual_value')]
+		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+		private readonly bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $actualValue = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(castBoolLike: true),
+			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
+			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\ButtonPayload::class),
+			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\SwitchPayload::class),
+			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\CoverPayload::class),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('expected_value')]
+		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+		private readonly bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $expectedValue = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
+			new ObjectMapper\Rules\BoolValue(castBoolLike: true),
+		])]
+		private readonly bool|DateTimeInterface $pending = false,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(castBoolLike: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		private readonly bool|null $valid = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('created_at')]
+		private readonly DateTimeInterface|null $createdAt = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('updated_at')]
+		private readonly DateTimeInterface|null $updatedAt = null,
+	)
+	{
+		parent::__construct($id, $raw);
+	}
 
-	private bool|string $pending = false;
-
-	/** @var bool */
-	private bool|null $valid = null;
-
-	private string|null $createdAt = null;
-
-	private string|null $updatedAt = null;
-
-	/**
-	 * @throws Exception
-	 */
 	public function getCreatedAt(): DateTimeInterface|null
 	{
-		return $this->createdAt !== null ? new DateTime($this->createdAt) : null;
+		return $this->createdAt;
 	}
 
-	public function setCreatedAt(string|null $createdAt = null): void
-	{
-		$this->createdAt = $createdAt;
-	}
-
-	/**
-	 * @throws Exception
-	 */
 	public function getUpdatedAt(): DateTimeInterface|null
 	{
-		return $this->updatedAt !== null ? new DateTimeImmutable($this->updatedAt) : null;
+		return $this->updatedAt;
 	}
 
-	public function setUpdatedAt(string|null $updatedAt = null): void
-	{
-		$this->updatedAt = $updatedAt;
-	}
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 	public function getActualValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
 	{
 		return $this->actualValue;
 	}
 
-	public function setActualValue(
-		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $actual,
-	): void
-	{
-		$this->actualValue = $actual;
-	}
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 	public function getExpectedValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
 	{
 		return $this->expectedValue;
-	}
-
-	public function setExpectedValue(
-		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $expected,
-	): void
-	{
-		$this->expectedValue = $expected;
 	}
 
 	public function isPending(): bool
@@ -110,26 +124,12 @@ class Property extends RedisDbStates\State implements DevicesStates\Property
 
 	public function getPending(): bool|DateTimeInterface
 	{
-		if (is_string($this->pending)) {
-			return Utils\DateTime::createFromFormat(DateTimeInterface::ATOM, $this->pending);
-		}
-
 		return $this->pending;
-	}
-
-	public function setPending(bool|string $pending = false): void
-	{
-		$this->pending = $pending;
 	}
 
 	public function isValid(): bool
 	{
 		return $this->valid ?? false;
-	}
-
-	public function setValid(bool $valid): void
-	{
-		$this->valid = $valid;
 	}
 
 	public static function getCreateFields(): array
@@ -140,8 +140,8 @@ class Property extends RedisDbStates\State implements DevicesStates\Property
 			DevicesStates\Property::EXPECTED_VALUE_KEY => null,
 			DevicesStates\Property::PENDING_KEY => false,
 			DevicesStates\Property::VALID_KEY => false,
-			'createdAt' => null,
-			'updatedAt' => null,
+			self::CREATED_AT_FIELD => null,
+			self::UPDATED_AT_FIELD => null,
 		];
 	}
 
@@ -152,13 +152,10 @@ class Property extends RedisDbStates\State implements DevicesStates\Property
 			DevicesStates\Property::EXPECTED_VALUE_KEY,
 			DevicesStates\Property::PENDING_KEY,
 			DevicesStates\Property::VALID_KEY,
-			'updatedAt',
+			self::UPDATED_AT_FIELD,
 		];
 	}
 
-	/**
-	 * @throws Exception
-	 */
 	public function toArray(): array
 	{
 		return array_merge([

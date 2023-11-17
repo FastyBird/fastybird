@@ -28,7 +28,6 @@ use Ramsey\Uuid;
 use function array_map;
 use function assert;
 use function in_array;
-use const DATE_ATOM;
 
 /**
  * @ORM\Entity
@@ -228,7 +227,7 @@ class Account implements Entities\Entity,
 	}
 
 	/**
-	 * @phpstan-param array<Entities\Emails\Email> $emails
+	 * @param array<Entities\Emails\Email> $emails
 	 */
 	public function setEmails(array $emails): void
 	{
@@ -266,7 +265,7 @@ class Account implements Entities\Entity,
 	}
 
 	/**
-	 * @phpstan-param array<Entities\Roles\Role> $roles
+	 * @param array<Entities\Roles\Role> $roles
 	 */
 	public function setRoles(array $roles): void
 	{
@@ -330,8 +329,8 @@ class Account implements Entities\Entity,
 			'middle_name' => $this->getDetails()->getMiddleName(),
 			'email' => $this->getEmail()?->getAddress(),
 			'state' => $this->getState()->getValue(),
-			'registered' => $this->getCreatedAt()?->format(DATE_ATOM),
-			'last_visit' => $this->getLastVisit()?->format(DATE_ATOM),
+			'registered' => $this->getCreatedAt()?->format(DateTimeInterface::ATOM),
+			'last_visit' => $this->getLastVisit()?->format(DateTimeInterface::ATOM),
 			'roles' => array_map(static fn (Entities\Roles\Role $role): string => $role->getName(), $this->getRoles()),
 			'language' => $this->getLanguage(),
 		];

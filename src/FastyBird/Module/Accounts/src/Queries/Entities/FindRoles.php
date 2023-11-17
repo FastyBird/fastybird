@@ -68,7 +68,7 @@ class FindRoles extends DoctrineOrmQuery\QueryObject
 	}
 
 	/**
-	 * @phpstan-param ORM\EntityRepository<Entities\Roles\Role> $repository
+	 * @param ORM\EntityRepository<Entities\Roles\Role> $repository
 	 */
 	protected function doCreateQuery(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{
@@ -76,7 +76,7 @@ class FindRoles extends DoctrineOrmQuery\QueryObject
 	}
 
 	/**
-	 * @phpstan-param ORM\EntityRepository<Entities\Roles\Role> $repository
+	 * @param ORM\EntityRepository<Entities\Roles\Role> $repository
 	 */
 	private function createBasicDql(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{
@@ -94,7 +94,7 @@ class FindRoles extends DoctrineOrmQuery\QueryObject
 	}
 
 	/**
-	 * @phpstan-param ORM\EntityRepository<Entities\Roles\Role> $repository
+	 * @param ORM\EntityRepository<Entities\Roles\Role> $repository
 	 */
 	protected function doCreateCountQuery(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{
