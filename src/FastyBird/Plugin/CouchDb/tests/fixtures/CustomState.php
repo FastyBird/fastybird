@@ -24,7 +24,6 @@ class CustomState extends States\State
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		#[ObjectMapper\Modifiers\FieldName('camel_cased')]
 		private readonly string|null $camelCased = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
@@ -73,7 +72,7 @@ class CustomState extends States\State
 	{
 		return array_merge([
 			'value' => $this->getValue(),
-			'camel_cased' => $this->getCamelCased(),
+			'camelCased' => $this->getCamelCased(),
 			'created' => $this->getCreated()?->format(DateTimeInterface::ATOM),
 			'updated' => $this->getUpdated()?->format(DateTimeInterface::ATOM),
 		], parent::toArray());
