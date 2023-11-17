@@ -42,7 +42,7 @@ class ConditionsManager implements TriggersModels\States\IConditionsManager
 	private RedisDbModels\States\StatesManager $statesManager;
 
 	/**
-	 * @phpstan-param RedisDbModels\States\StatesManagerFactory<States\Condition> $statesManagerFactory
+	 * @param RedisDbModels\States\StatesManagerFactory<States\Condition> $statesManagerFactory
 	 *
 	 * @throws RedisDbExceptions\InvalidArgument
 	 */

@@ -48,7 +48,6 @@ use function React\Async\await;
 use function serialize;
 use function sprintf;
 use function strtolower;
-use const DATE_ATOM;
 
 /**
  * States manager
@@ -65,10 +64,11 @@ class StatesManager
 	use Nette\SmartObject;
 
 	/**
-	 * @phpstan-param class-string<T> $entity
+	 * @param class-string<T> $entity
 	 */
 	public function __construct(
 		private readonly Clients\Client|Redis\RedisClient $client,
+		private readonly States\StateFactory $stateFactory,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly string $entity = States\State::class,
 		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
@@ -91,7 +91,7 @@ class StatesManager
 		try {
 			$raw = $this->createKey($id, $values, $this->entity::getCreateFields(), $database);
 
-			$state = States\StateFactory::create($this->entity, $raw);
+			$state = $this->stateFactory->create($this->entity, $raw);
 
 		} catch (Throwable $ex) {
 			$this->logger->error('Record could not be created', [
@@ -127,7 +127,7 @@ class StatesManager
 		try {
 			$raw = $this->updateKey($state, $values, $state::getUpdateFields(), $database);
 
-			$updatedState = States\StateFactory::create($state::class, $raw);
+			$updatedState = $this->stateFactory->create($state::class, $raw);
 
 		} catch (Exceptions\NotUpdated) {
 			return $state;
@@ -166,7 +166,7 @@ class StatesManager
 	}
 
 	/**
-	 * @phpstan-param array<string>|array<string, int|string|bool|null> $fields
+	 * @param array<string>|array<string, int|string|bool|null> $fields
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
@@ -201,7 +201,7 @@ class StatesManager
 						$value = $values->offsetGet($field);
 
 						if ($value instanceof DateTimeInterface) {
-							$value = $value->format(DATE_ATOM);
+							$value = $value->format(DateTimeInterface::ATOM);
 						} elseif ($value instanceof Utils\ArrayHash) {
 							$value = (array) $value;
 						} elseif ($value instanceof Consistence\Enum\Enum) {
@@ -214,7 +214,7 @@ class StatesManager
 					}
 				} else {
 					if ($field === States\State::CREATED_AT_FIELD) {
-						$value = $this->dateTimeFactory->getNow()->format(DATE_ATOM);
+						$value = $this->dateTimeFactory->getNow()->format(DateTimeInterface::ATOM);
 					}
 				}
 
@@ -257,8 +257,7 @@ class StatesManager
 	}
 
 	/**
-	 * @phpstan-param T $state
-	 * @phpstan-param array<string> $fields
+	 * @param array<string> $fields
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
@@ -282,7 +281,7 @@ class StatesManager
 					$value = $values->offsetGet($field);
 
 					if ($value instanceof DateTimeInterface) {
-						$value = $value->format(DATE_ATOM);
+						$value = $value->format(DateTimeInterface::ATOM);
 
 					} elseif ($value instanceof Utils\ArrayHash) {
 						$value = (array) $value;
@@ -304,7 +303,9 @@ class StatesManager
 					}
 				} else {
 					if ($field === States\State::UPDATED_AT_FIELD) {
-						$data->{$this->camelToSnake($field)} = $this->dateTimeFactory->getNow()->format(DATE_ATOM);
+						$data->{$this->camelToSnake($field)} = $this->dateTimeFactory->getNow()->format(
+							DateTimeInterface::ATOM,
+						);
 					}
 				}
 			}

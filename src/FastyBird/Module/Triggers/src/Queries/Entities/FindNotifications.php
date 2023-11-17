@@ -55,7 +55,7 @@ class FindNotifications extends DoctrineOrmQuery\QueryObject
 	}
 
 	/**
-	 * @phpstan-param ORM\EntityRepository<Entities\Notifications\Notification> $repository
+	 * @param ORM\EntityRepository<Entities\Notifications\Notification> $repository
 	 */
 	protected function doCreateQuery(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{
@@ -69,7 +69,7 @@ class FindNotifications extends DoctrineOrmQuery\QueryObject
 	}
 
 	/**
-	 * @phpstan-param ORM\EntityRepository<Entities\Notifications\Notification> $repository
+	 * @param ORM\EntityRepository<Entities\Notifications\Notification> $repository
 	 */
 	private function createBasicDql(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{
@@ -85,7 +85,7 @@ class FindNotifications extends DoctrineOrmQuery\QueryObject
 	}
 
 	/**
-	 * @phpstan-param ORM\EntityRepository<Entities\Notifications\Notification> $repository
+	 * @param ORM\EntityRepository<Entities\Notifications\Notification> $repository
 	 */
 	protected function doCreateCountQuery(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{

@@ -2,10 +2,12 @@
 
 namespace FastyBird\Plugin\CouchDb\Tests\Cases\Unit\States;
 
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Plugin\CouchDb\Exceptions;
 use FastyBird\Plugin\CouchDb\States;
 use FastyBird\Plugin\CouchDb\Tests\Fixtures;
 use InvalidArgumentException;
+use Orisai\ObjectMapper;
 use PHPOnCouch;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
@@ -16,8 +18,8 @@ final class FactoryTest extends TestCase
 {
 
 	/**
-	 * @phpstan-param class-string<Fixtures\CustomState> $class
-	 * @phpstan-param array<string, array<string|array<string, mixed>>> $data
+	 * @param class-string<Fixtures\CustomState> $class
+	 * @param array<string, array<string|array<string, mixed>>> $data
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
@@ -38,7 +40,26 @@ final class FactoryTest extends TestCase
 			->method('id')
 			->willReturn($data['id']);
 
-		$entity = States\StateFactory::create($class, $document);
+		$sourceManager = new ObjectMapper\Meta\Source\DefaultMetaSourceManager();
+		$sourceManager->addSource(new ObjectMapper\Meta\Source\AttributesMetaSource());
+		$injectorManager = new ObjectMapper\Processing\DefaultDependencyInjectorManager();
+		$objectCreator = new ObjectMapper\Processing\ObjectCreator($injectorManager);
+		$ruleManager = new ObjectMapper\Rules\DefaultRuleManager();
+		$ruleManager->addRule(new BootstrapObjectMapper\Rules\UuidRule());
+		$ruleManager->addRule(new BootstrapObjectMapper\Rules\ConsistenceEnumRule());
+		$resolverFactory = new ObjectMapper\Meta\MetaResolverFactory($ruleManager, $objectCreator);
+		$cache = new ObjectMapper\Meta\Cache\ArrayMetaCache();
+		$metaLoader = new ObjectMapper\Meta\MetaLoader($cache, $sourceManager, $resolverFactory);
+
+		$processor = new ObjectMapper\Processing\DefaultProcessor(
+			$metaLoader,
+			$ruleManager,
+			$objectCreator,
+		);
+
+		$factory = new States\StateFactory($processor);
+
+		$entity = $factory->create($class, $document);
 
 		self::assertTrue($entity instanceof $class);
 
@@ -50,9 +71,9 @@ final class FactoryTest extends TestCase
 	}
 
 	/**
-	 * @phpstan-param class-string<Fixtures\CustomState> $class
-	 * @phpstan-param array<string, array<string|array<string, mixed>>> $data
-	 * @phpstan-param class-string<Throwable> $exception
+	 * @param class-string<Fixtures\CustomState> $class
+	 * @param array<string, array<string|array<string, mixed>>> $data
+	 * @param class-string<Throwable> $exception
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
@@ -72,7 +93,26 @@ final class FactoryTest extends TestCase
 
 		$this->expectException($exception);
 
-		States\StateFactory::create($class, $document);
+		$sourceManager = new ObjectMapper\Meta\Source\DefaultMetaSourceManager();
+		$sourceManager->addSource(new ObjectMapper\Meta\Source\AttributesMetaSource());
+		$injectorManager = new ObjectMapper\Processing\DefaultDependencyInjectorManager();
+		$objectCreator = new ObjectMapper\Processing\ObjectCreator($injectorManager);
+		$ruleManager = new ObjectMapper\Rules\DefaultRuleManager();
+		$ruleManager->addRule(new BootstrapObjectMapper\Rules\UuidRule());
+		$ruleManager->addRule(new BootstrapObjectMapper\Rules\ConsistenceEnumRule());
+		$resolverFactory = new ObjectMapper\Meta\MetaResolverFactory($ruleManager, $objectCreator);
+		$cache = new ObjectMapper\Meta\Cache\ArrayMetaCache();
+		$metaLoader = new ObjectMapper\Meta\MetaLoader($cache, $sourceManager, $resolverFactory);
+
+		$processor = new ObjectMapper\Processing\DefaultProcessor(
+			$metaLoader,
+			$ruleManager,
+			$objectCreator,
+		);
+
+		$factory = new States\StateFactory($processor);
+
+		$factory->create($class, $document);
 	}
 
 	/**
@@ -105,14 +145,14 @@ final class FactoryTest extends TestCase
 			'one' => [
 				States\State::class,
 				[],
-				Exceptions\InvalidState::class,
+				Exceptions\InvalidArgument::class,
 			],
 			'two' => [
 				States\State::class,
 				[
 					'id' => 'invalid-string',
 				],
-				Exceptions\InvalidState::class,
+				Exceptions\InvalidArgument::class,
 			],
 		];
 	}

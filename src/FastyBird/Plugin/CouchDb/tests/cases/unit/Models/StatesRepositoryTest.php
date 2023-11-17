@@ -2,11 +2,13 @@
 
 namespace FastyBird\Plugin\CouchDb\Tests\Cases\Unit\Models;
 
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Plugin\CouchDb\Connections;
 use FastyBird\Plugin\CouchDb\Exceptions;
 use FastyBird\Plugin\CouchDb\Models;
 use FastyBird\Plugin\CouchDb\States;
 use InvalidArgumentException;
+use Orisai\ObjectMapper;
 use PHPOnCouch;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid;
@@ -69,13 +71,32 @@ final class StatesRepositoryTest extends TestCase
 	}
 
 	/**
-	 * @phpstan-return Models\States\StatesRepository<States\State>
+	 * @return Models\States\StatesRepository<States\State>
 	 */
 	private function createRepository(
 		Connections\Connection $couchClient,
 	): Models\States\StatesRepository
 	{
-		return new Models\States\StatesRepository($couchClient);
+		$sourceManager = new ObjectMapper\Meta\Source\DefaultMetaSourceManager();
+		$sourceManager->addSource(new ObjectMapper\Meta\Source\AttributesMetaSource());
+		$injectorManager = new ObjectMapper\Processing\DefaultDependencyInjectorManager();
+		$objectCreator = new ObjectMapper\Processing\ObjectCreator($injectorManager);
+		$ruleManager = new ObjectMapper\Rules\DefaultRuleManager();
+		$ruleManager->addRule(new BootstrapObjectMapper\Rules\UuidRule());
+		$ruleManager->addRule(new BootstrapObjectMapper\Rules\ConsistenceEnumRule());
+		$resolverFactory = new ObjectMapper\Meta\MetaResolverFactory($ruleManager, $objectCreator);
+		$cache = new ObjectMapper\Meta\Cache\ArrayMetaCache();
+		$metaLoader = new ObjectMapper\Meta\MetaLoader($cache, $sourceManager, $resolverFactory);
+
+		$processor = new ObjectMapper\Processing\DefaultProcessor(
+			$metaLoader,
+			$ruleManager,
+			$objectCreator,
+		);
+
+		$factory = new States\StateFactory($processor);
+
+		return new Models\States\StatesRepository($couchClient, $factory);
 	}
 
 }

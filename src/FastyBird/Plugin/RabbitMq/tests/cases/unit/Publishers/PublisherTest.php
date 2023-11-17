@@ -3,6 +3,7 @@
 namespace FastyBird\Plugin\RabbitMq\Tests\Cases\Unit\Publishers;
 
 use DateTime;
+use DateTimeInterface;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -14,7 +15,6 @@ use Nette\Utils;
 use PHPUnit\Framework\TestCase;
 use Psr\Log;
 use Ramsey\Uuid;
-use const DATE_ATOM;
 
 final class PublisherTest extends TestCase
 {
@@ -40,7 +40,7 @@ final class PublisherTest extends TestCase
 				[
 					'sender_id' => 'rabbitmq_client_identifier',
 					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
-					'created' => $now->format(DATE_ATOM),
+					'created' => $now->format(DateTimeInterface::ATOM),
 				],
 				'exchange_name',
 				MetadataTypes\RoutingKey::DEVICE_DOCUMENT_UPDATED,

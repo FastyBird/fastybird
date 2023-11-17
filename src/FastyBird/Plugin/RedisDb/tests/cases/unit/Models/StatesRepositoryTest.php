@@ -2,11 +2,13 @@
 
 namespace FastyBird\Plugin\RedisDb\Tests\Cases\Unit\Models;
 
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Plugin\RedisDb\Clients;
 use FastyBird\Plugin\RedisDb\Exceptions;
 use FastyBird\Plugin\RedisDb\Models;
 use FastyBird\Plugin\RedisDb\States;
 use Nette\Utils;
+use Orisai\ObjectMapper;
 use PHPUnit\Framework\MockObject;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid;
@@ -38,9 +40,9 @@ final class StatesRepositoryTest extends TestCase
 	}
 
 	/**
-	 * @phpstan-param array<mixed> $data
+	 * @param array<mixed> $data
 	 *
-	 * @phpstan-return Clients\Client&MockObject\MockObject
+	 * @return Clients\Client&MockObject\MockObject
 	 *
 	 * @throws Utils\JsonException
 	 */
@@ -66,13 +68,32 @@ final class StatesRepositoryTest extends TestCase
 	}
 
 	/**
-	 * @phpstan-return Models\States\StatesRepository<States\State>
+	 * @return Models\States\StatesRepository<States\State>
 	 */
 	private function createRepository(
 		Clients\Client&MockObject\MockObject $redisClient,
 	): Models\States\StatesRepository
 	{
-		return new Models\States\StatesRepository($redisClient);
+		$sourceManager = new ObjectMapper\Meta\Source\DefaultMetaSourceManager();
+		$sourceManager->addSource(new ObjectMapper\Meta\Source\AttributesMetaSource());
+		$injectorManager = new ObjectMapper\Processing\DefaultDependencyInjectorManager();
+		$objectCreator = new ObjectMapper\Processing\ObjectCreator($injectorManager);
+		$ruleManager = new ObjectMapper\Rules\DefaultRuleManager();
+		$ruleManager->addRule(new BootstrapObjectMapper\Rules\UuidRule());
+		$ruleManager->addRule(new BootstrapObjectMapper\Rules\ConsistenceEnumRule());
+		$resolverFactory = new ObjectMapper\Meta\MetaResolverFactory($ruleManager, $objectCreator);
+		$cache = new ObjectMapper\Meta\Cache\ArrayMetaCache();
+		$metaLoader = new ObjectMapper\Meta\MetaLoader($cache, $sourceManager, $resolverFactory);
+
+		$processor = new ObjectMapper\Processing\DefaultProcessor(
+			$metaLoader,
+			$ruleManager,
+			$objectCreator,
+		);
+
+		$factory = new States\StateFactory($processor);
+
+		return new Models\States\StatesRepository($redisClient, $factory);
 	}
 
 }

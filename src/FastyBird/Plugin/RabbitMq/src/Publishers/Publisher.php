@@ -16,6 +16,7 @@
 namespace FastyBird\Plugin\RabbitMq\Publishers;
 
 use Bunny;
+use DateTimeInterface;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
@@ -30,7 +31,6 @@ use React\Promise;
 use Throwable;
 use function is_bool;
 use function strval;
-use const DATE_ATOM;
 
 /**
  * RabbitMQ exchange publisher
@@ -98,7 +98,7 @@ final class Publisher implements ExchangePublisher\Publisher
 			[
 				'sender_id' => $this->identifier->getIdentifier(),
 				'source' => $source->getValue(),
-				'created' => $this->dateTimeFactory->getNow()->format(DATE_ATOM),
+				'created' => $this->dateTimeFactory->getNow()->format(DateTimeInterface::ATOM),
 			],
 			$this->exchangeName,
 			strval($routingKey->getValue()),

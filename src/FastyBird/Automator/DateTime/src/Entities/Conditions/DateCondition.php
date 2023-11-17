@@ -22,7 +22,6 @@ use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
 use Ramsey\Uuid;
 use function array_merge;
 use function assert;
-use const DATE_ATOM;
 
 /**
  * @ORM\Entity
@@ -82,7 +81,7 @@ class DateCondition extends TriggersEntities\Conditions\Condition
 	public function toArray(): array
 	{
 		return array_merge(parent::toArray(), [
-			'date' => $this->getDate()->format(DATE_ATOM),
+			'date' => $this->getDate()->format(DateTimeInterface::ATOM),
 		]);
 	}
 

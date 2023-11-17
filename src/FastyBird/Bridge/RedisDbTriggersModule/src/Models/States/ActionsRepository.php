@@ -41,7 +41,7 @@ class ActionsRepository implements TriggersModels\States\IActionsRepository
 	private RedisDbModels\States\StatesRepository $stateRepository;
 
 	/**
-	 * @phpstan-param RedisDbModels\States\StatesRepositoryFactory<States\Action> $stateRepositoryFactory
+	 * @param RedisDbModels\States\StatesRepositoryFactory<States\Action> $stateRepositoryFactory
 	 *
 	 * @throws RedisDbExceptions\InvalidArgument
 	 */

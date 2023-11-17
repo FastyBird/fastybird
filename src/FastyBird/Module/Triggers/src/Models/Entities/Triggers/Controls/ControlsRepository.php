@@ -85,7 +85,7 @@ final class ControlsRepository
 	}
 
 	/**
-	 * @phpstan-return DoctrineOrmQuery\ResultSet<Entities\Triggers\Controls\Control>
+	 * @return DoctrineOrmQuery\ResultSet<Entities\Triggers\Controls\Control>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */

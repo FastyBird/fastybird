@@ -86,7 +86,7 @@ class FindTriggerControls extends DoctrineOrmQuery\QueryObject
 	}
 
 	/**
-	 * @phpstan-param ORM\EntityRepository<Entities\Triggers\Controls\Control> $repository
+	 * @param ORM\EntityRepository<Entities\Triggers\Controls\Control> $repository
 	 */
 	protected function doCreateQuery(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{
@@ -100,7 +100,7 @@ class FindTriggerControls extends DoctrineOrmQuery\QueryObject
 	}
 
 	/**
-	 * @phpstan-param ORM\EntityRepository<Entities\Triggers\Controls\Control> $repository
+	 * @param ORM\EntityRepository<Entities\Triggers\Controls\Control> $repository
 	 */
 	private function createBasicDql(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{
@@ -116,7 +116,7 @@ class FindTriggerControls extends DoctrineOrmQuery\QueryObject
 	}
 
 	/**
-	 * @phpstan-param ORM\EntityRepository<Entities\Triggers\Controls\Control> $repository
+	 * @param ORM\EntityRepository<Entities\Triggers\Controls\Control> $repository
 	 */
 	protected function doCreateCountQuery(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{

@@ -51,9 +51,9 @@ final class KeyRepository
 	}
 
 	/**
-	 * @phpstan-param class-string<Entities\Key> $type
+	 * @param class-string<Entities\Key> $type
 	 *
-	 * @phpstan-return ORM\EntityRepository<Entities\Key>
+	 * @return ORM\EntityRepository<Entities\Key>
 	 */
 	private function getRepository(string $type = Entities\Key::class): ORM\EntityRepository
 	{

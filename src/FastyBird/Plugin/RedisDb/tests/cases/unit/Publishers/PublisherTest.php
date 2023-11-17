@@ -3,6 +3,7 @@
 namespace FastyBird\Plugin\RedisDb\Tests\Cases\Unit\Publishers;
 
 use DateTime;
+use DateTimeInterface;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -13,7 +14,6 @@ use Nette;
 use Nette\Utils;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid;
-use const DATE_ATOM;
 
 final class PublisherTest extends TestCase
 {
@@ -33,7 +33,7 @@ final class PublisherTest extends TestCase
 				'sender_id' => 'redis_client_identifier',
 				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
 				'routing_key' => MetadataTypes\RoutingKey::DEVICE_DOCUMENT_UPDATED,
-				'created' => $now->format(DATE_ATOM),
+				'created' => $now->format(DateTimeInterface::ATOM),
 				'data' => [
 					'action' => MetadataTypes\PropertyAction::ACTION_SET,
 					'channel' => '06a64596-ca03-478b-ad1e-4f53731e66a5',

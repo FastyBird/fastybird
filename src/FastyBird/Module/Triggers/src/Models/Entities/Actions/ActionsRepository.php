@@ -49,8 +49,8 @@ final class ActionsRepository
 	}
 
 	/**
-	 * @phpstan-param Queries\Entities\FindActions<Entities\Actions\Action> $queryObject
-	 * @phpstan-param class-string<Entities\Actions\Action> $type
+	 * @param Queries\Entities\FindActions<Entities\Actions\Action> $queryObject
+	 * @param class-string<Entities\Actions\Action> $type
 	 *
 	 * @throws Exceptions\InvalidState
 	 */

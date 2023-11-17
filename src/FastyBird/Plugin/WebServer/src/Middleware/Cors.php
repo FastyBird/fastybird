@@ -47,7 +47,7 @@ final class Cors
 	}
 
 	/**
-	 * @phpstan-param Closure(ServerRequestInterface $request): ResponseInterface $next
+	 * @param Closure(ServerRequestInterface $request): ResponseInterface $next
 	 *
 	 * @throws InvalidArgumentException
 	 */

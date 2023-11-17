@@ -34,7 +34,7 @@ class IdentityFactory implements SimpleAuthSecurity\IIdentityFactory
 {
 
 	/**
-	 * @phpstan-param SimpleAuthModels\Tokens\TokenRepository<Entities\Tokens\AccessToken> $tokenRepository
+	 * @param SimpleAuthModels\Tokens\TokenRepository<Entities\Tokens\AccessToken> $tokenRepository
 	 */
 	public function __construct(
 		private readonly SimpleAuthModels\Tokens\TokenRepository $tokenRepository,
@@ -47,7 +47,7 @@ class IdentityFactory implements SimpleAuthSecurity\IIdentityFactory
 	 */
 	public function create(JWT\Token $token): SimpleAuthSecurity\IIdentity|null
 	{
-		/** @phpstan-var SimpleAuthQueries\FindTokens<Entities\Tokens\AccessToken> $findToken */
+		/** @var SimpleAuthQueries\FindTokens<Entities\Tokens\AccessToken> $findToken */
 		$findToken = new SimpleAuthQueries\FindTokens();
 		$findToken->byToken($token->toString());
 

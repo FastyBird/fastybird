@@ -77,7 +77,7 @@ class FindAccounts extends DoctrineOrmQuery\QueryObject
 	}
 
 	/**
-	 * @phpstan-param ORM\EntityRepository<Entities\Accounts\Account> $repository
+	 * @param ORM\EntityRepository<Entities\Accounts\Account> $repository
 	 */
 	protected function doCreateQuery(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{
@@ -85,7 +85,7 @@ class FindAccounts extends DoctrineOrmQuery\QueryObject
 	}
 
 	/**
-	 * @phpstan-param ORM\EntityRepository<Entities\Accounts\Account> $repository
+	 * @param ORM\EntityRepository<Entities\Accounts\Account> $repository
 	 */
 	private function createBasicDql(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{
@@ -103,7 +103,7 @@ class FindAccounts extends DoctrineOrmQuery\QueryObject
 	}
 
 	/**
-	 * @phpstan-param ORM\EntityRepository<Entities\Accounts\Account> $repository
+	 * @param ORM\EntityRepository<Entities\Accounts\Account> $repository
 	 */
 	protected function doCreateCountQuery(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{

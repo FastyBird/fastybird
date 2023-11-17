@@ -15,6 +15,7 @@
 
 namespace FastyBird\Plugin\RedisDb\Publishers;
 
+use DateTimeInterface;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
@@ -24,7 +25,6 @@ use FastyBird\Plugin\RedisDb\Clients;
 use FastyBird\Plugin\RedisDb\Utilities;
 use Nette;
 use Psr\Log;
-use const DATE_ATOM;
 
 /**
  * Redis DB exchange publisher
@@ -62,7 +62,7 @@ final class Publisher implements ExchangePublisher\Publisher
 					'sender_id' => $this->identifier->getIdentifier(),
 					'source' => $source->getValue(),
 					'routing_key' => $routingKey->getValue(),
-					'created' => $this->dateTimeFactory->getNow()->format(DATE_ATOM),
+					'created' => $this->dateTimeFactory->getNow()->format(DateTimeInterface::ATOM),
 					'data' => $entity?->toArray(),
 				]),
 			);

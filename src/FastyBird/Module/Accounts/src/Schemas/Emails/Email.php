@@ -26,7 +26,8 @@ use Neomerx\JsonApi;
 /**
  * Email entity schema
  *
- * @extends JsonApis\JsonApi<Entities\Emails\Email>
+ * @template T of Entities\Emails\Email
+ * @extends JsonApis\JsonApi<T>
  *
  * @package        FastyBird:AccountsModule!
  * @subpackage     Schemas
@@ -60,9 +61,9 @@ final class Email extends JsonApis\JsonApi
 	}
 
 	/**
-	 * @phpstan-param Entities\Emails\Email $resource
+	 * @param T $resource
 	 *
-	 * @phpstan-return iterable<string, string|bool>
+	 * @return iterable<string, string|bool>
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -80,7 +81,7 @@ final class Email extends JsonApis\JsonApi
 	}
 
 	/**
-	 * @phpstan-param Entities\Emails\Email $resource
+	 * @param T $resource
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -100,9 +101,9 @@ final class Email extends JsonApis\JsonApi
 	}
 
 	/**
-	 * @phpstan-param Entities\Emails\Email $resource
+	 * @param T $resource
 	 *
-	 * @phpstan-return iterable<string, array<int, (Entities\Accounts\Account|bool)>>
+	 * @return iterable<string, array<int, (Entities\Accounts\Account|bool)>>
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -121,7 +122,7 @@ final class Email extends JsonApis\JsonApi
 	}
 
 	/**
-	 * @phpstan-param Entities\Emails\Email $resource
+	 * @param T $resource
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -147,7 +148,7 @@ final class Email extends JsonApis\JsonApi
 	}
 
 	/**
-	 * @phpstan-param Entities\Emails\Email $resource
+	 * @param T $resource
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */

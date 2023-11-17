@@ -29,7 +29,6 @@ use function in_array;
 use function intval;
 use function is_array;
 use function method_exists;
-use const DATE_ATOM;
 
 /**
  * @ORM\Entity
@@ -137,7 +136,7 @@ class TimeCondition extends TriggersEntities\Conditions\Condition
 	public function toArray(): array
 	{
 		return array_merge(parent::toArray(), [
-			'time' => $this->getTime()->format(DATE_ATOM),
+			'time' => $this->getTime()->format(DateTimeInterface::ATOM),
 			'days' => (array) $this->getDays(),
 		]);
 	}

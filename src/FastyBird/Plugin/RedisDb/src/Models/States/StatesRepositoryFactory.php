@@ -39,15 +39,16 @@ class StatesRepositoryFactory
 
 	public function __construct(
 		private readonly Clients\Client $client,
+		private readonly States\StateFactory $stateFactory,
 		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
 	}
 
 	/**
-	 * @phpstan-param class-string<T> $entity
+	 * @param class-string<T> $entity
 	 *
-	 * @phpstan-return StatesRepository<T>
+	 * @return StatesRepository<T>
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 */
@@ -57,7 +58,7 @@ class StatesRepositoryFactory
 			throw new Exceptions\InvalidArgument(sprintf('Provided entity class %s does not exists', $entity));
 		}
 
-		return new StatesRepository($this->client, $entity, $this->logger);
+		return new StatesRepository($this->client, $this->stateFactory, $entity, $this->logger);
 	}
 
 }

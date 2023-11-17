@@ -158,7 +158,7 @@ final class Device implements Consumers\Consumer
 	}
 
 	/**
-	 * @phpstan-param Utils\ArrayHash<string> $properties
+	 * @param Utils\ArrayHash<string> $properties
 	 *
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
@@ -242,7 +242,7 @@ final class Device implements Consumers\Consumer
 	}
 
 	/**
-	 * @phpstan-param Utils\ArrayHash<string> $extensions
+	 * @param Utils\ArrayHash<string> $extensions
 	 *
 	 * @throws DevicesExceptions\InvalidState
 	 */
@@ -296,7 +296,7 @@ final class Device implements Consumers\Consumer
 	}
 
 	/**
-	 * @phpstan-param Utils\ArrayHash<string> $controls
+	 * @param Utils\ArrayHash<string> $controls
 	 *
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
@@ -333,7 +333,7 @@ final class Device implements Consumers\Consumer
 	}
 
 	/**
-	 * @phpstan-param Utils\ArrayHash<string> $channels
+	 * @param Utils\ArrayHash<string> $channels
 	 *
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException

@@ -23,7 +23,8 @@ use function array_merge;
 /**
  * Trigger email notification entity schema
  *
- * @extends Notification<Entities\Notifications\EmailNotification>
+ * @template T of Entities\Notifications\EmailNotification
+ * @extends  Notification<T>
  *
  * @package        FastyBird:TriggersModule!
  * @subpackage     Schemas

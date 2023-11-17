@@ -62,7 +62,7 @@ final class StaticFiles
 	}
 
 	/**
-	 * @phpstan-param Closure(ServerRequestInterface $request): ResponseInterface $next
+	 * @param Closure(ServerRequestInterface $request): ResponseInterface $next
 	 *
 	 * @throws InvalidArgumentException
 	 * @throws Exceptions\FileNotFound

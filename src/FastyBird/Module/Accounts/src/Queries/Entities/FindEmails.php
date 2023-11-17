@@ -68,7 +68,7 @@ class FindEmails extends DoctrineOrmQuery\QueryObject
 	}
 
 	/**
-	 * @phpstan-param ORM\EntityRepository<Entities\Emails\Email> $repository
+	 * @param ORM\EntityRepository<Entities\Emails\Email> $repository
 	 */
 	protected function doCreateQuery(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{
@@ -76,7 +76,7 @@ class FindEmails extends DoctrineOrmQuery\QueryObject
 	}
 
 	/**
-	 * @phpstan-param ORM\EntityRepository<Entities\Emails\Email> $repository
+	 * @param ORM\EntityRepository<Entities\Emails\Email> $repository
 	 */
 	private function createBasicDql(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{
@@ -94,7 +94,7 @@ class FindEmails extends DoctrineOrmQuery\QueryObject
 	}
 
 	/**
-	 * @phpstan-param ORM\EntityRepository<Entities\Emails\Email> $repository
+	 * @param ORM\EntityRepository<Entities\Emails\Email> $repository
 	 */
 	protected function doCreateCountQuery(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{

@@ -27,6 +27,8 @@ use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\States;
 use Nette;
 use Nette\Utils;
+use Orisai\ObjectMapper;
+use function array_merge;
 use function is_array;
 
 /**
@@ -50,6 +52,7 @@ final class DevicePropertiesStates
 		private readonly Models\States\DevicePropertiesRepository $devicePropertyStateRepository,
 		private readonly Models\States\DevicePropertiesManager $devicePropertiesStatesManager,
 		private readonly Devices\Logger $logger,
+		private readonly ObjectMapper\Processing\Processor $stateMapper,
 	)
 	{
 	}
@@ -170,27 +173,28 @@ final class DevicePropertiesStates
 			if ($state !== null) {
 				try {
 					if ($state->getActualValue() !== null) {
-						if ($forReading) {
-							$state->setActualValue(
-								ValueHelper::normalizeReadValue(
+						$state = $forReading ? $this->updateState(
+							$state,
+							[
+								States\Property::ACTUAL_VALUE_KEY => ValueHelper::normalizeReadValue(
 									$property->getDataType(),
 									$state->getActualValue(),
 									$property->getFormat(),
 									$property->getScale(),
 									$property->getInvalid(),
 								),
-							);
-
-						} else {
-							$state->setActualValue(
-								ValueHelper::normalizeValue(
+							],
+						) : $this->updateState(
+							$state,
+							[
+								States\Property::ACTUAL_VALUE_KEY => ValueHelper::normalizeValue(
 									$property->getDataType(),
 									$state->getActualValue(),
 									$property->getFormat(),
 									$property->getInvalid(),
 								),
-							);
-						}
+							],
+						);
 					}
 				} catch (Exceptions\InvalidArgument $ex) {
 					$this->devicePropertiesStatesManager->update($property, $state, Utils\ArrayHash::from([
@@ -212,27 +216,28 @@ final class DevicePropertiesStates
 
 				try {
 					if ($state->getExpectedValue() !== null) {
-						if ($forReading) {
-							$state->setExpectedValue(
-								ValueHelper::normalizeReadValue(
+						$state = $forReading ? $this->updateState(
+							$state,
+							[
+								States\Property::EXPECTED_VALUE_KEY => ValueHelper::normalizeReadValue(
 									$property->getDataType(),
 									$state->getExpectedValue(),
 									$property->getFormat(),
 									$property->getScale(),
 									$property->getInvalid(),
 								),
-							);
-
-						} else {
-							$state->setExpectedValue(
-								ValueHelper::normalizeValue(
+							],
+						) : $this->updateState(
+							$state,
+							[
+								States\Property::EXPECTED_VALUE_KEY => ValueHelper::normalizeValue(
 									$property->getDataType(),
 									$state->getExpectedValue(),
 									$property->getFormat(),
 									$property->getInvalid(),
 								),
-							);
-						}
+							],
+						);
 					}
 				} catch (Exceptions\InvalidArgument $ex) {
 					$this->devicePropertiesStatesManager->update($property, $state, Utils\ArrayHash::from([
@@ -465,6 +470,37 @@ final class DevicePropertiesStates
 					'type' => 'device-properties-states',
 				],
 			);
+		}
+	}
+
+	/**
+	 * @param array<string, mixed> $update
+	 *
+	 * @throws Exceptions\InvalidArgument
+	 */
+	private function updateState(
+		States\DeviceProperty $state,
+		array $update,
+	): States\DeviceProperty
+	{
+		try {
+			$options = new ObjectMapper\Processing\Options();
+			$options->setAllowUnknownFields();
+
+			return $this->stateMapper->process(
+				array_merge(
+					$state->toArray(),
+					$update,
+				),
+				$state::class,
+				$options,
+			);
+		} catch (ObjectMapper\Exception\InvalidData $ex) {
+			$errorPrinter = new ObjectMapper\Printers\ErrorVisualPrinter(
+				new ObjectMapper\Printers\TypeToStringConverter(),
+			);
+
+			throw new Exceptions\InvalidArgument('Could not map data to state: ' . $errorPrinter->printError($ex));
 		}
 	}
 

@@ -4,7 +4,9 @@ namespace FastyBird\Plugin\CouchDb\Tests\Cases\Unit\Models;
 
 use Consistence;
 use DateTimeImmutable;
+use DateTimeInterface;
 use FastyBird\DateTimeFactory;
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Plugin\CouchDb\Connections;
 use FastyBird\Plugin\CouchDb\Exceptions;
 use FastyBird\Plugin\CouchDb\Models;
@@ -12,20 +14,20 @@ use FastyBird\Plugin\CouchDb\States;
 use FastyBird\Plugin\CouchDb\Tests\Fixtures;
 use InvalidArgumentException;
 use Nette\Utils;
+use Orisai\ObjectMapper;
 use PHPOnCouch;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid;
 use stdClass;
 use function array_keys;
-use const DATE_ATOM;
 
 final class StatesManagerTest extends TestCase
 {
 
 	/**
-	 * @phpstan-param array<Uuid\UuidInterface|array<string, mixed>> $data
-	 * @phpstan-param array<Uuid\UuidInterface|array<string, mixed>> $dbData
-	 * @phpstan-param array<Uuid\UuidInterface|array<string, mixed>> $expected
+	 * @param array<Uuid\UuidInterface|array<string, mixed>> $data
+	 * @param array<Uuid\UuidInterface|array<string, mixed>> $dbData
+	 * @param array<Uuid\UuidInterface|array<string, mixed>> $expected
 	 *
 	 * @throws Exceptions\InvalidState
 	 *
@@ -74,9 +76,7 @@ final class StatesManagerTest extends TestCase
 			->method('getClient')
 			->willReturn($couchClient);
 
-		$dateTimeFactory = $this->createMock(DateTimeFactory\Factory::class);
-
-		$manager = new Models\States\StatesManager($couchDbConnection, $dateTimeFactory, Fixtures\CustomState::class);
+		$manager = $this->createManager($couchDbConnection);
 
 		$state = $manager->create($id, Utils\ArrayHash::from($data));
 
@@ -87,10 +87,10 @@ final class StatesManagerTest extends TestCase
 	}
 
 	/**
-	 * @phpstan-param array<Uuid\UuidInterface|array<string, mixed>> $originalData
-	 * @phpstan-param array<Uuid\UuidInterface|array<string, mixed>> $data
-	 * @phpstan-param array<Uuid\UuidInterface|array<string, mixed>> $dbData
-	 * @phpstan-param array<Uuid\UuidInterface|array<string, mixed>> $expected
+	 * @param array<Uuid\UuidInterface|array<string, mixed>> $originalData
+	 * @param array<Uuid\UuidInterface|array<string, mixed>> $data
+	 * @param array<Uuid\UuidInterface|array<string, mixed>> $dbData
+	 * @param array<Uuid\UuidInterface|array<string, mixed>> $expected
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
@@ -147,11 +147,28 @@ final class StatesManagerTest extends TestCase
 			->method('getClient')
 			->willReturn($couchClient);
 
-		$dateTimeFactory = $this->createMock(DateTimeFactory\Factory::class);
+		$manager = $this->createManager($couchDbConnection);
 
-		$manager = new Models\States\StatesManager($couchDbConnection, $dateTimeFactory, Fixtures\CustomState::class);
+		$sourceManager = new ObjectMapper\Meta\Source\DefaultMetaSourceManager();
+		$sourceManager->addSource(new ObjectMapper\Meta\Source\AttributesMetaSource());
+		$injectorManager = new ObjectMapper\Processing\DefaultDependencyInjectorManager();
+		$objectCreator = new ObjectMapper\Processing\ObjectCreator($injectorManager);
+		$ruleManager = new ObjectMapper\Rules\DefaultRuleManager();
+		$ruleManager->addRule(new BootstrapObjectMapper\Rules\UuidRule());
+		$ruleManager->addRule(new BootstrapObjectMapper\Rules\ConsistenceEnumRule());
+		$resolverFactory = new ObjectMapper\Meta\MetaResolverFactory($ruleManager, $objectCreator);
+		$cache = new ObjectMapper\Meta\Cache\ArrayMetaCache();
+		$metaLoader = new ObjectMapper\Meta\MetaLoader($cache, $sourceManager, $resolverFactory);
 
-		$original = States\StateFactory::create(Fixtures\CustomState::class, $document);
+		$processor = new ObjectMapper\Processing\DefaultProcessor(
+			$metaLoader,
+			$ruleManager,
+			$objectCreator,
+		);
+
+		$factory = new States\StateFactory($processor);
+
+		$original = $factory->create(Fixtures\CustomState::class, $document);
 
 		$state = $manager->update($original, Utils\ArrayHash::from($data));
 
@@ -206,13 +223,61 @@ final class StatesManagerTest extends TestCase
 			->method('getClient')
 			->willReturn($couchClient);
 
-		$dateTimeFactory = $this->createMock(DateTimeFactory\Factory::class);
+		$manager = $this->createManager($couchDbConnection);
 
-		$manager = new Models\States\StatesManager($couchDbConnection, $dateTimeFactory, Fixtures\CustomState::class);
+		$sourceManager = new ObjectMapper\Meta\Source\DefaultMetaSourceManager();
+		$sourceManager->addSource(new ObjectMapper\Meta\Source\AttributesMetaSource());
+		$injectorManager = new ObjectMapper\Processing\DefaultDependencyInjectorManager();
+		$objectCreator = new ObjectMapper\Processing\ObjectCreator($injectorManager);
+		$ruleManager = new ObjectMapper\Rules\DefaultRuleManager();
+		$ruleManager->addRule(new BootstrapObjectMapper\Rules\UuidRule());
+		$ruleManager->addRule(new BootstrapObjectMapper\Rules\ConsistenceEnumRule());
+		$resolverFactory = new ObjectMapper\Meta\MetaResolverFactory($ruleManager, $objectCreator);
+		$cache = new ObjectMapper\Meta\Cache\ArrayMetaCache();
+		$metaLoader = new ObjectMapper\Meta\MetaLoader($cache, $sourceManager, $resolverFactory);
 
-		$original = States\StateFactory::create(Fixtures\CustomState::class, $document);
+		$processor = new ObjectMapper\Processing\DefaultProcessor(
+			$metaLoader,
+			$ruleManager,
+			$objectCreator,
+		);
+
+		$factory = new States\StateFactory($processor);
+
+		$original = $factory->create(Fixtures\CustomState::class, $document);
 
 		self::assertTrue($manager->delete($original));
+	}
+
+	/**
+	 * @return Models\States\StatesManager<Fixtures\CustomState>
+	 */
+	private function createManager(
+		Connections\Connection $couchClient,
+	): Models\States\StatesManager
+	{
+		$sourceManager = new ObjectMapper\Meta\Source\DefaultMetaSourceManager();
+		$sourceManager->addSource(new ObjectMapper\Meta\Source\AttributesMetaSource());
+		$injectorManager = new ObjectMapper\Processing\DefaultDependencyInjectorManager();
+		$objectCreator = new ObjectMapper\Processing\ObjectCreator($injectorManager);
+		$ruleManager = new ObjectMapper\Rules\DefaultRuleManager();
+		$ruleManager->addRule(new BootstrapObjectMapper\Rules\UuidRule());
+		$ruleManager->addRule(new BootstrapObjectMapper\Rules\ConsistenceEnumRule());
+		$resolverFactory = new ObjectMapper\Meta\MetaResolverFactory($ruleManager, $objectCreator);
+		$cache = new ObjectMapper\Meta\Cache\ArrayMetaCache();
+		$metaLoader = new ObjectMapper\Meta\MetaLoader($cache, $sourceManager, $resolverFactory);
+
+		$processor = new ObjectMapper\Processing\DefaultProcessor(
+			$metaLoader,
+			$ruleManager,
+			$objectCreator,
+		);
+
+		$factory = new States\StateFactory($processor);
+
+		$dateTimeFactory = $this->createMock(DateTimeFactory\Factory::class);
+
+		return new Models\States\StatesManager($couchClient, $factory, $dateTimeFactory, Fixtures\CustomState::class);
 	}
 
 	/**
@@ -280,25 +345,25 @@ final class StatesManagerTest extends TestCase
 					'id' => $id->toString(),
 					'value' => 'value',
 					'camelCased' => null,
-					'created' => $now->format(DATE_ATOM),
+					'created' => $now->format(DateTimeInterface::ATOM),
 					'updated' => null,
 				],
 				[
-					'updated' => $now->format(DATE_ATOM),
+					'updated' => $now->format(DateTimeInterface::ATOM),
 				],
 				[
 					'id' => $id->toString(),
 					'value' => 'value',
 					'camelCased' => null,
-					'created' => $now->format(DATE_ATOM),
-					'updated' => $now->format(DATE_ATOM),
+					'created' => $now->format(DateTimeInterface::ATOM),
+					'updated' => $now->format(DateTimeInterface::ATOM),
 				],
 				[
 					'id' => $id->toString(),
 					'value' => 'value',
 					'camelCased' => null,
-					'created' => $now->format(DATE_ATOM),
-					'updated' => $now->format(DATE_ATOM),
+					'created' => $now->format(DateTimeInterface::ATOM),
+					'updated' => $now->format(DateTimeInterface::ATOM),
 				],
 			],
 			'two' => [
@@ -307,11 +372,11 @@ final class StatesManagerTest extends TestCase
 					'id' => $id->toString(),
 					'value' => 'value',
 					'camelCased' => null,
-					'created' => $now->format(DATE_ATOM),
+					'created' => $now->format(DateTimeInterface::ATOM),
 					'updated' => null,
 				],
 				[
-					'updated' => $now->format(DATE_ATOM),
+					'updated' => $now->format(DateTimeInterface::ATOM),
 					'value' => 'updated',
 					'camelCased' => 'camelCasedValue',
 				],
@@ -319,15 +384,15 @@ final class StatesManagerTest extends TestCase
 					'id' => $id->toString(),
 					'value' => 'updated',
 					'camelCased' => 'camelCasedValue',
-					'created' => $now->format(DATE_ATOM),
-					'updated' => $now->format(DATE_ATOM),
+					'created' => $now->format(DateTimeInterface::ATOM),
+					'updated' => $now->format(DateTimeInterface::ATOM),
 				],
 				[
 					'id' => $id->toString(),
 					'value' => 'updated',
 					'camelCased' => 'camelCasedValue',
-					'created' => $now->format(DATE_ATOM),
-					'updated' => $now->format(DATE_ATOM),
+					'created' => $now->format(DateTimeInterface::ATOM),
+					'updated' => $now->format(DateTimeInterface::ATOM),
 				],
 			],
 		];

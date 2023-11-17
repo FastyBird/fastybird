@@ -15,8 +15,8 @@
 
 namespace FastyBird\Plugin\CouchDb\States;
 
-use FastyBird\Plugin\CouchDb\Exceptions;
-use Nette;
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use Orisai\ObjectMapper;
 use PHPOnCouch;
 use Ramsey\Uuid;
 
@@ -28,27 +28,20 @@ use Ramsey\Uuid;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class State
+class State implements ObjectMapper\MappedObject
 {
-
-	use Nette\SmartObject;
 
 	public const CREATED_AT_FIELD = 'createdAt';
 
 	public const UPDATED_AT_FIELD = 'updatedAt';
 
-	private Uuid\UuidInterface $id;
-
-	/**
-	 * @throws Exceptions\InvalidState
-	 */
-	public function __construct(string $id, private readonly PHPOnCouch\CouchDocument $document)
+	public function __construct(
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $id,
+		#[ObjectMapper\Rules\ObjectValue()]
+		private readonly PHPOnCouch\CouchDocument $document,
+	)
 	{
-		if (!Uuid\Uuid::isValid($id)) {
-			throw new Exceptions\InvalidState('Provided state id is not valid');
-		}
-
-		$this->id = Uuid\Uuid::fromString($id);
 	}
 
 	/**

@@ -41,7 +41,7 @@ class ConnectorPropertiesRepository implements DevicesModels\States\IConnectorPr
 	private RedisDbModels\States\StatesRepository $stateRepository;
 
 	/**
-	 * @phpstan-param RedisDbModels\States\StatesRepositoryFactory<States\ConnectorProperty> $stateRepositoryFactory
+	 * @param RedisDbModels\States\StatesRepositoryFactory<States\ConnectorProperty> $stateRepositoryFactory
 	 *
 	 * @throws RedisDbExceptions\InvalidArgument
 	 */
