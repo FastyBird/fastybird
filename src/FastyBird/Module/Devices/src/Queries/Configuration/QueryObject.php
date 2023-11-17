@@ -37,4 +37,6 @@ abstract class QueryObject
 
 	abstract protected function doCreateQuery(JSONPath\JSONPath $repository): JSONPath\JSONPath;
 
+	abstract public function toString(): string;
+
 }

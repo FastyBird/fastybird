@@ -164,9 +164,9 @@ class Property extends RedisDbStates\State implements DevicesStates\Property
 		return array_merge([
 			'actual_value' => DevicesUtilities\ValueHelper::flattenValue($this->getActualValue()),
 			'expected_value' => DevicesUtilities\ValueHelper::flattenValue($this->getExpectedValue()),
-			'pending' => $this->getPending() instanceof DateTimeInterface ? $this->getPending()->format(
-				DateTimeInterface::ATOM,
-			) : $this->getPending(),
+			'pending' => $this->getPending() instanceof DateTimeInterface
+				? $this->getPending()->format(DateTimeInterface::ATOM)
+				: $this->getPending(),
 			'valid' => $this->isValid(),
 			'created_at' => $this->getCreatedAt()?->format(DateTimeInterface::ATOM),
 			'updated_at' => $this->getUpdatedAt()?->format(DateTimeInterface::ATOM),

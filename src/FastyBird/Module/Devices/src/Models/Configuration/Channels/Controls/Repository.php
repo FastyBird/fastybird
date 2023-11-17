@@ -29,11 +29,13 @@ use function is_array;
 /**
  * Channels controls configuration repository
  *
+ * @extends  Models\Configuration\Repository<MetadataDocuments\DevicesModule\ChannelControl>
+ *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Models
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Repository
+final class Repository extends Models\Configuration\Repository
 {
 
 	public function __construct(
@@ -55,6 +57,12 @@ final class Repository
 		Queries\Configuration\FindChannelControls $queryObject,
 	): MetadataDocuments\DevicesModule\ChannelControl|null
 	{
+		$document = $this->loadCacheOne($queryObject->toString());
+
+		if ($document !== false) {
+			return $document;
+		}
+
 		try {
 			$space = $this->builder
 				->load()
@@ -69,7 +77,11 @@ final class Repository
 			return null;
 		}
 
-		return $this->entityFactory->create(MetadataDocuments\DevicesModule\ChannelControl::class, $result[0]);
+		$document = $this->entityFactory->create(MetadataDocuments\DevicesModule\ChannelControl::class, $result[0]);
+
+		$this->writeCacheOne($queryObject->toString(), $document);
+
+		return $document;
 	}
 
 	/**
@@ -85,6 +97,12 @@ final class Repository
 		Queries\Configuration\FindChannelControls $queryObject,
 	): array
 	{
+		$documents = $this->loadCacheAll($queryObject->toString());
+
+		if ($documents !== false) {
+			return $documents;
+		}
+
 		try {
 			$space = $this->builder
 				->load()
@@ -99,13 +117,17 @@ final class Repository
 			return [];
 		}
 
-		return array_map(
+		$documents = array_map(
 			fn (stdClass $item): MetadataDocuments\DevicesModule\ChannelControl => $this->entityFactory->create(
 				MetadataDocuments\DevicesModule\ChannelControl::class,
 				$item,
 			),
 			$result,
 		);
+
+		$this->writeCacheAll($queryObject->toString(), $documents);
+
+		return $documents;
 	}
 
 }

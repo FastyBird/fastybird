@@ -19,6 +19,7 @@ use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Module\Devices\Exceptions;
 use Flow\JSONPath;
 use Ramsey\Uuid;
+use function serialize;
 
 /**
  * Find devices configuration query
@@ -103,6 +104,11 @@ class FindDevices extends QueryObject
 		}
 
 		return $filtered;
+	}
+
+	public function toString(): string
+	{
+		return serialize($this->filter);
 	}
 
 }

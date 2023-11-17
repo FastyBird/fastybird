@@ -18,6 +18,7 @@ namespace FastyBird\Module\Devices\Queries\Configuration;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use Flow\JSONPath;
 use Ramsey\Uuid;
+use function serialize;
 
 /**
  * Find connectors configuration query
@@ -57,6 +58,11 @@ class FindConnectors extends QueryObject
 		}
 
 		return $filtered;
+	}
+
+	public function toString(): string
+	{
+		return serialize($this->filter);
 	}
 
 }

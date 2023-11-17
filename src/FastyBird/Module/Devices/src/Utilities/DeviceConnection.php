@@ -42,6 +42,9 @@ final class DeviceConnection
 
 	use Nette\SmartObject;
 
+	/**
+	 * @param Models\Configuration\Devices\Properties\Repository<MetadataDocuments\DevicesModule\DeviceDynamicProperty> $devicesPropertiesConfigurationRepository
+	 */
 	public function __construct(
 		private readonly Models\Entities\Devices\DevicesRepository $devicesEntitiesRepository,
 		private readonly Models\Entities\Devices\Properties\PropertiesManager $devicesPropertiesEntitiesManager,

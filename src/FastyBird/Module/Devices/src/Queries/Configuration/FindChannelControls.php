@@ -18,6 +18,7 @@ namespace FastyBird\Module\Devices\Queries\Configuration;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use Flow\JSONPath;
 use Ramsey\Uuid;
+use function serialize;
 
 /**
  * Find channels controls configuration query
@@ -72,6 +73,11 @@ class FindChannelControls extends QueryObject
 		}
 
 		return $filtered;
+	}
+
+	public function toString(): string
+	{
+		return serialize($this->filter);
 	}
 
 }

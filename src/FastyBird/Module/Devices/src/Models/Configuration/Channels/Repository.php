@@ -29,12 +29,15 @@ use function is_array;
 /**
  * Channels configuration repository
  *
+ * @template T of MetadataDocuments\DevicesModule\Channel
+ * @extends  Models\Configuration\Repository<T>
+ *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Models
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Repository
+final class Repository extends Models\Configuration\Repository
 {
 
 	public function __construct(
@@ -45,8 +48,6 @@ final class Repository
 	}
 
 	/**
-	 * @template T of MetadataDocuments\DevicesModule\Channel
-	 *
 	 * @param Queries\Configuration\FindChannels<T> $queryObject
 	 * @param class-string<T> $type
 	 *
@@ -60,6 +61,12 @@ final class Repository
 		string $type = MetadataDocuments\DevicesModule\Channel::class,
 	): MetadataDocuments\DevicesModule\Channel|null
 	{
+		$document = $this->loadCacheOne($queryObject->toString());
+
+		if ($document !== false) {
+			return $document;
+		}
+
 		try {
 			$space = $this->builder
 				->load()
@@ -74,12 +81,14 @@ final class Repository
 			return null;
 		}
 
-		return $this->entityFactory->create($type, $result[0]);
+		$document = $this->entityFactory->create($type, $result[0]);
+
+		$this->writeCacheOne($queryObject->toString(), $document);
+
+		return $document;
 	}
 
 	/**
-	 * @template T of MetadataDocuments\DevicesModule\Channel
-	 *
 	 * @param Queries\Configuration\FindChannels<T> $queryObject
 	 * @param class-string<T> $type
 	 *
@@ -94,6 +103,12 @@ final class Repository
 		string $type = MetadataDocuments\DevicesModule\Channel::class,
 	): array
 	{
+		$documents = $this->loadCacheAll($queryObject->toString());
+
+		if ($documents !== false) {
+			return $documents;
+		}
+
 		try {
 			$space = $this->builder
 				->load()
@@ -108,10 +123,14 @@ final class Repository
 			return [];
 		}
 
-		return array_map(
+		$documents = array_map(
 			fn (stdClass $item): MetadataDocuments\DevicesModule\Channel => $this->entityFactory->create($type, $item),
 			$result,
 		);
+
+		$this->writeCacheAll($queryObject->toString(), $documents);
+
+		return $documents;
 	}
 
 }

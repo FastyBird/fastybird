@@ -19,6 +19,7 @@ use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions;
 use Ramsey\Uuid;
+use function serialize;
 
 /**
  * Find device variable properties entities query
@@ -56,6 +57,11 @@ class FindDeviceVariableProperties extends FindDeviceProperties
 	public function byParentId(Uuid\UuidInterface $parentId): void
 	{
 		throw new Exceptions\InvalidState('Searching by parent is not allowed for this type of property');
+	}
+
+	public function toString(): string
+	{
+		return serialize($this->filter);
 	}
 
 }

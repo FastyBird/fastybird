@@ -116,6 +116,7 @@ final class Message extends Evenement\EventEmitter
 				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
 				'type' => 'messages-handler',
 				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'data' => $data,
 			]);
 
 			return;

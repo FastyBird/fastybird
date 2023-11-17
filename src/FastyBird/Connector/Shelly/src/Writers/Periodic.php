@@ -19,12 +19,11 @@ use DateTimeInterface;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Helpers;
-use FastyBird\Connector\Shelly\Queries;
 use FastyBird\Connector\Shelly\Queue;
 use FastyBird\DateTimeFactory;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -63,13 +62,18 @@ class Periodic implements Writer
 
 	private EventLoop\TimerInterface|null $handlerTimer = null;
 
+	/**
+	 * @param DevicesModels\Configuration\Devices\Repository<MetadataDocuments\DevicesModule\Device> $devicesRepository
+	 * @param DevicesModels\Configuration\Channels\Repository<MetadataDocuments\DevicesModule\Channel> $channelsRepository
+	 * @param DevicesModels\Configuration\Channels\Properties\Repository<MetadataDocuments\DevicesModule\ChannelDynamicProperty> $channelsPropertiesRepository
+	 */
 	public function __construct(
 		private readonly Entities\ShellyConnector $connector,
 		private readonly Helpers\Entity $entityHelper,
 		private readonly Queue\Queue $queue,
-		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
-		private readonly DevicesModels\Entities\Channels\ChannelsRepository $channelsRepository,
-		private readonly DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
+		private readonly DevicesModels\Configuration\Devices\Repository $devicesRepository,
+		private readonly DevicesModels\Configuration\Channels\Repository $channelsRepository,
+		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
@@ -109,15 +113,10 @@ class Periodic implements Writer
 	 */
 	private function handleCommunication(): void
 	{
-		$findDevicesQuery = new Queries\Entities\FindDevices();
-		$findDevicesQuery->forConnector($this->connector);
+		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDevicesQuery->byConnectorId($this->connector->getId());
 
-		$devices = $this->devicesRepository->findAllBy(
-			$findDevicesQuery,
-			Entities\ShellyDevice::class,
-		);
-
-		foreach ($devices as $device) {
+		foreach ($this->devicesRepository->findAllBy($findDevicesQuery) as $device) {
 			if (!in_array($device->getId()->toString(), $this->processedDevices, true)) {
 				$this->processedDevices[] = $device->getId()->toString();
 
@@ -147,22 +146,22 @@ class Periodic implements Writer
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
 	 */
-	private function writeChannelsProperty(Entities\ShellyDevice $device): bool
+	private function writeChannelsProperty(MetadataDocuments\DevicesModule\Device $device): bool
 	{
 		$now = $this->dateTimeFactory->getNow();
 
-		$findChannelsQuery = new DevicesQueries\Entities\FindChannels();
+		$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
 		$findChannelsQuery->forDevice($device);
 
 		$channels = $this->channelsRepository->findAllBy($findChannelsQuery);
 
 		foreach ($channels as $channel) {
-			$findChannelPropertiesQuery = new DevicesQueries\Entities\FindChannelDynamicProperties();
+			$findChannelPropertiesQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
 			$findChannelPropertiesQuery->forChannel($channel);
 
 			$properties = $this->channelsPropertiesRepository->findAllBy(
 				$findChannelPropertiesQuery,
-				DevicesEntities\Channels\Properties\Dynamic::class,
+				MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
 			);
 
 			foreach ($properties as $property) {
