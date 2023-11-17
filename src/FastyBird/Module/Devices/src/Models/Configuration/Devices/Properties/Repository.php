@@ -30,6 +30,7 @@ use function array_map;
 use function implode;
 use function is_array;
 use function is_string;
+use function serialize;
 
 /**
  * Devices properties configuration repository

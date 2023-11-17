@@ -25,6 +25,7 @@ use Flow\JSONPath;
 use stdClass;
 use function array_map;
 use function is_array;
+use function serialize;
 
 /**
  * Connectors configuration repository
