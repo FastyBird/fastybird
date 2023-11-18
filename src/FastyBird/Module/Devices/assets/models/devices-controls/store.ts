@@ -6,7 +6,7 @@ import { v4 as uuid } from 'uuid';
 import get from 'lodash/get';
 import isEqual from 'lodash/isEqual';
 
-import exchangeDocumentSchema from '../../../../../Library/Metadata/resources/schemas/modules/devices-module/document.device.control.json';
+import exchangeDocumentSchema from '@fastybird/metadata-library/resources/schemas/modules/devices-module/document.device.control.json';
 import { DeviceControlDocument, DevicesModuleRoutes as RoutingKeys, ModulePrefix } from '@fastybird/metadata-library';
 
 import { ApiError } from '@/errors';
