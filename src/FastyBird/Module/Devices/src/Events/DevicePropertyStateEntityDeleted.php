@@ -16,7 +16,6 @@
 namespace FastyBird\Module\Devices\Events;
 
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Module\Devices\Entities;
 use Symfony\Contracts\EventDispatcher;
 
 /**
@@ -31,13 +30,12 @@ class DevicePropertyStateEntityDeleted extends EventDispatcher\Event
 {
 
 	public function __construct(
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		private readonly MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
+		private readonly MetadataDocuments\DevicesModule\DeviceDynamicProperty $property,
 	)
 	{
 	}
-	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-	public function getProperty(): MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped
+
+	public function getProperty(): MetadataDocuments\DevicesModule\DeviceDynamicProperty
 	{
 		return $this->property;
 	}

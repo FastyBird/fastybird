@@ -45,7 +45,7 @@ class FindConnectorProperties extends QueryObject
 
 	public function byId(Uuid\UuidInterface $id): void
 	{
-		$this->filter[] = '.[?(@.id == ' . $id->toString() . ')]';
+		$this->filter[] = '.[?(@.id =~ /(?i).*^' . $id->toString() . '*$/)]';
 	}
 
 	public function byIdentifier(string $identifier): void
@@ -65,12 +65,12 @@ class FindConnectorProperties extends QueryObject
 
 	public function forConnector(MetadataDocuments\DevicesModule\Connector $connector): void
 	{
-		$this->filter[] = '.[?(@.connector == ' . $connector->getId()->toString() . ')]';
+		$this->filter[] = '.[?(@.connector =~ /(?i).*^' . $connector->getId()->toString() . '*$/)]';
 	}
 
 	public function byConnectorId(Uuid\UuidInterface $connectorId): void
 	{
-		$this->filter[] = '.[?(@.connector == ' . $connectorId->toString() . ')]';
+		$this->filter[] = '.[?(@.connector =~ /(?i).*^' . $connectorId->toString() . '*$/)]';
 	}
 
 	/**

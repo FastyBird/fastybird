@@ -21,6 +21,7 @@ use Doctrine\Persistence;
 use FastyBird\Library\Exchange\Documents as ExchangeEntities;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
@@ -55,8 +56,17 @@ final class ModuleEntities implements Common\EventSubscriber
 
 	private const ACTION_DELETED = 'deleted';
 
+	/**
+	 * @param Models\Configuration\Connectors\Properties\Repository<MetadataDocuments\DevicesModule\ConnectorDynamicProperty> $connectorsPropertiesConfigurationRepository
+	 * @param Models\Configuration\Devices\Properties\Repository<MetadataDocuments\DevicesModule\DeviceDynamicProperty> $devicesPropertiesConfigurationRepository
+	 * @param Models\Configuration\Channels\Properties\Repository<MetadataDocuments\DevicesModule\ChannelDynamicProperty> $channelsPropertiesConfigurationRepository
+	 */
 	public function __construct(
 		private readonly ORM\EntityManagerInterface $entityManager,
+		private readonly Models\Configuration\Connectors\Properties\Repository $connectorsPropertiesConfigurationRepository,
+		private readonly Models\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
+		private readonly Models\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
+		private readonly Models\Configuration\Builder $configurationBuilder,
 		private readonly Models\States\ConnectorPropertiesManager $connectorPropertiesStatesManager,
 		private readonly Models\States\DevicePropertiesManager $devicePropertiesStatesManager,
 		private readonly Models\States\ChannelPropertiesManager $channelPropertiesStatesManager,
@@ -74,6 +84,7 @@ final class ModuleEntities implements Common\EventSubscriber
 		return [
 			ORM\Events::postPersist,
 			ORM\Events::postUpdate,
+			ORM\Events::preRemove,
 			ORM\Events::postRemove,
 		];
 	}
@@ -98,6 +109,8 @@ final class ModuleEntities implements Common\EventSubscriber
 		if (!$entity instanceof Entities\Entity || !$this->validateNamespace($entity)) {
 			return;
 		}
+
+		$this->configurationBuilder->build();
 
 		$this->publishEntity($entity, self::ACTION_CREATED);
 	}
@@ -137,7 +150,79 @@ final class ModuleEntities implements Common\EventSubscriber
 			return;
 		}
 
+		$this->configurationBuilder->build();
+
 		$this->publishEntity($entity, self::ACTION_UPDATED);
+	}
+
+	/**
+	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
+	 *
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
+	 */
+	public function preRemove(Persistence\Event\LifecycleEventArgs $eventArgs): void
+	{
+		// onFlush was executed before, everything already initialized
+		$entity = $eventArgs->getObject();
+
+		// Check for valid entity
+		if (!$entity instanceof Entities\Entity || !$this->validateNamespace($entity)) {
+			return;
+		}
+
+		// Property states cleanup
+		if ($entity instanceof Entities\Connectors\Properties\Dynamic) {
+			try {
+				$findProperty = new Devices\Queries\Configuration\FindConnectorDynamicProperties();
+				$findProperty->byId($entity->getId());
+
+				$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
+					$findProperty,
+					MetadataDocuments\DevicesModule\ConnectorDynamicProperty::class,
+				);
+
+				if ($property !== null) {
+					$this->connectorPropertiesStatesManager->delete($property);
+				}
+			} catch (Exceptions\NotImplemented) {
+				return;
+			}
+		} elseif ($entity instanceof Entities\Devices\Properties\Dynamic) {
+			try {
+				$findProperty = new Devices\Queries\Configuration\FindDeviceDynamicProperties();
+				$findProperty->byId($entity->getId());
+
+				$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
+					$findProperty,
+					MetadataDocuments\DevicesModule\DeviceDynamicProperty::class,
+				);
+
+				if ($property !== null) {
+					$this->devicePropertiesStatesManager->delete($property);
+				}
+			} catch (Exceptions\NotImplemented) {
+				return;
+			}
+		} elseif ($entity instanceof Entities\Channels\Properties\Dynamic) {
+			try {
+				$findProperty = new Devices\Queries\Configuration\FindChannelDynamicProperties();
+				$findProperty->byId($entity->getId());
+
+				$property = $this->channelsPropertiesConfigurationRepository->findOneBy(
+					$findProperty,
+					MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
+				);
+
+				if ($property !== null) {
+					$this->channelPropertiesStatesManager->delete($property);
+				}
+			} catch (Exceptions\NotImplemented) {
+				return;
+			}
+		}
 	}
 
 	/**
@@ -161,28 +246,9 @@ final class ModuleEntities implements Common\EventSubscriber
 			return;
 		}
 
-		$this->publishEntity($entity, self::ACTION_DELETED);
+		$this->configurationBuilder->build();
 
-		// Property states cleanup
-		if ($entity instanceof Entities\Connectors\Properties\Dynamic) {
-			try {
-				$this->connectorPropertiesStatesManager->delete($entity);
-			} catch (Exceptions\NotImplemented) {
-				return;
-			}
-		} elseif ($entity instanceof Entities\Devices\Properties\Dynamic) {
-			try {
-				$this->devicePropertiesStatesManager->delete($entity);
-			} catch (Exceptions\NotImplemented) {
-				return;
-			}
-		} elseif ($entity instanceof Entities\Channels\Properties\Dynamic) {
-			try {
-				$this->channelPropertiesStatesManager->delete($entity);
-			} catch (Exceptions\NotImplemented) {
-				return;
-			}
-		}
+		$this->publishEntity($entity, self::ACTION_DELETED);
 	}
 
 	/**
@@ -228,7 +294,9 @@ final class ModuleEntities implements Common\EventSubscriber
 		if ($publishRoutingKey !== null) {
 			if ($entity instanceof Entities\Devices\Properties\Dynamic) {
 				try {
-					$state = $this->devicePropertiesStates->readValue($entity);
+					$state = $action === self::ACTION_UPDATED ? $this->devicePropertiesStates->readValue(
+						$entity,
+					) : null;
 
 					$this->publisher->publish(
 						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
@@ -258,7 +326,9 @@ final class ModuleEntities implements Common\EventSubscriber
 				}
 			} elseif ($entity instanceof Entities\Channels\Properties\Dynamic) {
 				try {
-					$state = $this->channelPropertiesStates->readValue($entity);
+					$state = $action === self::ACTION_UPDATED
+						? $this->channelPropertiesStates->readValue($entity)
+						: null;
 
 					$this->publisher->publish(
 						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
@@ -288,7 +358,9 @@ final class ModuleEntities implements Common\EventSubscriber
 				}
 			} elseif ($entity instanceof Entities\Connectors\Properties\Dynamic) {
 				try {
-					$state = $this->connectorPropertiesStates->readValue($entity);
+					$state = $action === self::ACTION_UPDATED
+						? $this->connectorPropertiesStates->readValue($entity)
+						: null;
 
 					$this->publisher->publish(
 						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),

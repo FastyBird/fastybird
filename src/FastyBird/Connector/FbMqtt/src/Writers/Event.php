@@ -24,7 +24,6 @@ use FastyBird\DateTimeFactory;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -123,20 +122,11 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 			return;
 		}
 
-		if (
-			$property instanceof DevicesEntities\Devices\Properties\Dynamic
-			|| $property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
-		) {
-			if ($property->getDevice() instanceof DevicesEntities\Devices\Device) {
-				$device = $property->getDevice();
-				assert($device instanceof Entities\FbMqttDevice);
+		if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
+			$findDeviceQuery = new Queries\Entities\FindDevices();
+			$findDeviceQuery->byId($property->getDevice());
 
-			} else {
-				$findDeviceQuery = new Queries\Entities\FindDevices();
-				$findDeviceQuery->byId($property->getDevice());
-
-				$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\FbMqttDevice::class);
-			}
+			$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\FbMqttDevice::class);
 
 			if ($device === null) {
 				return;
@@ -184,19 +174,11 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 						]),
 					);
 				});
-		} elseif (
-			$property instanceof DevicesEntities\Channels\Properties\Dynamic
-			|| $property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-		) {
-			if ($property->getChannel() instanceof DevicesEntities\Channels\Channel) {
-				$channel = $property->getChannel();
+		} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+			$findChannelQuery = new DevicesQueries\Entities\FindChannels();
+			$findChannelQuery->byId($property->getChannel());
 
-			} else {
-				$findChannelQuery = new DevicesQueries\Entities\FindChannels();
-				$findChannelQuery->byId($property->getChannel());
-
-				$channel = $this->channelsRepository->findOneBy($findChannelQuery);
-			}
+			$channel = $this->channelsRepository->findOneBy($findChannelQuery);
 
 			if ($channel === null) {
 				return;

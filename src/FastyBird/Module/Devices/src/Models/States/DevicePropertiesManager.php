@@ -16,7 +16,6 @@
 namespace FastyBird\Module\Devices\Models\States;
 
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
@@ -53,7 +52,7 @@ final class DevicePropertiesManager
 	 * @interal
 	 */
 	public function create(
-		MetadataDocuments\DevicesModule\DeviceDynamicProperty|Entities\Devices\Properties\Dynamic $property,
+		MetadataDocuments\DevicesModule\DeviceDynamicProperty $property,
 		Utils\ArrayHash $values,
 	): States\DeviceProperty
 	{
@@ -85,7 +84,7 @@ final class DevicePropertiesManager
 	 * @interal
 	 */
 	public function update(
-		MetadataDocuments\DevicesModule\DeviceDynamicProperty|Entities\Devices\Properties\Dynamic $property,
+		MetadataDocuments\DevicesModule\DeviceDynamicProperty $property,
 		States\DeviceProperty $state,
 		Utils\ArrayHash $values,
 	): States\DeviceProperty
@@ -117,7 +116,7 @@ final class DevicePropertiesManager
 	 * @interal
 	 */
 	public function delete(
-		MetadataDocuments\DevicesModule\DeviceDynamicProperty|Entities\Devices\Properties\Dynamic $property,
+		MetadataDocuments\DevicesModule\DeviceDynamicProperty $property,
 	): bool
 	{
 		if ($this->manager === null || $this->repository === null) {

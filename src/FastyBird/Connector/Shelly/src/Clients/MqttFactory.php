@@ -15,8 +15,8 @@
 
 namespace FastyBird\Connector\Shelly\Clients;
 
-use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Types;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 
 /**
  * MQTT client factory
@@ -31,6 +31,6 @@ interface MqttFactory extends ClientFactory
 
 	public const MODE = Types\ClientMode::MQTT;
 
-	public function create(Entities\ShellyConnector $connector): Mqtt;
+	public function create(MetadataDocuments\DevicesModule\Connector $connector): Mqtt;
 
 }

@@ -16,7 +16,6 @@
 namespace FastyBird\Module\Devices\Models\States;
 
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
@@ -53,7 +52,7 @@ final class ConnectorPropertiesManager
 	 * @interal
 	 */
 	public function create(
-		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
+		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
 		Utils\ArrayHash $values,
 	): States\ConnectorProperty
 	{
@@ -85,7 +84,7 @@ final class ConnectorPropertiesManager
 	 * @interal
 	 */
 	public function update(
-		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
+		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
 		States\ConnectorProperty $state,
 		Utils\ArrayHash $values,
 	): States\ConnectorProperty
@@ -117,7 +116,7 @@ final class ConnectorPropertiesManager
 	 * @interal
 	 */
 	public function delete(
-		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
+		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
 	): bool
 	{
 		if ($this->manager === null || $this->repository === null) {

@@ -29,6 +29,7 @@ use Nette;
 use Nette\Utils;
 use Orisai\ObjectMapper;
 use function array_merge;
+use function assert;
 use function is_array;
 
 /**
@@ -45,7 +46,7 @@ final class DevicePropertiesStates
 	use Nette\SmartObject;
 
 	/**
-	 * @param Models\Configuration\Devices\Properties\Repository<MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceVariableProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty> $devicePropertiesRepository
+	 * @param Models\Configuration\Devices\Properties\Repository<MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty> $devicePropertiesRepository
 	 */
 	public function __construct(
 		private readonly Models\Configuration\Devices\Properties\Repository $devicePropertiesRepository,
@@ -148,6 +149,17 @@ final class DevicePropertiesStates
 		bool $forReading,
 	): States\DeviceProperty|null
 	{
+		if ($property instanceof Entities\Devices\Properties\Property) {
+			$findPropertyQuery = new Queries\Configuration\FindDeviceProperties();
+			$findPropertyQuery->byId($property->getId());
+
+			$property = $this->devicePropertiesRepository->findOneBy($findPropertyQuery);
+			assert(
+				$property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
+				|| $property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty,
+			);
+		}
+
 		if ($property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
 			$findPropertyQuery = new Queries\Configuration\FindDeviceProperties();
 			$findPropertyQuery->byId($property->getParent());
@@ -159,12 +171,6 @@ final class DevicePropertiesStates
 			}
 
 			$property = $parent;
-		} elseif ($property instanceof Entities\Devices\Properties\Mapped) {
-			$property = $property->getParent();
-
-			if (!$property instanceof Entities\Devices\Properties\Dynamic) {
-				throw new Exceptions\InvalidState('Mapped property parent is invalid type');
-			}
 		}
 
 		try {
@@ -284,6 +290,17 @@ final class DevicePropertiesStates
 		bool $forWriting,
 	): void
 	{
+		if ($property instanceof Entities\Devices\Properties\Property) {
+			$findPropertyQuery = new Queries\Configuration\FindDeviceProperties();
+			$findPropertyQuery->byId($property->getId());
+
+			$property = $this->devicePropertiesRepository->findOneBy($findPropertyQuery);
+			assert(
+				$property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
+				|| $property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty,
+			);
+		}
+
 		if ($property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
 			$findPropertyQuery = new Queries\Configuration\FindDeviceProperties();
 			$findPropertyQuery->byId($property->getParent());
@@ -295,12 +312,6 @@ final class DevicePropertiesStates
 			}
 
 			$property = $parent;
-		} elseif ($property instanceof Entities\Devices\Properties\Mapped) {
-			$property = $property->getParent();
-
-			if (!$property instanceof Entities\Devices\Properties\Dynamic) {
-				throw new Exceptions\InvalidState('Mapped property parent is invalid type');
-			}
 		}
 
 		$state = $this->loadValue($property, $forWriting);

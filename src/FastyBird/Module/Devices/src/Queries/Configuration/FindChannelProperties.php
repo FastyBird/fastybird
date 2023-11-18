@@ -45,7 +45,7 @@ class FindChannelProperties extends QueryObject
 
 	public function byId(Uuid\UuidInterface $id): void
 	{
-		$this->filter[] = '.[?(@.id == ' . $id->toString() . ')]';
+		$this->filter[] = '.[?(@.id =~ /(?i).*^' . $id->toString() . '*$/)]';
 	}
 
 	public function byIdentifier(string $identifier): void
@@ -65,24 +65,24 @@ class FindChannelProperties extends QueryObject
 
 	public function forChannel(MetadataDocuments\DevicesModule\Channel $channel): void
 	{
-		$this->filter[] = '.[?(@.channel == ' . $channel->getId()->toString() . ')]';
+		$this->filter[] = '.[?(@.channel =~ /(?i).*^' . $channel->getId()->toString() . '*$/)]';
 	}
 
 	public function byChannelId(Uuid\UuidInterface $channelId): void
 	{
-		$this->filter[] = '.[?(@.channel == ' . $channelId->toString() . ')]';
+		$this->filter[] = '.[?(@.channel =~ /(?i).*^' . $channelId->toString() . '*$/)]';
 	}
 
 	public function forParent(
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelVariableProperty $parent,
 	): void
 	{
-		$this->filter[] = '.[?(@.parent == ' . $parent->getId()->toString() . ')]';
+		$this->filter[] = '.[?(@.parent =~ /(?i).*^' . $parent->getId()->toString() . '*$/)]';
 	}
 
 	public function byParentId(Uuid\UuidInterface $parentId): void
 	{
-		$this->filter[] = '.[?(@.parent == ' . $parentId->toString() . ')]';
+		$this->filter[] = '.[?(@.parent =~ /(?i).*^' . $parentId->toString() . '*$/)]';
 	}
 
 	/**

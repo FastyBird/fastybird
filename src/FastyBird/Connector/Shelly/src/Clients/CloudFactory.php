@@ -15,8 +15,8 @@
 
 namespace FastyBird\Connector\Shelly\Clients;
 
-use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Types;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 
 /**
  * Cloud client factory
@@ -31,6 +31,6 @@ interface CloudFactory extends ClientFactory
 
 	public const MODE = Types\ClientMode::CLOUD;
 
-	public function create(Entities\ShellyConnector $connector): Cloud;
+	public function create(MetadataDocuments\DevicesModule\Connector $connector): Cloud;
 
 }

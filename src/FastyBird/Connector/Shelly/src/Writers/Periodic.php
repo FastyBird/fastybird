@@ -71,7 +71,7 @@ abstract class Periodic
 	 * @param DevicesModels\Configuration\Channels\Properties\Repository<MetadataDocuments\DevicesModule\ChannelDynamicProperty> $channelsPropertiesRepository
 	 */
 	public function __construct(
-		protected readonly Entities\ShellyConnector $connector,
+		protected readonly MetadataDocuments\DevicesModule\Connector $connector,
 		protected readonly Helpers\Entity $entityHelper,
 		protected readonly Queue\Queue $queue,
 		protected readonly DevicesModels\Configuration\Devices\Repository $devicesRepository,
@@ -95,7 +95,7 @@ abstract class Periodic
 		$this->processedProperties = [];
 
 		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
-		$findDevicesQuery->byConnectorId($this->connector->getId());
+		$findDevicesQuery->forConnector($this->connector);
 
 		foreach ($this->devicesRepository->findAllBy($findDevicesQuery) as $device) {
 			$this->devices[$device->getId()->toString()] = $device;

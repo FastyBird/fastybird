@@ -15,6 +15,7 @@
 
 namespace FastyBird\Module\Devices\Models\Configuration;
 
+use Evenement;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Exceptions;
@@ -35,8 +36,10 @@ use const DIRECTORY_SEPARATOR;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Builder
+final class Builder implements Evenement\EventEmitterInterface
 {
+
+	use Evenement\EventEmitterTrait;
 
 	private JSONPath\JSONPath|null $configuration = null;
 
@@ -130,6 +133,10 @@ final class Builder
 		}
 
 		$this->encode($data);
+
+		$this->configuration = null;
+
+		$this->emit('build');
 	}
 
 	/**

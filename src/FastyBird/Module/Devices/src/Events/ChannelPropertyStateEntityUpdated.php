@@ -16,7 +16,6 @@
 namespace FastyBird\Module\Devices\Events;
 
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\States;
 use Symfony\Contracts\EventDispatcher;
 
@@ -32,15 +31,14 @@ class ChannelPropertyStateEntityUpdated extends EventDispatcher\Event
 {
 
 	public function __construct(
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		private readonly MetadataDocuments\DevicesModule\ChannelDynamicProperty|Entities\Channels\Properties\Dynamic|MetadataDocuments\DevicesModule\ChannelMappedProperty|Entities\Channels\Properties\Mapped $property,
+		private readonly MetadataDocuments\DevicesModule\ChannelDynamicProperty $property,
 		private readonly States\ChannelProperty $previousState,
 		private readonly States\ChannelProperty $state,
 	)
 	{
 	}
-	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-	public function getProperty(): MetadataDocuments\DevicesModule\ChannelDynamicProperty|Entities\Channels\Properties\Dynamic|MetadataDocuments\DevicesModule\ChannelMappedProperty|Entities\Channels\Properties\Mapped
+
+	public function getProperty(): MetadataDocuments\DevicesModule\ChannelDynamicProperty
 	{
 		return $this->property;
 	}

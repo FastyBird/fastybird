@@ -17,6 +17,7 @@ namespace FastyBird\Module\Devices\Models\Configuration;
 
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Module\Devices\Exceptions;
+use FastyBird\Module\Devices\Models;
 use function array_key_exists;
 use function is_array;
 
@@ -35,6 +36,15 @@ abstract class Repository
 
 	/** @var array<string, T|array<T>|null>  */
 	private array $cacheData = [];
+
+	public function __construct(
+		protected readonly Models\Configuration\Builder $builder,
+	)
+	{
+		$this->builder->on('build', function (): void {
+			$this->cacheData = [];
+		});
+	}
 
 	/**
 	 * @return T|array<T>|false|null
