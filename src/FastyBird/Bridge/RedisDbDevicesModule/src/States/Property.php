@@ -39,7 +39,6 @@ class Property extends RedisDbStates\State implements DevicesStates\Property
 
 	public function __construct(
 		Uuid\UuidInterface $id,
-		string $raw,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\BoolValue(castBoolLike: true),
 			new ObjectMapper\Rules\IntValue(),
@@ -92,7 +91,7 @@ class Property extends RedisDbStates\State implements DevicesStates\Property
 		private readonly DateTimeInterface|null $updatedAt = null,
 	)
 	{
-		parent::__construct($id, $raw);
+		parent::__construct($id);
 	}
 
 	public function getCreatedAt(): DateTimeInterface|null

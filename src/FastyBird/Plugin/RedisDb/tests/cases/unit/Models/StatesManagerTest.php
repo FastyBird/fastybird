@@ -258,11 +258,11 @@ final class StatesManagerTest extends TestCase
 					'updated' => $now->format(DateTimeInterface::ATOM),
 				],
 				[
-					'id' => $id->toString(),
 					'value' => 'value',
 					'camel_cased' => null,
 					'created' => $now->format(DateTimeInterface::ATOM),
 					'updated' => $now->format(DateTimeInterface::ATOM),
+					'id' => $id->toString(),
 				],
 				[
 					'id' => $id->toString(),
@@ -287,11 +287,11 @@ final class StatesManagerTest extends TestCase
 					'camelCased' => 'camelCasedValue',
 				],
 				[
-					'id' => $id->toString(),
 					'value' => 'updated',
 					'camel_cased' => 'camelCasedValue',
 					'created' => $now->format(DateTimeInterface::ATOM),
 					'updated' => $now->format(DateTimeInterface::ATOM),
+					'id' => $id->toString(),
 				],
 				[
 					'id' => $id->toString(),

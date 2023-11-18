@@ -102,11 +102,13 @@ final class ChannelPropertiesManagerTest extends BaseTestCase
 				$id->toString(),
 				self::callback(static function (string $data) use ($id): bool {
 					JsonAssert::assertMatch(Utils\Json::encode([
-						'id' => $id->toString(),
 						'actual_value' => 10,
 						'expected_value' => 40,
+						'pending' => false,
+						'valid' => false,
 						'created_at' => '2020-04-01T12:00:00+00:00',
 						'updated_at' => '2020-04-01T12:00:00+00:00',
+						'id' => $id->toString(),
 					]), $data);
 
 					return true;
@@ -119,10 +121,10 @@ final class ChannelPropertiesManagerTest extends BaseTestCase
 			->method('get')
 			->with($id->toString())
 			->willReturn(Utils\Json::encode([
-				'id' => $id->toString(),
 				'actual_value' => 10,
 				'expected_value' => 40,
 				'created_at' => '2020-04-01T12:00:00+00:00',
+				'id' => $id->toString(),
 			]));
 
 		$this->mockContainerService(RedisDbClient\Client::class, $redisDbClient);

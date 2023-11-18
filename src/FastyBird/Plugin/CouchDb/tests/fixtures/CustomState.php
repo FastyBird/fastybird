@@ -5,7 +5,6 @@ namespace FastyBird\Plugin\CouchDb\Tests\Fixtures;
 use DateTimeInterface;
 use FastyBird\Plugin\CouchDb\States;
 use Orisai\ObjectMapper;
-use PHPOnCouch;
 use Ramsey\Uuid;
 use function array_merge;
 
@@ -14,7 +13,6 @@ class CustomState extends States\State
 
 	public function __construct(
 		Uuid\UuidInterface $id,
-		PHPOnCouch\CouchDocument $document,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
@@ -37,7 +35,7 @@ class CustomState extends States\State
 		private readonly DateTimeInterface|null $updated = null,
 	)
 	{
-		parent::__construct($id, $document);
+		parent::__construct($id);
 	}
 
 	/**

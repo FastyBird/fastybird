@@ -19,15 +19,17 @@ use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Queue;
+use FastyBird\DateTimeFactory;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
-use Nette;
+use FastyBird\Module\Devices\Utilities as DevicesUtilities;
+use React\EventLoop;
 use Symfony\Component\EventDispatcher;
-use function assert;
 
 /**
  * Event based properties writer
@@ -37,20 +39,39 @@ use function assert;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Event implements Writer, EventDispatcher\EventSubscriberInterface
+class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberInterface
 {
-
-	use Nette\SmartObject;
 
 	public const NAME = 'event';
 
+	/**
+	 * @param DevicesModels\Configuration\Devices\Repository<MetadataDocuments\DevicesModule\Device> $devicesRepository
+	 * @param DevicesModels\Configuration\Channels\Repository<MetadataDocuments\DevicesModule\Channel> $channelsRepository
+	 * @param DevicesModels\Configuration\Channels\Properties\Repository<MetadataDocuments\DevicesModule\ChannelDynamicProperty> $channelsPropertiesRepository
+	 */
 	public function __construct(
-		private readonly Entities\ShellyConnector $connector,
-		private readonly Helpers\Entity $entityHelper,
-		private readonly Queue\Queue $queue,
-		private readonly DevicesModels\Entities\Channels\ChannelsRepository $channelsRepository,
+		Entities\ShellyConnector $connector,
+		Helpers\Entity $entityHelper,
+		Queue\Queue $queue,
+		DevicesModels\Configuration\Devices\Repository $devicesRepository,
+		DevicesModels\Configuration\Channels\Repository $channelsRepository,
+		DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesRepository,
+		DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
+		DateTimeFactory\Factory $dateTimeFactory,
+		EventLoop\LoopInterface $eventLoop,
 	)
 	{
+		parent::__construct(
+			$connector,
+			$entityHelper,
+			$queue,
+			$devicesRepository,
+			$channelsRepository,
+			$channelsPropertiesRepository,
+			$channelPropertiesStatesManager,
+			$dateTimeFactory,
+			$eventLoop,
+		);
 	}
 
 	public static function getSubscribedEvents(): array
@@ -61,19 +82,12 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 		];
 	}
 
-	public function connect(): void
-	{
-		// Nothing to do here
-	}
-
-	public function disconnect(): void
-	{
-		// Nothing to do here
-	}
-
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function stateChanged(
 		DevicesEvents\ChannelPropertyStateEntityCreated|DevicesEvents\ChannelPropertyStateEntityUpdated $event,
@@ -92,10 +106,13 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 			|| $property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
 		) {
 			if ($property->getChannel() instanceof DevicesEntities\Channels\Channel) {
-				$channel = $property->getChannel();
+				$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
+				$findChannelQuery->byId($property->getChannel()->getId());
+
+				$channel = $this->channelsRepository->findOneBy($findChannelQuery);
 
 			} else {
-				$findChannelQuery = new DevicesQueries\Entities\FindChannels();
+				$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 				$findChannelQuery->byId($property->getChannel());
 
 				$channel = $this->channelsRepository->findOneBy($findChannelQuery);
@@ -105,10 +122,16 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 				return;
 			}
 
-			$device = $channel->getDevice();
-			assert($device instanceof Entities\ShellyDevice);
+			$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+			$findDeviceQuery->byId($channel->getDevice());
 
-			if (!$device->getConnector()->getId()->equals($this->connector->getId())) {
+			$device = $this->devicesRepository->findOneBy($findDeviceQuery);
+
+			if ($device === null) {
+				return;
+			}
+
+			if (!$device->getConnector()->equals($this->connector->getId())) {
 				return;
 			}
 
@@ -116,7 +139,7 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 				$this->entityHelper->create(
 					Entities\Messages\WriteChannelPropertyState::class,
 					[
-						'connector' => $this->connector->getId()->toString(),
+						'connector' => $device->getConnector()->toString(),
 						'device' => $device->getId()->toString(),
 						'channel' => $channel->getId()->toString(),
 						'property' => $property->getId()->toString(),

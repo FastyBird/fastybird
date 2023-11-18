@@ -16,16 +16,12 @@
 namespace FastyBird\Connector\Shelly\API;
 
 use FastyBird\Connector\Shelly\Entities;
-use FastyBird\Connector\Shelly\Types;
+use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
-use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
 use function array_key_exists;
-use function assert;
-use function is_string;
 
 /**
  * API connections manager
@@ -49,15 +45,12 @@ final class ConnectionManager
 	/** @var array<string, Gen2WsApi> */
 	private array $gen2WsApiConnection = [];
 
-	/**
-	 * @param DevicesModels\Configuration\Devices\Properties\Repository<MetadataDocuments\DevicesModule\DeviceVariableProperty> $devicesPropertiesRepository
-	 */
 	public function __construct(
 		private readonly Gen1HttpApiFactory $gen1HttpApiFactory,
 		private readonly Gen1CoapFactory $gen1CoapFactory,
 		private readonly Gen2HttpApiFactory $gen2HttpApiFactory,
 		private readonly Gen2WsApiFactory $wsApiFactory,
-		private readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesRepository,
+		private readonly Helpers\Device $deviceHelper,
 	)
 	{
 	}
@@ -124,23 +117,7 @@ final class ConnectionManager
 			return $device->getIpAddress();
 		}
 
-		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
-		$findPropertyQuery->forDevice($device);
-		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IP_ADDRESS);
-
-		$property = $this->devicesPropertiesRepository->findOneBy(
-			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
-		);
-
-		if ($property === null) {
-			return null;
-		}
-
-		$ipAddress = $property->getValue();
-		assert(is_string($ipAddress) || $ipAddress === null);
-
-		return $ipAddress;
+		return $this->deviceHelper->getIpAddress($device);
 	}
 
 	/**
@@ -155,23 +132,7 @@ final class ConnectionManager
 			return $device->getDomain();
 		}
 
-		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
-		$findPropertyQuery->forDevice($device);
-		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::DOMAIN);
-
-		$property = $this->devicesPropertiesRepository->findOneBy(
-			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
-		);
-
-		if ($property === null) {
-			return null;
-		}
-
-		$domain = $property->getValue();
-		assert(is_string($domain) || $domain === null);
-
-		return $domain;
+		return $this->deviceHelper->getDomain($device);
 	}
 
 	/**
@@ -186,23 +147,7 @@ final class ConnectionManager
 			return $device->getUsername();
 		}
 
-		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
-		$findPropertyQuery->forDevice($device);
-		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::USERNAME);
-
-		$property = $this->devicesPropertiesRepository->findOneBy(
-			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
-		);
-
-		if ($property === null) {
-			return null;
-		}
-
-		$username = $property->getValue();
-		assert(is_string($username) || $username === null);
-
-		return $username;
+		return $this->deviceHelper->getUsername($device);
 	}
 
 	/**
@@ -217,23 +162,7 @@ final class ConnectionManager
 			return $device->getPassword();
 		}
 
-		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
-		$findPropertyQuery->forDevice($device);
-		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::PASSWORD);
-
-		$property = $this->devicesPropertiesRepository->findOneBy(
-			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
-		);
-
-		if ($property === null) {
-			return null;
-		}
-
-		$password = $property->getValue();
-		assert(is_string($password) || $password === null);
-
-		return $password;
+		return $this->deviceHelper->getPassword($device);
 	}
 
 	public function __destruct()

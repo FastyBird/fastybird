@@ -33,7 +33,6 @@ use Nette;
 use Nette\Utils;
 use Symfony\Component\EventDispatcher;
 use function array_merge;
-use function print_r;
 
 /**
  * Devices state entities events
@@ -237,13 +236,6 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 			return;
 		}
 
-		print_r($routingKey);
-		print_r(Utils\Json::encode(
-			array_merge(
-				$state?->toArray() ?? [],
-				$property->toArray(),
-			),
-		));
 		$this->publisher->publish(
 			MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
 			$routingKey,

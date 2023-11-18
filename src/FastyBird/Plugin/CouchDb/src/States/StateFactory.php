@@ -20,7 +20,6 @@ use FastyBird\Plugin\CouchDb\States;
 use InvalidArgumentException;
 use Orisai\ObjectMapper;
 use PHPOnCouch;
-use function array_merge;
 use function class_exists;
 
 /**
@@ -67,7 +66,7 @@ final class StateFactory
 			$options = new ObjectMapper\Processing\Options();
 			$options->setAllowUnknownFields();
 
-			return $this->stateMapper->process(array_merge($data, ['document' => $document]), $class, $options);
+			return $this->stateMapper->process($data, $class, $options);
 		} catch (ObjectMapper\Exception\InvalidData $ex) {
 			$errorPrinter = new ObjectMapper\Printers\ErrorVisualPrinter(
 				new ObjectMapper\Printers\TypeToStringConverter(),

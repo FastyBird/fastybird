@@ -37,8 +37,6 @@ class State implements ObjectMapper\MappedObject
 	public function __construct(
 		#[BootstrapObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $id,
-		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $raw,
 	)
 	{
 	}
@@ -59,11 +57,6 @@ class State implements ObjectMapper\MappedObject
 	public static function getUpdateFields(): array
 	{
 		return [];
-	}
-
-	public function getRaw(): string
-	{
-		return $this->raw;
 	}
 
 	/**
