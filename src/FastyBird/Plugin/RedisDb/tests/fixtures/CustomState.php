@@ -13,7 +13,6 @@ class CustomState extends States\State
 
 	public function __construct(
 		Uuid\UuidInterface $id,
-		string $raw,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
@@ -37,7 +36,7 @@ class CustomState extends States\State
 		private readonly DateTimeInterface|null $updated = null,
 	)
 	{
-		parent::__construct($id, $raw);
+		parent::__construct($id);
 	}
 
 	/**

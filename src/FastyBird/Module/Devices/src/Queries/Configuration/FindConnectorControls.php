@@ -50,7 +50,7 @@ class FindConnectorControls extends QueryObject
 
 	public function byName(string $name): void
 	{
-		$this->filter[] = '.[?(@.name == ' . $name . ')]';
+		$this->filter[] = '.[?(@.name =~ /(?i).*^' . $name . '*$/)]';
 	}
 
 	public function forConnector(MetadataDocuments\DevicesModule\Connector $connector): void

@@ -50,7 +50,7 @@ class FindChannelControls extends QueryObject
 
 	public function byName(string $name): void
 	{
-		$this->filter[] = '.[?(@.name == ' . $name . ')]';
+		$this->filter[] = '.[?(@.name =~ /(?i).*^' . $name . '*$/)]';
 	}
 
 	public function forChannel(MetadataDocuments\DevicesModule\Channel $channel): void

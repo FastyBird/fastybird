@@ -50,7 +50,7 @@ class FindDeviceControls extends QueryObject
 
 	public function byName(string $name): void
 	{
-		$this->filter[] = '.[?(@.name == ' . $name . ')]';
+		$this->filter[] = '.[?(@.name =~ /(?i).*^' . $name . '*$/)]';
 	}
 
 	public function forDevice(MetadataDocuments\DevicesModule\Device $device): void

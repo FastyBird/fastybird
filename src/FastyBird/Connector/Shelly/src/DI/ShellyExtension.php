@@ -70,9 +70,8 @@ class ShellyExtension extends DI\CompilerExtension
 			'writer' => Schema\Expect::anyOf(
 				Writers\Event::NAME,
 				Writers\Exchange::NAME,
-				Writers\Periodic::NAME,
 			)->default(
-				Writers\Periodic::NAME,
+				Writers\Exchange::NAME,
 			),
 		]);
 	}
@@ -102,11 +101,6 @@ class ShellyExtension extends DI\CompilerExtension
 				->getResultDefinition()
 				->setType(Writers\Exchange::class)
 				->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATE, false);
-		} elseif ($configuration->writer === Writers\Periodic::NAME) {
-			$builder->addFactoryDefinition($this->prefix('writers.periodic'))
-				->setImplement(Writers\PeriodicFactory::class)
-				->getResultDefinition()
-				->setType(Writers\Periodic::class);
 		}
 
 		/**

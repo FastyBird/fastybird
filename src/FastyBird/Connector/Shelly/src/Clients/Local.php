@@ -41,13 +41,8 @@ use RuntimeException;
 use Throwable;
 use function array_key_exists;
 use function array_merge;
-use function assert;
 use function count;
-use function floatval;
-use function gethostbyname;
 use function in_array;
-use function is_numeric;
-use function is_string;
 use function strval;
 
 /**
@@ -71,6 +66,9 @@ final class Local implements Client
 
 	private const CMD_STATE = 'state';
 
+	/** @var array<string, MetadataDocuments\DevicesModule\Device>  */
+	private array $devices = [];
+
 	/** @var array<string, API\Gen2WsApi> */
 	private array $gen2DevicesWsClients = [];
 
@@ -91,6 +89,7 @@ final class Local implements Client
 		private readonly API\ConnectionManager $connectionManager,
 		private readonly Queue\Queue $queue,
 		private readonly Helpers\Entity $entityHelper,
+		private readonly Helpers\Device $deviceHelper,
 		private readonly Shelly\Logger $logger,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesRepository,
 		private readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesRepository,
@@ -171,6 +170,8 @@ final class Local implements Client
 		$findDevicesQuery->byConnectorId($this->connector->getId());
 
 		foreach ($this->devicesRepository->findAllBy($findDevicesQuery) as $device) {
+			$this->devices[$device->getId()->toString()] = $device;
+
 			$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
 			$findDevicePropertyQuery->forDevice($device);
 			$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::GENERATION);
@@ -246,16 +247,8 @@ final class Local implements Client
 	 */
 	private function handleCommunication(): void
 	{
-		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
-		$findDevicesQuery->byConnectorId($this->connector->getId());
-
-		foreach ($this->devicesRepository->findAllBy($findDevicesQuery) as $device) {
-			$deviceState = $this->deviceConnectionManager->getState($device);
-
-			if (
-				!in_array($device->getId()->toString(), $this->processedDevices, true)
-				&& !$deviceState->equalsValue(MetadataTypes\ConnectionState::STATE_ALERT)
-			) {
+		foreach ($this->devices as $device) {
+			if (!in_array($device->getId()->toString(), $this->processedDevices, true)) {
 				$this->processedDevices[] = $device->getId()->toString();
 
 				if ($this->readDeviceStatus($device)) {
@@ -290,9 +283,8 @@ final class Local implements Client
 			if (
 				$cmdResult instanceof DateTimeInterface
 				&& (
-					$this->dateTimeFactory->getNow()->getTimestamp() - $cmdResult->getTimestamp() < $this->getStatusReadingDelay(
-						$device,
-					)
+					$this->dateTimeFactory->getNow()->getTimestamp() - $cmdResult->getTimestamp()
+						< $this->deviceHelper->getStatusReadingDelay($device)
 				)
 			) {
 				return false;
@@ -301,7 +293,13 @@ final class Local implements Client
 
 		$this->processedDevicesCommands[$device->getId()->toString()][self::CMD_STATE] = $this->dateTimeFactory->getNow();
 
-		if ($this->getGeneration($device)->equalsValue(Types\DeviceGeneration::GENERATION_2)) {
+		$deviceState = $this->deviceConnectionManager->getState($device);
+
+		if ($deviceState->equalsValue(MetadataTypes\ConnectionState::STATE_ALERT)) {
+			return true;
+		}
+
+		if ($this->deviceHelper->getGeneration($device)->equalsValue(Types\DeviceGeneration::GENERATION_2)) {
 			$client = $this->getGen2DeviceWsClient($device);
 
 			if ($client === null) {
@@ -356,8 +354,8 @@ final class Local implements Client
 					);
 				});
 
-		} elseif ($this->getGeneration($device)->equalsValue(Types\DeviceGeneration::GENERATION_1)) {
-			$address = $this->getLocalAddress($device);
+		} elseif ($this->deviceHelper->getGeneration($device)->equalsValue(Types\DeviceGeneration::GENERATION_1)) {
+			$address = $this->deviceHelper->getLocalAddress($device);
 
 			if ($address === null) {
 				$this->queue->append(
@@ -376,8 +374,8 @@ final class Local implements Client
 
 			$this->connectionManager->getGen1HttpApiConnection()->getDeviceState(
 				$address,
-				$this->getUsername($device),
-				$this->getPassword($device),
+				$this->deviceHelper->getUsername($device),
+				$this->deviceHelper->getPassword($device),
 			)
 				->then(function (Entities\API\Gen1\GetDeviceState $response) use ($device): void {
 					$this->processedDevicesCommands[$device->getId()->toString()][self::CMD_STATE] = $this->dateTimeFactory->getNow();
@@ -1150,150 +1148,6 @@ final class Local implements Client
 				$this->handleCommunication();
 			},
 		);
-	}
-
-	/**
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 */
-	private function getStatusReadingDelay(MetadataDocuments\DevicesModule\Device $device): float
-	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
-		$findPropertyQuery->forDevice($device);
-		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::STATE_READING_DELAY);
-
-		$property = $this->devicesPropertiesRepository->findOneBy(
-			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
-		);
-
-		$readingDelay = $property?->getValue();
-
-		if (!is_numeric($readingDelay)) {
-			return Entities\ShellyDevice::STATE_READING_DELAY;
-		}
-
-		return floatval($readingDelay);
-	}
-
-	/**
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 */
-	private function getGeneration(MetadataDocuments\DevicesModule\Device $device): Types\DeviceGeneration
-	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
-		$findPropertyQuery->forDevice($device);
-		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::GENERATION);
-
-		$property = $this->devicesPropertiesRepository->findOneBy(
-			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
-		);
-
-		$generation = $property?->getValue();
-
-		if (Types\DeviceGeneration::isValidValue($generation)) {
-			return Types\DeviceGeneration::get($generation);
-		}
-
-		throw new Exceptions\InvalidState('Device generation is not configured');
-	}
-
-	/**
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 */
-	private function getLocalAddress(MetadataDocuments\DevicesModule\Device $device): string|null
-	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
-		$findPropertyQuery->forDevice($device);
-		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::DOMAIN);
-
-		$property = $this->devicesPropertiesRepository->findOneBy(
-			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
-		);
-
-		if ($property !== null && is_string($property->getValue())) {
-			return gethostbyname($property->getValue());
-		}
-
-		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
-		$findPropertyQuery->forDevice($device);
-		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IP_ADDRESS);
-
-		$property = $this->devicesPropertiesRepository->findOneBy(
-			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
-		);
-
-		if ($property !== null && is_string($property->getValue())) {
-			return $property->getValue();
-		}
-
-		return null;
-	}
-
-	/**
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 */
-	private function getUsername(MetadataDocuments\DevicesModule\Device $device): string|null
-	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
-		$findPropertyQuery->forDevice($device);
-		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::USERNAME);
-
-		$property = $this->devicesPropertiesRepository->findOneBy(
-			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
-		);
-
-		if ($property === null) {
-			return null;
-		}
-
-		$username = $property->getValue();
-		assert(is_string($username) || $username === null);
-
-		return $username;
-	}
-
-	/**
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 */
-	private function getPassword(MetadataDocuments\DevicesModule\Device $device): string|null
-	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
-		$findPropertyQuery->forDevice($device);
-		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::PASSWORD);
-
-		$property = $this->devicesPropertiesRepository->findOneBy(
-			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
-		);
-
-		if ($property === null) {
-			return null;
-		}
-
-		$password = $property->getValue();
-		assert(is_string($password) || $password === null);
-
-		return $password;
 	}
 
 }

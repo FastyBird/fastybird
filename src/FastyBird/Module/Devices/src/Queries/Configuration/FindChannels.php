@@ -45,17 +45,17 @@ class FindChannels extends QueryObject
 
 	public function byIdentifier(string $identifier): void
 	{
-		$this->filter[] = '.[?(@.identifier == ' . $identifier . ')]';
+		$this->filter[] = '.[?(@.identifier =~ /(?i).*^' . $identifier . '*$/)]';
 	}
 
 	public function startWithIdentifier(string $identifier): void
 	{
-		$this->filter[] = '.[?(@.identifier =~ /^' . $identifier . '[\w\d\-_]+$/)]';
+		$this->filter[] = '.[?(@.identifier =~ /(?i).*^' . $identifier . '*[\w\d\-_]+$/)]';
 	}
 
 	public function endWithIdentifier(string $identifier): void
 	{
-		$this->filter[] = '.[?(@.identifier =~ /^[\w\d\-_]+' . $identifier . '$/)]';
+		$this->filter[] = '.[?(@.identifier =~ /^[\w\d\-_]+(?i).*' . $identifier . '*$/)]';
 	}
 
 	public function forDevice(MetadataDocuments\DevicesModule\Device $device): void

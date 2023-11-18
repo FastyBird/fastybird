@@ -141,6 +141,11 @@ final class StatesManagerTest extends TestCase
 		$couchClient = $this->createMock(PHPOnCouch\CouchClient::class);
 		$couchClient
 			->method('asCouchDocuments');
+		$couchClient
+			->expects(self::once())
+			->method('getDoc')
+			->with($originalData['id'])
+			->willReturn($document);
 
 		$couchDbConnection = $this->createMock(Connections\Connection::class);
 		$couchDbConnection

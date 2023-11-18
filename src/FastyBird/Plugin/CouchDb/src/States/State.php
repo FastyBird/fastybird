@@ -17,7 +17,6 @@ namespace FastyBird\Plugin\CouchDb\States;
 
 use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use Orisai\ObjectMapper;
-use PHPOnCouch;
 use Ramsey\Uuid;
 
 /**
@@ -38,8 +37,6 @@ class State implements ObjectMapper\MappedObject
 	public function __construct(
 		#[BootstrapObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $id,
-		#[ObjectMapper\Rules\ObjectValue()]
-		private readonly PHPOnCouch\CouchDocument $document,
 	)
 	{
 	}
@@ -60,11 +57,6 @@ class State implements ObjectMapper\MappedObject
 	public static function getUpdateFields(): array
 	{
 		return [];
-	}
-
-	public function getDocument(): PHPOnCouch\CouchDocument
-	{
-		return $this->document;
 	}
 
 	/**

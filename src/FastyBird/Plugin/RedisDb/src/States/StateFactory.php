@@ -19,7 +19,6 @@ use FastyBird\Plugin\RedisDb\Exceptions;
 use FastyBird\Plugin\RedisDb\States;
 use Nette\Utils;
 use Orisai\ObjectMapper;
-use function array_merge;
 use function class_exists;
 use function is_array;
 
@@ -70,7 +69,7 @@ final class StateFactory
 			$options = new ObjectMapper\Processing\Options();
 			$options->setAllowUnknownFields();
 
-			return $this->stateMapper->process(array_merge($decoded, ['raw' => $raw]), $class, $options);
+			return $this->stateMapper->process($decoded, $class, $options);
 		} catch (ObjectMapper\Exception\InvalidData $ex) {
 			$errorPrinter = new ObjectMapper\Printers\ErrorVisualPrinter(
 				new ObjectMapper\Printers\TypeToStringConverter(),

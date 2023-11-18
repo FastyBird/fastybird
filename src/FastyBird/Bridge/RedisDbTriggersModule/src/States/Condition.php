@@ -35,7 +35,6 @@ class Condition extends RedisDbStates\State implements TriggersStates\Condition
 
 	public function __construct(
 		Uuid\UuidInterface $id,
-		string $raw,
 		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
 		#[ObjectMapper\Modifiers\FieldName('validation_result')]
 		private readonly bool $validationResult = false,
@@ -53,7 +52,7 @@ class Condition extends RedisDbStates\State implements TriggersStates\Condition
 		private readonly DateTimeInterface|null $updatedAt = null,
 	)
 	{
-		parent::__construct($id, $raw);
+		parent::__construct($id);
 	}
 
 	public function isFulfilled(): bool

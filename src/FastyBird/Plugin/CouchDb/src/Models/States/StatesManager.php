@@ -271,7 +271,11 @@ class StatesManager
 		array $fields,
 	): PHPOnCouch\CouchDocument
 	{
-		$doc = $state->getDocument();
+		$doc = $this->loadDoc($state->getId()->toString());
+
+		if ($doc === null) {
+			throw new Exceptions\InvalidState('State could not be loaded');
+		}
 
 		try {
 			$doc->setAutocommit(false);

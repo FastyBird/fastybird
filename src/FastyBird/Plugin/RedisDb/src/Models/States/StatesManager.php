@@ -36,7 +36,6 @@ use stdClass;
 use Throwable;
 use function array_keys;
 use function assert;
-use function get_object_vars;
 use function in_array;
 use function is_numeric;
 use function is_object;
@@ -268,12 +267,9 @@ class StatesManager
 		int $database,
 	): string
 	{
-		$raw = $state->getRaw();
+		$data = $state->toArray();
 
 		try {
-			$data = Utils\Json::decode($raw);
-			assert($data instanceof stdClass);
-
 			$isUpdated = false;
 
 			foreach ($fields as $field) {
@@ -294,16 +290,16 @@ class StatesManager
 					}
 
 					if (
-						!in_array($field, array_keys(get_object_vars($data)), true)
-						|| $data->{$this->camelToSnake($field)} !== $value
+						!in_array($field, array_keys($data), true)
+						|| $data[$this->camelToSnake($field)] !== $value
 					) {
-						$data->{$this->camelToSnake($field)} = $value;
+						$data[$this->camelToSnake($field)] = $value;
 
 						$isUpdated = true;
 					}
 				} else {
 					if ($field === States\State::UPDATED_AT_FIELD) {
-						$data->{$this->camelToSnake($field)} = $this->dateTimeFactory->getNow()->format(
+						$data[$this->camelToSnake($field)] = $this->dateTimeFactory->getNow()->format(
 							DateTimeInterface::ATOM,
 						);
 					}
