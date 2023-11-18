@@ -281,6 +281,12 @@ class ShellyExtension extends DI\CompilerExtension
 		$builder->addDefinition($this->prefix('helpers.entity'), new DI\Definitions\ServiceDefinition())
 			->setType(Helpers\Entity::class);
 
+		$builder->addDefinition($this->prefix('helpers.connector'), new DI\Definitions\ServiceDefinition())
+			->setType(Helpers\Connector::class);
+
+		$builder->addDefinition($this->prefix('helpers.device'), new DI\Definitions\ServiceDefinition())
+			->setType(Helpers\Device::class);
+
 		/**
 		 * COMMANDS
 		 */
