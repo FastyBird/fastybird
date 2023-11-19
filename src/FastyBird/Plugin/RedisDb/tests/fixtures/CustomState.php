@@ -27,12 +27,12 @@ class CustomState extends States\State
 			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly DateTimeInterface|null $created = null,
+		private readonly DateTimeInterface|null $createdAt = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly DateTimeInterface|null $updated = null,
+		private readonly DateTimeInterface|null $updatedAt = null,
 	)
 	{
 		parent::__construct($id);
@@ -47,7 +47,8 @@ class CustomState extends States\State
 			0 => 'id',
 			1 => 'value',
 			'camelCased' => null,
-			'created' => null,
+			self::CREATED_AT_FIELD => null,
+			self::UPDATED_AT_FIELD => null,
 		];
 	}
 
@@ -59,7 +60,7 @@ class CustomState extends States\State
 		return [
 			'value',
 			'camelCased',
-			'updated',
+			self::UPDATED_AT_FIELD,
 		];
 	}
 
@@ -71,8 +72,8 @@ class CustomState extends States\State
 		return array_merge([
 			'value' => $this->getValue(),
 			'camel_cased' => $this->getCamelCased(),
-			'created' => $this->getCreated()?->format(DateTimeInterface::ATOM),
-			'updated' => $this->getUpdated()?->format(DateTimeInterface::ATOM),
+			'created_at' => $this->getCreated()?->format(DateTimeInterface::ATOM),
+			'updated_at' => $this->getUpdated()?->format(DateTimeInterface::ATOM),
 		], parent::toArray());
 	}
 
@@ -88,12 +89,12 @@ class CustomState extends States\State
 
 	public function getCreated(): DateTimeInterface|null
 	{
-		return $this->created;
+		return $this->createdAt;
 	}
 
 	public function getUpdated(): DateTimeInterface|null
 	{
-		return $this->updated;
+		return $this->updatedAt;
 	}
 
 }

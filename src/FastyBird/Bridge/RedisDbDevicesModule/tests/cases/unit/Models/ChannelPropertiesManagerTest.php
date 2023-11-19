@@ -104,11 +104,9 @@ final class ChannelPropertiesManagerTest extends BaseTestCase
 					JsonAssert::assertMatch(Utils\Json::encode([
 						'actual_value' => 10,
 						'expected_value' => 40,
-						'pending' => false,
-						'valid' => false,
 						'created_at' => '2020-04-01T12:00:00+00:00',
-						'updated_at' => '2020-04-01T12:00:00+00:00',
 						'id' => $id->toString(),
+						'updated_at' => '2020-04-01T12:00:00+00:00',
 					]), $data);
 
 					return true;
@@ -117,7 +115,7 @@ final class ChannelPropertiesManagerTest extends BaseTestCase
 			->willReturn(true);
 
 		$redisDbClient
-			->expects(self::exactly(2))
+			->expects(self::exactly(3))
 			->method('get')
 			->with($id->toString())
 			->willReturn(Utils\Json::encode([

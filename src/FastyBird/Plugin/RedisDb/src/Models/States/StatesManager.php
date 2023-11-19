@@ -36,6 +36,7 @@ use stdClass;
 use Throwable;
 use function array_keys;
 use function assert;
+use function get_object_vars;
 use function in_array;
 use function is_numeric;
 use function is_object;
@@ -267,9 +268,23 @@ class StatesManager
 		int $database,
 	): string
 	{
-		$data = $state->toArray();
-
 		try {
+			$getResult = $this->client->get($state->getId()->toString());
+
+			if ($getResult instanceof Promise\PromiseInterface) {
+				$raw = await($getResult);
+				assert(is_string($raw) || $raw === null);
+			} else {
+				$raw = $getResult;
+			}
+
+			if (!is_string($raw)) {
+				throw new Exceptions\InvalidState('Stored record could not be loaded from database');
+			}
+
+			$data = Utils\Json::decode($raw);
+			assert($data instanceof stdClass);
+
 			$isUpdated = false;
 
 			foreach ($fields as $field) {
@@ -290,16 +305,16 @@ class StatesManager
 					}
 
 					if (
-						!in_array($field, array_keys($data), true)
-						|| $data[$this->camelToSnake($field)] !== $value
+						!in_array($field, array_keys(get_object_vars($data)), true)
+						|| $data->{$this->camelToSnake($field)} !== $value
 					) {
-						$data[$this->camelToSnake($field)] = $value;
+						$data->{$this->camelToSnake($field)} = $value;
 
 						$isUpdated = true;
 					}
 				} else {
 					if ($field === States\State::UPDATED_AT_FIELD) {
-						$data[$this->camelToSnake($field)] = $this->dateTimeFactory->getNow()->format(
+						$data->{$this->camelToSnake($field)} = $this->dateTimeFactory->getNow()->format(
 							DateTimeInterface::ATOM,
 						);
 					}
