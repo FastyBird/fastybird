@@ -401,15 +401,8 @@
     "else": {
       "properties": {
         "parent": {
-          "oneOf": [
-            {
-              "type": "null"
-            },
-            {
-              "type": "string",
-              "format": "uuid"
-            }
-          ],
+          "type": "string",
+          "format": "uuid",
           "description": "Document parent unique uuid v4 identifier",
           "default": null
         },

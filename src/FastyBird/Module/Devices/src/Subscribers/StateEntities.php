@@ -232,8 +232,8 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 			$this->entityFactory->create(
 				Utils\Json::encode(
 					array_merge(
-						$state?->toArray() ?? [],
 						$property->toArray(),
+						$state?->toArray() ?? [],
 					),
 				),
 				$routingKey,

@@ -40,6 +40,8 @@ final class DeviceMappedProperty extends MappedProperty
 		Uuid\UuidInterface $id,
 		#[BootstrapObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $device,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $parent,
 		Types\PropertyType $type,
 		Types\PropertyCategory $category,
 		string $identifier,
@@ -55,12 +57,10 @@ final class DeviceMappedProperty extends MappedProperty
 		bool|float|int|string|null $actualValue = null,
 		bool|float|int|string|null $previousValue = null,
 		bool|float|int|string|null $expectedValue = null,
-		bool|DateTimeInterface|null $pending = null,
-		bool|null $valid = null,
+		bool|DateTimeInterface $pending = false,
+		bool $valid = false,
 		bool|float|int|string|null $value = null,
 		bool|float|int|string|null $default = null,
-		#[BootstrapObjectMapper\Rules\UuidValue()]
-		private readonly Uuid\UuidInterface $parent,
 		Uuid\UuidInterface|null $owner = null,
 	)
 	{
