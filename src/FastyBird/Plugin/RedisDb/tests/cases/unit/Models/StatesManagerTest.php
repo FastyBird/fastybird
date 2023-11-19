@@ -3,7 +3,6 @@
 namespace FastyBird\Plugin\RedisDb\Tests\Cases\Unit\Models;
 
 use DateTimeImmutable;
-use DateTimeInterface;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Plugin\RedisDb\Clients;
