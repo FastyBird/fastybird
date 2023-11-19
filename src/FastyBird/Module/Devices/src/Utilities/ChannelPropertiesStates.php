@@ -85,6 +85,7 @@ final class ChannelPropertiesStates
 	}
 
 	/**
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -99,6 +100,7 @@ final class ChannelPropertiesStates
 	}
 
 	/**
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -115,6 +117,7 @@ final class ChannelPropertiesStates
 	/**
 	 * @param MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty|array<MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty>|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped|array<Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped> $property
 	 *
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -128,12 +131,12 @@ final class ChannelPropertiesStates
 		if (is_array($property)) {
 			foreach ($property as $item) {
 				$this->writeValue($item, Utils\ArrayHash::from([
-					States\Property::VALID_KEY => $state,
+					States\Property::VALID_FIELD => $state,
 				]));
 			}
 		} else {
 			$this->writeValue($property, Utils\ArrayHash::from([
-				States\Property::VALID_KEY => $state,
+				States\Property::VALID_FIELD => $state,
 			]));
 		}
 	}
@@ -160,6 +163,8 @@ final class ChannelPropertiesStates
 			);
 		}
 
+		$mapped = null;
+
 		if ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
 			$findPropertyQuery = new Queries\Configuration\FindChannelProperties();
 			$findPropertyQuery->byId($property->getParent());
@@ -170,6 +175,8 @@ final class ChannelPropertiesStates
 				throw new Exceptions\InvalidState('Mapped property parent could not be loaded');
 			}
 
+			$mapped = $property;
+
 			$property = $parent;
 		}
 
@@ -179,33 +186,36 @@ final class ChannelPropertiesStates
 			if ($state !== null) {
 				try {
 					if ($state->getActualValue() !== null) {
-						$state = $forReading ? $this->updateState(
+						$actualValue = $forReading ? ValueHelper::normalizeReadValue(
+							$property->getDataType(),
+							$state->getActualValue(),
+							$property->getFormat(),
+							$property->getScale(),
+							$property->getInvalid(),
+						) : ValueHelper::normalizeValue(
+							$property->getDataType(),
+							$state->getActualValue(),
+							$property->getFormat(),
+							$property->getInvalid(),
+						);
+
+						$state = $this->updateState(
 							$state,
 							[
-								States\Property::ACTUAL_VALUE_KEY => ValueHelper::normalizeReadValue(
-									$property->getDataType(),
-									$state->getActualValue(),
-									$property->getFormat(),
-									$property->getScale(),
-									$property->getInvalid(),
-								),
-							],
-						) : $this->updateState(
-							$state,
-							[
-								States\Property::ACTUAL_VALUE_KEY => ValueHelper::normalizeValue(
-									$property->getDataType(),
-									$state->getActualValue(),
-									$property->getFormat(),
-									$property->getInvalid(),
-								),
+								States\Property::ACTUAL_VALUE_FIELD => $mapped !== null
+									? ValueHelper::transformValueToMappedParent(
+										$mapped->getDataType(),
+										$property->getDataType(),
+										$actualValue,
+									)
+									: $actualValue,
 							],
 						);
 					}
 				} catch (Exceptions\InvalidArgument $ex) {
 					$this->channelPropertiesStatesManager->update($property, $state, Utils\ArrayHash::from([
-						States\Property::ACTUAL_VALUE_KEY => null,
-						States\Property::VALID_KEY => false,
+						States\Property::ACTUAL_VALUE_FIELD => null,
+						States\Property::VALID_FIELD => false,
 					]));
 
 					$this->logger->error(
@@ -222,33 +232,36 @@ final class ChannelPropertiesStates
 
 				try {
 					if ($state->getExpectedValue() !== null) {
-						$state = $forReading ? $this->updateState(
+						$expectedValue = $forReading ? ValueHelper::normalizeReadValue(
+							$property->getDataType(),
+							$state->getExpectedValue(),
+							$property->getFormat(),
+							$property->getScale(),
+							$property->getInvalid(),
+						) : ValueHelper::normalizeValue(
+							$property->getDataType(),
+							$state->getExpectedValue(),
+							$property->getFormat(),
+							$property->getInvalid(),
+						);
+
+						$state = $this->updateState(
 							$state,
 							[
-								States\Property::EXPECTED_VALUE_KEY => ValueHelper::normalizeReadValue(
-									$property->getDataType(),
-									$state->getExpectedValue(),
-									$property->getFormat(),
-									$property->getScale(),
-									$property->getInvalid(),
-								),
-							],
-						) : $this->updateState(
-							$state,
-							[
-								States\Property::EXPECTED_VALUE_KEY => ValueHelper::normalizeValue(
-									$property->getDataType(),
-									$state->getExpectedValue(),
-									$property->getFormat(),
-									$property->getInvalid(),
-								),
+								States\Property::EXPECTED_VALUE_FIELD => $mapped !== null
+									? ValueHelper::transformValueToMappedParent(
+										$mapped->getDataType(),
+										$property->getDataType(),
+										$expectedValue,
+									)
+									: $expectedValue,
 							],
 						);
 					}
 				} catch (Exceptions\InvalidArgument $ex) {
 					$this->channelPropertiesStatesManager->update($property, $state, Utils\ArrayHash::from([
-						States\Property::EXPECTED_VALUE_KEY => null,
-						States\Property::PENDING_KEY => false,
+						States\Property::EXPECTED_VALUE_FIELD => null,
+						States\Property::PENDING_FIELD => false,
 					]));
 
 					$this->logger->error(
@@ -279,6 +292,7 @@ final class ChannelPropertiesStates
 	}
 
 	/**
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -301,6 +315,8 @@ final class ChannelPropertiesStates
 			);
 		}
 
+		$mapped = null;
+
 		if ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
 			$findPropertyQuery = new Queries\Configuration\FindChannelProperties();
 			$findPropertyQuery->byId($property->getParent());
@@ -311,126 +327,142 @@ final class ChannelPropertiesStates
 				throw new Exceptions\InvalidState('Mapped property parent could not be loaded');
 			}
 
+			$mapped = $property;
+
 			$property = $parent;
 		}
 
 		$state = $this->loadValue($property, $forWriting);
 
-		if ($data->offsetExists(States\Property::ACTUAL_VALUE_KEY)) {
+		if ($data->offsetExists(States\Property::ACTUAL_VALUE_FIELD)) {
 			if ($forWriting) {
-				try {
-					$data->offsetSet(
-						States\Property::ACTUAL_VALUE_KEY,
-						ValueHelper::flattenValue(
-							ValueHelper::normalizeWriteValue(
-								$property->getDataType(),
-								/** @phpstan-ignore-next-line */
-								$data->offsetGet(States\Property::ACTUAL_VALUE_KEY),
-								$property->getFormat(),
-								$property->getScale(),
-								$property->getInvalid(),
-							),
-						),
+				$actualValue = $mapped !== null
+					? ValueHelper::normalizeWriteValue(
+						$mapped->getDataType(),
+						/** @phpstan-ignore-next-line */
+						$data->offsetGet(States\Property::ACTUAL_VALUE_FIELD),
+						$mapped->getFormat(),
+						$mapped->getScale(),
+						$mapped->getInvalid(),
+					)
+					: ValueHelper::normalizeWriteValue(
+						$property->getDataType(),
+						/** @phpstan-ignore-next-line */
+						$data->offsetGet(States\Property::ACTUAL_VALUE_FIELD),
+						$property->getFormat(),
+						$property->getScale(),
+						$property->getInvalid(),
 					);
-				} catch (Exceptions\InvalidArgument $ex) {
-					$data->offsetSet(States\Property::ACTUAL_VALUE_KEY, null);
-					$data->offsetSet(States\Property::VALID_KEY, false);
 
-					$this->logger->error(
-						'Provided property actual value is not valid',
-						[
-							'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
-							'type' => 'channel-properties-states',
-							'exception' => BootstrapHelpers\Logger::buildException($ex),
-						],
-					);
-				}
 			} else {
-				try {
-					$data->offsetSet(
-						States\Property::ACTUAL_VALUE_KEY,
-						ValueHelper::flattenValue(
-							ValueHelper::normalizeValue(
-								$property->getDataType(),
-								/** @phpstan-ignore-next-line */
-								$data->offsetGet(States\Property::ACTUAL_VALUE_KEY),
-								$property->getFormat(),
-								$property->getInvalid(),
-							),
-						),
+				$actualValue = $mapped !== null
+					? ValueHelper::normalizeValue(
+						$mapped->getDataType(),
+						/** @phpstan-ignore-next-line */
+						$data->offsetGet(States\Property::ACTUAL_VALUE_FIELD),
+						$mapped->getFormat(),
+						$mapped->getInvalid(),
+					)
+					: ValueHelper::normalizeValue(
+						$property->getDataType(),
+						/** @phpstan-ignore-next-line */
+						$data->offsetGet(States\Property::ACTUAL_VALUE_FIELD),
+						$property->getFormat(),
+						$property->getInvalid(),
 					);
-				} catch (Exceptions\InvalidArgument $ex) {
-					$data->offsetSet(States\Property::ACTUAL_VALUE_KEY, null);
-					$data->offsetSet(States\Property::VALID_KEY, false);
+			}
 
-					$this->logger->error(
-						'Provided property actual value is not valid',
-						[
-							'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
-							'type' => 'channel-properties-states',
-							'exception' => BootstrapHelpers\Logger::buildException($ex),
-						],
-					);
-				}
+			if ($mapped !== null) {
+				$actualValue = ValueHelper::transformValueFromMappedParent(
+					$mapped->getDataType(),
+					$property->getDataType(),
+					$actualValue,
+				);
+			}
+
+			try {
+				$data->offsetSet(
+					States\Property::ACTUAL_VALUE_FIELD,
+					ValueHelper::flattenValue($actualValue),
+				);
+			} catch (Exceptions\InvalidArgument $ex) {
+				$data->offsetSet(States\Property::ACTUAL_VALUE_FIELD, null);
+				$data->offsetSet(States\Property::VALID_FIELD, false);
+
+				$this->logger->error(
+					'Provided property actual value is not valid',
+					[
+						'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+						'type' => 'channel-properties-states',
+						'exception' => BootstrapHelpers\Logger::buildException($ex),
+					],
+				);
 			}
 		}
 
-		if ($data->offsetExists(States\Property::EXPECTED_VALUE_KEY)) {
+		if ($data->offsetExists(States\Property::EXPECTED_VALUE_FIELD)) {
 			if ($forWriting) {
-				try {
-					$data->offsetSet(
-						States\Property::EXPECTED_VALUE_KEY,
-						ValueHelper::flattenValue(
-							ValueHelper::normalizeWriteValue(
-								$property->getDataType(),
-								/** @phpstan-ignore-next-line */
-								$data->offsetGet(States\Property::EXPECTED_VALUE_KEY),
-								$property->getFormat(),
-								$property->getScale(),
-								$property->getInvalid(),
-							),
-						),
+				$expectedValue = $mapped !== null
+					? ValueHelper::normalizeWriteValue(
+						$mapped->getDataType(),
+						/** @phpstan-ignore-next-line */
+						$data->offsetGet(States\Property::EXPECTED_VALUE_FIELD),
+						$mapped->getFormat(),
+						$mapped->getScale(),
+						$mapped->getInvalid(),
+					)
+					: ValueHelper::normalizeWriteValue(
+						$property->getDataType(),
+						/** @phpstan-ignore-next-line */
+						$data->offsetGet(States\Property::EXPECTED_VALUE_FIELD),
+						$property->getFormat(),
+						$property->getScale(),
+						$property->getInvalid(),
 					);
-				} catch (Exceptions\InvalidArgument $ex) {
-					$data->offsetSet(States\Property::EXPECTED_VALUE_KEY, null);
-					$data->offsetSet(States\Property::PENDING_KEY, false);
 
-					$this->logger->error(
-						'Provided property expected value was not valid',
-						[
-							'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
-							'type' => 'channel-properties-states',
-							'exception' => BootstrapHelpers\Logger::buildException($ex),
-						],
-					);
-				}
 			} else {
-				try {
-					$data->offsetSet(
-						States\Property::EXPECTED_VALUE_KEY,
-						ValueHelper::flattenValue(
-							ValueHelper::normalizeValue(
-								$property->getDataType(),
-								/** @phpstan-ignore-next-line */
-								$data->offsetGet(States\Property::EXPECTED_VALUE_KEY),
-								$property->getFormat(),
-								$property->getInvalid(),
-							),
-						),
+				$expectedValue = $mapped !== null
+					? ValueHelper::normalizeValue(
+						$mapped->getDataType(),
+						/** @phpstan-ignore-next-line */
+						$data->offsetGet(States\Property::EXPECTED_VALUE_FIELD),
+						$mapped->getFormat(),
+						$mapped->getInvalid(),
+					)
+					: ValueHelper::normalizeValue(
+						$property->getDataType(),
+						/** @phpstan-ignore-next-line */
+						$data->offsetGet(States\Property::EXPECTED_VALUE_FIELD),
+						$property->getFormat(),
+						$property->getInvalid(),
 					);
-				} catch (Exceptions\InvalidArgument $ex) {
-					$data->offsetSet(States\Property::EXPECTED_VALUE_KEY, null);
-					$data->offsetSet(States\Property::PENDING_KEY, false);
+			}
 
-					$this->logger->error(
-						'Provided property expected value was not valid',
-						[
-							'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
-							'type' => 'channel-properties-states',
-							'exception' => BootstrapHelpers\Logger::buildException($ex),
-						],
-					);
-				}
+			if ($mapped !== null) {
+				$expectedValue = ValueHelper::transformValueFromMappedParent(
+					$mapped->getDataType(),
+					$property->getDataType(),
+					$expectedValue,
+				);
+			}
+
+			try {
+				$data->offsetSet(
+					States\Property::EXPECTED_VALUE_FIELD,
+					ValueHelper::flattenValue($expectedValue),
+				);
+			} catch (Exceptions\InvalidArgument $ex) {
+				$data->offsetSet(States\Property::EXPECTED_VALUE_FIELD, null);
+				$data->offsetSet(States\Property::PENDING_FIELD, false);
+
+				$this->logger->error(
+					'Provided property expected value was not valid',
+					[
+						'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+						'type' => 'channel-properties-states',
+						'exception' => BootstrapHelpers\Logger::buildException($ex),
+					],
+				);
 			}
 		}
 

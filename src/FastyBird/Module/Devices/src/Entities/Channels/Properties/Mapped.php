@@ -159,6 +159,33 @@ class Mapped extends Property
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+	public function getDefault(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
+	{
+		if (!$this->getParent() instanceof Variable) {
+			throw new Exceptions\InvalidState('Reading default value is allowed only for variable parent properties');
+		}
+
+		return $this->getParent()->getDefault();
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
+	public function setDefault(string|null $default): void
+	{
+		if (!$this->getParent() instanceof Variable) {
+			throw new Exceptions\InvalidState('Setting default value is allowed only for variable parent properties');
+		}
+
+		throw new Exceptions\InvalidState('Default value setter is allowed only for parent');
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 	public function getValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
 	{
 		if (!$this->getParent() instanceof Variable) {

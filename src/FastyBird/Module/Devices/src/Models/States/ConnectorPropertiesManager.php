@@ -61,14 +61,14 @@ final class ConnectorPropertiesManager
 		}
 
 		if (
-			property_exists($values, States\Property::ACTUAL_VALUE_KEY)
-			&& property_exists($values, States\Property::EXPECTED_VALUE_KEY)
-			&& $values->offsetGet(States\Property::ACTUAL_VALUE_KEY) === $values->offsetGet(
-				States\Property::EXPECTED_VALUE_KEY,
+			property_exists($values, States\Property::ACTUAL_VALUE_FIELD)
+			&& property_exists($values, States\Property::EXPECTED_VALUE_FIELD)
+			&& $values->offsetGet(States\Property::ACTUAL_VALUE_FIELD) === $values->offsetGet(
+				States\Property::EXPECTED_VALUE_FIELD,
 			)
 		) {
-			$values->offsetSet(States\Property::EXPECTED_VALUE_KEY, null);
-			$values->offsetSet(States\Property::PENDING_KEY, null);
+			$values->offsetSet(States\Property::EXPECTED_VALUE_FIELD, null);
+			$values->offsetSet(States\Property::PENDING_FIELD, null);
 		}
 
 		$createdState = $this->manager->create($property->getId(), $values);
@@ -99,8 +99,8 @@ final class ConnectorPropertiesManager
 			$updatedState = $this->manager->update(
 				$updatedState,
 				Utils\ArrayHash::from([
-					States\Property::EXPECTED_VALUE_KEY => null,
-					States\Property::PENDING_KEY => false,
+					States\Property::EXPECTED_VALUE_FIELD => null,
+					States\Property::PENDING_FIELD => false,
 				]),
 			);
 		}

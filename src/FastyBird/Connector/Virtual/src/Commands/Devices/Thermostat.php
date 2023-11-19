@@ -961,30 +961,30 @@ class Thermostat extends Device
 		$this->channelPropertiesStatesManager->setValue(
 			$hvacModeProperty,
 			Utils\ArrayHash::from([
-				DevicesStates\Property::ACTUAL_VALUE_KEY => Types\HvacMode::OFF,
-				DevicesStates\Property::EXPECTED_VALUE_KEY => null,
-				DevicesStates\Property::VALID_KEY => true,
-				DevicesStates\Property::PENDING_KEY => false,
+				DevicesStates\Property::ACTUAL_VALUE_FIELD => Types\HvacMode::OFF,
+				DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
+				DevicesStates\Property::VALID_FIELD => true,
+				DevicesStates\Property::PENDING_FIELD => false,
 			]),
 		);
 
 		$this->channelPropertiesStatesManager->setValue(
 			$targetTempProperty,
 			Utils\ArrayHash::from([
-				DevicesStates\Property::ACTUAL_VALUE_KEY => $targetTemp,
-				DevicesStates\Property::EXPECTED_VALUE_KEY => null,
-				DevicesStates\Property::VALID_KEY => true,
-				DevicesStates\Property::PENDING_KEY => false,
+				DevicesStates\Property::ACTUAL_VALUE_FIELD => $targetTemp,
+				DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
+				DevicesStates\Property::VALID_FIELD => true,
+				DevicesStates\Property::PENDING_FIELD => false,
 			]),
 		);
 
 		$this->channelPropertiesStatesManager->setValue(
 			$presetModeProperty,
 			Utils\ArrayHash::from([
-				DevicesStates\Property::ACTUAL_VALUE_KEY => Types\ThermostatMode::MANUAL,
-				DevicesStates\Property::EXPECTED_VALUE_KEY => null,
-				DevicesStates\Property::VALID_KEY => true,
-				DevicesStates\Property::PENDING_KEY => false,
+				DevicesStates\Property::ACTUAL_VALUE_FIELD => Types\ThermostatMode::MANUAL,
+				DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
+				DevicesStates\Property::VALID_FIELD => true,
+				DevicesStates\Property::PENDING_FIELD => false,
 			]),
 		);
 
@@ -992,10 +992,10 @@ class Thermostat extends Device
 			$this->channelPropertiesStatesManager->setValue(
 				$data['property'],
 				Utils\ArrayHash::from([
-					DevicesStates\Property::ACTUAL_VALUE_KEY => $data['value'],
-					DevicesStates\Property::EXPECTED_VALUE_KEY => null,
-					DevicesStates\Property::VALID_KEY => true,
-					DevicesStates\Property::PENDING_KEY => false,
+					DevicesStates\Property::ACTUAL_VALUE_FIELD => $data['value'],
+					DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
+					DevicesStates\Property::VALID_FIELD => true,
+					DevicesStates\Property::PENDING_FIELD => false,
 				]),
 			);
 		}
@@ -1521,10 +1521,10 @@ class Thermostat extends Device
 		$this->channelPropertiesStatesManager->setValue(
 			$hvacModeProperty,
 			Utils\ArrayHash::from([
-				DevicesStates\Property::ACTUAL_VALUE_KEY => Types\HvacMode::OFF,
-				DevicesStates\Property::EXPECTED_VALUE_KEY => null,
-				DevicesStates\Property::VALID_KEY => true,
-				DevicesStates\Property::PENDING_KEY => false,
+				DevicesStates\Property::ACTUAL_VALUE_FIELD => Types\HvacMode::OFF,
+				DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
+				DevicesStates\Property::VALID_FIELD => true,
+				DevicesStates\Property::PENDING_FIELD => false,
 			]),
 		);
 
@@ -1532,10 +1532,10 @@ class Thermostat extends Device
 		$this->channelPropertiesStatesManager->setValue(
 			$targetTempProperty,
 			Utils\ArrayHash::from([
-				DevicesStates\Property::ACTUAL_VALUE_KEY => $targetTemp,
-				DevicesStates\Property::EXPECTED_VALUE_KEY => null,
-				DevicesStates\Property::VALID_KEY => true,
-				DevicesStates\Property::PENDING_KEY => false,
+				DevicesStates\Property::ACTUAL_VALUE_FIELD => $targetTemp,
+				DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
+				DevicesStates\Property::VALID_FIELD => true,
+				DevicesStates\Property::PENDING_FIELD => false,
 			]),
 		);
 
@@ -1543,10 +1543,10 @@ class Thermostat extends Device
 		$this->channelPropertiesStatesManager->setValue(
 			$presetModeProperty,
 			Utils\ArrayHash::from([
-				DevicesStates\Property::ACTUAL_VALUE_KEY => Types\ThermostatMode::MANUAL,
-				DevicesStates\Property::EXPECTED_VALUE_KEY => null,
-				DevicesStates\Property::VALID_KEY => true,
-				DevicesStates\Property::PENDING_KEY => false,
+				DevicesStates\Property::ACTUAL_VALUE_FIELD => Types\ThermostatMode::MANUAL,
+				DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
+				DevicesStates\Property::VALID_FIELD => true,
+				DevicesStates\Property::PENDING_FIELD => false,
 			]),
 		);
 
@@ -1554,10 +1554,10 @@ class Thermostat extends Device
 			$this->channelPropertiesStatesManager->setValue(
 				$data['property'],
 				Utils\ArrayHash::from([
-					DevicesStates\Property::ACTUAL_VALUE_KEY => $data['value'],
-					DevicesStates\Property::EXPECTED_VALUE_KEY => null,
-					DevicesStates\Property::VALID_KEY => true,
-					DevicesStates\Property::PENDING_KEY => false,
+					DevicesStates\Property::ACTUAL_VALUE_FIELD => $data['value'],
+					DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
+					DevicesStates\Property::VALID_FIELD => true,
+					DevicesStates\Property::PENDING_FIELD => false,
 				]),
 			);
 		}
@@ -1734,6 +1734,7 @@ class Thermostat extends Device
 
 	/**
 	 * @throws DBAL\Exception
+	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
@@ -1892,10 +1893,10 @@ class Thermostat extends Device
 		$this->channelPropertiesStatesManager->setValue(
 			$targetTempProperty,
 			Utils\ArrayHash::from([
-				DevicesStates\Property::ACTUAL_VALUE_KEY => $targetTemp,
-				DevicesStates\Property::EXPECTED_VALUE_KEY => null,
-				DevicesStates\Property::VALID_KEY => true,
-				DevicesStates\Property::PENDING_KEY => false,
+				DevicesStates\Property::ACTUAL_VALUE_FIELD => $targetTemp,
+				DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
+				DevicesStates\Property::VALID_FIELD => true,
+				DevicesStates\Property::PENDING_FIELD => false,
 			]),
 		);
 	}
@@ -2923,6 +2924,7 @@ class Thermostat extends Device
 	 * @throws Console\Exception\InvalidArgumentException
 	 * @throws Console\Exception\ExceptionInterface
 	 * @throws DBAL\Exception
+	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exception
 	 * @throws Exceptions\Runtime

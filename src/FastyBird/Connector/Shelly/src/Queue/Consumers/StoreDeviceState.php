@@ -73,6 +73,7 @@ final class StoreDeviceState implements Queue\Consumer
 
 	/**
 	 * @throws DBAL\Exception
+	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
@@ -135,12 +136,12 @@ final class StoreDeviceState implements Queue\Consumer
 				if ($property !== null) {
 					if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
 						$this->devicePropertiesStateManager->setValue($property, Utils\ArrayHash::from([
-							DevicesStates\Property::ACTUAL_VALUE_KEY => DevicesUtilities\ValueHelper::transformValueFromDevice(
+							DevicesStates\Property::ACTUAL_VALUE_FIELD => DevicesUtilities\ValueHelper::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								$state->getValue(),
 							),
-							DevicesStates\Property::VALID_KEY => true,
+							DevicesStates\Property::VALID_FIELD => true,
 						]));
 
 					} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty) {
@@ -193,12 +194,12 @@ final class StoreDeviceState implements Queue\Consumer
 						if ($property !== null) {
 							if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
 								$this->channelPropertiesStateManager->setValue($property, Utils\ArrayHash::from([
-									DevicesStates\Property::ACTUAL_VALUE_KEY => DevicesUtilities\ValueHelper::transformValueFromDevice(
+									DevicesStates\Property::ACTUAL_VALUE_FIELD => DevicesUtilities\ValueHelper::transformValueFromDevice(
 										$property->getDataType(),
 										$property->getFormat(),
 										$state->getValue(),
 									),
-									DevicesStates\Property::VALID_KEY => true,
+									DevicesStates\Property::VALID_FIELD => true,
 								]));
 
 							} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
@@ -264,12 +265,12 @@ final class StoreDeviceState implements Queue\Consumer
 
 						if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
 							$this->channelPropertiesStateManager->setValue($property, Utils\ArrayHash::from([
-								DevicesStates\Property::ACTUAL_VALUE_KEY => DevicesUtilities\ValueHelper::transformValueFromDevice(
+								DevicesStates\Property::ACTUAL_VALUE_FIELD => DevicesUtilities\ValueHelper::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$sensor->getValue(),
 								),
-								DevicesStates\Property::VALID_KEY => true,
+								DevicesStates\Property::VALID_FIELD => true,
 							]));
 						} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
 							$this->databaseHelper->transaction(

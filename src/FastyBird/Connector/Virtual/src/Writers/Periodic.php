@@ -178,9 +178,9 @@ class Periodic implements Writer
 					continue;
 				}
 
-				$valueToWrite = $property instanceof DevicesEntities\Channels\Properties\Mapped ? DevicesUtilities\ValueHelper::flattenValue(
-					$state->getExpectedValue() ?? $state->getActualValue(),
-				) : DevicesUtilities\ValueHelper::flattenValue($state->getExpectedValue());
+				$valueToWrite = $property instanceof DevicesEntities\Channels\Properties\Mapped
+					? DevicesUtilities\ValueHelper::flattenValue($state->getExpectedValue() ?? $state->getActualValue())
+					: DevicesUtilities\ValueHelper::flattenValue($state->getExpectedValue());
 
 				if (
 					(

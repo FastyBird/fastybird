@@ -128,12 +128,12 @@ final class ConnectorPropertiesStates
 		if (is_array($property)) {
 			foreach ($property as $item) {
 				$this->setValue($item, Utils\ArrayHash::from([
-					States\Property::VALID_KEY => $state,
+					States\Property::VALID_FIELD => $state,
 				]));
 			}
 		} else {
 			$this->setValue($property, Utils\ArrayHash::from([
-				States\Property::VALID_KEY => $state,
+				States\Property::VALID_FIELD => $state,
 			]));
 		}
 	}
@@ -166,7 +166,7 @@ final class ConnectorPropertiesStates
 						$state = $forReading ? $this->updateState(
 							$state,
 							[
-								States\Property::ACTUAL_VALUE_KEY => ValueHelper::normalizeReadValue(
+								States\Property::ACTUAL_VALUE_FIELD => ValueHelper::normalizeReadValue(
 									$property->getDataType(),
 									$state->getActualValue(),
 									$property->getFormat(),
@@ -177,7 +177,7 @@ final class ConnectorPropertiesStates
 						) : $this->updateState(
 							$state,
 							[
-								States\Property::ACTUAL_VALUE_KEY => ValueHelper::normalizeValue(
+								States\Property::ACTUAL_VALUE_FIELD => ValueHelper::normalizeValue(
 									$property->getDataType(),
 									$state->getActualValue(),
 									$property->getFormat(),
@@ -188,8 +188,8 @@ final class ConnectorPropertiesStates
 					}
 				} catch (Exceptions\InvalidArgument $ex) {
 					$this->connectorPropertiesStatesManager->update($property, $state, Utils\ArrayHash::from([
-						States\Property::ACTUAL_VALUE_KEY => null,
-						States\Property::VALID_KEY => false,
+						States\Property::ACTUAL_VALUE_FIELD => null,
+						States\Property::VALID_FIELD => false,
 					]));
 
 					$this->logger->error(
@@ -209,7 +209,7 @@ final class ConnectorPropertiesStates
 						$state = $forReading ? $this->updateState(
 							$state,
 							[
-								States\Property::EXPECTED_VALUE_KEY => ValueHelper::normalizeReadValue(
+								States\Property::EXPECTED_VALUE_FIELD => ValueHelper::normalizeReadValue(
 									$property->getDataType(),
 									$state->getExpectedValue(),
 									$property->getFormat(),
@@ -220,7 +220,7 @@ final class ConnectorPropertiesStates
 						) : $this->updateState(
 							$state,
 							[
-								States\Property::EXPECTED_VALUE_KEY => ValueHelper::normalizeValue(
+								States\Property::EXPECTED_VALUE_FIELD => ValueHelper::normalizeValue(
 									$property->getDataType(),
 									$state->getExpectedValue(),
 									$property->getFormat(),
@@ -231,8 +231,8 @@ final class ConnectorPropertiesStates
 					}
 				} catch (Exceptions\InvalidArgument $ex) {
 					$this->connectorPropertiesStatesManager->update($property, $state, Utils\ArrayHash::from([
-						States\Property::EXPECTED_VALUE_KEY => null,
-						States\Property::PENDING_KEY => false,
+						States\Property::EXPECTED_VALUE_FIELD => null,
+						States\Property::PENDING_FIELD => false,
 					]));
 
 					$this->logger->error(
@@ -284,16 +284,16 @@ final class ConnectorPropertiesStates
 
 		$state = $this->loadValue($property, $forWriting);
 
-		if ($data->offsetExists(States\Property::ACTUAL_VALUE_KEY)) {
+		if ($data->offsetExists(States\Property::ACTUAL_VALUE_FIELD)) {
 			if ($forWriting) {
 				try {
 					$data->offsetSet(
-						States\Property::ACTUAL_VALUE_KEY,
+						States\Property::ACTUAL_VALUE_FIELD,
 						ValueHelper::flattenValue(
 							ValueHelper::normalizeWriteValue(
 								$property->getDataType(),
 								/** @phpstan-ignore-next-line */
-								$data->offsetGet(States\Property::ACTUAL_VALUE_KEY),
+								$data->offsetGet(States\Property::ACTUAL_VALUE_FIELD),
 								$property->getFormat(),
 								$property->getScale(),
 								$property->getInvalid(),
@@ -301,8 +301,8 @@ final class ConnectorPropertiesStates
 						),
 					);
 				} catch (Exceptions\InvalidArgument $ex) {
-					$data->offsetSet(States\Property::ACTUAL_VALUE_KEY, null);
-					$data->offsetSet(States\Property::VALID_KEY, false);
+					$data->offsetSet(States\Property::ACTUAL_VALUE_FIELD, null);
+					$data->offsetSet(States\Property::VALID_FIELD, false);
 
 					$this->logger->error(
 						'Provided property actual value is not valid',
@@ -316,20 +316,20 @@ final class ConnectorPropertiesStates
 			} else {
 				try {
 					$data->offsetSet(
-						States\Property::ACTUAL_VALUE_KEY,
+						States\Property::ACTUAL_VALUE_FIELD,
 						ValueHelper::flattenValue(
 							ValueHelper::normalizeValue(
 								$property->getDataType(),
 								/** @phpstan-ignore-next-line */
-								$data->offsetGet(States\Property::ACTUAL_VALUE_KEY),
+								$data->offsetGet(States\Property::ACTUAL_VALUE_FIELD),
 								$property->getFormat(),
 								$property->getInvalid(),
 							),
 						),
 					);
 				} catch (Exceptions\InvalidArgument $ex) {
-					$data->offsetSet(States\Property::ACTUAL_VALUE_KEY, null);
-					$data->offsetSet(States\Property::VALID_KEY, false);
+					$data->offsetSet(States\Property::ACTUAL_VALUE_FIELD, null);
+					$data->offsetSet(States\Property::VALID_FIELD, false);
 
 					$this->logger->error(
 						'Provided property actual value is not valid',
@@ -343,16 +343,16 @@ final class ConnectorPropertiesStates
 			}
 		}
 
-		if ($data->offsetExists(States\Property::EXPECTED_VALUE_KEY)) {
+		if ($data->offsetExists(States\Property::EXPECTED_VALUE_FIELD)) {
 			if ($forWriting) {
 				try {
 					$data->offsetSet(
-						States\Property::EXPECTED_VALUE_KEY,
+						States\Property::EXPECTED_VALUE_FIELD,
 						ValueHelper::flattenValue(
 							ValueHelper::normalizeWriteValue(
 								$property->getDataType(),
 								/** @phpstan-ignore-next-line */
-								$data->offsetGet(States\Property::EXPECTED_VALUE_KEY),
+								$data->offsetGet(States\Property::EXPECTED_VALUE_FIELD),
 								$property->getFormat(),
 								$property->getScale(),
 								$property->getInvalid(),
@@ -360,8 +360,8 @@ final class ConnectorPropertiesStates
 						),
 					);
 				} catch (Exceptions\InvalidArgument $ex) {
-					$data->offsetSet(States\Property::EXPECTED_VALUE_KEY, null);
-					$data->offsetSet(States\Property::PENDING_KEY, false);
+					$data->offsetSet(States\Property::EXPECTED_VALUE_FIELD, null);
+					$data->offsetSet(States\Property::PENDING_FIELD, false);
 
 					$this->logger->error(
 						'Provided property expected value was not valid',
@@ -375,20 +375,20 @@ final class ConnectorPropertiesStates
 			} else {
 				try {
 					$data->offsetSet(
-						States\Property::EXPECTED_VALUE_KEY,
+						States\Property::EXPECTED_VALUE_FIELD,
 						ValueHelper::flattenValue(
 							ValueHelper::normalizeValue(
 								$property->getDataType(),
 								/** @phpstan-ignore-next-line */
-								$data->offsetGet(States\Property::EXPECTED_VALUE_KEY),
+								$data->offsetGet(States\Property::EXPECTED_VALUE_FIELD),
 								$property->getFormat(),
 								$property->getInvalid(),
 							),
 						),
 					);
 				} catch (Exceptions\InvalidArgument $ex) {
-					$data->offsetSet(States\Property::EXPECTED_VALUE_KEY, null);
-					$data->offsetSet(States\Property::PENDING_KEY, false);
+					$data->offsetSet(States\Property::EXPECTED_VALUE_FIELD, null);
+					$data->offsetSet(States\Property::PENDING_FIELD, false);
 
 					$this->logger->error(
 						'Provided property expected value was not valid',

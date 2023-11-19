@@ -31,17 +31,13 @@ use Ramsey\Uuid;
 interface Property extends ObjectMapper\MappedObject
 {
 
-	public const ACTUAL_VALUE_KEY = 'actualValue';
+	public const ACTUAL_VALUE_FIELD = 'actualValue';
 
-	public const EXPECTED_VALUE_KEY = 'expectedValue';
+	public const EXPECTED_VALUE_FIELD = 'expectedValue';
 
-	public const PENDING_KEY = 'pending';
+	public const PENDING_FIELD = 'pending';
 
-	public const VALID_KEY = 'valid';
-
-	public const CREATED_AT_KEY = 'createdAt';
-
-	public const UPDATED_AT_KEY = 'updatedAt';
+	public const VALID_FIELD = 'valid';
 
 	public function getId(): Uuid\UuidInterface;
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong

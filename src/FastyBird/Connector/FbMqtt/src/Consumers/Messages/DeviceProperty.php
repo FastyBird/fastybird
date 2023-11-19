@@ -143,8 +143,8 @@ final class DeviceProperty implements Consumers\Consumer
 				$this->devicePropertiesStates->setValue(
 					$property,
 					Utils\ArrayHash::from([
-						DevicesStates\Property::ACTUAL_VALUE_KEY => $entity->getValue(),
-						DevicesStates\Property::VALID_KEY => true,
+						DevicesStates\Property::ACTUAL_VALUE_FIELD => $entity->getValue(),
+						DevicesStates\Property::VALID_FIELD => true,
 					]),
 				);
 			}
