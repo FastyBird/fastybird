@@ -125,8 +125,8 @@ final class State implements ExchangeConsumers\Consumer
 						$this->entityFactory->create(
 							Utils\Json::encode(
 								array_merge(
-									$state?->toArray() ?? [],
 									$property->toArray(),
+									$state?->toArray() ?? [],
 								),
 							),
 							$publishRoutingKey,
@@ -178,8 +178,8 @@ final class State implements ExchangeConsumers\Consumer
 						$this->entityFactory->create(
 							Utils\Json::encode(
 								array_merge(
-									$state?->toArray() ?? [],
 									$property->toArray(),
+									$state?->toArray() ?? [],
 								),
 							),
 							$publishRoutingKey,
@@ -231,8 +231,8 @@ final class State implements ExchangeConsumers\Consumer
 						$this->entityFactory->create(
 							Utils\Json::encode(
 								array_merge(
-									$state?->toArray() ?? [],
 									$property->toArray(),
+									$state?->toArray() ?? [],
 								),
 							),
 							$publishRoutingKey,

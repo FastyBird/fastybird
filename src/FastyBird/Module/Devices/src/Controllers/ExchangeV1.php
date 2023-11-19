@@ -348,8 +348,8 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 			$responseEntity = $this->entityFactory->create(
 				Utils\Json::encode(
 					array_merge(
-						$state?->toArray() ?? [],
 						$property->toArray(),
+						$state?->toArray() ?? [],
 					),
 				),
 				$publishRoutingKey,
@@ -424,8 +424,8 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 			$responseEntity = $this->entityFactory->create(
 				Utils\Json::encode(
 					array_merge(
-						$state?->toArray() ?? [],
 						$property->toArray(),
+						$state?->toArray() ?? [],
 					),
 				),
 				$publishRoutingKey,
@@ -500,8 +500,8 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 			$responseEntity = $this->entityFactory->create(
 				Utils\Json::encode(
 					array_merge(
-						$state?->toArray() ?? [],
 						$property->toArray(),
+						$state?->toArray() ?? [],
 					),
 				),
 				$publishRoutingKey,

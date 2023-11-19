@@ -73,12 +73,9 @@ class Property extends RedisDbStates\State implements DevicesStates\Property
 		])]
 		#[ObjectMapper\Modifiers\FieldName(self::PENDING_FIELD)]
 		private readonly bool|DateTimeInterface $pending = false,
-		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\BoolValue(castBoolLike: true),
-			new ObjectMapper\Rules\NullValue(castEmptyString: true),
-		])]
+		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
 		#[ObjectMapper\Modifiers\FieldName(self::VALID_FIELD)]
-		private readonly bool|null $valid = null,
+		private readonly bool $valid = false,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
@@ -130,7 +127,7 @@ class Property extends RedisDbStates\State implements DevicesStates\Property
 
 	public function isValid(): bool
 	{
-		return $this->valid ?? false;
+		return $this->valid;
 	}
 
 	public static function getCreateFields(): array

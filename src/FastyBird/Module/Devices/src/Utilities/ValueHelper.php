@@ -16,6 +16,7 @@
 namespace FastyBird\Module\Devices\Utilities;
 
 use Consistence;
+use Contributte\Monolog;
 use DateTime;
 use DateTimeInterface;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -672,9 +673,6 @@ final class ValueHelper
 		return self::flattenValue($value);
 	}
 
-	/**
-	 * @throws Exceptions\InvalidState
-	 */
 	public static function transformValueFromMappedParent(
 		MetadataTypes\DataType $dataType,
 		MetadataTypes\DataType $parentDataType,
@@ -705,12 +703,20 @@ final class ValueHelper
 			}
 		}
 
-		throw new Exceptions\InvalidState('Parent property value could not be transformed to mapped property value');
+		Monolog\LoggerHolder::getInstance()->getLogger()->warning(
+			'Parent property value could not be transformed to mapped property value',
+			[
+				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+				'type' => 'connector-properties-states',
+				'mapped_data_type' => $dataType->getValue(),
+				'parent_data_type' => $parentDataType->getValue(),
+				'value' => self::flattenValue($value),
+			],
+		);
+
+		return $value;
 	}
 
-	/**
-	 * @throws Exceptions\InvalidState
-	 */
 	public static function transformValueToMappedParent(
 		MetadataTypes\DataType $dataType,
 		MetadataTypes\DataType $parentDataType,
@@ -737,7 +743,18 @@ final class ValueHelper
 			}
 		}
 
-		throw new Exceptions\InvalidState('Mapped property value could not be transformed to parent property value');
+		Monolog\LoggerHolder::getInstance()->getLogger()->warning(
+			'Mapped property value could not be transformed to parent property value',
+			[
+				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+				'type' => 'connector-properties-states',
+				'mapped_data_type' => $dataType->getValue(),
+				'parent_data_type' => $parentDataType->getValue(),
+				'value' => self::flattenValue($value),
+			],
+		);
+
+		return $value;
 	}
 
 	private static function normalizeEnumItemValue(

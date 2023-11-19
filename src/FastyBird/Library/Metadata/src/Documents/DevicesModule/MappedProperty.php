@@ -94,14 +94,10 @@ abstract class MappedProperty extends Property
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\BoolValue(),
 			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
-			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly bool|DateTimeInterface|null $pending = null,
-		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\BoolValue(),
-			new ObjectMapper\Rules\NullValue(castEmptyString: true),
-		])]
-		private readonly bool|null $valid = null,
+		private readonly bool|DateTimeInterface $pending = false,
+		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
+		private readonly bool $valid = false,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\BoolValue(),
 			new ObjectMapper\Rules\FloatValue(),
@@ -166,17 +162,17 @@ abstract class MappedProperty extends Property
 		return $this->expectedValue;
 	}
 
-	public function getPending(): bool|DateTimeInterface|null
+	public function getPending(): bool|DateTimeInterface
 	{
 		return $this->pending;
 	}
 
 	public function isPending(): bool
 	{
-		return is_bool($this->pending) ? $this->pending : $this->pending !== null;
+		return is_bool($this->pending) ? $this->pending : true;
 	}
 
-	public function isValid(): bool|null
+	public function isValid(): bool
 	{
 		return $this->valid;
 	}
