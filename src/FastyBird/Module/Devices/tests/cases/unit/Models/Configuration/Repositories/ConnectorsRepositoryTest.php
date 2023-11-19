@@ -60,7 +60,7 @@ final class ConnectorsRepositoryTest extends DbTestCase
 
 		$entities = $repository->findAllBy($findQuery);
 
-		self::assertCount(1, $entities);
+		self::assertCount(2, $entities);
 	}
 
 }
