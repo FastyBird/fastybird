@@ -156,7 +156,7 @@ class Property extends RedisDbStates\State implements DevicesStates\Property
 
 	public function toArray(): array
 	{
-		return array_merge([
+		return array_merge(parent::toArray(), [
 			'actual_value' => DevicesUtilities\ValueHelper::flattenValue($this->getActualValue()),
 			'expected_value' => DevicesUtilities\ValueHelper::flattenValue($this->getExpectedValue()),
 			'pending' => $this->getPending() instanceof DateTimeInterface
@@ -165,7 +165,7 @@ class Property extends RedisDbStates\State implements DevicesStates\Property
 			'valid' => $this->isValid(),
 			'created_at' => $this->getCreatedAt()?->format(DateTimeInterface::ATOM),
 			'updated_at' => $this->getUpdatedAt()?->format(DateTimeInterface::ATOM),
-		], parent::toArray());
+		]);
 	}
 
 }

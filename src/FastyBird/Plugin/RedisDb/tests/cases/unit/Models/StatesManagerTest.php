@@ -3,7 +3,6 @@
 namespace FastyBird\Plugin\RedisDb\Tests\Cases\Unit\Models;
 
 use DateTimeImmutable;
-use DateTimeInterface;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Plugin\RedisDb\Clients;
@@ -78,6 +77,11 @@ final class StatesManagerTest extends TestCase
 	{
 		$redisClient = $this->createMock(Clients\Client::class);
 		$redisClient
+			->expects(self::exactly(2))
+			->method('get')
+			->with($id->toString())
+			->willReturn(Utils\Json::encode($originalData), Utils\Json::encode($dbData));
+		$redisClient
 			->expects(self::once())
 			->method('select')
 			->with(0);
@@ -86,11 +90,6 @@ final class StatesManagerTest extends TestCase
 			->method('set')
 			->with($id->toString(), Utils\Json::encode($dbData))
 			->willReturn(true);
-		$redisClient
-			->expects(self::once())
-			->method('get')
-			->with($id->toString())
-			->willReturn(Utils\Json::encode($dbData));
 
 		$manager = $this->createManager($redisClient);
 
@@ -182,6 +181,9 @@ final class StatesManagerTest extends TestCase
 		$factory = new States\StateFactory($processor);
 
 		$dateTimeFactory = $this->createMock(DateTimeFactory\Factory::class);
+		$dateTimeFactory
+			->method('getNow')
+			->willReturn(new DateTimeImmutable('2020-04-01T12:00:00+00:00'));
 
 		return new Models\States\StatesManager($redisClient, $factory, $dateTimeFactory, Fixtures\CustomState::class);
 	}
@@ -203,14 +205,15 @@ final class StatesManagerTest extends TestCase
 					'id' => $id->toString(),
 					'value' => 'keyValue',
 					'camel_cased' => null,
-					'created' => null,
+					'created_at' => '2020-04-01T12:00:00+00:00',
+					'updated_at' => null,
 				],
 				[
 					'id' => $id->toString(),
 					'value' => 'keyValue',
 					'camel_cased' => null,
-					'created' => null,
-					'updated' => null,
+					'created_at' => '2020-04-01T12:00:00+00:00',
+					'updated_at' => null,
 				],
 			],
 			'two' => [
@@ -223,14 +226,15 @@ final class StatesManagerTest extends TestCase
 					'id' => $id->toString(),
 					'value' => null,
 					'camel_cased' => null,
-					'created' => null,
+					'created_at' => '2020-04-01T12:00:00+00:00',
+					'updated_at' => null,
 				],
 				[
 					'id' => $id->toString(),
 					'value' => null,
 					'camel_cased' => null,
-					'created' => null,
-					'updated' => null,
+					'created_at' => '2020-04-01T12:00:00+00:00',
+					'updated_at' => null,
 				],
 			],
 		];
@@ -242,7 +246,6 @@ final class StatesManagerTest extends TestCase
 	public static function updateStateValue(): array
 	{
 		$id = Uuid\Uuid::uuid4();
-		$now = new DateTimeImmutable();
 
 		return [
 			'one' => [
@@ -251,25 +254,25 @@ final class StatesManagerTest extends TestCase
 					'id' => $id->toString(),
 					'value' => 'value',
 					'camel_cased' => null,
-					'created' => $now->format(DateTimeInterface::ATOM),
-					'updated' => null,
+					'created_at' => '2020-04-01T12:00:00+00:00',
+					'updated_at' => null,
 				],
 				[
-					'updated' => $now->format(DateTimeInterface::ATOM),
-				],
-				[
-					'value' => 'value',
-					'camel_cased' => null,
-					'created' => $now->format(DateTimeInterface::ATOM),
-					'updated' => $now->format(DateTimeInterface::ATOM),
-					'id' => $id->toString(),
+					'value' => 'updated',
 				],
 				[
 					'id' => $id->toString(),
-					'value' => 'value',
+					'value' => 'updated',
 					'camel_cased' => null,
-					'created' => $now->format(DateTimeInterface::ATOM),
-					'updated' => $now->format(DateTimeInterface::ATOM),
+					'created_at' => '2020-04-01T12:00:00+00:00',
+					'updated_at' => '2020-04-01T12:00:00+00:00',
+				],
+				[
+					'id' => $id->toString(),
+					'value' => 'updated',
+					'camel_cased' => null,
+					'created_at' => '2020-04-01T12:00:00+00:00',
+					'updated_at' => '2020-04-01T12:00:00+00:00',
 				],
 			],
 			'two' => [
@@ -278,27 +281,26 @@ final class StatesManagerTest extends TestCase
 					'id' => $id->toString(),
 					'value' => 'value',
 					'camel_cased' => null,
-					'created' => $now->format(DateTimeInterface::ATOM),
-					'updated' => null,
+					'created_at' => '2020-04-01T12:00:00+00:00',
+					'updated_at' => null,
 				],
 				[
-					'updated' => $now->format(DateTimeInterface::ATOM),
 					'value' => 'updated',
 					'camelCased' => 'camelCasedValue',
 				],
 				[
+					'id' => $id->toString(),
 					'value' => 'updated',
 					'camel_cased' => 'camelCasedValue',
-					'created' => $now->format(DateTimeInterface::ATOM),
-					'updated' => $now->format(DateTimeInterface::ATOM),
-					'id' => $id->toString(),
+					'created_at' => '2020-04-01T12:00:00+00:00',
+					'updated_at' => '2020-04-01T12:00:00+00:00',
 				],
 				[
 					'id' => $id->toString(),
 					'value' => 'updated',
 					'camel_cased' => 'camelCasedValue',
-					'created' => $now->format(DateTimeInterface::ATOM),
-					'updated' => $now->format(DateTimeInterface::ATOM),
+					'created_at' => '2020-04-01T12:00:00+00:00',
+					'updated_at' => '2020-04-01T12:00:00+00:00',
 				],
 			],
 		];
