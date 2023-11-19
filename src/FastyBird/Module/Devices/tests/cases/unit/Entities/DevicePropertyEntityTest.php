@@ -48,6 +48,8 @@ final class DevicePropertyEntityTest extends DbTestCase
 			'identifier' => 'new-child-property',
 			'device' => $parent->getDevice(),
 			'parent' => $parent,
+			'dataType' => $parent->getDataType(),
+			'format' => $parent->getFormat(),
 		]));
 
 		self::assertTrue($child instanceof Entities\Devices\Properties\Mapped);
@@ -85,6 +87,8 @@ final class DevicePropertyEntityTest extends DbTestCase
 			'identifier' => 'new-child-property',
 			'device' => $parent->getDevice(),
 			'parent' => $parent,
+			'dataType' => $parent->getDataType(),
+			'format' => $parent->getFormat(),
 		]));
 
 		self::assertTrue($child instanceof Entities\Devices\Properties\Mapped);
@@ -143,6 +147,8 @@ final class DevicePropertyEntityTest extends DbTestCase
 			'identifier' => 'new-child-property',
 			'device' => $parent->getDevice(),
 			'parent' => $parent,
+			'dataType' => $parent->getDataType(),
+			'format' => $parent->getFormat(),
 		]));
 
 		self::assertTrue($child instanceof Entities\Devices\Properties\Mapped);
