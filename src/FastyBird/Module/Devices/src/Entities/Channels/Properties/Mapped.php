@@ -165,7 +165,11 @@ class Mapped extends Property
 			throw new Exceptions\InvalidState('Reading default value is allowed only for variable parent properties');
 		}
 
-		return $this->getParent()->getDefault();
+		return Utilities\ValueHelper::transformValueToMappedParent(
+			$this->getDataType(),
+			$this->getParent()->getDataType(),
+			$this->getParent()->getDefault(),
+		);
 	}
 
 	/**
@@ -192,7 +196,11 @@ class Mapped extends Property
 			throw new Exceptions\InvalidState('Reading value is allowed only for variable parent properties');
 		}
 
-		return $this->getParent()->getValue();
+		return Utilities\ValueHelper::transformValueToMappedParent(
+			$this->getDataType(),
+			$this->getParent()->getDataType(),
+			$this->getParent()->getValue(),
+		);
 	}
 
 	/**
