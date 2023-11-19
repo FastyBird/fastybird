@@ -49,7 +49,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 	 * @param DevicesModels\Configuration\Channels\Properties\Repository<MetadataDocuments\DevicesModule\ChannelDynamicProperty> $channelsPropertiesRepository
 	 */
 	public function __construct(
-		Entities\ShellyConnector $connector,
+		MetadataDocuments\DevicesModule\Connector $connector,
 		Helpers\Entity $entityHelper,
 		Queue\Queue $queue,
 		DevicesModels\Configuration\Devices\Repository $devicesRepository,

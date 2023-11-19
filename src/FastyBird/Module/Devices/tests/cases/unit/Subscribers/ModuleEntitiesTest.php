@@ -50,8 +50,26 @@ final class ModuleEntitiesTest extends TestCase
 
 		$entityFactory = $this->createMock(ExchangeEntities\DocumentFactory::class);
 
+		$connectorsPropertiesConfigurationRepository = $this->createMock(
+			Models\Configuration\Connectors\Properties\Repository::class,
+		);
+
+		$devicesPropertiesConfigurationRepository = $this->createMock(
+			Models\Configuration\Devices\Properties\Repository::class,
+		);
+
+		$channelsPropertiesConfigurationRepository = $this->createMock(
+			Models\Configuration\Channels\Properties\Repository::class,
+		);
+
+		$configurationBuilder = $this->createMock(Models\Configuration\Builder::class);
+
 		$subscriber = new Subscribers\ModuleEntities(
 			$entityManager,
+			$connectorsPropertiesConfigurationRepository,
+			$devicesPropertiesConfigurationRepository,
+			$channelsPropertiesConfigurationRepository,
+			$configurationBuilder,
 			$connectorPropertiesStateManager,
 			$devicePropertiesStateManager,
 			$channelPropertiesStateManager,
@@ -65,6 +83,7 @@ final class ModuleEntitiesTest extends TestCase
 		self::assertSame([
 			'postPersist',
 			'postUpdate',
+			'preRemove',
 			'postRemove',
 		], $subscriber->getSubscribedEvents());
 	}
@@ -156,8 +175,26 @@ final class ModuleEntitiesTest extends TestCase
 			->method('create')
 			->willReturn($entityItem);
 
+		$connectorsPropertiesConfigurationRepository = $this->createMock(
+			Models\Configuration\Connectors\Properties\Repository::class,
+		);
+
+		$devicesPropertiesConfigurationRepository = $this->createMock(
+			Models\Configuration\Devices\Properties\Repository::class,
+		);
+
+		$channelsPropertiesConfigurationRepository = $this->createMock(
+			Models\Configuration\Channels\Properties\Repository::class,
+		);
+
+		$configurationBuilder = $this->createMock(Models\Configuration\Builder::class);
+
 		$subscriber = new Subscribers\ModuleEntities(
 			$entityManager,
+			$connectorsPropertiesConfigurationRepository,
+			$devicesPropertiesConfigurationRepository,
+			$channelsPropertiesConfigurationRepository,
+			$configurationBuilder,
 			$connectorPropertiesStateManager,
 			$devicePropertiesStateManager,
 			$channelPropertiesStateManager,
@@ -272,8 +309,26 @@ final class ModuleEntitiesTest extends TestCase
 			->method('create')
 			->willReturn($entityItem);
 
+		$connectorsPropertiesConfigurationRepository = $this->createMock(
+			Models\Configuration\Connectors\Properties\Repository::class,
+		);
+
+		$devicesPropertiesConfigurationRepository = $this->createMock(
+			Models\Configuration\Devices\Properties\Repository::class,
+		);
+
+		$channelsPropertiesConfigurationRepository = $this->createMock(
+			Models\Configuration\Channels\Properties\Repository::class,
+		);
+
+		$configurationBuilder = $this->createMock(Models\Configuration\Builder::class);
+
 		$subscriber = new Subscribers\ModuleEntities(
 			$entityManager,
+			$connectorsPropertiesConfigurationRepository,
+			$devicesPropertiesConfigurationRepository,
+			$channelsPropertiesConfigurationRepository,
+			$configurationBuilder,
 			$connectorPropertiesStateManager,
 			$devicePropertiesStateManager,
 			$channelPropertiesStateManager,
@@ -396,8 +451,26 @@ final class ModuleEntitiesTest extends TestCase
 			->method('create')
 			->willReturn($entityItem);
 
+		$connectorsPropertiesConfigurationRepository = $this->createMock(
+			Models\Configuration\Connectors\Properties\Repository::class,
+		);
+
+		$devicesPropertiesConfigurationRepository = $this->createMock(
+			Models\Configuration\Devices\Properties\Repository::class,
+		);
+
+		$channelsPropertiesConfigurationRepository = $this->createMock(
+			Models\Configuration\Channels\Properties\Repository::class,
+		);
+
+		$configurationBuilder = $this->createMock(Models\Configuration\Builder::class);
+
 		$subscriber = new Subscribers\ModuleEntities(
 			$entityManager,
+			$connectorsPropertiesConfigurationRepository,
+			$devicesPropertiesConfigurationRepository,
+			$channelsPropertiesConfigurationRepository,
+			$configurationBuilder,
 			$connectorPropertiesStateManager,
 			$devicePropertiesStateManager,
 			$channelPropertiesStateManager,

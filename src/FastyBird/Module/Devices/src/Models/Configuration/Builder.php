@@ -15,6 +15,7 @@
 
 namespace FastyBird\Module\Devices\Models\Configuration;
 
+use Evenement;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Exceptions;
@@ -35,12 +36,12 @@ use const DIRECTORY_SEPARATOR;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Builder
+final class Builder implements Evenement\EventEmitterInterface
 {
 
-	private JSONPath\JSONPath|null $configuration = null;
+	use Evenement\EventEmitterTrait;
 
-	private DataSources\DefaultDataSource $dataSource;
+	private JSONPath\JSONPath|null $configuration = null;
 
 	public function __construct(
 		private readonly Models\Entities\Connectors\ConnectorsRepository $connectorsRepository,
@@ -52,12 +53,9 @@ final class Builder
 		private readonly Models\Entities\Channels\ChannelsRepository $channelsRepository,
 		private readonly Models\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly Models\Entities\Channels\Controls\ControlsRepository $channelsControlsRepository,
+		private readonly DataSources\DefaultDataSource $dataSource,
 	)
 	{
-		$manager = new DataSources\DefaultFormatEncoderManager();
-		$manager->addEncoder(new DataSources\JsonFormatEncoder());
-
-		$this->dataSource = new DataSources\DefaultDataSource($manager);
 	}
 
 	/**
@@ -130,6 +128,10 @@ final class Builder
 		}
 
 		$this->encode($data);
+
+		$this->configuration = null;
+
+		$this->emit('build');
 	}
 
 	/**

@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\Shelly\Writers;
 
-use FastyBird\Connector\Shelly\Entities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 
 /**
  * Device state writer interface factory
@@ -28,6 +28,6 @@ use FastyBird\Connector\Shelly\Entities;
 interface WriterFactory
 {
 
-	public function create(Entities\ShellyConnector $connector): Writer;
+	public function create(MetadataDocuments\DevicesModule\Connector $connector): Writer;
 
 }

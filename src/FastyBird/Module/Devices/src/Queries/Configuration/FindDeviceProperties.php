@@ -45,7 +45,7 @@ class FindDeviceProperties extends QueryObject
 
 	public function byId(Uuid\UuidInterface $id): void
 	{
-		$this->filter[] = '.[?(@.id == ' . $id->toString() . ')]';
+		$this->filter[] = '.[?(@.id =~ /(?i).*^' . $id->toString() . '*$/)]';
 	}
 
 	public function byIdentifier(string $identifier): void
@@ -65,24 +65,24 @@ class FindDeviceProperties extends QueryObject
 
 	public function forDevice(MetadataDocuments\DevicesModule\Device $device): void
 	{
-		$this->filter[] = '.[?(@.device == ' . $device->getId()->toString() . ')]';
+		$this->filter[] = '.[?(@.device =~ /(?i).*^' . $device->getId()->toString() . '*$/)]';
 	}
 
 	public function byDeviceId(Uuid\UuidInterface $deviceId): void
 	{
-		$this->filter[] = '.[?(@.device == ' . $deviceId->toString() . ')]';
+		$this->filter[] = '.[?(@.device =~ /(?i).*^' . $deviceId->toString() . '*$/)]';
 	}
 
 	public function forParent(
 		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceVariableProperty $parent,
 	): void
 	{
-		$this->filter[] = '.[?(@.parent == ' . $parent->getId()->toString() . ')]';
+		$this->filter[] = '.[?(@.parent =~ /(?i).*^' . $parent->getId()->toString() . '*$/)]';
 	}
 
 	public function byParentId(Uuid\UuidInterface $parentId): void
 	{
-		$this->filter[] = '.[?(@.parent == ' . $parentId->toString() . ')]';
+		$this->filter[] = '.[?(@.parent =~ /(?i).*^' . $parentId->toString() . '*$/)]';
 	}
 
 	/**

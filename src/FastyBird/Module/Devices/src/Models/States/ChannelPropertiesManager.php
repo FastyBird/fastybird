@@ -16,7 +16,6 @@
 namespace FastyBird\Module\Devices\Models\States;
 
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
@@ -53,7 +52,7 @@ final class ChannelPropertiesManager
 	 * @interal
 	 */
 	public function create(
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty|Entities\Channels\Properties\Dynamic $property,
+		MetadataDocuments\DevicesModule\ChannelDynamicProperty $property,
 		Utils\ArrayHash $values,
 	): States\ChannelProperty
 	{
@@ -85,7 +84,7 @@ final class ChannelPropertiesManager
 	 * @interal
 	 */
 	public function update(
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty|Entities\Channels\Properties\Dynamic $property,
+		MetadataDocuments\DevicesModule\ChannelDynamicProperty $property,
 		States\ChannelProperty $state,
 		Utils\ArrayHash $values,
 	): States\ChannelProperty
@@ -117,7 +116,7 @@ final class ChannelPropertiesManager
 	 * @interal
 	 */
 	public function delete(
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty|Entities\Channels\Properties\Dynamic $property,
+		MetadataDocuments\DevicesModule\ChannelDynamicProperty $property,
 	): bool
 	{
 		if ($this->manager === null || $this->repository === null) {

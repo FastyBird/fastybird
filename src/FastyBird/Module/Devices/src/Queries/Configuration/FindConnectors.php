@@ -40,7 +40,7 @@ class FindConnectors extends QueryObject
 
 	public function byId(Uuid\UuidInterface $id): void
 	{
-		$this->filter[] = '.[?(@.id=' . $id->toString() . ')]';
+		$this->filter[] = '.[?(@.id =~ /(?i).*^' . $id->toString() . '*$/)]';
 	}
 
 	public function byIdentifier(string $identifier): void

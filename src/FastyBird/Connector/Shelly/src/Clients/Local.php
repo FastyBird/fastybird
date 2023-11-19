@@ -85,7 +85,7 @@ final class Local implements Client
 	 * @param DevicesModels\Configuration\Devices\Properties\Repository<MetadataDocuments\DevicesModule\DeviceVariableProperty> $devicesPropertiesRepository
 	 */
 	public function __construct(
-		private readonly Entities\ShellyConnector $connector,
+		private readonly MetadataDocuments\DevicesModule\Connector $connector,
 		private readonly API\ConnectionManager $connectionManager,
 		private readonly Queue\Queue $queue,
 		private readonly Helpers\Entity $entityHelper,

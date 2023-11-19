@@ -16,7 +16,6 @@
 namespace FastyBird\Module\Devices\Events;
 
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Module\Devices\Entities;
 use Symfony\Contracts\EventDispatcher;
 
 /**
@@ -31,12 +30,12 @@ class ConnectorPropertyStateEntityDeleted extends EventDispatcher\Event
 {
 
 	public function __construct(
-		private readonly MetadataDocuments\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
+		private readonly MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
 	)
 	{
 	}
 
-	public function getProperty(): MetadataDocuments\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic
+	public function getProperty(): MetadataDocuments\DevicesModule\ConnectorDynamicProperty
 	{
 		return $this->property;
 	}

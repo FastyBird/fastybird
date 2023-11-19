@@ -29,6 +29,7 @@ use Nette;
 use Nette\Utils;
 use Orisai\ObjectMapper;
 use function array_merge;
+use function assert;
 use function is_array;
 
 /**
@@ -45,7 +46,7 @@ final class ChannelPropertiesStates
 	use Nette\SmartObject;
 
 	/**
-	 * @param Models\Configuration\Channels\Properties\Repository<MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelVariableProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty> $channelPropertiesRepository
+	 * @param Models\Configuration\Channels\Properties\Repository<MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty> $channelPropertiesRepository
 	 */
 	public function __construct(
 		private readonly Models\Configuration\Channels\Properties\Repository $channelPropertiesRepository,
@@ -148,6 +149,17 @@ final class ChannelPropertiesStates
 		bool $forReading,
 	): States\ChannelProperty|null
 	{
+		if ($property instanceof Entities\Channels\Properties\Property) {
+			$findPropertyQuery = new Queries\Configuration\FindChannelProperties();
+			$findPropertyQuery->byId($property->getId());
+
+			$property = $this->channelPropertiesRepository->findOneBy($findPropertyQuery);
+			assert(
+				$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+				|| $property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty,
+			);
+		}
+
 		if ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
 			$findPropertyQuery = new Queries\Configuration\FindChannelProperties();
 			$findPropertyQuery->byId($property->getParent());
@@ -159,12 +171,6 @@ final class ChannelPropertiesStates
 			}
 
 			$property = $parent;
-		} elseif ($property instanceof Entities\Channels\Properties\Mapped) {
-			$property = $property->getParent();
-
-			if (!$property instanceof Entities\Channels\Properties\Dynamic) {
-				throw new Exceptions\InvalidState('Mapped property parent is invalid type');
-			}
 		}
 
 		try {
@@ -284,6 +290,17 @@ final class ChannelPropertiesStates
 		bool $forWriting,
 	): void
 	{
+		if ($property instanceof Entities\Channels\Properties\Property) {
+			$findPropertyQuery = new Queries\Configuration\FindChannelProperties();
+			$findPropertyQuery->byId($property->getId());
+
+			$property = $this->channelPropertiesRepository->findOneBy($findPropertyQuery);
+			assert(
+				$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+				|| $property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty,
+			);
+		}
+
 		if ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
 			$findPropertyQuery = new Queries\Configuration\FindChannelProperties();
 			$findPropertyQuery->byId($property->getParent());
@@ -295,12 +312,6 @@ final class ChannelPropertiesStates
 			}
 
 			$property = $parent;
-		} elseif ($property instanceof Entities\Channels\Properties\Mapped) {
-			$property = $property->getParent();
-
-			if (!$property instanceof Entities\Channels\Properties\Dynamic) {
-				throw new Exceptions\InvalidState('Mapped property parent is invalid type');
-			}
 		}
 
 		$state = $this->loadValue($property, $forWriting);

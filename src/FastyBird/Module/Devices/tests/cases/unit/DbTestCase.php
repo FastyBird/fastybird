@@ -24,12 +24,14 @@ use function fclose;
 use function feof;
 use function fgets;
 use function fopen;
+use function getmypid;
 use function in_array;
 use function md5;
 use function rtrim;
 use function set_time_limit;
 use function sprintf;
 use function strlen;
+use function strval;
 use function substr;
 use function time;
 use function trim;
@@ -53,15 +55,15 @@ abstract class DbTestCase extends TestCase
 		. 'kMi00OTU0LWJhM2ItNThlZTRiZTUzMjdkIiwiaWF0IjoxNTg1NzQyNDAwLCJleHAiOjE1ODU3NDk2MDAsInVzZXIiOiI1ZTc5ZWZiZi1iZDBkLTViN2MtNDZlZi1iZmJkZWZiZmJkM'
 		. 'zQiLCJyb2xlcyI6WyJ1c2VyIl19.jELVcZGRa5_-Jcpoo3Jfho08vQT2IobtoEQPhxN2tzw';
 
-	private Nette\DI\Container|null $container = null;
+	protected Nette\DI\Container|null $container = null;
 
-	private bool $isDatabaseSetUp = false;
-
-	/** @var array<string> */
-	private array $sqlFiles = [];
+	protected bool $isDatabaseSetUp = false;
 
 	/** @var array<string> */
-	private array $neonFiles = [];
+	protected array $sqlFiles = [];
+
+	/** @var array<string> */
+	protected array $neonFiles = [];
 
 	/**
 	 * @throws BootstrapExceptions\InvalidArgument
@@ -146,7 +148,9 @@ abstract class DbTestCase extends TestCase
 		$config->setForceReloadContainer();
 		$config->setTempDirectory(FB_TEMP_DIR);
 
-		$config->addStaticParameters(['container' => ['class' => 'SystemContainer_' . md5((string) time())]]);
+		$config->addStaticParameters(
+			['container' => ['class' => 'SystemContainer_' . strval(getmypid()) . md5((string) time())]],
+		);
 		$config->addStaticParameters(['appDir' => $rootDir, 'wwwDir' => $rootDir, 'vendorDir' => $vendorDir]);
 
 		$config->addConfig(__DIR__ . '/../../common.neon');

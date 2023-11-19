@@ -23,11 +23,13 @@ use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
+use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\States;
 use Nette;
 use Nette\Utils;
 use Orisai\ObjectMapper;
 use function array_merge;
+use function assert;
 use function is_array;
 
 /**
@@ -43,7 +45,11 @@ final class ConnectorPropertiesStates
 
 	use Nette\SmartObject;
 
+	/**
+	 * @param Models\Configuration\Connectors\Properties\Repository<MetadataDocuments\DevicesModule\ConnectorDynamicProperty> $connectorPropertiesRepository
+	 */
 	public function __construct(
+		private readonly Models\Configuration\Connectors\Properties\Repository $connectorPropertiesRepository,
 		private readonly Models\States\ConnectorPropertiesRepository $connectorPropertyStateRepository,
 		private readonly Models\States\ConnectorPropertiesManager $connectorPropertiesStatesManager,
 		private readonly Devices\Logger $logger,
@@ -56,6 +62,7 @@ final class ConnectorPropertiesStates
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function readValue(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
@@ -68,6 +75,7 @@ final class ConnectorPropertiesStates
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getValue(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
@@ -80,6 +88,7 @@ final class ConnectorPropertiesStates
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function writeValue(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
@@ -93,6 +102,7 @@ final class ConnectorPropertiesStates
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function setValue(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
@@ -108,6 +118,7 @@ final class ConnectorPropertiesStates
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function setValidState(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic|array $property,
@@ -131,12 +142,21 @@ final class ConnectorPropertiesStates
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function loadValue(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
 		bool $forReading,
 	): States\ConnectorProperty|null
 	{
+		if ($property instanceof Entities\Connectors\Properties\Property) {
+			$findPropertyQuery = new Queries\Configuration\FindConnectorProperties();
+			$findPropertyQuery->byId($property->getId());
+
+			$property = $this->connectorPropertiesRepository->findOneBy($findPropertyQuery);
+			assert($property instanceof MetadataDocuments\DevicesModule\ConnectorDynamicProperty);
+		}
+
 		try {
 			$state = $this->connectorPropertyStateRepository->findOne($property);
 
@@ -246,6 +266,7 @@ final class ConnectorPropertiesStates
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function saveValue(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
@@ -253,6 +274,14 @@ final class ConnectorPropertiesStates
 		bool $forWriting,
 	): void
 	{
+		if ($property instanceof Entities\Connectors\Properties\Property) {
+			$findPropertyQuery = new Queries\Configuration\FindConnectorProperties();
+			$findPropertyQuery->byId($property->getId());
+
+			$property = $this->connectorPropertiesRepository->findOneBy($findPropertyQuery);
+			assert($property instanceof MetadataDocuments\DevicesModule\ConnectorDynamicProperty);
+		}
+
 		$state = $this->loadValue($property, $forWriting);
 
 		if ($data->offsetExists(States\Property::ACTUAL_VALUE_KEY)) {

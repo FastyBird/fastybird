@@ -48,10 +48,11 @@ final class Repository extends Models\Configuration\Repository
 {
 
 	public function __construct(
-		private readonly Models\Configuration\Builder $builder,
+		Models\Configuration\Builder $builder,
 		private readonly MetadataDocuments\DocumentFactory $entityFactory,
 	)
 	{
+		parent::__construct($builder);
 	}
 
 	/**
