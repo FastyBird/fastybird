@@ -23,6 +23,7 @@ use FastyBird\Module\Devices\States;
 use Nette;
 use Nette\Utils;
 use Psr\EventDispatcher as PsrEventDispatcher;
+use function array_diff;
 use function property_exists;
 
 /**
@@ -105,7 +106,26 @@ final class ConnectorPropertiesManager
 			);
 		}
 
-		$this->dispatcher?->dispatch(new Events\ConnectorPropertyStateEntityUpdated($property, $state, $updatedState));
+		if (
+			array_diff(
+				[
+					$state->getActualValue(),
+					$state->getExpectedValue(),
+					$state->getPending(),
+					$state->isValid(),
+				],
+				[
+					$updatedState->getActualValue(),
+					$updatedState->getExpectedValue(),
+					$updatedState->getPending(),
+					$updatedState->isValid(),
+				],
+			) !== []
+		) {
+			$this->dispatcher?->dispatch(
+				new Events\ConnectorPropertyStateEntityUpdated($property, $state, $updatedState),
+			);
+		}
 
 		return $updatedState;
 	}

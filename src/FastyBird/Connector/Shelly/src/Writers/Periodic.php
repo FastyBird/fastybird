@@ -54,7 +54,7 @@ abstract class Periodic
 	/** @var array<string, MetadataDocuments\DevicesModule\Device>  */
 	private array $devices = [];
 
-	/** @var array<string, MetadataDocuments\DevicesModule\ChannelDynamicProperty>  */
+	/** @var array<string, array<string, MetadataDocuments\DevicesModule\ChannelDynamicProperty>>  */
 	private array $properties = [];
 
 	/** @var array<string> */
@@ -100,6 +100,10 @@ abstract class Periodic
 		foreach ($this->devicesRepository->findAllBy($findDevicesQuery) as $device) {
 			$this->devices[$device->getId()->toString()] = $device;
 
+			if (!array_key_exists($device->getId()->toString(), $this->properties)) {
+				$this->properties[$device->getId()->toString()] = [];
+			}
+
 			$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
 			$findChannelsQuery->forDevice($device);
 
@@ -116,7 +120,7 @@ abstract class Periodic
 
 				foreach ($properties as $property) {
 					if ($property->isSettable()) {
-						$this->properties[$property->getId()->toString()] = $property;
+						$this->properties[$device->getId()->toString()][$property->getId()->toString()] = $property;
 					}
 				}
 			}
@@ -176,7 +180,11 @@ abstract class Periodic
 	{
 		$now = $this->dateTimeFactory->getNow();
 
-		foreach ($this->properties as $property) {
+		if (!array_key_exists($device->getId()->toString(), $this->properties)) {
+			return false;
+		}
+
+		foreach ($this->properties[$device->getId()->toString()] as $property) {
 			$debounce = array_key_exists($property->getId()->toString(), $this->processedProperties)
 				? $this->processedProperties[$property->getId()->toString()]
 				: false;

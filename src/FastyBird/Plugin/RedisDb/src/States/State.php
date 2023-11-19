@@ -30,6 +30,8 @@ use Ramsey\Uuid;
 class State implements ObjectMapper\MappedObject
 {
 
+	public const ID_FIELD = 'id';
+
 	public const CREATED_AT_FIELD = 'createdAt';
 
 	public const UPDATED_AT_FIELD = 'updatedAt';
@@ -47,7 +49,7 @@ class State implements ObjectMapper\MappedObject
 	public static function getCreateFields(): array
 	{
 		return [
-			'id',
+			self::ID_FIELD,
 		];
 	}
 
