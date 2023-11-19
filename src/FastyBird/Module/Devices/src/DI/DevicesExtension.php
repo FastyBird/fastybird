@@ -39,6 +39,7 @@ use Nette;
 use Nette\DI;
 use Nette\PhpGenerator;
 use Nette\Schema;
+use Orisai\DataSources;
 use stdClass;
 use function assert;
 use function class_exists;
@@ -200,8 +201,24 @@ class DevicesExtension extends DI\CompilerExtension
 			->setType(Models\Entities\Connectors\Controls\ControlsManager::class)
 			->setArgument('entityCrud', '__placeholder__');
 
+		$manager = new DataSources\DefaultFormatEncoderManager();
+		$manager->addEncoder(new DataSources\JsonFormatEncoder());
+
+		$dataSource = $builder->addDefinition(
+			$this->prefix('models.configuration.builder.datasource'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(DataSources\DefaultDataSource::class)
+			->setArguments([
+				'encoderManager' => $manager,
+			])
+			->setAutowired(false);
+
 		$builder->addDefinition($this->prefix('models.configuration.builder'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Configuration\Builder::class);
+			->setType(Models\Configuration\Builder::class)
+			->setArguments([
+				'dataSource' => $dataSource,
+			]);
 
 		$builder->addDefinition(
 			$this->prefix('models.configuration.connectorsRepository'),

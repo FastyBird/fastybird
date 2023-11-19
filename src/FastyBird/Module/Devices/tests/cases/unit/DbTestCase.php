@@ -55,15 +55,15 @@ abstract class DbTestCase extends TestCase
 		. 'kMi00OTU0LWJhM2ItNThlZTRiZTUzMjdkIiwiaWF0IjoxNTg1NzQyNDAwLCJleHAiOjE1ODU3NDk2MDAsInVzZXIiOiI1ZTc5ZWZiZi1iZDBkLTViN2MtNDZlZi1iZmJkZWZiZmJkM'
 		. 'zQiLCJyb2xlcyI6WyJ1c2VyIl19.jELVcZGRa5_-Jcpoo3Jfho08vQT2IobtoEQPhxN2tzw';
 
-	private Nette\DI\Container|null $container = null;
+	protected Nette\DI\Container|null $container = null;
 
-	private bool $isDatabaseSetUp = false;
-
-	/** @var array<string> */
-	private array $sqlFiles = [];
+	protected bool $isDatabaseSetUp = false;
 
 	/** @var array<string> */
-	private array $neonFiles = [];
+	protected array $sqlFiles = [];
+
+	/** @var array<string> */
+	protected array $neonFiles = [];
 
 	/**
 	 * @throws BootstrapExceptions\InvalidArgument

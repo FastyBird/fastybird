@@ -43,8 +43,6 @@ final class Builder implements Evenement\EventEmitterInterface
 
 	private JSONPath\JSONPath|null $configuration = null;
 
-	private DataSources\DefaultDataSource $dataSource;
-
 	public function __construct(
 		private readonly Models\Entities\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly Models\Entities\Connectors\Properties\PropertiesRepository $connectorsPropertiesRepository,
@@ -55,12 +53,9 @@ final class Builder implements Evenement\EventEmitterInterface
 		private readonly Models\Entities\Channels\ChannelsRepository $channelsRepository,
 		private readonly Models\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly Models\Entities\Channels\Controls\ControlsRepository $channelsControlsRepository,
+		private readonly DataSources\DefaultDataSource $dataSource,
 	)
 	{
-		$manager = new DataSources\DefaultFormatEncoderManager();
-		$manager->addEncoder(new DataSources\JsonFormatEncoder());
-
-		$this->dataSource = new DataSources\DefaultDataSource($manager);
 	}
 
 	/**

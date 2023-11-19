@@ -11,11 +11,40 @@ use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\Tests\Cases\Unit\DbTestCase;
 use Nette;
+use Nette\Utils;
+use Orisai\DataSources;
 use Ramsey\Uuid;
 use RuntimeException;
 
 final class DevicesPropertiesRepositoryTest extends DbTestCase
 {
+
+	/**
+	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws Error
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Nette\DI\MissingServiceException
+	 * @throws RuntimeException
+	 * @throws Utils\JsonException
+	 */
+	public function setUp(): void
+	{
+		parent::setUp();
+
+		$dataSource = $this->createMock(DataSources\DefaultDataSource::class);
+		$dataSource
+			->method('decode')
+			->willReturn(
+				Utils\Json::decode(
+					Utils\FileSystem::read(__DIR__ . '/../../../../../fixtures/devices-module-data.json'),
+				),
+			);
+
+		$this->mockContainerService(
+			DataSources\DefaultDataSource::class,
+			$dataSource,
+		);
+	}
 
 	/**
 	 * @throws BootstrapExceptions\InvalidArgument
