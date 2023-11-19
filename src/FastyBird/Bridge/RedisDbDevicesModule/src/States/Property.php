@@ -50,7 +50,7 @@ class Property extends RedisDbStates\State implements DevicesStates\Property
 			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\CoverPayload::class),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		#[ObjectMapper\Modifiers\FieldName('actual_value')]
+		#[ObjectMapper\Modifiers\FieldName(self::ACTUAL_VALUE_FIELD)]
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		private readonly bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $actualValue = null,
 		#[ObjectMapper\Rules\AnyOf([
@@ -64,30 +64,32 @@ class Property extends RedisDbStates\State implements DevicesStates\Property
 			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\CoverPayload::class),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		#[ObjectMapper\Modifiers\FieldName('expected_value')]
+		#[ObjectMapper\Modifiers\FieldName(self::EXPECTED_VALUE_FIELD)]
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		private readonly bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $expectedValue = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
 			new ObjectMapper\Rules\BoolValue(castBoolLike: true),
 		])]
+		#[ObjectMapper\Modifiers\FieldName(self::PENDING_FIELD)]
 		private readonly bool|DateTimeInterface $pending = false,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\BoolValue(castBoolLike: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
+		#[ObjectMapper\Modifiers\FieldName(self::VALID_FIELD)]
 		private readonly bool|null $valid = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		#[ObjectMapper\Modifiers\FieldName('created_at')]
+		#[ObjectMapper\Modifiers\FieldName(self::CREATED_AT_FIELD)]
 		private readonly DateTimeInterface|null $createdAt = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		#[ObjectMapper\Modifiers\FieldName('updated_at')]
+		#[ObjectMapper\Modifiers\FieldName(self::UPDATED_AT_FIELD)]
 		private readonly DateTimeInterface|null $updatedAt = null,
 	)
 	{
@@ -135,10 +137,10 @@ class Property extends RedisDbStates\State implements DevicesStates\Property
 	{
 		return [
 			0 => 'id',
-			DevicesStates\Property::ACTUAL_VALUE_KEY => null,
-			DevicesStates\Property::EXPECTED_VALUE_KEY => null,
-			DevicesStates\Property::PENDING_KEY => false,
-			DevicesStates\Property::VALID_KEY => false,
+			DevicesStates\Property::ACTUAL_VALUE_FIELD => null,
+			DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
+			DevicesStates\Property::PENDING_FIELD => false,
+			DevicesStates\Property::VALID_FIELD => false,
 			self::CREATED_AT_FIELD => null,
 			self::UPDATED_AT_FIELD => null,
 		];
@@ -147,10 +149,10 @@ class Property extends RedisDbStates\State implements DevicesStates\Property
 	public static function getUpdateFields(): array
 	{
 		return [
-			DevicesStates\Property::ACTUAL_VALUE_KEY,
-			DevicesStates\Property::EXPECTED_VALUE_KEY,
-			DevicesStates\Property::PENDING_KEY,
-			DevicesStates\Property::VALID_KEY,
+			DevicesStates\Property::ACTUAL_VALUE_FIELD,
+			DevicesStates\Property::EXPECTED_VALUE_FIELD,
+			DevicesStates\Property::PENDING_FIELD,
+			DevicesStates\Property::VALID_FIELD,
 			self::UPDATED_AT_FIELD,
 		];
 	}

@@ -57,6 +57,7 @@ final class DeviceConnection
 
 	/**
 	 * @throws DBAL\Exception
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
@@ -117,10 +118,10 @@ final class DeviceConnection
 		$this->propertiesStates->writeValue(
 			$property,
 			Utils\ArrayHash::from([
-				States\Property::ACTUAL_VALUE_KEY => $state->getValue(),
-				States\Property::EXPECTED_VALUE_KEY => null,
-				States\Property::PENDING_KEY => false,
-				States\Property::VALID_KEY => true,
+				States\Property::ACTUAL_VALUE_FIELD => $state->getValue(),
+				States\Property::EXPECTED_VALUE_FIELD => null,
+				States\Property::PENDING_FIELD => false,
+				States\Property::VALID_FIELD => true,
 			]),
 		);
 

@@ -25,6 +25,7 @@ use FastyBird\Module\Devices\Exceptions;
 use Nette\Utils;
 use function array_filter;
 use function array_values;
+use function boolval;
 use function count;
 use function floatval;
 use function implode;
@@ -669,6 +670,74 @@ final class ValueHelper
 		}
 
 		return self::flattenValue($value);
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
+	public static function transformValueFromMappedParent(
+		MetadataTypes\DataType $dataType,
+		MetadataTypes\DataType $parentDataType,
+		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
+	): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
+	{
+		if ($dataType->equals($parentDataType)) {
+			return $value;
+		}
+
+		if ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BOOLEAN)) {
+			if (
+				$parentDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SWITCH)
+				&& (
+					$value instanceof MetadataTypes\SwitchPayload
+					|| $value === null
+				)
+			) {
+				return $value?->equalsValue(MetadataTypes\SwitchPayload::PAYLOAD_ON) ?? false;
+			} elseif (
+				$parentDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)
+				&& (
+					$value instanceof MetadataTypes\ButtonPayload
+					|| $value === null
+				)
+			) {
+				return $value?->equalsValue(MetadataTypes\ButtonPayload::PAYLOAD_PRESSED) ?? false;
+			}
+		}
+
+		throw new Exceptions\InvalidState('Parent property value could not be transformed to mapped property value');
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
+	public static function transformValueToMappedParent(
+		MetadataTypes\DataType $dataType,
+		MetadataTypes\DataType $parentDataType,
+		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
+	): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
+	{
+		if ($dataType->equals($parentDataType)) {
+			return $value;
+		}
+
+		if ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BOOLEAN)) {
+			if ($parentDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SWITCH)) {
+				return MetadataTypes\SwitchPayload::get(
+					boolval($value)
+						? MetadataTypes\SwitchPayload::PAYLOAD_ON
+						: MetadataTypes\SwitchPayload::PAYLOAD_OFF,
+				);
+			} elseif ($parentDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)) {
+				return MetadataTypes\ButtonPayload::get(
+					boolval($value)
+						? MetadataTypes\ButtonPayload::PAYLOAD_PRESSED
+						: MetadataTypes\ButtonPayload::PAYLOAD_RELEASED,
+				);
+			}
+		}
+
+		throw new Exceptions\InvalidState('Mapped property value could not be transformed to parent property value');
 	}
 
 	private static function normalizeEnumItemValue(

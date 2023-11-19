@@ -205,8 +205,8 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			);
 		} elseif ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
 			$this->channelPropertiesStateManager->setValue($property, Utils\ArrayHash::from([
-				DevicesStates\Property::ACTUAL_VALUE_KEY => DevicesUtilities\ValueHelper::flattenValue($valueToStore),
-				DevicesStates\Property::VALID_KEY => true,
+				DevicesStates\Property::ACTUAL_VALUE_FIELD => DevicesUtilities\ValueHelper::flattenValue($valueToStore),
+				DevicesStates\Property::VALID_FIELD => true,
 			]));
 		} elseif ($property instanceof DevicesEntities\Channels\Properties\Mapped) {
 			if ($this->useExchange) {
@@ -260,8 +260,8 @@ final class StoreChannelPropertyState implements Queue\Consumer
 				}
 			} else {
 				$this->channelPropertiesStateManager->writeValue($property, Utils\ArrayHash::from([
-					DevicesStates\Property::EXPECTED_VALUE_KEY => $entity->getValue(),
-					DevicesStates\Property::PENDING_KEY => true,
+					DevicesStates\Property::EXPECTED_VALUE_FIELD => $entity->getValue(),
+					DevicesStates\Property::PENDING_FIELD => true,
 				]));
 			}
 		}

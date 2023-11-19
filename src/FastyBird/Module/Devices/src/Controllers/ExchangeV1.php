@@ -323,8 +323,8 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 			$this->connectorPropertiesStates->writeValue(
 				$property,
 				Utils\ArrayHash::from([
-					States\Property::EXPECTED_VALUE_KEY => $entity->getExpectedValue(),
-					States\Property::PENDING_KEY => true,
+					States\Property::EXPECTED_VALUE_FIELD => $entity->getExpectedValue(),
+					States\Property::PENDING_FIELD => true,
 				]),
 			);
 		} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
@@ -368,6 +368,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	}
 
 	/**
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws ExchangeExceptions\InvalidArgument
 	 * @throws ExchangeExceptions\InvalidState
@@ -398,8 +399,8 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 			$this->devicePropertiesStates->writeValue(
 				$property,
 				Utils\ArrayHash::from([
-					States\Property::EXPECTED_VALUE_KEY => $entity->getExpectedValue(),
-					States\Property::PENDING_KEY => true,
+					States\Property::EXPECTED_VALUE_FIELD => $entity->getExpectedValue(),
+					States\Property::PENDING_FIELD => true,
 				]),
 			);
 		} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
@@ -443,6 +444,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	}
 
 	/**
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws ExchangeExceptions\InvalidArgument
 	 * @throws ExchangeExceptions\InvalidState
@@ -473,8 +475,8 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 			$this->channelPropertiesStates->writeValue(
 				$property,
 				Utils\ArrayHash::from([
-					States\Property::EXPECTED_VALUE_KEY => $entity->getExpectedValue(),
-					States\Property::PENDING_KEY => true,
+					States\Property::EXPECTED_VALUE_FIELD => $entity->getExpectedValue(),
+					States\Property::PENDING_FIELD => true,
 				]),
 			);
 		} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {

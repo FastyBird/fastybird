@@ -66,6 +66,7 @@ final class StoreDeviceState implements Queue\Consumer
 
 	/**
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
+	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws ExchangeExceptions\InvalidArgument
 	 * @throws ExchangeExceptions\InvalidState
@@ -132,6 +133,7 @@ final class StoreDeviceState implements Queue\Consumer
 	/**
 	 * @param array<Entities\Messages\CapabilityState> $state
 	 *
+	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -174,12 +176,12 @@ final class StoreDeviceState implements Queue\Consumer
 			$this->channelPropertiesStatesManager->writeValue(
 				$property,
 				Utils\ArrayHash::from([
-					DevicesStates\Property::ACTUAL_VALUE_KEY => DevicesUtilities\ValueHelper::transformValueFromDevice(
+					DevicesStates\Property::ACTUAL_VALUE_FIELD => DevicesUtilities\ValueHelper::transformValueFromDevice(
 						$property->getDataType(),
 						$property->getFormat(),
 						DevicesUtilities\ValueHelper::flattenValue($item->getValue()),
 					),
-					DevicesStates\Property::VALID_KEY => true,
+					DevicesStates\Property::VALID_FIELD => true,
 				]),
 			);
 		}
@@ -189,6 +191,7 @@ final class StoreDeviceState implements Queue\Consumer
 	 * @param array<Entities\Messages\CapabilityState> $state
 	 *
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
+	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws ExchangeExceptions\InvalidArgument
 	 * @throws ExchangeExceptions\InvalidState
@@ -246,6 +249,7 @@ final class StoreDeviceState implements Queue\Consumer
 
 	/**
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
+	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws ExchangeExceptions\InvalidArgument
 	 * @throws ExchangeExceptions\InvalidState
@@ -297,8 +301,8 @@ final class StoreDeviceState implements Queue\Consumer
 			$this->channelPropertiesStatesManager->writeValue(
 				$property,
 				Utils\ArrayHash::from([
-					DevicesStates\Property::EXPECTED_VALUE_KEY => $value,
-					DevicesStates\Property::PENDING_KEY => true,
+					DevicesStates\Property::EXPECTED_VALUE_FIELD => $value,
+					DevicesStates\Property::PENDING_FIELD => true,
 				]),
 			);
 		}

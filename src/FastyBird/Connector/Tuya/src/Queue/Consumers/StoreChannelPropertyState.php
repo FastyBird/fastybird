@@ -155,8 +155,8 @@ final class StoreChannelPropertyState implements Queue\Consumer
 				}
 
 				$this->channelPropertiesStateManager->setValue($property, Utils\ArrayHash::from([
-					DevicesStates\Property::ACTUAL_VALUE_KEY => $valueToStore,
-					DevicesStates\Property::VALID_KEY => true,
+					DevicesStates\Property::ACTUAL_VALUE_FIELD => $valueToStore,
+					DevicesStates\Property::VALID_FIELD => true,
 				]));
 			}
 		}

@@ -4,6 +4,7 @@ namespace FastyBird\Module\Devices\Tests\Cases\Unit\Entities;
 
 use Error;
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
@@ -24,6 +25,7 @@ final class DevicePropertyEntityTest extends DbTestCase
 	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
 	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 * @throws Exceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
 	 * @throws Error
@@ -48,6 +50,8 @@ final class DevicePropertyEntityTest extends DbTestCase
 			'identifier' => 'new-child-property',
 			'device' => $parent->getDevice(),
 			'parent' => $parent,
+			'dataType' => $parent->getDataType(),
+			'format' => $parent->getFormat(),
 		]));
 
 		self::assertTrue($child instanceof Entities\Devices\Properties\Mapped);
@@ -61,6 +65,7 @@ final class DevicePropertyEntityTest extends DbTestCase
 	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
 	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 * @throws Exceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
 	 * @throws Error
@@ -85,6 +90,8 @@ final class DevicePropertyEntityTest extends DbTestCase
 			'identifier' => 'new-child-property',
 			'device' => $parent->getDevice(),
 			'parent' => $parent,
+			'dataType' => $parent->getDataType(),
+			'format' => $parent->getFormat(),
 		]));
 
 		self::assertTrue($child instanceof Entities\Devices\Properties\Mapped);
@@ -119,6 +126,7 @@ final class DevicePropertyEntityTest extends DbTestCase
 	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
 	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 * @throws Exceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
 	 * @throws Error
@@ -143,6 +151,8 @@ final class DevicePropertyEntityTest extends DbTestCase
 			'identifier' => 'new-child-property',
 			'device' => $parent->getDevice(),
 			'parent' => $parent,
+			'dataType' => $parent->getDataType(),
+			'format' => $parent->getFormat(),
 		]));
 
 		self::assertTrue($child instanceof Entities\Devices\Properties\Mapped);

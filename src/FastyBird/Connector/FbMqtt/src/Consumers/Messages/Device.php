@@ -64,6 +64,7 @@ final class Device implements Consumers\Consumer
 
 	/**
 	 * @throws DBAL\Exception
+	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
@@ -161,6 +162,7 @@ final class Device implements Consumers\Consumer
 	 * @param Utils\ArrayHash<string> $properties
 	 *
 	 * @throws DBAL\Exception
+	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Runtime
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException

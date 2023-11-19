@@ -627,6 +627,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 
 	/**
 	 * @throws DBAL\Exception
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
@@ -658,6 +659,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 
 	/**
 	 * @throws DBAL\Exception
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument

@@ -143,7 +143,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 					$this->propertyStateHelper->setValue(
 						$property,
 						Utils\ArrayHash::from([
-							DevicesStates\Property::PENDING_KEY => $this->dateTimeFactory->getNow()->format(
+							DevicesStates\Property::PENDING_FIELD => $this->dateTimeFactory->getNow()->format(
 								DateTimeInterface::ATOM,
 							),
 						]),
@@ -171,8 +171,8 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 					$this->propertyStateHelper->setValue(
 						$property,
 						Utils\ArrayHash::from([
-							DevicesStates\Property::EXPECTED_VALUE_KEY => null,
-							DevicesStates\Property::PENDING_KEY => false,
+							DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
+							DevicesStates\Property::PENDING_FIELD => false,
 						]),
 					);
 				});
@@ -206,7 +206,7 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 					$this->propertyStateHelper->setValue(
 						$property,
 						Utils\ArrayHash::from([
-							DevicesStates\Property::PENDING_KEY => $this->dateTimeFactory->getNow()->format(
+							DevicesStates\Property::PENDING_FIELD => $this->dateTimeFactory->getNow()->format(
 								DateTimeInterface::ATOM,
 							),
 						]),
@@ -237,8 +237,8 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 					$this->propertyStateHelper->setValue(
 						$property,
 						Utils\ArrayHash::from([
-							DevicesStates\Property::EXPECTED_VALUE_KEY => null,
-							DevicesStates\Property::PENDING_KEY => false,
+							DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
+							DevicesStates\Property::PENDING_FIELD => false,
 						]),
 					);
 				});

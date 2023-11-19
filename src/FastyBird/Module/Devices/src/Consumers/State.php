@@ -63,6 +63,7 @@ final class State implements ExchangeConsumers\Consumer
 	}
 
 	/**
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws ExchangeExceptions\InvalidArgument
 	 * @throws ExchangeExceptions\InvalidState
@@ -96,8 +97,8 @@ final class State implements ExchangeConsumers\Consumer
 					$this->connectorPropertiesStates->writeValue(
 						$property,
 						Utils\ArrayHash::from([
-							States\Property::EXPECTED_VALUE_KEY => $entity->getExpectedValue(),
-							States\Property::PENDING_KEY => true,
+							States\Property::EXPECTED_VALUE_FIELD => $entity->getExpectedValue(),
+							States\Property::PENDING_FIELD => true,
 						]),
 					);
 				} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
@@ -149,8 +150,8 @@ final class State implements ExchangeConsumers\Consumer
 					$this->devicePropertiesStates->writeValue(
 						$property,
 						Utils\ArrayHash::from([
-							States\Property::EXPECTED_VALUE_KEY => $entity->getExpectedValue(),
-							States\Property::PENDING_KEY => true,
+							States\Property::EXPECTED_VALUE_FIELD => $entity->getExpectedValue(),
+							States\Property::PENDING_FIELD => true,
 						]),
 					);
 				} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
@@ -202,8 +203,8 @@ final class State implements ExchangeConsumers\Consumer
 					$this->channelPropertiesStates->writeValue(
 						$property,
 						Utils\ArrayHash::from([
-							States\Property::EXPECTED_VALUE_KEY => $entity->getExpectedValue(),
-							States\Property::PENDING_KEY => true,
+							States\Property::EXPECTED_VALUE_FIELD => $entity->getExpectedValue(),
+							States\Property::PENDING_FIELD => true,
 						]),
 					);
 				} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
