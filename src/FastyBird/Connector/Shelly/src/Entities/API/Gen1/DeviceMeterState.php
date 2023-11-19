@@ -41,7 +41,7 @@ final class DeviceMeterState implements Entities\API\Entity
 		private readonly float $power,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\FloatValue(),
-			new ObjectMapper\Rules\BoolValue(castBoolLike: true),
+			new ObjectMapper\Rules\BoolValue(),
 		])]
 		private readonly float|bool $overpower,
 		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]

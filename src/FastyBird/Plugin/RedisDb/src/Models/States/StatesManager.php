@@ -181,7 +181,7 @@ class StatesManager
 			// Initialize structure
 			$data = new stdClass();
 
-			$values->offsetSet('id', $id->toString());
+			$values->offsetSet(States\State::ID_FIELD, $id->toString());
 
 			foreach ($fields as $field => $default) {
 				$value = $default;

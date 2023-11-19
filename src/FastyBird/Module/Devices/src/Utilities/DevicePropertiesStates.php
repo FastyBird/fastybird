@@ -532,6 +532,7 @@ final class DevicePropertiesStates
 
 			return $this->stateMapper->process(
 				array_merge(
+					$state->toArray(),
 					[
 						$state::ACTUAL_VALUE_FIELD => $state->getActualValue(),
 						$state::EXPECTED_VALUE_FIELD => $state->getExpectedValue(),

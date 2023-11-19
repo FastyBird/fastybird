@@ -58,7 +58,7 @@ final class PropertyDescription implements Entity
 					new ObjectMapper\Rules\AnyOf([
 						new ObjectMapper\Rules\ArrayOf(
 							new ObjectMapper\Rules\AnyOf([
-								new ObjectMapper\Rules\BoolValue(castBoolLike: true),
+								new ObjectMapper\Rules\BoolValue(),
 								new ObjectMapper\Rules\StringValue(notEmpty: true),
 								new ObjectMapper\Rules\NullValue(castEmptyString: true),
 							]),

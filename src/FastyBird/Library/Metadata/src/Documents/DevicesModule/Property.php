@@ -87,7 +87,7 @@ abstract class Property implements Documents\Document, Documents\Owner
 								new ObjectMapper\Rules\StringValue(notEmpty: true),
 								new ObjectMapper\Rules\IntValue(),
 								new ObjectMapper\Rules\FloatValue(),
-								new ObjectMapper\Rules\BoolValue(castBoolLike: true),
+								new ObjectMapper\Rules\BoolValue(),
 							]),
 							key: new ObjectMapper\Rules\IntValue(unsigned: true),
 							minItems: 2,

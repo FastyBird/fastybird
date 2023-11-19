@@ -96,7 +96,7 @@ abstract class MappedProperty extends Property
 			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
 		])]
 		private readonly bool|DateTimeInterface $pending = false,
-		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
+		#[ObjectMapper\Rules\BoolValue()]
 		private readonly bool $valid = false,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\BoolValue(),
