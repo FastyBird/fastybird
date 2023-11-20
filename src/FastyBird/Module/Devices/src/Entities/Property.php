@@ -21,9 +21,9 @@ use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
 use FastyBird\Module\Devices\Exceptions;
-use FastyBird\Module\Devices\Utilities;
 use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
 use IPub\DoctrineTimestampable;
 use Nette\Utils;
@@ -408,7 +408,7 @@ abstract class Property implements Entity,
 		}
 
 		try {
-			return Utilities\ValueHelper::normalizeValue(
+			return MetadataUtilities\ValueHelper::normalizeValue(
 				$this->getDataType(),
 				$this->value,
 				$this->getFormat(),
@@ -426,7 +426,7 @@ abstract class Property implements Entity,
 		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
 	): void
 	{
-		$value = Utilities\ValueHelper::flattenValue($value);
+		$value = MetadataUtilities\ValueHelper::flattenValue($value);
 
 		if ($this->getIdentifier() === MetadataTypes\PropertyIdentifier::IDENTIFIER_IP_ADDRESS) {
 			if (!is_string($value)) {
@@ -485,7 +485,7 @@ abstract class Property implements Entity,
 		}
 
 		try {
-			return Utilities\ValueHelper::normalizeValue(
+			return MetadataUtilities\ValueHelper::normalizeValue(
 				$this->getDataType(),
 				$this->default,
 				$this->getFormat(),
@@ -498,7 +498,7 @@ abstract class Property implements Entity,
 
 	public function setDefault(string|null $default): void
 	{
-		$default = Utilities\ValueHelper::flattenValue($default);
+		$default = MetadataUtilities\ValueHelper::flattenValue($default);
 
 		if (is_bool($default)) {
 			$this->default = $default ? '1' : '0';
@@ -535,8 +535,8 @@ abstract class Property implements Entity,
 
 		if ($this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_VARIABLE)) {
 			return array_merge($data, [
-				'default' => Utilities\ValueHelper::flattenValue($this->getDefault()),
-				'value' => Utilities\ValueHelper::flattenValue($this->getValue()),
+				'default' => MetadataUtilities\ValueHelper::flattenValue($this->getDefault()),
+				'value' => MetadataUtilities\ValueHelper::flattenValue($this->getValue()),
 			]);
 		} elseif ($this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_DYNAMIC)) {
 			return array_merge($data, [

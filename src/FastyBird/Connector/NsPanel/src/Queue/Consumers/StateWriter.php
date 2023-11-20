@@ -22,6 +22,7 @@ use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models\Entities\Channels\Properties\PropertiesRepository;
@@ -499,7 +500,7 @@ trait StateWriter
 			$value = $property->getValue();
 		}
 
-		return DevicesUtilities\ValueHelper::transformValueToDevice(
+		return MetadataUtilities\ValueHelper::transformValueToDevice(
 			$property->getDataType(),
 			$property->getFormat(),
 			$value,

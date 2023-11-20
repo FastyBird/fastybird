@@ -8,9 +8,9 @@
   "unit": null,
   "format": ["one", "two", "three"],
   "invalid": 99,
-  "scale": 0,
+  "scale": null,
   "step": null,
   "channel": "247fd6b5-8466-4323-81de-cec3e315015a",
-  "value" : 50,
+  "value" : "two",
   "default" : null
 }

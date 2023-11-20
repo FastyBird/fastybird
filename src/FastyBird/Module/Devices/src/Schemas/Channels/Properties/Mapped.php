@@ -19,6 +19,7 @@ use DateTimeInterface;
 use Exception;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
@@ -94,16 +95,16 @@ final class Mapped extends Property
 			[
 				'settable' => $resource->isSettable(),
 				'queryable' => $resource->isQueryable(),
-				'actual_value' => Utilities\ValueHelper::flattenValue($state?->getActualValue()),
-				'expected_value' => Utilities\ValueHelper::flattenValue($state?->getExpectedValue()),
+				'actual_value' => MetadataUtilities\ValueHelper::flattenValue($state?->getActualValue()),
+				'expected_value' => MetadataUtilities\ValueHelper::flattenValue($state?->getExpectedValue()),
 				'pending' => $state !== null ? (is_bool($state->getPending())
 					? $state->getPending() : $state->getPending()->format(DateTimeInterface::ATOM))
 					: null,
 				'is_valid' => $state !== null && $state->isValid(),
 			],
 		) : array_merge((array) parent::getAttributes($resource, $context), [
-			'value' => Utilities\ValueHelper::flattenValue($resource->getValue()),
-			'default' => Utilities\ValueHelper::flattenValue($resource->getDefault()),
+			'value' => MetadataUtilities\ValueHelper::flattenValue($resource->getValue()),
+			'default' => MetadataUtilities\ValueHelper::flattenValue($resource->getDefault()),
 		]);
 	}
 

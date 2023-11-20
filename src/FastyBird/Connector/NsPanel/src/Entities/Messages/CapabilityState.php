@@ -18,7 +18,7 @@ namespace FastyBird\Connector\NsPanel\Entities\Messages;
 use DateTimeInterface;
 use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
-use FastyBird\Module\Devices\Utilities as DevicesUtilities;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use Orisai\ObjectMapper;
 
 /**
@@ -91,7 +91,7 @@ final class CapabilityState implements Entity
 		return [
 			'capability' => $this->getCapability()->getValue(),
 			'protocol' => $this->getProtocol()->getValue(),
-			'value' => DevicesUtilities\ValueHelper::flattenValue($this->getValue()),
+			'value' => MetadataUtilities\ValueHelper::flattenValue($this->getValue()),
 			'identifier' => $this->getIdentifier(),
 		];
 	}

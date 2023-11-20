@@ -8,7 +8,6 @@ use DateTimeInterface;
 use Exception;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\States as DevicesStates;
-use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette\Utils;
 use Ramsey\Uuid;
 use function is_bool;
@@ -126,8 +125,8 @@ class DummyChannelPropertyState implements DevicesStates\ChannelProperty
 	{
 		return [
 			'id' => $this->getId()->toString(),
-			'actual_value' => DevicesUtilities\ValueHelper::flattenValue($this->getActualValue()),
-			'expected_value' => DevicesUtilities\ValueHelper::flattenValue($this->getExpectedValue()),
+			'actual_value' => MetadataUtilities\ValueHelper::flattenValue($this->getActualValue()),
+			'expected_value' => MetadataUtilities\ValueHelper::flattenValue($this->getExpectedValue()),
 			'pending' => $this->getPending() instanceof DateTimeInterface ? $this->getPending()->format(
 				DateTimeInterface::ATOM,
 			) : $this->getPending(),

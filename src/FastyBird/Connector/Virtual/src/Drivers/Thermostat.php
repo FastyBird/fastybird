@@ -25,6 +25,7 @@ use FastyBird\Connector\Virtual\Types;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
@@ -126,7 +127,7 @@ class Thermostat implements Driver
 				$actualValue = Helpers\Transformer::fromMappedParent($actor, $actualValue);
 			}
 
-			$actualValue = DevicesUtilities\ValueHelper::normalizeValue(
+			$actualValue = MetadataUtilities\ValueHelper::normalizeValue(
 				$actor->getDataType(),
 				$actualValue,
 				$actor->getFormat(),
@@ -153,7 +154,7 @@ class Thermostat implements Driver
 				$actualValue = Helpers\Transformer::fromMappedParent($sensor, $actualValue);
 			}
 
-			$actualValue = DevicesUtilities\ValueHelper::normalizeValue(
+			$actualValue = MetadataUtilities\ValueHelper::normalizeValue(
 				$sensor->getDataType(),
 				$actualValue,
 				$sensor->getFormat(),
@@ -183,7 +184,7 @@ class Thermostat implements Driver
 				$actualValue = Helpers\Transformer::fromMappedParent($opening, $actualValue);
 			}
 
-			$actualValue = DevicesUtilities\ValueHelper::normalizeValue(
+			$actualValue = MetadataUtilities\ValueHelper::normalizeValue(
 				$opening->getDataType(),
 				$actualValue,
 				$opening->getFormat(),

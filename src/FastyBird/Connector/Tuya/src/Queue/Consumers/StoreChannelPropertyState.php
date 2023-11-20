@@ -22,6 +22,7 @@ use FastyBird\Connector\Tuya\Queue;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -120,7 +121,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 
 			if ($property !== null) {
 				try {
-					$valueToStore = DevicesUtilities\ValueHelper::normalizeValue(
+					$valueToStore = MetadataUtilities\ValueHelper::normalizeValue(
 						$property->getDataType(),
 						$dataPoint->getValue(),
 						$property->getFormat(),
@@ -157,7 +158,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 							},
 						);
 
-						$valueToStore = DevicesUtilities\ValueHelper::normalizeValue(
+						$valueToStore = MetadataUtilities\ValueHelper::normalizeValue(
 							$updatedProperty->getDataType(),
 							$dataPoint->getValue(),
 							$updatedProperty->getFormat(),

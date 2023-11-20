@@ -349,7 +349,7 @@ final class Cloud implements Client
 			}
 		}
 
-		$this->processedDevicesCommands[$device->getId()->toString()][self::CMD_STATE] = $this->dateTimeFactory->getNow();
+		$this->processedDevicesCommands[$device->getId()->toString()][self::CMD_HEARTBEAT] = $this->dateTimeFactory->getNow();
 
 		$deviceState = $this->deviceConnectionManager->getState($device);
 

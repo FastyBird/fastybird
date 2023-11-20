@@ -24,7 +24,6 @@ use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use function assert;
 use function is_string;
-use function strval;
 
 /**
  * Device helper
@@ -66,8 +65,8 @@ final class Connector
 
 		$value = $property?->getValue();
 
-		if (Types\ClientMode::isValidValue(strval($value))) {
-			return Types\ClientMode::get(strval($value));
+		if (is_string($value) && Types\ClientMode::isValidValue($value)) {
+			return Types\ClientMode::get($value);
 		}
 
 		throw new Exceptions\InvalidState('Connector mode is not configured');

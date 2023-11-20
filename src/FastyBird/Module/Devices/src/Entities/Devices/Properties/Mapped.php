@@ -19,9 +19,9 @@ use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
-use FastyBird\Module\Devices\Utilities;
 use Ramsey\Uuid;
 use function array_merge;
 use function assert;
@@ -165,7 +165,7 @@ class Mapped extends Property
 			throw new Exceptions\InvalidState('Reading default value is allowed only for variable parent properties');
 		}
 
-		return Utilities\ValueHelper::transformValueFromMappedParent(
+		return MetadataUtilities\ValueHelper::transformValueFromMappedParent(
 			$this->getDataType(),
 			$this->getParent()->getDataType(),
 			$this->getParent()->getDefault(),
@@ -196,7 +196,7 @@ class Mapped extends Property
 			throw new Exceptions\InvalidState('Reading value is allowed only for variable parent properties');
 		}
 
-		return Utilities\ValueHelper::transformValueFromMappedParent(
+		return MetadataUtilities\ValueHelper::transformValueFromMappedParent(
 			$this->getDataType(),
 			$this->getParent()->getDataType(),
 			$this->getParent()->getValue(),
@@ -230,8 +230,8 @@ class Mapped extends Property
 			return array_merge(parent::toArray(), [
 				'parent' => $this->getParent()->getId()->toString(),
 
-				'default' => Utilities\ValueHelper::flattenValue($this->getDefault()),
-				'value' => Utilities\ValueHelper::flattenValue($this->getValue()),
+				'default' => MetadataUtilities\ValueHelper::flattenValue($this->getDefault()),
+				'value' => MetadataUtilities\ValueHelper::flattenValue($this->getValue()),
 			]);
 		}
 
