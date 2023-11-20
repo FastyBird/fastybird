@@ -21,6 +21,7 @@ use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Queue;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
+use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -47,6 +48,8 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 	 * @param DevicesModels\Configuration\Devices\Repository<MetadataDocuments\DevicesModule\Device> $devicesRepository
 	 * @param DevicesModels\Configuration\Channels\Repository<MetadataDocuments\DevicesModule\Channel> $channelsRepository
 	 * @param DevicesModels\Configuration\Channels\Properties\Repository<MetadataDocuments\DevicesModule\ChannelDynamicProperty> $channelsPropertiesRepository
+	 *
+	 * @throws ExchangeExceptions\InvalidArgument
 	 */
 	public function __construct(
 		MetadataDocuments\DevicesModule\Connector $connector,
@@ -72,8 +75,16 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 			$dateTimeFactory,
 			$eventLoop,
 		);
+
+		$this->consumer->register($this, null, false);
 	}
 
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws ExchangeExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
 	public function connect(): void
 	{
 		parent::connect();
@@ -81,6 +92,9 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 		$this->consumer->enable(self::class);
 	}
 
+	/**
+	 * @throws ExchangeExceptions\InvalidArgument
+	 */
 	public function disconnect(): void
 	{
 		parent::disconnect();

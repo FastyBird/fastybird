@@ -92,6 +92,7 @@ final class ModuleEntities implements Common\EventSubscriber
 	/**
 	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
 	 *
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws ExchangeExceptions\InvalidArgument
 	 * @throws ExchangeExceptions\InvalidState
@@ -118,6 +119,7 @@ final class ModuleEntities implements Common\EventSubscriber
 	/**
 	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
 	 *
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws ExchangeExceptions\InvalidArgument
 	 * @throws ExchangeExceptions\InvalidState
@@ -228,6 +230,7 @@ final class ModuleEntities implements Common\EventSubscriber
 	/**
 	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
 	 *
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws ExchangeExceptions\InvalidArgument
 	 * @throws ExchangeExceptions\InvalidState
@@ -252,6 +255,7 @@ final class ModuleEntities implements Common\EventSubscriber
 	}
 
 	/**
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws ExchangeExceptions\InvalidArgument
 	 * @throws ExchangeExceptions\InvalidState

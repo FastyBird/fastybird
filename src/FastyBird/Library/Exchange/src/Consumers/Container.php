@@ -92,6 +92,8 @@ class Container implements Consumer
 
 	/**
 	 * @param class-string<Consumer> $name
+	 *
+	 * @throws Exceptions\InvalidArgument
 	 */
 	public function enable(string $name): void
 	{
@@ -112,10 +114,14 @@ class Container implements Consumer
 
 			$this->consumers->next();
 		}
+
+		throw new Exceptions\InvalidArgument('Provided consumer is not registered in container and can not be enabled');
 	}
 
 	/**
 	 * @param class-string<Consumer> $name
+	 *
+	 * @throws Exceptions\InvalidArgument
 	 */
 	public function disable(string $name): void
 	{
@@ -136,6 +142,10 @@ class Container implements Consumer
 
 			$this->consumers->next();
 		}
+
+		throw new Exceptions\InvalidArgument(
+			'Provided consumer is not registered in container and can not be disabled',
+		);
 	}
 
 	public function reset(): void

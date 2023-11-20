@@ -30,10 +30,12 @@ use Nette\Utils;
 use React\Datagram;
 use RuntimeException;
 use Throwable;
+use function array_key_exists;
 use function count;
 use function explode;
 use function is_array;
 use function mb_convert_encoding;
+use function md5;
 use function pack;
 use function preg_replace;
 use function sprintf;
@@ -62,6 +64,9 @@ final class Gen1Coap implements Evenement\EventEmitterInterface
 	private const STATE_MESSAGE_CODE = 30;
 
 	private const STATE_MESSAGE_SCHEMA_FILENAME = 'gen1_coap_state.json';
+
+	/** @var array<string, string> */
+	private array $validationSchemas = [];
 
 	private Datagram\SocketInterface|null $server = null;
 
@@ -312,16 +317,20 @@ final class Gen1Coap implements Evenement\EventEmitterInterface
 	 */
 	private function getSchema(string $schemaFilename): string
 	{
-		try {
-			$schema = Utils\FileSystem::read(
-				Shelly\Constants::RESOURCES_FOLDER . DIRECTORY_SEPARATOR . $schemaFilename,
-			);
+		$key = md5($schemaFilename);
 
-		} catch (Nette\IOException) {
-			throw new Exceptions\InvalidState('Validation schema for payload could not be loaded');
+		if (!array_key_exists($key, $this->validationSchemas)) {
+			try {
+				$this->validationSchemas[$key] = Utils\FileSystem::read(
+					Shelly\Constants::RESOURCES_FOLDER . DIRECTORY_SEPARATOR . $schemaFilename,
+				);
+
+			} catch (Nette\IOException) {
+				throw new Exceptions\InvalidState('Validation schema for payload could not be loaded');
+			}
 		}
 
-		return $schema;
+		return $this->validationSchemas[$key];
 	}
 
 }

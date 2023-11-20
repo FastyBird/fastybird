@@ -673,7 +673,7 @@ final class ValueHelper
 		return self::flattenValue($value);
 	}
 
-	public static function transformValueToMappedParent(
+	public static function transformValueFromMappedParent(
 		MetadataTypes\DataType $dataType,
 		MetadataTypes\DataType $parentDataType,
 		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
@@ -717,7 +717,7 @@ final class ValueHelper
 		return $value;
 	}
 
-	public static function transformValueFromMappedParent(
+	public static function transformValueToMappedParent(
 		MetadataTypes\DataType $dataType,
 		MetadataTypes\DataType $parentDataType,
 		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,

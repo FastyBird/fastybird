@@ -59,6 +59,7 @@ final class ChannelPropertiesStates
 	}
 
 	/**
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -72,6 +73,7 @@ final class ChannelPropertiesStates
 	}
 
 	/**
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -142,6 +144,7 @@ final class ChannelPropertiesStates
 	}
 
 	/**
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -183,101 +186,103 @@ final class ChannelPropertiesStates
 		try {
 			$state = $this->channelPropertyStateRepository->findOne($property);
 
-			if ($state !== null) {
-				try {
-					if ($state->getActualValue() !== null) {
-						$actualValue = $forReading ? ValueHelper::normalizeReadValue(
-							$property->getDataType(),
-							$state->getActualValue(),
-							$property->getFormat(),
-							$property->getScale(),
-							$property->getInvalid(),
-						) : ValueHelper::normalizeValue(
-							$property->getDataType(),
-							$state->getActualValue(),
-							$property->getFormat(),
-							$property->getInvalid(),
-						);
-
-						$state = $this->updateState(
-							$state,
-							[
-								States\Property::ACTUAL_VALUE_FIELD => $mapped !== null
-									? ValueHelper::transformValueToMappedParent(
-										$mapped->getDataType(),
-										$property->getDataType(),
-										$actualValue,
-									)
-									: $actualValue,
-							],
-						);
-					}
-				} catch (Exceptions\InvalidArgument $ex) {
-					$this->channelPropertiesStatesManager->update($property, $state, Utils\ArrayHash::from([
-						States\Property::ACTUAL_VALUE_FIELD => null,
-						States\Property::VALID_FIELD => false,
-					]));
-
-					$this->logger->error(
-						'Property stored actual value was not valid',
-						[
-							'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
-							'type' => 'channel-properties-states',
-							'exception' => BootstrapHelpers\Logger::buildException($ex),
-						],
-					);
-
-					return $this->loadValue($property, $forReading);
-				}
-
-				try {
-					if ($state->getExpectedValue() !== null) {
-						$expectedValue = $forReading ? ValueHelper::normalizeReadValue(
-							$property->getDataType(),
-							$state->getExpectedValue(),
-							$property->getFormat(),
-							$property->getScale(),
-							$property->getInvalid(),
-						) : ValueHelper::normalizeValue(
-							$property->getDataType(),
-							$state->getExpectedValue(),
-							$property->getFormat(),
-							$property->getInvalid(),
-						);
-
-						$state = $this->updateState(
-							$state,
-							[
-								States\Property::EXPECTED_VALUE_FIELD => $mapped !== null
-									? ValueHelper::transformValueToMappedParent(
-										$mapped->getDataType(),
-										$property->getDataType(),
-										$expectedValue,
-									)
-									: $expectedValue,
-							],
-						);
-					}
-				} catch (Exceptions\InvalidArgument $ex) {
-					$this->channelPropertiesStatesManager->update($property, $state, Utils\ArrayHash::from([
-						States\Property::EXPECTED_VALUE_FIELD => null,
-						States\Property::PENDING_FIELD => false,
-					]));
-
-					$this->logger->error(
-						'Property stored expected value was not valid',
-						[
-							'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
-							'type' => 'channel-properties-states',
-							'exception' => BootstrapHelpers\Logger::buildException($ex),
-						],
-					);
-
-					return $this->loadValue($property, $forReading);
-				}
+			if ($state === null) {
+				return null;
 			}
 
-			return $state;
+			$updateValues = [];
+
+			if ($mapped !== null) {
+				$updateValues['id'] = $mapped->getId();
+			}
+
+			try {
+				if ($state->getActualValue() !== null) {
+					$actualValue = $forReading ? ValueHelper::normalizeReadValue(
+						$property->getDataType(),
+						$state->getActualValue(),
+						$property->getFormat(),
+						$property->getScale(),
+						$property->getInvalid(),
+					) : ValueHelper::normalizeValue(
+						$property->getDataType(),
+						$state->getActualValue(),
+						$property->getFormat(),
+						$property->getInvalid(),
+					);
+
+					$updateValues[States\Property::ACTUAL_VALUE_FIELD] = $mapped !== null
+						? ValueHelper::transformValueFromMappedParent(
+							$mapped->getDataType(),
+							$property->getDataType(),
+							$actualValue,
+						)
+						: $actualValue;
+				}
+			} catch (Exceptions\InvalidArgument $ex) {
+				$this->channelPropertiesStatesManager->update($property, $state, Utils\ArrayHash::from([
+					States\Property::ACTUAL_VALUE_FIELD => null,
+					States\Property::VALID_FIELD => false,
+				]));
+
+				$this->logger->error(
+					'Property stored actual value was not valid',
+					[
+						'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+						'type' => 'channel-properties-states',
+						'exception' => BootstrapHelpers\Logger::buildException($ex),
+					],
+				);
+
+				return $this->loadValue($property, $forReading);
+			}
+
+			try {
+				if ($state->getExpectedValue() !== null) {
+					$expectedValue = $forReading ? ValueHelper::normalizeReadValue(
+						$property->getDataType(),
+						$state->getExpectedValue(),
+						$property->getFormat(),
+						$property->getScale(),
+						$property->getInvalid(),
+					) : ValueHelper::normalizeValue(
+						$property->getDataType(),
+						$state->getExpectedValue(),
+						$property->getFormat(),
+						$property->getInvalid(),
+					);
+
+					$updateValues[States\Property::EXPECTED_VALUE_FIELD] = $mapped !== null
+						? ValueHelper::transformValueFromMappedParent(
+							$mapped->getDataType(),
+							$property->getDataType(),
+							$expectedValue,
+						)
+						: $expectedValue;
+				}
+			} catch (Exceptions\InvalidArgument $ex) {
+				$this->channelPropertiesStatesManager->update($property, $state, Utils\ArrayHash::from([
+					States\Property::EXPECTED_VALUE_FIELD => null,
+					States\Property::PENDING_FIELD => false,
+				]));
+
+				$this->logger->error(
+					'Property stored expected value was not valid',
+					[
+						'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+						'type' => 'channel-properties-states',
+						'exception' => BootstrapHelpers\Logger::buildException($ex),
+					],
+				);
+
+				return $this->loadValue($property, $forReading);
+			}
+
+			if ($updateValues === []) {
+				return $state;
+			}
+
+			return $this->updateState($state, $updateValues);
 		} catch (Exceptions\NotImplemented) {
 			$this->logger->warning(
 				'Channels states repository is not configured. State could not be fetched',
@@ -373,7 +378,7 @@ final class ChannelPropertiesStates
 			}
 
 			if ($mapped !== null) {
-				$actualValue = ValueHelper::transformValueFromMappedParent(
+				$actualValue = ValueHelper::transformValueToMappedParent(
 					$mapped->getDataType(),
 					$property->getDataType(),
 					$actualValue,
@@ -439,7 +444,7 @@ final class ChannelPropertiesStates
 			}
 
 			if ($mapped !== null) {
-				$expectedValue = ValueHelper::transformValueFromMappedParent(
+				$expectedValue = ValueHelper::transformValueToMappedParent(
 					$mapped->getDataType(),
 					$property->getDataType(),
 					$expectedValue,

@@ -296,6 +296,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	}
 
 	/**
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws ExchangeExceptions\InvalidArgument
 	 * @throws ExchangeExceptions\InvalidState

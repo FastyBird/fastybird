@@ -59,6 +59,7 @@ final class ConnectorPropertiesStates
 	}
 
 	/**
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -72,6 +73,7 @@ final class ConnectorPropertiesStates
 	}
 
 	/**
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -85,6 +87,7 @@ final class ConnectorPropertiesStates
 	}
 
 	/**
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -99,6 +102,7 @@ final class ConnectorPropertiesStates
 	}
 
 	/**
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -115,6 +119,7 @@ final class ConnectorPropertiesStates
 	/**
 	 * @param MetadataDocuments\DevicesModule\ConnectorDynamicProperty|array<MetadataDocuments\DevicesModule\ConnectorDynamicProperty>|Entities\Connectors\Properties\Dynamic|array<Entities\Connectors\Properties\Dynamic> $property
 	 *
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -139,6 +144,7 @@ final class ConnectorPropertiesStates
 	}
 
 	/**
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -160,95 +166,83 @@ final class ConnectorPropertiesStates
 		try {
 			$state = $this->connectorPropertyStateRepository->findOne($property);
 
-			if ($state !== null) {
-				try {
-					if ($state->getActualValue() !== null) {
-						$state = $forReading ? $this->updateState(
-							$state,
-							[
-								States\Property::ACTUAL_VALUE_FIELD => ValueHelper::normalizeReadValue(
-									$property->getDataType(),
-									$state->getActualValue(),
-									$property->getFormat(),
-									$property->getScale(),
-									$property->getInvalid(),
-								),
-							],
-						) : $this->updateState(
-							$state,
-							[
-								States\Property::ACTUAL_VALUE_FIELD => ValueHelper::normalizeValue(
-									$property->getDataType(),
-									$state->getActualValue(),
-									$property->getFormat(),
-									$property->getInvalid(),
-								),
-							],
-						);
-					}
-				} catch (Exceptions\InvalidArgument $ex) {
-					$this->connectorPropertiesStatesManager->update($property, $state, Utils\ArrayHash::from([
-						States\Property::ACTUAL_VALUE_FIELD => null,
-						States\Property::VALID_FIELD => false,
-					]));
-
-					$this->logger->error(
-						'Property stored actual value was not valid',
-						[
-							'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
-							'type' => 'connector-properties-states',
-							'exception' => BootstrapHelpers\Logger::buildException($ex),
-						],
-					);
-
-					return $this->loadValue($property, $forReading);
-				}
-
-				try {
-					if ($state->getExpectedValue() !== null) {
-						$state = $forReading ? $this->updateState(
-							$state,
-							[
-								States\Property::EXPECTED_VALUE_FIELD => ValueHelper::normalizeReadValue(
-									$property->getDataType(),
-									$state->getExpectedValue(),
-									$property->getFormat(),
-									$property->getScale(),
-									$property->getInvalid(),
-								),
-							],
-						) : $this->updateState(
-							$state,
-							[
-								States\Property::EXPECTED_VALUE_FIELD => ValueHelper::normalizeValue(
-									$property->getDataType(),
-									$state->getExpectedValue(),
-									$property->getFormat(),
-									$property->getInvalid(),
-								),
-							],
-						);
-					}
-				} catch (Exceptions\InvalidArgument $ex) {
-					$this->connectorPropertiesStatesManager->update($property, $state, Utils\ArrayHash::from([
-						States\Property::EXPECTED_VALUE_FIELD => null,
-						States\Property::PENDING_FIELD => false,
-					]));
-
-					$this->logger->error(
-						'Property stored expected value was not valid',
-						[
-							'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
-							'type' => 'connector-properties-states',
-							'exception' => BootstrapHelpers\Logger::buildException($ex),
-						],
-					);
-
-					return $this->loadValue($property, $forReading);
-				}
+			if ($state === null) {
+				return null;
 			}
 
-			return $state;
+			$updateValues = [];
+
+			try {
+				if ($state->getActualValue() !== null) {
+					$updateValues[States\Property::ACTUAL_VALUE_FIELD] = $forReading ? ValueHelper::normalizeReadValue(
+						$property->getDataType(),
+						$state->getActualValue(),
+						$property->getFormat(),
+						$property->getScale(),
+						$property->getInvalid(),
+					) : ValueHelper::normalizeValue(
+						$property->getDataType(),
+						$state->getActualValue(),
+						$property->getFormat(),
+						$property->getInvalid(),
+					);
+				}
+			} catch (Exceptions\InvalidArgument $ex) {
+				$this->connectorPropertiesStatesManager->update($property, $state, Utils\ArrayHash::from([
+					States\Property::ACTUAL_VALUE_FIELD => null,
+					States\Property::VALID_FIELD => false,
+				]));
+
+				$this->logger->error(
+					'Property stored actual value was not valid',
+					[
+						'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+						'type' => 'connector-properties-states',
+						'exception' => BootstrapHelpers\Logger::buildException($ex),
+					],
+				);
+
+				return $this->loadValue($property, $forReading);
+			}
+
+			try {
+				if ($state->getExpectedValue() !== null) {
+					$updateValues[States\Property::EXPECTED_VALUE_FIELD] = $forReading ? ValueHelper::normalizeReadValue(
+						$property->getDataType(),
+						$state->getExpectedValue(),
+						$property->getFormat(),
+						$property->getScale(),
+						$property->getInvalid(),
+					) : ValueHelper::normalizeValue(
+						$property->getDataType(),
+						$state->getExpectedValue(),
+						$property->getFormat(),
+						$property->getInvalid(),
+					);
+				}
+			} catch (Exceptions\InvalidArgument $ex) {
+				$this->connectorPropertiesStatesManager->update($property, $state, Utils\ArrayHash::from([
+					States\Property::EXPECTED_VALUE_FIELD => null,
+					States\Property::PENDING_FIELD => false,
+				]));
+
+				$this->logger->error(
+					'Property stored expected value was not valid',
+					[
+						'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+						'type' => 'connector-properties-states',
+						'exception' => BootstrapHelpers\Logger::buildException($ex),
+					],
+				);
+
+				return $this->loadValue($property, $forReading);
+			}
+
+			if ($updateValues === []) {
+				return $state;
+			}
+
+			return $this->updateState($state, $updateValues);
 		} catch (Exceptions\NotImplemented) {
 			$this->logger->warning(
 				'Connectors states repository is not configured. State could not be fetched',
@@ -263,6 +257,7 @@ final class ConnectorPropertiesStates
 	}
 
 	/**
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState

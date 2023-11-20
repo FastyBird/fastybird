@@ -21,6 +21,7 @@ use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
+use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -53,11 +54,17 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 	{
 	}
 
+	/**
+	 * @throws ExchangeExceptions\InvalidArgument
+	 */
 	public function connect(): void
 	{
 		$this->consumer->enable(self::class);
 	}
 
+	/**
+	 * @throws ExchangeExceptions\InvalidArgument
+	 */
 	public function disconnect(): void
 	{
 		$this->consumer->disable(self::class);
