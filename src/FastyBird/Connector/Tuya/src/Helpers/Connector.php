@@ -24,7 +24,6 @@ use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use function assert;
 use function is_string;
-use function strval;
 
 /**
  * Device helper
@@ -66,8 +65,8 @@ final class Connector
 
 		$value = $property?->getValue();
 
-		if (Types\ClientMode::isValidValue(strval($value))) {
-			return Types\ClientMode::get(strval($value));
+		if (is_string($value) && Types\ClientMode::isValidValue($value)) {
+			return Types\ClientMode::get($value);
 		}
 
 		throw new Exceptions\InvalidState('Connector mode is not configured');
@@ -92,8 +91,8 @@ final class Connector
 
 		$value = $property?->getValue();
 
-		if (Types\OpenApiEndpoint::isValidValue(strval($value))) {
-			return Types\OpenApiEndpoint::get(strval($value));
+		if (is_string($value) && Types\OpenApiEndpoint::isValidValue($value)) {
+			return Types\OpenApiEndpoint::get($value);
 		}
 
 		return Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::EUROPE);
@@ -120,8 +119,8 @@ final class Connector
 
 		$value = $property?->getValue();
 
-		if (Types\OpenPulsarEndpoint::isValidValue(strval($value))) {
-			return Types\OpenPulsarEndpoint::get(strval($value));
+		if (is_string($value) && Types\OpenPulsarEndpoint::isValidValue($value)) {
+			return Types\OpenPulsarEndpoint::get($value);
 		}
 
 		if (
@@ -162,8 +161,8 @@ final class Connector
 
 		$value = $property?->getValue();
 
-		if (Types\OpenPulsarTopic::isValidValue(strval($value))) {
-			return Types\OpenPulsarTopic::get(strval($value));
+		if (is_string($value) && Types\OpenPulsarTopic::isValidValue($value)) {
+			return Types\OpenPulsarTopic::get($value);
 		}
 
 		return Types\OpenPulsarTopic::get(Types\OpenPulsarTopic::PROD);

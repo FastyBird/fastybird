@@ -29,6 +29,7 @@ use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -1989,7 +1990,7 @@ class Devices extends Console\Command\Command
 				&& $metadata->offsetGet($type->getValue())->offsetGet('valid_values') instanceof Utils\ArrayHash
 			) {
 				$enumValue = array_search(
-					intval(DevicesUtilities\ValueHelper::flattenValue($value)),
+					intval(MetadataUtilities\ValueHelper::flattenValue($value)),
 					(array) $metadata->offsetGet($type->getValue())->offsetGet('valid_values'),
 					true,
 				);
@@ -3190,7 +3191,7 @@ class Devices extends Console\Command\Command
 				$this->translator->translate('//ns-panel-connector.cmd.devices.questions.select.value'),
 				$options,
 				$value !== null ? array_key_exists(
-					strval(DevicesUtilities\ValueHelper::flattenValue($value)),
+					strval(MetadataUtilities\ValueHelper::flattenValue($value)),
 					$options,
 				) : null,
 			);

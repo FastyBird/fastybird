@@ -26,6 +26,7 @@ use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
@@ -112,7 +113,7 @@ final class FbMqttV1 extends Client
 		) {
 			return $this->publish(
 				$this->apiBuilder->buildDevicePropertyTopic($device, $property),
-				strval(DevicesUtilities\ValueHelper::flattenValue($state->getExpectedValue())),
+				strval(MetadataUtilities\ValueHelper::flattenValue($state->getExpectedValue())),
 			);
 		}
 
@@ -140,7 +141,7 @@ final class FbMqttV1 extends Client
 		) {
 			return $this->publish(
 				$this->apiBuilder->buildChannelPropertyTopic($device, $channel, $property),
-				strval(DevicesUtilities\ValueHelper::flattenValue($state->getExpectedValue())),
+				strval(MetadataUtilities\ValueHelper::flattenValue($state->getExpectedValue())),
 			);
 		}
 

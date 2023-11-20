@@ -24,6 +24,7 @@ use FastyBird\Connector\Virtual\Queue;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -181,8 +182,10 @@ class Periodic implements Writer
 				}
 
 				$valueToWrite = $property instanceof DevicesEntities\Channels\Properties\Mapped
-					? DevicesUtilities\ValueHelper::flattenValue($state->getExpectedValue() ?? $state->getActualValue())
-					: DevicesUtilities\ValueHelper::flattenValue($state->getExpectedValue());
+					? MetadataUtilities\ValueHelper::flattenValue(
+						$state->getExpectedValue() ?? $state->getActualValue(),
+					)
+					: MetadataUtilities\ValueHelper::flattenValue($state->getExpectedValue());
 
 				if (
 					(

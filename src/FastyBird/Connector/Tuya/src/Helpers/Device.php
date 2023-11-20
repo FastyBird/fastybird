@@ -29,7 +29,6 @@ use function floatval;
 use function is_bool;
 use function is_numeric;
 use function is_string;
-use function strval;
 
 /**
  * Device helper
@@ -73,8 +72,8 @@ final class Device
 
 		$value = $property?->getValue();
 
-		if (Types\DeviceProtocolVersion::isValidValue(strval($value))) {
-			return Types\DeviceProtocolVersion::get(strval($value));
+		if (is_string($value) && Types\DeviceProtocolVersion::isValidValue($value)) {
+			return Types\DeviceProtocolVersion::get($value);
 		}
 
 		throw new Exceptions\InvalidState('Device protocol version is not configured');

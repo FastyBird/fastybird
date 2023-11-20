@@ -23,6 +23,7 @@ use FastyBird\Connector\Shelly\Types;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -136,7 +137,7 @@ final class StoreDeviceState implements Queue\Consumer
 				if ($property !== null) {
 					if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
 						$this->devicePropertiesStateManager->setValue($property, Utils\ArrayHash::from([
-							DevicesStates\Property::ACTUAL_VALUE_FIELD => DevicesUtilities\ValueHelper::transformValueFromDevice(
+							DevicesStates\Property::ACTUAL_VALUE_FIELD => MetadataUtilities\ValueHelper::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
 								$state->getValue(),
@@ -159,7 +160,7 @@ final class StoreDeviceState implements Queue\Consumer
 								$this->devicesPropertiesManager->update(
 									$property,
 									Utils\ArrayHash::from([
-										'value' => DevicesUtilities\ValueHelper::transformValueFromDevice(
+										'value' => MetadataUtilities\ValueHelper::transformValueFromDevice(
 											$property->getDataType(),
 											$property->getFormat(),
 											$state->getValue(),
@@ -194,7 +195,7 @@ final class StoreDeviceState implements Queue\Consumer
 						if ($property !== null) {
 							if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
 								$this->channelPropertiesStateManager->setValue($property, Utils\ArrayHash::from([
-									DevicesStates\Property::ACTUAL_VALUE_FIELD => DevicesUtilities\ValueHelper::transformValueFromDevice(
+									DevicesStates\Property::ACTUAL_VALUE_FIELD => MetadataUtilities\ValueHelper::transformValueFromDevice(
 										$property->getDataType(),
 										$property->getFormat(),
 										$state->getValue(),
@@ -217,7 +218,7 @@ final class StoreDeviceState implements Queue\Consumer
 										$this->channelsPropertiesManager->update(
 											$property,
 											Utils\ArrayHash::from([
-												'value' => DevicesUtilities\ValueHelper::transformValueFromDevice(
+												'value' => MetadataUtilities\ValueHelper::transformValueFromDevice(
 													$property->getDataType(),
 													$property->getFormat(),
 													$state->getValue(),
@@ -265,7 +266,7 @@ final class StoreDeviceState implements Queue\Consumer
 
 						if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
 							$this->channelPropertiesStateManager->setValue($property, Utils\ArrayHash::from([
-								DevicesStates\Property::ACTUAL_VALUE_FIELD => DevicesUtilities\ValueHelper::transformValueFromDevice(
+								DevicesStates\Property::ACTUAL_VALUE_FIELD => MetadataUtilities\ValueHelper::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),
 									$sensor->getValue(),
@@ -287,7 +288,7 @@ final class StoreDeviceState implements Queue\Consumer
 									$this->channelsPropertiesManager->update(
 										$property,
 										Utils\ArrayHash::from([
-											'value' => DevicesUtilities\ValueHelper::transformValueFromDevice(
+											'value' => MetadataUtilities\ValueHelper::transformValueFromDevice(
 												$property->getDataType(),
 												$property->getFormat(),
 												$sensor->getValue(),

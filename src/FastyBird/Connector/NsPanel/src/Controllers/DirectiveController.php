@@ -28,9 +28,9 @@ use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette\Utils;
 use Psr\Http\Message;
 use Ramsey\Uuid;
@@ -176,7 +176,7 @@ final class DirectiveController extends BaseController
 				$state[] = [
 					'capability' => $item->getType()->getValue(),
 					'protocol' => $protocol,
-					'value' => DevicesUtilities\ValueHelper::flattenValue($value),
+					'value' => MetadataUtilities\ValueHelper::flattenValue($value),
 					'identifier' => $identifier,
 				];
 			}

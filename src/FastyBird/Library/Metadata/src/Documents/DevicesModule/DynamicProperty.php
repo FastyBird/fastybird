@@ -19,6 +19,7 @@ use DateTimeInterface;
 use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Library\Metadata\Exceptions;
 use FastyBird\Library\Metadata\Types;
+use FastyBird\Library\Metadata\Utilities;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_merge;
@@ -125,19 +126,46 @@ abstract class DynamicProperty extends Property
 		return $this->queryable;
 	}
 
-	public function getActualValue(): float|bool|int|string|null
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 */
+	public function getActualValue(): bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
 	{
-		return $this->actualValue;
+		return Utilities\ValueHelper::normalizeValue(
+			$this->getDataType(),
+			$this->actualValue,
+			$this->getFormat(),
+			$this->getInvalid(),
+		);
 	}
 
-	public function getPreviousValue(): float|bool|int|string|null
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 */
+	public function getPreviousValue(): bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
 	{
-		return $this->previousValue;
+		return Utilities\ValueHelper::normalizeValue(
+			$this->getDataType(),
+			$this->previousValue,
+			$this->getFormat(),
+			$this->getInvalid(),
+		);
 	}
 
-	public function getExpectedValue(): float|bool|int|string|null
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 */
+	public function getExpectedValue(): bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
 	{
-		return $this->expectedValue;
+		return Utilities\ValueHelper::normalizeValue(
+			$this->getDataType(),
+			$this->expectedValue,
+			$this->getFormat(),
+			$this->getInvalid(),
+		);
 	}
 
 	public function getPending(): bool|DateTimeInterface
@@ -165,8 +193,9 @@ abstract class DynamicProperty extends Property
 			'type' => $this->getType()->getValue(),
 			'settable' => $this->isSettable(),
 			'queryable' => $this->isQueryable(),
-			'actual_value' => $this->getActualValue(),
-			'expected_value' => $this->getExpectedValue(),
+			'actual_value' => Utilities\ValueHelper::flattenValue($this->getActualValue()),
+			'previous_value' => Utilities\ValueHelper::flattenValue($this->getPreviousValue()),
+			'expected_value' => Utilities\ValueHelper::flattenValue($this->getExpectedValue()),
 			'pending' => $this->getPending() instanceof DateTimeInterface
 				? $this->getPending()->format(DateTimeInterface::ATOM)
 				: $this->getPending(),

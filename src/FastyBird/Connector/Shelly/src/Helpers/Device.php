@@ -28,7 +28,6 @@ use function floatval;
 use function gethostbyname;
 use function is_numeric;
 use function is_string;
-use function strval;
 
 /**
  * Device helper
@@ -96,8 +95,8 @@ final class Device
 
 		$value = $property?->getValue();
 
-		if (Types\DeviceGeneration::isValidValue(strval($value))) {
-			return Types\DeviceGeneration::get(strval($value));
+		if (is_string($value) && Types\DeviceGeneration::isValidValue($value)) {
+			return Types\DeviceGeneration::get($value);
 		}
 
 		throw new Exceptions\InvalidState('Device generation is not configured');

@@ -87,6 +87,7 @@ final class ChannelPropertyDocumentTest extends BaseTestCase
 					'valid' => true,
 					'channel' => '247fd6b5-8466-4323-81de-cec3e315015a',
 					'children' => [],
+					'previous_value' => null,
 				],
 			],
 			'variable' => [
@@ -102,10 +103,10 @@ final class ChannelPropertyDocumentTest extends BaseTestCase
 					'unit' => null,
 					'format' => ['one','two','three'],
 					'invalid' => 99,
-					'scale' => 0,
+					'scale' => null,
 					'step' => null,
 					'owner' => null,
-					'value' => 50,
+					'value' => 'two',
 					'default' => null,
 					'channel' => '247fd6b5-8466-4323-81de-cec3e315015a',
 					'children' => [],
@@ -153,6 +154,7 @@ final class ChannelPropertyDocumentTest extends BaseTestCase
 					'default' => null,
 					'channel' => '247fd6b5-8466-4323-81de-cec3e315015a',
 					'parent' => 'f42a8b4c-d5c8-4242-8ff0-6e5f867dcfb1',
+					'previous_value' => null,
 				],
 			],
 			'dynamic-created' => [
@@ -179,6 +181,7 @@ final class ChannelPropertyDocumentTest extends BaseTestCase
 					'valid' => true,
 					'channel' => '247fd6b5-8466-4323-81de-cec3e315015a',
 					'children' => [],
+					'previous_value' => null,
 				],
 			],
 			'dynamic-updated' => [
@@ -205,6 +208,7 @@ final class ChannelPropertyDocumentTest extends BaseTestCase
 					'valid' => true,
 					'channel' => '247fd6b5-8466-4323-81de-cec3e315015a',
 					'children' => [],
+					'previous_value' => null,
 				],
 			],
 			'dynamic-deleted' => [
@@ -231,6 +235,7 @@ final class ChannelPropertyDocumentTest extends BaseTestCase
 					'valid' => true,
 					'channel' => '247fd6b5-8466-4323-81de-cec3e315015a',
 					'children' => [],
+					'previous_value' => null,
 				],
 			],
 		];

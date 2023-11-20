@@ -15,9 +15,11 @@
 
 namespace FastyBird\Library\Metadata\Documents\DevicesModule;
 
+use DateTimeInterface;
 use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Library\Metadata\Exceptions;
 use FastyBird\Library\Metadata\Types;
+use FastyBird\Library\Metadata\Utilities;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_merge;
@@ -91,14 +93,32 @@ abstract class VariableProperty extends Property
 		return $this->type;
 	}
 
-	public function getValue(): float|bool|int|string|null
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 */
+	public function getValue(): bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
 	{
-		return $this->value;
+		return Utilities\ValueHelper::normalizeValue(
+			$this->getDataType(),
+			$this->value,
+			$this->getFormat(),
+			$this->getInvalid(),
+		);
 	}
 
-	public function getDefault(): float|bool|int|string|null
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 */
+	public function getDefault(): bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
 	{
-		return $this->default;
+		return Utilities\ValueHelper::normalizeValue(
+			$this->getDataType(),
+			$this->default,
+			$this->getFormat(),
+			$this->getInvalid(),
+		);
 	}
 
 	/**
@@ -109,8 +129,8 @@ abstract class VariableProperty extends Property
 	{
 		return array_merge(parent::toArray(), [
 			'type' => $this->getType()->getValue(),
-			'value' => $this->getValue(),
-			'default' => $this->getDefault(),
+			'value' => Utilities\ValueHelper::flattenValue($this->getValue()),
+			'default' => Utilities\ValueHelper::flattenValue($this->getDefault()),
 		]);
 	}
 

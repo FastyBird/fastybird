@@ -18,8 +18,8 @@ namespace FastyBird\Bridge\RedisDbDevicesModule\States;
 use DateTimeInterface;
 use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\States as DevicesStates;
-use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use FastyBird\Plugin\RedisDb\States as RedisDbStates;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
@@ -162,8 +162,8 @@ class Property extends RedisDbStates\State implements DevicesStates\Property
 	public function toArray(): array
 	{
 		return array_merge(parent::toArray(), [
-			'actual_value' => DevicesUtilities\ValueHelper::flattenValue($this->getActualValue()),
-			'expected_value' => DevicesUtilities\ValueHelper::flattenValue($this->getExpectedValue()),
+			'actual_value' => MetadataUtilities\ValueHelper::flattenValue($this->getActualValue()),
+			'expected_value' => MetadataUtilities\ValueHelper::flattenValue($this->getExpectedValue()),
 			'pending' => $this->getPending() instanceof DateTimeInterface
 				? $this->getPending()->format(DateTimeInterface::ATOM)
 				: $this->getPending(),

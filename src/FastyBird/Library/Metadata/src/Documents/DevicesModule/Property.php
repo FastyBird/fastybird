@@ -128,8 +128,8 @@ abstract class Property implements Documents\Document, Documents\Owner
 		])]
 		private readonly string|array|null $format = null,
 		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]

@@ -23,6 +23,7 @@ use FastyBird\Connector\Tuya\Queue;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -208,7 +209,7 @@ abstract class Periodic implements Writer
 				continue;
 			}
 
-			$expectedValue = DevicesUtilities\ValueHelper::flattenValue($state->getExpectedValue());
+			$expectedValue = MetadataUtilities\ValueHelper::flattenValue($state->getExpectedValue());
 
 			if ($expectedValue === null) {
 				continue;

@@ -28,6 +28,7 @@ use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -250,7 +251,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$expectedValue = DevicesUtilities\ValueHelper::transformValueToDevice(
+		$expectedValue = MetadataUtilities\ValueHelper::transformValueToDevice(
 			$property->getDataType(),
 			$property->getFormat(),
 			$state->getExpectedValue(),

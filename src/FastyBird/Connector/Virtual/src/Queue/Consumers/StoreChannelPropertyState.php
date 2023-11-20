@@ -26,6 +26,7 @@ use FastyBird\Library\Exchange\Documents as ExchangeEntities;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -185,7 +186,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 		}
 
 		$valueToStore = $entity->getValue();
-		$valueToStore = DevicesUtilities\ValueHelper::normalizeValue(
+		$valueToStore = MetadataUtilities\ValueHelper::normalizeValue(
 			$property->getDataType(),
 			$valueToStore,
 			$property->getFormat(),
@@ -200,12 +201,14 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			$this->channelsPropertiesManager->update(
 				$property,
 				Utils\ArrayHash::from([
-					'value' => DevicesUtilities\ValueHelper::flattenValue($valueToStore),
+					'value' => MetadataUtilities\ValueHelper::flattenValue($valueToStore),
 				]),
 			);
 		} elseif ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
 			$this->channelPropertiesStateManager->setValue($property, Utils\ArrayHash::from([
-				DevicesStates\Property::ACTUAL_VALUE_FIELD => DevicesUtilities\ValueHelper::flattenValue($valueToStore),
+				DevicesStates\Property::ACTUAL_VALUE_FIELD => MetadataUtilities\ValueHelper::flattenValue(
+					$valueToStore,
+				),
 				DevicesStates\Property::VALID_FIELD => true,
 			]));
 		} elseif ($property instanceof DevicesEntities\Channels\Properties\Mapped) {
@@ -224,7 +227,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 								'device' => $device->getId()->toString(),
 								'channel' => $channel->getId()->toString(),
 								'property' => $property->getId()->toString(),
-								'expected_value' => DevicesUtilities\ValueHelper::flattenValue($valueToStore),
+								'expected_value' => MetadataUtilities\ValueHelper::flattenValue($valueToStore),
 							]),
 							MetadataTypes\RoutingKey::get(
 								MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION,

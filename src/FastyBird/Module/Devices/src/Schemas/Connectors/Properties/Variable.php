@@ -17,9 +17,9 @@ namespace FastyBird\Module\Devices\Schemas\Connectors\Properties;
 
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Schemas;
-use FastyBird\Module\Devices\Utilities;
 use Neomerx\JsonApi;
 use function array_merge;
 
@@ -67,8 +67,8 @@ final class Variable extends Property
 	): iterable
 	{
 		return array_merge((array) parent::getAttributes($resource, $context), [
-			'value' => Utilities\ValueHelper::flattenValue($resource->getValue()),
-			'default' => Utilities\ValueHelper::flattenValue($resource->getDefault()),
+			'value' => MetadataUtilities\ValueHelper::flattenValue($resource->getValue()),
+			'default' => MetadataUtilities\ValueHelper::flattenValue($resource->getDefault()),
 		]);
 	}
 
