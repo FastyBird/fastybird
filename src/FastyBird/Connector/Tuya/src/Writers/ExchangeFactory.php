@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\Tuya\Writers;
 
-use FastyBird\Connector\Tuya\Entities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 
 /**
  * Event bus exchange device state periodic writer factory
@@ -28,6 +28,6 @@ use FastyBird\Connector\Tuya\Entities;
 interface ExchangeFactory extends WriterFactory
 {
 
-	public function create(Entities\TuyaConnector $connector): Exchange;
+	public function create(MetadataDocuments\DevicesModule\Connector $connector): Exchange;
 
 }

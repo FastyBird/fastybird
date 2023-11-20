@@ -21,14 +21,13 @@ use FastyBird\Connector\Tuya\API;
 use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Helpers;
-use FastyBird\Connector\Tuya\Queries;
 use FastyBird\Connector\Tuya\Queue;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -54,15 +53,23 @@ final class WriteChannelPropertyState implements Queue\Consumer
 
 	use Nette\SmartObject;
 
+	/**
+	 * @param DevicesModels\Configuration\Connectors\Repository<MetadataDocuments\DevicesModule\Connector> $connectorsConfigurationRepository
+	 * @param DevicesModels\Configuration\Devices\Repository<MetadataDocuments\DevicesModule\Device> $devicesConfigurationRepository
+	 * @param DevicesModels\Configuration\Channels\Repository<MetadataDocuments\DevicesModule\Channel> $channelsConfigurationRepository
+	 * @param DevicesModels\Configuration\Channels\Properties\Repository<MetadataDocuments\DevicesModule\ChannelDynamicProperty> $channelsPropertiesConfigurationRepository
+	 */
 	public function __construct(
 		private readonly Queue\Queue $queue,
 		private readonly API\ConnectionManager $connectionManager,
 		private readonly Helpers\Entity $entityHelper,
+		private readonly Helpers\Connector $connectorHelper,
+		private readonly Helpers\Device $deviceHelper,
 		private readonly Tuya\Logger $logger,
-		private readonly DevicesModels\Entities\Connectors\ConnectorsRepository $connectorsRepository,
-		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
-		private readonly DevicesModels\Entities\Channels\ChannelsRepository $channelsRepository,
-		private readonly DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
+		private readonly DevicesModels\Configuration\Connectors\Repository $connectorsConfigurationRepository,
+		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
+		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
+		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 	)
@@ -84,10 +91,12 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return false;
 		}
 
-		$findConnectorQuery = new Queries\Entities\FindConnectors();
+		$now = $this->dateTimeFactory->getNow();
+
+		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
 		$findConnectorQuery->byId($entity->getConnector());
 
-		$connector = $this->connectorsRepository->findOneBy($findConnectorQuery, Entities\TuyaConnector::class);
+		$connector = $this->connectorsConfigurationRepository->findOneBy($findConnectorQuery);
 
 		if ($connector === null) {
 			$this->logger->error(
@@ -114,11 +123,11 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$findDeviceQuery = new Queries\Entities\FindDevices();
+		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDeviceQuery->forConnector($connector);
 		$findDeviceQuery->byId($entity->getDevice());
 
-		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\TuyaDevice::class);
+		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
 		if ($device === null) {
 			$this->logger->error(
@@ -145,11 +154,11 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$findChannelQuery = new DevicesQueries\Entities\FindChannels();
+		$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 		$findChannelQuery->forDevice($device);
 		$findChannelQuery->byId($entity->getChannel());
 
-		$channel = $this->channelsRepository->findOneBy($findChannelQuery);
+		$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 
 		if ($channel === null) {
 			$this->logger->error(
@@ -176,13 +185,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelDynamicProperties();
+		$findChannelPropertyQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
 		$findChannelPropertyQuery->forChannel($channel);
 		$findChannelPropertyQuery->byId($entity->getProperty());
 
-		$property = $this->channelsPropertiesRepository->findOneBy(
+		$property = $this->channelsPropertiesConfigurationRepository->findOneBy(
 			$findChannelPropertyQuery,
-			DevicesEntities\Channels\Properties\Dynamic::class,
+			MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
 		);
 
 		if ($property === null) {
@@ -241,14 +250,33 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$expectedValue = DevicesUtilities\ValueHelper::flattenValue($state->getExpectedValue());
+		$expectedValue = DevicesUtilities\ValueHelper::transformValueToDevice(
+			$property->getDataType(),
+			$property->getFormat(),
+			$state->getExpectedValue(),
+		);
 
 		if ($expectedValue === null) {
+			$this->channelPropertiesStatesManager->setValue(
+				$property,
+				Utils\ArrayHash::from([
+					DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
+					DevicesStates\Property::PENDING_FIELD => false,
+				]),
+			);
+
 			return true;
 		}
 
+		$this->channelPropertiesStatesManager->setValue(
+			$property,
+			Utils\ArrayHash::from([
+				DevicesStates\Property::PENDING_FIELD => $now->format(DateTimeInterface::ATOM),
+			]),
+		);
+
 		try {
-			if ($connector->getClientMode()->equalsValue(Types\ClientMode::CLOUD)) {
+			if ($this->connectorHelper->getClientMode($connector)->equalsValue(Types\ClientMode::CLOUD)) {
 				$client = $this->connectionManager->getCloudApiConnection($connector);
 
 				if (!$client->isConnected()) {
@@ -260,13 +288,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					$property->getIdentifier(),
 					$expectedValue,
 				);
-			} elseif ($connector->getClientMode()->equalsValue(Types\ClientMode::LOCAL)) {
+			} elseif ($this->connectorHelper->getClientMode($connector)->equalsValue(Types\ClientMode::LOCAL)) {
 				$client = $this->connectionManager->getLocalConnection($device);
 
 				$result = $client->writeState(
 					$property->getIdentifier(),
 					$expectedValue,
-					$device->getGateway() !== null ? $device->getIdentifier() : null,
+					$this->deviceHelper->getGateway($device) !== null ? $device->getIdentifier() : null,
 				);
 			} else {
 				return true;
@@ -397,9 +425,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		}
 
 		$result->then(
-			function () use ($property): void {
-				$now = $this->dateTimeFactory->getNow();
-
+			function () use ($property, $now): void {
 				$state = $this->channelPropertiesStatesManager->getValue($property);
 
 				if ($state?->getExpectedValue() !== null) {

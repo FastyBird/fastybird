@@ -68,17 +68,17 @@ abstract class Periodic
 	private EventLoop\TimerInterface|null $handlerTimer = null;
 
 	/**
-	 * @param DevicesModels\Configuration\Devices\Repository<MetadataDocuments\DevicesModule\Device> $devicesRepository
-	 * @param DevicesModels\Configuration\Channels\Repository<MetadataDocuments\DevicesModule\Channel> $channelsRepository
-	 * @param DevicesModels\Configuration\Channels\Properties\Repository<MetadataDocuments\DevicesModule\ChannelDynamicProperty> $channelsPropertiesRepository
+	 * @param DevicesModels\Configuration\Devices\Repository<MetadataDocuments\DevicesModule\Device> $devicesConfigurationRepository
+	 * @param DevicesModels\Configuration\Channels\Repository<MetadataDocuments\DevicesModule\Channel> $channelsConfigurationRepository
+	 * @param DevicesModels\Configuration\Channels\Properties\Repository<MetadataDocuments\DevicesModule\ChannelDynamicProperty> $channelsPropertiesConfigurationRepository
 	 */
 	public function __construct(
 		protected readonly MetadataDocuments\DevicesModule\Connector $connector,
 		protected readonly Helpers\Entity $entityHelper,
 		protected readonly Queue\Queue $queue,
-		protected readonly DevicesModels\Configuration\Devices\Repository $devicesRepository,
-		protected readonly DevicesModels\Configuration\Channels\Repository $channelsRepository,
-		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesRepository,
+		protected readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
+		protected readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
+		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
@@ -99,7 +99,7 @@ abstract class Periodic
 		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDevicesQuery->forConnector($this->connector);
 
-		foreach ($this->devicesRepository->findAllBy($findDevicesQuery) as $device) {
+		foreach ($this->devicesConfigurationRepository->findAllBy($findDevicesQuery) as $device) {
 			$this->devices[$device->getId()->toString()] = $device;
 
 			if (!array_key_exists($device->getId()->toString(), $this->properties)) {
@@ -109,13 +109,13 @@ abstract class Periodic
 			$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
 			$findChannelsQuery->forDevice($device);
 
-			$channels = $this->channelsRepository->findAllBy($findChannelsQuery);
+			$channels = $this->channelsConfigurationRepository->findAllBy($findChannelsQuery);
 
 			foreach ($channels as $channel) {
 				$findChannelPropertiesQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
 				$findChannelPropertiesQuery->forChannel($channel);
 
-				$properties = $this->channelsPropertiesRepository->findAllBy(
+				$properties = $this->channelsPropertiesConfigurationRepository->findAllBy(
 					$findChannelPropertiesQuery,
 					MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
 				);
@@ -205,6 +205,12 @@ abstract class Periodic
 			$state = $this->channelPropertiesStatesManager->getValue($property);
 
 			if ($state === null) {
+				continue;
+			}
+
+			$expectedValue = DevicesUtilities\ValueHelper::flattenValue($state->getExpectedValue());
+
+			if ($expectedValue === null) {
 				continue;
 			}
 

@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\Tuya\Writers;
 
-use FastyBird\Connector\Tuya\Entities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 
 /**
  * Device state writer interface factory
@@ -28,6 +28,6 @@ use FastyBird\Connector\Tuya\Entities;
 interface WriterFactory
 {
 
-	public function create(Entities\TuyaConnector $connector): Writer;
+	public function create(MetadataDocuments\DevicesModule\Connector $connector): Writer;
 
 }

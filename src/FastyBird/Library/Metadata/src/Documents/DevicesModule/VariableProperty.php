@@ -54,16 +54,16 @@ abstract class VariableProperty extends Property
 		int|float|null $step = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\BoolValue(),
-			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		private readonly bool|float|int|string|null $value = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\BoolValue(),
-			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]

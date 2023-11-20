@@ -62,6 +62,8 @@ final class ShellyExtensionTest extends Tests\Cases\Unit\BaseTestCase
 		self::assertNotNull($container->getByType(Hydrators\ShellyDevice::class, false));
 
 		self::assertNotNull($container->getByType(Helpers\Entity::class, false));
+		self::assertNotNull($container->getByType(Helpers\Connector::class, false));
+		self::assertNotNull($container->getByType(Helpers\Device::class, false));
 
 		self::assertNotNull($container->getByType(Commands\Initialize::class, false));
 		self::assertNotNull($container->getByType(Commands\Execute::class, false));

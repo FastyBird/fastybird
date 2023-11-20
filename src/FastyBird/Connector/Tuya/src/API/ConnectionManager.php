@@ -17,12 +17,14 @@ namespace FastyBird\Connector\Tuya\API;
 
 use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Exceptions;
-use FastyBird\Connector\Tuya\Queries;
+use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\Connector\Tuya\ValueObjects;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
 use Orisai\ObjectMapper;
 use function array_key_exists;
@@ -50,11 +52,16 @@ final class ConnectionManager
 
 	private OpenPulsar|null $cloudWsConnection = null;
 
+	/**
+	 * @param DevicesModels\Configuration\Devices\Repository<MetadataDocuments\DevicesModule\Device> $devicesConfigurationRepository
+	 */
 	public function __construct(
 		private readonly LocalApiFactory $localApiFactory,
 		private readonly OpenApiFactory $openApiFactory,
 		private readonly OpenPulsarFactory $openPulsarFactory,
-		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
+		private readonly Helpers\Connector $connectorHelper,
+		private readonly Helpers\Device $deviceHelper,
+		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		private readonly ObjectMapper\Processing\Processor $objectMapper,
 	)
 	{
@@ -65,35 +72,36 @@ final class ConnectionManager
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
-	public function getLocalConnection(Entities\TuyaDevice $device): LocalApi
+	public function getLocalConnection(MetadataDocuments\DevicesModule\Device $device): LocalApi
 	{
 		$connector = $device->getConnector();
 		assert($connector instanceof Entities\TuyaConnector);
 
 		if (!array_key_exists($device->getId()->toString(), $this->localConnections)) {
-			$findChildrenDevicesQuery = new Queries\Entities\FindDevices();
+			$findChildrenDevicesQuery = new DevicesQueries\Configuration\FindDevices();
 			$findChildrenDevicesQuery->forParent($device);
 
-			$children = $this->devicesRepository->findAllBy($findChildrenDevicesQuery, Entities\TuyaDevice::class);
+			$children = $this->devicesConfigurationRepository->findAllBy($findChildrenDevicesQuery);
 
-			assert(is_string($device->getLocalKey()));
-			assert(is_string($device->getIpAddress()));
+			assert(is_string($this->deviceHelper->getLocalKey($device)));
+			assert(is_string($this->deviceHelper->getIpAddress($device)));
 
 			$connection = $this->localApiFactory->create(
 				$device->getIdentifier(),
 				null,
 				null,
-				$device->getLocalKey(),
-				$device->getIpAddress(),
-				$device->getProtocolVersion(),
-				array_map(function (Entities\TuyaDevice $child): ValueObjects\LocalChild {
-					assert(is_string($child->getNodeId()));
+				$this->deviceHelper->getLocalKey($device),
+				$this->deviceHelper->getIpAddress($device),
+				$this->deviceHelper->getProtocolVersion($device),
+				array_map(function (MetadataDocuments\DevicesModule\Device $child): ValueObjects\LocalChild {
+					assert(is_string($this->deviceHelper->getNodeId($child)));
 
 					return $this->objectMapper->process(
 						[
 							'identifier' => $child->getIdentifier(),
-							'node_id' => $child->getNodeId(),
+							'node_id' => $this->deviceHelper->getNodeId($child),
 							'type' => Types\LocalDeviceType::ZIGBEE,
 						],
 						ValueObjects\LocalChild::class,
@@ -108,20 +116,22 @@ final class ConnectionManager
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
-	public function getCloudApiConnection(Entities\TuyaConnector $connector): OpenApi
+	public function getCloudApiConnection(MetadataDocuments\DevicesModule\Connector $connector): OpenApi
 	{
 		if ($this->cloudApiConnection === null) {
-			assert(is_string($connector->getAccessId()));
-			assert(is_string($connector->getAccessSecret()));
+			assert(is_string($this->connectorHelper->getAccessId($connector)));
+			assert(is_string($this->connectorHelper->getAccessSecret($connector)));
 
 			$this->cloudApiConnection = $this->openApiFactory->create(
 				$connector->getIdentifier(),
-				$connector->getAccessId(),
-				$connector->getAccessSecret(),
-				$connector->getOpenApiEndpoint(),
+				$this->connectorHelper->getAccessId($connector),
+				$this->connectorHelper->getAccessSecret($connector),
+				$this->connectorHelper->getOpenApiEndpoint($connector),
 			);
 		}
 
@@ -129,21 +139,23 @@ final class ConnectionManager
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
-	public function getCloudWsConnection(Entities\TuyaConnector $connector): OpenPulsar
+	public function getCloudWsConnection(MetadataDocuments\DevicesModule\Connector $connector): OpenPulsar
 	{
 		if ($this->cloudWsConnection === null) {
-			assert(is_string($connector->getAccessId()));
-			assert(is_string($connector->getAccessSecret()));
+			assert(is_string($this->connectorHelper->getAccessId($connector)));
+			assert(is_string($this->connectorHelper->getAccessSecret($connector)));
 
 			$this->cloudWsConnection = $this->openPulsarFactory->create(
 				$connector->getIdentifier(),
-				$connector->getAccessId(),
-				$connector->getAccessSecret(),
-				$connector->getOpenPulsarTopic(),
-				$connector->getOpenPulsarEndpoint(),
+				$this->connectorHelper->getAccessId($connector),
+				$this->connectorHelper->getAccessSecret($connector),
+				$this->connectorHelper->getOpenPulsarTopic($connector),
+				$this->connectorHelper->getOpenPulsarEndpoint($connector),
 			);
 		}
 

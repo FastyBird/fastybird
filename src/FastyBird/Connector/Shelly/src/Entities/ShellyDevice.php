@@ -241,7 +241,7 @@ class ShellyDevice extends DevicesEntities\Devices\Device
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getStatusReadingDelay(): float
+	public function getStateReadingDelay(): float
 	{
 		$property = $this->properties
 			->filter(

@@ -44,17 +44,17 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 	public const NAME = 'event';
 
 	/**
-	 * @param DevicesModels\Configuration\Devices\Repository<MetadataDocuments\DevicesModule\Device> $devicesRepository
-	 * @param DevicesModels\Configuration\Channels\Repository<MetadataDocuments\DevicesModule\Channel> $channelsRepository
-	 * @param DevicesModels\Configuration\Channels\Properties\Repository<MetadataDocuments\DevicesModule\ChannelDynamicProperty> $channelsPropertiesRepository
+	 * @param DevicesModels\Configuration\Devices\Repository<MetadataDocuments\DevicesModule\Device> $devicesConfigurationRepository
+	 * @param DevicesModels\Configuration\Channels\Repository<MetadataDocuments\DevicesModule\Channel> $channelsConfigurationRepository
+	 * @param DevicesModels\Configuration\Channels\Properties\Repository<MetadataDocuments\DevicesModule\ChannelDynamicProperty> $channelsPropertiesConfigurationRepository
 	 */
 	public function __construct(
 		MetadataDocuments\DevicesModule\Connector $connector,
 		Helpers\Entity $entityHelper,
 		Queue\Queue $queue,
-		DevicesModels\Configuration\Devices\Repository $devicesRepository,
-		DevicesModels\Configuration\Channels\Repository $channelsRepository,
-		DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesRepository,
+		DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
+		DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
+		DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
 		DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
 		DateTimeFactory\Factory $dateTimeFactory,
 		EventLoop\LoopInterface $eventLoop,
@@ -64,9 +64,9 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 			$connector,
 			$entityHelper,
 			$queue,
-			$devicesRepository,
-			$channelsRepository,
-			$channelsPropertiesRepository,
+			$devicesConfigurationRepository,
+			$channelsConfigurationRepository,
+			$channelsPropertiesConfigurationRepository,
 			$channelPropertiesStatesManager,
 			$dateTimeFactory,
 			$eventLoop,
@@ -103,7 +103,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 		$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 		$findChannelQuery->byId($property->getChannel());
 
-		$channel = $this->channelsRepository->findOneBy($findChannelQuery);
+		$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 
 		if ($channel === null) {
 			return;
@@ -112,7 +112,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDeviceQuery->byId($channel->getDevice());
 
-		$device = $this->devicesRepository->findOneBy($findDeviceQuery);
+		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
 		if ($device === null) {
 			return;

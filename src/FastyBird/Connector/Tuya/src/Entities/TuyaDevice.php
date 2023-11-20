@@ -36,7 +36,7 @@ class TuyaDevice extends DevicesEntities\Devices\Device
 
 	public const DEVICE_TYPE = 'tuya';
 
-	private const STATUS_READING_DELAY = 120.0;
+	public const STATE_READING_DELAY = 120.0;
 
 	private self|null $gateway = null;
 
@@ -300,7 +300,7 @@ class TuyaDevice extends DevicesEntities\Devices\Device
 			return floatval($property->getValue());
 		}
 
-		return self::STATUS_READING_DELAY;
+		return self::STATE_READING_DELAY;
 	}
 
 }

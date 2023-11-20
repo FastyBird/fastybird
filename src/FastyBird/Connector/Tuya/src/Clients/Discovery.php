@@ -90,6 +90,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 		'gywg',
 	];
 
+	private API\OpenApi|null $cloudApiConnection = null;
+
 	/** @var SplObjectStorage<Entities\Clients\DiscoveredLocalDevice, null> */
 	private SplObjectStorage $discoveredLocalDevices;
 
@@ -98,7 +100,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 	public function __construct(
 		private readonly Entities\TuyaConnector $connector,
-		private readonly API\ConnectionManager $connectionManager,
+		private readonly API\OpenApiFactory $openApiFactory,
 		private readonly API\LocalApiFactory $localApiFactory,
 		private readonly Services\DatagramFactory $datagramFactory,
 		private readonly Helpers\Entity $entityHelper,
@@ -145,9 +147,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			unset($this->handlerTimer[$index]);
 		}
 
-		$this->connectionManager
-			->getCloudApiConnection($this->connector)
-			->disconnect();
+		$this->getCloudApiConnection()->disconnect();
 	}
 
 	private function discoverLocalDevices(): void
@@ -259,10 +259,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 			],
 		);
 
-		$apiClient = $this->connectionManager->getCloudApiConnection($this->connector);
-
 		try {
-			await($apiClient->connect());
+			await($this->getCloudApiConnection()->connect());
 		} catch (Exceptions\OpenApiCall | Exceptions\OpenApiError $ex) {
 			$this->logger->error(
 				'Could not connect to cloud api',
@@ -276,17 +274,17 @@ final class Discovery implements Evenement\EventEmitterInterface
 			return;
 		}
 
-		$apiClient
+		$this->getCloudApiConnection()
 			->getDevices(
 				[
 					'source_id' => $this->connector->getUid(),
 					'source_type' => 'tuyaUser',
 				],
 			)
-			->then(function (Entities\API\GetDevices $response) use ($apiClient): void {
+			->then(function (Entities\API\GetDevices $response): void {
 				$devices = $response->getResult()->getList();
 
-				$apiClient
+				$this->getCloudApiConnection()
 					->getDevicesFactoryInfos(
 						array_map(
 							static fn (Entities\API\Device $userDevice): string => $userDevice->getId(),
@@ -469,10 +467,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 	{
 		$processedDevices = [];
 
-		$apiClient = $this->connectionManager->getCloudApiConnection($this->connector);
-
 		try {
-			await($apiClient->connect());
+			await($this->getCloudApiConnection()->connect());
 		} catch (Exceptions\OpenApiCall | Exceptions\OpenApiError $ex) {
 			$this->logger->error(
 				'Could not connect to cloud api',
@@ -489,7 +485,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 		$devicesFactoryInfos = [];
 
 		try {
-			$response = await($apiClient
+			$response = await($this->getCloudApiConnection()
 				->getDevicesFactoryInfos(
 					array_map(
 						static fn (Entities\Clients\DiscoveredLocalDevice $userDevice): string => $userDevice->getId(),
@@ -512,7 +508,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 		foreach ($devices as $device) {
 			try {
-				$response = await($apiClient->getDeviceDetail($device->getId()));
+				$response = await($this->getCloudApiConnection()->getDeviceDetail($device->getId()));
 				assert($response instanceof Entities\API\GetDevice);
 				$deviceInformation = $response->getResult();
 			} catch (Throwable $ex) {
@@ -589,7 +585,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 			if (in_array($deviceInformation->getCategory(), self::GATEWAY_CATEGORIES, true)) {
 				try {
-					$response = await($apiClient->getUserDeviceChildren($device->getId()));
+					$response = await($this->getCloudApiConnection()->getUserDeviceChildren($device->getId()));
 					assert($response instanceof Entities\API\GetUserDeviceChildren);
 					$children = $response->getResult();
 				} catch (Throwable $ex) {
@@ -611,7 +607,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 				foreach ($children as $child) {
 					try {
-						$response = await($apiClient->getDeviceDetail($child->getId()));
+						$response = await($this->getCloudApiConnection()->getDeviceDetail($child->getId()));
 						assert($response instanceof Entities\API\GetDevice);
 						$childDeviceInformation = $response->getResult();
 					} catch (Throwable $ex) {
@@ -695,7 +691,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			}
 		}
 
-		$apiClient->disconnect();
+		$this->getCloudApiConnection()->disconnect();
 
 		return $processedDevices;
 	}
@@ -718,10 +714,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 	{
 		$processedDevices = [];
 
-		$apiClient = $this->connectionManager->getCloudApiConnection($this->connector);
-
 		try {
-			await($apiClient->connect());
+			await($this->getCloudApiConnection()->connect());
 		} catch (Exceptions\OpenApiCall | Exceptions\OpenApiError $ex) {
 			$this->logger->error(
 				'Could not connect to cloud api',
@@ -747,7 +741,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$dataPoints = [];
 
 			try {
-				$response = await($apiClient->getDeviceSpecification($device->getId()));
+				$response = await($this->getCloudApiConnection()->getDeviceSpecification($device->getId()));
 				assert($response instanceof Entities\API\GetDeviceSpecification);
 				$deviceSpecifications = $response->getResult();
 
@@ -902,7 +896,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 		}
 
-		$apiClient->disconnect();
+		$this->getCloudApiConnection()->disconnect();
 
 		return $processedDevices;
 	}
@@ -1021,6 +1015,27 @@ final class Discovery implements Evenement\EventEmitterInterface
 		}
 
 		return $dataPoints;
+	}
+
+	/**
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	private function getCloudApiConnection(): API\OpenApi
+	{
+		if ($this->cloudApiConnection === null) {
+			assert(is_string($this->connector->getAccessId()));
+			assert(is_string($this->connector->getAccessSecret()));
+
+			$this->cloudApiConnection = $this->openApiFactory->create(
+				$this->connector->getIdentifier(),
+				$this->connector->getAccessId(),
+				$this->connector->getAccessSecret(),
+				$this->connector->getOpenApiEndpoint(),
+			);
+		}
+
+		return $this->cloudApiConnection;
 	}
 
 }

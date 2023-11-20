@@ -34,6 +34,7 @@ use Ratchet\RFC6455;
 use React\EventLoop;
 use React\Promise;
 use Throwable;
+use function array_key_exists;
 use function array_keys;
 use function base64_decode;
 use function is_bool;
@@ -71,6 +72,9 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 	private bool $connecting = false;
 
 	private bool $connected = false;
+
+	/** @var array<string, string> */
+	private array $validationSchemas = [];
 
 	private DateTimeInterface|null $lastConnectAttempt = null;
 
@@ -478,16 +482,20 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 	 */
 	private function getSchema(string $schemaFilename): string
 	{
-		try {
-			$schema = Utils\FileSystem::read(
-				Tuya\Constants::RESOURCES_FOLDER . DIRECTORY_SEPARATOR . $schemaFilename,
-			);
+		$key = md5($schemaFilename);
 
-		} catch (Nette\IOException) {
-			throw new Exceptions\OpenPulsarError('Validation schema for response could not be loaded');
+		if (!array_key_exists($key, $this->validationSchemas)) {
+			try {
+				$this->validationSchemas[$key] = Utils\FileSystem::read(
+					Tuya\Constants::RESOURCES_FOLDER . DIRECTORY_SEPARATOR . $schemaFilename,
+				);
+
+			} catch (Nette\IOException) {
+				throw new Exceptions\OpenPulsarError('Validation schema for response could not be loaded');
+			}
 		}
 
-		return $schema;
+		return $this->validationSchemas[$key];
 	}
 
 }

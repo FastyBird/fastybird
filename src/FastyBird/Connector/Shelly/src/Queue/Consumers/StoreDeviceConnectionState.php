@@ -42,17 +42,17 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 	use Nette\SmartObject;
 
 	/**
-	 * @param DevicesModels\Configuration\Devices\Repository<Metadata\Documents\DevicesModule\Device> $devicesRepository
-	 * @param DevicesModels\Configuration\Devices\Properties\Repository<Metadata\Documents\DevicesModule\DeviceDynamicProperty> $devicesPropertiesRepository
-	 * @param DevicesModels\Configuration\Channels\Repository<Metadata\Documents\DevicesModule\Channel> $channelsRepository
-	 * @param DevicesModels\Configuration\Channels\Properties\Repository<Metadata\Documents\DevicesModule\ChannelDynamicProperty> $channelsPropertiesRepository
+	 * @param DevicesModels\Configuration\Devices\Repository<Metadata\Documents\DevicesModule\Device> $devicesConfigurationRepository
+	 * @param DevicesModels\Configuration\Devices\Properties\Repository<Metadata\Documents\DevicesModule\DeviceDynamicProperty> $devicesPropertiesConfigurationRepository
+	 * @param DevicesModels\Configuration\Channels\Repository<Metadata\Documents\DevicesModule\Channel> $channelsConfigurationRepository
+	 * @param DevicesModels\Configuration\Channels\Properties\Repository<Metadata\Documents\DevicesModule\ChannelDynamicProperty> $channelsPropertiesConfigurationRepository
 	 */
 	public function __construct(
 		private readonly Shelly\Logger $logger,
-		private readonly DevicesModels\Configuration\Devices\Repository $devicesRepository,
-		private readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesRepository,
-		private readonly DevicesModels\Configuration\Channels\Repository $channelsRepository,
-		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesRepository,
+		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
+		private readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
+		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
+		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DevicesUtilities\DevicePropertiesStates $devicePropertiesStateManager,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStateManager,
@@ -79,7 +79,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 		$findDeviceQuery->byConnectorId($entity->getConnector());
 		$findDeviceQuery->startWithIdentifier($entity->getIdentifier());
 
-		$device = $this->devicesRepository->findOneBy($findDeviceQuery);
+		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
 		if ($device === null) {
 			$this->logger->error(
@@ -119,7 +119,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 				$findDevicePropertiesQuery = new DevicesQueries\Configuration\FindDeviceDynamicProperties();
 				$findDevicePropertiesQuery->forDevice($device);
 
-				foreach ($this->devicesPropertiesRepository->findAllBy(
+				foreach ($this->devicesPropertiesConfigurationRepository->findAllBy(
 					$findDevicePropertiesQuery,
 					Metadata\Documents\DevicesModule\DeviceDynamicProperty::class,
 				) as $property) {
@@ -129,13 +129,13 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 				$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
 				$findChannelsQuery->forDevice($device);
 
-				$channels = $this->channelsRepository->findAllBy($findChannelsQuery);
+				$channels = $this->channelsConfigurationRepository->findAllBy($findChannelsQuery);
 
 				foreach ($channels as $channel) {
 					$findChannelPropertiesQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
 					$findChannelPropertiesQuery->forChannel($channel);
 
-					foreach ($this->channelsPropertiesRepository->findAllBy(
+					foreach ($this->channelsPropertiesConfigurationRepository->findAllBy(
 						$findChannelPropertiesQuery,
 						Metadata\Documents\DevicesModule\ChannelDynamicProperty::class,
 					) as $property) {
