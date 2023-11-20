@@ -45,6 +45,7 @@ use function gethostbyname;
 use function hash;
 use function implode;
 use function intval;
+use function md5;
 use function preg_match;
 use function property_exists;
 use function React\Async\async;
@@ -99,6 +100,9 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 
 	/** @var array<string, ValueObjects\WsMessage> */
 	private array $messages = [];
+
+	/** @var array<string, string> */
+	private array $validationSchemas = [];
 
 	private DateTimeInterface|null $lastConnectAttempt = null;
 
@@ -893,16 +897,20 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 	 */
 	private function getSchema(string $schemaFilename): string
 	{
-		try {
-			$schema = Utils\FileSystem::read(
-				Shelly\Constants::RESOURCES_FOLDER . DIRECTORY_SEPARATOR . $schemaFilename,
-			);
+		$key = md5($schemaFilename);
 
-		} catch (Nette\IOException) {
-			throw new Exceptions\WsError('Validation schema for payload could not be loaded');
+		if (!array_key_exists($key, $this->validationSchemas)) {
+			try {
+				$this->validationSchemas[$key] = Utils\FileSystem::read(
+					Shelly\Constants::RESOURCES_FOLDER . DIRECTORY_SEPARATOR . $schemaFilename,
+				);
+
+			} catch (Nette\IOException) {
+				throw new Exceptions\WsError('Validation schema for payload could not be loaded');
+			}
 		}
 
-		return $schema;
+		return $this->validationSchemas[$key];
 	}
 
 	/**

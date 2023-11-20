@@ -15,6 +15,7 @@
 
 namespace FastyBird\Module\Devices\Models\States;
 
+use DateTimeInterface;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Exceptions;
@@ -111,13 +112,17 @@ final class ChannelPropertiesManager
 				[
 					$state->getActualValue(),
 					$state->getExpectedValue(),
-					$state->getPending(),
+					$state->getPending() instanceof DateTimeInterface
+						? $state->getPending()->format(DateTimeInterface::ATOM)
+						: $state->getPending(),
 					$state->isValid(),
 				],
 				[
 					$updatedState->getActualValue(),
 					$updatedState->getExpectedValue(),
-					$updatedState->getPending(),
+					$updatedState->getPending() instanceof DateTimeInterface
+						? $updatedState->getPending()->format(DateTimeInterface::ATOM)
+						: $updatedState->getPending(),
 					$updatedState->isValid(),
 				],
 			) !== []

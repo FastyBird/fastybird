@@ -40,6 +40,7 @@ use function count;
 use function hash;
 use function http_build_query;
 use function implode;
+use function md5;
 use function preg_match_all;
 use function sprintf;
 use function strval;
@@ -66,6 +67,9 @@ abstract class HttpApi
 	protected const AUTHORIZATION_BASIC = 'basic';
 
 	protected const AUTHORIZATION_DIGEST = 'digest';
+
+	/** @var array<string, string> */
+	private array $validationSchemas = [];
 
 	public function __construct(
 		protected readonly Services\HttpClientFactory $httpClientFactory,
@@ -497,16 +501,20 @@ abstract class HttpApi
 	 */
 	private function getSchema(string $schemaFilename): string
 	{
-		try {
-			$schema = Utils\FileSystem::read(
-				Shelly\Constants::RESOURCES_FOLDER . DIRECTORY_SEPARATOR . $schemaFilename,
-			);
+		$key = md5($schemaFilename);
 
-		} catch (Nette\IOException) {
-			throw new Exceptions\HttpApiError('Validation schema for response could not be loaded');
+		if (!array_key_exists($key, $this->validationSchemas)) {
+			try {
+				$this->validationSchemas[$key] = Utils\FileSystem::read(
+					Shelly\Constants::RESOURCES_FOLDER . DIRECTORY_SEPARATOR . $schemaFilename,
+				);
+
+			} catch (Nette\IOException) {
+				throw new Exceptions\HttpApiError('Validation schema for response could not be loaded');
+			}
 		}
 
-		return $schema;
+		return $this->validationSchemas[$key];
 	}
 
 }

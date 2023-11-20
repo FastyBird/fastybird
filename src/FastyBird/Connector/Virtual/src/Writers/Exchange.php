@@ -20,6 +20,7 @@ use FastyBird\Connector\Virtual\Entities;
 use FastyBird\Connector\Virtual\Helpers;
 use FastyBird\Connector\Virtual\Queue;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
+use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -53,11 +54,17 @@ class Exchange implements Writer, ExchangeConsumers\Consumer
 	{
 	}
 
+	/**
+	 * @throws ExchangeExceptions\InvalidArgument
+	 */
 	public function connect(): void
 	{
 		$this->consumer->enable(self::class);
 	}
 
+	/**
+	 * @throws ExchangeExceptions\InvalidArgument
+	 */
 	public function disconnect(): void
 	{
 		$this->consumer->disable(self::class);

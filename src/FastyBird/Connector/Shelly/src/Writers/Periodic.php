@@ -47,9 +47,11 @@ abstract class Periodic
 
 	private const HANDLER_START_DELAY = 5.0;
 
-	private const HANDLER_DEBOUNCE_INTERVAL = 5_000.0;
+	private const HANDLER_DEBOUNCE_INTERVAL = 2_500.0;
 
 	private const HANDLER_PROCESSING_INTERVAL = 0.01;
+
+	private const HANDLER_PENDING_DELAY = 2_000.0;
 
 	/** @var array<string, MetadataDocuments\DevicesModule\Device>  */
 	private array $devices = [];
@@ -144,6 +146,7 @@ abstract class Periodic
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
@@ -170,6 +173,7 @@ abstract class Periodic
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
@@ -204,9 +208,14 @@ abstract class Periodic
 				continue;
 			}
 
+			$pending = $state->getPending();
+
 			if (
-				$state->getExpectedValue() !== null
-				&& $state->getPending() === true
+				$pending === true
+				|| (
+					$pending instanceof DateTimeInterface
+					&& (float) $now->format('Uv') - (float) $pending->format('Uv') > self::HANDLER_PENDING_DELAY
+				)
 			) {
 				$this->queue->append(
 					$this->entityHelper->create(
