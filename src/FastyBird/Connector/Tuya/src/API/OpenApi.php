@@ -37,6 +37,7 @@ use Ramsey\Uuid;
 use React\Promise;
 use RuntimeException;
 use Throwable;
+use function array_key_exists;
 use function boolval;
 use function count;
 use function hash;
@@ -45,6 +46,7 @@ use function http_build_query;
 use function implode;
 use function intval;
 use function is_array;
+use function md5;
 use function React\Async\await;
 use function sprintf;
 use function strval;
@@ -127,6 +129,9 @@ final class OpenApi
 	private const SET_DEVICE_STATE_MESSAGE_SCHEMA_FILENAME = 'openapi_set_device_state.json';
 
 	private string $devChannel = 'fastybird_iot';
+
+	/** @var array<string, string> */
+	private array $validationSchemas = [];
 
 	private Uuid\UuidInterface $nonce;
 
@@ -1644,16 +1649,20 @@ final class OpenApi
 	 */
 	private function getSchema(string $schemaFilename): string
 	{
-		try {
-			$schema = Utils\FileSystem::read(
-				Tuya\Constants::RESOURCES_FOLDER . DIRECTORY_SEPARATOR . $schemaFilename,
-			);
+		$key = md5($schemaFilename);
 
-		} catch (Nette\IOException) {
-			throw new Exceptions\OpenApiError('Validation schema for response could not be loaded');
+		if (!array_key_exists($key, $this->validationSchemas)) {
+			try {
+				$this->validationSchemas[$key] = Utils\FileSystem::read(
+					Tuya\Constants::RESOURCES_FOLDER . DIRECTORY_SEPARATOR . $schemaFilename,
+				);
+
+			} catch (Nette\IOException) {
+				throw new Exceptions\OpenApiError('Validation schema for response could not be loaded');
+			}
 		}
 
-		return $schema;
+		return $this->validationSchemas[$key];
 	}
 
 }

@@ -28,6 +28,7 @@ use function floatval;
 use function gethostbyname;
 use function is_numeric;
 use function is_string;
+use function strval;
 
 /**
  * Device helper
@@ -41,10 +42,10 @@ final class Device
 {
 
 	/**
-	 * @param DevicesModels\Configuration\Devices\Properties\Repository<MetadataDocuments\DevicesModule\DeviceVariableProperty> $devicesPropertiesRepository
+	 * @param DevicesModels\Configuration\Devices\Properties\Repository<MetadataDocuments\DevicesModule\DeviceVariableProperty> $devicesPropertiesConfigurationRepository
 	 */
 	public function __construct(
-		private readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesRepository,
+		private readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
 	)
 	{
 	}
@@ -55,13 +56,13 @@ final class Device
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
 	 */
-	public function getStatusReadingDelay(MetadataDocuments\DevicesModule\Device $device): float
+	public function getStateReadingDelay(MetadataDocuments\DevicesModule\Device $device): float
 	{
 		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
 		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::STATE_READING_DELAY);
 
-		$property = $this->devicesPropertiesRepository->findOneBy(
+		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
 			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
 		);
@@ -88,15 +89,15 @@ final class Device
 		$findPropertyQuery->forDevice($device);
 		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::GENERATION);
 
-		$property = $this->devicesPropertiesRepository->findOneBy(
+		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
 			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
 		);
 
 		$value = $property?->getValue();
 
-		if (Types\DeviceGeneration::isValidValue($value)) {
-			return Types\DeviceGeneration::get($value);
+		if (Types\DeviceGeneration::isValidValue(strval($value))) {
+			return Types\DeviceGeneration::get(strval($value));
 		}
 
 		throw new Exceptions\InvalidState('Device generation is not configured');
@@ -131,7 +132,7 @@ final class Device
 		$findPropertyQuery->forDevice($device);
 		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IP_ADDRESS);
 
-		$property = $this->devicesPropertiesRepository->findOneBy(
+		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
 			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
 		);
@@ -158,7 +159,7 @@ final class Device
 		$findPropertyQuery->forDevice($device);
 		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::DOMAIN);
 
-		$property = $this->devicesPropertiesRepository->findOneBy(
+		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
 			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
 		);
@@ -185,7 +186,7 @@ final class Device
 		$findPropertyQuery->forDevice($device);
 		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::USERNAME);
 
-		$property = $this->devicesPropertiesRepository->findOneBy(
+		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
 			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
 		);
@@ -212,7 +213,7 @@ final class Device
 		$findPropertyQuery->forDevice($device);
 		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::PASSWORD);
 
-		$property = $this->devicesPropertiesRepository->findOneBy(
+		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
 			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
 		);

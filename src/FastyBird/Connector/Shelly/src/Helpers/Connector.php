@@ -24,6 +24,7 @@ use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use function assert;
 use function is_string;
+use function strval;
 
 /**
  * Device helper
@@ -37,10 +38,10 @@ final class Connector
 {
 
 	/**
-	 * @param DevicesModels\Configuration\Connectors\Properties\Repository<MetadataDocuments\DevicesModule\ConnectorVariableProperty> $connectorsPropertiesRepository
+	 * @param DevicesModels\Configuration\Connectors\Properties\Repository<MetadataDocuments\DevicesModule\ConnectorVariableProperty> $connectorsPropertiesConfigurationRepository
 	 */
 	public function __construct(
-		private readonly DevicesModels\Configuration\Connectors\Properties\Repository $connectorsPropertiesRepository,
+		private readonly DevicesModels\Configuration\Connectors\Properties\Repository $connectorsPropertiesConfigurationRepository,
 	)
 	{
 	}
@@ -58,18 +59,18 @@ final class Connector
 		$findPropertyQuery->forConnector($connector);
 		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::CLIENT_MODE);
 
-		$property = $this->connectorsPropertiesRepository->findOneBy(
+		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
 			MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
 		);
 
 		$value = $property?->getValue();
 
-		if (Types\ClientMode::isValidValue($value)) {
-			return Types\ClientMode::get($value);
+		if (Types\ClientMode::isValidValue(strval($value))) {
+			return Types\ClientMode::get(strval($value));
 		}
 
-		throw new Exceptions\InvalidState('Device generation is not configured');
+		throw new Exceptions\InvalidState('Connector mode is not configured');
 	}
 
 	/**
@@ -84,7 +85,7 @@ final class Connector
 		$findPropertyQuery->forConnector($connector);
 		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::CLOUD_SERVER);
 
-		$property = $this->connectorsPropertiesRepository->findOneBy(
+		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
 			MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
 		);
@@ -111,7 +112,7 @@ final class Connector
 		$findPropertyQuery->forConnector($connector);
 		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::CLOUD_AUTH_KEY);
 
-		$property = $this->connectorsPropertiesRepository->findOneBy(
+		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
 			MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
 		);

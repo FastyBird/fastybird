@@ -60,8 +60,8 @@ abstract class DynamicProperty extends Property
 		private readonly bool $queryable = false,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\BoolValue(),
-			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
@@ -69,8 +69,8 @@ abstract class DynamicProperty extends Property
 		private readonly bool|float|int|string|null $actualValue = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\BoolValue(),
-			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
@@ -78,8 +78,8 @@ abstract class DynamicProperty extends Property
 		private readonly bool|float|int|string|null $previousValue = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\BoolValue(),
-			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]

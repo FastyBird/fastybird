@@ -45,9 +45,9 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 	public const NAME = 'exchange';
 
 	/**
-	 * @param DevicesModels\Configuration\Devices\Repository<MetadataDocuments\DevicesModule\Device> $devicesRepository
-	 * @param DevicesModels\Configuration\Channels\Repository<MetadataDocuments\DevicesModule\Channel> $channelsRepository
-	 * @param DevicesModels\Configuration\Channels\Properties\Repository<MetadataDocuments\DevicesModule\ChannelDynamicProperty> $channelsPropertiesRepository
+	 * @param DevicesModels\Configuration\Devices\Repository<MetadataDocuments\DevicesModule\Device> $devicesConfigurationRepository
+	 * @param DevicesModels\Configuration\Channels\Repository<MetadataDocuments\DevicesModule\Channel> $channelsConfigurationRepository
+	 * @param DevicesModels\Configuration\Channels\Properties\Repository<MetadataDocuments\DevicesModule\ChannelDynamicProperty> $channelsPropertiesConfigurationRepository
 	 *
 	 * @throws ExchangeExceptions\InvalidArgument
 	 */
@@ -55,9 +55,9 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 		MetadataDocuments\DevicesModule\Connector $connector,
 		Helpers\Entity $entityHelper,
 		Queue\Queue $queue,
-		DevicesModels\Configuration\Devices\Repository $devicesRepository,
-		DevicesModels\Configuration\Channels\Repository $channelsRepository,
-		DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesRepository,
+		DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
+		DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
+		DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
 		DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
 		DateTimeFactory\Factory $dateTimeFactory,
 		EventLoop\LoopInterface $eventLoop,
@@ -68,9 +68,9 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 			$connector,
 			$entityHelper,
 			$queue,
-			$devicesRepository,
-			$channelsRepository,
-			$channelsPropertiesRepository,
+			$devicesConfigurationRepository,
+			$channelsConfigurationRepository,
+			$channelsPropertiesConfigurationRepository,
 			$channelPropertiesStatesManager,
 			$dateTimeFactory,
 			$eventLoop,
@@ -116,10 +116,14 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 	): void
 	{
 		if ($entity instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+			if ($entity->getExpectedValue() === null) {
+				return;
+			}
+
 			$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 			$findChannelQuery->byId($entity->getChannel());
 
-			$channel = $this->channelsRepository->findOneBy($findChannelQuery);
+			$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 
 			if ($channel === null) {
 				return;
@@ -128,7 +132,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 			$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
 			$findDeviceQuery->byId($channel->getDevice());
 
-			$device = $this->devicesRepository->findOneBy($findDeviceQuery);
+			$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
 			if ($device === null) {
 				return;

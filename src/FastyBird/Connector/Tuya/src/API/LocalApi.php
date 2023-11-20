@@ -127,6 +127,9 @@ final class LocalApi implements Evenement\EventEmitterInterface
 	/** @var array<string|int, int|float|string|null> */
 	private array $dpsToRequest = [];
 
+	/** @var array<string, string> */
+	private array $validationSchemas = [];
+
 	private DateTimeInterface|null $lastConnectAttempt = null;
 
 	private DateTimeInterface|null $lastHeartbeat = null;
@@ -1540,16 +1543,20 @@ final class LocalApi implements Evenement\EventEmitterInterface
 	 */
 	private function getSchema(string $schemaFilename): string
 	{
-		try {
-			$schema = Utils\FileSystem::read(
-				Tuya\Constants::RESOURCES_FOLDER . DIRECTORY_SEPARATOR . $schemaFilename,
-			);
+		$key = md5($schemaFilename);
 
-		} catch (Nette\IOException) {
-			throw new Exceptions\LocalApiCall('Validation schema for data could not be loaded');
+		if (!array_key_exists($key, $this->validationSchemas)) {
+			try {
+				$this->validationSchemas[$key] = Utils\FileSystem::read(
+					Tuya\Constants::RESOURCES_FOLDER . DIRECTORY_SEPARATOR . $schemaFilename,
+				);
+
+			} catch (Nette\IOException) {
+				throw new Exceptions\LocalApiCall('Validation schema for data could not be loaded');
+			}
 		}
 
-		return $schema;
+		return $this->validationSchemas[$key];
 	}
 
 }

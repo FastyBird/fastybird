@@ -81,8 +81,8 @@ final class Local implements Client
 	private EventLoop\TimerInterface|null $handlerTimer = null;
 
 	/**
-	 * @param DevicesModels\Configuration\Devices\Repository<MetadataDocuments\DevicesModule\Device> $devicesRepository
-	 * @param DevicesModels\Configuration\Devices\Properties\Repository<MetadataDocuments\DevicesModule\DeviceVariableProperty> $devicesPropertiesRepository
+	 * @param DevicesModels\Configuration\Devices\Repository<MetadataDocuments\DevicesModule\Device> $devicesConfigurationRepository
+	 * @param DevicesModels\Configuration\Devices\Properties\Repository<MetadataDocuments\DevicesModule\DeviceVariableProperty> $devicesPropertiesConfigurationRepository
 	 */
 	public function __construct(
 		private readonly MetadataDocuments\DevicesModule\Connector $connector,
@@ -91,8 +91,8 @@ final class Local implements Client
 		private readonly Helpers\Entity $entityHelper,
 		private readonly Helpers\Device $deviceHelper,
 		private readonly Shelly\Logger $logger,
-		private readonly DevicesModels\Configuration\Devices\Repository $devicesRepository,
-		private readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesRepository,
+		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
+		private readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
@@ -169,14 +169,14 @@ final class Local implements Client
 		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDevicesQuery->byConnectorId($this->connector->getId());
 
-		foreach ($this->devicesRepository->findAllBy($findDevicesQuery) as $device) {
+		foreach ($this->devicesConfigurationRepository->findAllBy($findDevicesQuery) as $device) {
 			$this->devices[$device->getId()->toString()] = $device;
 
 			$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
 			$findDevicePropertyQuery->forDevice($device);
 			$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::GENERATION);
 
-			$generationProperty = $this->devicesPropertiesRepository->findOneBy(
+			$generationProperty = $this->devicesPropertiesConfigurationRepository->findOneBy(
 				$findDevicePropertyQuery,
 				MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
 			);
@@ -252,7 +252,7 @@ final class Local implements Client
 			if (!in_array($device->getId()->toString(), $this->processedDevices, true)) {
 				$this->processedDevices[] = $device->getId()->toString();
 
-				if ($this->readDeviceStatus($device)) {
+				if ($this->readDeviceState($device)) {
 					$this->registerLoopHandler();
 
 					return;
@@ -267,13 +267,13 @@ final class Local implements Client
 
 	/**
 	 * @throws DevicesExceptions\InvalidArgument
-	 * @throws Exceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws RuntimeException
 	 */
-	private function readDeviceStatus(MetadataDocuments\DevicesModule\Device $device): bool
+	private function readDeviceState(MetadataDocuments\DevicesModule\Device $device): bool
 	{
 		if (!array_key_exists($device->getId()->toString(), $this->processedDevicesCommands)) {
 			$this->processedDevicesCommands[$device->getId()->toString()] = [];
@@ -286,7 +286,7 @@ final class Local implements Client
 				$cmdResult instanceof DateTimeInterface
 				&& (
 					$this->dateTimeFactory->getNow()->getTimestamp() - $cmdResult->getTimestamp()
-						< $this->deviceHelper->getStatusReadingDelay($device)
+						< $this->deviceHelper->getStateReadingDelay($device)
 				)
 			) {
 				return false;
@@ -298,7 +298,9 @@ final class Local implements Client
 		$deviceState = $this->deviceConnectionManager->getState($device);
 
 		if ($deviceState->equalsValue(MetadataTypes\ConnectionState::STATE_ALERT)) {
-			return true;
+			unset($this->devices[$device->getId()->toString()]);
+
+			return false;
 		}
 
 		if ($this->deviceHelper->getGeneration($device)->equalsValue(Types\DeviceGeneration::GENERATION_2)) {
@@ -624,7 +626,11 @@ final class Local implements Client
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function processGen1DeviceGetState(
 		MetadataDocuments\DevicesModule\Device $device,
@@ -840,7 +846,7 @@ final class Local implements Client
 					[
 						'connector' => $device->getConnector()->toString(),
 						'identifier' => $device->getIdentifier(),
-						'ip_address' => $state->getWifi()?->getIp(),
+						'ip_address' => $state->getWifi()?->getIp() ?? $this->deviceHelper->getIpAddress($device),
 						'states' => $states,
 					],
 				),
@@ -891,7 +897,11 @@ final class Local implements Client
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function processGen2DeviceGetState(
 		MetadataDocuments\DevicesModule\Device $device,
@@ -1134,7 +1144,8 @@ final class Local implements Client
 					[
 						'connector' => $device->getConnector()->toString(),
 						'identifier' => $device->getIdentifier(),
-						'ip_address' => $state->getEthernet()?->getIp() ?? $state->getWifi()?->getStaIp(),
+						'ip_address' => $state->getEthernet()?->getIp()
+							?? ($state->getWifi()?->getStaIp() ?? $this->deviceHelper->getIpAddress($device)),
 						'states' => $states,
 					],
 				),

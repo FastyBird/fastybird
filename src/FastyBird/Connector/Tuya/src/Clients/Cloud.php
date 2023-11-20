@@ -22,15 +22,16 @@ use FastyBird\Connector\Tuya\API;
 use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Helpers;
-use FastyBird\Connector\Tuya\Queries;
 use FastyBird\Connector\Tuya\Queue;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Psr\EventDispatcher as PsrEventDispatcher;
@@ -57,11 +58,14 @@ final class Cloud implements Client
 
 	private const HANDLER_PROCESSING_INTERVAL = 0.01;
 
-	private const HEARTBEAT_DELAY = 600;
+	private const HEARTBEAT_DELAY = 2_500;
 
 	private const CMD_STATE = 'state';
 
-	private const CMD_HEARTBEAT = 'hearbeat';
+	private const CMD_HEARTBEAT = 'heartbeat';
+
+	/** @var array<string, MetadataDocuments\DevicesModule\Device>  */
+	private array $devices = [];
 
 	/** @var array<string> */
 	private array $processedDevices = [];
@@ -71,13 +75,17 @@ final class Cloud implements Client
 
 	private EventLoop\TimerInterface|null $handlerTimer = null;
 
+	/**
+	 * @param DevicesModels\Configuration\Devices\Repository<MetadataDocuments\DevicesModule\Device> $devicesConfigurationRepository
+	 */
 	public function __construct(
+		private readonly MetadataDocuments\DevicesModule\Connector $connector,
 		private readonly API\ConnectionManager $connectionManager,
-		private readonly Entities\TuyaConnector $connector,
 		private readonly Queue\Queue $queue,
 		private readonly Helpers\Entity $entityHelper,
+		private readonly Helpers\Device $deviceHelper,
 		private readonly Tuya\Logger $logger,
-		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
@@ -87,10 +95,12 @@ final class Cloud implements Client
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\OpenApiCall
 	 * @throws Exceptions\OpenApiError
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function connect(): void
 	{
@@ -98,6 +108,13 @@ final class Cloud implements Client
 		$this->processedDevicesCommands = [];
 
 		$this->handlerTimer = null;
+
+		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDevicesQuery->forConnector($this->connector);
+
+		foreach ($this->devicesConfigurationRepository->findAllBy($findDevicesQuery) as $device) {
+			$this->devices[$device->getId()->toString()] = $device;
+		}
 
 		$this->eventLoop->addTimer(
 			self::HANDLER_START_DELAY,
@@ -236,8 +253,10 @@ final class Cloud implements Client
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function disconnect(): void
 	{
@@ -270,16 +289,8 @@ final class Cloud implements Client
 			$this->connectionManager->getCloudApiConnection($this->connector)->connect(false);
 		}
 
-		$findDevicesQuery = new Queries\Entities\FindDevices();
-		$findDevicesQuery->forConnector($this->connector);
-
-		foreach ($this->devicesRepository->findAllBy($findDevicesQuery, Entities\TuyaDevice::class) as $device) {
-			if (
-				!in_array($device->getId()->toString(), $this->processedDevices, true)
-				&& !$this->deviceConnectionManager->getState($device)->equalsValue(
-					MetadataTypes\ConnectionState::STATE_ALERT,
-				)
-			) {
+		foreach ($this->devices as $device) {
+			if (!in_array($device->getId()->toString(), $this->processedDevices, true)) {
 				$this->processedDevices[] = $device->getId()->toString();
 
 				if ($this->processDevice($device)) {
@@ -301,7 +312,7 @@ final class Cloud implements Client
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Exception
 	 */
-	private function processDevice(Entities\TuyaDevice $device): bool
+	private function processDevice(MetadataDocuments\DevicesModule\Device $device): bool
 	{
 		if ($this->readDeviceInformation($device)) {
 			return true;
@@ -311,12 +322,15 @@ final class Cloud implements Client
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidArgument
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\OpenApiCall
 	 * @throws Exceptions\OpenApiError
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
-	private function readDeviceInformation(Entities\TuyaDevice $device): bool
+	private function readDeviceInformation(MetadataDocuments\DevicesModule\Device $device): bool
 	{
 		if (!array_key_exists($device->getId()->toString(), $this->processedDevicesCommands)) {
 			$this->processedDevicesCommands[$device->getId()->toString()] = [];
@@ -335,7 +349,15 @@ final class Cloud implements Client
 			}
 		}
 
-		$this->processedDevicesCommands[$device->getId()->toString()][self::CMD_HEARTBEAT] = $this->dateTimeFactory->getNow();
+		$this->processedDevicesCommands[$device->getId()->toString()][self::CMD_STATE] = $this->dateTimeFactory->getNow();
+
+		$deviceState = $this->deviceConnectionManager->getState($device);
+
+		if ($deviceState->equalsValue(MetadataTypes\ConnectionState::STATE_ALERT)) {
+			unset($this->devices[$device->getId()->toString()]);
+
+			return false;
+		}
 
 		$this->connectionManager
 			->getCloudApiConnection($this->connector)
@@ -347,7 +369,7 @@ final class Cloud implements Client
 					$this->entityHelper->create(
 						Entities\Messages\StoreDeviceConnectionState::class,
 						[
-							'connector' => $device->getConnector()->getId()->toString(),
+							'connector' => $device->getConnector()->toString(),
 							'identifier' => $device->getIdentifier(),
 							'state' => $detail->getResult()->isOnline()
 								? MetadataTypes\ConnectionState::STATE_CONNECTED
@@ -374,7 +396,7 @@ final class Cloud implements Client
 						$this->entityHelper->create(
 							Entities\Messages\StoreDeviceConnectionState::class,
 							[
-								'connector' => $device->getConnector()->getId()->toString(),
+								'connector' => $device->getConnector()->toString(),
 								'identifier' => $device->getIdentifier(),
 								'state' => MetadataTypes\ConnectionState::STATE_ALERT,
 							],
@@ -385,7 +407,7 @@ final class Cloud implements Client
 						$this->entityHelper->create(
 							Entities\Messages\StoreDeviceConnectionState::class,
 							[
-								'connector' => $device->getConnector()->getId()->toString(),
+								'connector' => $device->getConnector()->toString(),
 								'identifier' => $device->getIdentifier(),
 								'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
 							],
@@ -405,12 +427,15 @@ final class Cloud implements Client
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidArgument
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\OpenApiCall
 	 * @throws Exceptions\OpenApiError
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
-	private function readDeviceState(Entities\TuyaDevice $device): bool
+	private function readDeviceState(MetadataDocuments\DevicesModule\Device $device): bool
 	{
 		if (!array_key_exists($device->getId()->toString(), $this->processedDevicesCommands)) {
 			$this->processedDevicesCommands[$device->getId()->toString()] = [];
@@ -422,7 +447,8 @@ final class Cloud implements Client
 			if (
 				$cmdResult instanceof DateTimeInterface
 				&& (
-					$this->dateTimeFactory->getNow()->getTimestamp() - $cmdResult->getTimestamp() < $device->getStateReadingDelay()
+					$this->dateTimeFactory->getNow()->getTimestamp() - $cmdResult->getTimestamp()
+					< $this->deviceHelper->getStateReadingDelay($device)
 				)
 			) {
 				return false;
@@ -430,6 +456,14 @@ final class Cloud implements Client
 		}
 
 		$this->processedDevicesCommands[$device->getId()->toString()][self::CMD_STATE] = $this->dateTimeFactory->getNow();
+
+		$deviceState = $this->deviceConnectionManager->getState($device);
+
+		if ($deviceState->equalsValue(MetadataTypes\ConnectionState::STATE_ALERT)) {
+			unset($this->devices[$device->getId()->toString()]);
+
+			return false;
+		}
 
 		$this->connectionManager
 			->getCloudApiConnection($this->connector)
@@ -441,7 +475,7 @@ final class Cloud implements Client
 					$this->entityHelper->create(
 						Entities\Messages\StoreChannelPropertyState::class,
 						[
-							'connector' => $device->getConnector()->getId()->toString(),
+							'connector' => $device->getConnector()->toString(),
 							'identifier' => $device->getIdentifier(),
 							'data_points' => array_map(
 								static fn (Entities\API\DeviceDataPointState $dps): array => [
@@ -472,7 +506,7 @@ final class Cloud implements Client
 						$this->entityHelper->create(
 							Entities\Messages\StoreDeviceConnectionState::class,
 							[
-								'connector' => $device->getConnector()->getId()->toString(),
+								'connector' => $device->getConnector()->toString(),
 								'identifier' => $device->getIdentifier(),
 								'state' => MetadataTypes\ConnectionState::STATE_ALERT,
 							],
@@ -483,7 +517,7 @@ final class Cloud implements Client
 						$this->entityHelper->create(
 							Entities\Messages\StoreDeviceConnectionState::class,
 							[
-								'connector' => $device->getConnector()->getId()->toString(),
+								'connector' => $device->getConnector()->toString(),
 								'identifier' => $device->getIdentifier(),
 								'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
 							],
