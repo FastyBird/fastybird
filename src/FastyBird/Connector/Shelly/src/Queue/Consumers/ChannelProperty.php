@@ -6,17 +6,17 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:VieraConnector!
+ * @package        FastyBird:ShellyConnector!
  * @subpackage     Queue
  * @since          1.0.0
  *
- * @date           28.06.23
+ * @date           21.11.23
  */
 
-namespace FastyBird\Connector\Viera\Queue\Consumers;
+namespace FastyBird\Connector\Shelly\Queue\Consumers;
 
 use Doctrine\DBAL;
-use FastyBird\Connector\Viera;
+use FastyBird\Connector\Shelly;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
@@ -31,7 +31,7 @@ use function array_merge;
 /**
  * Device channel property consumer trait
  *
- * @package        FastyBird:VieraConnector!
+ * @package        FastyBird:ShellyConnector!
  * @subpackage     Queue
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
@@ -40,7 +40,7 @@ use function array_merge;
  * @property-read DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository
  * @property-read DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager
  * @property-read DevicesUtilities\Database $databaseHelper
- * @property-read Viera\Logger $logger
+ * @property-read Shelly\Logger $logger
  */
 trait ChannelProperty
 {
@@ -63,6 +63,8 @@ trait ChannelProperty
 		string $identifier,
 		string|null $name = null,
 		array|string|null $format = null,
+		string|null $unit = null,
+		float|int|string|null $invalid = null,
 		bool $settable = false,
 		bool $queryable = false,
 	): void
@@ -108,7 +110,7 @@ trait ChannelProperty
 				$this->logger->warning(
 					'Stored channel property was not of valid type',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'message-consumer',
 						'channel' => [
 							'id' => $channelId->toString(),
@@ -144,6 +146,8 @@ trait ChannelProperty
 							'name' => $name,
 							'dataType' => $dataType,
 							'format' => $format,
+							'unit' => $unit,
+							'invalid' => $invalid,
 						],
 						$type === DevicesEntities\Channels\Properties\Variable::class
 							? [
@@ -160,7 +164,7 @@ trait ChannelProperty
 			$this->logger->debug(
 				'Channel property was created',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'message-consumer',
 					'channel' => [
 						'id' => $channelId->toString(),
@@ -180,6 +184,8 @@ trait ChannelProperty
 						[
 							'dataType' => $dataType,
 							'format' => $format,
+							'unit' => $unit,
+							'invalid' => $invalid,
 						],
 						$type === DevicesEntities\Channels\Properties\Variable::class
 							? [
@@ -196,7 +202,7 @@ trait ChannelProperty
 			$this->logger->debug(
 				'Channel property was updated',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 					'type' => 'message-consumer',
 					'channel' => [
 						'id' => $channelId->toString(),
