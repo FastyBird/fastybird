@@ -46,16 +46,17 @@ final class StoreLocalDevice implements Queue\Consumer
 
 	use Nette\SmartObject;
 	use DeviceProperty;
+	use ChannelProperty;
 
 	public function __construct(
 		protected readonly Shelly\Logger $logger,
 		protected readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
 		protected readonly DevicesModels\Entities\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
 		protected readonly DevicesModels\Entities\Devices\Properties\PropertiesManager $devicesPropertiesManager,
+		protected readonly DevicesModels\Entities\Channels\ChannelsRepository $channelsRepository,
+		protected readonly DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
+		protected readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager,
 		protected readonly DevicesUtilities\Database $databaseHelper,
-		private readonly DevicesModels\Entities\Channels\ChannelsRepository $channelsRepository,
-		private readonly DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
-		private readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager,
 		private readonly DevicesModels\Entities\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Entities\Devices\DevicesManager $devicesManager,
 		private readonly DevicesModels\Entities\Channels\ChannelsManager $channelsManager,
@@ -199,79 +200,19 @@ final class StoreLocalDevice implements Queue\Consumer
 			);
 
 			foreach ($channelDescription->getProperties() as $propertyDescription) {
-				$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
-				$findChannelPropertyQuery->forChannel($channel);
-				$findChannelPropertyQuery->byIdentifier($propertyDescription->getIdentifier());
-
-				$channelProperty = $this->channelsPropertiesRepository->findOneBy($findChannelPropertyQuery);
-
-				if ($channelProperty === null) {
-					$channelProperty = $this->databaseHelper->transaction(
-						fn (): DevicesEntities\Channels\Properties\Property => $this->channelsPropertiesManager->create(
-							Utils\ArrayHash::from([
-								'channel' => $channel,
-								'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
-								'identifier' => $propertyDescription->getIdentifier(),
-								'name' => $propertyDescription->getName(),
-								'unit' => $propertyDescription->getUnit(),
-								'dataType' => $propertyDescription->getDataType(),
-								'format' => $propertyDescription->getFormat(),
-								'invalid' => $propertyDescription->getInvalid(),
-								'queryable' => $propertyDescription->isQueryable(),
-								'settable' => $propertyDescription->isSettable(),
-							]),
-						),
-					);
-
-					$this->logger->debug(
-						'Device channel property was created',
-						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-							'type' => 'store-local-device-message-consumer',
-							'device' => [
-								'id' => $device->getId()->toString(),
-							],
-							'channel' => [
-								'id' => $channelProperty->getChannel()->getId()->toString(),
-							],
-							'property' => [
-								'id' => $channelProperty->getId()->toString(),
-							],
-						],
-					);
-
-				} else {
-					$channelProperty = $this->databaseHelper->transaction(
-						fn (): DevicesEntities\Channels\Properties\Property => $this->channelsPropertiesManager->update(
-							$channelProperty,
-							Utils\ArrayHash::from([
-								'unit' => $propertyDescription->getUnit(),
-								'dataType' => $propertyDescription->getDataType(),
-								'format' => $propertyDescription->getFormat(),
-								'invalid' => $propertyDescription->getInvalid(),
-								'queryable' => $propertyDescription->isQueryable(),
-								'settable' => $propertyDescription->isSettable(),
-							]),
-						),
-					);
-
-					$this->logger->debug(
-						'Device channel property was updated',
-						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-							'type' => 'store-local-device-message-consumer',
-							'device' => [
-								'id' => $device->getId()->toString(),
-							],
-							'channel' => [
-								'id' => $channelProperty->getChannel()->getId()->toString(),
-							],
-							'property' => [
-								'id' => $channelProperty->getId()->toString(),
-							],
-						],
-					);
-				}
+				$this->setChannelProperty(
+					DevicesEntities\Channels\Properties\Dynamic::class,
+					$channel->getId(),
+					null,
+					$propertyDescription->getDataType(),
+					$propertyDescription->getIdentifier(),
+					$propertyDescription->getName(),
+					$propertyDescription->getFormat(),
+					$propertyDescription->getUnit(),
+					$propertyDescription->getInvalid(),
+					$propertyDescription->isSettable(),
+					$propertyDescription->isQueryable(),
+				);
 			}
 		}
 

@@ -45,16 +45,17 @@ final class StoreCloudDevice implements Queue\Consumer
 
 	use Nette\SmartObject;
 	use DeviceProperty;
+	use ChannelProperty;
 
 	public function __construct(
 		protected readonly Tuya\Logger $logger,
 		protected readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
 		protected readonly DevicesModels\Entities\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
 		protected readonly DevicesModels\Entities\Devices\Properties\PropertiesManager $devicesPropertiesManager,
+		protected readonly DevicesModels\Entities\Channels\ChannelsRepository $channelsRepository,
+		protected readonly DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
+		protected readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager,
 		protected readonly DevicesUtilities\Database $databaseHelper,
-		private readonly DevicesModels\Entities\Channels\ChannelsRepository $channelsRepository,
-		private readonly DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
-		private readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager,
 		private readonly DevicesModels\Entities\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Entities\Devices\DevicesManager $devicesManager,
 		private readonly DevicesModels\Entities\Channels\ChannelsManager $channelsManager,
@@ -254,40 +255,21 @@ final class StoreCloudDevice implements Queue\Consumer
 			}
 
 			foreach ($entity->getDataPoints() as $dataPoint) {
-				$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelDynamicProperties();
-				$findChannelPropertyQuery->forChannel($channel);
-				$findChannelPropertyQuery->byIdentifier($dataPoint->getCode());
-
-				$property = $this->channelsPropertiesRepository->findOneBy(
-					$findChannelPropertyQuery,
+				$this->setChannelProperty(
 					DevicesEntities\Channels\Properties\Dynamic::class,
+					$channel->getId(),
+					null,
+					$dataPoint->getDataType(),
+					$dataPoint->getCode(),
+					$dataPoint->getCode(),
+					$dataPoint->getFormat(),
+					$dataPoint->getUnit(),
+					null,
+					$dataPoint->getScale(),
+					$dataPoint->getStep(),
+					$dataPoint->isSettable(),
+					$dataPoint->isQueryable(),
 				);
-
-				if ($property === null) {
-					$this->channelsPropertiesManager->create(Utils\ArrayHash::from([
-						'channel' => $channel,
-						'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
-						'identifier' => $dataPoint->getCode(),
-						'dataType' => $dataPoint->getDataType(),
-						'unit' => $dataPoint->getUnit(),
-						'format' => $dataPoint->getFormat(),
-						'scale' => $dataPoint->getScale(),
-						'step' => $dataPoint->getStep(),
-						'queryable' => $dataPoint->isQueryable(),
-						'settable' => $dataPoint->isSettable(),
-					]));
-
-				} else {
-					$this->channelsPropertiesManager->update($property, Utils\ArrayHash::from([
-						'dataType' => $dataPoint->getDataType(),
-						'unit' => $dataPoint->getUnit(),
-						'format' => $dataPoint->getFormat(),
-						'scale' => $dataPoint->getScale(),
-						'step' => $dataPoint->getStep(),
-						'queryable' => $dataPoint->isQueryable(),
-						'settable' => $dataPoint->isSettable(),
-					]));
-				}
 			}
 
 			return true;
