@@ -64,6 +64,8 @@ class DevicePropertyIdentifier extends Consistence\Enum\Enum
 
 	public const STATE_READING_DELAY = 'state_reading_delay';
 
+	public const HEARTBEAT_DELAY = 'heartbeat_delay';
+
 	public const READ_STATE_EXCLUDE_DPS = 'read_state_exclude_dps';
 
 	public function getValue(): string

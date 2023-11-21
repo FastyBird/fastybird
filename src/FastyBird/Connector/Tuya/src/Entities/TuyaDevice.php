@@ -36,7 +36,9 @@ class TuyaDevice extends DevicesEntities\Devices\Device
 
 	public const DEVICE_TYPE = 'tuya';
 
-	public const STATE_READING_DELAY = 120.0;
+	public const STATE_READING_DELAY = 5_000.0;
+
+	public const HEARTBEAT_DELAY = 2_500.0;
 
 	private self|null $gateway = null;
 
@@ -301,6 +303,29 @@ class TuyaDevice extends DevicesEntities\Devices\Device
 		}
 
 		return self::STATE_READING_DELAY;
+	}
+
+	/**
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public function getHeartbeatDelay(): float
+	{
+		$property = $this->properties
+			->filter(
+			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::HEARTBEAT_DELAY
+			)
+			->first();
+
+		if (
+			$property instanceof DevicesEntities\Devices\Properties\Variable
+			&& is_numeric($property->getValue())
+		) {
+			return floatval($property->getValue());
+		}
+
+		return self::HEARTBEAT_DELAY;
 	}
 
 }
