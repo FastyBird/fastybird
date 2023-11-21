@@ -343,4 +343,30 @@ final class Device
 		return floatval($value);
 	}
 
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
+	 */
+	public function getHeartbeatDelay(MetadataDocuments\DevicesModule\Device $device): float
+	{
+		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+		$findPropertyQuery->forDevice($device);
+		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::HEARTBEAT_DELAY);
+
+		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
+			$findPropertyQuery,
+			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+		);
+
+		$value = $property?->getValue();
+
+		if (!is_numeric($value)) {
+			return Entities\TuyaDevice::HEARTBEAT_DELAY;
+		}
+
+		return floatval($value);
+	}
+
 }

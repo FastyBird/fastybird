@@ -58,8 +58,6 @@ final class Cloud implements Client
 
 	private const HANDLER_PROCESSING_INTERVAL = 0.01;
 
-	private const HEARTBEAT_DELAY = 2_500;
-
 	private const CMD_STATE = 'state';
 
 	private const CMD_HEARTBEAT = 'heartbeat';
@@ -342,7 +340,8 @@ final class Cloud implements Client
 			if (
 				$cmdResult instanceof DateTimeInterface
 				&& (
-					$this->dateTimeFactory->getNow()->getTimestamp() - $cmdResult->getTimestamp() < self::HEARTBEAT_DELAY
+					$this->dateTimeFactory->getNow()->getTimestamp() - $cmdResult->getTimestamp()
+					< $this->deviceHelper->getHeartbeatDelay($device)
 				)
 			) {
 				return false;
