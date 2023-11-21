@@ -22,7 +22,6 @@ use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
@@ -49,12 +48,17 @@ final class State implements ExchangeConsumers\Consumer
 		MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION,
 	];
 
+	/**
+	 * @param Models\Configuration\Connectors\Properties\Repository<MetadataDocuments\DevicesModule\ConnectorDynamicProperty> $connectorPropertiesConfigurationRepository
+	 * @param Models\Configuration\Devices\Properties\Repository<MetadataDocuments\DevicesModule\DeviceDynamicProperty> $devicePropertiesConfigurationRepository
+	 * @param Models\Configuration\Channels\Properties\Repository<MetadataDocuments\DevicesModule\ChannelDynamicProperty> $channelPropertiesConfigurationRepository
+	 */
 	public function __construct(
 		private readonly ExchangePublisher\Publisher $publisher,
 		private readonly ExchangeEntities\DocumentFactory $entityFactory,
-		private readonly Models\Entities\Connectors\Properties\PropertiesRepository $connectorPropertiesRepository,
-		private readonly Models\Entities\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
-		private readonly Models\Entities\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
+		private readonly Models\Configuration\Connectors\Properties\Repository $connectorPropertiesConfigurationRepository,
+		private readonly Models\Configuration\Devices\Properties\Repository $devicePropertiesConfigurationRepository,
+		private readonly Models\Configuration\Channels\Properties\Repository $channelPropertiesConfigurationRepository,
 		private readonly Utilities\ConnectorPropertiesStates $connectorPropertiesStates,
 		private readonly Utilities\DevicePropertiesStates $devicePropertiesStates,
 		private readonly Utilities\ChannelPropertiesStates $channelPropertiesStates,
@@ -85,12 +89,15 @@ final class State implements ExchangeConsumers\Consumer
 		if (in_array($routingKey->getValue(), self::PROPERTIES_ACTIONS_ROUTING_KEYS, true)) {
 			if ($entity instanceof MetadataDocuments\Actions\ActionConnectorProperty) {
 				if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_SET)) {
-					$findConnectorPropertyQuery = new Queries\Entities\FindConnectorProperties();
+					$findConnectorPropertyQuery = new Queries\Configuration\FindConnectorDynamicProperties();
 					$findConnectorPropertyQuery->byId($entity->getProperty());
 
-					$property = $this->connectorPropertiesRepository->findOneBy($findConnectorPropertyQuery);
+					$property = $this->connectorPropertiesConfigurationRepository->findOneBy(
+						$findConnectorPropertyQuery,
+						MetadataDocuments\DevicesModule\ConnectorDynamicProperty::class,
+					);
 
-					if (!$property instanceof Entities\Connectors\Properties\Dynamic) {
+					if ($property === null) {
 						return;
 					}
 
@@ -102,18 +109,19 @@ final class State implements ExchangeConsumers\Consumer
 						]),
 					);
 				} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
-					$findConnectorPropertyQuery = new Queries\Entities\FindConnectorProperties();
+					$findConnectorPropertyQuery = new Queries\Configuration\FindConnectorDynamicProperties();
 					$findConnectorPropertyQuery->byId($entity->getProperty());
 
-					$property = $this->connectorPropertiesRepository->findOneBy($findConnectorPropertyQuery);
+					$property = $this->connectorPropertiesConfigurationRepository->findOneBy(
+						$findConnectorPropertyQuery,
+						MetadataDocuments\DevicesModule\ConnectorDynamicProperty::class,
+					);
 
 					if ($property === null) {
 						return;
 					}
 
-					$state = $property instanceof Entities\Connectors\Properties\Dynamic
-						? $this->connectorPropertiesStates->readValue($property)
-						: null;
+					$state = $this->connectorPropertiesStates->readValue($property);
 
 					$publishRoutingKey = MetadataTypes\RoutingKey::get(
 						MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_DOCUMENT_REPORTED,
@@ -135,14 +143,14 @@ final class State implements ExchangeConsumers\Consumer
 				}
 			} elseif ($entity instanceof MetadataDocuments\Actions\ActionDeviceProperty) {
 				if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_SET)) {
-					$findConnectorPropertyQuery = new Queries\Entities\FindDeviceProperties();
+					$findConnectorPropertyQuery = new Queries\Configuration\FindDeviceProperties();
 					$findConnectorPropertyQuery->byId($entity->getProperty());
 
-					$property = $this->devicePropertiesRepository->findOneBy($findConnectorPropertyQuery);
+					$property = $this->devicePropertiesConfigurationRepository->findOneBy($findConnectorPropertyQuery);
 
 					if (
-						!$property instanceof Entities\Devices\Properties\Dynamic
-						&& !$property instanceof Entities\Devices\Properties\Mapped
+						!$property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
+						&& !$property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
 					) {
 						return;
 					}
@@ -155,18 +163,19 @@ final class State implements ExchangeConsumers\Consumer
 						]),
 					);
 				} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
-					$findConnectorPropertyQuery = new Queries\Entities\FindDeviceProperties();
+					$findConnectorPropertyQuery = new Queries\Configuration\FindDeviceProperties();
 					$findConnectorPropertyQuery->byId($entity->getProperty());
 
-					$property = $this->devicePropertiesRepository->findOneBy($findConnectorPropertyQuery);
+					$property = $this->devicePropertiesConfigurationRepository->findOneBy($findConnectorPropertyQuery);
 
-					if ($property === null) {
+					if (
+						!$property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
+						&& !$property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
+					) {
 						return;
 					}
 
-					$state = $property instanceof Entities\Devices\Properties\Dynamic
-						|| $property instanceof Entities\Devices\Properties\Mapped
-					 ? $this->devicePropertiesStates->readValue($property) : null;
+					$state = $this->devicePropertiesStates->readValue($property);
 
 					$publishRoutingKey = MetadataTypes\RoutingKey::get(
 						MetadataTypes\RoutingKey::DEVICE_PROPERTY_DOCUMENT_REPORTED,
@@ -188,14 +197,14 @@ final class State implements ExchangeConsumers\Consumer
 				}
 			} elseif ($entity instanceof MetadataDocuments\Actions\ActionChannelProperty) {
 				if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_SET)) {
-					$findConnectorPropertyQuery = new Queries\Entities\FindChannelProperties();
+					$findConnectorPropertyQuery = new Queries\Configuration\FindChannelProperties();
 					$findConnectorPropertyQuery->byId($entity->getProperty());
 
-					$property = $this->channelPropertiesRepository->findOneBy($findConnectorPropertyQuery);
+					$property = $this->channelPropertiesConfigurationRepository->findOneBy($findConnectorPropertyQuery);
 
 					if (
-						!$property instanceof Entities\Channels\Properties\Dynamic
-						&& !$property instanceof Entities\Channels\Properties\Mapped
+						!$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+						&& !$property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
 					) {
 						return;
 					}
@@ -208,18 +217,19 @@ final class State implements ExchangeConsumers\Consumer
 						]),
 					);
 				} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
-					$findConnectorPropertyQuery = new Queries\Entities\FindChannelProperties();
+					$findConnectorPropertyQuery = new Queries\Configuration\FindChannelProperties();
 					$findConnectorPropertyQuery->byId($entity->getProperty());
 
-					$property = $this->channelPropertiesRepository->findOneBy($findConnectorPropertyQuery);
+					$property = $this->channelPropertiesConfigurationRepository->findOneBy($findConnectorPropertyQuery);
 
-					if ($property === null) {
+					if (
+						!$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+						&& !$property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
+					) {
 						return;
 					}
 
-					$state = $property instanceof Entities\Channels\Properties\Dynamic
-						|| $property instanceof Entities\Channels\Properties\Mapped
-					 ? $this->channelPropertiesStates->readValue($property) : null;
+					$state = $this->channelPropertiesStates->readValue($property);
 
 					$publishRoutingKey = MetadataTypes\RoutingKey::get(
 						MetadataTypes\RoutingKey::CHANNEL_PROPERTY_DOCUMENT_REPORTED,

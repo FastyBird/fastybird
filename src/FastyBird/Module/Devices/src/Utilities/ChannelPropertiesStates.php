@@ -47,10 +47,10 @@ final class ChannelPropertiesStates
 	use Nette\SmartObject;
 
 	/**
-	 * @param Models\Configuration\Channels\Properties\Repository<MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty> $channelPropertiesRepository
+	 * @param Models\Configuration\Channels\Properties\Repository<MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty> $channelPropertiesConfigurationRepository
 	 */
 	public function __construct(
-		private readonly Models\Configuration\Channels\Properties\Repository $channelPropertiesRepository,
+		private readonly Models\Configuration\Channels\Properties\Repository $channelPropertiesConfigurationRepository,
 		private readonly Models\States\ChannelPropertiesRepository $channelPropertyStateRepository,
 		private readonly Models\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly Devices\Logger $logger,
@@ -160,7 +160,7 @@ final class ChannelPropertiesStates
 			$findPropertyQuery = new Queries\Configuration\FindChannelProperties();
 			$findPropertyQuery->byId($property->getId());
 
-			$property = $this->channelPropertiesRepository->findOneBy($findPropertyQuery);
+			$property = $this->channelPropertiesConfigurationRepository->findOneBy($findPropertyQuery);
 			assert(
 				$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
 				|| $property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty,
@@ -173,7 +173,7 @@ final class ChannelPropertiesStates
 			$findPropertyQuery = new Queries\Configuration\FindChannelProperties();
 			$findPropertyQuery->byId($property->getParent());
 
-			$parent = $this->channelPropertiesRepository->findOneBy($findPropertyQuery);
+			$parent = $this->channelPropertiesConfigurationRepository->findOneBy($findPropertyQuery);
 
 			if (!$parent instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
 				throw new Exceptions\InvalidState('Mapped property parent could not be loaded');
@@ -314,7 +314,7 @@ final class ChannelPropertiesStates
 			$findPropertyQuery = new Queries\Configuration\FindChannelProperties();
 			$findPropertyQuery->byId($property->getId());
 
-			$property = $this->channelPropertiesRepository->findOneBy($findPropertyQuery);
+			$property = $this->channelPropertiesConfigurationRepository->findOneBy($findPropertyQuery);
 			assert(
 				$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
 				|| $property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty,
@@ -327,7 +327,7 @@ final class ChannelPropertiesStates
 			$findPropertyQuery = new Queries\Configuration\FindChannelProperties();
 			$findPropertyQuery->byId($property->getParent());
 
-			$parent = $this->channelPropertiesRepository->findOneBy($findPropertyQuery);
+			$parent = $this->channelPropertiesConfigurationRepository->findOneBy($findPropertyQuery);
 
 			if (!$parent instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
 				throw new Exceptions\InvalidState('Mapped property parent could not be loaded');

@@ -47,12 +47,12 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	use Nette\SmartObject;
 
 	/**
-	 * @param Models\Configuration\Devices\Properties\Repository<MetadataDocuments\DevicesModule\DeviceMappedProperty> $devicePropertiesRepository
-	 * @param Models\Configuration\Channels\Properties\Repository<MetadataDocuments\DevicesModule\ChannelMappedProperty> $channelPropertiesRepository
+	 * @param Models\Configuration\Devices\Properties\Repository<MetadataDocuments\DevicesModule\DeviceMappedProperty> $devicePropertiesConfigurationRepository
+	 * @param Models\Configuration\Channels\Properties\Repository<MetadataDocuments\DevicesModule\ChannelMappedProperty> $channelPropertiesConfigurationRepository
 	 */
 	public function __construct(
-		private readonly Models\Configuration\Devices\Properties\Repository $devicePropertiesRepository,
-		private readonly Models\Configuration\Channels\Properties\Repository $channelPropertiesRepository,
+		private readonly Models\Configuration\Devices\Properties\Repository $devicePropertiesConfigurationRepository,
+		private readonly Models\Configuration\Channels\Properties\Repository $channelPropertiesConfigurationRepository,
 		private readonly Utilities\ConnectorPropertiesStates $connectorPropertiesStates,
 		private readonly Utilities\DevicePropertiesStates $devicePropertiesStates,
 		private readonly Utilities\ChannelPropertiesStates $channelPropertiesStates,
@@ -258,7 +258,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 			$findDevicePropertiesQuery = new Queries\Configuration\FindDeviceMappedProperties();
 			$findDevicePropertiesQuery->forParent($property);
 
-			return $this->devicePropertiesRepository->findAllBy(
+			return $this->devicePropertiesConfigurationRepository->findAllBy(
 				$findDevicePropertiesQuery,
 				MetadataDocuments\DevicesModule\DeviceMappedProperty::class,
 			);
@@ -266,7 +266,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 			$findDevicePropertiesQuery = new Queries\Configuration\FindChannelMappedProperties();
 			$findDevicePropertiesQuery->forParent($property);
 
-			return $this->channelPropertiesRepository->findAllBy(
+			return $this->channelPropertiesConfigurationRepository->findAllBy(
 				$findDevicePropertiesQuery,
 				MetadataDocuments\DevicesModule\ChannelMappedProperty::class,
 			);

@@ -47,10 +47,10 @@ final class ConnectorPropertiesStates
 	use Nette\SmartObject;
 
 	/**
-	 * @param Models\Configuration\Connectors\Properties\Repository<MetadataDocuments\DevicesModule\ConnectorDynamicProperty> $connectorPropertiesRepository
+	 * @param Models\Configuration\Connectors\Properties\Repository<MetadataDocuments\DevicesModule\ConnectorDynamicProperty> $connectorPropertiesConfigurationRepository
 	 */
 	public function __construct(
-		private readonly Models\Configuration\Connectors\Properties\Repository $connectorPropertiesRepository,
+		private readonly Models\Configuration\Connectors\Properties\Repository $connectorPropertiesConfigurationRepository,
 		private readonly Models\States\ConnectorPropertiesRepository $connectorPropertyStateRepository,
 		private readonly Models\States\ConnectorPropertiesManager $connectorPropertiesStatesManager,
 		private readonly Devices\Logger $logger,
@@ -160,7 +160,7 @@ final class ConnectorPropertiesStates
 			$findPropertyQuery = new Queries\Configuration\FindConnectorProperties();
 			$findPropertyQuery->byId($property->getId());
 
-			$property = $this->connectorPropertiesRepository->findOneBy($findPropertyQuery);
+			$property = $this->connectorPropertiesConfigurationRepository->findOneBy($findPropertyQuery);
 			assert($property instanceof MetadataDocuments\DevicesModule\ConnectorDynamicProperty);
 		}
 
@@ -274,7 +274,7 @@ final class ConnectorPropertiesStates
 			$findPropertyQuery = new Queries\Configuration\FindConnectorProperties();
 			$findPropertyQuery->byId($property->getId());
 
-			$property = $this->connectorPropertiesRepository->findOneBy($findPropertyQuery);
+			$property = $this->connectorPropertiesConfigurationRepository->findOneBy($findPropertyQuery);
 			assert($property instanceof MetadataDocuments\DevicesModule\ConnectorDynamicProperty);
 		}
 
