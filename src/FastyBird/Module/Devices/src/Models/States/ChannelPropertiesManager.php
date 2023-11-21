@@ -24,7 +24,6 @@ use FastyBird\Module\Devices\States;
 use Nette;
 use Nette\Utils;
 use Psr\EventDispatcher as PsrEventDispatcher;
-use function array_diff;
 use function property_exists;
 
 /**
@@ -108,24 +107,21 @@ final class ChannelPropertiesManager
 		}
 
 		if (
-			array_diff(
-				[
-					$state->getActualValue(),
-					$state->getExpectedValue(),
-					$state->getPending() instanceof DateTimeInterface
-						? $state->getPending()->format(DateTimeInterface::ATOM)
-						: $state->getPending(),
-					$state->isValid(),
-				],
-				[
-					$updatedState->getActualValue(),
-					$updatedState->getExpectedValue(),
-					$updatedState->getPending() instanceof DateTimeInterface
-						? $updatedState->getPending()->format(DateTimeInterface::ATOM)
-						: $updatedState->getPending(),
-					$updatedState->isValid(),
-				],
-			) !== []
+			[
+				States\Property::ACTUAL_VALUE_FIELD => $state->getActualValue(),
+				States\Property::EXPECTED_VALUE_FIELD => $state->getExpectedValue(),
+				States\Property::PENDING_FIELD => $state->getPending() instanceof DateTimeInterface
+					? $state->getPending()->format(DateTimeInterface::ATOM)
+					: $state->getPending(),
+				States\Property::VALID_FIELD => $state->isValid(),
+			] !== [
+				States\Property::ACTUAL_VALUE_FIELD => $updatedState->getActualValue(),
+				States\Property::EXPECTED_VALUE_FIELD => $updatedState->getExpectedValue(),
+				States\Property::PENDING_FIELD => $updatedState->getPending() instanceof DateTimeInterface
+					? $updatedState->getPending()->format(DateTimeInterface::ATOM)
+					: $updatedState->getPending(),
+				States\Property::VALID_FIELD => $updatedState->isValid(),
+			]
 		) {
 			$this->dispatcher?->dispatch(
 				new Events\ChannelPropertyStateEntityUpdated($property, $state, $updatedState),

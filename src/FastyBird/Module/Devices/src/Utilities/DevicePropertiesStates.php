@@ -47,10 +47,10 @@ final class DevicePropertiesStates
 	use Nette\SmartObject;
 
 	/**
-	 * @param Models\Configuration\Devices\Properties\Repository<MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty> $devicePropertiesRepository
+	 * @param Models\Configuration\Devices\Properties\Repository<MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty> $devicePropertiesConfigurationRepository
 	 */
 	public function __construct(
-		private readonly Models\Configuration\Devices\Properties\Repository $devicePropertiesRepository,
+		private readonly Models\Configuration\Devices\Properties\Repository $devicePropertiesConfigurationRepository,
 		private readonly Models\States\DevicePropertiesRepository $devicePropertyStateRepository,
 		private readonly Models\States\DevicePropertiesManager $devicePropertiesStatesManager,
 		private readonly Devices\Logger $logger,
@@ -160,7 +160,7 @@ final class DevicePropertiesStates
 			$findPropertyQuery = new Queries\Configuration\FindDeviceProperties();
 			$findPropertyQuery->byId($property->getId());
 
-			$property = $this->devicePropertiesRepository->findOneBy($findPropertyQuery);
+			$property = $this->devicePropertiesConfigurationRepository->findOneBy($findPropertyQuery);
 			assert(
 				$property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
 				|| $property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty,
@@ -173,7 +173,7 @@ final class DevicePropertiesStates
 			$findPropertyQuery = new Queries\Configuration\FindDeviceProperties();
 			$findPropertyQuery->byId($property->getParent());
 
-			$parent = $this->devicePropertiesRepository->findOneBy($findPropertyQuery);
+			$parent = $this->devicePropertiesConfigurationRepository->findOneBy($findPropertyQuery);
 
 			if (!$parent instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
 				throw new Exceptions\InvalidState('Mapped property parent could not be loaded');
@@ -314,7 +314,7 @@ final class DevicePropertiesStates
 			$findPropertyQuery = new Queries\Configuration\FindDeviceProperties();
 			$findPropertyQuery->byId($property->getId());
 
-			$property = $this->devicePropertiesRepository->findOneBy($findPropertyQuery);
+			$property = $this->devicePropertiesConfigurationRepository->findOneBy($findPropertyQuery);
 			assert(
 				$property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
 				|| $property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty,
@@ -327,7 +327,7 @@ final class DevicePropertiesStates
 			$findPropertyQuery = new Queries\Configuration\FindDeviceProperties();
 			$findPropertyQuery->byId($property->getParent());
 
-			$parent = $this->devicePropertiesRepository->findOneBy($findPropertyQuery);
+			$parent = $this->devicePropertiesConfigurationRepository->findOneBy($findPropertyQuery);
 
 			if (!$parent instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
 				throw new Exceptions\InvalidState('Mapped property parent could not be loaded');

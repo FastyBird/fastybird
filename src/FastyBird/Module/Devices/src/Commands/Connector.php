@@ -18,11 +18,14 @@ namespace FastyBird\Module\Devices\Commands;
 use BadMethodCallException;
 use Doctrine\DBAL;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
+use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Exchange\Exchange as ExchangeExchange;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Connectors;
+use FastyBird\Module\Devices\Consumers;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Exceptions;
@@ -108,6 +111,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 		private readonly Devices\Logger $logger,
 		private readonly BootstrapHelpers\Database $database,
 		private readonly EventLoop\LoopInterface $eventLoop,
+		private readonly ExchangeConsumers\Container $consumer,
 		private readonly Localization\Translator $translator,
 		private readonly array $exchangeFactories = [],
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
@@ -242,11 +246,19 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 
 			return Console\Command\Command::SUCCESS;
 		} catch (Exceptions\Terminate $ex) {
-			$this->logger->debug('Stopping connector', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
-				'type' => 'command',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
-			]);
+			if ($ex->getPrevious() !== null) {
+				$this->logger->error('An error occurred. Stopping connector', [
+					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+					'type' => 'command',
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
+				]);
+			} else {
+				$this->logger->debug('Stopping connector', [
+					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+					'type' => 'command',
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
+				]);
+			}
 
 			$this->eventLoop->stop();
 
@@ -271,6 +283,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 	 * @throws Console\Exception\InvalidArgumentException
 	 * @throws BadMethodCallException
 	 * @throws Exceptions\InvalidState
+	 * @throws ExchangeExceptions\InvalidArgument
 	 * @throws Exceptions\Terminate
 	 */
 	private function executeConnector(
@@ -434,6 +447,8 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 		}
 
 		$this->dispatcher?->dispatch(new Events\ConnectorStartup($this->connector));
+
+		$this->consumer->enable(Consumers\Configuration::class);
 
 		foreach ($this->factories as $factory) {
 			if ($this->connector->getType() === $this->factories[$factory]) {

@@ -5,6 +5,7 @@ namespace FastyBird\Module\Devices\Tests\Cases\Unit\DI;
 use Error;
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
 use FastyBird\Module\Devices\Commands;
+use FastyBird\Module\Devices\Consumers;
 use FastyBird\Module\Devices\Controllers;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Hydrators;
@@ -34,6 +35,9 @@ final class DevicesModuleExtensionTests extends DbTestCase
 		self::assertNotNull($this->getContainer()->getByType(Commands\Connector::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Commands\Exchange::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Commands\Configuration::class, false));
+
+		self::assertNotNull($this->getContainer()->getByType(Consumers\State::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Consumers\Configuration::class, false));
 
 		self::assertNotNull($this->getContainer()->getByType(Middleware\Access::class, false));
 
