@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\Virtual\Writers;
 
-use FastyBird\Connector\Virtual\Entities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 
 /**
  * Event bus exchange device state periodic writer factory
@@ -28,6 +28,6 @@ use FastyBird\Connector\Virtual\Entities;
 interface ExchangeFactory extends WriterFactory
 {
 
-	public function create(Entities\VirtualConnector $connector): Exchange;
+	public function create(MetadataDocuments\DevicesModule\Connector $connector): Exchange;
 
 }

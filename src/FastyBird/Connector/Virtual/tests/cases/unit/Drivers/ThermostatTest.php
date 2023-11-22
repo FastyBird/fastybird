@@ -6,15 +6,16 @@ use Error;
 use FastyBird\Connector\Virtual\Drivers;
 use FastyBird\Connector\Virtual\Entities;
 use FastyBird\Connector\Virtual\Exceptions;
-use FastyBird\Connector\Virtual\Queries;
 use FastyBird\Connector\Virtual\Queue;
 use FastyBird\Connector\Virtual\Tests;
 use FastyBird\Connector\Virtual\Types\HvacMode;
 use FastyBird\Connector\Virtual\Types\HvacState;
 use FastyBird\Connector\Virtual\Types\ThermostatMode;
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
-use FastyBird\Module\Devices\Entities as DevicesEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette\DI;
@@ -34,17 +35,18 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws Error
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws RuntimeException
 	 */
 	public function testConnect(): void
 	{
-		$devicesRepository = $this->getContainer()->getByType(DevicesModels\Entities\Devices\DevicesRepository::class);
+		$devicesRepository = $this->getContainer()->getByType(DevicesModels\Configuration\Devices\Repository::class);
 
-		$findDeviceQuery = new Queries\Entities\FindThermostatDevices();
+		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDeviceQuery->byIdentifier('thermostat-office');
 
-		$device = $devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\Thermostat::class);
-		self::assertInstanceOf(Entities\Devices\Thermostat::class, $device);
+		$device = $devicesRepository->findOneBy($findDeviceQuery);
+		self::assertInstanceOf(MetadataDocuments\DevicesModule\Device::class, $device);
 
 		$driversManager = $this->getContainer()->getByType(Drivers\DriversManager::class);
 
@@ -65,6 +67,7 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws DI\MissingServiceException
 	 * @throws Error
 	 * @throws Exceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws RuntimeException
 	 *
 	 * @dataProvider processThermostatData
@@ -76,7 +79,7 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 			->method('readValue')
 			->willReturnCallback(
 				static function (
-					DevicesEntities\Channels\Properties\Property $property,
+					MetadataDocuments\DevicesModule\Property $property,
 				) use ($readInitialStates): DevicesStates\ChannelProperty|null {
 					if (array_key_exists($property->getId()->toString(), $readInitialStates)) {
 						$state = new Tests\Fixtures\Dummy\DummyChannelPropertyState($property->getId());
@@ -112,13 +115,13 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 			$storeChannelPropertyStateConsumer,
 		);
 
-		$devicesRepository = $this->getContainer()->getByType(DevicesModels\Entities\Devices\DevicesRepository::class);
+		$devicesRepository = $this->getContainer()->getByType(DevicesModels\Configuration\Devices\Repository::class);
 
-		$findDeviceQuery = new Queries\Entities\FindThermostatDevices();
+		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDeviceQuery->byIdentifier('thermostat-office');
 
-		$device = $devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\Thermostat::class);
-		self::assertInstanceOf(Entities\Devices\Thermostat::class, $device);
+		$device = $devicesRepository->findOneBy($findDeviceQuery);
+		self::assertInstanceOf(MetadataDocuments\DevicesModule\Device::class, $device);
 
 		$driversManager = $this->getContainer()->getByType(Drivers\DriversManager::class);
 

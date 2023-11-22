@@ -23,11 +23,12 @@ use FastyBird\Connector\Virtual\Helpers;
 use FastyBird\Connector\Virtual\Queue;
 use FastyBird\Connector\Virtual\Types;
 use FastyBird\DateTimeFactory;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
-use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette\Utils;
 use React\Promise;
@@ -83,13 +84,15 @@ class Thermostat implements Driver
 	private DateTimeInterface|null $connectedAt = null;
 
 	/**
-	 * @param Entities\Devices\Thermostat $device
+	 * @param DevicesModels\Configuration\Channels\Repository<MetadataDocuments\DevicesModule\Channel> $channelsConfigurationRepository
 	 */
 	public function __construct(
-		private readonly Entities\VirtualDevice $device,
+		private readonly MetadataDocuments\DevicesModule\Device $device,
 		private readonly Helpers\Entity $entityHelper,
+		private readonly Helpers\Devices\Thermostat $thermostatHelper,
 		private readonly Queue\Queue $queue,
 		private readonly Virtual\Logger $logger,
+		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 	)
@@ -107,10 +110,10 @@ class Thermostat implements Driver
 	public function connect(): Promise\PromiseInterface
 	{
 		if (
-			!$this->device->hasSensors()
+			!$this->thermostatHelper->hasSensors($this->device)
 			|| (
-				!$this->device->hasHeaters()
-				&& !$this->device->hasCoolers()
+				!$this->thermostatHelper->hasHeaters($this->device)
+				&& !$this->thermostatHelper->hasCoolers($this->device)
 			)
 		) {
 			return Promise\reject(
@@ -118,21 +121,10 @@ class Thermostat implements Driver
 			);
 		}
 
-		foreach ($this->device->getActors() as $actor) {
+		foreach ($this->thermostatHelper->getActors($this->device) as $actor) {
 			$state = $this->channelPropertiesStatesManager->readValue($actor);
 
 			$actualValue = $state?->getActualValue();
-
-			if ($actor instanceof DevicesEntities\Channels\Properties\Mapped) {
-				$actualValue = Helpers\Transformer::fromMappedParent($actor, $actualValue);
-			}
-
-			$actualValue = MetadataUtilities\ValueHelper::normalizeValue(
-				$actor->getDataType(),
-				$actualValue,
-				$actor->getFormat(),
-				$actor->getInvalid(),
-			);
 
 			if (Utils\Strings::startsWith($actor->getIdentifier(), Types\ChannelPropertyIdentifier::HEATER)) {
 				$this->heaters[$actor->getId()->toString()] = is_bool($actualValue)
@@ -145,21 +137,10 @@ class Thermostat implements Driver
 			}
 		}
 
-		foreach ($this->device->getSensors() as $sensor) {
+		foreach ($this->thermostatHelper->getSensors($this->device) as $sensor) {
 			$state = $this->channelPropertiesStatesManager->readValue($sensor);
 
 			$actualValue = $state?->getActualValue();
-
-			if ($sensor instanceof DevicesEntities\Channels\Properties\Mapped) {
-				$actualValue = Helpers\Transformer::fromMappedParent($sensor, $actualValue);
-			}
-
-			$actualValue = MetadataUtilities\ValueHelper::normalizeValue(
-				$sensor->getDataType(),
-				$actualValue,
-				$sensor->getFormat(),
-				$sensor->getInvalid(),
-			);
 
 			if (Utils\Strings::startsWith($sensor->getIdentifier(), Types\ChannelPropertyIdentifier::FLOOR_SENSOR)) {
 				$this->actualFloorTemperature[$sensor->getId()->toString()] = is_numeric($actualValue)
@@ -175,31 +156,20 @@ class Thermostat implements Driver
 			}
 		}
 
-		foreach ($this->device->getOpenings() as $opening) {
+		foreach ($this->thermostatHelper->getOpenings($this->device) as $opening) {
 			$state = $this->channelPropertiesStatesManager->readValue($opening);
 
 			$actualValue = $state?->getActualValue();
-
-			if ($opening instanceof DevicesEntities\Channels\Properties\Mapped) {
-				$actualValue = Helpers\Transformer::fromMappedParent($opening, $actualValue);
-			}
-
-			$actualValue = MetadataUtilities\ValueHelper::normalizeValue(
-				$opening->getDataType(),
-				$actualValue,
-				$opening->getFormat(),
-				$opening->getInvalid(),
-			);
 
 			if (Utils\Strings::startsWith($opening->getIdentifier(), Types\ChannelPropertyIdentifier::SENSOR)) {
 				$this->openingsState[$opening->getId()->toString()] = is_bool($actualValue) ? $actualValue : null;
 			}
 		}
 
-		foreach ($this->device->getPresetModes() as $mode) {
-			$property = $this->device->getTargetTemp(Types\ThermostatMode::get($mode));
+		foreach ($this->thermostatHelper->getPresetModes($this->device) as $mode) {
+			$property = $this->thermostatHelper->getTargetTemp($this->device, Types\ThermostatMode::get($mode));
 
-			if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
+			if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
 				$state = $this->channelPropertiesStatesManager->readValue($property);
 
 				if (is_numeric($state?->getActualValue())) {
@@ -208,16 +178,20 @@ class Thermostat implements Driver
 			}
 		}
 
-		if ($this->device->getHvacMode() !== null) {
-			$state = $this->channelPropertiesStatesManager->readValue($this->device->getHvacMode());
+		if ($this->thermostatHelper->getHvacMode($this->device) !== null) {
+			$state = $this->channelPropertiesStatesManager->readValue(
+				$this->thermostatHelper->getHvacMode($this->device),
+			);
 
 			if ($state !== null && Types\HvacMode::isValidValue($state->getActualValue())) {
 				$this->hvacMode = Types\HvacMode::get($state->getActualValue());
 			}
 		}
 
-		if ($this->device->getPresetMode() !== null) {
-			$state = $this->channelPropertiesStatesManager->readValue($this->device->getPresetMode());
+		if ($this->thermostatHelper->getPresetMode($this->device) !== null) {
+			$state = $this->channelPropertiesStatesManager->readValue(
+				$this->thermostatHelper->getPresetMode($this->device),
+			);
 
 			if ($state !== null && Types\ThermostatMode::isValidValue($state->getActualValue())) {
 				$this->presetMode = Types\ThermostatMode::get($state->getActualValue());
@@ -236,6 +210,7 @@ class Thermostat implements Driver
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function disconnect(): Promise\PromiseInterface
 	{
@@ -270,6 +245,7 @@ class Thermostat implements Driver
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function process(): Promise\PromiseInterface
 	{
@@ -294,8 +270,8 @@ class Thermostat implements Driver
 
 		$targetTemp = $this->targetTemperature[$this->presetMode->getValue()];
 
-		$targetTempLow = $targetTemp - ($this->device->getLowTargetTempTolerance() ?? 0);
-		$targetTempHigh = $targetTemp + ($this->device->getHighTargetTempTolerance() ?? 0);
+		$targetTempLow = $targetTemp - ($this->thermostatHelper->getLowTargetTempTolerance($this->device) ?? 0);
+		$targetTempHigh = $targetTemp + ($this->thermostatHelper->getHighTargetTempTolerance($this->device) ?? 0);
 
 		if ($targetTempLow > $targetTempHigh) {
 			$this->setActorState(false, false);
@@ -321,9 +297,9 @@ class Thermostat implements Driver
 			$this->entityHelper->create(
 				Entities\Messages\StoreChannelPropertyState::class,
 				[
-					'connector' => $this->device->getConnector()->getId(),
+					'connector' => $this->device->getConnector(),
 					'device' => $this->device->getId(),
-					'channel' => $this->device->getThermostat()->getId(),
+					'channel' => $this->thermostatHelper->getThermostat($this->device)->getId(),
 					'property' => Types\ChannelPropertyIdentifier::ACTUAL_TEMPERATURE,
 					'value' => $measuredTemp !== []
 						? array_sum($measuredTemp) / count($measuredTemp)
@@ -332,14 +308,14 @@ class Thermostat implements Driver
 			),
 		);
 
-		if ($this->device->hasFloorSensors()) {
+		if ($this->thermostatHelper->hasFloorSensors($this->device)) {
 			$this->queue->append(
 				$this->entityHelper->create(
 					Entities\Messages\StoreChannelPropertyState::class,
 					[
-						'connector' => $this->device->getConnector()->getId(),
+						'connector' => $this->device->getConnector(),
 						'device' => $this->device->getId(),
-						'channel' => $this->device->getThermostat()->getId(),
+						'channel' => $this->thermostatHelper->getThermostat($this->device)->getId(),
 						'property' => Types\ChannelPropertyIdentifier::ACTUAL_FLOOR_TEMPERATURE,
 						'value' => $measuredFloorTemp !== []
 							? array_sum($measuredFloorTemp) / count($measuredFloorTemp)
@@ -368,7 +344,7 @@ class Thermostat implements Driver
 		}
 
 		if ($this->hvacMode->equalsValue(Types\HvacMode::HEAT)) {
-			if (!$this->device->hasHeaters()) {
+			if (!$this->thermostatHelper->hasHeaters($this->device)) {
 				$this->setActorState(false, false);
 
 				$this->connected = false;
@@ -382,7 +358,7 @@ class Thermostat implements Driver
 				$this->setActorState(true, false);
 			}
 		} elseif ($this->hvacMode->equalsValue(Types\HvacMode::COOL)) {
-			if (!$this->device->hasCoolers()) {
+			if (!$this->thermostatHelper->hasCoolers($this->device)) {
 				$this->setActorState(false, false);
 
 				$this->connected = false;
@@ -396,8 +372,8 @@ class Thermostat implements Driver
 				$this->setActorState(false, false);
 			}
 		} elseif ($this->hvacMode->equalsValue(Types\HvacMode::AUTO)) {
-			$heatingThresholdTemp = $this->device->getHeatingThresholdTemp($this->presetMode);
-			$coolingThresholdTemp = $this->device->getCoolingThresholdTemp($this->presetMode);
+			$heatingThresholdTemp = $this->thermostatHelper->getHeatingThresholdTemp($this->device, $this->presetMode);
+			$coolingThresholdTemp = $this->thermostatHelper->getCoolingThresholdTemp($this->device, $this->presetMode);
 
 			if (
 				$heatingThresholdTemp === null
@@ -438,17 +414,32 @@ class Thermostat implements Driver
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function writeState(
-		DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Devices\Properties\Dynamic $property,
+		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\ChannelDynamicProperty $property,
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $expectedValue,
 	): Promise\PromiseInterface
 	{
-		if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
-			if ($property->getChannel()->getIdentifier() === Types\ChannelIdentifier::THERMOSTAT) {
+		if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+			$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
+			$findChannelQuery->byId($property->getChannel());
+
+			$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
+
+			if ($channel === null) {
+				return Promise\reject(
+					new Exceptions\InvalidArgument('Channel for provided property could not be found'),
+				);
+			}
+
+			if ($channel->getIdentifier() === Types\ChannelIdentifier::THERMOSTAT) {
 				if ($property->getIdentifier() === Types\ChannelPropertyIdentifier::PRESET_MODE) {
 					if (
 						is_string($expectedValue)
@@ -460,9 +451,9 @@ class Thermostat implements Driver
 							$this->entityHelper->create(
 								Entities\Messages\StoreChannelPropertyState::class,
 								[
-									'connector' => $this->device->getConnector()->getId(),
+									'connector' => $this->device->getConnector(),
 									'device' => $this->device->getId(),
-									'channel' => $this->device->getThermostat()->getId(),
+									'channel' => $this->thermostatHelper->getThermostat($this->device)->getId(),
 									'property' => $property->getId(),
 									'value' => $expectedValue,
 								],
@@ -484,9 +475,9 @@ class Thermostat implements Driver
 							$this->entityHelper->create(
 								Entities\Messages\StoreChannelPropertyState::class,
 								[
-									'connector' => $this->device->getConnector()->getId(),
+									'connector' => $this->device->getConnector(),
 									'device' => $this->device->getId(),
-									'channel' => $this->device->getThermostat()->getId(),
+									'channel' => $this->thermostatHelper->getThermostat($this->device)->getId(),
 									'property' => $property->getId(),
 									'value' => $expectedValue,
 								],
@@ -505,9 +496,9 @@ class Thermostat implements Driver
 							$this->entityHelper->create(
 								Entities\Messages\StoreChannelPropertyState::class,
 								[
-									'connector' => $this->device->getConnector()->getId(),
+									'connector' => $this->device->getConnector(),
 									'device' => $this->device->getId(),
-									'channel' => $this->device->getThermostat()->getId(),
+									'channel' => $this->thermostatHelper->getThermostat($this->device)->getId(),
 									'property' => $property->getId(),
 									'value' => $expectedValue,
 								],
@@ -522,7 +513,7 @@ class Thermostat implements Driver
 			} elseif (
 				preg_match(
 					Virtual\Constants::PRESET_CHANNEL_PATTERN,
-					$property->getChannel()->getIdentifier(),
+					$channel->getIdentifier(),
 					$matches,
 				) === 1
 				&& in_array('preset', $matches, true)
@@ -537,9 +528,9 @@ class Thermostat implements Driver
 						$this->entityHelper->create(
 							Entities\Messages\StoreChannelPropertyState::class,
 							[
-								'connector' => $this->device->getConnector()->getId(),
+								'connector' => $this->device->getConnector(),
 								'device' => $this->device->getId(),
-								'channel' => $property->getChannel()->getId(),
+								'channel' => $channel->getId(),
 								'property' => $property->getId(),
 								'value' => $expectedValue,
 							],
@@ -556,13 +547,30 @@ class Thermostat implements Driver
 		return Promise\reject(new Exceptions\InvalidArgument('Provided property is unsupported'));
 	}
 
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
+	 */
 	public function notifyState(
-		DevicesEntities\Devices\Properties\Mapped|DevicesEntities\Channels\Properties\Mapped $property,
+		MetadataDocuments\DevicesModule\DeviceMappedProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
 		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $actualValue,
 	): Promise\PromiseInterface
 	{
-		if ($property instanceof DevicesEntities\Channels\Properties\Mapped) {
-			if ($property->getChannel()->getIdentifier() === Types\ChannelIdentifier::ACTORS) {
+		if ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
+			$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
+			$findChannelQuery->byId($property->getChannel());
+
+			$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
+
+			if ($channel === null) {
+				return Promise\reject(
+					new Exceptions\InvalidArgument('Channel for provided property could not be found'),
+				);
+			}
+
+			if ($channel->getIdentifier() === Types\ChannelIdentifier::ACTORS) {
 				if (
 					Utils\Strings::startsWith($property->getIdentifier(), Types\ChannelPropertyIdentifier::HEATER)
 					&& (is_bool($actualValue) || $actualValue === null)
@@ -578,7 +586,7 @@ class Thermostat implements Driver
 
 					return Promise\resolve(true);
 				}
-			} elseif ($property->getChannel()->getIdentifier() === Types\ChannelIdentifier::SENSORS) {
+			} elseif ($channel->getIdentifier() === Types\ChannelIdentifier::SENSORS) {
 				if (
 					Utils\Strings::startsWith(
 						$property->getIdentifier(),
@@ -597,7 +605,7 @@ class Thermostat implements Driver
 
 					return Promise\resolve(true);
 				}
-			} elseif ($property->getChannel()->getIdentifier() === Types\ChannelIdentifier::OPENINGS) {
+			} elseif ($channel->getIdentifier() === Types\ChannelIdentifier::OPENINGS) {
 				if (
 					Utils\Strings::startsWith($property->getIdentifier(), Types\ChannelPropertyIdentifier::SENSOR)
 					&& (is_bool($actualValue) || $actualValue === null)
@@ -618,14 +626,15 @@ class Thermostat implements Driver
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function setActorState(bool $heaters, bool $coolers): void
 	{
-		if (!$this->device->hasHeaters()) {
+		if (!$this->thermostatHelper->hasHeaters($this->device)) {
 			$heaters = false;
 		}
 
-		if (!$this->device->hasCoolers()) {
+		if (!$this->thermostatHelper->hasCoolers($this->device)) {
 			$coolers = false;
 		}
 
@@ -646,9 +655,9 @@ class Thermostat implements Driver
 			$this->entityHelper->create(
 				Entities\Messages\StoreChannelPropertyState::class,
 				[
-					'connector' => $this->device->getConnector()->getId(),
+					'connector' => $this->device->getConnector(),
 					'device' => $this->device->getId(),
-					'channel' => $this->device->getThermostat()->getId(),
+					'channel' => $this->thermostatHelper->getThermostat($this->device)->getId(),
 					'property' => Types\ChannelPropertyIdentifier::HVAC_STATE,
 					'value' => $state,
 				],
@@ -662,6 +671,7 @@ class Thermostat implements Driver
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function setHeaterState(bool $state): void
 	{
@@ -674,7 +684,7 @@ class Thermostat implements Driver
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
 					'type' => 'thermostat-driver',
 					'connector' => [
-						'id' => $this->device->getConnector()->getId()->toString(),
+						'id' => $this->device->getConnector()->toString(),
 					],
 					'device' => [
 						'id' => $this->device->getId()->toString(),
@@ -685,8 +695,8 @@ class Thermostat implements Driver
 			return;
 		}
 
-		foreach ($this->device->getActors() as $actor) {
-			assert($actor instanceof DevicesEntities\Channels\Properties\Mapped);
+		foreach ($this->thermostatHelper->getActors($this->device) as $actor) {
+			assert($actor instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty);
 
 			if (!Utils\Strings::startsWith($actor->getIdentifier(), Types\ChannelPropertyIdentifier::HEATER)) {
 				continue;
@@ -696,9 +706,9 @@ class Thermostat implements Driver
 				$this->entityHelper->create(
 					Entities\Messages\StoreChannelPropertyState::class,
 					[
-						'connector' => $this->device->getConnector()->getId(),
+						'connector' => $this->device->getConnector(),
 						'device' => $this->device->getId(),
-						'channel' => $actor->getChannel()->getId(),
+						'channel' => $actor->getChannel(),
 						'property' => $actor->getId(),
 						'value' => $state,
 					],
@@ -708,12 +718,16 @@ class Thermostat implements Driver
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function setCoolerState(bool $state): void
 	{
-		foreach ($this->device->getActors() as $actor) {
-			assert($actor instanceof DevicesEntities\Channels\Properties\Mapped);
+		foreach ($this->thermostatHelper->getActors($this->device) as $actor) {
+			assert($actor instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty);
 
 			if (!Utils\Strings::startsWith($actor->getIdentifier(), Types\ChannelPropertyIdentifier::COOLER)) {
 				continue;
@@ -723,9 +737,9 @@ class Thermostat implements Driver
 				$this->entityHelper->create(
 					Entities\Messages\StoreChannelPropertyState::class,
 					[
-						'connector' => $this->device->getConnector()->getId(),
+						'connector' => $this->device->getConnector(),
 						'device' => $this->device->getId(),
-						'channel' => $actor->getChannel()->getId(),
+						'channel' => $actor->getChannel(),
 						'property' => $actor->getId(),
 						'value' => $state,
 					],
@@ -745,18 +759,20 @@ class Thermostat implements Driver
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function isFloorOverHeating(): bool
 	{
-		if ($this->device->hasFloorSensors()) {
+		if ($this->thermostatHelper->hasFloorSensors($this->device)) {
 			$maxFloorActualTemp = max(
 				array_filter($this->actualFloorTemperature, static fn (float|null $temp): bool => $temp !== null),
 			);
 
-			if ($maxFloorActualTemp >= $this->device->getMaximumFloorTemp()) {
+			if ($maxFloorActualTemp >= $this->thermostatHelper->getMaximumFloorTemp($this->device)) {
 				return true;
 			}
 		}

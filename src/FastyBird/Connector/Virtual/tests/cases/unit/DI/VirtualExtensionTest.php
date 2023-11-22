@@ -32,7 +32,9 @@ final class VirtualExtensionTest extends Tests\Cases\Unit\BaseTestCase
 		self::assertNotNull($container->getByType(Writers\WriterFactory::class, false));
 
 		self::assertNotNull($container->getByType(Queue\Consumers\StoreDeviceConnectionState::class, false));
+		self::assertNotNull($container->getByType(Queue\Consumers\StoreDevicePropertyState::class, false));
 		self::assertNotNull($container->getByType(Queue\Consumers\StoreChannelPropertyState::class, false));
+		self::assertNotNull($container->getByType(Queue\Consumers\WriteDevicePropertyState::class, false));
 		self::assertNotNull($container->getByType(Queue\Consumers\WriteChannelPropertyState::class, false));
 		self::assertNotNull($container->getByType(Queue\Consumers::class, false));
 		self::assertNotNull($container->getByType(Queue\Queue::class, false));

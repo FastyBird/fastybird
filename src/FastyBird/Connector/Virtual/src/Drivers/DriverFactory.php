@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Virtual\Drivers;
 
 use FastyBird\Connector\Virtual\Entities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 
 /**
  * Driver factory
@@ -28,8 +29,8 @@ use FastyBird\Connector\Virtual\Entities;
 interface DriverFactory
 {
 
-	public const DRIVER_DEVICE = Entities\VirtualDevice::class;
+	public const DEVICE_TYPE = Entities\VirtualDevice::TYPE;
 
-	public function create(Entities\VirtualDevice $device): Driver;
+	public function create(MetadataDocuments\DevicesModule\Device $device): Driver;
 
 }

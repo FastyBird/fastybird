@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\Virtual\Writers;
 
-use FastyBird\Connector\Virtual\Entities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 
 /**
  * Device state writer interface factory
@@ -28,6 +28,6 @@ use FastyBird\Connector\Virtual\Entities;
 interface WriterFactory
 {
 
-	public function create(Entities\VirtualConnector $connector): Writer;
+	public function create(MetadataDocuments\DevicesModule\Connector $connector): Writer;
 
 }

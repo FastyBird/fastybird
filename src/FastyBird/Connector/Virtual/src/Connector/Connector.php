@@ -20,9 +20,14 @@ use FastyBird\Connector\Virtual\Devices;
 use FastyBird\Connector\Virtual\Entities;
 use FastyBird\Connector\Virtual\Queue;
 use FastyBird\Connector\Virtual\Writers;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Connectors as DevicesConnectors;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
+use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
 use React\EventLoop;
 use function assert;
@@ -49,6 +54,9 @@ final class Connector implements DevicesConnectors\Connector
 
 	private EventLoop\TimerInterface|null $consumersTimer = null;
 
+	/**
+	 * @param DevicesModels\Configuration\Connectors\Repository<MetadataDocuments\DevicesModule\Connector> $connectorsConfigurationRepository
+	 */
 	public function __construct(
 		private readonly DevicesEntities\Connectors\Connector $connector,
 		private readonly Devices\DevicesFactory $devicesFactory,
@@ -56,11 +64,18 @@ final class Connector implements DevicesConnectors\Connector
 		private readonly Queue\Queue $queue,
 		private readonly Queue\Consumers $consumers,
 		private readonly Virtual\Logger $logger,
+		private readonly DevicesModels\Configuration\Connectors\Repository $connectorsConfigurationRepository,
 		private readonly EventLoop\LoopInterface $eventLoop,
 	)
 	{
 	}
 
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
+	 */
 	public function execute(): void
 	{
 		assert($this->connector instanceof Entities\VirtualConnector);
@@ -76,9 +91,29 @@ final class Connector implements DevicesConnectors\Connector
 			],
 		);
 
-		$this->devices = $this->devicesFactory->create($this->connector);
+		$findConnector = new DevicesQueries\Configuration\FindConnectors();
+		$findConnector->byId($this->connector->getId());
 
-		$this->writer = $this->writerFactory->create($this->connector);
+		$connector = $this->connectorsConfigurationRepository->findOneBy($findConnector);
+
+		if ($connector === null) {
+			$this->logger->error(
+				'Connector could not be loaded',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
+					'type' => 'connector',
+					'connector' => [
+						'id' => $this->connector->getId()->toString(),
+					],
+				],
+			);
+
+			return;
+		}
+
+		$this->devices = $this->devicesFactory->create($connector);
+
+		$this->writer = $this->writerFactory->create($connector);
 		$this->writer->connect();
 
 		$this->consumersTimer = $this->eventLoop->addPeriodicTimer(

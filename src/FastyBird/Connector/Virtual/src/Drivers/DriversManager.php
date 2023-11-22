@@ -15,8 +15,8 @@
 
 namespace FastyBird\Connector\Virtual\Drivers;
 
-use FastyBird\Connector\Virtual\Entities;
 use FastyBird\Connector\Virtual\Exceptions;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use Nette;
 use Throwable;
 use function array_key_exists;
@@ -48,11 +48,11 @@ final class DriversManager
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public function getDriver(Entities\VirtualDevice $device): Driver
+	public function getDriver(MetadataDocuments\DevicesModule\Device $device): Driver
 	{
 		if (!array_key_exists($device->getId()->toString(), $this->drivers)) {
 			foreach ($this->driversFactories as $factory) {
-				if ($device::class === $factory::DRIVER_DEVICE) {
+				if ($device->getType() === $factory::DEVICE_TYPE) {
 					$driver = $factory->create($device);
 
 					$this->drivers[$device->getId()->toString()] = $driver;
