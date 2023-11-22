@@ -26,7 +26,7 @@ use function assert;
 use function is_string;
 
 /**
- * Device helper
+ * Connector helper
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Helpers

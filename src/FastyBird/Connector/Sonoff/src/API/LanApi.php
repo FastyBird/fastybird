@@ -53,6 +53,7 @@ use function intval;
 use function is_array;
 use function is_numeric;
 use function is_string;
+use function md5;
 use function preg_match;
 use function random_bytes;
 use function sprintf;
@@ -99,6 +100,9 @@ final class LanApi
 
 	/** @var array<string, string> */
 	private array $encodeKeys = [];
+
+	/** @var array<string, string> */
+	private array $validationSchemas = [];
 
 	private Dns\Protocol\Parser $parser;
 
@@ -770,15 +774,20 @@ final class LanApi
 	 */
 	private function getSchema(string $schemaFilename): string
 	{
-		try {
-			$schema = Utils\FileSystem::read(
-				Sonoff\Constants::RESOURCES_FOLDER . DIRECTORY_SEPARATOR . $schemaFilename,
-			);
-		} catch (Nette\IOException) {
-			throw new Exceptions\LanApiCall('Validation schema for response could not be loaded');
+		$key = md5($schemaFilename);
+
+		if (!array_key_exists($key, $this->validationSchemas)) {
+			try {
+				$this->validationSchemas[$key] = Utils\FileSystem::read(
+					Sonoff\Constants::RESOURCES_FOLDER . DIRECTORY_SEPARATOR . $schemaFilename,
+				);
+
+			} catch (Nette\IOException) {
+				throw new Exceptions\LanApiCall('Validation schema for response could not be loaded');
+			}
 		}
 
-		return $schema;
+		return $this->validationSchemas[$key];
 	}
 
 	/**

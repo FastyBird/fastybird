@@ -40,12 +40,14 @@ use React\Promise;
 use RuntimeException;
 use stdClass;
 use Throwable;
+use function array_key_exists;
 use function assert;
 use function base64_encode;
 use function count;
 use function hash_hmac;
 use function http_build_query;
 use function in_array;
+use function md5;
 use function sprintf;
 use function str_contains;
 use function strval;
@@ -98,6 +100,9 @@ final class CloudApi implements Evenement\EventEmitterInterface
 	private string|null $accessToken = null;
 
 	private string|null $refreshToken = null;
+
+	/** @var array<string, string> */
+	private array $validationSchemas = [];
 
 	private Entities\API\Cloud\User|null $user = null;
 
@@ -1298,15 +1303,20 @@ final class CloudApi implements Evenement\EventEmitterInterface
 	 */
 	private function getSchema(string $schemaFilename): string
 	{
-		try {
-			$schema = Utils\FileSystem::read(
-				Sonoff\Constants::RESOURCES_FOLDER . DIRECTORY_SEPARATOR . $schemaFilename,
-			);
-		} catch (Nette\IOException) {
-			throw new Exceptions\CloudApiCall('Validation schema for response could not be loaded');
+		$key = md5($schemaFilename);
+
+		if (!array_key_exists($key, $this->validationSchemas)) {
+			try {
+				$this->validationSchemas[$key] = Utils\FileSystem::read(
+					Sonoff\Constants::RESOURCES_FOLDER . DIRECTORY_SEPARATOR . $schemaFilename,
+				);
+
+			} catch (Nette\IOException) {
+				throw new Exceptions\CloudApiCall('Validation schema for response could not be loaded');
+			}
 		}
 
-		return $schema;
+		return $this->validationSchemas[$key];
 	}
 
 	/**

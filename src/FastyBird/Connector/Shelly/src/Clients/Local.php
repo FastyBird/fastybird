@@ -167,7 +167,7 @@ final class Local implements Client
 		}
 
 		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
-		$findDevicesQuery->byConnectorId($this->connector->getId());
+		$findDevicesQuery->forConnector($this->connector);
 
 		foreach ($this->devicesConfigurationRepository->findAllBy($findDevicesQuery) as $device) {
 			$this->devices[$device->getId()->toString()] = $device;

@@ -75,9 +75,14 @@ final class Discovery implements Evenement\EventEmitterInterface
 	/** @var array<string, Entities\Clients\DiscoveredLocalDevice> */
 	private array $foundLocalDevices = [];
 
+	private API\LanApi|null $lanApiConnection = null;
+
+	private API\CloudApi|null $cloudApiConnection = null;
+
 	public function __construct(
 		private readonly Entities\SonoffConnector $connector,
-		private readonly API\ConnectionManager $connectionManager,
+		private readonly API\LanApiFactory $lanApiFactory,
+		private readonly API\CloudApiFactory $cloudApiFactory,
 		private readonly Helpers\Entity $entityHelper,
 		private readonly Queue\Queue $queue,
 		private readonly Sonoff\Logger $logger,
@@ -138,8 +143,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$this->handlerTimer = null;
 		}
 
-		$this->connectionManager->getCloudApiConnection($this->connector)->disconnect();
-		$this->connectionManager->getLanConnection()->disconnect();
+		$this->getCloudApiConnection()->disconnect();
+		$this->getLanConnection()->disconnect();
 	}
 
 	/**
@@ -160,7 +165,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			],
 		);
 
-		$apiClient = $this->connectionManager->getCloudApiConnection($this->connector);
+		$apiClient = $this->getCloudApiConnection();
 
 		try {
 			$apiClient->connect();
@@ -232,7 +237,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 		$deferred = new Promise\Deferred();
 
-		$apiClient = $this->connectionManager->getLanConnection();
+		$apiClient = $this->getLanConnection();
 
 		$apiClient->on(
 			'message',
@@ -501,6 +506,35 @@ final class Discovery implements Evenement\EventEmitterInterface
 		}
 
 		return $mapping;
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	private function getCloudApiConnection(): API\CloudApi
+	{
+		if ($this->cloudApiConnection === null) {
+			$this->cloudApiConnection = $this->cloudApiFactory->create(
+				$this->connector->getUsername(),
+				$this->connector->getPassword(),
+				$this->connector->getAppId(),
+				$this->connector->getAppSecret(),
+				$this->connector->getRegion(),
+			);
+		}
+
+		return $this->cloudApiConnection;
+	}
+
+	private function getLanConnection(): API\LanApi
+	{
+		if ($this->lanApiConnection === null) {
+			$this->lanApiConnection = $this->lanApiFactory->create();
+		}
+
+		return $this->lanApiConnection;
 	}
 
 }

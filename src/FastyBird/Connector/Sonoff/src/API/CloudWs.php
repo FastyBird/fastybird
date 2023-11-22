@@ -48,6 +48,7 @@ use function assert;
 use function count;
 use function http_build_query;
 use function intval;
+use function md5;
 use function property_exists;
 use function React\Async\async;
 use function sprintf;
@@ -93,6 +94,9 @@ final class CloudWs implements Evenement\EventEmitterInterface
 	private bool $connecting = false;
 
 	private bool $connected = false;
+
+	/** @var array<string, string> */
+	private array $validationSchemas = [];
 
 	private DateTimeInterface|null $lastConnectAttempt = null;
 
@@ -868,15 +872,20 @@ final class CloudWs implements Evenement\EventEmitterInterface
 	 */
 	private function getSchema(string $schemaFilename): string
 	{
-		try {
-			$schema = Utils\FileSystem::read(
-				Sonoff\Constants::RESOURCES_FOLDER . DIRECTORY_SEPARATOR . $schemaFilename,
-			);
-		} catch (Nette\IOException) {
-			throw new Exceptions\CloudWsCall('Validation schema for response could not be loaded');
+		$key = md5($schemaFilename);
+
+		if (!array_key_exists($key, $this->validationSchemas)) {
+			try {
+				$this->validationSchemas[$key] = Utils\FileSystem::read(
+					Sonoff\Constants::RESOURCES_FOLDER . DIRECTORY_SEPARATOR . $schemaFilename,
+				);
+
+			} catch (Nette\IOException) {
+				throw new Exceptions\CloudWsCall('Validation schema for response could not be loaded');
+			}
 		}
 
-		return $schema;
+		return $this->validationSchemas[$key];
 	}
 
 	/**
