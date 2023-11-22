@@ -137,8 +137,8 @@ final class LocalApi implements Evenement\EventEmitterInterface
 	private DateTimeInterface|null $disconnected = null;
 
 	private DateTimeInterface|null $lost = null;
-
-	/** @var array<int, Promise\Deferred> */
+	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+	/** @var array<int, Promise\Deferred<string|array<Entities\API\DeviceDataPointState>|Entities\API\LocalDeviceWifiScan|Types\LocalDeviceError|null>> */
 	private array $messagesListeners = [];
 
 	/** @var array<int, EventLoop\TimerInterface> */
@@ -187,6 +187,9 @@ final class LocalApi implements Evenement\EventEmitterInterface
 		}
 	}
 
+	/**
+	 * @return Promise\PromiseInterface<bool>
+	 */
 	public function connect(): Promise\PromiseInterface
 	{
 		$this->messagesListeners = [];
@@ -364,9 +367,9 @@ final class LocalApi implements Evenement\EventEmitterInterface
 						// TODO: $this->detectAvailableDps();
 					}
 
-					$deferred->resolve();
+					$deferred->resolve(true);
 				})
-				->otherwise(function (Throwable $ex) use ($deferred): void {
+				->catch(function (Throwable $ex) use ($deferred): void {
 					$this->connection = null;
 
 					$this->connecting = false;
@@ -439,6 +442,9 @@ final class LocalApi implements Evenement\EventEmitterInterface
 		return $this->lost;
 	}
 
+	/**
+	 * @return Promise\PromiseInterface<string|array<Entities\API\DeviceDataPointState>|Entities\API\LocalDeviceWifiScan|Types\LocalDeviceError|null>
+	 */
 	public function readStates(string|null $child = null): Promise\PromiseInterface
 	{
 		$deferred = new Promise\Deferred();
@@ -494,7 +500,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 			->then(function (): void {
 				$this->waitingForReading = false;
 			})
-			->otherwise(function (): void {
+			->catch(function (): void {
 				$this->waitingForReading = false;
 			});
 
@@ -503,6 +509,8 @@ final class LocalApi implements Evenement\EventEmitterInterface
 
 	/**
 	 * @param array<string, int|float|string|bool> $states
+	 *
+	 * @return Promise\PromiseInterface<string|array<Entities\API\DeviceDataPointState>|Entities\API\LocalDeviceWifiScan|Types\LocalDeviceError|null>
 	 */
 	public function writeStates(array $states, string|null $child = null): Promise\PromiseInterface
 	{
@@ -553,6 +561,9 @@ final class LocalApi implements Evenement\EventEmitterInterface
 		return $deferred->promise();
 	}
 
+	/**
+	 * @return Promise\PromiseInterface<string|array<Entities\API\DeviceDataPointState>|Entities\API\LocalDeviceWifiScan|Types\LocalDeviceError|null>
+	 */
 	public function writeState(
 		string $idx,
 		int|float|string|bool $value,

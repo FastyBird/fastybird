@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Tuya\Services;
 
 use InvalidArgumentException;
+use Ratchet;
 use Ratchet\Client;
 use React\EventLoop;
 use React\Promise;
@@ -38,11 +39,14 @@ class WebSocketClientFactory
 	{
 	}
 
+	/**
+	 * @return Promise\PromiseInterface<Ratchet\Client\WebSocket>
+	 */
 	public function create(
 		string $topicUrl,
 		string $accessId,
 		string $password,
-	): Promise\PromiseInterface|Promise\ExtendedPromiseInterface
+	): Promise\PromiseInterface
 	{
 		try {
 			$reactConnector = new Socket\Connector([

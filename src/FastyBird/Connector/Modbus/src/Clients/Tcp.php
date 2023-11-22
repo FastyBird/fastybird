@@ -138,6 +138,8 @@ class Tcp implements Client
 	}
 
 	/**
+	 * @return Promise\PromiseInterface<bool>
+	 *
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exception
 	 * @throws InvalidArgumentException
@@ -310,7 +312,7 @@ class Tcp implements Client
 
 			$promise?->then(
 				static function () use ($deferred): void {
-					$deferred->resolve();
+					$deferred->resolve(true);
 				},
 				static function (Throwable $ex) use ($deferred): void {
 					$deferred->reject($ex);

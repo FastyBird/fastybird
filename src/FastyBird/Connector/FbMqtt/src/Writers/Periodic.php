@@ -242,7 +242,7 @@ class Periodic implements Writer
 
 							unset($this->processedProperties[$property->getPlainId()]);
 						})
-						->otherwise(function (Throwable $ex) use ($device, $property): void {
+						->catch(function (Throwable $ex) use ($device, $property): void {
 							$this->logger->error(
 								'Could write new device property state',
 								[
@@ -356,7 +356,7 @@ class Periodic implements Writer
 
 								unset($this->processedProperties[$property->getPlainId()]);
 							})
-							->otherwise(function (Throwable $ex) use ($device, $channel, $property): void {
+							->catch(function (Throwable $ex) use ($device, $channel, $property): void {
 								$this->logger->error(
 									'Could write new channel property state',
 									[

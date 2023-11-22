@@ -188,7 +188,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 			$httpClientFactory,
 		);
 
-		$socketConnectorPromise = $this->createMock(React\Promise\ExtendedPromiseInterface::class);
+		$socketConnectorPromise = $this->createMock(React\Promise\PromiseInterface::class);
 		$socketConnectorPromise
 			->method('then')
 			->with(

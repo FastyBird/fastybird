@@ -103,7 +103,7 @@ final class Gen1HttpApi extends HttpApi
 	];
 
 	/**
-	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\Gen1\GetDeviceInformation)
+	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\Gen1\GetDeviceInformation> : Entities\API\Gen1\GetDeviceInformation)
 	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\HttpApiCall
@@ -112,7 +112,7 @@ final class Gen1HttpApi extends HttpApi
 	public function getDeviceInformation(
 		string $address,
 		bool $async = true,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\Gen1\GetDeviceInformation
+	): Promise\PromiseInterface|Entities\API\Gen1\GetDeviceInformation
 	{
 		$deferred = new Promise\Deferred();
 
@@ -132,7 +132,7 @@ final class Gen1HttpApi extends HttpApi
 						$deferred->reject($ex);
 					}
 				})
-				->otherwise(static function (Throwable $ex) use ($deferred): void {
+				->catch(static function (Throwable $ex) use ($deferred): void {
 					$deferred->reject($ex);
 				});
 
@@ -143,7 +143,7 @@ final class Gen1HttpApi extends HttpApi
 	}
 
 	/**
-	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\Gen1\GetDeviceDescription)
+	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\Gen1\GetDeviceDescription> : Entities\API\Gen1\GetDeviceDescription)
 	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\HttpApiCall
@@ -154,7 +154,7 @@ final class Gen1HttpApi extends HttpApi
 		string|null $username,
 		string|null $password,
 		bool $async = true,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\Gen1\GetDeviceDescription
+	): Promise\PromiseInterface|Entities\API\Gen1\GetDeviceDescription
 	{
 		$deferred = new Promise\Deferred();
 
@@ -174,7 +174,7 @@ final class Gen1HttpApi extends HttpApi
 						$deferred->reject($ex);
 					}
 				})
-				->otherwise(static function (Throwable $ex) use ($deferred): void {
+				->catch(static function (Throwable $ex) use ($deferred): void {
 					$deferred->reject($ex);
 				});
 
@@ -185,7 +185,7 @@ final class Gen1HttpApi extends HttpApi
 	}
 
 	/**
-	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\Gen1\GetDeviceState)
+	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\Gen1\GetDeviceState> : Entities\API\Gen1\GetDeviceState)
 	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\HttpApiCall
@@ -196,7 +196,7 @@ final class Gen1HttpApi extends HttpApi
 		string|null $username,
 		string|null $password,
 		bool $async = true,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\Gen1\GetDeviceState
+	): Promise\PromiseInterface|Entities\API\Gen1\GetDeviceState
 	{
 		$deferred = new Promise\Deferred();
 
@@ -216,7 +216,7 @@ final class Gen1HttpApi extends HttpApi
 						$deferred->reject($ex);
 					}
 				})
-				->otherwise(static function (Throwable $ex) use ($deferred): void {
+				->catch(static function (Throwable $ex) use ($deferred): void {
 					$deferred->reject($ex);
 				});
 
@@ -227,7 +227,7 @@ final class Gen1HttpApi extends HttpApi
 	}
 
 	/**
-	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : bool)
+	 * @return ($async is true ? Promise\PromiseInterface<bool> : bool)
 	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\HttpApiCall
@@ -241,7 +241,7 @@ final class Gen1HttpApi extends HttpApi
 		string $sensorIdentifier,
 		int|float|string|bool $value,
 		bool $async = true,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|bool
+	): Promise\PromiseInterface|bool
 	{
 		if (
 			preg_match(self::CHANNEL_BLOCK, $blockIdentifier, $channelMatches) !== 1
@@ -288,7 +288,7 @@ final class Gen1HttpApi extends HttpApi
 				->then(static function (Message\ResponseInterface $response) use ($deferred): void {
 					$deferred->resolve($response->getStatusCode() === StatusCodeInterface::STATUS_OK);
 				})
-				->otherwise(static function (Throwable $ex) use ($deferred): void {
+				->catch(static function (Throwable $ex) use ($deferred): void {
 					$deferred->reject($ex);
 				});
 

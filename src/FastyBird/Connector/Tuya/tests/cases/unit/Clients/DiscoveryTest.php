@@ -247,12 +247,12 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 		$localApiApi
 			->method('connect')
 			->willReturnCallback(
-				function (): Promise\ExtendedPromiseInterface {
-					$promise = $this->createMock(Promise\ExtendedPromiseInterface::class);
+				function (): Promise\PromiseInterface {
+					$promise = $this->createMock(Promise\PromiseInterface::class);
 					$promise
 						->method('then')
 						->willReturnCallback(
-							static function (callable $callback) use ($promise): Promise\ExtendedPromiseInterface {
+							static function (callable $callback) use ($promise): Promise\PromiseInterface {
 								$callback(true);
 
 								return $promise;
@@ -271,12 +271,12 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 		$localApiApi
 			->method('readStates')
 			->willReturnCallback(
-				function (): Promise\ExtendedPromiseInterface {
-					$promise = $this->createMock(Promise\ExtendedPromiseInterface::class);
+				function (): Promise\PromiseInterface {
+					$promise = $this->createMock(Promise\PromiseInterface::class);
 					$promise
 						->method('then')
 						->willReturnCallback(
-							static function (callable $callback) use ($promise): Promise\ExtendedPromiseInterface {
+							static function (callable $callback) use ($promise): Promise\PromiseInterface {
 								$entities = [
 									new Entities\API\DeviceDataPointState(
 										'1',
@@ -317,7 +317,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 		$datagramFactoryService
 			->method('create')
 			->willReturnCallback(
-				function (string $address, int $port): Promise\ExtendedPromiseInterface {
+				function (string $address, int $port): Promise\PromiseInterface {
 					$datagramClient = $this->createMock(Datagram\Socket::class);
 					$datagramClient
 						->method('on')
@@ -339,11 +339,11 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 							},
 						);
 
-					$datagramFactoryPromise = $this->createMock(Promise\ExtendedPromiseInterface::class);
+					$datagramFactoryPromise = $this->createMock(Promise\PromiseInterface::class);
 					$datagramFactoryPromise
 						->method('then')
 						->willReturnCallback(
-							static function (callable $callback) use ($datagramFactoryPromise, $datagramClient): Promise\ExtendedPromiseInterface {
+							static function (callable $callback) use ($datagramFactoryPromise, $datagramClient): Promise\PromiseInterface {
 								$callback($datagramClient);
 
 								return $datagramFactoryPromise;

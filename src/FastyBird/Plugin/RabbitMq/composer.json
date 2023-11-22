@@ -34,7 +34,7 @@
   },
   "require": {
     "php": ">=8.1.0",
-    "bunny/bunny": "^0.5",
+    "bunny/bunny": "dev-promise-v3",
     "cweagans/composer-patches": "^1.7",
     "evenement/evenement": "^3.0",
     "fastybird/bootstrap-library": "dev-main",

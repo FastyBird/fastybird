@@ -130,7 +130,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 				$this->emit('finished', [$foundSubDevices]);
 			})
-			->otherwise(function (): void {
+			->catch(function (): void {
 				$this->emit('finished', [[]]);
 			});
 	}
@@ -141,12 +141,14 @@ final class Discovery implements Evenement\EventEmitterInterface
 	}
 
 	/**
+	 * @return Promise\PromiseInterface<array<Entities\Clients\DiscoveredSubDevice>>
+	 *
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	private function discoverSubDevices(
 		Entities\Devices\Gateway $gateway,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface
+	): Promise\PromiseInterface
 	{
 		$deferred = new Promise\Deferred();
 
@@ -166,7 +168,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				->then(function (Entities\API\Response\GetSubDevices $response) use ($deferred, $gateway): void {
 					$deferred->resolve($this->handleFoundSubDevices($gateway, $response));
 				})
-				->otherwise(static function (Throwable $ex) use ($deferred): void {
+				->catch(static function (Throwable $ex) use ($deferred): void {
 					$deferred->reject($ex);
 				});
 		} catch (Exceptions\LanApiCall $ex) {

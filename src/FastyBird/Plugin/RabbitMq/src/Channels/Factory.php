@@ -68,7 +68,7 @@ final class Factory implements ExchangeExchange\Factory
 				static function (Bunny\Channel $channel): Promise\PromiseInterface {
 					$qosResult = $channel->qos(0, 5);
 
-					if ($qosResult instanceof Promise\ExtendedPromiseInterface) {
+					if ($qosResult instanceof Promise\PromiseInterface) {
 						return $qosResult
 							->then(static fn (): Bunny\Channel => $channel);
 					}

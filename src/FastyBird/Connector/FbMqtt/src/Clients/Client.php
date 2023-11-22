@@ -126,6 +126,8 @@ abstract class Client
 
 	/**
 	 * Write data to DPS
+	 *
+	 * @return Promise\PromiseInterface<mixed>
 	 */
 	abstract public function writeDeviceProperty(
 		Entities\FbMqttDevice $device,
@@ -134,6 +136,8 @@ abstract class Client
 
 	/**
 	 * Write data to DPS
+	 *
+	 * @return Promise\PromiseInterface<mixed>
 	 */
 	abstract public function writeChannelProperty(
 		Entities\FbMqttDevice $device,
@@ -144,21 +148,20 @@ abstract class Client
 	/**
 	 * Connects to a broker
 	 *
+	 * @return Promise\PromiseInterface<mixed>
+	 *
 	 * @throws InvalidArgumentException
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function connect(int $timeout = 5): Promise\ExtendedPromiseInterface
+	public function connect(int $timeout = 5): Promise\PromiseInterface
 	{
 		$deferred = new Promise\Deferred();
 
 		$this->writer->connect($this->connector, $this);
 
 		if ($this->isConnected || $this->isConnecting) {
-			$promise = Promise\reject(new Exceptions\Logic('The client is already connected'));
-			assert($promise instanceof Promise\ExtendedPromiseInterface);
-
-			return $promise;
+			return Promise\reject(new Exceptions\Logic('The client is already connected'));
 		}
 
 		$this->isConnecting = true;
@@ -191,7 +194,7 @@ abstract class Client
 
 						$deferred->resolve($result ?? $connection);
 					})
-					->otherwise(function (Throwable $ex) use ($connection, $deferred): void {
+					->catch(function (Throwable $ex) use ($connection, $deferred): void {
 						$this->isConnecting = false;
 
 						$this->onError($ex);
@@ -203,7 +206,7 @@ abstract class Client
 						$this->onClose($connection);
 					});
 			})
-			->otherwise(function (Throwable $ex) use ($deferred): void {
+			->catch(function (Throwable $ex) use ($deferred): void {
 				$this->isConnecting = false;
 
 				$this->onError($ex);
@@ -211,22 +214,18 @@ abstract class Client
 				$deferred->reject($ex);
 			});
 
-		$promise = $deferred->promise();
-		assert($promise instanceof Promise\ExtendedPromiseInterface);
-
-		return $promise;
+		return $deferred->promise();
 	}
 
 	/**
 	 * Disconnects from a broker
+	 *
+	 * @return Promise\PromiseInterface<mixed>
 	 */
-	public function disconnect(int $timeout = 5): Promise\ExtendedPromiseInterface
+	public function disconnect(int $timeout = 5): Promise\PromiseInterface
 	{
 		if (!$this->isConnected || $this->isDisconnecting || $this->connection === null) {
-			$promise = Promise\reject(new Exceptions\Logic('The client is not connected'));
-			assert($promise instanceof Promise\ExtendedPromiseInterface);
-
-			return $promise;
+			return Promise\reject(new Exceptions\Logic('The client is not connected'));
 		}
 
 		$this->isDisconnecting = true;
@@ -261,7 +260,7 @@ abstract class Client
 					},
 				);
 			})
-			->otherwise(function ($exception) use ($deferred, &$isResolved): void {
+			->catch(function ($exception) use ($deferred, &$isResolved): void {
 				if (!$isResolved) {
 					$isResolved = true;
 					$this->isDisconnecting = false;
@@ -270,7 +269,6 @@ abstract class Client
 			});
 
 		$promise = $deferred->promise();
-		assert($promise instanceof Promise\ExtendedPromiseInterface);
 
 		$this->writer->disconnect($this->connector, $this);
 
@@ -279,14 +277,13 @@ abstract class Client
 
 	/**
 	 * Subscribes to a topic filter
+	 *
+	 * @return Promise\PromiseInterface<mixed>
 	 */
-	public function subscribe(Mqtt\Subscription $subscription): Promise\ExtendedPromiseInterface
+	public function subscribe(Mqtt\Subscription $subscription): Promise\PromiseInterface
 	{
 		if (!$this->isConnected) {
-			$promise = Promise\reject(new Exceptions\Logic('The client is not connected'));
-			assert($promise instanceof Promise\ExtendedPromiseInterface);
-
-			return $promise;
+			return Promise\reject(new Exceptions\Logic('The client is not connected'));
 		}
 
 		return $this->startFlow($this->flowFactory->buildOutgoingSubscribeFlow([$subscription]));
@@ -294,14 +291,13 @@ abstract class Client
 
 	/**
 	 * Unsubscribes from a topic filter
+	 *
+	 * @return Promise\PromiseInterface<mixed>
 	 */
-	public function unsubscribe(Mqtt\Subscription $subscription): Promise\ExtendedPromiseInterface
+	public function unsubscribe(Mqtt\Subscription $subscription): Promise\PromiseInterface
 	{
 		if (!$this->isConnected) {
-			$promise = Promise\reject(new Exceptions\Logic('The client is not connected'));
-			assert($promise instanceof Promise\ExtendedPromiseInterface);
-
-			return $promise;
+			return Promise\reject(new Exceptions\Logic('The client is not connected'));
 		}
 
 		$deferred = new Promise\Deferred();
@@ -310,30 +306,27 @@ abstract class Client
 			->then(static function (array $subscriptions) use ($deferred): void {
 				$deferred->resolve(array_shift($subscriptions));
 			})
-			->otherwise(static function ($exception) use ($deferred): void {
+			->catch(static function ($exception) use ($deferred): void {
 				$deferred->reject($exception);
 			});
 
-		$promise = $deferred->promise();
-		assert($promise instanceof Promise\ExtendedPromiseInterface);
-
-		return $promise;
+		return $deferred->promise();
 	}
 
+	/**
+	 * @return Promise\PromiseInterface<mixed>
+	 */
 	public function publish(
 		string $topic,
 		string|null $payload = null,
 		int $qos = FbMqtt\Constants::MQTT_API_QOS_0,
 		bool $retain = false,
-	): Promise\ExtendedPromiseInterface
+	): Promise\PromiseInterface
 	{
 		$message = new Mqtt\DefaultMessage($topic, ($payload ?? ''), $qos, $retain);
 
 		if (!$this->isConnected) {
-			$promise = Promise\reject(new Exceptions\Logic('The client is not connected'));
-			assert($promise instanceof Promise\ExtendedPromiseInterface);
-
-			return $promise;
+			return Promise\reject(new Exceptions\Logic('The client is not connected'));
 		}
 
 		return $this->startFlow($this->flowFactory->buildOutgoingPublishFlow($message));
@@ -504,9 +497,11 @@ abstract class Client
 	/**
 	 * Establishes a network connection to a server
 	 *
+	 * @return Promise\PromiseInterface<Stream\DuplexStreamInterface>
+	 *
 	 * @throws InvalidArgumentException
 	 */
-	private function establishConnection(string $host, int $port, int $timeout): Promise\ExtendedPromiseInterface
+	private function establishConnection(string $host, int $port, int $timeout): Promise\PromiseInterface
 	{
 		$deferred = new Promise\Deferred();
 
@@ -519,7 +514,7 @@ abstract class Client
 				$deferred->reject($exception);
 
 				/** @phpstan-ignore-next-line */
-				if ($future instanceof Promise\CancellablePromiseInterface) {
+				if ($future instanceof Promise\PromiseInterface) {
 					$future->cancel();
 				}
 
@@ -529,41 +524,38 @@ abstract class Client
 
 		$future = $this->getConnector()->connect($host . ':' . $port);
 
-		if ($future instanceof Promise\ExtendedPromiseInterface) {
-			$future
-				->always(function () use ($timer): void {
-					$this->eventLoop->cancelTimer($timer);
-				})
-				->then(function (Stream\DuplexStreamInterface $stream) use ($deferred): void {
-					$stream->on('data', function ($data): void {
-						$this->handleReceive($data);
-					});
-
-					$stream->on('close', function (): void {
-						$this->handleClose();
-					});
-
-					$stream->on('error', function (Throwable $ex): void {
-						$this->handleError($ex);
-					});
-
-					$deferred->resolve($stream);
-				})
-				->otherwise(static function (Throwable $ex) use ($deferred): void {
-					$deferred->reject($ex);
+		$future
+			->finally(function () use ($timer): void {
+				$this->eventLoop->cancelTimer($timer);
+			})
+			->then(function (Stream\DuplexStreamInterface $stream) use ($deferred): void {
+				$stream->on('data', function ($data): void {
+					$this->handleReceive($data);
 				});
-		}
 
-		$promise = $deferred->promise();
-		assert($promise instanceof Promise\ExtendedPromiseInterface);
+				$stream->on('close', function (): void {
+					$this->handleClose();
+				});
 
-		return $promise;
+				$stream->on('error', function (Throwable $ex): void {
+					$this->handleError($ex);
+				});
+
+				$deferred->resolve($stream);
+			})
+			->catch(static function (Throwable $ex) use ($deferred): void {
+				$deferred->reject($ex);
+			});
+
+		return $deferred->promise();
 	}
 
 	/**
 	 * Registers a new client with the broker
+	 *
+	 * @return Promise\PromiseInterface<mixed>
 	 */
-	private function registerClient(Mqtt\Connection $connection, int $timeout): Promise\ExtendedPromiseInterface
+	private function registerClient(Mqtt\Connection $connection, int $timeout): Promise\PromiseInterface
 	{
 		$deferred = new Promise\Deferred();
 
@@ -576,7 +568,7 @@ abstract class Client
 		);
 
 		$this->startFlow($this->flowFactory->buildOutgoingConnectFlow($connection), true)
-			->always(function () use ($responseTimer): void {
+			->finally(function () use ($responseTimer): void {
 				$this->eventLoop->cancelTimer($responseTimer);
 			})
 			->then(function ($result) use ($connection, $deferred): void {
@@ -589,14 +581,11 @@ abstract class Client
 
 				$deferred->resolve($result ?? $connection);
 			})
-			->otherwise(static function (Throwable $ex) use ($deferred): void {
+			->catch(static function (Throwable $ex) use ($deferred): void {
 				$deferred->reject($ex);
 			});
 
-		$promise = $deferred->promise();
-		assert($promise instanceof Promise\ExtendedPromiseInterface);
-
-		return $promise;
+		return $deferred->promise();
 	}
 
 	/**
@@ -768,8 +757,10 @@ abstract class Client
 
 	/**
 	 * Starts the given flow
+	 *
+	 * @return Promise\PromiseInterface<mixed>
 	 */
-	private function startFlow(Mqtt\Flow $flow, bool $isSilent = false): Promise\ExtendedPromiseInterface
+	private function startFlow(Mqtt\Flow $flow, bool $isSilent = false): Promise\PromiseInterface
 	{
 		try {
 			$packet = $flow->start();
@@ -777,10 +768,7 @@ abstract class Client
 		} catch (Throwable $ex) {
 			$this->onError($ex);
 
-			$promise = Promise\reject($ex);
-			assert($promise instanceof Promise\ExtendedPromiseInterface);
-
-			return $promise;
+			return Promise\reject($ex);
 		}
 
 		$deferred = new Promise\Deferred();
@@ -801,10 +789,7 @@ abstract class Client
 			});
 		}
 
-		$promise = $deferred->promise();
-		assert($promise instanceof Promise\ExtendedPromiseInterface);
-
-		return $promise;
+		return $deferred->promise();
 	}
 
 	/**

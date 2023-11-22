@@ -371,7 +371,7 @@ final class WritePropertyState implements Queue\Consumer
 						->then(static function () use ($deferred): void {
 							$deferred->resolve(true);
 						})
-						->otherwise(
+						->catch(
 							function () use ($deferred, $connector, $device, $parameter, $expectedValue, $group, $outlet): void {
 								$client = $this->connectionManager->getCloudApiConnection($connector);
 
@@ -383,9 +383,9 @@ final class WritePropertyState implements Queue\Consumer
 									$outlet,
 								)
 									->then(static function () use ($deferred): void {
-										$deferred->resolve();
+										$deferred->resolve(true);
 									})
-									->otherwise(static function (Throwable $ex) use ($deferred): void {
+									->catch(static function (Throwable $ex) use ($deferred): void {
 										$deferred->reject($ex);
 									});
 							},
@@ -403,7 +403,7 @@ final class WritePropertyState implements Queue\Consumer
 						->then(static function () use ($deferred): void {
 							$deferred->resolve(true);
 						})
-						->otherwise(static function (Throwable $ex) use ($deferred): void {
+						->catch(static function (Throwable $ex) use ($deferred): void {
 							$deferred->reject($ex);
 						});
 				}

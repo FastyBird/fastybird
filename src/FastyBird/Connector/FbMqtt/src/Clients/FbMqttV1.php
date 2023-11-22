@@ -157,7 +157,7 @@ final class FbMqttV1 extends Client
 		// Subscribe to system topic
 		$this
 			->subscribe($systemTopic)
-			->done(
+			->then(
 				function (Mqtt\Subscription $subscription): void {
 					$this->logger->info(
 						sprintf('Subscribed to: %s', $subscription->getFilter()),
@@ -192,7 +192,7 @@ final class FbMqttV1 extends Client
 			// ...& subscribe to them
 			$this
 				->subscribe($topic)
-				->done(
+				->then(
 					function (Mqtt\Subscription $subscription): void {
 						$this->logger->info(
 							sprintf('Subscribed to: %s', $subscription->getFilter()),

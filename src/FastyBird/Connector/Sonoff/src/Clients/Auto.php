@@ -116,6 +116,8 @@ final class Auto extends ClientProcess implements Client
 	}
 
 	/**
+	 * @return Promise\PromiseInterface<bool>
+	 *
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\CloudApiCall
 	 * @throws Exceptions\LanApiCall
@@ -136,12 +138,12 @@ final class Auto extends ClientProcess implements Client
 				->then(static function () use ($deferred): void {
 					$deferred->resolve(true);
 				})
-				->otherwise(function (Throwable $ex) use ($deferred, $device): void {
+				->catch(function (Throwable $ex) use ($deferred, $device): void {
 					$this->cloudClient->readInformation($device)
 						->then(static function () use ($deferred): void {
 							$deferred->resolve(true);
 						})
-						->otherwise(static function (Throwable $ex) use ($deferred): void {
+						->catch(static function (Throwable $ex) use ($deferred): void {
 							$deferred->reject($ex);
 						});
 				});
@@ -150,7 +152,7 @@ final class Auto extends ClientProcess implements Client
 				->then(static function () use ($deferred): void {
 					$deferred->resolve(true);
 				})
-				->otherwise(static function (Throwable $ex) use ($deferred): void {
+				->catch(static function (Throwable $ex) use ($deferred): void {
 					$deferred->reject($ex);
 				});
 		}
@@ -159,6 +161,8 @@ final class Auto extends ClientProcess implements Client
 	}
 
 	/**
+	 * @return Promise\PromiseInterface<bool>
+	 *
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\CloudApiCall
@@ -174,7 +178,7 @@ final class Auto extends ClientProcess implements Client
 			->then(static function () use ($deferred): void {
 				$deferred->resolve(true);
 			})
-			->otherwise(static function (Throwable $ex) use ($deferred): void {
+			->catch(static function (Throwable $ex) use ($deferred): void {
 				$deferred->reject($ex);
 			});
 

@@ -137,6 +137,7 @@ final class OpenApi
 
 	private Entities\API\AccessToken|null $tokenInfo = null;
 
+	/** @var Promise\Deferred<bool>|null */
 	private Promise\Deferred|null $refreshTokenPromise = null;
 
 	public function __construct(
@@ -157,12 +158,12 @@ final class OpenApi
 	}
 
 	/**
-	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : true)
+	 * @return ($async is true ? Promise\PromiseInterface<bool> : true)
 	 *
 	 * @throws Exceptions\OpenApiCall
 	 * @throws Exceptions\OpenApiError
 	 */
-	public function connect(bool $async = true): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|bool
+	public function connect(bool $async = true): Promise\PromiseInterface|bool
 	{
 		$deferred = new Promise\Deferred();
 
@@ -182,12 +183,12 @@ final class OpenApi
 					try {
 						$this->tokenInfo = $this->parseGetAccessToken($request, $response)->getResult();
 
-						$deferred->resolve();
+						$deferred->resolve(true);
 					} catch (Throwable $ex) {
 						$deferred->reject($ex);
 					}
 				})
-				->otherwise(static function (Throwable $ex) use ($deferred): void {
+				->catch(static function (Throwable $ex) use ($deferred): void {
 					$deferred->reject($ex);
 				});
 
@@ -227,7 +228,7 @@ final class OpenApi
 	}
 
 	/**
-	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\GetUserDevices)
+	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\GetUserDevices> : Entities\API\GetUserDevices)
 	 *
 	 * @throws Exceptions\OpenApiCall
 	 * @throws Exceptions\OpenApiError
@@ -235,7 +236,7 @@ final class OpenApi
 	public function getUserDevices(
 		string $userId,
 		bool $async = true,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\GetUserDevices
+	): Promise\PromiseInterface|Entities\API\GetUserDevices
 	{
 		$deferred = new Promise\Deferred();
 
@@ -259,7 +260,7 @@ final class OpenApi
 						$deferred->reject($ex);
 					}
 				})
-				->otherwise(static function (Throwable $ex) use ($deferred): void {
+				->catch(static function (Throwable $ex) use ($deferred): void {
 					$deferred->reject($ex);
 				});
 
@@ -272,7 +273,7 @@ final class OpenApi
 	/**
 	 * @param array<string> $deviceIds
 	 *
-	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\GetUserDeviceFactoryInfos)
+	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\GetUserDeviceFactoryInfos> : Entities\API\GetUserDeviceFactoryInfos)
 	 *
 	 * @throws Exceptions\OpenApiCall
 	 * @throws Exceptions\OpenApiError
@@ -280,7 +281,7 @@ final class OpenApi
 	public function getUserDevicesFactoryInfos(
 		array $deviceIds,
 		bool $async = true,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\GetUserDeviceFactoryInfos
+	): Promise\PromiseInterface|Entities\API\GetUserDeviceFactoryInfos
 	{
 		$deferred = new Promise\Deferred();
 
@@ -307,7 +308,7 @@ final class OpenApi
 						$deferred->reject($ex);
 					}
 				})
-				->otherwise(static function (Throwable $ex) use ($deferred): void {
+				->catch(static function (Throwable $ex) use ($deferred): void {
 					$deferred->reject($ex);
 				});
 
@@ -318,7 +319,7 @@ final class OpenApi
 	}
 
 	/**
-	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\GetUserDeviceDetail)
+	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\GetUserDeviceDetail> : Entities\API\GetUserDeviceDetail)
 	 *
 	 * @throws Exceptions\OpenApiCall
 	 * @throws Exceptions\OpenApiError
@@ -326,7 +327,7 @@ final class OpenApi
 	public function getUserDeviceDetail(
 		string $deviceId,
 		bool $async = true,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\GetUserDeviceDetail
+	): Promise\PromiseInterface|Entities\API\GetUserDeviceDetail
 	{
 		$deferred = new Promise\Deferred();
 
@@ -350,7 +351,7 @@ final class OpenApi
 						$deferred->reject($ex);
 					}
 				})
-				->otherwise(static function (Throwable $ex) use ($deferred): void {
+				->catch(static function (Throwable $ex) use ($deferred): void {
 					$deferred->reject($ex);
 				});
 
@@ -361,7 +362,7 @@ final class OpenApi
 	}
 
 	/**
-	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\GetUserDeviceSpecifications)
+	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\GetUserDeviceSpecifications> : Entities\API\GetUserDeviceSpecifications)
 	 *
 	 * @throws Exceptions\OpenApiCall
 	 * @throws Exceptions\OpenApiError
@@ -369,7 +370,7 @@ final class OpenApi
 	public function getUserDeviceSpecifications(
 		string $deviceId,
 		bool $async = true,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\GetUserDeviceSpecifications
+	): Promise\PromiseInterface|Entities\API\GetUserDeviceSpecifications
 	{
 		$deferred = new Promise\Deferred();
 
@@ -393,7 +394,7 @@ final class OpenApi
 						$deferred->reject($ex);
 					}
 				})
-				->otherwise(static function (Throwable $ex) use ($deferred): void {
+				->catch(static function (Throwable $ex) use ($deferred): void {
 					$deferred->reject($ex);
 				});
 
@@ -404,7 +405,7 @@ final class OpenApi
 	}
 
 	/**
-	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\GetUserDeviceState)
+	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\GetUserDeviceState> : Entities\API\GetUserDeviceState)
 	 *
 	 * @throws Exceptions\OpenApiCall
 	 * @throws Exceptions\OpenApiError
@@ -412,7 +413,7 @@ final class OpenApi
 	public function getUserDeviceState(
 		string $deviceId,
 		bool $async = true,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\GetUserDeviceState
+	): Promise\PromiseInterface|Entities\API\GetUserDeviceState
 	{
 		$deferred = new Promise\Deferred();
 
@@ -436,7 +437,7 @@ final class OpenApi
 						$deferred->reject($ex);
 					}
 				})
-				->otherwise(static function (Throwable $ex) use ($deferred): void {
+				->catch(static function (Throwable $ex) use ($deferred): void {
 					$deferred->reject($ex);
 				});
 
@@ -447,7 +448,7 @@ final class OpenApi
 	}
 
 	/**
-	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\GetUserDeviceChildren)
+	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\GetUserDeviceChildren> : Entities\API\GetUserDeviceChildren)
 	 *
 	 * @throws Exceptions\OpenApiCall
 	 * @throws Exceptions\OpenApiError
@@ -455,7 +456,7 @@ final class OpenApi
 	public function getUserDeviceChildren(
 		string $deviceId,
 		bool $async = true,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\GetUserDeviceChildren
+	): Promise\PromiseInterface|Entities\API\GetUserDeviceChildren
 	{
 		$deferred = new Promise\Deferred();
 
@@ -479,7 +480,7 @@ final class OpenApi
 						$deferred->reject($ex);
 					}
 				})
-				->otherwise(static function (Throwable $ex) use ($deferred): void {
+				->catch(static function (Throwable $ex) use ($deferred): void {
 					$deferred->reject($ex);
 				});
 
@@ -492,7 +493,7 @@ final class OpenApi
 	/**
 	 * @param array<string, mixed> $params
 	 *
-	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\GetDevices)
+	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\GetDevices> : Entities\API\GetDevices)
 	 *
 	 * @throws Exceptions\OpenApiCall
 	 * @throws Exceptions\OpenApiError
@@ -500,7 +501,7 @@ final class OpenApi
 	public function getDevices(
 		array $params = [],
 		bool $async = true,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\GetDevices
+	): Promise\PromiseInterface|Entities\API\GetDevices
 	{
 		$deferred = new Promise\Deferred();
 
@@ -525,7 +526,7 @@ final class OpenApi
 						$deferred->reject($ex);
 					}
 				})
-				->otherwise(static function (Throwable $ex) use ($deferred): void {
+				->catch(static function (Throwable $ex) use ($deferred): void {
 					$deferred->reject($ex);
 				});
 
@@ -538,7 +539,7 @@ final class OpenApi
 	/**
 	 * @param array<string> $deviceIds
 	 *
-	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\GetDevicesFactoryInfos)
+	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\GetDevicesFactoryInfos> : Entities\API\GetDevicesFactoryInfos)
 	 *
 	 * @throws Exceptions\OpenApiCall
 	 * @throws Exceptions\OpenApiError
@@ -546,7 +547,7 @@ final class OpenApi
 	public function getDevicesFactoryInfos(
 		array $deviceIds,
 		bool $async = true,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\GetDevicesFactoryInfos
+	): Promise\PromiseInterface|Entities\API\GetDevicesFactoryInfos
 	{
 		$deferred = new Promise\Deferred();
 
@@ -573,7 +574,7 @@ final class OpenApi
 						$deferred->reject($ex);
 					}
 				})
-				->otherwise(static function (Throwable $ex) use ($deferred): void {
+				->catch(static function (Throwable $ex) use ($deferred): void {
 					$deferred->reject($ex);
 				});
 
@@ -584,7 +585,7 @@ final class OpenApi
 	}
 
 	/**
-	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\GetDevice)
+	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\GetDevice> : Entities\API\GetDevice)
 	 *
 	 * @throws Exceptions\OpenApiCall
 	 * @throws Exceptions\OpenApiError
@@ -592,7 +593,7 @@ final class OpenApi
 	public function getDeviceDetail(
 		string $deviceId,
 		bool $async = true,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\GetDevice
+	): Promise\PromiseInterface|Entities\API\GetDevice
 	{
 		$deferred = new Promise\Deferred();
 
@@ -616,7 +617,7 @@ final class OpenApi
 						$deferred->reject($ex);
 					}
 				})
-				->otherwise(static function (Throwable $ex) use ($deferred): void {
+				->catch(static function (Throwable $ex) use ($deferred): void {
 					$deferred->reject($ex);
 				});
 
@@ -627,7 +628,7 @@ final class OpenApi
 	}
 
 	/**
-	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\GetDeviceSpecification)
+	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\GetDeviceSpecification> : Entities\API\GetDeviceSpecification)
 	 *
 	 * @throws Exceptions\OpenApiCall
 	 * @throws Exceptions\OpenApiError
@@ -635,7 +636,7 @@ final class OpenApi
 	public function getDeviceSpecification(
 		string $deviceId,
 		bool $async = true,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\GetDeviceSpecification
+	): Promise\PromiseInterface|Entities\API\GetDeviceSpecification
 	{
 		$deferred = new Promise\Deferred();
 
@@ -659,7 +660,7 @@ final class OpenApi
 						$deferred->reject($ex);
 					}
 				})
-				->otherwise(static function (Throwable $ex) use ($deferred): void {
+				->catch(static function (Throwable $ex) use ($deferred): void {
 					$deferred->reject($ex);
 				});
 
@@ -670,7 +671,7 @@ final class OpenApi
 	}
 
 	/**
-	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\GetDeviceState)
+	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\GetDeviceState> : Entities\API\GetDeviceState)
 	 *
 	 * @throws Exceptions\OpenApiCall
 	 * @throws Exceptions\OpenApiError
@@ -678,7 +679,7 @@ final class OpenApi
 	public function getDeviceState(
 		string $deviceId,
 		bool $async = true,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\GetDeviceState
+	): Promise\PromiseInterface|Entities\API\GetDeviceState
 	{
 		$deferred = new Promise\Deferred();
 
@@ -702,7 +703,7 @@ final class OpenApi
 						$deferred->reject($ex);
 					}
 				})
-				->otherwise(static function (Throwable $ex) use ($deferred): void {
+				->catch(static function (Throwable $ex) use ($deferred): void {
 					$deferred->reject($ex);
 				});
 
@@ -713,7 +714,7 @@ final class OpenApi
 	}
 
 	/**
-	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : bool)
+	 * @return ($async is true ? Promise\PromiseInterface<bool> : bool)
 	 *
 	 * @throws Exceptions\OpenApiCall
 	 * @throws Exceptions\OpenApiError
@@ -723,7 +724,7 @@ final class OpenApi
 		string $code,
 		string|int|float|bool $value,
 		bool $async = true,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|bool
+	): Promise\PromiseInterface|bool
 	{
 		$deferred = new Promise\Deferred();
 
@@ -768,7 +769,7 @@ final class OpenApi
 						$deferred->reject($ex);
 					}
 				})
-				->otherwise(static function (Throwable $ex) use ($deferred): void {
+				->catch(static function (Throwable $ex) use ($deferred): void {
 					$deferred->reject($ex);
 				});
 
@@ -1058,7 +1059,7 @@ final class OpenApi
 	}
 
 	/**
-	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Message\ResponseInterface)
+	 * @return ($async is true ? Promise\PromiseInterface<Message\ResponseInterface> : Message\ResponseInterface)
 	 *
 	 * @throws Exceptions\OpenApiCall
 	 * @throws Exceptions\OpenApiError
@@ -1066,7 +1067,7 @@ final class OpenApi
 	private function callRequest(
 		Request $request,
 		bool $async = true,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Message\ResponseInterface
+	): Promise\PromiseInterface|Message\ResponseInterface
 	{
 		$deferred = new Promise\Deferred();
 
@@ -1377,6 +1378,8 @@ final class OpenApi
 	}
 
 	/**
+	 * @return Promise\PromiseInterface<bool>|false
+	 *
 	 * @throws Exceptions\OpenApiCall
 	 * @throws Exceptions\OpenApiError
 	 */
@@ -1500,10 +1503,10 @@ final class OpenApi
 
 					$this->connect();
 
-					$this->refreshTokenPromise->resolve();
+					$this->refreshTokenPromise->resolve(true);
 					$this->refreshTokenPromise = null;
 
-					return Promise\resolve();
+					return Promise\resolve(true);
 				} else {
 					if ($data->offsetExists('msg')) {
 						$error = new Exceptions\OpenApiCall(strval($data->offsetGet('msg')), $request, $response);
@@ -1532,10 +1535,10 @@ final class OpenApi
 				return Promise\reject($ex);
 			}
 
-			$this->refreshTokenPromise->resolve();
+			$this->refreshTokenPromise->resolve(true);
 			$this->refreshTokenPromise = null;
 
-			return Promise\resolve();
+			return Promise\resolve(true);
 		} catch (GuzzleHttp\Exception\GuzzleException | InvalidArgumentException $ex) {
 			$error = new Exceptions\OpenApiCall('Could not refresh access token', $request, null, $ex->getCode(), $ex);
 

@@ -84,7 +84,7 @@ final class LanApi
 	}
 
 	/**
-	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\Response\GetGatewayInfo)
+	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\Response\GetGatewayInfo> : Entities\API\Response\GetGatewayInfo)
 	 *
 	 * @throws Exceptions\LanApiCall
 	 */
@@ -92,7 +92,7 @@ final class LanApi
 		string $ipAddress,
 		int $port = self::GATEWAY_PORT,
 		bool $async = true,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\Response\GetGatewayInfo
+	): Promise\PromiseInterface|Entities\API\Response\GetGatewayInfo
 	{
 		$deferred = new Promise\Deferred();
 
@@ -115,7 +115,7 @@ final class LanApi
 						$deferred->reject($ex);
 					}
 				})
-				->otherwise(static function (Throwable $ex) use ($deferred): void {
+				->catch(static function (Throwable $ex) use ($deferred): void {
 					$deferred->reject($ex);
 				});
 
@@ -126,7 +126,7 @@ final class LanApi
 	}
 
 	/**
-	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\Response\GetGatewayAccessToken)
+	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\Response\GetGatewayAccessToken> : Entities\API\Response\GetGatewayAccessToken)
 	 *
 	 * @throws Exceptions\LanApiCall
 	 */
@@ -135,7 +135,7 @@ final class LanApi
 		string $ipAddress,
 		int $port = self::GATEWAY_PORT,
 		bool $async = true,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\Response\GetGatewayAccessToken
+	): Promise\PromiseInterface|Entities\API\Response\GetGatewayAccessToken
 	{
 		$deferred = new Promise\Deferred();
 
@@ -161,7 +161,7 @@ final class LanApi
 						$deferred->reject($ex);
 					}
 				})
-				->otherwise(static function (Throwable $ex) use ($deferred): void {
+				->catch(static function (Throwable $ex) use ($deferred): void {
 					$deferred->reject($ex);
 				});
 
@@ -174,7 +174,7 @@ final class LanApi
 	/**
 	 * @param array<mixed> $devices
 	 *
-	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\Response\SyncDevices)
+	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\Response\SyncDevices> : Entities\API\Response\SyncDevices)
 	 *
 	 * @throws Exceptions\LanApiCall
 	 */
@@ -184,7 +184,7 @@ final class LanApi
 		string $accessToken,
 		int $port = self::GATEWAY_PORT,
 		bool $async = true,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\Response\SyncDevices
+	): Promise\PromiseInterface|Entities\API\Response\SyncDevices
 	{
 		$deferred = new Promise\Deferred();
 
@@ -248,7 +248,7 @@ final class LanApi
 						$deferred->reject($ex);
 					}
 				})
-				->otherwise(static function (Throwable $ex) use ($deferred): void {
+				->catch(static function (Throwable $ex) use ($deferred): void {
 					$deferred->reject($ex);
 				});
 
@@ -261,7 +261,7 @@ final class LanApi
 	/**
 	 * @param array<mixed> $state
 	 *
-	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\Response\ReportDeviceState)
+	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\Response\ReportDeviceState> : Entities\API\Response\ReportDeviceState)
 	 *
 	 * @throws Exceptions\LanApiCall
 	 */
@@ -272,7 +272,7 @@ final class LanApi
 		string $accessToken,
 		int $port = self::GATEWAY_PORT,
 		bool $async = true,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\Response\ReportDeviceState
+	): Promise\PromiseInterface|Entities\API\Response\ReportDeviceState
 	{
 		$deferred = new Promise\Deferred();
 
@@ -339,7 +339,7 @@ final class LanApi
 						$deferred->reject($ex);
 					}
 				})
-				->otherwise(static function (Throwable $ex) use ($deferred): void {
+				->catch(static function (Throwable $ex) use ($deferred): void {
 					$deferred->reject($ex);
 				});
 
@@ -350,7 +350,7 @@ final class LanApi
 	}
 
 	/**
-	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\Response\ReportDeviceOnline)
+	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\Response\ReportDeviceOnline> : Entities\API\Response\ReportDeviceOnline)
 	 *
 	 * @throws Exceptions\LanApiCall
 	 */
@@ -361,7 +361,7 @@ final class LanApi
 		string $accessToken,
 		int $port = self::GATEWAY_PORT,
 		bool $async = true,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\Response\ReportDeviceOnline
+	): Promise\PromiseInterface|Entities\API\Response\ReportDeviceOnline
 	{
 		$deferred = new Promise\Deferred();
 
@@ -428,7 +428,7 @@ final class LanApi
 						$deferred->reject($ex);
 					}
 				})
-				->otherwise(static function (Throwable $ex) use ($deferred): void {
+				->catch(static function (Throwable $ex) use ($deferred): void {
 					$deferred->reject($ex);
 				});
 
@@ -439,7 +439,7 @@ final class LanApi
 	}
 
 	/**
-	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : bool)
+	 * @return ($async is true ? Promise\PromiseInterface<bool> : bool)
 	 *
 	 * @throws Exceptions\LanApiCall
 	 */
@@ -449,7 +449,7 @@ final class LanApi
 		string $accessToken,
 		int $port = self::GATEWAY_PORT,
 		bool $async = true,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|bool
+	): Promise\PromiseInterface|bool
 	{
 		$deferred = new Promise\Deferred();
 
@@ -474,7 +474,7 @@ final class LanApi
 						$deferred->reject($ex);
 					}
 				})
-				->otherwise(static function (Throwable $ex) use ($deferred): void {
+				->catch(static function (Throwable $ex) use ($deferred): void {
 					$deferred->reject($ex);
 				});
 
@@ -485,7 +485,7 @@ final class LanApi
 	}
 
 	/**
-	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\Response\GetSubDevices)
+	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\Response\GetSubDevices> : Entities\API\Response\GetSubDevices)
 	 *
 	 * @throws Exceptions\LanApiCall
 	 */
@@ -494,7 +494,7 @@ final class LanApi
 		string $accessToken,
 		int $port = self::GATEWAY_PORT,
 		bool $async = true,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\Response\GetSubDevices
+	): Promise\PromiseInterface|Entities\API\Response\GetSubDevices
 	{
 		$deferred = new Promise\Deferred();
 
@@ -518,7 +518,7 @@ final class LanApi
 						$deferred->reject($ex);
 					}
 				})
-				->otherwise(static function (Throwable $ex) use ($deferred): void {
+				->catch(static function (Throwable $ex) use ($deferred): void {
 					$deferred->reject($ex);
 				});
 
@@ -531,7 +531,7 @@ final class LanApi
 	/**
 	 * @param array<mixed> $state
 	 *
-	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\Response\SetSubDeviceState)
+	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\Response\SetSubDeviceState> : Entities\API\Response\SetSubDeviceState)
 	 *
 	 * @throws Exceptions\LanApiCall
 	 */
@@ -542,7 +542,7 @@ final class LanApi
 		string $accessToken,
 		int $port = self::GATEWAY_PORT,
 		bool $async = true,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\Response\SetSubDeviceState
+	): Promise\PromiseInterface|Entities\API\Response\SetSubDeviceState
 	{
 		$deferred = new Promise\Deferred();
 
@@ -597,7 +597,7 @@ final class LanApi
 						$deferred->reject($ex);
 					}
 				})
-				->otherwise(static function (Throwable $ex) use ($deferred): void {
+				->catch(static function (Throwable $ex) use ($deferred): void {
 					$deferred->reject($ex);
 				});
 
@@ -877,14 +877,14 @@ final class LanApi
 	}
 
 	/**
-	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Message\ResponseInterface)
+	 * @return ($async is true ? Promise\PromiseInterface<Message\ResponseInterface> : Message\ResponseInterface)
 	 *
 	 * @throws Exceptions\LanApiCall
 	 */
 	private function callRequest(
 		Request $request,
 		bool $async = true,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Message\ResponseInterface
+	): Promise\PromiseInterface|Message\ResponseInterface
 	{
 		$deferred = new Promise\Deferred();
 

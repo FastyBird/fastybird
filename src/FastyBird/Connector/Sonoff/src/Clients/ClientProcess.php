@@ -215,10 +215,16 @@ abstract class ClientProcess
 		);
 	}
 
+	/**
+	 * @return Promise\PromiseInterface<bool>
+	 */
 	abstract protected function readInformation(
 		MetadataDocuments\DevicesModule\Device $device,
 	): Promise\PromiseInterface;
 
+	/**
+	 * @return Promise\PromiseInterface<bool>
+	 */
 	abstract protected function readState(MetadataDocuments\DevicesModule\Device $device): Promise\PromiseInterface;
 
 }

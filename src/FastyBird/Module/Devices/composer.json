@@ -56,7 +56,7 @@
     "orisai/data-sources": "^1.0",
     "react/async": "^4.0",
     "react/event-loop": "^1.3",
-    "react/promise": "~2.2",
+    "react/promise": "^3|^2.2",
     "softcreatr/jsonpath": "^0.8",
     "symfony/console": "^5.0|^6.0",
     "symfony/event-dispatcher": "^5.4",

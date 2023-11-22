@@ -218,7 +218,7 @@ final class Local implements Client
 								],
 							);
 						})
-						->otherwise(function (Throwable $ex) use ($device): void {
+						->catch(function (Throwable $ex) use ($device): void {
 							$this->logger->error(
 								'Tuya local device client could not be created',
 								[
@@ -330,7 +330,7 @@ final class Local implements Client
 					),
 				);
 			})
-			->otherwise(function (Throwable $ex) use ($device): void {
+			->catch(function (Throwable $ex) use ($device): void {
 				if ($ex instanceof Exceptions\LocalApiBusy || $ex instanceof Exceptions\LocalApiTimeout) {
 					$this->processedDevicesCommands[$device->getId()->toString()][self::CMD_STATE] = false;
 

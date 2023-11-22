@@ -300,7 +300,7 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 						}
 					}
 				})
-				->otherwise(function (Throwable $ex) use ($entity, $connector, $device, $channel): void {
+				->catch(function (Throwable $ex) use ($entity, $connector, $device, $channel): void {
 					foreach ($channel->getProperties() as $property) {
 						if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
 							$this->channelPropertiesStatesManager->setValue(

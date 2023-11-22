@@ -126,7 +126,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 				$this->emit('finished', [$devices]);
 			}))
-			->otherwise(function (): void {
+			->catch(function (): void {
 				$this->emit('failed');
 			});
 	}
@@ -148,6 +148,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 	}
 
 	/**
+	 * @return Promise\PromiseInterface<bool>
+	 *
 	 * @throws Exceptions\CloudApiCall
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
@@ -189,9 +191,9 @@ final class Discovery implements Evenement\EventEmitterInterface
 					->then(function (Entities\API\Cloud\Things $things) use ($deferred): void {
 						$this->handleFoundCloudDevices($things);
 
-						$deferred->resolve();
+						$deferred->resolve(true);
 					})
-					->otherwise(function (Throwable $ex) use ($deferred): void {
+					->catch(function (Throwable $ex) use ($deferred): void {
 						$this->logger->error(
 							'Loading devices from cloud failed',
 							[
@@ -204,7 +206,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 						$deferred->reject($ex);
 					});
 			})
-			->otherwise(function (Throwable $ex) use ($deferred): void {
+			->catch(function (Throwable $ex) use ($deferred): void {
 				$this->logger->error(
 					'Loading homes from cloud failed',
 					[
@@ -221,6 +223,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 	}
 
 	/**
+	 * @return Promise\PromiseInterface<bool>
+	 *
 	 * @throws BadMethodCallException
 	 * @throws Exceptions\InvalidState
 	 * @throws RuntimeException
@@ -259,7 +263,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			async(static function () use ($deferred, $apiClient): void {
 				$apiClient->disconnect();
 
-				$deferred->resolve();
+				$deferred->resolve(true);
 			}),
 		);
 

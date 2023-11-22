@@ -299,7 +299,7 @@ final class LanApi
 	}
 
 	/**
-	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Entities\API\Lan\DeviceInfo)
+	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\Lan\DeviceInfo> : Entities\API\Lan\DeviceInfo)
 	 *
 	 * @throws Exceptions\LanApiCall
 	 */
@@ -308,7 +308,7 @@ final class LanApi
 		string $ipAddress,
 		int $port,
 		bool $async = true,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Entities\API\Lan\DeviceInfo
+	): Promise\PromiseInterface|Entities\API\Lan\DeviceInfo
 	{
 		$deferred = new Promise\Deferred();
 
@@ -375,7 +375,7 @@ final class LanApi
 						$deferred->reject($ex);
 					}
 				})
-				->otherwise(static function (Throwable $ex) use ($deferred): void {
+				->catch(static function (Throwable $ex) use ($deferred): void {
 					$deferred->reject($ex);
 				});
 
@@ -386,7 +386,7 @@ final class LanApi
 	}
 
 	/**
-	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : bool)
+	 * @return ($async is true ? Promise\PromiseInterface<bool> : bool)
 	 *
 	 * @throws Exceptions\LanApiCall
 	 */
@@ -399,7 +399,7 @@ final class LanApi
 		string|null $group = null,
 		int|null $outlet = null,
 		bool $async = true,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|bool
+	): Promise\PromiseInterface|bool
 	{
 		$deferred = new Promise\Deferred();
 
@@ -483,7 +483,7 @@ final class LanApi
 						$deferred->reject($ex);
 					}
 				})
-				->otherwise(static function (Throwable $ex) use ($deferred): void {
+				->catch(static function (Throwable $ex) use ($deferred): void {
 					$deferred->reject($ex);
 				});
 
@@ -636,14 +636,14 @@ final class LanApi
 	}
 
 	/**
-	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Message\ResponseInterface)
+	 * @return ($async is true ? Promise\PromiseInterface<Message\ResponseInterface> : Message\ResponseInterface)
 	 *
 	 * @throws Exceptions\LanApiCall
 	 */
 	private function callRequest(
 		Request $request,
 		bool $async = true,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Message\ResponseInterface
+	): Promise\PromiseInterface|Message\ResponseInterface
 	{
 		$deferred = new Promise\Deferred();
 

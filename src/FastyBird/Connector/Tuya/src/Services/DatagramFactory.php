@@ -39,6 +39,9 @@ final class DatagramFactory
 	{
 	}
 
+	/**
+	 * @return Promise\PromiseInterface<Datagram\Socket>
+	 */
 	public function create(string $address, int $port): Promise\PromiseInterface
 	{
 		return (new Datagram\Factory($this->eventLoop))->createServer($address . ':' . $port);

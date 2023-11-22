@@ -177,7 +177,7 @@ final class Cloud extends ClientProcess implements Client
 						],
 					);
 				})
-				->otherwise(function (Throwable $ex): void {
+				->catch(function (Throwable $ex): void {
 					$this->logger->error(
 						'eWelink cloud websockets client could not be created',
 						[
@@ -240,6 +240,8 @@ final class Cloud extends ClientProcess implements Client
 	}
 
 	/**
+	 * @return Promise\PromiseInterface<bool>
+	 *
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\CloudApiCall
 	 * @throws MetadataExceptions\InvalidArgument
@@ -273,7 +275,7 @@ final class Cloud extends ClientProcess implements Client
 
 					$deferred->resolve(true);
 			})
-				->otherwise(function (Throwable $ex) use ($deferred, $device): void {
+				->catch(function (Throwable $ex) use ($deferred, $device): void {
 					$this->logger->error(
 						'Could not call cloud openapi',
 						[
@@ -308,6 +310,8 @@ final class Cloud extends ClientProcess implements Client
 	}
 
 	/**
+	 * @return Promise\PromiseInterface<bool>
+	 *
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\CloudApiCall
 	 * @throws Exceptions\InvalidState
@@ -334,7 +338,7 @@ final class Cloud extends ClientProcess implements Client
 
 						$deferred->resolve(true);
 				})
-					->otherwise(function () use ($deferred, $device): void {
+					->catch(function () use ($deferred, $device): void {
 						$this->connectionManager
 							->getCloudApiConnection($this->connector)
 							->getThingState(
@@ -345,7 +349,7 @@ final class Cloud extends ClientProcess implements Client
 
 									$deferred->resolve(true);
 							})
-								->otherwise(function (Throwable $ex) use ($deferred, $device): void {
+								->catch(function (Throwable $ex) use ($deferred, $device): void {
 									$this->logger->error(
 										'Calling eWelink cloud failed',
 										[
@@ -385,7 +389,7 @@ final class Cloud extends ClientProcess implements Client
 
 						$deferred->resolve(true);
 				})
-					->otherwise(function (Throwable $ex) use ($deferred, $device): void {
+					->catch(function (Throwable $ex) use ($deferred, $device): void {
 						$this->logger->error(
 							'Calling eWelink cloud failed',
 							[

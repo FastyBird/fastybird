@@ -160,6 +160,8 @@ final class Lan extends ClientProcess implements Client
 	}
 
 	/**
+	 * @return Promise\PromiseInterface<bool>
+	 *
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\LanApiCall
 	 * @throws Exceptions\Runtime
@@ -211,7 +213,7 @@ final class Lan extends ClientProcess implements Client
 
 					$deferred->resolve(true);
 			})
-				->otherwise(function (Throwable $ex) use ($deferred, $device): void {
+				->catch(function (Throwable $ex) use ($deferred, $device): void {
 					if ($ex instanceof Exceptions\LanApiCall) {
 						$this->checkError($ex, $device);
 
@@ -262,6 +264,9 @@ final class Lan extends ClientProcess implements Client
 		return $deferred->promise();
 	}
 
+	/**
+	 * @return Promise\PromiseInterface<bool>
+	 */
 	protected function readState(MetadataDocuments\DevicesModule\Device $device): Promise\PromiseInterface
 	{
 		// Reading device state is not supported by LAN api
