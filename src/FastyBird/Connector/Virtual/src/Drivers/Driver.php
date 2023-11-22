@@ -16,8 +16,8 @@
 namespace FastyBird\Connector\Virtual\Drivers;
 
 use DateTimeInterface;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Module\Devices\Entities as DevicesEntities;
 use React\Promise;
 
 /**
@@ -44,13 +44,13 @@ interface Driver
 	public function process(): Promise\PromiseInterface;
 
 	public function writeState(
-		DevicesEntities\Devices\Properties\Dynamic|DevicesEntities\Channels\Properties\Dynamic $property,
+		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\ChannelDynamicProperty $property,
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $expectedValue,
 	): Promise\PromiseInterface;
 
 	public function notifyState(
-		DevicesEntities\Devices\Properties\Mapped|DevicesEntities\Channels\Properties\Mapped $property,
+		MetadataDocuments\DevicesModule\DeviceMappedProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
 		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $actualValue,
 	): Promise\PromiseInterface;
 

@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * StoreChannelPropertyState.php
+ * StoreDevicePropertyState.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -39,33 +39,31 @@ use function assert;
 use function is_string;
 
 /**
- * Store channel property state message consumer
+ * Store device property state message consumer
  *
  * @package        FastyBird:VirtualConnector!
  * @subpackage     Queue
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class StoreChannelPropertyState implements Queue\Consumer
+final class StoreDevicePropertyState implements Queue\Consumer
 {
 
 	use Nette\SmartObject;
 
 	/**
 	 * @param DevicesModels\Configuration\Devices\Repository<MetadataDocuments\DevicesModule\Device> $devicesConfigurationRepository
-	 * @param DevicesModels\Configuration\Channels\Repository<MetadataDocuments\DevicesModule\Channel> $channelsConfigurationRepository
-	 * @param DevicesModels\Configuration\Channels\Properties\Repository<MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty|MetadataDocuments\DevicesModule\ChannelVariableProperty> $channelsPropertiesConfigurationRepository
+	 * @param DevicesModels\Configuration\Devices\Properties\Repository<MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceVariableProperty> $devicesPropertiesConfigurationRepository
 	 */
 	public function __construct(
 		private readonly bool $useExchange,
 		private readonly Virtual\Logger $logger,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
-		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
-		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
-		private readonly DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
-		private readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager,
+		private readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
+		private readonly DevicesModels\Entities\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
+		private readonly DevicesModels\Entities\Devices\Properties\PropertiesManager $devicesPropertiesManager,
 		private readonly DevicesUtilities\Database $databaseHelper,
-		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStateManager,
+		private readonly DevicesUtilities\DevicePropertiesStates $devicePropertiesStateManager,
 		private readonly ExchangeEntities\DocumentFactory $entityFactory,
 		private readonly ExchangePublisher\Publisher $publisher,
 	)
@@ -85,7 +83,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 	 */
 	public function consume(Entities\Messages\Entity $entity): bool
 	{
-		if (!$entity instanceof Entities\Messages\StoreChannelPropertyState) {
+		if (!$entity instanceof Entities\Messages\StoreDevicePropertyState) {
 			return false;
 		}
 
@@ -100,15 +98,12 @@ final class StoreChannelPropertyState implements Queue\Consumer
 				'Device could not be loaded',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
-					'type' => 'store-channel-property-state-message-consumer',
+					'type' => 'store-device-property-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
 					],
 					'device' => [
 						'id' => $entity->getDevice()->toString(),
-					],
-					'channel' => [
-						'id' => $entity->getChannel()->toString(),
 					],
 					'property' => [
 						'id' => is_string($entity->getProperty())
@@ -122,63 +117,27 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
-		$findChannelQuery->forDevice($device);
-		$findChannelQuery->byId($entity->getChannel());
-
-		$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
-
-		if ($channel === null) {
-			$this->logger->error(
-				'Device channel could not be loaded',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
-					'type' => 'store-channel-property-state-message-consumer',
-					'connector' => [
-						'id' => $entity->getConnector()->toString(),
-					],
-					'device' => [
-						'id' => $entity->getDevice()->toString(),
-					],
-					'channel' => [
-						'id' => $entity->getChannel()->toString(),
-					],
-					'property' => [
-						'id' => is_string($entity->getProperty())
-							? $entity->getProperty()
-							: $entity->getProperty()->toString(),
-					],
-					'data' => $entity->toArray(),
-				],
-			);
-
-			return true;
-		}
-
-		$findChannelPropertyQuery = new DevicesQueries\Configuration\FindChannelProperties();
-		$findChannelPropertyQuery->forChannel($channel);
+		$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceProperties();
+		$findDevicePropertyQuery->forDevice($device);
 		if (is_string($entity->getProperty())) {
-			$findChannelPropertyQuery->byIdentifier($entity->getProperty());
+			$findDevicePropertyQuery->byIdentifier($entity->getProperty());
 		} else {
-			$findChannelPropertyQuery->byId($entity->getProperty());
+			$findDevicePropertyQuery->byId($entity->getProperty());
 		}
 
-		$property = $this->channelsPropertiesConfigurationRepository->findOneBy($findChannelPropertyQuery);
+		$property = $this->devicesPropertiesConfigurationRepository->findOneBy($findDevicePropertyQuery);
 
 		if ($property === null) {
 			$this->logger->error(
-				'Device channel property could not be loaded',
+				'Device device property could not be loaded',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
-					'type' => 'store-channel-property-state-message-consumer',
+					'type' => 'store-device-property-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
 					],
 					'device' => [
 						'id' => $entity->getDevice()->toString(),
-					],
-					'channel' => [
-						'id' => $entity->getChannel()->toString(),
 					],
 					'property' => [
 						'id' => is_string($entity->getProperty())
@@ -200,19 +159,19 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			$property->getInvalid(),
 		);
 
-		if ($property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
+		if ($property instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty) {
 			$this->databaseHelper->transaction(
 				function () use ($valueToStore, $property): void {
-					$findPropertyQuery = new DevicesQueries\Entities\FindChannelVariableProperties();
+					$findPropertyQuery = new DevicesQueries\Entities\FindDeviceVariableProperties();
 					$findPropertyQuery->byId($property->getId());
 
-					$property = $this->channelsPropertiesRepository->findOneBy(
+					$property = $this->devicesPropertiesRepository->findOneBy(
 						$findPropertyQuery,
-						DevicesEntities\Channels\Properties\Variable::class,
+						DevicesEntities\Devices\Properties\Variable::class,
 					);
-					assert($property instanceof DevicesEntities\Channels\Properties\Variable);
+					assert($property instanceof DevicesEntities\Devices\Properties\Variable);
 
-					$this->channelsPropertiesManager->update(
+					$this->devicesPropertiesManager->update(
 						$property,
 						Utils\ArrayHash::from([
 							'value' => MetadataUtilities\ValueHelper::flattenValue($valueToStore),
@@ -221,20 +180,20 @@ final class StoreChannelPropertyState implements Queue\Consumer
 				},
 			);
 
-		} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-			$this->channelPropertiesStateManager->setValue($property, Utils\ArrayHash::from([
+		} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
+			$this->devicePropertiesStateManager->setValue($property, Utils\ArrayHash::from([
 				DevicesStates\Property::ACTUAL_VALUE_FIELD => MetadataUtilities\ValueHelper::flattenValue(
 					$valueToStore,
 				),
 				DevicesStates\Property::VALID_FIELD => true,
 			]));
-		} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
-			$findChannelPropertyQuery = new DevicesQueries\Configuration\FindChannelProperties();
-			$findChannelPropertyQuery->byId($property->getParent());
+		} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
+			$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceProperties();
+			$findDevicePropertyQuery->byId($property->getParent());
 
-			$parent = $this->channelsPropertiesConfigurationRepository->findOneBy($findChannelPropertyQuery);
+			$parent = $this->devicesPropertiesConfigurationRepository->findOneBy($findDevicePropertyQuery);
 
-			if ($parent instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+			if ($parent instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
 				try {
 					if ($this->useExchange) {
 						$this->publisher->publish(
@@ -242,23 +201,22 @@ final class StoreChannelPropertyState implements Queue\Consumer
 								MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
 							),
 							MetadataTypes\RoutingKey::get(
-								MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION,
+								MetadataTypes\RoutingKey::DEVICE_PROPERTY_ACTION,
 							),
 							$this->entityFactory->create(
 								Utils\Json::encode([
 									'action' => MetadataTypes\PropertyAction::ACTION_SET,
 									'device' => $device->getId()->toString(),
-									'channel' => $channel->getId()->toString(),
 									'property' => $property->getId()->toString(),
 									'expected_value' => MetadataUtilities\ValueHelper::flattenValue($valueToStore),
 								]),
 								MetadataTypes\RoutingKey::get(
-									MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION,
+									MetadataTypes\RoutingKey::DEVICE_PROPERTY_ACTION,
 								),
 							),
 						);
 					} else {
-						$this->channelPropertiesStateManager->writeValue($property, Utils\ArrayHash::from([
+						$this->devicePropertiesStateManager->writeValue($property, Utils\ArrayHash::from([
 							DevicesStates\Property::EXPECTED_VALUE_FIELD => $entity->getValue(),
 							DevicesStates\Property::PENDING_FIELD => true,
 						]));
@@ -268,16 +226,13 @@ final class StoreChannelPropertyState implements Queue\Consumer
 						'State value could not be converted to mapped parent',
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
-							'type' => 'store-channel-property-state-message-consumer',
+							'type' => 'store-device-property-state-message-consumer',
 							'exception' => BootstrapHelpers\Logger::buildException($ex),
 							'connector' => [
 								'id' => $entity->getConnector()->toString(),
 							],
 							'device' => [
 								'id' => $entity->getDevice()->toString(),
-							],
-							'channel' => [
-								'id' => $entity->getChannel()->toString(),
 							],
 							'property' => [
 								'id' => is_string($entity->getProperty())
@@ -290,18 +245,18 @@ final class StoreChannelPropertyState implements Queue\Consumer
 
 					return true;
 				}
-			} elseif ($parent instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
+			} elseif ($parent instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty) {
 				$this->databaseHelper->transaction(function () use ($entity, $parent): void {
-					$findPropertyQuery = new DevicesQueries\Entities\FindChannelVariableProperties();
+					$findPropertyQuery = new DevicesQueries\Entities\FindDeviceVariableProperties();
 					$findPropertyQuery->byId($parent->getId());
 
-					$property = $this->channelsPropertiesRepository->findOneBy(
+					$property = $this->devicesPropertiesRepository->findOneBy(
 						$findPropertyQuery,
-						DevicesEntities\Channels\Properties\Variable::class,
+						DevicesEntities\Devices\Properties\Variable::class,
 					);
 
 					if ($property !== null) {
-						$this->channelsPropertiesManager->update(
+						$this->devicesPropertiesManager->update(
 							$property,
 							Utils\ArrayHash::from([
 								'value' => $entity->getValue(),
@@ -318,9 +273,6 @@ final class StoreChannelPropertyState implements Queue\Consumer
 								],
 								'device' => [
 									'id' => $entity->getDevice()->toString(),
-								],
-								'channel' => [
-									'id' => $entity->getChannel()->toString(),
 								],
 								'property' => [
 									'id' => is_string($entity->getProperty())
@@ -339,7 +291,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			'Consumed device status message',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
-				'type' => 'store-channel-property-state-message-consumer',
+				'type' => 'store-device-property-state-message-consumer',
 				'device' => [
 					'id' => $device->getId()->toString(),
 				],

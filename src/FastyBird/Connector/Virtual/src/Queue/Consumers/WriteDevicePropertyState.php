@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * WriteChannelPropertyState.php
+ * WriteDevicePropertyState.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,7 +10,7 @@
  * @subpackage     Queue
  * @since          1.0.0
  *
- * @date           18.10.23
+ * @date           22.11.23
  */
 
 namespace FastyBird\Connector\Virtual\Queue\Consumers;
@@ -45,7 +45,7 @@ use Throwable;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class WriteChannelPropertyState implements Queue\Consumer
+final class WriteDevicePropertyState implements Queue\Consumer
 {
 
 	use Nette\SmartObject;
@@ -53,8 +53,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 	/**
 	 * @param DevicesModels\Configuration\Connectors\Repository<MetadataDocuments\DevicesModule\Connector> $connectorsConfigurationRepository
 	 * @param DevicesModels\Configuration\Devices\Repository<MetadataDocuments\DevicesModule\Device> $devicesConfigurationRepository
-	 * @param DevicesModels\Configuration\Channels\Repository<MetadataDocuments\DevicesModule\Channel> $channelsConfigurationRepository
-	 * @param DevicesModels\Configuration\Channels\Properties\Repository<MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty> $channelsPropertiesConfigurationRepository
+	 * @param DevicesModels\Configuration\Devices\Properties\Repository<MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty> $devicesPropertiesConfigurationRepository
 	 */
 	public function __construct(
 		private readonly Queue\Queue $queue,
@@ -63,9 +62,8 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		private readonly Virtual\Logger $logger,
 		private readonly DevicesModels\Configuration\Connectors\Repository $connectorsConfigurationRepository,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
-		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
-		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
-		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
+		private readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
+		private readonly DevicesUtilities\DevicePropertiesStates $devicePropertiesStatesManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 	)
 	{
@@ -82,7 +80,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 	 */
 	public function consume(Entities\Messages\Entity $entity): bool
 	{
-		if (!$entity instanceof Entities\Messages\WriteChannelPropertyState) {
+		if (!$entity instanceof Entities\Messages\WriteDevicePropertyState) {
 			return false;
 		}
 
@@ -98,15 +96,12 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				'Connector could not be loaded',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
-					'type' => 'write-channel-property-state-message-consumer',
+					'type' => 'write-device-property-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
 					],
 					'device' => [
 						'id' => $entity->getDevice()->toString(),
-					],
-					'channel' => [
-						'id' => $entity->getChannel()->toString(),
 					],
 					'property' => [
 						'id' => $entity->getProperty()->toString(),
@@ -129,16 +124,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				'Device could not be loaded',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
-					'type' => 'write-channel-property-state-message-consumer',
+					'type' => 'write-device-property-state-message-consumer',
 					'connector' => [
 						'id' => $connector->getId()->toString(),
 					],
 					'device' => [
 						'id' => $entity->getDevice()->toString(),
 					],
-					'channel' => [
-						'id' => $entity->getChannel()->toString(),
-					],
 					'property' => [
 						'id' => $entity->getProperty()->toString(),
 					],
@@ -149,60 +141,26 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
-		$findChannelQuery->forDevice($device);
-		$findChannelQuery->byId($entity->getChannel());
-
-		$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
-
-		if ($channel === null) {
-			$this->logger->error(
-				'Channel could not be loaded',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
-					'type' => 'write-channel-property-state-message-consumer',
-					'connector' => [
-						'id' => $connector->getId()->toString(),
-					],
-					'device' => [
-						'id' => $device->getId()->toString(),
-					],
-					'channel' => [
-						'id' => $entity->getChannel()->toString(),
-					],
-					'property' => [
-						'id' => $entity->getProperty()->toString(),
-					],
-					'data' => $entity->toArray(),
-				],
-			);
-
-			return true;
-		}
-
-		$findChannelPropertyQuery = new DevicesQueries\Configuration\FindChannelProperties();
-		$findChannelPropertyQuery->forChannel($channel);
+		$findChannelPropertyQuery = new DevicesQueries\Configuration\FindDeviceProperties();
+		$findChannelPropertyQuery->forDevice($device);
 		$findChannelPropertyQuery->byId($entity->getProperty());
 
-		$property = $this->channelsPropertiesConfigurationRepository->findOneBy($findChannelPropertyQuery);
+		$property = $this->devicesPropertiesConfigurationRepository->findOneBy($findChannelPropertyQuery);
 
 		if (
-			!$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-			&& !$property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
+			!$property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
+			&& !$property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
 		) {
 			$this->logger->error(
 				'Channel property could not be loaded',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
-					'type' => 'write-channel-property-state-message-consumer',
+					'type' => 'write-device-property-state-message-consumer',
 					'connector' => [
 						'id' => $connector->getId()->toString(),
 					],
 					'device' => [
 						'id' => $device->getId()->toString(),
-					],
-					'channel' => [
-						'id' => $channel->getId()->toString(),
 					],
 					'property' => [
 						'id' => $entity->getProperty()->toString(),
@@ -215,22 +173,19 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		}
 
 		if (
-			$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+			$property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
 			&& !$property->isSettable()
 		) {
 			$this->logger->error(
 				'Channel property is not writable',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
-					'type' => 'write-channel-property-state-message-consumer',
+					'type' => 'write-device-property-state-message-consumer',
 					'connector' => [
 						'id' => $connector->getId()->toString(),
 					],
 					'device' => [
 						'id' => $device->getId()->toString(),
-					],
-					'channel' => [
-						'id' => $channel->getId()->toString(),
 					],
 					'property' => [
 						'id' => $property->getId()->toString(),
@@ -242,19 +197,19 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$state = $this->channelPropertiesStatesManager->readValue($property);
+		$state = $this->devicePropertiesStatesManager->readValue($property);
 
 		if ($state === null) {
 			return true;
 		}
 
-		$valueToWrite = $property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
+		$valueToWrite = $property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
 			? $state->getActualValue()
 			: $state->getExpectedValue();
 
-		if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+		if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
 			if ($valueToWrite === null) {
-				$this->channelPropertiesStatesManager->setValue(
+				$this->devicePropertiesStatesManager->setValue(
 					$property,
 					Utils\ArrayHash::from([
 						DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
@@ -265,7 +220,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				return true;
 			}
 
-			$this->channelPropertiesStatesManager->setValue(
+			$this->devicePropertiesStatesManager->setValue(
 				$property,
 				Utils\ArrayHash::from([
 					DevicesStates\Property::PENDING_FIELD => $now->format(DateTimeInterface::ATOM),
@@ -276,7 +231,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		try {
 			$driver = $this->driversManager->getDriver($device);
 
-			$result = $property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
+			$result = $property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
 				? $driver->notifyState($property, $valueToWrite)
 				: $driver->writeState($property, $valueToWrite);
 		} catch (Exceptions\InvalidState $ex) {
@@ -295,16 +250,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				'Device is not properly configured',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
-					'type' => 'write-channel-property-state-message-consumer',
+					'type' => 'write-device-property-state-message-consumer',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'connector' => [
 						'id' => $connector->getId()->toString(),
 					],
 					'device' => [
 						'id' => $device->getId()->toString(),
-					],
-					'channel' => [
-						'id' => $channel->getId()->toString(),
 					],
 					'property' => [
 						'id' => $property->getId()->toString(),
@@ -318,11 +270,11 @@ final class WriteChannelPropertyState implements Queue\Consumer
 
 		$result->then(
 			function () use ($property, $now): void {
-				if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-					$state = $this->channelPropertiesStatesManager->getValue($property);
+				if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
+					$state = $this->devicePropertiesStatesManager->getValue($property);
 
 					if ($state?->getExpectedValue() !== null) {
-						$this->channelPropertiesStatesManager->setValue(
+						$this->devicePropertiesStatesManager->setValue(
 							$property,
 							Utils\ArrayHash::from([
 								DevicesStates\Property::PENDING_FIELD => $now->format(DateTimeInterface::ATOM),
@@ -331,9 +283,9 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					}
 				}
 			},
-			function (Throwable $ex) use ($connector, $device, $channel, $property, $entity): void {
-				if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-					$this->channelPropertiesStatesManager->setValue(
+			function (Throwable $ex) use ($connector, $device, $property, $entity): void {
+				if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
+					$this->devicePropertiesStatesManager->setValue(
 						$property,
 						Utils\ArrayHash::from([
 							DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
@@ -357,16 +309,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					'Could write state to device',
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
-						'type' => 'write-channel-property-state-message-consumer',
+						'type' => 'write-device-property-state-message-consumer',
 						'exception' => BootstrapHelpers\Logger::buildException($ex),
 						'connector' => [
 							'id' => $connector->getId()->toString(),
 						],
 						'device' => [
 							'id' => $device->getId()->toString(),
-						],
-						'channel' => [
-							'id' => $channel->getId()->toString(),
 						],
 						'property' => [
 							'id' => $property->getId()->toString(),
@@ -381,15 +330,12 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			'Consumed write sub device state message',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
-				'type' => 'write-channel-property-state-message-consumer',
+				'type' => 'write-device-property-state-message-consumer',
 				'connector' => [
 					'id' => $connector->getId()->toString(),
 				],
 				'device' => [
 					'id' => $device->getId()->toString(),
-				],
-				'channel' => [
-					'id' => $channel->getId()->toString(),
 				],
 				'property' => [
 					'id' => $property->getId()->toString(),

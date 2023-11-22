@@ -22,14 +22,15 @@ use FastyBird\Connector\Virtual\Drivers;
 use FastyBird\Connector\Virtual\Entities;
 use FastyBird\Connector\Virtual\Exceptions;
 use FastyBird\Connector\Virtual\Helpers;
-use FastyBird\Connector\Virtual\Queries;
 use FastyBird\Connector\Virtual\Queue;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use React\EventLoop;
@@ -56,6 +57,9 @@ class Devices
 
 	private const RECONNECT_COOL_DOWN_TIME = 300.0;
 
+	/** @var array<string, MetadataDocuments\DevicesModule\Device>  */
+	private array $devices = [];
+
 	/** @var array<string, Drivers\Driver> */
 	private array $devicesDrivers = [];
 
@@ -67,13 +71,17 @@ class Devices
 
 	private EventLoop\TimerInterface|null $handlerTimer = null;
 
+	/**
+	 * @param DevicesModels\Configuration\Devices\Repository<MetadataDocuments\DevicesModule\Device> $devicesConfigurationRepository
+	 */
 	public function __construct(
-		private readonly Entities\VirtualConnector $connector,
+		private readonly MetadataDocuments\DevicesModule\Connector $connector,
 		private readonly Drivers\DriversManager $driversManager,
 		private readonly Helpers\Entity $entityHelper,
+		private readonly Helpers\Device $deviceHelper,
 		private readonly Queue\Queue $queue,
 		private readonly Virtual\Logger $logger,
-		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
@@ -81,9 +89,21 @@ class Devices
 	{
 	}
 
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
 	public function start(): void
 	{
 		$this->processedDevices = [];
+
+		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDevicesQuery->forConnector($this->connector);
+
+		foreach ($this->devicesConfigurationRepository->findAllBy($findDevicesQuery) as $device) {
+			$this->devices[$device->getId()->toString()] = $device;
+		}
 
 		$this->eventLoop->addTimer(
 			self::HANDLER_START_DELAY,
@@ -115,16 +135,8 @@ class Devices
 	 */
 	private function handleDevices(): void
 	{
-		$findDevicesQuery = new Queries\Entities\FindDevices();
-		$findDevicesQuery->forConnector($this->connector);
-
-		foreach ($this->devicesRepository->findAllBy($findDevicesQuery, Entities\VirtualDevice::class) as $device) {
-			if (
-				!in_array($device->getId()->toString(), $this->processedDevices, true)
-				&& !$this->deviceConnectionManager->getState($device)->equalsValue(
-					MetadataTypes\ConnectionState::STATE_ALERT,
-				)
-			) {
+		foreach ($this->devices as $device) {
+			if (!in_array($device->getId()->toString(), $this->processedDevices, true)) {
 				$this->processedDevices[] = $device->getId()->toString();
 
 				if ($this->processDevice($device)) {
@@ -141,16 +153,27 @@ class Devices
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidArgument
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
-	private function processDevice(Entities\VirtualDevice $device): bool
+	private function processDevice(MetadataDocuments\DevicesModule\Device $device): bool
 	{
 		$service = $this->driversManager->getDriver($device);
 
 		if (!$service->isConnected()) {
+			$deviceState = $this->deviceConnectionManager->getState($device);
+
+			if ($deviceState->equalsValue(MetadataTypes\ConnectionState::STATE_ALERT)) {
+				unset($this->devices[$device->getId()->toString()]);
+
+				return false;
+			}
+
 			if (!$service->isConnecting()) {
 				if (
 					$service->getLastConnectAttempt() === null
@@ -196,7 +219,7 @@ class Devices
 								$this->entityHelper->create(
 									Entities\Messages\StoreDeviceConnectionState::class,
 									[
-										'connector' => $device->getConnector()->getId(),
+										'connector' => $device->getConnector(),
 										'device' => $device->getId(),
 										'state' => MetadataTypes\ConnectionState::STATE_ALERT,
 									],
@@ -209,7 +232,7 @@ class Devices
 						$this->entityHelper->create(
 							Entities\Messages\StoreDeviceConnectionState::class,
 							[
-								'connector' => $device->getConnector()->getId(),
+								'connector' => $device->getConnector(),
 								'device' => $device->getId(),
 								'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
 							],
@@ -230,13 +253,22 @@ class Devices
 		if (
 			$cmdResult instanceof DateTimeInterface
 			&& (
-				$this->dateTimeFactory->getNow()->getTimestamp() - $cmdResult->getTimestamp() < $device->getStateProcessingDelay()
+				$this->dateTimeFactory->getNow()->getTimestamp() - $cmdResult->getTimestamp()
+				< $this->deviceHelper->getStateProcessingDelay($device)
 			)
 		) {
 			return false;
 		}
 
 		$this->processedDevicesCommands[$device->getId()->toString()] = $this->dateTimeFactory->getNow();
+
+		$deviceState = $this->deviceConnectionManager->getState($device);
+
+		if ($deviceState->equalsValue(MetadataTypes\ConnectionState::STATE_ALERT)) {
+			unset($this->devices[$device->getId()->toString()]);
+
+			return false;
+		}
 
 		$service->process()
 			->then(function () use ($device): void {
@@ -246,7 +278,7 @@ class Devices
 					$this->entityHelper->create(
 						Entities\Messages\StoreDeviceConnectionState::class,
 						[
-							'connector' => $device->getConnector()->getId(),
+							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
 							'state' => MetadataTypes\ConnectionState::STATE_CONNECTED,
 						],
@@ -275,7 +307,7 @@ class Devices
 					$this->entityHelper->create(
 						Entities\Messages\StoreDeviceConnectionState::class,
 						[
-							'connector' => $device->getConnector()->getId(),
+							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
 							'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
 						],

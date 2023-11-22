@@ -31,7 +31,7 @@ class VirtualDevice extends DevicesEntities\Devices\Device
 
 	public const TYPE = 'virtual';
 
-	private const STATE_PROCESSING_DELAY = 120.0;
+	public const STATE_PROCESSING_DELAY = 120.0;
 
 	public function getType(): string
 	{
