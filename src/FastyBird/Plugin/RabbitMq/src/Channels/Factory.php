@@ -26,6 +26,7 @@ use Nette\Utils;
 use Psr\EventDispatcher;
 use React\EventLoop;
 use React\Promise;
+use function assert;
 
 /**
  * RabbitMQ async client factory
@@ -63,9 +64,18 @@ final class Factory implements ExchangeExchange\Factory
 
 		$client
 			->connect()
-			->then(static fn (Bunny\Async\Client $client) => $client->channel())
+			->then(static function (mixed $client): Promise\PromiseInterface {
+				assert($client instanceof Bunny\Async\Client);
+
+				$channel = $client->channel();
+				assert($channel instanceof Promise\PromiseInterface);
+
+				return $channel;
+			})
 			->then(
-				static function (Bunny\Channel $channel): Promise\PromiseInterface {
+				static function (mixed $channel): Promise\PromiseInterface {
+					assert($channel instanceof Bunny\Channel);
+
 					$qosResult = $channel->qos(0, 5);
 
 					if ($qosResult instanceof Promise\PromiseInterface) {

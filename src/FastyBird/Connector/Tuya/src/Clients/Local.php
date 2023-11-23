@@ -292,44 +292,46 @@ final class Local implements Client
 		}
 
 		$client->readStates($this->deviceHelper->getGateway($device) !== null ? $device->getIdentifier() : null)
-			->then(function (array|Types\LocalDeviceError|null $statuses) use ($device): void {
-				$this->processedDevicesCommands[$device->getId()->toString()][self::CMD_STATE] = $this->dateTimeFactory->getNow();
+			->then(
+				function (array|Entities\API\LocalDeviceWifiScan|Types\LocalDeviceError|string|null $statuses) use ($device): void {
+					$this->processedDevicesCommands[$device->getId()->toString()][self::CMD_STATE] = $this->dateTimeFactory->getNow();
 
-				if (is_array($statuses)) {
-					$dataPointsStatuses = [];
+					if (is_array($statuses)) {
+						$dataPointsStatuses = [];
 
-					foreach ($statuses as $status) {
-						if (!in_array($status->getCode(), $this->deviceHelper->getExcludedDps($device), true)) {
-							$dataPointsStatuses[] = [
-								'code' => $status->getCode(),
-								'value' => $status->getValue(),
-							];
+						foreach ($statuses as $status) {
+							if (!in_array($status->getCode(), $this->deviceHelper->getExcludedDps($device), true)) {
+								$dataPointsStatuses[] = [
+									'code' => $status->getCode(),
+									'value' => $status->getValue(),
+								];
+							}
 						}
+
+						$this->queue->append(
+							$this->entityHelper->create(
+								Entities\Messages\StoreChannelPropertyState::class,
+								[
+									'connector' => $device->getConnector()->toString(),
+									'identifier' => $device->getIdentifier(),
+									'data_points' => $dataPointsStatuses,
+								],
+							),
+						);
 					}
 
 					$this->queue->append(
 						$this->entityHelper->create(
-							Entities\Messages\StoreChannelPropertyState::class,
+							Entities\Messages\StoreDeviceConnectionState::class,
 							[
 								'connector' => $device->getConnector()->toString(),
 								'identifier' => $device->getIdentifier(),
-								'data_points' => $dataPointsStatuses,
+								'state' => MetadataTypes\ConnectionState::STATE_CONNECTED,
 							],
 						),
 					);
-				}
-
-				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\StoreDeviceConnectionState::class,
-						[
-							'connector' => $device->getConnector()->toString(),
-							'identifier' => $device->getIdentifier(),
-							'state' => MetadataTypes\ConnectionState::STATE_CONNECTED,
-						],
-					),
-				);
-			})
+				},
+			)
 			->catch(function (Throwable $ex) use ($device): void {
 				if ($ex instanceof Exceptions\LocalApiBusy || $ex instanceof Exceptions\LocalApiTimeout) {
 					$this->processedDevicesCommands[$device->getId()->toString()][self::CMD_STATE] = false;

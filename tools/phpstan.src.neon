@@ -40,8 +40,6 @@ parameters:
         - phpstan-bootstrap.php
 
     stubFiles:
-        - ../tests/stubs/PromiseInterface.stub
-        - ../tests/stubs/ExtendedPromiseInterface.stub
         - ../tests/stubs/BaseLinkInterface.stub
         - ../tests/stubs/ContextInterface.stub
         - ../tests/stubs/LinkInterface.stub

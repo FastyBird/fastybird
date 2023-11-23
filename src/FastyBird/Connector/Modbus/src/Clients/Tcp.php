@@ -609,15 +609,8 @@ class Tcp implements Client
 			}
 
 			$promise?->then(
-				function (Entities\API\Entity $response) use ($request, $device): void {
+				function (Entities\API\ReadAnalogInputs|Entities\API\ReadDigitalInputs $response) use ($request, $device): void {
 					$now = $this->dateTimeFactory->getNow();
-
-					if (
-						!$response instanceof Entities\API\ReadDigitalInputs
-						&& !$response instanceof Entities\API\ReadAnalogInputs
-					) {
-						return;
-					}
 
 					if ($response instanceof Entities\API\ReadDigitalInputs) {
 						foreach ($response->getRegisters() as $address => $value) {

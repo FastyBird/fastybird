@@ -41,6 +41,7 @@ use function assert;
 use function call_user_func;
 use function count;
 use function floor;
+use function is_array;
 use function sprintf;
 
 /**
@@ -303,7 +304,8 @@ abstract class Client
 		$deferred = new Promise\Deferred();
 
 		$this->startFlow($this->flowFactory->buildOutgoingUnsubscribeFlow([$subscription]))
-			->then(static function (array $subscriptions) use ($deferred): void {
+			->then(static function (mixed $subscriptions) use ($deferred): void {
+				assert(is_array($subscriptions));
 				$deferred->resolve(array_shift($subscriptions));
 			})
 			->catch(static function ($exception) use ($deferred): void {

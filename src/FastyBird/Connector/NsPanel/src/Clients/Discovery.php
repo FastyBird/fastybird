@@ -33,8 +33,6 @@ use React\Promise;
 use Throwable;
 use function array_key_exists;
 use function array_merge;
-use function assert;
-use function is_array;
 
 /**
  * Connector sub-devices discovery client
@@ -115,11 +113,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$foundSubDevices = [];
 
 				foreach ($results as $result) {
-					assert(is_array($result));
-
 					foreach ($result as $device) {
-						assert($device instanceof Entities\Clients\DiscoveredSubDevice);
-
 						if (!array_key_exists($device->getParent()->toString(), $foundSubDevices)) {
 							$foundSubDevices[$device->getParent()->toString()] = [];
 						}

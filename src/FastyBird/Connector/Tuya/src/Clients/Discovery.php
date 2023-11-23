@@ -570,6 +570,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 						],
 					),
 				);
+
+				$processedDevices[] = $device;
 			} catch (Throwable $ex) {
 				$this->logger->error(
 					'Could not create device description message',
@@ -894,6 +896,13 @@ final class Discovery implements Evenement\EventEmitterInterface
 				),
 			);
 
+			$processedDevices[] = $this->entityHelper->create(
+				Entities\Clients\DiscoveredCloudDevice::class,
+				[
+					'id' => $device->getId(),
+					'ip_address' => $device->getIp(),
+				],
+			);
 		}
 
 		$this->getCloudApiConnection()->disconnect();

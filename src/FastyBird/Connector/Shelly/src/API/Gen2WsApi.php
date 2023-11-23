@@ -41,6 +41,7 @@ use React\Promise;
 use stdClass;
 use Throwable;
 use function array_key_exists;
+use function assert;
 use function gethostbyname;
 use function hash;
 use function implode;
@@ -171,7 +172,9 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 					'Connection' => 'Upgrade',
 				],
 			)
-				->then(function (Ratchet\Client\WebSocket $connection) use ($deferred): void {
+				->then(function (mixed $connection) use ($deferred): void {
+					assert($connection instanceof Ratchet\Client\WebSocket);
+
 					$this->connection = $connection;
 					$this->connecting = false;
 					$this->connected = true;

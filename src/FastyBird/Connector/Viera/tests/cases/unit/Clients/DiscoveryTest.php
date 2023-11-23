@@ -201,7 +201,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 			->willReturn($socketConnectorPromise);
 
 		$socketConnectorPromise
-			->method('otherwise')
+			->method('catch')
 			->with(
 				self::callback(static function ($callback): bool {
 					self::assertIsCallable($callback);

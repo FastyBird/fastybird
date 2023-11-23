@@ -259,7 +259,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 							},
 						);
 					$promise
-						->method('otherwise')
+						->method('catch')
 						->with(self::callback(static fn (): bool => true));
 
 					return $promise;
@@ -294,7 +294,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 							},
 						);
 					$promise
-						->method('otherwise')
+						->method('catch')
 						->with(self::callback(static fn (): bool => true));
 
 					return $promise;
@@ -350,7 +350,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 							},
 						);
 					$datagramFactoryPromise
-						->method('otherwise')
+						->method('catch')
 						->with(
 							self::callback(static fn (): bool => true),
 						);
