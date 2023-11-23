@@ -31,9 +31,12 @@ final class DiscoveredCloudDevice implements Entity
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $id,
-		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		#[ObjectMapper\Modifiers\FieldName('ip_address')]
-		private readonly string $ipAddress,
+		private readonly string|null $ipAddress,
 	)
 	{
 	}
@@ -43,7 +46,7 @@ final class DiscoveredCloudDevice implements Entity
 		return $this->id;
 	}
 
-	public function getIpAddress(): string
+	public function getIpAddress(): string|null
 	{
 		return $this->ipAddress;
 	}

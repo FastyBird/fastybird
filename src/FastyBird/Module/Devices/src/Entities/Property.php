@@ -428,7 +428,7 @@ abstract class Property implements Entity,
 	{
 		$value = MetadataUtilities\ValueHelper::flattenValue($value);
 
-		if ($this->getIdentifier() === MetadataTypes\PropertyIdentifier::IDENTIFIER_IP_ADDRESS) {
+		if ($value !== null && $this->getIdentifier() === MetadataTypes\PropertyIdentifier::IDENTIFIER_IP_ADDRESS) {
 			if (!is_string($value)) {
 				throw new Exceptions\InvalidArgument(
 					'Provided property value is not valid value for IP address property',
@@ -442,7 +442,10 @@ abstract class Property implements Entity,
 					'Provided property value is not valid value for IP address property',
 				);
 			}
-		} elseif ($this->getIdentifier() === MetadataTypes\PropertyIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS) {
+		} elseif (
+			$value !== null
+			&& $this->getIdentifier() === MetadataTypes\PropertyIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS
+		) {
 			if (!is_string($value)) {
 				throw new Exceptions\InvalidArgument(
 					'Provided property value is not valid value for MAC address property',
