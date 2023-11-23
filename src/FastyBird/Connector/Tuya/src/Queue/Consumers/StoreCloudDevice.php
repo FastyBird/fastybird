@@ -21,6 +21,7 @@ use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Queries;
 use FastyBird\Connector\Tuya\Queue;
 use FastyBird\Connector\Tuya\Types;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
@@ -47,6 +48,9 @@ final class StoreCloudDevice implements Queue\Consumer
 	use DeviceProperty;
 	use ChannelProperty;
 
+	/**
+	 * @param DevicesModels\Configuration\Channels\Properties\Repository<MetadataDocuments\DevicesModule\ChannelDynamicProperty> $channelsPropertiesConfigurationRepository
+	 */
 	public function __construct(
 		protected readonly Tuya\Logger $logger,
 		protected readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
@@ -55,6 +59,8 @@ final class StoreCloudDevice implements Queue\Consumer
 		protected readonly DevicesModels\Entities\Channels\ChannelsRepository $channelsRepository,
 		protected readonly DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		protected readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager,
+		protected readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStateManager,
+		protected readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
 		protected readonly DevicesUtilities\Database $databaseHelper,
 		private readonly DevicesModels\Entities\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Entities\Devices\DevicesManager $devicesManager,
