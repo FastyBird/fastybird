@@ -17,6 +17,7 @@ namespace FastyBird\Connector\Tuya\Queue\Consumers;
 
 use Doctrine\DBAL;
 use FastyBird\Connector\Tuya;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
@@ -39,6 +40,8 @@ use function array_merge;
  * @property-read DevicesModels\Entities\Channels\ChannelsRepository $channelsRepository
  * @property-read DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository
  * @property-read DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager
+ * @property-read DevicesModels\States\ChannelPropertiesManager $channelPropertiesStateManager
+ * @property-read DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository
  * @property-read DevicesUtilities\Database $databaseHelper
  * @property-read Tuya\Logger $logger
  */
@@ -54,6 +57,7 @@ trait ChannelProperty
 	 * @throws DevicesExceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function setChannelProperty(
 		string $type,
@@ -181,6 +185,24 @@ trait ChannelProperty
 			);
 
 		} else {
+			if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
+				$findPropertyQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
+				$findPropertyQuery->byId($property->getId());
+
+				$propertyConfiguration = $this->channelsPropertiesConfigurationRepository->findOneBy(
+					$findPropertyQuery,
+					MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
+				);
+
+				if ($propertyConfiguration !== null) {
+					try {
+						$this->channelPropertiesStateManager->delete($propertyConfiguration);
+					} catch (DevicesExceptions\NotImplemented) {
+						// Just ignore it
+					}
+				}
+			}
+
 			$property = $this->databaseHelper->transaction(
 				fn (): DevicesEntities\Channels\Properties\Property => $this->channelsPropertiesManager->update(
 					$property,
