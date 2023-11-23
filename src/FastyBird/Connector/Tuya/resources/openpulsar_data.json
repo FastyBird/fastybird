@@ -43,7 +43,14 @@
       "type" : "string"
     },
     "gid" : {
-      "type" : "string"
+      "oneOf" : [
+        {
+          "type" : "string"
+        },
+        {
+          "type" : "number"
+        }
+      ]
     },
     "uid" : {
       "type" : "string"
