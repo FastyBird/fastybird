@@ -122,29 +122,6 @@ final class StoreDevice implements Queue\Consumer
 					'data' => $entity->toArray(),
 				],
 			);
-		} else {
-			$device = $this->databaseHelper->transaction(
-				function () use ($entity, $device): Entities\VieraDevice {
-					$device = $this->devicesManager->update($device, Utils\ArrayHash::from([
-						'name' => $entity->getName(),
-					]));
-					assert($device instanceof Entities\VieraDevice);
-
-					return $device;
-				},
-			);
-
-			$this->logger->debug(
-				'Device was updated',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
-					'type' => 'store-device-message-consumer',
-					'device' => [
-						'id' => $device->getId()->toString(),
-					],
-					'data' => $entity->toArray(),
-				],
-			);
 		}
 
 		$this->setDeviceProperty(
