@@ -127,7 +127,12 @@ final class StoreChannelPropertyState implements Queue\Consumer
 						$property->getFormat(),
 						$property->getInvalid(),
 					);
-				} catch (DevicesExceptions\InvalidArgument $ex) {
+
+					$this->channelPropertiesStateManager->setValue($property, Utils\ArrayHash::from([
+						DevicesStates\Property::ACTUAL_VALUE_FIELD => $valueToStore,
+						DevicesStates\Property::VALID_FIELD => true,
+					]));
+				} catch (MetadataExceptions\InvalidArgument $ex) {
 					$format = $property->getFormat();
 
 					if (
@@ -135,7 +140,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 						&& $dataPoint->getValue() !== null
 						&& $format instanceof MetadataValueObjects\StringEnumFormat
 					) {
-						$updatedProperty = $this->databaseHelper->transaction(
+						$property = $this->databaseHelper->transaction(
 							function () use ($dataPoint, $property, $format): DevicesEntities\Channels\Properties\Dynamic {
 								$findPropertyQuery = new DevicesQueries\Entities\FindChannelDynamicProperties();
 								$findPropertyQuery->byId($property->getId());
@@ -159,10 +164,10 @@ final class StoreChannelPropertyState implements Queue\Consumer
 						);
 
 						$valueToStore = MetadataUtilities\ValueHelper::normalizeValue(
-							$updatedProperty->getDataType(),
+							$property->getDataType(),
 							$dataPoint->getValue(),
-							$updatedProperty->getFormat(),
-							$updatedProperty->getInvalid(),
+							$property->getFormat(),
+							$property->getInvalid(),
 						);
 
 					} else {
