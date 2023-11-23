@@ -42,7 +42,6 @@ use Throwable;
 use function array_key_exists;
 use function array_map;
 use function array_merge;
-use function assert;
 use function count;
 use function explode;
 use function is_array;
@@ -345,10 +344,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 			try {
 				if ($device->getGeneration()->equalsValue(Types\DeviceGeneration::GENERATION_1)) {
 					$deviceInformation = await($gen1HttpApi->getDeviceInformation($device->getIpAddress()));
-					assert($deviceInformation instanceof Entities\API\Gen1\GetDeviceInformation);
 				} elseif ($device->getGeneration()->equalsValue(Types\DeviceGeneration::GENERATION_2)) {
 					$deviceInformation = await($gen2HttpApi->getDeviceInformation($device->getIpAddress()));
-					assert($deviceInformation instanceof Entities\API\Gen2\GetDeviceInformation);
 				} else {
 					continue;
 				}
@@ -379,14 +376,11 @@ final class Discovery implements Evenement\EventEmitterInterface
 			try {
 				if ($device->getGeneration()->equalsValue(Types\DeviceGeneration::GENERATION_1)) {
 					$deviceDescription = await($gen1HttpApi->getDeviceDescription($device->getIpAddress(), null, null));
-					assert($deviceDescription instanceof Entities\API\Gen1\GetDeviceDescription);
 				} elseif ($device->getGeneration()->equalsValue(Types\DeviceGeneration::GENERATION_2)) {
 					$deviceConfiguration = await(
 						$gen2HttpApi->getDeviceConfiguration($device->getIpAddress(), null, null),
 					);
-					assert($deviceConfiguration instanceof Entities\API\Gen2\GetDeviceConfiguration);
 					$deviceStatus = await($gen2HttpApi->getDeviceState($device->getIpAddress(), null, null));
-					assert($deviceStatus instanceof Entities\API\Gen2\GetDeviceState);
 				} else {
 					continue;
 				}

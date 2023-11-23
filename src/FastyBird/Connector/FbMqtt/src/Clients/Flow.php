@@ -29,6 +29,9 @@ use React\Promise;
 class Flow implements Mqtt\Flow
 {
 
+	/**
+	 * @param Promise\Deferred<mixed> $deferred
+	 */
 	public function __construct(
 		private readonly Mqtt\Flow $decorated,
 		private readonly Promise\Deferred $deferred,
@@ -84,6 +87,8 @@ class Flow implements Mqtt\Flow
 
 	/**
 	 * Returns the associated deferred.
+	 *
+	 * @return Promise\Deferred<mixed>
 	 */
 	public function getDeferred(): Promise\Deferred
 	{

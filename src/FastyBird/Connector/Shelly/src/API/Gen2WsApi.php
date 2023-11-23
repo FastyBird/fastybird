@@ -41,6 +41,7 @@ use React\Promise;
 use stdClass;
 use Throwable;
 use function array_key_exists;
+use function assert;
 use function gethostbyname;
 use function hash;
 use function implode;
@@ -130,6 +131,9 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 	{
 	}
 
+	/**
+	 * @return Promise\PromiseInterface<bool>
+	 */
 	public function connect(): Promise\PromiseInterface
 	{
 		$this->messages = [];
@@ -168,7 +172,9 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 					'Connection' => 'Upgrade',
 				],
 			)
-				->then(function (Ratchet\Client\WebSocket $connection) use ($deferred): void {
+				->then(function (mixed $connection) use ($deferred): void {
+					assert($connection instanceof Ratchet\Client\WebSocket);
+
 					$this->connection = $connection;
 					$this->connecting = false;
 					$this->connected = true;
@@ -322,7 +328,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 									|| $this->messages[$payload->id]->getFrame()->getMethod() === self::COVER_GO_TO_POSITION_METHOD
 									|| $this->messages[$payload->id]->getFrame()->getMethod() === self::LIGHT_SET_METHOD
 								) {
-									$this->messages[$payload->id]->getDeferred()?->resolve();
+									$this->messages[$payload->id]->getDeferred()?->resolve(true);
 								} else {
 									$this->messages[$payload->id]->getDeferred()?->reject(
 										new Exceptions\WsCall('Received response could not be processed'),
@@ -510,9 +516,9 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 
 					$this->emit('connected');
 
-					$deferred->resolve();
+					$deferred->resolve(true);
 				})
-				->otherwise(function (Throwable $ex) use ($deferred): void {
+				->catch(function (Throwable $ex) use ($deferred): void {
 					$this->logger->error(
 						'Connection to device failed',
 						[
@@ -608,6 +614,9 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 		return $this->lost;
 	}
 
+	/**
+	 * @return Promise\PromiseInterface<Entities\API\Gen2\GetDeviceState>
+	 */
 	public function readStates(): Promise\PromiseInterface
 	{
 		$deferred = new Promise\Deferred();
@@ -642,6 +651,9 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 		return $deferred->promise();
 	}
 
+	/**
+	 * @return Promise\PromiseInterface<Entities\API\Gen2\GetDeviceState>
+	 */
 	public function writeState(
 		string $component,
 		int|float|string|bool $value,
@@ -714,6 +726,8 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 	}
 
 	/**
+	 * @param Promise\Deferred<Entities\API\Gen2\GetDeviceState|bool>|null $deferred
+	 *
 	 * @throws Exceptions\WsError
 	 */
 	private function sendRequest(ValueObjects\WsFrame $frame, Promise\Deferred|null $deferred = null): void

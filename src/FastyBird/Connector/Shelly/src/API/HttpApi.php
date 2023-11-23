@@ -110,7 +110,7 @@ abstract class HttpApi
 	}
 
 	/**
-	 * @return ($async is true ? Promise\ExtendedPromiseInterface|Promise\PromiseInterface : Message\ResponseInterface)
+	 * @return ($async is true ? Promise\PromiseInterface<Message\ResponseInterface> : Message\ResponseInterface)
 	 *
 	 * @throws Exceptions\HttpApiCall
 	 */
@@ -121,7 +121,7 @@ abstract class HttpApi
 		string|null $password = null,
 		bool $async = true,
 		bool $handlingAuthentication = false,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface|Message\ResponseInterface
+	): Promise\PromiseInterface|Message\ResponseInterface
 	{
 		$deferred = new Promise\Deferred();
 
@@ -236,7 +236,7 @@ abstract class HttpApi
 													$deferred->resolve($response);
 												},
 											)
-											->otherwise(
+											->catch(
 												static function (Throwable $ex) use ($deferred, $request): void {
 													$deferred->reject(
 														new Exceptions\HttpApiCall(

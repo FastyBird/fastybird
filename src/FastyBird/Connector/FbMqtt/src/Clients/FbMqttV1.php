@@ -34,6 +34,7 @@ use Psr\Log;
 use React\EventLoop;
 use React\Promise;
 use Throwable;
+use function assert;
 use function explode;
 use function sprintf;
 use function str_contains;
@@ -157,8 +158,9 @@ final class FbMqttV1 extends Client
 		// Subscribe to system topic
 		$this
 			->subscribe($systemTopic)
-			->done(
-				function (Mqtt\Subscription $subscription): void {
+			->then(
+				function (mixed $subscription): void {
+					assert($subscription instanceof Mqtt\Subscription);
 					$this->logger->info(
 						sprintf('Subscribed to: %s', $subscription->getFilter()),
 						[
@@ -192,8 +194,9 @@ final class FbMqttV1 extends Client
 			// ...& subscribe to them
 			$this
 				->subscribe($topic)
-				->done(
-					function (Mqtt\Subscription $subscription): void {
+				->then(
+					function (mixed $subscription): void {
+						assert($subscription instanceof Mqtt\Subscription);
 						$this->logger->info(
 							sprintf('Subscribed to: %s', $subscription->getFilter()),
 							[

@@ -102,10 +102,13 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 	{
 	}
 
+	/**
+	 * @return Promise\PromiseInterface<bool>
+	 */
 	public function connect(): Promise\PromiseInterface
 	{
 		if ($this->isConnected()) {
-			return Promise\resolve();
+			return Promise\resolve(true);
 		}
 
 		$this->pingTimer = null;
@@ -192,9 +195,9 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 
 				$this->emit('connected');
 
-				$deferred->resolve();
+				$deferred->resolve(true);
 			})
-			->otherwise(function (Throwable $ex) use ($deferred): void {
+			->catch(function (Throwable $ex) use ($deferred): void {
 				$this->wsConnection = null;
 
 				$this->connecting = false;

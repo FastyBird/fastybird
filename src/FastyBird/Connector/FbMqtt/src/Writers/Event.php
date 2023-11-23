@@ -147,7 +147,7 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 						]),
 					);
 				})
-				->otherwise(function (Throwable $ex) use ($connectorId, $device, $property): void {
+				->catch(function (Throwable $ex) use ($connectorId, $device, $property): void {
 					$this->logger->error(
 						'Could write new device property state',
 						[
@@ -203,7 +203,7 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 						]),
 					);
 				})
-				->otherwise(function (Throwable $ex) use ($connectorId, $device, $channel, $property): void {
+				->catch(function (Throwable $ex) use ($connectorId, $device, $channel, $property): void {
 					$this->logger->error(
 						'Could write new channel property state',
 						[

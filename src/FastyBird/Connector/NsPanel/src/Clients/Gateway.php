@@ -220,7 +220,7 @@ final class Gateway implements Client
 						),
 					);
 				})
-				->otherwise(function (Throwable $ex) use ($gateway): void {
+				->catch(function (Throwable $ex) use ($gateway): void {
 					if ($ex instanceof Exceptions\LanApiCall) {
 						$this->logger->error(
 							'Could not NS Panel API',
@@ -422,7 +422,7 @@ final class Gateway implements Client
 						);
 					}
 				})
-				->otherwise(function (Throwable $ex) use ($gateway): void {
+				->catch(function (Throwable $ex) use ($gateway): void {
 					if ($ex instanceof Exceptions\LanApiCall) {
 						$this->logger->warning(
 							'Calling NS Panel API failed',

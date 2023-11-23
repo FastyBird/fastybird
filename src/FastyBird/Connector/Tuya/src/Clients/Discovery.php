@@ -190,11 +190,11 @@ final class Discovery implements Evenement\EventEmitterInterface
 								unset($this->handlerTimer[$protocolVersion]);
 							}
 
-							$deferred->resolve();
+							$deferred->resolve(true);
 						},
 					);
 				})
-				->otherwise(function (Throwable $ex) use ($deferred, $protocolVersion): void {
+				->catch(function (Throwable $ex) use ($deferred, $protocolVersion): void {
 					$this->logger->error(
 						'Could not create local discovery server',
 						[
@@ -229,10 +229,10 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 				$this->emit('finished', [$devices]);
 			}))
-			->otherwise(function (): void {
+			->catch(function (): void {
 				$this->emit('finished', [[]]);
 			})
-			->always(function (): void {
+			->finally(function (): void {
 				foreach ($this->handlerTimer as $index => $timer) {
 					$this->eventLoop->cancelTimer($timer);
 
@@ -296,7 +296,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 						$this->emit('finished', [$devices]);
 					}))
-					->otherwise(function (Throwable $ex): void {
+					->catch(function (Throwable $ex): void {
 						if ($ex instanceof Exceptions\OpenApiError) {
 							$this->logger->warning(
 								'Loading devices factory infos from cloud failed',
@@ -327,7 +327,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 						}
 					});
 			})
-			->otherwise(function (Throwable $ex): void {
+			->catch(function (Throwable $ex): void {
 				if ($ex instanceof Exceptions\OpenApiError) {
 					$this->logger->warning(
 						'Loading devices from cloud failed',
@@ -492,7 +492,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 						$devices,
 					),
 				));
-			assert($response instanceof Entities\API\GetDevicesFactoryInfos);
+
 			$devicesFactoryInfos = $response->getResult();
 
 		} catch (Throwable $ex) {
@@ -509,7 +509,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 		foreach ($devices as $device) {
 			try {
 				$response = await($this->getCloudApiConnection()->getDeviceDetail($device->getId()));
-				assert($response instanceof Entities\API\GetDevice);
+
 				$deviceInformation = $response->getResult();
 			} catch (Throwable $ex) {
 				$this->logger->error(
@@ -570,6 +570,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 						],
 					),
 				);
+
+				$processedDevices[] = $device;
 			} catch (Throwable $ex) {
 				$this->logger->error(
 					'Could not create device description message',
@@ -586,7 +588,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			if (in_array($deviceInformation->getCategory(), self::GATEWAY_CATEGORIES, true)) {
 				try {
 					$response = await($this->getCloudApiConnection()->getUserDeviceChildren($device->getId()));
-					assert($response instanceof Entities\API\GetUserDeviceChildren);
+
 					$children = $response->getResult();
 				} catch (Throwable $ex) {
 					$this->logger->error(
@@ -608,7 +610,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				foreach ($children as $child) {
 					try {
 						$response = await($this->getCloudApiConnection()->getDeviceDetail($child->getId()));
-						assert($response instanceof Entities\API\GetDevice);
+
 						$childDeviceInformation = $response->getResult();
 					} catch (Throwable $ex) {
 						$this->logger->error(
@@ -742,7 +744,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 			try {
 				$response = await($this->getCloudApiConnection()->getDeviceSpecification($device->getId()));
-				assert($response instanceof Entities\API\GetDeviceSpecification);
+
 				$deviceSpecifications = $response->getResult();
 
 				$dataPointsInfos = [];
@@ -894,6 +896,13 @@ final class Discovery implements Evenement\EventEmitterInterface
 				),
 			);
 
+			$processedDevices[] = $this->entityHelper->create(
+				Entities\Clients\DiscoveredCloudDevice::class,
+				[
+					'id' => $device->getId(),
+					'ip_address' => $device->getIp(),
+				],
+			);
 		}
 
 		$this->getCloudApiConnection()->disconnect();

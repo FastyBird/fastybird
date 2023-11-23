@@ -31,8 +31,14 @@ use React\Promise;
 interface Driver
 {
 
+	/**
+	 * @return Promise\PromiseInterface<bool>
+	 */
 	public function connect(): Promise\PromiseInterface;
 
+	/**
+	 * @return Promise\PromiseInterface<bool>
+	 */
 	public function disconnect(): Promise\PromiseInterface;
 
 	public function isConnected(): bool;
@@ -41,14 +47,23 @@ interface Driver
 
 	public function getLastConnectAttempt(): DateTimeInterface|null;
 
+	/**
+	 * @return Promise\PromiseInterface<bool>
+	 */
 	public function process(): Promise\PromiseInterface;
 
+	/**
+	 * @return Promise\PromiseInterface<bool>
+	 */
 	public function writeState(
 		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\ChannelDynamicProperty $property,
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $expectedValue,
 	): Promise\PromiseInterface;
 
+	/**
+	 * @return Promise\PromiseInterface<bool>
+	 */
 	public function notifyState(
 		MetadataDocuments\DevicesModule\DeviceMappedProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
 		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $actualValue,

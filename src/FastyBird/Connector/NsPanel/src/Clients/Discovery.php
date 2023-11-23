@@ -33,8 +33,6 @@ use React\Promise;
 use Throwable;
 use function array_key_exists;
 use function array_merge;
-use function assert;
-use function is_array;
 
 /**
  * Connector sub-devices discovery client
@@ -115,11 +113,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$foundSubDevices = [];
 
 				foreach ($results as $result) {
-					assert(is_array($result));
-
 					foreach ($result as $device) {
-						assert($device instanceof Entities\Clients\DiscoveredSubDevice);
-
 						if (!array_key_exists($device->getParent()->toString(), $foundSubDevices)) {
 							$foundSubDevices[$device->getParent()->toString()] = [];
 						}
@@ -130,7 +124,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 				$this->emit('finished', [$foundSubDevices]);
 			})
-			->otherwise(function (): void {
+			->catch(function (): void {
 				$this->emit('finished', [[]]);
 			});
 	}
@@ -141,12 +135,14 @@ final class Discovery implements Evenement\EventEmitterInterface
 	}
 
 	/**
+	 * @return Promise\PromiseInterface<array<Entities\Clients\DiscoveredSubDevice>>
+	 *
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	private function discoverSubDevices(
 		Entities\Devices\Gateway $gateway,
-	): Promise\ExtendedPromiseInterface|Promise\PromiseInterface
+	): Promise\PromiseInterface
 	{
 		$deferred = new Promise\Deferred();
 
@@ -166,7 +162,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				->then(function (Entities\API\Response\GetSubDevices $response) use ($deferred, $gateway): void {
 					$deferred->resolve($this->handleFoundSubDevices($gateway, $response));
 				})
-				->otherwise(static function (Throwable $ex) use ($deferred): void {
+				->catch(static function (Throwable $ex) use ($deferred): void {
 					$deferred->reject($ex);
 				});
 		} catch (Exceptions\LanApiCall $ex) {

@@ -15,6 +15,7 @@
 
 namespace FastyBird\Connector\Shelly\ValueObjects;
 
+use FastyBird\Connector\Shelly\Entities;
 use Orisai\ObjectMapper;
 use React\EventLoop;
 use React\Promise;
@@ -30,6 +31,9 @@ use React\Promise;
 final class WsMessage implements ObjectMapper\MappedObject
 {
 
+	/**
+	 * @param Promise\Deferred<Entities\API\Gen2\GetDeviceState|bool>|null $deferred
+	 */
 	public function __construct(
 		#[ObjectMapper\Rules\InstanceOfValue(WsFrame::class)]
 		private readonly WsFrame $frame,
@@ -52,6 +56,9 @@ final class WsMessage implements ObjectMapper\MappedObject
 		return $this->frame;
 	}
 
+	/**
+	 * @return Promise\Deferred<Entities\API\Gen2\GetDeviceState|bool>|null
+	 */
 	public function getDeferred(): Promise\Deferred|null
 	{
 		return $this->deferred;

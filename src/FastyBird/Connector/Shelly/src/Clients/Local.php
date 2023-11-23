@@ -167,7 +167,7 @@ final class Local implements Client
 		}
 
 		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
-		$findDevicesQuery->byConnectorId($this->connector->getId());
+		$findDevicesQuery->forConnector($this->connector);
 
 		foreach ($this->devicesConfigurationRepository->findAllBy($findDevicesQuery) as $device) {
 			$this->devices[$device->getId()->toString()] = $device;
@@ -344,7 +344,7 @@ final class Local implements Client
 
 					$this->processGen2DeviceGetState($device, $response);
 				})
-				->otherwise(function (Throwable $ex) use ($device): void {
+				->catch(function (Throwable $ex) use ($device): void {
 					$this->logger->error(
 						'Could not read device state',
 						[
@@ -397,7 +397,7 @@ final class Local implements Client
 
 					$this->processGen1DeviceGetState($device, $response);
 				})
-				->otherwise(function (Throwable $ex) use ($device): void {
+				->catch(function (Throwable $ex) use ($device): void {
 					if ($ex instanceof Exceptions\HttpApiError) {
 						$this->queue->append(
 							$this->entityHelper->create(
@@ -556,7 +556,7 @@ final class Local implements Client
 					->then(function (Entities\API\Gen2\GetDeviceState $state) use ($device): void {
 						$this->processGen2DeviceGetState($device, $state);
 					})
-					->otherwise(function (Throwable $ex) use ($device): void {
+					->catch(function (Throwable $ex) use ($device): void {
 						$this->queue->append(
 							$this->entityHelper->create(
 								Entities\Messages\StoreDeviceConnectionState::class,

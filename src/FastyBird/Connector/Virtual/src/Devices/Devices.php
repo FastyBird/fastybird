@@ -199,7 +199,7 @@ class Devices
 								],
 							);
 						})
-						->otherwise(function (Throwable $ex) use ($device): void {
+						->catch(function (Throwable $ex) use ($device): void {
 							$this->logger->error(
 								'Virtual device service could not be created',
 								[
@@ -285,7 +285,7 @@ class Devices
 					),
 				);
 			})
-			->otherwise(function (Throwable $ex) use ($device): void {
+			->catch(function (Throwable $ex) use ($device): void {
 				$this->processedDevicesCommands[$device->getId()->toString()] = false;
 
 				$this->logger->warning(

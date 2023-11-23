@@ -308,9 +308,9 @@ final class Device implements Client
 								}
 							}
 
-							$deferred->resolve();
+							$deferred->resolve(true);
 						})
-						->otherwise(function (Throwable $ex) use ($gateway, $deferred): void {
+						->catch(function (Throwable $ex) use ($gateway, $deferred): void {
 							$extra = [];
 
 							if ($ex instanceof Exceptions\LanApiCall) {
@@ -372,7 +372,7 @@ final class Device implements Client
 							$deferred->reject($ex);
 						});
 				} else {
-					$deferred->resolve();
+					$deferred->resolve(true);
 				}
 
 				$promise->then(function () use ($gateway, $ipAddress, $accessToken): void {
@@ -420,7 +420,7 @@ final class Device implements Client
 												],
 											);
 										})
-										->otherwise(function (Throwable $ex) use ($gateway, $subDevice): void {
+										->catch(function (Throwable $ex) use ($gateway, $subDevice): void {
 											$extra = [];
 
 											if ($ex instanceof Exceptions\LanApiCall) {
@@ -485,7 +485,7 @@ final class Device implements Client
 								}
 							},
 						)
-						->otherwise(function (Throwable $ex) use ($gateway): void {
+						->catch(function (Throwable $ex) use ($gateway): void {
 							$extra = [];
 
 							if ($ex instanceof Exceptions\LanApiCall) {
@@ -649,7 +649,7 @@ final class Device implements Client
 								],
 							);
 						})
-						->otherwise(function (Throwable $ex) use ($gateway): void {
+						->catch(function (Throwable $ex) use ($gateway): void {
 							$extra = [];
 
 							if ($ex instanceof Exceptions\LanApiCall) {

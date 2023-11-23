@@ -6,17 +6,18 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:TuyaConnector!
+ * @package        FastyBird:SonoffConnector!
  * @subpackage     Helpers
  * @since          1.0.0
  *
- * @date           20.11.23
+ * @date           22.11.23
  */
 
-namespace FastyBird\Connector\Tuya\Helpers;
+namespace FastyBird\Connector\Sonoff\Helpers;
 
-use FastyBird\Connector\Tuya\Exceptions;
-use FastyBird\Connector\Tuya\Types;
+use FastyBird\Connector\Sonoff;
+use FastyBird\Connector\Sonoff\Exceptions;
+use FastyBird\Connector\Sonoff\Types;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -28,7 +29,7 @@ use function is_string;
 /**
  * Connector helper
  *
- * @package        FastyBird:TuyaConnector!
+ * @package        FastyBird:SonoffConnector!
  * @subpackage     Helpers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
@@ -78,24 +79,25 @@ final class Connector
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
 	 */
-	public function getOpenApiEndpoint(MetadataDocuments\DevicesModule\Connector $connector): Types\OpenApiEndpoint
+	public function getUsername(MetadataDocuments\DevicesModule\Connector $connector): string
 	{
 		$findPropertyQuery = new DevicesQueries\Configuration\FindConnectorVariableProperties();
 		$findPropertyQuery->forConnector($connector);
-		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::OPENAPI_ENDPOINT);
+		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::USERNAME);
 
 		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
 			MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
 		);
 
-		$value = $property?->getValue();
-
-		if (is_string($value) && Types\OpenApiEndpoint::isValidValue($value)) {
-			return Types\OpenApiEndpoint::get($value);
+		if ($property === null) {
+			return '';
 		}
 
-		return Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::EUROPE);
+		$value = $property->getValue();
+		assert(is_string($value) || $value === null);
+
+		return $value ?? '';
 	}
 
 	/**
@@ -104,42 +106,25 @@ final class Connector
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
 	 */
-	public function getOpenPulsarEndpoint(
-		MetadataDocuments\DevicesModule\Connector $connector,
-	): Types\OpenPulsarEndpoint
+	public function getPassword(MetadataDocuments\DevicesModule\Connector $connector): string
 	{
 		$findPropertyQuery = new DevicesQueries\Configuration\FindConnectorVariableProperties();
 		$findPropertyQuery->forConnector($connector);
-		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::OPENPULSAR_ENDPOINT);
+		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::PASSWORD);
 
 		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
 			MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
 		);
 
-		$value = $property?->getValue();
-
-		if (is_string($value) && Types\OpenPulsarEndpoint::isValidValue($value)) {
-			return Types\OpenPulsarEndpoint::get($value);
+		if ($property === null) {
+			return '';
 		}
 
-		if (
-			$this->getOpenApiEndpoint($connector)->equalsValue(Types\OpenApiEndpoint::EUROPE)
-			|| $this->getOpenApiEndpoint($connector)->equalsValue(Types\OpenApiEndpoint::EUROPE_MS)
-		) {
-			return Types\OpenPulsarEndpoint::get(Types\OpenPulsarEndpoint::EUROPE);
-		} elseif (
-			$this->getOpenApiEndpoint($connector)->equalsValue(Types\OpenApiEndpoint::AMERICA)
-			|| $this->getOpenApiEndpoint($connector)->equalsValue(Types\OpenApiEndpoint::AMERICA_AZURE)
-		) {
-			return Types\OpenPulsarEndpoint::get(Types\OpenPulsarEndpoint::AMERICA);
-		} elseif ($this->getOpenApiEndpoint($connector)->equalsValue(Types\OpenApiEndpoint::CHINA)) {
-			return Types\OpenPulsarEndpoint::get(Types\OpenPulsarEndpoint::CHINA);
-		} elseif ($this->getOpenApiEndpoint($connector)->equalsValue(Types\OpenApiEndpoint::INDIA)) {
-			return Types\OpenPulsarEndpoint::get(Types\OpenPulsarEndpoint::INDIA);
-		}
+		$value = $property->getValue();
+		assert(is_string($value) || $value === null);
 
-		return Types\OpenPulsarEndpoint::get(Types\OpenPulsarEndpoint::EUROPE);
+		return $value ?? '';
 	}
 
 	/**
@@ -148,24 +133,25 @@ final class Connector
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
 	 */
-	public function getOpenPulsarTopic(MetadataDocuments\DevicesModule\Connector $connector): Types\OpenPulsarTopic
+	public function getAppId(MetadataDocuments\DevicesModule\Connector $connector): string
 	{
 		$findPropertyQuery = new DevicesQueries\Configuration\FindConnectorVariableProperties();
 		$findPropertyQuery->forConnector($connector);
-		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::OPENPULSAR_TOPIC);
+		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::APP_ID);
 
 		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
 			MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
 		);
 
-		$value = $property?->getValue();
-
-		if (is_string($value) && Types\OpenPulsarTopic::isValidValue($value)) {
-			return Types\OpenPulsarTopic::get($value);
+		if ($property === null) {
+			return Sonoff\Constants::DEFAULT_APP_ID;
 		}
 
-		return Types\OpenPulsarTopic::get(Types\OpenPulsarTopic::PROD);
+		$value = $property->getValue();
+		assert(is_string($value) || $value === null);
+
+		return $value ?? Sonoff\Constants::DEFAULT_APP_ID;
 	}
 
 	/**
@@ -174,11 +160,64 @@ final class Connector
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
 	 */
-	public function getAccessId(MetadataDocuments\DevicesModule\Connector $connector): string|null
+	public function getAppSecret(MetadataDocuments\DevicesModule\Connector $connector): string
 	{
 		$findPropertyQuery = new DevicesQueries\Configuration\FindConnectorVariableProperties();
 		$findPropertyQuery->forConnector($connector);
-		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::ACCESS_ID);
+		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::APP_SECRET);
+
+		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
+			$findPropertyQuery,
+			MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
+		);
+
+		if ($property === null) {
+			return Sonoff\Constants::DEFAULT_APP_SECRET;
+		}
+
+		$value = $property->getValue();
+		assert(is_string($value) || $value === null);
+
+		return $value ?? Sonoff\Constants::DEFAULT_APP_SECRET;
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
+	 */
+	public function getRegion(MetadataDocuments\DevicesModule\Connector $connector): Types\Region
+	{
+		$findPropertyQuery = new DevicesQueries\Configuration\FindConnectorVariableProperties();
+		$findPropertyQuery->forConnector($connector);
+		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::APP_SECRET);
+
+		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
+			$findPropertyQuery,
+			MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
+		);
+
+		$value = $property?->getValue();
+
+		if (is_string($value) && Types\Region::isValidValue($value)) {
+			return Types\Region::get($value);
+		}
+
+		return Types\Region::get(Types\Region::EUROPE);
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
+	 */
+	public function getGatewayId(MetadataDocuments\DevicesModule\Connector $connector): string|null
+	{
+		$findPropertyQuery = new DevicesQueries\Configuration\FindConnectorVariableProperties();
+		$findPropertyQuery->forConnector($connector);
+		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::GATEWAY_ID);
 
 		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
@@ -201,38 +240,11 @@ final class Connector
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
 	 */
-	public function getAccessSecret(MetadataDocuments\DevicesModule\Connector $connector): string|null
+	public function getGatewayApiKey(MetadataDocuments\DevicesModule\Connector $connector): string|null
 	{
 		$findPropertyQuery = new DevicesQueries\Configuration\FindConnectorVariableProperties();
 		$findPropertyQuery->forConnector($connector);
-		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::ACCESS_SECRET);
-
-		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
-			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
-		);
-
-		if ($property === null) {
-			return null;
-		}
-
-		$value = $property->getValue();
-		assert(is_string($value) || $value === null);
-
-		return $value;
-	}
-
-	/**
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 */
-	public function getUid(MetadataDocuments\DevicesModule\Connector $connector): string|null
-	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindConnectorVariableProperties();
-		$findPropertyQuery->forConnector($connector);
-		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::UID);
+		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::GATEWAY_API_KEY);
 
 		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,

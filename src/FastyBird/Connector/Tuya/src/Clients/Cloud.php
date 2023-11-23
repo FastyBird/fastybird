@@ -136,7 +136,7 @@ final class Cloud implements Client
 					],
 				);
 			})
-			->otherwise(function (Throwable $ex): void {
+			->catch(function (Throwable $ex): void {
 				$this->logger->error(
 					'Tuya cloud API client could not be created',
 					[
@@ -228,7 +228,7 @@ final class Cloud implements Client
 					],
 				);
 			})
-			->otherwise(function (Throwable $ex): void {
+			->catch(function (Throwable $ex): void {
 				$this->logger->error(
 					'Tuya cloud WS client could not be created',
 					[
@@ -377,7 +377,7 @@ final class Cloud implements Client
 					),
 				);
 			})
-			->otherwise(function (Throwable $ex) use ($device): void {
+			->catch(function (Throwable $ex) use ($device): void {
 				$this->logger->error(
 					'Could not call cloud openapi',
 					[
@@ -487,7 +487,7 @@ final class Cloud implements Client
 					),
 				);
 			})
-			->otherwise(function (Throwable $ex) use ($device): void {
+			->catch(function (Throwable $ex) use ($device): void {
 				$this->logger->warning(
 					'Calling Tuya cloud failed',
 					[

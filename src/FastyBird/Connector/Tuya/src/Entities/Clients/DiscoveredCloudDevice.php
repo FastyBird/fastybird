@@ -34,13 +34,6 @@ final class DiscoveredCloudDevice implements Entity
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('ip_address')]
 		private readonly string $ipAddress,
-		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		#[ObjectMapper\Modifiers\FieldName('product_key')]
-		private readonly string $productKey,
-		#[ObjectMapper\Rules\BoolValue()]
-		private readonly bool $encrypted,
-		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $version,
 	)
 	{
 	}
@@ -55,21 +48,6 @@ final class DiscoveredCloudDevice implements Entity
 		return $this->ipAddress;
 	}
 
-	public function getProductKey(): string
-	{
-		return $this->productKey;
-	}
-
-	public function isEncrypted(): bool
-	{
-		return $this->encrypted;
-	}
-
-	public function getVersion(): string
-	{
-		return $this->version;
-	}
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -78,9 +56,6 @@ final class DiscoveredCloudDevice implements Entity
 		return [
 			'id' => $this->id,
 			'ip_address' => $this->ipAddress,
-			'product_key' => $this->productKey,
-			'encrypted' => $this->encrypted,
-			'version' => $this->version,
 		];
 	}
 

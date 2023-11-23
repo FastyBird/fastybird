@@ -34,7 +34,7 @@ use function is_numeric;
 use function sprintf;
 
 /**
- * Device helper
+ * Thermostat helper
  *
  * @package        FastyBird:VirtualConnector!
  * @subpackage     Helpers
