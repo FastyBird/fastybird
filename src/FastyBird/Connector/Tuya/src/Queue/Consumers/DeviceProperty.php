@@ -19,7 +19,6 @@ use Doctrine\DBAL;
 use FastyBird\Connector\Tuya;
 use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Queries;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -52,8 +51,6 @@ trait DeviceProperty
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Runtime
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 */
 	private function setDeviceProperty(
 		Uuid\UuidInterface $deviceId,
@@ -81,13 +78,6 @@ trait DeviceProperty
 		}
 
 		if ($value === null) {
-			return;
-		}
-
-		if (
-			$property instanceof DevicesEntities\Devices\Properties\Variable
-			&& $property->getValue() === $value
-		) {
 			return;
 		}
 
@@ -134,6 +124,20 @@ trait DeviceProperty
 			);
 
 			if ($device === null) {
+				$this->logger->error(
+					'Device was not found, property could not be configured',
+					[
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+						'type' => 'message-consumer',
+						'device' => [
+							'id' => $deviceId->toString(),
+						],
+						'property' => [
+							'identifier' => $identifier,
+						],
+					],
+				);
+
 				return;
 			}
 
