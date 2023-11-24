@@ -89,6 +89,10 @@ is finished, you will see your devices in the Devices list.
 
 ![Application code](https://github.com/FastyBird/tuya-connector/blob/main/docs/_media/tuya_scan_code.png)
 
+After your devices are linked with your Tuya cloud account you are able to get Tuya user identifier.
+
+![User identifier](https://github.com/FastyBird/tuya-connector/blob/main/docs/_media/tuya_cloud_user_id.png)
+
 ## Configuring the Connector through the Console
 
 To configure the connector through the console, run the following command:
