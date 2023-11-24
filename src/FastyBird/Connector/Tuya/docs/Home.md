@@ -1,3 +1,7 @@
+<p align="center">
+	<img src="https://github.com/fastybird/.github/blob/main/assets/repo_title.png?raw=true" alt="FastyBird"/>
+</p>
+
 The [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) Tuya Connector is an extension for the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem that enables seamless integration
 with [Tuya](https://www.tuya.com) devices. It allows users to easily connect and control [Tuya](https://www.tuya.com) devices from within the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem,
 providing a simple and user-friendly interface for managing and monitoring your devices.
@@ -85,6 +89,10 @@ is finished, you will see your devices in the Devices list.
 
 ![Application code](https://github.com/FastyBird/tuya-connector/blob/main/docs/_media/tuya_scan_code.png)
 
+After your devices are linked with your Tuya cloud account you are able to get Tuya user identifier.
+
+![User identifier](https://github.com/FastyBird/tuya-connector/blob/main/docs/_media/tuya_cloud_user_id.png)
+
 ## Configuring the Connector through the Console
 
 To configure the connector through the console, run the following command:
@@ -111,19 +119,20 @@ Tuya connector - initialization
 You will then be prompted to choose an action:
 
 ```shell
- What would you like to do?:
+ What would you like to do? [Nothing]:
   [0] Create new connector configuration
   [1] Edit existing connector configuration
   [2] Delete existing connector configuration
- > 0
+  [3] List Tuya connectors
+  [4] Nothing
 ```
 
 If you choose to create a new connector, you will be asked to choose the mode in which the connector will communicate with the devices:
 
 ```shell
- In what mode should this connector communicate with devices? [Local network mode]:
+ In what mode should this connector communicate with Tuya devices? [Tuya cloud server mode]:
   [0] Local network mode
-  [1] Cloud server mode
+  [1] Tuya cloud server mode
  > 0
 ```
 

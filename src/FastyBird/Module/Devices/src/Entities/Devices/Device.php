@@ -258,6 +258,8 @@ abstract class Device implements Entities\Entity,
 			// ...and assign it to collection
 			$this->parents->add($device);
 		}
+
+		$device->addChild($this);
 	}
 
 	public function hasParent(self $device): bool

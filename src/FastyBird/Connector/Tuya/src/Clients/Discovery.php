@@ -224,7 +224,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$this->discoveredLocalDevices = new SplObjectStorage();
 
 				if ($devices !== []) {
-					$devices = $this->handleFoundLocalDevices($devices);
+					$this->handleFoundLocalDevices($devices);
 				}
 
 				$this->emit('finished', [$devices]);

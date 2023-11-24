@@ -188,7 +188,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @return Promise\PromiseInterface<bool>
+	 * @return Promise\PromiseInterface<true>
 	 */
 	public function connect(): Promise\PromiseInterface
 	{

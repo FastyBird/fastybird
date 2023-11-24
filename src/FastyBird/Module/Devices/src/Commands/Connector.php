@@ -75,7 +75,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 
 	private const DATABASE_REFRESH_INTERVAL = 5;
 
-	private const DISCOVERY_MAX_PROCESSING_INTERVAL = 60.0;
+	private const DISCOVERY_MAX_PROCESSING_INTERVAL = 120.0;
 
 	private Entities\Connectors\Connector|null $connector = null;
 

@@ -21,7 +21,7 @@ use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Queries;
 use FastyBird\Connector\Tuya\Queue;
 use FastyBird\Connector\Tuya\Types;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -30,6 +30,7 @@ use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Nette\Utils;
+use function array_merge;
 use function assert;
 use function count;
 
@@ -48,6 +49,9 @@ final class StoreLocalDevice implements Queue\Consumer
 	use DeviceProperty;
 	use ChannelProperty;
 
+	/**
+	 * @param DevicesModels\Configuration\Channels\Properties\Repository<MetadataDocuments\DevicesModule\ChannelDynamicProperty> $channelsPropertiesConfigurationRepository
+	 */
 	public function __construct(
 		protected readonly Tuya\Logger $logger,
 		protected readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
@@ -56,6 +60,8 @@ final class StoreLocalDevice implements Queue\Consumer
 		protected readonly DevicesModels\Entities\Channels\ChannelsRepository $channelsRepository,
 		protected readonly DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		protected readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager,
+		protected readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStateManager,
+		protected readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
 		protected readonly DevicesUtilities\Database $databaseHelper,
 		private readonly DevicesModels\Entities\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Entities\Devices\DevicesManager $devicesManager,
@@ -68,8 +74,6 @@ final class StoreLocalDevice implements Queue\Consumer
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Runtime
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function consume(Entities\Messages\Entity $entity): bool
 	{
@@ -98,12 +102,40 @@ final class StoreLocalDevice implements Queue\Consumer
 
 			$device = $this->databaseHelper->transaction(
 				function () use ($entity, $connector): Entities\TuyaDevice {
-					$device = $this->devicesManager->create(Utils\ArrayHash::from([
-						'entity' => Entities\TuyaDevice::class,
-						'connector' => $connector,
-						'identifier' => $entity->getId(),
-						'name' => $entity->getName(),
-					]));
+					$parents = [];
+
+					if ($entity->getGateway() !== null) {
+						$findParentDeviceQuery = new Queries\Entities\FindDevices();
+						$findParentDeviceQuery->byConnectorId($entity->getConnector());
+						$findParentDeviceQuery->byIdentifier($entity->getGateway());
+
+						$parent = $this->devicesRepository->findOneBy(
+							$findParentDeviceQuery,
+							Entities\TuyaDevice::class,
+						);
+
+						if ($parent === null) {
+							throw new Tuya\Exceptions\InvalidState(
+								'Parent device could not be loaded for child device',
+							);
+						}
+
+						$parents = [$parent];
+					}
+
+					$device = $this->devicesManager->create(
+						Utils\ArrayHash::from(array_merge(
+							[
+								'entity' => Entities\TuyaDevice::class,
+								'connector' => $connector,
+								'identifier' => $entity->getId(),
+								'name' => $entity->getName(),
+							],
+							$entity->getGateway() !== null
+								? ['parents' => $parents]
+								: [],
+						)),
+					);
 					assert($device instanceof Entities\TuyaDevice);
 
 					return $device;
@@ -122,55 +154,6 @@ final class StoreLocalDevice implements Queue\Consumer
 					],
 					'data' => $entity->toArray(),
 				],
-			);
-		} else {
-			$device = $this->databaseHelper->transaction(
-				function () use ($entity, $device): Entities\TuyaDevice {
-					$device = $this->devicesManager->update($device, Utils\ArrayHash::from([
-						'name' => $entity->getName(),
-					]));
-					assert($device instanceof Entities\TuyaDevice);
-
-					return $device;
-				},
-			);
-
-			$this->logger->debug(
-				'Device was updated',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-					'type' => 'store-local-device-message-consumer',
-					'device' => [
-						'id' => $device->getId()->toString(),
-					],
-					'data' => $entity->toArray(),
-				],
-			);
-		}
-
-		if ($entity->getGateway() !== null) {
-			$findParentDeviceQuery = new Queries\Entities\FindDevices();
-			$findParentDeviceQuery->byConnectorId($entity->getConnector());
-			$findParentDeviceQuery->byIdentifier($entity->getGateway());
-
-			$parent = $this->devicesRepository->findOneBy($findParentDeviceQuery, Entities\TuyaDevice::class);
-
-			if ($parent === null) {
-				$this->databaseHelper->transaction(
-					function () use ($device): void {
-						$this->devicesManager->delete($device);
-					},
-				);
-
-				return true;
-			}
-
-			$this->databaseHelper->transaction(
-				function () use ($device, $parent): void {
-					$this->devicesManager->update($device, Utils\ArrayHash::from([
-						'parents' => [$parent],
-					]));
-				},
 			);
 		}
 
@@ -265,7 +248,6 @@ final class StoreLocalDevice implements Queue\Consumer
 			Types\DevicePropertyIdentifier::ENCRYPTED,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::ENCRYPTED),
 		);
-
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getModel(),
