@@ -87,13 +87,6 @@ trait DeviceProperty
 		}
 
 		if (
-			$property instanceof DevicesEntities\Devices\Properties\Variable
-			&& $property->getValue() === $value
-		) {
-			return;
-		}
-
-		if (
 			$property !== null
 			&& !$property instanceof DevicesEntities\Devices\Properties\Variable
 		) {
@@ -136,6 +129,20 @@ trait DeviceProperty
 			);
 
 			if ($device === null) {
+				$this->logger->error(
+					'Device was not found, property could not be configured',
+					[
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
+						'type' => 'message-consumer',
+						'device' => [
+							'id' => $deviceId->toString(),
+						],
+						'property' => [
+							'identifier' => $identifier,
+						],
+					],
+				);
+
 				return;
 			}
 

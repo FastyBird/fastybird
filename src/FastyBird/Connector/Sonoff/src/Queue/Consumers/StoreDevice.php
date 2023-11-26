@@ -124,29 +124,6 @@ final class StoreDevice implements Consumer
 					],
 				],
 			);
-		} else {
-			$device = $this->databaseHelper->transaction(
-				function () use ($entity, $device): Entities\SonoffDevice {
-					$device = $this->devicesManager->update($device, Utils\ArrayHash::from([
-						'name' => $entity->getName(),
-						'description' => $entity->getDescription(),
-					]));
-					assert($device instanceof Entities\SonoffDevice);
-
-					return $device;
-				},
-			);
-
-			$this->logger->debug(
-				'Device was updated',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
-					'type' => 'store-device-message-consumer',
-					'device' => [
-						'id' => $device->getId()->toString(),
-					],
-				],
-			);
 		}
 
 		$this->setDeviceProperty(
