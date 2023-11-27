@@ -48,11 +48,6 @@ final class State implements ExchangeConsumers\Consumer
 		MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION,
 	];
 
-	/**
-	 * @param Models\Configuration\Connectors\Properties\Repository<MetadataDocuments\DevicesModule\ConnectorDynamicProperty> $connectorPropertiesConfigurationRepository
-	 * @param Models\Configuration\Devices\Properties\Repository<MetadataDocuments\DevicesModule\DeviceDynamicProperty> $devicePropertiesConfigurationRepository
-	 * @param Models\Configuration\Channels\Properties\Repository<MetadataDocuments\DevicesModule\ChannelDynamicProperty> $channelPropertiesConfigurationRepository
-	 */
 	public function __construct(
 		private readonly ExchangePublisher\Publisher $publisher,
 		private readonly ExchangeEntities\DocumentFactory $entityFactory,

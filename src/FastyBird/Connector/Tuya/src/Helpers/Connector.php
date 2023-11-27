@@ -36,9 +36,6 @@ use function is_string;
 final class Connector
 {
 
-	/**
-	 * @param DevicesModels\Configuration\Connectors\Properties\Repository<MetadataDocuments\DevicesModule\ConnectorVariableProperty> $connectorsPropertiesConfigurationRepository
-	 */
 	public function __construct(
 		private readonly DevicesModels\Configuration\Connectors\Properties\Repository $connectorsPropertiesConfigurationRepository,
 	)
@@ -50,7 +47,6 @@ final class Connector
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getClientMode(MetadataDocuments\DevicesModule\Connector $connector): Types\ClientMode
 	{
@@ -76,7 +72,6 @@ final class Connector
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getOpenApiEndpoint(MetadataDocuments\DevicesModule\Connector $connector): Types\OpenApiEndpoint
 	{
@@ -102,7 +97,6 @@ final class Connector
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getOpenPulsarEndpoint(
 		MetadataDocuments\DevicesModule\Connector $connector,
@@ -146,7 +140,6 @@ final class Connector
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getOpenPulsarTopic(MetadataDocuments\DevicesModule\Connector $connector): Types\OpenPulsarTopic
 	{
@@ -172,7 +165,6 @@ final class Connector
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getAccessId(MetadataDocuments\DevicesModule\Connector $connector): string|null
 	{
@@ -199,7 +191,6 @@ final class Connector
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getAccessSecret(MetadataDocuments\DevicesModule\Connector $connector): string|null
 	{
@@ -226,7 +217,6 @@ final class Connector
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getUid(MetadataDocuments\DevicesModule\Connector $connector): string|null
 	{

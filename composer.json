@@ -36,6 +36,7 @@
         "bunny/bunny": "dev-promise-v3",
         "clue/multicast-react": "^1.1",
         "clue/redis-react": "^3@dev",
+        "contributte/cache": "^0.6",
         "contributte/console": "^0.9",
         "contributte/event-dispatcher": "^0.8",
         "contributte/monolog": "^0.5",

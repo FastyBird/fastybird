@@ -15,16 +15,14 @@
 
 namespace FastyBird\Module\Devices\Models\Configuration;
 
+use Contributte\Cache;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
-use function array_key_exists;
-use function is_array;
+use FastyBird\Module\Devices\Queries;
+use Nette\Caching;
 
 /**
  * Configuration repository
- *
- * @template T of MetadataDocuments\Document
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Models
@@ -34,92 +32,38 @@ use function is_array;
 abstract class Repository
 {
 
-	/** @var array<string, T|array<T>|null>  */
-	private array $cacheData = [];
+	protected Caching\Cache $cache;
 
 	public function __construct(
 		protected readonly Models\Configuration\Builder $builder,
+		protected readonly Cache\CacheFactory $cacheFactory,
 	)
 	{
+		$this->cache = $this->cacheFactory->create(static::class);
+
 		$this->builder->on('build', function (): void {
-			$this->cacheData = [];
+			$this->cache->clean();
 		});
 	}
 
 	/**
-	 * @return T|array<T>|false|null
-	 */
-	protected function loadCache(string $key): MetadataDocuments\Document|array|false|null
-	{
-		if (array_key_exists($key, $this->cacheData)) {
-			return $this->cacheData[$key];
-		}
-
-		return false;
-	}
-
-	/**
-	 * @return T|false|null
+	 * @template T of MetadataDocuments\Document
 	 *
-	 * @throws Exceptions\InvalidState
+	 * @param Queries\Configuration\QueryObject<T> $queryObject
 	 */
-	protected function loadCacheOne(string $key): MetadataDocuments\Document|false|null
+	protected function createKeyOne(Queries\Configuration\QueryObject $queryObject): string
 	{
-		$data = $this->loadCache($key . '_one');
-
-		if ($data === false) {
-			return false;
-		}
-
-		if ($data === null || $data instanceof MetadataDocuments\Document) {
-			return $data;
-		}
-
-		throw new Exceptions\InvalidState('Failed loading data from cache');
+		return $queryObject->toString() . '_one';
 	}
 
 	/**
-	 * @return array<T>|false
+	 * @template T of MetadataDocuments\Document
 	 *
-	 * @throws Exceptions\InvalidState
+	 * @param Queries\Configuration\QueryObject<T> $queryObject
 	 */
-	protected function loadCacheAll(string $key): array|false
+	protected function createKeyAll(Queries\Configuration\QueryObject $queryObject): string
 	{
-		$data = $this->loadCache($key . '_all');
-
-		if ($data === false) {
-			return false;
-		}
-
-		if (is_array($data)) {
-			return $data;
-		}
-
-		throw new Exceptions\InvalidState('Failed loading data from cache');
-	}
-
-	/**
-	 * @param T|array<T>|null $data
-	 */
-	protected function writeCache(string $key, MetadataDocuments\Document|array|null $data): void
-	{
-		$this->cacheData[$key] = $data;
-	}
-
-	/**
-	 * @param T|null $data
-	 */
-	protected function writeCacheOne(string $key, MetadataDocuments\Document|null $data): void
-	{
-		$this->writeCache($key . '_one', $data);
-	}
-
-	/**
-	 * @param array<T> $data
-	 */
-	protected function writeCacheAll(string $key, array $data): void
-	{
-		$this->writeCache($key . '_all', $data);
+		return $queryObject->toString() . '_all';
 	}
 
 }

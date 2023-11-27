@@ -15,23 +15,21 @@
 
 namespace FastyBird\Module\Devices\Models\Configuration\Channels;
 
+use Contributte\Cache;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
-use Flow\JSONPath;
+use Nette\Caching;
 use stdClass;
+use Throwable;
 use function array_map;
 use function is_array;
-use function serialize;
+use function md5;
 
 /**
  * Channels configuration repository
- *
- * @template T of MetadataDocuments\DevicesModule\Channel
- * @extends  Models\Configuration\Repository<T>
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Models
@@ -43,94 +41,103 @@ final class Repository extends Models\Configuration\Repository
 
 	public function __construct(
 		Models\Configuration\Builder $builder,
+		Cache\CacheFactory $cacheFactory,
 		private readonly MetadataDocuments\DocumentFactory $entityFactory,
 	)
 	{
-		parent::__construct($builder);
+		parent::__construct($builder, $cacheFactory);
 	}
 
 	/**
+	 * @template T of MetadataDocuments\DevicesModule\Channel
+	 *
 	 * @param Queries\Configuration\FindChannels<T> $queryObject
 	 * @param class-string<T> $type
 	 *
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function findOneBy(
 		Queries\Configuration\FindChannels $queryObject,
 		string $type = MetadataDocuments\DevicesModule\Channel::class,
 	): MetadataDocuments\DevicesModule\Channel|null
 	{
-		$document = $this->loadCacheOne(serialize($queryObject->toString() . $type));
-
-		if ($document !== false) {
-			return $document;
-		}
-
 		try {
-			$space = $this->builder
-				->load()
-				->find('.' . Devices\Constants::DATA_STORAGE_CHANNELS_KEY . '.*');
-		} catch (JSONPath\JSONPathException $ex) {
-			throw new Exceptions\InvalidState('', $ex->getCode(), $ex);
+			$document = $this->cache->load(
+				$this->createKeyOne($queryObject) . '_' . md5($type),
+				function () use ($queryObject, $type, &$dependencies): MetadataDocuments\DevicesModule\Channel|null {
+					$dependencies[Caching\Cache::Files] = $this->builder->getConfigurationFile();
+
+					$space = $this->builder
+						->load()
+						->find('.' . Devices\Constants::DATA_STORAGE_CHANNELS_KEY . '.*');
+
+					$result = $queryObject->fetch($space);
+
+					if (!is_array($result) || $result === []) {
+						return null;
+					}
+
+					return $this->entityFactory->create($type, $result[0]);
+				},
+			);
+		} catch (Throwable $ex) {
+			throw new Exceptions\InvalidState('Could not load document', $ex->getCode(), $ex);
 		}
 
-		$result = $queryObject->fetch($space);
-
-		if (!is_array($result) || $result === []) {
-			return null;
+		if ($document !== null && !$document instanceof $type) {
+			throw new Exceptions\InvalidState('Could not load document');
 		}
-
-		$document = $this->entityFactory->create($type, $result[0]);
-
-		$this->writeCacheOne(serialize($queryObject->toString() . $type), $document);
 
 		return $document;
 	}
 
 	/**
+	 * @template T of MetadataDocuments\DevicesModule\Channel
+	 *
 	 * @param Queries\Configuration\FindChannels<T> $queryObject
 	 * @param class-string<T> $type
 	 *
 	 * @return array<T>
 	 *
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function findAllBy(
 		Queries\Configuration\FindChannels $queryObject,
 		string $type = MetadataDocuments\DevicesModule\Channel::class,
 	): array
 	{
-		$documents = $this->loadCacheAll(serialize($queryObject->toString() . $type));
-
-		if ($documents !== false) {
-			return $documents;
-		}
-
 		try {
-			$space = $this->builder
-				->load()
-				->find('.' . Devices\Constants::DATA_STORAGE_CHANNELS_KEY . '.*');
-		} catch (JSONPath\JSONPathException $ex) {
-			throw new Exceptions\InvalidState('Fetch all data by query failed', $ex->getCode(), $ex);
+			$documents = $this->cache->load(
+				$this->createKeyAll($queryObject) . '_' . md5($type),
+				function () use ($queryObject, $type, &$dependencies): array {
+					$dependencies[Caching\Cache::Files] = $this->builder->getConfigurationFile();
+
+					$space = $this->builder
+						->load()
+						->find('.' . Devices\Constants::DATA_STORAGE_CHANNELS_KEY . '.*');
+
+					$result = $queryObject->fetch($space);
+
+					if (!is_array($result)) {
+						return [];
+					}
+
+					return array_map(
+						fn (stdClass $item): MetadataDocuments\DevicesModule\Channel => $this->entityFactory->create(
+							$type,
+							$item,
+						),
+						$result,
+					);
+				},
+			);
+		} catch (Throwable $ex) {
+			throw new Exceptions\InvalidState('Could not load documents', $ex->getCode(), $ex);
 		}
 
-		$result = $queryObject->fetch($space);
-
-		if (!is_array($result)) {
-			return [];
+		if (!is_array($documents)) {
+			throw new Exceptions\InvalidState('Could not load documents');
 		}
-
-		$documents = array_map(
-			fn (stdClass $item): MetadataDocuments\DevicesModule\Channel => $this->entityFactory->create($type, $item),
-			$result,
-		);
-
-		$this->writeCacheAll(serialize($queryObject->toString() . $type), $documents);
 
 		return $documents;
 	}

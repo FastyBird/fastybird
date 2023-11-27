@@ -48,12 +48,6 @@ final class StoreDeviceState implements Queue\Consumer
 	use Nette\SmartObject;
 	use DeviceProperty;
 
-	/**
-	 * @param DevicesModels\Configuration\Devices\Repository<MetadataDocuments\DevicesModule\Device> $devicesConfigurationRepository
-	 * @param DevicesModels\Configuration\Devices\Properties\Repository<MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceVariableProperty> $devicesPropertiesConfigurationRepository
-	 * @param DevicesModels\Configuration\Channels\Repository<MetadataDocuments\DevicesModule\Channel> $channelsConfigurationRepository
-	 * @param DevicesModels\Configuration\Channels\Properties\Repository<MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelVariableProperty> $channelsPropertiesConfigurationRepository
-	 */
 	public function __construct(
 		protected readonly Shelly\Logger $logger,
 		protected readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,

@@ -41,9 +41,6 @@ final class ConnectorConnection
 
 	use Nette\SmartObject;
 
-	/**
-	 * @param Models\Configuration\Connectors\Properties\Repository<MetadataDocuments\DevicesModule\ConnectorDynamicProperty> $connectorsPropertiesConfigurationRepository
-	 */
 	public function __construct(
 		private readonly Models\Entities\Connectors\ConnectorsRepository $connectorsEntitiesRepository,
 		private readonly Models\Entities\Connectors\Properties\PropertiesManager $connectorsPropertiesEntitiesManager,

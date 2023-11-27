@@ -73,9 +73,6 @@ final class Cloud implements Client
 
 	private EventLoop\TimerInterface|null $handlerTimer = null;
 
-	/**
-	 * @param DevicesModels\Configuration\Devices\Repository<MetadataDocuments\DevicesModule\Device> $devicesConfigurationRepository
-	 */
 	public function __construct(
 		private readonly MetadataDocuments\DevicesModule\Connector $connector,
 		private readonly API\ConnectionManager $connectionManager,
@@ -98,7 +95,6 @@ final class Cloud implements Client
 	 * @throws Exceptions\OpenApiError
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function connect(): void
 	{
@@ -254,7 +250,6 @@ final class Cloud implements Client
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function disconnect(): void
 	{

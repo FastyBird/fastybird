@@ -80,10 +80,6 @@ final class Local implements Client
 
 	private EventLoop\TimerInterface|null $handlerTimer = null;
 
-	/**
-	 * @param DevicesModels\Configuration\Devices\Repository<MetadataDocuments\DevicesModule\Device> $devicesConfigurationRepository
-	 * @param DevicesModels\Configuration\Devices\Properties\Repository<MetadataDocuments\DevicesModule\DeviceVariableProperty> $devicesPropertiesConfigurationRepository
-	 */
 	public function __construct(
 		private readonly MetadataDocuments\DevicesModule\Connector $connector,
 		private readonly API\ConnectionManager $connectionManager,
@@ -105,7 +101,6 @@ final class Local implements Client
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function connect(): void
 	{
@@ -478,7 +473,6 @@ final class Local implements Client
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function createGen2DeviceWsClient(MetadataDocuments\DevicesModule\Device $device): API\Gen2WsApi
 	{
@@ -630,7 +624,6 @@ final class Local implements Client
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function processGen1DeviceGetState(
 		MetadataDocuments\DevicesModule\Device $device,
@@ -901,7 +894,6 @@ final class Local implements Client
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function processGen2DeviceGetState(
 		MetadataDocuments\DevicesModule\Device $device,

@@ -25,7 +25,7 @@ use function serialize;
 /**
  * Find devices properties configuration query
  *
- * @template T of MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceVariableProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty
+ * @template T of MetadataDocuments\DevicesModule\DeviceProperty
  * @extends  QueryObject<T>
  *
  * @package        FastyBird:DevicesModule!

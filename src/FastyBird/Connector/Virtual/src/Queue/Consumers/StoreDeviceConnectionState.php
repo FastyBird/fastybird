@@ -20,7 +20,6 @@ use FastyBird\Connector\Virtual;
 use FastyBird\Connector\Virtual\Entities;
 use FastyBird\Connector\Virtual\Queue;
 use FastyBird\Library\Metadata;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -42,12 +41,6 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 
 	use Nette\SmartObject;
 
-	/**
-	 * @param DevicesModels\Configuration\Devices\Repository<MetadataDocuments\DevicesModule\Device> $devicesConfigurationRepository
-	 * @param DevicesModels\Configuration\Devices\Properties\Repository<MetadataDocuments\DevicesModule\DeviceDynamicProperty> $devicesPropertiesConfigurationRepository
-	 * @param DevicesModels\Configuration\Channels\Repository<MetadataDocuments\DevicesModule\Channel> $channelsConfigurationRepository
-	 * @param DevicesModels\Configuration\Channels\Properties\Repository<MetadataDocuments\DevicesModule\ChannelDynamicProperty> $channelsPropertiesConfigurationRepository
-	 */
 	public function __construct(
 		private readonly Virtual\Logger $logger,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,

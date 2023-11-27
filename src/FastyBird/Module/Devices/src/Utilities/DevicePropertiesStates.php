@@ -46,9 +46,6 @@ final class DevicePropertiesStates
 
 	use Nette\SmartObject;
 
-	/**
-	 * @param Models\Configuration\Devices\Properties\Repository<MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty> $devicePropertiesConfigurationRepository
-	 */
 	public function __construct(
 		private readonly Models\Configuration\Devices\Properties\Repository $devicePropertiesConfigurationRepository,
 		private readonly Models\States\DevicePropertiesRepository $devicePropertyStateRepository,

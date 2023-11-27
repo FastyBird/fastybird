@@ -75,9 +75,6 @@ final class Local implements Client
 
 	private EventLoop\TimerInterface|null $handlerTimer = null;
 
-	/**
-	 * @param DevicesModels\Configuration\Devices\Repository<MetadataDocuments\DevicesModule\Device> $devicesConfigurationRepository
-	 */
 	public function __construct(
 		private readonly MetadataDocuments\DevicesModule\Connector $connector,
 		private readonly API\ConnectionManager $connectionManager,
@@ -98,7 +95,6 @@ final class Local implements Client
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function connect(): void
 	{
@@ -373,7 +369,6 @@ final class Local implements Client
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function createDeviceClient(MetadataDocuments\DevicesModule\Device $device): void
 	{
@@ -489,9 +484,6 @@ final class Local implements Client
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function getDeviceClient(MetadataDocuments\DevicesModule\Device $device): API\LocalApi|null
 	{

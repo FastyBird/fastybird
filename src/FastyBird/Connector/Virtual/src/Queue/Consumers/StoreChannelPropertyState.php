@@ -51,11 +51,6 @@ final class StoreChannelPropertyState implements Queue\Consumer
 
 	use Nette\SmartObject;
 
-	/**
-	 * @param DevicesModels\Configuration\Devices\Repository<MetadataDocuments\DevicesModule\Device> $devicesConfigurationRepository
-	 * @param DevicesModels\Configuration\Channels\Repository<MetadataDocuments\DevicesModule\Channel> $channelsConfigurationRepository
-	 * @param DevicesModels\Configuration\Channels\Properties\Repository<MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty|MetadataDocuments\DevicesModule\ChannelVariableProperty> $channelsPropertiesConfigurationRepository
-	 */
 	public function __construct(
 		private readonly bool $useExchange,
 		private readonly Virtual\Logger $logger,

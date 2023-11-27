@@ -15,30 +15,22 @@
 
 namespace FastyBird\Module\Devices\Models\Configuration\Devices\Properties;
 
+use Contributte\Cache;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
-use Flow\JSONPath;
+use Nette\Caching;
 use stdClass;
 use Throwable;
-use function array_filter;
 use function array_map;
-use function implode;
 use function is_array;
-use function is_string;
-use function serialize;
+use function md5;
 
 /**
  * Devices properties configuration repository
- *
- * @phpstan-type SupportedClasses MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceVariableProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty
- *
- * @template T of MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceVariableProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty
- * @extends  Models\Configuration\Repository<T|SupportedClasses>
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Models
@@ -49,183 +41,129 @@ final class Repository extends Models\Configuration\Repository
 
 	public function __construct(
 		Models\Configuration\Builder $builder,
+		Cache\CacheFactory $cacheFactory,
 		private readonly MetadataDocuments\DocumentFactory $entityFactory,
 	)
 	{
-		parent::__construct($builder);
+		parent::__construct($builder, $cacheFactory);
 	}
 
 	/**
-	 * @template Doc of SupportedClasses
+	 * @template T of MetadataDocuments\DevicesModule\DeviceProperty
 	 *
-	 * @param Queries\Configuration\FindDeviceProperties<Doc> $queryObject
-	 * @param class-string<Doc>|null $type
+	 * @param Queries\Configuration\FindDeviceProperties<T> $queryObject
+	 * @param class-string<T> $type
 	 *
-	 * @return ($type is class-string<Doc> ? Doc|null : SupportedClasses|null)
+	 * @return T|null
 	 *
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function findOneBy(
 		Queries\Configuration\FindDeviceProperties $queryObject,
-		string|null $type = null,
-	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-	): MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceVariableProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty|null
+		string $type = MetadataDocuments\DevicesModule\DeviceProperty::class,
+	): MetadataDocuments\DevicesModule\DeviceProperty|null
 	{
-		$document = $this->loadCacheOne(serialize($queryObject->toString() . $type));
-
-		if ($document !== false) {
-			return $document;
-		}
-
 		try {
-			$space = $this->builder
-				->load()
-				->find('.' . Devices\Constants::DATA_STORAGE_PROPERTIES_KEY . '.*');
+			$document = $this->cache->load(
+				$this->createKeyOne($queryObject) . '_' . md5($type),
+				function () use ($queryObject, $type, &$dependencies): MetadataDocuments\DevicesModule\DeviceProperty|null {
+					$dependencies[Caching\Cache::Files] = $this->builder->getConfigurationFile();
 
-			if (is_string($type)) {
-				if ($type === MetadataDocuments\DevicesModule\DeviceDynamicProperty::class) {
-					$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_DYNAMIC . '")]');
+					$space = $this->builder
+						->load()
+						->find('.' . Devices\Constants::DATA_STORAGE_PROPERTIES_KEY . '.*');
 
-				} elseif ($type === MetadataDocuments\DevicesModule\DeviceVariableProperty::class) {
-					$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_VARIABLE . '")]');
+					if ($type === MetadataDocuments\DevicesModule\DeviceDynamicProperty::class) {
+						$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_DYNAMIC . '")]');
 
-				} elseif ($type === MetadataDocuments\DevicesModule\DeviceMappedProperty::class) {
-					$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_MAPPED . '")]');
-				}
-			} else {
-				$types = [
-					MetadataTypes\PropertyType::TYPE_DYNAMIC,
-					MetadataTypes\PropertyType::TYPE_VARIABLE,
-					MetadataTypes\PropertyType::TYPE_MAPPED,
-				];
+					} elseif ($type === MetadataDocuments\DevicesModule\DeviceVariableProperty::class) {
+						$space = $space->find(
+							'.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_VARIABLE . '")]',
+						);
 
-				$space = $space->find('.[?(@.type in ["' . implode('","', $types) . '"])]');
-			}
-		} catch (JSONPath\JSONPathException $ex) {
-			throw new Exceptions\InvalidState('', $ex->getCode(), $ex);
-		}
-
-		$result = $queryObject->fetch($space);
-
-		if (!is_array($result) || $result === []) {
-			$document = null;
-		} else {
-			if (is_string($type)) {
-				$document = $this->entityFactory->create($type, $result[0]);
-			} else {
-				foreach (
-					[
-						MetadataDocuments\DevicesModule\DeviceDynamicProperty::class,
-						MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
-						MetadataDocuments\DevicesModule\DeviceMappedProperty::class,
-					] as $class
-				) {
-					try {
-						$document = $this->entityFactory->create($class, $result[0]);
-
-						break;
-					} catch (Throwable) {
-						$document = null;
+					} elseif ($type === MetadataDocuments\DevicesModule\DeviceMappedProperty::class) {
+						$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_MAPPED . '")]');
 					}
-				}
-			}
+
+					$result = $queryObject->fetch($space);
+
+					if (!is_array($result) || $result === []) {
+						return null;
+					}
+
+					return $this->entityFactory->create($type, $result[0]);
+				},
+			);
+		} catch (Throwable $ex) {
+			throw new Exceptions\InvalidState('Could not load document', $ex->getCode(), $ex);
 		}
 
-		$this->writeCacheOne(serialize($queryObject->toString() . $type), $document);
+		if ($document !== null && !$document instanceof $type) {
+			throw new Exceptions\InvalidState('Could not load document');
+		}
 
 		return $document;
 	}
 
 	/**
-	 * @template Doc of SupportedClasses
+	 * @template T of MetadataDocuments\DevicesModule\DeviceProperty
 	 *
-	 * @param Queries\Configuration\FindDeviceProperties<Doc> $queryObject
-	 * @param class-string<Doc>|null $type
+	 * @param Queries\Configuration\FindDeviceProperties<T> $queryObject
+	 * @param class-string<T> $type
 	 *
-	 * @return ($type is class-string<Doc> ? array<Doc> : array<SupportedClasses>)
+	 * @return array<T>
 	 *
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function findAllBy(
 		Queries\Configuration\FindDeviceProperties $queryObject,
-		string|null $type = null,
+		string $type = MetadataDocuments\DevicesModule\DeviceProperty::class,
 	): array
 	{
-		$documents = $this->loadCacheAll(serialize($queryObject->toString() . $type));
-
-		if ($documents !== false) {
-			return $documents;
-		}
-
 		try {
-			$space = $this->builder
-				->load()
-				->find('.' . Devices\Constants::DATA_STORAGE_PROPERTIES_KEY . '.*');
+			$documents = $this->cache->load(
+				$this->createKeyAll($queryObject) . '_' . md5($type),
+				function () use ($queryObject, $type, &$dependencies): array {
+					$dependencies[Caching\Cache::Files] = $this->builder->getConfigurationFile();
 
-			if (is_string($type)) {
-				if ($type === MetadataDocuments\DevicesModule\DeviceDynamicProperty::class) {
-					$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_DYNAMIC . '")]');
+					$space = $this->builder
+						->load()
+						->find('.' . Devices\Constants::DATA_STORAGE_PROPERTIES_KEY . '.*');
 
-				} elseif ($type === MetadataDocuments\DevicesModule\DeviceVariableProperty::class) {
-					$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_VARIABLE . '")]');
+					if ($type === MetadataDocuments\DevicesModule\DeviceDynamicProperty::class) {
+						$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_DYNAMIC . '")]');
 
-				} elseif ($type === MetadataDocuments\DevicesModule\DeviceMappedProperty::class) {
-					$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_MAPPED . '")]');
-				}
-			} else {
-				$types = [
-					MetadataTypes\PropertyType::TYPE_DYNAMIC,
-					MetadataTypes\PropertyType::TYPE_VARIABLE,
-					MetadataTypes\PropertyType::TYPE_MAPPED,
-				];
+					} elseif ($type === MetadataDocuments\DevicesModule\DeviceVariableProperty::class) {
+						$space = $space->find(
+							'.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_VARIABLE . '")]',
+						);
 
-				$space = $space->find('.[?(@.type in ["' . implode('","', $types) . '"])]');
-			}
-		} catch (JSONPath\JSONPathException $ex) {
-			throw new Exceptions\InvalidState('Fetch all data by query failed', $ex->getCode(), $ex);
-		}
-
-		$result = $queryObject->fetch($space);
-
-		if (!is_array($result)) {
-			return [];
-		}
-
-		$documents = array_filter(
-			array_map(
-				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				function (stdClass $item) use ($type): MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceVariableProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty|null {
-					if (is_string($type)) {
-						return $this->entityFactory->create($type, $item);
-					} else {
-						foreach (
-							[
-								MetadataDocuments\DevicesModule\DeviceDynamicProperty::class,
-								MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
-								MetadataDocuments\DevicesModule\DeviceMappedProperty::class,
-							] as $class
-						) {
-							try {
-								return $this->entityFactory->create($class, $item);
-							} catch (Throwable) {
-								// Just ignore it
-							}
-						}
-
-						return null;
+					} elseif ($type === MetadataDocuments\DevicesModule\DeviceMappedProperty::class) {
+						$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_MAPPED . '")]');
 					}
-				},
-				$result,
-			),
-			static fn ($item): bool => $item !== null,
-		);
 
-		$this->writeCacheAll(serialize($queryObject->toString() . $type), $documents);
+					$result = $queryObject->fetch($space);
+
+					if (!is_array($result)) {
+						return [];
+					}
+
+					return array_map(
+						fn (stdClass $item): MetadataDocuments\DevicesModule\DeviceProperty => $this->entityFactory->create(
+							$type,
+							$item,
+						),
+						$result,
+					);
+				},
+			);
+		} catch (Throwable $ex) {
+			throw new Exceptions\InvalidState('Could not load documents', $ex->getCode(), $ex);
+		}
+
+		if (!is_array($documents)) {
+			throw new Exceptions\InvalidState('Could not load documents');
+		}
 
 		return $documents;
 	}

@@ -21,7 +21,6 @@ use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Queries;
 use FastyBird\Connector\Tuya\Queue;
 use FastyBird\Connector\Tuya\Types;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -49,9 +48,6 @@ final class StoreLocalDevice implements Queue\Consumer
 	use DeviceProperty;
 	use ChannelProperty;
 
-	/**
-	 * @param DevicesModels\Configuration\Channels\Properties\Repository<MetadataDocuments\DevicesModule\ChannelDynamicProperty> $channelsPropertiesConfigurationRepository
-	 */
 	public function __construct(
 		protected readonly Tuya\Logger $logger,
 		protected readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,

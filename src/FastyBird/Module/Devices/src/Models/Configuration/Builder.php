@@ -148,6 +148,11 @@ final class Builder implements Evenement\EventEmitterInterface
 		return $this->configuration;
 	}
 
+	public function getConfigurationFile(): string
+	{
+		return FB_TEMP_DIR . DIRECTORY_SEPARATOR . Devices\Constants::CONFIGURATION_FILE_FILENAME;
+	}
+
 	/**
 	 * @param array<string, mixed> $data
 	 *
@@ -156,10 +161,7 @@ final class Builder implements Evenement\EventEmitterInterface
 	private function encode(array $data): void
 	{
 		try {
-			Utils\FileSystem::write(
-				FB_TEMP_DIR . DIRECTORY_SEPARATOR . Devices\Constants::CONFIGURATION_FILE_FILENAME,
-				$this->dataSource->encode($data, 'json'),
-			);
+			Utils\FileSystem::write($this->getConfigurationFile(), $this->dataSource->encode($data, 'json'));
 		} catch (Throwable $ex) {
 			throw new Exceptions\InvalidState('Module configuration could not be written', $ex->getCode(), $ex);
 		}
@@ -174,9 +176,7 @@ final class Builder implements Evenement\EventEmitterInterface
 	{
 		try {
 			return $this->dataSource->decode(
-				Utils\FileSystem::read(
-					FB_TEMP_DIR . DIRECTORY_SEPARATOR . Devices\Constants::CONFIGURATION_FILE_FILENAME,
-				),
+				Utils\FileSystem::read($this->getConfigurationFile()),
 				'json',
 			);
 		} catch (Nette\IOException) {

@@ -15,10 +15,11 @@
 #########################
 
 extensions:
-    contributteConsole  : Contributte\Console\DI\ConsoleExtension(%consoleMode%)
-    contributteMonolog  : Contributte\Monolog\DI\MonologExtension
-    orisaiObjectMapper  : OriNette\ObjectMapper\DI\ObjectMapperExtension
-    fbBootstrapLibrary  : FastyBird\Library\Bootstrap\DI\BootstrapExtension
+    contributteConsole      : Contributte\Console\DI\ConsoleExtension(%consoleMode%)
+    contributteMonolog      : Contributte\Monolog\DI\MonologExtension
+    contributteCacheFactory : Contributte\Cache\DI\CacheFactoryExtension
+    orisaiObjectMapper      : OriNette\ObjectMapper\DI\ObjectMapperExtension
+    fbBootstrapLibrary      : FastyBird\Library\Bootstrap\DI\BootstrapExtension
 
 ##################################
 # Nette extensions configuration #

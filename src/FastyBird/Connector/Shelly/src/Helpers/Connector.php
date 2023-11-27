@@ -36,9 +36,6 @@ use function is_string;
 final class Connector
 {
 
-	/**
-	 * @param DevicesModels\Configuration\Connectors\Properties\Repository<MetadataDocuments\DevicesModule\ConnectorVariableProperty> $connectorsPropertiesConfigurationRepository
-	 */
 	public function __construct(
 		private readonly DevicesModels\Configuration\Connectors\Properties\Repository $connectorsPropertiesConfigurationRepository,
 	)
@@ -50,7 +47,6 @@ final class Connector
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getClientMode(MetadataDocuments\DevicesModule\Connector $connector): Types\ClientMode
 	{
@@ -76,7 +72,6 @@ final class Connector
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getCloudServerAddress(MetadataDocuments\DevicesModule\Connector $connector): string|null
 	{
@@ -103,7 +98,6 @@ final class Connector
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getCloudAuthKey(MetadataDocuments\DevicesModule\Connector $connector): string|null
 	{

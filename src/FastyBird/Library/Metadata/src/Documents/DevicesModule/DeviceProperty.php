@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Property.php
+ * DeviceProperty.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,7 +10,7 @@
  * @subpackage     Documents
  * @since          1.0.0
  *
- * @date           02.06.22
+ * @date           27.11.23
  */
 
 namespace FastyBird\Library\Metadata\Documents\DevicesModule;
@@ -31,14 +31,14 @@ use function preg_match;
 use function strval;
 
 /**
- * Property document
+ * Device property document
  *
  * @package        FastyBird:MetadataLibrary!
  * @subpackage     Documents
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-abstract class Property implements Documents\Document, Documents\Owner
+abstract class DeviceProperty implements Documents\Document, Documents\Owner
 {
 
 	use Documents\TOwner;
@@ -81,7 +81,7 @@ abstract class Property implements Documents\Document, Documents\Owner
 						new ObjectMapper\Rules\ArrayOf(
 							item: new ObjectMapper\Rules\AnyOf([
 								new ObjectMapper\Rules\ArrayEnumValue(
-									// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+								// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 									cases: [Types\DataTypeShort::DATA_TYPE_CHAR, Types\DataTypeShort::DATA_TYPE_UCHAR, Types\DataTypeShort::DATA_TYPE_SHORT, Types\DataTypeShort::DATA_TYPE_USHORT, Types\DataTypeShort::DATA_TYPE_INT, Types\DataTypeShort::DATA_TYPE_UINT, Types\DataTypeShort::DATA_TYPE_FLOAT, Types\DataTypeShort::DATA_TYPE_BOOLEAN, Types\DataTypeShort::DATA_TYPE_STRING, Types\DataTypeShort::DATA_TYPE_BUTTON, Types\DataTypeShort::DATA_TYPE_SWITCH, Types\DataTypeShort::DATA_TYPE_COVER],
 								),
 								new ObjectMapper\Rules\StringValue(notEmpty: true),
@@ -108,7 +108,7 @@ abstract class Property implements Documents\Document, Documents\Owner
 					new ObjectMapper\Rules\ArrayOf(
 						item: new ObjectMapper\Rules\AnyOf([
 							new ObjectMapper\Rules\ArrayEnumValue(
-								// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+							// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 								cases: [Types\DataTypeShort::DATA_TYPE_CHAR, Types\DataTypeShort::DATA_TYPE_UCHAR, Types\DataTypeShort::DATA_TYPE_SHORT, Types\DataTypeShort::DATA_TYPE_USHORT, Types\DataTypeShort::DATA_TYPE_INT, Types\DataTypeShort::DATA_TYPE_UINT, Types\DataTypeShort::DATA_TYPE_FLOAT],
 							),
 							new ObjectMapper\Rules\IntValue(),
@@ -158,6 +158,8 @@ abstract class Property implements Documents\Document, Documents\Owner
 	{
 		return $this->id;
 	}
+
+	abstract public function getType(): Types\PropertyType;
 
 	public function getCategory(): Types\PropertyCategory
 	{

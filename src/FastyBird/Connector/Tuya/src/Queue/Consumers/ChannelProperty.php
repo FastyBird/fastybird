@@ -18,7 +18,6 @@ namespace FastyBird\Connector\Tuya\Queue\Consumers;
 use Doctrine\DBAL;
 use FastyBird\Connector\Tuya;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -55,9 +54,6 @@ trait ChannelProperty
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Runtime
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function setChannelProperty(
 		string $type,

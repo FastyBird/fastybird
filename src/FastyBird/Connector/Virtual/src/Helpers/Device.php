@@ -36,9 +36,6 @@ use function is_numeric;
 final class Device
 {
 
-	/**
-	 * @param DevicesModels\Configuration\Devices\Properties\Repository<MetadataDocuments\DevicesModule\DeviceVariableProperty> $devicesPropertiesConfigurationRepository
-	 */
 	public function __construct(
 		protected readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
 	)
@@ -49,7 +46,6 @@ final class Device
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getStateProcessingDelay(MetadataDocuments\DevicesModule\Device $device): float
 	{

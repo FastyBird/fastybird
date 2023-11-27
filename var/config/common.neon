@@ -171,7 +171,7 @@ fbVirtualConnector:
 #############
 
 contributteConsole:
-    name: "FastyBird:MiniServer!"
+    name: "FastyBird:IoTServer!"
     version: "1.0.0"
     catchExceptions: true
     autoExit: true

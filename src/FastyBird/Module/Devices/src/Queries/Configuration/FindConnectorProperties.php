@@ -25,7 +25,7 @@ use function serialize;
 /**
  * Find connectors properties configuration query
  *
- * @template T of MetadataDocuments\DevicesModule\ConnectorDynamicProperty|MetadataDocuments\DevicesModule\ConnectorVariableProperty
+ * @template T of MetadataDocuments\DevicesModule\ConnectorProperty
  * @extends  QueryObject<T>
  *
  * @package        FastyBird:DevicesModule!
