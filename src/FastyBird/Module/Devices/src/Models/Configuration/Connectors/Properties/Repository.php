@@ -98,16 +98,15 @@ final class Repository extends Models\Configuration\Repository
 					) {
 						try {
 							$document = $this->entityFactory->create($class, $result[0]);
+							assert($document instanceof $type);
 
-							break;
+							return $document;
 						} catch (Throwable) {
-							$document = null;
+							// Just ignore it
 						}
 					}
 
-					assert($document === null || $document instanceof $type);
-
-					return $document;
+					return null;
 				},
 			);
 		} catch (Throwable $ex) {
