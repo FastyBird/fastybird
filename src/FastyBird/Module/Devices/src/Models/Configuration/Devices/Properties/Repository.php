@@ -25,7 +25,9 @@ use FastyBird\Module\Devices\Queries;
 use Nette\Caching;
 use stdClass;
 use Throwable;
+use function array_filter;
 use function array_map;
+use function assert;
 use function is_array;
 use function md5;
 
