@@ -57,7 +57,7 @@ final class Repository extends Models\Configuration\Repository
 		try {
 			$document = $this->cache->load(
 				$this->createKeyOne($queryObject),
-				function () use ($queryObject): MetadataDocuments\DevicesModule\ChannelControl|null {
+				function () use ($queryObject): MetadataDocuments\DevicesModule\ChannelControl|false {
 					$space = $this->builder
 						->load()
 						->find('.' . Devices\Constants::DATA_STORAGE_CONTROLS_KEY . '.*');
@@ -65,7 +65,7 @@ final class Repository extends Models\Configuration\Repository
 					$result = $queryObject->fetch($space);
 
 					if (!is_array($result) || $result === []) {
-						return null;
+						return false;
 					}
 
 					return $this->entityFactory->create(
@@ -78,7 +78,11 @@ final class Repository extends Models\Configuration\Repository
 			throw new Exceptions\InvalidState('Could not load document', $ex->getCode(), $ex);
 		}
 
-		if ($document !== null && !$document instanceof MetadataDocuments\DevicesModule\ChannelControl) {
+		if ($document === false) {
+			return null;
+		}
+
+		if (!$document instanceof MetadataDocuments\DevicesModule\ChannelControl) {
 			throw new Exceptions\InvalidState('Could not load document');
 		}
 

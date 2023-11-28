@@ -25,6 +25,9 @@ extensions:
 # Nette extensions configuration #
 ##################################
 
+services:
+    cache.storage: Contributte\Cache\Storages\MemoryAdapterStorage(Nette\Caching\Storages\FileStorage(%tempDir%/cache, Nette\Caching\Storages\SQLiteJournal(%tempDir%/cache/journal.s3db)))
+
 # Symfony console support extension
 ###################################
 contributteConsole:
