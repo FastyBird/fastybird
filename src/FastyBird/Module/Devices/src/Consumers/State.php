@@ -22,6 +22,7 @@ use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
@@ -49,6 +50,7 @@ final class State implements ExchangeConsumers\Consumer
 	];
 
 	public function __construct(
+		private readonly Devices\Logger $logger,
 		private readonly ExchangePublisher\Publisher $publisher,
 		private readonly ExchangeEntities\DocumentFactory $entityFactory,
 		private readonly Models\Configuration\Connectors\Properties\Repository $connectorPropertiesConfigurationRepository,
@@ -103,6 +105,24 @@ final class State implements ExchangeConsumers\Consumer
 							States\Property::PENDING_FIELD => true,
 						]),
 					);
+
+					$this->logger->info('Requested write value to connector property', [
+						'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+						'type' => 'state-consumer',
+						'connector' => [
+							'id' => $entity->getConnector()->toString(),
+						],
+						'property' => [
+							'id' => $property->getId()->toString(),
+							'identifier' => $property->getIdentifier(),
+						],
+						'expected_value' => $entity->getExpectedValue(),
+						'message' => [
+							'routing_key' => $routingKey->getValue(),
+							'source' => $source->getValue(),
+							'data' => $entity->toArray(),
+						],
+					]);
 				} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
 					$findConnectorPropertyQuery = new Queries\Configuration\FindConnectorDynamicProperties();
 					$findConnectorPropertyQuery->byId($entity->getProperty());
@@ -157,6 +177,24 @@ final class State implements ExchangeConsumers\Consumer
 							States\Property::PENDING_FIELD => true,
 						]),
 					);
+
+					$this->logger->info('Requested write value to device property', [
+						'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+						'type' => 'state-consumer',
+						'device' => [
+							'id' => $entity->getDevice()->toString(),
+						],
+						'property' => [
+							'id' => $property->getId()->toString(),
+							'identifier' => $property->getIdentifier(),
+						],
+						'expected_value' => $entity->getExpectedValue(),
+						'message' => [
+							'routing_key' => $routingKey->getValue(),
+							'source' => $source->getValue(),
+							'data' => $entity->toArray(),
+						],
+					]);
 				} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
 					$findConnectorPropertyQuery = new Queries\Configuration\FindDeviceProperties();
 					$findConnectorPropertyQuery->byId($entity->getProperty());
@@ -211,6 +249,24 @@ final class State implements ExchangeConsumers\Consumer
 							States\Property::PENDING_FIELD => true,
 						]),
 					);
+
+					$this->logger->info('Requested write value to channel property', [
+						'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+						'type' => 'state-consumer',
+						'channel' => [
+							'id' => $entity->getChannel()->toString(),
+						],
+						'property' => [
+							'id' => $property->getId()->toString(),
+							'identifier' => $property->getIdentifier(),
+						],
+						'expected_value' => $entity->getExpectedValue(),
+						'message' => [
+							'routing_key' => $routingKey->getValue(),
+							'source' => $source->getValue(),
+							'data' => $entity->toArray(),
+						],
+					]);
 				} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
 					$findConnectorPropertyQuery = new Queries\Configuration\FindChannelProperties();
 					$findConnectorPropertyQuery->byId($entity->getProperty());
