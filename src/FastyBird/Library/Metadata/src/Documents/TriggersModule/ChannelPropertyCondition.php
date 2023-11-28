@@ -90,12 +90,4 @@ final class ChannelPropertyCondition extends Condition
 		]);
 	}
 
-	/**
-	 * @return array<string, mixed>
-	 */
-	public function __serialize(): array
-	{
-		return $this->toArray();
-	}
-
 }

@@ -26,12 +26,4 @@ namespace FastyBird\Library\Metadata\Documents\TriggersModule;
 final class ManualTrigger extends Trigger
 {
 
-	/**
-	 * @return array<string, mixed>
-	 */
-	public function __serialize(): array
-	{
-		return $this->toArray();
-	}
-
 }

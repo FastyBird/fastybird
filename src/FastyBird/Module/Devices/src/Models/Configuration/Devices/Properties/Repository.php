@@ -91,7 +91,25 @@ final class Repository extends Models\Configuration\Repository
 						return null;
 					}
 
-					return $this->entityFactory->create($type, $result[0]);
+					foreach (
+						[
+							MetadataDocuments\DevicesModule\DeviceDynamicProperty::class,
+							MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+							MetadataDocuments\DevicesModule\DeviceMappedProperty::class,
+						] as $class
+					) {
+						try {
+							$document = $this->entityFactory->create($class, $result[0]);
+
+							break;
+						} catch (Throwable) {
+							$document = null;
+						}
+					}
+
+					assert($document === null || $document instanceof $type);
+
+					return $document;
 				},
 			);
 		} catch (Throwable $ex) {
@@ -148,12 +166,29 @@ final class Repository extends Models\Configuration\Repository
 						return [];
 					}
 
-					return array_map(
-						fn (stdClass $item): MetadataDocuments\DevicesModule\DeviceProperty => $this->entityFactory->create(
-							$type,
-							$item,
+					return array_filter(
+						array_map(
+						// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+							function (stdClass $item): MetadataDocuments\DevicesModule\DeviceProperty|null {
+								foreach (
+									[
+										MetadataDocuments\DevicesModule\DeviceDynamicProperty::class,
+										MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+										MetadataDocuments\DevicesModule\DeviceMappedProperty::class,
+									] as $class
+								) {
+									try {
+										return $this->entityFactory->create($class, $item);
+									} catch (Throwable) {
+										// Just ignore it
+									}
+								}
+
+								return null;
+							},
+							$result,
 						),
-						$result,
+						static fn ($item): bool => $item instanceof $type,
 					);
 				},
 			);

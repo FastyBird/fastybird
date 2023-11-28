@@ -63,12 +63,4 @@ final class AutomaticTrigger extends Trigger
 		]);
 	}
 
-	/**
-	 * @return array<string, mixed>
-	 */
-	public function __serialize(): array
-	{
-		return $this->toArray();
-	}
-
 }

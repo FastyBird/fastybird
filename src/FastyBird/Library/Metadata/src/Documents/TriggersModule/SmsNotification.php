@@ -66,15 +66,4 @@ final class SmsNotification extends Notification
 		]);
 	}
 
-	/**
-	 * @return array<string, mixed>
-	 *
-	 * @throws PhoneExceptions\NoValidCountryException
-	 * @throws PhoneExceptions\NoValidPhoneException
-	 */
-	public function __serialize(): array
-	{
-		return $this->toArray();
-	}
-
 }

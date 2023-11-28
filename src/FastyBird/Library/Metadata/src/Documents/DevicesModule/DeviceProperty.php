@@ -312,15 +312,4 @@ abstract class DeviceProperty implements Documents\Document, Documents\Owner
 		return null;
 	}
 
-	/**
-	 * @return array<string, mixed>
-	 *
-	 * @throws Exceptions\InvalidArgument
-	 * @throws Exceptions\InvalidState
-	 */
-	public function __serialize(): array
-	{
-		return $this->toArray();
-	}
-
 }
