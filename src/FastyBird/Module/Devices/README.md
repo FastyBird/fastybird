@@ -1,14 +1,18 @@
+<p align="center">
+	<img src="https://github.com/fastybird/.github/blob/main/assets/repo_title.png?raw=true" alt="FastyBird"/>
+</p>
+
 # FastyBird IoT devices module
 
-[![Build Status](https://badgen.net/github/checks/FastyBird/devices-module/main?cache=300&style=flat-square)](https://github.com/FastyBird/devices-module/actions)
-[![Licence](https://badgen.net/github/license/FastyBird/devices-module?cache=300&style=flat-square)](https://github.com/FastyBird/devices-module/blob/main/LICENSE.md)
-[![Code coverage](https://badgen.net/coveralls/c/github/FastyBird/devices-module?cache=300&style=flat-square)](https://coveralls.io/r/FastyBird/devices-module)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/FastyBird/devices-module/ci.yaml?style=flat-square)](https://github.com/FastyBird/devices-module/actions)
+[![Licence](https://img.shields.io/github/license/FastyBird/devices-module?style=flat-square)](https://github.com/FastyBird/devices-module/blob/main/LICENSE.md)
+[![Code coverage](https://img.shields.io/coverallsCoverage/github/FastyBird/devices-module?style=flat-square)](https://coveralls.io/r/FastyBird/devices-module)
 [![Mutation testing](https://img.shields.io/endpoint?style=flat-square&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2FFastyBird%2Fdevices-module%2Fmain)](https://dashboard.stryker-mutator.io/reports/github.com/FastyBird/devices-module/main)
 
 ![PHP](https://badgen.net/packagist/php/FastyBird/devices-module?cache=300&style=flat-square)
-[![PHP latest stable](https://badgen.net/packagist/v/FastyBird/devices-module/latest?cache=300&style=flat-square)](https://packagist.org/packages/FastyBird/devices-module)
-[![PHP downloads total](https://badgen.net/packagist/dt/FastyBird/devices-module?cache=300&style=flat-square)](https://packagist.org/packages/FastyBird/devices-module)
-[![PHPStan](https://img.shields.io/badge/phpstan-enabled-brightgreen.svg?style=flat-square)](https://github.com/phpstan/phpstan)
+[![Latest stable](https://badgen.net/packagist/v/FastyBird/devices-module/latest?cache=300&style=flat-square)](https://packagist.org/packages/FastyBird/devices-module)
+[![Downloads total](https://badgen.net/packagist/dt/FastyBird/devices-module?cache=300&style=flat-square)](https://packagist.org/packages/FastyBird/devices-module)
+[![PHPStan](https://img.shields.io/badge/PHPStan-enabled-brightgreen.svg?style=flat-square)](https://github.com/phpstan/phpstan)
 
 ![JS](https://img.shields.io/badge/js-es6-blue.svg?style=flat-square)
 [![JS latest stable](https://badgen.net/npm/v/@fastybird/devices-module?cache=300&style=flat-square)](https://www.npmjs.com/package/@fastybird/devices-module)
@@ -22,10 +26,6 @@
 Devices module is a [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things)
 extension for managing connectors and connected devices and their basic logic.
 
-[FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) devices module is
-an [Apache2 licensed](http://www.apache.org/licenses/LICENSE-2.0) distributed extension, developed
-in [PHP](https://www.php.net) on top of the [Nette framework](https://nette.org) and [Symfony framework](https://symfony.com) and in [Typescript](https://www.typescriptlang.org) on top of the [Vue framework](https://vuejs.org).
-
 ### Features:
 
 - Devices connectors management
@@ -35,6 +35,10 @@ in [PHP](https://www.php.net) on top of the [Nette framework](https://nette.org)
 - Multilingual
 - User interface integration via [Vue 3](https://vuejs.org) components
 - Integrated connector worker for PHP based connectors
+
+[FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) devices module is
+an [Apache2 licensed](http://www.apache.org/licenses/LICENSE-2.0) distributed extension, developed
+in [PHP](https://www.php.net) on top of the [Nette framework](https://nette.org) and [Symfony framework](https://symfony.com) and in [Typescript](https://www.typescriptlang.org) on top of the [Vue framework](https://vuejs.org).
 
 ## Requirements
 
@@ -46,7 +50,8 @@ against [ECMAScript 6](https://www.w3schools.com/JS/js_es6.asp)
 
 ## Installation
 
-The best way to install **fastybird/devices-module** is using [Composer](http://getcomposer.org/):
+This extension is part of the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem and is installed by default.
+In case you want to create you own distribution of [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem you could install this extension with  [Composer](http://getcomposer.org/):
 
 ```sh
 composer require fastybird/devices-module
@@ -67,7 +72,7 @@ npm install @fastybird/devices-module
 ## Documentation
 
 Learn how to configure and use devices module and manage your connectors & devices
-in [documentation](https://github.com/FastyBird/devices-module/blob/main/docs/index.md).
+in [documentation](https://github.com/FastyBird/devices-module/wiki).
 
 ## Feedback
 
