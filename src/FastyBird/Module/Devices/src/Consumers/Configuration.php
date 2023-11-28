@@ -17,9 +17,7 @@ namespace FastyBird\Module\Devices\Consumers;
 
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use function in_array;
 
@@ -70,11 +68,6 @@ final class Configuration implements ExchangeConsumers\Consumer
 	{
 	}
 
-	/**
-	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 */
 	public function consume(
 		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource $source,
 		MetadataTypes\RoutingKey $routingKey,
@@ -86,7 +79,7 @@ final class Configuration implements ExchangeConsumers\Consumer
 		}
 
 		if (in_array($routingKey->getValue(), self::MODULE_ROUTING_KEYS, true)) {
-			$this->configurationBuilder->build();
+			$this->configurationBuilder->clean();
 		}
 	}
 

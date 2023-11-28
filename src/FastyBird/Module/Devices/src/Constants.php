@@ -136,7 +136,7 @@ final class Constants
 			Entities\Channels\Controls\Control::class => Metadata\Constants::MESSAGE_BUS_CHANNEL_CONTROL_DOCUMENT_DELETED_ROUTING_KEY,
 		];
 
-	public const CONFIGURATION_FILE_FILENAME = 'devices-module-data.json';
+	public const CONFIGURATION_KEY = 'devices-module-data.json';
 
 	public const DATA_STORAGE_PROPERTIES_KEY = 'properties';
 

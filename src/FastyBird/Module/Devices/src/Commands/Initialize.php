@@ -94,7 +94,7 @@ class Initialize extends Console\Command\Command
 		try {
 			$this->initializeDatabase($io, $input, $output);
 
-			$this->configurationBuilder->build();
+			$this->configurationBuilder->clean();
 
 			if ($input->getOption('quiet') === false) {
 				$io->success($this->translator->translate('//devices-module.cmd.initialize.messages.success'));

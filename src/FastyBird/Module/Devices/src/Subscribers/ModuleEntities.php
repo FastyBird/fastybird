@@ -106,7 +106,7 @@ final class ModuleEntities implements Common\EventSubscriber
 			return;
 		}
 
-		$this->configurationBuilder->build();
+		$this->configurationBuilder->clean();
 
 		$this->publishEntity($entity, self::ACTION_CREATED);
 	}
@@ -147,7 +147,7 @@ final class ModuleEntities implements Common\EventSubscriber
 			return;
 		}
 
-		$this->configurationBuilder->build();
+		$this->configurationBuilder->clean();
 
 		$this->publishEntity($entity, self::ACTION_UPDATED);
 	}
@@ -241,7 +241,7 @@ final class ModuleEntities implements Common\EventSubscriber
 			return;
 		}
 
-		$this->configurationBuilder->build();
+		$this->configurationBuilder->clean();
 
 		$this->publishEntity($entity, self::ACTION_DELETED);
 	}

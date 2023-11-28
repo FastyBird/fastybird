@@ -21,7 +21,6 @@ use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
-use Nette\Caching;
 use stdClass;
 use Throwable;
 use function array_map;
@@ -66,9 +65,7 @@ final class Repository extends Models\Configuration\Repository
 		try {
 			$document = $this->cache->load(
 				$this->createKeyOne($queryObject) . '_' . md5($type),
-				function () use ($queryObject, $type, &$dependencies): MetadataDocuments\DevicesModule\Device|null {
-					$dependencies[Caching\Cache::Files] = $this->builder->getConfigurationFile();
-
+				function () use ($queryObject, $type): MetadataDocuments\DevicesModule\Device|null {
 					$space = $this->builder
 						->load()
 						->find('.' . Devices\Constants::DATA_STORAGE_DEVICES_KEY . '.*');
@@ -111,9 +108,7 @@ final class Repository extends Models\Configuration\Repository
 		try {
 			$documents = $this->cache->load(
 				$this->createKeyAll($queryObject) . '_' . md5($type),
-				function () use ($queryObject, $type, &$dependencies): array {
-					$dependencies[Caching\Cache::Files] = $this->builder->getConfigurationFile();
-
+				function () use ($queryObject, $type): array {
 					$space = $this->builder
 						->load()
 						->find('.' . Devices\Constants::DATA_STORAGE_DEVICES_KEY . '.*');
