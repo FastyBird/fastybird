@@ -16,7 +16,6 @@
 namespace FastyBird\Module\Devices\Models\Configuration;
 
 use Contributte\Cache;
-use Evenement;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
@@ -38,10 +37,8 @@ use function is_string;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Builder implements Evenement\EventEmitterInterface
+final class Builder
 {
-
-	use Evenement\EventEmitterTrait;
 
 	private JSONPath\JSONPath|null $configuration = null;
 
@@ -68,10 +65,11 @@ final class Builder implements Evenement\EventEmitterInterface
 
 	public function clean(): void
 	{
-		$this->cache->remove(Devices\Constants::CONFIGURATION_KEY);
-		$this->configuration = null;
+		$this->cache->clean([
+			Caching\Cache::All => true,
+		]);
 
-		$this->emit('clean');
+		$this->configuration = null;
 	}
 
 	/**
