@@ -67,7 +67,7 @@ final class Repository extends Models\Configuration\Repository
 		try {
 			$document = $this->cache->load(
 				$this->createKeyOne($queryObject) . '_' . md5($type),
-				function () use ($queryObject, $type): MetadataDocuments\DevicesModule\ConnectorProperty|null {
+				function () use ($queryObject, $type): MetadataDocuments\DevicesModule\ConnectorProperty|false {
 					$space = $this->builder
 						->load()
 						->find('.' . Devices\Constants::DATA_STORAGE_PROPERTIES_KEY . '.*');
@@ -84,7 +84,7 @@ final class Repository extends Models\Configuration\Repository
 					$result = $queryObject->fetch($space);
 
 					if (!is_array($result) || $result === []) {
-						return null;
+						return false;
 					}
 
 					foreach (
@@ -103,14 +103,18 @@ final class Repository extends Models\Configuration\Repository
 						}
 					}
 
-					return null;
+					return false;
 				},
 			);
 		} catch (Throwable $ex) {
 			throw new Exceptions\InvalidState('Could not load document', $ex->getCode(), $ex);
 		}
 
-		if ($document !== null && !$document instanceof $type) {
+		if ($document === false) {
+			return null;
+		}
+
+		if (!$document instanceof $type) {
 			throw new Exceptions\InvalidState('Could not load document');
 		}
 

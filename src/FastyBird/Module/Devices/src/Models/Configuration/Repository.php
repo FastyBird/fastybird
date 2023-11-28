@@ -17,6 +17,7 @@ namespace FastyBird\Module\Devices\Models\Configuration;
 
 use Contributte\Cache;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
 use Nette\Caching;
@@ -39,9 +40,11 @@ abstract class Repository
 		protected readonly Cache\CacheFactory $cacheFactory,
 	)
 	{
-		$this->cache = $this->cacheFactory->create(static::class);
+		$this->cache = $this->cacheFactory->create(
+			MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES . '_configuration',
+		);
 
-		$this->builder->on('build', function (): void {
+		$this->builder->on('clean', function (): void {
 			$this->cache->clean();
 		});
 	}

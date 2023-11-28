@@ -678,7 +678,7 @@ final class ValueHelper
 		bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null $value,
 	): bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
 	{
-		if ($dataType->equals($parentDataType)) {
+		if ($dataType->equalsValue($parentDataType->getValue())) {
 			return $value;
 		}
 
@@ -706,7 +706,7 @@ final class ValueHelper
 			'Parent property value could not be transformed to mapped property value',
 			[
 				'source' => Types\ModuleSource::SOURCE_MODULE_DEVICES,
-				'type' => 'connector-properties-states',
+				'type' => 'value-helper',
 				'mapped_data_type' => $dataType->getValue(),
 				'parent_data_type' => $parentDataType->getValue(),
 				'value' => self::flattenValue($value),
@@ -722,7 +722,7 @@ final class ValueHelper
 		bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null $value,
 	): bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
 	{
-		if ($dataType->equals($parentDataType)) {
+		if ($dataType->equalsValue($parentDataType->getValue())) {
 			return $value;
 		}
 
@@ -746,7 +746,7 @@ final class ValueHelper
 			'Mapped property value could not be transformed to parent property value',
 			[
 				'source' => Types\ModuleSource::SOURCE_MODULE_DEVICES,
-				'type' => 'connector-properties-states',
+				'type' => 'value-helper',
 				'mapped_data_type' => $dataType->getValue(),
 				'parent_data_type' => $parentDataType->getValue(),
 				'value' => self::flattenValue($value),

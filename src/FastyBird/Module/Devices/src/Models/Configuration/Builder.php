@@ -70,6 +70,8 @@ final class Builder implements Evenement\EventEmitterInterface
 	{
 		$this->cache->remove(Devices\Constants::CONFIGURATION_KEY);
 		$this->configuration = null;
+
+		$this->emit('clean');
 	}
 
 	/**
@@ -168,10 +170,6 @@ final class Builder implements Evenement\EventEmitterInterface
 		foreach ($this->channelsControlsRepository->findAllBy($findChannelsControlsQuery) as $control) {
 			$data[Devices\Constants::DATA_STORAGE_CONTROLS_KEY][] = $control->toArray();
 		}
-
-		$this->configuration = null;
-
-		$this->emit('build');
 
 		try {
 			return $this->dataSource->encode($data, 'json');
