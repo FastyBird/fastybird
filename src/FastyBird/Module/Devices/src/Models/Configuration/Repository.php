@@ -43,10 +43,6 @@ abstract class Repository
 		$this->cache = $this->cacheFactory->create(
 			MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES . '_configuration',
 		);
-
-		$this->builder->on('clean', function (): void {
-			$this->cache->clean();
-		});
 	}
 
 	/**
