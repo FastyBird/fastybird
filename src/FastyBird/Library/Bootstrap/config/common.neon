@@ -47,6 +47,8 @@ contributteMonolog:
                 - Monolog\Handler\NullHandler
             processors:
                 - Monolog\Processor\MemoryPeakUsageProcessor
+    holder:
+        enabled: true
 
 # Universal object mapper tool
 ##############################
