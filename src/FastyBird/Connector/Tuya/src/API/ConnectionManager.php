@@ -52,9 +52,6 @@ final class ConnectionManager
 
 	private OpenPulsar|null $cloudWsConnection = null;
 
-	/**
-	 * @param DevicesModels\Configuration\Devices\Repository<MetadataDocuments\DevicesModule\Device> $devicesConfigurationRepository
-	 */
 	public function __construct(
 		private readonly LocalApiFactory $localApiFactory,
 		private readonly OpenApiFactory $openApiFactory,
@@ -72,7 +69,6 @@ final class ConnectionManager
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getLocalConnection(MetadataDocuments\DevicesModule\Device $device): LocalApi
 	{
@@ -119,7 +115,6 @@ final class ConnectionManager
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getCloudApiConnection(MetadataDocuments\DevicesModule\Connector $connector): OpenApi
 	{
@@ -142,7 +137,6 @@ final class ConnectionManager
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getCloudWsConnection(MetadataDocuments\DevicesModule\Connector $connector): OpenPulsar
 	{

@@ -25,7 +25,7 @@ use function serialize;
 /**
  * Find channels properties configuration query
  *
- * @template T of MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelVariableProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty
+ * @template T of MetadataDocuments\DevicesModule\ChannelProperty
  * @extends  QueryObject<T>
  *
  * @package        FastyBird:DevicesModule!

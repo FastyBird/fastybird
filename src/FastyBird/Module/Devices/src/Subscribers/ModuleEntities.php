@@ -56,11 +56,6 @@ final class ModuleEntities implements Common\EventSubscriber
 
 	private const ACTION_DELETED = 'deleted';
 
-	/**
-	 * @param Models\Configuration\Connectors\Properties\Repository<MetadataDocuments\DevicesModule\ConnectorDynamicProperty> $connectorsPropertiesConfigurationRepository
-	 * @param Models\Configuration\Devices\Properties\Repository<MetadataDocuments\DevicesModule\DeviceDynamicProperty> $devicesPropertiesConfigurationRepository
-	 * @param Models\Configuration\Channels\Properties\Repository<MetadataDocuments\DevicesModule\ChannelDynamicProperty> $channelsPropertiesConfigurationRepository
-	 */
 	public function __construct(
 		private readonly ORM\EntityManagerInterface $entityManager,
 		private readonly Models\Configuration\Connectors\Properties\Repository $connectorsPropertiesConfigurationRepository,
@@ -161,9 +156,6 @@ final class ModuleEntities implements Common\EventSubscriber
 	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
 	 *
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function preRemove(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{

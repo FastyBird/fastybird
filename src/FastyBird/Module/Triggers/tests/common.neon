@@ -46,6 +46,8 @@ services:
     - {factory: FastyBird\Module\Triggers\Tests\Fixtures\Dummy\DummyConditionSchema}
     - {factory: FastyBird\Module\Triggers\Tests\Fixtures\Dummy\DummyConditionHydrator}
 
+    cache.storage: Nette\Caching\Storages\MemoryStorage
+
 decorator:
     Doctrine\Persistence\Mapping\Driver\MappingDriverChain:
         setup:

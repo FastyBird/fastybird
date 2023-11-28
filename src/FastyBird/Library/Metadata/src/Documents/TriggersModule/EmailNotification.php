@@ -56,12 +56,4 @@ final class EmailNotification extends Notification
 		]);
 	}
 
-	/**
-	 * @return array<string, mixed>
-	 */
-	public function __serialize(): array
-	{
-		return $this->toArray();
-	}
-
 }

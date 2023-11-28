@@ -104,14 +104,4 @@ final class ActionConnectorProperty implements Documents\Document
 		return $data;
 	}
 
-	/**
-	 * @return array<string, mixed>
-	 *
-	 * @throws Exceptions\InvalidState
-	 */
-	public function __serialize(): array
-	{
-		return $this->toArray();
-	}
-
 }

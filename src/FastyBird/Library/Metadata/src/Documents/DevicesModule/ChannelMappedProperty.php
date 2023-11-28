@@ -19,8 +19,11 @@ use DateTimeInterface;
 use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Library\Metadata\Exceptions;
 use FastyBird\Library\Metadata\Types;
+use FastyBird\Library\Metadata\Utilities;
+use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_merge;
+use function is_bool;
 
 /**
  * Channel mapped property document
@@ -30,7 +33,7 @@ use function array_merge;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ChannelMappedProperty extends MappedProperty
+final class ChannelMappedProperty extends ChannelProperty
 {
 
 	/**
@@ -38,11 +41,15 @@ final class ChannelMappedProperty extends MappedProperty
 	 */
 	public function __construct(
 		Uuid\UuidInterface $id,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(
+			class: Types\PropertyType::class,
+			allowedValues: [Types\PropertyType::TYPE_MAPPED],
+		)]
+		private readonly Types\PropertyType $type,
 		#[BootstrapObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $channel,
 		#[BootstrapObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $parent,
-		Types\PropertyType $type,
 		Types\PropertyCategory $category,
 		string $identifier,
 		string|null $name,
@@ -52,21 +59,71 @@ final class ChannelMappedProperty extends MappedProperty
 		float|int|string|null $invalid = null,
 		int|null $scale = null,
 		int|float|null $step = null,
-		bool|null $settable = null,
-		bool|null $queryable = null,
-		bool|float|int|string|null $actualValue = null,
-		bool|float|int|string|null $previousValue = null,
-		bool|float|int|string|null $expectedValue = null,
-		bool|DateTimeInterface $pending = false,
-		bool $valid = false,
-		bool|float|int|string|null $value = null,
-		bool|float|int|string|null $default = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\NullValue(),
+		])]
+		private readonly bool|null $settable = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\NullValue(),
+		])]
+		private readonly bool|null $queryable = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('actual_value')]
+		private readonly bool|float|int|string|null $actualValue = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('previous_value')]
+		private readonly bool|float|int|string|null $previousValue = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('expected_value')]
+		private readonly bool|float|int|string|null $expectedValue = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
+		])]
+		private readonly bool|DateTimeInterface $pending = false,
+		#[ObjectMapper\Rules\BoolValue()]
+		private readonly bool $valid = false,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		private readonly bool|float|int|string|null $value = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		private readonly bool|float|int|string|null $default = null,
 		Uuid\UuidInterface|null $owner = null,
 	)
 	{
 		parent::__construct(
 			$id,
-			$type,
 			$category,
 			$identifier,
 			$name,
@@ -76,17 +133,13 @@ final class ChannelMappedProperty extends MappedProperty
 			$invalid,
 			$scale,
 			$step,
-			$settable,
-			$queryable,
-			$actualValue,
-			$previousValue,
-			$expectedValue,
-			$pending,
-			$valid,
-			$value,
-			$default,
 			$owner,
 		);
+	}
+
+	public function getType(): Types\PropertyType
+	{
+		return $this->type;
 	}
 
 	public function getChannel(): Uuid\UuidInterface
@@ -99,6 +152,101 @@ final class ChannelMappedProperty extends MappedProperty
 		return $this->parent;
 	}
 
+	public function isSettable(): bool
+	{
+		return $this->settable ?? false;
+	}
+
+	public function isQueryable(): bool
+	{
+		return $this->queryable ?? false;
+	}
+
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 */
+	public function getActualValue(): bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
+	{
+		return Utilities\ValueHelper::normalizeValue(
+			$this->getDataType(),
+			$this->actualValue,
+			$this->getFormat(),
+			$this->getInvalid(),
+		);
+	}
+
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 */
+	public function getPreviousValue(): bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
+	{
+		return Utilities\ValueHelper::normalizeValue(
+			$this->getDataType(),
+			$this->previousValue,
+			$this->getFormat(),
+			$this->getInvalid(),
+		);
+	}
+
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 */
+	public function getExpectedValue(): bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
+	{
+		return Utilities\ValueHelper::normalizeValue(
+			$this->getDataType(),
+			$this->expectedValue,
+			$this->getFormat(),
+			$this->getInvalid(),
+		);
+	}
+
+	public function getPending(): bool|DateTimeInterface
+	{
+		return $this->pending;
+	}
+
+	public function isPending(): bool
+	{
+		return is_bool($this->pending) ? $this->pending : true;
+	}
+
+	public function isValid(): bool
+	{
+		return $this->valid;
+	}
+
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 */
+	public function getValue(): bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
+	{
+		return Utilities\ValueHelper::normalizeValue(
+			$this->getDataType(),
+			$this->value,
+			$this->getFormat(),
+			$this->getInvalid(),
+		);
+	}
+
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 */
+	public function getDefault(): bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
+	{
+		return Utilities\ValueHelper::normalizeValue(
+			$this->getDataType(),
+			$this->default,
+			$this->getFormat(),
+			$this->getInvalid(),
+		);
+	}
+
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
@@ -106,20 +254,22 @@ final class ChannelMappedProperty extends MappedProperty
 	public function toArray(): array
 	{
 		return array_merge(parent::toArray(), [
+			'type' => $this->getType()->getValue(),
+			'settable' => $this->isSettable(),
+			'queryable' => $this->isQueryable(),
+			'actual_value' => Utilities\ValueHelper::flattenValue($this->getActualValue()),
+			'previous_value' => Utilities\ValueHelper::flattenValue($this->getPreviousValue()),
+			'expected_value' => Utilities\ValueHelper::flattenValue($this->getExpectedValue()),
+			'pending' => $this->getPending() instanceof DateTimeInterface
+				? $this->getPending()->format(DateTimeInterface::ATOM)
+				: $this->getPending(),
+			'valid' => $this->isValid(),
+			'value' => Utilities\ValueHelper::flattenValue($this->getValue()),
+			'default' => Utilities\ValueHelper::flattenValue($this->getDefault()),
+
 			'channel' => $this->getChannel()->toString(),
 			'parent' => $this->getParent()->toString(),
 		]);
-	}
-
-	/**
-	 * @return array<string, mixed>
-	 *
-	 * @throws Exceptions\InvalidArgument
-	 * @throws Exceptions\InvalidState
-	 */
-	public function __serialize(): array
-	{
-		return $this->toArray();
 	}
 
 }

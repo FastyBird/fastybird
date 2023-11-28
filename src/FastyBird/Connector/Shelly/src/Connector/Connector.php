@@ -22,7 +22,6 @@ use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Queue;
 use FastyBird\Connector\Shelly\Writers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Connectors as DevicesConnectors;
@@ -62,7 +61,6 @@ final class Connector implements DevicesConnectors\Connector
 
 	/**
 	 * @param array<Clients\ClientFactory> $clientsFactories
-	 * @param DevicesModels\Configuration\Connectors\Repository<MetadataDocuments\DevicesModule\Connector> $connectorsConfigurationRepository
 	 */
 	public function __construct(
 		private readonly DevicesEntities\Connectors\Connector $connector,
@@ -86,7 +84,6 @@ final class Connector implements DevicesConnectors\Connector
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function execute(): void
 	{

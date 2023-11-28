@@ -50,11 +50,6 @@ final class WriteDevicePropertyState implements Queue\Consumer
 
 	use Nette\SmartObject;
 
-	/**
-	 * @param DevicesModels\Configuration\Connectors\Repository<MetadataDocuments\DevicesModule\Connector> $connectorsConfigurationRepository
-	 * @param DevicesModels\Configuration\Devices\Repository<MetadataDocuments\DevicesModule\Device> $devicesConfigurationRepository
-	 * @param DevicesModels\Configuration\Devices\Properties\Repository<MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty> $devicesPropertiesConfigurationRepository
-	 */
 	public function __construct(
 		private readonly Queue\Queue $queue,
 		private readonly Drivers\DriversManager $driversManager,

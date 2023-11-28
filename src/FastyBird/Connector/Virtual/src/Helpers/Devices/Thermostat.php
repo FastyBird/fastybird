@@ -44,10 +44,6 @@ use function sprintf;
 final class Thermostat
 {
 
-	/**
-	 * @param DevicesModels\Configuration\Channels\Repository<MetadataDocuments\DevicesModule\Channel> $channelsConfigurationRepository
-	 * @param DevicesModels\Configuration\Channels\Properties\Repository<MetadataDocuments\DevicesModule\ChannelDynamicProperty> $channelsPropertiesConfigurationRepository
-	 */
 	public function __construct(
 		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
@@ -58,9 +54,6 @@ final class Thermostat
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getThermostat(
 		MetadataDocuments\DevicesModule\Device $device,
@@ -82,9 +75,6 @@ final class Thermostat
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getPreset(
 		MetadataDocuments\DevicesModule\Device $device,
@@ -107,9 +97,6 @@ final class Thermostat
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getHvacMode(
 		MetadataDocuments\DevicesModule\Device $device,
@@ -130,9 +117,6 @@ final class Thermostat
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getPresetMode(
 		MetadataDocuments\DevicesModule\Device $device,
@@ -153,9 +137,6 @@ final class Thermostat
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getTargetTemp(
 		MetadataDocuments\DevicesModule\Device $device,
@@ -199,7 +180,6 @@ final class Thermostat
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getCoolingThresholdTemp(
 		MetadataDocuments\DevicesModule\Device $device,
@@ -248,7 +228,6 @@ final class Thermostat
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getHeatingThresholdTemp(
 		MetadataDocuments\DevicesModule\Device $device,
@@ -297,7 +276,6 @@ final class Thermostat
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getMaximumFloorTemp(MetadataDocuments\DevicesModule\Device $device): float
 	{
@@ -327,7 +305,6 @@ final class Thermostat
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getMinimumCycleDuration(MetadataDocuments\DevicesModule\Device $device): float|null
 	{
@@ -360,7 +337,6 @@ final class Thermostat
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getLowTargetTempTolerance(MetadataDocuments\DevicesModule\Device $device): float|null
 	{
@@ -393,7 +369,6 @@ final class Thermostat
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getHighTargetTempTolerance(MetadataDocuments\DevicesModule\Device $device): float|null
 	{
@@ -422,9 +397,6 @@ final class Thermostat
 	 * @return array<int, MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty>
 	 *
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getActors(MetadataDocuments\DevicesModule\Device $device): array
 	{
@@ -445,7 +417,7 @@ final class Thermostat
 
 		return array_filter(
 			$properties,
-			static fn (MetadataDocuments\DevicesModule\Property $property): bool =>
+			static fn (MetadataDocuments\DevicesModule\ChannelProperty $property): bool =>
 				(
 					$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
 					|| $property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
@@ -458,9 +430,6 @@ final class Thermostat
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function hasHeaters(MetadataDocuments\DevicesModule\Device $device): bool
 	{
@@ -475,9 +444,6 @@ final class Thermostat
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function hasCoolers(MetadataDocuments\DevicesModule\Device $device): bool
 	{
@@ -494,9 +460,6 @@ final class Thermostat
 	 * @return array<int, MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty>
 	 *
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getSensors(MetadataDocuments\DevicesModule\Device $device): array
 	{
@@ -517,7 +480,7 @@ final class Thermostat
 
 		return array_filter(
 			$properties,
-			static fn (MetadataDocuments\DevicesModule\Property $property): bool =>
+			static fn (MetadataDocuments\DevicesModule\ChannelProperty $property): bool =>
 				(
 					$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
 					|| $property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
@@ -536,9 +499,6 @@ final class Thermostat
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function hasSensors(MetadataDocuments\DevicesModule\Device $device): bool
 	{
@@ -553,9 +513,6 @@ final class Thermostat
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function hasFloorSensors(MetadataDocuments\DevicesModule\Device $device): bool
 	{
@@ -572,9 +529,6 @@ final class Thermostat
 	 * @return array<int, MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty>
 	 *
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getOpenings(MetadataDocuments\DevicesModule\Device $device): array
 	{
@@ -595,7 +549,7 @@ final class Thermostat
 
 		return array_filter(
 			$properties,
-			static fn (MetadataDocuments\DevicesModule\Property $property): bool =>
+			static fn (MetadataDocuments\DevicesModule\ChannelProperty $property): bool =>
 				(
 					$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
 					|| $property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
@@ -609,8 +563,6 @@ final class Thermostat
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getHvacModes(MetadataDocuments\DevicesModule\Device $device): array
 	{
@@ -632,8 +584,6 @@ final class Thermostat
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getPresetModes(MetadataDocuments\DevicesModule\Device $device): array
 	{

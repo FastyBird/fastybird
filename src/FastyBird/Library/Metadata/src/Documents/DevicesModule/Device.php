@@ -201,12 +201,4 @@ final class Device implements Documents\Document, Documents\Owner
 		];
 	}
 
-	/**
-	 * @return array<string, mixed>
-	 */
-	public function __serialize(): array
-	{
-		return $this->toArray();
-	}
-
 }

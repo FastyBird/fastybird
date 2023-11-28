@@ -46,10 +46,6 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 
 	use Nette\SmartObject;
 
-	/**
-	 * @param Models\Configuration\Devices\Properties\Repository<MetadataDocuments\DevicesModule\DeviceMappedProperty> $devicePropertiesConfigurationRepository
-	 * @param Models\Configuration\Channels\Properties\Repository<MetadataDocuments\DevicesModule\ChannelMappedProperty> $channelPropertiesConfigurationRepository
-	 */
 	public function __construct(
 		private readonly Models\Configuration\Devices\Properties\Repository $devicePropertiesConfigurationRepository,
 		private readonly Models\Configuration\Channels\Properties\Repository $channelPropertiesConfigurationRepository,
@@ -155,7 +151,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
 	private function processEntity(
-		MetadataDocuments\DevicesModule\DynamicProperty $property,
+		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\ChannelDynamicProperty $property,
 	): void
 	{
 		if (
@@ -166,11 +162,8 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 		} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
 			$state = $this->devicePropertiesStates->readValue($property);
 
-		} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-			$state = $this->channelPropertiesStates->readValue($property);
-
 		} else {
-			return;
+			$state = $this->channelPropertiesStates->readValue($property);
 		}
 
 		$this->publishEntity($property, $state);
@@ -197,7 +190,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
 	private function publishEntity(
-		MetadataDocuments\DevicesModule\DynamicProperty|MetadataDocuments\DevicesModule\MappedProperty $property,
+		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
 		States\ConnectorProperty|States\ChannelProperty|States\DeviceProperty|null $state = null,
 	): void
 	{
@@ -214,16 +207,10 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 				MetadataTypes\RoutingKey::DEVICE_PROPERTY_DOCUMENT_REPORTED,
 			);
 
-		} elseif (
-			$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-			|| $property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
-		) {
+		} else {
 			$routingKey = MetadataTypes\RoutingKey::get(
 				MetadataTypes\RoutingKey::CHANNEL_PROPERTY_DOCUMENT_REPORTED,
 			);
-
-		} else {
-			return;
 		}
 
 		$this->publisher->publish(
@@ -245,16 +232,12 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	 * @return array<MetadataDocuments\DevicesModule\DeviceMappedProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty>
 	 *
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 */
 	private function findChildren(
-		MetadataDocuments\DevicesModule\DynamicProperty $property,
+		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\ChannelDynamicProperty $property,
 	): array
 	{
-		if ($property instanceof MetadataDocuments\DevicesModule\ConnectorDynamicProperty) {
-			return [];
-		} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
+		if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
 			$findDevicePropertiesQuery = new Queries\Configuration\FindDeviceMappedProperties();
 			$findDevicePropertiesQuery->forParent($property);
 

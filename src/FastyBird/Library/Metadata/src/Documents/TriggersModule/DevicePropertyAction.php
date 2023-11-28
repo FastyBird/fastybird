@@ -74,12 +74,4 @@ final class DevicePropertyAction extends Action
 		]);
 	}
 
-	/**
-	 * @return array<string, mixed>
-	 */
-	public function __serialize(): array
-	{
-		return $this->toArray();
-	}
-
 }

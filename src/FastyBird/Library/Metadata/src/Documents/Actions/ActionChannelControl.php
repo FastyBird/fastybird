@@ -82,12 +82,4 @@ final class ActionChannelControl implements Documents\Document
 		];
 	}
 
-	/**
-	 * @return array<string, mixed>
-	 */
-	public function __serialize(): array
-	{
-		return $this->toArray();
-	}
-
 }

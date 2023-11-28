@@ -51,10 +51,6 @@ final class StoreDevicePropertyState implements Queue\Consumer
 
 	use Nette\SmartObject;
 
-	/**
-	 * @param DevicesModels\Configuration\Devices\Repository<MetadataDocuments\DevicesModule\Device> $devicesConfigurationRepository
-	 * @param DevicesModels\Configuration\Devices\Properties\Repository<MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceVariableProperty> $devicesPropertiesConfigurationRepository
-	 */
 	public function __construct(
 		private readonly bool $useExchange,
 		private readonly Virtual\Logger $logger,

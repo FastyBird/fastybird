@@ -71,9 +71,6 @@ class Devices
 
 	private EventLoop\TimerInterface|null $handlerTimer = null;
 
-	/**
-	 * @param DevicesModels\Configuration\Devices\Repository<MetadataDocuments\DevicesModule\Device> $devicesConfigurationRepository
-	 */
 	public function __construct(
 		private readonly MetadataDocuments\DevicesModule\Connector $connector,
 		private readonly Drivers\DriversManager $driversManager,
@@ -91,8 +88,6 @@ class Devices
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function start(): void
 	{

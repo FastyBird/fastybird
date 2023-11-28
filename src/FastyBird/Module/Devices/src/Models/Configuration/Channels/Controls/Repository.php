@@ -15,21 +15,20 @@
 
 namespace FastyBird\Module\Devices\Models\Configuration\Channels\Controls;
 
+use Contributte\Cache;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
-use Flow\JSONPath;
+use Nette\Caching;
 use stdClass;
+use Throwable;
 use function array_map;
 use function is_array;
 
 /**
  * Channels controls configuration repository
- *
- * @extends  Models\Configuration\Repository<MetadataDocuments\DevicesModule\ChannelControl>
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Models
@@ -40,47 +39,51 @@ final class Repository extends Models\Configuration\Repository
 
 	public function __construct(
 		Models\Configuration\Builder $builder,
+		Cache\CacheFactory $cacheFactory,
 		private readonly MetadataDocuments\DocumentFactory $entityFactory,
 	)
 	{
-		parent::__construct($builder);
+		parent::__construct($builder, $cacheFactory);
 	}
 
 	/**
 	 * @param Queries\Configuration\FindChannelControls<MetadataDocuments\DevicesModule\ChannelControl> $queryObject
 	 *
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function findOneBy(
 		Queries\Configuration\FindChannelControls $queryObject,
 	): MetadataDocuments\DevicesModule\ChannelControl|null
 	{
-		$document = $this->loadCacheOne($queryObject->toString());
-
-		if ($document !== false) {
-			return $document;
-		}
-
 		try {
-			$space = $this->builder
-				->load()
-				->find('.' . Devices\Constants::DATA_STORAGE_CONTROLS_KEY . '.*');
-		} catch (JSONPath\JSONPathException $ex) {
-			throw new Exceptions\InvalidState('', $ex->getCode(), $ex);
+			$document = $this->cache->load(
+				$this->createKeyOne($queryObject),
+				function () use ($queryObject, &$dependencies): MetadataDocuments\DevicesModule\ChannelControl|null {
+					$dependencies[Caching\Cache::Files] = $this->builder->getConfigurationFile();
+
+					$space = $this->builder
+						->load()
+						->find('.' . Devices\Constants::DATA_STORAGE_CONTROLS_KEY . '.*');
+
+					$result = $queryObject->fetch($space);
+
+					if (!is_array($result) || $result === []) {
+						return null;
+					}
+
+					return $this->entityFactory->create(
+						MetadataDocuments\DevicesModule\ChannelControl::class,
+						$result[0],
+					);
+				},
+			);
+		} catch (Throwable $ex) {
+			throw new Exceptions\InvalidState('Could not load document', $ex->getCode(), $ex);
 		}
 
-		$result = $queryObject->fetch($space);
-
-		if (!is_array($result) || $result === []) {
-			return null;
+		if ($document !== null && !$document instanceof MetadataDocuments\DevicesModule\ChannelControl) {
+			throw new Exceptions\InvalidState('Could not load document');
 		}
-
-		$document = $this->entityFactory->create(MetadataDocuments\DevicesModule\ChannelControl::class, $result[0]);
-
-		$this->writeCacheOne($queryObject->toString(), $document);
 
 		return $document;
 	}
@@ -91,42 +94,43 @@ final class Repository extends Models\Configuration\Repository
 	 * @return array<MetadataDocuments\DevicesModule\ChannelControl>
 	 *
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function findAllBy(
 		Queries\Configuration\FindChannelControls $queryObject,
 	): array
 	{
-		$documents = $this->loadCacheAll($queryObject->toString());
-
-		if ($documents !== false) {
-			return $documents;
-		}
-
 		try {
-			$space = $this->builder
-				->load()
-				->find('.' . Devices\Constants::DATA_STORAGE_CONTROLS_KEY . '.*');
-		} catch (JSONPath\JSONPathException $ex) {
-			throw new Exceptions\InvalidState('Fetch all data by query failed', $ex->getCode(), $ex);
+			$documents = $this->cache->load(
+				$this->createKeyAll($queryObject),
+				function () use ($queryObject, &$dependencies): array {
+					$dependencies[Caching\Cache::Files] = $this->builder->getConfigurationFile();
+
+					$space = $this->builder
+						->load()
+						->find('.' . Devices\Constants::DATA_STORAGE_CONTROLS_KEY . '.*');
+
+					$result = $queryObject->fetch($space);
+
+					if (!is_array($result)) {
+						return [];
+					}
+
+					return array_map(
+						fn (stdClass $item): MetadataDocuments\DevicesModule\ChannelControl => $this->entityFactory->create(
+							MetadataDocuments\DevicesModule\ChannelControl::class,
+							$item,
+						),
+						$result,
+					);
+				},
+			);
+		} catch (Throwable $ex) {
+			throw new Exceptions\InvalidState('Could not load documents', $ex->getCode(), $ex);
 		}
 
-		$result = $queryObject->fetch($space);
-
-		if (!is_array($result)) {
-			return [];
+		if (!is_array($documents)) {
+			throw new Exceptions\InvalidState('Could not load documents');
 		}
-
-		$documents = array_map(
-			fn (stdClass $item): MetadataDocuments\DevicesModule\ChannelControl => $this->entityFactory->create(
-				MetadataDocuments\DevicesModule\ChannelControl::class,
-				$item,
-			),
-			$result,
-		);
-
-		$this->writeCacheAll($queryObject->toString(), $documents);
 
 		return $documents;
 	}

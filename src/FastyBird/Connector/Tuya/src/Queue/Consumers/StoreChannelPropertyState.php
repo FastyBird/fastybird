@@ -54,11 +54,6 @@ final class StoreChannelPropertyState implements Queue\Consumer
 	/** @var array<string, Uuid\UuidInterface> */
 	private array $dataPointsToProperties = [];
 
-	/**
-	 * @param DevicesModels\Configuration\Devices\Repository<MetadataDocuments\DevicesModule\Device> $devicesConfigurationRepository
-	 * @param DevicesModels\Configuration\Channels\Repository<MetadataDocuments\DevicesModule\Channel> $channelsConfigurationRepository
-	 * @param DevicesModels\Configuration\Channels\Properties\Repository<MetadataDocuments\DevicesModule\ChannelDynamicProperty> $channelsPropertiesConfigurationRepository
-	 */
 	public function __construct(
 		private readonly Tuya\Logger $logger,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
@@ -199,9 +194,6 @@ final class StoreChannelPropertyState implements Queue\Consumer
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function findProperty(
 		Uuid\UuidInterface $connector,
@@ -236,9 +228,6 @@ final class StoreChannelPropertyState implements Queue\Consumer
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function loadProperty(
 		Uuid\UuidInterface $connector,

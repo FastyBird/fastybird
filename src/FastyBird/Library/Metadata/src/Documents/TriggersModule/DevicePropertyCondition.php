@@ -82,12 +82,4 @@ final class DevicePropertyCondition extends Condition
 		]);
 	}
 
-	/**
-	 * @return array<string, mixed>
-	 */
-	public function __serialize(): array
-	{
-		return $this->toArray();
-	}
-
 }

@@ -15,9 +15,12 @@
 
 namespace FastyBird\Library\Metadata\Documents\DevicesModule;
 
+use DateTimeInterface;
 use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Library\Metadata\Exceptions;
 use FastyBird\Library\Metadata\Types;
+use FastyBird\Library\Metadata\Utilities;
+use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_merge;
 
@@ -29,7 +32,7 @@ use function array_merge;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ConnectorVariableProperty extends VariableProperty
+final class ConnectorVariableProperty extends ConnectorProperty
 {
 
 	/**
@@ -37,9 +40,13 @@ final class ConnectorVariableProperty extends VariableProperty
 	 */
 	public function __construct(
 		Uuid\UuidInterface $id,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(
+			class: Types\PropertyType::class,
+			allowedValues: [Types\PropertyType::TYPE_VARIABLE],
+		)]
+		private readonly Types\PropertyType $type,
 		#[BootstrapObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $connector,
-		Types\PropertyType $type,
 		Types\PropertyCategory $category,
 		string $identifier,
 		string|null $name,
@@ -49,14 +56,27 @@ final class ConnectorVariableProperty extends VariableProperty
 		float|int|string|null $invalid = null,
 		int|null $scale = null,
 		int|float|null $step = null,
-		bool|float|int|string|null $value = null,
-		bool|float|int|string|null $default = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		private readonly bool|float|int|string|null $value = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		private readonly bool|float|int|string|null $default = null,
 		Uuid\UuidInterface|null $owner = null,
 	)
 	{
 		parent::__construct(
 			$id,
-			$type,
 			$category,
 			$identifier,
 			$name,
@@ -66,10 +86,13 @@ final class ConnectorVariableProperty extends VariableProperty
 			$invalid,
 			$scale,
 			$step,
-			$value,
-			$default,
 			$owner,
 		);
+	}
+
+	public function getType(): Types\PropertyType
+	{
+		return $this->type;
 	}
 
 	public function getConnector(): Uuid\UuidInterface
@@ -81,22 +104,43 @@ final class ConnectorVariableProperty extends VariableProperty
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 */
-	public function toArray(): array
+	public function getValue(): bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
 	{
-		return array_merge(parent::toArray(), [
-			'connector' => $this->getConnector()->toString(),
-		]);
+		return Utilities\ValueHelper::normalizeValue(
+			$this->getDataType(),
+			$this->value,
+			$this->getFormat(),
+			$this->getInvalid(),
+		);
 	}
 
 	/**
-	 * @return array<string, mixed>
-	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 */
-	public function __serialize(): array
+	public function getDefault(): bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
 	{
-		return $this->toArray();
+		return Utilities\ValueHelper::normalizeValue(
+			$this->getDataType(),
+			$this->default,
+			$this->getFormat(),
+			$this->getInvalid(),
+		);
+	}
+
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 */
+	public function toArray(): array
+	{
+		return array_merge(parent::toArray(), [
+			'type' => $this->getType()->getValue(),
+			'value' => Utilities\ValueHelper::flattenValue($this->getValue()),
+			'default' => Utilities\ValueHelper::flattenValue($this->getDefault()),
+
+			'connector' => $this->getConnector()->toString(),
+		]);
 	}
 
 }

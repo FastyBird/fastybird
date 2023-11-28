@@ -53,12 +53,4 @@ final class ConnectorControl extends Control
 		]);
 	}
 
-	/**
-	 * @return array<string, mixed>
-	 */
-	public function __serialize(): array
-	{
-		return $this->toArray();
-	}
-
 }

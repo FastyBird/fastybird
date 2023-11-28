@@ -86,7 +86,6 @@ final class ConnectionManager
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getGen2WsApiConnection(
 		Entities\ShellyDevice|MetadataDocuments\DevicesModule\Device $device,
@@ -109,7 +108,6 @@ final class ConnectionManager
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function getIpAddress(Entities\ShellyDevice|MetadataDocuments\DevicesModule\Device $device): string|null
 	{
@@ -124,7 +122,6 @@ final class ConnectionManager
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function getDomain(Entities\ShellyDevice|MetadataDocuments\DevicesModule\Device $device): string|null
 	{
@@ -139,7 +136,6 @@ final class ConnectionManager
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function getUsername(Entities\ShellyDevice|MetadataDocuments\DevicesModule\Device $device): string|null
 	{
@@ -154,7 +150,6 @@ final class ConnectionManager
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function getPassword(Entities\ShellyDevice|MetadataDocuments\DevicesModule\Device $device): string|null
 	{

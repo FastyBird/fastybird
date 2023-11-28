@@ -40,9 +40,6 @@ use function is_string;
 final class Device
 {
 
-	/**
-	 * @param DevicesModels\Configuration\Devices\Properties\Repository<MetadataDocuments\DevicesModule\DeviceVariableProperty> $devicesPropertiesConfigurationRepository
-	 */
 	public function __construct(
 		private readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
 	)
@@ -54,7 +51,6 @@ final class Device
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getGeneration(MetadataDocuments\DevicesModule\Device $device): Types\DeviceGeneration
 	{
@@ -80,7 +76,6 @@ final class Device
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getLocalAddress(MetadataDocuments\DevicesModule\Device $device): string|null
 	{
@@ -97,7 +92,6 @@ final class Device
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getIpAddress(MetadataDocuments\DevicesModule\Device $device): string|null
 	{
@@ -124,7 +118,6 @@ final class Device
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getDomain(MetadataDocuments\DevicesModule\Device $device): string|null
 	{
@@ -151,7 +144,6 @@ final class Device
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getUsername(MetadataDocuments\DevicesModule\Device $device): string|null
 	{
@@ -178,7 +170,6 @@ final class Device
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getPassword(MetadataDocuments\DevicesModule\Device $device): string|null
 	{
@@ -205,7 +196,6 @@ final class Device
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getStateReadingDelay(MetadataDocuments\DevicesModule\Device $device): float
 	{

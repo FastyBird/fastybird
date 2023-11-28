@@ -83,9 +83,6 @@ class Thermostat implements Driver
 
 	private DateTimeInterface|null $connectedAt = null;
 
-	/**
-	 * @param DevicesModels\Configuration\Channels\Repository<MetadataDocuments\DevicesModule\Channel> $channelsConfigurationRepository
-	 */
 	public function __construct(
 		private readonly MetadataDocuments\DevicesModule\Device $device,
 		private readonly Helpers\Entity $entityHelper,
@@ -214,7 +211,6 @@ class Thermostat implements Driver
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function disconnect(): Promise\PromiseInterface
 	{
@@ -251,7 +247,6 @@ class Thermostat implements Driver
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function process(): Promise\PromiseInterface
 	{
@@ -425,9 +420,6 @@ class Thermostat implements Driver
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function writeState(
 		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\ChannelDynamicProperty $property,
@@ -559,9 +551,6 @@ class Thermostat implements Driver
 	 * @return Promise\PromiseInterface<bool>
 	 *
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function notifyState(
 		MetadataDocuments\DevicesModule\DeviceMappedProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
@@ -636,7 +625,6 @@ class Thermostat implements Driver
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function setActorState(bool $heaters, bool $coolers): void
 	{
@@ -681,7 +669,6 @@ class Thermostat implements Driver
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function setHeaterState(bool $state): void
 	{
@@ -730,9 +717,6 @@ class Thermostat implements Driver
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function setCoolerState(bool $state): void
 	{
@@ -773,7 +757,6 @@ class Thermostat implements Driver
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function isFloorOverHeating(): bool
 	{

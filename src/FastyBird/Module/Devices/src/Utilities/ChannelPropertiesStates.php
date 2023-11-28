@@ -46,9 +46,6 @@ final class ChannelPropertiesStates
 
 	use Nette\SmartObject;
 
-	/**
-	 * @param Models\Configuration\Channels\Properties\Repository<MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty> $channelPropertiesConfigurationRepository
-	 */
 	public function __construct(
 		private readonly Models\Configuration\Channels\Properties\Repository $channelPropertiesConfigurationRepository,
 		private readonly Models\States\ChannelPropertiesRepository $channelPropertyStateRepository,

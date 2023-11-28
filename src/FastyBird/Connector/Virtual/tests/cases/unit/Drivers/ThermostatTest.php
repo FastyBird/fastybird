@@ -79,7 +79,7 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 			->method('readValue')
 			->willReturnCallback(
 				static function (
-					MetadataDocuments\DevicesModule\Property $property,
+					MetadataDocuments\DevicesModule\ChannelProperty $property,
 				) use ($readInitialStates): DevicesStates\ChannelProperty|null {
 					if (array_key_exists($property->getId()->toString(), $readInitialStates)) {
 						$state = new Tests\Fixtures\Dummy\DummyChannelPropertyState($property->getId());

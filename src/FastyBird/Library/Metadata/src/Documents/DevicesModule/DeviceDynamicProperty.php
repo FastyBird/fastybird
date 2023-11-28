@@ -19,10 +19,12 @@ use DateTimeInterface;
 use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Library\Metadata\Exceptions;
 use FastyBird\Library\Metadata\Types;
+use FastyBird\Library\Metadata\Utilities;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_map;
 use function array_merge;
+use function is_bool;
 
 /**
  * Device dynamic property document
@@ -32,7 +34,7 @@ use function array_merge;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceDynamicProperty extends DynamicProperty
+final class DeviceDynamicProperty extends DeviceProperty
 {
 
 	/**
@@ -41,9 +43,13 @@ final class DeviceDynamicProperty extends DynamicProperty
 	 */
 	public function __construct(
 		Uuid\UuidInterface $id,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(
+			class: Types\PropertyType::class,
+			allowedValues: [Types\PropertyType::TYPE_DYNAMIC],
+		)]
+		private readonly Types\PropertyType $type,
 		#[BootstrapObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $device,
-		Types\PropertyType $type,
 		Types\PropertyCategory $category,
 		string $identifier,
 		string|null $name,
@@ -53,13 +59,44 @@ final class DeviceDynamicProperty extends DynamicProperty
 		float|int|string|null $invalid = null,
 		int|null $scale = null,
 		int|float|null $step = null,
-		bool $settable = false,
-		bool $queryable = false,
-		bool|float|int|string|null $actualValue = null,
-		bool|float|int|string|null $previousValue = null,
-		bool|float|int|string|null $expectedValue = null,
-		bool|DateTimeInterface $pending = false,
-		bool $valid = false,
+		#[ObjectMapper\Rules\BoolValue()]
+		private readonly bool $settable = false,
+		#[ObjectMapper\Rules\BoolValue()]
+		private readonly bool $queryable = false,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('actual_value')]
+		private readonly bool|float|int|string|null $actualValue = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('previous_value')]
+		private readonly bool|float|int|string|null $previousValue = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('expected_value')]
+		private readonly bool|float|int|string|null $expectedValue = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
+		])]
+		private readonly bool|DateTimeInterface $pending = false,
+		#[ObjectMapper\Rules\BoolValue()]
+		private readonly bool $valid = false,
 		#[ObjectMapper\Rules\ArrayOf(
 			new BootstrapObjectMapper\Rules\UuidValue(),
 		)]
@@ -69,7 +106,6 @@ final class DeviceDynamicProperty extends DynamicProperty
 	{
 		parent::__construct(
 			$id,
-			$type,
 			$category,
 			$identifier,
 			$name,
@@ -79,15 +115,13 @@ final class DeviceDynamicProperty extends DynamicProperty
 			$invalid,
 			$scale,
 			$step,
-			$settable,
-			$queryable,
-			$actualValue,
-			$previousValue,
-			$expectedValue,
-			$pending,
-			$valid,
 			$owner,
 		);
+	}
+
+	public function getType(): Types\PropertyType
+	{
+		return $this->type;
 	}
 
 	public function getDevice(): Uuid\UuidInterface
@@ -103,6 +137,73 @@ final class DeviceDynamicProperty extends DynamicProperty
 		return $this->children;
 	}
 
+	public function isSettable(): bool
+	{
+		return $this->settable;
+	}
+
+	public function isQueryable(): bool
+	{
+		return $this->queryable;
+	}
+
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 */
+	public function getActualValue(): bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
+	{
+		return Utilities\ValueHelper::normalizeValue(
+			$this->getDataType(),
+			$this->actualValue,
+			$this->getFormat(),
+			$this->getInvalid(),
+		);
+	}
+
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 */
+	public function getPreviousValue(): bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
+	{
+		return Utilities\ValueHelper::normalizeValue(
+			$this->getDataType(),
+			$this->previousValue,
+			$this->getFormat(),
+			$this->getInvalid(),
+		);
+	}
+
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 */
+	public function getExpectedValue(): bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
+	{
+		return Utilities\ValueHelper::normalizeValue(
+			$this->getDataType(),
+			$this->expectedValue,
+			$this->getFormat(),
+			$this->getInvalid(),
+		);
+	}
+
+	public function getPending(): bool|DateTimeInterface
+	{
+		return $this->pending;
+	}
+
+	public function isPending(): bool
+	{
+		return is_bool($this->pending) ? $this->pending : true;
+	}
+
+	public function isValid(): bool
+	{
+		return $this->valid;
+	}
+
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
@@ -110,23 +211,23 @@ final class DeviceDynamicProperty extends DynamicProperty
 	public function toArray(): array
 	{
 		return array_merge(parent::toArray(), [
+			'type' => $this->getType()->getValue(),
+			'settable' => $this->isSettable(),
+			'queryable' => $this->isQueryable(),
+			'actual_value' => Utilities\ValueHelper::flattenValue($this->getActualValue()),
+			'previous_value' => Utilities\ValueHelper::flattenValue($this->getPreviousValue()),
+			'expected_value' => Utilities\ValueHelper::flattenValue($this->getExpectedValue()),
+			'pending' => $this->getPending() instanceof DateTimeInterface
+				? $this->getPending()->format(DateTimeInterface::ATOM)
+				: $this->getPending(),
+			'valid' => $this->isValid(),
+
 			'device' => $this->getDevice()->toString(),
 			'children' => array_map(
 				static fn (Uuid\UuidInterface $id): string => $id->toString(),
 				$this->getChildren(),
 			),
 		]);
-	}
-
-	/**
-	 * @return array<string, mixed>
-	 *
-	 * @throws Exceptions\InvalidArgument
-	 * @throws Exceptions\InvalidState
-	 */
-	public function __serialize(): array
-	{
-		return $this->toArray();
 	}
 
 }

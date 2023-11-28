@@ -566,6 +566,9 @@ class DevicesExtension extends DI\CompilerExtension
 
 		$builder->addDefinition($this->prefix('exchange.consumer.states'), new DI\Definitions\ServiceDefinition())
 			->setType(Consumers\State::class)
+			->setArguments([
+				'logger' => $logger,
+			])
 			->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATE, false);
 
 		$builder->addDefinition(

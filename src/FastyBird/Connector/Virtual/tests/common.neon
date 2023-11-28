@@ -51,6 +51,8 @@ services:
     - {factory: FastyBird\Connector\Virtual\Tests\Fixtures\Dummy\DummyConnectorSchema}
     - {factory: FastyBird\Connector\Virtual\Tests\Fixtures\Dummy\DummyDeviceSchema}
 
+    cache.storage: Nette\Caching\Storages\MemoryStorage
+
 decorator:
     Doctrine\Persistence\Mapping\Driver\MappingDriverChain:
         setup:
