@@ -36,7 +36,6 @@ use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Nette\Utils;
 use function assert;
-use function is_string;
 
 /**
  * Store channel property state message consumer
@@ -106,9 +105,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 						'id' => $entity->getChannel()->toString(),
 					],
 					'property' => [
-						'id' => is_string($entity->getProperty())
-							? $entity->getProperty()
-							: $entity->getProperty()->toString(),
+						'id' => $entity->getProperty()->toString(),
 					],
 					'data' => $entity->toArray(),
 				],
@@ -139,9 +136,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 						'id' => $entity->getChannel()->toString(),
 					],
 					'property' => [
-						'id' => is_string($entity->getProperty())
-							? $entity->getProperty()
-							: $entity->getProperty()->toString(),
+						'id' => $entity->getProperty()->toString(),
 					],
 					'data' => $entity->toArray(),
 				],
@@ -172,9 +167,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 						'id' => $entity->getChannel()->toString(),
 					],
 					'property' => [
-						'id' => is_string($entity->getProperty())
-							? $entity->getProperty()
-							: $entity->getProperty()->toString(),
+						'id' => $entity->getProperty()->toString(),
 					],
 					'data' => $entity->toArray(),
 				],
@@ -271,9 +264,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 								'id' => $entity->getChannel()->toString(),
 							],
 							'property' => [
-								'id' => is_string($entity->getProperty())
-									? $entity->getProperty()
-									: $entity->getProperty()->toString(),
+								'id' => $entity->getProperty()->toString(),
 							],
 							'data' => $entity->toArray(),
 						],
@@ -314,9 +305,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 									'id' => $entity->getChannel()->toString(),
 								],
 								'property' => [
-									'id' => is_string($entity->getProperty())
-										? $entity->getProperty()
-										: $entity->getProperty()->toString(),
+									'id' => $entity->getProperty()->toString(),
 								],
 								'data' => $entity->toArray(),
 							],
