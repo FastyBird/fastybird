@@ -18,7 +18,6 @@ namespace FastyBird\Connector\HomeKit\Entities\Messages;
 use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
-use function is_string;
 
 /**
  * Device status message entity
