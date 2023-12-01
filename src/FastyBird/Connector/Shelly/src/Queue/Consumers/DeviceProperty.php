@@ -85,41 +85,27 @@ trait DeviceProperty
 		}
 
 		if (
-			$property instanceof DevicesEntities\Devices\Properties\Variable
-			&& $property->getValue() === $value
-		) {
-			return;
-		}
-
-		if (
 			$property !== null
 			&& !$property instanceof DevicesEntities\Devices\Properties\Variable
 		) {
-			$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
-			$findDevicePropertyQuery->byId($property->getId());
+			$this->databaseHelper->transaction(function () use ($property): void {
+				$this->devicesPropertiesManager->delete($property);
+			});
 
-			$property = $this->devicesPropertiesRepository->findOneBy($findDevicePropertyQuery);
-
-			if ($property !== null) {
-				$this->databaseHelper->transaction(function () use ($property): void {
-					$this->devicesPropertiesManager->delete($property);
-				});
-
-				$this->logger->warning(
-					'Stored device property was not of valid type',
-					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-						'type' => 'message-consumer',
-						'device' => [
-							'id' => $deviceId->toString(),
-						],
-						'property' => [
-							'id' => $property->getId()->toString(),
-							'identifier' => $identifier,
-						],
+			$this->logger->warning(
+				'Stored device property was not of valid type',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+					'type' => 'message-consumer',
+					'device' => [
+						'id' => $deviceId->toString(),
 					],
-				);
-			}
+					'property' => [
+						'id' => $property->getId()->toString(),
+						'identifier' => $identifier,
+					],
+				],
+			);
 
 			$property = null;
 		}

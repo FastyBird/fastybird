@@ -182,22 +182,15 @@ final class StoreLocalDevice implements Queue\Consumer
 
 			$channel = $this->channelsRepository->findOneBy($findChannelQuery);
 
-			$channel = $channel === null ? $this->databaseHelper->transaction(
-				fn (): DevicesEntities\Channels\Channel => $this->channelsManager->create(Utils\ArrayHash::from([
-					'device' => $device,
-					'identifier' => $channelDescription->getIdentifier(),
-					'name' => $channelDescription->getName(),
-				])),
-			) : $this->databaseHelper->transaction(
-				fn (): DevicesEntities\Channels\Channel => $this->channelsManager->update(
-					$channel,
-					Utils\ArrayHash::from([
+			if ($channel === null) {
+				$channel = $this->databaseHelper->transaction(
+					fn(): DevicesEntities\Channels\Channel => $this->channelsManager->create(Utils\ArrayHash::from([
 						'device' => $device,
 						'identifier' => $channelDescription->getIdentifier(),
 						'name' => $channelDescription->getName(),
-					]),
-				),
-			);
+					])),
+				);
+			}
 
 			foreach ($channelDescription->getProperties() as $propertyDescription) {
 				$this->setChannelProperty(
@@ -217,7 +210,7 @@ final class StoreLocalDevice implements Queue\Consumer
 		}
 
 		$this->logger->debug(
-			'Consumed device found message',
+			'Consumed store device message',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 				'type' => 'store-local-device-message-consumer',

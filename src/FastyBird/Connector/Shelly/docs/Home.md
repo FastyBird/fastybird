@@ -1,3 +1,7 @@
+<p align="center">
+	<img src="https://github.com/fastybird/.github/blob/main/assets/repo_title.png?raw=true" alt="FastyBird"/>
+</p>
+
 The [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) Shelly Connector is an extension for the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem that enables seamless integration
 with [Shelly](https://shelly.cloud) devices. It allows users to easily connect and control [Shelly](https://shelly.cloud) devices from within the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem,
 providing a simple and user-friendly interface for managing and monitoring your devices.
@@ -57,20 +61,21 @@ Shelly connector - initialization
 You will then be prompted to choose an action:
 
 ```shell
- What would you like to do?:
+ What would you like to do? [Nothing]:
   [0] Create new connector configuration
   [1] Edit existing connector configuration
   [2] Delete existing connector configuration
+  [3] List Shelly connectors
+  [4] Nothing
  > 0
 ```
 
 If you choose to create a new connector, you will be asked to choose the mode in which the connector will communicate with the devices:
 
 ```shell
- In what mode should this connector communicate with devices? [Local network mode]:
+ In what mode should this connector communicate with Shelly devices? [Shelly cloud server mode]:
   [0] Local network mode
-  [1] Cloud server mode
-  [2] MQTT broker mode
+  [1] Shelly cloud server mode
  > 0
 ```
 
