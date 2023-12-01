@@ -136,18 +136,18 @@ final class WriteDevicePropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$findChannelPropertyQuery = new DevicesQueries\Configuration\FindDeviceProperties();
-		$findChannelPropertyQuery->forDevice($device);
-		$findChannelPropertyQuery->byId($entity->getProperty());
+		$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceProperties();
+		$findDevicePropertyQuery->forDevice($device);
+		$findDevicePropertyQuery->byId($entity->getProperty());
 
-		$property = $this->devicesPropertiesConfigurationRepository->findOneBy($findChannelPropertyQuery);
+		$property = $this->devicesPropertiesConfigurationRepository->findOneBy($findDevicePropertyQuery);
 
 		if (
 			!$property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
 			&& !$property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
 		) {
 			$this->logger->error(
-				'Channel property could not be loaded',
+				'Device property could not be loaded',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
 					'type' => 'write-device-property-state-message-consumer',
@@ -172,7 +172,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 			&& !$property->isSettable()
 		) {
 			$this->logger->error(
-				'Channel property is not writable',
+				'Device property is not writable',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
 					'type' => 'write-device-property-state-message-consumer',
@@ -322,7 +322,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 		);
 
 		$this->logger->debug(
-			'Consumed write sub device state message',
+			'Consumed write device state message',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
 				'type' => 'write-device-property-state-message-consumer',

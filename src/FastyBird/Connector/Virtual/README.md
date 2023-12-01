@@ -1,13 +1,17 @@
+<p align="center">
+	<img src="https://github.com/fastybird/.github/blob/main/assets/repo_title.png?raw=true" alt="FastyBird"/>
+</p>
+
 # FastyBird IoT Virtual connector
 
-[![Build Status](https://badgen.net/github/checks/FastyBird/virtual-connector/main?cache=300&style=flast-square)](https://github.com/FastyBird/virtual-connector/actions)
-[![Licence](https://badgen.net/github/license/FastyBird/virtual-connector?cache=300&style=flast-square)](https://github.com/FastyBird/virtual-connector/blob/main/LICENSE.md)
-[![Code coverage](https://badgen.net/coveralls/c/github/FastyBird/virtual-connector?cache=300&style=flast-square)](https://coveralls.io/r/FastyBird/virtual-connector)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/FastyBird/virtual-connector/ci.yaml?style=flat-square)](https://github.com/FastyBird/virtual-connector/actions)
+[![Licence](https://img.shields.io/github/license/FastyBird/virtual-connector?style=flat-square)](https://github.com/FastyBird/virtual-connector/blob/main/LICENSE.md)
+[![Code coverage](https://img.shields.io/coverallsCoverage/github/FastyBird/virtual-connector?style=flat-square)](https://coveralls.io/r/FastyBird/virtual-connector)
 [![Mutation testing](https://img.shields.io/endpoint?style=flat-square&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2FFastyBird%2Fvirtual-connector%2Fmain)](https://dashboard.stryker-mutator.io/reports/github.com/FastyBird/virtual-connector/main)
 
-![PHP](https://badgen.net/packagist/php/FastyBird/virtual-connector?cache=300&style=flast-square)
-[![Latest stable](https://badgen.net/packagist/v/FastyBird/virtual-connector/latest?cache=300&style=flast-square)](https://packagist.org/packages/FastyBird/virtual-connector)
-[![Downloads total](https://badgen.net/packagist/dt/FastyBird/virtual-connector?cache=300&style=flast-square)](https://packagist.org/packages/FastyBird/virtual-connector)
+![PHP](https://badgen.net/packagist/php/FastyBird/virtual-connector?cache=300&style=flat-square)
+[![Latest stable](https://badgen.net/packagist/v/FastyBird/virtual-connector/latest?cache=300&style=flat-square)](https://packagist.org/packages/FastyBird/virtual-connector)
+[![Downloads total](https://badgen.net/packagist/dt/FastyBird/virtual-connector?cache=300&style=flat-square)](https://packagist.org/packages/FastyBird/virtual-connector)
 [![PHPStan](https://img.shields.io/badge/PHPStan-enabled-brightgreen.svg?style=flat-square)](https://github.com/phpstan/phpstan)
 
 ***
@@ -16,9 +20,6 @@
 
 FastyBird Virtual connector is extension for [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem
 which allow you to create virtual devices composed from other physical devices.
-
-FastyBird Virtual Connector is a distributed extension that is developed in [PHP](https://www.php.net), built on the [Nette](https://nette.org) and [Symfony](https://symfony.com) frameworks,
-and is licensed under [Apache2](http://www.apache.org/licenses/LICENSE-2.0).
 
 ### Features:
 
@@ -29,6 +30,8 @@ and is licensed under [Apache2](http://www.apache.org/licenses/LICENSE-2.0).
 - [{JSON:API}](https://jsonapi.org/) schemas for full API access, providing a standardized and consistent way for developers to access and manipulate virtual device data
 - Regular updates with new features and bug fixes, ensuring that the FastyBird Virtual Connector is always up-to-date and reliable.
 
+FastyBird Virtual Connector is a distributed extension that is developed in [PHP](https://www.php.net), built on the [Nette](https://nette.org) and [Symfony](https://symfony.com) frameworks,
+and is licensed under [Apache2](http://www.apache.org/licenses/LICENSE-2.0).
 
 ## Requirements
 
@@ -37,22 +40,16 @@ PHP extensions.
 
 ## Installation
 
-### Manual installation
-
-The best way to install **fastybird/virtual-connector** is using [Composer](http://getcomposer.org/):
+This extension is part of the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem and is installed by default.
+In case you want to create you own distribution of [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem you could install this extension with  [Composer](http://getcomposer.org/):
 
 ```sh
 composer require fastybird/virtual-connector
 ```
 
-### Marketplace installation [WIP]
-
-You could install this connector in your [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things)
-application under marketplace section.
-
 ## Documentation
 
-Learn how to connect FastyBird Virtual televisions and manage them with [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) system
+Learn how to configure FastyBird virtual devices and manage them with [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) system
 in [documentation](https://github.com/FastyBird/virtual-connector/wiki).
 
 ## Feedback

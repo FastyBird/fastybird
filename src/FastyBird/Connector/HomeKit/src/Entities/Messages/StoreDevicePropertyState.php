@@ -36,11 +36,8 @@ final class StoreDevicePropertyState implements Entity
 		private readonly Uuid\UuidInterface $connector,
 		#[BootstrapObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $device,
-		#[ObjectMapper\Rules\AnyOf([
-			new BootstrapObjectMapper\Rules\UuidValue(),
-			new ObjectMapper\Rules\StringValue(notEmpty: true),
-		])]
-		private readonly Uuid\UuidInterface|string $property,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $property,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\IntValue(),
@@ -63,12 +60,8 @@ final class StoreDevicePropertyState implements Entity
 		return $this->device;
 	}
 
-	public function getProperty(): Uuid\UuidInterface|string
+	public function getProperty(): Uuid\UuidInterface
 	{
-		if (is_string($this->property) && Uuid\Uuid::isValid($this->property)) {
-			return Uuid\Uuid::fromString($this->property);
-		}
-
 		return $this->property;
 	}
 
@@ -85,7 +78,7 @@ final class StoreDevicePropertyState implements Entity
 		return [
 			'connector' => $this->getConnector()->toString(),
 			'device' => $this->getDevice()->toString(),
-			'property' => is_string($this->getProperty()) ? $this->getProperty() : $this->getProperty()->toString(),
+			'property' => $this->getProperty()->toString(),
 			'value' => $this->getValue(),
 		];
 	}

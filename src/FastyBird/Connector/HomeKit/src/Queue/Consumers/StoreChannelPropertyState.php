@@ -152,11 +152,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 
 		$findChannelPropertyQuery = new DevicesQueries\Configuration\FindChannelProperties();
 		$findChannelPropertyQuery->forChannel($channel);
-		if (is_string($entity->getProperty())) {
-			$findChannelPropertyQuery->byIdentifier($entity->getProperty());
-		} else {
-			$findChannelPropertyQuery->byId($entity->getProperty());
-		}
+		$findChannelPropertyQuery->byId($entity->getProperty());
 
 		$property = $this->channelsPropertiesConfigurationRepository->findOneBy($findChannelPropertyQuery);
 
@@ -331,7 +327,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 		}
 
 		$this->logger->debug(
-			'Consumed device status message',
+			'Consumed store device state message',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 				'type' => 'store-channel-property-state-message-consumer',

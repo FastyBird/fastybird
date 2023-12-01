@@ -115,11 +115,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 
 		$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($device);
-		if (is_string($entity->getProperty())) {
-			$findDevicePropertyQuery->byIdentifier($entity->getProperty());
-		} else {
-			$findDevicePropertyQuery->byId($entity->getProperty());
-		}
+		$findDevicePropertyQuery->byId($entity->getProperty());
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy($findDevicePropertyQuery);
 
@@ -284,7 +280,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 		}
 
 		$this->logger->debug(
-			'Consumed device status message',
+			'Consumed store device state message',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 				'type' => 'store-device-property-state-message-consumer',

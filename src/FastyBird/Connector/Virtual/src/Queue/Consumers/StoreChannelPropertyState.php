@@ -233,8 +233,8 @@ final class StoreChannelPropertyState implements Queue\Consumer
 				try {
 					if ($this->useExchange) {
 						$this->publisher->publish(
-							MetadataTypes\ModuleSource::get(
-								MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+							MetadataTypes\ConnectorSource::get(
+								MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
 							),
 							MetadataTypes\RoutingKey::get(
 								MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION,
@@ -306,7 +306,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 						$this->logger->error(
 							'Mapped variable property could not be updated',
 							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
 								'type' => 'characteristics-controller',
 								'connector' => [
 									'id' => $entity->getConnector()->toString(),
@@ -331,7 +331,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 		}
 
 		$this->logger->debug(
-			'Consumed device status message',
+			'Consumed store device state message',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
 				'type' => 'store-channel-property-state-message-consumer',
