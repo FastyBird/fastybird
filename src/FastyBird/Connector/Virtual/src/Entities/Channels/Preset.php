@@ -29,7 +29,7 @@ use function is_numeric;
 class Preset extends Entities\VirtualChannel
 {
 
-	public const TYPE = 'virtual-thermostat-preset';
+	public const TYPE = 'virtual-preset';
 
 	public function getType(): string
 	{

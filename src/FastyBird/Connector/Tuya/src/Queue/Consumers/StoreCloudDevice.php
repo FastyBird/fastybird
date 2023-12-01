@@ -252,7 +252,7 @@ final class StoreCloudDevice implements Queue\Consumer
 		});
 
 		$this->logger->debug(
-			'Consumed device found message',
+			'Consumed store device message',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 				'type' => 'store-cloud-device-message-consumer',
