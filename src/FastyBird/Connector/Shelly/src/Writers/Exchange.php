@@ -139,10 +139,10 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 				$this->entityHelper->create(
 					Entities\Messages\WriteChannelPropertyState::class,
 					[
-						'connector' => $device->getConnector()->toString(),
-						'device' => $device->getId()->toString(),
-						'channel' => $entity->getChannel()->toString(),
-						'property' => $entity->getId()->toString(),
+						'connector' => $device->getConnector(),
+						'device' => $device->getId(),
+						'channel' => $entity->getChannel(),
+						'property' => $entity->getId(),
 					],
 				),
 			);

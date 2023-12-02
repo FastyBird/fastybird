@@ -49,6 +49,8 @@ abstract class ChannelProperty implements Documents\Document, Documents\Owner
 	public function __construct(
 		#[BootstrapObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $id,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $channel,
 		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\PropertyCategory::class)]
 		private readonly Types\PropertyCategory $category,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
@@ -161,6 +163,11 @@ abstract class ChannelProperty implements Documents\Document, Documents\Owner
 
 	abstract public function getType(): Types\PropertyType;
 
+	public function getChannel(): Uuid\UuidInterface
+	{
+		return $this->channel;
+	}
+
 	public function getCategory(): Types\PropertyCategory
 	{
 		return $this->category;
@@ -227,6 +234,8 @@ abstract class ChannelProperty implements Documents\Document, Documents\Owner
 			'invalid' => $this->getInvalid(),
 			'scale' => $this->getScale(),
 			'step' => $this->getStep(),
+
+			'channel' => $this->getChannel()->toString(),
 			'owner' => $this->getOwner()?->toString(),
 		];
 	}

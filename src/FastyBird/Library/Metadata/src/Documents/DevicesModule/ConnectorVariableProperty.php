@@ -45,8 +45,7 @@ final class ConnectorVariableProperty extends ConnectorProperty
 			allowedValues: [Types\PropertyType::TYPE_VARIABLE],
 		)]
 		private readonly Types\PropertyType $type,
-		#[BootstrapObjectMapper\Rules\UuidValue()]
-		private readonly Uuid\UuidInterface $connector,
+		Uuid\UuidInterface $connector,
 		Types\PropertyCategory $category,
 		string $identifier,
 		string|null $name,
@@ -77,6 +76,7 @@ final class ConnectorVariableProperty extends ConnectorProperty
 	{
 		parent::__construct(
 			$id,
+			$connector,
 			$category,
 			$identifier,
 			$name,
@@ -93,11 +93,6 @@ final class ConnectorVariableProperty extends ConnectorProperty
 	public function getType(): Types\PropertyType
 	{
 		return $this->type;
-	}
-
-	public function getConnector(): Uuid\UuidInterface
-	{
-		return $this->connector;
 	}
 
 	/**
@@ -138,8 +133,6 @@ final class ConnectorVariableProperty extends ConnectorProperty
 			'type' => $this->getType()->getValue(),
 			'value' => Utilities\ValueHelper::flattenValue($this->getValue()),
 			'default' => Utilities\ValueHelper::flattenValue($this->getDefault()),
-
-			'connector' => $this->getConnector()->toString(),
 		]);
 	}
 

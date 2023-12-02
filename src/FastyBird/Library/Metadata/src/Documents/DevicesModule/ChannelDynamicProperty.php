@@ -48,8 +48,7 @@ final class ChannelDynamicProperty extends ChannelProperty
 			allowedValues: [Types\PropertyType::TYPE_DYNAMIC],
 		)]
 		private readonly Types\PropertyType $type,
-		#[BootstrapObjectMapper\Rules\UuidValue()]
-		private readonly Uuid\UuidInterface $channel,
+		Uuid\UuidInterface $channel,
 		Types\PropertyCategory $category,
 		string $identifier,
 		string|null $name,
@@ -106,6 +105,7 @@ final class ChannelDynamicProperty extends ChannelProperty
 	{
 		parent::__construct(
 			$id,
+			$channel,
 			$category,
 			$identifier,
 			$name,
@@ -122,11 +122,6 @@ final class ChannelDynamicProperty extends ChannelProperty
 	public function getType(): Types\PropertyType
 	{
 		return $this->type;
-	}
-
-	public function getChannel(): Uuid\UuidInterface
-	{
-		return $this->channel;
 	}
 
 	/**
@@ -222,7 +217,6 @@ final class ChannelDynamicProperty extends ChannelProperty
 				: $this->getPending(),
 			'valid' => $this->isValid(),
 
-			'channel' => $this->getChannel()->toString(),
 			'children' => array_map(
 				static fn (Uuid\UuidInterface $id): string => $id->toString(),
 				$this->getChildren(),

@@ -548,7 +548,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					$this->entityHelper->create(
 						Entities\Messages\StoreLocalDevice::class,
 						[
-							'connector' => $this->connector->getId()->toString(),
+							'connector' => $this->connector->getId(),
 							'id' => $device->getId(),
 							'ip_address' => $device->getIpAddress(),
 							'local_key' => $deviceInformation->getLocalKey(),
@@ -655,7 +655,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 							$this->entityHelper->create(
 								Entities\Messages\StoreLocalDevice::class,
 								[
-									'connector' => $this->connector->getId()->toString(),
+									'connector' => $this->connector->getId(),
 									'id' => $child->getId(),
 									'ip_address' => null,
 									'local_key' => $childDeviceInformation->getLocalKey(),
@@ -877,7 +877,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$this->entityHelper->create(
 					Entities\Messages\StoreCloudDevice::class,
 					[
-						'connector' => $this->connector->getId()->toString(),
+						'connector' => $this->connector->getId(),
 						'id' => $device->getId(),
 						'local_key' => $device->getLocalKey(),
 						'ip_address' => $device->getIp(),

@@ -46,8 +46,7 @@ final class ConnectorDynamicProperty extends ConnectorProperty
 			allowedValues: [Types\PropertyType::TYPE_DYNAMIC],
 		)]
 		private readonly Types\PropertyType $type,
-		#[BootstrapObjectMapper\Rules\UuidValue()]
-		private readonly Uuid\UuidInterface $connector,
+		Uuid\UuidInterface $connector,
 		Types\PropertyCategory $category,
 		string $identifier,
 		string|null $name,
@@ -100,6 +99,7 @@ final class ConnectorDynamicProperty extends ConnectorProperty
 	{
 		parent::__construct(
 			$id,
+			$connector,
 			$category,
 			$identifier,
 			$name,
@@ -116,11 +116,6 @@ final class ConnectorDynamicProperty extends ConnectorProperty
 	public function getType(): Types\PropertyType
 	{
 		return $this->type;
-	}
-
-	public function getConnector(): Uuid\UuidInterface
-	{
-		return $this->connector;
 	}
 
 	public function isSettable(): bool
@@ -207,8 +202,6 @@ final class ConnectorDynamicProperty extends ConnectorProperty
 				? $this->getPending()->format(DateTimeInterface::ATOM)
 				: $this->getPending(),
 			'valid' => $this->isValid(),
-
-			'connector' => $this->getConnector()->toString(),
 		]);
 	}
 

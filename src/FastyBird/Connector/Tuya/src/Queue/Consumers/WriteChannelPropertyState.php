@@ -299,8 +299,8 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				$this->entityHelper->create(
 					Entities\Messages\StoreDeviceConnectionState::class,
 					[
-						'connector' => $connector->getId()->toString(),
-						'device' => $device->getId()->toString(),
+						'connector' => $connector->getId(),
+						'device' => $device->getId(),
 						'state' => MetadataTypes\ConnectionState::STATE_ALERT,
 					],
 				),
@@ -334,8 +334,8 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				$this->entityHelper->create(
 					Entities\Messages\StoreDeviceConnectionState::class,
 					[
-						'connector' => $connector->getId()->toString(),
-						'device' => $device->getId()->toString(),
+						'connector' => $connector->getId(),
+						'device' => $device->getId(),
 						'state' => MetadataTypes\ConnectionState::STATE_ALERT,
 					],
 				),
@@ -369,8 +369,8 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				$this->entityHelper->create(
 					Entities\Messages\StoreDeviceConnectionState::class,
 					[
-						'connector' => $connector->getId()->toString(),
-						'device' => $device->getId()->toString(),
+						'connector' => $connector->getId(),
+						'device' => $device->getId(),
 						'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
 					],
 				),
@@ -461,7 +461,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						$this->entityHelper->create(
 							Entities\Messages\StoreDeviceConnectionState::class,
 							[
-								'connector' => $connector->getId()->toString(),
+								'connector' => $connector->getId(),
 								'identifier' => $device->getIdentifier(),
 								'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
 							],
@@ -473,7 +473,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						$this->entityHelper->create(
 							Entities\Messages\StoreDeviceConnectionState::class,
 							[
-								'connector' => $connector->getId()->toString(),
+								'connector' => $connector->getId(),
 								'identifier' => $device->getIdentifier(),
 								'state' => MetadataTypes\ConnectionState::STATE_ALERT,
 							],
@@ -485,7 +485,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						$this->entityHelper->create(
 							Entities\Messages\StoreDeviceConnectionState::class,
 							[
-								'connector' => $connector->getId()->toString(),
+								'connector' => $connector->getId(),
 								'identifier' => $device->getIdentifier(),
 								'state' => MetadataTypes\ConnectionState::STATE_LOST,
 							],

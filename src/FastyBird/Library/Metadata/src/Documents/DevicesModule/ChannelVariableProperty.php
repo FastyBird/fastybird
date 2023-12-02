@@ -47,8 +47,7 @@ final class ChannelVariableProperty extends ChannelProperty
 			allowedValues: [Types\PropertyType::TYPE_VARIABLE],
 		)]
 		private readonly Types\PropertyType $type,
-		#[BootstrapObjectMapper\Rules\UuidValue()]
-		private readonly Uuid\UuidInterface $channel,
+		Uuid\UuidInterface $channel,
 		Types\PropertyCategory $category,
 		string $identifier,
 		string|null $name,
@@ -83,6 +82,7 @@ final class ChannelVariableProperty extends ChannelProperty
 	{
 		parent::__construct(
 			$id,
+			$channel,
 			$category,
 			$identifier,
 			$name,
@@ -99,11 +99,6 @@ final class ChannelVariableProperty extends ChannelProperty
 	public function getType(): Types\PropertyType
 	{
 		return $this->type;
-	}
-
-	public function getChannel(): Uuid\UuidInterface
-	{
-		return $this->channel;
 	}
 
 	/**
@@ -153,7 +148,6 @@ final class ChannelVariableProperty extends ChannelProperty
 			'value' => Utilities\ValueHelper::flattenValue($this->getValue()),
 			'default' => Utilities\ValueHelper::flattenValue($this->getDefault()),
 
-			'channel' => $this->getChannel()->toString(),
 			'children' => array_map(
 				static fn (Uuid\UuidInterface $id): string => $id->toString(),
 				$this->getChildren(),

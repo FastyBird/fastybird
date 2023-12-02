@@ -234,7 +234,7 @@ final class Local implements Client
 								$this->entityHelper->create(
 									Entities\Messages\StoreDeviceConnectionState::class,
 									[
-										'connector' => $device->getConnector()->toString(),
+										'connector' => $device->getConnector(),
 										'identifier' => $device->getIdentifier(),
 										'state' => MetadataTypes\ConnectionState::STATE_LOST,
 									],
@@ -247,7 +247,7 @@ final class Local implements Client
 						$this->entityHelper->create(
 							Entities\Messages\StoreDeviceConnectionState::class,
 							[
-								'connector' => $device->getConnector()->toString(),
+								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
 								'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
 							],
@@ -308,7 +308,7 @@ final class Local implements Client
 							$this->entityHelper->create(
 								Entities\Messages\StoreChannelPropertyState::class,
 								[
-									'connector' => $device->getConnector()->toString(),
+									'connector' => $device->getConnector(),
 									'identifier' => $device->getIdentifier(),
 									'data_points' => $dataPointsStatuses,
 								],
@@ -320,7 +320,7 @@ final class Local implements Client
 						$this->entityHelper->create(
 							Entities\Messages\StoreDeviceConnectionState::class,
 							[
-								'connector' => $device->getConnector()->toString(),
+								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
 								'state' => MetadataTypes\ConnectionState::STATE_CONNECTED,
 							],
@@ -352,7 +352,7 @@ final class Local implements Client
 						$this->entityHelper->create(
 							Entities\Messages\StoreDeviceConnectionState::class,
 							[
-								'connector' => $device->getConnector()->toString(),
+								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
 								'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
 							],
@@ -408,7 +408,7 @@ final class Local implements Client
 						$this->entityHelper->create(
 							Entities\Messages\StoreChannelPropertyState::class,
 							[
-								'connector' => $this->connector->getId()->toString(),
+								'connector' => $this->connector->getId(),
 								'identifier' => $message->getIdentifier(),
 								'data_points' => $dataPointsStatuses,
 							],
@@ -439,7 +439,7 @@ final class Local implements Client
 					$this->entityHelper->create(
 						Entities\Messages\StoreDeviceConnectionState::class,
 						[
-							'connector' => $device->getConnector()->toString(),
+							'connector' => $device->getConnector(),
 							'identifier' => $device->getIdentifier(),
 							'state' => MetadataTypes\ConnectionState::STATE_CONNECTED,
 						],
@@ -470,7 +470,7 @@ final class Local implements Client
 					$this->entityHelper->create(
 						Entities\Messages\StoreDeviceConnectionState::class,
 						[
-							'connector' => $device->getConnector()->toString(),
+							'connector' => $device->getConnector(),
 							'identifier' => $device->getIdentifier(),
 							'state' => MetadataTypes\ConnectionState::STATE_LOST,
 						],
