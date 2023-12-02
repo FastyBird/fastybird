@@ -21,7 +21,6 @@ use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Queries;
 use FastyBird\Connector\Shelly\Queue;
 use FastyBird\Connector\Shelly\Types;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -68,8 +67,6 @@ final class StoreLocalDevice implements Queue\Consumer
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Runtime
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function consume(Entities\Messages\Entity $entity): bool
 	{
@@ -184,7 +181,7 @@ final class StoreLocalDevice implements Queue\Consumer
 
 			if ($channel === null) {
 				$channel = $this->databaseHelper->transaction(
-					fn(): DevicesEntities\Channels\Channel => $this->channelsManager->create(Utils\ArrayHash::from([
+					fn (): DevicesEntities\Channels\Channel => $this->channelsManager->create(Utils\ArrayHash::from([
 						'device' => $device,
 						'identifier' => $channelDescription->getIdentifier(),
 						'name' => $channelDescription->getName(),
