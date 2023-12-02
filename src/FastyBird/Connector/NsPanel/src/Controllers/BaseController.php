@@ -19,6 +19,8 @@ use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Exceptions;
 use Nette;
 use Nette\Utils;
+use function array_key_exists;
+use function md5;
 use const DIRECTORY_SEPARATOR;
 
 /**
