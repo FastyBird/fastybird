@@ -1,3 +1,7 @@
+<p align="center">
+	<img src="https://github.com/fastybird/.github/blob/main/assets/repo_title.png?raw=true" alt="FastyBird"/>
+</p>
+
 The [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) Sonoff NS Panel Connector is
 an extension of the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things)
 ecosystem that enables effortless integration  with [Sonoff NS Panels](https://sonoff.tech/product/central-control-panel/nspanel-pro/).
@@ -21,7 +25,7 @@ Each NS Panel have to be configured with connector.
 
 A sub-device is an entity which represent a device which is connected to **Sonoff NS Panel** via [Zigbee](https://en.wikipedia.org/wiki/Zigbee) network
 
-> NOTE: Only Zigbee devices ara now supported. In future will be supported other types. It depends on Sonoff developers team
+> NOTE: Only Zigbee devices are now supported. In future will be supported other types. It depends on Sonoff developers team
 
 ### Third-party device
 

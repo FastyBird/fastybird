@@ -1,59 +1,45 @@
 <?php declare(strict_types = 1);
 
 /**
- * NsPanelChannel.php
+ * Channel.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:NsPanelConnector!
- * @subpackage     Entities
+ * @subpackage     Helpers
  * @since          1.0.0
  *
- * @date           04.03.22
+ * @date           01.12.23
  */
 
-namespace FastyBird\Connector\NsPanel\Entities;
+namespace FastyBird\Connector\NsPanel\Helpers;
 
-use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Types;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Module\Devices\Entities as DevicesEntities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use function array_key_exists;
 use function preg_match;
 use function str_replace;
 
 /**
- * @ORM\Entity
+ * Channel helper
+ *
+ * @package        FastyBird:NsPanelConnector!
+ * @subpackage     Helpers
+ *
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class NsPanelChannel extends DevicesEntities\Channels\Channel
+final class Channel
 {
-
-	public const TYPE = 'ns-panel';
-
-	public function getType(): string
-	{
-		return self::TYPE;
-	}
-
-	public function getDiscriminatorName(): string
-	{
-		return self::TYPE;
-	}
-
-	public function getSource(): MetadataTypes\ConnectorSource
-	{
-		return MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL);
-	}
 
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public function getCapability(): Types\Capability
+	public function getCapability(MetadataDocuments\DevicesModule\Channel $channel): Types\Capability
 	{
-		preg_match(NsPanel\Constants::CHANNEL_IDENTIFIER, $this->getIdentifier(), $matches);
+		preg_match(NsPanel\Constants::CHANNEL_IDENTIFIER, $channel->getIdentifier(), $matches);
 
 		if (!array_key_exists('type', $matches)) {
 			throw new Exceptions\InvalidState('Device channel has invalid identifier');

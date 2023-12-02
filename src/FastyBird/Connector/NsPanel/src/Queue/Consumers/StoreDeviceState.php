@@ -16,14 +16,15 @@
 namespace FastyBird\Connector\NsPanel\Queue\Consumers;
 
 use DateTimeInterface;
+use Doctrine\DBAL;
 use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Helpers;
-use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Library\Exchange\Documents as ExchangeEntities;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
@@ -33,7 +34,6 @@ use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
-use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
 use Nette;
 use Nette\Utils;
 use function assert;
@@ -54,11 +54,13 @@ final class StoreDeviceState implements Queue\Consumer
 	public function __construct(
 		private readonly bool $useExchange,
 		private readonly NsPanel\Logger $logger,
-		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
-		private readonly DevicesModels\Entities\Channels\ChannelsRepository $channelsRepository,
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager,
+		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
+		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
+		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
+		private readonly DevicesUtilities\Database $databaseHelper,
 		private readonly ExchangeEntities\DocumentFactory $entityFactory,
 		private readonly ExchangePublisher\Publisher $publisher,
 	)
@@ -66,9 +68,10 @@ final class StoreDeviceState implements Queue\Consumer
 	}
 
 	/**
-	 * @throws DoctrineCrudExceptions\InvalidArgumentException
+	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws DevicesExceptions\Runtime
 	 * @throws ExchangeExceptions\InvalidArgument
 	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
@@ -82,11 +85,11 @@ final class StoreDeviceState implements Queue\Consumer
 			return false;
 		}
 
-		$findDeviceQuery = new Queries\Entities\FindDevices();
+		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDeviceQuery->byConnectorId($entity->getConnector());
 		$findDeviceQuery->byIdentifier($entity->getIdentifier());
 
-		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\NsPanelDevice::class);
+		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
 		if ($device === null) {
 			$this->logger->error(
@@ -107,9 +110,9 @@ final class StoreDeviceState implements Queue\Consumer
 			return true;
 		}
 
-		if ($device instanceof Entities\Devices\ThirdPartyDevice) {
+		if ($device->getType() === Entities\Devices\ThirdPartyDevice::TYPE) {
 			$this->processThirdPartyDevice($device, $entity->getState());
-		} elseif ($device instanceof Entities\Devices\SubDevice) {
+		} elseif ($device->getType() === Entities\Devices\SubDevice::TYPE) {
 			$this->processSubDevice($device, $entity->getState());
 		}
 
@@ -141,33 +144,30 @@ final class StoreDeviceState implements Queue\Consumer
 	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function processSubDevice(
-		Entities\Devices\SubDevice $device,
+		MetadataDocuments\DevicesModule\Device $device,
 		array $state,
 	): void
 	{
 		foreach ($state as $item) {
-			$findChannelQuery = new Queries\Entities\FindChannels();
+			$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 			$findChannelQuery->forDevice($device);
 			$findChannelQuery->byIdentifier(
 				Helpers\Name::convertCapabilityToChannel($item->getCapability(), $item->getIdentifier()),
 			);
 
-			$channel = $this->channelsRepository->findOneBy(
-				$findChannelQuery,
-				Entities\NsPanelChannel::class,
-			);
+			$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 
 			if ($channel === null) {
 				continue;
 			}
 
-			$findChannelPropertiesQuery = new DevicesQueries\Entities\FindChannelDynamicProperties();
+			$findChannelPropertiesQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
 			$findChannelPropertiesQuery->forChannel($channel);
 			$findChannelPropertiesQuery->byIdentifier(Helpers\Name::convertProtocolToProperty($item->getProtocol()));
 
-			$property = $this->channelsPropertiesRepository->findOneBy(
+			$property = $this->channelsPropertiesConfigurationRepository->findOneBy(
 				$findChannelPropertiesQuery,
-				DevicesEntities\Channels\Properties\Dynamic::class,
+				MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
 			);
 
 			if ($property === null) {
@@ -191,9 +191,10 @@ final class StoreDeviceState implements Queue\Consumer
 	/**
 	 * @param array<Entities\Messages\CapabilityState> $state
 	 *
-	 * @throws DoctrineCrudExceptions\InvalidArgumentException
+	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws DevicesExceptions\Runtime
 	 * @throws ExchangeExceptions\InvalidArgument
 	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
@@ -202,41 +203,32 @@ final class StoreDeviceState implements Queue\Consumer
 	 * @throws Utils\JsonException
 	 */
 	private function processThirdPartyDevice(
-		Entities\Devices\ThirdPartyDevice $device,
+		MetadataDocuments\DevicesModule\Device $device,
 		array $state,
 	): void
 	{
 		foreach ($state as $item) {
-			$findChannelQuery = new Queries\Entities\FindChannels();
+			$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 			$findChannelQuery->forDevice($device);
 			$findChannelQuery->byIdentifier(
 				Helpers\Name::convertCapabilityToChannel($item->getCapability(), $item->getIdentifier()),
 			);
 
-			$channel = $this->channelsRepository->findOneBy(
-				$findChannelQuery,
-				Entities\NsPanelChannel::class,
-			);
+			$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 
 			if ($channel === null) {
 				continue;
 			}
 
-			$findChannelPropertiesQuery = new DevicesQueries\Entities\FindChannelProperties();
+			$findChannelPropertiesQuery = new DevicesQueries\Configuration\FindChannelProperties();
 			$findChannelPropertiesQuery->forChannel($channel);
 			$findChannelPropertiesQuery->byIdentifier(Helpers\Name::convertProtocolToProperty($item->getProtocol()));
 
-			$property = $this->channelsPropertiesRepository->findOneBy($findChannelPropertiesQuery);
+			$property = $this->channelsPropertiesConfigurationRepository->findOneBy($findChannelPropertiesQuery);
 
 			if ($property === null) {
 				continue;
 			}
-
-			assert(
-				$property instanceof DevicesEntities\Channels\Properties\Dynamic
-				|| $property instanceof DevicesEntities\Channels\Properties\Mapped
-				|| $property instanceof DevicesEntities\Channels\Properties\Variable,
-			);
 
 			$value = MetadataUtilities\ValueHelper::transformValueFromDevice(
 				$property->getDataType(),
@@ -244,14 +236,15 @@ final class StoreDeviceState implements Queue\Consumer
 				MetadataUtilities\ValueHelper::flattenValue($item->getValue()),
 			);
 
-			$this->writeProperty($device, $channel, $property, $value);
+			$this->writeThirdPartyProperty($device, $channel, $property, $value);
 		}
 	}
 
 	/**
-	 * @throws DoctrineCrudExceptions\InvalidArgumentException
+	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws DevicesExceptions\Runtime
 	 * @throws ExchangeExceptions\InvalidArgument
 	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
@@ -259,53 +252,78 @@ final class StoreDeviceState implements Queue\Consumer
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws Utils\JsonException
 	 */
-	private function writeProperty(
-		Entities\Devices\ThirdPartyDevice $device,
-		Entities\NsPanelChannel $channel,
-		DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped|DevicesEntities\Channels\Properties\Variable $property,
+	private function writeThirdPartyProperty(
+		MetadataDocuments\DevicesModule\Device $device,
+		MetadataDocuments\DevicesModule\Channel $channel,
+		MetadataDocuments\DevicesModule\ChannelProperty $property,
 		float|int|string|bool|MetadataTypes\ButtonPayload|MetadataTypes\CoverPayload|MetadataTypes\SwitchPayload|DateTimeInterface|null $value,
 	): void
 	{
-		if ($property instanceof DevicesEntities\Channels\Properties\Variable) {
-			$this->channelsPropertiesManager->update(
-				$property,
-				Utils\ArrayHash::from([
-					'value' => $value,
-				]),
+		if ($property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
+			$this->databaseHelper->transaction(
+				function () use ($property, $value): void {
+					$findPropertyQuery = new DevicesQueries\Entities\FindChannelVariableProperties();
+					$findPropertyQuery->byId($property->getId());
+
+					$property = $this->channelsPropertiesRepository->findOneBy(
+						$findPropertyQuery,
+						DevicesEntities\Channels\Properties\Variable::class,
+					);
+					assert($property instanceof DevicesEntities\Channels\Properties\Variable);
+
+					$this->channelsPropertiesManager->update(
+						$property,
+						Utils\ArrayHash::from([
+							'value' => $value,
+						]),
+					);
+				},
 			);
 
-			return;
-		}
-
-		if ($this->useExchange) {
-			$this->publisher->publish(
-				MetadataTypes\ModuleSource::get(
-					MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
-				),
-				MetadataTypes\RoutingKey::get(
-					MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION,
-				),
-				$this->entityFactory->create(
-					Utils\Json::encode([
-						'action' => MetadataTypes\PropertyAction::ACTION_SET,
-						'device' => $device->getId()->toString(),
-						'channel' => $channel->getId()->toString(),
-						'property' => $property->getId()->toString(),
-						'expected_value' => MetadataUtilities\ValueHelper::flattenValue($value),
-					]),
-					MetadataTypes\RoutingKey::get(
-						MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION,
-					),
-				),
-			);
-		} else {
+		} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
 			$this->channelPropertiesStatesManager->writeValue(
 				$property,
 				Utils\ArrayHash::from([
-					DevicesStates\Property::EXPECTED_VALUE_FIELD => $value,
-					DevicesStates\Property::PENDING_FIELD => true,
+					DevicesStates\Property::ACTUAL_VALUE_FIELD => MetadataUtilities\ValueHelper::transformValueFromDevice(
+						$property->getDataType(),
+						$property->getFormat(),
+						MetadataUtilities\ValueHelper::flattenValue($value),
+					),
+					DevicesStates\Property::VALID_FIELD => true,
 				]),
 			);
+
+		} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
+			if ($this->useExchange) {
+				$this->publisher->publish(
+					MetadataTypes\ConnectorSource::get(
+						MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					),
+					MetadataTypes\RoutingKey::get(
+						MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION,
+					),
+					$this->entityFactory->create(
+						Utils\Json::encode([
+							'action' => MetadataTypes\PropertyAction::ACTION_SET,
+							'device' => $device->getId()->toString(),
+							'channel' => $channel->getId()->toString(),
+							'property' => $property->getId()->toString(),
+							'expected_value' => MetadataUtilities\ValueHelper::flattenValue($value),
+						]),
+						MetadataTypes\RoutingKey::get(
+							MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION,
+						),
+					),
+				);
+			} else {
+				$this->channelPropertiesStatesManager->writeValue(
+					$property,
+					Utils\ArrayHash::from([
+						DevicesStates\Property::EXPECTED_VALUE_FIELD => $value,
+						DevicesStates\Property::PENDING_FIELD => true,
+					]),
+				);
+			}
 		}
 	}
 

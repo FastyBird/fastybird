@@ -74,9 +74,8 @@ class NsPanelExtension extends DI\CompilerExtension
 			'writer' => Schema\Expect::anyOf(
 				Writers\Event::NAME,
 				Writers\Exchange::NAME,
-				Writers\Periodic::NAME,
 			)->default(
-				Writers\Periodic::NAME,
+				Writers\Exchange::NAME,
 			),
 		]);
 	}
@@ -106,11 +105,6 @@ class NsPanelExtension extends DI\CompilerExtension
 				->getResultDefinition()
 				->setType(Writers\Exchange::class)
 				->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATE, false);
-		} elseif ($configuration->writer === Writers\Periodic::NAME) {
-			$builder->addFactoryDefinition($this->prefix('writers.periodic'))
-				->setImplement(Writers\PeriodicFactory::class)
-				->getResultDefinition()
-				->setType(Writers\Periodic::class);
 		}
 
 		/**
@@ -330,6 +324,21 @@ class NsPanelExtension extends DI\CompilerExtension
 
 		$builder->addDefinition($this->prefix('helpers.entity'), new DI\Definitions\ServiceDefinition())
 			->setType(Helpers\Entity::class);
+
+		$builder->addDefinition($this->prefix('helpers.connector'), new DI\Definitions\ServiceDefinition())
+			->setType(Helpers\Connector::class);
+
+		$builder->addDefinition($this->prefix('helpers.gatewayDevice'), new DI\Definitions\ServiceDefinition())
+			->setType(Helpers\Devices\Gateway::class);
+
+		$builder->addDefinition($this->prefix('helpers.thirdPartyDevice'), new DI\Definitions\ServiceDefinition())
+			->setType(Helpers\Devices\ThirdPartyDevice::class);
+
+		$builder->addDefinition($this->prefix('helpers.subDevice'), new DI\Definitions\ServiceDefinition())
+			->setType(Helpers\Devices\SubDevice::class);
+
+		$builder->addDefinition($this->prefix('helpers.channel'), new DI\Definitions\ServiceDefinition())
+			->setType(Helpers\Channel::class);
 
 		/**
 		 * SERVERS

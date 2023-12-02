@@ -19,18 +19,19 @@ use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
-use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Connector\NsPanel\Router;
 use FastyBird\Connector\NsPanel\Servers;
 use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette\Utils;
 use Psr\Http\Message;
 use Ramsey\Uuid;
@@ -56,7 +57,7 @@ final class DirectiveController extends BaseController
 	public function __construct(
 		private readonly Queue\Queue $queue,
 		private readonly Helpers\Entity $entityHelper,
-		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		private readonly MetadataSchemas\Validator $schemaValidator,
 	)
 	{
@@ -186,8 +187,8 @@ final class DirectiveController extends BaseController
 			$this->entityHelper->create(
 				Entities\Messages\StoreDeviceState::class,
 				[
-					'connector' => $connectorId->toString(),
-					'gateway' => $gateway->getId()->toString(),
+					'connector' => $connectorId,
+					'gateway' => $gateway->getId(),
 					'identifier' => $device->getIdentifier(),
 					'state' => $state,
 				],
@@ -245,16 +246,16 @@ final class DirectiveController extends BaseController
 	private function findGateway(
 		Message\ServerRequestInterface $request,
 		Uuid\UuidInterface $connectorId,
-	): Entities\Devices\Gateway
+	): MetadataDocuments\DevicesModule\Device
 	{
 		$id = strval($request->getAttribute(Router\Router::URL_GATEWAY_ID));
 
 		try {
-			$findQuery = new Queries\Entities\FindGatewayDevices();
+			$findQuery = new DevicesQueries\Configuration\FindDevices();
 			$findQuery->byId(Uuid\Uuid::fromString($id));
 			$findQuery->byConnectorId($connectorId);
 
-			$gateway = $this->devicesRepository->findOneBy($findQuery, Entities\Devices\Gateway::class);
+			$gateway = $this->devicesConfigurationRepository->findOneBy($findQuery);
 
 			if ($gateway === null) {
 				throw new Exceptions\ServerRequestError(
@@ -281,18 +282,18 @@ final class DirectiveController extends BaseController
 	private function findDevice(
 		Message\ServerRequestInterface $request,
 		Uuid\UuidInterface $connectorId,
-		Entities\Devices\Gateway $gateway,
-	): Entities\Devices\ThirdPartyDevice
+		MetadataDocuments\DevicesModule\Device $gateway,
+	): MetadataDocuments\DevicesModule\Device
 	{
 		$id = strval($request->getAttribute(Router\Router::URL_DEVICE_ID));
 
 		try {
-			$findQuery = new Queries\Entities\FindThirdPartyDevices();
+			$findQuery = new DevicesQueries\Configuration\FindDevices();
 			$findQuery->byId(Uuid\Uuid::fromString($id));
 			$findQuery->byConnectorId($connectorId);
 			$findQuery->forParent($gateway);
 
-			$device = $this->devicesRepository->findOneBy($findQuery, Entities\Devices\ThirdPartyDevice::class);
+			$device = $this->devicesConfigurationRepository->findOneBy($findQuery);
 
 			if ($device === null) {
 				throw new Exceptions\ServerRequestError(

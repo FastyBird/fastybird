@@ -39,7 +39,7 @@ use function array_merge;
  * @property-read DevicesModels\Entities\Channels\ChannelsRepository $channelsRepository
  * @property-read DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository
  * @property-read DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager
- * @property-read DevicesModels\States\ChannelPropertiesManager $channelPropertiesStateManager
+ * @property-read DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager
  * @property-read DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository
  * @property-read DevicesUtilities\Database $databaseHelper
  * @property-read Tuya\Logger $logger
@@ -194,7 +194,7 @@ trait ChannelProperty
 
 				if ($propertyConfiguration !== null) {
 					try {
-						$this->channelPropertiesStateManager->delete($propertyConfiguration);
+						$this->channelPropertiesStatesManager->delete($propertyConfiguration);
 					} catch (DevicesExceptions\NotImplemented) {
 						// Just ignore it
 					}

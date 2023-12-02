@@ -73,8 +73,8 @@ final class FbMqttV1 extends Client
 		private readonly API\V1Builder $apiBuilder,
 		Consumers\Messages $consumer,
 		Writers\Writer $writer,
-		private readonly DevicesUtilities\DevicePropertiesStates $devicePropertiesStates,
-		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
+		private readonly DevicesUtilities\DevicePropertiesStates $devicePropertiesStatesManager,
+		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
 		EventLoop\LoopInterface $loop,
 		Mqtt\ClientIdentifierGenerator|null $identifierGenerator = null,
 		Mqtt\FlowFactory|null $flowFactory = null,
@@ -106,7 +106,7 @@ final class FbMqttV1 extends Client
 		DevicesEntities\Devices\Properties\Dynamic|MetadataDocuments\DevicesModule\DeviceDynamicProperty $property,
 	): Promise\PromiseInterface
 	{
-		$state = $this->devicePropertiesStates->getValue($property);
+		$state = $this->devicePropertiesStatesManager->getValue($property);
 
 		if (
 			$state?->getExpectedValue() !== null
@@ -134,7 +134,7 @@ final class FbMqttV1 extends Client
 		DevicesEntities\Channels\Properties\Dynamic|MetadataDocuments\DevicesModule\ChannelDynamicProperty $property,
 	): Promise\PromiseInterface
 	{
-		$state = $this->channelPropertiesStates->getValue($property);
+		$state = $this->channelPropertiesStatesManager->getValue($property);
 
 		if (
 			$state?->getExpectedValue() !== null

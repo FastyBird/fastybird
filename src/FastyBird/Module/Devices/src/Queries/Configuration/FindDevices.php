@@ -43,6 +43,11 @@ class FindDevices extends QueryObject
 		$this->filter[] = '.[?(@.id =~ /(?i).*^' . $id->toString() . '*$/)]';
 	}
 
+	public function byType(string $type): void
+	{
+		$this->filter[] = '.[?(@.type =~ /(?i).*^' . $type . '*$/)]';
+	}
+
 	public function byIdentifier(string $identifier): void
 	{
 		$this->filter[] = '.[?(@.identifier =~ /(?i).*^' . $identifier . '*$/)]';
@@ -71,6 +76,16 @@ class FindDevices extends QueryObject
 	public function forParent(MetadataDocuments\DevicesModule\Device $parent): void
 	{
 		$this->filter[] = '.[?(@.parents in "' . $parent->getId()->toString() . '")]';
+	}
+
+	public function withoutParents(): void
+	{
+		$this->filter[] = '.[?(@.parents == 0)]';
+	}
+
+	public function withParents(): void
+	{
+		$this->filter[] = '.[?(@.parents > 0)]';
 	}
 
 	public function forChild(MetadataDocuments\DevicesModule\Device $child): void

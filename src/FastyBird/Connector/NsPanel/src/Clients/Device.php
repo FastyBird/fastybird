@@ -20,15 +20,15 @@ use FastyBird\Connector\NsPanel\API;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
-use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
 use Nette\Utils;
 use React\Promise;
@@ -36,7 +36,6 @@ use Throwable;
 use function array_diff;
 use function array_key_exists;
 use function array_merge;
-use function assert;
 use function is_array;
 use function is_string;
 use function preg_match;
@@ -59,13 +58,19 @@ final class Device implements Client
 	private API\LanApi $lanApi;
 
 	public function __construct(
-		private readonly Entities\NsPanelConnector $connector,
+		private readonly MetadataDocuments\DevicesModule\Connector $connector,
 		API\LanApiFactory $lanApiFactory,
 		private readonly Queue\Queue $queue,
 		private readonly Helpers\Loader $loader,
 		private readonly Helpers\Entity $entityHelper,
+		private readonly Helpers\Connector $connectorHelper,
+		private readonly Helpers\Devices\Gateway $gatewayHelper,
+		private readonly Helpers\Devices\ThirdPartyDevice $thirdPartyDeviceHelper,
+		private readonly Helpers\Channel $channelHelper,
 		private readonly NsPanel\Logger $logger,
-		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
+		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
+		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
 	)
 	{
 		$this->lanApi = $lanApiFactory->create($this->connector->getIdentifier());
@@ -82,38 +87,41 @@ final class Device implements Client
 	 */
 	public function connect(): void
 	{
-		$findDevicesQuery = new Queries\Entities\FindGatewayDevices();
+		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDevicesQuery->forConnector($this->connector);
+		$findDevicesQuery->withoutParents();
+		$findDevicesQuery->byType(Entities\Devices\Gateway::TYPE);
 
-		foreach ($this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\Gateway::class) as $gateway) {
-			$ipAddress = $gateway->getIpAddress();
-			$accessToken = $gateway->getAccessToken();
+		foreach ($this->devicesConfigurationRepository->findAllBy($findDevicesQuery) as $gateway) {
+			$ipAddress = $this->gatewayHelper->getIpAddress($gateway);
+			$accessToken = $this->gatewayHelper->getAccessToken($gateway);
 
 			if ($ipAddress === null || $accessToken === null) {
 				continue;
 			}
 
-			$findDevicesQuery = new Queries\Entities\FindThirdPartyDevices();
+			$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
 			$findDevicesQuery->forConnector($this->connector);
 			$findDevicesQuery->forParent($gateway);
+			$findDevicesQuery->byType(Entities\Devices\ThirdPartyDevice::TYPE);
 
-			/** @var array<Entities\Devices\ThirdPartyDevice> $devices */
-			$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\ThirdPartyDevice::class);
+			$devices = $this->devicesConfigurationRepository->findAllBy($findDevicesQuery);
 
 			$categoriesMetadata = $this->loader->loadCategories();
 
 			$syncDevices = [];
 
 			foreach ($devices as $device) {
-				if (
-					!array_key_exists($device->getDisplayCategory()->getValue(), (array) $categoriesMetadata)
-				) {
+				if (!array_key_exists(
+					$this->thirdPartyDeviceHelper->getDisplayCategory($device)->getValue(),
+					(array) $categoriesMetadata,
+				)) {
 					$this->queue->append(
 						$this->entityHelper->create(
 							Entities\Messages\StoreDeviceConnectionState::class,
 							[
-								'connector' => $this->connector->getId()->toString(),
-								'identifier' => $device->getGateway()->getIdentifier(),
+								'connector' => $gateway->getConnector(),
+								'identifier' => $gateway->getIdentifier(),
 								'state' => MetadataTypes\ConnectionState::STATE_ALERT,
 							],
 						),
@@ -123,27 +131,34 @@ final class Device implements Client
 				}
 
 				if (
-					!$categoriesMetadata[$device->getDisplayCategory()->getValue()] instanceof Utils\ArrayHash
-					|| !$categoriesMetadata[$device->getDisplayCategory()->getValue()]->offsetExists('capabilities')
-					|| !$categoriesMetadata[$device->getDisplayCategory()->getValue()]->offsetGet(
+					!$categoriesMetadata[$this->thirdPartyDeviceHelper->getDisplayCategory(
+						$device,
+					)->getValue()] instanceof Utils\ArrayHash
+					|| !$categoriesMetadata[$this->thirdPartyDeviceHelper->getDisplayCategory(
+						$device,
+					)->getValue()]->offsetExists('capabilities')
+					|| !$categoriesMetadata[$this->thirdPartyDeviceHelper->getDisplayCategory(
+						$device,
+					)->getValue()]->offsetGet(
 						'capabilities',
 					) instanceof Utils\ArrayHash
 				) {
 					throw new DevicesExceptions\Terminate('Connector configuration is corrupted');
 				}
 
-				$requiredCapabilities = (array) $categoriesMetadata[$device->getDisplayCategory()->getValue()]->offsetGet(
-					'capabilities',
-				);
+				$requiredCapabilities = (array) $categoriesMetadata[$this->thirdPartyDeviceHelper->getDisplayCategory(
+					$device,
+				)->getValue()]->offsetGet('capabilities');
 				$deviceCapabilities = [];
 
 				$capabilities = [];
 				$tags = [];
 
-				foreach ($device->getChannels() as $channel) {
-					assert($channel instanceof Entities\NsPanelChannel);
+				$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
+				$findChannelsQuery->forDevice($device);
 
-					$deviceCapabilities[] = $channel->getCapability()->getValue();
+				foreach ($this->channelsConfigurationRepository->findAllBy($findChannelsQuery) as $channel) {
+					$deviceCapabilities[] = $this->channelHelper->getCapability($channel)->getValue();
 
 					$capabilityName = null;
 
@@ -155,17 +170,26 @@ final class Device implements Client
 					}
 
 					$capabilities[] = [
-						'capability' => $channel->getCapability()->getValue(),
+						'capability' => $this->channelHelper->getCapability($channel)->getValue(),
 						'permission' => Types\Permission::get(
-							$channel->getCapability()->hasReadWritePermission() ? Types\Permission::READ_WRITE : Types\Permission::READ,
+							$this->channelHelper->getCapability($channel)->hasReadWritePermission()
+								? Types\Permission::READ_WRITE
+								: Types\Permission::READ,
 						)->getValue(),
 						'name' => $capabilityName,
 					];
 
-					foreach ($channel->getProperties() as $property) {
+					$findChannelPropertiesQuery = new DevicesQueries\Configuration\FindChannelVariableProperties();
+					$findChannelPropertiesQuery->forChannel($channel);
+
+					$properties = $this->channelsPropertiesConfigurationRepository->findAllBy(
+						$findChannelPropertiesQuery,
+						MetadataDocuments\DevicesModule\ChannelVariableProperty::class,
+					);
+
+					foreach ($properties as $property) {
 						if (
-							$property instanceof DevicesEntities\Channels\Properties\Variable
-							&& is_string($property->getValue())
+							is_string($property->getValue())
 							&& preg_match(
 								NsPanel\Constants::PROPERTY_TAG_IDENTIFIER,
 								$property->getIdentifier(),
@@ -179,7 +203,7 @@ final class Device implements Client
 
 					if (
 						$capabilityName !== null
-						&& $channel->getCapability()->equalsValue(Types\Capability::TOGGLE)
+						&& $this->channelHelper->getCapability($channel)->equalsValue(Types\Capability::TOGGLE)
 					) {
 						if (!array_key_exists('toggle', $tags)) {
 							$tags['toggle'] = [];
@@ -197,7 +221,7 @@ final class Device implements Client
 						$this->entityHelper->create(
 							Entities\Messages\StoreDeviceConnectionState::class,
 							[
-								'connector' => $this->connector->getId()->toString(),
+								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
 								'state' => MetadataTypes\ConnectionState::STATE_ALERT,
 							],
@@ -210,18 +234,18 @@ final class Device implements Client
 				$syncDevices[] = [
 					'third_serial_number' => $device->getId()->toString(),
 					'name' => $device->getName() ?? $device->getIdentifier(),
-					'display_category' => $device->getDisplayCategory()->getValue(),
+					'display_category' => $this->thirdPartyDeviceHelper->getDisplayCategory($device)->getValue(),
 					'capabilities' => $capabilities,
 					'state' => [],
 					'tags' => $tags,
-					'manufacturer' => $device->getManufacturer(),
-					'model' => $device->getModel(),
-					'firmware_version' => $device->getFirmwareVersion(),
+					'manufacturer' => $this->thirdPartyDeviceHelper->getManufacturer($device),
+					'model' => $this->thirdPartyDeviceHelper->getModel($device),
+					'firmware_version' => $this->thirdPartyDeviceHelper->getFirmwareVersion($device),
 					'service_address' => sprintf(
 						'http://%s:%d/do-directive/%s/%s',
 						Helpers\Network::getLocalAddress(),
-						$device->getConnector()->getPort(),
-						$device->getGateway()->getId()->toString(),
+						$this->connectorHelper->getPort($this->connector),
+						$gateway->getId()->toString(),
 						$device->getId()->toString(),
 					),
 					'online' => true, // Virtual device is always online
@@ -246,7 +270,7 @@ final class Device implements Client
 									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 									'type' => 'device-client',
 									'connector' => [
-										'id' => $this->connector->getId()->toString(),
+										'id' => $gateway->getConnector()->toString(),
 									],
 									'gateway' => [
 										'id' => $gateway->getId()->toString(),
@@ -255,22 +279,19 @@ final class Device implements Client
 							);
 
 							foreach ($response->getPayload()->getEndpoints() as $endpoint) {
-								$findDeviceQuery = new Queries\Entities\FindThirdPartyDevices();
+								$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
 								$findDeviceQuery->byId($endpoint->getThirdSerialNumber());
 								$findDeviceQuery->forConnector($this->connector);
 								$findDeviceQuery->forParent($gateway);
 
-								$device = $this->devicesRepository->findOneBy(
-									$findDeviceQuery,
-									Entities\Devices\ThirdPartyDevice::class,
-								);
+								$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
 								if ($device !== null) {
 									$this->queue->append(
 										$this->entityHelper->create(
 											Entities\Messages\StoreDeviceConnectionState::class,
 											[
-												'connector' => $this->connector->getId()->toString(),
+												'connector' => $device->getConnector(),
 												'identifier' => $device->getIdentifier(),
 												'state' => MetadataTypes\ConnectionState::STATE_CONNECTED,
 											],
@@ -281,8 +302,8 @@ final class Device implements Client
 										$this->entityHelper->create(
 											Entities\Messages\StoreThirdPartyDevice::class,
 											[
-												'connector' => $this->connector->getId()->toString(),
-												'gateway' => $gateway->getId()->toString(),
+												'connector' => $device->getConnector(),
+												'gateway' => $gateway->getId(),
 												'identifier' => $device->getIdentifier(),
 												'gateway_identifier' => $endpoint->getSerialNumber(),
 											],
@@ -295,7 +316,7 @@ final class Device implements Client
 											'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 											'type' => 'device-client',
 											'connector' => [
-												'id' => $this->connector->getId()->toString(),
+												'id' => $gateway->getConnector()->toString(),
 											],
 											'gateway' => [
 												'id' => $gateway->getId()->toString(),
@@ -331,7 +352,7 @@ final class Device implements Client
 									$this->entityHelper->create(
 										Entities\Messages\StoreDeviceConnectionState::class,
 										[
-											'connector' => $this->connector->getId()->toString(),
+											'connector' => $gateway->getConnector(),
 											'identifier' => $gateway->getIdentifier(),
 											'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
 										],
@@ -343,9 +364,9 @@ final class Device implements Client
 									$this->entityHelper->create(
 										Entities\Messages\StoreDeviceConnectionState::class,
 										[
-											'connector' => $this->connector->getId()->toString(),
+											'connector' => $gateway->getConnector(),
 											'identifier' => $gateway->getIdentifier(),
-											'state' => MetadataTypes\ConnectionState::STATE_LOST,
+											'state' => MetadataTypes\ConnectionState::STATE_ALERT,
 										],
 									),
 								);
@@ -359,7 +380,7 @@ final class Device implements Client
 										'type' => 'device-client',
 										'exception' => BootstrapHelpers\Logger::buildException($ex),
 										'connector' => [
-											'id' => $this->connector->getId()->toString(),
+											'id' => $gateway->getConnector()->toString(),
 										],
 										'gateway' => [
 											'id' => $gateway->getId()->toString(),
@@ -384,14 +405,11 @@ final class Device implements Client
 										continue;
 									}
 
-									$findDevicesQuery = new Queries\Entities\FindThirdPartyDevices();
+									$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
 									$findDevicesQuery->forParent($gateway);
 									$findDevicesQuery->byId($subDevice->getThirdSerialNumber());
 
-									$device = $this->devicesRepository->findOneBy(
-										$findDevicesQuery,
-										Entities\Devices\ThirdPartyDevice::class,
-									);
+									$device = $this->devicesConfigurationRepository->findOneBy($findDevicesQuery);
 
 									if ($device !== null) {
 										continue;
@@ -409,7 +427,7 @@ final class Device implements Client
 													'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 													'type' => 'device-client',
 													'connector' => [
-														'id' => $this->connector->getId()->toString(),
+														'id' => $gateway->getConnector()->toString(),
 													],
 													'gateway' => [
 														'id' => $gateway->getId()->toString(),
@@ -441,7 +459,7 @@ final class Device implements Client
 													$this->entityHelper->create(
 														Entities\Messages\StoreDeviceConnectionState::class,
 														[
-															'connector' => $this->connector->getId()->toString(),
+															'connector' => $gateway->getConnector(),
 															'identifier' => $gateway->getIdentifier(),
 															'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
 														],
@@ -453,9 +471,9 @@ final class Device implements Client
 													$this->entityHelper->create(
 														Entities\Messages\StoreDeviceConnectionState::class,
 														[
-															'connector' => $this->connector->getId()->toString(),
+															'connector' => $gateway->getConnector(),
 															'identifier' => $gateway->getIdentifier(),
-															'state' => MetadataTypes\ConnectionState::STATE_LOST,
+															'state' => MetadataTypes\ConnectionState::STATE_ALERT,
 														],
 													),
 												);
@@ -469,7 +487,7 @@ final class Device implements Client
 														'type' => 'device-client',
 														'exception' => BootstrapHelpers\Logger::buildException($ex),
 														'connector' => [
-															'id' => $this->connector->getId()->toString(),
+															'id' => $gateway->getConnector()->toString(),
 														],
 														'gateway' => [
 															'id' => $gateway->getId()->toString(),
@@ -506,7 +524,7 @@ final class Device implements Client
 									$this->entityHelper->create(
 										Entities\Messages\StoreDeviceConnectionState::class,
 										[
-											'connector' => $this->connector->getId()->toString(),
+											'connector' => $gateway->getConnector(),
 											'identifier' => $gateway->getIdentifier(),
 											'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
 										],
@@ -518,9 +536,9 @@ final class Device implements Client
 									$this->entityHelper->create(
 										Entities\Messages\StoreDeviceConnectionState::class,
 										[
-											'connector' => $this->connector->getId()->toString(),
+											'connector' => $gateway->getConnector(),
 											'identifier' => $gateway->getIdentifier(),
-											'state' => MetadataTypes\ConnectionState::STATE_LOST,
+											'state' => MetadataTypes\ConnectionState::STATE_ALERT,
 										],
 									),
 								);
@@ -534,7 +552,7 @@ final class Device implements Client
 										'type' => 'device-client',
 										'exception' => BootstrapHelpers\Logger::buildException($ex),
 										'connector' => [
-											'id' => $this->connector->getId()->toString(),
+											'id' => $gateway->getConnector()->toString(),
 										],
 										'gateway' => [
 											'id' => $gateway->getId()->toString(),
@@ -554,7 +572,7 @@ final class Device implements Client
 						'type' => 'device-client',
 						'exception' => BootstrapHelpers\Logger::buildException($ex),
 						'connector' => [
-							'id' => $this->connector->getId()->toString(),
+							'id' => $gateway->getConnector()->toString(),
 						],
 						'gateway' => [
 							'id' => $gateway->getId()->toString(),
@@ -566,9 +584,9 @@ final class Device implements Client
 					$this->entityHelper->create(
 						Entities\Messages\StoreDeviceConnectionState::class,
 						[
-							'connector' => $this->connector->getId()->toString(),
+							'connector' => $gateway->getConnector(),
 							'identifier' => $gateway->getIdentifier(),
-							'state' => MetadataTypes\ConnectionState::STATE_LOST,
+							'state' => MetadataTypes\ConnectionState::STATE_ALERT,
 						],
 					),
 				);
@@ -584,30 +602,30 @@ final class Device implements Client
 	 */
 	public function disconnect(): void
 	{
-		$findDevicesQuery = new Queries\Entities\FindGatewayDevices();
+		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDevicesQuery->forConnector($this->connector);
+		$findDevicesQuery->withoutParents();
+		$findDevicesQuery->byType(Entities\Devices\Gateway::TYPE);
 
-		foreach ($this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\Gateway::class) as $gateway) {
-			$ipAddress = $gateway->getIpAddress();
-			$accessToken = $gateway->getAccessToken();
+		foreach ($this->devicesConfigurationRepository->findAllBy($findDevicesQuery) as $gateway) {
+			$ipAddress = $this->gatewayHelper->getIpAddress($gateway);
+			$accessToken = $this->gatewayHelper->getAccessToken($gateway);
 
 			if ($ipAddress === null || $accessToken === null) {
 				continue;
 			}
 
-			$findDevicesQuery = new Queries\Entities\FindThirdPartyDevices();
+			$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
 			$findDevicesQuery->forConnector($this->connector);
 			$findDevicesQuery->forParent($gateway);
+			$findDevicesQuery->byType(Entities\Devices\ThirdPartyDevice::TYPE);
 
-			foreach ($this->devicesRepository->findAllBy(
-				$findDevicesQuery,
-				Entities\Devices\ThirdPartyDevice::class,
-			) as $device) {
+			foreach ($this->devicesConfigurationRepository->findAllBy($findDevicesQuery) as $device) {
 				$this->queue->append(
 					$this->entityHelper->create(
 						Entities\Messages\StoreDeviceConnectionState::class,
 						[
-							'connector' => $this->connector->getId()->toString(),
+							'connector' => $gateway->getConnector(),
 							'identifier' => $device->getIdentifier(),
 							'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
 						],
@@ -615,7 +633,7 @@ final class Device implements Client
 				);
 
 				try {
-					$serialNumber = $device->getGatewayIdentifier();
+					$serialNumber = $this->thirdPartyDeviceHelper->getGatewayIdentifier($device);
 
 					if ($serialNumber === null) {
 						continue;
@@ -638,7 +656,7 @@ final class Device implements Client
 									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 									'type' => 'device-client',
 									'connector' => [
-										'id' => $this->connector->getId()->toString(),
+										'id' => $gateway->getConnector()->toString(),
 									],
 									'gateway' => [
 										'id' => $gateway->getId()->toString(),
@@ -675,7 +693,7 @@ final class Device implements Client
 										'type' => 'device-client',
 										'exception' => BootstrapHelpers\Logger::buildException($ex),
 										'connector' => [
-											'id' => $this->connector->getId()->toString(),
+											'id' => $gateway->getConnector()->toString(),
 										],
 										'gateway' => [
 											'id' => $gateway->getId()->toString(),
@@ -693,7 +711,7 @@ final class Device implements Client
 							'type' => 'device-client',
 							'exception' => BootstrapHelpers\Logger::buildException($ex),
 							'connector' => [
-								'id' => $this->connector->getId()->toString(),
+								'id' => $gateway->getConnector()->toString(),
 							],
 							'gateway' => [
 								'id' => $gateway->getId()->toString(),
@@ -707,7 +725,7 @@ final class Device implements Client
 				$this->entityHelper->create(
 					Entities\Messages\StoreDeviceConnectionState::class,
 					[
-						'connector' => $this->connector->getId()->toString(),
+						'connector' => $gateway->getConnector(),
 						'identifier' => $gateway->getIdentifier(),
 						'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
 					],

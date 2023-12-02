@@ -70,6 +70,11 @@ final class NsPanelExtensionTest extends Tests\Cases\Unit\BaseTestCase
 
 		self::assertNotNull($container->getByType(Helpers\Loader::class, false));
 		self::assertNotNull($container->getByType(Helpers\Entity::class, false));
+		self::assertNotNull($container->getByType(Helpers\Connector::class, false));
+		self::assertNotNull($container->getByType(Helpers\Devices\Gateway::class, false));
+		self::assertNotNull($container->getByType(Helpers\Devices\ThirdPartyDevice::class, false));
+		self::assertNotNull($container->getByType(Helpers\Devices\SubDevice::class, false));
+		self::assertNotNull($container->getByType(Helpers\Channel::class, false));
 
 		self::assertNotNull($container->getByType(Middleware\Router::class, false));
 

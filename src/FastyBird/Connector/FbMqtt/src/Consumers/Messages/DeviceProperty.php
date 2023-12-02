@@ -53,7 +53,7 @@ final class DeviceProperty implements Consumers\Consumer
 		private readonly DevicesModels\Entities\Devices\DevicesRepository $deviceRepository,
 		private readonly DevicesModels\Entities\Devices\Properties\PropertiesRepository $propertiesRepository,
 		private readonly DevicesModels\Entities\Devices\Properties\PropertiesManager $propertiesManager,
-		private readonly DevicesUtilities\DevicePropertiesStates $devicePropertiesStates,
+		private readonly DevicesUtilities\DevicePropertiesStates $devicePropertiesStatesManager,
 		private readonly DevicesUtilities\Database $databaseHelper,
 		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
@@ -140,7 +140,7 @@ final class DeviceProperty implements Consumers\Consumer
 					});
 				}
 			} elseif ($property instanceof DevicesEntities\Devices\Properties\Dynamic) {
-				$this->devicePropertiesStates->setValue(
+				$this->devicePropertiesStatesManager->setValue(
 					$property,
 					Utils\ArrayHash::from([
 						DevicesStates\Property::ACTUAL_VALUE_FIELD => $entity->getValue(),

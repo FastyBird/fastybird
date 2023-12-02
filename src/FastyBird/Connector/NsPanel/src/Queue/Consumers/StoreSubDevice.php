@@ -22,7 +22,6 @@ use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Connector\NsPanel\Types;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -64,8 +63,6 @@ final class StoreSubDevice implements Queue\Consumer
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Runtime
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function consume(Entities\Messages\Entity $entity): bool
 	{
@@ -156,36 +153,6 @@ final class StoreSubDevice implements Queue\Consumer
 
 			$this->logger->info(
 				'Sub-device was created',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'store-sub-device-message-consumer',
-					'connector' => [
-						'id' => $entity->getConnector()->toString(),
-					],
-					'gateway' => [
-						'id' => $parent->getId()->toString(),
-					],
-					'device' => [
-						'id' => $device->getId()->toString(),
-						'identifier' => $entity->getIdentifier(),
-						'protocol' => $entity->getProtocol(),
-					],
-				],
-			);
-		} else {
-			$device = $this->databaseHelper->transaction(
-				function () use ($entity, $device): Entities\Devices\SubDevice {
-					$device = $this->devicesManager->update($device, Utils\ArrayHash::from([
-						'name' => $entity->getName(),
-					]));
-					assert($device instanceof Entities\Devices\SubDevice);
-
-					return $device;
-				},
-			);
-
-			$this->logger->info(
-				'Sub-device was updated',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 					'type' => 'store-sub-device-message-consumer',
@@ -338,7 +305,7 @@ final class StoreSubDevice implements Queue\Consumer
 		}
 
 		$this->logger->debug(
-			'Consumed store sub-device message',
+			'Consumed store device message',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 				'type' => 'store-sub-device-message-consumer',

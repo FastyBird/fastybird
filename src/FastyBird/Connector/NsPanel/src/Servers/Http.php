@@ -16,9 +16,10 @@
 namespace FastyBird\Connector\NsPanel\Servers;
 
 use FastyBird\Connector\NsPanel;
-use FastyBird\Connector\NsPanel\Entities;
+use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Middleware;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Nette;
@@ -51,7 +52,8 @@ final class Http implements Server
 	private Socket\ServerInterface|null $socket = null;
 
 	public function __construct(
-		private readonly Entities\NsPanelConnector $connector,
+		private readonly MetadataDocuments\DevicesModule\Connector $connector,
+		private readonly Helpers\Connector $connectorHelper,
 		private readonly Middleware\Router $routerMiddleware,
 		private readonly NsPanel\Logger $logger,
 		private readonly EventLoop\LoopInterface $eventLoop,
@@ -75,13 +77,13 @@ final class Http implements Server
 					],
 					'server' => [
 						'address' => self::LISTENING_ADDRESS,
-						'port' => $this->connector->getPort(),
+						'port' => $this->connectorHelper->getPort($this->connector),
 					],
 				],
 			);
 
 			$this->socket = new Socket\SocketServer(
-				self::LISTENING_ADDRESS . ':' . $this->connector->getPort(),
+				self::LISTENING_ADDRESS . ':' . $this->connectorHelper->getPort($this->connector),
 				[],
 				$this->eventLoop,
 			);

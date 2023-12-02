@@ -61,7 +61,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager,
-		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStateManager,
+		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
 		private readonly DevicesUtilities\Database $databaseHelper,
 	)
 	{
@@ -123,7 +123,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 						$property->getInvalid(),
 					);
 
-					$this->channelPropertiesStateManager->setValue($property, Utils\ArrayHash::from([
+					$this->channelPropertiesStatesManager->setValue($property, Utils\ArrayHash::from([
 						DevicesStates\Property::ACTUAL_VALUE_FIELD => $valueToStore,
 						DevicesStates\Property::VALID_FIELD => true,
 					]));
@@ -170,7 +170,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 					}
 				}
 
-				$this->channelPropertiesStateManager->setValue($property, Utils\ArrayHash::from([
+				$this->channelPropertiesStatesManager->setValue($property, Utils\ArrayHash::from([
 					DevicesStates\Property::ACTUAL_VALUE_FIELD => $valueToStore,
 					DevicesStates\Property::VALID_FIELD => true,
 				]));

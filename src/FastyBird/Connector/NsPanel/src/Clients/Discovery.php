@@ -165,7 +165,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				->catch(static function (Throwable $ex) use ($deferred): void {
 					$deferred->reject($ex);
 				});
-		} catch (Exceptions\LanApiCall $ex) {
+		} catch (Exceptions\LanApiCall | Exceptions\LanApiError $ex) {
 			$this->logger->error(
 				'Loading sub-devices from NS Panel failed',
 				[
@@ -209,7 +209,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					array_merge(
 						$subDevice->toArray(),
 						[
-							'parent' => $gateway->getId()->toString(),
+							'parent' => $gateway->getId(),
 						],
 					),
 				);
@@ -219,8 +219,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 						Entities\Messages\StoreSubDevice::class,
 						array_merge(
 							[
-								'connector' => $this->connector->getId()->toString(),
-								'gateway' => $gateway->getId()->toString(),
+								'connector' => $gateway->getConnector()->getId(),
+								'gateway' => $gateway->getId(),
 							],
 							$subDevice->toArray(),
 						),

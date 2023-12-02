@@ -34,9 +34,11 @@ use Ramsey\Uuid;
 use React\Promise;
 use RuntimeException;
 use Throwable;
+use function array_key_exists;
 use function assert;
 use function count;
 use function http_build_query;
+use function md5;
 use function sprintf;
 use function strval;
 use const DIRECTORY_SEPARATOR;
@@ -73,6 +75,9 @@ final class LanApi
 
 	private const EVENT_ERROR_MESSAGE_SCHEMA_FILENAME = 'event_error.json';
 
+	/** @var array<string, string> */
+	private array $validationSchemas = [];
+
 	public function __construct(
 		private readonly string $identifier,
 		private readonly Services\HttpClientFactory $httpClientFactory,
@@ -87,6 +92,7 @@ final class LanApi
 	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\Response\GetGatewayInfo> : Entities\API\Response\GetGatewayInfo)
 	 *
 	 * @throws Exceptions\LanApiCall
+	 * @throws Exceptions\LanApiError
 	 */
 	public function getGatewayInfo(
 		string $ipAddress,
@@ -129,6 +135,7 @@ final class LanApi
 	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\Response\GetGatewayAccessToken> : Entities\API\Response\GetGatewayAccessToken)
 	 *
 	 * @throws Exceptions\LanApiCall
+	 * @throws Exceptions\LanApiError
 	 */
 	public function getGatewayAccessToken(
 		string $name,
@@ -177,6 +184,7 @@ final class LanApi
 	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\Response\SyncDevices> : Entities\API\Response\SyncDevices)
 	 *
 	 * @throws Exceptions\LanApiCall
+	 * @throws Exceptions\LanApiError
 	 */
 	public function synchroniseDevices(
 		array $devices,
@@ -230,10 +238,8 @@ final class LanApi
 				);
 			}
 
-			throw new Exceptions\LanApiCall(
+			throw new Exceptions\LanApiError(
 				'Could not prepare request',
-				null,
-				null,
 				$ex->getCode(),
 				$ex,
 			);
@@ -264,6 +270,7 @@ final class LanApi
 	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\Response\ReportDeviceState> : Entities\API\Response\ReportDeviceState)
 	 *
 	 * @throws Exceptions\LanApiCall
+	 * @throws Exceptions\LanApiError
 	 */
 	public function reportDeviceState(
 		string $serialNumber,
@@ -321,10 +328,8 @@ final class LanApi
 				);
 			}
 
-			throw new Exceptions\LanApiCall(
+			throw new Exceptions\LanApiError(
 				'Could not prepare request',
-				null,
-				null,
 				$ex->getCode(),
 				$ex,
 			);
@@ -353,6 +358,7 @@ final class LanApi
 	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\Response\ReportDeviceOnline> : Entities\API\Response\ReportDeviceOnline)
 	 *
 	 * @throws Exceptions\LanApiCall
+	 * @throws Exceptions\LanApiError
 	 */
 	public function reportDeviceOnline(
 		string $serialNumber,
@@ -410,10 +416,8 @@ final class LanApi
 				);
 			}
 
-			throw new Exceptions\LanApiCall(
+			throw new Exceptions\LanApiError(
 				'Could not prepare request',
-				null,
-				null,
 				$ex->getCode(),
 				$ex,
 			);
@@ -439,9 +443,10 @@ final class LanApi
 	}
 
 	/**
-	 * @return ($async is true ? Promise\PromiseInterface<bool> : bool)
+	 * @return ($async is true ? Promise\PromiseInterface<true> : true)
 	 *
 	 * @throws Exceptions\LanApiCall
+	 * @throws Exceptions\LanApiError
 	 */
 	public function removeDevice(
 		string $serialNumber,
@@ -488,6 +493,7 @@ final class LanApi
 	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\Response\GetSubDevices> : Entities\API\Response\GetSubDevices)
 	 *
 	 * @throws Exceptions\LanApiCall
+	 * @throws Exceptions\LanApiError
 	 */
 	public function getSubDevices(
 		string $ipAddress,
@@ -534,6 +540,7 @@ final class LanApi
 	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\Response\SetSubDeviceState> : Entities\API\Response\SetSubDeviceState)
 	 *
 	 * @throws Exceptions\LanApiCall
+	 * @throws Exceptions\LanApiError
 	 */
 	public function setSubDeviceState(
 		string $serialNumber,
@@ -579,10 +586,8 @@ final class LanApi
 				);
 			}
 
-			throw new Exceptions\LanApiCall(
+			throw new Exceptions\LanApiError(
 				'Could not prepare request',
-				null,
-				null,
 				$ex->getCode(),
 				$ex,
 			);
@@ -609,6 +614,7 @@ final class LanApi
 
 	/**
 	 * @throws Exceptions\LanApiCall
+	 * @throws Exceptions\LanApiError
 	 */
 	private function parseGetGatewayInfo(
 		Message\RequestInterface $request,
@@ -635,6 +641,7 @@ final class LanApi
 
 	/**
 	 * @throws Exceptions\LanApiCall
+	 * @throws Exceptions\LanApiError
 	 */
 	private function parseGetGatewayAccessToken(
 		Message\RequestInterface $request,
@@ -665,6 +672,7 @@ final class LanApi
 
 	/**
 	 * @throws Exceptions\LanApiCall
+	 * @throws Exceptions\LanApiError
 	 */
 	private function parseSynchroniseDevices(
 		Message\RequestInterface $request,
@@ -691,6 +699,7 @@ final class LanApi
 
 	/**
 	 * @throws Exceptions\LanApiCall
+	 * @throws Exceptions\LanApiError
 	 */
 	private function parseReportDeviceState(
 		Message\RequestInterface $request,
@@ -717,6 +726,7 @@ final class LanApi
 
 	/**
 	 * @throws Exceptions\LanApiCall
+	 * @throws Exceptions\LanApiError
 	 */
 	private function parseReportDeviceOnline(
 		Message\RequestInterface $request,
@@ -743,6 +753,7 @@ final class LanApi
 
 	/**
 	 * @throws Exceptions\LanApiCall
+	 * @throws Exceptions\LanApiError
 	 */
 	private function parseGetSubDevices(
 		Message\RequestInterface $request,
@@ -769,6 +780,7 @@ final class LanApi
 
 	/**
 	 * @throws Exceptions\LanApiCall
+	 * @throws Exceptions\LanApiError
 	 */
 	private function parseSetSubDeviceState(
 		Message\RequestInterface $request,
@@ -794,6 +806,7 @@ final class LanApi
 	 * @return ($throw is true ? Utils\ArrayHash : Utils\ArrayHash|false)
 	 *
 	 * @throws Exceptions\LanApiCall
+	 * @throws Exceptions\LanApiError
 	 */
 	private function validateResponseBody(
 		Message\RequestInterface $request,
@@ -854,7 +867,7 @@ final class LanApi
 	 *
 	 * @return T
 	 *
-	 * @throws Exceptions\LanApiCall
+	 * @throws Exceptions\LanApiError
 	 */
 	private function createEntity(string $entity, Utils\ArrayHash $data): Entities\API\Entity
 	{
@@ -864,12 +877,10 @@ final class LanApi
 				(array) Utils\Json::decode(Utils\Json::encode($data), Utils\Json::FORCE_ARRAY),
 			);
 		} catch (Exceptions\Runtime $ex) {
-			throw new Exceptions\LanApiCall('Could not map data to entity', null, null, $ex->getCode(), $ex);
+			throw new Exceptions\LanApiError('Could not map data to entity', $ex->getCode(), $ex);
 		} catch (Utils\JsonException $ex) {
-			throw new Exceptions\LanApiCall(
+			throw new Exceptions\LanApiError(
 				'Could not create entity from response',
-				null,
-				null,
 				$ex->getCode(),
 				$ex,
 			);
@@ -1020,26 +1031,31 @@ final class LanApi
 	}
 
 	/**
-	 * @throws Exceptions\LanApiCall
+	 * @throws Exceptions\LanApiError
 	 */
 	private function getSchema(string $schemaFilename): string
 	{
-		try {
-			$schema = Utils\FileSystem::read(
-				NsPanel\Constants::RESOURCES_FOLDER . DIRECTORY_SEPARATOR . 'response' . DIRECTORY_SEPARATOR . $schemaFilename,
-			);
-		} catch (Nette\IOException) {
-			throw new Exceptions\LanApiCall('Validation schema for response could not be loaded');
+		$key = md5($schemaFilename);
+
+		if (!array_key_exists($key, $this->validationSchemas)) {
+			try {
+				$this->validationSchemas[$key] = Utils\FileSystem::read(
+					NsPanel\Constants::RESOURCES_FOLDER . DIRECTORY_SEPARATOR . 'response' . DIRECTORY_SEPARATOR . $schemaFilename,
+				);
+
+			} catch (Nette\IOException) {
+				throw new Exceptions\LanApiError('Validation schema for response could not be loaded');
+			}
 		}
 
-		return $schema;
+		return $this->validationSchemas[$key];
 	}
 
 	/**
 	 * @param array<string, string|array<string>>|null $headers
 	 * @param array<string, mixed> $params
 	 *
-	 * @throws Exceptions\LanApiCall
+	 * @throws Exceptions\LanApiError
 	 */
 	private function createRequest(
 		string $method,
@@ -1057,7 +1073,7 @@ final class LanApi
 		try {
 			return new Request($method, $url, $headers, $body);
 		} catch (Exceptions\InvalidArgument $ex) {
-			throw new Exceptions\LanApiCall('Could not create request instance', null, null, $ex->getCode(), $ex);
+			throw new Exceptions\LanApiError('Could not create request instance', $ex->getCode(), $ex);
 		}
 	}
 

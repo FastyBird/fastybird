@@ -1033,23 +1033,13 @@ class Devices extends Console\Command\Command
 			$panelApi = $this->lanApiFactory->create($connector->getIdentifier());
 
 			try {
-				$result = $panelApi->removeDevice(
+				$panelApi->removeDevice(
 					$device->getGatewayIdentifier(),
 					$gateway->getIpAddress(),
 					$gateway->getAccessToken(),
 					API\LanApi::GATEWAY_PORT,
 					false,
 				);
-
-				if ($result !== true) {
-					$io->error($this->translator->translate(
-						'//ns-panel-connector.cmd.devices.messages.removeDeviceFromPanelFailed',
-						[
-							'name' => $device->getName() ?? $device->getIdentifier(),
-							'panel' => $gateway->getName() ?? $gateway->getIdentifier(),
-						],
-					));
-				}
 			} catch (Throwable $ex) {
 				// Log caught exception
 				$this->logger->error(

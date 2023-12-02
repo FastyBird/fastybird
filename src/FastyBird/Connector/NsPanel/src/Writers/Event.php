@@ -17,18 +17,13 @@ namespace FastyBird\Connector\NsPanel\Writers;
 
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
-use FastyBird\Connector\NsPanel\Helpers;
-use FastyBird\Connector\NsPanel\Queries;
-use FastyBird\Connector\NsPanel\Queue;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
-use FastyBird\Module\Devices\Models as DevicesModels;
-use Nette;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Symfony\Component\EventDispatcher;
-use function assert;
 
 /**
  * Event based properties writer
@@ -38,21 +33,10 @@ use function assert;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Event implements Writer, EventDispatcher\EventSubscriberInterface
+class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberInterface
 {
 
-	use Nette\SmartObject;
-
 	public const NAME = 'event';
-
-	public function __construct(
-		private readonly Entities\NsPanelConnector $connector,
-		private readonly Helpers\Entity $entityHelper,
-		private readonly Queue\Queue $queue,
-		private readonly DevicesModels\Entities\Channels\ChannelsRepository $channelsRepository,
-	)
-	{
-	}
 
 	public static function getSubscribedEvents(): array
 	{
@@ -86,82 +70,77 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 
 		$state = $event->getState();
 
-		if ($property->getChannel() instanceof DevicesEntities\Channels\Channel) {
-			$channel = $property->getChannel();
+		$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
+		$findChannelQuery->byId($property->getChannel());
 
-		} else {
-			$findChannelQuery = new Queries\Entities\FindChannels();
-			$findChannelQuery->byId($property->getChannel());
-
-			$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\NsPanelChannel::class);
-		}
+		$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 
 		if ($channel === null) {
 			return;
 		}
 
-		$device = $channel->getDevice();
+		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDeviceQuery->byId($channel->getDevice());
 
-		if (!$device->getConnector()->getId()->equals($this->connector->getId())) {
+		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+
+		if ($device === null) {
 			return;
 		}
 
-		if ($device instanceof Entities\Devices\SubDevice) {
-			assert($channel instanceof Entities\NsPanelChannel);
-
+		if ($device->getType() === Entities\Devices\SubDevice::TYPE) {
 			if ($state->getExpectedValue() === null || $state->getPending() !== true) {
 				return;
 			}
 
-			$this->writeSubDeviceChannelProperty($device, $channel);
+			$this->writeSubDeviceChannel($device, $channel);
 
-		} elseif ($device instanceof Entities\Devices\ThirdPartyDevice) {
-			assert($channel instanceof Entities\NsPanelChannel);
-
+		} elseif ($device->getType() === Entities\Devices\ThirdPartyDevice::TYPE) {
 			if ($state->isValid() !== true) {
 				return;
 			}
 
-			$this->writeThirdPartyDeviceChannelProperty($device, $channel);
+			$this->writeThirdPartyDeviceChannel($device, $channel);
 		}
 	}
 
 	/**
 	 * @throws Exceptions\Runtime
 	 */
-	public function writeSubDeviceChannelProperty(
-		Entities\Devices\SubDevice $device,
-		Entities\NsPanelChannel $channel,
+	public function writeSubDeviceChannel(
+		MetadataDocuments\DevicesModule\Device $device,
+		MetadataDocuments\DevicesModule\Channel $channel,
 	): void
 	{
 		$this->queue->append(
 			$this->entityHelper->create(
 				Entities\Messages\WriteSubDeviceState::class,
 				[
-					'connector' => $this->connector->getId()->toString(),
-					'device' => $device->getId()->toString(),
-					'channel' => $channel->getId()->toString(),
+					'connector' => $device->getConnector(),
+					'device' => $device->getId(),
+					'channel' => $channel->getId(),
 				],
 			),
 		);
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function writeThirdPartyDeviceChannelProperty(
-		Entities\Devices\ThirdPartyDevice $device,
-		Entities\NsPanelChannel $channel,
+	public function writeThirdPartyDeviceChannel(
+		MetadataDocuments\DevicesModule\Device $device,
+		MetadataDocuments\DevicesModule\Channel $channel,
 	): void
 	{
-		if ($device->getGatewayIdentifier() === null) {
+		if ($this->thirdPartyDeviceHelper->getGatewayIdentifier($device) === null) {
 			$this->queue->append(
 				$this->entityHelper->create(
 					Entities\Messages\StoreDeviceConnectionState::class,
 					[
-						'connector' => $this->connector->getId()->toString(),
+						'connector' => $device->getConnector(),
 						'identifier' => $device->getIdentifier(),
 						'state' => MetadataTypes\ConnectionState::STATE_ALERT,
 					],
@@ -175,9 +154,9 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 			$this->entityHelper->create(
 				Entities\Messages\WriteThirdPartyDeviceState::class,
 				[
-					'connector' => $this->connector->getId()->toString(),
-					'device' => $device->getId()->toString(),
-					'channel' => $channel->getId()->toString(),
+					'connector' => $device->getConnector(),
+					'device' => $device->getId(),
+					'channel' => $channel->getId(),
 				],
 			),
 		);

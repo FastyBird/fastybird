@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\NsPanel\Clients;
 
-use FastyBird\Connector\NsPanel\Entities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 
 /**
  * Connector client interface factory
@@ -30,6 +30,6 @@ interface ClientFactory
 
 	public const MODE_CONSTANT_NAME = 'MODE';
 
-	public function create(Entities\NsPanelConnector $connector): Client;
+	public function create(MetadataDocuments\DevicesModule\Connector $connector): Client;
 
 }
