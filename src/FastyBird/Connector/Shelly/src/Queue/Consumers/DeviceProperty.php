@@ -19,7 +19,6 @@ use Doctrine\DBAL;
 use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Queries;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -52,8 +51,6 @@ trait DeviceProperty
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Runtime
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 */
 	private function setDeviceProperty(
 		Uuid\UuidInterface $deviceId,
@@ -85,41 +82,27 @@ trait DeviceProperty
 		}
 
 		if (
-			$property instanceof DevicesEntities\Devices\Properties\Variable
-			&& $property->getValue() === $value
-		) {
-			return;
-		}
-
-		if (
 			$property !== null
 			&& !$property instanceof DevicesEntities\Devices\Properties\Variable
 		) {
-			$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
-			$findDevicePropertyQuery->byId($property->getId());
+			$this->databaseHelper->transaction(function () use ($property): void {
+				$this->devicesPropertiesManager->delete($property);
+			});
 
-			$property = $this->devicesPropertiesRepository->findOneBy($findDevicePropertyQuery);
-
-			if ($property !== null) {
-				$this->databaseHelper->transaction(function () use ($property): void {
-					$this->devicesPropertiesManager->delete($property);
-				});
-
-				$this->logger->warning(
-					'Stored device property was not of valid type',
-					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-						'type' => 'message-consumer',
-						'device' => [
-							'id' => $deviceId->toString(),
-						],
-						'property' => [
-							'id' => $property->getId()->toString(),
-							'identifier' => $identifier,
-						],
+			$this->logger->warning(
+				'Stored device property was not of valid type',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+					'type' => 'message-consumer',
+					'device' => [
+						'id' => $deviceId->toString(),
 					],
-				);
-			}
+					'property' => [
+						'id' => $property->getId()->toString(),
+						'identifier' => $identifier,
+					],
+				],
+			);
 
 			$property = null;
 		}

@@ -298,7 +298,7 @@ final class StoreDeviceState implements Queue\Consumer
 		}
 
 		$this->logger->debug(
-			'Consumed device status message',
+			'Consumed store device state message',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 				'type' => 'store-device-state-message-consumer',

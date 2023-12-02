@@ -17,7 +17,6 @@ namespace FastyBird\Connector\Shelly\Queue\Consumers;
 
 use Doctrine\DBAL;
 use FastyBird\Connector\Shelly;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -52,8 +51,6 @@ trait ChannelProperty
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Runtime
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 */
 	private function setChannelProperty(
 		string $type,
@@ -89,39 +86,25 @@ trait ChannelProperty
 			return;
 		}
 
-		if (
-			$property instanceof DevicesEntities\Channels\Properties\Variable
-			&& $property->getValue() === $value
-		) {
-			return;
-		}
-
 		if ($property !== null && !$property instanceof $type) {
-			$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
-			$findChannelPropertyQuery->byId($property->getId());
+			$this->databaseHelper->transaction(function () use ($property): void {
+				$this->channelsPropertiesManager->delete($property);
+			});
 
-			$property = $this->channelsPropertiesRepository->findOneBy($findChannelPropertyQuery);
-
-			if ($property !== null) {
-				$this->databaseHelper->transaction(function () use ($property): void {
-					$this->channelsPropertiesManager->delete($property);
-				});
-
-				$this->logger->warning(
-					'Stored channel property was not of valid type',
-					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-						'type' => 'message-consumer',
-						'channel' => [
-							'id' => $channelId->toString(),
-						],
-						'property' => [
-							'id' => $property->getId()->toString(),
-							'identifier' => $identifier,
-						],
+			$this->logger->warning(
+				'Stored channel property was not of valid type',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+					'type' => 'message-consumer',
+					'channel' => [
+						'id' => $channelId->toString(),
 					],
-				);
-			}
+					'property' => [
+						'id' => $property->getId()->toString(),
+						'identifier' => $identifier,
+					],
+				],
+			);
 
 			$property = null;
 		}
