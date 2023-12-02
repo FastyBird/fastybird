@@ -87,7 +87,7 @@ abstract class HttpApi
 	 *
 	 * @return T
 	 *
-	 * @throws Exceptions\HttpApiCall
+	 * @throws Exceptions\HttpApiError
 	 */
 	protected function createEntity(string $entity, Utils\ArrayHash $data): Entities\API\Entity
 	{
@@ -97,12 +97,10 @@ abstract class HttpApi
 				(array) Utils\Json::decode(Utils\Json::encode($data), Utils\Json::FORCE_ARRAY),
 			);
 		} catch (Exceptions\Runtime $ex) {
-			throw new Exceptions\HttpApiCall('Could not map data to entity', null, null, $ex->getCode(), $ex);
+			throw new Exceptions\HttpApiError('Could not map data to entity', $ex->getCode(), $ex);
 		} catch (Utils\JsonException $ex) {
-			throw new Exceptions\HttpApiCall(
+			throw new Exceptions\HttpApiError(
 				'Could not create entity from response',
-				null,
-				null,
 				$ex->getCode(),
 				$ex,
 			);

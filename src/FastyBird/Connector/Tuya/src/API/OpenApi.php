@@ -1036,7 +1036,7 @@ final class OpenApi
 	 *
 	 * @return T
 	 *
-	 * @throws Exceptions\OpenApiCall
+	 * @throws Exceptions\OpenApiError
 	 */
 	private function createEntity(string $entity, Utils\ArrayHash $data): Entities\API\Entity
 	{
@@ -1046,12 +1046,10 @@ final class OpenApi
 				(array) Utils\Json::decode(Utils\Json::encode($data), Utils\Json::FORCE_ARRAY),
 			);
 		} catch (Exceptions\Runtime $ex) {
-			throw new Exceptions\OpenApiCall('Could not map data to entity', null, null, $ex->getCode(), $ex);
+			throw new Exceptions\OpenApiError('Could not map data to entity', $ex->getCode(), $ex);
 		} catch (Utils\JsonException $ex) {
-			throw new Exceptions\OpenApiCall(
+			throw new Exceptions\OpenApiError(
 				'Could not create entity from response',
-				null,
-				null,
 				$ex->getCode(),
 				$ex,
 			);

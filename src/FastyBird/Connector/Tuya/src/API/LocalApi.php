@@ -657,7 +657,6 @@ final class LocalApi implements Evenement\EventEmitterInterface
 	/**
 	 * @param array<string, int|float|string|bool>|null $data
 	 *
-	 * @throws Exceptions\LocalApiCall
 	 * @throws Exceptions\LocalApiError
 	 */
 	private function sendRequest(
@@ -704,7 +703,6 @@ final class LocalApi implements Evenement\EventEmitterInterface
 	 *
 	 * @return array<int>
 	 *
-	 * @throws Exceptions\LocalApiCall
 	 * @throws Exceptions\LocalApiError
 	 */
 	private function buildPayload(
@@ -839,6 +837,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 
 	/**
 	 * @throws Exceptions\LocalApiCall
+	 * @throws Exceptions\LocalApiError
 	 */
 	private function decodePayload(string $data): Entities\API\LocalDeviceMessage|null
 	{
@@ -1196,7 +1195,6 @@ final class LocalApi implements Evenement\EventEmitterInterface
 	 *
 	 * @param array<string, string|int|float|bool>|null $data
 	 *
-	 * @throws Exceptions\LocalApiCall
 	 * @throws Exceptions\LocalApiError
 	 */
 	private function generateData(
@@ -1500,7 +1498,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 	 *
 	 * @return T
 	 *
-	 * @throws Exceptions\LocalApiCall
+	 * @throws Exceptions\LocalApiError
 	 */
 	private function createEntity(string $entity, Utils\ArrayHash $data): Entities\API\Entity
 	{
@@ -1510,9 +1508,9 @@ final class LocalApi implements Evenement\EventEmitterInterface
 				(array) Utils\Json::decode(Utils\Json::encode($data), Utils\Json::FORCE_ARRAY),
 			);
 		} catch (Exceptions\Runtime $ex) {
-			throw new Exceptions\LocalApiCall('Could not map data to entity', $ex->getCode(), $ex);
+			throw new Exceptions\LocalApiError('Could not map data to entity', $ex->getCode(), $ex);
 		} catch (Utils\JsonException $ex) {
-			throw new Exceptions\LocalApiCall(
+			throw new Exceptions\LocalApiError(
 				'Could not create entity from data',
 				$ex->getCode(),
 				$ex,
