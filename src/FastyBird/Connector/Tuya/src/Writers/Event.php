@@ -117,10 +117,10 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 			$this->entityHelper->create(
 				Entities\Messages\WriteChannelPropertyState::class,
 				[
-					'connector' => $device->getConnector()->toString(),
-					'device' => $device->getId()->toString(),
-					'channel' => $channel->getId()->toString(),
-					'property' => $property->getId()->toString(),
+					'connector' => $device->getConnector(),
+					'device' => $device->getId(),
+					'channel' => $channel->getId(),
+					'property' => $property->getId(),
 				],
 			),
 		);

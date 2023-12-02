@@ -321,7 +321,7 @@ final class Local implements Client
 							$this->entityHelper->create(
 								Entities\Messages\StoreDeviceConnectionState::class,
 								[
-									'connector' => $device->getConnector()->toString(),
+									'connector' => $device->getConnector(),
 									'identifier' => $device->getIdentifier(),
 									'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
 								],
@@ -361,7 +361,7 @@ final class Local implements Client
 					$this->entityHelper->create(
 						Entities\Messages\StoreDeviceConnectionState::class,
 						[
-							'connector' => $device->getConnector()->toString(),
+							'connector' => $device->getConnector(),
 							'identifier' => $device->getIdentifier(),
 							'state' => MetadataTypes\ConnectionState::STATE_ALERT,
 						],
@@ -383,7 +383,7 @@ final class Local implements Client
 						$this->entityHelper->create(
 							Entities\Messages\StoreDeviceConnectionState::class,
 							[
-								'connector' => $device->getConnector()->toString(),
+								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
 								'state' => MetadataTypes\ConnectionState::STATE_CONNECTED,
 							],
@@ -398,7 +398,7 @@ final class Local implements Client
 							$this->entityHelper->create(
 								Entities\Messages\StoreDeviceConnectionState::class,
 								[
-									'connector' => $device->getConnector()->toString(),
+									'connector' => $device->getConnector(),
 									'identifier' => $device->getIdentifier(),
 									'state' => MetadataTypes\ConnectionState::STATE_ALERT,
 								],
@@ -414,7 +414,7 @@ final class Local implements Client
 								$this->entityHelper->create(
 									Entities\Messages\StoreDeviceConnectionState::class,
 									[
-										'connector' => $device->getConnector()->toString(),
+										'connector' => $device->getConnector(),
 										'identifier' => $device->getIdentifier(),
 										'state' => MetadataTypes\ConnectionState::STATE_ALERT,
 									],
@@ -430,7 +430,7 @@ final class Local implements Client
 								$this->entityHelper->create(
 									Entities\Messages\StoreDeviceConnectionState::class,
 									[
-										'connector' => $device->getConnector()->toString(),
+										'connector' => $device->getConnector(),
 										'identifier' => $device->getIdentifier(),
 										'state' => MetadataTypes\ConnectionState::STATE_LOST,
 									],
@@ -442,7 +442,7 @@ final class Local implements Client
 								$this->entityHelper->create(
 									Entities\Messages\StoreDeviceConnectionState::class,
 									[
-										'connector' => $device->getConnector()->toString(),
+										'connector' => $device->getConnector(),
 										'identifier' => $device->getIdentifier(),
 										'state' => MetadataTypes\ConnectionState::STATE_UNKNOWN,
 									],
@@ -512,7 +512,7 @@ final class Local implements Client
 					$this->entityHelper->create(
 						Entities\Messages\StoreDeviceConnectionState::class,
 						[
-							'connector' => $device->getConnector()->toString(),
+							'connector' => $device->getConnector(),
 							'identifier' => $device->getIdentifier(),
 							'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
 						],
@@ -539,7 +539,7 @@ final class Local implements Client
 					$this->entityHelper->create(
 						Entities\Messages\StoreDeviceConnectionState::class,
 						[
-							'connector' => $device->getConnector()->toString(),
+							'connector' => $device->getConnector(),
 							'identifier' => $device->getIdentifier(),
 							'state' => MetadataTypes\ConnectionState::STATE_CONNECTED,
 						],
@@ -555,7 +555,7 @@ final class Local implements Client
 							$this->entityHelper->create(
 								Entities\Messages\StoreDeviceConnectionState::class,
 								[
-									'connector' => $device->getConnector()->toString(),
+									'connector' => $device->getConnector(),
 									'identifier' => $device->getIdentifier(),
 									'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
 								],
@@ -595,7 +595,7 @@ final class Local implements Client
 					$this->entityHelper->create(
 						Entities\Messages\StoreDeviceConnectionState::class,
 						[
-							'connector' => $device->getConnector()->toString(),
+							'connector' => $device->getConnector(),
 							'identifier' => $device->getIdentifier(),
 							'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
 						],
@@ -837,7 +837,7 @@ final class Local implements Client
 				$this->entityHelper->create(
 					Entities\Messages\StoreDeviceState::class,
 					[
-						'connector' => $device->getConnector()->toString(),
+						'connector' => $device->getConnector(),
 						'identifier' => $device->getIdentifier(),
 						'ip_address' => $state->getWifi()?->getIp() ?? $this->deviceHelper->getIpAddress($device),
 						'states' => $states,
@@ -867,7 +867,7 @@ final class Local implements Client
 			$this->entityHelper->create(
 				Entities\Messages\StoreDeviceConnectionState::class,
 				[
-					'connector' => $this->connector->getId()->toString(),
+					'connector' => $this->connector->getId(),
 					'identifier' => $state->getIdentifier(),
 					'state' => MetadataTypes\ConnectionState::STATE_CONNECTED,
 				],
@@ -879,7 +879,7 @@ final class Local implements Client
 				$this->entityHelper->create(
 					Entities\Messages\StoreDeviceState::class,
 					[
-						'connector' => $this->connector->getId()->toString(),
+						'connector' => $this->connector->getId(),
 						'identifier' => $state->getIdentifier(),
 						'ip_address' => $state->getIpAddress(),
 						'states' => $states,
@@ -1134,7 +1134,7 @@ final class Local implements Client
 				$this->entityHelper->create(
 					Entities\Messages\StoreDeviceState::class,
 					[
-						'connector' => $device->getConnector()->toString(),
+						'connector' => $device->getConnector(),
 						'identifier' => $device->getIdentifier(),
 						'ip_address' => $state->getEthernet()?->getIp()
 							?? ($state->getWifi()?->getStaIp() ?? $this->deviceHelper->getIpAddress($device)),

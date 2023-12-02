@@ -437,9 +437,9 @@ final class Discovery implements Evenement\EventEmitterInterface
 					$message = $this->entityHelper->create(
 						Entities\Messages\StoreLocalDevice::class,
 						[
-							'connector' => $this->connector->getId()->toString(),
+							'connector' => $this->connector->getId(),
 							'identifier' => $device->getIdentifier(),
-							'generation' => $device->getGeneration()->getValue(),
+							'generation' => $device->getGeneration(),
 							'ip_address' => $device->getIpAddress(),
 							'domain' => $device->getDomain(),
 							'model' => $deviceInformation->getModel(),
@@ -460,7 +460,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 												. $sensor->getDescription()
 											),
 											'name' => DevicesUtilities\Name::createName($sensor->getDescription()),
-											'data_type' => $sensor->getDataType()->getValue(),
+											'data_type' => $sensor->getDataType(),
 											'unit' => $sensor->getUnit(),
 											'format' => $sensor->getFormat(),
 											'invalid' => $sensor->getInvalid(),
@@ -481,9 +481,9 @@ final class Discovery implements Evenement\EventEmitterInterface
 					$message = $this->entityHelper->create(
 						Entities\Messages\StoreLocalDevice::class,
 						[
-							'connector' => $this->connector->getId()->toString(),
+							'connector' => $this->connector->getId(),
 							'identifier' => $device->getIdentifier(),
-							'generation' => $device->getGeneration()->getValue(),
+							'generation' => $device->getGeneration(),
 							'ip_address' => $device->getIpAddress(),
 							'domain' => $device->getDomain(),
 							'model' => $deviceInformation->getModel(),

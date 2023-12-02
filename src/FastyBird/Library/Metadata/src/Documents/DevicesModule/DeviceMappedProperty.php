@@ -46,8 +46,7 @@ final class DeviceMappedProperty extends DeviceProperty
 			allowedValues: [Types\PropertyType::TYPE_MAPPED],
 		)]
 		private readonly Types\PropertyType $type,
-		#[BootstrapObjectMapper\Rules\UuidValue()]
-		private readonly Uuid\UuidInterface $device,
+		Uuid\UuidInterface $device,
 		#[BootstrapObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $parent,
 		Types\PropertyCategory $category,
@@ -124,6 +123,7 @@ final class DeviceMappedProperty extends DeviceProperty
 	{
 		parent::__construct(
 			$id,
+			$device,
 			$category,
 			$identifier,
 			$name,
@@ -140,11 +140,6 @@ final class DeviceMappedProperty extends DeviceProperty
 	public function getType(): Types\PropertyType
 	{
 		return $this->type;
-	}
-
-	public function getDevice(): Uuid\UuidInterface
-	{
-		return $this->device;
 	}
 
 	public function getParent(): Uuid\UuidInterface
@@ -267,7 +262,6 @@ final class DeviceMappedProperty extends DeviceProperty
 			'value' => Utilities\ValueHelper::flattenValue($this->getValue()),
 			'default' => Utilities\ValueHelper::flattenValue($this->getDefault()),
 
-			'device' => $this->getDevice()->toString(),
 			'parent' => $this->getParent()->toString(),
 		]);
 	}

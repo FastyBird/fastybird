@@ -48,8 +48,7 @@ final class DeviceDynamicProperty extends DeviceProperty
 			allowedValues: [Types\PropertyType::TYPE_DYNAMIC],
 		)]
 		private readonly Types\PropertyType $type,
-		#[BootstrapObjectMapper\Rules\UuidValue()]
-		private readonly Uuid\UuidInterface $device,
+		Uuid\UuidInterface $device,
 		Types\PropertyCategory $category,
 		string $identifier,
 		string|null $name,
@@ -106,6 +105,7 @@ final class DeviceDynamicProperty extends DeviceProperty
 	{
 		parent::__construct(
 			$id,
+			$device,
 			$category,
 			$identifier,
 			$name,
@@ -122,11 +122,6 @@ final class DeviceDynamicProperty extends DeviceProperty
 	public function getType(): Types\PropertyType
 	{
 		return $this->type;
-	}
-
-	public function getDevice(): Uuid\UuidInterface
-	{
-		return $this->device;
 	}
 
 	/**
@@ -222,7 +217,6 @@ final class DeviceDynamicProperty extends DeviceProperty
 				: $this->getPending(),
 			'valid' => $this->isValid(),
 
-			'device' => $this->getDevice()->toString(),
 			'children' => array_map(
 				static fn (Uuid\UuidInterface $id): string => $id->toString(),
 				$this->getChildren(),

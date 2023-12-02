@@ -218,10 +218,10 @@ abstract class Periodic implements Writer
 					$this->entityHelper->create(
 						Entities\Messages\WriteChannelPropertyState::class,
 						[
-							'connector' => $device->getConnector()->toString(),
-							'device' => $device->getId()->toString(),
-							'channel' => $property->getChannel()->toString(),
-							'property' => $property->getId()->toString(),
+							'connector' => $device->getConnector(),
+							'device' => $device->getId(),
+							'channel' => $property->getChannel(),
+							'property' => $property->getId(),
 						],
 					),
 				);

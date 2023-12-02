@@ -163,7 +163,7 @@ final class Cloud implements Client
 							$this->entityHelper->create(
 								Entities\Messages\StoreDeviceConnectionState::class,
 								[
-									'connector' => $this->connector->getId()->toString(),
+									'connector' => $this->connector->getId(),
 									'identifier' => $message->getIdentifier(),
 									'state' => $message->isOnline()
 										? MetadataTypes\ConnectionState::STATE_CONNECTED
@@ -176,7 +176,7 @@ final class Cloud implements Client
 							$this->entityHelper->create(
 								Entities\Messages\StoreChannelPropertyState::class,
 								[
-									'connector' => $this->connector->getId()->toString(),
+									'connector' => $this->connector->getId(),
 									'identifier' => $message->getIdentifier(),
 									'data_points' => array_map(
 										static fn (Entities\API\DataPointState $dps): array => [
@@ -363,7 +363,7 @@ final class Cloud implements Client
 					$this->entityHelper->create(
 						Entities\Messages\StoreDeviceConnectionState::class,
 						[
-							'connector' => $device->getConnector()->toString(),
+							'connector' => $device->getConnector(),
 							'identifier' => $device->getIdentifier(),
 							'state' => $detail->getResult()->isOnline()
 								? MetadataTypes\ConnectionState::STATE_CONNECTED
@@ -390,7 +390,7 @@ final class Cloud implements Client
 						$this->entityHelper->create(
 							Entities\Messages\StoreDeviceConnectionState::class,
 							[
-								'connector' => $device->getConnector()->toString(),
+								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
 								'state' => MetadataTypes\ConnectionState::STATE_ALERT,
 							],
@@ -401,7 +401,7 @@ final class Cloud implements Client
 						$this->entityHelper->create(
 							Entities\Messages\StoreDeviceConnectionState::class,
 							[
-								'connector' => $device->getConnector()->toString(),
+								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
 								'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
 							],
@@ -469,7 +469,7 @@ final class Cloud implements Client
 					$this->entityHelper->create(
 						Entities\Messages\StoreChannelPropertyState::class,
 						[
-							'connector' => $device->getConnector()->toString(),
+							'connector' => $device->getConnector(),
 							'identifier' => $device->getIdentifier(),
 							'data_points' => array_map(
 								static fn (Entities\API\DeviceDataPointState $dps): array => [
@@ -500,7 +500,7 @@ final class Cloud implements Client
 						$this->entityHelper->create(
 							Entities\Messages\StoreDeviceConnectionState::class,
 							[
-								'connector' => $device->getConnector()->toString(),
+								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
 								'state' => MetadataTypes\ConnectionState::STATE_ALERT,
 							],
@@ -511,7 +511,7 @@ final class Cloud implements Client
 						$this->entityHelper->create(
 							Entities\Messages\StoreDeviceConnectionState::class,
 							[
-								'connector' => $device->getConnector()->toString(),
+								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
 								'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
 							],
