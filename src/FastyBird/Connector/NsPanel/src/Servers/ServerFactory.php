@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\NsPanel\Servers;
 
-use FastyBird\Connector\NsPanel\Entities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 
 /**
  * Connector base communication server factory
@@ -28,6 +28,6 @@ use FastyBird\Connector\NsPanel\Entities;
 interface ServerFactory
 {
 
-	public function create(Entities\NsPanelConnector $connector): Server;
+	public function create(MetadataDocuments\DevicesModule\Connector $connector): Server;
 
 }

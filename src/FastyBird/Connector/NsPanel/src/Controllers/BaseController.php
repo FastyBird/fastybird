@@ -19,6 +19,8 @@ use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Exceptions;
 use Nette;
 use Nette\Utils;
+use function array_key_exists;
+use function md5;
 use const DIRECTORY_SEPARATOR;
 
 /**
@@ -36,6 +38,9 @@ abstract class BaseController
 
 	protected NsPanel\Logger $logger;
 
+	/** @var array<string, string> */
+	private array $validationSchemas = [];
+
 	public function setLogger(NsPanel\Logger $logger): void
 	{
 		$this->logger = $logger;
@@ -46,15 +51,20 @@ abstract class BaseController
 	 */
 	protected function getSchema(string $schemaFilename): string
 	{
-		try {
-			$schema = Utils\FileSystem::read(
-				NsPanel\Constants::RESOURCES_FOLDER . DIRECTORY_SEPARATOR . 'request' . DIRECTORY_SEPARATOR . $schemaFilename,
-			);
-		} catch (Nette\IOException) {
-			throw new Exceptions\InvalidArgument('Validation schema for request could not be loaded');
+		$key = md5($schemaFilename);
+
+		if (!array_key_exists($key, $this->validationSchemas)) {
+			try {
+				$this->validationSchemas[$key] = Utils\FileSystem::read(
+					NsPanel\Constants::RESOURCES_FOLDER . DIRECTORY_SEPARATOR . 'request' . DIRECTORY_SEPARATOR . $schemaFilename,
+				);
+
+			} catch (Nette\IOException) {
+				throw new Exceptions\InvalidArgument('Validation schema for request could not be loaded');
+			}
 		}
 
-		return $schema;
+		return $this->validationSchemas[$key];
 	}
 
 }

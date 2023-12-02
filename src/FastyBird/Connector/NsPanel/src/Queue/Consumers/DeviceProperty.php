@@ -19,13 +19,10 @@ use Doctrine\DBAL;
 use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Queries;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
-use FastyBird\Module\Devices\Models\Entities\Devices\DevicesRepository;
-use FastyBird\Module\Devices\Models\Entities\Devices\Properties\PropertiesManager;
-use FastyBird\Module\Devices\Models\Entities\Devices\Properties\PropertiesRepository;
+use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette\Utils;
@@ -39,9 +36,9 @@ use Ramsey\Uuid;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *
- * @property-read DevicesRepository $devicesRepository
- * @property-read PropertiesRepository $devicesPropertiesRepository
- * @property-read PropertiesManager $devicesPropertiesManager
+ * @property-read DevicesModels\Entities\Devices\DevicesRepository $devicesRepository
+ * @property-read DevicesModels\Entities\Devices\Properties\PropertiesRepository $devicesPropertiesRepository
+ * @property-read DevicesModels\Entities\Devices\Properties\PropertiesManager $devicesPropertiesManager
  * @property-read DevicesUtilities\Database $databaseHelper
  * @property-read NsPanel\Logger $logger
  */
@@ -54,8 +51,6 @@ trait DeviceProperty
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Runtime
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 */
 	private function setDeviceProperty(
 		Uuid\UuidInterface $deviceId,
@@ -83,13 +78,6 @@ trait DeviceProperty
 		}
 
 		if ($value === null) {
-			return;
-		}
-
-		if (
-			$property instanceof DevicesEntities\Devices\Properties\Variable
-			&& $property->getValue() === $value
-		) {
 			return;
 		}
 
@@ -136,6 +124,20 @@ trait DeviceProperty
 			);
 
 			if ($device === null) {
+				$this->logger->error(
+					'Device was not found, property could not be configured',
+					[
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+						'type' => 'message-consumer',
+						'device' => [
+							'id' => $deviceId->toString(),
+						],
+						'property' => [
+							'identifier' => $identifier,
+						],
+					],
+				);
+
 				return;
 			}
 

@@ -21,15 +21,16 @@ use FastyBird\Connector\NsPanel\API;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
-use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
@@ -55,15 +56,18 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 	private API\LanApi|null $lanApiApi = null;
 
 	public function __construct(
-		protected readonly DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
+		protected readonly Helpers\Channel $channelHelper,
+		protected readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
 		protected readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
 		private readonly Queue\Queue $queue,
 		private readonly API\LanApiFactory $lanApiApiFactory,
 		private readonly Helpers\Entity $entityHelper,
+		private readonly Helpers\Devices\Gateway $gatewayHelper,
+		private readonly Helpers\Devices\ThirdPartyDevice $thirdPartyDeviceHelper,
 		private readonly NsPanel\Logger $logger,
-		private readonly DevicesModels\Entities\Connectors\ConnectorsRepository $connectorsRepository,
-		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
-		private readonly DevicesModels\Entities\Channels\ChannelsRepository $channelsRepository,
+		private readonly DevicesModels\Configuration\Connectors\Repository $connectorsConfigurationRepository,
+		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
+		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 	)
 	{
@@ -85,10 +89,10 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 			return false;
 		}
 
-		$findConnectorQuery = new Queries\Entities\FindConnectors();
+		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
 		$findConnectorQuery->byId($entity->getConnector());
 
-		$connector = $this->connectorsRepository->findOneBy($findConnectorQuery, Entities\NsPanelConnector::class);
+		$connector = $this->connectorsConfigurationRepository->findOneBy($findConnectorQuery);
 
 		if ($connector === null) {
 			$this->logger->error(
@@ -112,11 +116,12 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 			return true;
 		}
 
-		$findDeviceQuery = new Queries\Entities\FindThirdPartyDevices();
+		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDeviceQuery->forConnector($connector);
 		$findDeviceQuery->byId($entity->getDevice());
+		$findDeviceQuery->byType(Entities\Devices\ThirdPartyDevice::TYPE);
 
-		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\ThirdPartyDevice::class);
+		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
 		if ($device === null) {
 			$this->logger->error(
@@ -140,16 +145,18 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 			return true;
 		}
 
-		$ipAddress = $device->getGateway()->getIpAddress();
-		$accessToken = $device->getGateway()->getAccessToken();
+		$gateway = $this->thirdPartyDeviceHelper->getGateway($device);
+
+		$ipAddress = $this->gatewayHelper->getIpAddress($gateway);
+		$accessToken = $this->gatewayHelper->getAccessToken($gateway);
 
 		if ($ipAddress === null || $accessToken === null) {
 			$this->queue->append(
 				$this->entityHelper->create(
 					Entities\Messages\StoreDeviceConnectionState::class,
 					[
-						'connector' => $connector->getId()->toString(),
-						'identifier' => $device->getGateway()->getIdentifier(),
+						'connector' => $connector->getId(),
+						'identifier' => $gateway->getIdentifier(),
 						'state' => MetadataTypes\ConnectionState::STATE_ALERT,
 					],
 				),
@@ -164,7 +171,7 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 						'id' => $connector->getId()->toString(),
 					],
 					'gateway' => [
-						'id' => $device->getGateway()->getId()->toString(),
+						'id' => $gateway->getId()->toString(),
 					],
 					'device' => [
 						'id' => $device->getId()->toString(),
@@ -179,14 +186,14 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 			return true;
 		}
 
-		$serialNumber = $device->getGatewayIdentifier();
+		$serialNumber = $this->thirdPartyDeviceHelper->getGatewayIdentifier($device);
 
 		if ($serialNumber === null) {
 			$this->queue->append(
 				$this->entityHelper->create(
 					Entities\Messages\StoreDeviceConnectionState::class,
 					[
-						'connector' => $connector->getId()->toString(),
+						'connector' => $connector->getId(),
 						'identifier' => $device->getIdentifier(),
 						'state' => MetadataTypes\ConnectionState::STATE_ALERT,
 					],
@@ -202,7 +209,7 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 						'id' => $connector->getId()->toString(),
 					],
 					'gateway' => [
-						'id' => $device->getGateway()->getId()->toString(),
+						'id' => $gateway->getId()->toString(),
 					],
 					'device' => [
 						'id' => $device->getId()->toString(),
@@ -217,11 +224,11 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 			return true;
 		}
 
-		$findChannelQuery = new Queries\Entities\FindChannels();
+		$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 		$findChannelQuery->forDevice($device);
 		$findChannelQuery->byId($entity->getChannel());
 
-		$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\NsPanelChannel::class);
+		$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 
 		if ($channel === null) {
 			$this->logger->error(
@@ -233,7 +240,7 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 						'id' => $connector->getId()->toString(),
 					],
 					'gateway' => [
-						'id' => $device->getGateway()->getId()->toString(),
+						'id' => $gateway->getId()->toString(),
 					],
 					'device' => [
 						'id' => $device->getId()->toString(),
@@ -260,7 +267,7 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 						'id' => $connector->getId()->toString(),
 					],
 					'gateway' => [
-						'id' => $device->getGateway()->getId()->toString(),
+						'id' => $gateway->getId()->toString(),
 					],
 					'device' => [
 						'id' => $device->getId()->toString(),
@@ -300,7 +307,7 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 						}
 					}
 				})
-				->catch(function (Throwable $ex) use ($entity, $connector, $device, $channel): void {
+				->catch(function (Throwable $ex) use ($entity, $connector, $gateway, $device, $channel): void {
 					foreach ($channel->getProperties() as $property) {
 						if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
 							$this->channelPropertiesStatesManager->setValue(
@@ -331,8 +338,8 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 							$this->entityHelper->create(
 								Entities\Messages\StoreDeviceConnectionState::class,
 								[
-									'connector' => $connector->getId()->toString(),
-									'identifier' => $device->getGateway()->getIdentifier(),
+									'connector' => $connector->getId(),
+									'identifier' => $gateway->getIdentifier(),
 									'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
 								],
 							),
@@ -343,8 +350,8 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 							$this->entityHelper->create(
 								Entities\Messages\StoreDeviceConnectionState::class,
 								[
-									'connector' => $connector->getId()->toString(),
-									'identifier' => $device->getGateway()->getIdentifier(),
+									'connector' => $connector->getId(),
+									'identifier' => $gateway->getIdentifier(),
 									'state' => MetadataTypes\ConnectionState::STATE_LOST,
 								],
 							),
@@ -362,7 +369,7 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 									'id' => $connector->getId()->toString(),
 								],
 								'gateway' => [
-									'id' => $device->getGateway()->getId()->toString(),
+									'id' => $gateway->getId()->toString(),
 								],
 								'device' => [
 									'id' => $device->getId()->toString(),
@@ -397,7 +404,7 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 					'id' => $connector->getId()->toString(),
 				],
 				'gateway' => [
-					'id' => $device->getGateway()->getId()->toString(),
+					'id' => $gateway->getId()->toString(),
 				],
 				'device' => [
 					'id' => $device->getId()->toString(),
@@ -412,7 +419,7 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 		return true;
 	}
 
-	private function getApiClient(Entities\NsPanelConnector $connector): API\LanApi
+	private function getApiClient(MetadataDocuments\DevicesModule\Connector $connector): API\LanApi
 	{
 		if ($this->lanApiApi === null) {
 			$this->lanApiApi = $this->lanApiApiFactory->create($connector->getIdentifier());

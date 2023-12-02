@@ -15,8 +15,8 @@
 
 namespace FastyBird\Connector\NsPanel\Clients;
 
-use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Types;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 
 /**
  * Connector gateway client factory
@@ -31,6 +31,6 @@ interface GatewayFactory extends ClientFactory
 
 	public const MODE = Types\ClientMode::GATEWAY;
 
-	public function create(Entities\NsPanelConnector $connector): Gateway;
+	public function create(MetadataDocuments\DevicesModule\Connector $connector): Gateway;
 
 }

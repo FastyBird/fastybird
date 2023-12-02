@@ -121,24 +121,16 @@ final class Properties implements Common\EventSubscriber
 			$stateProperty = null;
 		}
 
-		$enumValues = $device instanceof Entities\Devices\ThirdPartyDevice ? [
-			MetadataTypes\ConnectionState::STATE_CONNECTED,
-			MetadataTypes\ConnectionState::STATE_DISCONNECTED,
-			MetadataTypes\ConnectionState::STATE_ALERT,
-			MetadataTypes\ConnectionState::STATE_UNKNOWN,
-		] : [
-			MetadataTypes\ConnectionState::STATE_CONNECTED,
-			MetadataTypes\ConnectionState::STATE_DISCONNECTED,
-			MetadataTypes\ConnectionState::STATE_LOST,
-			MetadataTypes\ConnectionState::STATE_ALERT,
-			MetadataTypes\ConnectionState::STATE_UNKNOWN,
-		];
-
 		if ($stateProperty !== null) {
 			$this->devicesPropertiesManager->update($stateProperty, Utils\ArrayHash::from([
 				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
 				'unit' => null,
-				'format' => $enumValues,
+				'format' => [
+					MetadataTypes\ConnectionState::STATE_CONNECTED,
+					MetadataTypes\ConnectionState::STATE_DISCONNECTED,
+					MetadataTypes\ConnectionState::STATE_ALERT,
+					MetadataTypes\ConnectionState::STATE_UNKNOWN,
+				],
 				'settable' => false,
 				'queryable' => false,
 			]));
@@ -150,7 +142,12 @@ final class Properties implements Common\EventSubscriber
 				'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::STATE),
 				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
 				'unit' => null,
-				'format' => $enumValues,
+				'format' => [
+					MetadataTypes\ConnectionState::STATE_CONNECTED,
+					MetadataTypes\ConnectionState::STATE_DISCONNECTED,
+					MetadataTypes\ConnectionState::STATE_ALERT,
+					MetadataTypes\ConnectionState::STATE_UNKNOWN,
+				],
 				'settable' => false,
 				'queryable' => false,
 			]));

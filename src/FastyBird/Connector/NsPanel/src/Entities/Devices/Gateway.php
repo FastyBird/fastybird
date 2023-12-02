@@ -32,7 +32,9 @@ class Gateway extends Entities\NsPanelDevice
 
 	public const TYPE = 'ns-panel-gateway';
 
-	private const STATE_READING_DELAY = 120.0;
+	public const STATE_READING_DELAY = 5_000.0;
+
+	public const HEARTBEAT_DELAY = 2_500.0;
 
 	public function getType(): string
 	{

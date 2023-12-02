@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\NsPanel\Writers;
 
-use FastyBird\Connector\NsPanel\Entities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 
 /**
  * Event bus exchange device state periodic writer factory
@@ -28,6 +28,6 @@ use FastyBird\Connector\NsPanel\Entities;
 interface ExchangeFactory extends WriterFactory
 {
 
-	public function create(Entities\NsPanelConnector $connector): Exchange;
+	public function create(MetadataDocuments\DevicesModule\Connector $connector): Exchange;
 
 }

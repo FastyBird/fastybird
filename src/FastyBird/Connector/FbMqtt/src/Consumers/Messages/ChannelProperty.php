@@ -53,7 +53,7 @@ final class ChannelProperty implements Consumers\Consumer
 		private readonly DevicesModels\Entities\Channels\ChannelsRepository $channelsRepository,
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesRepository $propertiesRepository,
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $propertiesManager,
-		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStates,
+		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
 		private readonly DevicesUtilities\Database $databaseHelper,
 		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
@@ -161,7 +161,7 @@ final class ChannelProperty implements Consumers\Consumer
 					),
 				);
 			} elseif ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
-				$this->channelPropertiesStates->setValue(
+				$this->channelPropertiesStatesManager->setValue(
 					$property,
 					Utils\ArrayHash::from([
 						DevicesStates\Property::ACTUAL_VALUE_FIELD => $entity->getValue(),

@@ -16,16 +16,15 @@
 namespace FastyBird\Connector\NsPanel\Queue\Consumers;
 
 use DateTimeInterface;
-use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Types;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
-use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
-use FastyBird\Module\Devices\Models\Entities\Channels\Properties\PropertiesRepository;
+use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use function boolval;
@@ -44,7 +43,8 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *
- * @property-read PropertiesRepository $channelsPropertiesRepository
+ * @property-read Helpers\Channel $channelHelper
+ * @property-read DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository
  * @property-read DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager
  */
 trait StateWriter
@@ -62,10 +62,10 @@ trait StateWriter
 	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function mapChannelToState(
-		Entities\NsPanelChannel $channel,
+		MetadataDocuments\DevicesModule\Channel $channel,
 	): array|null
 	{
-		switch ($channel->getCapability()->getValue()) {
+		switch ($this->channelHelper->getCapability($channel)->getValue()) {
 			case Types\Capability::POWER:
 				$property = $this->findProtocolProperty($channel, Types\Protocol::get(Types\Protocol::POWER_STATE));
 
@@ -84,7 +84,7 @@ trait StateWriter
 				}
 
 				return [
-					$channel->getCapability()->getValue() => [
+					$this->channelHelper->getCapability($channel)->getValue() => [
 						Types\Protocol::POWER_STATE => $value,
 					],
 				];
@@ -106,7 +106,7 @@ trait StateWriter
 				}
 
 				return [
-					$channel->getCapability()->getValue() => [
+					$this->channelHelper->getCapability($channel)->getValue() => [
 						$channel->getIdentifier() => [
 							Types\Protocol::TOGGLE_STATE => $value,
 						],
@@ -130,7 +130,7 @@ trait StateWriter
 				}
 
 				return [
-					$channel->getCapability()->getValue() => [
+					$this->channelHelper->getCapability($channel)->getValue() => [
 						Types\Protocol::BRIGHTNESS => intval($value),
 					],
 				];
@@ -155,7 +155,7 @@ trait StateWriter
 				}
 
 				return [
-					$channel->getCapability()->getValue() => [
+					$this->channelHelper->getCapability($channel)->getValue() => [
 						Types\Protocol::COLOR_TEMPERATURE => intval($value),
 					],
 				];
@@ -209,7 +209,7 @@ trait StateWriter
 				}
 
 				return [
-					$channel->getCapability()->getValue() => [
+					$this->channelHelper->getCapability($channel)->getValue() => [
 						Types\Protocol::COLOR_RED => intval($red),
 						Types\Protocol::COLOR_GREEN => intval($green),
 						Types\Protocol::COLOR_BLUE => intval($blue),
@@ -233,7 +233,7 @@ trait StateWriter
 				}
 
 				return [
-					$channel->getCapability()->getValue() => [
+					$this->channelHelper->getCapability($channel)->getValue() => [
 						Types\Protocol::PERCENTAGE => intval($value),
 					],
 				];
@@ -255,7 +255,7 @@ trait StateWriter
 				}
 
 				return [
-					$channel->getCapability()->getValue() => [
+					$this->channelHelper->getCapability($channel)->getValue() => [
 						Types\Protocol::MOTOR_CONTROL => $value,
 					],
 				];
@@ -277,7 +277,7 @@ trait StateWriter
 				}
 
 				return [
-					$channel->getCapability()->getValue() => [
+					$this->channelHelper->getCapability($channel)->getValue() => [
 						Types\Protocol::MOTOR_REVERSE => boolval($value),
 					],
 				];
@@ -302,7 +302,7 @@ trait StateWriter
 				}
 
 				return [
-					$channel->getCapability()->getValue() => [
+					$this->channelHelper->getCapability($channel)->getValue() => [
 						Types\Protocol::MOTOR_CALIBRATION => $value,
 					],
 				];
@@ -324,7 +324,7 @@ trait StateWriter
 				}
 
 				return [
-					$channel->getCapability()->getValue() => [
+					$this->channelHelper->getCapability($channel)->getValue() => [
 						Types\Protocol::STARTUP => $value,
 					],
 				];
@@ -338,7 +338,7 @@ trait StateWriter
 				$value = $this->getPropertyValue($property);
 
 				return [
-					$channel->getCapability()->getValue() => [
+					$this->channelHelper->getCapability($channel)->getValue() => [
 						Types\Protocol::CONFIGURATION => [
 							Types\Protocol::STREAM_URL => strval($value),
 						],
@@ -362,7 +362,7 @@ trait StateWriter
 				}
 
 				return [
-					$channel->getCapability()->getValue() => [
+					$this->channelHelper->getCapability($channel)->getValue() => [
 						Types\Protocol::DETECT => boolval($value),
 					],
 				];
@@ -384,7 +384,7 @@ trait StateWriter
 				}
 
 				return [
-					$channel->getCapability()->getValue() => [
+					$this->channelHelper->getCapability($channel)->getValue() => [
 						Types\Protocol::HUMIDITY => intval($value),
 					],
 				];
@@ -406,7 +406,7 @@ trait StateWriter
 				}
 
 				return [
-					$channel->getCapability()->getValue() => [
+					$this->channelHelper->getCapability($channel)->getValue() => [
 						Types\Protocol::TEMPERATURE => floatval($value),
 					],
 				];
@@ -428,7 +428,7 @@ trait StateWriter
 				}
 
 				return [
-					$channel->getCapability()->getValue() => [
+					$this->channelHelper->getCapability($channel)->getValue() => [
 						Types\Protocol::BATTERY => intval($value),
 					],
 				];
@@ -446,7 +446,7 @@ trait StateWriter
 				}
 
 				return [
-					$channel->getCapability()->getValue() => [
+					$this->channelHelper->getCapability($channel)->getValue() => [
 						Types\Protocol::PRESS => $value,
 					],
 				];
@@ -468,7 +468,7 @@ trait StateWriter
 				}
 
 				return [
-					$channel->getCapability()->getValue() => [
+					$this->channelHelper->getCapability($channel)->getValue() => [
 						Types\Protocol::RSSI => intval($value),
 					],
 				];
@@ -480,24 +480,27 @@ trait StateWriter
 	/**
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function getPropertyValue(
-		DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped|DevicesEntities\Channels\Properties\Variable $property,
+		MetadataDocuments\DevicesModule\ChannelProperty $property,
 	): string|int|float|bool|null
 	{
 		if (
-			$property instanceof DevicesEntities\Channels\Properties\Dynamic
-			|| $property instanceof DevicesEntities\Channels\Properties\Mapped
+			$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+			|| $property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
 		) {
 			$actualValue = $this->getActualValue($property);
 			$expectedValue = $this->getExpectedValue($property);
 
 			$value = $expectedValue ?? $actualValue;
-		} else {
+		} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
 			$value = $property->getValue();
+		} else {
+			throw new Exceptions\InvalidArgument('Provided property is not valid');
 		}
 
 		return MetadataUtilities\ValueHelper::transformValueToDevice(
@@ -511,29 +514,15 @@ trait StateWriter
 	 * @throws DevicesExceptions\InvalidState
 	 */
 	private function findProtocolProperty(
-		Entities\NsPanelChannel $channel,
+		MetadataDocuments\DevicesModule\Channel $channel,
 		Types\Protocol $protocol,
-	): DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped|DevicesEntities\Channels\Properties\Variable|null
+	): MetadataDocuments\DevicesModule\ChannelProperty|null
 	{
-		$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
+		$findChannelPropertyQuery = new DevicesQueries\Configuration\FindChannelProperties();
 		$findChannelPropertyQuery->forChannel($channel);
 		$findChannelPropertyQuery->byIdentifier(Helpers\Name::convertProtocolToProperty($protocol));
 
-		$property = $this->channelsPropertiesRepository->findOneBy($findChannelPropertyQuery);
-
-		if ($property === null) {
-			return null;
-		}
-
-		if (
-			!$property instanceof DevicesEntities\Channels\Properties\Dynamic
-			&& !$property instanceof DevicesEntities\Channels\Properties\Mapped
-			&& !$property instanceof DevicesEntities\Channels\Properties\Variable
-		) {
-			return null;
-		}
-
-		return $property;
+		return $this->channelsPropertiesConfigurationRepository->findOneBy($findChannelPropertyQuery);
 	}
 
 	/**
@@ -544,7 +533,7 @@ trait StateWriter
 	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getActualValue(
-		DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped $property,
+		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
 	): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
 	{
 		return $this->channelPropertiesStatesManager->readValue($property)?->getActualValue();
@@ -558,7 +547,7 @@ trait StateWriter
 	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function getExpectedValue(
-		DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped $property,
+		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
 	): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
 	{
 		return $this->channelPropertiesStatesManager->readValue($property)?->getExpectedValue();

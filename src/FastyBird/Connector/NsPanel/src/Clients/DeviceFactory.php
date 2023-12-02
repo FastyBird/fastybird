@@ -15,8 +15,8 @@
 
 namespace FastyBird\Connector\NsPanel\Clients;
 
-use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Types;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 
 /**
  * Connector third-party device client factory
@@ -31,6 +31,6 @@ interface DeviceFactory extends ClientFactory
 
 	public const MODE = Types\ClientMode::DEVICE;
 
-	public function create(Entities\NsPanelConnector $connector): Device;
+	public function create(MetadataDocuments\DevicesModule\Connector $connector): Device;
 
 }

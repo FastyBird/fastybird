@@ -60,8 +60,8 @@ final class StoreDeviceState implements Queue\Consumer
 		private readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
-		private readonly DevicesUtilities\DevicePropertiesStates $devicePropertiesStateManager,
-		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStateManager,
+		private readonly DevicesUtilities\DevicePropertiesStates $devicePropertiesStatesManager,
+		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
 	)
 	{
 	}
@@ -130,7 +130,7 @@ final class StoreDeviceState implements Queue\Consumer
 
 				if ($property !== null) {
 					if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-						$this->devicePropertiesStateManager->setValue($property, Utils\ArrayHash::from([
+						$this->devicePropertiesStatesManager->setValue($property, Utils\ArrayHash::from([
 							DevicesStates\Property::ACTUAL_VALUE_FIELD => MetadataUtilities\ValueHelper::transformValueFromDevice(
 								$property->getDataType(),
 								$property->getFormat(),
@@ -188,7 +188,7 @@ final class StoreDeviceState implements Queue\Consumer
 
 						if ($property !== null) {
 							if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-								$this->channelPropertiesStateManager->setValue($property, Utils\ArrayHash::from([
+								$this->channelPropertiesStatesManager->setValue($property, Utils\ArrayHash::from([
 									DevicesStates\Property::ACTUAL_VALUE_FIELD => MetadataUtilities\ValueHelper::transformValueFromDevice(
 										$property->getDataType(),
 										$property->getFormat(),
@@ -259,7 +259,7 @@ final class StoreDeviceState implements Queue\Consumer
 						);
 
 						if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-							$this->channelPropertiesStateManager->setValue($property, Utils\ArrayHash::from([
+							$this->channelPropertiesStatesManager->setValue($property, Utils\ArrayHash::from([
 								DevicesStates\Property::ACTUAL_VALUE_FIELD => MetadataUtilities\ValueHelper::transformValueFromDevice(
 									$property->getDataType(),
 									$property->getFormat(),

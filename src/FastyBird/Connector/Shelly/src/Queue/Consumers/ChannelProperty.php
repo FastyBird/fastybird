@@ -116,6 +116,20 @@ trait ChannelProperty
 			$channel = $this->channelsRepository->findOneBy($findChannelQuery);
 
 			if ($channel === null) {
+				$this->logger->error(
+					'Channel was not found, property could not be configured',
+					[
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+						'type' => 'message-consumer',
+						'channel' => [
+							'id' => $channelId->toString(),
+						],
+						'property' => [
+							'identifier' => $identifier,
+						],
+					],
+				);
+
 				return;
 			}
 

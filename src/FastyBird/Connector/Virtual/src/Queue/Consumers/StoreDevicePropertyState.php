@@ -59,7 +59,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 		private readonly DevicesModels\Entities\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
 		private readonly DevicesModels\Entities\Devices\Properties\PropertiesManager $devicesPropertiesManager,
 		private readonly DevicesUtilities\Database $databaseHelper,
-		private readonly DevicesUtilities\DevicePropertiesStates $devicePropertiesStateManager,
+		private readonly DevicesUtilities\DevicePropertiesStates $devicePropertiesStatesManager,
 		private readonly ExchangeEntities\DocumentFactory $entityFactory,
 		private readonly ExchangePublisher\Publisher $publisher,
 	)
@@ -177,7 +177,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 			);
 
 		} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-			$this->devicePropertiesStateManager->setValue($property, Utils\ArrayHash::from([
+			$this->devicePropertiesStatesManager->setValue($property, Utils\ArrayHash::from([
 				DevicesStates\Property::ACTUAL_VALUE_FIELD => MetadataUtilities\ValueHelper::flattenValue(
 					$valueToStore,
 				),
@@ -212,7 +212,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 							),
 						);
 					} else {
-						$this->devicePropertiesStateManager->writeValue($property, Utils\ArrayHash::from([
+						$this->devicePropertiesStatesManager->writeValue($property, Utils\ArrayHash::from([
 							DevicesStates\Property::EXPECTED_VALUE_FIELD => $entity->getValue(),
 							DevicesStates\Property::PENDING_FIELD => true,
 						]));
