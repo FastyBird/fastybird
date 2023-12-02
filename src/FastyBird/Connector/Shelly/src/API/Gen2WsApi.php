@@ -860,7 +860,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 	 *
 	 * @return T
 	 *
-	 * @throws Exceptions\WsCall
+	 * @throws Exceptions\WsError
 	 */
 	protected function createEntity(string $entity, Utils\ArrayHash $data): Entities\API\Entity
 	{
@@ -870,9 +870,9 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 				(array) Utils\Json::decode(Utils\Json::encode($data), Utils\Json::FORCE_ARRAY),
 			);
 		} catch (Exceptions\Runtime $ex) {
-			throw new Exceptions\WsCall('Could not map payload to entity', $ex->getCode(), $ex);
+			throw new Exceptions\WsError('Could not map payload to entity', $ex->getCode(), $ex);
 		} catch (Utils\JsonException $ex) {
-			throw new Exceptions\WsCall('Could not create entity from payload', $ex->getCode(), $ex);
+			throw new Exceptions\WsError('Could not create entity from payload', $ex->getCode(), $ex);
 		}
 	}
 
