@@ -7,7 +7,7 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:MetadataLibrary!
- * @subpackage     Entities
+ * @subpackage     ValueObjects
  * @since          1.0.0
  *
  * @date           12.04.23
@@ -25,7 +25,7 @@ use function round;
  * HSB value object
  *
  * @package        FastyBird:MetadataLibrary!
- * @subpackage     Entities
+ * @subpackage     ValueObjects
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */

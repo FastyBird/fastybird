@@ -7,7 +7,7 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:MetadataLibrary!
- * @subpackage     Entities
+ * @subpackage     ValueObjects
  * @since          1.0.0
  *
  * @date           03.02.23
@@ -19,7 +19,7 @@ namespace FastyBird\Library\Metadata\ValueObjects;
  * Transformer base value object interface
  *
  * @package        FastyBird:MetadataLibrary!
- * @subpackage     Entities
+ * @subpackage     ValueObjects
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
