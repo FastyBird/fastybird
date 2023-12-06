@@ -95,7 +95,6 @@
         "softcreatr/jsonpath": "^0.8",
         "sunrise/http-message": "^3.0",
         "symfony/console": "^6.0",
-        "symfony/dependency-injection": "^5.0",
         "symfony/event-dispatcher": "^5.4",
         "symfony/monolog-bridge": "^6.1",
         "symplify/vendor-patches": "^11.2",
