@@ -60,6 +60,9 @@ jobs:
       - name: "Setup problem matchers for PHP"
         run: 'echo "::add-matcher::${{ runner.tool_cache }}/php.json"'
 
+      - name: "Remove PSR extension"
+        run: "sudo apt remove php${{ matrix.php-version }}-psr"
+
       - name: "Setup composer & install dependencies"
         uses: "ramsey/composer-install@v2"
         with:
@@ -109,6 +112,9 @@ jobs:
 
       - name: "Setup problem matchers for PHP"
         run: 'echo "::add-matcher::${{ runner.tool_cache }}/php.json"'
+
+      - name: "Remove PSR extension"
+        run: "sudo apt remove php${{ matrix.php-version }}-psr"
 
       - name: "Setup composer & install dependencies"
         uses: "ramsey/composer-install@v2"
@@ -167,6 +173,9 @@ jobs:
 
       - name: "Setup problem matchers for PHP"
         run: 'echo "::add-matcher::${{ runner.tool_cache }}/php.json"'
+
+      - name: "Remove PSR extension"
+        run: "sudo apt remove php${{ matrix.php-version }}-psr"
 
       - name: "Setup composer & install dependencies"
         uses: "ramsey/composer-install@v2"
@@ -235,6 +244,9 @@ jobs:
       - name: "Setup problem matchers for PHP"
         run: 'echo "::add-matcher::${{ runner.tool_cache }}/php.json"'
 
+      - name: "Remove PSR extension"
+        run: "sudo apt remove php${{ matrix.php-version }}-psr"
+
       - name: "Setup composer & install dependencies"
         uses: "ramsey/composer-install@v2"
         with:
@@ -302,6 +314,9 @@ jobs:
 
       - name: "Setup problem matchers for PHP"
         run: 'echo "::add-matcher::${{ runner.tool_cache }}/php.json"'
+
+      - name: "Remove PSR extension"
+        run: "sudo apt remove php${{ matrix.php-version }}-psr"
 
       - name: "Setup composer & install dependencies"
         uses: "ramsey/composer-install@v2"
@@ -372,6 +387,9 @@ jobs:
 
       - name: "Setup problem matchers for PHP"
         run: 'echo "::add-matcher::${{ runner.tool_cache }}/php.json"'
+
+      - name: "Remove PSR extension"
+        run: "sudo apt remove php${{ matrix.php-version }}-psr"
 
       - name: "Setup composer & install dependencies"
         uses: "ramsey/composer-install@v2"
