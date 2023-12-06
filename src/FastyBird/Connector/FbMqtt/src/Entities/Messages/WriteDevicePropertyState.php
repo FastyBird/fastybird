@@ -6,14 +6,14 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:SonoffConnector!
+ * @package        FastyBird:FbMqttConnector!
  * @subpackage     Entities
  * @since          1.0.0
  *
  * @date           16.08.23
  */
 
-namespace FastyBird\Connector\Sonoff\Entities\Messages;
+namespace FastyBird\Connector\FbMqtt\Entities\Messages;
 
 use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use Ramsey\Uuid;
@@ -21,7 +21,7 @@ use Ramsey\Uuid;
 /**
  * Write updated device property state to hardware message entity
  *
- * @package        FastyBird:SonoffConnector!
+ * @package        FastyBird:FbMqttConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

@@ -15,12 +15,10 @@
 
 namespace FastyBird\Connector\FbMqtt\Entities\Messages;
 
-use FastyBird\Connector\FbMqtt\Exceptions;
 use FastyBird\Connector\FbMqtt\Types;
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use Orisai\ObjectMapper;
 use Ramsey\Uuid;
-use function array_merge;
-use function in_array;
-use function sprintf;
 
 /**
  * Device extension attribute
@@ -30,7 +28,7 @@ use function sprintf;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ExtensionAttribute extends Entity
+final class ExtensionAttribute implements Entity
 {
 
 	public const MAC_ADDRESS = 'mac-address';
@@ -51,24 +49,31 @@ final class ExtensionAttribute extends Entity
 		self::NAME,
 	];
 
-	/**
-	 * @throws Exceptions\InvalidArgument
-	 */
 	public function __construct(
-		Uuid\UuidInterface $connector,
-		string $device,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $connector,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		private readonly string $device,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\ExtensionType::class)]
 		private readonly Types\ExtensionType $extension,
+		#[ObjectMapper\Rules\ArrayEnumValue(cases: self::ALLOWED_PARAMETERS)]
 		private readonly string $parameter,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $value,
+		#[ObjectMapper\Rules\BoolValue()]
+		private readonly bool $retained = false,
 	)
 	{
-		if (!in_array($parameter, self::ALLOWED_PARAMETERS, true)) {
-			throw new Exceptions\InvalidArgument(
-				sprintf('Provided extension attribute "%s" is not in allowed range', $parameter),
-			);
-		}
+	}
 
-		parent::__construct($connector, $device);
+	public function getConnector(): Uuid\UuidInterface
+	{
+		return $this->connector;
+	}
+
+	public function getDevice(): string
+	{
+		return $this->device;
 	}
 
 	public function getExtension(): Types\ExtensionType
@@ -86,14 +91,19 @@ final class ExtensionAttribute extends Entity
 		return $this->value;
 	}
 
+	public function isRetained(): bool
+	{
+		return $this->retained;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
 	public function toArray(): array
 	{
-		return array_merge([
+		return [
 			$this->getParameter() => $this->getValue(),
-		], parent::toArray());
+		];
 	}
 
 }

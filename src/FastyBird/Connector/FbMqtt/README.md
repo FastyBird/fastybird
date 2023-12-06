@@ -1,13 +1,17 @@
+<p align="center">
+	<img src="https://github.com/fastybird/.github/blob/main/assets/repo_title.png?raw=true" alt="FastyBird"/>
+</p>
+
 # FastyBird IoT MQTT connector
 
-[![Build Status](https://badgen.net/github/checks/FastyBird/fb-mqtt-connector/main?cache=300&style=flast-square)](https://github.com/FastyBird/fb-mqtt-connector/actions)
-[![Licence](https://badgen.net/github/license/FastyBird/fb-mqtt-connector?cache=300&style=flast-square)](https://github.com/FastyBird/fb-mqtt-connector/blob/main/LICENSE.md)
-[![Code coverage](https://badgen.net/coveralls/c/github/FastyBird/fb-mqtt-connector?cache=300&style=flast-square)](https://coveralls.io/r/FastyBird/fb-mqtt-connector)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/FastyBird/fb-mqtt-connector/ci.yaml?style=flat-square)](https://github.com/FastyBird/fb-mqtt-connector/actions)
+[![Licence](https://img.shields.io/github/license/FastyBird/fb-mqtt-connector?style=flat-square)](https://github.com/FastyBird/fb-mqtt-connector/blob/main/LICENSE.md)
+[![Code coverage](https://img.shields.io/coverallsCoverage/github/FastyBird/fb-mqtt-connector?style=flat-square)](https://coveralls.io/r/FastyBird/fb-mqtt-connector)
 [![Mutation testing](https://img.shields.io/endpoint?style=flat-square&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2FFastyBird%2Ffb-mqtt-connector%2Fmain)](https://dashboard.stryker-mutator.io/reports/github.com/FastyBird/fb-mqtt-connector/main)
 
-![PHP](https://badgen.net/packagist/php/FastyBird/fb-mqtt-connector?cache=300&style=flast-square)
-[![Latest stable](https://badgen.net/packagist/v/FastyBird/fb-mqtt-connector/latest?cache=300&style=flast-square)](https://packagist.org/packages/FastyBird/fb-mqtt-connector)
-[![Downloads total](https://badgen.net/packagist/dt/FastyBird/fb-mqtt-connector?cache=300&style=flast-square)](https://packagist.org/packages/FastyBird/fb-mqtt-connector)
+![PHP](https://badgen.net/packagist/php/FastyBird/fb-mqtt-connector?cache=300&style=flat-square)
+[![Latest stable](https://badgen.net/packagist/v/FastyBird/fb-mqtt-connector/latest?cache=300&style=flat-square)](https://packagist.org/packages/FastyBird/fb-mqtt-connector)
+[![Downloads total](https://badgen.net/packagist/dt/FastyBird/fb-mqtt-connector?cache=300&style=flat-square)](https://packagist.org/packages/FastyBird/fb-mqtt-connector)
 [![PHPStan](https://img.shields.io/badge/PHPStan-enabled-brightgreen.svg?style=flat-square)](https://github.com/phpstan/phpstan)
 
 ***
@@ -18,16 +22,16 @@ FastyBird MQTT connector is extension for [FastyBird](https://www.fastybird.com)
 which is integrating [MQTT](https://mqtt.org) protocol
 via [FastyBird MQTT Convention](https://github.com/FastyBird/mqtt-convention) for connected devices.
 
-FastyBird MQTT Connector is a distributed extension that is developed in [PHP](https://www.php.net), built on the [Nette](https://nette.org) and [Symfony](https://symfony.com) frameworks,
-and is licensed under [Apache2](http://www.apache.org/licenses/LICENSE-2.0).
-
 ### Features:
 
 - [FastyBird MQTT v1 convention](https://github.com/FastyBird/mqtt-convention) devices support
 - Integration with the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) [devices module](https://github.com/FastyBird/devices-module) for easy management and monitoring of Modbus devices
 - Advanced device management features, such as controlling power status, measuring energy consumption, and reading sensor data
-- [{JSON:API}](https://jsonapi.org/) schemas for full API access, providing a standardized and consistent way for developers to access and manipulate Shelly device data
-- Regular updates with new features and bug fixes, ensuring that the Shelly Connector is always up-to-date and reliable.
+- [{JSON:API}](https://jsonapi.org/) schemas for full API access, providing a standardized and consistent way for developers to access and manipulate FB MQTT powered device data
+- Regular updates with new features and bug fixes, ensuring that the FB MQTT Connector is always up-to-date and reliable.
+
+FastyBird MQTT Connector is a distributed extension that is developed in [PHP](https://www.php.net), built on the [Nette](https://nette.org) and [Symfony](https://symfony.com) frameworks,
+and is licensed under [Apache2](http://www.apache.org/licenses/LICENSE-2.0).
 
 ## Requirements
 
@@ -36,18 +40,12 @@ PHP extension.
 
 ## Installation
 
-### Manual installation
-
-The best way to install **fastybird/fb-mqtt-connector** is using [Composer](http://getcomposer.org/):
+This extension is part of the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem and is installed by default.
+In case you want to create you own distribution of [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem you could install this extension with  [Composer](http://getcomposer.org/):
 
 ```sh
 composer require fastybird/fb-mqtt-connector
 ```
-
-### Marketplace installation [WIP]
-
-You could install this connector in your [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things)
-application under marketplace section.
 
 ## Documentation
 

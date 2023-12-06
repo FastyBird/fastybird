@@ -15,16 +15,24 @@
 
 namespace FastyBird\Connector\FbMqtt\Connector;
 
+use FastyBird\Connector\FbMqtt;
 use FastyBird\Connector\FbMqtt\Clients;
-use FastyBird\Connector\FbMqtt\Consumers;
 use FastyBird\Connector\FbMqtt\Entities;
 use FastyBird\Connector\FbMqtt\Exceptions;
+use FastyBird\Connector\FbMqtt\Helpers;
+use FastyBird\Connector\FbMqtt\Queue;
+use FastyBird\Connector\FbMqtt\Writers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Connectors as DevicesConnectors;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
+use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use InvalidArgumentException;
 use Nette;
+use Psr\EventDispatcher as PsrEventDispatcher;
 use React\EventLoop;
 use ReflectionClass;
 use function array_key_exists;
@@ -46,9 +54,11 @@ final class Connector implements DevicesConnectors\Connector
 
 	private const QUEUE_PROCESSING_INTERVAL = 0.01;
 
-	private Clients\Client|null $client = null;
+	private FbMqtt\Clients\Client|null $client = null;
 
-	private EventLoop\TimerInterface|null $consumerTimer = null;
+	private Writers\Writer|null $writer = null;
+
+	private EventLoop\TimerInterface|null $consumersTimer = null;
 
 	/**
 	 * @param array<Clients\ClientFactory> $clientsFactories
@@ -56,14 +66,20 @@ final class Connector implements DevicesConnectors\Connector
 	public function __construct(
 		private readonly DevicesEntities\Connectors\Connector $connector,
 		private readonly array $clientsFactories,
-		private readonly Consumers\Messages $consumer,
+		private readonly Helpers\Connector $connectorHelper,
+		private readonly Writers\WriterFactory $writerFactory,
+		private readonly Queue\Queue $queue,
+		private readonly Queue\Consumers $consumers,
+		private readonly FbMqtt\Logger $logger,
+		private readonly DevicesModels\Configuration\Connectors\Repository $connectorsConfigurationRepository,
 		private readonly EventLoop\LoopInterface $eventLoop,
+		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
 	}
 
 	/**
-	 * @throws DevicesExceptions\Terminate
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws InvalidArgumentException
 	 * @throws MetadataExceptions\InvalidArgument
@@ -73,6 +89,39 @@ final class Connector implements DevicesConnectors\Connector
 	{
 		assert($this->connector instanceof Entities\FbMqttConnector);
 
+		$this->logger->info(
+			'Starting FB MQTT connector service',
+			[
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+				'type' => 'connector',
+				'connector' => [
+					'id' => $this->connector->getId()->toString(),
+				],
+			],
+		);
+
+		$findConnector = new DevicesQueries\Configuration\FindConnectors();
+		$findConnector->byId($this->connector->getId());
+
+		$connector = $this->connectorsConfigurationRepository->findOneBy($findConnector);
+
+		if ($connector === null) {
+			$this->logger->error(
+				'Connector could not be loaded',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+					'type' => 'connector',
+					'connector' => [
+						'id' => $this->connector->getId()->toString(),
+					],
+				],
+			);
+
+			return;
+		}
+
+		$version = $this->connectorHelper->getProtocolVersion($connector);
+
 		foreach ($this->clientsFactories as $clientFactory) {
 			$rc = new ReflectionClass($clientFactory);
 
@@ -80,45 +129,88 @@ final class Connector implements DevicesConnectors\Connector
 
 			if (
 				array_key_exists(Clients\ClientFactory::VERSION_CONSTANT_NAME, $constants)
-				&& $this->connector->getProtocolVersion()->equalsValue(
-					$constants[Clients\ClientFactory::VERSION_CONSTANT_NAME],
-				)
+				&& $version->equalsValue($constants[Clients\ClientFactory::VERSION_CONSTANT_NAME])
 			) {
-				$this->client = $clientFactory->create($this->connector);
+				$this->client = $clientFactory->create($connector);
 			}
 		}
 
 		if ($this->client === null) {
-			throw new DevicesExceptions\Terminate('Connector client is not configured');
+			$this->dispatcher?->dispatch(
+				new DevicesEvents\TerminateConnector(
+					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT),
+					'Connector protocol version is not configured',
+				),
+			);
+
+			return;
 		}
 
 		$this->client->connect();
 
-		$this->consumerTimer = $this->eventLoop->addPeriodicTimer(
+		$this->writer = $this->writerFactory->create($connector);
+		$this->writer->connect();
+
+		$this->consumersTimer = $this->eventLoop->addPeriodicTimer(
 			self::QUEUE_PROCESSING_INTERVAL,
 			async(function (): void {
-				$this->consumer->consume();
+				$this->consumers->consume();
 			}),
+		);
+
+		$this->logger->info(
+			'FB MQTT connector service has been started',
+			[
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+				'type' => 'connector',
+				'connector' => [
+					'id' => $connector->getId()->toString(),
+				],
+			],
 		);
 	}
 
 	public function discover(): void
 	{
-		// TODO: Implement it
+		assert($this->connector instanceof Entities\FbMqttConnector);
+
+		$this->logger->error(
+			'Devices discovery is not allowed for FB MQTT connector type',
+			[
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+				'type' => 'connector',
+				'connector' => [
+					'id' => $this->connector->getId()->toString(),
+				],
+			],
+		);
 	}
 
 	public function terminate(): void
 	{
 		$this->client?->disconnect();
 
-		if ($this->consumerTimer !== null) {
-			$this->eventLoop->cancelTimer($this->consumerTimer);
+		$this->writer?->disconnect();
+
+		if ($this->consumersTimer !== null && $this->queue->isEmpty()) {
+			$this->eventLoop->cancelTimer($this->consumersTimer);
 		}
+
+		$this->logger->info(
+			'FB MQTT connector has been terminated',
+			[
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+				'type' => 'connector',
+				'connector' => [
+					'id' => $this->connector->getId()->toString(),
+				],
+			],
+		);
 	}
 
 	public function hasUnfinishedTasks(): bool
 	{
-		return !$this->consumer->isEmpty() && $this->consumerTimer !== null;
+		return !$this->queue->isEmpty() && $this->consumersTimer !== null;
 	}
 
 }

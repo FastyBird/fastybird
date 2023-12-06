@@ -15,9 +15,6 @@
 
 namespace FastyBird\Connector\FbMqtt\Writers;
 
-use FastyBird\Connector\FbMqtt\Clients;
-use FastyBird\Connector\FbMqtt\Entities;
-
 /**
  * Properties writer interface
  *
@@ -29,14 +26,8 @@ use FastyBird\Connector\FbMqtt\Entities;
 interface Writer
 {
 
-	public function connect(
-		Entities\FbMqttConnector $connector,
-		Clients\Client $client,
-	): void;
+	public function connect(): void;
 
-	public function disconnect(
-		Entities\FbMqttConnector $connector,
-		Clients\Client $client,
-	): void;
+	public function disconnect(): void;
 
 }

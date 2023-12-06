@@ -13,9 +13,10 @@
  * @date           05.02.22
  */
 
-namespace FastyBird\Connector\FbMqtt\Consumers\Messages;
+namespace FastyBird\Connector\FbMqtt\Queue\Consumers;
 
 use FastyBird\Connector\FbMqtt\Entities;
+use FastyBird\Connector\FbMqtt\Exceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use function array_merge;
 use function boolval;
@@ -35,6 +36,8 @@ trait TProperty
 
 	/**
 	 * @return array<string, (string|array<string>|array<float>|array<null>|bool|MetadataTypes\DataType|null)>
+	 *
+	 * @throws Exceptions\ParseMessage
 	 */
 	protected function handlePropertyConfiguration(
 		Entities\Messages\Property $entity,

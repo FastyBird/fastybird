@@ -33,41 +33,35 @@ class DevicePropertyIdentifier extends Consistence\Enum\Enum
 	/**
 	 * Define device states
 	 */
-	public const IDENTIFIER_STATE = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_STATE;
+	public const STATE = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_STATE;
 
-	public const IDENTIFIER_IP_ADDRESS = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS;
+	public const IP_ADDRESS = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS;
 
-	public const IDENTIFIER_STATUS_LED = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_STATUS_LED;
+	public const STATUS_LED = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_STATUS_LED;
 
-	public const IDENTIFIER_UPTIME = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_UPTIME;
+	public const UPTIME = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_UPTIME;
 
-	public const IDENTIFIER_FREE_HEAP = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_FREE_HEAP;
+	public const FREE_HEAP = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_FREE_HEAP;
 
-	public const IDENTIFIER_CPU_LOAD = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_CPU_LOAD;
+	public const CPU_LOAD = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_CPU_LOAD;
 
-	public const IDENTIFIER_VCC = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_VCC;
+	public const VCC = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_VCC;
 
-	public const IDENTIFIER_RSSI = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_RSSI;
+	public const RSSI = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_RSSI;
 
-	public const IDENTIFIER_HARDWARE_MAC_ADDRESS = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS;
+	public const HARDWARE_MAC_ADDRESS = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS;
 
-	public const IDENTIFIER_HARDWARE_MANUFACTURER = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MANUFACTURER;
+	public const HARDWARE_MANUFACTURER = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MANUFACTURER;
 
-	public const IDENTIFIER_HARDWARE_MODEL = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL;
+	public const HARDWARE_MODEL = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL;
 
-	public const IDENTIFIER_HARDWARE_VERSION = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_VERSION;
+	public const HARDWARE_VERSION = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_VERSION;
 
-	public const IDENTIFIER_FIRMWARE_MANUFACTURER = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_MANUFACTURER;
+	public const FIRMWARE_MANUFACTURER = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_MANUFACTURER;
 
-	public const IDENTIFIER_FIRMWARE_NAME = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_NAME;
+	public const FIRMWARE_NAME = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_NAME;
 
-	public const IDENTIFIER_FIRMWARE_VERSION = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_VERSION;
-
-	public const IDENTIFIER_USERNAME = 'username';
-
-	public const IDENTIFIER_PASSWORD = 'password';
-
-	public const IDENTIFIER_AUTH_ENABLED = 'auth_enabled';
+	public const FIRMWARE_VERSION = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_VERSION;
 
 	public function __toString(): string
 	{

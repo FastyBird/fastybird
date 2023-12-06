@@ -16,28 +16,20 @@
 namespace FastyBird\Connector\FbMqtt\Writers;
 
 use DateTimeInterface;
-use FastyBird\Connector\FbMqtt\Clients;
 use FastyBird\Connector\FbMqtt\Entities;
+use FastyBird\Connector\FbMqtt\Exceptions;
 use FastyBird\Connector\FbMqtt\Helpers;
+use FastyBird\Connector\FbMqtt\Queue;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
-use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
-use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
-use Nette\Utils;
-use Psr\Log;
-use Ramsey\Uuid;
 use React\EventLoop;
-use Throwable;
 use function array_key_exists;
-use function assert;
 use function in_array;
 
 /**
@@ -48,20 +40,24 @@ use function in_array;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Periodic implements Writer
+abstract class Periodic
 {
 
 	use Nette\SmartObject;
 
-	public const NAME = 'periodic';
-
 	private const HANDLER_START_DELAY = 5.0;
 
-	private const HANDLER_DEBOUNCE_INTERVAL = 500.0;
+	private const HANDLER_DEBOUNCE_INTERVAL = 2_500.0;
 
 	private const HANDLER_PROCESSING_INTERVAL = 0.01;
 
 	private const HANDLER_PENDING_DELAY = 2_000.0;
+
+	/** @var array<string, MetadataDocuments\DevicesModule\Device>  */
+	private array $devices = [];
+	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+	/** @var array<string, array<string, MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\ChannelDynamicProperty>>  */
+	private array $properties = [];
 
 	/** @var array<string> */
 	private array $processedDevices = [];
@@ -69,35 +65,77 @@ class Periodic implements Writer
 	/** @var array<string, DateTimeInterface> */
 	private array $processedProperties = [];
 
-	/** @var array<string, Clients\Client> */
-	private array $clients = [];
-
 	private EventLoop\TimerInterface|null $handlerTimer = null;
 
 	public function __construct(
-		private readonly Helpers\Property $propertyStateHelper,
-		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
-		private readonly DevicesModels\Entities\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
-		private readonly DevicesModels\Entities\Channels\ChannelsRepository $channelsRepository,
-		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
+		protected readonly MetadataDocuments\DevicesModule\Connector $connector,
+		protected readonly Helpers\Entity $entityHelper,
+		protected readonly Queue\Queue $queue,
+		protected readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
+		protected readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
+		private readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
+		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
 		private readonly DevicesUtilities\DevicePropertiesStates $devicePropertiesStatesManager,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
 	}
 
-	public function connect(
-		Entities\FbMqttConnector $connector,
-		Clients\Client $client,
-	): void
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 */
+	public function connect(): void
 	{
-		$this->clients[$connector->getPlainId()] = $client;
-
 		$this->processedDevices = [];
 		$this->processedProperties = [];
+
+		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDevicesQuery->forConnector($this->connector);
+
+		foreach ($this->devicesConfigurationRepository->findAllBy($findDevicesQuery) as $device) {
+			$this->devices[$device->getId()->toString()] = $device;
+
+			if (!array_key_exists($device->getId()->toString(), $this->properties)) {
+				$this->properties[$device->getId()->toString()] = [];
+			}
+
+			$findDevicePropertiesQuery = new DevicesQueries\Configuration\FindDeviceDynamicProperties();
+			$findDevicePropertiesQuery->forDevice($device);
+
+			$properties = $this->devicesPropertiesConfigurationRepository->findAllBy(
+				$findDevicePropertiesQuery,
+				MetadataDocuments\DevicesModule\DeviceDynamicProperty::class,
+			);
+
+			foreach ($properties as $property) {
+				if ($property->isSettable()) {
+					$this->properties[$device->getId()->toString()][$property->getId()->toString()] = $property;
+				}
+			}
+
+			$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
+			$findChannelsQuery->forDevice($device);
+
+			$channels = $this->channelsConfigurationRepository->findAllBy($findChannelsQuery);
+
+			foreach ($channels as $channel) {
+				$findChannelPropertiesQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
+				$findChannelPropertiesQuery->forChannel($channel);
+
+				$properties = $this->channelsPropertiesConfigurationRepository->findAllBy(
+					$findChannelPropertiesQuery,
+					MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
+				);
+
+				foreach ($properties as $property) {
+					if ($property->isSettable()) {
+						$this->properties[$device->getId()->toString()][$property->getId()->toString()] = $property;
+					}
+				}
+			}
+		}
 
 		$this->eventLoop->addTimer(
 			self::HANDLER_START_DELAY,
@@ -107,14 +145,9 @@ class Periodic implements Writer
 		);
 	}
 
-	public function disconnect(
-		Entities\FbMqttConnector $connector,
-		Clients\Client $client,
-	): void
+	public function disconnect(): void
 	{
-		unset($this->clients[$connector->getPlainId()]);
-
-		if ($this->clients === [] && $this->handlerTimer !== null) {
+		if ($this->handlerTimer !== null) {
 			$this->eventLoop->cancelTimer($this->handlerTimer);
 
 			$this->handlerTimer = null;
@@ -124,38 +157,21 @@ class Periodic implements Writer
 	/**
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function handleCommunication(): void
 	{
-		foreach ($this->clients as $id => $client) {
-			$findDevicesQuery = new DevicesQueries\Entities\FindDevices();
-			$findDevicesQuery->byConnectorId(Uuid\Uuid::fromString($id));
+		foreach ($this->devices as $device) {
+			if (!in_array($device->getId()->toString(), $this->processedDevices, true)) {
+				$this->processedDevices[] = $device->getId()->toString();
 
-			foreach ($this->devicesRepository->findAllBy($findDevicesQuery) as $device) {
-				assert($device instanceof Entities\FbMqttDevice);
+				if ($this->writeProperty($device)) {
+					$this->registerLoopHandler();
 
-				if (
-					!in_array($device->getPlainId(), $this->processedDevices, true)
-					&& $this->deviceConnectionManager->getState($device)->equalsValue(
-						MetadataTypes\ConnectionState::STATE_CONNECTED,
-					)
-				) {
-					$this->processedDevices[] = $device->getPlainId();
-
-					if ($this->writeDevicesProperty($client, $device)) {
-						$this->registerLoopHandler();
-
-						return;
-					}
-
-					if ($this->writeChannelsProperty($client, $device)) {
-						$this->registerLoopHandler();
-
-						return;
-					}
+					return;
 				}
 			}
 		}
@@ -168,108 +184,39 @@ class Periodic implements Writer
 	/**
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
 	 */
-	private function writeDevicesProperty(
-		Clients\Client $client,
-		Entities\FbMqttDevice $device,
-	): bool
+	private function writeProperty(MetadataDocuments\DevicesModule\Device $device): bool
 	{
 		$now = $this->dateTimeFactory->getNow();
 
-		$findDevicePropertiesQuery = new DevicesQueries\Entities\FindDeviceProperties();
-		$findDevicePropertiesQuery->forDevice($device);
+		if (!array_key_exists($device->getId()->toString(), $this->properties)) {
+			return false;
+		}
 
-		foreach ($this->devicePropertiesRepository->findAllBy($findDevicePropertiesQuery) as $property) {
-			if (!$property instanceof DevicesEntities\Devices\Properties\Dynamic) {
-				continue;
-			}
-
-			$state = $this->devicePropertiesStatesManager->getValue($property);
-
-			if ($state === null) {
-				continue;
-			}
-
-			$expectedValue = MetadataUtilities\ValueHelper::flattenValue($state->getExpectedValue());
+		foreach ($this->properties[$device->getId()->toString()] as $property) {
+			$debounce = array_key_exists($property->getId()->toString(), $this->processedProperties)
+				? $this->processedProperties[$property->getId()->toString()]
+				: false;
 
 			if (
-				$property->isSettable()
-				&& $expectedValue !== null
-				&& $state->isPending() === true
+				$debounce !== false
+				&& (float) $now->format('Uv') - (float) $debounce->format('Uv') < self::HANDLER_DEBOUNCE_INTERVAL
 			) {
-				$debounce = array_key_exists(
-					$property->getPlainId(),
-					$this->processedProperties,
-				)
-					? $this->processedProperties[$property->getPlainId()]
-					: false;
+				continue;
+			}
 
-				if (
-					$debounce !== false
-					&& (float) $now->format('Uv') - (float) $debounce->format(
-						'Uv',
-					) < self::HANDLER_DEBOUNCE_INTERVAL
-				) {
-					continue;
+			$this->processedProperties[$property->getId()->toString()] = $now;
+
+			if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
+				if ($this->writeDeviceProperty($device, $property)) {
+					return true;
 				}
-
-				unset($this->processedProperties[$property->getPlainId()]);
-
-				$pending = $state->getPending();
-
-				if (
-					$pending === true
-					|| (
-						$pending instanceof DateTimeInterface
-						&& (float) $now->format('Uv') - (float) $pending->format('Uv') > self::HANDLER_PENDING_DELAY
-					)
-				) {
-					$this->processedProperties[$property->getPlainId()] = $now;
-
-					$client->writeDeviceProperty($device, $property)
-						->then(function () use ($property): void {
-							$this->propertyStateHelper->setValue(
-								$property,
-								Utils\ArrayHash::from([
-									DevicesStates\Property::PENDING_FIELD => $this->dateTimeFactory->getNow()->format(
-										DateTimeInterface::ATOM,
-									),
-								]),
-							);
-
-							unset($this->processedProperties[$property->getPlainId()]);
-						})
-						->catch(function (Throwable $ex) use ($device, $property): void {
-							$this->logger->error(
-								'Could write new device property state',
-								[
-									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
-									'type' => 'periodic-writer',
-									'exception' => BootstrapHelpers\Logger::buildException($ex),
-									'connector' => [
-										'id' => $device->getConnector()->getPlainId(),
-									],
-									'device' => [
-										'id' => $device->getPlainId(),
-									],
-									'property' => [
-										'id' => $property->getPlainId(),
-									],
-								],
-							);
-
-							$this->propertyStateHelper->setValue(
-								$property,
-								Utils\ArrayHash::from([
-									DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
-									DevicesStates\Property::PENDING_FIELD => false,
-								]),
-							);
-						});
-
+			} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+				if ($this->writeChannelProperty($device, $property)) {
 					return true;
 				}
 			}
@@ -281,116 +228,101 @@ class Periodic implements Writer
 	/**
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
 	 */
-	private function writeChannelsProperty(
-		Clients\Client $client,
-		Entities\FbMqttDevice $device,
+	private function writeDeviceProperty(
+		MetadataDocuments\DevicesModule\Device $device,
+		MetadataDocuments\DevicesModule\DeviceDynamicProperty $property,
 	): bool
 	{
 		$now = $this->dateTimeFactory->getNow();
 
-		$findChannelsQuery = new DevicesQueries\Entities\FindChannels();
-		$findChannelsQuery->forDevice($device);
+		$state = $this->devicePropertiesStatesManager->getValue($property);
 
-		foreach ($this->channelsRepository->findAllBy($findChannelsQuery) as $channel) {
-			foreach ($channel->getProperties() as $property) {
-				if (!$property instanceof DevicesEntities\Channels\Properties\Dynamic) {
-					continue;
-				}
+		if ($state === null) {
+			return false;
+		}
 
-				$state = $this->channelPropertiesStatesManager->getValue($property);
+		if ($state->getExpectedValue() === null) {
+			return false;
+		}
 
-				if ($state === null) {
-					continue;
-				}
+		$pending = $state->getPending();
 
-				$expectedValue = MetadataUtilities\ValueHelper::flattenValue($state->getExpectedValue());
+		if (
+			$pending === true
+			|| (
+				$pending instanceof DateTimeInterface
+				&& (float) $now->format('Uv') - (float) $pending->format('Uv') > self::HANDLER_PENDING_DELAY
+			)
+		) {
+			$this->queue->append(
+				$this->entityHelper->create(
+					Entities\Messages\WriteDevicePropertyState::class,
+					[
+						'connector' => $device->getConnector(),
+						'device' => $device->getId(),
+						'property' => $property->getId(),
+					],
+				),
+			);
 
-				if (
-					$property->isSettable()
-					&& $expectedValue !== null
-					&& $state->isPending() === true
-				) {
-					$debounce = array_key_exists(
-						$property->getPlainId(),
-						$this->processedProperties,
-					)
-						? $this->processedProperties[$property->getPlainId()]
-						: false;
+			return true;
+		}
 
-					if (
-						$debounce !== false
-						&& (float) $now->format('Uv') - (float) $debounce->format(
-							'Uv',
-						) < self::HANDLER_DEBOUNCE_INTERVAL
-					) {
-						continue;
-					}
+		return false;
+	}
 
-					unset($this->processedProperties[$property->getPlainId()]);
+	/**
+	 * @throws DevicesExceptions\InvalidArgument
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\Runtime
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
+	 */
+	private function writeChannelProperty(
+		MetadataDocuments\DevicesModule\Device $device,
+		MetadataDocuments\DevicesModule\ChannelDynamicProperty $property,
+	): bool
+	{
+		$now = $this->dateTimeFactory->getNow();
 
-					$pending = $state->getPending();
+		$state = $this->channelPropertiesStatesManager->getValue($property);
 
-					if (
-						$pending === true
-						|| (
-							$pending instanceof DateTimeInterface
-							&& (float) $now->format('Uv') - (float) $pending->format('Uv') > self::HANDLER_PENDING_DELAY
-						)
-					) {
-						$this->processedProperties[$property->getPlainId()] = $now;
+		if ($state === null) {
+			return false;
+		}
 
-						$client->writeChannelProperty($device, $channel, $property)
-							->then(function () use ($property): void {
-								$this->propertyStateHelper->setValue(
-									$property,
-									Utils\ArrayHash::from([
-										DevicesStates\Property::PENDING_FIELD => $this->dateTimeFactory->getNow()->format(
-											DateTimeInterface::ATOM,
-										),
-									]),
-								);
+		if ($state->getExpectedValue() === null) {
+			return false;
+		}
 
-								unset($this->processedProperties[$property->getPlainId()]);
-							})
-							->catch(function (Throwable $ex) use ($device, $channel, $property): void {
-								$this->logger->error(
-									'Could write new channel property state',
-									[
-										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
-										'type' => 'periodic-writer',
-										'exception' => BootstrapHelpers\Logger::buildException($ex),
-										'connector' => [
-											'id' => $device->getConnector()->getPlainId(),
-										],
-										'device' => [
-											'id' => $device->getPlainId(),
-										],
-										'channel' => [
-											'id' => $channel->getPlainId(),
-										],
-										'property' => [
-											'id' => $property->getPlainId(),
-										],
-									],
-								);
+		$pending = $state->getPending();
 
-								$this->propertyStateHelper->setValue(
-									$property,
-									Utils\ArrayHash::from([
-										DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
-										DevicesStates\Property::PENDING_FIELD => false,
-									]),
-								);
-							});
+		if (
+			$pending === true
+			|| (
+				$pending instanceof DateTimeInterface
+				&& (float) $now->format('Uv') - (float) $pending->format('Uv') > self::HANDLER_PENDING_DELAY
+			)
+		) {
+			$this->queue->append(
+				$this->entityHelper->create(
+					Entities\Messages\WriteChannelPropertyState::class,
+					[
+						'connector' => $device->getConnector(),
+						'device' => $device->getId(),
+						'channel' => $property->getChannel(),
+						'property' => $property->getId(),
+					],
+				),
+			);
 
-						return true;
-					}
-				}
-			}
+			return true;
 		}
 
 		return false;

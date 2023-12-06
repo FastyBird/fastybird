@@ -120,7 +120,7 @@ final class Connector implements DevicesConnectors\Connector
 			$this->logger->error(
 				'Connector could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 					'type' => 'connector',
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),

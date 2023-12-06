@@ -63,7 +63,7 @@ final class V1Validator
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 	public const CHANNEL_PROPERTY_REGEXP = '/\/(.*)\/\$channel\/([a-z0-9-]+)\/\$property\/([a-z0-9-]+)((\/\$)(name|settable|queryable|data-type|format|unit))?$/';
 
-	public function validate(string $topic): bool
+	public static function validate(string $topic): bool
 	{
 		// Check if message is sent from broker
 		if (str_contains(
@@ -74,38 +74,38 @@ final class V1Validator
 		}
 
 		// Check for valid convention prefix
-		if (!$this->validateConvention($topic)) {
+		if (!self::validateConvention($topic)) {
 			return false;
 		}
 
 		// Check for valid version V1
-		if (!$this->validateVersion($topic)) {
+		if (!self::validateVersion($topic)) {
 			return false;
 		}
 
-		if ($this->validateDeviceAttribute($topic)) {
+		if (self::validateDeviceAttribute($topic)) {
 			return true;
 		}
 
-		if ($this->validateDeviceHardwareInfo($topic)) {
+		if (self::validateDeviceHardwareInfo($topic)) {
 			return true;
 		}
 
-		if ($this->validateDeviceFirmwareInfo($topic)) {
+		if (self::validateDeviceFirmwareInfo($topic)) {
 			return true;
 		}
 
-		if ($this->validateDeviceProperty($topic)) {
+		if (self::validateDeviceProperty($topic)) {
 			return true;
 		}
 
 		// Check for channel topics
-		if ($this->validateChannelPart($topic)) {
-			if ($this->validateChannelAttribute($topic)) {
+		if (self::validateChannelPart($topic)) {
+			if (self::validateChannelAttribute($topic)) {
 				return true;
 			}
 
-			if ($this->validateChannelProperty($topic)) {
+			if (self::validateChannelProperty($topic)) {
 				return true;
 			}
 		}
@@ -113,49 +113,49 @@ final class V1Validator
 		return false;
 	}
 
-	public function validateConvention(string $topic): bool
+	public static function validateConvention(string $topic): bool
 	{
 		return preg_match(self::CONVENTION_PREFIX_REGEXP, $topic) === 1;
 	}
 
-	public function validateVersion(string $topic): bool
+	public static function validateVersion(string $topic): bool
 	{
 		return preg_match(self::API_VERSION_REGEXP, $topic) === 1;
 	}
 
-	public function validateDeviceAttribute(string $topic): bool
+	public static function validateDeviceAttribute(string $topic): bool
 	{
 		return preg_match(self::DEVICE_ATTRIBUTE_REGEXP, $topic) === 1;
 	}
 
-	public function validateDeviceHardwareInfo(string $topic): bool
+	public static function validateDeviceHardwareInfo(string $topic): bool
 	{
 		return preg_match(self::DEVICE_HW_INFO_REGEXP, $topic) === 1;
 	}
 
-	public function validateDeviceFirmwareInfo(string $topic): bool
+	public static function validateDeviceFirmwareInfo(string $topic): bool
 	{
 		return preg_match(self::DEVICE_FW_INFO_REGEXP, $topic) === 1;
 	}
 
-	public function validateDeviceProperty(string $topic): bool
+	public static function validateDeviceProperty(string $topic): bool
 	{
 		return preg_match(self::DEVICE_PROPERTY_REGEXP, $topic) === 1;
 	}
 
-	public function validateChannelPart(string $topic): bool
+	public static function validateChannelPart(string $topic): bool
 	{
 		return preg_match(self::CHANNEL_PARTIAL_REGEXP, $topic) === 1;
 	}
 
-	public function validateChannelAttribute(string $topic): bool
+	public static function validateChannelAttribute(string $topic): bool
 	{
-		return $this->validateChannelPart($topic) && preg_match(self::CHANNEL_ATTRIBUTE_REGEXP, $topic) === 1;
+		return self::validateChannelPart($topic) && preg_match(self::CHANNEL_ATTRIBUTE_REGEXP, $topic) === 1;
 	}
 
-	public function validateChannelProperty(string $topic): bool
+	public static function validateChannelProperty(string $topic): bool
 	{
-		return $this->validateChannelPart($topic) && preg_match(self::CHANNEL_PROPERTY_REGEXP, $topic) === 1;
+		return self::validateChannelPart($topic) && preg_match(self::CHANNEL_PROPERTY_REGEXP, $topic) === 1;
 	}
 
 }

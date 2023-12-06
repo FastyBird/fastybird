@@ -33,17 +33,17 @@ class ConnectorPropertyIdentifier extends Consistence\Enum\Enum
 	/**
 	 * Define device states
 	 */
-	public const IDENTIFIER_SERVER = MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_SERVER;
+	public const SERVER = MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_SERVER;
 
-	public const IDENTIFIER_PORT = MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_PORT;
+	public const PORT = MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_PORT;
 
-	public const IDENTIFIER_SECURED_PORT = MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_SECURED_PORT;
+	public const SECURED_PORT = MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_SECURED_PORT;
 
-	public const IDENTIFIER_USERNAME = 'username';
+	public const USERNAME = 'username';
 
-	public const IDENTIFIER_PASSWORD = 'password';
+	public const PASSWORD = 'password';
 
-	public const IDENTIFIER_PROTOCOL_VERSION = 'protocol';
+	public const PROTOCOL_VERSION = 'protocol';
 
 	public function __toString(): string
 	{

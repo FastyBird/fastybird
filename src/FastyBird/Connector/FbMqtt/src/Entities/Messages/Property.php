@@ -16,9 +16,10 @@
 namespace FastyBird\Connector\FbMqtt\Entities\Messages;
 
 use FastyBird\Connector\FbMqtt;
+use FastyBird\Connector\FbMqtt\Exceptions;
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use Orisai\ObjectMapper;
 use Ramsey\Uuid;
-use SplObjectStorage;
-use function array_merge;
 
 /**
  * Device or channel property
@@ -28,30 +29,40 @@ use function array_merge;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-abstract class Property extends Entity
+abstract class Property implements Entity
 {
 
-	private string|null $value = FbMqtt\Constants::VALUE_NOT_SET;
-
-	/** @var SplObjectStorage<PropertyAttribute, null> */
-	private SplObjectStorage $attributes;
-
+	/**
+	 * @param array<PropertyAttribute> $attributes
+	 */
 	public function __construct(
-		Uuid\UuidInterface $connector,
-		string $device,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $connector,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		private readonly string $device,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $property,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		private readonly array $attributes = [],
+		#[ObjectMapper\Rules\MappedObjectValue(class: PropertyAttribute::class)]
+		private readonly string|null $value = FbMqtt\Constants::VALUE_NOT_SET,
+		#[ObjectMapper\Rules\BoolValue()]
+		private readonly bool $retained = false,
 	)
 	{
-		parent::__construct($connector, $device);
-
-		$this->attributes = new SplObjectStorage();
 	}
 
-	public function addAttribute(PropertyAttribute $attribute): void
+	public function getConnector(): Uuid\UuidInterface
 	{
-		if (!$this->attributes->contains($attribute)) {
-			$this->attributes->attach($attribute);
-		}
+		return $this->connector;
+	}
+
+	public function getDevice(): string
+	{
+		return $this->device;
 	}
 
 	public function getProperty(): string
@@ -64,13 +75,7 @@ abstract class Property extends Entity
 	 */
 	public function getAttributes(): array
 	{
-		$data = [];
-
-		foreach ($this->attributes as $item) {
-			$data[] = $item;
-		}
-
-		return $data;
+		return $this->attributes;
 	}
 
 	public function getValue(): string|null
@@ -78,19 +83,21 @@ abstract class Property extends Entity
 		return $this->value;
 	}
 
-	public function setValue(string $value): void
+	public function isRetained(): bool
 	{
-		$this->value = $value;
+		return $this->retained;
 	}
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @throws Exceptions\ParseMessage
 	 */
 	public function toArray(): array
 	{
-		$return = array_merge([
+		$return = [
 			'property' => $this->getProperty(),
-		], parent::toArray());
+		];
 
 		foreach ($this->getAttributes() as $attribute) {
 			$return[$attribute->getAttribute()] = $attribute->getValue();

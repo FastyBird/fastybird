@@ -15,6 +15,9 @@
 
 namespace FastyBird\Connector\FbMqtt\Entities\Messages;
 
+use Orisai\ObjectMapper;
+use Ramsey\Uuid;
+
 /**
  * Device attribute
  *
@@ -35,12 +38,21 @@ final class DeviceAttribute extends Attribute
 		self::CONTROLS,
 	];
 
-	/**
-	 * {@inheritDoc}
-	 */
-	protected function getAllowedAttributes(): array
+	public function __construct(
+		Uuid\UuidInterface $connector,
+		string $device,
+		#[ObjectMapper\Rules\ArrayEnumValue(cases: self::ALLOWED_ATTRIBUTES)]
+		private readonly string $attribute,
+		string $value,
+		bool $retained = false,
+	)
 	{
-		return self::ALLOWED_ATTRIBUTES;
+		parent::__construct($connector, $device, $value, $retained);
+	}
+
+	public function getAttribute(): string
+	{
+		return $this->attribute;
 	}
 
 }

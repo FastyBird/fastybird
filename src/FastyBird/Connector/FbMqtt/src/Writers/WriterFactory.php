@@ -1,35 +1,33 @@
 <?php declare(strict_types = 1);
 
 /**
- * ClientFactory.php
+ * WriterFactory.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:FbMqttConnector!
- * @subpackage     Clients
+ * @subpackage     Writers
  * @since          1.0.0
  *
- * @date           05.07.22
+ * @date           03.12.23
  */
 
-namespace FastyBird\Connector\FbMqtt\Clients;
+namespace FastyBird\Connector\FbMqtt\Writers;
 
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 
 /**
- * Base client factory
+ * Device state writer interface factory
  *
  * @package        FastyBird:FbMqttConnector!
- * @subpackage     Clients
+ * @subpackage     Writers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-interface ClientFactory
+interface WriterFactory
 {
 
-	public const VERSION_CONSTANT_NAME = 'VERSION';
-
-	public function create(MetadataDocuments\DevicesModule\Connector $connector): Client;
+	public function create(MetadataDocuments\DevicesModule\Connector $connector): Writer;
 
 }

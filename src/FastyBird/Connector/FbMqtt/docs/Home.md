@@ -1,3 +1,7 @@
+<p align="center">
+	<img src="https://github.com/fastybird/.github/blob/main/assets/repo_title.png?raw=true" alt="FastyBird"/>
+</p>
+
 The FastyBird MQTT Connector is an addition to the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things)
 ecosystem that facilitates integration with devices using the [FastyBird MQTT Convention](https://github.com/FastyBird/mqtt-convention) protocol.
 This enables users to effortlessly connect and control their devices using the [FastyBird MQTT Convention](https://github.com/FastyBird/mqtt-convention)

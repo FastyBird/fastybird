@@ -189,6 +189,7 @@ contributteTranslation:
         - %appDir%/src/FastyBird/Module/Devices/src/Translations
         - %appDir%/src/FastyBird/Module/Triggers/src/Translations
         # CONNECTORS
+        - %appDir%/src/FastyBird/Connector/FbMqtt/src/Translations
         - %appDir%/src/FastyBird/Connector/HomeKit/src/Translations
         - %appDir%/src/FastyBird/Connector/NsPanel/src/Translations
         - %appDir%/src/FastyBird/Connector/Shelly/src/Translations

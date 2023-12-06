@@ -16,14 +16,15 @@
 namespace FastyBird\Connector\FbMqtt\DI;
 
 use Doctrine\Persistence;
+use FastyBird\Connector\FbMqtt;
 use FastyBird\Connector\FbMqtt\API;
 use FastyBird\Connector\FbMqtt\Clients;
 use FastyBird\Connector\FbMqtt\Commands;
 use FastyBird\Connector\FbMqtt\Connector;
-use FastyBird\Connector\FbMqtt\Consumers;
 use FastyBird\Connector\FbMqtt\Entities;
 use FastyBird\Connector\FbMqtt\Helpers;
 use FastyBird\Connector\FbMqtt\Hydrators;
+use FastyBird\Connector\FbMqtt\Queue;
 use FastyBird\Connector\FbMqtt\Schemas;
 use FastyBird\Connector\FbMqtt\Subscribers;
 use FastyBird\Connector\FbMqtt\Writers;
@@ -68,9 +69,8 @@ class FbMqttExtension extends DI\CompilerExtension
 			'writer' => Schema\Expect::anyOf(
 				Writers\Event::NAME,
 				Writers\Exchange::NAME,
-				Writers\Periodic::NAME,
 			)->default(
-				Writers\Periodic::NAME,
+				Writers\Exchange::NAME,
 			),
 		]);
 	}
@@ -81,78 +81,141 @@ class FbMqttExtension extends DI\CompilerExtension
 		$configuration = $this->getConfig();
 		assert($configuration instanceof stdClass);
 
-		$writer = null;
+		$logger = $builder->addDefinition($this->prefix('logger'), new DI\Definitions\ServiceDefinition())
+			->setType(FbMqtt\Logger::class)
+			->setAutowired(false);
+
+		/**
+		 * WRITERS
+		 */
 
 		if ($configuration->writer === Writers\Event::NAME) {
-			$writer = $builder->addDefinition($this->prefix('writers.event'), new DI\Definitions\ServiceDefinition())
-				->setType(Writers\Event::class)
-				->setAutowired(false);
+			$builder->addFactoryDefinition($this->prefix('writers.event'))
+				->setImplement(Writers\EventFactory::class)
+				->getResultDefinition()
+				->setType(Writers\Event::class);
 		} elseif ($configuration->writer === Writers\Exchange::NAME) {
-			$writer = $builder->addDefinition($this->prefix('writers.exchange'), new DI\Definitions\ServiceDefinition())
+			$builder->addFactoryDefinition($this->prefix('writers.exchange'))
+				->setImplement(Writers\ExchangeFactory::class)
+				->getResultDefinition()
 				->setType(Writers\Exchange::class)
-				->setAutowired(false)
 				->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATE, false);
-		} elseif ($configuration->writer === Writers\Periodic::NAME) {
-			$writer = $builder->addDefinition($this->prefix('writers.periodic'), new DI\Definitions\ServiceDefinition())
-				->setType(Writers\Periodic::class)
-				->setAutowired(false);
 		}
+
+		/**
+		 * CLIENTS
+		 */
 
 		$builder->addFactoryDefinition($this->prefix('client.apiv1'))
 			->setImplement(Clients\FbMqttV1Factory::class)
 			->getResultDefinition()
 			->setType(Clients\FbMqttV1::class)
 			->setArguments([
-				'writer' => $writer,
+				'logger' => $logger,
 			]);
 
-		$builder->addDefinition($this->prefix('api.v1parser'), new DI\Definitions\ServiceDefinition())
-			->setType(API\V1Parser::class);
+		/**
+		 * API
+		 */
 
-		$builder->addDefinition($this->prefix('api.v1validator'), new DI\Definitions\ServiceDefinition())
-			->setType(API\V1Validator::class);
+		$builder->addDefinition($this->prefix('api.connectionsManager'), new DI\Definitions\ServiceDefinition())
+			->setType(API\ConnectionManager::class);
 
-		$builder->addDefinition($this->prefix('api.v1builder'), new DI\Definitions\ServiceDefinition())
-			->setType(API\V1Builder::class);
-
-		$builder->addDefinition(
-			$this->prefix('consumers.device.attribute.message'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Consumers\Messages\Device::class);
-
-		$builder->addDefinition(
-			$this->prefix('consumers.device.extension.message'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Consumers\Messages\ExtensionAttribute::class);
-
-		$builder->addDefinition(
-			$this->prefix('consumers.device.property.message'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Consumers\Messages\DeviceProperty::class);
-
-		$builder->addDefinition(
-			$this->prefix('consumers.channel.attribute.message'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Consumers\Messages\Channel::class);
-
-		$builder->addDefinition(
-			$this->prefix('consumers.channel.property.message'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Consumers\Messages\ChannelProperty::class);
-
-		$builder->addDefinition($this->prefix('consumers.proxy'), new DI\Definitions\ServiceDefinition())
-			->setType(Consumers\Messages::class)
+		$builder->addFactoryDefinition($this->prefix('api.client'))
+			->setImplement(API\ClientFactory::class)
+			->getResultDefinition()
+			->setType(API\Client::class)
 			->setArguments([
-				'consumers' => $builder->findByType(Consumers\Consumer::class),
+				'logger' => $logger,
 			]);
+
+		/**
+		 * MESSAGES QUEUE
+		 */
+
+		$builder->addDefinition(
+			$this->prefix('queue.consumers.store.device'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Queue\Consumers\DeviceAttribute::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
+
+		$builder->addDefinition(
+			$this->prefix('queue.consumers.store.deviceProperty'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Queue\Consumers\DeviceProperty::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
+
+		$builder->addDefinition(
+			$this->prefix('queue.consumers.store.extension'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Queue\Consumers\ExtensionAttribute::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
+
+		$builder->addDefinition(
+			$this->prefix('queue.consumers.store.channel'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Queue\Consumers\ChannelAttribute::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
+
+		$builder->addDefinition(
+			$this->prefix('queue.consumers.store.channelProperty'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Queue\Consumers\ChannelProperty::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
+
+		$builder->addDefinition(
+			$this->prefix('queue.consumers.store.writeV1PropertyState'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Queue\Consumers\WriteV1PropertyState::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
+
+		$builder->addDefinition(
+			$this->prefix('queue.consumers'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Queue\Consumers::class)
+			->setArguments([
+				'consumers' => $builder->findByType(Queue\Consumer::class),
+				'logger' => $logger,
+			]);
+
+		$builder->addDefinition(
+			$this->prefix('queue.queue'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Queue\Queue::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
+
+		/**
+		 * SUBSCRIBERS
+		 */
 
 		$builder->addDefinition($this->prefix('subscribers.controls'), new DI\Definitions\ServiceDefinition())
 			->setType(Subscribers\Controls::class);
+
+		/**
+		 * JSON-API SCHEMAS
+		 */
 
 		$builder->addDefinition($this->prefix('schemas.connector.fbMqtt'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\FbMqttConnector::class);
@@ -160,14 +223,48 @@ class FbMqttExtension extends DI\CompilerExtension
 		$builder->addDefinition($this->prefix('schemas.device.fbMqtt'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\FbMqttDevice::class);
 
+		/**
+		 * JSON-API HYDRATORS
+		 */
+
 		$builder->addDefinition($this->prefix('hydrators.connector.fbMqtt'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\FbMqttConnector::class);
 
 		$builder->addDefinition($this->prefix('hydrators.device.fbMqtt'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\FbMqttDevice::class);
 
-		$builder->addDefinition($this->prefix('helpers.property'), new DI\Definitions\ServiceDefinition())
-			->setType(Helpers\Property::class);
+		/**
+		 * HELPERS
+		 */
+
+		$builder->addDefinition($this->prefix('helpers.entity'), new DI\Definitions\ServiceDefinition())
+			->setType(Helpers\Entity::class);
+
+		$builder->addDefinition($this->prefix('helpers.connector'), new DI\Definitions\ServiceDefinition())
+			->setType(Helpers\Connector::class);
+
+		/**
+		 * COMMANDS
+		 */
+
+		$builder->addDefinition($this->prefix('commands.initialize'), new DI\Definitions\ServiceDefinition())
+			->setType(Commands\Initialize::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
+
+		$builder->addDefinition($this->prefix('commands.execute'), new DI\Definitions\ServiceDefinition())
+			->setType(Commands\Execute::class);
+
+		$builder->addDefinition($this->prefix('commands.devices'), new DI\Definitions\ServiceDefinition())
+			->setType(Commands\Devices::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
+
+		/**
+		 * CONNECTOR
+		 */
 
 		$builder->addFactoryDefinition($this->prefix('executor.factory'))
 			->setImplement(Connector\ConnectorFactory::class)
@@ -179,16 +276,8 @@ class FbMqttExtension extends DI\CompilerExtension
 			->setType(Connector\Connector::class)
 			->setArguments([
 				'clientsFactories' => $builder->findByType(Clients\ClientFactory::class),
+				'logger' => $logger,
 			]);
-
-		$builder->addDefinition($this->prefix('commands.initialize'), new DI\Definitions\ServiceDefinition())
-			->setType(Commands\Initialize::class);
-
-		$builder->addDefinition($this->prefix('commands.execute'), new DI\Definitions\ServiceDefinition())
-			->setType(Commands\Execute::class);
-
-		$builder->addDefinition($this->prefix('commands.devices'), new DI\Definitions\ServiceDefinition())
-			->setType(Commands\Devices::class);
 	}
 
 	/**

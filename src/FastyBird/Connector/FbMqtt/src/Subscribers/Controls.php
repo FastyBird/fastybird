@@ -66,13 +66,13 @@ final class Controls implements Common\EventSubscriber
 		if ($entity instanceof Entities\FbMqttConnector) {
 			$findConnectorControlQuery = new DevicesQueries\Entities\FindConnectorControls();
 			$findConnectorControlQuery->forConnector($entity);
-			$findConnectorControlQuery->byName(Types\ConnectorControlName::NAME_REBOOT);
+			$findConnectorControlQuery->byName(Types\ConnectorControlName::REBOOT);
 
 			$rebootControl = $this->controlsRepository->findOneBy($findConnectorControlQuery);
 
 			if ($rebootControl === null) {
 				$this->controlsManager->create(Utils\ArrayHash::from([
-					'name' => Types\ConnectorControlName::NAME_REBOOT,
+					'name' => Types\ConnectorControlName::REBOOT,
 					'connector' => $entity,
 				]));
 			}

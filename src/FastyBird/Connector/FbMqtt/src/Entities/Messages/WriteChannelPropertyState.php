@@ -1,32 +1,32 @@
 <?php declare(strict_types = 1);
 
 /**
- * WriteDevicePropertyState.php
+ * WriteChannelPropertyState.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:SonoffConnector!
+ * @package        FastyBird:FbMqttConnector!
  * @subpackage     Entities
  * @since          1.0.0
  *
  * @date           16.08.23
  */
 
-namespace FastyBird\Connector\Sonoff\Entities\Messages;
+namespace FastyBird\Connector\FbMqtt\Entities\Messages;
 
 use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use Ramsey\Uuid;
 
 /**
- * Write updated device property state to hardware message entity
+ * Write updated channel property state to hardware message entity
  *
- * @package        FastyBird:SonoffConnector!
+ * @package        FastyBird:FbMqttConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class WriteDevicePropertyState implements Entity
+final class WriteChannelPropertyState implements Entity
 {
 
 	public function __construct(
@@ -34,6 +34,8 @@ final class WriteDevicePropertyState implements Entity
 		private readonly Uuid\UuidInterface $connector,
 		#[BootstrapObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $device,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $channel,
 		#[BootstrapObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $property,
 	)
@@ -50,6 +52,11 @@ final class WriteDevicePropertyState implements Entity
 		return $this->device;
 	}
 
+	public function getChannel(): Uuid\UuidInterface
+	{
+		return $this->channel;
+	}
+
 	public function getProperty(): Uuid\UuidInterface
 	{
 		return $this->property;
@@ -63,6 +70,7 @@ final class WriteDevicePropertyState implements Entity
 		return [
 			'connector' => $this->getConnector()->toString(),
 			'device' => $this->getDevice()->toString(),
+			'channel' => $this->getChannel()->toString(),
 			'property' => $this->getProperty()->toString(),
 		];
 	}

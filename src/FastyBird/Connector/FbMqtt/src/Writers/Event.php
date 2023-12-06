@@ -15,27 +15,12 @@
 
 namespace FastyBird\Connector\FbMqtt\Writers;
 
-use DateTimeInterface;
-use FastyBird\Connector\FbMqtt\Clients;
 use FastyBird\Connector\FbMqtt\Entities;
-use FastyBird\Connector\FbMqtt\Helpers;
-use FastyBird\Connector\FbMqtt\Queries;
-use FastyBird\DateTimeFactory;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Connector\FbMqtt\Exceptions;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
-use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
-use FastyBird\Module\Devices\States as DevicesStates;
-use Nette;
-use Nette\Utils;
-use Psr\Log;
-use Ramsey\Uuid;
 use Symfony\Component\EventDispatcher;
-use Throwable;
-use function assert;
 
 /**
  * Event based properties writer
@@ -45,25 +30,10 @@ use function assert;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Event implements Writer, EventDispatcher\EventSubscriberInterface
+class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberInterface
 {
 
-	use Nette\SmartObject;
-
 	public const NAME = 'event';
-
-	/** @var array<string, Clients\Client> */
-	private array $clients = [];
-
-	public function __construct(
-		private readonly Helpers\Property $propertyStateHelper,
-		private readonly DateTimeFactory\Factory $dateTimeFactory,
-		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
-		private readonly DevicesModels\Entities\Channels\ChannelsRepository $channelsRepository,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
-	)
-	{
-	}
 
 	public static function getSubscribedEvents(): array
 	{
@@ -75,164 +45,84 @@ class Event implements Writer, EventDispatcher\EventSubscriberInterface
 		];
 	}
 
-	public function connect(
-		Entities\FbMqttConnector $connector,
-		Clients\Client $client,
-	): void
-	{
-		$this->clients[$connector->getPlainId()] = $client;
-	}
-
-	public function disconnect(
-		Entities\FbMqttConnector $connector,
-		Clients\Client $client,
-	): void
-	{
-		unset($this->clients[$connector->getPlainId()]);
-	}
-
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\Runtime
 	 */
 	public function stateChanged(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		DevicesEvents\DevicePropertyStateEntityCreated|DevicesEvents\DevicePropertyStateEntityUpdated|DevicesEvents\ChannelPropertyStateEntityCreated|DevicesEvents\ChannelPropertyStateEntityUpdated $event,
 	): void
 	{
-		foreach ($this->clients as $id => $client) {
-			$this->processClient(Uuid\Uuid::fromString($id), $event, $client);
-		}
-	}
-
-	/**
-	 * @throws DevicesExceptions\InvalidState
-	 */
-	public function processClient(
-		Uuid\UuidInterface $connectorId,
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		DevicesEvents\DevicePropertyStateEntityCreated|DevicesEvents\DevicePropertyStateEntityUpdated|DevicesEvents\ChannelPropertyStateEntityCreated|DevicesEvents\ChannelPropertyStateEntityUpdated $event,
-		Clients\Client $client,
-	): void
-	{
-		$property = $event->getProperty();
-
 		$state = $event->getState();
 
 		if ($state->getExpectedValue() === null || $state->getPending() !== true) {
 			return;
 		}
 
-		if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-			$findDeviceQuery = new Queries\Entities\FindDevices();
-			$findDeviceQuery->byId($property->getDevice());
+		if (
+			$event instanceof DevicesEvents\DevicePropertyStateEntityCreated
+			|| $event instanceof DevicesEvents\DevicePropertyStateEntityUpdated
+		) {
+			$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+			$findDeviceQuery->byId($event->getProperty()->getDevice());
 
-			$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\FbMqttDevice::class);
+			$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
 			if ($device === null) {
 				return;
 			}
+		} else {
+			$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
+			$findChannelQuery->byId($event->getProperty()->getChannel());
 
-			if (!$device->getConnector()->getId()->equals($connectorId)) {
-				return;
-			}
-
-			$client->writeDeviceProperty($device, $property)
-				->then(function () use ($property): void {
-					$this->propertyStateHelper->setValue(
-						$property,
-						Utils\ArrayHash::from([
-							DevicesStates\Property::PENDING_FIELD => $this->dateTimeFactory->getNow()->format(
-								DateTimeInterface::ATOM,
-							),
-						]),
-					);
-				})
-				->catch(function (Throwable $ex) use ($connectorId, $device, $property): void {
-					$this->logger->error(
-						'Could write new device property state',
-						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
-							'type' => 'event-writer',
-							'exception' => BootstrapHelpers\Logger::buildException($ex),
-							'connector' => [
-								'id' => $connectorId->toString(),
-							],
-							'device' => [
-								'id' => $device->getPlainId(),
-							],
-							'property' => [
-								'id' => $property->getId()->toString(),
-							],
-						],
-					);
-
-					$this->propertyStateHelper->setValue(
-						$property,
-						Utils\ArrayHash::from([
-							DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
-							DevicesStates\Property::PENDING_FIELD => false,
-						]),
-					);
-				});
-		} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-			$findChannelQuery = new DevicesQueries\Entities\FindChannels();
-			$findChannelQuery->byId($property->getChannel());
-
-			$channel = $this->channelsRepository->findOneBy($findChannelQuery);
+			$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 
 			if ($channel === null) {
 				return;
 			}
 
-			if (!$channel->getDevice()->getConnector()->getId()->equals($connectorId)) {
+			$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+			$findDeviceQuery->byId($channel->getDevice());
+
+			$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+
+			if ($device === null) {
 				return;
 			}
+		}
 
-			$device = $channel->getDevice();
+		if (!$device->getConnector()->equals($this->connector->getId())) {
+			return;
+		}
 
-			assert($device instanceof Entities\FbMqttDevice);
+		if (
+			$event instanceof DevicesEvents\DevicePropertyStateEntityCreated
+			|| $event instanceof DevicesEvents\DevicePropertyStateEntityUpdated
+		) {
+			$this->queue->append(
+				$this->entityHelper->create(
+					Entities\Messages\WriteDevicePropertyState::class,
+					[
+						'connector' => $this->connector->getId(),
+						'device' => $device->getId(),
+						'property' => $event->getProperty()->getId(),
+					],
+				),
+			);
 
-			$client->writeChannelProperty($device, $channel, $property)
-				->then(function () use ($property): void {
-					$this->propertyStateHelper->setValue(
-						$property,
-						Utils\ArrayHash::from([
-							DevicesStates\Property::PENDING_FIELD => $this->dateTimeFactory->getNow()->format(
-								DateTimeInterface::ATOM,
-							),
-						]),
-					);
-				})
-				->catch(function (Throwable $ex) use ($connectorId, $device, $channel, $property): void {
-					$this->logger->error(
-						'Could write new channel property state',
-						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
-							'type' => 'event-writer',
-							'exception' => BootstrapHelpers\Logger::buildException($ex),
-							'connector' => [
-								'id' => $connectorId->toString(),
-							],
-							'device' => [
-								'id' => $device->getPlainId(),
-							],
-							'channel' => [
-								'id' => $channel->getPlainId(),
-							],
-							'property' => [
-								'id' => $property->getId()->toString(),
-							],
-						],
-					);
-
-					$this->propertyStateHelper->setValue(
-						$property,
-						Utils\ArrayHash::from([
-							DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
-							DevicesStates\Property::PENDING_FIELD => false,
-						]),
-					);
-				});
+		} else {
+			$this->queue->append(
+				$this->entityHelper->create(
+					Entities\Messages\WriteChannelPropertyState::class,
+					[
+						'connector' => $this->connector->getId(),
+						'device' => $device->getId(),
+						'channel' => $event->getProperty()->getChannel(),
+						'property' => $event->getProperty()->getId(),
+					],
+				),
+			);
 		}
 	}
 

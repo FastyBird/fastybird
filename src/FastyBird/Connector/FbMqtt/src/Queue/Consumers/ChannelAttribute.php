@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Channel.php
+ * ChannelAttribute.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,11 +13,12 @@
  * @date           05.02.22
  */
 
-namespace FastyBird\Connector\FbMqtt\Consumers\Messages;
+namespace FastyBird\Connector\FbMqtt\Queue\Consumers;
 
 use Doctrine\DBAL;
-use FastyBird\Connector\FbMqtt\Consumers;
+use FastyBird\Connector\FbMqtt;
 use FastyBird\Connector\FbMqtt\Entities;
+use FastyBird\Connector\FbMqtt\Queue;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -27,7 +28,6 @@ use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
 use Nette;
 use Nette\Utils;
-use Psr\Log;
 use function in_array;
 use function is_array;
 use function sprintf;
@@ -40,12 +40,13 @@ use function sprintf;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Channel implements Consumers\Consumer
+final class ChannelAttribute implements Queue\Consumer
 {
 
 	use Nette\SmartObject;
 
 	public function __construct(
+		private readonly FbMqtt\Logger $logger,
 		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\Entities\Channels\ChannelsRepository $channelsRepository,
 		private readonly DevicesModels\Entities\Channels\ChannelsManager $channelsManager,
@@ -54,7 +55,6 @@ final class Channel implements Consumers\Consumer
 		private readonly DevicesModels\Entities\Channels\Controls\ControlsRepository $channelControlsRepository,
 		private readonly DevicesModels\Entities\Channels\Controls\ControlsManager $channelControlsManager,
 		private readonly DevicesUtilities\Database $databaseHelper,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
 	}
