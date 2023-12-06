@@ -15,6 +15,7 @@
 
 namespace FastyBird\Plugin\WsServer\Subscribers;
 
+use Doctrine\DBAL;
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -72,6 +73,7 @@ class Client implements EventDispatcher\EventSubscriberInterface
 
 	/**
 	 * @throws BootstrapExceptions\InvalidState
+	 * @throws DBAL\Exception
 	 * @throws WebSockets\Exceptions\InvalidArgumentException
 	 * @throws WebSockets\Exceptions\TerminateException
 	 */

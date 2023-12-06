@@ -15,6 +15,7 @@
 
 namespace FastyBird\Plugin\WebServer\Subscribers;
 
+use Doctrine\DBAL;
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Plugin\WebServer\Events;
@@ -47,6 +48,7 @@ class Server implements EventDispatcher\EventSubscriberInterface
 
 	/**
 	 * @throws BootstrapExceptions\InvalidState
+	 * @throws DBAL\Exception
 	 * @throws Exceptions\InvalidState
 	 */
 	public function check(): void
@@ -65,6 +67,7 @@ class Server implements EventDispatcher\EventSubscriberInterface
 
 	/**
 	 * @throws BootstrapExceptions\InvalidState
+	 * @throws DBAL\Exception
 	 */
 	public function request(): void
 	{

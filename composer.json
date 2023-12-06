@@ -65,6 +65,7 @@
         "nette/bootstrap": "^3.1",
         "nette/di": "^3.0",
         "nette/utils": "^3.2",
+        "nettrine/dbal": "^0.8",
         "nettrine/fixtures": "^0.6",
         "nettrine/orm": "^0.8",
         "opis/json-schema": "^2.3",

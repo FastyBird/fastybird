@@ -51,6 +51,7 @@
     "ipub/doctrine-timestampable": "^1.5",
     "ipub/slim-router": "^0.2",
     "mathsolver/mathsolver": "@dev",
+    "nettrine/dbal": "^0.8",
     "nettrine/orm": "^0.8",
     "psr/event-dispatcher": "^1.0",
     "orisai/data-sources": "^1.0",

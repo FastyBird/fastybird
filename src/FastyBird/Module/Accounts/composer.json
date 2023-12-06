@@ -48,6 +48,7 @@
     "ipub/doctrine-consistence": "^0.4",
     "ipub/doctrine-timestampable": "^1.5",
     "ipub/slim-router": "^0.2",
+    "nettrine/dbal": "^0.8",
     "nettrine/orm": "^0.8",
     "react/promise": "^3",
     "symfony/console": "^6.0",
