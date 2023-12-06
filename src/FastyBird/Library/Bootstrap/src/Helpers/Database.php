@@ -68,7 +68,6 @@ class Database
 	}
 
 	/**
-	 * @throws DBAL\Exception
 	 * @throws Exceptions\InvalidState
 	 */
 	public function reconnect(): void
