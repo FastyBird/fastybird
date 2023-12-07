@@ -74,6 +74,22 @@ npm install @fastybird/devices-module
 Learn how to configure and use devices module and manage your connectors & devices
 in [documentation](https://github.com/FastyBird/devices-module/wiki).
 
+# FastyBird
+
+<p align="center">
+	<img src="https://github.com/fastybird/.github/blob/main/assets/fastybird_row.svg?raw=true" alt="FastyBird"/>
+</p>
+
+FastyBird is an Open Source IOT solution built from decoupled components with powerful API and the highest quality code. Read more on [fastybird.com.com](https://www.fastybird.com).
+
+## Documentation
+
+Documentation is available on [docs.fastybird.com](https://docs.fastybird.com).
+
+## Contributing
+
+The sources of this package are contained in the [FastyBird monorepo](https://github.com/FastyBird/fastybird). We welcome contributions for this package on [FastyBird/fastybird](https://github.com/FastyBird/).
+
 ## Feedback
 
 Use the [issue tracker](https://github.com/FastyBird/fastybird/issues) for bugs
@@ -86,10 +102,6 @@ Thank you for testing, reporting and contributing.
 
 For release info check [release page](https://github.com/FastyBird/fastybird/releases).
 
-## Contribute
-
-The sources of this package are contained in the [FastyBird monorepo](https://github.com/FastyBird/fastybird). We welcome contributions for this package on [FastyBird/fastybird](https://github.com/FastyBird/).
-
 ## Maintainers
 
 <table>
@@ -97,7 +109,7 @@ The sources of this package are contained in the [FastyBird monorepo](https://gi
 		<tr>
 			<td align="center">
 				<a href="https://github.com/akadlec">
-					<img width="80" height="80" src="https://avatars3.githubusercontent.com/u/1866672?s=460&amp;v=4">
+					<img alt="akadlec" width="80" height="80" src="https://avatars3.githubusercontent.com/u/1866672?s=460&amp;v=4" />
 				</a>
 				<br>
 				<a href="https://github.com/akadlec">Adam Kadlec</a>
