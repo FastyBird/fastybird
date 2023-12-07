@@ -1,13 +1,17 @@
+<p align="center">
+	<img src="https://github.com/fastybird/.github/blob/main/assets/repo_title.png?raw=true" alt="FastyBird"/>
+</p>
+
 # FastyBird exchange library
 
-[![Build Status](https://badgen.net/github/checks/FastyBird/exchange-library/main?cache=300&style=flast-square)](https://github.com/FastyBird/exchange-library/actions)
-[![Licence](https://badgen.net/github/license/FastyBird/exchange-library?cache=300&style=flast-square)](https://github.com/FastyBird/exchange-library/blob/main/LICENSE.md)
-[![Code coverage](https://badgen.net/coveralls/c/github/FastyBird/exchange-library?cache=300&style=flast-square)](https://coveralls.io/r/FastyBird/exchange-library)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/FastyBird/exchange-library/ci.yaml?style=flat-square)](https://github.com/FastyBird/exchange-library/actions)
+[![Licence](https://img.shields.io/github/license/FastyBird/exchange-library?style=flat-square)](https://github.com/FastyBird/exchange-library/blob/main/LICENSE.md)
+[![Code coverage](https://img.shields.io/coverallsCoverage/github/FastyBird/exchange-library?style=flat-square)](https://coveralls.io/r/FastyBird/exchange-library)
 [![Mutation testing](https://img.shields.io/endpoint?style=flat-square&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2FFastyBird%2Fexchange-library%2Fmain)](https://dashboard.stryker-mutator.io/reports/github.com/FastyBird/exchange-library/main)
 
-![PHP](https://badgen.net/packagist/php/FastyBird/exchange-library?cache=300&style=flast-square)
-[![Latest stable](https://badgen.net/packagist/v/FastyBird/exchange-library/latest?cache=300&style=flast-square)](https://packagist.org/packages/FastyBird/exchange-library)
-[![Downloads total](https://badgen.net/packagist/dt/FastyBird/exchange-library?cache=300&style=flast-square)](https://packagist.org/packages/FastyBird/exchange-library)
+![PHP](https://badgen.net/packagist/php/FastyBird/exchange-library?cache=300&style=flat-square)
+[![Latest stable](https://badgen.net/packagist/v/FastyBird/exchange-library/latest?cache=300&style=flat-square)](https://packagist.org/packages/FastyBird/exchange-library)
+[![Downloads total](https://badgen.net/packagist/dt/FastyBird/exchange-library?cache=300&style=flat-square)](https://packagist.org/packages/FastyBird/exchange-library)
 [![PHPStan](https://img.shields.io/badge/PHPStan-enabled-brightgreen.svg?style=flat-square)](https://github.com/phpstan/phpstan)
 
 ***
@@ -36,6 +40,22 @@ composer require fastybird/exchange-library
 Learn how to consume & publish messages
 in [documentation](https://github.com/FastyBird/exchange-library/blob/main/docs/index.md).
 
+# FastyBird
+
+<p align="center">
+	<img src="https://github.com/fastybird/.github/blob/main/assets/fastybird_row.svg?raw=true" alt="FastyBird"/>
+</p>
+
+FastyBird is an Open Source IOT solution built from decoupled components with powerful API and the highest quality code. Read more on [fastybird.com.com](https://www.fastybird.com).
+
+## Documentation
+
+Documentation is available on [docs.fastybird.com](https://docs.fastybird.com).
+
+## Contributing
+
+The sources of this package are contained in the [FastyBird monorepo](https://github.com/FastyBird/fastybird). We welcome contributions for this package on [FastyBird/fastybird](https://github.com/FastyBird/).
+
 ## Feedback
 
 Use the [issue tracker](https://github.com/FastyBird/fastybird/issues) for bugs
@@ -47,10 +67,6 @@ Thank you for testing, reporting and contributing.
 ## Changelog
 
 For release info check [release page](https://github.com/FastyBird/fastybird/releases).
-
-## Contribute
-
-The sources of this package are contained in the [FastyBird monorepo](https://github.com/FastyBird/fastybird). We welcome contributions for this package on [FastyBird/fastybird](https://github.com/FastyBird/).
 
 ## Maintainers
 
