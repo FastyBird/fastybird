@@ -374,14 +374,12 @@ class Devices extends Console\Command\Command
 		$table->setHeaders([
 			'#',
 			$this->translator->translate('//fb-mqtt-connector.cmd.devices.data.name'),
-			$this->translator->translate('//fb-mqtt-connector.cmd.devices.data.model'),
 		]);
 
 		foreach ($devices as $index => $device) {
 			$table->addRow([
 				$index + 1,
 				$device->getName() ?? $device->getIdentifier(),
-				$device->getType(),
 			]);
 		}
 
