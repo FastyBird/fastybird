@@ -36,7 +36,7 @@
     "fastybird/redisdb-plugin": "dev-main",
     "fastybird/triggers-module": "dev-main",
     "nette/di": "^3.0",
-    "psr/log": "^1.1|^3.0",
+    "psr/log": "^3.0",
     "symplify/vendor-patches": "^11.2"
   },
   "require-dev": {

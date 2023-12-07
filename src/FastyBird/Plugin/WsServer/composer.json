@@ -41,10 +41,10 @@
     "nette/di": "^3.0",
     "nette/utils": "^3.2",
     "psr/event-dispatcher": "^1.0",
-    "psr/log": "^1.1|^3.0",
-    "react/promise": "^3|^2.2",
+    "psr/log": "^3.0",
+    "react/promise": "^3",
     "react/socket": "^1.12",
-    "symfony/console": "^5.0|^6.0",
+    "symfony/console": "^6.0",
     "symfony/event-dispatcher": "^5.4",
     "symplify/vendor-patches": "^11.2"
   },

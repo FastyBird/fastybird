@@ -27,7 +27,7 @@ The connector can be configured using the [FastyBird](https://www.fastybird.com)
 To configure the connector through the console, run the following command:
 
 ```shell
-php bin/fb-console fb:viera-connector:initialize
+php bin/fb-console fb:virtual-connector:initialize
 ```
 
 > **NOTE:**

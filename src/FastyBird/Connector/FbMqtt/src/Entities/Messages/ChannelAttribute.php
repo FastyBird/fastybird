@@ -15,6 +15,7 @@
 
 namespace FastyBird\Connector\FbMqtt\Entities\Messages;
 
+use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_merge;
 
@@ -38,17 +39,25 @@ final class ChannelAttribute extends Attribute
 	public function __construct(
 		Uuid\UuidInterface $connector,
 		string $device,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $channel,
-		string $attribute,
+		#[ObjectMapper\Rules\ArrayEnumValue(cases: self::ALLOWED_ATTRIBUTES)]
+		private readonly string $attribute,
 		string $value,
+		bool $retained = false,
 	)
 	{
-		parent::__construct($connector, $device, $attribute, $value);
+		parent::__construct($connector, $device, $value, $retained);
 	}
 
 	public function getChannel(): string
 	{
 		return $this->channel;
+	}
+
+	public function getAttribute(): string
+	{
+		return $this->attribute;
 	}
 
 	/**
@@ -59,14 +68,6 @@ final class ChannelAttribute extends Attribute
 		return array_merge([
 			'channel' => $this->getChannel(),
 		], parent::toArray());
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	protected function getAllowedAttributes(): array
-	{
-		return self::ALLOWED_ATTRIBUTES;
 	}
 
 }

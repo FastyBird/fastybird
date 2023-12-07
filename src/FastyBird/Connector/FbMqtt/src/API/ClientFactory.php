@@ -1,33 +1,37 @@
 <?php declare(strict_types = 1);
 
 /**
- * Consumer.php
+ * ClientFactory.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:FbMqttConnector!
- * @subpackage     Consumers
+ * @subpackage     API
  * @since          1.0.0
  *
- * @date           05.02.22
+ * @date           05.07.22
  */
 
-namespace FastyBird\Connector\FbMqtt\Consumers;
-
-use FastyBird\Connector\FbMqtt\Entities;
+namespace FastyBird\Connector\FbMqtt\API;
 
 /**
- * Exchange messages consumer interface
+ * Base client factory
  *
  * @package        FastyBird:FbMqttConnector!
- * @subpackage     Consumers
+ * @subpackage     API
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-interface Consumer
+interface ClientFactory
 {
 
-	public function consume(Entities\Messages\Entity $entity): bool;
+	public function create(
+		string $clientId,
+		string $address,
+		int $port,
+		string|null $username = null,
+		string|null $password = null,
+	): Client;
 
 }

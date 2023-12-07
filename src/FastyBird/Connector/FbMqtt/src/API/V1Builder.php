@@ -16,9 +16,7 @@
 namespace FastyBird\Connector\FbMqtt\API;
 
 use FastyBird\Connector\FbMqtt;
-use FastyBird\Connector\FbMqtt\Entities;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Module\Devices\Entities as DevicesEntities;
 use Nette;
 use function str_replace;
 
@@ -105,9 +103,9 @@ final class V1Builder
 		. FbMqtt\Constants::MQTT_TOPIC_DELIMITER
 		. 'set';
 
-	public function buildDevicePropertyTopic(
-		Entities\FbMqttDevice $device,
-		DevicesEntities\Devices\Properties\Dynamic|MetadataDocuments\DevicesModule\DeviceDynamicProperty $property,
+	public static function buildDevicePropertyTopic(
+		MetadataDocuments\DevicesModule\Device $device,
+		MetadataDocuments\DevicesModule\DeviceDynamicProperty $property,
 	): string
 	{
 		$topic = self::DEVICE_PROPERTY_TOPIC;
@@ -116,8 +114,8 @@ final class V1Builder
 		return str_replace(self::PROPERTY_REPLACE_STRING, $property->getIdentifier(), $topic);
 	}
 
-	public function buildDeviceCommandTopic(
-		Entities\FbMqttDevice $device,
+	public static function buildDeviceCommandTopic(
+		MetadataDocuments\DevicesModule\Device $device,
 		MetadataDocuments\DevicesModule\DeviceControl $command,
 	): string
 	{
@@ -127,10 +125,10 @@ final class V1Builder
 		return str_replace(self::CONTROL_REPLACE_STRING, $command->getName(), $topic);
 	}
 
-	public function buildChannelPropertyTopic(
-		Entities\FbMqttDevice $device,
-		DevicesEntities\Channels\Channel $channel,
-		DevicesEntities\Channels\Properties\Dynamic|MetadataDocuments\DevicesModule\ChannelDynamicProperty $property,
+	public static function buildChannelPropertyTopic(
+		MetadataDocuments\DevicesModule\Device $device,
+		MetadataDocuments\DevicesModule\Channel $channel,
+		MetadataDocuments\DevicesModule\ChannelDynamicProperty $property,
 	): string
 	{
 		$topic = self::CHANNEL_PROPERTY_TOPIC;
@@ -140,8 +138,8 @@ final class V1Builder
 		return str_replace(self::PROPERTY_REPLACE_STRING, $property->getIdentifier(), $topic);
 	}
 
-	public function buildChannelCommandTopic(
-		Entities\FbMqttDevice $device,
+	public static function buildChannelCommandTopic(
+		MetadataDocuments\DevicesModule\Device $device,
 		MetadataDocuments\DevicesModule\Channel $channel,
 		MetadataDocuments\DevicesModule\ChannelControl $command,
 	): string

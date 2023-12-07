@@ -32,9 +32,9 @@ class ExtensionType extends Consistence\Enum\Enum
 	/**
 	 * Define states
 	 */
-	public const EXTENSION_TYPE_FASTYBIRD_HARDWARE = 'com.fastybird.hardware';
+	public const FASTYBIRD_HARDWARE = 'com.fastybird.hardware';
 
-	public const EXTENSION_TYPE_FASTYBIRD_FIRMWARE = 'com.fastybird.firmware';
+	public const FASTYBIRD_FIRMWARE = 'com.fastybird.firmware';
 
 	public function __toString(): string
 	{

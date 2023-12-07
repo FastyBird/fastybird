@@ -66,20 +66,20 @@ class BootstrapExtension extends DI\CompilerExtension
 					'rotatingFile' => Schema\Expect::structure(
 						[
 							'enabled' => Schema\Expect::bool(true),
-							'level' => Schema\Expect::int(Monolog\Logger::INFO),
+							'level' => Schema\Expect::int(Monolog\Level::Info),
 							'filename' => Schema\Expect::string('app.log'),
 						],
 					),
 					'stdOut' => Schema\Expect::structure(
 						[
 							'enabled' => Schema\Expect::bool(false),
-							'level' => Schema\Expect::int(Monolog\Logger::INFO),
+							'level' => Schema\Expect::int(Monolog\Level::Info),
 						],
 					),
 					'console' => Schema\Expect::structure(
 						[
 							'enabled' => Schema\Expect::bool(false),
-							'level' => Schema\Expect::int(Monolog\Logger::INFO),
+							'level' => Schema\Expect::int(Monolog\Level::Info),
 						],
 					),
 				],
@@ -87,7 +87,7 @@ class BootstrapExtension extends DI\CompilerExtension
 			'sentry' => Schema\Expect::structure(
 				[
 					'dsn' => Schema\Expect::string(null)->nullable(),
-					'level' => Schema\Expect::int(Monolog\Logger::WARNING),
+					'level' => Schema\Expect::int(Monolog\Level::Warning),
 				],
 			),
 		]);

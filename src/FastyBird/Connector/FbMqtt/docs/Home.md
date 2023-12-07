@@ -1,3 +1,7 @@
+<p align="center">
+	<img src="https://github.com/fastybird/.github/blob/main/assets/repo_title.png?raw=true" alt="FastyBird"/>
+</p>
+
 The FastyBird MQTT Connector is an addition to the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things)
 ecosystem that facilitates integration with devices using the [FastyBird MQTT Convention](https://github.com/FastyBird/mqtt-convention) protocol.
 This enables users to effortlessly connect and control their devices using the [FastyBird MQTT Convention](https://github.com/FastyBird/mqtt-convention)
@@ -52,7 +56,7 @@ The console will ask you to confirm that you want to continue with the configura
 FastyBird MQTT connector - initialization
 =========================================
 
- ! [NOTE] This action will create|update|delete connector configuration.                                                       
+ ! [NOTE] This action will create|update|delete connector configuration                                                 
 
  Would you like to continue? (yes/no) [no]:
  > y
@@ -61,10 +65,12 @@ FastyBird MQTT connector - initialization
 You will then be prompted to choose an action:
 
 ```shell
- What would you like to do?:
+ What would you like to do? [Nothing]:
   [0] Create new connector configuration
   [1] Edit existing connector configuration
   [2] Delete existing connector configuration
+  [3] List FB MQTT connectors
+  [4] Nothing
  > 0
 ```
 
@@ -146,9 +152,11 @@ You will then be prompted to select device management action.
 
 ```shell
  What would you like to do?:
-  [0] Create new connector device
-  [1] Edit existing connector device
-  [2] Delete existing connector device
+  [0] Create new connector configuration
+  [1] Edit existing connector configuration
+  [2] Delete existing connector configuration
+  [3] List FB MQTT connectors
+  [4] Nothing
  > 0
 ```
 

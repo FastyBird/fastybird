@@ -40,7 +40,7 @@
     "nette/di": "^3.0",
     "nette/utils": "^3.2",
     "opis/json-schema": "^2.3",
-    "phpdocumentor/reflection": "^4.0",
+    "phpdocumentor/reflection": "^5.3",
     "phpdocumentor/reflection-common": "^2.2",
     "ramsey/uuid": "^4.5"
   },

@@ -28,7 +28,7 @@ which is integrating [Sonoff](https://sonoff.tech) NS Panel PRO human interface 
 - Ability to map multiple devices into a single NS Panel device
 - Sonoff NS Panel Pro Connector management for the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) [devices module](https://github.com/FastyBird/devices-module), allowing users to easily manage and monitor Sonoff NS Panels
 - Advanced device management features, such as controlling power status, measuring energy consumption, and reading sensor data
-- [{JSON:API}](https://jsonapi.org/) schemas for full API access, providing a standardized and consistent way for developers to access and manipulate Panasonic Viera device data
+- [{JSON:API}](https://jsonapi.org/) schemas for full API access, providing a standardized and consistent way for developers to access and manipulate NS Panel device data
 - Regular updates with new features and bug fixes, ensuring that the Sonoff NS Panel Pro Connector is always up-to-date and reliable.
 
 Sonoff NS Panel PRO Connector is a distributed extension that is developed in [PHP](https://www.php.net), built on the [Nette](https://nette.org) and [Symfony](https://symfony.com) frameworks,

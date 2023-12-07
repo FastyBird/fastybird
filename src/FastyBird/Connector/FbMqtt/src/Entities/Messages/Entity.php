@@ -10,62 +10,27 @@
  * @subpackage     Entities
  * @since          1.0.0
  *
- * @date           24.02.20
+ * @date           03.12.23
  */
 
 namespace FastyBird\Connector\FbMqtt\Entities\Messages;
 
-use Nette;
-use Ramsey\Uuid;
+use Orisai\ObjectMapper;
 
 /**
- * Base data entity
+ * FB MQTT base message data entity interface
  *
  * @package        FastyBird:FbMqttConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-abstract class Entity
+interface Entity extends ObjectMapper\MappedObject
 {
 
-	use Nette\SmartObject;
-
-	private bool $retained = false;
-
-	public function __construct(private readonly Uuid\UuidInterface $connector, private readonly string $device)
-	{
-	}
-
-	public function getConnector(): Uuid\UuidInterface
-	{
-		return $this->connector;
-	}
-
-	public function getDevice(): string
-	{
-		return $this->device;
-	}
-
-	public function isRetained(): bool
-	{
-		return $this->retained;
-	}
-
-	public function setRetained(bool $retained): void
-	{
-		$this->retained = $retained;
-	}
-
 	/**
-	 * @return array<mixed>
+	 * @return array<string, mixed>
 	 */
-	public function toArray(): array
-	{
-		return [
-			'device' => $this->getDevice(),
-			'retained' => $this->isRetained(),
-		];
-	}
+	public function toArray(): array;
 
 }

@@ -46,10 +46,11 @@
     "ipub/doctrine-phone": "^1.6",
     "ipub/doctrine-timestampable": "^1.5",
     "ipub/slim-router": "^0.2",
+    "nettrine/dbal": "^0.8",
     "nettrine/orm": "^0.8",
     "psr/event-dispatcher": "^1.0",
-    "react/promise": "^3|^2.2",
-    "symfony/console": "^5.0|^6.0",
+    "react/promise": "^3",
+    "symfony/console": "^6.0",
     "symfony/event-dispatcher": "^5.4",
     "symplify/vendor-patches": "^11.2"
   },

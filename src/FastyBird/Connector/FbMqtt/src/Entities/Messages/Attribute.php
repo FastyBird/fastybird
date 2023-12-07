@@ -15,17 +15,16 @@
 
 namespace FastyBird\Connector\FbMqtt\Entities\Messages;
 
-use FastyBird\Connector\FbMqtt\Exceptions;
 use FastyBird\Connector\FbMqtt\Helpers;
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_filter;
 use function array_map;
-use function array_merge;
 use function array_unique;
 use function array_values;
 use function explode;
 use function in_array;
-use function sprintf;
 use function strtolower;
 
 /**
@@ -36,7 +35,7 @@ use function strtolower;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-abstract class Attribute extends Entity
+abstract class Attribute implements Entity
 {
 
 	public const NAME = 'name';
@@ -51,41 +50,42 @@ abstract class Attribute extends Entity
 
 	public const CONTROLS = 'controls';
 
-	/** @var string|array<string> */
-	private string|array $value;
-
-	/**
-	 * @throws Exceptions\InvalidArgument
-	 */
 	public function __construct(
-		Uuid\UuidInterface $connector,
-		string $device,
-		private readonly string $attribute,
-		string $value,
+		#[BootstrapObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $connector,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		private readonly string $device,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		private readonly string $value,
+		#[ObjectMapper\Rules\BoolValue()]
+		private readonly bool $retained = false,
 	)
 	{
-		if (!in_array($attribute, $this->getAllowedAttributes(), true)) {
-			throw new Exceptions\InvalidArgument(
-				sprintf('Provided attribute "%s" is not in allowed range', $attribute),
-			);
-		}
-
-		parent::__construct($connector, $device);
-
-		$this->parseValue($value);
 	}
 
-	public function getAttribute(): string
+	public function getConnector(): Uuid\UuidInterface
 	{
-		return $this->attribute;
+		return $this->connector;
 	}
+
+	public function getDevice(): string
+	{
+		return $this->device;
+	}
+
+	abstract public function getAttribute(): string;
 
 	/**
 	 * @return string|array<string>
 	 */
 	public function getValue(): array|string
 	{
-		return $this->value;
+		return $this->parseValue();
+	}
+
+	public function isRetained(): bool
+	{
+		return $this->retained;
 	}
 
 	/**
@@ -93,32 +93,27 @@ abstract class Attribute extends Entity
 	 */
 	public function toArray(): array
 	{
-		return array_merge([
+		return [
 			$this->getAttribute() => $this->getValue(),
-		], parent::toArray());
+		];
 	}
 
 	/**
-	 * @return array<string>
+	 * @return string|array<string>
 	 */
-	protected function getAllowedAttributes(): array
-	{
-		return [];
-	}
-
-	private function parseValue(string $value): void
+	private function parseValue(): string|array
 	{
 		if ($this->getAttribute() === self::NAME) {
-			$this->value = Helpers\Payload::cleanName($value);
-
+			return Helpers\Payload::cleanName($this->value);
 		} else {
-			$this->value = Helpers\Payload::cleanPayload($value);
+			$value = Helpers\Payload::cleanPayload($this->value);
 
 			if (
-				$this->getAttribute() === self::PROPERTIES
-				|| $this->getAttribute() === self::CHANNELS
-				|| $this->getAttribute() === self::EXTENSIONS
-				|| $this->getAttribute() === self::CONTROLS
+				in_array(
+					$this->getAttribute(),
+					[self::PROPERTIES, self::CHANNELS, self::EXTENSIONS, self::CONTROLS],
+					true,
+				)
 			) {
 				$items = array_filter(
 					array_map('trim', explode(',', strtolower($value))),
@@ -127,9 +122,11 @@ abstract class Attribute extends Entity
 
 				$items = array_values($items);
 
-				$this->value = array_unique($items);
+				return array_unique($items);
 			}
 		}
+
+		return $this->value;
 	}
 
 }

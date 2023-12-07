@@ -5,81 +5,87 @@ namespace FastyBird\Connector\FbMqtt\Tests\Cases\Unit\API;
 use FastyBird\Connector\FbMqtt\API;
 use FastyBird\Connector\FbMqtt\Entities;
 use FastyBird\Connector\FbMqtt\Exceptions;
-use FastyBird\Connector\FbMqtt\Tests\Cases\Unit\BaseTestCase;
-use Nette;
+use FastyBird\Connector\FbMqtt\Types\ExtensionType;
+use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid;
 use Throwable;
 
-final class ApiV1ParserTest extends BaseTestCase
+final class ApiV1ParserTest extends TestCase
 {
 
 	/**
 	 * @param array<string, bool|float|int|string|array<string>> $expected
 	 *
-	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\ParseMessage
-	 * @throws Nette\DI\MissingServiceException
 	 *
 	 * @dataProvider parseDeviceAttributesProvider
 	 */
 	public function testParseDeviceAttribute(
+		Uuid\UuidInterface $connectorId,
 		string $topic,
 		string $payload,
 		array $expected,
 	): void
 	{
-		$apiV1Parser = $this->container->getByType(API\V1Parser::class);
+		$data = API\V1Parser::parse($connectorId, $topic, $payload);
 
-		$entity = $apiV1Parser->parse(
-			Uuid\Uuid::fromString('17c59Dfa-2edd-438e-8c49f-aa4e38e5a5e'),
-			$topic,
-			$payload,
-		);
-
-		self::assertTrue($entity instanceof Entities\Messages\DeviceAttribute);
-		self::assertEquals($expected, $entity->toArray());
+		self::assertEquals($expected, $data);
 	}
 
 	/**
-	 * @return array<string, array<string|array<string, bool|float|int|string|array<string>>>>
+	 * @return array<string, array<int, array<string, bool|Uuid\UuidInterface|string>|Uuid\UuidInterface|string>>
 	 */
 	public static function parseDeviceAttributesProvider(): array
 	{
+		$connectorId = Uuid\Uuid::fromString('17c59Dfa-2edd-438e-8c49f-aa4e38e5a5e');
+
 		return [
 			'attr-' . Entities\Messages\Attribute::NAME => [
+				$connectorId,
 				'/fb/v1/device-name/$' . Entities\Messages\Attribute::NAME,
 				'Some content',
 				[
+					'connector' => $connectorId,
 					'device' => 'device-name',
 					'retained' => false,
-					Entities\Messages\Attribute::NAME => 'Some content',
+					'attribute' => Entities\Messages\Attribute::NAME,
+					'value' => 'Some content',
 				],
 			],
 			'attr-' . Entities\Messages\Attribute::PROPERTIES => [
+				$connectorId,
 				'/fb/v1/device-name/$' . Entities\Messages\Attribute::PROPERTIES,
 				'prop1,prop2',
 				[
+					'connector' => $connectorId,
 					'device' => 'device-name',
 					'retained' => false,
-					Entities\Messages\Attribute::PROPERTIES => ['prop1', 'prop2'],
+					'attribute' => Entities\Messages\Attribute::PROPERTIES,
+					'value' => 'prop1,prop2',
 				],
 			],
 			'attr-' . Entities\Messages\Attribute::CHANNELS => [
+				$connectorId,
 				'/fb/v1/device-name/$' . Entities\Messages\Attribute::CHANNELS,
 				'channel-one,channel-two',
 				[
+					'connector' => $connectorId,
 					'device' => 'device-name',
 					'retained' => false,
-					Entities\Messages\Attribute::CHANNELS => ['channel-one', 'channel-two'],
+					'attribute' => Entities\Messages\Attribute::CHANNELS,
+					'value' => 'channel-one,channel-two',
 				],
 			],
 			'attr-' . Entities\Messages\Attribute::CONTROLS => [
+				$connectorId,
 				'/fb/v1/device-name/$' . Entities\Messages\Attribute::CONTROLS,
 				'configure,reset',
 				[
+					'connector' => $connectorId,
 					'device' => 'device-name',
 					'retained' => false,
-					Entities\Messages\Attribute::CONTROLS => ['configure', 'reset'],
+					'attribute' => Entities\Messages\Attribute::CONTROLS,
+					'value' => 'configure,reset',
 				],
 			],
 		];
@@ -88,70 +94,80 @@ final class ApiV1ParserTest extends BaseTestCase
 	/**
 	 * @param array<string, bool|float|int|string|array<string>> $expected
 	 *
-	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\ParseMessage
-	 * @throws Nette\DI\MissingServiceException
 	 *
 	 * @dataProvider parseDeviceHardwareInfoProvider
 	 */
 	public function testParseDeviceHardwareInfo(
+		Uuid\UuidInterface $connectorId,
 		string $topic,
 		string $payload,
 		array $expected,
 	): void
 	{
-		$apiV1Parser = $this->container->getByType(API\V1Parser::class);
+		$data = API\V1Parser::parse($connectorId, $topic, $payload);
 
-		$entity = $apiV1Parser->parse(
-			Uuid\Uuid::fromString('17c59Dfa-2edd-438e-8c49f-aa4e38e5a5e'),
-			$topic,
-			$payload,
-		);
-
-		self::assertTrue($entity instanceof Entities\Messages\ExtensionAttribute);
-		self::assertEquals($expected, $entity->toArray());
+		self::assertEquals($expected, $data);
 	}
 
 	/**
-	 * @return array<string, array<string|array<string, bool|float|int|string|array<string>>>>
+	 * @return array<string, array<int, array<string, bool|Uuid\UuidInterface|string>|Uuid\UuidInterface|string>>
 	 */
 	public static function parseDeviceHardwareInfoProvider(): array
 	{
+		$connectorId = Uuid\Uuid::fromString('17c59Dfa-2edd-438e-8c49f-aa4e38e5a5e');
+
 		return [
 			'hw-' . Entities\Messages\ExtensionAttribute::MAC_ADDRESS => [
+				$connectorId,
 				'/fb/v1/device-name/$hw/' . Entities\Messages\ExtensionAttribute::MAC_ADDRESS,
 				'00:0a:95:9d:68:16',
 				[
+					'connector' => $connectorId,
 					'device' => 'device-name',
 					'retained' => false,
-					Entities\Messages\ExtensionAttribute::MAC_ADDRESS => '000a959d6816',
+					'extension' => ExtensionType::FASTYBIRD_HARDWARE,
+					'parameter' => Entities\Messages\ExtensionAttribute::MAC_ADDRESS,
+					'value' => '000a959d6816',
 				],
 			],
 			'hw-' . Entities\Messages\ExtensionAttribute::MANUFACTURER => [
+				$connectorId,
 				'/fb/v1/device-name/$hw/' . Entities\Messages\ExtensionAttribute::MANUFACTURER,
 				'value-content',
 				[
+					'connector' => $connectorId,
 					'device' => 'device-name',
 					'retained' => false,
-					Entities\Messages\ExtensionAttribute::MANUFACTURER => 'value-content',
+					'extension' => ExtensionType::FASTYBIRD_HARDWARE,
+					'parameter' => Entities\Messages\ExtensionAttribute::MANUFACTURER,
+					'value' => 'value-content',
 				],
 			],
 			'hw-' . Entities\Messages\ExtensionAttribute::MODEL => [
+				$connectorId,
 				'/fb/v1/device-name/$hw/' . Entities\Messages\ExtensionAttribute::MODEL,
 				'value-content',
 				[
+					'connector' => $connectorId,
 					'device' => 'device-name',
 					'retained' => false,
-					Entities\Messages\ExtensionAttribute::MODEL => 'value-content',
+					'extension' => ExtensionType::FASTYBIRD_HARDWARE,
+					'parameter' => Entities\Messages\ExtensionAttribute::MODEL,
+					'value' => 'value-content',
 				],
 			],
 			'hw-' . Entities\Messages\ExtensionAttribute::VERSION => [
+				$connectorId,
 				'/fb/v1/device-name/$hw/' . Entities\Messages\ExtensionAttribute::VERSION,
 				'value-content',
 				[
+					'connector' => $connectorId,
 					'device' => 'device-name',
 					'retained' => false,
-					Entities\Messages\ExtensionAttribute::VERSION => 'value-content',
+					'extension' => ExtensionType::FASTYBIRD_HARDWARE,
+					'parameter' => Entities\Messages\ExtensionAttribute::VERSION,
+					'value' => 'value-content',
 				],
 			],
 		];
@@ -160,52 +176,54 @@ final class ApiV1ParserTest extends BaseTestCase
 	/**
 	 * @param array<string, bool|float|int|string|array<string>> $expected
 	 *
-	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\ParseMessage
-	 * @throws Nette\DI\MissingServiceException
 	 *
 	 * @dataProvider parseDeviceFirmwareInfoProvider
 	 */
 	public function testParseDeviceFirmwareInfo(
+		Uuid\UuidInterface $connectorId,
 		string $topic,
 		string $payload,
 		array $expected,
 	): void
 	{
-		$apiV1Parser = $this->container->getByType(API\V1Parser::class);
+		$data = API\V1Parser::parse($connectorId, $topic, $payload);
 
-		$entity = $apiV1Parser->parse(
-			Uuid\Uuid::fromString('17c59Dfa-2edd-438e-8c49f-aa4e38e5a5e'),
-			$topic,
-			$payload,
-		);
-
-		self::assertTrue($entity instanceof Entities\Messages\ExtensionAttribute);
-		self::assertEquals($expected, $entity->toArray());
+		self::assertEquals($expected, $data);
 	}
 
 	/**
-	 * @return array<string, array<string|array<string, bool|float|int|string|array<string>>>>
+	 * @return array<string, array<int, array<string, bool|Uuid\UuidInterface|string>|Uuid\UuidInterface|string>>
 	 */
 	public static function parseDeviceFirmwareInfoProvider(): array
 	{
+		$connectorId = Uuid\Uuid::fromString('17c59Dfa-2edd-438e-8c49f-aa4e38e5a5e');
+
 		return [
 			'fw-' . Entities\Messages\ExtensionAttribute::MANUFACTURER => [
+				$connectorId,
 				'/fb/v1/device-name/$fw/' . Entities\Messages\ExtensionAttribute::MANUFACTURER,
 				'value-content',
 				[
+					'connector' => $connectorId,
 					'device' => 'device-name',
 					'retained' => false,
-					Entities\Messages\ExtensionAttribute::MANUFACTURER => 'value-content',
+					'extension' => ExtensionType::FASTYBIRD_FIRMWARE,
+					'parameter' => Entities\Messages\ExtensionAttribute::MANUFACTURER,
+					'value' => 'value-content',
 				],
 			],
 			'fw-' . Entities\Messages\ExtensionAttribute::VERSION => [
+				$connectorId,
 				'/fb/v1/device-name/$fw/' . Entities\Messages\ExtensionAttribute::VERSION,
 				'value-content',
 				[
+					'connector' => $connectorId,
 					'device' => 'device-name',
 					'retained' => false,
-					Entities\Messages\ExtensionAttribute::VERSION => 'value-content',
+					'extension' => ExtensionType::FASTYBIRD_FIRMWARE,
+					'parameter' => Entities\Messages\ExtensionAttribute::VERSION,
+					'value' => 'value-content',
 				],
 			],
 		];
@@ -214,40 +232,36 @@ final class ApiV1ParserTest extends BaseTestCase
 	/**
 	 * @param array<string, bool|float|int|string|array<string>> $expected
 	 *
-	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\ParseMessage
-	 * @throws Nette\DI\MissingServiceException
 	 *
 	 * @dataProvider parseDevicePropertiesProvider
 	 */
 	public function testParseDeviceProperties(
+		Uuid\UuidInterface $connectorId,
 		string $topic,
 		string $payload,
 		array $expected,
 	): void
 	{
-		$apiV1Parser = $this->container->getByType(API\V1Parser::class);
+		$data = API\V1Parser::parse($connectorId, $topic, $payload);
 
-		$entity = $apiV1Parser->parse(
-			Uuid\Uuid::fromString('17c59Dfa-2edd-438e-8c49f-aa4e38e5a5e'),
-			$topic,
-			$payload,
-		);
-
-		self::assertTrue($entity instanceof Entities\Messages\DeviceProperty);
-		self::assertEquals($expected, $entity->toArray());
+		self::assertEquals($expected, $data);
 	}
 
 	/**
-	 * @return array<string, array<string|array<string, bool|float|int|string|array<string>>>>
+	 * @return array<string, array<int, array<string, bool|Uuid\UuidInterface|string>|Uuid\UuidInterface|string>>
 	 */
 	public static function parseDevicePropertiesProvider(): array
 	{
+		$connectorId = Uuid\Uuid::fromString('17c59Dfa-2edd-438e-8c49f-aa4e38e5a5e');
+
 		return [
 			'prop-property-name' => [
+				$connectorId,
 				'/fb/v1/device-name/$property/property-name',
 				'content',
 				[
+					'connector' => $connectorId,
 					'device' => 'device-name',
 					'retained' => false,
 					'property' => 'property-name',
@@ -260,64 +274,79 @@ final class ApiV1ParserTest extends BaseTestCase
 	/**
 	 * @param array<string, bool|float|int|string|array<string>> $expected
 	 *
-	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\ParseMessage
-	 * @throws Nette\DI\MissingServiceException
 	 *
 	 * @dataProvider parseDevicePropertiesAttributesProvider
 	 */
 	public function testParseDevicePropertiesAttributes(
+		Uuid\UuidInterface $connectorId,
 		string $topic,
 		string $payload,
 		array $expected,
 	): void
 	{
-		$apiV1Parser = $this->container->getByType(API\V1Parser::class);
+		$data = API\V1Parser::parse($connectorId, $topic, $payload);
 
-		$entity = $apiV1Parser->parse(
-			Uuid\Uuid::fromString('17c59Dfa-2edd-438e-8c49f-aa4e38e5a5e'),
-			$topic,
-			$payload,
-		);
-
-		self::assertTrue($entity instanceof Entities\Messages\DeviceProperty);
-		self::assertEquals($expected, $entity->toArray());
+		self::assertEquals($expected, $data);
 	}
 
 	/**
-	 * @return array<string, array<string|array<string, bool|float|int|string|array<string>>>>
+	 * @return array<string, array<int, array<string, array<int, array<string, string>>|bool|Uuid\UuidInterface|string>|Uuid\UuidInterface|string>>
 	 */
 	public static function parseDevicePropertiesAttributesProvider(): array
 	{
+		$connectorId = Uuid\Uuid::fromString('17c59Dfa-2edd-438e-8c49f-aa4e38e5a5e');
+
 		return [
 			'attr-' . Entities\Messages\PropertyAttribute::NAME => [
+				$connectorId,
 				'/fb/v1/device-name/$property/some-property/$' . Entities\Messages\PropertyAttribute::NAME,
 				'payload',
 				[
+					'connector' => $connectorId,
 					'device' => 'device-name',
 					'retained' => false,
 					'property' => 'some-property',
-					Entities\Messages\PropertyAttribute::NAME => 'payload',
+					'attributes' => [
+						[
+							'attribute' => Entities\Messages\PropertyAttribute::NAME,
+							'value' => 'payload',
+						],
+					],
 				],
 			],
 			'attr-' . Entities\Messages\PropertyAttribute::SETTABLE => [
+				$connectorId,
 				'/fb/v1/device-name/$property/some-property/$' . Entities\Messages\PropertyAttribute::SETTABLE,
 				'true',
 				[
+					'connector' => $connectorId,
 					'device' => 'device-name',
 					'retained' => false,
 					'property' => 'some-property',
-					Entities\Messages\PropertyAttribute::SETTABLE => true,
+					'attributes' => [
+						[
+							'attribute' => Entities\Messages\PropertyAttribute::SETTABLE,
+							'value' => 'true',
+						],
+					],
 				],
 			],
 			'attr-' . Entities\Messages\PropertyAttribute::QUERYABLE => [
+				$connectorId,
 				'/fb/v1/device-name/$property/some-property/$' . Entities\Messages\PropertyAttribute::QUERYABLE,
 				'invalid',
 				[
+					'connector' => $connectorId,
 					'device' => 'device-name',
 					'retained' => false,
 					'property' => 'some-property',
-					Entities\Messages\PropertyAttribute::QUERYABLE => false,
+					'attributes' => [
+						[
+							'attribute' => Entities\Messages\PropertyAttribute::QUERYABLE,
+							'value' => 'invalid',
+						],
+					],
 				],
 			],
 		];
@@ -326,9 +355,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	/**
 	 * @param class-string<Throwable> $exception
 	 *
-	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\ParseMessage
-	 * @throws Nette\DI\MissingServiceException
 	 *
 	 * @dataProvider parseDeviceAttributesInvalidProvider
 	 */
@@ -338,12 +365,10 @@ final class ApiV1ParserTest extends BaseTestCase
 		string $message,
 	): void
 	{
-		$apiV1Parser = $this->container->getByType(API\V1Parser::class);
-
 		$this->expectException($exception);
 		$this->expectExceptionMessage($message);
 
-		$apiV1Parser->parse(
+		API\V1Parser::parse(
 			Uuid\Uuid::fromString('17c59Dfa-2edd-438e-8c49f-aa4e38e5a5e'),
 			$topic,
 			'bar',
@@ -367,9 +392,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	/**
 	 * @param class-string<Throwable> $exception
 	 *
-	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\ParseMessage
-	 * @throws Nette\DI\MissingServiceException
 	 *
 	 * @dataProvider parseDeviceHardwareInfoInvalidProvider
 	 */
@@ -379,12 +402,10 @@ final class ApiV1ParserTest extends BaseTestCase
 		string $message,
 	): void
 	{
-		$apiV1Parser = $this->container->getByType(API\V1Parser::class);
-
 		$this->expectException($exception);
 		$this->expectExceptionMessage($message);
 
-		$apiV1Parser->parse(
+		API\V1Parser::parse(
 			Uuid\Uuid::fromString('17c59Dfa-2edd-438e-8c49f-aa4e38e5a5e'),
 			$topic,
 			'bar',
@@ -408,9 +429,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	/**
 	 * @param class-string<Throwable> $exception
 	 *
-	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\ParseMessage
-	 * @throws Nette\DI\MissingServiceException
 	 *
 	 * @dataProvider parseDeviceFirmwareInfoInvalidProvider
 	 */
@@ -420,12 +439,10 @@ final class ApiV1ParserTest extends BaseTestCase
 		string $message,
 	): void
 	{
-		$apiV1Parser = $this->container->getByType(API\V1Parser::class);
-
 		$this->expectException($exception);
 		$this->expectExceptionMessage($message);
 
-		$apiV1Parser->parse(
+		API\V1Parser::parse(
 			Uuid\Uuid::fromString('17c59Dfa-2edd-438e-8c49f-aa4e38e5a5e'),
 			$topic,
 			'bar',
@@ -449,64 +466,67 @@ final class ApiV1ParserTest extends BaseTestCase
 	/**
 	 * @param array<string, bool|float|int|string|array<string>> $expected
 	 *
-	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\ParseMessage
-	 * @throws Nette\DI\MissingServiceException
 	 *
 	 * @dataProvider parseChannelAttributesProvider
 	 */
 	public function testParseChannelAttributes(
+		Uuid\UuidInterface $connectorId,
 		string $topic,
 		string $payload,
 		array $expected,
 	): void
 	{
-		$apiV1Parser = $this->container->getByType(API\V1Parser::class);
+		$data = API\V1Parser::parse($connectorId, $topic, $payload);
 
-		$entity = $apiV1Parser->parse(
-			Uuid\Uuid::fromString('17c59Dfa-2edd-438e-8c49f-aa4e38e5a5e'),
-			$topic,
-			$payload,
-		);
-
-		self::assertTrue($entity instanceof Entities\Messages\ChannelAttribute);
-		self::assertEquals($expected, $entity->toArray());
+		self::assertEquals($expected, $data);
 	}
 
 	/**
-	 * @return array<string, array<string|array<string, bool|float|int|string|array<string>>>>
+	 * @return array<string, array<int, array<string, bool|Uuid\UuidInterface|string>|Uuid\UuidInterface|string>>
 	 */
 	public static function parseChannelAttributesProvider(): array
 	{
+		$connectorId = Uuid\Uuid::fromString('17c59Dfa-2edd-438e-8c49f-aa4e38e5a5e');
+
 		return [
 			'attr-' . Entities\Messages\Attribute::NAME => [
+				$connectorId,
 				'/fb/v1/device-name/$channel/channel-name/$' . Entities\Messages\Attribute::NAME,
 				'Some content',
 				[
+					'connector' => $connectorId,
 					'device' => 'device-name',
 					'channel' => 'channel-name',
 					'retained' => false,
-					Entities\Messages\Attribute::NAME => 'Some content',
+					'attribute' => Entities\Messages\Attribute::NAME,
+					'value' => 'Some content',
 				],
 			],
 			'attr-' . Entities\Messages\Attribute::PROPERTIES => [
+				$connectorId,
 				'/fb/v1/device-name/$channel/channel-name/$' . Entities\Messages\Attribute::PROPERTIES,
 				'prop1,prop2',
 				[
+					'connector' => $connectorId,
 					'device' => 'device-name',
 					'channel' => 'channel-name',
 					'retained' => false,
-					Entities\Messages\Attribute::PROPERTIES => ['prop1', 'prop2'],
+					'attribute' => Entities\Messages\Attribute::PROPERTIES,
+					'value' => 'prop1,prop2',
 				],
 			],
 			'attr-' . Entities\Messages\Attribute::CONTROLS => [
+				$connectorId,
 				'/fb/v1/device-name/$channel/channel-name/$' . Entities\Messages\Attribute::CONTROLS,
 				'configure,reset',
 				[
+					'connector' => $connectorId,
 					'device' => 'device-name',
 					'channel' => 'channel-name',
 					'retained' => false,
-					Entities\Messages\Attribute::CONTROLS => ['configure', 'reset'],
+					'attribute' => Entities\Messages\Attribute::CONTROLS,
+					'value' => 'configure,reset',
 				],
 			],
 		];
@@ -515,40 +535,36 @@ final class ApiV1ParserTest extends BaseTestCase
 	/**
 	 * @param array<string, bool|float|int|string|array<string>> $expected
 	 *
-	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\ParseMessage
-	 * @throws Nette\DI\MissingServiceException
 	 *
 	 * @dataProvider parseChannelPropertiesProvider
 	 */
 	public function testParseChannelProperties(
+		Uuid\UuidInterface $connectorId,
 		string $topic,
 		string $payload,
 		array $expected,
 	): void
 	{
-		$apiV1Parser = $this->container->getByType(API\V1Parser::class);
+		$data = API\V1Parser::parse($connectorId, $topic, $payload);
 
-		$entity = $apiV1Parser->parse(
-			Uuid\Uuid::fromString('17c59Dfa-2edd-438e-8c49f-aa4e38e5a5e'),
-			$topic,
-			$payload,
-		);
-
-		self::assertTrue($entity instanceof Entities\Messages\ChannelProperty);
-		self::assertEquals($expected, $entity->toArray());
+		self::assertEquals($expected, $data);
 	}
 
 	/**
-	 * @return array<string, array<string|array<string, bool|float|int|string|array<string>>>>
+	 * @return array<string, array<int, array<string, bool|Uuid\UuidInterface|string>|Uuid\UuidInterface|string>>
 	 */
 	public static function parseChannelPropertiesProvider(): array
 	{
+		$connectorId = Uuid\Uuid::fromString('17c59Dfa-2edd-438e-8c49f-aa4e38e5a5e');
+
 		return [
 			'prop-property-name' => [
+				$connectorId,
 				'/fb/v1/device-name/$channel/channel-name/$property/property-name',
 				'content',
 				[
+					'connector' => $connectorId,
 					'device' => 'device-name',
 					'channel' => 'channel-name',
 					'retained' => false,
@@ -562,67 +578,82 @@ final class ApiV1ParserTest extends BaseTestCase
 	/**
 	 * @param array<string, bool|float|int|string|array<string>> $expected
 	 *
-	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\ParseMessage
-	 * @throws Nette\DI\MissingServiceException
 	 *
 	 * @dataProvider parseChannelPropertiesAttributesProvider
 	 */
 	public function testParseChannelPropertiesAttributes(
+		Uuid\UuidInterface $connectorId,
 		string $topic,
 		string $payload,
 		array $expected,
 	): void
 	{
-		$apiV1Parser = $this->container->getByType(API\V1Parser::class);
+		$data = API\V1Parser::parse($connectorId, $topic, $payload);
 
-		$entity = $apiV1Parser->parse(
-			Uuid\Uuid::fromString('17c59Dfa-2edd-438e-8c49f-aa4e38e5a5e'),
-			$topic,
-			$payload,
-		);
-
-		self::assertTrue($entity instanceof Entities\Messages\ChannelProperty);
-		self::assertEquals($expected, $entity->toArray());
+		self::assertEquals($expected, $data);
 	}
 
 	/**
-	 * @return array<string, array<string|array<string, bool|float|int|string|array<string>>>>
+	 * @return array<string, array<int, array<string, array<int, array<string, bool|string>>|bool|Uuid\UuidInterface|string>|Uuid\UuidInterface|string>>
 	 */
 	public static function parseChannelPropertiesAttributesProvider(): array
 	{
+		$connectorId = Uuid\Uuid::fromString('17c59Dfa-2edd-438e-8c49f-aa4e38e5a5e');
+
 		return [
 			'attr-' . Entities\Messages\PropertyAttribute::NAME => [
+				$connectorId,
 				'/fb/v1/device-name/$channel/channel-name/$property/some-property/$' . Entities\Messages\PropertyAttribute::NAME,
 				'payload',
 				[
+					'connector' => $connectorId,
 					'device' => 'device-name',
 					'channel' => 'channel-name',
 					'retained' => false,
 					'property' => 'some-property',
-					Entities\Messages\PropertyAttribute::NAME => 'payload',
+					'attributes' => [
+						[
+							'attribute' => Entities\Messages\PropertyAttribute::NAME,
+							'value' => 'payload',
+						],
+					],
 				],
 			],
 			'attr-' . Entities\Messages\PropertyAttribute::SETTABLE => [
+				$connectorId,
 				'/fb/v1/device-name/$channel/channel-name/$property/some-property/$' . Entities\Messages\PropertyAttribute::SETTABLE,
 				'true',
 				[
+					'connector' => $connectorId,
 					'device' => 'device-name',
 					'channel' => 'channel-name',
 					'retained' => false,
 					'property' => 'some-property',
-					Entities\Messages\PropertyAttribute::SETTABLE => true,
+					'attributes' => [
+						[
+							'attribute' => Entities\Messages\PropertyAttribute::SETTABLE,
+							'value' => true,
+						],
+					],
 				],
 			],
 			'attr-' . Entities\Messages\PropertyAttribute::QUERYABLE => [
+				$connectorId,
 				'/fb/v1/device-name/$channel/channel-name/$property/some-property/$' . Entities\Messages\PropertyAttribute::QUERYABLE,
 				'invalid',
 				[
+					'connector' => $connectorId,
 					'device' => 'device-name',
 					'channel' => 'channel-name',
 					'retained' => false,
 					'property' => 'some-property',
-					Entities\Messages\PropertyAttribute::QUERYABLE => false,
+					'attributes' => [
+						[
+							'attribute' => Entities\Messages\PropertyAttribute::QUERYABLE,
+							'value' => 'invalid',
+						],
+					],
 				],
 			],
 		];
@@ -631,9 +662,7 @@ final class ApiV1ParserTest extends BaseTestCase
 	/**
 	 * @param class-string<Throwable> $exception
 	 *
-	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\ParseMessage
-	 * @throws Nette\DI\MissingServiceException
 	 *
 	 * @dataProvider parseChannelAttributesInvalidProvider
 	 */
@@ -643,12 +672,10 @@ final class ApiV1ParserTest extends BaseTestCase
 		string $message,
 	): void
 	{
-		$apiV1Parser = $this->container->getByType(API\V1Parser::class);
-
 		$this->expectException($exception);
 		$this->expectExceptionMessage($message);
 
-		$apiV1Parser->parse(
+		API\V1Parser::parse(
 			Uuid\Uuid::fromString('17c59Dfa-2edd-438e-8c49f-aa4e38e5a5e'),
 			$topic,
 			'bar',

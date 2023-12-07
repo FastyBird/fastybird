@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:VieraConnector!
+ * @package        FastyBird:TuyaConnector!
  * @subpackage     Clients
  * @since          1.0.0
  *
@@ -23,7 +23,7 @@ use React\Promise;
 /**
  * React datagram server factory
  *
- * @package        FastyBird:VieraConnector!
+ * @package        FastyBird:TuyaConnector!
  * @subpackage     Clients
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
