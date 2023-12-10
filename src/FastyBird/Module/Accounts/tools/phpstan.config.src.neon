@@ -6,19 +6,3 @@ parameters:
 
     bootstrapFiles:
         - phpstan-bootstrap.php
-
-    ignoreErrors:
-        - message: '#^Method FastyBird\\Module\\Accounts\\Entities\\Accounts\\Account::getSource\(\) never returns FastyBird\\Library\\Metadata\\Types\\ConnectorSource so it can be removed from the return type.#'
-        - message: '#^Method FastyBird\\Module\\Accounts\\Entities\\Accounts\\Account::getSource\(\) never returns FastyBird\\Library\\Metadata\\Types\\PluginSource so it can be removed from the return type.#'
-        - message: '#^Method FastyBird\\Module\\Accounts\\Entities\\Details\\Details::getSource\(\) never returns FastyBird\\Library\\Metadata\\Types\\ConnectorSource so it can be removed from the return type.#'
-        - message: '#^Method FastyBird\\Module\\Accounts\\Entities\\Details\\Details::getSource\(\) never returns FastyBird\\Library\\Metadata\\Types\\PluginSource so it can be removed from the return type.#'
-        - message: '#^Method FastyBird\\Module\\Accounts\\Entities\\Emails\\Email::getSource\(\) never returns FastyBird\\Library\\Metadata\\Types\\ConnectorSource so it can be removed from the return type.#'
-        - message: '#^Method FastyBird\\Module\\Accounts\\Entities\\Emails\\Email::getSource\(\) never returns FastyBird\\Library\\Metadata\\Types\\PluginSource so it can be removed from the return type.#'
-        - message: '#^Method FastyBird\\Module\\Accounts\\Entities\\Identities\\Identity::getSource\(\) never returns FastyBird\\Library\\Metadata\\Types\\ConnectorSource so it can be removed from the return type.#'
-        - message: '#^Method FastyBird\\Module\\Accounts\\Entities\\Identities\\Identity::getSource\(\) never returns FastyBird\\Library\\Metadata\\Types\\PluginSource so it can be removed from the return type.#'
-        - message: '#^Method FastyBird\\Module\\Accounts\\Entities\\Roles\\Role::getSource\(\) never returns FastyBird\\Library\\Metadata\\Types\\ConnectorSource so it can be removed from the return type.#'
-        - message: '#^Method FastyBird\\Module\\Accounts\\Entities\\Roles\\Role::getSource\(\) never returns FastyBird\\Library\\Metadata\\Types\\PluginSource so it can be removed from the return type.#'
-        - message: '#^Method FastyBird\\Module\\Accounts\\Entities\\Tokens\\AccessToken::getSource\(\) never returns FastyBird\\Library\\Metadata\\Types\\ConnectorSource so it can be removed from the return type.#'
-        - message: '#^Method FastyBird\\Module\\Accounts\\Entities\\Tokens\\AccessToken::getSource\(\) never returns FastyBird\\Library\\Metadata\\Types\\PluginSource so it can be removed from the return type.#'
-        - message: '#^Method FastyBird\\Module\\Accounts\\Entities\\Tokens\\RefreshToken::getSource\(\) never returns FastyBird\\Library\\Metadata\\Types\\ConnectorSource so it can be removed from the return type.#'
-        - message: '#^Method FastyBird\\Module\\Accounts\\Entities\\Tokens\\RefreshToken::getSource\(\) never returns FastyBird\\Library\\Metadata\\Types\\PluginSource so it can be removed from the return type.#'
