@@ -93,7 +93,7 @@ class Tcp
 	{
 		return $this->readDigitalRegisters(
 			$uri,
-			Types\ModbusFunction::get(Types\ModbusFunction::FUNCTION_CODE_READ_COIL),
+			Types\ModbusFunction::get(Types\ModbusFunction::READ_COIL),
 			$station,
 			$startingAddress,
 			$quantity,
@@ -122,7 +122,7 @@ class Tcp
 	{
 		return $this->readDigitalRegisters(
 			$uri,
-			Types\ModbusFunction::get(Types\ModbusFunction::FUNCTION_CODE_READ_DISCRETE),
+			Types\ModbusFunction::get(Types\ModbusFunction::READ_DISCRETE),
 			$station,
 			$startingAddress,
 			$quantity,
@@ -151,7 +151,7 @@ class Tcp
 	{
 		return $this->readAnalogRegisters(
 			$uri,
-			Types\ModbusFunction::get(Types\ModbusFunction::FUNCTION_CODE_READ_HOLDINGS_REGISTERS),
+			Types\ModbusFunction::get(Types\ModbusFunction::READ_HOLDINGS_REGISTERS),
 			$station,
 			$startingAddress,
 			$quantity,
@@ -180,7 +180,7 @@ class Tcp
 	{
 		return $this->readAnalogRegisters(
 			$uri,
-			Types\ModbusFunction::get(Types\ModbusFunction::FUNCTION_CODE_READ_INPUTS_REGISTERS),
+			Types\ModbusFunction::get(Types\ModbusFunction::READ_INPUTS_REGISTERS),
 			$station,
 			$startingAddress,
 			$quantity,
@@ -207,7 +207,7 @@ class Tcp
 		bool $raw = false,
 	): Promise\PromiseInterface
 	{
-		$functionCode = Types\ModbusFunction::get(Types\ModbusFunction::FUNCTION_CODE_WRITE_SINGLE_COIL);
+		$functionCode = Types\ModbusFunction::get(Types\ModbusFunction::WRITE_SINGLE_COIL);
 
 		$deferred = new Promise\Deferred();
 
@@ -251,7 +251,7 @@ class Tcp
 				$valueUnpacked = unpack('n1', substr($response, 10));
 
 				if ($valueUnpacked === false) {
-					$deferred->reject(new Exceptions\ModbusRtu('Response data could not be parsed'));
+					$deferred->reject(new Exceptions\ModbusTcp('Response data could not be parsed'));
 
 					return;
 				}
@@ -299,10 +299,10 @@ class Tcp
 
 		$functionCode = count($value) === 2
 			? Types\ModbusFunction::get(
-				Types\ModbusFunction::FUNCTION_CODE_WRITE_SINGLE_HOLDING_REGISTER,
+				Types\ModbusFunction::WRITE_SINGLE_HOLDING_REGISTER,
 			)
 			: Types\ModbusFunction::get(
-				Types\ModbusFunction::FUNCTION_CODE_WRITE_MULTIPLE_HOLDINGS_REGISTERS,
+				Types\ModbusFunction::WRITE_MULTIPLE_HOLDINGS_REGISTERS,
 			);
 
 		// Pack header (transform to binary)

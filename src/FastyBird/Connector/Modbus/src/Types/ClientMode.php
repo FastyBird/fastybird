@@ -32,9 +32,9 @@ class ClientMode extends Consistence\Enum\Enum
 	/**
 	 * Define versions
 	 */
-	public const MODE_RTU = 'rtu';
+	public const RTU = 'rtu';
 
-	public const MODE_TCP = 'tcp';
+	public const TCP = 'tcp';
 
 	public function __toString(): string
 	{

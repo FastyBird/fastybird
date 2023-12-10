@@ -17,8 +17,10 @@ namespace FastyBird\Connector\Modbus\Commands;
 
 use Doctrine\DBAL;
 use Doctrine\Persistence;
+use FastyBird\Connector\Modbus;
 use FastyBird\Connector\Modbus\Entities;
 use FastyBird\Connector\Modbus\Exceptions;
+use FastyBird\Connector\Modbus\Queries;
 use FastyBird\Connector\Modbus\Types;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -27,8 +29,9 @@ use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\Utilities as DevicesUtilities;
+use Nette\Localization;
 use Nette\Utils;
-use Psr\Log;
 use Symfony\Component\Console;
 use Symfony\Component\Console\Input;
 use Symfony\Component\Console\Output;
@@ -58,30 +61,15 @@ class Initialize extends Console\Command\Command
 
 	public const NAME = 'fb:modbus-connector:initialize';
 
-	private const CHOICE_QUESTION_CREATE_CONNECTOR = 'Create new connector configuration';
-
-	private const CHOICE_QUESTION_EDIT_CONNECTOR = 'Edit existing connector configuration';
-
-	private const CHOICE_QUESTION_DELETE_CONNECTOR = 'Delete existing connector configuration';
-
-	private const CHOICE_QUESTION_RTU_MODE = 'Modbus RTU devices over serial line';
-
-	private const CHOICE_QUESTION_TCP_MODE = 'Modbus devices over TCP network';
-
-	private const CHOICE_QUESTION_PARITY_NONE = 'None';
-
-	private const CHOICE_QUESTION_PARITY_ODD = 'Odd verification';
-
-	private const CHOICE_QUESTION_PARITY_EVEN = 'Even verification';
-
 	public function __construct(
+		private readonly Modbus\Logger $logger,
 		private readonly DevicesModels\Entities\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Entities\Connectors\ConnectorsManager $connectorsManager,
 		private readonly DevicesModels\Entities\Connectors\Properties\PropertiesRepository $propertiesRepository,
 		private readonly DevicesModels\Entities\Connectors\Properties\PropertiesManager $propertiesManager,
-		private readonly DevicesModels\Entities\Connectors\Controls\ControlsManager $controlsManager,
+		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
+		private readonly Localization\Translator $translator,
 		string|null $name = null,
 	)
 	{
@@ -102,7 +90,6 @@ class Initialize extends Console\Command\Command
 	 * @throws DBAL\Exception
 	 * @throws Console\Exception\InvalidArgumentException
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -111,13 +98,13 @@ class Initialize extends Console\Command\Command
 	{
 		$io = new Style\SymfonyStyle($input, $output);
 
-		$io->title('Modbus connector - initialization');
+		$io->title($this->translator->translate('//modbus-connector.cmd.initialize.title'));
 
-		$io->note('This action will create|update|delete connector configuration.');
+		$io->note($this->translator->translate('//modbus-connector.cmd.initialize.subtitle'));
 
 		if ($input->getOption('no-interaction') === false) {
 			$question = new Console\Question\ConfirmationQuestion(
-				'Would you like to continue?',
+				$this->translator->translate('//modbus-connector.cmd.base.questions.continue'),
 				false,
 			);
 
@@ -128,27 +115,7 @@ class Initialize extends Console\Command\Command
 			}
 		}
 
-		$question = new Console\Question\ChoiceQuestion(
-			'What would you like to do?',
-			[
-				0 => self::CHOICE_QUESTION_CREATE_CONNECTOR,
-				1 => self::CHOICE_QUESTION_EDIT_CONNECTOR,
-				2 => self::CHOICE_QUESTION_DELETE_CONNECTOR,
-			],
-		);
-		$question->setErrorMessage('Selected answer: "%s" is not valid.');
-
-		$whatToDo = $io->askQuestion($question);
-
-		if ($whatToDo === self::CHOICE_QUESTION_CREATE_CONNECTOR) {
-			$this->createNewConfiguration($io);
-
-		} elseif ($whatToDo === self::CHOICE_QUESTION_EDIT_CONNECTOR) {
-			$this->editExistingConfiguration($io);
-
-		} elseif ($whatToDo === self::CHOICE_QUESTION_DELETE_CONNECTOR) {
-			$this->deleteExistingConfiguration($io);
-		}
+		$this->askInitializeAction($io);
 
 		return Console\Command\Command::SUCCESS;
 	}
@@ -160,24 +127,26 @@ class Initialize extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function createNewConfiguration(Style\SymfonyStyle $io): void
+	private function createConfiguration(Style\SymfonyStyle $io): void
 	{
 		$mode = $this->askMode($io);
 
-		$question = new Console\Question\Question('Provide connector identifier');
+		$question = new Console\Question\Question(
+			$this->translator->translate('//modbus-connector.cmd.initialize.questions.provide.identifier'),
+		);
 
-		$question->setValidator(function (string|null $answer) {
-			if ($answer !== '' && $answer !== null) {
-				$findConnectorQuery = new DevicesQueries\Entities\FindConnectors();
+		$question->setValidator(function ($answer) {
+			if ($answer !== null) {
+				$findConnectorQuery = new Queries\Entities\FindConnectors();
 				$findConnectorQuery->byIdentifier($answer);
 
-				if (
-					$this->connectorsRepository->findOneBy(
-						$findConnectorQuery,
-						Entities\ModbusConnector::class,
-					) !== null
-				) {
-					throw new Exceptions\Runtime('This identifier is already used');
+				if ($this->connectorsRepository->findOneBy(
+					$findConnectorQuery,
+					Entities\ModbusConnector::class,
+				) !== null) {
+					throw new Exceptions\Runtime(
+						$this->translator->translate('//modbus-connector.cmd.initialize.messages.identifier.used'),
+					);
 				}
 			}
 
@@ -192,22 +161,20 @@ class Initialize extends Console\Command\Command
 			for ($i = 1; $i <= 100; $i++) {
 				$identifier = sprintf($identifierPattern, $i);
 
-				$findConnectorQuery = new DevicesQueries\Entities\FindConnectors();
+				$findConnectorQuery = new Queries\Entities\FindConnectors();
 				$findConnectorQuery->byIdentifier($identifier);
 
-				if (
-					$this->connectorsRepository->findOneBy(
-						$findConnectorQuery,
-						Entities\ModbusConnector::class,
-					) === null
-				) {
+				if ($this->connectorsRepository->findOneBy(
+					$findConnectorQuery,
+					Entities\ModbusConnector::class,
+				) === null) {
 					break;
 				}
 			}
 		}
 
 		if ($identifier === '') {
-			$io->error('Connector identifier have to be provided');
+			$io->error($this->translator->translate('//modbus-connector.cmd.initialize.messages.identifier.missing'));
 
 			return;
 		}
@@ -216,7 +183,7 @@ class Initialize extends Console\Command\Command
 
 		$interface = $baudRate = $byteSize = $dataParity = $stopBits = null;
 
-		if ($mode->equalsValue(Types\ClientMode::MODE_RTU)) {
+		if ($mode->equalsValue(Types\ClientMode::RTU)) {
 			$interface = $this->askRtuInterface($io);
 			$baudRate = $this->askRtuBaudRate($io);
 			$byteSize = $this->askRtuByteSize($io);
@@ -236,16 +203,18 @@ class Initialize extends Console\Command\Command
 
 			$this->propertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-				'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE,
+				'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE,
+				'name' => DevicesUtilities\Name::createName(Types\ConnectorPropertyIdentifier::CLIENT_MODE),
 				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 				'value' => $mode->getValue(),
 				'connector' => $connector,
 			]));
 
-			if ($mode->equalsValue(Types\ClientMode::MODE_RTU)) {
+			if ($mode->equalsValue(Types\ClientMode::RTU)) {
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_RTU_INTERFACE,
+					'identifier' => Types\ConnectorPropertyIdentifier::RTU_INTERFACE,
+					'name' => DevicesUtilities\Name::createName(Types\ConnectorPropertyIdentifier::RTU_INTERFACE),
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 					'value' => $interface,
 					'connector' => $connector,
@@ -253,7 +222,8 @@ class Initialize extends Console\Command\Command
 
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_RTU_BAUD_RATE,
+					'identifier' => Types\ConnectorPropertyIdentifier::RTU_BAUD_RATE,
+					'name' => DevicesUtilities\Name::createName(Types\ConnectorPropertyIdentifier::RTU_BAUD_RATE),
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UINT),
 					'value' => $baudRate?->getValue(),
 					'connector' => $connector,
@@ -261,7 +231,8 @@ class Initialize extends Console\Command\Command
 
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_RTU_BYTE_SIZE,
+					'identifier' => Types\ConnectorPropertyIdentifier::RTU_BYTE_SIZE,
+					'name' => DevicesUtilities\Name::createName(Types\ConnectorPropertyIdentifier::RTU_BYTE_SIZE),
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
 					'value' => $byteSize?->getValue(),
 					'connector' => $connector,
@@ -269,7 +240,8 @@ class Initialize extends Console\Command\Command
 
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_RTU_PARITY,
+					'identifier' => Types\ConnectorPropertyIdentifier::RTU_PARITY,
+					'name' => DevicesUtilities\Name::createName(Types\ConnectorPropertyIdentifier::RTU_PARITY),
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
 					'value' => $dataParity?->getValue(),
 					'connector' => $connector,
@@ -277,25 +249,23 @@ class Initialize extends Console\Command\Command
 
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_RTU_STOP_BITS,
+					'identifier' => Types\ConnectorPropertyIdentifier::RTU_STOP_BITS,
+					'name' => DevicesUtilities\Name::createName(Types\ConnectorPropertyIdentifier::RTU_STOP_BITS),
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
 					'value' => $stopBits?->getValue(),
 					'connector' => $connector,
 				]));
 			}
 
-			$this->controlsManager->create(Utils\ArrayHash::from([
-				'name' => Types\ConnectorControlName::NAME_REBOOT,
-				'connector' => $connector,
-			]));
-
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
-			$io->success(sprintf(
-				'New connector "%s" was successfully created',
-				$connector->getName() ?? $connector->getIdentifier(),
-			));
+			$io->success(
+				$this->translator->translate(
+					'//modbus-connector.cmd.initialize.messages.create.success',
+					['name' => $connector->getName() ?? $connector->getIdentifier()],
+				),
+			);
 		} catch (Throwable $ex) {
 			// Log caught exception
 			$this->logger->error(
@@ -307,7 +277,7 @@ class Initialize extends Console\Command\Command
 				],
 			);
 
-			$io->error('Something went wrong, connector could not be created. Error was logged.');
+			$io->error($this->translator->translate('//modbus-connector.cmd.initialize.messages.create.error'));
 		} finally {
 			// Revert all changes when error occur
 			if ($this->getOrmConnection()->isTransactionActive()) {
@@ -319,27 +289,26 @@ class Initialize extends Console\Command\Command
 	/**
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function editExistingConfiguration(Style\SymfonyStyle $io): void
+	private function editConfiguration(Style\SymfonyStyle $io): void
 	{
 		$connector = $this->askWhichConnector($io);
 
 		if ($connector === null) {
-			$io->warning('No Modbus connectors registered in system');
+			$io->warning($this->translator->translate('//modbus-connector.cmd.base.messages.noConnectors'));
 
 			$question = new Console\Question\ConfirmationQuestion(
-				'Would you like to create new Modbus connector configuration?',
+				$this->translator->translate('//modbus-connector.cmd.initialize.questions.create'),
 				false,
 			);
 
 			$continue = (bool) $io->askQuestion($question);
 
 			if ($continue) {
-				$this->createNewConfiguration($io);
+				$this->createConfiguration($io);
 			}
 
 			return;
@@ -347,7 +316,7 @@ class Initialize extends Console\Command\Command
 
 		$findConnectorPropertyQuery = new DevicesQueries\Entities\FindConnectorProperties();
 		$findConnectorPropertyQuery->forConnector($connector);
-		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE);
+		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::CLIENT_MODE);
 
 		$modeProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
@@ -356,7 +325,7 @@ class Initialize extends Console\Command\Command
 
 		} else {
 			$question = new Console\Question\ConfirmationQuestion(
-				'Do you want to change connector devices support?',
+				$this->translator->translate('//modbus-connector.cmd.initialize.questions.changeMode'),
 				false,
 			);
 
@@ -375,7 +344,7 @@ class Initialize extends Console\Command\Command
 
 		if ($connector->isEnabled()) {
 			$question = new Console\Question\ConfirmationQuestion(
-				'Do you want to disable connector?',
+				$this->translator->translate('//modbus-connector.cmd.initialize.questions.disable'),
 				false,
 			);
 
@@ -384,7 +353,7 @@ class Initialize extends Console\Command\Command
 			}
 		} else {
 			$question = new Console\Question\ConfirmationQuestion(
-				'Do you want to enable connector?',
+				$this->translator->translate('//modbus-connector.cmd.initialize.questions.enable'),
 				false,
 			);
 
@@ -396,11 +365,8 @@ class Initialize extends Console\Command\Command
 		$interface = $baudRate = $byteSize = $dataParity = $stopBits = null;
 
 		if (
-			(
-				$mode !== null
-				&& $mode->equalsValue(Types\ClientMode::MODE_RTU)
-			)
-			|| $connector->getClientMode()->equalsValue(Types\ClientMode::MODE_RTU)
+			$modeProperty?->getValue() === Types\ClientMode::RTU
+			|| $mode?->getValue() === Types\ClientMode::RTU
 		) {
 			$interface = $this->askRtuInterface($io, $connector);
 			$baudRate = $this->askRtuBaudRate($io, $connector);
@@ -411,31 +377,31 @@ class Initialize extends Console\Command\Command
 
 		$findConnectorPropertyQuery = new DevicesQueries\Entities\FindConnectorProperties();
 		$findConnectorPropertyQuery->forConnector($connector);
-		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_RTU_INTERFACE);
+		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::RTU_INTERFACE);
 
 		$interfaceProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
 		$findConnectorPropertyQuery = new DevicesQueries\Entities\FindConnectorProperties();
 		$findConnectorPropertyQuery->forConnector($connector);
-		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_RTU_BAUD_RATE);
+		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::RTU_BAUD_RATE);
 
 		$baudRateProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
 		$findConnectorPropertyQuery = new DevicesQueries\Entities\FindConnectorProperties();
 		$findConnectorPropertyQuery->forConnector($connector);
-		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_RTU_BYTE_SIZE);
+		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::RTU_BYTE_SIZE);
 
 		$byteSizeProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
 		$findConnectorPropertyQuery = new DevicesQueries\Entities\FindConnectorProperties();
 		$findConnectorPropertyQuery->forConnector($connector);
-		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_RTU_PARITY);
+		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::RTU_PARITY);
 
 		$dataParityProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
 		$findConnectorPropertyQuery = new DevicesQueries\Entities\FindConnectorProperties();
 		$findConnectorPropertyQuery->forConnector($connector);
-		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::IDENTIFIER_RTU_STOP_BITS);
+		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::RTU_STOP_BITS);
 
 		$stopBitsProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
@@ -456,9 +422,14 @@ class Initialize extends Console\Command\Command
 
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_CLIENT_MODE,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+					'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE,
+					'name' => DevicesUtilities\Name::createName(Types\ConnectorPropertyIdentifier::CLIENT_MODE),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
 					'value' => $mode->getValue(),
+					'format' => [
+						Types\ClientMode::RTU,
+						Types\ClientMode::TCP,
+					],
 					'connector' => $connector,
 				]));
 			} elseif ($mode !== null) {
@@ -468,16 +439,14 @@ class Initialize extends Console\Command\Command
 			}
 
 			if (
-				(
-					$mode !== null
-					&& $mode->equalsValue(Types\ClientMode::MODE_RTU)
-				)
-				|| $connector->getClientMode()->equalsValue(Types\ClientMode::MODE_RTU)
+				$modeProperty?->getValue() === Types\ClientMode::RTU
+				|| $mode?->getValue() === Types\ClientMode::RTU
 			) {
 				if ($interfaceProperty === null) {
 					$this->propertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-						'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_RTU_INTERFACE,
+						'identifier' => Types\ConnectorPropertyIdentifier::RTU_INTERFACE,
+						'name' => DevicesUtilities\Name::createName(Types\ConnectorPropertyIdentifier::RTU_INTERFACE),
 						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 						'value' => $interface,
 						'connector' => $connector,
@@ -491,7 +460,8 @@ class Initialize extends Console\Command\Command
 				if ($baudRateProperty === null) {
 					$this->propertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-						'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_RTU_BAUD_RATE,
+						'identifier' => Types\ConnectorPropertyIdentifier::RTU_BAUD_RATE,
+						'name' => DevicesUtilities\Name::createName(Types\ConnectorPropertyIdentifier::RTU_BAUD_RATE),
 						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UINT),
 						'value' => $baudRate?->getValue(),
 						'connector' => $connector,
@@ -505,7 +475,8 @@ class Initialize extends Console\Command\Command
 				if ($byteSizeProperty === null) {
 					$this->propertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-						'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_RTU_BYTE_SIZE,
+						'identifier' => Types\ConnectorPropertyIdentifier::RTU_BYTE_SIZE,
+						'name' => DevicesUtilities\Name::createName(Types\ConnectorPropertyIdentifier::RTU_BYTE_SIZE),
 						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
 						'value' => $byteSize?->getValue(),
 						'connector' => $connector,
@@ -519,7 +490,8 @@ class Initialize extends Console\Command\Command
 				if ($dataParityProperty === null) {
 					$this->propertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-						'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_RTU_PARITY,
+						'identifier' => Types\ConnectorPropertyIdentifier::RTU_PARITY,
+						'name' => DevicesUtilities\Name::createName(Types\ConnectorPropertyIdentifier::RTU_PARITY),
 						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
 						'value' => $dataParity?->getValue(),
 						'connector' => $connector,
@@ -533,7 +505,8 @@ class Initialize extends Console\Command\Command
 				if ($stopBitsProperty === null) {
 					$this->propertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-						'identifier' => Types\ConnectorPropertyIdentifier::IDENTIFIER_RTU_STOP_BITS,
+						'identifier' => Types\ConnectorPropertyIdentifier::RTU_STOP_BITS,
+						'name' => DevicesUtilities\Name::createName(Types\ConnectorPropertyIdentifier::RTU_STOP_BITS),
 						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
 						'value' => $stopBits?->getValue(),
 						'connector' => $connector,
@@ -568,10 +541,12 @@ class Initialize extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
-			$io->success(sprintf(
-				'Connector "%s" was successfully updated',
-				$connector->getName() ?? $connector->getIdentifier(),
-			));
+			$io->success(
+				$this->translator->translate(
+					'//modbus-connector.cmd.initialize.messages.update.success',
+					['name' => $connector->getName() ?? $connector->getIdentifier()],
+				),
+			);
 		} catch (Throwable $ex) {
 			// Log caught exception
 			$this->logger->error(
@@ -583,7 +558,7 @@ class Initialize extends Console\Command\Command
 				],
 			);
 
-			$io->error('Something went wrong, connector could not be updated. Error was logged.');
+			$io->error($this->translator->translate('//modbus-connector.cmd.initialize.messages.update.error'));
 		} finally {
 			// Revert all changes when error occur
 			if ($this->getOrmConnection()->isTransactionActive()) {
@@ -597,18 +572,18 @@ class Initialize extends Console\Command\Command
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 */
-	private function deleteExistingConfiguration(Style\SymfonyStyle $io): void
+	private function deleteConfiguration(Style\SymfonyStyle $io): void
 	{
 		$connector = $this->askWhichConnector($io);
 
 		if ($connector === null) {
-			$io->info('No Modbus connectors registered in system');
+			$io->info($this->translator->translate('//modbus-connector.cmd.base.messages.noConnectors'));
 
 			return;
 		}
 
 		$question = new Console\Question\ConfirmationQuestion(
-			'Would you like to continue?',
+			$this->translator->translate('//modbus-connector.cmd.base.questions.continue'),
 			false,
 		);
 
@@ -627,10 +602,12 @@ class Initialize extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
-			$io->success(sprintf(
-				'Connector "%s" was successfully removed',
-				$connector->getName() ?? $connector->getIdentifier(),
-			));
+			$io->success(
+				$this->translator->translate(
+					'//modbus-connector.cmd.initialize.messages.remove.success',
+					['name' => $connector->getName() ?? $connector->getIdentifier()],
+				),
+			);
 		} catch (Throwable $ex) {
 			// Log caught exception
 			$this->logger->error(
@@ -642,7 +619,7 @@ class Initialize extends Console\Command\Command
 				],
 			);
 
-			$io->error('Something went wrong, connector could not be removed. Error was logged.');
+			$io->error($this->translator->translate('//modbus-connector.cmd.initialize.messages.remove.error'));
 		} finally {
 			// Revert all changes when error occur
 			if ($this->getOrmConnection()->isTransactionActive()) {
@@ -651,31 +628,95 @@ class Initialize extends Console\Command\Command
 		}
 	}
 
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 */
+	private function listConfigurations(Style\SymfonyStyle $io): void
+	{
+		$findConnectorsQuery = new Queries\Entities\FindConnectors();
+
+		$connectors = $this->connectorsRepository->findAllBy($findConnectorsQuery, Entities\ModbusConnector::class);
+		usort(
+			$connectors,
+			static function (Entities\ModbusConnector $a, Entities\ModbusConnector $b): int {
+				if ($a->getIdentifier() === $b->getIdentifier()) {
+					return $a->getName() <=> $b->getName();
+				}
+
+				return $a->getIdentifier() <=> $b->getIdentifier();
+			},
+		);
+
+		$table = new Console\Helper\Table($io);
+		$table->setHeaders([
+			'#',
+			$this->translator->translate('//modbus-connector.cmd.initialize.data.name'),
+			$this->translator->translate('//modbus-connector.cmd.initialize.data.devicesCnt'),
+		]);
+
+		foreach ($connectors as $index => $connector) {
+			$findDevicesQuery = new Queries\Entities\FindDevices();
+			$findDevicesQuery->forConnector($connector);
+
+			$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\ModbusDevice::class);
+
+			$table->addRow([
+				$index + 1,
+				$connector->getName() ?? $connector->getIdentifier(),
+				count($devices),
+			]);
+		}
+
+		$table->render();
+
+		$io->newLine();
+	}
+
 	private function askMode(Style\SymfonyStyle $io): Types\ClientMode
 	{
 		$question = new Console\Question\ChoiceQuestion(
-			'What type of Modbus devices will this connector handle?',
+			$this->translator->translate('//modbus-connector.cmd.initialize.questions.select.mode'),
 			[
-				self::CHOICE_QUESTION_RTU_MODE,
-				self::CHOICE_QUESTION_TCP_MODE,
+				0 => $this->translator->translate('//modbus-connector.cmd.initialize.answers.mode.rtu'),
+				1 => $this->translator->translate('//modbus-connector.cmd.initialize.answers.mode.tcp'),
 			],
-			0,
+			1,
 		);
-		$question->setErrorMessage('Selected answer: "%s" is not valid.');
-		$question->setValidator(static function (string|null $answer): Types\ClientMode {
+
+		$question->setErrorMessage(
+			$this->translator->translate('//modbus-connector.cmd.base.messages.answerNotValid'),
+		);
+		$question->setValidator(function (string|null $answer): Types\ClientMode {
 			if ($answer === null) {
-				throw new Exceptions\InvalidState('Selected answer is not valid');
+				throw new Exceptions\Runtime(
+					sprintf(
+						$this->translator->translate('//modbus-connector.cmd.base.messages.answerNotValid'),
+						$answer,
+					),
+				);
 			}
 
-			if ($answer === self::CHOICE_QUESTION_RTU_MODE || $answer === '0') {
-				return Types\ClientMode::get(Types\ClientMode::MODE_RTU);
+			if (
+				$answer === $this->translator->translate(
+					'//modbus-connector.cmd.initialize.answers.mode.rtu',
+				)
+				|| $answer === '0'
+			) {
+				return Types\ClientMode::get(Types\ClientMode::RTU);
 			}
 
-			if ($answer === self::CHOICE_QUESTION_TCP_MODE || $answer === '1') {
-				return Types\ClientMode::get(Types\ClientMode::MODE_TCP);
+			if (
+				$answer === $this->translator->translate(
+					'//modbus-connector.cmd.initialize.answers.mode.tcp',
+				)
+				|| $answer === '1'
+			) {
+				return Types\ClientMode::get(Types\ClientMode::TCP);
 			}
 
-			throw new Exceptions\InvalidState('Selected answer is not valid');
+			throw new Exceptions\Runtime(
+				sprintf($this->translator->translate('//modbus-connector.cmd.base.messages.answerNotValid'), $answer),
+			);
 		});
 
 		$answer = $io->askQuestion($question);
@@ -686,7 +727,10 @@ class Initialize extends Console\Command\Command
 
 	private function askName(Style\SymfonyStyle $io, Entities\ModbusConnector|null $connector = null): string|null
 	{
-		$question = new Console\Question\Question('Provide connector name', $connector?->getName());
+		$question = new Console\Question\Question(
+			$this->translator->translate('//modbus-connector.cmd.initialize.questions.provide.name'),
+			$connector?->getName(),
+		);
 
 		$name = $io->askQuestion($question);
 
@@ -699,10 +743,18 @@ class Initialize extends Console\Command\Command
 	 */
 	private function askRtuInterface(Style\SymfonyStyle $io, Entities\ModbusConnector|null $connector = null): string
 	{
-		$question = new Console\Question\Question('Provide interface path', $connector?->getRtuInterface());
-		$question->setValidator(static function (string|null $answer): string {
+		$question = new Console\Question\Question(
+			$this->translator->translate('//modbus-connector.cmd.initialize.questions.provide.rtuInterface'),
+			$connector?->getRtuInterface(),
+		);
+		$question->setValidator(function (string|null $answer): string {
 			if ($answer === '' || $answer === null) {
-				throw new Exceptions\Runtime('You have to provide valid interface path');
+				throw new Exceptions\Runtime(
+					sprintf(
+						$this->translator->translate('//modbus-connector.cmd.base.messages.answerNotValid'),
+						$answer,
+					),
+				);
 			}
 
 			return $answer;
@@ -728,14 +780,22 @@ class Initialize extends Console\Command\Command
 		);
 
 		$question = new Console\Question\ChoiceQuestion(
-			'What byte size device uses?',
+			$this->translator->translate('//modbus-connector.cmd.initialize.questions.select.byteSize'),
 			array_values($byteSizes),
 			$default,
 		);
-		$question->setErrorMessage('Selected answer: "%s" is not valid.');
-		$question->setValidator(static function (string|null $answer) use ($byteSizes): Types\ByteSize {
+
+		$question->setErrorMessage(
+			$this->translator->translate('//modbus-connector.cmd.base.messages.answerNotValid'),
+		);
+		$question->setValidator(function (string|null $answer) use ($byteSizes): Types\ByteSize {
 			if ($answer === null) {
-				throw new Exceptions\InvalidState('Selected answer is not valid');
+				throw new Exceptions\Runtime(
+					sprintf(
+						$this->translator->translate('//modbus-connector.cmd.base.messages.answerNotValid'),
+						$answer,
+					),
+				);
 			}
 
 			if (array_key_exists($answer, array_values($byteSizes))) {
@@ -748,7 +808,9 @@ class Initialize extends Console\Command\Command
 				return Types\ByteSize::get(intval($byteSize));
 			}
 
-			throw new Exceptions\InvalidState('Selected answer is not valid');
+			throw new Exceptions\Runtime(
+				sprintf($this->translator->translate('//modbus-connector.cmd.base.messages.answerNotValid'), $answer),
+			);
 		});
 
 		$answer = $io->askQuestion($question);
@@ -766,7 +828,7 @@ class Initialize extends Console\Command\Command
 		Entities\ModbusConnector|null $connector = null,
 	): Types\BaudRate
 	{
-		$default = $connector?->getBaudRate()->getValue() ?? Types\BaudRate::BAUD_RATE_9600;
+		$default = $connector?->getBaudRate()->getValue() ?? Types\BaudRate::RATE_9600;
 
 		$baudRates = array_combine(
 			array_values(Types\BaudRate::getValues()),
@@ -774,14 +836,22 @@ class Initialize extends Console\Command\Command
 		);
 
 		$question = new Console\Question\ChoiceQuestion(
-			'What communication baud rate devices use?',
+			$this->translator->translate('//modbus-connector.cmd.initialize.questions.select.baudRate'),
 			array_values($baudRates),
 			$default,
 		);
-		$question->setErrorMessage('Selected answer: "%s" is not valid.');
-		$question->setValidator(static function (string|null $answer) use ($baudRates): Types\BaudRate {
+
+		$question->setErrorMessage(
+			$this->translator->translate('//modbus-connector.cmd.base.messages.answerNotValid'),
+		);
+		$question->setValidator(function (string|null $answer) use ($baudRates): Types\BaudRate {
 			if ($answer === null) {
-				throw new Exceptions\InvalidState('Selected answer is not valid');
+				throw new Exceptions\Runtime(
+					sprintf(
+						$this->translator->translate('//modbus-connector.cmd.base.messages.answerNotValid'),
+						$answer,
+					),
+				);
 			}
 
 			if (array_key_exists($answer, array_values($baudRates))) {
@@ -794,7 +864,9 @@ class Initialize extends Console\Command\Command
 				return Types\BaudRate::get(intval($baudRate));
 			}
 
-			throw new Exceptions\InvalidState('Selected answer is not valid');
+			throw new Exceptions\Runtime(
+				sprintf($this->translator->translate('//modbus-connector.cmd.base.messages.answerNotValid'), $answer),
+			);
 		});
 
 		$answer = $io->askQuestion($question);
@@ -815,40 +887,69 @@ class Initialize extends Console\Command\Command
 		$default = 0;
 
 		switch ($connector?->getParity()->getValue()) {
-			case Types\Parity::PARITY_ODD:
+			case Types\Parity::ODD:
 				$default = 1;
 
 				break;
-			case Types\Parity::PARITY_EVEN:
+			case Types\Parity::EVEN:
 				$default = 2;
 
 				break;
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			'What parity checking devices use?',
+			$this->translator->translate('//modbus-connector.cmd.initialize.questions.select.dataParity'),
 			[
-				self::CHOICE_QUESTION_PARITY_NONE,
-				self::CHOICE_QUESTION_PARITY_ODD,
-				self::CHOICE_QUESTION_PARITY_EVEN,
+				0 => $this->translator->translate('//modbus-connector.cmd.initialize.answers.parity.none'),
+				1 => $this->translator->translate('//modbus-connector.cmd.initialize.answers.parity.odd'),
+				2 => $this->translator->translate('//modbus-connector.cmd.initialize.answers.parity.even'),
 			],
 			$default,
 		);
-		$question->setErrorMessage('Selected answer: "%s" is not valid.');
-		$question->setValidator(static function (string|null $answer): Types\Parity {
+
+		$question->setErrorMessage(
+			$this->translator->translate('//modbus-connector.cmd.base.messages.answerNotValid'),
+		);
+		$question->setValidator(function (string|null $answer): Types\Parity {
 			if ($answer === null) {
-				throw new Exceptions\InvalidState('Selected answer is not valid');
+				throw new Exceptions\Runtime(
+					sprintf(
+						$this->translator->translate('//modbus-connector.cmd.base.messages.answerNotValid'),
+						$answer,
+					),
+				);
 			}
 
-			if ($answer === self::CHOICE_QUESTION_PARITY_NONE || $answer === '0') {
-				return Types\Parity::get(Types\Parity::PARITY_NONE);
-			} elseif ($answer === self::CHOICE_QUESTION_PARITY_ODD || $answer === '1') {
-				return Types\Parity::get(Types\Parity::PARITY_ODD);
-			} elseif ($answer === self::CHOICE_QUESTION_PARITY_EVEN || $answer === '2') {
-				return Types\Parity::get(Types\Parity::PARITY_EVEN);
+			if (
+				$answer === $this->translator->translate(
+					'//modbus-connector.cmd.initialize.answers.parity.none',
+				)
+				|| $answer === '0'
+			) {
+				return Types\Parity::get(Types\Parity::NONE);
 			}
 
-			throw new Exceptions\InvalidState('Selected answer is not valid');
+			if (
+				$answer === $this->translator->translate(
+					'//modbus-connector.cmd.initialize.answers.parity.odd',
+				)
+				|| $answer === '1'
+			) {
+				return Types\Parity::get(Types\Parity::ODD);
+			}
+
+			if (
+				$answer === $this->translator->translate(
+					'//modbus-connector.cmd.initialize.answers.parity.even',
+				)
+				|| $answer === '2'
+			) {
+				return Types\Parity::get(Types\Parity::EVEN);
+			}
+
+			throw new Exceptions\Runtime(
+				sprintf($this->translator->translate('//modbus-connector.cmd.base.messages.answerNotValid'), $answer),
+			);
 		});
 
 		$answer = $io->askQuestion($question);
@@ -866,7 +967,7 @@ class Initialize extends Console\Command\Command
 		Entities\ModbusConnector|null $connector = null,
 	): Types\StopBits
 	{
-		$default = $connector?->getStopBits()->getValue() ?? Types\StopBits::STOP_BIT_ONE;
+		$default = $connector?->getStopBits()->getValue() ?? Types\StopBits::ONE;
 
 		$stopBits = array_combine(
 			array_values(Types\StopBits::getValues()),
@@ -874,14 +975,22 @@ class Initialize extends Console\Command\Command
 		);
 
 		$question = new Console\Question\ChoiceQuestion(
-			'How many stop bits devices use?',
+			$this->translator->translate('//modbus-connector.cmd.initialize.questions.select.stopBits'),
 			array_values($stopBits),
 			$default,
 		);
-		$question->setErrorMessage('Selected answer: "%s" is not valid.');
-		$question->setValidator(static function (string|null $answer) use ($stopBits): Types\StopBits {
+
+		$question->setErrorMessage(
+			$this->translator->translate('//modbus-connector.cmd.base.messages.answerNotValid'),
+		);
+		$question->setValidator(function (string|null $answer) use ($stopBits): Types\StopBits {
 			if ($answer === null) {
-				throw new Exceptions\InvalidState('Selected answer is not valid');
+				throw new Exceptions\Runtime(
+					sprintf(
+						$this->translator->translate('//modbus-connector.cmd.base.messages.answerNotValid'),
+						$answer,
+					),
+				);
 			}
 
 			if (array_key_exists($answer, array_values($stopBits))) {
@@ -894,7 +1003,9 @@ class Initialize extends Console\Command\Command
 				return Types\StopBits::get(intval($stopBit));
 			}
 
-			throw new Exceptions\InvalidState('Selected answer is not valid');
+			throw new Exceptions\Runtime(
+				sprintf($this->translator->translate('//modbus-connector.cmd.base.messages.answerNotValid'), $answer),
+			);
 		});
 
 		$answer = $io->askQuestion($question);
@@ -910,7 +1021,7 @@ class Initialize extends Console\Command\Command
 	{
 		$connectors = [];
 
-		$findConnectorsQuery = new DevicesQueries\Entities\FindConnectors();
+		$findConnectorsQuery = new Queries\Entities\FindConnectors();
 
 		$systemConnectors = $this->connectorsRepository->findAllBy(
 			$findConnectorsQuery,
@@ -919,12 +1030,10 @@ class Initialize extends Console\Command\Command
 		usort(
 			$systemConnectors,
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-			static fn (DevicesEntities\Connectors\Connector $a, DevicesEntities\Connectors\Connector $b): int => $a->getIdentifier() <=> $b->getIdentifier()
+			static fn (Entities\ModbusConnector $a, Entities\ModbusConnector $b): int => $a->getIdentifier() <=> $b->getIdentifier()
 		);
 
 		foreach ($systemConnectors as $connector) {
-			assert($connector instanceof Entities\ModbusConnector);
-
 			$connectors[$connector->getIdentifier()] = $connector->getIdentifier()
 				. ($connector->getName() !== null ? ' [' . $connector->getName() . ']' : '');
 		}
@@ -934,14 +1043,22 @@ class Initialize extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			'Please select connector under which you want to manage devices',
+			$this->translator->translate('//modbus-connector.cmd.initialize.questions.select.connector'),
 			array_values($connectors),
 			count($connectors) === 1 ? 0 : null,
 		);
-		$question->setErrorMessage('Selected connector: "%s" is not valid.');
-		$question->setValidator(function (string|null $answer) use ($connectors): Entities\ModbusConnector {
+
+		$question->setErrorMessage(
+			$this->translator->translate('//modbus-connector.cmd.base.messages.answerNotValid'),
+		);
+		$question->setValidator(function (string|int|null $answer) use ($connectors): Entities\ModbusConnector {
 			if ($answer === null) {
-				throw new Exceptions\InvalidState('Selected answer is not valid');
+				throw new Exceptions\Runtime(
+					sprintf(
+						$this->translator->translate('//modbus-connector.cmd.base.messages.answerNotValid'),
+						$answer,
+					),
+				);
 			}
 
 			if (array_key_exists($answer, array_values($connectors))) {
@@ -951,27 +1068,100 @@ class Initialize extends Console\Command\Command
 			$identifier = array_search($answer, $connectors, true);
 
 			if ($identifier !== false) {
-				$findConnectorQuery = new DevicesQueries\Entities\FindConnectors();
+				$findConnectorQuery = new Queries\Entities\FindConnectors();
 				$findConnectorQuery->byIdentifier($identifier);
 
 				$connector = $this->connectorsRepository->findOneBy(
 					$findConnectorQuery,
 					Entities\ModbusConnector::class,
 				);
-				assert($connector instanceof Entities\ModbusConnector || $connector === null);
 
 				if ($connector !== null) {
 					return $connector;
 				}
 			}
 
-			throw new Exceptions\InvalidState('Selected answer is not valid');
+			throw new Exceptions\Runtime(
+				sprintf(
+					$this->translator->translate('//modbus-connector.cmd.base.messages.answerNotValid'),
+					$answer,
+				),
+			);
 		});
 
 		$connector = $io->askQuestion($question);
 		assert($connector instanceof Entities\ModbusConnector);
 
 		return $connector;
+	}
+
+	/**
+	 * @throws DBAL\Exception
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\Runtime
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	private function askInitializeAction(Style\SymfonyStyle $io): void
+	{
+		$question = new Console\Question\ChoiceQuestion(
+			$this->translator->translate('//modbus-connector.cmd.base.questions.whatToDo'),
+			[
+				0 => $this->translator->translate('//modbus-connector.cmd.initialize.actions.create'),
+				1 => $this->translator->translate('//modbus-connector.cmd.initialize.actions.update'),
+				2 => $this->translator->translate('//modbus-connector.cmd.initialize.actions.remove'),
+				3 => $this->translator->translate('//modbus-connector.cmd.initialize.actions.list'),
+				4 => $this->translator->translate('//modbus-connector.cmd.initialize.actions.nothing'),
+			],
+			4,
+		);
+
+		$question->setErrorMessage(
+			$this->translator->translate('//modbus-connector.cmd.base.messages.answerNotValid'),
+		);
+
+		$whatToDo = $io->askQuestion($question);
+
+		if (
+			$whatToDo === $this->translator->translate(
+				'//modbus-connector.cmd.initialize.actions.create',
+			)
+			|| $whatToDo === '0'
+		) {
+			$this->createConfiguration($io);
+
+			$this->askInitializeAction($io);
+
+		} elseif (
+			$whatToDo === $this->translator->translate(
+				'//modbus-connector.cmd.initialize.actions.update',
+			)
+			|| $whatToDo === '1'
+		) {
+			$this->editConfiguration($io);
+
+			$this->askInitializeAction($io);
+
+		} elseif (
+			$whatToDo === $this->translator->translate(
+				'//modbus-connector.cmd.initialize.actions.remove',
+			)
+			|| $whatToDo === '2'
+		) {
+			$this->deleteConfiguration($io);
+
+			$this->askInitializeAction($io);
+
+		} elseif (
+			$whatToDo === $this->translator->translate(
+				'//modbus-connector.cmd.initialize.actions.list',
+			)
+			|| $whatToDo === '3'
+		) {
+			$this->listConfigurations($io);
+
+			$this->askInitializeAction($io);
+		}
 	}
 
 	/**

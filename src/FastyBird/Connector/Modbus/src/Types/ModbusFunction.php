@@ -32,21 +32,21 @@ class ModbusFunction extends Consistence\Enum\Enum
 	/**
 	 * Define versions
 	 */
-	public const FUNCTION_CODE_READ_COIL = 0x01;
+	public const READ_COIL = 0x01;
 
-	public const FUNCTION_CODE_READ_DISCRETE = 0x02;
+	public const READ_DISCRETE = 0x02;
 
-	public const FUNCTION_CODE_READ_HOLDINGS_REGISTERS = 0x03;
+	public const READ_HOLDINGS_REGISTERS = 0x03;
 
-	public const FUNCTION_CODE_READ_INPUTS_REGISTERS = 0x04;
+	public const READ_INPUTS_REGISTERS = 0x04;
 
-	public const FUNCTION_CODE_WRITE_SINGLE_COIL = 0x05;
+	public const WRITE_SINGLE_COIL = 0x05;
 
-	public const FUNCTION_CODE_WRITE_SINGLE_HOLDING_REGISTER = 0x06;
+	public const WRITE_SINGLE_HOLDING_REGISTER = 0x06;
 
-	public const FUNCTION_CODE_WRITE_MULTIPLE_COILS = 0x1F;
+	public const WRITE_MULTIPLE_COILS = 0x1F;
 
-	public const FUNCTION_CODE_WRITE_MULTIPLE_HOLDINGS_REGISTERS = 0x10;
+	public const WRITE_MULTIPLE_HOLDINGS_REGISTERS = 0x10;
 
 	public function __toString(): string
 	{

@@ -459,6 +459,10 @@ final class ValueHelper
 			return $intValue;
 		}
 
+		if ($dataType->equalsValue(Types\DataType::DATA_TYPE_STRING)) {
+			return strval($value);
+		}
+
 		if (
 			$dataType->equalsValue(Types\DataType::DATA_TYPE_BUTTON)
 			|| $dataType->equalsValue(Types\DataType::DATA_TYPE_SWITCH)
