@@ -37,8 +37,8 @@ use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Nette\Utils;
 use React\EventLoop;
+use React\Promise;
 use Throwable;
-use function array_filter;
 use function array_key_exists;
 use function array_merge;
 use function assert;
@@ -60,7 +60,7 @@ class Tcp implements Client
 	use TReading;
 	use Nette\SmartObject;
 
-	private const LOST_DELAY = 5.0; // in s - Waiting delay before another communication with device after device was lost
+	private const LOST_DELAY = 60.0; // in s - Waiting delay before another communication with device after device was lost
 
 	private const HANDLER_START_DELAY = 2.0;
 
@@ -74,7 +74,7 @@ class Tcp implements Client
 	/** @var array<string, DateTimeInterface> */
 	private array $processedReadRegister = [];
 
-	/** @var array<string> */
+	/** @var array<string, DateTimeInterface> */
 	private array $lostDevices = [];
 
 	private EventLoop\TimerInterface|null $handlerTimer;
@@ -168,22 +168,8 @@ class Tcp implements Client
 				$this->processedDevices[] = $device->getId()->toString();
 
 				// Check if device is lost or not
-				if (in_array($device->getId()->toString(), $this->lostDevices, true)) {
+				if (array_key_exists($device->getId()->toString(), $this->lostDevices)) {
 					if ($this->deviceConnectionManager->getLostAt($device) === null) {
-						$this->logger->warning(
-							'Device is lost',
-							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
-								'type' => 'tcp-client',
-								'connector' => [
-									'id' => $this->connector->getId()->toString(),
-								],
-								'device' => [
-									'id' => $device->getId()->toString(),
-								],
-							],
-						);
-
 						$this->queue->append(
 							$this->entityHelper->create(
 								Entities\Messages\StoreDeviceConnectionState::class,
@@ -194,17 +180,16 @@ class Tcp implements Client
 								],
 							),
 						);
+
+						continue;
 					} else {
 						if (
 							$this->dateTimeFactory->getNow()->getTimestamp()
-								- $this->deviceConnectionManager->getLostAt($device)->getTimestamp() < self::LOST_DELAY
+							- $this->lostDevices[$device->getId()->toString()]->getTimestamp() < self::LOST_DELAY
 						) {
 							continue;
 						} else {
-							$this->lostDevices = array_filter(
-								$this->lostDevices,
-								static fn ($id) => $id != $device->getId()->toString()
-							);
+							unset($this->lostDevices[$device->getId()->toString()]);
 						}
 					}
 				}
@@ -358,6 +343,8 @@ class Tcp implements Client
 
 		$now = $this->dateTimeFactory->getNow();
 
+		$promises = [];
+
 		foreach ($requests as $request) {
 			foreach ($request->getAddresses() as $requestAddress) {
 				if ($request instanceof Entities\Clients\ReadCoilsRequest) {
@@ -394,7 +381,7 @@ class Tcp implements Client
 			}
 
 			if ($request instanceof Entities\Clients\ReadCoilsRequest) {
-				$promise = $this->connectionManager
+				$promises[] = $promise = $this->connectionManager
 					->getTcpClient()
 					->readCoils(
 						$deviceAddress,
@@ -403,7 +390,7 @@ class Tcp implements Client
 						$request->getQuantity(),
 					);
 			} elseif ($request instanceof Entities\Clients\ReadDiscreteInputsRequest) {
-				$promise = $this->connectionManager
+				$promises[] = $promise = $this->connectionManager
 					->getTcpClient()
 					->readDiscreteInputs(
 						$deviceAddress,
@@ -412,7 +399,7 @@ class Tcp implements Client
 						$request->getQuantity(),
 					);
 			} elseif ($request instanceof Entities\Clients\ReadHoldingsRegistersRequest) {
-				$promise = $this->connectionManager
+				$promises[] = $promise = $this->connectionManager
 					->getTcpClient()
 					->readHoldingRegisters(
 						$deviceAddress,
@@ -421,7 +408,7 @@ class Tcp implements Client
 						$request->getQuantity(),
 					);
 			} elseif ($request instanceof Entities\Clients\ReadInputsRegistersRequest) {
-				$promise = $this->connectionManager
+				$promises[] = $promise = $this->connectionManager
 					->getTcpClient()
 					->readInputRegisters(
 						$deviceAddress,
@@ -530,9 +517,37 @@ class Tcp implements Client
 								],
 							],
 						);
-					} else {
-						$this->lostDevices[] = $device->getId()->toString();
+					}
+				},
+			);
+		}
 
+		Promise\all($promises)
+			->then(function () use ($device): void {
+				// Check device state...
+				if (
+					!$this->deviceConnectionManager->getState($device)->equalsValue(
+						MetadataTypes\ConnectionState::STATE_CONNECTED,
+					)
+				) {
+					// ... and if it is not ready, set it to ready
+					$this->queue->append(
+						$this->entityHelper->create(
+							Entities\Messages\StoreDeviceConnectionState::class,
+							[
+								'connector' => $this->connector->getId(),
+								'device' => $device->getId(),
+								'state' => MetadataTypes\ConnectionState::STATE_CONNECTED,
+							],
+						),
+					);
+				}
+			})
+			->catch(function (Throwable $ex) use ($device, $now): void {
+				if (!$ex instanceof Exceptions\ModbusTcp) {
+					$this->lostDevices[$device->getId()->toString()] = $now;
+
+					if ($this->deviceConnectionManager->getLostAt($device) === null) {
 						$this->logger->warning(
 							'Device is lost',
 							[
@@ -559,28 +574,8 @@ class Tcp implements Client
 							),
 						);
 					}
-				},
-			);
-		}
-
-		// Check device state...
-		if (
-			!$this->deviceConnectionManager->getState($device)->equalsValue(
-				MetadataTypes\ConnectionState::STATE_CONNECTED,
-			)
-		) {
-			// ... and if it is not ready, set it to ready
-			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\StoreDeviceConnectionState::class,
-					[
-						'connector' => $this->connector->getId(),
-						'device' => $device->getId(),
-						'state' => MetadataTypes\ConnectionState::STATE_CONNECTED,
-					],
-				),
-			);
-		}
+				}
+			});
 
 		return true;
 	}

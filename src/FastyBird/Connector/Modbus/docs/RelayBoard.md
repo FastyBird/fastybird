@@ -109,7 +109,7 @@ In the next steps will be configured read and write values.
   [5] i32
   [6] u32
   [7] f
- > 2
+ > 4
 ```
 
 ```shell
@@ -150,7 +150,7 @@ In the next steps will be configured read and write values.
   [5] i32
   [6] u32
   [7] f
- > 2
+ > 4
 ```
 
 ```shell
@@ -178,7 +178,7 @@ In the next steps will be configured read and write values.
   [5] i32
   [6] u32
   [7] f
- > 2
+ > 4
 ```
 
 So in short.

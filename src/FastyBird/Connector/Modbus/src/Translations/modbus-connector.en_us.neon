@@ -54,7 +54,7 @@ cmd:
 
         answers:
             mode:
-                rtu: "Modbus RTU devices over serial line"
+                rtu: "Modbus devices over serial line"
                 tcp: "Modbus devices over TCP network"
             parity:
                 none: "None"

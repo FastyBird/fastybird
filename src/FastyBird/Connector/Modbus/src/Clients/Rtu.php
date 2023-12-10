@@ -37,7 +37,6 @@ use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Nette\Utils;
 use React\EventLoop;
-use function array_filter;
 use function array_key_exists;
 use function array_merge;
 use function assert;
@@ -61,7 +60,7 @@ class Rtu implements Client
 
 	private const READ_MAX_ATTEMPTS = 5;
 
-	private const LOST_DELAY = 5.0; // in s - Waiting delay before another communication with device after device was lost
+	private const LOST_DELAY = 60.0; // in s - Waiting delay before another communication with device after device was lost
 
 	private const HANDLER_START_DELAY = 2.0;
 
@@ -75,7 +74,7 @@ class Rtu implements Client
 	/** @var array<string, DateTimeInterface|int> */
 	private array $processedReadRegisters = [];
 
-	/** @var array<string> */
+	/** @var array<string, DateTimeInterface> */
 	private array $lostDevices = [];
 
 	private EventLoop\TimerInterface|null $handlerTimer;
@@ -180,22 +179,8 @@ class Rtu implements Client
 				$this->processedDevices[] = $device->getId()->toString();
 
 				// Check if device is lost or not
-				if (in_array($device->getId()->toString(), $this->lostDevices, true)) {
+				if (array_key_exists($device->getId()->toString(), $this->lostDevices)) {
 					if ($this->deviceConnectionManager->getLostAt($device) === null) {
-						$this->logger->warning(
-							'Device is lost',
-							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
-								'type' => 'rtu-client',
-								'connector' => [
-									'id' => $this->connector->getId()->toString(),
-								],
-								'device' => [
-									'id' => $device->getId()->toString(),
-								],
-							],
-						);
-
 						$this->queue->append(
 							$this->entityHelper->create(
 								Entities\Messages\StoreDeviceConnectionState::class,
@@ -206,17 +191,16 @@ class Rtu implements Client
 								],
 							),
 						);
+
+						continue;
 					} else {
 						if (
 							$this->dateTimeFactory->getNow()->getTimestamp()
-								- $this->deviceConnectionManager->getLostAt($device)->getTimestamp() < self::LOST_DELAY
+								- $this->lostDevices[$device->getId()->toString()]->getTimestamp() < self::LOST_DELAY
 						) {
 							continue;
 						} else {
-							$this->lostDevices = array_filter(
-								$this->lostDevices,
-								static fn ($id) => $id != $device->getId()->toString()
-							);
+							unset($this->lostDevices[$device->getId()->toString()]);
 						}
 					}
 				}
@@ -427,7 +411,7 @@ class Rtu implements Client
 					}
 
 					if ($channel !== null) {
-						$this->processedReadRegisters[$channel->getIdentifier()] = $now;
+						$this->processedReadRegisters[$channel->getId()->toString()] = $now;
 					}
 				}
 			} catch (Exceptions\ModbusRtu $ex) {
@@ -473,12 +457,12 @@ class Rtu implements Client
 						}
 
 						// Increment failed attempts counter
-						if (!array_key_exists($channel->getIdentifier(), $this->processedReadRegisters)) {
-							$this->processedReadRegisters[$channel->getIdentifier()] = 1;
+						if (!array_key_exists($channel->getId()->toString(), $this->processedReadRegisters)) {
+							$this->processedReadRegisters[$channel->getId()->toString()] = 1;
 						} else {
-							$this->processedReadRegisters[$channel->getIdentifier()]
-								= is_int($this->processedReadRegisters[$channel->getIdentifier()])
-									? $this->processedReadRegisters[$channel->getIdentifier()] + 1
+							$this->processedReadRegisters[$channel->getId()->toString()]
+								= is_int($this->processedReadRegisters[$channel->getId()->toString()])
+									? $this->processedReadRegisters[$channel->getId()->toString()] + 1
 									: 1;
 						}
 					}
@@ -488,7 +472,7 @@ class Rtu implements Client
 					'Could not handle register reading',
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
-						'type' => 'tcp-client',
+						'type' => 'rtu-client',
 						'exception' => BootstrapHelpers\Logger::buildException($ex),
 						'connector' => [
 							'id' => $this->connector->getId()->toString(),
@@ -527,10 +511,12 @@ class Rtu implements Client
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function createReadAddress(
 		MetadataDocuments\DevicesModule\Device $device,
@@ -559,53 +545,55 @@ class Rtu implements Client
 		}
 
 		if (
-			isset($this->processedReadRegisters[$channel->getIdentifier()])
-			&& is_int($this->processedReadRegisters[$channel->getIdentifier()])
-			&& $this->processedReadRegisters[$channel->getIdentifier()] >= self::READ_MAX_ATTEMPTS
+			isset($this->processedReadRegisters[$channel->getId()->toString()])
+			&& is_int($this->processedReadRegisters[$channel->getId()->toString()])
+			&& $this->processedReadRegisters[$channel->getId()->toString()] >= self::READ_MAX_ATTEMPTS
 		) {
-			unset($this->processedReadRegisters[$channel->getIdentifier()]);
+			unset($this->processedReadRegisters[$channel->getId()->toString()]);
 
-			$this->lostDevices[] = $device->getId()->toString();
+			$this->lostDevices[$device->getId()->toString()] = $now;
 
-			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\StoreDeviceConnectionState::class,
+			if ($this->deviceConnectionManager->getLostAt($device) === null) {
+				$this->queue->append(
+					$this->entityHelper->create(
+						Entities\Messages\StoreDeviceConnectionState::class,
+						[
+							'connector' => $this->connector->getId(),
+							'device' => $device->getId(),
+							'state' => MetadataTypes\ConnectionState::STATE_LOST,
+						],
+					),
+				);
+
+				$this->logger->warning(
+					'Maximum channel property read attempts reached. Device is lost',
 					[
-						'connector' => $this->connector->getId(),
-						'device' => $device->getId(),
-						'state' => MetadataTypes\ConnectionState::STATE_LOST,
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
+						'type' => 'rtu-client',
+						'connector' => [
+							'id' => $this->connector->getId()->toString(),
+						],
+						'device' => [
+							'id' => $device->getId()->toString(),
+						],
+						'channel' => [
+							'id' => $channel->getId()->toString(),
+						],
+						'property' => [
+							'id' => $property->getId()->toString(),
+						],
 					],
-				),
-			);
-
-			$this->logger->warning(
-				'Maximum channel property read attempts reached',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
-					'type' => 'rtu-client',
-					'connector' => [
-						'id' => $this->connector->getId()->toString(),
-					],
-					'device' => [
-						'id' => $device->getId()->toString(),
-					],
-					'channel' => [
-						'id' => $channel->getId()->toString(),
-					],
-					'property' => [
-						'id' => $property->getId()->toString(),
-					],
-				],
-			);
+				);
+			}
 
 			return null;
 		}
 
 		if (
-			array_key_exists($channel->getIdentifier(), $this->processedReadRegisters)
-			&& $this->processedReadRegisters[$channel->getIdentifier()] instanceof DateTimeInterface
+			array_key_exists($channel->getId()->toString(), $this->processedReadRegisters)
+			&& $this->processedReadRegisters[$channel->getId()->toString()] instanceof DateTimeInterface
 			&& (
-				$now->getTimestamp() - $this->processedReadRegisters[$channel->getIdentifier()]->getTimestamp()
+				$now->getTimestamp() - $this->processedReadRegisters[$channel->getId()->toString()]->getTimestamp()
 			) < $this->channelHelper->getReadingDelay($channel)
 		) {
 			return null;

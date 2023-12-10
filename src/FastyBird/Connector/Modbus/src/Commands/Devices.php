@@ -528,7 +528,7 @@ class Devices extends Console\Command\Command
 
 			$io->success(
 				$this->translator->translate(
-					'//modbus-connector.cmd.devices.messages.update.success',
+					'//modbus-connector.cmd.devices.messages.update.device.success',
 					['name' => $device->getName() ?? $device->getIdentifier()],
 				),
 			);
@@ -1142,15 +1142,13 @@ class Devices extends Console\Command\Command
 				);
 			}
 
-			$findDevicesQuery = new DevicesQueries\Entities\FindDevices();
+			$findDevicesQuery = new Queries\Entities\FindDevices();
 			$findDevicesQuery->forConnector($connector);
 
 			foreach ($this->devicesRepository->findAllBy(
 				$findDevicesQuery,
 				Entities\ModbusDevice::class,
 			) as $connectorDevice) {
-				assert($connectorDevice instanceof Entities\ModbusDevice);
-
 				if (
 					$connectorDevice->getAddress() === intval($answer)
 					&& ($device === null || !$device->getId()->equals($connectorDevice->getId()))
@@ -1256,15 +1254,13 @@ class Devices extends Console\Command\Command
 				);
 			}
 
-			$findDevicesQuery = new DevicesQueries\Entities\FindDevices();
+			$findDevicesQuery = new Queries\Entities\FindDevices();
 			$findDevicesQuery->forConnector($connector);
 
 			foreach ($this->devicesRepository->findAllBy(
 				$findDevicesQuery,
 				Entities\ModbusDevice::class,
 			) as $connectorDevice) {
-				assert($connectorDevice instanceof Entities\ModbusDevice);
-
 				if (
 					$connectorDevice->getUnitId() === intval($answer)
 					&& ($device === null || !$device->getId()->equals($connectorDevice->getId()))
@@ -1601,7 +1597,7 @@ class Devices extends Console\Command\Command
 	): string|null
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate('//modbus-connector.cmd.devices.questions.provide.readingDelay'),
+			$this->translator->translate('//modbus-connector.cmd.devices.questions.provide.register.readingDelay'),
 			$channel?->getReadingDelay() ?? Entities\ModbusChannel::READING_DELAY,
 		);
 

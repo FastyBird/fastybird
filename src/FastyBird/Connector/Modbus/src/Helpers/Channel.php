@@ -86,7 +86,7 @@ final class Channel
 	{
 		$findPropertyQuery = new DevicesQueries\Configuration\FindChannelVariableProperties();
 		$findPropertyQuery->forChannel($channel);
-		$findPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::ADDRESS);
+		$findPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::TYPE);
 
 		$property = $this->channelsPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,

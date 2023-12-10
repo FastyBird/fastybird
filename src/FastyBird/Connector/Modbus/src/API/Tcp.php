@@ -547,73 +547,94 @@ class Tcp
 
 				$connection->write($request);
 
-				// Wait for response event
-				$connection->on('data', function ($data) use ($connection, $deferred, $request, &$response): void {
-					// There are rare cases when MODBUS packet is received by multiple fragmented TCP packets, and it could
-					// take PHP multiple reads from stream to get full packet. So we concatenate data and check if all that
-					// we have received makes a complete modbus packet.
-					$response .= $data;
-
-					try {
-						if (!$this->isCompleteLength($response)) {
-							return;
-						}
-					} catch (Throwable $ex) {
-						$connection->end();
-
-						$deferred->reject($ex);
-
-						return;
-					}
-
-					$connection->end();
-
-					if (strlen($response) < 8) {
-						$deferred->reject(
-							new Exceptions\ModbusTcp('Response length too short', -1, $request, $response),
-						);
-
-						return;
-					}
-
-					$aduRequest = unpack(self::MODBUS_ADU, $request);
-
-					if ($aduRequest === false) {
-						$deferred->reject(new Exceptions\ModbusTcp('ADU could not be extracted from response'));
-
-						return;
-					}
-
-					$aduResponse = unpack(self::MODBUS_ERROR, $response);
-
-					if ($aduResponse === false) {
-						$deferred->reject(new Exceptions\ModbusTcp('Error could not be extracted from response'));
-
-						return;
-					}
-
-					if ($aduRequest['function'] !== $aduResponse['error']) {
-						// Error code = Function code + 0x80
-						if ($aduResponse['error'] === $aduRequest['function'] + 0x80) {
-							$deferred->reject(
-								new Exceptions\ModbusTcp(null, $aduResponse['exception'], $request, $response),
-							);
-						} else {
-							$deferred->reject(
-								new Exceptions\ModbusTcp('Illegal error code', -3, $request, $response),
-							);
-						}
-
-						return;
-					}
-
-					$deferred->resolve($response);
+				$timeout = $this->eventLoop->addTimer(1.0, static function () use ($deferred): void {
+					$deferred->reject(new Exceptions\InvalidState('Device did not send response in time'));
 				});
 
-				$connection->on('error', static function (Throwable $ex) use ($connection, $deferred): void {
+				// Wait for response event
+				$connection->on(
+					'data',
+					function ($data) use ($connection, $deferred, $request, &$response, $timeout): void {
+						// There are rare cases when MODBUS packet is received by multiple fragmented TCP packets, and it could
+						// take PHP multiple reads from stream to get full packet. So we concatenate data and check if all that
+						// we have received makes a complete modbus packet.
+						$response .= $data;
+
+						try {
+							if (!$this->isCompleteLength($response)) {
+								return;
+							}
+						} catch (Throwable $ex) {
+							$connection->end();
+
+							$deferred->reject($ex);
+
+							$this->eventLoop->cancelTimer($timeout);
+
+							return;
+						}
+
+						$connection->end();
+
+						if (strlen($response) < 8) {
+							$deferred->reject(
+								new Exceptions\ModbusTcp('Response length too short', -1, $request, $response),
+							);
+
+							$this->eventLoop->cancelTimer($timeout);
+
+							return;
+						}
+
+						$aduRequest = unpack(self::MODBUS_ADU, $request);
+
+						if ($aduRequest === false) {
+							$deferred->reject(new Exceptions\ModbusTcp('ADU could not be extracted from response'));
+
+							$this->eventLoop->cancelTimer($timeout);
+
+							return;
+						}
+
+						$aduResponse = unpack(self::MODBUS_ERROR, $response);
+
+						if ($aduResponse === false) {
+							$deferred->reject(new Exceptions\ModbusTcp('Error could not be extracted from response'));
+
+							$this->eventLoop->cancelTimer($timeout);
+
+							return;
+						}
+
+						if ($aduRequest['function'] !== $aduResponse['error']) {
+							// Error code = Function code + 0x80
+							if ($aduResponse['error'] === $aduRequest['function'] + 0x80) {
+								$deferred->reject(
+									new Exceptions\ModbusTcp(null, $aduResponse['exception'], $request, $response),
+								);
+							} else {
+								$deferred->reject(
+									new Exceptions\ModbusTcp('Illegal error code', -3, $request, $response),
+								);
+							}
+
+							$this->eventLoop->cancelTimer($timeout);
+
+							return;
+						}
+
+						$deferred->resolve($response);
+
+						$this->eventLoop->cancelTimer($timeout);
+					},
+				);
+
+				$connection->on('error', function (Throwable $ex) use ($connection, $deferred, $timeout): void {
 					$connection->end();
 
 					$deferred->reject($ex);
+
+					$this->eventLoop->cancelTimer($timeout);
 				});
 			})
 			->catch(static function (Throwable $ex) use ($deferred): void {

@@ -139,10 +139,10 @@ class Property extends RedisDbStates\State implements DevicesStates\Property
 	{
 		return [
 			0 => 'id',
-			DevicesStates\Property::ACTUAL_VALUE_FIELD => null,
-			DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
-			DevicesStates\Property::PENDING_FIELD => false,
-			DevicesStates\Property::VALID_FIELD => false,
+			self::ACTUAL_VALUE_FIELD => null,
+			self::EXPECTED_VALUE_FIELD => null,
+			self::PENDING_FIELD => false,
+			self::VALID_FIELD => false,
 			self::CREATED_AT_FIELD => null,
 			self::UPDATED_AT_FIELD => null,
 		];
@@ -151,10 +151,10 @@ class Property extends RedisDbStates\State implements DevicesStates\Property
 	public static function getUpdateFields(): array
 	{
 		return [
-			DevicesStates\Property::ACTUAL_VALUE_FIELD,
-			DevicesStates\Property::EXPECTED_VALUE_FIELD,
-			DevicesStates\Property::PENDING_FIELD,
-			DevicesStates\Property::VALID_FIELD,
+			self::ACTUAL_VALUE_FIELD,
+			self::EXPECTED_VALUE_FIELD,
+			self::PENDING_FIELD,
+			self::VALID_FIELD,
 			self::UPDATED_AT_FIELD,
 		];
 	}

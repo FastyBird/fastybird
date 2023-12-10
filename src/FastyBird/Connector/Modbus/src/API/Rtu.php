@@ -38,7 +38,6 @@ use function strlen;
 use function strrev;
 use function substr;
 use function unpack;
-use function usleep;
 
 /**
  * Modbus RTU API interface
@@ -58,6 +57,8 @@ class Rtu
 	private const MODBUS_ERROR = 'C1station/C1error/C1exception/';
 
 	private API\Interfaces\Serial $interface;
+
+	private bool $isOpen = false;
 
 	/**
 	 * @throws Exceptions\InvalidState
@@ -100,6 +101,7 @@ class Rtu
 	public function open(): void
 	{
 		$this->interface->open();
+		$this->isOpen = true;
 	}
 
 	/**
@@ -107,6 +109,7 @@ class Rtu
 	 */
 	public function close(): void
 	{
+		$this->isOpen = false;
 		$this->interface->close();
 	}
 
@@ -337,9 +340,11 @@ class Rtu
 	 */
 	private function sendRequest(string $request): string
 	{
-		$this->interface->send($request);
+		if (!$this->isOpen) {
+			throw new Exceptions\ModbusRtu('Connection was closed');
+		}
 
-		usleep((int) (0.1 * 1000_000));
+		$this->interface->send($request);
 
 		$response = $this->interface->read();
 

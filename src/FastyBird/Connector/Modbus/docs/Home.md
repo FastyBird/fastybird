@@ -54,18 +54,20 @@ Modbus connector - initialization
 You will then be prompted to choose an action:
 
 ```shell
- What would you like to do?:
+ What would you like to do? [Nothing]:
   [0] Create new connector configuration
   [1] Edit existing connector configuration
   [2] Delete existing connector configuration
+  [3] List Modbus connectors
+  [4] Nothing
  > 0
 ```
 
 If you choose to create a new connector, you will be asked to choose the mode in which the connector will communicate with the devices:
 
 ```shell
- What type of Modbus devices will this connector handle? [Modbus RTU devices over serial line]:
-  [0] Modbus RTU devices over serial line
+ What type of Modbus devices will this connector handle? [Modbus devices over serial line]:
+  [0] Modbus devices over serial line
   [1] Modbus devices over TCP network
  > 0
 ```
@@ -139,10 +141,12 @@ You will then be prompted to select connector to manage devices.
 You will then be prompted to select device management action.
 
 ```shell
- What would you like to do?:
+ What would you like to do? [Nothing]:
   [0] Create new connector device
   [1] Edit existing connector device
   [2] Delete existing connector device
+  [3] List connector's devices
+  [4] Nothing
  > 0
 ```
 
@@ -164,16 +168,16 @@ Now you will be asked to provide some device details:
 ```
 
 ```shell
- What byte order device uses? [big]:
-  [0] big
-  [1] big_swap
-  [2] little
-  [3] little_swap
+ What byte order device uses? [Big-endian]:
+  [0] Big-endian
+  [1] Swapped Big-endian
+  [2] Little-endian
+  [3] Swappd Little-endian
  > 0
 ```
 
 > **NOTE:**
-The byte order of your device is dependent on its specifications. To determine the appropriate byte order, consult your device manual.
+The byte order of your device is dependent on its specifications. To determine the appropriate byte order, consult it with your device manual.
 If you are unsure, the default option of "BIG" is commonly used.
 
 If there are no errors, you will receive a success message.

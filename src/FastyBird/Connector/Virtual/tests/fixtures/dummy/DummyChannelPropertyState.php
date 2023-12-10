@@ -7,6 +7,7 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use Exception;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\States as DevicesStates;
 use Nette\Utils;
 use Ramsey\Uuid;

@@ -39,6 +39,10 @@ interface Property extends ObjectMapper\MappedObject
 
 	public const VALID_FIELD = 'valid';
 
+	public const CREATED_AT = 'createdAt';
+
+	public const UPDATED_AT = 'updatedAt';
+
 	public function getId(): Uuid\UuidInterface;
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 	public function getActualValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null;

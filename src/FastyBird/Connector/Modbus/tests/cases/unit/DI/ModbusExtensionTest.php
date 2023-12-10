@@ -45,6 +45,7 @@ final class ModbusExtensionTest extends Tests\Cases\Unit\BaseTestCase
 		self::assertNotNull($container->getByType(Queue\Queue::class, false));
 
 		self::assertNotNull($container->getByType(Subscribers\Properties::class, false));
+		self::assertNotNull($container->getByType(Subscribers\Controls::class, false));
 
 		self::assertNotNull($container->getByType(Schemas\ModbusConnector::class, false));
 		self::assertNotNull($container->getByType(Schemas\ModbusDevice::class, false));

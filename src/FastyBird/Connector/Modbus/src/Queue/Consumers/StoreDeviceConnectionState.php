@@ -106,17 +106,24 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 			);
 
 			if (
-				$entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_LOST)
+				$entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_DISCONNECTED)
+				|| $entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_LOST)
 				|| $entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_ALERT)
 				|| $entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_UNKNOWN)
 			) {
 				$findDevicePropertiesQuery = new DevicesQueries\Configuration\FindDeviceDynamicProperties();
 				$findDevicePropertiesQuery->forDevice($device);
 
-				foreach ($this->devicesPropertiesConfigurationRepository->findAllBy(
+				$properties = $this->devicesPropertiesConfigurationRepository->findAllBy(
 					$findDevicePropertiesQuery,
 					Metadata\Documents\DevicesModule\DeviceDynamicProperty::class,
-				) as $property) {
+				);
+
+				foreach ($properties as $property) {
+					if ($property->getIdentifier() === Modbus\Types\DevicePropertyIdentifier::STATE) {
+						continue;
+					}
+
 					$this->devicePropertiesStatesManager->setValidState($property, false);
 				}
 
@@ -130,10 +137,12 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 					$findChannelPropertiesQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
 					$findChannelPropertiesQuery->forChannel($channel);
 
-					foreach ($this->channelsPropertiesConfigurationRepository->findAllBy(
+					$properties = $this->channelsPropertiesConfigurationRepository->findAllBy(
 						$findChannelPropertiesQuery,
 						Metadata\Documents\DevicesModule\ChannelDynamicProperty::class,
-					) as $property) {
+					);
+
+					foreach ($properties as $property) {
 						$this->channelPropertiesStatesManager->setValidState($property, false);
 					}
 				}

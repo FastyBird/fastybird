@@ -229,6 +229,8 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		}
 
 		if (!$property->isSettable()) {
+			$this->resetExpected($property);
+
 			$this->logger->error(
 				'Channel property is not writable',
 				[
@@ -266,12 +268,39 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		);
 
 		if ($expectedValue === null) {
-			$this->channelPropertiesStatesManager->setValue(
-				$property,
-				Utils\ArrayHash::from([
-					DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
-					DevicesStates\Property::PENDING_FIELD => false,
-				]),
+			$this->resetExpected($property);
+
+			return true;
+		}
+
+		$valueToWrite = $this->transformer->transformValueToDevice(
+			$property->getDataType(),
+			$property->getFormat(),
+			$state->getExpectedValue(),
+		);
+
+		if ($valueToWrite === null) {
+			$this->resetExpected($property);
+
+			$this->logger->error(
+				'Value to write into register is invalid',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
+					'type' => 'write-channel-property-state-message-consumer',
+					'connector' => [
+						'id' => $entity->getConnector()->toString(),
+					],
+					'device' => [
+						'id' => $entity->getDevice()->toString(),
+					],
+					'channel' => [
+						'id' => $entity->getChannel()->toString(),
+					],
+					'property' => [
+						'id' => $entity->getProperty()->toString(),
+					],
+					'data' => $entity->toArray(),
+				],
 			);
 
 			return true;
@@ -301,6 +330,8 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					),
 				);
 
+				$this->resetExpected($property);
+
 				$this->logger->error(
 					'Device address is not configured',
 					[
@@ -328,6 +359,8 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$address = $this->channelHelper->getAddress($channel);
 
 			if (!is_int($address)) {
+				$this->resetExpected($property);
+
 				$this->logger->error(
 					'Channel address is not configured',
 					[
@@ -367,42 +400,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				MetadataTypes\DataType::DATA_TYPE_FLOAT,
 				MetadataTypes\DataType::DATA_TYPE_BOOLEAN,
 			], true)) {
+				$this->resetExpected($property);
+
 				$this->logger->error(
 					sprintf(
 						'Trying to write property with unsupported data type: %s for channel property',
 						strval($deviceExpectedDataType->getValue()),
 					),
-					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
-						'type' => 'write-channel-property-state-message-consumer',
-						'connector' => [
-							'id' => $entity->getConnector()->toString(),
-						],
-						'device' => [
-							'id' => $entity->getDevice()->toString(),
-						],
-						'channel' => [
-							'id' => $entity->getChannel()->toString(),
-						],
-						'property' => [
-							'id' => $entity->getProperty()->toString(),
-						],
-						'data' => $entity->toArray(),
-					],
-				);
-
-				return true;
-			}
-
-			$valueToWrite = $this->transformer->transformValueToDevice(
-				$property->getDataType(),
-				$property->getFormat(),
-				$expectedValue,
-			);
-
-			if ($valueToWrite === null) {
-				$this->logger->error(
-					'Value to write into register is invalid',
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
 						'type' => 'write-channel-property-state-message-consumer',
@@ -437,6 +441,8 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						);
 
 					} else {
+						$this->resetExpected($property);
+
 						$this->logger->error(
 							'Value for boolean property have to be 1/0 or true/false',
 							[
@@ -510,6 +516,8 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						);
 
 					} else {
+						$this->resetExpected($property);
+
 						$this->logger->error(
 							'Provided data type is not supported',
 							[
@@ -535,6 +543,8 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					}
 
 					if ($bytes === null) {
+						$this->resetExpected($property);
+
 						$this->logger->error(
 							'Data could not be converted for write',
 							[
@@ -562,7 +572,21 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					$this->connectionManager
 						->getRtuClient($connector)
 						->writeSingleHolding($station, $address, $bytes);
+
+					$state = $this->channelPropertiesStatesManager->getValue($property);
+
+					if ($state?->getExpectedValue() !== null) {
+						$this->channelPropertiesStatesManager->setValue(
+							$property,
+							Utils\ArrayHash::from([
+								DevicesStates\Property::ACTUAL_VALUE_FIELD => $state->getExpectedValue(),
+								DevicesStates\Property::VALID_FIELD => true,
+							]),
+						);
+					}
 				} else {
+					$this->resetExpected($property);
+
 					$this->logger->error(
 						sprintf(
 							'Unsupported value data type: %s',
@@ -590,6 +614,8 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					return true;
 				}
 			} catch (Exceptions\ModbusRtu $ex) {
+				$this->resetExpected($property);
+
 				$this->logger->error(
 					'Could not write state to device',
 					[
@@ -629,6 +655,8 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					),
 				);
 
+				$this->resetExpected($property);
+
 				$this->logger->error(
 					'Device ip address is not configured',
 					[
@@ -662,6 +690,8 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$address = $this->channelHelper->getAddress($channel);
 
 			if (!is_int($address)) {
+				$this->resetExpected($property);
+
 				$this->logger->error(
 					'Channel address is not configured',
 					[
@@ -702,42 +732,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				MetadataTypes\DataType::DATA_TYPE_BOOLEAN,
 				MetadataTypes\DataType::DATA_TYPE_STRING,
 			], true)) {
+				$this->resetExpected($property);
+
 				$this->logger->error(
 					sprintf(
 						'Trying to write property with unsupported data type: %s for channel property',
 						strval($deviceExpectedDataType->getValue()),
 					),
-					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
-						'type' => 'write-channel-property-state-message-consumer',
-						'connector' => [
-							'id' => $entity->getConnector()->toString(),
-						],
-						'device' => [
-							'id' => $entity->getDevice()->toString(),
-						],
-						'channel' => [
-							'id' => $entity->getChannel()->toString(),
-						],
-						'property' => [
-							'id' => $entity->getProperty()->toString(),
-						],
-						'data' => $entity->toArray(),
-					],
-				);
-
-				return true;
-			}
-
-			$valueToWrite = $this->transformer->transformValueToDevice(
-				$property->getDataType(),
-				$property->getFormat(),
-				$state->getExpectedValue(),
-			);
-
-			if ($valueToWrite === null) {
-				$this->logger->error(
-					'Value to write to register is invalid',
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
 						'type' => 'write-channel-property-state-message-consumer',
@@ -774,6 +775,8 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						);
 
 				} else {
+					$this->resetExpected($property);
+
 					$this->logger->error(
 						'Value for boolean property have to be 1/0 or true/false',
 						[
@@ -847,6 +850,8 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					);
 
 				} else {
+					$this->resetExpected($property);
+
 					$this->logger->error(
 						'Provided data type is not supported',
 						[
@@ -872,6 +877,8 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				}
 
 				if ($bytes === null) {
+					$this->resetExpected($property);
+
 					$this->logger->error(
 						'Data could not be converted for write',
 						[
@@ -905,6 +912,8 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						$bytes,
 					);
 			} else {
+				$this->resetExpected($property);
+
 				$this->logger->error(
 					sprintf(
 						'Unsupported value data type: %s',
@@ -933,26 +942,21 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			}
 
 			$promise->then(
-				function () use ($property, $now): void {
+				function () use ($property): void {
 					$state = $this->channelPropertiesStatesManager->getValue($property);
 
 					if ($state?->getExpectedValue() !== null) {
 						$this->channelPropertiesStatesManager->setValue(
 							$property,
 							Utils\ArrayHash::from([
-								DevicesStates\Property::PENDING_FIELD => $now->format(DateTimeInterface::ATOM),
+								DevicesStates\Property::ACTUAL_VALUE_FIELD => $state->getExpectedValue(),
+								DevicesStates\Property::VALID_FIELD => true,
 							]),
 						);
 					}
 				},
 				function (Throwable $ex) use ($entity, $property): void {
-					$this->channelPropertiesStatesManager->setValue(
-						$property,
-						Utils\ArrayHash::from([
-							DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
-							DevicesStates\Property::PENDING_FIELD => false,
-						]),
-					);
+					$this->resetExpected($property);
 
 					$this->logger->error(
 						'Could not write state to device',
@@ -979,6 +983,8 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			);
 
 		} else {
+			$this->resetExpected($property);
+
 			$this->logger->error(
 				'Client mode is not supported',
 				[
@@ -1026,6 +1032,24 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		);
 
 		return true;
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidArgument
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
+	 */
+	private function resetExpected(MetadataDocuments\DevicesModule\ChannelDynamicProperty $property): void
+	{
+		$this->channelPropertiesStatesManager->setValue(
+			$property,
+			Utils\ArrayHash::from([
+				DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
+				DevicesStates\Property::PENDING_FIELD => false,
+			]),
+		);
 	}
 
 }

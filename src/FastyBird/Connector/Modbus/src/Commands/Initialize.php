@@ -39,6 +39,7 @@ use Symfony\Component\Console\Style;
 use Throwable;
 use function array_combine;
 use function array_key_exists;
+use function array_map;
 use function array_search;
 use function array_values;
 use function assert;
@@ -776,7 +777,7 @@ class Initialize extends Console\Command\Command
 
 		$byteSizes = array_combine(
 			array_values(Types\ByteSize::getValues()),
-			array_values(Types\ByteSize::getValues()),
+			array_map(static fn (int $item): string => strval($item), array_values(Types\ByteSize::getValues())),
 		);
 
 		$question = new Console\Question\ChoiceQuestion(
@@ -832,7 +833,7 @@ class Initialize extends Console\Command\Command
 
 		$baudRates = array_combine(
 			array_values(Types\BaudRate::getValues()),
-			array_values(Types\BaudRate::getValues()),
+			array_map(static fn (int $item): string => strval($item), array_values(Types\BaudRate::getValues())),
 		);
 
 		$question = new Console\Question\ChoiceQuestion(
@@ -971,7 +972,7 @@ class Initialize extends Console\Command\Command
 
 		$stopBits = array_combine(
 			array_values(Types\StopBits::getValues()),
-			array_values(Types\StopBits::getValues()),
+			array_map(static fn (int $item): string => strval($item), array_values(Types\StopBits::getValues())),
 		);
 
 		$question = new Console\Question\ChoiceQuestion(
