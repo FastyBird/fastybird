@@ -128,10 +128,12 @@ class Install extends Console\Command\Command
 	/**
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws RuntimeException
 	 */
 	private function createConnector(Style\SymfonyStyle $io): void
 	{
@@ -214,6 +216,7 @@ class Install extends Console\Command\Command
 				'identifier' => $identifier,
 				'name' => $name,
 			]));
+			assert($connector instanceof Entities\ModbusConnector);
 
 			$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
@@ -286,21 +289,36 @@ class Install extends Console\Command\Command
 			);
 
 			$io->error($this->translator->translate('//modbus-connector.cmd.install.messages.create.connector.error'));
+
+			return;
 		} finally {
 			// Revert all changes when error occur
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
 		}
+
+		$question = new Console\Question\ConfirmationQuestion(
+			$this->translator->translate('//modbus-connector.cmd.install.questions.create.devices'),
+			true,
+		);
+
+		$createRegisters = (bool) $io->askQuestion($question);
+
+		if ($createRegisters) {
+			$this->createDevice($io, $connector);
+		}
 	}
 
 	/**
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws RuntimeException
 	 */
 	private function editConnector(Style\SymfonyStyle $io): void
 	{
@@ -562,12 +580,27 @@ class Install extends Console\Command\Command
 			);
 
 			$io->error($this->translator->translate('//modbus-connector.cmd.install.messages.update.connector.error'));
+
+			return;
 		} finally {
 			// Revert all changes when error occur
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
 		}
+
+		$question = new Console\Question\ConfirmationQuestion(
+			$this->translator->translate('//modbus-connector.cmd.install.questions.manage.devices'),
+			false,
+		);
+
+		$manage = (bool) $io->askQuestion($question);
+
+		if (!$manage) {
+			return;
+		}
+
+		$this->askManageConnectorAction($io, $connector);
 	}
 
 	/**
@@ -976,6 +1009,7 @@ class Install extends Console\Command\Command
 			$device = $this->devicesManager->update($device, Utils\ArrayHash::from([
 				'name' => $name,
 			]));
+			assert($device instanceof Entities\ModbusDevice);
 
 			if ($connector->getClientMode()->equalsValue(Types\ClientMode::RTU)) {
 				if ($addressProperty === null) {
@@ -1086,14 +1120,14 @@ class Install extends Console\Command\Command
 			);
 
 			$io->error($this->translator->translate('//modbus-connector.cmd.install.messages.update.device.error'));
+
+			return;
 		} finally {
 			// Revert all changes when error occur
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
 		}
-
-		assert($device instanceof Entities\ModbusDevice);
 
 		$question = new Console\Question\ConfirmationQuestion(
 			$this->translator->translate('//modbus-connector.cmd.install.questions.manage.registers'),

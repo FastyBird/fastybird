@@ -69,10 +69,12 @@ cmd:
         questions:
             create:
                 connector: "Would you like to create new connector configuration?"
+                devices: "Would you like to configure connector device(s)?"
                 device: "Would you like to create new device in connector?"
                 registers: "Would you like to configure device register(s)?"
                 register: "Would you like to configure another device register?"
             manage:
+                devices: "Would you like to manage connector devices?"
                 registers: "Would you like to manage device registers?"
             select:
                 item:
