@@ -45,9 +45,9 @@ cmd:
 
         actions:
             create:
-                connector: "Create new connector"
-                device: "Create new device"
-                register: "Configure new register"
+                connector: "Create connector"
+                device: "Create device"
+                register: "Configure register"
             update:
                 connector: "Edit connector"
                 device: "Edit device"
