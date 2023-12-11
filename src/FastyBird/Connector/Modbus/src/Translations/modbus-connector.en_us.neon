@@ -46,23 +46,24 @@ cmd:
         actions:
             create:
                 connector: "Create new connector"
-                device: "Create new connector device"
-                register: "Configure new device register"
+                device: "Create new device"
+                register: "Configure new register"
             update:
                 connector: "Edit connector"
-                device: "Edit connector device"
-                register: "Edit device register"
+                device: "Edit device"
+                register: "Edit register"
             remove:
                 connector: "Delete connector"
-                device: "Delete connector device"
-                register: "Delete device register"
+                device: "Delete device"
+                register: "Delete register"
             manage:
                 connector: "Manage connector"
                 device: "Manage device"
+                register: "Manage register"
             list:
                 connectors: "List connectors"
-                devices: "List connector's devices"
-                registers: "List device's registers"
+                devices: "List devices"
+                registers: "List registers"
             nothing: "Nothing"
 
         questions:
