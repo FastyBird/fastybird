@@ -1717,6 +1717,7 @@ class Install extends Console\Command\Command
 			$this->translator->translate('//modbus-connector.cmd.install.data.type'),
 			$this->translator->translate('//modbus-connector.cmd.install.data.address'),
 			$this->translator->translate('//modbus-connector.cmd.install.data.dataType'),
+			$this->translator->translate('//modbus-connector.cmd.install.data.readingDelay'),
 		]);
 
 		foreach ($deviceChannels as $index => $channel) {
@@ -1735,6 +1736,7 @@ class Install extends Console\Command\Command
 				strval($channel->getRegisterType()?->getValue()),
 				$channel->getAddress(),
 				$valueProperty?->getDataType()->getValue(),
+				$channel->getReadingDelay(),
 			]);
 		}
 
@@ -2633,7 +2635,7 @@ class Install extends Console\Command\Command
 			}
 
 			$question = new Console\Question\ChoiceQuestion(
-				$this->translator->translate('//modbus-connector.cmd.install.questions.select.registerType'),
+				$this->translator->translate('//modbus-connector.cmd.install.questions.select.register.updateType'),
 				[
 					$this->translator->translate('//modbus-connector.cmd.install.answers.registerType.discreteInput'),
 					$this->translator->translate('//modbus-connector.cmd.install.answers.registerType.coil'),
@@ -2644,7 +2646,7 @@ class Install extends Console\Command\Command
 			);
 		} else {
 			$question = new Console\Question\ChoiceQuestion(
-				$this->translator->translate('//modbus-connector.cmd.install.questions.select.newRegisterType'),
+				$this->translator->translate('//modbus-connector.cmd.install.questions.select.register.createType'),
 				[
 					$this->translator->translate('//modbus-connector.cmd.install.answers.registerType.discreteInput'),
 					$this->translator->translate('//modbus-connector.cmd.install.answers.registerType.coil'),

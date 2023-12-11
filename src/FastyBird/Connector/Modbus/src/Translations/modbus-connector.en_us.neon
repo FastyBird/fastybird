@@ -90,7 +90,8 @@ cmd:
                 device:
                     byteOrder: "What byte order device uses?"
                 register:
-                    type: "What type of register you want to configure?"
+                    createType: "What type of register you would like to add?"
+                    updateType: "What type of register you want to configure?"
                     valueDataType: "What type of data type provided value is?"
             provide:
                 connector:
@@ -175,6 +176,7 @@ cmd:
             type: "Type"
             address: "Address"
             dataType: "Data Type"
+            readingDelay: "Samping time"
             devicesCnt: "# Devices"
             discreteInputRegistersCnt: "# Discrete inputs"
             coilRegistersCnt: "# Coils"
