@@ -1640,6 +1640,17 @@ class Install extends Console\Command\Command
 			return;
 		}
 
+		$question = new Console\Question\ConfirmationQuestion(
+			$this->translator->translate('//modbus-connector.cmd.base.questions.continue'),
+			false,
+		);
+
+		$continue = (bool) $io->askQuestion($question);
+
+		if (!$continue) {
+			return;
+		}
+
 		try {
 			// Start transaction connection to the database
 			$this->getOrmConnection()->beginTransaction();

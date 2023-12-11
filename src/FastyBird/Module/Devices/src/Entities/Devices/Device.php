@@ -94,7 +94,7 @@ abstract class Device implements Entities\Entity,
 	 * @var Common\Collections\Collection<int, Device>
 	 *
 	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\ManyToMany(targetEntity="FastyBird\Module\Devices\Entities\Devices\Device", inversedBy="children")
+	 * @ORM\ManyToMany(targetEntity="FastyBird\Module\Devices\Entities\Devices\Device", inversedBy="children", cascade={"persist"})
 	 * @ORM\JoinTable(
 	 *     name="fb_devices_module_devices_children",
 	 *     joinColumns={@ORM\JoinColumn(name="child_device", referencedColumnName="device_id", onDelete="CASCADE")},
@@ -106,7 +106,7 @@ abstract class Device implements Entities\Entity,
 	/**
 	 * @var Common\Collections\Collection<int, Device>
 	 *
-	 * @ORM\ManyToMany(targetEntity="FastyBird\Module\Devices\Entities\Devices\Device", mappedBy="parents", cascade={"remove"}, orphanRemoval=true)
+	 * @ORM\ManyToMany(targetEntity="FastyBird\Module\Devices\Entities\Devices\Device", mappedBy="parents", cascade={"persist", "remove"}, orphanRemoval=true)
 	 */
 	protected Common\Collections\Collection $children;
 
@@ -148,7 +148,7 @@ abstract class Device implements Entities\Entity,
 
 	/**
 	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\ManyToOne(targetEntity="FastyBird\Module\Devices\Entities\Connectors\Connector", inversedBy="devices")
+	 * @ORM\ManyToOne(targetEntity="FastyBird\Module\Devices\Entities\Connectors\Connector", inversedBy="devices", cascade={"persist"})
 	 * @ORM\JoinColumn(name="connector_id", referencedColumnName="connector_id", onDelete="CASCADE", nullable=false)
 	 */
 	protected Entities\Connectors\Connector $connector;

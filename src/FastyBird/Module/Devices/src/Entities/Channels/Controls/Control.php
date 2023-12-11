@@ -63,7 +63,7 @@ class Control implements Entities\Entity,
 
 	/**
 	 * @IPubDoctrine\Crud(is="required")
-	 * @ORM\ManyToOne(targetEntity="FastyBird\Module\Devices\Entities\Channels\Channel", inversedBy="controls")
+	 * @ORM\ManyToOne(targetEntity="FastyBird\Module\Devices\Entities\Channels\Channel", inversedBy="controls", cascade={"persist"})
 	 * @ORM\JoinColumn(name="channel_id", referencedColumnName="channel_id", onDelete="CASCADE", nullable=false)
 	 */
 	private Entities\Channels\Channel $channel;

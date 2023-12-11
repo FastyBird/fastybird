@@ -56,14 +56,14 @@ abstract class Property extends Entities\Property
 
 	/**
 	 * @IPubDoctrine\Crud(is="required")
-	 * @ORM\ManyToOne(targetEntity="FastyBird\Module\Devices\Entities\Channels\Channel", inversedBy="properties")
+	 * @ORM\ManyToOne(targetEntity="FastyBird\Module\Devices\Entities\Channels\Channel", inversedBy="properties", cascade={"persist"})
 	 * @ORM\JoinColumn(name="channel_id", referencedColumnName="channel_id", onDelete="CASCADE", nullable=false)
 	 */
 	protected Entities\Channels\Channel $channel;
 
 	/**
 	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\ManyToOne(targetEntity="FastyBird\Module\Devices\Entities\Channels\Properties\Property", inversedBy="children")
+	 * @ORM\ManyToOne(targetEntity="FastyBird\Module\Devices\Entities\Channels\Properties\Property", inversedBy="children", cascade={"persist"})
 	 * @ORM\JoinColumn(name="parent_id", referencedColumnName="property_id", nullable=true, onDelete="CASCADE")
 	 */
 	protected self|null $parent = null;
