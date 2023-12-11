@@ -15,6 +15,7 @@
 
 namespace FastyBird\Module\Devices\Utilities;
 
+use DateTimeInterface;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -467,6 +468,8 @@ final class ConnectorPropertiesStates
 						$state::EXPECTED_VALUE_FIELD => $state->getExpectedValue(),
 						$state::PENDING_FIELD => $state->getPending(),
 						$state::VALID_FIELD => $state->isValid(),
+						$state::CREATED_AT => $state->getCreatedAt()?->format(DateTimeInterface::ATOM),
+						$state::UPDATED_AT => $state->getUpdatedAt()?->format(DateTimeInterface::ATOM),
 					],
 					$update,
 				),
