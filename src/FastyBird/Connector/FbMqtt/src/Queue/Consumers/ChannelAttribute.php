@@ -18,6 +18,7 @@ namespace FastyBird\Connector\FbMqtt\Queue\Consumers;
 use Doctrine\DBAL;
 use FastyBird\Connector\FbMqtt;
 use FastyBird\Connector\FbMqtt\Entities;
+use FastyBird\Connector\FbMqtt\Queries;
 use FastyBird\Connector\FbMqtt\Queue;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
@@ -70,7 +71,7 @@ final class ChannelAttribute implements Queue\Consumer
 			return false;
 		}
 
-		$findDeviceQuery = new DevicesQueries\Entities\FindDevices();
+		$findDeviceQuery = new Queries\Entities\FindDevices();
 		$findDeviceQuery->byIdentifier($entity->getDevice());
 
 		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\FbMqttDevice::class);
@@ -80,7 +81,7 @@ final class ChannelAttribute implements Queue\Consumer
 				sprintf('Device "%s" is not registered', $entity->getDevice()),
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
-					'type' => 'channel-message-consumer',
+					'type' => 'channel-attribute-message-consumer',
 					'device' => [
 						'identifier' => $entity->getDevice(),
 					],
@@ -101,7 +102,7 @@ final class ChannelAttribute implements Queue\Consumer
 				sprintf('Device channel "%s" is not registered', $entity->getChannel()),
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
-					'type' => 'channel-message-consumer',
+					'type' => 'channel-attribute-message-consumer',
 					'device' => [
 						'identifier' => $entity->getDevice(),
 					],
@@ -138,9 +139,9 @@ final class ChannelAttribute implements Queue\Consumer
 			'Consumed channel message',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
-				'type' => 'channel-message-consumer',
+				'type' => 'channel-attribute-message-consumer',
 				'device' => [
-					'id' => $device->getPlainId(),
+					'identifier' => $entity->getDevice(),
 				],
 				'data' => $entity->toArray(),
 			],

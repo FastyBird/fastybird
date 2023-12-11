@@ -170,7 +170,7 @@ final class Client implements Evenement\EventEmitterInterface
 							sprintf('Connected to MQTT broker with client id %s', $connection->getClientID()),
 							[
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
-								'type' => 'client',
+								'type' => 'api-client',
 								'credentials' => [
 									'username' => $connection->getUsername(),
 									'client_id' => $connection->getClientID(),
@@ -233,7 +233,7 @@ final class Client implements Evenement\EventEmitterInterface
 						sprintf('Disconnected from MQTT broker with client id %s', $connection->getClientID()),
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
-							'type' => 'client',
+							'type' => 'api-client',
 							'credentials' => [
 								'username' => $connection->getUsername(),
 								'client_id' => $connection->getClientID(),
@@ -336,7 +336,7 @@ final class Client implements Evenement\EventEmitterInterface
 			'Established connection to MQTT broker',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
-				'type' => 'client',
+				'type' => 'api-client',
 				'credentials' => [
 					'username' => $connection->getUsername(),
 					'client_id' => $connection->getClientID(),
@@ -589,7 +589,7 @@ final class Client implements Evenement\EventEmitterInterface
 				'Connection to MQTT broker',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
-					'type' => 'client',
+					'type' => 'api-client',
 					'credentials' => [
 						'username' => $connection->getUsername(),
 						'client_id' => $connection->getClientID(),
@@ -611,7 +611,7 @@ final class Client implements Evenement\EventEmitterInterface
 			sprintf('There was an error  %s', $error->getMessage()),
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
-				'type' => 'client',
+				'type' => 'api-client',
 				'error' => [
 					'message' => $error->getMessage(),
 					'code' => $error->getCode(),
@@ -635,7 +635,7 @@ final class Client implements Evenement\EventEmitterInterface
 			sprintf('There was an error  %s', $error->getMessage()),
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
-				'type' => 'client',
+				'type' => 'api-client',
 				'error' => [
 					'message' => $error->getMessage(),
 					'code' => $error->getCode(),
@@ -735,7 +735,7 @@ final class Client implements Evenement\EventEmitterInterface
 							sprintf('Connected to MQTT broker with client id %s', $result->getClientID()),
 							[
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
-								'type' => 'client',
+								'type' => 'api-client',
 								'credentials' => [
 									'username' => $result->getUsername(),
 									'client_id' => $result->getClientID(),
@@ -755,7 +755,7 @@ final class Client implements Evenement\EventEmitterInterface
 							sprintf('Disconnected from MQTT broker with client id %s', $result->getClientID()),
 							[
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
-								'type' => 'client',
+								'type' => 'api-client',
 								'credentials' => [
 									'username' => $result->getUsername(),
 									'client_id' => $result->getClientID(),
@@ -779,7 +779,7 @@ final class Client implements Evenement\EventEmitterInterface
 							),
 							[
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
-								'type' => 'client',
+								'type' => 'api-client',
 								'message' => [
 									'topic' => $result->getTopic(),
 									'payload' => $result->getPayload(),

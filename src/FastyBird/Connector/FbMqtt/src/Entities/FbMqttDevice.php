@@ -25,16 +25,16 @@ use FastyBird\Module\Devices\Entities as DevicesEntities;
 class FbMqttDevice extends DevicesEntities\Devices\Device
 {
 
-	public const DEVICE_TYPE = 'fb-mqtt';
+	public const TYPE = 'fb-mqtt';
 
 	public function getType(): string
 	{
-		return self::DEVICE_TYPE;
+		return self::TYPE;
 	}
 
 	public function getDiscriminatorName(): string
 	{
-		return self::DEVICE_TYPE;
+		return self::TYPE;
 	}
 
 	public function getSource(): MetadataTypes\ConnectorSource
