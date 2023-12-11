@@ -887,7 +887,7 @@ class Install extends Console\Command\Command
 				'An unhandled error occurred',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
-					'type' => 'devices-cmd',
+					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
@@ -1114,7 +1114,7 @@ class Install extends Console\Command\Command
 				'An unhandled error occurred',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
-					'type' => 'devices-cmd',
+					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
@@ -1190,7 +1190,7 @@ class Install extends Console\Command\Command
 				'An unhandled error occurred',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
-					'type' => 'devices-cmd',
+					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
@@ -1408,7 +1408,7 @@ class Install extends Console\Command\Command
 				'An unhandled error occurred',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
-					'type' => 'devices-cmd',
+					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
@@ -1607,7 +1607,7 @@ class Install extends Console\Command\Command
 				'An unhandled error occurred',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
-					'type' => 'devices-cmd',
+					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
@@ -1672,7 +1672,7 @@ class Install extends Console\Command\Command
 				'An unhandled error occurred',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
-					'type' => 'devices-cmd',
+					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
