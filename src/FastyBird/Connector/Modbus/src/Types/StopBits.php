@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Modbus\Types;
 
 use Consistence;
+use function intval;
 use function strval;
 
 /**
@@ -37,6 +38,11 @@ class StopBits extends Consistence\Enum\Enum
 	public const ONE = 1;
 
 	public const TWO = 2;
+
+	public function getValue(): int
+	{
+		return intval(parent::getValue());
+	}
 
 	/**
 	 * @return array<int>

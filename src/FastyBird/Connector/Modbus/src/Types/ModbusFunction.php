@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Modbus\Types;
 
 use Consistence;
+use function intval;
 use function strval;
 
 /**
@@ -47,6 +48,11 @@ class ModbusFunction extends Consistence\Enum\Enum
 	public const WRITE_MULTIPLE_COILS = 0x1F;
 
 	public const WRITE_MULTIPLE_HOLDINGS_REGISTERS = 0x10;
+
+	public function getValue(): int
+	{
+		return intval(parent::getValue());
+	}
 
 	public function __toString(): string
 	{

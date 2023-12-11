@@ -44,6 +44,11 @@ class ByteOrder extends Consistence\Enum\Enum
 
 	public const LITTLE_LOW_WORD_FIRST = 'little_lwf';
 
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
+
 	public function __toString(): string
 	{
 		return strval(self::getValue());

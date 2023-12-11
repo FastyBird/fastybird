@@ -45,6 +45,11 @@ class DevicePropertyIdentifier extends Consistence\Enum\Enum
 
 	public const UNIT_ID = 'unit_id';
 
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
+
 	public function __toString(): string
 	{
 		return strval(self::getValue());

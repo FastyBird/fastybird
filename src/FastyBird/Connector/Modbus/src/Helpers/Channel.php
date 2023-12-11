@@ -30,7 +30,6 @@ use function assert;
 use function is_float;
 use function is_int;
 use function is_string;
-use function strval;
 
 /**
  * Useful channel helpers
@@ -141,7 +140,7 @@ final class Channel
 	{
 		$findChannelPropertyQuery = new DevicesQueries\Configuration\FindChannelVariableProperties();
 		$findChannelPropertyQuery->forChannel($channel);
-		$findChannelPropertyQuery->byIdentifier(strval($type->getValue()));
+		$findChannelPropertyQuery->byIdentifier($type->getValue());
 
 		$configuration = $this->channelsPropertiesConfigurationRepository->findOneBy(
 			$findChannelPropertyQuery,

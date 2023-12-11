@@ -36,6 +36,11 @@ class ClientMode extends Consistence\Enum\Enum
 
 	public const TCP = 'tcp';
 
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
+
 	public function __toString(): string
 	{
 		return strval(self::getValue());

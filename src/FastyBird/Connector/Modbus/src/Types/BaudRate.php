@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Modbus\Types;
 
 use Consistence;
+use function intval;
 use function strval;
 
 /**
@@ -77,6 +78,11 @@ class BaudRate extends Consistence\Enum\Enum
 	public const RATE_230400 = 230_400; // posix
 
 	public const RATE_460800 = 460_800; // posix
+
+	public function getValue(): int
+	{
+		return intval(parent::getValue());
+	}
 
 	/**
 	 * @return array<int>
