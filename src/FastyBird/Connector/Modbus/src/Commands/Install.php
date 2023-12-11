@@ -1960,7 +1960,7 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//modbus-connector.cmd.install.questions.select.mode'),
+			$this->translator->translate('//modbus-connector.cmd.install.questions.select.connector.mode'),
 			[
 				0 => $this->translator->translate('//modbus-connector.cmd.install.answers.mode.rtu'),
 				1 => $this->translator->translate('//modbus-connector.cmd.install.answers.mode.tcp'),
@@ -3201,7 +3201,7 @@ class Install extends Console\Command\Command
 			}
 
 			$question = new Console\Question\ChoiceQuestion(
-				$this->translator->translate('//modbus-connector.cmd.install.questions.select.valueDataType'),
+				$this->translator->translate('//modbus-connector.cmd.install.questions.select.register.valueDataType'),
 				$dataTypes,
 				$selected,
 			);
@@ -3528,7 +3528,7 @@ class Install extends Console\Command\Command
 			}
 
 			$question = new Console\Question\ChoiceQuestion(
-				$this->translator->translate('//modbus-connector.cmd.install.questions.select.valueDataType'),
+				$this->translator->translate('//modbus-connector.cmd.install.questions.select.register.valueDataType'),
 				$dataTypes,
 				$selected,
 			);
