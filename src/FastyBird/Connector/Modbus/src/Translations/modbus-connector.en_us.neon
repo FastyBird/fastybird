@@ -176,7 +176,7 @@ cmd:
             type: "Type"
             address: "Address"
             dataType: "Data Type"
-            readingDelay: "Samping time"
+            readingDelay: "Samping time (in seconds)"
             devicesCnt: "# Devices"
             discreteInputRegistersCnt: "# Discrete inputs"
             coilRegistersCnt: "# Coils"
