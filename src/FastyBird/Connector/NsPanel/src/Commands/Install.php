@@ -2613,8 +2613,8 @@ class Install extends Console\Command\Command
 		Entities\NsPanelConnector $connector,
 	): void
 	{
-		$question =
-			$connector->getClientMode()->equalsValue(Types\ClientMode::GATEWAY)
+		$question
+			= $connector->getClientMode()->equalsValue(Types\ClientMode::GATEWAY)
 			|| $connector->getClientMode()->equalsValue(Types\ClientMode::BOTH)
 		? new Console\Question\ChoiceQuestion(
 			$this->translator->translate('//ns-panel-connector.cmd.base.questions.whatToDo'),
@@ -2628,7 +2628,8 @@ class Install extends Console\Command\Command
 				6 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.nothing'),
 			],
 			6,
-		) : new Console\Question\ChoiceQuestion(
+		)
+		: new Console\Question\ChoiceQuestion(
 			$this->translator->translate('//ns-panel-connector.cmd.base.questions.whatToDo'),
 			[
 				0 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.create.gateway'),
