@@ -157,7 +157,10 @@ class Install extends Console\Command\Command
 	/**
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\Runtime
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws RuntimeException
 	 */
 	private function createConnector(Style\SymfonyStyle $io): void
 	{
@@ -226,6 +229,7 @@ class Install extends Console\Command\Command
 				'identifier' => $identifier,
 				'name' => $name === '' ? null : $name,
 			]));
+			assert($connector instanceof Entities\NsPanelConnector);
 
 			$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
@@ -263,18 +267,36 @@ class Install extends Console\Command\Command
 			$io->error(
 				$this->translator->translate('//ns-panel-connector.cmd.install.messages.create.connector.error'),
 			);
+
+			return;
 		} finally {
 			// Revert all changes when error occur
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
 		}
+
+		$question = new Console\Question\ConfirmationQuestion(
+			$this->translator->translate('//ns-panel-connector.cmd.install.questions.create.gateways'),
+			true,
+		);
+
+		$createRegisters = (bool) $io->askQuestion($question);
+
+		if ($createRegisters) {
+			$this->createGateway($io, $connector);
+		}
 	}
 
 	/**
+	 * @throws Console\Exception\ExceptionInterface
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\Runtime
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws RuntimeException
 	 */
 	private function editConnector(Style\SymfonyStyle $io): void
 	{
@@ -353,6 +375,7 @@ class Install extends Console\Command\Command
 				'name' => $name === '' ? null : $name,
 				'enabled' => $enabled,
 			]));
+			assert($connector instanceof Entities\NsPanelConnector);
 
 			if ($modeProperty === null) {
 				if ($mode === null) {
@@ -396,12 +419,27 @@ class Install extends Console\Command\Command
 			$io->error(
 				$this->translator->translate('//ns-panel-connector.cmd.install.messages.update.connector.error'),
 			);
+
+			return;
 		} finally {
 			// Revert all changes when error occur
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
 		}
+
+		$question = new Console\Question\ConfirmationQuestion(
+			$this->translator->translate('//ns-panel-connector.cmd.install.questions.manage.gateways'),
+			false,
+		);
+
+		$manage = (bool) $io->askQuestion($question);
+
+		if (!$manage) {
+			return;
+		}
+
+		$this->askManageConnectorAction($io, $connector);
 	}
 
 	/**
@@ -562,6 +600,7 @@ class Install extends Console\Command\Command
 	/**
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
@@ -571,7 +610,7 @@ class Install extends Console\Command\Command
 	private function createGateway(
 		Style\SymfonyStyle $io,
 		Entities\NsPanelConnector $connector,
-	): Entities\Devices\Gateway|null
+	): void
 	{
 		$question = new Console\Question\Question(
 			$this->translator->translate('//ns-panel-connector.cmd.install.questions.provide.device.identifier'),
@@ -609,7 +648,7 @@ class Install extends Console\Command\Command
 				$this->translator->translate('//ns-panel-connector.cmd.install.messages.identifier.device.missing'),
 			);
 
-			return null;
+			return;
 		}
 
 		assert(is_string($identifier));
@@ -637,7 +676,7 @@ class Install extends Console\Command\Command
 				$exit = (bool) $io->askQuestion($question);
 
 				if ($exit) {
-					return null;
+					return;
 				}
 			}
 		} while (!$continue);
@@ -656,7 +695,7 @@ class Install extends Console\Command\Command
 				$this->translator->translate('//ns-panel-connector.cmd.install.messages.accessToken.error'),
 			);
 
-			return null;
+			return;
 		}
 
 		try {
@@ -733,7 +772,7 @@ class Install extends Console\Command\Command
 
 			$io->error($this->translator->translate('//ns-panel-connector.cmd.install.messages.create.gateway.error'));
 
-			return null;
+			return;
 		} finally {
 			// Revert all changes when error occur
 			if ($this->getOrmConnection()->isTransactionActive()) {
@@ -741,16 +780,33 @@ class Install extends Console\Command\Command
 			}
 		}
 
-		return $gateway;
+		if (
+			$connector->getClientMode()->equalsValue(Types\ClientMode::DEVICE)
+			|| $connector->getClientMode()->equalsValue(Types\ClientMode::BOTH)
+		) {
+			$question = new Console\Question\ConfirmationQuestion(
+				$this->translator->translate('//ns-panel-connector.cmd.install.questions.create.devices'),
+				true,
+			);
+
+			$createRegisters = (bool)$io->askQuestion($question);
+
+			if ($createRegisters) {
+				$this->createDevice($io, $connector, $gateway);
+			}
+		}
 	}
 
 	/**
+	 * @throws Console\Exception\ExceptionInterface
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws Nette\IOException
 	 * @throws RuntimeException
 	 */
 	private function editGateway(
@@ -883,6 +939,7 @@ class Install extends Console\Command\Command
 			$gateway = $this->devicesManager->update($gateway, Utils\ArrayHash::from([
 				'name' => $name,
 			]));
+			assert($gateway instanceof Entities\Devices\Gateway);
 
 			if ($ipAddressProperty === null) {
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
@@ -977,12 +1034,27 @@ class Install extends Console\Command\Command
 			);
 
 			$io->error($this->translator->translate('//ns-panel-connector.cmd.install.messages.update.gateway.error'));
+
+			return;
 		} finally {
 			// Revert all changes when error occur
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
 		}
+
+		$question = new Console\Question\ConfirmationQuestion(
+			$this->translator->translate('//ns-panel-connector.cmd.install.questions.manage.devices'),
+			false,
+		);
+
+		$manage = (bool) $io->askQuestion($question);
+
+		if (!$manage) {
+			return;
+		}
+
+		$this->askManageGatewayAction($io, $connector, $gateway);
 	}
 
 	/**
@@ -1078,22 +1150,7 @@ class Install extends Console\Command\Command
 		if ($gateway === null) {
 			$io->info($this->translator->translate('//ns-panel-connector.cmd.install.messages.noGateways'));
 
-			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//ns-panel-connector.cmd.install.questions.create.gateway'),
-				false,
-			);
-
-			$continue = (bool) $io->askQuestion($question);
-
-			if ($continue) {
-				$gateway = $this->createGateway($io, $connector);
-
-				if ($gateway === null) {
-					return;
-				}
-			} else {
-				return;
-			}
+			return;
 		}
 
 		$this->askManageGatewayAction($io, $connector, $gateway);

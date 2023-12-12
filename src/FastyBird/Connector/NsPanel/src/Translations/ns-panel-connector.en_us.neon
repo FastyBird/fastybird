@@ -160,18 +160,20 @@ cmd:
         questions:
             create:
                 connector: "Would you like to create new connector configuration?"
+                gateways: "Would you like to configure connector NS Panel(s)?"
                 gateway: "Would you like to configure new NS Panel?"
-                devices: "Would you like to configure connector device(s)?"
+                devices: "Would you like to configure NS Panel device(s)?"
                 device: "Would you like to create new device in NS Panel?"
                 capability: "Would you like to configure new device capability?"
             manage:
-                devices: "Would you like to manage connector devices?"
+                gateways: "Would you like to manage connector NS Panels?"
+                devices: "Would you like to manage NS Panel devices?"
             provide:
                 connector:
                     identifier: "Provide connector identifier"
                     name: "Provide connector name"
                 device:
-                    identifier: "Provide identifier"
+                    identifier: "Provide device identifier"
                     name: "Provide device name"
                     value: "Provide protocol value"
                     address: "Provide NS Panel local IP address or domain"
