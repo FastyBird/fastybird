@@ -1159,6 +1159,106 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws Console\Exception\ExceptionInterface
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	private function discoverDevices(Style\SymfonyStyle $io, Entities\NsPanelConnector $connector): void
+	{
+		if ($this->output === null) {
+			throw new Exceptions\InvalidState('Something went wrong, console output is not configured');
+		}
+
+		$executedTime = $this->dateTimeFactory->getNow();
+
+		$symfonyApp = $this->getApplication();
+
+		if ($symfonyApp === null) {
+			throw new Exceptions\InvalidState('Something went wrong, console app is not configured');
+		}
+
+		$serviceCmd = $symfonyApp->find(DevicesCommands\Connector::NAME);
+
+		$result = $serviceCmd->run(new Input\ArrayInput([
+			'--connector' => $connector->getId()->toString(),
+			'--mode' => DevicesCommands\Connector::MODE_DISCOVER,
+			'--no-interaction' => true,
+			'--quiet' => true,
+		]), $this->output);
+
+		if ($result !== Console\Command\Command::SUCCESS) {
+			$io->error($this->translator->translate('//ns-panel-connector.cmd.execute.messages.discover.error'));
+
+			return;
+		}
+
+		$io->newLine();
+
+		$table = new Console\Helper\Table($io);
+		$table->setHeaders([
+			'#',
+			$this->translator->translate('//ns-panel-connector.cmd.install.data.id'),
+			$this->translator->translate('//ns-panel-connector.cmd.install.data.name'),
+			$this->translator->translate('//ns-panel-connector.cmd.install.data.type'),
+			$this->translator->translate('//ns-panel-connector.cmd.discovery.data.gateway'),
+		]);
+
+		$foundDevices = 0;
+
+		$findDevicesQuery = new Queries\Entities\FindGatewayDevices();
+		$findDevicesQuery->forConnector($connector);
+
+		$gateways = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\Gateway::class);
+
+		foreach ($gateways as $gateway) {
+			$findDevicesQuery = new Queries\Entities\FindSubDevices();
+			$findDevicesQuery->forConnector($gateway->getConnector());
+			$findDevicesQuery->forParent($gateway);
+
+			$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\SubDevice::class);
+
+			foreach ($devices as $device) {
+				$createdAt = $device->getCreatedAt();
+
+				if (
+					$createdAt !== null
+					&& $createdAt->getTimestamp() > $executedTime->getTimestamp()
+				) {
+					$foundDevices++;
+
+					$table->addRow([
+						$foundDevices,
+						$device->getId()->toString(),
+						$device->getName() ?? $device->getIdentifier(),
+						$device->getModel(),
+						$gateway->getName() ?? $gateway->getIdentifier(),
+					]);
+				}
+			}
+		}
+
+		if ($foundDevices > 0) {
+			$io->newLine();
+
+			$io->info(sprintf(
+				$this->translator->translate('//ns-panel-connector.cmd.install.messages.foundDevices'),
+				$foundDevices,
+			));
+
+			$table->render();
+
+			$io->newLine();
+
+		} else {
+			$io->info($this->translator->translate('//ns-panel-connector.cmd.install.messages.noDevicesFound'));
+		}
+
+		$io->success($this->translator->translate('//ns-panel-connector.cmd.install.messages.discover.success'));
+	}
+
+	/**
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -1566,97 +1666,6 @@ class Install extends Console\Command\Command
 		$table->render();
 
 		$io->newLine();
-	}
-
-	/**
-	 * @throws Console\Exception\ExceptionInterface
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 */
-	private function discoverDevices(Style\SymfonyStyle $io, Entities\Devices\Gateway $gateway): void
-	{
-		if ($this->output === null) {
-			throw new Exceptions\InvalidState('Something went wrong, console output is not configured');
-		}
-
-		$executedTime = $this->dateTimeFactory->getNow();
-
-		$symfonyApp = $this->getApplication();
-
-		if ($symfonyApp === null) {
-			throw new Exceptions\InvalidState('Something went wrong, console app is not configured');
-		}
-
-		$serviceCmd = $symfonyApp->find(DevicesCommands\Connector::NAME);
-
-		$result = $serviceCmd->run(new Input\ArrayInput([
-			'--connector' => $gateway->getConnector()->getId()->toString(),
-			'--mode' => DevicesCommands\Connector::MODE_DISCOVER,
-			'--no-interaction' => true,
-			'--quiet' => true,
-		]), $this->output);
-
-		if ($result !== Console\Command\Command::SUCCESS) {
-			$io->error($this->translator->translate('//ns-panel-connector.cmd.execute.messages.discover.error'));
-
-			return;
-		}
-
-		$io->newLine();
-
-		$table = new Console\Helper\Table($io);
-		$table->setHeaders([
-			'#',
-			$this->translator->translate('//ns-panel-connector.cmd.install.data.id'),
-			$this->translator->translate('//ns-panel-connector.cmd.install.data.name'),
-			$this->translator->translate('//ns-panel-connector.cmd.install.data.type'),
-		]);
-
-		$foundDevices = 0;
-
-		$findDevicesQuery = new Queries\Entities\FindSubDevices();
-		$findDevicesQuery->forConnector($gateway->getConnector());
-		$findDevicesQuery->forParent($gateway);
-
-		$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\SubDevice::class);
-
-		foreach ($devices as $device) {
-			$createdAt = $device->getCreatedAt();
-
-			if (
-				$createdAt !== null
-				&& $createdAt->getTimestamp() > $executedTime->getTimestamp()
-			) {
-				$foundDevices++;
-
-				$table->addRow([
-					$foundDevices,
-					$device->getId()->toString(),
-					$device->getName() ?? $device->getIdentifier(),
-					$device->getModel(),
-				]);
-			}
-		}
-
-		if ($foundDevices > 0) {
-			$io->newLine();
-
-			$io->info(sprintf(
-				$this->translator->translate('//ns-panel-connector.cmd.install.messages.foundDevices'),
-				$foundDevices,
-			));
-
-			$table->render();
-
-			$io->newLine();
-
-		} else {
-			$io->info($this->translator->translate('//ns-panel-connector.cmd.install.messages.noDevicesFound'));
-		}
-
-		$io->success($this->translator->translate('//ns-panel-connector.cmd.install.messages.discover.success'));
 	}
 
 	/**
@@ -2604,18 +2613,38 @@ class Install extends Console\Command\Command
 		Entities\NsPanelConnector $connector,
 	): void
 	{
-		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//ns-panel-connector.cmd.base.questions.whatToDo'),
-			[
-				0 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.create.gateway'),
-				1 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.update.gateway'),
-				2 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.remove.gateway'),
-				3 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.manage.gateway'),
-				4 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.list.gateways'),
-				5 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.nothing'),
-			],
-			5,
-		);
+		if (
+			$connector->getClientMode()->equalsValue(Types\ClientMode::GATEWAY)
+			|| $connector->getClientMode()->equalsValue(Types\ClientMode::BOTH)
+		) {
+			$question = new Console\Question\ChoiceQuestion(
+				$this->translator->translate('//ns-panel-connector.cmd.base.questions.whatToDo'),
+				[
+					0 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.create.gateway'),
+					1 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.update.gateway'),
+					2 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.remove.gateway'),
+					3 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.manage.gateway'),
+					4 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.list.gateways'),
+					5 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.discover.devices'),
+					6 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.nothing'),
+				],
+				6,
+			);
+
+		} else {
+			$question = new Console\Question\ChoiceQuestion(
+				$this->translator->translate('//ns-panel-connector.cmd.base.questions.whatToDo'),
+				[
+					0 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.create.gateway'),
+					1 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.update.gateway'),
+					2 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.remove.gateway'),
+					3 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.manage.gateway'),
+					4 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.list.gateways'),
+					5 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.nothing'),
+				],
+				5,
+			);
+		}
 
 		$question->setErrorMessage(
 			$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
@@ -2673,6 +2702,22 @@ class Install extends Console\Command\Command
 
 			$this->askManageConnectorAction($io, $connector);
 		}
+
+		if (
+			$connector->getClientMode()->equalsValue(Types\ClientMode::GATEWAY)
+			|| $connector->getClientMode()->equalsValue(Types\ClientMode::BOTH)
+		) {
+			if (
+				$whatToDo === $this->translator->translate(
+					'//ns-panel-connector.cmd.install.actions.discover.devices',
+				)
+				|| $whatToDo === '5'
+			) {
+				$this->discoverDevices($io, $connector);
+
+				$this->askManageConnectorAction($io, $connector);
+			}
+		}
 	}
 
 	/**
@@ -2714,10 +2759,9 @@ class Install extends Console\Command\Command
 					1 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.remove.device'),
 					2 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.manage.device'),
 					3 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.list.devices'),
-					4 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.discover.devices'),
-					5 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.nothing'),
+					4 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.nothing'),
 				],
-				5,
+				4,
 			);
 
 		} else {
@@ -2729,10 +2773,9 @@ class Install extends Console\Command\Command
 					2 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.remove.device'),
 					3 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.manage.device'),
 					4 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.list.devices'),
-					5 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.discover.devices'),
-					6 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.nothing'),
+					5 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.nothing'),
 				],
-				6,
+				5,
 			);
 		}
 
@@ -2833,16 +2876,6 @@ class Install extends Console\Command\Command
 				$this->listDevices($io, $gateway);
 
 				$this->askManageGatewayAction($io, $connector, $gateway);
-
-			} elseif (
-				$whatToDo === $this->translator->translate(
-					'//ns-panel-connector.cmd.install.actions.discover.devices',
-				)
-				|| $whatToDo === '4'
-			) {
-				$this->discoverDevices($io, $gateway);
-
-				$this->askManageGatewayAction($io, $connector, $gateway);
 			}
 		} else {
 			if (
@@ -2892,16 +2925,6 @@ class Install extends Console\Command\Command
 				|| $whatToDo === '4'
 			) {
 				$this->listDevices($io, $gateway);
-
-				$this->askManageGatewayAction($io, $connector, $gateway);
-
-			} elseif (
-				$whatToDo === $this->translator->translate(
-					'//ns-panel-connector.cmd.install.actions.discover.devices',
-				)
-				|| $whatToDo === '5'
-			) {
-				$this->discoverDevices($io, $gateway);
 
 				$this->askManageGatewayAction($io, $connector, $gateway);
 			}

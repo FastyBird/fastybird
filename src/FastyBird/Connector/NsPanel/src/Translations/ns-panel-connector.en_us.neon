@@ -223,6 +223,7 @@ cmd:
             type: "Type"
             protocols: "Protocols"
             value: "Value"
+            gateway: "NS Panel"
             subDevicesCnt: "# Sub-devices"
             devicesCnt: "# Devices"
 
