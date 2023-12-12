@@ -332,7 +332,7 @@ You could configure as many devices as you want.
 
 ### Connectors, Devices and Capabilities management
 
-With this console command you could manage all your connectors, their devices and registers. Just use the main menu to navigate to proper action.
+With this console command you could manage all your connectors, their devices and capabilities. Just use the main menu to navigate to proper action.
 
 ## Configuring the Connector with the FastyBird User Interface
 
