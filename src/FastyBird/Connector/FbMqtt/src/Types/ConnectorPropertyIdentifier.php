@@ -45,6 +45,11 @@ class ConnectorPropertyIdentifier extends Consistence\Enum\Enum
 
 	public const PROTOCOL_VERSION = 'protocol';
 
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
+
 	public function __toString(): string
 	{
 		return strval(self::getValue());

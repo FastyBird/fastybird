@@ -34,6 +34,11 @@ class ProtocolVersion extends Consistence\Enum\Enum
 	 */
 	public const VERSION_1 = 'v1';
 
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
+
 	public function __toString(): string
 	{
 		return strval(self::getValue());

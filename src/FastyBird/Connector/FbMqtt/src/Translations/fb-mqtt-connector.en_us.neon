@@ -24,6 +24,119 @@ cmd:
             noConnectors: "No FB MQTT connectors registered in system."
             answerNotValid: "Selected answer: \"%s\" is not valid."
 
+    execute:
+        title: "FB MQTT connector - service"
+        subtitle: "This action will run connector service"
+
+        questions:
+            execute: "Would you like to execute \"%connector%\" connector"
+            select:
+                connector: "Please select connector to execute"
+
+        messages:
+            connector:
+                notFound: "Connector was not found in system."
+                disabled: "Connector is disabled. Disabled connector could not be executed."
+            error: "Something went wrong, connector was terminated."
+
+    install:
+        title: "FB MQTT connector - installer"
+        subtitle: "This action will create|update|delete connector configuration"
+
+        actions:
+            create:
+                connector: "Create connector"
+                device: "Create device"
+            update:
+                connector: "Edit connector"
+                device: "Edit device"
+            remove:
+                connector: "Delete connector"
+                device: "Delete device"
+            manage:
+                connector: "Manage connector"
+            list:
+                connectors: "List connectors"
+                devices: "List devices"
+            nothing: "Nothing"
+
+        questions:
+            create:
+                connector: "Would you like to create new connector configuration?"
+                devices: "Would you like to configure connector device(s)?"
+                device: "Would you like to create new device in connector?"
+            manage:
+                devices: "Would you like to manage connector devices?"
+            select:
+                item:
+                    connector: "Please select connector to manage"
+                    device: "Please select device to manage"
+                connector:
+                    protocol: "What type of FB MQTT protocol will this connector handle?"
+            provide:
+                connector:
+                    identifier: "Provide connector identifier"
+                    name: "Provide connector name"
+                    address: "Provide server address"
+                    port: "Provide server port"
+                    securedPort: "Provide server secured port"
+                    username: "Provide server username"
+                    password: "Provide server password"
+                device:
+                    identifier: "Provide device identifier"
+                    name: "Provide device name"
+            changeProtocol: "Do you want to change connector protocol version?"
+            disable:
+                connector: "Do you want to disable connector?"
+            enable:
+                connector: "Do you want to enable connector?"
+
+        answers:
+            protocol:
+                v1: "FB MQTT v1 protocol"
+
+        data:
+            name: "Name"
+            devicesCnt: "# Devices"
+
+        messages:
+            identifier:
+                connector:
+                    used: "This identifier is already used."
+                    missing: "Connector identifier have to be provided."
+                device:
+                    used: "This identifier is already used."
+                    missing: "Device identifier have to provided."
+            create:
+                connector:
+                    success: "Connector \"%name%\" was successfully created."
+                    error: "Something went wrong, connector could not be created. An error was logged."
+                device:
+                    success: "Device \"%name%\" was successfully created."
+                    error: "Something went wrong, device could not be created. Error was logged."
+            update:
+                connector:
+                    success: "Connector \"%name%\" was successfully updated."
+                    error: "Something went wrong, connector could not be updated. An error was logged."
+                device:
+                    success: "Device \"%name%\" was successfully updated."
+                    error: "Something went wrong, device could not be updated. Error was logged."
+            remove:
+                connector:
+                    success: "Connector \"%name%\" was successfully removed."
+                    error: "Something went wrong, connector could not be removed. An error was logged."
+                device:
+                    success: "Device \"%name%\" was successfully removed."
+                    error: "Something went wrong, device could not be removed. Error was logged."
+            noConnector: "Connector could not be loaded"
+            noDevices: "No devices registered in selected connector."
+
+
+
+
+
+
+
     initialize:
         title: "FB MQTT connector - initialization"
         subtitle: "This action will create|update|delete connector configuration"
@@ -73,21 +186,6 @@ cmd:
             remove:
                 success: "Connector \"%name%\" was successfully removed."
                 error: "Something went wrong, connector could not be removed. An error was logged."
-
-    execute:
-        title: "FB MQTT connector - service"
-        subtitle: "This action will run connector service"
-
-        questions:
-            execute: "Would you like to execute \"%connector%\" connector"
-            select:
-                connector: "Please select connector to execute"
-
-        messages:
-            connector:
-                notFound: "Connector was not found in system."
-                disabled: "Connector is disabled. Disabled connector could not be executed."
-            error: "Something went wrong, connector was terminated."
 
     devices:
         title: "FB MQTT connector - devices management"

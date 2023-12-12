@@ -18,6 +18,7 @@ namespace FastyBird\Connector\FbMqtt\Queue\Consumers;
 use Doctrine\DBAL;
 use FastyBird\Connector\FbMqtt;
 use FastyBird\Connector\FbMqtt\Entities;
+use FastyBird\Connector\FbMqtt\Queries;
 use FastyBird\Connector\FbMqtt\Queue;
 use FastyBird\Connector\FbMqtt\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -77,7 +78,7 @@ final class DeviceAttribute implements Queue\Consumer
 			return false;
 		}
 
-		$findDeviceQuery = new DevicesQueries\Entities\FindDevices();
+		$findDeviceQuery = new Queries\Entities\FindDevices();
 		$findDeviceQuery->byConnectorId($entity->getConnector());
 		$findDeviceQuery->byIdentifier($entity->getDevice());
 
@@ -147,7 +148,7 @@ final class DeviceAttribute implements Queue\Consumer
 			'Consumed device message',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
-				'type' => 'device-message-consumer',
+				'type' => 'device-attribute-message-consumer',
 				'device' => [
 					'identifier' => $entity->getDevice(),
 				],

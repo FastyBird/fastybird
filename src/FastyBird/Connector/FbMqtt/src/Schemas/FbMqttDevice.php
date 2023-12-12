@@ -34,7 +34,7 @@ final class FbMqttDevice extends DevicesSchemas\Devices\Device
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT . '/device/' . Entities\FbMqttDevice::DEVICE_TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT . '/device/' . Entities\FbMqttDevice::TYPE;
 
 	public function getEntityClass(): string
 	{
