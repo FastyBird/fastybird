@@ -33,6 +33,11 @@ These properties often take the form of numerical values or specific states. For
 a temperature property, while an environment channel may have properties for temperature, humidity, and air quality.
 Similarly, a lights channel could have properties for intensity and color.
 
+## MQTT Broker
+
+A MQTT broker is a service which is used to handle communication between devices and [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) connectors.
+You could use self-hosted applications like [Mosquitto](https://mosquitto.org) and also services provided by other vendors like [HideMQ](https://www.hivemq.com) or [CloudMQTT](https://www.cloudmqtt.com) 
+
 # Configuration
 
 To connect to devices that use the [FastyBird MQTT Convention](https://github.com/FastyBird/mqtt-convention) protocol
