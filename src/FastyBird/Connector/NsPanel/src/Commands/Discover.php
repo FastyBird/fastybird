@@ -73,7 +73,7 @@ class Discover extends Console\Command\Command
 	{
 		$this
 			->setName(self::NAME)
-			->setDescription('NS Panel connector devices discovery')
+			->setDescription('NS Panel connector discovery')
 			->setDefinition(
 				new Input\InputDefinition([
 					new Input\InputOption(
