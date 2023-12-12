@@ -35,47 +35,42 @@ There are three types of connectors available for selection:
 - **Cloud** - This connector communicates with the [Shelly](https://shelly.cloud) cloud instance.
 - **MQTT** - This connector utilizes the MQTT protocol to communicate with an MQTT broker.
 
-## Configuring the Connector through the Console
+## Configuring the Connectors, Devices and Capabilities through the Console
 
 To configure the connector through the console, run the following command:
 
 ```shell
-php bin/fb-console fb:shelly-connector:initialize
+php bin/fb-console fb:shelly-connector:install
 ```
 
 > **NOTE:**
 The path to the console command may vary depending on your FastyBird application distribution. For more information, refer to the FastyBird documentation.
 
-The console will ask you to confirm that you want to continue with the configuration.
+After triggering the command you will get information message:
 
 ```shell
-Shelly connector - initialization
-=================================
+Shelly connector - installer
+============================
 
- ! [NOTE] This action will create|update|delete connector configuration.                                                       
+ ! [NOTE] This action will create|update|delete connector configuration                                                 
 
- Would you like to continue? (yes/no) [no]:
- > y
-```
-
-You will then be prompted to choose an action:
-
-```shell
  What would you like to do? [Nothing]:
-  [0] Create new connector configuration
-  [1] Edit existing connector configuration
-  [2] Delete existing connector configuration
-  [3] List Shelly connectors
-  [4] Nothing
+  [0] Create connector
+  [1] Edit connector
+  [2] Delete connector
+  [3] Manage connector
+  [4] List connectors
+  [5] Nothing
  > 0
 ```
+
+### Create connector
 
 If you choose to create a new connector, you will be asked to choose the mode in which the connector will communicate with the devices:
 
 ```shell
- In what mode should this connector communicate with Shelly devices? [Shelly cloud server mode]:
+ In what mode should this connector communicate with Shelly devices? [Local network mode]:
   [0] Local network mode
-  [1] Shelly cloud server mode
  > 0
 ```
 
@@ -99,6 +94,10 @@ After providing the necessary information, your new [Shelly](https://shelly.clou
 ```shell
  [OK] New connector "My Shelly" was successfully created                                                                
 ```
+
+### Connectors and Devices management
+
+With this console command you could manage all your connectors and their devices. Just use the main menu to navigate to proper action.
 
 ## Configuring the Connector with the FastyBird User Interface
 
@@ -152,7 +151,7 @@ a list of found devices will be displayed.
 
 
 +---+--------------------------------------+--------+---------+--------------+
-| # | ID                                   | Name   | Type    | IP address   |
+| # | ID                                   | Name   | Model   | Address      |
 +---+--------------------------------------+--------+---------+--------------+
 | 1 | 89b1d985-0183-4c05-8d28-69f4acf4128e | 2cc29e | shrgbw2 | 10.10.10.132 |
 | 2 | 8f377380-860f-4ac9-a4de-4be73e5ef59a | e48652 | shrgbw2 | 10.10.10.126 |

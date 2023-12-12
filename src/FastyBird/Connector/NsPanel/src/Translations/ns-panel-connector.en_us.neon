@@ -96,7 +96,7 @@ cmd:
                 disabled: "Connector is disabled. Disabled connector could not be executed."
             error: "Something went wrong, connector was terminated."
 
-    discovery:
+    discover:
         title: "NS Panel connector - devices discovery"
         subtitle: "This action will run connector devices discovery"
 
@@ -186,7 +186,6 @@ cmd:
                     protocol: "Please select capability's protocol"
                 connector:
                     mode: "In what mode should this connector communicate with NS Panels?"
-                gateway:
                 device:
                     category: "Please select device category"
                     capabilityType: "What type of device capability you would like to add?"
@@ -236,7 +235,7 @@ cmd:
                     missing: "Connector identifier have to be provided."
                 device:
                     used: "This identifier is already used."
-                    missing: "Identifier have to provided."
+                    missing: "Device identifier have to provided."
             create:
                 connector:
                     success: "Connector \"%name%\" was successfully created."
@@ -298,8 +297,8 @@ cmd:
             accessToken:
                 error: "Could not retrive access token from NS Panel"
             noGateways: "No NS Panels registered in NS Panel connector."
-            noDevices: "No devices are registered in \"%name%\" NS Panel."
-            noCapabilities: "No capabilities are registered in \"%name%\" device."
+            noDevices: "No devices registered in selected NS Panels."
+            noCapabilities: "No capabilities registered in selected device."
             noProtocols: "This device capability has not configured any protocol."
             noMultipleCapabilities: "Capability \"%type%\" is already created under this device"
             noMissingProtocols: "All available protocols for selected capability are configured"

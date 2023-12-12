@@ -48,6 +48,12 @@ Examples of protocol include temperature, humidity, on/off status, and brightnes
 To use [Sonoff NS Panels](https://sonoff.tech/product/central-control-panel/nspanel-pro/) devices with the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem, you will need to configure at least one connector.
 The connector can be configured using the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) user interface or through the console.
 
+There are three types of connectors available for selection:
+
+- **Gateway** - This connector uses NS Panels only as gateways and communicate with devices connected to NS Panels.
+- **Device** - This connector uses NS Panels only as control panels which could control mapped devices from FastyBird IoT ecosystem.
+- **Both** - This connector combines both modes.
+
 ## Configuring the Connectors, Devices and Capabilities through the Console
 
 To configure the connector through the console, run the following command:

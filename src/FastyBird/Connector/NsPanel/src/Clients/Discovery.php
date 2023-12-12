@@ -100,10 +100,12 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$findDevicesQuery = new Queries\Entities\FindGatewayDevices();
 			$findDevicesQuery->forConnector($this->connector);
 
-			foreach ($this->devicesRepository->findAllBy(
+			$gateways = $this->devicesRepository->findAllBy(
 				$findDevicesQuery,
 				Entities\Devices\Gateway::class,
-			) as $gateway) {
+			);
+
+			foreach ($gateways as $gateway) {
 				$promises[] = $this->discoverSubDevices($gateway);
 			}
 		}

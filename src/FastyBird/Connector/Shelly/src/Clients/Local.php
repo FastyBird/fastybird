@@ -163,6 +163,7 @@ final class Local implements Client
 
 		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDevicesQuery->forConnector($this->connector);
+		$findDevicesQuery->byType(Entities\ShellyDevice::TYPE);
 
 		foreach ($this->devicesConfigurationRepository->findAllBy($findDevicesQuery) as $device) {
 			$this->devices[$device->getId()->toString()] = $device;
@@ -346,6 +347,9 @@ final class Local implements Client
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 							'type' => 'local-client',
 							'exception' => BootstrapHelpers\Logger::buildException($ex),
+							'connector' => [
+								'id' => $this->connector->getId()->toString(),
+							],
 							'device' => [
 								'id' => $device->getId()->toString(),
 							],
@@ -457,6 +461,9 @@ final class Local implements Client
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 							'type' => 'local-client',
 							'exception' => BootstrapHelpers\Logger::buildException($ex),
+							'connector' => [
+								'id' => $this->connector->getId()->toString(),
+							],
 							'device' => [
 								'id' => $device->getId()->toString(),
 							],
@@ -502,6 +509,9 @@ final class Local implements Client
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'local-client',
 						'exception' => BootstrapHelpers\Logger::buildException($ex),
+						'connector' => [
+							'id' => $this->connector->getId()->toString(),
+						],
 						'device' => [
 							'id' => $device->getId()->toString(),
 						],
@@ -529,6 +539,9 @@ final class Local implements Client
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'local-client',
+						'connector' => [
+							'id' => $this->connector->getId()->toString(),
+						],
 						'device' => [
 							'id' => $device->getId()->toString(),
 						],
@@ -568,6 +581,9 @@ final class Local implements Client
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 								'type' => 'local-client',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
+								'connector' => [
+									'id' => $this->connector->getId()->toString(),
+								],
 								'device' => [
 									'identifier' => $device->getIdentifier(),
 								],
@@ -585,6 +601,9 @@ final class Local implements Client
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 						'type' => 'local-client',
+						'connector' => [
+							'id' => $this->connector->getId()->toString(),
+						],
 						'device' => [
 							'id' => $device->getId()->toString(),
 						],

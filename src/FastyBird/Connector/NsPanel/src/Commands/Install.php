@@ -175,10 +175,12 @@ class Install extends Console\Command\Command
 				$findConnectorQuery = new Queries\Entities\FindConnectors();
 				$findConnectorQuery->byIdentifier($answer);
 
-				if ($this->connectorsRepository->findOneBy(
+				$connector = $this->connectorsRepository->findOneBy(
 					$findConnectorQuery,
 					Entities\NsPanelConnector::class,
-				) !== null) {
+				);
+
+				if ($connector !== null) {
 					throw new Exceptions\Runtime(
 						$this->translator->translate(
 							'//ns-panel-connector.cmd.install.messages.identifier.connector.used',
@@ -201,10 +203,12 @@ class Install extends Console\Command\Command
 				$findConnectorQuery = new Queries\Entities\FindConnectors();
 				$findConnectorQuery->byIdentifier($identifier);
 
-				if ($this->connectorsRepository->findOneBy(
+				$connector = $this->connectorsRepository->findOneBy(
 					$findConnectorQuery,
 					Entities\NsPanelConnector::class,
-				) === null) {
+				);
+
+				if ($connector === null) {
 					break;
 				}
 			}
@@ -259,7 +263,7 @@ class Install extends Console\Command\Command
 				'An unhandled error occurred',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'initialize-cmd',
+					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
@@ -411,7 +415,7 @@ class Install extends Console\Command\Command
 				'An unhandled error occurred',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'initialize-cmd',
+					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
@@ -496,7 +500,7 @@ class Install extends Console\Command\Command
 				'An unhandled error occurred',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'initialize-cmd',
+					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
@@ -765,7 +769,7 @@ class Install extends Console\Command\Command
 				'An unhandled error occurred',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'devices-cmd',
+					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
@@ -1028,7 +1032,7 @@ class Install extends Console\Command\Command
 				'An unhandled error occurred',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'devices-cmd',
+					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
@@ -1114,7 +1118,7 @@ class Install extends Console\Command\Command
 				'An unhandled error occurred',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'devices-cmd',
+					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
@@ -1412,7 +1416,7 @@ class Install extends Console\Command\Command
 				'An unhandled error occurred',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'devices-cmd',
+					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
@@ -1452,10 +1456,7 @@ class Install extends Console\Command\Command
 		$device = $this->askWhichDevice($io, $connector, $gateway);
 
 		if ($device === null) {
-			$io->info($this->translator->translate(
-				'//ns-panel-connector.cmd.install.messages.noDevices',
-				['name' => $gateway->getName() ?? $gateway->getIdentifier()],
-			));
+			$io->info($this->translator->translate('//ns-panel-connector.cmd.install.messages.noDevices'));
 
 			$question = new Console\Question\ConfirmationQuestion(
 				$this->translator->translate('//ns-panel-connector.cmd.install.questions.create.device'),
@@ -1496,7 +1497,7 @@ class Install extends Console\Command\Command
 				'An unhandled error occurred',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'devices-cmd',
+					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
@@ -1526,10 +1527,7 @@ class Install extends Console\Command\Command
 		$device = $this->askWhichDevice($io, $connector, $gateway);
 
 		if ($device === null) {
-			$io->info($this->translator->translate(
-				'//ns-panel-connector.cmd.install.messages.noDevices',
-				['name' => $gateway->getName() ?? $gateway->getIdentifier()],
-			));
+			$io->info($this->translator->translate('//ns-panel-connector.cmd.install.messages.noDevices'));
 
 			return;
 		}
@@ -1574,7 +1572,7 @@ class Install extends Console\Command\Command
 					'Calling NS Panel api failed',
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-						'type' => 'devices-cmd',
+						'type' => 'install-cmd',
 						'exception' => BootstrapHelpers\Logger::buildException($ex),
 					],
 				);
@@ -1610,7 +1608,7 @@ class Install extends Console\Command\Command
 				'An unhandled error occurred',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'devices-cmd',
+					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
@@ -1643,10 +1641,7 @@ class Install extends Console\Command\Command
 		$device = $this->askWhichDevice($io, $connector, $gateway, true);
 
 		if ($device === null) {
-			$io->info($this->translator->translate(
-				'//ns-panel-connector.cmd.install.messages.noDevices',
-				['name' => $gateway->getName() ?? $gateway->getIdentifier()],
-			));
+			$io->info($this->translator->translate('//ns-panel-connector.cmd.install.messages.noDevices'));
 
 			$question = new Console\Question\ConfirmationQuestion(
 				$this->translator->translate('//ns-panel-connector.cmd.install.questions.create.device'),
@@ -1834,7 +1829,7 @@ class Install extends Console\Command\Command
 				'An unhandled error occurred',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'devices-cmd',
+					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
@@ -1869,10 +1864,7 @@ class Install extends Console\Command\Command
 		$channel = $this->askWhichCapability($io, $device);
 
 		if ($channel === null) {
-			$io->info($this->translator->translate(
-				'//ns-panel-connector.cmd.install.messages.noCapabilities',
-				['name' => $device->getName() ?? $device->getIdentifier()],
-			));
+			$io->info($this->translator->translate('//ns-panel-connector.cmd.install.messages.noCapabilities'));
 
 			$question = new Console\Question\ConfirmationQuestion(
 				$this->translator->translate('//ns-panel-connector.cmd.install.questions.create.capability'),
@@ -1966,7 +1958,7 @@ class Install extends Console\Command\Command
 				'An unhandled error occurred',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'devices-cmd',
+					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
@@ -2000,10 +1992,7 @@ class Install extends Console\Command\Command
 		$channel = $this->askWhichCapability($io, $device);
 
 		if ($channel === null) {
-			$io->info($this->translator->translate(
-				'//ns-panel-connector.cmd.install.messages.noCapabilities',
-				['name' => $device->getName() ?? $device->getIdentifier()],
-			));
+			$io->info($this->translator->translate('//ns-panel-connector.cmd.install.messages.noCapabilities'));
 
 			$question = new Console\Question\ConfirmationQuestion(
 				$this->translator->translate('//ns-panel-connector.cmd.install.questions.create.capability'),
@@ -2034,10 +2023,7 @@ class Install extends Console\Command\Command
 		$channel = $this->askWhichCapability($io, $device);
 
 		if ($channel === null) {
-			$io->info($this->translator->translate(
-				'//ns-panel-connector.cmd.install.messages.noCapabilities',
-				['name' => $device->getName() ?? $device->getIdentifier()],
-			));
+			$io->info($this->translator->translate('//ns-panel-connector.cmd.install.messages.noCapabilities'));
 
 			return;
 		} elseif ($channel === false) {
@@ -2083,7 +2069,7 @@ class Install extends Console\Command\Command
 				'An unhandled error occurred',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'devices-cmd',
+					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
@@ -2402,7 +2388,7 @@ class Install extends Console\Command\Command
 				'An unhandled error occurred',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'devices-cmd',
+					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
@@ -2479,7 +2465,7 @@ class Install extends Console\Command\Command
 				'An unhandled error occurred',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'devices-cmd',
+					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
@@ -4367,7 +4353,7 @@ class Install extends Console\Command\Command
 							'Could not get NS Panel basic information',
 							[
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-								'type' => 'devices-cmd',
+								'type' => 'install-cmd',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'request' => [
 									'method' => $ex->getRequest()?->getMethod(),
