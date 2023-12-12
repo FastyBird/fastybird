@@ -2613,38 +2613,33 @@ class Install extends Console\Command\Command
 		Entities\NsPanelConnector $connector,
 	): void
 	{
-		if (
+		$question =
 			$connector->getClientMode()->equalsValue(Types\ClientMode::GATEWAY)
 			|| $connector->getClientMode()->equalsValue(Types\ClientMode::BOTH)
-		) {
-			$question = new Console\Question\ChoiceQuestion(
-				$this->translator->translate('//ns-panel-connector.cmd.base.questions.whatToDo'),
-				[
-					0 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.create.gateway'),
-					1 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.update.gateway'),
-					2 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.remove.gateway'),
-					3 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.manage.gateway'),
-					4 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.list.gateways'),
-					5 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.discover.devices'),
-					6 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.nothing'),
-				],
-				6,
-			);
-
-		} else {
-			$question = new Console\Question\ChoiceQuestion(
-				$this->translator->translate('//ns-panel-connector.cmd.base.questions.whatToDo'),
-				[
-					0 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.create.gateway'),
-					1 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.update.gateway'),
-					2 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.remove.gateway'),
-					3 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.manage.gateway'),
-					4 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.list.gateways'),
-					5 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.nothing'),
-				],
-				5,
-			);
-		}
+		? new Console\Question\ChoiceQuestion(
+			$this->translator->translate('//ns-panel-connector.cmd.base.questions.whatToDo'),
+			[
+				0 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.create.gateway'),
+				1 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.update.gateway'),
+				2 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.remove.gateway'),
+				3 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.manage.gateway'),
+				4 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.list.gateways'),
+				5 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.discover.devices'),
+				6 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.nothing'),
+			],
+			6,
+		) : new Console\Question\ChoiceQuestion(
+			$this->translator->translate('//ns-panel-connector.cmd.base.questions.whatToDo'),
+			[
+				0 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.create.gateway'),
+				1 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.update.gateway'),
+				2 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.remove.gateway'),
+				3 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.manage.gateway'),
+				4 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.list.gateways'),
+				5 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.nothing'),
+			],
+			5,
+		);
 
 		$question->setErrorMessage(
 			$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
