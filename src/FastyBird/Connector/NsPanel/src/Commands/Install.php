@@ -540,6 +540,8 @@ class Install extends Console\Command\Command
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
 	 * @throws RuntimeException
 	 */
 	private function createGateway(
@@ -723,6 +725,8 @@ class Install extends Console\Command\Command
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
 	 * @throws RuntimeException
 	 */
 	private function editGateway(
@@ -3290,7 +3294,9 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//ns-panel-connector.cmd.install.questions.select.device.mappedDeviceChannel'),
+			$this->translator->translate(
+				'//ns-panel-connector.cmd.install.questions.select.device.mappedDeviceChannel',
+			),
 			array_values($channels),
 			$default,
 		);
@@ -3379,7 +3385,9 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//ns-panel-connector.cmd.install.questions.select.device.mappedChannelProperty'),
+			$this->translator->translate(
+				'//ns-panel-connector.cmd.install.questions.select.device.mappedChannelProperty',
+			),
 			array_values($properties),
 			$default,
 		);
@@ -3941,6 +3949,10 @@ class Install extends Console\Command\Command
 		return $connector;
 	}
 
+	/**
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
 	private function askWhichPanel(
 		Style\SymfonyStyle $io,
 		Entities\NsPanelConnector $connector,
