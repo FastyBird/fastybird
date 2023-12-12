@@ -186,7 +186,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 						'Connected to device sockets server',
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-							'type' => 'ws-api',
+							'type' => 'gen2-ws-api',
 							'device' => [
 								'id' => $this->id->toString(),
 							],
@@ -204,7 +204,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 									'Received message from device could not be decoded',
 									[
 										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-										'type' => 'ws-api',
+										'type' => 'gen2-ws-api',
 										'exception' => BootstrapHelpers\Logger::buildException($ex),
 										'device' => [
 											'id' => $this->id->toString(),
@@ -240,8 +240,11 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 											'Could not handle received device status message',
 											[
 												'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-												'type' => 'ws-api',
+												'type' => 'gen2-ws-api',
 												'exception' => BootstrapHelpers\Logger::buildException($ex),
+												'device' => [
+													'id' => $this->id->toString(),
+												],
 												'response' => [
 													'body' => Utils\Json::encode($payload->params),
 													'schema' => self::DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME,
@@ -261,8 +264,11 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 											'Could not handle received event message',
 											[
 												'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-												'type' => 'ws-api',
+												'type' => 'gen2-ws-api',
 												'exception' => BootstrapHelpers\Logger::buildException($ex),
+												'device' => [
+													'id' => $this->id->toString(),
+												],
 												'response' => [
 													'body' => Utils\Json::encode($payload->params),
 													'schema' => self::DEVICE_EVENT_MESSAGE_SCHEMA_FILENAME,
@@ -277,7 +283,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 										'Device respond with unsupported method',
 										[
 											'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-											'type' => 'ws-api',
+											'type' => 'gen2-ws-api',
 											'device' => [
 												'id' => $this->id->toString(),
 											],
@@ -310,8 +316,11 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 											'Could not handle received response device status message',
 											[
 												'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-												'type' => 'ws-api',
+												'type' => 'gen2-ws-api',
 												'exception' => BootstrapHelpers\Logger::buildException($ex),
+												'device' => [
+													'id' => $this->id->toString(),
+												],
 												'response' => [
 													'body' => Utils\Json::encode($payload->result),
 													'schema' => self::DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME,
@@ -445,7 +454,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 									'Device respond with error',
 									[
 										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-										'type' => 'ws-api',
+										'type' => 'gen2-ws-api',
 										'device' => [
 											'id' => $this->id->toString(),
 										],
@@ -480,7 +489,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 							'An error occurred on device connection',
 							[
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-								'type' => 'ws-api',
+								'type' => 'gen2-ws-api',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'device' => [
 									'id' => $this->id->toString(),
@@ -498,7 +507,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 							'Connection with device was closed',
 							[
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-								'type' => 'ws-api',
+								'type' => 'gen2-ws-api',
 								'connection' => [
 									'code' => $code,
 									'reason' => $reason,
@@ -523,7 +532,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 						'Connection to device failed',
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-							'type' => 'ws-api',
+							'type' => 'gen2-ws-api',
 							'exception' => BootstrapHelpers\Logger::buildException($ex),
 							'device' => [
 								'id' => $this->id->toString(),
@@ -550,7 +559,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 				'Could not create device client',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-					'type' => 'ws-api',
+					'type' => 'gen2-ws-api',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'device' => [
 						'id' => $this->id->toString(),

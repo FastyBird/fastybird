@@ -65,9 +65,9 @@ final class ShellyExtensionTest extends Tests\Cases\Unit\BaseTestCase
 		self::assertNotNull($container->getByType(Helpers\Connector::class, false));
 		self::assertNotNull($container->getByType(Helpers\Device::class, false));
 
-		self::assertNotNull($container->getByType(Commands\Initialize::class, false));
 		self::assertNotNull($container->getByType(Commands\Execute::class, false));
-		self::assertNotNull($container->getByType(Commands\Discovery::class, false));
+		self::assertNotNull($container->getByType(Commands\Discover::class, false));
+		self::assertNotNull($container->getByType(Commands\Install::class, false));
 
 		self::assertNotNull($container->getByType(Connector\ConnectorFactory::class, false));
 	}

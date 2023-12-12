@@ -127,10 +127,12 @@ class Install extends Console\Command\Command
 				$findConnectorQuery = new Queries\Entities\FindConnectors();
 				$findConnectorQuery->byIdentifier($answer);
 
-				if ($this->connectorsRepository->findOneBy(
+				$connector = $this->connectorsRepository->findOneBy(
 					$findConnectorQuery,
 					Entities\FbMqttConnector::class,
-				) !== null) {
+				);
+
+				if ($connector !== null) {
 					throw new Exceptions\Runtime(
 						$this->translator->translate(
 							'//fb-mqtt-connector.cmd.install.messages.identifier.connector.used',
@@ -153,10 +155,12 @@ class Install extends Console\Command\Command
 				$findConnectorQuery = new Queries\Entities\FindConnectors();
 				$findConnectorQuery->byIdentifier($identifier);
 
-				if ($this->connectorsRepository->findOneBy(
+				$connector = $this->connectorsRepository->findOneBy(
 					$findConnectorQuery,
 					Entities\FbMqttConnector::class,
-				) === null) {
+				);
+
+				if ($connector === null) {
 					break;
 				}
 			}

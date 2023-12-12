@@ -100,10 +100,11 @@ final class Connector implements DevicesConnectors\Connector
 			],
 		);
 
-		$findConnector = new DevicesQueries\Configuration\FindConnectors();
-		$findConnector->byId($this->connector->getId());
+		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
+		$findConnectorQuery->byId($this->connector->getId());
+		$findConnectorQuery->byType(Entities\ShellyConnector::TYPE);
 
-		$connector = $this->connectorsConfigurationRepository->findOneBy($findConnector);
+		$connector = $this->connectorsConfigurationRepository->findOneBy($findConnectorQuery);
 
 		if ($connector === null) {
 			$this->logger->error(
@@ -171,7 +172,7 @@ final class Connector implements DevicesConnectors\Connector
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
 				'type' => 'connector',
 				'connector' => [
-					'id' => $connector->getId()->toString(),
+					'id' => $this->connector->getId()->toString(),
 				],
 			],
 		);

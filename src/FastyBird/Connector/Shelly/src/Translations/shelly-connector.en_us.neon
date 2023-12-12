@@ -24,56 +24,6 @@ cmd:
             noConnectors: "No Shelly connectors registered in system."
             answerNotValid: "Selected answer: \"%s\" is not valid."
 
-    initialize:
-        title: "Shelly connector - initialization"
-        subtitle: "This action will create|update|delete connector configuration"
-
-        actions:
-            create: "Create new connector configuration"
-            update: "Edit existing connector configuration"
-            remove: "Delete existing connector configuration"
-            list: "List Shelly connectors"
-            nothing: "Nothing"
-
-        questions:
-            create: "Would you like to create new Shelly connector configuration?"
-            disable: "Do you want to disable connector?"
-            enable: "Do you want to enable connector?"
-            provide:
-                identifier: "Provide connector identifier"
-                name: "Provide connector name"
-                cloudAuthenticationKey: "Provide cloud authentication key"
-                cloudServerAddress: "Provide cloud server address"
-            select:
-                connector: "Please select connector to manage"
-                mode: "In what mode should this connector communicate with Shelly devices?"
-            changeMode: "Do you want to change connector devices support?"
-            changeCloudAuthKey: "Do you want to change connector cloud authentication key?"
-            changeCloudServerAddress: "Do you want to change connector clout server address?"
-
-        answers:
-            mode:
-                local: "Local network mode"
-                cloud: "Shelly cloud server mode"
-
-        data:
-            name: "Name"
-            devicesCnt: "# Devices"
-
-        messages:
-            identifier:
-                used: "This identifier is already used."
-                missing: "Connector identifier have to be provided."
-            create:
-                success: "Connector \"%name%\" was successfully created."
-                error: "Something went wrong, connector could not be created. An error was logged."
-            update:
-                success: "Connector \"%name%\" was successfully updated."
-                error: "Something went wrong, connector could not be updated. An error was logged."
-            remove:
-                success: "Connector \"%name%\" was successfully removed."
-                error: "Something went wrong, connector could not be removed. An error was logged."
-
     execute:
         title: "Shelly connector - service"
         subtitle: "This action will run connector service"
@@ -89,7 +39,7 @@ cmd:
                 disabled: "Connector is disabled. Disabled connector could not be executed."
             error: "Something went wrong, connector was terminated."
 
-    discovery:
+    discover:
         title: "Shelly connector - devices discovery"
         subtitle: "This action will run connector devices discovery"
 
@@ -114,3 +64,93 @@ cmd:
             noDevicesFound: "No devices were found"
             success: "Devices discovery was successfully finished"
             error: "Devices discovery failed. An error was logged."
+
+    install:
+        title: "Shelly connector - installer"
+        subtitle: "This action will create|update|delete connector configuration"
+
+        actions:
+            create:
+                connector: "Create connector"
+            update:
+                connector: "Edit connector"
+                device: "Edit device"
+            remove:
+                connector: "Delete connector"
+                device: "Delete device"
+            manage:
+                connector: "Manage connector"
+            list:
+                connectors: "List connectors"
+                devices: "List devices"
+            discover:
+                devices: "Discover devices"
+            nothing: "Nothing"
+
+        questions:
+            create:
+                connector: "Would you like to create new connector configuration?"
+            manage:
+                devices: "Would you like to manage connector devices?"
+            provide:
+                connector:
+                    identifier: "Provide connector identifier"
+                    name: "Provide connector name"
+                    cloudAuthenticationKey: "Provide cloud authentication key"
+                    cloudServerAddress: "Provide cloud server address"
+                device:
+                    name: "Provide device name"
+            select:
+                item:
+                    connector: "Please select connector to manage"
+                    device: "Please select device to manage"
+                connector:
+                    mode: "In what mode should this connector communicate with Shelly devices?"
+            changeMode: "Do you want to change connector devices support?"
+            disable:
+                connector: "Do you want to disable connector?"
+            enable:
+                connector: "Do you want to enable connector?"
+            changeCloudAuthKey: "Do you want to change connector cloud authentication key?"
+            changeCloudServerAddress: "Do you want to change connector clout server address?"
+
+        answers:
+            mode:
+                local: "Local network mode"
+                cloud: "Cloud server mode"
+
+        data:
+            name: "Name"
+            devicesCnt: "# Devices"
+
+        messages:
+            identifier:
+                connector:
+                    used: "This identifier is already used."
+                    missing: "Connector identifier have to be provided."
+            create:
+                connector:
+                    success: "Connector \"%name%\" was successfully created."
+                    error: "Something went wrong, connector could not be created. An error was logged."
+            update:
+                connector:
+                    success: "Connector \"%name%\" was successfully updated."
+                    error: "Something went wrong, connector could not be updated. An error was logged."
+                device:
+                    success: "Device \"%name%\" was successfully updated."
+                    error: "Something went wrong, device could not be updated. An error was logged."
+            remove:
+                connector:
+                    confirm: "This action will remove \"%name%\" connector. This action can not be undone."
+                    success: "Connector \"%name%\" was successfully removed."
+                    error: "Something went wrong, connector could not be removed. An error was logged."
+                device:
+                    confirm: "This action will remove \"%name%\" device. This action can not be undone."
+                    success: "Device \"%name%\" was successfully removed."
+                    error: "Something went wrong, device could not be removed. An error was logged."
+            discover:
+                success: "Devices discovery was successfully finished"
+                error: "Devices discovery failed. An error was logged."
+            noDevices: "No devices are registered in \"%name%\" connector."
+            foundDevices: "Found %d new devices"
+            noDevicesFound: "No devices were found"
