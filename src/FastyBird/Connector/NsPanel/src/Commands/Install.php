@@ -1250,7 +1250,7 @@ class Install extends Console\Command\Command
 		]), $this->output);
 
 		if ($result !== Console\Command\Command::SUCCESS) {
-			$io->error($this->translator->translate('//ns-panel-connector.cmd.execute.messages.discover.error'));
+			$io->error($this->translator->translate('//ns-panel-connector.cmd.install.messages.discover.error'));
 
 			return;
 		}
@@ -1263,7 +1263,7 @@ class Install extends Console\Command\Command
 			$this->translator->translate('//ns-panel-connector.cmd.install.data.id'),
 			$this->translator->translate('//ns-panel-connector.cmd.install.data.name'),
 			$this->translator->translate('//ns-panel-connector.cmd.install.data.type'),
-			$this->translator->translate('//ns-panel-connector.cmd.discovery.data.gateway'),
+			$this->translator->translate('//ns-panel-connector.cmd.install.data.gateway'),
 		]);
 
 		$foundDevices = 0;
