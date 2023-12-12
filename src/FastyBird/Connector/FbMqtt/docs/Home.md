@@ -39,7 +39,7 @@ To connect to devices that use the [FastyBird MQTT Convention](https://github.co
 with the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem,
 you must set up at least one connector. You can configure the connector using the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) user interface or by using the console.
 
-## Configuring the Connector through the Console
+## Configuring the Connectors and Devices through the Console
 
 To configure the connector through the console, run the following command:
 
@@ -50,29 +50,26 @@ php bin/fb-console fb:fb-mqtt-connector:initialize
 > **NOTE:**
 The path to the console command may vary depending on your FastyBird application distribution. For more information, refer to the FastyBird documentation.
 
-The console will ask you to confirm that you want to continue with the configuration.
+The console will show you basic menu. To navigate in menu you could write value displayed in square brackets or you
+could use arrows to select one of the options:
 
 ```shell
-FastyBird MQTT connector - initialization
-=========================================
+FB MQTT connector - installer
+=============================
 
  ! [NOTE] This action will create|update|delete connector configuration                                                 
 
- Would you like to continue? (yes/no) [no]:
- > y
-```
-
-You will then be prompted to choose an action:
-
-```shell
  What would you like to do? [Nothing]:
-  [0] Create new connector configuration
-  [1] Edit existing connector configuration
-  [2] Delete existing connector configuration
-  [3] List FB MQTT connectors
-  [4] Nothing
+  [0] Create connector
+  [1] Edit connector
+  [2] Delete connector
+  [3] Manage connector
+  [4] List connectors
+  [5] Nothing
  > 0
 ```
+
+### Create connector
 
 When opting to create a new connector, you'll be prompted to select the protocol version that the connector will use to
 communicate with the devices.
@@ -104,61 +101,21 @@ After providing the necessary information, your new FastyBird MQTT connector wil
  [OK] New connector "My FastyBird MQTT" was successfully created                                                                
 ```
 
-## Configuring the Connector with the FastyBird User Interface
-
-You can also configure the FastyBird MQTT connector using the [FastyBird](https://www.fastybird.com)
-[IoT](https://en.wikipedia.org/wiki/Internet_of_things) user interface. For more information on how to do this, please refer
-to the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) documentation.
-
-# Devices Configuration
+### Create device
 
 According to [FastyBird MQTT Convention](https://github.com/FastyBird/mqtt-convention) protocol definition, devices
 could be configured automatically, because they have to provide its description.
 
-However, you can create a basic configuration for the devices either through the user interface or a console command.
+However, you can create a basic configuration for the devices manually.
 
-## Manual Console Command
-
-To manually trigger device discovery, use the following command:
+After new connector is created you will be asked if you want to create new device:
 
 ```shell
-php bin/fb-console fb:fb-mqtt-connector:devices
+ Would you like to configure connector device(s)? (yes/no) [yes]:
+ > 
 ```
 
-> **NOTE:**
-The path to the console command may vary depending on your FastyBird application distribution. For more information, refer to the FastyBird documentation.
-
-The console will prompt for confirmation before proceeding with the devices configuration process.
-
-```shell
-FastyBird MQTT connector - devices management
-=============================================
-
- ! [NOTE] This action will create|update|delete connector device.                                                       
-
- Would you like to continue? (yes/no) [no]:
- > y
-```
-
-You will then be prompted to select connector to manage devices.
-
-```shell
- Please select connector under which you want to manage devices:
-  [0] my-fb-mqtt [My FastyBird MQTT]
- > 0
-```
-
-You will then be prompted to select device management action.
-
-```shell
- What would you like to do?:
-  [0] Create new connector configuration
-  [1] Edit existing connector configuration
-  [2] Delete existing connector configuration
-  [3] List FB MQTT connectors
-  [4] Nothing
- > 0
-```
+Or you could choose to manage connector devices from the main menu.
 
 Now you will be asked to provide some device details:
 
@@ -178,3 +135,9 @@ you will receive a confirmation message.
 ```shell
  [OK] Device register was successfully created
 ```
+
+## Configuring the Connector with the FastyBird User Interface
+
+You can also configure the FastyBird MQTT connector using the [FastyBird](https://www.fastybird.com)
+[IoT](https://en.wikipedia.org/wiki/Internet_of_things) user interface. For more information on how to do this, please refer
+to the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) documentation.
