@@ -45,17 +45,15 @@ Examples of protocol include temperature, humidity, on/off status, and brightnes
 
 # Configuration
 
-To integrate [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem devices
-with **Sonoff NS Panel**, you will need to configure at least one connector.
-The connector can be configured using the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things)
-user interface or through the console.
+To use [Sonoff NS Panels](https://sonoff.tech/product/central-control-panel/nspanel-pro/) devices with the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem, you will need to configure at least one connector.
+The connector can be configured using the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) user interface or through the console.
 
-## Configuring the Connector through the Console
+## Configuring the Connectors, Devices and Capabilities through the Console
 
 To configure the connector through the console, run the following command:
 
 ```shell
-php bin/fb-console fb:ns-panel-connector:initialize
+php bin/fb-console fb:ns-panel-connector:install
 ```
 
 > **NOTE:**
@@ -64,36 +62,34 @@ The path to the console command may vary depending on your FastyBird application
 After triggering the command you will get information message:
 
 ```shell
-NS Panel connector - initialization
-===================================
+NS Panel connector - installer
+==============================
 
  ! [NOTE] This action will create|update|delete connector configuration                                                 
 
- Would you like to continue? (yes/no) [no]:
- > y
-```
-
-If you are ready to process press **Y** and hit **Enter**. You will then be prompted to choose an action:
-
-```shell
  What would you like to do? [Nothing]:
-  [0] Create new connector configuration
-  [1] Edit existing connector configuration
-  [2] Delete existing connector configuration
-  [3] List NS Panel connectors
-  [4] Nothing
+  [0] Create connector
+  [1] Edit connector
+  [2] Delete connector
+  [3] Manage connector
+  [4] List connectors
+  [5] Nothing
  > 0
 ```
 
-If you choose to create a new connector, you will be asked to provide basic connector configuration:
+### Create connector
+
+If you choose to create a new connector, you will be asked to choose the mode in which the connector will communicate with the devices:
 
 ```shell
- In what mode should this connector communicate with NS Panels? [2]:
+ In what mode should this connector communicate with NS Panels? [Both modes]:
   [0] Only NS Panel gateway mode
   [1] Only NS Panel third-party devices mode
   [2] Both modes
  > Both modes
 ```
+
+You will then be asked to provide a connector identifier and name:
 
 ```shell
  Provide connector identifier:
@@ -111,68 +107,21 @@ After providing the necessary information, your new **Sonoff NS Panel** connecto
  [OK] Connector "My NS Panel connector" was successfully created.                                                       
  ```
 
-## Configuring the Connector with the FastyBird User Interface
+### Connect NS Panel
 
-You can also configure the **Sonoff NS Panel** connector using the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) user interface. For more information on how to do this,
-please refer to the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) documentation.
-
-# Third-party Devices Configuration
-
-With your new connector set up, you could now configure the third-party devices with which the connector will communicate.
-This can be accomplished either through a console command or through the user interface of the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things).
-
-## Manual Console Command
-
-To manually trigger device configuration, use the following command:
+After new connector is created you will be asked if you want to connect new NS Panel:
 
 ```shell
-php bin/fb-console fb:ns-panel-connector:devices
+ Would you like to configure connector NS Panel(s)? (yes/no) [yes]:
+ > 
 ```
 
-> **NOTE:**
-The path to the console command may vary depending on your FastyBird application distribution. For more information, refer to the FastyBird documentation.
+Or you could choose to manage connector devices from the main menu.
 
-The console will prompt for confirmation before proceeding with the devices configuration process.
-
-```shell
-NS Panel connector - devices management
-=======================================
-
- ! [NOTE] This action will manage connector NS Panels and their devices                                                 
-
- Would you like to continue? (yes/no) [no]:
- > y
-```
-
-You will then be prompted to select connector which you want to manage.
+Now you will be asked to provide some device details:
 
 ```shell
- Please select connector under which you want to manage devices [my-ns-panel-connector [My NS Panel connector]]:
-  [0] my-ns-panel-connector [My NS Panel connector]
- > 0
-```
-
-You will then be prompted to select connector management action.
-
-```shell
- What would you like to do? [Nothing]:
-  [0] Connect new NS Panel
-  [1] Edit existing NS Panel
-  [2] Delete existing NS Panel
-  [3] List NS Panels
-  [4] Manage NS Panel devices
-  [5] Nothing
- > 0
-```
-
-### Connect New Sonoff NS Panel
-
-If you would like to connect new **Sonoff NS Panel** to you connector, you have to choose `Connect new NS Panel`
-
-You will be asked to provide basic NS Panel configuration:
-
-```shell
- Provide identifier:
+ Provide device identifier:
  > panel-living-room
 ```
 
@@ -239,11 +188,11 @@ You will then be prompted to select device management action. To create new devi
 
 ```shell
  What would you like to do? [Nothing]:
-  [0] Create new device
-  [1] Edit existing device
-  [2] Delete existing device
-  [3] List devices
-  [4] Manage device capabilities
+  [0] Create device
+  [1] Edit device
+  [2] Delete device
+  [3] Manage device
+  [4] List devices
   [5] Nothing
  > 0
 ```
@@ -380,6 +329,16 @@ If there are no errors, you will be back in NS Panel management main menu:
 ```
 
 You could configure as many devices as you want.
+
+### Connectors, Devices and Capabilities management
+
+With this console command you could manage all your connectors, their devices and capabilities. Just use the main menu to navigate to proper action.
+
+## Configuring the Connector with the FastyBird User Interface
+
+You can also configure the NS Panel connector using the [FastyBird](https://www.fastybird.com)
+[IoT](https://en.wikipedia.org/wiki/Internet_of_things) user interface. For more information on how to do this, please refer
+to the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) documentation.
 
 # Sub-Devices Discovery
 

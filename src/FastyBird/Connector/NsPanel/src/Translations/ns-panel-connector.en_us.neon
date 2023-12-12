@@ -81,185 +81,6 @@ cmd:
             press: "Press"
             rssi: "Signal RSSI"
 
-    initialize:
-        title: "NS Panel connector - initialization"
-        subtitle: "This action will create|update|delete connector configuration"
-
-        actions:
-            create: "Create new connector configuration"
-            update: "Edit existing connector configuration"
-            remove: "Delete existing connector configuration"
-            list: "List NS Panel connectors"
-            nothing: "Nothing"
-
-        questions:
-            create: "Would you like to create new NS Panel connector configuration?"
-            disable: "Do you want to disable connector?"
-            enable: "Do you want to enable connector?"
-            provide:
-                identifier: "Provide connector identifier"
-                name: "Provide connector name"
-            select:
-                connector: "Please select connector to manage"
-                mode: "In what mode should this connector communicate with NS Panels?"
-            changeMode: "Do you want to change connector devices support?"
-
-        answers:
-            mode:
-                gateway: "Only NS Panel gateway mode"
-                device: "Only NS Panel third-party devices mode"
-                both: "Both modes"
-
-        data:
-            name: "Name"
-            panelsCnt: "# NS Panels"
-            subDevicesCnt: "# Sub-devices"
-            devicesCnt: "# Devices"
-
-        messages:
-            identifier:
-                used: "This identifier is already used."
-                missing: "Connector identifier have to be provided."
-            create:
-                success: "Connector \"%name%\" was successfully created."
-                error: "Something went wrong, connector could not be created. An error was logged."
-            update:
-                success: "Connector \"%name%\" was successfully updated."
-                error: "Something went wrong, connector could not be updated. An error was logged."
-            remove:
-                success: "Connector \"%name%\" was successfully removed."
-                error: "Something went wrong, connector could not be removed. An error was logged."
-
-    devices:
-        title: "NS Panel connector - devices management"
-        subtitle: "This action will manage connector NS Panels and their devices"
-
-        actions:
-            create:
-                gateway: "Connect new NS Panel"
-                device: "Create new device"
-                capability: "Create new device capability"
-            update:
-                gateway: "Edit existing NS Panel"
-                device: "Edit existing device"
-                capability: "Edit existing device capability"
-                protocol: "Edit existing capability protocol"
-            remove:
-                gateway: "Delete existing NS Panel"
-                device: "Delete existing device"
-                capability: "Delete existing device capability"
-                protocol: "Delete existing capability protocol"
-            list:
-                gateways: "List NS Panels"
-                devices: "List devices"
-                capabilities: "List device capabilities"
-                protocols: "List capability protocols"
-            manage:
-                gateway: "Manage NS Panel devices"
-                device: "Manage device capabilities"
-                capability: "Manage capability protocols"
-            nothing: "Nothing"
-
-        questions:
-            create:
-                gateway: "Would you like to configure new NS Panel?"
-                device: "Would you like to create new device in NS Panel?"
-                capability: "Would you like to configure new device capability?"
-            provide:
-                identifier: "Provide identifier"
-                name: "Provide device name"
-                value: "Provide protocol value"
-                address: "Provide NS Panel local IP address or domain"
-            select:
-                connector: "Please select connector under which you want to manage devices"
-                gateway: "Please select NS Panel to manage"
-                device: "Please select device to manage"
-                capability: "Please select device's capability"
-                protocol: "Please select capability's protocol"
-                category: "Please select device category"
-                capabilityType: "What type of device capability you would like to add?"
-                protocolType: "What type of capability protocol you would like to add?"
-                mappedDevice: "Select device for mapping"
-                mappedDeviceChannel: "Select device channel for mapping"
-                mappedChannelProperty: "Select channel property for mapping"
-                valueMapping: "Select device value which will be mapped to: %value%"
-                value: "Please select protocol value"
-            isGatewayReady: "Is your NS Panel ready?"
-            regenerateAccessToken: "Would you like to establish new connection with NS Panel?"
-            connectProtocol: "Connect protocol with device?"
-
-        answers:
-            none: "None"
-            true: "True"
-            false: "False"
-
-        data:
-            name: "Name"
-            ipAddress: "IP Address"
-            devices: "Devices"
-            category: "Category"
-            capabilities: "Capabilities"
-            type: "Type"
-            protocols: "Protocols"
-            value: "Value"
-
-        messages:
-            create:
-                gateway:
-                    success: "NS Panel \"%name%\" was successfully created."
-                    error: "Something went wrong, NS Panel could not be created. An error was logged."
-                device:
-                    success: "Device \"%name%\" was successfully created."
-                    error: "Something went wrong, device could not be created. An error was logged."
-                capability:
-                    success: "Capability \"%name%\" was successfully created."
-                    error: "Something went wrong, capability could not be created. An error was logged."
-                protocol:
-                    success: "Protocol \"%name%\" was successfully created."
-                    error: "Something went wrong, protocol could not be created. An error was logged."
-            update:
-                gateway:
-                    success: "NS Panel \"%name%\" was successfully updated."
-                    error: "Something went wrong, NS Panel could not be updated. An error was logged."
-                device:
-                    success: "Device \"%name%\" was successfully updated."
-                    error: "Something went wrong, device could not be updated. An error was logged."
-                capability:
-                    success: "Capability \"%name%\" was successfully updated."
-                    error: "Something went wrong, capability could not be updated. An error was logged."
-                protocol:
-                    success: "Protocol \"%name%\" was successfully updated."
-                    error: "Something went wrong, protocol could not be updated. An error was logged."
-            remove:
-                gateway:
-                    success: "NS Panel \"%name%\" was successfully removed."
-                    error: "Something went wrong, NS Panel could not be removed. An error was logged."
-                device:
-                    success: "Device \"%name%\" was successfully removed."
-                    error: "Something went wrong, device could not be removed. An error was logged."
-                capability:
-                    success: "Capability \"%name%\" was successfully removed."
-                    error: "Something went wrong, capability could not be removed. An error was logged."
-                protocol:
-                    success: "Protocol \"%name%\" was successfully removed."
-                    error: "Something went wrong, protocol could not be removed. An error was logged."
-            identifier:
-                used: "This identifier is already used."
-                missing: "Identifier have to provided."
-            gateway:
-                prepare: "Now you have to prepare your NS Panel for pairing. Go to Settings, then to About and tap 7 times in a row on Name."
-            accessToken:
-                error: "Could not get NS Panel access token"
-            noGateways: "No NS Panels registered in NS Panel connector."
-            noDevices: "No devices are registered in \"%name%\" NS Panel."
-            noCapabilities: "No capabilities are registered in \"%name%\" device."
-            noProtocols: "This device capability has not configured any protocol."
-            noMultipleCapabilities: "Capability \"%type%\" is already created under this device"
-            noMissingProtocols: "All available protocols for selected capability are configured"
-            noHardwareDevices: "No devices registered in system which could be connected with NS Panel device"
-            addressNotReachable: "NS Panel with address \"%address%\" is not reachable."
-            removeDeviceFromPanelFailed: "Device \"%name%\" could not be removed from NS panel \"%panel%\""
-
     execute:
         title: "NS Panel connector - service"
         subtitle: "This action will run connector service"
@@ -294,9 +115,196 @@ cmd:
             connector:
                 notFound: "Connector was not found in system."
                 disabled: "Connector is disabled. Disabled connector could not be executed."
-            starting: "Starting NS Panel connector discovery..."
-            stopping: "Stopping NS Panel connector discovery..."
             foundDevices: "Found %d new devices"
             noDevicesFound: "No devices were found"
             success: "Devices discovery was successfully finished"
             error: "Devices discovery failed. An error was logged."
+
+    install:
+        title: "NS Panel connector - installer"
+        subtitle: "This action will create|update|delete connector configuration"
+
+        actions:
+            create:
+                connector: "Create connector"
+                gateway: "Connect NS Panel"
+                device: "Create device"
+                capability: "Create device capability"
+            update:
+                connector: "Edit connector"
+                gateway: "Edit NS Panel"
+                device: "Edit device"
+                capability: "Edit device capability"
+                protocol: "Edit capability protocol"
+            remove:
+                connector: "Delete connector"
+                gateway: "Delete NS Panel"
+                device: "Delete device"
+                capability: "Delete device capability"
+                protocol: "Delete capability protocol"
+            manage:
+                connector: "Manage connector"
+                gateway: "Manage NS Panel"
+                device: "Manage device"
+                capability: "Manage capability protocols"
+            list:
+                connectors: "List connectors"
+                gateways: "List NS Panels"
+                devices: "List devices"
+                capabilities: "List device capabilities"
+                protocols: "List capability protocols"
+            discover:
+                devices: "Discover devices"
+            nothing: "Nothing"
+
+        questions:
+            create:
+                connector: "Would you like to create new connector configuration?"
+                gateways: "Would you like to configure connector NS Panel(s)?"
+                gateway: "Would you like to configure new NS Panel?"
+                devices: "Would you like to configure NS Panel device(s)?"
+                device: "Would you like to create new device in NS Panel?"
+                capability: "Would you like to configure new device capability?"
+            manage:
+                gateways: "Would you like to manage connector NS Panels?"
+                devices: "Would you like to manage NS Panel devices?"
+            provide:
+                connector:
+                    identifier: "Provide connector identifier"
+                    name: "Provide connector name"
+                device:
+                    identifier: "Provide device identifier"
+                    name: "Provide device name"
+                    value: "Provide protocol value"
+                    address: "Provide NS Panel local IP address or domain"
+            select:
+                item:
+                    connector: "Please select connector to manage"
+                    gateway: "Please select NS Panel to manage"
+                    device: "Please select device to manage"
+                    capability: "Please select device's capability"
+                    protocol: "Please select capability's protocol"
+                connector:
+                    mode: "In what mode should this connector communicate with NS Panels?"
+                gateway:
+                device:
+                    category: "Please select device category"
+                    capabilityType: "What type of device capability you would like to add?"
+                    protocolType: "What type of capability protocol you would like to add?"
+                    mappedDevice: "Select device for mapping"
+                    mappedDeviceChannel: "Select device channel for mapping"
+                    mappedChannelProperty: "Select channel property for mapping"
+                    valueMapping: "Select device value which will be mapped to: %value%"
+                    value: "Please select protocol value"
+            changeMode: "Do you want to change connector devices support?"
+            disable:
+                connector: "Do you want to disable connector?"
+            enable:
+                connector: "Do you want to enable connector?"
+            isGatewayReady: "Is your NS Panel ready?"
+            regenerateAccessToken: "Would you like to establish new connection with NS Panel?"
+            connectProtocol: "Connect protocol with device?"
+
+        answers:
+            mode:
+                gateway: "Only NS Panel gateway mode"
+                device: "Only NS Panel third-party devices mode"
+                both: "Both modes"
+            none: "None"
+            true: "True"
+            false: "False"
+
+        data:
+            id: "ID"
+            name: "Name"
+            mode: "Mode"
+            panelsCnt: "# NS Panels"
+            ipAddress: "IP Address"
+            category: "Category"
+            capabilities: "Capabilities"
+            type: "Type"
+            protocols: "Protocols"
+            value: "Value"
+            gateway: "NS Panel"
+            subDevicesCnt: "# Sub-devices"
+            devicesCnt: "# Devices"
+
+        messages:
+            identifier:
+                connector:
+                    used: "This identifier is already used."
+                    missing: "Connector identifier have to be provided."
+                device:
+                    used: "This identifier is already used."
+                    missing: "Identifier have to provided."
+            create:
+                connector:
+                    success: "Connector \"%name%\" was successfully created."
+                    error: "Something went wrong, connector could not be created. An error was logged."
+                gateway:
+                    success: "NS Panel \"%name%\" was successfully created."
+                    error: "Something went wrong, NS Panel could not be created. An error was logged."
+                device:
+                    success: "Device \"%name%\" was successfully created."
+                    error: "Something went wrong, device could not be created. An error was logged."
+                capability:
+                    success: "Capability \"%name%\" was successfully created."
+                    error: "Something went wrong, capability could not be created. An error was logged."
+                protocol:
+                    success: "Protocol \"%name%\" was successfully created."
+                    error: "Something went wrong, protocol could not be created. An error was logged."
+            update:
+                connector:
+                    success: "Connector \"%name%\" was successfully updated."
+                    error: "Something went wrong, connector could not be updated. An error was logged."
+                gateway:
+                    success: "NS Panel \"%name%\" was successfully updated."
+                    error: "Something went wrong, NS Panel could not be updated. An error was logged."
+                device:
+                    success: "Device \"%name%\" was successfully updated."
+                    error: "Something went wrong, device could not be updated. An error was logged."
+                capability:
+                    success: "Capability \"%name%\" was successfully updated."
+                    error: "Something went wrong, capability could not be updated. An error was logged."
+                protocol:
+                    success: "Protocol \"%name%\" was successfully updated."
+                    error: "Something went wrong, protocol could not be updated. An error was logged."
+            remove:
+                connector:
+                    confirm: "This action will remove \"%name%\" connector. This action can not be undone."
+                    success: "Connector \"%name%\" was successfully removed."
+                    error: "Something went wrong, connector could not be removed. An error was logged."
+                gateway:
+                    confirm: "This action will remove \"%name%\" NS Panel. This action can not be undone."
+                    success: "NS Panel \"%name%\" was successfully removed."
+                    error: "Something went wrong, NS Panel could not be removed. An error was logged."
+                device:
+                    confirm: "This action will remove \"%name%\" device. This action can not be undone."
+                    success: "Device \"%name%\" was successfully removed."
+                    error: "Something went wrong, device could not be removed. An error was logged."
+                capability:
+                    confirm: "This action will remove \"%name%\" capability. This action can not be undone."
+                    success: "Capability \"%name%\" was successfully removed."
+                    error: "Something went wrong, capability could not be removed. An error was logged."
+                protocol:
+                    confirm: "This action will remove \"%name%\" protocol. This action can not be undone."
+                    success: "Protocol \"%name%\" was successfully removed."
+                    error: "Something went wrong, protocol could not be removed. An error was logged."
+            discover:
+                success: "Devices discovery was successfully finished"
+                error: "Devices discovery failed. An error was logged."
+            gateway:
+                prepare: "Now you have to prepare your NS Panel for pairing. Go to Settings, then to About and tap 7 times in a row on Name."
+            accessToken:
+                error: "Could not retrive access token from NS Panel"
+            noGateways: "No NS Panels registered in NS Panel connector."
+            noDevices: "No devices are registered in \"%name%\" NS Panel."
+            noCapabilities: "No capabilities are registered in \"%name%\" device."
+            noProtocols: "This device capability has not configured any protocol."
+            noMultipleCapabilities: "Capability \"%type%\" is already created under this device"
+            noMissingProtocols: "All available protocols for selected capability are configured"
+            noHardwareDevices: "No devices registered in system which could be connected with NS Panel device"
+            addressNotReachable: "NS Panel with address \"%address%\" is not reachable."
+            removeDeviceFromPanelFailed: "Device \"%name%\" could not be removed from NS panel \"%panel%\""
+            foundDevices: "Found %d new devices"
+            noDevicesFound: "No devices were found"

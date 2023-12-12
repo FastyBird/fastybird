@@ -86,7 +86,7 @@ final class StoreSubDevice implements Queue\Consumer
 						'id' => $entity->getConnector()->toString(),
 					],
 					'gateway' => [
-						'id' => $entity->getGateway(),
+						'id' => $entity->getGateway()->toString(),
 					],
 					'device' => [
 						'identifier' => $entity->getIdentifier(),
@@ -124,7 +124,7 @@ final class StoreSubDevice implements Queue\Consumer
 							'id' => $entity->getConnector()->toString(),
 						],
 						'gateway' => [
-							'id' => $entity->getGateway(),
+							'id' => $entity->getGateway()->toString(),
 						],
 						'device' => [
 							'identifier' => $entity->getIdentifier(),
@@ -160,7 +160,7 @@ final class StoreSubDevice implements Queue\Consumer
 						'id' => $entity->getConnector()->toString(),
 					],
 					'gateway' => [
-						'id' => $parent->getId()->toString(),
+						'id' => $entity->getGateway()->toString(),
 					],
 					'device' => [
 						'id' => $device->getId()->toString(),
@@ -208,7 +208,7 @@ final class StoreSubDevice implements Queue\Consumer
 		);
 
 		foreach ($entity->getCapabilities() as $capability) {
-			$this->databaseHelper->transaction(function () use ($entity, $parent, $device, $capability): bool {
+			$this->databaseHelper->transaction(function () use ($entity, $device, $capability): bool {
 				$identifier = Helpers\Name::convertCapabilityToChannel($capability->getCapability());
 
 				if (
@@ -240,10 +240,10 @@ final class StoreSubDevice implements Queue\Consumer
 								'id' => $entity->getConnector()->toString(),
 							],
 							'gateway' => [
-								'id' => $parent->getId()->toString(),
+								'id' => $entity->getGateway()->toString(),
 							],
 							'device' => [
-								'id' => $device->getId()->toString(),
+								'identifier' => $entity->getIdentifier(),
 							],
 							'channel' => [
 								'id' => $channel->getId()->toString(),
@@ -258,7 +258,7 @@ final class StoreSubDevice implements Queue\Consumer
 
 		foreach ($entity->getTags() as $tag => $value) {
 			if ($tag === Types\Capability::TOGGLE && is_array($value)) {
-				$this->databaseHelper->transaction(function () use ($entity, $parent, $device, $value): void {
+				$this->databaseHelper->transaction(function () use ($entity, $device, $value): void {
 					foreach ($value as $key => $name) {
 						$findChannelQuery = new Queries\Entities\FindChannels();
 						$findChannelQuery->byIdentifier(
@@ -288,10 +288,10 @@ final class StoreSubDevice implements Queue\Consumer
 										'id' => $entity->getConnector()->toString(),
 									],
 									'gateway' => [
-										'id' => $parent->getId()->toString(),
+										'id' => $entity->getGateway()->toString(),
 									],
 									'device' => [
-										'id' => $device->getId()->toString(),
+										'identifier' => $entity->getIdentifier(),
 									],
 									'channel' => [
 										'id' => $channel->getId()->toString(),
@@ -313,10 +313,10 @@ final class StoreSubDevice implements Queue\Consumer
 					'id' => $entity->getConnector()->toString(),
 				],
 				'gateway' => [
-					'id' => $parent->getId()->toString(),
+					'id' => $entity->getGateway()->toString(),
 				],
 				'device' => [
-					'id' => $device->getId()->toString(),
+					'identifier' => $entity->getIdentifier(),
 				],
 				'data' => $entity->toArray(),
 			],

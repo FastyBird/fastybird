@@ -292,7 +292,7 @@ class Install extends Console\Command\Command
 		$connector = $this->askWhichConnector($io);
 
 		if ($connector === null) {
-			$io->warning($this->translator->translate('//fb-mqtt-connector.cmd.base.messages.noConnectors'));
+			$io->info($this->translator->translate('//fb-mqtt-connector.cmd.base.messages.noConnectors'));
 
 			$question = new Console\Question\ConfirmationQuestion(
 				$this->translator->translate('//fb-mqtt-connector.cmd.install.questions.create.connector'),
@@ -549,6 +549,13 @@ class Install extends Console\Command\Command
 			return;
 		}
 
+		$io->warning(
+			$this->translator->translate(
+				'//fb-mqtt-connector.cmd.install.messages.remove.connector.success',
+				['name' => $connector->getName() ?? $connector->getIdentifier()],
+			),
+		);
+
 		$question = new Console\Question\ConfirmationQuestion(
 			$this->translator->translate('//fb-mqtt-connector.cmd.base.questions.continue'),
 			false,
@@ -770,7 +777,7 @@ class Install extends Console\Command\Command
 		$device = $this->askWhichDevice($io, $connector);
 
 		if ($device === null) {
-			$io->warning($this->translator->translate('//fb-mqtt-connector.cmd.install.messages.noDevices'));
+			$io->info($this->translator->translate('//fb-mqtt-connector.cmd.install.messages.noDevices'));
 
 			$question = new Console\Question\ConfirmationQuestion(
 				$this->translator->translate('//fb-mqtt-connector.cmd.install.questions.create.device'),
@@ -835,10 +842,17 @@ class Install extends Console\Command\Command
 		$device = $this->askWhichDevice($io, $connector);
 
 		if ($device === null) {
-			$io->warning($this->translator->translate('//fb-mqtt-connector.cmd.install.messages.noDevices'));
+			$io->info($this->translator->translate('//fb-mqtt-connector.cmd.install.messages.noDevices'));
 
 			return;
 		}
+
+		$io->warning(
+			$this->translator->translate(
+				'//fb-mqtt-connector.cmd.install.messages.remove.device.success',
+				['name' => $device->getName() ?? $device->getIdentifier()],
+			),
+		);
 
 		$question = new Console\Question\ConfirmationQuestion(
 			$this->translator->translate('//fb-mqtt-connector.cmd.base.questions.continue'),

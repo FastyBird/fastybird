@@ -254,7 +254,7 @@ final class Gateway implements Client
 								'type' => 'gateway-client',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'connector' => [
-									'id' => $gateway->getConnector()->toString(),
+									'id' => $this->connector->getId()->toString(),
 								],
 								'device' => [
 									'id' => $gateway->getId()->toString(),
@@ -280,7 +280,7 @@ final class Gateway implements Client
 								'type' => 'gateway-client',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'connector' => [
-									'id' => $gateway->getConnector()->toString(),
+									'id' => $this->connector->getId()->toString(),
 								],
 								'device' => [
 									'id' => $gateway->getId()->toString(),
@@ -314,7 +314,7 @@ final class Gateway implements Client
 								'type' => 'gateway-client',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'connector' => [
-									'id' => $gateway->getConnector()->toString(),
+									'id' => $this->connector->getId()->toString(),
 								],
 								'device' => [
 									'id' => $gateway->getId()->toString(),
@@ -340,7 +340,7 @@ final class Gateway implements Client
 					'type' => 'gateway-client',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'connector' => [
-						'id' => $gateway->getConnector()->toString(),
+						'id' => $this->connector->getId()->toString(),
 					],
 					'device' => [
 						'id' => $gateway->getId()->toString(),
@@ -493,7 +493,7 @@ final class Gateway implements Client
 								'type' => 'gateway-client',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'connector' => [
-									'id' => $gateway->getConnector()->toString(),
+									'id' => $this->connector->getId()->toString(),
 								],
 								'device' => [
 									'id' => $gateway->getId()->toString(),
@@ -519,7 +519,7 @@ final class Gateway implements Client
 								'type' => 'gateway-client',
 								'error' => $ex->getMessage(),
 								'connector' => [
-									'id' => $gateway->getConnector()->toString(),
+									'id' => $this->connector->getId()->toString(),
 								],
 								'device' => [
 									'id' => $gateway->getId()->toString(),
@@ -553,7 +553,7 @@ final class Gateway implements Client
 								'type' => 'gateway-client',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'connector' => [
-									'id' => $gateway->getConnector()->toString(),
+									'id' => $this->connector->getId()->toString(),
 								],
 								'device' => [
 									'id' => $gateway->getId()->toString(),
@@ -579,7 +579,7 @@ final class Gateway implements Client
 					'type' => 'gateway-client',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'connector' => [
-						'id' => $gateway->getConnector()->toString(),
+						'id' => $this->connector->getId()->toString(),
 					],
 					'device' => [
 						'id' => $gateway->getId()->toString(),

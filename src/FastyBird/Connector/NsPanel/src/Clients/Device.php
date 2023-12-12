@@ -270,7 +270,7 @@ final class Device implements Client
 									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 									'type' => 'device-client',
 									'connector' => [
-										'id' => $gateway->getConnector()->toString(),
+										'id' => $this->connector->getId()->toString(),
 									],
 									'gateway' => [
 										'id' => $gateway->getId()->toString(),
@@ -316,7 +316,7 @@ final class Device implements Client
 											'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 											'type' => 'device-client',
 											'connector' => [
-												'id' => $gateway->getConnector()->toString(),
+												'id' => $this->connector->getId()->toString(),
 											],
 											'gateway' => [
 												'id' => $gateway->getId()->toString(),
@@ -380,7 +380,7 @@ final class Device implements Client
 										'type' => 'device-client',
 										'exception' => BootstrapHelpers\Logger::buildException($ex),
 										'connector' => [
-											'id' => $gateway->getConnector()->toString(),
+											'id' => $this->connector->getId()->toString(),
 										],
 										'gateway' => [
 											'id' => $gateway->getId()->toString(),
@@ -427,7 +427,7 @@ final class Device implements Client
 													'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 													'type' => 'device-client',
 													'connector' => [
-														'id' => $gateway->getConnector()->toString(),
+														'id' => $this->connector->getId()->toString(),
 													],
 													'gateway' => [
 														'id' => $gateway->getId()->toString(),
@@ -487,7 +487,7 @@ final class Device implements Client
 														'type' => 'device-client',
 														'exception' => BootstrapHelpers\Logger::buildException($ex),
 														'connector' => [
-															'id' => $gateway->getConnector()->toString(),
+															'id' => $this->connector->getId()->toString(),
 														],
 														'gateway' => [
 															'id' => $gateway->getId()->toString(),
@@ -552,7 +552,7 @@ final class Device implements Client
 										'type' => 'device-client',
 										'exception' => BootstrapHelpers\Logger::buildException($ex),
 										'connector' => [
-											'id' => $gateway->getConnector()->toString(),
+											'id' => $this->connector->getId()->toString(),
 										],
 										'gateway' => [
 											'id' => $gateway->getId()->toString(),
@@ -572,7 +572,7 @@ final class Device implements Client
 						'type' => 'device-client',
 						'exception' => BootstrapHelpers\Logger::buildException($ex),
 						'connector' => [
-							'id' => $gateway->getConnector()->toString(),
+							'id' => $this->connector->getId()->toString(),
 						],
 						'gateway' => [
 							'id' => $gateway->getId()->toString(),
@@ -656,7 +656,7 @@ final class Device implements Client
 									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 									'type' => 'device-client',
 									'connector' => [
-										'id' => $gateway->getConnector()->toString(),
+										'id' => $this->connector->getId()->toString(),
 									],
 									'gateway' => [
 										'id' => $gateway->getId()->toString(),
@@ -693,7 +693,7 @@ final class Device implements Client
 										'type' => 'device-client',
 										'exception' => BootstrapHelpers\Logger::buildException($ex),
 										'connector' => [
-											'id' => $gateway->getConnector()->toString(),
+											'id' => $this->connector->getId()->toString(),
 										],
 										'gateway' => [
 											'id' => $gateway->getId()->toString(),
@@ -711,7 +711,7 @@ final class Device implements Client
 							'type' => 'device-client',
 							'exception' => BootstrapHelpers\Logger::buildException($ex),
 							'connector' => [
-								'id' => $gateway->getConnector()->toString(),
+								'id' => $this->connector->getId()->toString(),
 							],
 							'gateway' => [
 								'id' => $gateway->getId()->toString(),
