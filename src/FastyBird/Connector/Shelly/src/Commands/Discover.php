@@ -73,7 +73,7 @@ class Discover extends Console\Command\Command
 	{
 		$this
 			->setName(self::NAME)
-			->setDescription('Shelly connector devices discovery')
+			->setDescription('Shelly connector discovery')
 			->setDefinition(
 				new Input\InputDefinition([
 					new Input\InputOption(
@@ -306,8 +306,8 @@ class Discover extends Console\Command\Command
 			'#',
 			$this->translator->translate('//shelly-connector.cmd.discover.data.id'),
 			$this->translator->translate('//shelly-connector.cmd.discover.data.name'),
-			$this->translator->translate('//shelly-connector.cmd.discover.data.type'),
-			$this->translator->translate('//shelly-connector.cmd.discover.data.ipAddress'),
+			$this->translator->translate('//shelly-connector.cmd.discover.data.model'),
+			$this->translator->translate('//shelly-connector.cmd.discover.data.address'),
 		]);
 
 		$foundDevices = 0;
@@ -332,7 +332,7 @@ class Discover extends Console\Command\Command
 					$device->getId()->toString(),
 					$device->getName() ?? $device->getIdentifier(),
 					$device->getModel() ?? 'N/A',
-					$device->getIpAddress() ?? 'N/A',
+					$device->getLocalAddress() ?? 'N/A',
 				]);
 			}
 		}

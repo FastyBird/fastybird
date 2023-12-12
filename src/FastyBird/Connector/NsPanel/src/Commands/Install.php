@@ -1456,10 +1456,7 @@ class Install extends Console\Command\Command
 		$device = $this->askWhichDevice($io, $connector, $gateway);
 
 		if ($device === null) {
-			$io->info($this->translator->translate(
-				'//ns-panel-connector.cmd.install.messages.noDevices',
-				['name' => $gateway->getName() ?? $gateway->getIdentifier()],
-			));
+			$io->info($this->translator->translate('//ns-panel-connector.cmd.install.messages.noDevices'));
 
 			$question = new Console\Question\ConfirmationQuestion(
 				$this->translator->translate('//ns-panel-connector.cmd.install.questions.create.device'),
@@ -1530,10 +1527,7 @@ class Install extends Console\Command\Command
 		$device = $this->askWhichDevice($io, $connector, $gateway);
 
 		if ($device === null) {
-			$io->info($this->translator->translate(
-				'//ns-panel-connector.cmd.install.messages.noDevices',
-				['name' => $gateway->getName() ?? $gateway->getIdentifier()],
-			));
+			$io->info($this->translator->translate('//ns-panel-connector.cmd.install.messages.noDevices'));
 
 			return;
 		}
@@ -1647,10 +1641,7 @@ class Install extends Console\Command\Command
 		$device = $this->askWhichDevice($io, $connector, $gateway, true);
 
 		if ($device === null) {
-			$io->info($this->translator->translate(
-				'//ns-panel-connector.cmd.install.messages.noDevices',
-				['name' => $gateway->getName() ?? $gateway->getIdentifier()],
-			));
+			$io->info($this->translator->translate('//ns-panel-connector.cmd.install.messages.noDevices'));
 
 			$question = new Console\Question\ConfirmationQuestion(
 				$this->translator->translate('//ns-panel-connector.cmd.install.questions.create.device'),
@@ -1873,10 +1864,7 @@ class Install extends Console\Command\Command
 		$channel = $this->askWhichCapability($io, $device);
 
 		if ($channel === null) {
-			$io->info($this->translator->translate(
-				'//ns-panel-connector.cmd.install.messages.noCapabilities',
-				['name' => $device->getName() ?? $device->getIdentifier()],
-			));
+			$io->info($this->translator->translate('//ns-panel-connector.cmd.install.messages.noCapabilities'));
 
 			$question = new Console\Question\ConfirmationQuestion(
 				$this->translator->translate('//ns-panel-connector.cmd.install.questions.create.capability'),
@@ -2004,10 +1992,7 @@ class Install extends Console\Command\Command
 		$channel = $this->askWhichCapability($io, $device);
 
 		if ($channel === null) {
-			$io->info($this->translator->translate(
-				'//ns-panel-connector.cmd.install.messages.noCapabilities',
-				['name' => $device->getName() ?? $device->getIdentifier()],
-			));
+			$io->info($this->translator->translate('//ns-panel-connector.cmd.install.messages.noCapabilities'));
 
 			$question = new Console\Question\ConfirmationQuestion(
 				$this->translator->translate('//ns-panel-connector.cmd.install.questions.create.capability'),
@@ -2038,10 +2023,7 @@ class Install extends Console\Command\Command
 		$channel = $this->askWhichCapability($io, $device);
 
 		if ($channel === null) {
-			$io->info($this->translator->translate(
-				'//ns-panel-connector.cmd.install.messages.noCapabilities',
-				['name' => $device->getName() ?? $device->getIdentifier()],
-			));
+			$io->info($this->translator->translate('//ns-panel-connector.cmd.install.messages.noCapabilities'));
 
 			return;
 		} elseif ($channel === false) {

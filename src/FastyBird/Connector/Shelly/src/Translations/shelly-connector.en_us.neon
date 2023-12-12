@@ -51,8 +51,8 @@ cmd:
         data:
             id: "ID"
             name: "Name"
-            type: "Type"
-            ipAddress: "IP Address"
+            model: "Model"
+            address: "Address"
 
         messages:
             connector:
@@ -120,7 +120,11 @@ cmd:
                 cloud: "Cloud server mode"
 
         data:
+            id: "ID"
             name: "Name"
+            generation: "Generation"
+            address: "Address"
+            model: "Model"
             devicesCnt: "# Devices"
 
         messages:
@@ -151,6 +155,6 @@ cmd:
             discover:
                 success: "Devices discovery was successfully finished"
                 error: "Devices discovery failed. An error was logged."
-            noDevices: "No devices are registered in \"%name%\" connector."
+            noDevices: "No devices registered in selected connector."
             foundDevices: "Found %d new devices"
             noDevicesFound: "No devices were found"

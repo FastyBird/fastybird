@@ -297,8 +297,8 @@ cmd:
             accessToken:
                 error: "Could not retrive access token from NS Panel"
             noGateways: "No NS Panels registered in NS Panel connector."
-            noDevices: "No devices are registered in \"%name%\" NS Panel."
-            noCapabilities: "No capabilities are registered in \"%name%\" device."
+            noDevices: "No devices registered in selected NS Panels."
+            noCapabilities: "No capabilities registered in selected device."
             noProtocols: "This device capability has not configured any protocol."
             noMultipleCapabilities: "Capability \"%type%\" is already created under this device"
             noMissingProtocols: "All available protocols for selected capability are configured"

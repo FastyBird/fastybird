@@ -129,7 +129,7 @@ class Install extends Console\Command\Command
 		$mode = $this->askConnectorMode($io);
 
 		$question = new Console\Question\Question(
-			$this->translator->translate('//shelly-connector.cmd.install.questions.provide.identifier'),
+			$this->translator->translate('//shelly-connector.cmd.install.questions.provide.connector.identifier'),
 		);
 
 		$question->setValidator(function ($answer) {
@@ -144,7 +144,9 @@ class Install extends Console\Command\Command
 
 				if ($connector !== null) {
 					throw new Exceptions\Runtime(
-						$this->translator->translate('//shelly-connector.cmd.install.messages.identifier.used'),
+						$this->translator->translate(
+							'//shelly-connector.cmd.install.messages.identifier.connector.used',
+						),
 					);
 				}
 			}
@@ -175,7 +177,9 @@ class Install extends Console\Command\Command
 		}
 
 		if ($identifier === '') {
-			$io->error($this->translator->translate('//shelly-connector.cmd.install.messages.identifier.missing'));
+			$io->error(
+				$this->translator->translate('//shelly-connector.cmd.install.messages.identifier.connector.missing'),
+			);
 
 			return;
 		}
@@ -322,7 +326,7 @@ class Install extends Console\Command\Command
 
 		if ($connector->isEnabled()) {
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//shelly-connector.cmd.install.questions.disable'),
+				$this->translator->translate('//shelly-connector.cmd.install.questions.disable.connector'),
 				false,
 			);
 
@@ -331,7 +335,7 @@ class Install extends Console\Command\Command
 			}
 		} else {
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//shelly-connector.cmd.install.questions.enable'),
+				$this->translator->translate('//shelly-connector.cmd.install.questions.enable.connector'),
 				false,
 			);
 
@@ -509,7 +513,7 @@ class Install extends Console\Command\Command
 
 		$io->warning(
 			$this->translator->translate(
-				'//shelly-connector.cmd.install.messages.remove.confirm',
+				'//shelly-connector.cmd.install.messages.remove.connector.confirm',
 				['name' => $connector->getName() ?? $connector->getIdentifier()],
 			),
 		);
@@ -536,7 +540,7 @@ class Install extends Console\Command\Command
 
 			$io->success(
 				$this->translator->translate(
-					'//shelly-connector.cmd.install.messages.remove.success',
+					'//shelly-connector.cmd.install.messages.remove.connector.success',
 					['name' => $connector->getName() ?? $connector->getIdentifier()],
 				),
 			);
@@ -551,7 +555,7 @@ class Install extends Console\Command\Command
 				],
 			);
 
-			$io->error($this->translator->translate('//shelly-connector.cmd.install.messages.remove.error'));
+			$io->error($this->translator->translate('//shelly-connector.cmd.install.messages.remove.connector.error'));
 		} finally {
 			// Revert all changes when error occur
 			if ($this->getOrmConnection()->isTransactionActive()) {
@@ -842,8 +846,8 @@ class Install extends Console\Command\Command
 			'#',
 			$this->translator->translate('//shelly-connector.cmd.install.data.id'),
 			$this->translator->translate('//shelly-connector.cmd.install.data.name'),
-			$this->translator->translate('//shelly-connector.cmd.install.data.type'),
-			$this->translator->translate('//shelly-connector.cmd.discovery.data.ipAddress'),
+			$this->translator->translate('//shelly-connector.cmd.install.data.model'),
+			$this->translator->translate('//shelly-connector.cmd.discovery.data.address'),
 		]);
 
 		$foundDevices = 0;
@@ -867,7 +871,7 @@ class Install extends Console\Command\Command
 					$device->getId()->toString(),
 					$device->getName() ?? $device->getIdentifier(),
 					$device->getModel() ?? 'N/A',
-					$device->getIpAddress() ?? 'N/A',
+					$device->getLocalAddress() ?? 'N/A',
 				]);
 			}
 		}
@@ -1052,12 +1056,11 @@ class Install extends Console\Command\Command
 	private function askConnectorMode(Style\SymfonyStyle $io): Types\ClientMode
 	{
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//shelly-connector.cmd.install.questions.select.mode'),
+			$this->translator->translate('//shelly-connector.cmd.install.questions.select.connector.mode'),
 			[
 				0 => $this->translator->translate('//shelly-connector.cmd.install.answers.mode.local'),
-				1 => $this->translator->translate('//shelly-connector.cmd.install.answers.mode.cloud'),
 			],
-			1,
+			0,
 		);
 
 		$question->setErrorMessage(
@@ -1108,7 +1111,7 @@ class Install extends Console\Command\Command
 	): string|null
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate('//shelly-connector.cmd.install.questions.provide.name'),
+			$this->translator->translate('//shelly-connector.cmd.install.questions.provide.connector.name'),
 			$connector?->getName(),
 		);
 
@@ -1127,7 +1130,9 @@ class Install extends Console\Command\Command
 	): string
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate('//shelly-connector.cmd.install.questions.provide.cloudAuthenticationKey'),
+			$this->translator->translate(
+				'//shelly-connector.cmd.install.questions.provide.connector.cloudAuthenticationKey',
+			),
 			$connector?->getCloudAuthKey(),
 		);
 		$question->setValidator(function (string|null $answer): string {
@@ -1156,7 +1161,9 @@ class Install extends Console\Command\Command
 	): string
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate('//shelly-connector.cmd.install.questions.provide.cloudServerAddress'),
+			$this->translator->translate(
+				'//shelly-connector.cmd.install.questions.provide.connector.cloudServerAddress',
+			),
 			$connector?->getCloudServerAddress(),
 		);
 		$question->setValidator(function (string|null $answer): string {
