@@ -792,7 +792,9 @@ class Install extends Console\Command\Command
 			$table->addRow([
 				$index + 1,
 				$device->getName() ?? $device->getIdentifier(),
-				$device->getGeneration(),
+				$this->translator->translate(
+					'//shelly-connector.cmd.install.answers.generation.' . $device->getGeneration()->getValue(),
+				),
 				$device->getLocalAddress(),
 				$device->getModel(),
 			]);

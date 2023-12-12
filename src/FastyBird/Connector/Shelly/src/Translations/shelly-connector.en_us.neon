@@ -118,6 +118,9 @@ cmd:
             mode:
                 local: "Local network mode"
                 cloud: "Cloud server mode"
+            generation:
+                gen1: "Generation 1"
+                gen2: "Generation 2"
 
         data:
             id: "ID"
