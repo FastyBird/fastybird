@@ -123,114 +123,12 @@ cmd:
                     error: "Something went wrong, device could not be updated. Error was logged."
             remove:
                 connector:
+                    confirm: "This action will remove \"%name%\" connector. This action can not be undone."
                     success: "Connector \"%name%\" was successfully removed."
                     error: "Something went wrong, connector could not be removed. An error was logged."
                 device:
+                    confirm: "This action will remove \"%name%\" device. This action can not be undone."
                     success: "Device \"%name%\" was successfully removed."
                     error: "Something went wrong, device could not be removed. Error was logged."
             noConnector: "Connector could not be loaded"
             noDevices: "No devices registered in selected connector."
-
-
-
-
-
-
-
-    initialize:
-        title: "FB MQTT connector - initialization"
-        subtitle: "This action will create|update|delete connector configuration"
-
-        actions:
-            create: "Create new connector configuration"
-            update: "Edit existing connector configuration"
-            remove: "Delete existing connector configuration"
-            list: "List FB MQTT connectors"
-            nothing: "Nothing"
-
-        questions:
-            create: "Would you like to create new FB MQTT connector configuration?"
-            disable: "Do you want to disable connector?"
-            enable: "Do you want to enable connector?"
-            provide:
-                identifier: "Provide connector identifier"
-                name: "Provide connector name"
-                address: "Provide server address"
-                port: "Provide server port"
-                securedPort: "Provide server secured port"
-                username: "Provide server username"
-                password: "Provide server password"
-            select:
-                connector: "Please select connector to manage"
-                protocol: "What type of FB MQTT protocol will this connector handle?"
-            changeProtocol: "Do you want to change connector protocol version?"
-
-        answers:
-            protocol:
-                v1: "FB MQTT v1 protocol"
-
-        data:
-            name: "Name"
-            devicesCnt: "# Devices"
-
-        messages:
-            identifier:
-                used: "This identifier is already used."
-                missing: "Connector identifier have to be provided."
-            create:
-                success: "Connector \"%name%\" was successfully created."
-                error: "Something went wrong, connector could not be created. An error was logged."
-            update:
-                success: "Connector \"%name%\" was successfully updated."
-                error: "Something went wrong, connector could not be updated. An error was logged."
-            remove:
-                success: "Connector \"%name%\" was successfully removed."
-                error: "Something went wrong, connector could not be removed. An error was logged."
-
-    devices:
-        title: "FB MQTT connector - devices management"
-        subtitle: "This action will create|update|delete connector device"
-
-        actions:
-            create:
-                device: "Create new connector device"
-            update:
-                device: "Edit existing connector device"
-            remove:
-                device: "Delete existing connector device"
-            list:
-                devices: "List connector devices"
-            nothing: "Nothing"
-
-        questions:
-            create:
-                device: "Would you like to create new device in connector?"
-            select:
-                connector: "Please select connector under which you want to manage devices"
-                device: "Please select device to manage"
-                type: "Please select device type"
-            provide:
-                identifier: "Provide device identifier"
-                name: "Provide device name"
-
-        data:
-            name: "Name"
-
-        messages:
-            identifier:
-                used: "This identifier is already used."
-                missing: "Device identifier have to provided."
-            create:
-                device:
-                    success: "Device \"%name%\" was successfully created."
-                    error: "Something went wrong, device could not be created. Error was logged."
-            update:
-                device:
-                    success: "Device \"%name%\" was successfully updated."
-                    error: "Something went wrong, device could not be updated. Error was logged."
-            remove:
-                device:
-                    success: "Device \"%name%\" was successfully removed."
-                    error: "Something went wrong, device could not be removed. Error was logged."
-            noDevices: "No devices registered in FB MQTT connector."
-            noConnector: "Connector could not be loaded"

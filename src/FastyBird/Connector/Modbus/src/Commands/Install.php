@@ -618,6 +618,13 @@ class Install extends Console\Command\Command
 			return;
 		}
 
+		$io->warning(
+			$this->translator->translate(
+				'//modbus-connector.cmd.install.messages.remove.connector.confirm',
+				['name' => $connector->getName() ?? $connector->getIdentifier()],
+			),
+		);
+
 		$question = new Console\Question\ConfirmationQuestion(
 			$this->translator->translate('//modbus-connector.cmd.base.questions.continue'),
 			false,
@@ -1158,6 +1165,13 @@ class Install extends Console\Command\Command
 			return;
 		}
 
+		$io->warning(
+			$this->translator->translate(
+				'//modbus-connector.cmd.install.messages.remove.device.confirm',
+				['name' => $device->getName() ?? $device->getIdentifier()],
+			),
+		);
+
 		$question = new Console\Question\ConfirmationQuestion(
 			$this->translator->translate('//modbus-connector.cmd.base.questions.continue'),
 			false,
@@ -1639,6 +1653,13 @@ class Install extends Console\Command\Command
 
 			return;
 		}
+
+		$io->warning(
+			$this->translator->translate(
+				'//modbus-connector.cmd.install.messages.remove.register.confirm',
+				['name' => $channel->getName() ?? $channel->getIdentifier()],
+			),
+		);
 
 		$question = new Console\Question\ConfirmationQuestion(
 			$this->translator->translate('//modbus-connector.cmd.base.questions.continue'),

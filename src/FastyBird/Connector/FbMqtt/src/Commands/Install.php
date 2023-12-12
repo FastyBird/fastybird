@@ -549,6 +549,13 @@ class Install extends Console\Command\Command
 			return;
 		}
 
+		$io->warning(
+			$this->translator->translate(
+				'//fb-mqtt-connector.cmd.install.messages.remove.connector.success',
+				['name' => $connector->getName() ?? $connector->getIdentifier()],
+			),
+		);
+
 		$question = new Console\Question\ConfirmationQuestion(
 			$this->translator->translate('//fb-mqtt-connector.cmd.base.questions.continue'),
 			false,
@@ -839,6 +846,13 @@ class Install extends Console\Command\Command
 
 			return;
 		}
+
+		$io->warning(
+			$this->translator->translate(
+				'//fb-mqtt-connector.cmd.install.messages.remove.device.success',
+				['name' => $device->getName() ?? $device->getIdentifier()],
+			),
+		);
 
 		$question = new Console\Question\ConfirmationQuestion(
 			$this->translator->translate('//fb-mqtt-connector.cmd.base.questions.continue'),
