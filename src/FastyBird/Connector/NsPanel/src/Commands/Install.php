@@ -270,7 +270,7 @@ class Install extends Console\Command\Command
 		$connector = $this->askWhichConnector($io);
 
 		if ($connector === null) {
-			$io->warning($this->translator->translate('//ns-panel-connector.cmd.base.messages.noConnectors'));
+			$io->info($this->translator->translate('//ns-panel-connector.cmd.base.messages.noConnectors'));
 
 			$question = new Console\Question\ConfirmationQuestion(
 				$this->translator->translate('//ns-panel-connector.cmd.install.questions.create.connector'),
@@ -626,23 +626,6 @@ class Install extends Console\Command\Command
 				false,
 			);
 		} catch (Exceptions\LanApiCall $ex) {
-			$this->logger->error(
-				'Could not get NS Panel access token',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'devices-cmd',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
-					'request' => [
-						'method' => $ex->getRequest()?->getMethod(),
-						'url' => $ex->getRequest() !== null ? strval($ex->getRequest()->getUri()) : null,
-						'body' => $ex->getRequest()?->getBody()->getContents(),
-					],
-					'connector' => [
-						'id' => $connector->getId()->toString(),
-					],
-				],
-			);
-
 			$io->error(
 				$this->translator->translate('//ns-panel-connector.cmd.install.messages.accessToken.error'),
 			);
@@ -750,7 +733,7 @@ class Install extends Console\Command\Command
 		$gateway = $this->askWhichGateway($io, $connector);
 
 		if ($gateway === null) {
-			$io->warning($this->translator->translate('//ns-panel-connector.cmd.install.messages.noGateways'));
+			$io->info($this->translator->translate('//ns-panel-connector.cmd.install.messages.noGateways'));
 
 			$question = new Console\Question\ConfirmationQuestion(
 				$this->translator->translate('//ns-panel-connector.cmd.install.questions.create.gateway'),
@@ -849,24 +832,7 @@ class Install extends Console\Command\Command
 					API\LanApi::GATEWAY_PORT,
 					false,
 				);
-			} catch (Exceptions\LanApiCall $ex) {
-				$this->logger->error(
-					'Could not get NS Panel access token',
-					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-						'type' => 'devices-cmd',
-						'exception' => BootstrapHelpers\Logger::buildException($ex),
-						'request' => [
-							'method' => $ex->getRequest()?->getMethod(),
-							'url' => $ex->getRequest() !== null ? strval($ex->getRequest()->getUri()) : null,
-							'body' => $ex->getRequest()?->getBody()->getContents(),
-						],
-						'connector' => [
-							'id' => $connector->getId()->toString(),
-						],
-					],
-				);
-
+			} catch (Exceptions\LanApiCall) {
 				$io->error(
 					$this->translator->translate('//ns-panel-connector.cmd.install.messages.accessToken.error'),
 				);
@@ -1004,7 +970,7 @@ class Install extends Console\Command\Command
 		$gateway = $this->askWhichGateway($io, $connector);
 
 		if ($gateway === null) {
-			$io->warning($this->translator->translate('//ns-panel-connector.cmd.install.messages.noGateways'));
+			$io->info($this->translator->translate('//ns-panel-connector.cmd.install.messages.noGateways'));
 
 			return;
 		}
@@ -1074,7 +1040,7 @@ class Install extends Console\Command\Command
 		$gateway = $this->askWhichGateway($io, $connector);
 
 		if ($gateway === null) {
-			$io->warning($this->translator->translate('//ns-panel-connector.cmd.install.messages.noGateways'));
+			$io->info($this->translator->translate('//ns-panel-connector.cmd.install.messages.noGateways'));
 
 			$question = new Console\Question\ConfirmationQuestion(
 				$this->translator->translate('//ns-panel-connector.cmd.install.questions.create.gateway'),
@@ -1297,7 +1263,7 @@ class Install extends Console\Command\Command
 		$device = $this->askWhichDevice($io, $connector, $gateway);
 
 		if ($device === null) {
-			$io->warning($this->translator->translate(
+			$io->info($this->translator->translate(
 				'//ns-panel-connector.cmd.install.messages.noDevices',
 				['name' => $gateway->getName() ?? $gateway->getIdentifier()],
 			));
@@ -1371,7 +1337,7 @@ class Install extends Console\Command\Command
 		$device = $this->askWhichDevice($io, $connector, $gateway);
 
 		if ($device === null) {
-			$io->warning($this->translator->translate(
+			$io->info($this->translator->translate(
 				'//ns-panel-connector.cmd.install.messages.noDevices',
 				['name' => $gateway->getName() ?? $gateway->getIdentifier()],
 			));
@@ -1480,7 +1446,7 @@ class Install extends Console\Command\Command
 		$device = $this->askWhichDevice($io, $connector, $gateway);
 
 		if ($device === null) {
-			$io->warning($this->translator->translate(
+			$io->info($this->translator->translate(
 				'//ns-panel-connector.cmd.install.messages.noDevices',
 				['name' => $gateway->getName() ?? $gateway->getIdentifier()],
 			));
@@ -1704,7 +1670,7 @@ class Install extends Console\Command\Command
 		$channel = $this->askWhichCapability($io, $device);
 
 		if ($channel === null) {
-			$io->warning($this->translator->translate(
+			$io->info($this->translator->translate(
 				'//ns-panel-connector.cmd.install.messages.noCapabilities',
 				['name' => $device->getName() ?? $device->getIdentifier()],
 			));
@@ -1836,7 +1802,7 @@ class Install extends Console\Command\Command
 		$capability = $this->askWhichCapability($io, $device);
 
 		if ($capability === null) {
-			$io->warning($this->translator->translate(
+			$io->info($this->translator->translate(
 				'//ns-panel-connector.cmd.install.messages.noCapabilities',
 				['name' => $device->getName() ?? $device->getIdentifier()],
 			));
@@ -1868,7 +1834,7 @@ class Install extends Console\Command\Command
 		$channel = $this->askWhichCapability($io, $device);
 
 		if ($channel === null) {
-			$io->warning($this->translator->translate(
+			$io->info($this->translator->translate(
 				'//ns-panel-connector.cmd.install.messages.noCapabilities',
 				['name' => $device->getName() ?? $device->getIdentifier()],
 			));
@@ -2082,7 +2048,7 @@ class Install extends Console\Command\Command
 		$property = $this->askWhichProtocol($io, $channel);
 
 		if ($property === null) {
-			$io->warning($this->translator->translate('//ns-panel-connector.cmd.install.messages.noProtocols'));
+			$io->info($this->translator->translate('//ns-panel-connector.cmd.install.messages.noProtocols'));
 
 			return;
 		}
@@ -2249,7 +2215,7 @@ class Install extends Console\Command\Command
 		$property = $this->askWhichProtocol($io, $channel);
 
 		if ($property === null) {
-			$io->warning($this->translator->translate('//ns-panel-connector.cmd.install.messages.noProtocols'));
+			$io->info($this->translator->translate('//ns-panel-connector.cmd.install.messages.noProtocols'));
 
 			return;
 		}
@@ -2853,7 +2819,7 @@ class Install extends Console\Command\Command
 	private function askDeviceName(Style\SymfonyStyle $io, Entities\NsPanelDevice|null $device = null): string|null
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate('//ns-panel-connector.cmd.install.questions.provide.name'),
+			$this->translator->translate('//ns-panel-connector.cmd.install.questions.provide.device.name'),
 			$device?->getName(),
 		);
 
@@ -3040,7 +3006,7 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//ns-panel-connector.cmd.install.questions.select.capabilityType'),
+			$this->translator->translate('//ns-panel-connector.cmd.install.questions.select.device.capabilityType'),
 			array_values($capabilities),
 			0,
 		);
@@ -3150,7 +3116,7 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//ns-panel-connector.cmd.install.questions.select.protocolType'),
+			$this->translator->translate('//ns-panel-connector.cmd.install.questions.select.device.protocolType'),
 			array_values($protocols),
 			0,
 		);
@@ -3211,7 +3177,7 @@ class Install extends Console\Command\Command
 		);
 
 		foreach ($systemDevices as $device) {
-			if ($device instanceof Entities\Devices\ThirdPartyDevice) {
+			if ($device instanceof Entities\NsPanelDevice) {
 				continue;
 			}
 
@@ -3240,7 +3206,7 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//ns-panel-connector.cmd.install.questions.select.mappedDevice'),
+			$this->translator->translate('//ns-panel-connector.cmd.install.questions.select.device.mappedDevice'),
 			array_values($devices),
 			$default,
 		);
@@ -3324,7 +3290,7 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//ns-panel-connector.cmd.install.questions.select.mappedDeviceChannel'),
+			$this->translator->translate('//ns-panel-connector.cmd.install.questions.select.device.mappedDeviceChannel'),
 			array_values($channels),
 			$default,
 		);
@@ -3413,7 +3379,7 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//ns-panel-connector.cmd.install.questions.select.mappedChannelProperty'),
+			$this->translator->translate('//ns-panel-connector.cmd.install.questions.select.device.mappedChannelProperty'),
 			array_values($properties),
 			$default,
 		);
@@ -3578,7 +3544,7 @@ class Install extends Console\Command\Command
 
 					$question = new Console\Question\ChoiceQuestion(
 						$this->translator->translate(
-							'//ns-panel-connector.cmd.install.questions.select.valueMapping',
+							'//ns-panel-connector.cmd.install.questions.select.device.valueMapping',
 							['value' => $name],
 						),
 						array_map(
@@ -3701,7 +3667,7 @@ class Install extends Console\Command\Command
 			);
 
 			$question = new Console\Question\ChoiceQuestion(
-				$this->translator->translate('//ns-panel-connector.cmd.install.questions.select.value'),
+				$this->translator->translate('//ns-panel-connector.cmd.install.questions.select.device.value'),
 				$options,
 				$value !== null ? array_key_exists(
 					strval(MetadataUtilities\ValueHelper::flattenValue($value)),
@@ -3982,8 +3948,8 @@ class Install extends Console\Command\Command
 	): Entities\Commands\GatewayInfo
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate('//ns-panel-connector.cmd.install.questions.provide.address'),
-			$gateway?->getName(),
+			$this->translator->translate('//ns-panel-connector.cmd.install.questions.provide.device.address'),
+			$gateway?->getIpAddress(),
 		);
 		$question->setValidator(
 			function (string|null $answer) use ($connector): Entities\Commands\GatewayInfo {

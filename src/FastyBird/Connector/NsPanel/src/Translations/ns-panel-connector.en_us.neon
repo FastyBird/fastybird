@@ -284,7 +284,7 @@ cmd:
             gateway:
                 prepare: "Now you have to prepare your NS Panel for pairing. Go to Settings, then to About and tap 7 times in a row on Name."
             accessToken:
-                error: "Could not get NS Panel access token"
+                error: "Could not retrive access token from NS Panel"
             noGateways: "No NS Panels registered in NS Panel connector."
             noDevices: "No devices are registered in \"%name%\" NS Panel."
             noCapabilities: "No capabilities are registered in \"%name%\" device."
