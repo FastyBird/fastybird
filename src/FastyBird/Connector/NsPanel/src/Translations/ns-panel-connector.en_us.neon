@@ -115,8 +115,6 @@ cmd:
             connector:
                 notFound: "Connector was not found in system."
                 disabled: "Connector is disabled. Disabled connector could not be executed."
-            starting: "Starting NS Panel connector discovery..."
-            stopping: "Stopping NS Panel connector discovery..."
             foundDevices: "Found %d new devices"
             noDevicesFound: "No devices were found"
             success: "Devices discovery was successfully finished"
@@ -146,7 +144,7 @@ cmd:
                 protocol: "Delete capability protocol"
             manage:
                 connector: "Manage connector"
-                gateway: "Manage NS Panels"
+                gateway: "Manage NS Panel"
                 device: "Manage device"
                 capability: "Manage capability protocols"
             list:
@@ -155,6 +153,8 @@ cmd:
                 devices: "List devices"
                 capabilities: "List device capabilities"
                 protocols: "List capability protocols"
+            discover:
+                devices: "Discover devices"
             nothing: "Nothing"
 
         questions:
@@ -213,10 +213,11 @@ cmd:
             false: "False"
 
         data:
+            id: "ID"
             name: "Name"
+            mode: "Mode"
             panelsCnt: "# NS Panels"
             ipAddress: "IP Address"
-            devices: "Devices"
             category: "Category"
             capabilities: "Capabilities"
             type: "Type"
@@ -267,20 +268,28 @@ cmd:
                     error: "Something went wrong, protocol could not be updated. An error was logged."
             remove:
                 connector:
+                    confirm: "This action will remove \"%name%\" connector. This action can not be undone."
                     success: "Connector \"%name%\" was successfully removed."
                     error: "Something went wrong, connector could not be removed. An error was logged."
                 gateway:
+                    confirm: "This action will remove \"%name%\" NS Panel. This action can not be undone."
                     success: "NS Panel \"%name%\" was successfully removed."
                     error: "Something went wrong, NS Panel could not be removed. An error was logged."
                 device:
+                    confirm: "This action will remove \"%name%\" device. This action can not be undone."
                     success: "Device \"%name%\" was successfully removed."
                     error: "Something went wrong, device could not be removed. An error was logged."
                 capability:
+                    confirm: "This action will remove \"%name%\" capability. This action can not be undone."
                     success: "Capability \"%name%\" was successfully removed."
                     error: "Something went wrong, capability could not be removed. An error was logged."
                 protocol:
+                    confirm: "This action will remove \"%name%\" protocol. This action can not be undone."
                     success: "Protocol \"%name%\" was successfully removed."
                     error: "Something went wrong, protocol could not be removed. An error was logged."
+            discover:
+                success: "Devices discovery was successfully finished"
+                error: "Devices discovery failed. An error was logged."
             gateway:
                 prepare: "Now you have to prepare your NS Panel for pairing. Go to Settings, then to About and tap 7 times in a row on Name."
             accessToken:
@@ -294,3 +303,5 @@ cmd:
             noHardwareDevices: "No devices registered in system which could be connected with NS Panel device"
             addressNotReachable: "NS Panel with address \"%address%\" is not reachable."
             removeDeviceFromPanelFailed: "Device \"%name%\" could not be removed from NS panel \"%panel%\""
+            foundDevices: "Found %d new devices"
+            noDevicesFound: "No devices were found"
