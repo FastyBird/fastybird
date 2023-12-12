@@ -111,10 +111,11 @@ final class Connector implements DevicesConnectors\Connector
 			],
 		);
 
-		$findConnector = new DevicesQueries\Configuration\FindConnectors();
-		$findConnector->byId($this->connector->getId());
+		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
+		$findConnectorQuery->byId($this->connector->getId());
+		$findConnectorQuery->byType(Entities\NsPanelConnector::TYPE);
 
-		$connector = $this->connectorsConfigurationRepository->findOneBy($findConnector);
+		$connector = $this->connectorsConfigurationRepository->findOneBy($findConnectorQuery);
 
 		if ($connector === null) {
 			$this->logger->error(
@@ -204,7 +205,7 @@ final class Connector implements DevicesConnectors\Connector
 									'type' => 'connector',
 									'exception' => BootstrapHelpers\Logger::buildException($ex),
 									'connector' => [
-										'id' => $device->getConnector()->toString(),
+										'id' => $this->connector->getId()->toString(),
 									],
 									'gateway' => [
 										'id' => $this->thirdPartyDeviceHelper->getGateway($device)->getId()->toString(),

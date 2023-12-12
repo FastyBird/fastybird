@@ -80,10 +80,9 @@ final class NsPanelExtensionTest extends Tests\Cases\Unit\BaseTestCase
 
 		self::assertNotNull($container->getByType(Controllers\DirectiveController::class, false));
 
-		self::assertNotNull($container->getByType(Commands\Initialize::class, false));
-		self::assertNotNull($container->getByType(Commands\Devices::class, false));
 		self::assertNotNull($container->getByType(Commands\Execute::class, false));
-		self::assertNotNull($container->getByType(Commands\Discovery::class, false));
+		self::assertNotNull($container->getByType(Commands\Discover::class, false));
+		self::assertNotNull($container->getByType(Commands\Install::class, false));
 
 		self::assertNotNull($container->getByType(Connector\ConnectorFactory::class, false));
 	}

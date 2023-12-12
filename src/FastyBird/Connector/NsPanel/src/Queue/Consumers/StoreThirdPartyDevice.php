@@ -78,7 +78,7 @@ final class StoreThirdPartyDevice implements Queue\Consumer
 						'id' => $entity->getConnector()->toString(),
 					],
 					'gateway' => [
-						'id' => $entity->getGateway(),
+						'id' => $entity->getGateway()->toString(),
 					],
 					'device' => [
 						'identifier' => $entity->getIdentifier(),
@@ -103,8 +103,14 @@ final class StoreThirdPartyDevice implements Queue\Consumer
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 				'type' => 'store-third-party-device-message-consumer',
+				'connector' => [
+					'id' => $entity->getConnector()->toString(),
+				],
+				'gateway' => [
+					'id' => $entity->getGateway()->toString(),
+				],
 				'device' => [
-					'id' => $device->getId()->toString(),
+					'identifier' => $entity->getIdentifier(),
 				],
 				'data' => $entity->toArray(),
 			],
