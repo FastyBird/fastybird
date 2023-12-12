@@ -22,9 +22,11 @@ use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Queries;
 use FastyBird\Connector\Shelly\Types;
+use FastyBird\DateTimeFactory;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Commands as DevicesCommands;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -58,6 +60,10 @@ class Install extends Console\Command\Command
 
 	public const NAME = 'fb:shelly-connector:install';
 
+	private Input\InputInterface|null $input = null;
+
+	private Output\OutputInterface|null $output = null;
+
 	public function __construct(
 		private readonly Shelly\Logger $logger,
 		private readonly DevicesModels\Entities\Connectors\ConnectorsRepository $connectorsRepository,
@@ -66,6 +72,7 @@ class Install extends Console\Command\Command
 		private readonly DevicesModels\Entities\Connectors\Properties\PropertiesManager $propertiesManager,
 		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\Entities\Devices\DevicesManager $devicesManager,
+		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 		private readonly Localization\Translator $translator,
 		string|null $name = null,
@@ -85,6 +92,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws Console\Exception\ExceptionInterface
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -95,7 +103,10 @@ class Install extends Console\Command\Command
 	 */
 	protected function execute(Input\InputInterface $input, Output\OutputInterface $output): int
 	{
-		$io = new Style\SymfonyStyle($input, $output);
+		$this->input = $input;
+		$this->output = $output;
+
+		$io = new Style\SymfonyStyle($this->input, $this->output);
 
 		$io->title($this->translator->translate('//shelly-connector.cmd.install.title'));
 
@@ -550,6 +561,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws Console\Exception\ExceptionInterface
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -787,11 +799,100 @@ class Install extends Console\Command\Command
 		$io->newLine();
 	}
 
+	/**
+	 * @throws Console\Exception\ExceptionInterface
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
 	private function discoverDevices(Style\SymfonyStyle $io, Entities\ShellyConnector $connector): void
 	{
+		if ($this->output === null) {
+			throw new Exceptions\InvalidState('Something went wrong, console output is not configured');
+		}
+
+		$executedTime = $this->dateTimeFactory->getNow();
+
+		$symfonyApp = $this->getApplication();
+
+		if ($symfonyApp === null) {
+			throw new Exceptions\InvalidState('Something went wrong, console app is not configured');
+		}
+
+		$serviceCmd = $symfonyApp->find(DevicesCommands\Connector::NAME);
+
+		$result = $serviceCmd->run(new Input\ArrayInput([
+			'--connector' => $connector->getId()->toString(),
+			'--mode' => DevicesCommands\Connector::MODE_DISCOVER,
+			'--no-interaction' => true,
+			'--quiet' => true,
+		]), $this->output);
+
+		if ($result !== Console\Command\Command::SUCCESS) {
+			$io->error($this->translator->translate('//shelly-connector.cmd.execute.messages.discover.error'));
+
+			return;
+		}
+
+		$io->newLine();
+
+		$table = new Console\Helper\Table($io);
+		$table->setHeaders([
+			'#',
+			$this->translator->translate('//shelly-connector.cmd.install.data.id'),
+			$this->translator->translate('//shelly-connector.cmd.install.data.name'),
+			$this->translator->translate('//shelly-connector.cmd.install.data.type'),
+			$this->translator->translate('//shelly-connector.cmd.discovery.data.ipAddress'),
+		]);
+
+		$foundDevices = 0;
+
+		$findDevicesQuery = new Queries\Entities\FindDevices();
+		$findDevicesQuery->byConnectorId($connector->getId());
+
+		$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\ShellyDevice::class);
+
+		foreach ($devices as $device) {
+			$createdAt = $device->getCreatedAt();
+
+			if (
+				$createdAt !== null
+				&& $createdAt->getTimestamp() > $executedTime->getTimestamp()
+			) {
+				$foundDevices++;
+
+				$table->addRow([
+					$foundDevices,
+					$device->getId()->toString(),
+					$device->getName() ?? $device->getIdentifier(),
+					$device->getModel() ?? 'N/A',
+					$device->getIpAddress() ?? 'N/A',
+				]);
+			}
+		}
+
+		if ($foundDevices > 0) {
+			$io->newLine();
+
+			$io->info(sprintf(
+				$this->translator->translate('//shelly-connector.cmd.install.messages.foundDevices'),
+				$foundDevices,
+			));
+
+			$table->render();
+
+			$io->newLine();
+
+		} else {
+			$io->info($this->translator->translate('//shelly-connector.cmd.install.messages.noDevicesFound'));
+		}
+
+		$io->success($this->translator->translate('//shelly-connector.cmd.install.messages.discover.success'));
 	}
 
 	/**
+	 * @throws Console\Exception\ExceptionInterface
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -874,6 +975,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws Console\Exception\ExceptionInterface
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
