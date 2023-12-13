@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Discovery.php
+ * Discover.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -48,7 +48,7 @@ use function usort;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Discovery extends Console\Command\Command
+class Discover extends Console\Command\Command
 {
 
 	public const NAME = 'fb:tuya-connector:discover';
@@ -73,7 +73,7 @@ class Discovery extends Console\Command\Command
 	{
 		$this
 			->setName(self::NAME)
-			->setDescription('Tuya connector devices discovery')
+			->setDescription('Tuya connector discovery')
 			->setDefinition(
 				new Input\InputDefinition([
 					new Input\InputOption(

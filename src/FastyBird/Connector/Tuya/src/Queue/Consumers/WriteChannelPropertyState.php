@@ -434,7 +434,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					);
 				}
 			},
-			function (Throwable $ex) use ($connector, $device, $channel, $property, $entity): void {
+			function (Throwable $ex) use ($connector, $device, $property, $entity): void {
 				$this->channelPropertiesStatesManager->setValue(
 					$property,
 					Utils\ArrayHash::from([
