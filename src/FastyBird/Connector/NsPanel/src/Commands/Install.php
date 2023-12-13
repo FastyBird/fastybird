@@ -2159,9 +2159,11 @@ class Install extends Console\Command\Command
 				implode(
 					', ',
 					array_map(
-						static fn (DevicesEntities\Channels\Properties\Property $property): string => Helpers\Name::convertPropertyToProtocol(
-							$property->getIdentifier(),
-						)->getValue(),
+						fn (DevicesEntities\Channels\Properties\Property $property): string => $this->translator->translate(
+							'//ns-panel-connector.cmd.base.protocol.' . Helpers\Name::convertPropertyToProtocol(
+								$property->getIdentifier(),
+							)->getValue(),
+						),
 						$this->channelsPropertiesRepository->findAllBy($findChannelPropertiesQuery),
 					),
 				),
@@ -2585,7 +2587,11 @@ class Install extends Console\Command\Command
 			$table->addRow([
 				$index + 1,
 				$property->getName() ?? $property->getIdentifier(),
-				Helpers\Name::convertPropertyToProtocol($property->getIdentifier())->getValue(),
+				$this->translator->translate(
+					'//ns-panel-connector.cmd.base.protocol.' . Helpers\Name::convertPropertyToProtocol(
+						$property->getIdentifier(),
+					)->getValue(),
+				),
 				$value,
 			]);
 		}
