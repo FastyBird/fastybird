@@ -35,7 +35,7 @@ There are three types of connectors available for selection:
 - **Cloud** - This connector communicates with the [Shelly](https://shelly.cloud) cloud instance.
 - **MQTT** - This connector utilizes the MQTT protocol to communicate with an MQTT broker.
 
-## Configuring the Connectors, Devices and Capabilities through the Console
+## Configuring the Connectors and Devices through the Console
 
 To configure the connector through the console, run the following command:
 

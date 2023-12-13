@@ -1066,7 +1066,7 @@ class Install extends Console\Command\Command
 	private function askConnectorMode(Style\SymfonyStyle $io): Types\ClientMode
 	{
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//sonoff-connector.cmd.install.questions.select.mode'),
+			$this->translator->translate('//sonoff-connector.cmd.install.questions.select.connector.mode'),
 			[
 				0 => $this->translator->translate('//sonoff-connector.cmd.install.answers.mode.auto'),
 				1 => $this->translator->translate('//sonoff-connector.cmd.install.answers.mode.local'),
