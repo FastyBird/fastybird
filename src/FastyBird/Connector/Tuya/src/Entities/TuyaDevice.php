@@ -34,7 +34,7 @@ use function is_string;
 class TuyaDevice extends DevicesEntities\Devices\Device
 {
 
-	public const DEVICE_TYPE = 'tuya';
+	public const TYPE = 'tuya';
 
 	public const STATE_READING_DELAY = 5_000.0;
 
@@ -44,12 +44,12 @@ class TuyaDevice extends DevicesEntities\Devices\Device
 
 	public function getType(): string
 	{
-		return self::DEVICE_TYPE;
+		return self::TYPE;
 	}
 
 	public function getDiscriminatorName(): string
 	{
-		return self::DEVICE_TYPE;
+		return self::TYPE;
 	}
 
 	public function getSource(): MetadataTypes\ConnectorSource

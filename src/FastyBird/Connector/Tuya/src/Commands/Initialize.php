@@ -138,10 +138,12 @@ class Initialize extends Console\Command\Command
 				$findConnectorQuery = new Queries\Entities\FindConnectors();
 				$findConnectorQuery->byIdentifier($answer);
 
-				if ($this->connectorsRepository->findOneBy(
+				$connector = $this->connectorsRepository->findOneBy(
 					$findConnectorQuery,
 					Entities\TuyaConnector::class,
-				) !== null) {
+				);
+
+				if ($connector !== null) {
 					throw new Exceptions\Runtime(
 						$this->translator->translate('//tuya-connector.cmd.initialize.messages.identifier.used'),
 					);
@@ -162,10 +164,12 @@ class Initialize extends Console\Command\Command
 				$findConnectorQuery = new Queries\Entities\FindConnectors();
 				$findConnectorQuery->byIdentifier($identifier);
 
-				if ($this->connectorsRepository->findOneBy(
+				$connector = $this->connectorsRepository->findOneBy(
 					$findConnectorQuery,
 					Entities\TuyaConnector::class,
-				) === null) {
+				);
+
+				if ($connector === null) {
 					break;
 				}
 			}
