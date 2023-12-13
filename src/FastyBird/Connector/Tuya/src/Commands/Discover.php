@@ -104,9 +104,9 @@ class Discover extends Console\Command\Command
 
 		$io = new Style\SymfonyStyle($input, $output);
 
-		$io->title($this->translator->translate('//tuya-connector.cmd.discovery.title'));
+		$io->title($this->translator->translate('//tuya-connector.cmd.discover.title'));
 
-		$io->note($this->translator->translate('//tuya-connector.cmd.discovery.subtitle'));
+		$io->note($this->translator->translate('//tuya-connector.cmd.discover.subtitle'));
 
 		if ($input->getOption('no-interaction') === false) {
 			$question = new Console\Question\ConfirmationQuestion(
@@ -140,7 +140,7 @@ class Discover extends Console\Command\Command
 
 			if ($connector === null) {
 				$io->warning(
-					$this->translator->translate('//tuya-connector.cmd.discovery.messages.connector.notFound'),
+					$this->translator->translate('//tuya-connector.cmd.discover.messages.connector.notFound'),
 				);
 
 				return Console\Command\Command::FAILURE;
@@ -184,7 +184,7 @@ class Discover extends Console\Command\Command
 
 				if ($connector === null) {
 					$io->warning(
-						$this->translator->translate('//tuya-connector.cmd.discovery.messages.connector.notFound'),
+						$this->translator->translate('//tuya-connector.cmd.discover.messages.connector.notFound'),
 					);
 
 					return Console\Command\Command::FAILURE;
@@ -193,7 +193,7 @@ class Discover extends Console\Command\Command
 				if ($input->getOption('no-interaction') === false) {
 					$question = new Console\Question\ConfirmationQuestion(
 						$this->translator->translate(
-							'//tuya-connector.cmd.discovery.questions.execute',
+							'//tuya-connector.cmd.discover.questions.execute',
 							['connector' => $connector->getName() ?? $connector->getIdentifier()],
 						),
 						false,
@@ -205,7 +205,7 @@ class Discover extends Console\Command\Command
 				}
 			} else {
 				$question = new Console\Question\ChoiceQuestion(
-					$this->translator->translate('//tuya-connector.cmd.discovery.questions.select.connector'),
+					$this->translator->translate('//tuya-connector.cmd.discover.questions.select.connector'),
 					array_values($connectors),
 				);
 				$question->setErrorMessage(
@@ -260,7 +260,7 @@ class Discover extends Console\Command\Command
 
 		if (!$connector->isEnabled()) {
 			$io->warning(
-				$this->translator->translate('//tuya-connector.cmd.discovery.messages.connector.disabled'),
+				$this->translator->translate('//tuya-connector.cmd.discover.messages.connector.disabled'),
 			);
 
 			return Console\Command\Command::SUCCESS;
@@ -304,10 +304,10 @@ class Discover extends Console\Command\Command
 		$table = new Console\Helper\Table($output);
 		$table->setHeaders([
 			'#',
-			$this->translator->translate('//tuya-connector.cmd.discovery.data.id'),
-			$this->translator->translate('//tuya-connector.cmd.discovery.data.name'),
-			$this->translator->translate('//tuya-connector.cmd.discovery.data.type'),
-			$this->translator->translate('//tuya-connector.cmd.discovery.data.ipAddress'),
+			$this->translator->translate('//tuya-connector.cmd.discover.data.id'),
+			$this->translator->translate('//tuya-connector.cmd.discover.data.name'),
+			$this->translator->translate('//tuya-connector.cmd.discover.data.type'),
+			$this->translator->translate('//tuya-connector.cmd.discover.data.ipAddress'),
 		]);
 
 		$foundDevices = 0;
@@ -341,7 +341,7 @@ class Discover extends Console\Command\Command
 			$io->newLine();
 
 			$io->info(sprintf(
-				$this->translator->translate('//tuya-connector.cmd.discovery.messages.foundDevices'),
+				$this->translator->translate('//tuya-connector.cmd.discover.messages.foundDevices'),
 				$foundDevices,
 			));
 
@@ -350,10 +350,10 @@ class Discover extends Console\Command\Command
 			$io->newLine();
 
 		} else {
-			$io->info($this->translator->translate('//tuya-connector.cmd.discovery.messages.noDevicesFound'));
+			$io->info($this->translator->translate('//tuya-connector.cmd.discover.messages.noDevicesFound'));
 		}
 
-		$io->success($this->translator->translate('//tuya-connector.cmd.discovery.messages.success'));
+		$io->success($this->translator->translate('//tuya-connector.cmd.discover.messages.success'));
 	}
 
 }
