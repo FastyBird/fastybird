@@ -29,10 +29,10 @@ cmd:
             tcp: "TCP/IP"
 
         registerType:
-            discreteInput: "Discrete Input"
+            discrete_input: "Discrete Input"
             coil: "Coil"
-            inputRegister: "Input Register"
-            holdingRegister: "Holding Register"
+            input_register: "Input Register"
+            holding_register: "Holding Register"
 
     execute:
         title: "Modbus connector - service"

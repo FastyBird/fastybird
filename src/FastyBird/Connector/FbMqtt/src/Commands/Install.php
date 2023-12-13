@@ -685,7 +685,9 @@ class Install extends Console\Command\Command
 			$table->addRow([
 				$index + 1,
 				$connector->getName() ?? $connector->getIdentifier(),
-				'//fb-mqtt-connector.cmd.base.protocol.' . $connector->getProtocolVersion()->getValue(),
+				$this->translator->translate(
+					'//fb-mqtt-connector.cmd.base.protocol.' . $connector->getProtocolVersion()->getValue(),
+				),
 				count($devices),
 			]);
 		}
