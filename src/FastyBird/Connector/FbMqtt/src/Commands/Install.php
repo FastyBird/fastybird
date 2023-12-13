@@ -666,7 +666,7 @@ class Install extends Console\Command\Command
 			$table->addRow([
 				$index + 1,
 				$connector->getName() ?? $connector->getIdentifier(),
-				$connector->getProtocolVersion()->getValue(),
+				'//modbus-connector.cmd.base.protocol.' . $connector->getProtocolVersion()->getValue(),
 				count($devices),
 			]);
 		}

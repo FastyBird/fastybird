@@ -73,7 +73,7 @@ class Discover extends Console\Command\Command
 	{
 		$this
 			->setName(self::NAME)
-			->setDescription('Sonoff connector devices discovery')
+			->setDescription('Sonoff connector discovery')
 			->setDefinition(
 				new Input\InputDefinition([
 					new Input\InputOption(

@@ -24,6 +24,11 @@ cmd:
             noConnectors: "No NS Panel connectors registered in system."
             answerNotValid: "Selected answer: \"%s\" is not valid."
 
+        mode:
+            gateway: "NS Panel gateway"
+            device: "NS Panel devices"
+            both: "Both modes"
+
         deviceType:
             unknown: "Unknown"
             plug: "Plug"

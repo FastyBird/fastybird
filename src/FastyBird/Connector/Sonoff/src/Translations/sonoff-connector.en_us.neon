@@ -24,6 +24,11 @@ cmd:
             noConnectors: "No Sonoff connectors registered in system."
             answerNotValid: "Selected answer: \"%s\" is not valid."
 
+        mode:
+            local: "Local nework"
+            cloud: "Cloud server"
+            auto: "Automatic selection"
+
     execute:
         title: "Sonoff connector - service"
         subtitle: "This action will run connector service"
@@ -119,7 +124,7 @@ cmd:
         answers:
             mode:
                 local: "Local network mode"
-                cloud: "Sonoff cloud server mode"
+                cloud: "Cloud server mode"
                 auto: "Automatic selection mode (combined local & cloud)"
 
             dataCentre:

@@ -626,7 +626,7 @@ class Install extends Console\Command\Command
 			$table->addRow([
 				$index + 1,
 				$this->translator->translate(
-					'//shelly-connector.cmd.install.answers.mode.' . $connector->getClientMode()->getValue(),
+					'//shelly-connector.cmd.base.mode.' . $connector->getClientMode()->getValue(),
 				),
 				count($devices),
 			]);

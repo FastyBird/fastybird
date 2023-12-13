@@ -732,7 +732,7 @@ class Install extends Console\Command\Command
 				$index + 1,
 				$connector->getName() ?? $connector->getIdentifier(),
 				$this->translator->translate(
-					'//modbus-connector.cmd.install.answers.mode.' . $connector->getClientMode()->getValue(),
+					'//modbus-connector.cmd.base.mode.' . $connector->getClientMode()->getValue(),
 				),
 				count($devices),
 			]);
