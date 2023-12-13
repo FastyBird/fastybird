@@ -306,6 +306,7 @@ class Discover extends Console\Command\Command
 			'#',
 			$this->translator->translate('//shelly-connector.cmd.discover.data.id'),
 			$this->translator->translate('//shelly-connector.cmd.discover.data.name'),
+			$this->translator->translate('//shelly-connector.cmd.discover.data.generation'),
 			$this->translator->translate('//shelly-connector.cmd.discover.data.model'),
 			$this->translator->translate('//shelly-connector.cmd.discover.data.address'),
 		]);
@@ -331,6 +332,9 @@ class Discover extends Console\Command\Command
 					$foundDevices,
 					$device->getId()->toString(),
 					$device->getName() ?? $device->getIdentifier(),
+					$this->translator->translate(
+						'//shelly-connector.cmd.install.answers.generation.' . $device->getGeneration()->getValue(),
+					),
 					$device->getModel() ?? 'N/A',
 					$device->getLocalAddress() ?? 'N/A',
 				]);

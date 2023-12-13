@@ -1277,7 +1277,7 @@ class Install extends Console\Command\Command
 			'#',
 			$this->translator->translate('//ns-panel-connector.cmd.install.data.id'),
 			$this->translator->translate('//ns-panel-connector.cmd.install.data.name'),
-			$this->translator->translate('//ns-panel-connector.cmd.install.data.type'),
+			$this->translator->translate('//ns-panel-connector.cmd.install.data.model'),
 			$this->translator->translate('//ns-panel-connector.cmd.install.data.gateway'),
 		]);
 
@@ -2153,7 +2153,9 @@ class Install extends Console\Command\Command
 			$table->addRow([
 				$index + 1,
 				$channel->getName() ?? $channel->getIdentifier(),
-				$channel->getCapability()->getValue(),
+				$this->translator->translate(
+					'//ns-panel-connector.cmd.base.capability.' . $channel->getCapability()->getValue(),
+				),
 				implode(
 					', ',
 					array_map(

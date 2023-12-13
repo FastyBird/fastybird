@@ -795,16 +795,16 @@ class Install extends Console\Command\Command
 		$table->setHeaders([
 			'#',
 			$this->translator->translate('//sonoff-connector.cmd.install.data.name'),
-			$this->translator->translate('//sonoff-connector.cmd.install.data.ipAddress'),
 			$this->translator->translate('//sonoff-connector.cmd.install.data.model'),
+			$this->translator->translate('//sonoff-connector.cmd.install.data.ipAddress'),
 		]);
 
 		foreach ($devices as $index => $device) {
 			$table->addRow([
 				$index + 1,
 				$device->getName() ?? $device->getIdentifier(),
-				$device->getIpAddress() !== null ? ($device->getIpAddress() . ':' . $device->getPort()) : 'N/A',
 				$device->getModel(),
+				$device->getIpAddress() !== null ? ($device->getIpAddress() . ':' . $device->getPort()) : 'N/A',
 			]);
 		}
 

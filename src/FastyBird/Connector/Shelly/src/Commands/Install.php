@@ -802,8 +802,8 @@ class Install extends Console\Command\Command
 			'#',
 			$this->translator->translate('//shelly-connector.cmd.install.data.name'),
 			$this->translator->translate('//shelly-connector.cmd.install.data.generation'),
-			$this->translator->translate('//shelly-connector.cmd.install.data.address'),
 			$this->translator->translate('//shelly-connector.cmd.install.data.model'),
+			$this->translator->translate('//shelly-connector.cmd.install.data.address'),
 		]);
 
 		foreach ($devices as $index => $device) {
@@ -813,8 +813,8 @@ class Install extends Console\Command\Command
 				$this->translator->translate(
 					'//shelly-connector.cmd.install.answers.generation.' . $device->getGeneration()->getValue(),
 				),
-				$device->getLocalAddress(),
 				$device->getModel(),
+				$device->getLocalAddress(),
 			]);
 		}
 
@@ -866,6 +866,7 @@ class Install extends Console\Command\Command
 			'#',
 			$this->translator->translate('//shelly-connector.cmd.install.data.id'),
 			$this->translator->translate('//shelly-connector.cmd.install.data.name'),
+			$this->translator->translate('//shelly-connector.cmd.install.data.generation'),
 			$this->translator->translate('//shelly-connector.cmd.install.data.model'),
 			$this->translator->translate('//shelly-connector.cmd.install.data.address'),
 		]);
@@ -890,6 +891,9 @@ class Install extends Console\Command\Command
 					$foundDevices,
 					$device->getId()->toString(),
 					$device->getName() ?? $device->getIdentifier(),
+					$this->translator->translate(
+						'//shelly-connector.cmd.install.answers.generation.' . $device->getGeneration()->getValue(),
+					),
 					$device->getModel() ?? 'N/A',
 					$device->getLocalAddress() ?? 'N/A',
 				]);

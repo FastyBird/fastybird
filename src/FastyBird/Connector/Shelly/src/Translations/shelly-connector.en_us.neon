@@ -55,6 +55,7 @@ cmd:
         data:
             id: "ID"
             name: "Name"
+            generation: "Generation"
             model: "Model"
             address: "Address"
 

@@ -1780,7 +1780,11 @@ class Install extends Console\Command\Command
 			$table->addRow([
 				$index + 1,
 				$channel->getName() ?? $channel->getIdentifier(),
-				strval($channel->getRegisterType()?->getValue()),
+				$channel->getRegisterType() !== null
+					? $this->translator->translate(
+						'//modbus-connector.cmd.base.registerType.' . $channel->getRegisterType()->getValue(),
+					)
+					: 'N/A',
 				$channel->getAddress(),
 				$valueProperty?->getDataType()->getValue(),
 				$channel->getReadingDelay(),

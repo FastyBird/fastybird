@@ -113,7 +113,7 @@ cmd:
         data:
             id: "ID"
             name: "Name"
-            type: "Type"
+            model: "Model"
             gateway: "NS Panel"
 
         messages:
@@ -222,6 +222,7 @@ cmd:
             id: "ID"
             name: "Name"
             mode: "Mode"
+            model: "Model"
             panelsCnt: "# NS Panels"
             ipAddress: "IP Address"
             category: "Category"

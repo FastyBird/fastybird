@@ -28,6 +28,12 @@ cmd:
             rtu: "RTU"
             tcp: "TCP/IP"
 
+        registerType:
+            discreteInput: "Discrete Input"
+            coil: "Coil"
+            inputRegister: "Input Register"
+            holdingRegister: "Holding Register"
+
     execute:
         title: "Modbus connector - service"
         subtitle: "This action will run connector service"
