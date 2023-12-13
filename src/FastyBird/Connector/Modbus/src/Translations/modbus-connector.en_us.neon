@@ -173,6 +173,7 @@ cmd:
 
         data:
             name: "Name"
+            mode: "Mode"
             type: "Type"
             address: "Address"
             dataType: "Data Type"

@@ -589,7 +589,9 @@ class Install extends Console\Command\Command
 			$table->addRow([
 				$index + 1,
 				$connector->getName() ?? $connector->getIdentifier(),
-				$connector->getClientMode()->getValue(),
+				$this->translator->translate(
+					'//ns-panel-connector.cmd.install.answers.mode.' . $connector->getClientMode()->getValue(),
+				),
 				count($nsPanels),
 				count($subDevices),
 				count($devices),

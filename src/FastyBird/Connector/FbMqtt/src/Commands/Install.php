@@ -629,6 +629,9 @@ class Install extends Console\Command\Command
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
 	 */
 	private function listConnectors(Style\SymfonyStyle $io): void
 	{
@@ -650,6 +653,7 @@ class Install extends Console\Command\Command
 		$table->setHeaders([
 			'#',
 			$this->translator->translate('//fb-mqtt-connector.cmd.install.data.name'),
+			$this->translator->translate('//fb-mqtt-connector.cmd.install.data.protocol'),
 			$this->translator->translate('//fb-mqtt-connector.cmd.install.data.devicesCnt'),
 		]);
 
@@ -662,6 +666,7 @@ class Install extends Console\Command\Command
 			$table->addRow([
 				$index + 1,
 				$connector->getName() ?? $connector->getIdentifier(),
+				$connector->getProtocolVersion()->getValue(),
 				count($devices),
 			]);
 		}

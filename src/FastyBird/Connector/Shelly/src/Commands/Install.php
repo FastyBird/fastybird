@@ -589,6 +589,9 @@ class Install extends Console\Command\Command
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
 	 */
 	private function listConnectors(Style\SymfonyStyle $io): void
 	{
@@ -610,6 +613,7 @@ class Install extends Console\Command\Command
 		$table->setHeaders([
 			'#',
 			$this->translator->translate('//shelly-connector.cmd.install.data.name'),
+			$this->translator->translate('//shelly-connector.cmd.install.data.mode'),
 			$this->translator->translate('//shelly-connector.cmd.install.data.devicesCnt'),
 		]);
 
@@ -621,7 +625,9 @@ class Install extends Console\Command\Command
 
 			$table->addRow([
 				$index + 1,
-				$connector->getName() ?? $connector->getIdentifier(),
+				$this->translator->translate(
+					'//shelly-connector.cmd.install.answers.mode.' . $connector->getClientMode()->getValue(),
+				),
 				count($devices),
 			]);
 		}

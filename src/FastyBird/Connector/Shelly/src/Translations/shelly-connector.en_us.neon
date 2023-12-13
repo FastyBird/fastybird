@@ -125,6 +125,7 @@ cmd:
         data:
             id: "ID"
             name: "Name"
+            mode: "Mode"
             generation: "Generation"
             address: "Address"
             model: "Model"

@@ -97,6 +97,7 @@ cmd:
 
         data:
             name: "Name"
+            protocol: "Protocol Version"
             devicesCnt: "# Devices"
 
         messages:
