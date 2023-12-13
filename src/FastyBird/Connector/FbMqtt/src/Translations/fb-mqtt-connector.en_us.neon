@@ -24,6 +24,9 @@ cmd:
             noConnectors: "No FB MQTT connectors registered in system."
             answerNotValid: "Selected answer: \"%s\" is not valid."
 
+        protocol:
+            v1: "FB MQTT v1"
+
     execute:
         title: "FB MQTT connector - service"
         subtitle: "This action will run connector service"
@@ -97,6 +100,7 @@ cmd:
 
         data:
             name: "Name"
+            protocol: "Protocol Version"
             devicesCnt: "# Devices"
 
         messages:

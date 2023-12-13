@@ -313,7 +313,7 @@ class Discover extends Console\Command\Command
 			'#',
 			$this->translator->translate('//ns-panel-connector.cmd.discover.data.id'),
 			$this->translator->translate('//ns-panel-connector.cmd.discover.data.name'),
-			$this->translator->translate('//ns-panel-connector.cmd.discover.data.type'),
+			$this->translator->translate('//ns-panel-connector.cmd.discover.data.model'),
 			$this->translator->translate('//ns-panel-connector.cmd.discover.data.gateway'),
 		]);
 

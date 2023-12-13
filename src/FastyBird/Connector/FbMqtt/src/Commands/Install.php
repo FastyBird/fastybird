@@ -69,6 +69,7 @@ class Install extends Console\Command\Command
 		private readonly DevicesModels\Entities\Devices\DevicesManager $devicesManager,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 		private readonly Localization\Translator $translator,
+		private readonly BootstrapHelpers\Database $databaseHelper,
 		string|null $name = null,
 	)
 	{
@@ -225,24 +226,30 @@ class Install extends Console\Command\Command
 				'connector' => $connector,
 			]));
 
-			$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
-				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-				'identifier' => Types\ConnectorPropertyIdentifier::USERNAME,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-				'value' => $username,
-				'connector' => $connector,
-			]));
+			if ($username !== null) {
+				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
+					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
+					'identifier' => Types\ConnectorPropertyIdentifier::USERNAME,
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+					'value' => $username,
+					'connector' => $connector,
+				]));
+			}
 
-			$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
-				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-				'identifier' => Types\ConnectorPropertyIdentifier::PASSWORD,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-				'value' => $password,
-				'connector' => $connector,
-			]));
+			if ($password !== null) {
+				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
+					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
+					'identifier' => Types\ConnectorPropertyIdentifier::PASSWORD,
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+					'value' => $password,
+					'connector' => $connector,
+				]));
+			}
 
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
+
+			$this->databaseHelper->clear();
 
 			$io->success(
 				$this->translator->translate(
@@ -466,36 +473,46 @@ class Install extends Console\Command\Command
 				]));
 			}
 
-			if ($usernameProperty === null) {
-				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
-					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::USERNAME,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-					'value' => $username,
-					'connector' => $connector,
-				]));
-			} elseif ($usernameProperty instanceof DevicesEntities\Connectors\Properties\Variable) {
-				$this->connectorsPropertiesManager->update($usernameProperty, Utils\ArrayHash::from([
-					'value' => $username,
-				]));
+			if ($username !== null) {
+				if ($usernameProperty === null) {
+					$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
+						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
+						'identifier' => Types\ConnectorPropertyIdentifier::USERNAME,
+						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+						'value' => $username,
+						'connector' => $connector,
+					]));
+				} elseif ($usernameProperty instanceof DevicesEntities\Connectors\Properties\Variable) {
+					$this->connectorsPropertiesManager->update($usernameProperty, Utils\ArrayHash::from([
+						'value' => $username,
+					]));
+				}
+			} elseif ($usernameProperty !== null) {
+				$this->connectorsPropertiesManager->delete($usernameProperty);
 			}
 
-			if ($passwordProperty === null) {
-				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
-					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::PASSWORD,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-					'value' => $password,
-					'connector' => $connector,
-				]));
-			} elseif ($passwordProperty instanceof DevicesEntities\Connectors\Properties\Variable) {
-				$this->connectorsPropertiesManager->update($passwordProperty, Utils\ArrayHash::from([
-					'value' => $password,
-				]));
+			if ($password !== null) {
+				if ($passwordProperty === null) {
+					$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
+						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
+						'identifier' => Types\ConnectorPropertyIdentifier::PASSWORD,
+						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+						'value' => $password,
+						'connector' => $connector,
+					]));
+				} elseif ($passwordProperty instanceof DevicesEntities\Connectors\Properties\Variable) {
+					$this->connectorsPropertiesManager->update($passwordProperty, Utils\ArrayHash::from([
+						'value' => $password,
+					]));
+				}
+			} elseif ($passwordProperty !== null) {
+				$this->connectorsPropertiesManager->delete($passwordProperty);
 			}
 
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
+
+			$this->databaseHelper->clear();
 
 			$io->success(
 				$this->translator->translate(
@@ -580,6 +597,8 @@ class Install extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
+			$this->databaseHelper->clear();
+
 			$io->success(
 				$this->translator->translate(
 					'//fb-mqtt-connector.cmd.install.messages.remove.connector.success',
@@ -629,6 +648,9 @@ class Install extends Console\Command\Command
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
 	 */
 	private function listConnectors(Style\SymfonyStyle $io): void
 	{
@@ -650,6 +672,7 @@ class Install extends Console\Command\Command
 		$table->setHeaders([
 			'#',
 			$this->translator->translate('//fb-mqtt-connector.cmd.install.data.name'),
+			$this->translator->translate('//fb-mqtt-connector.cmd.install.data.protocol'),
 			$this->translator->translate('//fb-mqtt-connector.cmd.install.data.devicesCnt'),
 		]);
 
@@ -662,6 +685,9 @@ class Install extends Console\Command\Command
 			$table->addRow([
 				$index + 1,
 				$connector->getName() ?? $connector->getIdentifier(),
+				$this->translator->translate(
+					'//fb-mqtt-connector.cmd.base.protocol.' . $connector->getProtocolVersion()->getValue(),
+				),
 				count($devices),
 			]);
 		}
@@ -745,6 +771,8 @@ class Install extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
+			$this->databaseHelper->clear();
+
 			$io->success(
 				$this->translator->translate(
 					'//fb-mqtt-connector.cmd.install.messages.create.device.success',
@@ -809,6 +837,8 @@ class Install extends Console\Command\Command
 
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
+
+			$this->databaseHelper->clear();
 
 			$io->success(
 				$this->translator->translate(
@@ -877,6 +907,8 @@ class Install extends Console\Command\Command
 
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
+
+			$this->databaseHelper->clear();
 
 			$io->success(
 				$this->translator->translate(

@@ -112,6 +112,7 @@ class Install extends Console\Command\Command
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
+		private readonly BootstrapHelpers\Database $databaseHelper,
 		private readonly Localization\Translator $translator,
 		string|null $name = null,
 	)
@@ -250,6 +251,8 @@ class Install extends Console\Command\Command
 
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
+
+			$this->databaseHelper->clear();
 
 			$io->success(
 				$this->translator->translate(
@@ -403,6 +406,8 @@ class Install extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
+			$this->databaseHelper->clear();
+
 			$io->success(
 				$this->translator->translate(
 					'//ns-panel-connector.cmd.install.messages.update.connector.success',
@@ -487,6 +492,8 @@ class Install extends Console\Command\Command
 
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
+
+			$this->databaseHelper->clear();
 
 			$io->success(
 				$this->translator->translate(
@@ -589,7 +596,9 @@ class Install extends Console\Command\Command
 			$table->addRow([
 				$index + 1,
 				$connector->getName() ?? $connector->getIdentifier(),
-				$connector->getClientMode()->getValue(),
+				$this->translator->translate(
+					'//ns-panel-connector.cmd.base.mode.' . $connector->getClientMode()->getValue(),
+				),
 				count($nsPanels),
 				count($subDevices),
 				count($devices),
@@ -756,6 +765,8 @@ class Install extends Console\Command\Command
 
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
+
+			$this->databaseHelper->clear();
 
 			$io->success(
 				$this->translator->translate(
@@ -1020,6 +1031,8 @@ class Install extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
+			$this->databaseHelper->clear();
+
 			$io->success(
 				$this->translator->translate(
 					'//ns-panel-connector.cmd.install.messages.update.gateway.success',
@@ -1105,6 +1118,8 @@ class Install extends Console\Command\Command
 
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
+
+			$this->databaseHelper->clear();
 
 			$io->success(
 				$this->translator->translate(
@@ -1250,7 +1265,7 @@ class Install extends Console\Command\Command
 		]), $this->output);
 
 		if ($result !== Console\Command\Command::SUCCESS) {
-			$io->error($this->translator->translate('//ns-panel-connector.cmd.execute.messages.discover.error'));
+			$io->error($this->translator->translate('//ns-panel-connector.cmd.install.messages.discover.error'));
 
 			return;
 		}
@@ -1262,8 +1277,8 @@ class Install extends Console\Command\Command
 			'#',
 			$this->translator->translate('//ns-panel-connector.cmd.install.data.id'),
 			$this->translator->translate('//ns-panel-connector.cmd.install.data.name'),
-			$this->translator->translate('//ns-panel-connector.cmd.install.data.type'),
-			$this->translator->translate('//ns-panel-connector.cmd.discovery.data.gateway'),
+			$this->translator->translate('//ns-panel-connector.cmd.install.data.model'),
+			$this->translator->translate('//ns-panel-connector.cmd.install.data.gateway'),
 		]);
 
 		$foundDevices = 0;
@@ -1404,6 +1419,8 @@ class Install extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
+			$this->databaseHelper->clear();
+
 			$io->success(
 				$this->translator->translate(
 					'//ns-panel-connector.cmd.install.messages.create.device.success',
@@ -1484,6 +1501,8 @@ class Install extends Console\Command\Command
 
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
+
+			$this->databaseHelper->clear();
 
 			$io->success(
 				$this->translator->translate(
@@ -1596,6 +1615,8 @@ class Install extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
+			$this->databaseHelper->clear();
+
 			$io->success(
 				$this->translator->translate(
 					'//ns-panel-connector.cmd.install.messages.remove.device.success',
@@ -1704,11 +1725,15 @@ class Install extends Console\Command\Command
 			$table->addRow([
 				$index + 1,
 				$device->getName() ?? $device->getIdentifier(),
-				$device->getDisplayCategory()->getValue(),
+				$this->translator->translate(
+					'//ns-panel-connector.cmd.base.deviceType.' . $device->getDisplayCategory()->getValue(),
+				),
 				implode(
 					', ',
 					array_map(
-						static fn (Entities\NsPanelChannel $channel): string => $channel->getCapability()->getValue(),
+						fn (Entities\NsPanelChannel $channel): string => $this->translator->translate(
+							'//ns-panel-connector.cmd.base.capability.' . $channel->getCapability()->getValue(),
+						),
 						$this->channelsRepository->findAllBy($findChannelsQuery, Entities\NsPanelChannel::class),
 					),
 				),
@@ -1816,6 +1841,8 @@ class Install extends Console\Command\Command
 
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
+
+			$this->databaseHelper->clear();
 
 			$io->success(
 				$this->translator->translate(
@@ -1938,6 +1965,8 @@ class Install extends Console\Command\Command
 				// Commit all changes into database
 				$this->getOrmConnection()->commit();
 
+				$this->databaseHelper->clear();
+
 				$io->success(
 					$this->translator->translate(
 						'//ns-panel-connector.cmd.install.messages.update.capability.success',
@@ -2057,6 +2086,8 @@ class Install extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
+			$this->databaseHelper->clear();
+
 			$io->success(
 				$this->translator->translate(
 					'//ns-panel-connector.cmd.install.messages.remove.capability.success',
@@ -2122,13 +2153,17 @@ class Install extends Console\Command\Command
 			$table->addRow([
 				$index + 1,
 				$channel->getName() ?? $channel->getIdentifier(),
-				$channel->getCapability()->getValue(),
+				$this->translator->translate(
+					'//ns-panel-connector.cmd.base.capability.' . $channel->getCapability()->getValue(),
+				),
 				implode(
 					', ',
 					array_map(
-						static fn (DevicesEntities\Channels\Properties\Property $property): string => Helpers\Name::convertPropertyToProtocol(
-							$property->getIdentifier(),
-						)->getValue(),
+						fn (DevicesEntities\Channels\Properties\Property $property): string => $this->translator->translate(
+							'//ns-panel-connector.cmd.base.protocol.' . Helpers\Name::convertPropertyToProtocol(
+								$property->getIdentifier(),
+							)->getValue(),
+						),
 						$this->channelsPropertiesRepository->findAllBy($findChannelPropertiesQuery),
 					),
 				),
@@ -2376,6 +2411,8 @@ class Install extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
+			$this->databaseHelper->clear();
+
 			$io->success(
 				$this->translator->translate(
 					'//ns-panel-connector.cmd.install.messages.update.protocol.success',
@@ -2452,6 +2489,8 @@ class Install extends Console\Command\Command
 
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
+
+			$this->databaseHelper->clear();
 
 			$io->success(
 				$this->translator->translate(
@@ -2548,7 +2587,11 @@ class Install extends Console\Command\Command
 			$table->addRow([
 				$index + 1,
 				$property->getName() ?? $property->getIdentifier(),
-				Helpers\Name::convertPropertyToProtocol($property->getIdentifier())->getValue(),
+				$this->translator->translate(
+					'//ns-panel-connector.cmd.base.protocol.' . Helpers\Name::convertPropertyToProtocol(
+						$property->getIdentifier(),
+					)->getValue(),
+				),
 				$value,
 			]);
 		}

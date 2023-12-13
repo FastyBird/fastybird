@@ -6,22 +6,22 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:ShellyConnector!
+ * @package        FastyBird:SonoffConnector!
  * @subpackage     Commands
  * @since          1.0.0
  *
  * @date           12.12.23
  */
 
-namespace FastyBird\Connector\Shelly\Commands;
+namespace FastyBird\Connector\Sonoff\Commands;
 
 use Doctrine\DBAL;
 use Doctrine\Persistence;
-use FastyBird\Connector\Shelly;
-use FastyBird\Connector\Shelly\Entities;
-use FastyBird\Connector\Shelly\Exceptions;
-use FastyBird\Connector\Shelly\Queries;
-use FastyBird\Connector\Shelly\Types;
+use FastyBird\Connector\Sonoff;
+use FastyBird\Connector\Sonoff\Entities;
+use FastyBird\Connector\Sonoff\Exceptions;
+use FastyBird\Connector\Sonoff\Queries;
+use FastyBird\Connector\Sonoff\Types;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -50,7 +50,7 @@ use function usort;
 /**
  * Connector install command
  *
- * @package        FastyBird:ShellyConnector!
+ * @package        FastyBird:SonoffConnector!
  * @subpackage     Commands
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
@@ -58,14 +58,14 @@ use function usort;
 class Install extends Console\Command\Command
 {
 
-	public const NAME = 'fb:shelly-connector:install';
+	public const NAME = 'fb:sonoff-connector:install';
 
 	private Input\InputInterface|null $input = null;
 
 	private Output\OutputInterface|null $output = null;
 
 	public function __construct(
-		private readonly Shelly\Logger $logger,
+		private readonly Sonoff\Logger $logger,
 		private readonly DevicesModels\Entities\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Entities\Connectors\ConnectorsManager $connectorsManager,
 		private readonly DevicesModels\Entities\Connectors\Properties\PropertiesRepository $propertiesRepository,
@@ -89,7 +89,7 @@ class Install extends Console\Command\Command
 	{
 		$this
 			->setName(self::NAME)
-			->setDescription('Shelly connector installer');
+			->setDescription('Sonoff connector installer');
 	}
 
 	/**
@@ -109,9 +109,9 @@ class Install extends Console\Command\Command
 
 		$io = new Style\SymfonyStyle($this->input, $this->output);
 
-		$io->title($this->translator->translate('//shelly-connector.cmd.install.title'));
+		$io->title($this->translator->translate('//sonoff-connector.cmd.install.title'));
 
-		$io->note($this->translator->translate('//shelly-connector.cmd.install.subtitle'));
+		$io->note($this->translator->translate('//sonoff-connector.cmd.install.subtitle'));
 
 		$this->askInstallAction($io);
 
@@ -130,7 +130,7 @@ class Install extends Console\Command\Command
 		$mode = $this->askConnectorMode($io);
 
 		$question = new Console\Question\Question(
-			$this->translator->translate('//shelly-connector.cmd.install.questions.provide.connector.identifier'),
+			$this->translator->translate('//sonoff-connector.cmd.install.questions.provide.connector.identifier'),
 		);
 
 		$question->setValidator(function ($answer) {
@@ -140,13 +140,13 @@ class Install extends Console\Command\Command
 
 				$connector = $this->connectorsRepository->findOneBy(
 					$findConnectorQuery,
-					Entities\ShellyConnector::class,
+					Entities\SonoffConnector::class,
 				);
 
 				if ($connector !== null) {
 					throw new Exceptions\Runtime(
 						$this->translator->translate(
-							'//shelly-connector.cmd.install.messages.identifier.connector.used',
+							'//sonoff-connector.cmd.install.messages.identifier.connector.used',
 						),
 					);
 				}
@@ -158,7 +158,7 @@ class Install extends Console\Command\Command
 		$identifier = $io->askQuestion($question);
 
 		if ($identifier === '' || $identifier === null) {
-			$identifierPattern = 'shelly-%d';
+			$identifierPattern = 'sonoff-%d';
 
 			for ($i = 1; $i <= 100; $i++) {
 				$identifier = sprintf($identifierPattern, $i);
@@ -168,7 +168,7 @@ class Install extends Console\Command\Command
 
 				$connector = $this->connectorsRepository->findOneBy(
 					$findConnectorQuery,
-					Entities\ShellyConnector::class,
+					Entities\SonoffConnector::class,
 				);
 
 				if ($connector === null) {
@@ -179,7 +179,7 @@ class Install extends Console\Command\Command
 
 		if ($identifier === '') {
 			$io->error(
-				$this->translator->translate('//shelly-connector.cmd.install.messages.identifier.connector.missing'),
+				$this->translator->translate('//sonoff-connector.cmd.install.messages.identifier.connector.missing'),
 			);
 
 			return;
@@ -187,56 +187,61 @@ class Install extends Console\Command\Command
 
 		$name = $this->askConnectorName($io);
 
-		$cloudAuthKey = null;
-		$cloudServer = null;
+		$username = $this->askConnectorUsername($io);
 
-		if ($mode->getValue() === Types\ClientMode::CLOUD) {
-			$cloudAuthKey = $this->askConnectorCloudAuthenticationKey($io);
-			$cloudServer = $this->askConnectorCloudServerAddress($io);
-		}
+		$password = $this->askConnectorPassword($io);
+
+		$dataCentre = $this->askConnectorCloudApiEndpoint($io);
 
 		try {
 			// Start transaction connection to the database
 			$this->getOrmConnection()->beginTransaction();
 
 			$connector = $this->connectorsManager->create(Utils\ArrayHash::from([
-				'entity' => Entities\ShellyConnector::class,
+				'entity' => Entities\SonoffConnector::class,
 				'identifier' => $identifier,
 				'name' => $name === '' ? null : $name,
 			]));
-			assert($connector instanceof Entities\ShellyConnector);
+			assert($connector instanceof Entities\SonoffConnector);
 
 			$this->propertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 				'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE,
 				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
 				'value' => $mode->getValue(),
-				'format' => [
-					Types\ClientMode::LOCAL,
-					Types\ClientMode::CLOUD,
-					Types\ClientMode::MQTT,
-					Types\ClientMode::INTEGRATOR,
-				],
+				'format' => [Types\ClientMode::LAN, Types\ClientMode::CLOUD, Types\ClientMode::AUTO],
 				'connector' => $connector,
 			]));
 
-			if ($mode->getValue() === Types\ClientMode::CLOUD) {
-				$this->propertiesManager->create(Utils\ArrayHash::from([
-					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::CLOUD_AUTH_KEY,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-					'value' => $cloudAuthKey,
-					'connector' => $connector,
-				]));
+			$this->propertiesManager->create(Utils\ArrayHash::from([
+				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
+				'identifier' => Types\ConnectorPropertyIdentifier::USERNAME,
+				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+				'value' => $username,
+				'connector' => $connector,
+			]));
 
-				$this->propertiesManager->create(Utils\ArrayHash::from([
-					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::CLOUD_SERVER,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-					'value' => $cloudServer,
-					'connector' => $connector,
-				]));
-			}
+			$this->propertiesManager->create(Utils\ArrayHash::from([
+				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
+				'identifier' => Types\ConnectorPropertyIdentifier::PASSWORD,
+				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+				'value' => $password,
+				'connector' => $connector,
+			]));
+
+			$this->propertiesManager->create(Utils\ArrayHash::from([
+				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
+				'identifier' => Types\ConnectorPropertyIdentifier::REGION,
+				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
+				'value' => $dataCentre->getValue(),
+				'format' => [
+					Types\CloudApiEndpoint::CHINA,
+					Types\CloudApiEndpoint::AMERICA,
+					Types\CloudApiEndpoint::EUROPE,
+					Types\CloudApiEndpoint::ASIA,
+				],
+				'connector' => $connector,
+			]));
 
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
@@ -245,7 +250,7 @@ class Install extends Console\Command\Command
 
 			$io->success(
 				$this->translator->translate(
-					'//shelly-connector.cmd.install.messages.create.connector.success',
+					'//sonoff-connector.cmd.install.messages.create.connector.success',
 					['name' => $connector->getName() ?? $connector->getIdentifier()],
 				),
 			);
@@ -254,13 +259,13 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-					'type' => 'install-cmd',
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
+					'type' => 'initialize-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 
-			$io->error($this->translator->translate('//shelly-connector.cmd.install.messages.create.connector.error'));
+			$io->error($this->translator->translate('//sonoff-connector.cmd.install.messages.create.connector.error'));
 
 			return;
 		} finally {
@@ -283,10 +288,10 @@ class Install extends Console\Command\Command
 		$connector = $this->askWhichConnector($io);
 
 		if ($connector === null) {
-			$io->warning($this->translator->translate('//shelly-connector.cmd.base.messages.noConnectors'));
+			$io->warning($this->translator->translate('//sonoff-connector.cmd.base.messages.noConnectors'));
 
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//shelly-connector.cmd.install.questions.create.connector'),
+				$this->translator->translate('//sonoff-connector.cmd.install.questions.create.connector'),
 				false,
 			);
 
@@ -310,7 +315,7 @@ class Install extends Console\Command\Command
 
 		} else {
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//shelly-connector.cmd.install.questions.changeMode'),
+				$this->translator->translate('//sonoff-connector.cmd.install.questions.changeMode'),
 				false,
 			);
 
@@ -329,7 +334,7 @@ class Install extends Console\Command\Command
 
 		if ($connector->isEnabled()) {
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//shelly-connector.cmd.install.questions.disable.connector'),
+				$this->translator->translate('//sonoff-connector.cmd.install.questions.disable.connector'),
 				false,
 			);
 
@@ -338,7 +343,7 @@ class Install extends Console\Command\Command
 			}
 		} else {
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//shelly-connector.cmd.install.questions.enable.connector'),
+				$this->translator->translate('//sonoff-connector.cmd.install.questions.enable.connector'),
 				false,
 			);
 
@@ -347,58 +352,50 @@ class Install extends Console\Command\Command
 			}
 		}
 
-		$cloudAuthKey = null;
-		$cloudAuthKeyProperty = null;
-		$cloudServer = null;
-		$cloudServerProperty = null;
+		$username = $password = null;
 
-		if (
-			$modeProperty?->getValue() === Types\ClientMode::CLOUD
-			|| $mode?->getValue() === Types\ClientMode::CLOUD
-		) {
-			$findConnectorPropertyQuery = new DevicesQueries\Entities\FindConnectorProperties();
-			$findConnectorPropertyQuery->forConnector($connector);
-			$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::CLOUD_AUTH_KEY);
+		$findConnectorPropertyQuery = new DevicesQueries\Entities\FindConnectorProperties();
+		$findConnectorPropertyQuery->forConnector($connector);
+		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::USERNAME);
 
-			$cloudAuthKeyProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
+		$usernameProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
-			$changeCloudAuthKey = false;
+		if ($usernameProperty === null) {
+			$changeUsername = true;
 
-			if ($cloudAuthKeyProperty !== null) {
-				$question = new Console\Question\ConfirmationQuestion(
-					$this->translator->translate('//shelly-connector.cmd.install.questions.changeCloudAuthKey'),
-					false,
-				);
+		} else {
+			$question = new Console\Question\ConfirmationQuestion(
+				$this->translator->translate('//sonoff-connector.cmd.install.questions.changeUsername'),
+				false,
+			);
 
-				$changeCloudAuthKey = (bool) $io->askQuestion($question);
-			}
+			$changeUsername = (bool) $io->askQuestion($question);
+		}
 
-			if ($cloudAuthKeyProperty === null || $changeCloudAuthKey) {
-				$cloudAuthKey = $this->askConnectorCloudAuthenticationKey($io, $connector);
-			}
+		if ($changeUsername) {
+			$username = $this->askConnectorUsername($io);
+		}
 
-			$findConnectorPropertyQuery = new DevicesQueries\Entities\FindConnectorProperties();
-			$findConnectorPropertyQuery->forConnector($connector);
-			$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::CLOUD_SERVER);
+		$findConnectorPropertyQuery = new DevicesQueries\Entities\FindConnectorProperties();
+		$findConnectorPropertyQuery->forConnector($connector);
+		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::PASSWORD);
 
-			$cloudServerProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
+		$passwordProperty = $this->propertiesRepository->findOneBy($findConnectorPropertyQuery);
 
-			$changeCloudServer = false;
+		if ($passwordProperty === null) {
+			$changePassword = true;
 
-			if ($cloudServerProperty !== null) {
-				$question = new Console\Question\ConfirmationQuestion(
-					$this->translator->translate(
-						'//shelly-connector.cmd.install.questions.changeCloudServerAddress',
-					),
-					false,
-				);
+		} else {
+			$question = new Console\Question\ConfirmationQuestion(
+				$this->translator->translate('//sonoff-connector.cmd.install.questions.changePassword'),
+				false,
+			);
 
-				$changeCloudServer = (bool) $io->askQuestion($question);
-			}
+			$changePassword = (bool) $io->askQuestion($question);
+		}
 
-			if ($cloudServerProperty === null || $changeCloudServer) {
-				$cloudServer = $this->askConnectorCloudServerAddress($io, $connector);
-			}
+		if ($changePassword) {
+			$password = $this->askConnectorPassword($io);
 		}
 
 		try {
@@ -409,7 +406,7 @@ class Install extends Console\Command\Command
 				'name' => $name === '' ? null : $name,
 				'enabled' => $enabled,
 			]));
-			assert($connector instanceof Entities\ShellyConnector);
+			assert($connector instanceof Entities\SonoffConnector);
 
 			if ($modeProperty === null) {
 				if ($mode === null) {
@@ -421,12 +418,7 @@ class Install extends Console\Command\Command
 					'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE,
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
 					'value' => $mode->getValue(),
-					'format' => [
-						Types\ClientMode::LOCAL,
-						Types\ClientMode::CLOUD,
-						Types\ClientMode::MQTT,
-						Types\ClientMode::INTEGRATOR,
-					],
+					'format' => [Types\ClientMode::LAN, Types\ClientMode::CLOUD, Types\ClientMode::AUTO],
 					'connector' => $connector,
 				]));
 			} elseif ($mode !== null) {
@@ -435,37 +427,40 @@ class Install extends Console\Command\Command
 				]));
 			}
 
-			if (
-				$modeProperty?->getValue() === Types\ClientMode::CLOUD
-				|| $mode?->getValue() === Types\ClientMode::CLOUD
-			) {
-				if ($cloudAuthKeyProperty !== null) {
-					$this->propertiesManager->update($cloudAuthKeyProperty, Utils\ArrayHash::from([
-						'value' => $cloudAuthKey,
-					]));
-				} else {
-					$this->propertiesManager->create(Utils\ArrayHash::from([
-						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-						'identifier' => Types\ConnectorPropertyIdentifier::CLOUD_AUTH_KEY,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-						'value' => $cloudAuthKey,
-						'connector' => $connector,
-					]));
+			if ($usernameProperty === null) {
+				if ($username === null) {
+					$username = $this->askConnectorUsername($io);
 				}
 
-				if ($cloudServerProperty !== null) {
-					$this->propertiesManager->update($cloudServerProperty, Utils\ArrayHash::from([
-						'value' => $cloudServer,
-					]));
-				} else {
-					$this->propertiesManager->create(Utils\ArrayHash::from([
-						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-						'identifier' => Types\ConnectorPropertyIdentifier::CLOUD_SERVER,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-						'value' => $cloudServer,
-						'connector' => $connector,
-					]));
+				$this->propertiesManager->create(Utils\ArrayHash::from([
+					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
+					'identifier' => Types\ConnectorPropertyIdentifier::USERNAME,
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+					'value' => $username,
+					'connector' => $connector,
+				]));
+			} elseif ($username !== null) {
+				$this->propertiesManager->update($usernameProperty, Utils\ArrayHash::from([
+					'value' => $username,
+				]));
+			}
+
+			if ($passwordProperty === null) {
+				if ($password === null) {
+					$password = $this->askConnectorPassword($io);
 				}
+
+				$this->propertiesManager->create(Utils\ArrayHash::from([
+					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
+					'identifier' => Types\ConnectorPropertyIdentifier::PASSWORD,
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+					'value' => $password,
+					'connector' => $connector,
+				]));
+			} elseif ($password !== null) {
+				$this->propertiesManager->update($passwordProperty, Utils\ArrayHash::from([
+					'value' => $password,
+				]));
 			}
 
 			// Commit all changes into database
@@ -475,7 +470,7 @@ class Install extends Console\Command\Command
 
 			$io->success(
 				$this->translator->translate(
-					'//shelly-connector.cmd.install.messages.update.connector.success',
+					'//sonoff-connector.cmd.install.messages.update.connector.success',
 					['name' => $connector->getName() ?? $connector->getIdentifier()],
 				),
 			);
@@ -484,13 +479,13 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-					'type' => 'install-cmd',
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
+					'type' => 'initialize-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 
-			$io->error($this->translator->translate('//shelly-connector.cmd.install.messages.update.connector.error'));
+			$io->error($this->translator->translate('//sonoff-connector.cmd.install.messages.update.connector.error'));
 
 			return;
 		} finally {
@@ -511,20 +506,20 @@ class Install extends Console\Command\Command
 		$connector = $this->askWhichConnector($io);
 
 		if ($connector === null) {
-			$io->info($this->translator->translate('//shelly-connector.cmd.base.messages.noConnectors'));
+			$io->info($this->translator->translate('//sonoff-connector.cmd.base.messages.noConnectors'));
 
 			return;
 		}
 
 		$io->warning(
 			$this->translator->translate(
-				'//shelly-connector.cmd.install.messages.remove.connector.confirm',
+				'//sonoff-connector.cmd.install.messages.remove.connector.confirm',
 				['name' => $connector->getName() ?? $connector->getIdentifier()],
 			),
 		);
 
 		$question = new Console\Question\ConfirmationQuestion(
-			$this->translator->translate('//shelly-connector.cmd.base.questions.continue'),
+			$this->translator->translate('//sonoff-connector.cmd.base.questions.continue'),
 			false,
 		);
 
@@ -547,7 +542,7 @@ class Install extends Console\Command\Command
 
 			$io->success(
 				$this->translator->translate(
-					'//shelly-connector.cmd.install.messages.remove.connector.success',
+					'//sonoff-connector.cmd.install.messages.remove.connector.success',
 					['name' => $connector->getName() ?? $connector->getIdentifier()],
 				),
 			);
@@ -556,13 +551,13 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-					'type' => 'install-cmd',
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
+					'type' => 'initialize-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 
-			$io->error($this->translator->translate('//shelly-connector.cmd.install.messages.remove.connector.error'));
+			$io->error($this->translator->translate('//sonoff-connector.cmd.install.messages.remove.connector.error'));
 		} finally {
 			// Revert all changes when error occur
 			if ($this->getOrmConnection()->isTransactionActive()) {
@@ -586,7 +581,7 @@ class Install extends Console\Command\Command
 		$connector = $this->askWhichConnector($io);
 
 		if ($connector === null) {
-			$io->info($this->translator->translate('//shelly-connector.cmd.base.messages.noConnectors'));
+			$io->info($this->translator->translate('//sonoff-connector.cmd.base.messages.noConnectors'));
 
 			return;
 		}
@@ -604,10 +599,10 @@ class Install extends Console\Command\Command
 	{
 		$findConnectorsQuery = new Queries\Entities\FindConnectors();
 
-		$connectors = $this->connectorsRepository->findAllBy($findConnectorsQuery, Entities\ShellyConnector::class);
+		$connectors = $this->connectorsRepository->findAllBy($findConnectorsQuery, Entities\SonoffConnector::class);
 		usort(
 			$connectors,
-			static function (Entities\ShellyConnector $a, Entities\ShellyConnector $b): int {
+			static function (Entities\SonoffConnector $a, Entities\SonoffConnector $b): int {
 				if ($a->getIdentifier() === $b->getIdentifier()) {
 					return $a->getName() <=> $b->getName();
 				}
@@ -619,22 +614,22 @@ class Install extends Console\Command\Command
 		$table = new Console\Helper\Table($io);
 		$table->setHeaders([
 			'#',
-			$this->translator->translate('//shelly-connector.cmd.install.data.name'),
-			$this->translator->translate('//shelly-connector.cmd.install.data.mode'),
-			$this->translator->translate('//shelly-connector.cmd.install.data.devicesCnt'),
+			$this->translator->translate('//sonoff-connector.cmd.install.data.name'),
+			$this->translator->translate('//sonoff-connector.cmd.install.data.mode'),
+			$this->translator->translate('//sonoff-connector.cmd.install.data.devicesCnt'),
 		]);
 
 		foreach ($connectors as $index => $connector) {
 			$findDevicesQuery = new Queries\Entities\FindDevices();
 			$findDevicesQuery->forConnector($connector);
 
-			$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\ShellyDevice::class);
+			$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\SonoffDevice::class);
 
 			$table->addRow([
 				$index + 1,
 				$connector->getName() ?? $connector->getIdentifier(),
 				$this->translator->translate(
-					'//shelly-connector.cmd.base.mode.' . $connector->getClientMode()->getValue(),
+					'//sonoff-connector.cmd.base.mode.' . $connector->getClientMode()->getValue(),
 				),
 				count($devices),
 			]);
@@ -650,12 +645,12 @@ class Install extends Console\Command\Command
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 */
-	private function editDevice(Style\SymfonyStyle $io, Entities\ShellyConnector $connector): void
+	private function editDevice(Style\SymfonyStyle $io, Entities\SonoffConnector $connector): void
 	{
 		$device = $this->askWhichDevice($io, $connector);
 
 		if ($device === null) {
-			$io->info($this->translator->translate('//shelly-connector.cmd.install.messages.noDevices'));
+			$io->info($this->translator->translate('//sonoff-connector.cmd.install.messages.noDevices'));
 
 			return;
 		}
@@ -669,7 +664,7 @@ class Install extends Console\Command\Command
 			$device = $this->devicesManager->update($device, Utils\ArrayHash::from([
 				'name' => $name,
 			]));
-			assert($device instanceof Entities\ShellyDevice);
+			assert($device instanceof Entities\SonoffDevice);
 
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
@@ -678,7 +673,7 @@ class Install extends Console\Command\Command
 
 			$io->success(
 				$this->translator->translate(
-					'//shelly-connector.cmd.install.messages.update.device.success',
+					'//sonoff-connector.cmd.install.messages.update.device.success',
 					['name' => $device->getName() ?? $device->getIdentifier()],
 				),
 			);
@@ -687,13 +682,13 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
 					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 
-			$io->error($this->translator->translate('//shelly-connector.cmd.install.messages.update.device.error'));
+			$io->error($this->translator->translate('//sonoff-connector.cmd.install.messages.update.device.error'));
 
 			return;
 		} finally {
@@ -709,25 +704,25 @@ class Install extends Console\Command\Command
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 */
-	private function deleteDevice(Style\SymfonyStyle $io, Entities\ShellyConnector $connector): void
+	private function deleteDevice(Style\SymfonyStyle $io, Entities\SonoffConnector $connector): void
 	{
 		$device = $this->askWhichDevice($io, $connector);
 
 		if ($device === null) {
-			$io->info($this->translator->translate('//shelly-connector.cmd.install.messages.noDevices'));
+			$io->info($this->translator->translate('//sonoff-connector.cmd.install.messages.noDevices'));
 
 			return;
 		}
 
 		$io->warning(
 			$this->translator->translate(
-				'//shelly-connector.cmd.install.messages.remove.device.confirm',
+				'//sonoff-connector.cmd.install.messages.remove.device.confirm',
 				['name' => $device->getName() ?? $device->getIdentifier()],
 			),
 		);
 
 		$question = new Console\Question\ConfirmationQuestion(
-			$this->translator->translate('//shelly-connector.cmd.base.questions.continue'),
+			$this->translator->translate('//sonoff-connector.cmd.base.questions.continue'),
 			false,
 		);
 
@@ -750,7 +745,7 @@ class Install extends Console\Command\Command
 
 			$io->success(
 				$this->translator->translate(
-					'//shelly-connector.cmd.install.messages.remove.device.success',
+					'//sonoff-connector.cmd.install.messages.remove.device.success',
 					['name' => $device->getName() ?? $device->getIdentifier()],
 				),
 			);
@@ -759,13 +754,13 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
 					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 
-			$io->error($this->translator->translate('//shelly-connector.cmd.install.messages.remove.device.error'));
+			$io->error($this->translator->translate('//sonoff-connector.cmd.install.messages.remove.device.error'));
 		} finally {
 			// Revert all changes when error occur
 			if ($this->getOrmConnection()->isTransactionActive()) {
@@ -776,19 +771,18 @@ class Install extends Console\Command\Command
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function listDevices(Style\SymfonyStyle $io, Entities\ShellyConnector $connector): void
+	private function listDevices(Style\SymfonyStyle $io, Entities\SonoffConnector $connector): void
 	{
 		$findDevicesQuery = new Queries\Entities\FindDevices();
 		$findDevicesQuery->forConnector($connector);
 
-		$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\ShellyDevice::class);
+		$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\SonoffDevice::class);
 		usort(
 			$devices,
-			static function (Entities\ShellyDevice $a, Entities\ShellyDevice $b): int {
+			static function (Entities\SonoffDevice $a, Entities\SonoffDevice $b): int {
 				if ($a->getIdentifier() === $b->getIdentifier()) {
 					return $a->getName() <=> $b->getName();
 				}
@@ -800,21 +794,17 @@ class Install extends Console\Command\Command
 		$table = new Console\Helper\Table($io);
 		$table->setHeaders([
 			'#',
-			$this->translator->translate('//shelly-connector.cmd.install.data.name'),
-			$this->translator->translate('//shelly-connector.cmd.install.data.generation'),
-			$this->translator->translate('//shelly-connector.cmd.install.data.model'),
-			$this->translator->translate('//shelly-connector.cmd.install.data.address'),
+			$this->translator->translate('//sonoff-connector.cmd.install.data.name'),
+			$this->translator->translate('//sonoff-connector.cmd.install.data.model'),
+			$this->translator->translate('//sonoff-connector.cmd.install.data.ipAddress'),
 		]);
 
 		foreach ($devices as $index => $device) {
 			$table->addRow([
 				$index + 1,
 				$device->getName() ?? $device->getIdentifier(),
-				$this->translator->translate(
-					'//shelly-connector.cmd.install.answers.generation.' . $device->getGeneration()->getValue(),
-				),
 				$device->getModel(),
-				$device->getLocalAddress(),
+				$device->getIpAddress() !== null ? ($device->getIpAddress() . ':' . $device->getPort()) : 'N/A',
 			]);
 		}
 
@@ -830,7 +820,7 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function discoverDevices(Style\SymfonyStyle $io, Entities\ShellyConnector $connector): void
+	private function discoverDevices(Style\SymfonyStyle $io, Entities\SonoffConnector $connector): void
 	{
 		if ($this->output === null) {
 			throw new Exceptions\InvalidState('Something went wrong, console output is not configured');
@@ -854,7 +844,7 @@ class Install extends Console\Command\Command
 		]), $this->output);
 
 		if ($result !== Console\Command\Command::SUCCESS) {
-			$io->error($this->translator->translate('//shelly-connector.cmd.install.messages.discover.error'));
+			$io->error($this->translator->translate('//sonoff-connector.cmd.install.messages.discover.error'));
 
 			return;
 		}
@@ -864,11 +854,10 @@ class Install extends Console\Command\Command
 		$table = new Console\Helper\Table($io);
 		$table->setHeaders([
 			'#',
-			$this->translator->translate('//shelly-connector.cmd.install.data.id'),
-			$this->translator->translate('//shelly-connector.cmd.install.data.name'),
-			$this->translator->translate('//shelly-connector.cmd.install.data.generation'),
-			$this->translator->translate('//shelly-connector.cmd.install.data.model'),
-			$this->translator->translate('//shelly-connector.cmd.install.data.address'),
+			$this->translator->translate('//sonoff-connector.cmd.install.data.id'),
+			$this->translator->translate('//sonoff-connector.cmd.install.data.name'),
+			$this->translator->translate('//sonoff-connector.cmd.install.data.model'),
+			$this->translator->translate('//sonoff-connector.cmd.install.data.ipAddress'),
 		]);
 
 		$foundDevices = 0;
@@ -876,7 +865,7 @@ class Install extends Console\Command\Command
 		$findDevicesQuery = new Queries\Entities\FindDevices();
 		$findDevicesQuery->byConnectorId($connector->getId());
 
-		$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\ShellyDevice::class);
+		$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\SonoffDevice::class);
 
 		foreach ($devices as $device) {
 			$createdAt = $device->getCreatedAt();
@@ -891,11 +880,8 @@ class Install extends Console\Command\Command
 					$foundDevices,
 					$device->getId()->toString(),
 					$device->getName() ?? $device->getIdentifier(),
-					$this->translator->translate(
-						'//shelly-connector.cmd.install.answers.generation.' . $device->getGeneration()->getValue(),
-					),
-					$device->getModel() ?? 'N/A',
-					$device->getLocalAddress() ?? 'N/A',
+					$device->getModel(),
+					$device->getIpAddress() ?? 'N/A',
 				]);
 			}
 		}
@@ -904,7 +890,7 @@ class Install extends Console\Command\Command
 			$io->newLine();
 
 			$io->info(sprintf(
-				$this->translator->translate('//shelly-connector.cmd.install.messages.foundDevices'),
+				$this->translator->translate('//sonoff-connector.cmd.install.messages.foundDevices'),
 				$foundDevices,
 			));
 
@@ -913,10 +899,10 @@ class Install extends Console\Command\Command
 			$io->newLine();
 
 		} else {
-			$io->info($this->translator->translate('//shelly-connector.cmd.install.messages.noDevicesFound'));
+			$io->info($this->translator->translate('//sonoff-connector.cmd.install.messages.noDevicesFound'));
 		}
 
-		$io->success($this->translator->translate('//shelly-connector.cmd.install.messages.discover.success'));
+		$io->success($this->translator->translate('//sonoff-connector.cmd.install.messages.discover.success'));
 	}
 
 	/**
@@ -932,27 +918,27 @@ class Install extends Console\Command\Command
 	private function askInstallAction(Style\SymfonyStyle $io): void
 	{
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//shelly-connector.cmd.base.questions.whatToDo'),
+			$this->translator->translate('//sonoff-connector.cmd.base.questions.whatToDo'),
 			[
-				0 => $this->translator->translate('//shelly-connector.cmd.install.actions.create.connector'),
-				1 => $this->translator->translate('//shelly-connector.cmd.install.actions.update.connector'),
-				2 => $this->translator->translate('//shelly-connector.cmd.install.actions.remove.connector'),
-				3 => $this->translator->translate('//shelly-connector.cmd.install.actions.manage.connector'),
-				4 => $this->translator->translate('//shelly-connector.cmd.install.actions.list.connectors'),
-				5 => $this->translator->translate('//shelly-connector.cmd.install.actions.nothing'),
+				0 => $this->translator->translate('//sonoff-connector.cmd.install.actions.create.connector'),
+				1 => $this->translator->translate('//sonoff-connector.cmd.install.actions.update.connector'),
+				2 => $this->translator->translate('//sonoff-connector.cmd.install.actions.remove.connector'),
+				3 => $this->translator->translate('//sonoff-connector.cmd.install.actions.manage.connector'),
+				4 => $this->translator->translate('//sonoff-connector.cmd.install.actions.list.connectors'),
+				5 => $this->translator->translate('//sonoff-connector.cmd.install.actions.nothing'),
 			],
 			5,
 		);
 
 		$question->setErrorMessage(
-			$this->translator->translate('//shelly-connector.cmd.base.messages.answerNotValid'),
+			$this->translator->translate('//sonoff-connector.cmd.base.messages.answerNotValid'),
 		);
 
 		$whatToDo = $io->askQuestion($question);
 
 		if (
 			$whatToDo === $this->translator->translate(
-				'//shelly-connector.cmd.install.actions.create.connector',
+				'//sonoff-connector.cmd.install.actions.create.connector',
 			)
 			|| $whatToDo === '0'
 		) {
@@ -962,7 +948,7 @@ class Install extends Console\Command\Command
 
 		} elseif (
 			$whatToDo === $this->translator->translate(
-				'//shelly-connector.cmd.install.actions.update.connector',
+				'//sonoff-connector.cmd.install.actions.update.connector',
 			)
 			|| $whatToDo === '1'
 		) {
@@ -972,7 +958,7 @@ class Install extends Console\Command\Command
 
 		} elseif (
 			$whatToDo === $this->translator->translate(
-				'//shelly-connector.cmd.install.actions.remove.connector',
+				'//sonoff-connector.cmd.install.actions.remove.connector',
 			)
 			|| $whatToDo === '2'
 		) {
@@ -982,7 +968,7 @@ class Install extends Console\Command\Command
 
 		} elseif (
 			$whatToDo === $this->translator->translate(
-				'//shelly-connector.cmd.install.actions.manage.connector',
+				'//sonoff-connector.cmd.install.actions.manage.connector',
 			)
 			|| $whatToDo === '3'
 		) {
@@ -992,7 +978,7 @@ class Install extends Console\Command\Command
 
 		} elseif (
 			$whatToDo === $this->translator->translate(
-				'//shelly-connector.cmd.install.actions.list.connectors',
+				'//sonoff-connector.cmd.install.actions.list.connectors',
 			)
 			|| $whatToDo === '4'
 		) {
@@ -1014,30 +1000,30 @@ class Install extends Console\Command\Command
 	 */
 	private function askManageConnectorAction(
 		Style\SymfonyStyle $io,
-		Entities\ShellyConnector $connector,
+		Entities\SonoffConnector $connector,
 	): void
 	{
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//shelly-connector.cmd.base.questions.whatToDo'),
+			$this->translator->translate('//sonoff-connector.cmd.base.questions.whatToDo'),
 			[
-				0 => $this->translator->translate('//shelly-connector.cmd.install.actions.update.device'),
-				1 => $this->translator->translate('//shelly-connector.cmd.install.actions.remove.device'),
-				2 => $this->translator->translate('//shelly-connector.cmd.install.actions.list.devices'),
-				3 => $this->translator->translate('//shelly-connector.cmd.install.actions.discover.devices'),
-				4 => $this->translator->translate('//shelly-connector.cmd.install.actions.nothing'),
+				0 => $this->translator->translate('//sonoff-connector.cmd.install.actions.update.device'),
+				1 => $this->translator->translate('//sonoff-connector.cmd.install.actions.remove.device'),
+				2 => $this->translator->translate('//sonoff-connector.cmd.install.actions.list.devices'),
+				3 => $this->translator->translate('//sonoff-connector.cmd.install.actions.discover.devices'),
+				4 => $this->translator->translate('//sonoff-connector.cmd.install.actions.nothing'),
 			],
 			4,
 		);
 
 		$question->setErrorMessage(
-			$this->translator->translate('//shelly-connector.cmd.base.messages.answerNotValid'),
+			$this->translator->translate('//sonoff-connector.cmd.base.messages.answerNotValid'),
 		);
 
 		$whatToDo = $io->askQuestion($question);
 
 		if (
 			$whatToDo === $this->translator->translate(
-				'//shelly-connector.cmd.install.actions.update.device',
+				'//sonoff-connector.cmd.install.actions.update.device',
 			)
 			|| $whatToDo === '0'
 		) {
@@ -1047,7 +1033,7 @@ class Install extends Console\Command\Command
 
 		} elseif (
 			$whatToDo === $this->translator->translate(
-				'//shelly-connector.cmd.install.actions.remove.device',
+				'//sonoff-connector.cmd.install.actions.remove.device',
 			)
 			|| $whatToDo === '1'
 		) {
@@ -1057,7 +1043,7 @@ class Install extends Console\Command\Command
 
 		} elseif (
 			$whatToDo === $this->translator->translate(
-				'//shelly-connector.cmd.install.actions.list.devices',
+				'//sonoff-connector.cmd.install.actions.list.devices',
 			)
 			|| $whatToDo === '2'
 		) {
@@ -1067,7 +1053,7 @@ class Install extends Console\Command\Command
 
 		} elseif (
 			$whatToDo === $this->translator->translate(
-				'//shelly-connector.cmd.install.actions.discover.devices',
+				'//sonoff-connector.cmd.install.actions.discover.devices',
 			)
 			|| $whatToDo === '3'
 		) {
@@ -1080,21 +1066,23 @@ class Install extends Console\Command\Command
 	private function askConnectorMode(Style\SymfonyStyle $io): Types\ClientMode
 	{
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//shelly-connector.cmd.install.questions.select.connector.mode'),
+			$this->translator->translate('//sonoff-connector.cmd.install.questions.select.connector.mode'),
 			[
-				0 => $this->translator->translate('//shelly-connector.cmd.install.answers.mode.local'),
+				0 => $this->translator->translate('//sonoff-connector.cmd.install.answers.mode.auto'),
+				1 => $this->translator->translate('//sonoff-connector.cmd.install.answers.mode.local'),
+				2 => $this->translator->translate('//sonoff-connector.cmd.install.answers.mode.cloud'),
 			],
 			0,
 		);
 
 		$question->setErrorMessage(
-			$this->translator->translate('//shelly-connector.cmd.base.messages.answerNotValid'),
+			$this->translator->translate('//sonoff-connector.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(function (string|null $answer): Types\ClientMode {
 			if ($answer === null) {
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate('//shelly-connector.cmd.base.messages.answerNotValid'),
+						$this->translator->translate('//sonoff-connector.cmd.base.messages.answerNotValid'),
 						$answer,
 					),
 				);
@@ -1102,24 +1090,33 @@ class Install extends Console\Command\Command
 
 			if (
 				$answer === $this->translator->translate(
-					'//shelly-connector.cmd.install.answers.mode.local',
+					'//sonoff-connector.cmd.install.answers.mode.auto',
 				)
 				|| $answer === '0'
 			) {
-				return Types\ClientMode::get(Types\ClientMode::LOCAL);
+				return Types\ClientMode::get(Types\ClientMode::AUTO);
 			}
 
 			if (
 				$answer === $this->translator->translate(
-					'//shelly-connector.cmd.install.answers.mode.cloud',
+					'//sonoff-connector.cmd.install.answers.mode.local',
 				)
 				|| $answer === '1'
+			) {
+				return Types\ClientMode::get(Types\ClientMode::LAN);
+			}
+
+			if (
+				$answer === $this->translator->translate(
+					'//sonoff-connector.cmd.install.answers.mode.cloud',
+				)
+				|| $answer === '2'
 			) {
 				return Types\ClientMode::get(Types\ClientMode::CLOUD);
 			}
 
 			throw new Exceptions\Runtime(
-				sprintf($this->translator->translate('//shelly-connector.cmd.base.messages.answerNotValid'), $answer),
+				sprintf($this->translator->translate('//sonoff-connector.cmd.base.messages.answerNotValid'), $answer),
 			);
 		});
 
@@ -1131,11 +1128,11 @@ class Install extends Console\Command\Command
 
 	private function askConnectorName(
 		Style\SymfonyStyle $io,
-		Entities\ShellyConnector|null $connector = null,
+		Entities\SonoffConnector|null $connector = null,
 	): string|null
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate('//shelly-connector.cmd.install.questions.provide.connector.name'),
+			$this->translator->translate('//sonoff-connector.cmd.install.questions.provide.connector.name'),
 			$connector?->getName(),
 		);
 
@@ -1148,22 +1145,20 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function askConnectorCloudAuthenticationKey(
+	private function askConnectorUsername(
 		Style\SymfonyStyle $io,
-		Entities\ShellyConnector|null $connector = null,
+		Entities\SonoffConnector|null $connector = null,
 	): string
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate(
-				'//shelly-connector.cmd.install.questions.provide.connector.cloudAuthenticationKey',
-			),
-			$connector?->getCloudAuthKey(),
+			$this->translator->translate('//sonoff-connector.cmd.install.questions.provide.connector.username'),
+			$connector?->getUsername(),
 		);
 		$question->setValidator(function (string|null $answer): string {
 			if ($answer === '' || $answer === null) {
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate('//shelly-connector.cmd.base.messages.answerNotValid'),
+						$this->translator->translate('//sonoff-connector.cmd.base.messages.answerNotValid'),
 						$answer,
 					),
 				);
@@ -1175,26 +1170,16 @@ class Install extends Console\Command\Command
 		return strval($io->askQuestion($question));
 	}
 
-	/**
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 */
-	private function askConnectorCloudServerAddress(
-		Style\SymfonyStyle $io,
-		Entities\ShellyConnector|null $connector = null,
-	): string
+	private function askConnectorPassword(Style\SymfonyStyle $io): string
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate(
-				'//shelly-connector.cmd.install.questions.provide.connector.cloudServerAddress',
-			),
-			$connector?->getCloudServerAddress(),
+			$this->translator->translate('//sonoff-connector.cmd.install.questions.provide.connector.password'),
 		);
 		$question->setValidator(function (string|null $answer): string {
 			if ($answer === '' || $answer === null) {
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate('//shelly-connector.cmd.base.messages.answerNotValid'),
+						$this->translator->translate('//sonoff-connector.cmd.base.messages.answerNotValid'),
 						$answer,
 					),
 				);
@@ -1206,10 +1191,81 @@ class Install extends Console\Command\Command
 		return strval($io->askQuestion($question));
 	}
 
-	private function askDeviceName(Style\SymfonyStyle $io, Entities\ShellyDevice|null $device = null): string|null
+	private function askConnectorCloudApiEndpoint(Style\SymfonyStyle $io): Types\CloudApiEndpoint
+	{
+		$question = new Console\Question\ChoiceQuestion(
+			$this->translator->translate('//sonoff-connector.cmd.install.questions.select.connector.dataCentre'),
+			[
+				0 => $this->translator->translate('//sonoff-connector.cmd.install.answers.dataCentre.europe'),
+				1 => $this->translator->translate('//sonoff-connector.cmd.install.answers.dataCentre.america'),
+				2 => $this->translator->translate('//sonoff-connector.cmd.install.answers.dataCentre.china'),
+				3 => $this->translator->translate('//sonoff-connector.cmd.install.answers.dataCentre.asia'),
+			],
+			0,
+		);
+		$question->setErrorMessage(
+			$this->translator->translate('//sonoff-connector.cmd.base.messages.answerNotValid'),
+		);
+		$question->setValidator(function (string|null $answer): Types\CloudApiEndpoint {
+			if ($answer === null) {
+				throw new Exceptions\Runtime(
+					sprintf(
+						$this->translator->translate('//sonoff-connector.cmd.base.messages.answerNotValid'),
+						$answer,
+					),
+				);
+			}
+
+			if (
+				$answer === $this->translator->translate(
+					'//sonoff-connector.cmd.install.answers.dataCentre.europe',
+				)
+				|| $answer === '0'
+			) {
+				return Types\CloudApiEndpoint::get(Types\CloudApiEndpoint::EUROPE);
+			}
+
+			if (
+				$answer === $this->translator->translate(
+					'//sonoff-connector.cmd.install.answers.dataCentre.america',
+				)
+				|| $answer === '1'
+			) {
+				return Types\CloudApiEndpoint::get(Types\CloudApiEndpoint::AMERICA);
+			}
+
+			if (
+				$answer === $this->translator->translate('//sonoff-connector.cmd.install.answers.dataCentre.china')
+				|| $answer === '2'
+			) {
+				return Types\CloudApiEndpoint::get(Types\CloudApiEndpoint::CHINA);
+			}
+
+			if (
+				$answer === $this->translator->translate('//sonoff-connector.cmd.install.answers.dataCentre.asia')
+				|| $answer === '3'
+			) {
+				return Types\CloudApiEndpoint::get(Types\CloudApiEndpoint::ASIA);
+			}
+
+			throw new Exceptions\Runtime(
+				sprintf(
+					$this->translator->translate('//sonoff-connector.cmd.base.messages.answerNotValid'),
+					$answer,
+				),
+			);
+		});
+
+		$answer = $io->askQuestion($question);
+		assert($answer instanceof Types\CloudApiEndpoint);
+
+		return $answer;
+	}
+
+	private function askDeviceName(Style\SymfonyStyle $io, Entities\SonoffDevice|null $device = null): string|null
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate('//shelly-connector.cmd.install.questions.provide.device.name'),
+			$this->translator->translate('//sonoff-connector.cmd.install.questions.provide.device.name'),
 			$device?->getName(),
 		);
 
@@ -1221,7 +1277,7 @@ class Install extends Console\Command\Command
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 */
-	private function askWhichConnector(Style\SymfonyStyle $io): Entities\ShellyConnector|null
+	private function askWhichConnector(Style\SymfonyStyle $io): Entities\SonoffConnector|null
 	{
 		$connectors = [];
 
@@ -1229,12 +1285,12 @@ class Install extends Console\Command\Command
 
 		$systemConnectors = $this->connectorsRepository->findAllBy(
 			$findConnectorsQuery,
-			Entities\ShellyConnector::class,
+			Entities\SonoffConnector::class,
 		);
 		usort(
 			$systemConnectors,
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-			static fn (Entities\ShellyConnector $a, Entities\ShellyConnector $b): int => $a->getIdentifier() <=> $b->getIdentifier()
+			static fn (Entities\SonoffConnector $a, Entities\SonoffConnector $b): int => $a->getIdentifier() <=> $b->getIdentifier()
 		);
 
 		foreach ($systemConnectors as $connector) {
@@ -1247,19 +1303,19 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//shelly-connector.cmd.install.questions.select.item.connector'),
+			$this->translator->translate('//sonoff-connector.cmd.install.questions.select.item.connector'),
 			array_values($connectors),
 			count($connectors) === 1 ? 0 : null,
 		);
 
 		$question->setErrorMessage(
-			$this->translator->translate('//shelly-connector.cmd.base.messages.answerNotValid'),
+			$this->translator->translate('//sonoff-connector.cmd.base.messages.answerNotValid'),
 		);
-		$question->setValidator(function (string|int|null $answer) use ($connectors): Entities\ShellyConnector {
+		$question->setValidator(function (string|int|null $answer) use ($connectors): Entities\SonoffConnector {
 			if ($answer === null) {
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate('//shelly-connector.cmd.base.messages.answerNotValid'),
+						$this->translator->translate('//sonoff-connector.cmd.base.messages.answerNotValid'),
 						$answer,
 					),
 				);
@@ -1277,7 +1333,7 @@ class Install extends Console\Command\Command
 
 				$connector = $this->connectorsRepository->findOneBy(
 					$findConnectorQuery,
-					Entities\ShellyConnector::class,
+					Entities\SonoffConnector::class,
 				);
 
 				if ($connector !== null) {
@@ -1287,14 +1343,14 @@ class Install extends Console\Command\Command
 
 			throw new Exceptions\Runtime(
 				sprintf(
-					$this->translator->translate('//shelly-connector.cmd.base.messages.answerNotValid'),
+					$this->translator->translate('//sonoff-connector.cmd.base.messages.answerNotValid'),
 					$answer,
 				),
 			);
 		});
 
 		$connector = $io->askQuestion($question);
-		assert($connector instanceof Entities\ShellyConnector);
+		assert($connector instanceof Entities\SonoffConnector);
 
 		return $connector;
 	}
@@ -1304,8 +1360,8 @@ class Install extends Console\Command\Command
 	 */
 	private function askWhichDevice(
 		Style\SymfonyStyle $io,
-		Entities\ShellyConnector $connector,
-	): Entities\ShellyDevice|null
+		Entities\SonoffConnector $connector,
+	): Entities\SonoffDevice|null
 	{
 		$devices = [];
 
@@ -1314,11 +1370,11 @@ class Install extends Console\Command\Command
 
 		$connectorDevices = $this->devicesRepository->findAllBy(
 			$findDevicesQuery,
-			Entities\ShellyDevice::class,
+			Entities\SonoffDevice::class,
 		);
 		usort(
 			$connectorDevices,
-			static fn (Entities\ShellyDevice $a, Entities\ShellyDevice $b): int => $a->getIdentifier() <=> $b->getIdentifier()
+			static fn (Entities\SonoffDevice $a, Entities\SonoffDevice $b): int => $a->getIdentifier() <=> $b->getIdentifier()
 		);
 
 		foreach ($connectorDevices as $device) {
@@ -1331,20 +1387,20 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//shelly-connector.cmd.install.questions.select.item.device'),
+			$this->translator->translate('//sonoff-connector.cmd.install.questions.select.item.device'),
 			array_values($devices),
 			count($devices) === 1 ? 0 : null,
 		);
 
 		$question->setErrorMessage(
-			$this->translator->translate('//shelly-connector.cmd.base.messages.answerNotValid'),
+			$this->translator->translate('//sonoff-connector.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(
-			function (string|int|null $answer) use ($connector, $devices): Entities\ShellyDevice {
+			function (string|int|null $answer) use ($connector, $devices): Entities\SonoffDevice {
 				if ($answer === null) {
 					throw new Exceptions\Runtime(
 						sprintf(
-							$this->translator->translate('//shelly-connector.cmd.base.messages.answerNotValid'),
+							$this->translator->translate('//sonoff-connector.cmd.base.messages.answerNotValid'),
 							$answer,
 						),
 					);
@@ -1363,7 +1419,7 @@ class Install extends Console\Command\Command
 
 					$device = $this->devicesRepository->findOneBy(
 						$findDeviceQuery,
-						Entities\ShellyDevice::class,
+						Entities\SonoffDevice::class,
 					);
 
 					if ($device !== null) {
@@ -1373,7 +1429,7 @@ class Install extends Console\Command\Command
 
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate('//shelly-connector.cmd.base.messages.answerNotValid'),
+						$this->translator->translate('//sonoff-connector.cmd.base.messages.answerNotValid'),
 						$answer,
 					),
 				);
@@ -1381,7 +1437,7 @@ class Install extends Console\Command\Command
 		);
 
 		$device = $io->askQuestion($question);
-		assert($device instanceof Entities\ShellyDevice);
+		assert($device instanceof Entities\SonoffDevice);
 
 		return $device;
 	}

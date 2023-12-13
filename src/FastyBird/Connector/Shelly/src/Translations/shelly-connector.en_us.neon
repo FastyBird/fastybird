@@ -24,6 +24,10 @@ cmd:
             noConnectors: "No Shelly connectors registered in system."
             answerNotValid: "Selected answer: \"%s\" is not valid."
 
+        mode:
+            local: "Local network"
+            cloud: "Cloud server"
+
     execute:
         title: "Shelly connector - service"
         subtitle: "This action will run connector service"
@@ -51,6 +55,7 @@ cmd:
         data:
             id: "ID"
             name: "Name"
+            generation: "Generation"
             model: "Model"
             address: "Address"
 
@@ -125,6 +130,7 @@ cmd:
         data:
             id: "ID"
             name: "Name"
+            mode: "Mode"
             generation: "Generation"
             address: "Address"
             model: "Model"
