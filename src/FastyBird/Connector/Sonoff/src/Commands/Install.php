@@ -74,6 +74,7 @@ class Install extends Console\Command\Command
 		private readonly DevicesModels\Entities\Devices\DevicesManager $devicesManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
+		private readonly BootstrapHelpers\Database $databaseHelper,
 		private readonly Localization\Translator $translator,
 		string|null $name = null,
 	)
@@ -244,6 +245,8 @@ class Install extends Console\Command\Command
 
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
+
+			$this->databaseHelper->clear();
 
 			$io->success(
 				$this->translator->translate(
@@ -463,6 +466,8 @@ class Install extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
+			$this->databaseHelper->clear();
+
 			$io->success(
 				$this->translator->translate(
 					'//sonoff-connector.cmd.install.messages.update.connector.success',
@@ -532,6 +537,8 @@ class Install extends Console\Command\Command
 
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
+
+			$this->databaseHelper->clear();
 
 			$io->success(
 				$this->translator->translate(
@@ -662,6 +669,8 @@ class Install extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
+			$this->databaseHelper->clear();
+
 			$io->success(
 				$this->translator->translate(
 					'//sonoff-connector.cmd.install.messages.update.device.success',
@@ -732,6 +741,8 @@ class Install extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
+			$this->databaseHelper->clear();
+
 			$io->success(
 				$this->translator->translate(
 					'//sonoff-connector.cmd.install.messages.remove.device.success',
@@ -792,7 +803,7 @@ class Install extends Console\Command\Command
 			$table->addRow([
 				$index + 1,
 				$device->getName() ?? $device->getIdentifier(),
-				$device->getIpAddress() . ':' . $device->getPort(),
+				$device->getIpAddress() !== null ? ($device->getIpAddress() . ':' . $device->getPort()) : 'N/A',
 				$device->getModel(),
 			]);
 		}
@@ -1121,7 +1132,7 @@ class Install extends Console\Command\Command
 	): string|null
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate('//sonoff-connector.cmd.install.questions.provide.name'),
+			$this->translator->translate('//sonoff-connector.cmd.install.questions.provide.connector.name'),
 			$connector?->getName(),
 		);
 
@@ -1140,7 +1151,7 @@ class Install extends Console\Command\Command
 	): string
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate('//sonoff-connector.cmd.install.questions.provide.username'),
+			$this->translator->translate('//sonoff-connector.cmd.install.questions.provide.connector.username'),
 			$connector?->getUsername(),
 		);
 		$question->setValidator(function (string|null $answer): string {
@@ -1162,7 +1173,7 @@ class Install extends Console\Command\Command
 	private function askConnectorPassword(Style\SymfonyStyle $io): string
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate('//sonoff-connector.cmd.install.questions.provide.password'),
+			$this->translator->translate('//sonoff-connector.cmd.install.questions.provide.connector.password'),
 		);
 		$question->setValidator(function (string|null $answer): string {
 			if ($answer === '' || $answer === null) {
@@ -1183,7 +1194,7 @@ class Install extends Console\Command\Command
 	private function askConnectorCloudApiEndpoint(Style\SymfonyStyle $io): Types\CloudApiEndpoint
 	{
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//sonoff-connector.cmd.install.questions.select.dataCentre'),
+			$this->translator->translate('//sonoff-connector.cmd.install.questions.select.connector.dataCentre'),
 			[
 				0 => $this->translator->translate('//sonoff-connector.cmd.install.answers.dataCentre.europe'),
 				1 => $this->translator->translate('//sonoff-connector.cmd.install.answers.dataCentre.america'),

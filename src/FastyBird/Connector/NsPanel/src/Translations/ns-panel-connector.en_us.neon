@@ -27,7 +27,7 @@ cmd:
         mode:
             gateway: "NS Panel gateway"
             device: "NS Panel devices"
-            both: "Both modes"
+            both: "Combined"
 
         deviceType:
             unknown: "Unknown"

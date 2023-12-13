@@ -112,6 +112,7 @@ class Install extends Console\Command\Command
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
+		private readonly BootstrapHelpers\Database $databaseHelper,
 		private readonly Localization\Translator $translator,
 		string|null $name = null,
 	)
@@ -250,6 +251,8 @@ class Install extends Console\Command\Command
 
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
+
+			$this->databaseHelper->clear();
 
 			$io->success(
 				$this->translator->translate(
@@ -403,6 +406,8 @@ class Install extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
+			$this->databaseHelper->clear();
+
 			$io->success(
 				$this->translator->translate(
 					'//ns-panel-connector.cmd.install.messages.update.connector.success',
@@ -487,6 +492,8 @@ class Install extends Console\Command\Command
 
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
+
+			$this->databaseHelper->clear();
 
 			$io->success(
 				$this->translator->translate(
@@ -759,6 +766,8 @@ class Install extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
+			$this->databaseHelper->clear();
+
 			$io->success(
 				$this->translator->translate(
 					'//ns-panel-connector.cmd.install.messages.create.gateway.success',
@@ -1022,6 +1031,8 @@ class Install extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
+			$this->databaseHelper->clear();
+
 			$io->success(
 				$this->translator->translate(
 					'//ns-panel-connector.cmd.install.messages.update.gateway.success',
@@ -1107,6 +1118,8 @@ class Install extends Console\Command\Command
 
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
+
+			$this->databaseHelper->clear();
 
 			$io->success(
 				$this->translator->translate(
@@ -1406,6 +1419,8 @@ class Install extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
+			$this->databaseHelper->clear();
+
 			$io->success(
 				$this->translator->translate(
 					'//ns-panel-connector.cmd.install.messages.create.device.success',
@@ -1486,6 +1501,8 @@ class Install extends Console\Command\Command
 
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
+
+			$this->databaseHelper->clear();
 
 			$io->success(
 				$this->translator->translate(
@@ -1598,6 +1615,8 @@ class Install extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
+			$this->databaseHelper->clear();
+
 			$io->success(
 				$this->translator->translate(
 					'//ns-panel-connector.cmd.install.messages.remove.device.success',
@@ -1706,11 +1725,15 @@ class Install extends Console\Command\Command
 			$table->addRow([
 				$index + 1,
 				$device->getName() ?? $device->getIdentifier(),
-				$device->getDisplayCategory()->getValue(),
+				$this->translator->translate(
+					'//ns-panel-connector.cmd.base.deviceType.' . $device->getDisplayCategory()->getValue(),
+				),
 				implode(
 					', ',
 					array_map(
-						static fn (Entities\NsPanelChannel $channel): string => $channel->getCapability()->getValue(),
+						fn (Entities\NsPanelChannel $channel): string => $this->translator->translate(
+							'//ns-panel-connector.cmd.base.capability.' . $channel->getCapability()->getValue(),
+						),
 						$this->channelsRepository->findAllBy($findChannelsQuery, Entities\NsPanelChannel::class),
 					),
 				),
@@ -1818,6 +1841,8 @@ class Install extends Console\Command\Command
 
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
+
+			$this->databaseHelper->clear();
 
 			$io->success(
 				$this->translator->translate(
@@ -1940,6 +1965,8 @@ class Install extends Console\Command\Command
 				// Commit all changes into database
 				$this->getOrmConnection()->commit();
 
+				$this->databaseHelper->clear();
+
 				$io->success(
 					$this->translator->translate(
 						'//ns-panel-connector.cmd.install.messages.update.capability.success',
@@ -2058,6 +2085,8 @@ class Install extends Console\Command\Command
 
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
+
+			$this->databaseHelper->clear();
 
 			$io->success(
 				$this->translator->translate(
@@ -2378,6 +2407,8 @@ class Install extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
+			$this->databaseHelper->clear();
+
 			$io->success(
 				$this->translator->translate(
 					'//ns-panel-connector.cmd.install.messages.update.protocol.success',
@@ -2454,6 +2485,8 @@ class Install extends Console\Command\Command
 
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
+
+			$this->databaseHelper->clear();
 
 			$io->success(
 				$this->translator->translate(

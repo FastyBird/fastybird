@@ -137,7 +137,7 @@ cmd:
             id: "ID"
             name: "Name"
             mode: "Mode"
-            type: "Type"
+            model: "Model"
             ipAddress: "IP Address"
             devicesCnt: "# Devices"
 
