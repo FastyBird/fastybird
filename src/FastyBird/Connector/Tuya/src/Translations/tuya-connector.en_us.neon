@@ -24,6 +24,10 @@ cmd:
             noConnectors: "No Tuya connectors registered in system."
             answerNotValid: "Selected answer: \"%s\" is not valid."
 
+        mode:
+            local: "Local nework"
+            cloud: "Cloud server"
+
     execute:
         title: "Tuya connector - service"
         subtitle: "This action will run connector service"
@@ -99,6 +103,8 @@ cmd:
                     accessId: "Provide cloud authentication Access ID"
                     accessSecret: "Provide cloud authentication Access Secret"
                     uid: "Provide cloud user identification"
+                device:
+                    name: "Provide device name"
             select:
                 item:
                     connector: "Please select connector to manage"
@@ -130,6 +136,9 @@ cmd:
 
         data:
             name: "Name"
+            mode: "Mode"
+            model: "Model"
+            ipAddress: "IP Address"
             devicesCnt: "# Devices"
 
         messages:
