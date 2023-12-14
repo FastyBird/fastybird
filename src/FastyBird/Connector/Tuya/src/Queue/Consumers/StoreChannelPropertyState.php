@@ -85,6 +85,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDeviceQuery->byConnectorId($entity->getConnector());
 		$findDeviceQuery->byIdentifier($entity->getIdentifier());
+		$findDeviceQuery->byType(Entities\TuyaDevice::TYPE);
 
 		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
@@ -182,8 +183,11 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
 				'type' => 'store-channel-property-state-message-consumer',
+				'connector' => [
+					'id' => $entity->getConnector()->toString(),
+				],
 				'device' => [
-					'id' => $device->getId()->toString(),
+					'identifier' => $entity->getIdentifier(),
 				],
 				'data' => $entity->toArray(),
 			],
@@ -238,6 +242,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDeviceQuery->byConnectorId($connector);
 		$findDeviceQuery->byIdentifier($deviceIdentifier);
+		$findDeviceQuery->byType(Entities\TuyaDevice::TYPE);
 
 		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 

@@ -124,6 +124,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 
 			$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
 			$findDeviceQuery->byId($channel->getDevice());
+			$findDeviceQuery->byType(Entities\TuyaDevice::TYPE);
 
 			$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 

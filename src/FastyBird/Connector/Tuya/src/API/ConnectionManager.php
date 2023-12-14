@@ -78,6 +78,7 @@ final class ConnectionManager
 		if (!array_key_exists($device->getId()->toString(), $this->localConnections)) {
 			$findChildrenDevicesQuery = new DevicesQueries\Configuration\FindDevices();
 			$findChildrenDevicesQuery->forParent($device);
+			$findChildrenDevicesQuery->byType(Entities\TuyaDevice::TYPE);
 
 			$children = $this->devicesConfigurationRepository->findAllBy($findChildrenDevicesQuery);
 

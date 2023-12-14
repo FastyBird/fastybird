@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Initialize.php
+ * Install.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,7 +10,7 @@
  * @subpackage     Commands
  * @since          1.0.0
  *
- * @date           04.08.22
+ * @date           13.12.23
  */
 
 namespace FastyBird\Connector\Tuya\Commands;
@@ -22,14 +22,16 @@ use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Queries;
 use FastyBird\Connector\Tuya\Types;
+use FastyBird\DateTimeFactory;
+use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Commands as DevicesCommands;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
-use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette\Localization;
 use Nette\Utils;
 use Symfony\Component\Console;
@@ -54,10 +56,14 @@ use function usort;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Initialize extends Console\Command\Command
+class Install extends Console\Command\Command
 {
 
-	public const NAME = 'fb:tuya-connector:initialize';
+	public const NAME = 'fb:tuya-connector:install';
+
+	private Input\InputInterface|null $input = null;
+
+	private Output\OutputInterface|null $output = null;
 
 	public function __construct(
 		private readonly Tuya\Logger $logger,
@@ -66,7 +72,10 @@ class Initialize extends Console\Command\Command
 		private readonly DevicesModels\Entities\Connectors\Properties\PropertiesRepository $propertiesRepository,
 		private readonly DevicesModels\Entities\Connectors\Properties\PropertiesManager $propertiesManager,
 		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Entities\Devices\DevicesManager $devicesManager,
+		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
+		private readonly BootstrapHelpers\Database $databaseHelper,
 		private readonly Localization\Translator $translator,
 		string|null $name = null,
 	)
@@ -81,39 +90,32 @@ class Initialize extends Console\Command\Command
 	{
 		$this
 			->setName(self::NAME)
-			->setDescription('Tuya connector initialization');
+			->setDescription('Tuya connector installer');
 	}
 
 	/**
-	 * @throws Console\Exception\InvalidArgumentException
+	 * @throws BootstrapExceptions\InvalidState
+	 * @throws Console\Exception\ExceptionInterface
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	protected function execute(Input\InputInterface $input, Output\OutputInterface $output): int
 	{
-		$io = new Style\SymfonyStyle($input, $output);
+		$this->input = $input;
+		$this->output = $output;
 
-		$io->title($this->translator->translate('//tuya-connector.cmd.initialize.title'));
+		$io = new Style\SymfonyStyle($this->input, $this->output);
 
-		$io->note($this->translator->translate('//tuya-connector.cmd.initialize.subtitle'));
+		$io->title($this->translator->translate('//tuya-connector.cmd.install.title'));
 
-		if ($input->getOption('no-interaction') === false) {
-			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//tuya-connector.cmd.base.questions.continue'),
-				false,
-			);
+		$io->note($this->translator->translate('//tuya-connector.cmd.install.subtitle'));
 
-			$continue = (bool) $io->askQuestion($question);
-
-			if (!$continue) {
-				return Console\Command\Command::SUCCESS;
-			}
-		}
-
-		$this->askInitializeAction($io);
+		$this->askInstallAction($io);
 
 		return Console\Command\Command::SUCCESS;
 	}
@@ -125,12 +127,12 @@ class Initialize extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function createConfiguration(Style\SymfonyStyle $io): void
+	private function createConnector(Style\SymfonyStyle $io): void
 	{
-		$mode = $this->askMode($io);
+		$mode = $this->askConnectorMode($io);
 
 		$question = new Console\Question\Question(
-			$this->translator->translate('//tuya-connector.cmd.initialize.questions.provide.identifier'),
+			$this->translator->translate('//tuya-connector.cmd.install.questions.provide.connector.identifier'),
 		);
 
 		$question->setValidator(function ($answer) {
@@ -138,12 +140,14 @@ class Initialize extends Console\Command\Command
 				$findConnectorQuery = new Queries\Entities\FindConnectors();
 				$findConnectorQuery->byIdentifier($answer);
 
-				if ($this->connectorsRepository->findOneBy(
+				$connector = $this->connectorsRepository->findOneBy(
 					$findConnectorQuery,
 					Entities\TuyaConnector::class,
-				) !== null) {
+				);
+
+				if ($connector !== null) {
 					throw new Exceptions\Runtime(
-						$this->translator->translate('//tuya-connector.cmd.initialize.messages.identifier.used'),
+						$this->translator->translate('//tuya-connector.cmd.install.messages.identifier.connector.used'),
 					);
 				}
 			}
@@ -162,33 +166,37 @@ class Initialize extends Console\Command\Command
 				$findConnectorQuery = new Queries\Entities\FindConnectors();
 				$findConnectorQuery->byIdentifier($identifier);
 
-				if ($this->connectorsRepository->findOneBy(
+				$connector = $this->connectorsRepository->findOneBy(
 					$findConnectorQuery,
 					Entities\TuyaConnector::class,
-				) === null) {
+				);
+
+				if ($connector === null) {
 					break;
 				}
 			}
 		}
 
 		if ($identifier === '') {
-			$io->error($this->translator->translate('//tuya-connector.cmd.initialize.messages.identifier.missing'));
+			$io->error(
+				$this->translator->translate('//tuya-connector.cmd.install.messages.identifier.connector.missing'),
+			);
 
 			return;
 		}
 
-		$name = $this->askName($io);
+		$name = $this->askConnectorName($io);
 
-		$accessId = $this->askAccessId($io);
+		$accessId = $this->askConnectorAccessId($io);
 
-		$accessSecret = $this->askAccessSecret($io);
+		$accessSecret = $this->askConnectorAccessSecret($io);
 
-		$dataCentre = $this->askOpenApiEndpoint($io);
+		$dataCentre = $this->askConnectorOpenApiEndpoint($io);
 
 		$uid = null;
 
 		if ($mode->equalsValue(Types\ClientMode::CLOUD)) {
-			$uid = $this->askUid($io);
+			$uid = $this->askConnectorUid($io);
 		}
 
 		try {
@@ -200,11 +208,11 @@ class Initialize extends Console\Command\Command
 				'identifier' => $identifier,
 				'name' => $name === '' ? null : $name,
 			]));
+			assert($connector instanceof Entities\TuyaConnector);
 
 			$this->propertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 				'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE,
-				'name' => DevicesUtilities\Name::createName(Types\ConnectorPropertyIdentifier::CLIENT_MODE),
 				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
 				'value' => $mode->getValue(),
 				'format' => [Types\ClientMode::LOCAL, Types\ClientMode::CLOUD],
@@ -214,7 +222,6 @@ class Initialize extends Console\Command\Command
 			$this->propertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 				'identifier' => Types\ConnectorPropertyIdentifier::ACCESS_ID,
-				'name' => DevicesUtilities\Name::createName(Types\ConnectorPropertyIdentifier::ACCESS_ID),
 				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 				'value' => $accessId,
 				'connector' => $connector,
@@ -223,7 +230,6 @@ class Initialize extends Console\Command\Command
 			$this->propertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 				'identifier' => Types\ConnectorPropertyIdentifier::ACCESS_SECRET,
-				'name' => DevicesUtilities\Name::createName(Types\ConnectorPropertyIdentifier::ACCESS_SECRET),
 				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 				'value' => $accessSecret,
 				'connector' => $connector,
@@ -232,7 +238,6 @@ class Initialize extends Console\Command\Command
 			$this->propertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 				'identifier' => Types\ConnectorPropertyIdentifier::OPENAPI_ENDPOINT,
-				'name' => DevicesUtilities\Name::createName(Types\ConnectorPropertyIdentifier::OPENAPI_ENDPOINT),
 				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
 				'value' => $dataCentre->getValue(),
 				'format' => [
@@ -250,7 +255,6 @@ class Initialize extends Console\Command\Command
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::UID,
-					'name' => DevicesUtilities\Name::createName(Types\ConnectorPropertyIdentifier::UID),
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 					'value' => $uid,
 					'connector' => $connector,
@@ -260,9 +264,11 @@ class Initialize extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
+			$this->databaseHelper->clear();
+
 			$io->success(
 				$this->translator->translate(
-					'//tuya-connector.cmd.initialize.messages.create.success',
+					'//tuya-connector.cmd.install.messages.create.connector.success',
 					['name' => $connector->getName() ?? $connector->getIdentifier()],
 				),
 			);
@@ -272,12 +278,14 @@ class Initialize extends Console\Command\Command
 				'An unhandled error occurred',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-					'type' => 'initialize-cmd',
+					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 
-			$io->error($this->translator->translate('//tuya-connector.cmd.initialize.messages.create.error'));
+			$io->error($this->translator->translate('//tuya-connector.cmd.install.messages.create.connector.error'));
+
+			return;
 		} finally {
 			// Revert all changes when error occur
 			if ($this->getOrmConnection()->isTransactionActive()) {
@@ -293,7 +301,7 @@ class Initialize extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function editConfiguration(Style\SymfonyStyle $io): void
+	private function editConnector(Style\SymfonyStyle $io): void
 	{
 		$connector = $this->askWhichConnector($io);
 
@@ -301,14 +309,14 @@ class Initialize extends Console\Command\Command
 			$io->warning($this->translator->translate('//tuya-connector.cmd.base.messages.noConnectors'));
 
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//tuya-connector.cmd.initialize.questions.create'),
+				$this->translator->translate('//tuya-connector.cmd.install.questions.create.connector'),
 				false,
 			);
 
 			$continue = (bool) $io->askQuestion($question);
 
 			if ($continue) {
-				$this->createConfiguration($io);
+				$this->createConnector($io);
 			}
 
 			return;
@@ -325,7 +333,7 @@ class Initialize extends Console\Command\Command
 
 		} else {
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//tuya-connector.cmd.initialize.questions.changeMode'),
+				$this->translator->translate('//tuya-connector.cmd.install.questions.changeMode'),
 				false,
 			);
 
@@ -335,16 +343,16 @@ class Initialize extends Console\Command\Command
 		$mode = null;
 
 		if ($changeMode) {
-			$mode = $this->askMode($io);
+			$mode = $this->askConnectorMode($io);
 		}
 
-		$name = $this->askName($io, $connector);
+		$name = $this->askConnectorName($io, $connector);
 
 		$enabled = $connector->isEnabled();
 
 		if ($connector->isEnabled()) {
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//tuya-connector.cmd.initialize.questions.disable'),
+				$this->translator->translate('//tuya-connector.cmd.install.questions.disable.connector'),
 				false,
 			);
 
@@ -353,7 +361,7 @@ class Initialize extends Console\Command\Command
 			}
 		} else {
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//tuya-connector.cmd.initialize.questions.enable'),
+				$this->translator->translate('//tuya-connector.cmd.install.questions.enable.connector'),
 				false,
 			);
 
@@ -375,7 +383,7 @@ class Initialize extends Console\Command\Command
 
 		} else {
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//tuya-connector.cmd.initialize.questions.changeAccessId'),
+				$this->translator->translate('//tuya-connector.cmd.install.questions.changeAccessId'),
 				false,
 			);
 
@@ -383,7 +391,7 @@ class Initialize extends Console\Command\Command
 		}
 
 		if ($changeAccessId) {
-			$accessId = $this->askAccessId($io);
+			$accessId = $this->askConnectorAccessId($io, $connector);
 		}
 
 		$findConnectorPropertyQuery = new DevicesQueries\Entities\FindConnectorProperties();
@@ -397,7 +405,7 @@ class Initialize extends Console\Command\Command
 
 		} else {
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//tuya-connector.cmd.initialize.questions.changeAccessSecret'),
+				$this->translator->translate('//tuya-connector.cmd.install.questions.changeAccessSecret'),
 				false,
 			);
 
@@ -405,7 +413,7 @@ class Initialize extends Console\Command\Command
 		}
 
 		if ($changeAccessSecret) {
-			$accessSecret = $this->askAccessSecret($io);
+			$accessSecret = $this->askConnectorAccessSecret($io, $connector);
 		}
 
 		$uid = null;
@@ -431,7 +439,7 @@ class Initialize extends Console\Command\Command
 
 			} else {
 				$question = new Console\Question\ConfirmationQuestion(
-					$this->translator->translate('//tuya-connector.cmd.initialize.questions.changeUser'),
+					$this->translator->translate('//tuya-connector.cmd.install.questions.changeUser'),
 					false,
 				);
 
@@ -439,7 +447,7 @@ class Initialize extends Console\Command\Command
 			}
 
 			if ($changeUid) {
-				$uid = $this->askUid($io);
+				$uid = $this->askConnectorUid($io, $connector);
 			}
 		}
 
@@ -451,16 +459,16 @@ class Initialize extends Console\Command\Command
 				'name' => $name === '' ? null : $name,
 				'enabled' => $enabled,
 			]));
+			assert($connector instanceof Entities\TuyaConnector);
 
 			if ($modeProperty === null) {
 				if ($mode === null) {
-					$mode = $this->askMode($io);
+					$mode = $this->askConnectorMode($io);
 				}
 
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE,
-					'name' => DevicesUtilities\Name::createName(Types\ConnectorPropertyIdentifier::CLIENT_MODE),
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
 					'value' => $mode->getValue(),
 					'format' => [Types\ClientMode::LOCAL, Types\ClientMode::CLOUD],
@@ -474,13 +482,12 @@ class Initialize extends Console\Command\Command
 
 			if ($accessIdProperty === null) {
 				if ($accessId === null) {
-					$accessId = $this->askAccessId($io);
+					$accessId = $this->askConnectorAccessId($io, $connector);
 				}
 
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::ACCESS_ID,
-					'name' => DevicesUtilities\Name::createName(Types\ConnectorPropertyIdentifier::ACCESS_ID),
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 					'value' => $accessId,
 					'connector' => $connector,
@@ -493,13 +500,12 @@ class Initialize extends Console\Command\Command
 
 			if ($accessSecretProperty === null) {
 				if ($accessSecret === null) {
-					$accessSecret = $this->askAccessSecret($io);
+					$accessSecret = $this->askConnectorAccessSecret($io, $connector);
 				}
 
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::ACCESS_SECRET,
-					'name' => DevicesUtilities\Name::createName(Types\ConnectorPropertyIdentifier::ACCESS_SECRET),
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 					'value' => $accessSecret,
 					'connector' => $connector,
@@ -521,13 +527,12 @@ class Initialize extends Console\Command\Command
 			) {
 				if ($uidProperty === null) {
 					if ($uid === null) {
-						$uid = $this->askUid($io);
+						$uid = $this->askConnectorUid($io, $connector);
 					}
 
 					$this->propertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 						'identifier' => Types\ConnectorPropertyIdentifier::UID,
-						'name' => DevicesUtilities\Name::createName(Types\ConnectorPropertyIdentifier::UID),
 						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 						'value' => $uid,
 						'connector' => $connector,
@@ -546,9 +551,11 @@ class Initialize extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
+			$this->databaseHelper->clear();
+
 			$io->success(
 				$this->translator->translate(
-					'//tuya-connector.cmd.initialize.messages.update.success',
+					'//tuya-connector.cmd.install.messages.update.connector.success',
 					['name' => $connector->getName() ?? $connector->getIdentifier()],
 				),
 			);
@@ -558,12 +565,14 @@ class Initialize extends Console\Command\Command
 				'An unhandled error occurred',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-					'type' => 'initialize-cmd',
+					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 
-			$io->error($this->translator->translate('//tuya-connector.cmd.initialize.messages.update.error'));
+			$io->error($this->translator->translate('//tuya-connector.cmd.install.messages.update.connector.error'));
+
+			return;
 		} finally {
 			// Revert all changes when error occur
 			if ($this->getOrmConnection()->isTransactionActive()) {
@@ -577,7 +586,7 @@ class Initialize extends Console\Command\Command
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 */
-	private function deleteConfiguration(Style\SymfonyStyle $io): void
+	private function deleteConnector(Style\SymfonyStyle $io): void
 	{
 		$connector = $this->askWhichConnector($io);
 
@@ -586,6 +595,13 @@ class Initialize extends Console\Command\Command
 
 			return;
 		}
+
+		$io->warning(
+			$this->translator->translate(
+				'//tuya-connector.cmd.install.messages.remove.connector.confirm',
+				['name' => $connector->getName() ?? $connector->getIdentifier()],
+			),
+		);
 
 		$question = new Console\Question\ConfirmationQuestion(
 			$this->translator->translate('//tuya-connector.cmd.base.questions.continue'),
@@ -607,9 +623,11 @@ class Initialize extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
+			$this->databaseHelper->clear();
+
 			$io->success(
 				$this->translator->translate(
-					'//tuya-connector.cmd.initialize.messages.remove.success',
+					'//tuya-connector.cmd.install.messages.remove.connector.success',
 					['name' => $connector->getName() ?? $connector->getIdentifier()],
 				),
 			);
@@ -619,12 +637,12 @@ class Initialize extends Console\Command\Command
 				'An unhandled error occurred',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-					'type' => 'initialize-cmd',
+					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 
-			$io->error($this->translator->translate('//tuya-connector.cmd.initialize.messages.remove.error'));
+			$io->error($this->translator->translate('//tuya-connector.cmd.install.messages.remove.connector.error'));
 		} finally {
 			// Revert all changes when error occur
 			if ($this->getOrmConnection()->isTransactionActive()) {
@@ -634,9 +652,36 @@ class Initialize extends Console\Command\Command
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidState
+	 * @throws Console\Exception\ExceptionInterface
+	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\Runtime
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function listConfigurations(Style\SymfonyStyle $io): void
+	private function manageConnector(Style\SymfonyStyle $io): void
+	{
+		$connector = $this->askWhichConnector($io);
+
+		if ($connector === null) {
+			$io->info($this->translator->translate('//tuya-connector.cmd.base.messages.noConnectors'));
+
+			return;
+		}
+
+		$this->askManageConnectorAction($io, $connector);
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	private function listConnectors(Style\SymfonyStyle $io): void
 	{
 		$findConnectorsQuery = new Queries\Entities\FindConnectors();
 
@@ -655,8 +700,9 @@ class Initialize extends Console\Command\Command
 		$table = new Console\Helper\Table($io);
 		$table->setHeaders([
 			'#',
-			$this->translator->translate('//tuya-connector.cmd.initialize.data.name'),
-			$this->translator->translate('//tuya-connector.cmd.initialize.data.devicesCnt'),
+			$this->translator->translate('//tuya-connector.cmd.install.data.name'),
+			$this->translator->translate('//tuya-connector.cmd.install.data.mode'),
+			$this->translator->translate('//tuya-connector.cmd.install.data.devicesCnt'),
 		]);
 
 		foreach ($connectors as $index => $connector) {
@@ -668,6 +714,9 @@ class Initialize extends Console\Command\Command
 			$table->addRow([
 				$index + 1,
 				$connector->getName() ?? $connector->getIdentifier(),
+				$this->translator->translate(
+					'//tuya-connector.cmd.base.mode.' . $connector->getClientMode()->getValue(),
+				),
 				count($devices),
 			]);
 		}
@@ -677,13 +726,441 @@ class Initialize extends Console\Command\Command
 		$io->newLine();
 	}
 
-	private function askMode(Style\SymfonyStyle $io): Types\ClientMode
+	/**
+	 * @throws DBAL\Exception
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\Runtime
+	 */
+	private function editDevice(Style\SymfonyStyle $io, Entities\TuyaConnector $connector): void
+	{
+		$device = $this->askWhichDevice($io, $connector);
+
+		if ($device === null) {
+			$io->info($this->translator->translate('//tuya-connector.cmd.install.messages.noDevices'));
+
+			return;
+		}
+
+		$name = $this->askDeviceName($io, $device);
+
+		try {
+			// Start transaction connection to the database
+			$this->getOrmConnection()->beginTransaction();
+
+			$device = $this->devicesManager->update($device, Utils\ArrayHash::from([
+				'name' => $name,
+			]));
+			assert($device instanceof Entities\TuyaDevice);
+
+			// Commit all changes into database
+			$this->getOrmConnection()->commit();
+
+			$this->databaseHelper->clear();
+
+			$io->success(
+				$this->translator->translate(
+					'//tuya-connector.cmd.install.messages.update.device.success',
+					['name' => $device->getName() ?? $device->getIdentifier()],
+				),
+			);
+		} catch (Throwable $ex) {
+			// Log caught exception
+			$this->logger->error(
+				'An unhandled error occurred',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+					'type' => 'install-cmd',
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
+				],
+			);
+
+			$io->error($this->translator->translate('//tuya-connector.cmd.install.messages.update.device.error'));
+
+			return;
+		} finally {
+			// Revert all changes when error occur
+			if ($this->getOrmConnection()->isTransactionActive()) {
+				$this->getOrmConnection()->rollBack();
+			}
+		}
+	}
+
+	/**
+	 * @throws DBAL\Exception
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\Runtime
+	 */
+	private function deleteDevice(Style\SymfonyStyle $io, Entities\TuyaConnector $connector): void
+	{
+		$device = $this->askWhichDevice($io, $connector);
+
+		if ($device === null) {
+			$io->info($this->translator->translate('//tuya-connector.cmd.install.messages.noDevices'));
+
+			return;
+		}
+
+		$io->warning(
+			$this->translator->translate(
+				'//tuya-connector.cmd.install.messages.remove.device.confirm',
+				['name' => $device->getName() ?? $device->getIdentifier()],
+			),
+		);
+
+		$question = new Console\Question\ConfirmationQuestion(
+			$this->translator->translate('//tuya-connector.cmd.base.questions.continue'),
+			false,
+		);
+
+		$continue = (bool) $io->askQuestion($question);
+
+		if (!$continue) {
+			return;
+		}
+
+		try {
+			// Start transaction connection to the database
+			$this->getOrmConnection()->beginTransaction();
+
+			$this->devicesManager->delete($device);
+
+			// Commit all changes into database
+			$this->getOrmConnection()->commit();
+
+			$this->databaseHelper->clear();
+
+			$io->success(
+				$this->translator->translate(
+					'//tuya-connector.cmd.install.messages.remove.device.success',
+					['name' => $device->getName() ?? $device->getIdentifier()],
+				),
+			);
+		} catch (Throwable $ex) {
+			// Log caught exception
+			$this->logger->error(
+				'An unhandled error occurred',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+					'type' => 'install-cmd',
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
+				],
+			);
+
+			$io->error($this->translator->translate('//tuya-connector.cmd.install.messages.remove.device.error'));
+		} finally {
+			// Revert all changes when error occur
+			if ($this->getOrmConnection()->isTransactionActive()) {
+				$this->getOrmConnection()->rollBack();
+			}
+		}
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	private function listDevices(Style\SymfonyStyle $io, Entities\TuyaConnector $connector): void
+	{
+		$findDevicesQuery = new Queries\Entities\FindDevices();
+		$findDevicesQuery->forConnector($connector);
+
+		$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\TuyaDevice::class);
+		usort(
+			$devices,
+			static function (Entities\TuyaDevice $a, Entities\TuyaDevice $b): int {
+				if ($a->getIdentifier() === $b->getIdentifier()) {
+					return $a->getName() <=> $b->getName();
+				}
+
+				return $a->getIdentifier() <=> $b->getIdentifier();
+			},
+		);
+
+		$table = new Console\Helper\Table($io);
+		$table->setHeaders([
+			'#',
+			$this->translator->translate('//tuya-connector.cmd.install.data.name'),
+			$this->translator->translate('//tuya-connector.cmd.install.data.model'),
+			$this->translator->translate('//tuya-connector.cmd.install.data.ipAddress'),
+		]);
+
+		foreach ($devices as $index => $device) {
+			$table->addRow([
+				$index + 1,
+				$device->getName() ?? $device->getIdentifier(),
+				$device->getModel(),
+				$device->getIpAddress() ?? 'N/A',
+			]);
+		}
+
+		$table->render();
+
+		$io->newLine();
+	}
+
+	/**
+	 * @throws BootstrapExceptions\InvalidState
+	 * @throws Console\Exception\ExceptionInterface
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	private function discoverDevices(Style\SymfonyStyle $io, Entities\TuyaConnector $connector): void
+	{
+		if ($this->output === null) {
+			throw new Exceptions\InvalidState('Something went wrong, console output is not configured');
+		}
+
+		$executedTime = $this->dateTimeFactory->getNow();
+
+		$symfonyApp = $this->getApplication();
+
+		if ($symfonyApp === null) {
+			throw new Exceptions\InvalidState('Something went wrong, console app is not configured');
+		}
+
+		$serviceCmd = $symfonyApp->find(DevicesCommands\Connector::NAME);
+
+		$result = $serviceCmd->run(new Input\ArrayInput([
+			'--connector' => $connector->getId()->toString(),
+			'--mode' => DevicesCommands\Connector::MODE_DISCOVER,
+			'--no-interaction' => true,
+			'--quiet' => true,
+		]), $this->output);
+
+		$this->databaseHelper->clear();
+
+		if ($result !== Console\Command\Command::SUCCESS) {
+			$io->error($this->translator->translate('//tuya-connector.cmd.install.messages.discover.error'));
+
+			return;
+		}
+
+		$io->newLine();
+
+		$table = new Console\Helper\Table($io);
+		$table->setHeaders([
+			'#',
+			$this->translator->translate('//tuya-connector.cmd.install.data.id'),
+			$this->translator->translate('//tuya-connector.cmd.install.data.name'),
+			$this->translator->translate('//tuya-connector.cmd.install.data.model'),
+			$this->translator->translate('//tuya-connector.cmd.install.data.ipAddress'),
+		]);
+
+		$foundDevices = 0;
+
+		$findDevicesQuery = new Queries\Entities\FindDevices();
+		$findDevicesQuery->byConnectorId($connector->getId());
+
+		$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\TuyaDevice::class);
+
+		foreach ($devices as $device) {
+			$createdAt = $device->getCreatedAt();
+
+			if (
+				$createdAt !== null
+				&& $createdAt->getTimestamp() > $executedTime->getTimestamp()
+			) {
+				$foundDevices++;
+
+				$table->addRow([
+					$foundDevices,
+					$device->getId()->toString(),
+					$device->getName() ?? $device->getIdentifier(),
+					$device->getModel(),
+					$device->getIpAddress() ?? 'N/A',
+				]);
+			}
+		}
+
+		if ($foundDevices > 0) {
+			$io->newLine();
+
+			$io->info(sprintf(
+				$this->translator->translate('//tuya-connector.cmd.install.messages.foundDevices'),
+				$foundDevices,
+			));
+
+			$table->render();
+
+			$io->newLine();
+
+		} else {
+			$io->info($this->translator->translate('//tuya-connector.cmd.install.messages.noDevicesFound'));
+		}
+
+		$io->success($this->translator->translate('//tuya-connector.cmd.install.messages.discover.success'));
+	}
+
+	/**
+	 * @throws BootstrapExceptions\InvalidState
+	 * @throws Console\Exception\ExceptionInterface
+	 * @throws DBAL\Exception
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\Runtime
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	private function askInstallAction(Style\SymfonyStyle $io): void
 	{
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//tuya-connector.cmd.initialize.questions.select.mode'),
+			$this->translator->translate('//tuya-connector.cmd.base.questions.whatToDo'),
 			[
-				0 => $this->translator->translate('//tuya-connector.cmd.initialize.answers.mode.local'),
-				1 => $this->translator->translate('//tuya-connector.cmd.initialize.answers.mode.cloud'),
+				0 => $this->translator->translate('//tuya-connector.cmd.install.actions.create.connector'),
+				1 => $this->translator->translate('//tuya-connector.cmd.install.actions.update.connector'),
+				2 => $this->translator->translate('//tuya-connector.cmd.install.actions.remove.connector'),
+				3 => $this->translator->translate('//tuya-connector.cmd.install.actions.manage.connector'),
+				4 => $this->translator->translate('//tuya-connector.cmd.install.actions.list.connectors'),
+				5 => $this->translator->translate('//tuya-connector.cmd.install.actions.nothing'),
+			],
+			5,
+		);
+
+		$question->setErrorMessage(
+			$this->translator->translate('//tuya-connector.cmd.base.messages.answerNotValid'),
+		);
+
+		$whatToDo = $io->askQuestion($question);
+
+		if (
+			$whatToDo === $this->translator->translate(
+				'//tuya-connector.cmd.install.actions.create.connector',
+			)
+			|| $whatToDo === '0'
+		) {
+			$this->createConnector($io);
+
+			$this->askInstallAction($io);
+
+		} elseif (
+			$whatToDo === $this->translator->translate(
+				'//tuya-connector.cmd.install.actions.update.connector',
+			)
+			|| $whatToDo === '1'
+		) {
+			$this->editConnector($io);
+
+			$this->askInstallAction($io);
+
+		} elseif (
+			$whatToDo === $this->translator->translate(
+				'//tuya-connector.cmd.install.actions.remove.connector',
+			)
+			|| $whatToDo === '2'
+		) {
+			$this->deleteConnector($io);
+
+			$this->askInstallAction($io);
+
+		} elseif (
+			$whatToDo === $this->translator->translate(
+				'//tuya-connector.cmd.install.actions.manage.connector',
+			)
+			|| $whatToDo === '3'
+		) {
+			$this->manageConnector($io);
+
+			$this->askInstallAction($io);
+
+		} elseif (
+			$whatToDo === $this->translator->translate(
+				'//tuya-connector.cmd.install.actions.list.connectors',
+			)
+			|| $whatToDo === '4'
+		) {
+			$this->listConnectors($io);
+
+			$this->askInstallAction($io);
+		}
+	}
+
+	/**
+	 * @throws BootstrapExceptions\InvalidState
+	 * @throws Console\Exception\ExceptionInterface
+	 * @throws DBAL\Exception
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\Runtime
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	private function askManageConnectorAction(
+		Style\SymfonyStyle $io,
+		Entities\TuyaConnector $connector,
+	): void
+	{
+		$question = new Console\Question\ChoiceQuestion(
+			$this->translator->translate('//tuya-connector.cmd.base.questions.whatToDo'),
+			[
+				0 => $this->translator->translate('//tuya-connector.cmd.install.actions.update.device'),
+				1 => $this->translator->translate('//tuya-connector.cmd.install.actions.remove.device'),
+				2 => $this->translator->translate('//tuya-connector.cmd.install.actions.list.devices'),
+				3 => $this->translator->translate('//tuya-connector.cmd.install.actions.discover.devices'),
+				4 => $this->translator->translate('//tuya-connector.cmd.install.actions.nothing'),
+			],
+			4,
+		);
+
+		$question->setErrorMessage(
+			$this->translator->translate('//tuya-connector.cmd.base.messages.answerNotValid'),
+		);
+
+		$whatToDo = $io->askQuestion($question);
+
+		if (
+			$whatToDo === $this->translator->translate(
+				'//tuya-connector.cmd.install.actions.update.device',
+			)
+			|| $whatToDo === '0'
+		) {
+			$this->editDevice($io, $connector);
+
+			$this->askManageConnectorAction($io, $connector);
+
+		} elseif (
+			$whatToDo === $this->translator->translate(
+				'//tuya-connector.cmd.install.actions.remove.device',
+			)
+			|| $whatToDo === '1'
+		) {
+			$this->deleteDevice($io, $connector);
+
+			$this->askManageConnectorAction($io, $connector);
+
+		} elseif (
+			$whatToDo === $this->translator->translate(
+				'//tuya-connector.cmd.install.actions.list.devices',
+			)
+			|| $whatToDo === '2'
+		) {
+			$this->listDevices($io, $connector);
+
+			$this->askManageConnectorAction($io, $connector);
+
+		} elseif (
+			$whatToDo === $this->translator->translate(
+				'//tuya-connector.cmd.install.actions.discover.devices',
+			)
+			|| $whatToDo === '3'
+		) {
+			$this->discoverDevices($io, $connector);
+
+			$this->askManageConnectorAction($io, $connector);
+		}
+	}
+
+	private function askConnectorMode(Style\SymfonyStyle $io): Types\ClientMode
+	{
+		$question = new Console\Question\ChoiceQuestion(
+			$this->translator->translate('//tuya-connector.cmd.install.questions.select.connector.mode'),
+			[
+				0 => $this->translator->translate('//tuya-connector.cmd.install.answers.mode.local'),
+				1 => $this->translator->translate('//tuya-connector.cmd.install.answers.mode.cloud'),
 			],
 			1,
 		);
@@ -703,7 +1180,7 @@ class Initialize extends Console\Command\Command
 
 			if (
 				$answer === $this->translator->translate(
-					'//tuya-connector.cmd.initialize.answers.mode.local',
+					'//tuya-connector.cmd.install.answers.mode.local',
 				)
 				|| $answer === '0'
 			) {
@@ -712,7 +1189,7 @@ class Initialize extends Console\Command\Command
 
 			if (
 				$answer === $this->translator->translate(
-					'//tuya-connector.cmd.initialize.answers.mode.cloud',
+					'//tuya-connector.cmd.install.answers.mode.cloud',
 				)
 				|| $answer === '1'
 			) {
@@ -730,10 +1207,13 @@ class Initialize extends Console\Command\Command
 		return $answer;
 	}
 
-	private function askName(Style\SymfonyStyle $io, Entities\TuyaConnector|null $connector = null): string|null
+	private function askConnectorName(
+		Style\SymfonyStyle $io,
+		Entities\TuyaConnector|null $connector = null,
+	): string|null
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate('//tuya-connector.cmd.initialize.questions.provide.name'),
+			$this->translator->translate('//tuya-connector.cmd.install.questions.provide.connector.name'),
 			$connector?->getName(),
 		);
 
@@ -746,10 +1226,10 @@ class Initialize extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function askAccessId(Style\SymfonyStyle $io, Entities\TuyaConnector|null $connector = null): string
+	private function askConnectorAccessId(Style\SymfonyStyle $io, Entities\TuyaConnector|null $connector = null): string
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate('//tuya-connector.cmd.initialize.questions.provide.accessId'),
+			$this->translator->translate('//tuya-connector.cmd.install.questions.provide.connector.accessId'),
 			$connector?->getAccessId(),
 		);
 		$question->setValidator(function (string|null $answer): string {
@@ -772,10 +1252,13 @@ class Initialize extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function askAccessSecret(Style\SymfonyStyle $io, Entities\TuyaConnector|null $connector = null): string
+	private function askConnectorAccessSecret(
+		Style\SymfonyStyle $io,
+		Entities\TuyaConnector|null $connector = null,
+	): string
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate('//tuya-connector.cmd.initialize.questions.provide.accessSecret'),
+			$this->translator->translate('//tuya-connector.cmd.install.questions.provide.connector.accessSecret'),
 			$connector?->getAccessSecret(),
 		);
 		$question->setValidator(function (string|null $answer): string {
@@ -794,17 +1277,17 @@ class Initialize extends Console\Command\Command
 		return strval($io->askQuestion($question));
 	}
 
-	private function askOpenApiEndpoint(Style\SymfonyStyle $io): Types\OpenApiEndpoint
+	private function askConnectorOpenApiEndpoint(Style\SymfonyStyle $io): Types\OpenApiEndpoint
 	{
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//tuya-connector.cmd.initialize.questions.select.dataCentre'),
+			$this->translator->translate('//tuya-connector.cmd.install.questions.select.connector.dataCentre'),
 			[
-				0 => $this->translator->translate('//tuya-connector.cmd.initialize.answers.dataCentre.centralEurope'),
-				1 => $this->translator->translate('//tuya-connector.cmd.initialize.answers.dataCentre.westernEurope'),
-				2 => $this->translator->translate('//tuya-connector.cmd.initialize.answers.dataCentre.westernAmerica'),
-				3 => $this->translator->translate('//tuya-connector.cmd.initialize.answers.dataCentre.easternAmerica'),
-				4 => $this->translator->translate('//tuya-connector.cmd.initialize.answers.dataCentre.china'),
-				5 => $this->translator->translate('//tuya-connector.cmd.initialize.answers.dataCentre.india'),
+				0 => $this->translator->translate('//tuya-connector.cmd.install.answers.dataCentre.centralEurope'),
+				1 => $this->translator->translate('//tuya-connector.cmd.install.answers.dataCentre.westernEurope'),
+				2 => $this->translator->translate('//tuya-connector.cmd.install.answers.dataCentre.westernAmerica'),
+				3 => $this->translator->translate('//tuya-connector.cmd.install.answers.dataCentre.easternAmerica'),
+				4 => $this->translator->translate('//tuya-connector.cmd.install.answers.dataCentre.china'),
+				5 => $this->translator->translate('//tuya-connector.cmd.install.answers.dataCentre.india'),
 			],
 			0,
 		);
@@ -823,7 +1306,7 @@ class Initialize extends Console\Command\Command
 
 			if (
 				$answer === $this->translator->translate(
-					'//tuya-connector.cmd.initialize.answers.dataCentre.centralEurope',
+					'//tuya-connector.cmd.install.answers.dataCentre.centralEurope',
 				)
 				|| $answer === '0'
 			) {
@@ -832,7 +1315,7 @@ class Initialize extends Console\Command\Command
 
 			if (
 				$answer === $this->translator->translate(
-					'//tuya-connector.cmd.initialize.answers.dataCentre.westernEurope',
+					'//tuya-connector.cmd.install.answers.dataCentre.westernEurope',
 				)
 				|| $answer === '1'
 			) {
@@ -841,7 +1324,7 @@ class Initialize extends Console\Command\Command
 
 			if (
 				$answer === $this->translator->translate(
-					'//tuya-connector.cmd.initialize.answers.dataCentre.westernAmerica',
+					'//tuya-connector.cmd.install.answers.dataCentre.westernAmerica',
 				)
 				|| $answer === '2'
 			) {
@@ -850,7 +1333,7 @@ class Initialize extends Console\Command\Command
 
 			if (
 				$answer === $this->translator->translate(
-					'//tuya-connector.cmd.initialize.answers.dataCentre.easternAmerica',
+					'//tuya-connector.cmd.install.answers.dataCentre.easternAmerica',
 				)
 				|| $answer === '3'
 			) {
@@ -858,14 +1341,14 @@ class Initialize extends Console\Command\Command
 			}
 
 			if (
-				$answer === $this->translator->translate('//tuya-connector.cmd.initialize.answers.dataCentre.china')
+				$answer === $this->translator->translate('//tuya-connector.cmd.install.answers.dataCentre.china')
 				|| $answer === '4'
 			) {
 				return Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::CHINA);
 			}
 
 			if (
-				$answer === $this->translator->translate('//tuya-connector.cmd.initialize.answers.dataCentre.india')
+				$answer === $this->translator->translate('//tuya-connector.cmd.install.answers.dataCentre.india')
 				|| $answer === '5'
 			) {
 				return Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::INDIA);
@@ -889,10 +1372,10 @@ class Initialize extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function askUid(Style\SymfonyStyle $io, Entities\TuyaConnector|null $connector = null): string
+	private function askConnectorUid(Style\SymfonyStyle $io, Entities\TuyaConnector|null $connector = null): string
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate('//tuya-connector.cmd.initialize.questions.provide.uid'),
+			$this->translator->translate('//tuya-connector.cmd.install.questions.provide.connector.uid'),
 			$connector?->getUid(),
 		);
 		$question->setValidator(function (string|null $answer): string {
@@ -909,6 +1392,18 @@ class Initialize extends Console\Command\Command
 		});
 
 		return strval($io->askQuestion($question));
+	}
+
+	private function askDeviceName(Style\SymfonyStyle $io, Entities\TuyaDevice|null $device = null): string|null
+	{
+		$question = new Console\Question\Question(
+			$this->translator->translate('//tuya-connector.cmd.install.questions.provide.device.name'),
+			$device?->getName(),
+		);
+
+		$name = $io->askQuestion($question);
+
+		return strval($name) === '' ? null : strval($name);
 	}
 
 	/**
@@ -940,10 +1435,11 @@ class Initialize extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//tuya-connector.cmd.initialize.questions.select.connector'),
+			$this->translator->translate('//tuya-connector.cmd.install.questions.select.item.connector'),
 			array_values($connectors),
 			count($connectors) === 1 ? 0 : null,
 		);
+
 		$question->setErrorMessage(
 			$this->translator->translate('//tuya-connector.cmd.base.messages.answerNotValid'),
 		);
@@ -992,72 +1488,90 @@ class Initialize extends Console\Command\Command
 	}
 
 	/**
-	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\Runtime
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function askInitializeAction(Style\SymfonyStyle $io): void
+	private function askWhichDevice(
+		Style\SymfonyStyle $io,
+		Entities\TuyaConnector $connector,
+	): Entities\TuyaDevice|null
 	{
+		$devices = [];
+
+		$findDevicesQuery = new Queries\Entities\FindDevices();
+		$findDevicesQuery->forConnector($connector);
+
+		$connectorDevices = $this->devicesRepository->findAllBy(
+			$findDevicesQuery,
+			Entities\TuyaDevice::class,
+		);
+		usort(
+			$connectorDevices,
+			static fn (Entities\TuyaDevice $a, Entities\TuyaDevice $b): int => $a->getIdentifier() <=> $b->getIdentifier()
+		);
+
+		foreach ($connectorDevices as $device) {
+			$devices[$device->getIdentifier()] = $device->getIdentifier()
+				. ($device->getName() !== null ? ' [' . $device->getName() . ']' : '');
+		}
+
+		if (count($devices) === 0) {
+			return null;
+		}
+
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//tuya-connector.cmd.base.questions.whatToDo'),
-			[
-				0 => $this->translator->translate('//tuya-connector.cmd.initialize.actions.create'),
-				1 => $this->translator->translate('//tuya-connector.cmd.initialize.actions.update'),
-				2 => $this->translator->translate('//tuya-connector.cmd.initialize.actions.remove'),
-				3 => $this->translator->translate('//tuya-connector.cmd.initialize.actions.list'),
-				4 => $this->translator->translate('//tuya-connector.cmd.initialize.actions.nothing'),
-			],
-			4,
+			$this->translator->translate('//tuya-connector.cmd.install.questions.select.item.device'),
+			array_values($devices),
+			count($devices) === 1 ? 0 : null,
 		);
 
 		$question->setErrorMessage(
 			$this->translator->translate('//tuya-connector.cmd.base.messages.answerNotValid'),
 		);
+		$question->setValidator(
+			function (string|int|null $answer) use ($connector, $devices): Entities\TuyaDevice {
+				if ($answer === null) {
+					throw new Exceptions\Runtime(
+						sprintf(
+							$this->translator->translate('//tuya-connector.cmd.base.messages.answerNotValid'),
+							$answer,
+						),
+					);
+				}
 
-		$whatToDo = $io->askQuestion($question);
+				if (array_key_exists($answer, array_values($devices))) {
+					$answer = array_values($devices)[$answer];
+				}
 
-		if (
-			$whatToDo === $this->translator->translate(
-				'//tuya-connector.cmd.initialize.actions.create',
-			)
-			|| $whatToDo === '0'
-		) {
-			$this->createConfiguration($io);
+				$identifier = array_search($answer, $devices, true);
 
-			$this->askInitializeAction($io);
+				if ($identifier !== false) {
+					$findDeviceQuery = new Queries\Entities\FindDevices();
+					$findDeviceQuery->byIdentifier($identifier);
+					$findDeviceQuery->forConnector($connector);
 
-		} elseif (
-			$whatToDo === $this->translator->translate(
-				'//tuya-connector.cmd.initialize.actions.update',
-			)
-			|| $whatToDo === '1'
-		) {
-			$this->editConfiguration($io);
+					$device = $this->devicesRepository->findOneBy(
+						$findDeviceQuery,
+						Entities\TuyaDevice::class,
+					);
 
-			$this->askInitializeAction($io);
+					if ($device !== null) {
+						return $device;
+					}
+				}
 
-		} elseif (
-			$whatToDo === $this->translator->translate(
-				'//tuya-connector.cmd.initialize.actions.remove',
-			)
-			|| $whatToDo === '2'
-		) {
-			$this->deleteConfiguration($io);
+				throw new Exceptions\Runtime(
+					sprintf(
+						$this->translator->translate('//tuya-connector.cmd.base.messages.answerNotValid'),
+						$answer,
+					),
+				);
+			},
+		);
 
-			$this->askInitializeAction($io);
+		$device = $io->askQuestion($question);
+		assert($device instanceof Entities\TuyaDevice);
 
-		} elseif (
-			$whatToDo === $this->translator->translate(
-				'//tuya-connector.cmd.initialize.actions.list',
-			)
-			|| $whatToDo === '3'
-		) {
-			$this->listConfigurations($io);
-
-			$this->askInitializeAction($io);
-		}
+		return $device;
 	}
 
 	/**

@@ -24,66 +24,9 @@ cmd:
             noConnectors: "No Tuya connectors registered in system."
             answerNotValid: "Selected answer: \"%s\" is not valid."
 
-    initialize:
-        title: "Tuya connector - initialization"
-        subtitle: "This action will create|update|delete connector configuration"
-
-        actions:
-            create: "Create new connector configuration"
-            update: "Edit existing connector configuration"
-            remove: "Delete existing connector configuration"
-            list: "List Tuya connectors"
-            nothing: "Nothing"
-
-        questions:
-            create: "Would you like to create new Tuya connector configuration?"
-            disable: "Do you want to disable connector?"
-            enable: "Do you want to enable connector?"
-            provide:
-                identifier: "Provide connector identifier"
-                name: "Provide connector name"
-                accessId: "Provide cloud authentication Access ID"
-                accessSecret: "Provide cloud authentication Access Secret"
-                uid: "Provide cloud user identification"
-            select:
-                connector: "Please select connector to manage"
-                mode: "In what mode should this connector communicate with Tuya devices?"
-                dataCentre: "Provide which cloud data center you are using?"
-            changeMode: "Do you want to change connector devices support?"
-            changeAccessId: "Do you want to change connector cloud Access ID?"
-            changeAccessSecret: "Do you want to change connector cloud Access Secret?"
-            changeUser: "Do you want to change connector cloud user identifier?"
-
-        answers:
-            mode:
-                local: "Local network mode"
-                cloud: "Tuya cloud server mode"
-
-            dataCentre:
-                centralEurope: "Central Europe"
-                westernEurope: "Western Europe"
-                westernAmerica: "Western America"
-                easternAmerica: "Eastern America"
-                china: "China"
-                india: "India"
-
-        data:
-            name: "Name"
-            devicesCnt: "# Devices"
-
-        messages:
-            identifier:
-                used: "This identifier is already used."
-                missing: "Connector identifier have to be provided."
-            create:
-                success: "Connector \"%name%\" was successfully created."
-                error: "Something went wrong, connector could not be created. An error was logged."
-            update:
-                success: "Connector \"%name%\" was successfully updated."
-                error: "Something went wrong, connector could not be updated. An error was logged."
-            remove:
-                success: "Connector \"%name%\" was successfully removed."
-                error: "Something went wrong, connector could not be removed. An error was logged."
+        mode:
+            local: "Local nework"
+            cloud: "Cloud server"
 
     execute:
         title: "Tuya connector - service"
@@ -100,7 +43,7 @@ cmd:
                 disabled: "Connector is disabled. Disabled connector could not be executed."
             error: "Something went wrong, connector was terminated."
 
-    discovery:
+    discover:
         title: "Tuya connector - devices discovery"
         subtitle: "This action will run connector devices discovery"
 
@@ -125,3 +68,107 @@ cmd:
             noDevicesFound: "No devices were found"
             success: "Devices discovery was successfully finished"
             error: "Devices discovery failed. An error was logged."
+
+    install:
+        title: "Tuya connector - installer"
+        subtitle: "This action will create|update|delete connector configuration"
+
+        actions:
+            create:
+                connector: "Create connector"
+            update:
+                connector: "Edit connector"
+                device: "Edit device"
+            remove:
+                connector: "Delete connector"
+                device: "Delete device"
+            manage:
+                connector: "Manage connector"
+            list:
+                connectors: "List connectors"
+                devices: "List devices"
+            discover:
+                devices: "Discover devices"
+            nothing: "Nothing"
+
+        questions:
+            create:
+                connector: "Would you like to create new connector configuration?"
+            manage:
+                devices: "Would you like to manage connector devices?"
+            provide:
+                connector:
+                    identifier: "Provide connector identifier"
+                    name: "Provide connector name"
+                    accessId: "Provide cloud authentication Access ID"
+                    accessSecret: "Provide cloud authentication Access Secret"
+                    uid: "Provide cloud user identification"
+                device:
+                    name: "Provide device name"
+            select:
+                item:
+                    connector: "Please select connector to manage"
+                    device: "Please select device to manage"
+                connector:
+                    mode: "In what mode should this connector communicate with Tuya devices?"
+                    dataCentre: "Provide which cloud data center you are using?"
+            changeMode: "Do you want to change connector devices support?"
+            disable:
+                connector: "Do you want to disable connector?"
+            enable:
+                connector: "Do you want to enable connector?"
+            changeAccessId: "Do you want to change connector cloud Access ID?"
+            changeAccessSecret: "Do you want to change connector cloud Access Secret?"
+            changeUser: "Do you want to change connector cloud user identifier?"
+
+        answers:
+            mode:
+                local: "Local network mode"
+                cloud: "Tuya cloud server mode"
+
+            dataCentre:
+                centralEurope: "Central Europe"
+                westernEurope: "Western Europe"
+                westernAmerica: "Western America"
+                easternAmerica: "Eastern America"
+                china: "China"
+                india: "India"
+
+        data:
+            name: "Name"
+            mode: "Mode"
+            model: "Model"
+            ipAddress: "IP Address"
+            devicesCnt: "# Devices"
+
+        messages:
+            identifier:
+                connector:
+                    used: "This identifier is already used."
+                    missing: "Connector identifier have to be provided."
+            create:
+                connector:
+                    success: "Connector \"%name%\" was successfully created."
+                    error: "Something went wrong, connector could not be created. An error was logged."
+            update:
+                connector:
+                    success: "Connector \"%name%\" was successfully updated."
+                    error: "Something went wrong, connector could not be updated. An error was logged."
+                device:
+                    success: "Device \"%name%\" was successfully updated."
+                    error: "Something went wrong, device could not be updated. An error was logged."
+            remove:
+                connector:
+                    confirm: "This action will remove \"%name%\" connector. This action can not be undone."
+                    success: "Connector \"%name%\" was successfully removed."
+                    error: "Something went wrong, connector could not be removed. An error was logged."
+                device:
+                    confirm: "This action will remove \"%name%\" device. This action can not be undone."
+                    success: "Device \"%name%\" was successfully removed."
+                    error: "Something went wrong, device could not be removed. An error was logged."
+            discover:
+                success: "Devices discovery was successfully finished"
+                error: "Devices discovery failed. An error was logged."
+            noDevices: "No devices registered in selected connector."
+            foundDevices: "Found %d new devices"
+            noDevicesFound: "No devices were found"

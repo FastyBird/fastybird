@@ -84,6 +84,7 @@ final class Device
 		foreach ($device->getParents() as $parent) {
 			$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
 			$findDeviceQuery->byId($parent);
+			$findDeviceQuery->byType(Entities\TuyaDevice::TYPE);
 
 			return $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 		}
