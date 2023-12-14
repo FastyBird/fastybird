@@ -93,7 +93,7 @@ After your devices are linked with your Tuya cloud account you are able to get T
 
 ![User identifier](https://github.com/FastyBird/tuya-connector/blob/main/docs/_media/tuya_cloud_user_id.png)
 
-## Configuring the Connector through the Console
+## Configuring the Connectors and Devices through the Console
 
 To configure the connector through the console, run the following command:
 
@@ -107,25 +107,21 @@ The path to the console command may vary depending on your FastyBird application
 The console will ask you to confirm that you want to continue with the configuration.
 
 ```shell
-Tuya connector - initialization
-===============================
+Tuya connector - installer
+==========================
 
- ! [NOTE] This action will create|update|delete connector configuration.                                                       
+ ! [NOTE] This action will create|update|delete connector configuration                                                 
 
- Would you like to continue? (yes/no) [no]:
- > y
-```
-
-You will then be prompted to choose an action:
-
-```shell
  What would you like to do? [Nothing]:
-  [0] Create new connector configuration
-  [1] Edit existing connector configuration
-  [2] Delete existing connector configuration
-  [3] List Tuya connectors
-  [4] Nothing
+  [0] Create connector
+  [1] Edit connector
+  [2] Delete connector
+  [3] Manage connector
+  [4] List connectors
+  [5] Nothing
 ```
+
+### Create connector
 
 If you choose to create a new connector, you will be asked to choose the mode in which the connector will communicate with the devices:
 
@@ -176,6 +172,10 @@ After providing the necessary information, your new [Tuya](https://www.tuya.com)
 ```shell
  [OK] New connector "My Tuya" was successfully created                                                                
 ```
+
+### Connectors and Devices management
+
+With this console command you could manage all your connectors and their devices. Just use the main menu to navigate to proper action.
 
 ## Configuring the Connector with the FastyBird User Interface
 
@@ -229,7 +229,7 @@ a list of found devices will be displayed.
 
 
 +----+--------------------------------------+----------------------------------------+---------------+--------------+
-| #  | ID                                   | Name                                   | Type          | IP address   |
+| #  | ID                                   | Name                                   | Model         | IP address   |
 +----+--------------------------------------+----------------------------------------+---------------+--------------+
 | 1  | eebbc85d-76e0-4597-883d-8a8f93e7cd54 | Filament bulb                          | N/A           | N/A          |
 | 2  | 366e4c13-34c5-4bfe-ac5c-383157f5bd10 | WiFi 2Gang Dimmer Module               | 105b          | 10.10.10.130 |
