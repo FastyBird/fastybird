@@ -70,6 +70,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDeviceQuery->byConnectorId($entity->getConnector());
 		$findDeviceQuery->byId($entity->getDevice());
+		$findDeviceQuery->byType(Entities\VieraDevice::TYPE);
 
 		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
