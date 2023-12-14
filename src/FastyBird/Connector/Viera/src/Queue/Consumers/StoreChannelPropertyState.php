@@ -30,6 +30,8 @@ use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Nette\Utils;
 use Ramsey\Uuid;
+use function array_merge;
+use function is_string;
 
 /**
  * Store channel property state message consumer

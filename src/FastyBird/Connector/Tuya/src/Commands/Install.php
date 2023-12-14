@@ -49,7 +49,7 @@ use function strval;
 use function usort;
 
 /**
- * Connector initialize command
+ * Connector install command
  *
  * @package        FastyBird:TuyaConnector!
  * @subpackage     Commands

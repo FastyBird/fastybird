@@ -24,6 +24,63 @@ cmd:
             noConnectors: "No Viera connectors registered in system."
             answerNotValid: "Selected answer: \"%s\" is not valid."
 
+    execute:
+        title: "Viera connector - service"
+        subtitle: "This action will run connector service"
+
+        questions:
+            execute: "Would you like to execute \"%connector%\" connector"
+            select:
+                connector: "Please select connector to execute"
+
+        messages:
+            connector:
+                notFound: "Connector was not found in system."
+                disabled: "Connector is disabled. Disabled connector could not be executed."
+            noConnectors: "No Viera connectors registered in system."
+            error: "Something went wrong, connector was terminated."
+
+    discover:
+        title: "Viera connector - devices discovery"
+        subtitle: "This action will run connector devices discovery"
+
+        questions:
+            execute: "Would you like to discover devices with \"%connector%\" connector"
+            select:
+                connector: "Please select connector to perform discovery"
+            pairDevice: "Would you like to pair this televisions?"
+            provide:
+                pinCode: "Provide PIN code displayed on you television"
+
+        data:
+            id: "ID"
+            name: "Name"
+            model: "Model"
+            ipAddress: "IP Address"
+            encryption: "Is Encrypted"
+
+        messages:
+            connector:
+                notFound: "Connector was not found in system."
+                disabled: "Connector is disabled. Disabled connector could not be executed."
+            noConnectors: "No Viera connectors registered in system."
+            starting: "Starting Viera connector discovery..."
+            stopping: "Stopping Viera connector discovery..."
+            foundDevices: "Found %d new devices."
+            noDevicesFound: "No devices were found."
+            success: "Devices discovery was successfully finished."
+            error: "Devices discovery failed. An error was logged."
+            foundEncryptedDevices: "Some televisions require to by paired to get encryption keys."
+            missingIpAddress: "Something went wrong television: \"%device%\" has not defined its ip address."
+            pairing:
+                started: "Pairing television: \"%device%\"."
+                finished: "Television: \"%device%\" was successfully paired."
+                failed: "Communication with your: \"%device%\" failed. Pairing could not be finished. An error was logged."
+            device:
+                connectionFailed: "Connection with your television: \"%device%\" could not be established. Pairing could not be finished. An error was logged."
+                pairingFailed: "Something went wrong, television: \"%device%\" could not be paired. An error was logged."
+                offline: "It looks like your television: \"%device%\" is not turned on. It is possible that the pairing could not be finished."
+
     initialize:
         title: "Viera connector - initialization"
         subtitle: "This action will create|update|delete connector configuration"
@@ -132,60 +189,3 @@ cmd:
                 success: "Television \"%name%\" was successfully removed."
                 error: "Something went wrong, television could not be removed. An error was logged."
             noDevices: "No televisions registered in selected connector."
-
-    execute:
-        title: "Viera connector - service"
-        subtitle: "This action will run connector service"
-
-        questions:
-            execute: "Would you like to execute \"%connector%\" connector"
-            select:
-                connector: "Please select connector to execute"
-
-        messages:
-            connector:
-                notFound: "Connector was not found in system."
-                disabled: "Connector is disabled. Disabled connector could not be executed."
-            noConnectors: "No Viera connectors registered in system."
-            error: "Something went wrong, connector was terminated."
-
-    discovery:
-        title: "Viera connector - devices discovery"
-        subtitle: "This action will run connector devices discovery"
-
-        questions:
-            execute: "Would you like to discover devices with \"%connector%\" connector"
-            select:
-                connector: "Please select connector to perform discovery"
-            pairDevice: "Would you like to pair this televisions?"
-            provide:
-                pinCode: "Provide PIN code displayed on you television"
-
-        data:
-            id: "ID"
-            name: "Name"
-            model: "Model"
-            ipAddress: "IP Address"
-            encryption: "Is Encrypted"
-
-        messages:
-            connector:
-                notFound: "Connector was not found in system."
-                disabled: "Connector is disabled. Disabled connector could not be executed."
-            noConnectors: "No Viera connectors registered in system."
-            starting: "Starting Viera connector discovery..."
-            stopping: "Stopping Viera connector discovery..."
-            foundDevices: "Found %d new devices."
-            noDevicesFound: "No devices were found."
-            success: "Devices discovery was successfully finished."
-            error: "Devices discovery failed. An error was logged."
-            foundEncryptedDevices: "Some televisions require to by paired to get encryption keys."
-            missingIpAddress: "Something went wrong television: \"%device%\" has not defined its ip address."
-            pairing:
-                started: "Pairing television: \"%device%\"."
-                finished: "Television: \"%device%\" was successfully paired."
-                failed: "Communication with your: \"%device%\" failed. Pairing could not be finished. An error was logged."
-            device:
-                connectionFailed: "Connection with your television: \"%device%\" could not be established. Pairing could not be finished. An error was logged."
-                pairingFailed: "Something went wrong, television: \"%device%\" could not be paired. An error was logged."
-                offline: "It looks like your television: \"%device%\" is not turned on. It is possible that the pairing could not be finished."
