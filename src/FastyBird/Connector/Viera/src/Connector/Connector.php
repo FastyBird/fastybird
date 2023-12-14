@@ -127,7 +127,7 @@ final class Connector implements DevicesConnectors\Connector
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
 				'type' => 'connector',
 				'connector' => [
-					'id' => $connector->getId()->toString(),
+					'id' => $this->connector->getId()->toString(),
 				],
 			],
 		);
