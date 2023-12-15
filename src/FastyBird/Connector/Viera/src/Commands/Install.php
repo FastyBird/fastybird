@@ -146,6 +146,8 @@ class Install extends Console\Command\Command
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws RuntimeException
 	 */
 	private function createConnector(Style\SymfonyStyle $io): void
 	{
@@ -245,12 +247,27 @@ class Install extends Console\Command\Command
 				$this->getOrmConnection()->rollBack();
 			}
 		}
+
+		$question = new Console\Question\ConfirmationQuestion(
+			$this->translator->translate('//viera-connector.cmd.install.questions.create.devices'),
+			true,
+		);
+
+		$createRegisters = (bool) $io->askQuestion($question);
+
+		if ($createRegisters) {
+			$this->createDevice($io, $connector);
+		}
 	}
 
 	/**
+	 * @throws Console\Exception\ExceptionInterface
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\Runtime
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws RuntimeException
 	 */
 	private function editConnector(Style\SymfonyStyle $io): void
 	{
@@ -338,6 +355,19 @@ class Install extends Console\Command\Command
 				$this->getOrmConnection()->rollBack();
 			}
 		}
+
+		$question = new Console\Question\ConfirmationQuestion(
+			$this->translator->translate('//viera-connector.cmd.install.questions.manage.devices'),
+			false,
+		);
+
+		$manage = (bool) $io->askQuestion($question);
+
+		if (!$manage) {
+			return;
+		}
+
+		$this->askManageConnectorAction($io, $connector);
 	}
 
 	/**

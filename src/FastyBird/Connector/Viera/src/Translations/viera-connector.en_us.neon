@@ -86,6 +86,7 @@ cmd:
         actions:
             create:
                 connector: "Create connector"
+                device: "Create television"
             update:
                 connector: "Edit connector"
                 device: "Edit television"
@@ -104,6 +105,7 @@ cmd:
         questions:
             create:
                 connector: "Would you like to create new connector configuration?"
+                devices: "Would you like to configure connector television(s)?"
                 device: "Would you like to create new television?"
             manage:
                 devices: "Would you like to manage connector televisions?"
