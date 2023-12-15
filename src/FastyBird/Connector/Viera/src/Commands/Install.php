@@ -231,7 +231,7 @@ class Install extends Console\Command\Command
 				'An unhandled error occurred',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
-					'type' => 'initialize-cmd',
+					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
@@ -257,7 +257,7 @@ class Install extends Console\Command\Command
 		$connector = $this->askWhichConnector($io);
 
 		if ($connector === null) {
-			$io->warning($this->translator->translate('//viera-connector.cmd.install.messages.noConnectors'));
+			$io->warning($this->translator->translate('//viera-connector.cmd.base.messages.noConnectors'));
 
 			$question = new Console\Question\ConfirmationQuestion(
 				$this->translator->translate('//viera-connector.cmd.install.questions.create.connector'),
@@ -324,7 +324,7 @@ class Install extends Console\Command\Command
 				'An unhandled error occurred',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
-					'type' => 'initialize-cmd',
+					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
@@ -350,10 +350,17 @@ class Install extends Console\Command\Command
 		$connector = $this->askWhichConnector($io);
 
 		if ($connector === null) {
-			$io->info($this->translator->translate('//viera-connector.cmd.install.messages.noConnectors'));
+			$io->info($this->translator->translate('//viera-connector.cmd.base.messages.noConnectors'));
 
 			return;
 		}
+
+		$io->warning(
+			$this->translator->translate(
+				'//viera-connector.cmd.install.messages.remove.connector.confirm',
+				['name' => $connector->getName() ?? $connector->getIdentifier()],
+			),
+		);
 
 		$question = new Console\Question\ConfirmationQuestion(
 			$this->translator->translate('//viera-connector.cmd.base.questions.continue'),
@@ -389,7 +396,7 @@ class Install extends Console\Command\Command
 				'An unhandled error occurred',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
-					'type' => 'initialize-cmd',
+					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
@@ -1591,6 +1598,13 @@ class Install extends Console\Command\Command
 			return;
 		}
 
+		$io->warning(
+			$this->translator->translate(
+				'//viera-connector.cmd.install.messages.remove.device.confirm',
+				['name' => $device->getName() ?? $device->getIdentifier()],
+			),
+		);
+
 		$question = new Console\Question\ConfirmationQuestion(
 			$this->translator->translate('//viera-connector.cmd.base.questions.continue'),
 			false,
@@ -1888,13 +1902,14 @@ class Install extends Console\Command\Command
 		$question = new Console\Question\ChoiceQuestion(
 			$this->translator->translate('//viera-connector.cmd.base.questions.whatToDo'),
 			[
-				0 => $this->translator->translate('//viera-connector.cmd.install.actions.update.device'),
-				1 => $this->translator->translate('//viera-connector.cmd.install.actions.remove.device'),
-				2 => $this->translator->translate('//viera-connector.cmd.install.actions.list.devices'),
-				3 => $this->translator->translate('//viera-connector.cmd.install.actions.discover.devices'),
-				4 => $this->translator->translate('//viera-connector.cmd.install.actions.nothing'),
+				0 => $this->translator->translate('//viera-connector.cmd.install.actions.create.device'),
+				1 => $this->translator->translate('//viera-connector.cmd.install.actions.update.device'),
+				2 => $this->translator->translate('//viera-connector.cmd.install.actions.remove.device'),
+				3 => $this->translator->translate('//viera-connector.cmd.install.actions.list.devices'),
+				4 => $this->translator->translate('//viera-connector.cmd.install.actions.discover.devices'),
+				5 => $this->translator->translate('//viera-connector.cmd.install.actions.nothing'),
 			],
-			4,
+			5,
 		);
 
 		$question->setErrorMessage(
@@ -1905,9 +1920,19 @@ class Install extends Console\Command\Command
 
 		if (
 			$whatToDo === $this->translator->translate(
-				'//viera-connector.cmd.install.actions.update.device',
+				'//viera-connector.cmd.install.actions.create.device',
 			)
 			|| $whatToDo === '0'
+		) {
+			$this->createDevice($io, $connector);
+
+			$this->askManageConnectorAction($io, $connector);
+
+		} elseif (
+			$whatToDo === $this->translator->translate(
+				'//viera-connector.cmd.install.actions.update.device',
+			)
+			|| $whatToDo === '1'
 		) {
 			$this->editDevice($io, $connector);
 
@@ -1917,7 +1942,7 @@ class Install extends Console\Command\Command
 			$whatToDo === $this->translator->translate(
 				'//viera-connector.cmd.install.actions.remove.device',
 			)
-			|| $whatToDo === '1'
+			|| $whatToDo === '2'
 		) {
 			$this->deleteDevice($io, $connector);
 
@@ -1927,7 +1952,7 @@ class Install extends Console\Command\Command
 			$whatToDo === $this->translator->translate(
 				'//viera-connector.cmd.install.actions.list.devices',
 			)
-			|| $whatToDo === '2'
+			|| $whatToDo === '3'
 		) {
 			$this->listDevices($io, $connector);
 
@@ -1937,7 +1962,7 @@ class Install extends Console\Command\Command
 			$whatToDo === $this->translator->translate(
 				'//viera-connector.cmd.install.actions.discover.devices',
 			)
-			|| $whatToDo === '3'
+			|| $whatToDo === '4'
 		) {
 			$this->discoverDevices($io, $connector);
 

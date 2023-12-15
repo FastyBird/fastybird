@@ -200,11 +200,12 @@ cmd:
                     mappedChannelProperty: "Select channel property for mapping"
                     valueMapping: "Select device value which will be mapped to: %value%"
                     value: "Please select protocol value"
-            changeMode: "Do you want to change connector devices support?"
             disable:
                 connector: "Do you want to disable connector?"
             enable:
                 connector: "Do you want to enable connector?"
+            change:
+                mode: "Do you want to change connector devices support?"
             isGatewayReady: "Is your NS Panel ready?"
             regenerateAccessToken: "Would you like to establish new connection with NS Panel?"
             connectProtocol: "Connect protocol with device?"

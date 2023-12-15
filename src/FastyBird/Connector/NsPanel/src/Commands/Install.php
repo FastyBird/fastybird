@@ -338,7 +338,7 @@ class Install extends Console\Command\Command
 
 		} else {
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//ns-panel-connector.cmd.install.questions.changeMode'),
+				$this->translator->translate('//ns-panel-connector.cmd.install.questions.change.mode'),
 				false,
 			);
 
