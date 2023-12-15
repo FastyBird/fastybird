@@ -330,7 +330,7 @@ class Install extends Console\Command\Command
 
 		} else {
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//fb-mqtt-connector.cmd.install.questions.changeProtocol'),
+				$this->translator->translate('//fb-mqtt-connector.cmd.install.questions.change.protocol'),
 				false,
 			);
 

@@ -49,7 +49,7 @@ use function strval;
 use function usort;
 
 /**
- * Connector initialize command
+ * Connector install command
  *
  * @package        FastyBird:TuyaConnector!
  * @subpackage     Commands
@@ -333,7 +333,7 @@ class Install extends Console\Command\Command
 
 		} else {
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//tuya-connector.cmd.install.questions.changeMode'),
+				$this->translator->translate('//tuya-connector.cmd.install.questions.change.mode'),
 				false,
 			);
 
@@ -383,7 +383,7 @@ class Install extends Console\Command\Command
 
 		} else {
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//tuya-connector.cmd.install.questions.changeAccessId'),
+				$this->translator->translate('//tuya-connector.cmd.install.questions.change.accessId'),
 				false,
 			);
 
@@ -405,7 +405,7 @@ class Install extends Console\Command\Command
 
 		} else {
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//tuya-connector.cmd.install.questions.changeAccessSecret'),
+				$this->translator->translate('//tuya-connector.cmd.install.questions.change.accessSecret'),
 				false,
 			);
 
@@ -439,7 +439,7 @@ class Install extends Console\Command\Command
 
 			} else {
 				$question = new Console\Question\ConfirmationQuestion(
-					$this->translator->translate('//tuya-connector.cmd.install.questions.changeUser'),
+					$this->translator->translate('//tuya-connector.cmd.install.questions.change.user'),
 					false,
 				);
 

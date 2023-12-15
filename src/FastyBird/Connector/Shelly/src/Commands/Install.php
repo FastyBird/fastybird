@@ -312,7 +312,7 @@ class Install extends Console\Command\Command
 
 		} else {
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//shelly-connector.cmd.install.questions.changeMode'),
+				$this->translator->translate('//shelly-connector.cmd.install.questions.change.mode'),
 				false,
 			);
 
@@ -368,7 +368,7 @@ class Install extends Console\Command\Command
 
 			if ($cloudAuthKeyProperty !== null) {
 				$question = new Console\Question\ConfirmationQuestion(
-					$this->translator->translate('//shelly-connector.cmd.install.questions.changeCloudAuthKey'),
+					$this->translator->translate('//shelly-connector.cmd.install.questions.change.cloudAuthKey'),
 					false,
 				);
 
@@ -390,7 +390,7 @@ class Install extends Console\Command\Command
 			if ($cloudServerProperty !== null) {
 				$question = new Console\Question\ConfirmationQuestion(
 					$this->translator->translate(
-						'//shelly-connector.cmd.install.questions.changeCloudServerAddress',
+						'//shelly-connector.cmd.install.questions.change.cloudServerAddress',
 					),
 					false,
 				);

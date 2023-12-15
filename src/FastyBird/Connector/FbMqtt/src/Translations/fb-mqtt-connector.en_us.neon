@@ -88,11 +88,12 @@ cmd:
                 device:
                     identifier: "Provide device identifier"
                     name: "Provide device name"
-            changeProtocol: "Do you want to change connector protocol version?"
             disable:
                 connector: "Do you want to disable connector?"
             enable:
                 connector: "Do you want to enable connector?"
+            change:
+                protocol: "Do you want to change connector protocol version?"
 
         answers:
             protocol:
