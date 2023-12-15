@@ -381,7 +381,7 @@ class HomeKitExtension extends DI\CompilerExtension
 			->setImplement(Connector\ConnectorFactory::class)
 			->addTag(
 				DevicesDI\DevicesExtension::CONNECTOR_TYPE_TAG,
-				Entities\HomeKitConnector::CONNECTOR_TYPE,
+				Entities\HomeKitConnector::TYPE,
 			)
 			->getResultDefinition()
 			->setType(Connector\Connector::class)

@@ -85,6 +85,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDeviceQuery->byConnectorId($entity->getConnector());
 		$findDeviceQuery->byId($entity->getDevice());
+		$findDeviceQuery->byType(Entities\HomeKitDevice::TYPE);
 
 		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 

@@ -75,6 +75,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 
 		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
 		$findConnectorQuery->byId($entity->getConnector());
+		$findConnectorQuery->byType(Entities\HomeKitConnector::TYPE);
 
 		$connector = $this->connectorsConfigurationRepository->findOneBy($findConnectorQuery);
 
@@ -103,6 +104,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDeviceQuery->forConnector($connector);
 		$findDeviceQuery->byId($entity->getDevice());
+		$findDeviceQuery->byType(Entities\HomeKitDevice::TYPE);
 
 		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 

@@ -76,6 +76,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 
 		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
 		$findConnectorQuery->byId($entity->getConnector());
+		$findConnectorQuery->byType(Entities\HomeKitConnector::TYPE);
 
 		$connector = $this->connectorsConfigurationRepository->findOneBy($findConnectorQuery);
 
@@ -107,6 +108,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDeviceQuery->forConnector($connector);
 		$findDeviceQuery->byId($entity->getDevice());
+		$findDeviceQuery->byType(Entities\HomeKitDevice::TYPE);
 
 		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
@@ -165,6 +167,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 		$findChannelQuery->forDevice($device);
 		$findChannelQuery->byId($entity->getChannel());
+		$findChannelQuery->byType(Entities\HomeKitChannel::TYPE);
 
 		$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 

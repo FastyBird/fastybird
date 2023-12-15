@@ -89,6 +89,7 @@ final class Connector implements DevicesConnectors\Connector
 
 		$findConnector = new DevicesQueries\Configuration\FindConnectors();
 		$findConnector->byId($this->connector->getId());
+		$findConnector->byType(Entities\HomeKitConnector::TYPE);
 
 		$connector = $this->connectorsConfigurationRepository->findOneBy($findConnector);
 

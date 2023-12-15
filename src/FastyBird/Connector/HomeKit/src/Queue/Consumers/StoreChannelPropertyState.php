@@ -86,6 +86,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDeviceQuery->byConnectorId($entity->getConnector());
 		$findDeviceQuery->byId($entity->getDevice());
+		$findDeviceQuery->byType(Entities\HomeKitDevice::TYPE);
 
 		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
@@ -117,6 +118,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 		$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 		$findChannelQuery->forDevice($device);
 		$findChannelQuery->byId($entity->getChannel());
+		$findChannelQuery->byType(Entities\HomeKitChannel::TYPE);
 
 		$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 
