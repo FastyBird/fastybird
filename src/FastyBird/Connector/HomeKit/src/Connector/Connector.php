@@ -131,7 +131,7 @@ final class Connector implements DevicesConnectors\Connector
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
 				'type' => 'connector',
 				'connector' => [
-					'id' => $connector->getId()->toString(),
+					'id' => $this->connector->getId()->toString(),
 				],
 			],
 		);

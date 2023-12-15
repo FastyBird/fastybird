@@ -253,7 +253,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 							'Mapped variable property could not be updated',
 							[
 								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
-								'type' => 'characteristics-controller',
+								'type' => 'store-device-property-state-message-consumer',
 								'connector' => [
 									'id' => $entity->getConnector()->toString(),
 								],
