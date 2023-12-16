@@ -83,25 +83,26 @@ cmd:
             create:
                 connector: "Create connector"
                 device: "Create device"
-                service: "Create new device service"
+                service: "Create service"
             update:
                 connector: "Edit connector"
                 device: "Edit device"
-                service: "Edit existing device service"
-                characteristic: "Edit existing service characteristic"
+                service: "Edit service"
+                characteristic: "Edit characteristic"
             remove:
                 connector: "Delete connector"
                 device: "Delete device"
-                service: "Delete existing device service"
-                characteristic: "Delete existing service characteristic"
+                service: "Delete service"
+                characteristic: "Delete characteristic"
             manage:
                 connector: "Manage connector"
                 device: "Manage device"
+                service: "Manage service"
             list:
                 connectors: "List connectors"
                 devices: "List devices"
-                services: "List device services"
-                characteristics: "List service characteristics"
+                services: "List services"
+                characteristics: "List characteristics"
             nothing: "Nothing"
 
         questions:
@@ -109,8 +110,13 @@ cmd:
                 connector: "Would you like to create new connector configuration?"
                 devices: "Would you like to configure connector device(s)?"
                 device: "Would you like to create new device in connector?"
+                services: "Would you like to configure device service(s)?"
+                service: "Would you like to configure new device service?"
+                characteristics: "Would you like to configure service characteristic(s)?"
             manage:
                 devices: "Would you like to manage connector devices?"
+                services: "Would you like to manage device services?"
+                characteristics: "Would you like to manage service characteristics?"
             disable:
                  connector: "Do you want to disable connector?"
             enable:
@@ -144,9 +150,6 @@ cmd:
                     optionalCharacteristic: "What type of service characteristic you would like to add? (optional)"
                     valueMapping: "Select device value which will be mapped to: %value%"
             connectCharacteristic: "Connect characteristic with device?"
-            createService: "Would you like to configure new device service?"
-            createAnotherService: "Would you like to configure another device service?"
-            editServices: "Would you like to manage device services?"
             addCharacteristics: "Would you like to add new characteristics?"
 
         answers:
