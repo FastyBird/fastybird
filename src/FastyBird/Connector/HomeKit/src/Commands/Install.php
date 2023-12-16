@@ -236,7 +236,7 @@ class Install extends Console\Command\Command
 
 			$io->success(
 				$this->translator->translate(
-					'//homekit-connector.cmd.install.messages.create.success',
+					'//homekit-connector.cmd.install.messages.create.connector.success',
 					['name' => $connector->getName() ?? $connector->getIdentifier()],
 				),
 			);
@@ -251,7 +251,7 @@ class Install extends Console\Command\Command
 				],
 			);
 
-			$io->error($this->translator->translate('//homekit-connector.cmd.install.messages.create.error'));
+			$io->error($this->translator->translate('//homekit-connector.cmd.install.messages.create.connector.error'));
 
 			return;
 		} finally {
@@ -907,7 +907,7 @@ class Install extends Console\Command\Command
 			$table->addRow([
 				$index + 1,
 				$device->getName() ?? $device->getIdentifier(),
-				$device->getAccessoryCategory()->getValue(),
+				$this->translator->translate('//homekit-connector.cmd.base.category.' . $device->getAccessoryCategory()->getValue()),
 			]);
 		}
 
@@ -2187,7 +2187,7 @@ class Install extends Console\Command\Command
 	private function askDeviceName(Style\SymfonyStyle $io, Entities\HomeKitDevice|null $device = null): string|null
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate('//homekit-connector.cmd.install.questions.provide.name'),
+			$this->translator->translate('//homekit-connector.cmd.install.questions.provide.device.name'),
 			$device?->getName(),
 		);
 
@@ -2237,7 +2237,7 @@ class Install extends Console\Command\Command
 		);
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//homekit-connector.cmd.install.questions.select.category'),
+			$this->translator->translate('//homekit-connector.cmd.install.questions.select.device.category'),
 			array_values($categories),
 			$default,
 		);
@@ -2393,11 +2393,11 @@ class Install extends Console\Command\Command
 		}
 
 		$question = $required ? new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//homekit-connector.cmd.install.questions.select.requiredCharacteristic'),
+			$this->translator->translate('//homekit-connector.cmd.install.questions.select.device.requiredCharacteristic'),
 			$characteristics,
 			0,
 		) : new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//homekit-connector.cmd.install.questions.select.optionalCharacteristic'),
+			$this->translator->translate('//homekit-connector.cmd.install.questions.select.device.optionalCharacteristic'),
 			$characteristics,
 			count($characteristics) - 1,
 		);
@@ -2496,7 +2496,7 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//homekit-connector.cmd.install.questions.select.mappedDevice'),
+			$this->translator->translate('//homekit-connector.cmd.install.questions.select.device.mappedDevice'),
 			array_values($devices),
 			$default,
 		);
@@ -2548,7 +2548,7 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//homekit-connector.cmd.install.questions.select.propertyType'),
+			$this->translator->translate('//homekit-connector.cmd.install.questions.select.device.propertyType'),
 			[
 				$this->translator->translate('//homekit-connector.cmd.install.answers.deviceProperty'),
 				$this->translator->translate('//homekit-connector.cmd.install.answers.channelProperty'),
@@ -2643,7 +2643,7 @@ class Install extends Console\Command\Command
 			}
 
 			$question = new Console\Question\ChoiceQuestion(
-				$this->translator->translate('//homekit-connector.cmd.install.questions.select.mappedDeviceProperty'),
+				$this->translator->translate('//homekit-connector.cmd.install.questions.select.device.mappedDeviceProperty'),
 				array_values($properties),
 				$default,
 			);
@@ -2737,7 +2737,7 @@ class Install extends Console\Command\Command
 			}
 
 			$question = new Console\Question\ChoiceQuestion(
-				$this->translator->translate('//homekit-connector.cmd.install.questions.select.mappedDeviceChannel'),
+				$this->translator->translate('//homekit-connector.cmd.install.questions.select.device.mappedDeviceChannel'),
 				array_values($channels),
 				$default,
 			);
@@ -2830,7 +2830,7 @@ class Install extends Console\Command\Command
 			}
 
 			$question = new Console\Question\ChoiceQuestion(
-				$this->translator->translate('//homekit-connector.cmd.install.questions.select.mappedChannelProperty'),
+				$this->translator->translate('//homekit-connector.cmd.install.questions.select.device.mappedChannelProperty'),
 				array_values($properties),
 				$default,
 			);
@@ -2983,7 +2983,7 @@ class Install extends Console\Command\Command
 
 					$question = new Console\Question\ChoiceQuestion(
 						$this->translator->translate(
-							'//homekit-connector.cmd.install.questions.select.valueMapping',
+							'//homekit-connector.cmd.install.questions.select.device.valueMapping',
 							['value' => $name],
 						),
 						array_map(
@@ -3106,7 +3106,7 @@ class Install extends Console\Command\Command
 			);
 
 			$question = new Console\Question\ChoiceQuestion(
-				$this->translator->translate('//homekit-connector.cmd.install.questions.select.value'),
+				$this->translator->translate('//homekit-connector.cmd.install.questions.select.device.value'),
 				$options,
 				$value !== null ? array_key_exists(
 					strval(MetadataUtilities\ValueHelper::flattenValue($value)),
@@ -3152,7 +3152,7 @@ class Install extends Console\Command\Command
 
 		if ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BOOLEAN)) {
 			$question = new Console\Question\ChoiceQuestion(
-				$this->translator->translate('//homekit-connector.cmd.install.questions.select.value'),
+				$this->translator->translate('//homekit-connector.cmd.install.questions.select.device.value'),
 				[
 					$this->translator->translate('//homekit-connector.cmd.install.answers.false'),
 					$this->translator->translate('//homekit-connector.cmd.install.answers.true'),
@@ -3485,7 +3485,7 @@ class Install extends Console\Command\Command
 	): Entities\HomeKitChannel|null
 	{
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//homekit-connector.cmd.install.questions.select.service'),
+			$this->translator->translate('//homekit-connector.cmd.install.questions.select.item.service'),
 			array_values($channels),
 			count($channels) === 1 ? 0 : null,
 		);
@@ -3544,7 +3544,7 @@ class Install extends Console\Command\Command
 	): DevicesEntities\Channels\Properties\Variable|DevicesEntities\Channels\Properties\Mapped|null
 	{
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//homekit-connector.cmd.install.questions.select.characteristic'),
+			$this->translator->translate('//homekit-connector.cmd.install.questions.select.item.characteristic'),
 			array_values($properties),
 		);
 		$question->setErrorMessage(

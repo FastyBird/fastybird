@@ -96,6 +96,7 @@ cmd:
                 characteristic: "Delete existing service characteristic"
             manage:
                 connector: "Manage connector"
+                device: "Manage device"
             list:
                 connectors: "List connectors"
                 devices: "List devices"
@@ -127,6 +128,8 @@ cmd:
                 item:
                     connector: "Please select connector to manage"
                     device: "Please select device to manage"
+                    service: "Please select service to manage"
+                    characteristic: "Please select characteristic to manage"
                 device:
                     category: "Please select device category"
                     service: "Please select device's service"
