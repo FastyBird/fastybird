@@ -253,9 +253,9 @@ class Install extends Console\Command\Command
 			true,
 		);
 
-		$createRegisters = (bool) $io->askQuestion($question);
+		$createDevices = (bool) $io->askQuestion($question);
 
-		if ($createRegisters) {
+		if ($createDevices) {
 			$this->createDevice($io, $connector);
 		}
 	}
