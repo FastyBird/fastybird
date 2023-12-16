@@ -2013,10 +2013,10 @@ class Install extends Console\Command\Command
 		$question = new Console\Question\ChoiceQuestion(
 			$this->translator->translate('//homekit-connector.cmd.base.questions.whatToDo'),
 			[
-				0 => $this->translator->translate('//homekit-connector.cmd.install.actions.createService'),
-				1 => $this->translator->translate('//homekit-connector.cmd.install.actions.updateService'),
-				2 => $this->translator->translate('//homekit-connector.cmd.install.actions.removeService'),
-				3 => $this->translator->translate('//homekit-connector.cmd.install.actions.listServices'),
+				0 => $this->translator->translate('//homekit-connector.cmd.install.actions.create.service'),
+				1 => $this->translator->translate('//homekit-connector.cmd.install.actions.update.service'),
+				2 => $this->translator->translate('//homekit-connector.cmd.install.actions.remove.service'),
+				3 => $this->translator->translate('//homekit-connector.cmd.install.actions.list.services'),
 				4 => $this->translator->translate('//homekit-connector.cmd.install.actions.nothing'),
 			],
 			4,
@@ -2030,7 +2030,7 @@ class Install extends Console\Command\Command
 
 		if (
 			$whatToDo === $this->translator->translate(
-				'//homekit-connector.cmd.install.actions.createService',
+				'//homekit-connector.cmd.install.actions.create.service',
 			)
 			|| $whatToDo === '0'
 		) {
@@ -2038,7 +2038,7 @@ class Install extends Console\Command\Command
 
 		} elseif (
 			$whatToDo === $this->translator->translate(
-				'//homekit-connector.cmd.install.actions.updateService',
+				'//homekit-connector.cmd.install.actions.update.service',
 			)
 			|| $whatToDo === '1'
 		) {
@@ -2046,7 +2046,7 @@ class Install extends Console\Command\Command
 
 		} elseif (
 			$whatToDo === $this->translator->translate(
-				'//homekit-connector.cmd.install.actions.removeService',
+				'//homekit-connector.cmd.install.actions.remove.service',
 			)
 			|| $whatToDo === '2'
 		) {
@@ -2054,7 +2054,7 @@ class Install extends Console\Command\Command
 
 		} elseif (
 			$whatToDo === $this->translator->translate(
-				'//homekit-connector.cmd.install.actions.listServices',
+				'//homekit-connector.cmd.install.actions.list.services',
 			)
 			|| $whatToDo === '3'
 		) {
@@ -2080,9 +2080,9 @@ class Install extends Console\Command\Command
 		$question = new Console\Question\ChoiceQuestion(
 			$this->translator->translate('//homekit-connector.cmd.base.questions.whatToDo'),
 			[
-				0 => $this->translator->translate('//homekit-connector.cmd.install.actions.updateCharacteristic'),
-				1 => $this->translator->translate('//homekit-connector.cmd.install.actions.removeCharacteristic'),
-				2 => $this->translator->translate('//homekit-connector.cmd.install.actions.listCharacteristics'),
+				0 => $this->translator->translate('//homekit-connector.cmd.install.actions.update.characteristic'),
+				1 => $this->translator->translate('//homekit-connector.cmd.install.actions.remove.characteristic'),
+				2 => $this->translator->translate('//homekit-connector.cmd.install.actions.list.characteristics'),
 				3 => $this->translator->translate('//homekit-connector.cmd.install.actions.nothing'),
 			],
 			3,
@@ -2096,7 +2096,7 @@ class Install extends Console\Command\Command
 
 		if (
 			$whatToDo === $this->translator->translate(
-				'//homekit-connector.cmd.install.actions.updateCharacteristic',
+				'//homekit-connector.cmd.install.actions.update.characteristic',
 			)
 			|| $whatToDo === '0'
 		) {
@@ -2104,7 +2104,7 @@ class Install extends Console\Command\Command
 
 		} elseif (
 			$whatToDo === $this->translator->translate(
-				'//homekit-connector.cmd.install.actions.removeCharacteristic',
+				'//homekit-connector.cmd.install.actions.remove.characteristic',
 			)
 			|| $whatToDo === '1'
 		) {
@@ -2112,7 +2112,7 @@ class Install extends Console\Command\Command
 
 		} elseif (
 			$whatToDo === $this->translator->translate(
-				'//homekit-connector.cmd.install.actions.listCharacteristics',
+				'//homekit-connector.cmd.install.actions.list.characteristics',
 			)
 			|| $whatToDo === '2'
 		) {
