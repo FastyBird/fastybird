@@ -289,9 +289,9 @@ class Install extends Console\Command\Command
 			true,
 		);
 
-		$createRegisters = (bool) $io->askQuestion($question);
+		$createGateways = (bool) $io->askQuestion($question);
 
-		if ($createRegisters) {
+		if ($createGateways) {
 			$this->createGateway($io, $connector);
 		}
 	}
@@ -559,13 +559,9 @@ class Install extends Console\Command\Command
 		$connectors = $this->connectorsRepository->findAllBy($findConnectorsQuery, Entities\NsPanelConnector::class);
 		usort(
 			$connectors,
-			static function (Entities\NsPanelConnector $a, Entities\NsPanelConnector $b): int {
-				if ($a->getIdentifier() === $b->getIdentifier()) {
-					return $a->getName() <=> $b->getName();
-				}
-
-				return $a->getIdentifier() <=> $b->getIdentifier();
-			},
+			static fn (Entities\NsPanelConnector $a, Entities\NsPanelConnector $b): int => (
+				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
+			),
 		);
 
 		$table = new Console\Helper\Table($io);
@@ -805,9 +801,9 @@ class Install extends Console\Command\Command
 				true,
 			);
 
-			$createRegisters = (bool) $io->askQuestion($question);
+			$createDevices = (bool) $io->askQuestion($question);
 
-			if ($createRegisters) {
+			if ($createDevices) {
 				$this->createDevice($io, $connector, $gateway);
 			}
 		}
@@ -1190,13 +1186,9 @@ class Install extends Console\Command\Command
 		$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\Gateway::class);
 		usort(
 			$devices,
-			static function (Entities\Devices\Gateway $a, Entities\Devices\Gateway $b): int {
-				if ($a->getIdentifier() === $b->getIdentifier()) {
-					return $a->getName() <=> $b->getName();
-				}
-
-				return $a->getIdentifier() <=> $b->getIdentifier();
-			},
+			static fn (Entities\Devices\Gateway $a, Entities\Devices\Gateway $b): int => (
+				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
+			),
 		);
 
 		$table = new Console\Helper\Table($io);
@@ -1701,13 +1693,9 @@ class Install extends Console\Command\Command
 		$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\NsPanelDevice::class);
 		usort(
 			$devices,
-			static function (Entities\NsPanelDevice $a, Entities\NsPanelDevice $b): int {
-				if ($a->getIdentifier() === $b->getIdentifier()) {
-					return $a->getName() <=> $b->getName();
-				}
-
-				return $a->getIdentifier() <=> $b->getIdentifier();
-			},
+			static fn (Entities\NsPanelDevice $a, Entities\NsPanelDevice $b): int => (
+				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
+			),
 		);
 
 		$table = new Console\Helper\Table($io);
@@ -2133,13 +2121,9 @@ class Install extends Console\Command\Command
 		$deviceChannels = $this->channelsRepository->findAllBy($findChannelsQuery, Entities\NsPanelChannel::class);
 		usort(
 			$deviceChannels,
-			static function (Entities\NsPanelChannel $a, Entities\NsPanelChannel $b): int {
-				if ($a->getIdentifier() === $b->getIdentifier()) {
-					return $a->getName() <=> $b->getName();
-				}
-
-				return $a->getIdentifier() <=> $b->getIdentifier();
-			},
+			static fn (Entities\NsPanelChannel $a, Entities\NsPanelChannel $b): int => (
+				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
+			),
 		);
 
 		$table = new Console\Helper\Table($io);
@@ -2546,13 +2530,9 @@ class Install extends Console\Command\Command
 		$channelProperties = $this->channelsPropertiesRepository->findAllBy($findPropertiesQuery);
 		usort(
 			$channelProperties,
-			static function (DevicesEntities\Property $a, DevicesEntities\Property $b): int {
-				if ($a->getIdentifier() === $b->getIdentifier()) {
-					return $a->getName() <=> $b->getName();
-				}
-
-				return $a->getIdentifier() <=> $b->getIdentifier();
-			},
+			static fn (DevicesEntities\Property $a, DevicesEntities\Property $b): int => (
+				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
+			),
 		);
 
 		$table = new Console\Helper\Table($io);
@@ -3600,9 +3580,22 @@ class Install extends Console\Command\Command
 		$findDevicesQuery = new DevicesQueries\Entities\FindDevices();
 
 		$systemDevices = $this->devicesRepository->findAllBy($findDevicesQuery);
+		$systemDevices = array_filter($systemDevices, function (DevicesEntities\Devices\Device $device): bool {
+			$findChannelsQuery = new DevicesQueries\Entities\FindChannels();
+			$findChannelsQuery->forDevice($device);
+			$findChannelsQuery->withProperties();
+
+			return $this->channelsRepository->getResultSet($findChannelsQuery)->count() > 0;
+		});
 		usort(
 			$systemDevices,
-			static fn (DevicesEntities\Devices\Device $a, DevicesEntities\Devices\Device $b): int => $a->getIdentifier() <=> $b->getIdentifier()
+			static fn (DevicesEntities\Devices\Device $a, DevicesEntities\Devices\Device $b): int => (
+				(
+					($a->getConnector()->getName() ?? $a->getConnector()->getIdentifier())
+					<=> ($b->getConnector()->getName() ?? $b->getConnector()->getIdentifier())
+				) * 100 +
+				(($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier()))
+			),
 		);
 
 		foreach ($systemDevices as $device) {
@@ -3610,10 +3603,9 @@ class Install extends Console\Command\Command
 				continue;
 			}
 
-			$devices[$device->getId()->toString()] = $device->getIdentifier()
-				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				. ($device->getConnector()->getName() !== null ? ' [' . $device->getConnector()->getName() . ']' : '[' . $device->getConnector()->getIdentifier() . ']')
-				. ($device->getName() !== null ? ' [' . $device->getName() . ']' : '');
+			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+			$devices[$device->getId()->toString()] = '[' . ($device->getConnector()->getName() ?? $device->getConnector()->getIdentifier()) . '] '
+				. ($device->getName() ?? $device->getIdentifier());
 		}
 
 		if (count($devices) === 0) {
@@ -3689,21 +3681,13 @@ class Install extends Console\Command\Command
 		$deviceChannels = $this->channelsRepository->findAllBy($findChannelsQuery);
 		usort(
 			$deviceChannels,
-			static function (DevicesEntities\Channels\Channel $a, DevicesEntities\Channels\Channel $b): int {
-				if ($a->getIdentifier() === $b->getIdentifier()) {
-					return $a->getName() <=> $b->getName();
-				}
-
-				return $a->getIdentifier() <=> $b->getIdentifier();
-			},
+			static fn (DevicesEntities\Channels\Channel $a, DevicesEntities\Channels\Channel $b): int => (
+				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
+			),
 		);
 
 		foreach ($deviceChannels as $channel) {
-			$channels[$channel->getIdentifier()] = sprintf(
-				'%s%s',
-				$channel->getIdentifier(),
-				($channel->getName() !== null ? ' [' . $channel->getName() . ']' : ''),
-			);
+			$channels[$channel->getIdentifier()] = $channel->getName() ?? $channel->getIdentifier();
 		}
 
 		$default = count($channels) === 1 ? 0 : null;
@@ -3780,21 +3764,13 @@ class Install extends Console\Command\Command
 		);
 		usort(
 			$channelProperties,
-			static function (DevicesEntities\Channels\Properties\Dynamic $a, DevicesEntities\Channels\Properties\Dynamic $b): int {
-				if ($a->getIdentifier() === $b->getIdentifier()) {
-					return $a->getName() <=> $b->getName();
-				}
-
-				return $a->getIdentifier() <=> $b->getIdentifier();
-			},
+			static fn (DevicesEntities\Channels\Properties\Dynamic $a, DevicesEntities\Channels\Properties\Dynamic $b): int => (
+				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
+			),
 		);
 
 		foreach ($channelProperties as $property) {
-			$properties[$property->getIdentifier()] = sprintf(
-				'%s%s',
-				$property->getIdentifier(),
-				($property->getName() !== null ? ' [' . $property->getName() . ']' : ''),
-			);
+			$properties[$property->getIdentifier()] = $property->getName() ?? $property->getIdentifier();
 		}
 
 		$default = count($properties) === 1 ? 0 : null;
@@ -4308,13 +4284,13 @@ class Install extends Console\Command\Command
 		);
 		usort(
 			$systemConnectors,
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-			static fn (Entities\NsPanelConnector $a, Entities\NsPanelConnector $b): int => $a->getIdentifier() <=> $b->getIdentifier()
+			static fn (Entities\NsPanelConnector $a, Entities\NsPanelConnector $b): int => (
+				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
+			),
 		);
 
 		foreach ($systemConnectors as $connector) {
-			$connectors[$connector->getIdentifier()] = $connector->getIdentifier()
-				. ($connector->getName() !== null ? ' [' . $connector->getName() . ']' : '');
+			$connectors[$connector->getIdentifier()] = $connector->getName() ?? $connector->getIdentifier();
 		}
 
 		if (count($connectors) === 0) {
@@ -4467,12 +4443,13 @@ class Install extends Console\Command\Command
 		$connectorDevices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\Gateway::class);
 		usort(
 			$connectorDevices,
-			static fn (DevicesEntities\Devices\Device $a, DevicesEntities\Devices\Device $b): int => $a->getIdentifier() <=> $b->getIdentifier()
+			static fn (DevicesEntities\Devices\Device $a, DevicesEntities\Devices\Device $b): int => (
+				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
+			),
 		);
 
 		foreach ($connectorDevices as $gateway) {
-			$gateways[$gateway->getIdentifier()] = $gateway->getIdentifier()
-				. ($gateway->getName() !== null ? ' [' . $gateway->getName() . ']' : '');
+			$gateways[$gateway->getIdentifier()] = $gateway->getName() ?? $gateway->getIdentifier();
 		}
 
 		if (count($gateways) === 0) {
@@ -4563,12 +4540,13 @@ class Install extends Console\Command\Command
 
 		usort(
 			$connectorDevices,
-			static fn (Entities\NsPanelDevice $a, Entities\NsPanelDevice $b): int => $a->getIdentifier() <=> $b->getIdentifier()
+			static fn (Entities\NsPanelDevice $a, Entities\NsPanelDevice $b): int => (
+				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
+			),
 		);
 
 		foreach ($connectorDevices as $device) {
-			$devices[$device->getIdentifier()] = $device->getIdentifier()
-				. ($device->getName() !== null ? ' [' . $device->getName() . ']' : '');
+			$devices[$device->getIdentifier()] = $device->getName() ?? $device->getIdentifier();
 		}
 
 		if (count($devices) === 0) {
@@ -4651,12 +4629,13 @@ class Install extends Console\Command\Command
 		$deviceChannels = $this->channelsRepository->findAllBy($findChannelsQuery, Entities\NsPanelChannel::class);
 		usort(
 			$deviceChannels,
-			static fn (Entities\NsPanelChannel $a, Entities\NsPanelChannel $b): int => $a->getIdentifier() <=> $b->getIdentifier()
+			static fn (Entities\NsPanelChannel $a, Entities\NsPanelChannel $b): int => (
+				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
+			),
 		);
 
 		foreach ($deviceChannels as $channel) {
-			$channels[$channel->getIdentifier()] = $channel->getIdentifier()
-				. ($channel->getName() !== null ? ' [' . $channel->getName() . ']' : '');
+			$channels[$channel->getIdentifier()] = $channel->getName() ?? $channel->getIdentifier();
 		}
 
 		if (count($channels) === 0) {
@@ -4740,13 +4719,13 @@ class Install extends Console\Command\Command
 		$channelProperties = $this->channelsPropertiesRepository->findAllBy($findChannelPropertiesQuery);
 		usort(
 			$channelProperties,
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-			static fn (DevicesEntities\Channels\Properties\Property $a, DevicesEntities\Channels\Properties\Property $b): int => $a->getIdentifier() <=> $b->getIdentifier()
+			static fn (DevicesEntities\Channels\Properties\Property $a, DevicesEntities\Channels\Properties\Property $b): int => (
+				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
+			),
 		);
 
 		foreach ($channelProperties as $property) {
-			$properties[$property->getIdentifier()] = $property->getIdentifier()
-				. ($property->getName() !== null ? ' [' . $property->getName() . ']' : '');
+			$properties[$property->getIdentifier()] = $property->getName() ?? $property->getIdentifier();
 		}
 
 		if (count($properties) === 0) {

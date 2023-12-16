@@ -283,9 +283,9 @@ class Install extends Console\Command\Command
 			true,
 		);
 
-		$createRegisters = (bool) $io->askQuestion($question);
+		$createDevices = (bool) $io->askQuestion($question);
 
-		if ($createRegisters) {
+		if ($createDevices) {
 			$this->createDevice($io, $connector);
 		}
 	}
@@ -659,13 +659,9 @@ class Install extends Console\Command\Command
 		$connectors = $this->connectorsRepository->findAllBy($findConnectorsQuery, Entities\FbMqttConnector::class);
 		usort(
 			$connectors,
-			static function (Entities\FbMqttConnector $a, Entities\FbMqttConnector $b): int {
-				if ($a->getIdentifier() === $b->getIdentifier()) {
-					return $a->getName() <=> $b->getName();
-				}
-
-				return $a->getIdentifier() <=> $b->getIdentifier();
-			},
+			static fn (Entities\FbMqttConnector $a, Entities\FbMqttConnector $b): int => (
+				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
+			),
 		);
 
 		$table = new Console\Helper\Table($io);
@@ -947,13 +943,9 @@ class Install extends Console\Command\Command
 		$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\FbMqttDevice::class);
 		usort(
 			$devices,
-			static function (Entities\FbMqttDevice $a, Entities\FbMqttDevice $b): int {
-				if ($a->getIdentifier() === $b->getIdentifier()) {
-					return $a->getName() <=> $b->getName();
-				}
-
-				return $a->getIdentifier() <=> $b->getIdentifier();
-			},
+			static fn (Entities\FbMqttDevice $a, Entities\FbMqttDevice $b): int => (
+				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
+			),
 		);
 
 		$table = new Console\Helper\Table($io);
@@ -1341,13 +1333,13 @@ class Install extends Console\Command\Command
 		);
 		usort(
 			$systemConnectors,
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-			static fn (Entities\FbMqttConnector $a, Entities\FbMqttConnector $b): int => $a->getIdentifier() <=> $b->getIdentifier()
+			static fn (Entities\FbMqttConnector $a, Entities\FbMqttConnector $b): int => (
+				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
+			),
 		);
 
 		foreach ($systemConnectors as $connector) {
-			$connectors[$connector->getIdentifier()] = $connector->getIdentifier()
-				. ($connector->getName() !== null ? ' [' . $connector->getName() . ']' : '');
+			$connectors[$connector->getIdentifier()] = $connector->getName() ?? $connector->getIdentifier();
 		}
 
 		if (count($connectors) === 0) {
@@ -1426,12 +1418,13 @@ class Install extends Console\Command\Command
 		);
 		usort(
 			$connectorDevices,
-			static fn (Entities\FbMqttDevice $a, Entities\FbMqttDevice $b): int => $a->getIdentifier() <=> $b->getIdentifier()
+			static fn (Entities\FbMqttDevice $a, Entities\FbMqttDevice $b): int => (
+				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
+			),
 		);
 
 		foreach ($connectorDevices as $device) {
-			$devices[$device->getIdentifier()] = $device->getIdentifier()
-				. ($device->getName() !== null ? ' [' . $device->getName() . ']' : '');
+			$devices[$device->getIdentifier()] = $device->getName() ?? $device->getIdentifier();
 		}
 
 		if (count($devices) === 0) {
