@@ -23,6 +23,7 @@ use FastyBird\Connector\Virtual\Entities;
 use FastyBird\Connector\Virtual\Exceptions;
 use FastyBird\Connector\Virtual\Queries;
 use FastyBird\Connector\Virtual\Types;
+use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -87,8 +88,9 @@ class Thermostat extends Device
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
-		Persistence\ManagerRegistry $managerRegistry,
+		private readonly BootstrapHelpers\Database $databaseHelper,
 		private readonly Localization\Translator $translator,
+		Persistence\ManagerRegistry $managerRegistry,
 		string|null $name = null,
 	)
 	{
@@ -964,6 +966,8 @@ class Thermostat extends Device
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
+
+			$this->databaseHelper->clear();
 		}
 
 		$this->channelPropertiesStatesManager->setValue(
@@ -1523,6 +1527,8 @@ class Thermostat extends Device
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
+
+			$this->databaseHelper->clear();
 		}
 
 		assert($hvacModeProperty instanceof DevicesEntities\Channels\Properties\Dynamic);
@@ -1650,6 +1656,8 @@ class Thermostat extends Device
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
+
+			$this->databaseHelper->clear();
 		}
 	}
 
@@ -1659,6 +1667,7 @@ class Thermostat extends Device
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exception
 	 */
@@ -1737,10 +1746,13 @@ class Thermostat extends Device
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
+
+			$this->databaseHelper->clear();
 		}
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
@@ -1895,6 +1907,8 @@ class Thermostat extends Device
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
+
+			$this->databaseHelper->clear();
 		}
 
 		assert($targetTempProperty instanceof DevicesEntities\Channels\Properties\Dynamic);
@@ -3294,13 +3308,11 @@ class Thermostat extends Device
 			$property = null;
 		}
 
-		if ($property === null) {
-			$property = $this->channelsPropertiesManager->create($data);
-			assert($property instanceof $propertyType);
-		} else {
-			$property = $this->channelsPropertiesManager->update($property, $data);
-			assert($property instanceof $propertyType);
-		}
+		$property = $property === null
+			? $this->channelsPropertiesManager->create($data)
+			: $this->channelsPropertiesManager->update($property, $data);
+
+		assert($property instanceof $propertyType);
 
 		return $property;
 	}
