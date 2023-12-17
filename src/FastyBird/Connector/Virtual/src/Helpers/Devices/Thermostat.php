@@ -62,6 +62,7 @@ final class Thermostat
 		$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 		$findChannelQuery->forDevice($device);
 		$findChannelQuery->byIdentifier(Types\ChannelIdentifier::THERMOSTAT);
+		$findChannelQuery->byType(Entities\Channels\Thermostat::TYPE);
 
 		$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 
@@ -84,6 +85,7 @@ final class Thermostat
 		$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 		$findChannelQuery->forDevice($device);
 		$findChannelQuery->byIdentifier($preset);
+		$findChannelQuery->byType(Entities\Channels\Preset::TYPE);
 
 		$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 
@@ -403,6 +405,7 @@ final class Thermostat
 		$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 		$findChannelQuery->forDevice($device);
 		$findChannelQuery->byIdentifier(Types\ChannelIdentifier::ACTORS);
+		$findChannelQuery->byType(Entities\Channels\Actors::TYPE);
 
 		$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 
@@ -466,6 +469,7 @@ final class Thermostat
 		$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 		$findChannelQuery->forDevice($device);
 		$findChannelQuery->byIdentifier(Types\ChannelIdentifier::SENSORS);
+		$findChannelQuery->byType(Entities\Channels\Sensors::TYPE);
 
 		$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 
@@ -535,6 +539,7 @@ final class Thermostat
 		$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 		$findChannelQuery->forDevice($device);
 		$findChannelQuery->byIdentifier(Types\ChannelIdentifier::OPENINGS);
+		$findChannelQuery->byType(Entities\Channels\Sensors::TYPE);
 
 		$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 
