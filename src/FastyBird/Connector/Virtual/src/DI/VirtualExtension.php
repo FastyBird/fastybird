@@ -300,11 +300,8 @@ class VirtualExtension extends DI\CompilerExtension
 		 * COMMANDS
 		 */
 
-		$builder->addDefinition($this->prefix('commands.initialize'), new DI\Definitions\ServiceDefinition())
-			->setType(Commands\Initialize::class)
-			->setArguments([
-				'logger' => $logger,
-			]);
+		$builder->addDefinition($this->prefix('commands.execute'), new DI\Definitions\ServiceDefinition())
+			->setType(Commands\Execute::class);
 
 		$thermostatCmd = $builder->addDefinition(
 			$this->prefix('commands.device.thermostat'),
@@ -316,17 +313,14 @@ class VirtualExtension extends DI\CompilerExtension
 			])
 			->setAutowired(false);
 
-		$builder->addDefinition($this->prefix('commands.device'), new DI\Definitions\ServiceDefinition())
-			->setType(Commands\Devices::class)
+		$builder->addDefinition($this->prefix('commands.install'), new DI\Definitions\ServiceDefinition())
+			->setType(Commands\Install::class)
 			->setArguments([
 				'logger' => $logger,
 				'commands' => [
 					Entities\Devices\Thermostat::TYPE => $thermostatCmd,
 				],
 			]);
-
-		$builder->addDefinition($this->prefix('commands.execute'), new DI\Definitions\ServiceDefinition())
-			->setType(Commands\Execute::class);
 
 		/**
 		 * CONNECTOR

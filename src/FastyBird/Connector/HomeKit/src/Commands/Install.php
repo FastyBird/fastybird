@@ -25,6 +25,7 @@ use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Helpers;
 use FastyBird\Connector\HomeKit\Queries;
 use FastyBird\Connector\HomeKit\Types;
+use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -104,6 +105,7 @@ class Install extends Console\Command\Command
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
+		private readonly BootstrapHelpers\Database $databaseHelper,
 		private readonly Localization\Translator $translator,
 		string|null $name = null,
 	)
@@ -122,6 +124,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -145,6 +148,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -259,6 +263,8 @@ class Install extends Console\Command\Command
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
+
+			$this->databaseHelper->clear();
 		}
 
 		$question = new Console\Question\ConfirmationQuestion(
@@ -274,6 +280,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -388,6 +395,8 @@ class Install extends Console\Command\Command
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
+
+			$this->databaseHelper->clear();
 		}
 
 		$question = new Console\Question\ConfirmationQuestion(
@@ -405,6 +414,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
@@ -469,10 +479,13 @@ class Install extends Console\Command\Command
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
+
+			$this->databaseHelper->clear();
 		}
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -536,6 +549,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -647,12 +661,15 @@ class Install extends Console\Command\Command
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
+
+			$this->databaseHelper->clear();
 		}
 
 		$this->createService($io, $device);
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -744,6 +761,8 @@ class Install extends Console\Command\Command
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
+
+			$this->databaseHelper->clear();
 		}
 
 		$question = new Console\Question\ConfirmationQuestion(
@@ -761,6 +780,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
@@ -825,10 +845,13 @@ class Install extends Console\Command\Command
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
+
+			$this->databaseHelper->clear();
 		}
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -892,6 +915,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -1009,6 +1033,8 @@ class Install extends Console\Command\Command
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
+
+			$this->databaseHelper->clear();
 		}
 
 		$question = new Console\Question\ConfirmationQuestion(
@@ -1026,6 +1052,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -1183,6 +1210,8 @@ class Install extends Console\Command\Command
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
+
+			$this->databaseHelper->clear();
 		}
 
 		$question = new Console\Question\ConfirmationQuestion(
@@ -1200,6 +1229,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
@@ -1270,10 +1300,13 @@ class Install extends Console\Command\Command
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
+
+			$this->databaseHelper->clear();
 		}
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -1456,6 +1489,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -1604,10 +1638,13 @@ class Install extends Console\Command\Command
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
+
+			$this->databaseHelper->clear();
 		}
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
@@ -1680,6 +1717,8 @@ class Install extends Console\Command\Command
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
+
+			$this->databaseHelper->clear();
 		}
 	}
 
@@ -1750,6 +1789,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -1833,6 +1873,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -1919,6 +1960,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -2005,6 +2047,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument

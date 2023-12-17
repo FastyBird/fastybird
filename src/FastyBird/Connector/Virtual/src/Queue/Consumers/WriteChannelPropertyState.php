@@ -325,7 +325,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					}
 				}
 			},
-			function (Throwable $ex) use ($connector, $device, $channel, $property, $entity): void {
+			function (Throwable $ex) use ($connector, $device, $property, $entity): void {
 				if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
 					$this->channelPropertiesStatesManager->setValue(
 						$property,

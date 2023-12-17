@@ -35,6 +35,7 @@ use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Nette\Utils;
+use function array_merge;
 use function assert;
 use function is_string;
 
@@ -269,7 +270,9 @@ final class StoreDevicePropertyState implements Queue\Consumer
 								],
 								'property' => array_merge(
 									is_string($entity->getProperty()) ? ['identifier' => $entity->getProperty()] : [],
-									!is_string($entity->getProperty()) ? ['id' => $entity->getProperty()->toString()] : [],
+									!is_string(
+										$entity->getProperty(),
+									) ? ['id' => $entity->getProperty()->toString()] : [],
 								),
 								'data' => $entity->toArray(),
 							],
