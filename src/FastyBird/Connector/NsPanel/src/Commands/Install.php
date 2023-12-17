@@ -111,9 +111,9 @@ class Install extends Console\Command\Command
 		private readonly DevicesModels\Entities\Channels\ChannelsManager $channelsManager,
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager,
+		private readonly BootstrapHelpers\Database $databaseHelper,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
-		private readonly BootstrapHelpers\Database $databaseHelper,
 		private readonly Localization\Translator $translator,
 		string|null $name = null,
 	)
@@ -253,8 +253,6 @@ class Install extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
-			$this->databaseHelper->clear();
-
 			$io->success(
 				$this->translator->translate(
 					'//ns-panel-connector.cmd.install.messages.create.connector.success',
@@ -282,6 +280,8 @@ class Install extends Console\Command\Command
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
+
+			$this->databaseHelper->clear();
 		}
 
 		$question = new Console\Question\ConfirmationQuestion(
@@ -407,8 +407,6 @@ class Install extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
-			$this->databaseHelper->clear();
-
 			$io->success(
 				$this->translator->translate(
 					'//ns-panel-connector.cmd.install.messages.update.connector.success',
@@ -436,6 +434,8 @@ class Install extends Console\Command\Command
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
+
+			$this->databaseHelper->clear();
 		}
 
 		$question = new Console\Question\ConfirmationQuestion(
@@ -453,6 +453,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
@@ -494,8 +495,6 @@ class Install extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
-			$this->databaseHelper->clear();
-
 			$io->success(
 				$this->translator->translate(
 					'//ns-panel-connector.cmd.install.messages.remove.connector.success',
@@ -521,6 +520,8 @@ class Install extends Console\Command\Command
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
+
+			$this->databaseHelper->clear();
 		}
 	}
 
@@ -763,8 +764,6 @@ class Install extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
-			$this->databaseHelper->clear();
-
 			$io->success(
 				$this->translator->translate(
 					'//ns-panel-connector.cmd.install.messages.create.gateway.success',
@@ -790,6 +789,8 @@ class Install extends Console\Command\Command
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
+
+			$this->databaseHelper->clear();
 		}
 
 		if (
@@ -1028,8 +1029,6 @@ class Install extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
-			$this->databaseHelper->clear();
-
 			$io->success(
 				$this->translator->translate(
 					'//ns-panel-connector.cmd.install.messages.update.gateway.success',
@@ -1055,6 +1054,8 @@ class Install extends Console\Command\Command
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
+
+			$this->databaseHelper->clear();
 		}
 
 		$question = new Console\Question\ConfirmationQuestion(
@@ -1072,6 +1073,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
@@ -1116,8 +1118,6 @@ class Install extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
-			$this->databaseHelper->clear();
-
 			$io->success(
 				$this->translator->translate(
 					'//ns-panel-connector.cmd.install.messages.remove.gateway.success',
@@ -1141,6 +1141,8 @@ class Install extends Console\Command\Command
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
+
+			$this->databaseHelper->clear();
 		}
 	}
 
@@ -1331,6 +1333,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -1415,8 +1418,6 @@ class Install extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
-			$this->databaseHelper->clear();
-
 			$io->success(
 				$this->translator->translate(
 					'//ns-panel-connector.cmd.install.messages.create.device.success',
@@ -1442,6 +1443,8 @@ class Install extends Console\Command\Command
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
+
+			$this->databaseHelper->clear();
 		}
 
 		do {
@@ -1451,6 +1454,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -1498,8 +1502,6 @@ class Install extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
-			$this->databaseHelper->clear();
-
 			$io->success(
 				$this->translator->translate(
 					'//ns-panel-connector.cmd.install.messages.update.device.success',
@@ -1523,10 +1525,13 @@ class Install extends Console\Command\Command
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
+
+			$this->databaseHelper->clear();
 		}
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
@@ -1611,8 +1616,6 @@ class Install extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
-			$this->databaseHelper->clear();
-
 			$io->success(
 				$this->translator->translate(
 					'//ns-panel-connector.cmd.install.messages.remove.device.success',
@@ -1636,10 +1639,13 @@ class Install extends Console\Command\Command
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
+
+			$this->databaseHelper->clear();
 		}
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -1738,6 +1744,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -1834,8 +1841,6 @@ class Install extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
-			$this->databaseHelper->clear();
-
 			$io->success(
 				$this->translator->translate(
 					'//ns-panel-connector.cmd.install.messages.create.capability.success',
@@ -1863,12 +1868,15 @@ class Install extends Console\Command\Command
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
+
+			$this->databaseHelper->clear();
 		}
 
 		return $channel;
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -1957,8 +1965,6 @@ class Install extends Console\Command\Command
 				// Commit all changes into database
 				$this->getOrmConnection()->commit();
 
-				$this->databaseHelper->clear();
-
 				$io->success(
 					$this->translator->translate(
 						'//ns-panel-connector.cmd.install.messages.update.capability.success',
@@ -1992,10 +1998,13 @@ class Install extends Console\Command\Command
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
+
+			$this->databaseHelper->clear();
 		}
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -2035,6 +2044,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
@@ -2078,8 +2088,6 @@ class Install extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
-			$this->databaseHelper->clear();
-
 			$io->success(
 				$this->translator->translate(
 					'//ns-panel-connector.cmd.install.messages.remove.capability.success',
@@ -2105,6 +2113,8 @@ class Install extends Console\Command\Command
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
+
+			$this->databaseHelper->clear();
 		}
 	}
 
@@ -2263,6 +2273,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -2399,8 +2410,6 @@ class Install extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
-			$this->databaseHelper->clear();
-
 			$io->success(
 				$this->translator->translate(
 					'//ns-panel-connector.cmd.install.messages.update.protocol.success',
@@ -2426,12 +2435,15 @@ class Install extends Console\Command\Command
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
+
+			$this->databaseHelper->clear();
 		}
 
 		$this->askProtocolAction($io, $channel);
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -2478,8 +2490,6 @@ class Install extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
-			$this->databaseHelper->clear();
-
 			$io->success(
 				$this->translator->translate(
 					'//ns-panel-connector.cmd.install.messages.remove.protocol.success',
@@ -2505,6 +2515,8 @@ class Install extends Console\Command\Command
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
+
+			$this->databaseHelper->clear();
 		}
 
 		$findChannelPropertiesQuery = new DevicesQueries\Entities\FindChannelProperties();
@@ -2787,6 +2799,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidState
 	 * @throws Console\Exception\ExceptionInterface
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
@@ -2998,6 +3011,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -3084,6 +3098,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument

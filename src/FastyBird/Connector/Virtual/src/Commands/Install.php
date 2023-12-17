@@ -70,9 +70,9 @@ class Install extends Console\Command\Command
 		private readonly DevicesModels\Entities\Connectors\ConnectorsManager $connectorsManager,
 		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\Entities\Devices\DevicesManager $devicesManager,
+		private readonly BootstrapHelpers\Database $databaseHelper,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 		private readonly Localization\Translator $translator,
-		private readonly BootstrapHelpers\Database $databaseHelper,
 		string|null $name = null,
 	)
 	{
