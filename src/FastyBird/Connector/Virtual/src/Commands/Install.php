@@ -452,13 +452,9 @@ class Install extends Console\Command\Command
 		$connectors = $this->connectorsRepository->findAllBy($findConnectorsQuery, Entities\VirtualConnector::class);
 		usort(
 			$connectors,
-			static function (Entities\VirtualConnector $a, Entities\VirtualConnector $b): int {
-				if ($a->getIdentifier() === $b->getIdentifier()) {
-					return $a->getName() <=> $b->getName();
-				}
-
-				return $a->getIdentifier() <=> $b->getIdentifier();
-			},
+			static fn (Entities\VirtualConnector $a, Entities\VirtualConnector $b): int => (
+				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
+			),
 		);
 
 		$table = new Console\Helper\Table($io);
@@ -656,13 +652,9 @@ class Install extends Console\Command\Command
 		$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\VirtualDevice::class);
 		usort(
 			$devices,
-			static function (Entities\VirtualDevice $a, Entities\VirtualDevice $b): int {
-				if ($a->getIdentifier() === $b->getIdentifier()) {
-					return $a->getName() <=> $b->getName();
-				}
-
-				return $a->getIdentifier() <=> $b->getIdentifier();
-			},
+			static fn (Entities\VirtualDevice $a, Entities\VirtualDevice $b): int => (
+				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
+			),
 		);
 
 		$table = new Console\Helper\Table($io);

@@ -88,11 +88,11 @@ class Thermostat extends Device
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
 		Persistence\ManagerRegistry $managerRegistry,
-		Localization\Translator $translator,
+		private readonly Localization\Translator $translator,
 		string|null $name = null,
 	)
 	{
-		parent::__construct($translator, $managerRegistry, $name);
+		parent::__construct($managerRegistry, $name);
 	}
 
 	/**
@@ -102,7 +102,7 @@ class Thermostat extends Device
 	{
 		$this
 			->setName(self::NAME)
-			->setDescription('Virtual connector thermostat devices management')
+			->setDescription('Virtual connector thermostat management')
 			->setDefinition(
 				new Input\InputDefinition([
 					new Input\InputOption(
@@ -121,7 +121,7 @@ class Thermostat extends Device
 						'action',
 						'a',
 						Input\InputOption::VALUE_REQUIRED,
-						'Management action',
+						'Manage action',
 						[
 							self::ACTION_CREATE => new Console\Completion\Suggestion(
 								self::ACTION_CREATE,
@@ -153,7 +153,7 @@ class Thermostat extends Device
 
 		if (!Uuid\Uuid::isValid(strval($connector))) {
 			$io->warning(
-				$this->translator->translate('//virtual-connector.cmd.devices.messages.noConnector'),
+				$this->translator->translate('//virtual-connector.cmd.devices.thermostat.messages.noConnector'),
 			);
 
 			return Console\Command\Command::FAILURE;
@@ -166,7 +166,7 @@ class Thermostat extends Device
 
 		if ($connector === null) {
 			$io->warning(
-				$this->translator->translate('//virtual-connector.cmd.devices.messages.noConnector'),
+				$this->translator->translate('//virtual-connector.cmd.devices.thermostat.messages.noConnector'),
 			);
 
 			return Console\Command\Command::FAILURE;
@@ -184,7 +184,7 @@ class Thermostat extends Device
 
 				if (!Uuid\Uuid::isValid(strval($device))) {
 					$io->warning(
-						$this->translator->translate('//virtual-connector.cmd.devices.messages.noDevice'),
+						$this->translator->translate('//virtual-connector.cmd.devices.thermostat.messages.noDevice'),
 					);
 
 					return Console\Command\Command::FAILURE;
@@ -197,10 +197,14 @@ class Thermostat extends Device
 				$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\Thermostat::class);
 
 				if ($device === null) {
-					$io->warning($this->translator->translate('//virtual-connector.cmd.devices.messages.noDevices'));
+					$io->warning(
+						$this->translator->translate('//virtual-connector.cmd.devices.thermostat.messages.noDevice'),
+					);
 
 					$question = new Console\Question\ConfirmationQuestion(
-						$this->translator->translate('//virtual-connector.cmd.devices.questions.create.device'),
+						$this->translator->translate(
+							'//virtual-connector.cmd.devices.thermostat.questions.create.device',
+						),
 						false,
 					);
 
@@ -232,7 +236,9 @@ class Thermostat extends Device
 	private function createDevice(Style\SymfonyStyle $io, Entities\VirtualConnector $connector): void
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate('//virtual-connector.cmd.devices.questions.provide.identifier'),
+			$this->translator->translate(
+				'//virtual-connector.cmd.devices.thermostat.questions.provide.device.identifier',
+			),
 		);
 
 		$question->setValidator(function (string|null $answer) {
@@ -245,7 +251,7 @@ class Thermostat extends Device
 				) {
 					throw new Exceptions\Runtime(
 						$this->translator->translate(
-							'//virtual-connector.cmd.devices.messages.identifier.used',
+							'//virtual-connector.cmd.devices.thermostat.messages.identifier.device.used',
 						),
 					);
 				}
@@ -275,7 +281,9 @@ class Thermostat extends Device
 
 		if ($identifier === '') {
 			$io->error(
-				$this->translator->translate('//virtual-connector.cmd.devices.messages.identifier.missing'),
+				$this->translator->translate(
+					'//virtual-connector.cmd.devices.thermostat.messages.identifier.device.missing',
+				),
 			);
 
 			return;
@@ -931,7 +939,7 @@ class Thermostat extends Device
 
 			$io->success(
 				$this->translator->translate(
-					'//virtual-connector.cmd.devices.messages.create.device.success',
+					'//virtual-connector.cmd.devices.thermostat.messages.create.device.success',
 					['name' => $device->getName() ?? $device->getIdentifier()],
 				),
 			);
@@ -947,7 +955,7 @@ class Thermostat extends Device
 			);
 
 			$io->error(
-				$this->translator->translate('//virtual-connector.cmd.devices.messages.create.device.error'),
+				$this->translator->translate('//virtual-connector.cmd.devices.thermostat.messages.create.device.error'),
 			);
 
 			return;
@@ -1492,7 +1500,7 @@ class Thermostat extends Device
 
 			$io->success(
 				$this->translator->translate(
-					'//virtual-connector.cmd.devices.messages.update.device.success',
+					'//virtual-connector.cmd.devices.thermostat.messages.update.device.success',
 					['name' => $device->getName() ?? $device->getIdentifier()],
 				),
 			);
@@ -1508,7 +1516,7 @@ class Thermostat extends Device
 			);
 
 			$io->error(
-				$this->translator->translate('//virtual-connector.cmd.devices.messages.update.device.error'),
+				$this->translator->translate('//virtual-connector.cmd.devices.thermostat.messages.update.device.error'),
 			);
 		} finally {
 			// Revert all changes when error occur
@@ -1619,7 +1627,7 @@ class Thermostat extends Device
 
 			$io->success(
 				$this->translator->translate(
-					'//virtual-connector.cmd.devices.messages.update.device.success',
+					'//virtual-connector.cmd.devices.thermostat.messages.update.device.success',
 					['name' => $device->getName() ?? $device->getIdentifier()],
 				),
 			);
@@ -1635,7 +1643,7 @@ class Thermostat extends Device
 			);
 
 			$io->error(
-				$this->translator->translate('//virtual-connector.cmd.devices.messages.update.device.error'),
+				$this->translator->translate('//virtual-connector.cmd.devices.thermostat.messages.update.device.error'),
 			);
 		} finally {
 			// Revert all changes when error occur
@@ -1706,7 +1714,7 @@ class Thermostat extends Device
 
 			$io->success(
 				$this->translator->translate(
-					'//virtual-connector.cmd.devices.messages.update.device.success',
+					'//virtual-connector.cmd.devices.thermostat.messages.update.device.success',
 					['name' => $device->getName() ?? $device->getIdentifier()],
 				),
 			);
@@ -1722,7 +1730,7 @@ class Thermostat extends Device
 			);
 
 			$io->error(
-				$this->translator->translate('//virtual-connector.cmd.devices.messages.update.device.error'),
+				$this->translator->translate('//virtual-connector.cmd.devices.thermostat.messages.update.device.error'),
 			);
 		} finally {
 			// Revert all changes when error occur
@@ -1864,7 +1872,7 @@ class Thermostat extends Device
 
 			$io->success(
 				$this->translator->translate(
-					'//virtual-connector.cmd.devices.messages.update.device.success',
+					'//virtual-connector.cmd.devices.thermostat.messages.update.device.success',
 					['name' => $device->getName() ?? $device->getIdentifier()],
 				),
 			);
@@ -1880,7 +1888,7 @@ class Thermostat extends Device
 			);
 
 			$io->error(
-				$this->translator->translate('//virtual-connector.cmd.devices.messages.update.device.error'),
+				$this->translator->translate('//virtual-connector.cmd.devices.thermostat.messages.update.device.error'),
 			);
 		} finally {
 			// Revert all changes when error occur
@@ -1899,6 +1907,18 @@ class Thermostat extends Device
 				DevicesStates\Property::PENDING_FIELD => false,
 			]),
 		);
+	}
+
+	private function askDeviceName(Style\SymfonyStyle $io, Entities\Devices\Thermostat|null $device = null): string|null
+	{
+		$question = new Console\Question\Question(
+			$this->translator->translate('//virtual-connector.cmd.devices.thermostat.questions.provide.device.name'),
+			$device?->getName(),
+		);
+
+		$name = $io->askQuestion($question);
+
+		return strval($name) === '' ? null : strval($name);
 	}
 
 	/**
@@ -2478,7 +2498,9 @@ class Thermostat extends Device
 		$systemDevices = $this->devicesRepository->findAllBy($findDevicesQuery);
 		usort(
 			$systemDevices,
-			static fn (DevicesEntities\Devices\Device $a, DevicesEntities\Devices\Device $b): int => $a->getIdentifier() <=> $b->getIdentifier()
+			static fn (DevicesEntities\Devices\Device $a, DevicesEntities\Devices\Device $b): int => (
+				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
+			),
 		);
 
 		foreach ($systemDevices as $device) {
@@ -2573,10 +2595,9 @@ class Thermostat extends Device
 				continue;
 			}
 
-			$devices[$device->getId()->toString()] = $device->getIdentifier()
-				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				. ($device->getConnector()->getName() !== null ? ' [' . $device->getConnector()->getName() . ']' : ' [' . $device->getConnector()->getIdentifier() . ']')
-				. ($device->getName() !== null ? ' [' . $device->getName() . ']' : '');
+			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+			$devices[$device->getId()->toString()] = '[' . ($device->getConnector()->getName() ?? $device->getConnector()->getIdentifier()) . '] '
+				. ($device->getName() ?? $device->getIdentifier());
 		}
 
 		if (count($devices) === 0) {
@@ -2654,13 +2675,9 @@ class Thermostat extends Device
 		$deviceChannels = $this->channelsRepository->findAllBy($findChannelsQuery);
 		usort(
 			$deviceChannels,
-			static function (DevicesEntities\Channels\Channel $a, DevicesEntities\Channels\Channel $b): int {
-				if ($a->getIdentifier() === $b->getIdentifier()) {
-					return $a->getName() <=> $b->getName();
-				}
-
-				return $a->getIdentifier() <=> $b->getIdentifier();
-			},
+			static fn (DevicesEntities\Channels\Channel $a, DevicesEntities\Channels\Channel $b): int => (
+				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
+			),
 		);
 
 		foreach ($deviceChannels as $channel) {
@@ -2736,11 +2753,7 @@ class Thermostat extends Device
 				continue;
 			}
 
-			$channels[$channel->getIdentifier()] = sprintf(
-				'%s%s',
-				$channel->getIdentifier(),
-				($channel->getName() !== null ? ' [' . $channel->getName() . ']' : ''),
-			);
+			$channels[$channel->getIdentifier()] = $channel->getName() ?? $channel->getIdentifier();
 		}
 
 		$default = count($channels) === 1 ? 0 : null;
@@ -2814,13 +2827,9 @@ class Thermostat extends Device
 		$channelProperties = $this->channelsPropertiesRepository->findAllBy($findDevicePropertiesQuery);
 		usort(
 			$channelProperties,
-			static function (DevicesEntities\Channels\Properties\Property $a, DevicesEntities\Channels\Properties\Property $b): int {
-				if ($a->getIdentifier() === $b->getIdentifier()) {
-					return $a->getName() <=> $b->getName();
-				}
-
-				return $a->getIdentifier() <=> $b->getIdentifier();
-			},
+			static fn (DevicesEntities\Channels\Properties\Property $a, DevicesEntities\Channels\Properties\Property $b): int => (
+				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
+			),
 		);
 
 		foreach ($channelProperties as $property) {
@@ -2840,11 +2849,7 @@ class Thermostat extends Device
 				continue;
 			}
 
-			$properties[$property->getIdentifier()] = sprintf(
-				'%s%s',
-				$property->getIdentifier(),
-				' [' . ($property->getName() ?? DevicesUtilities\Name::createName($property->getIdentifier())) . ']',
-			);
+			$properties[$property->getIdentifier()] = $property->getName() ?? $property->getIdentifier();
 		}
 
 		$default = count($properties) === 1 ? 0 : null;
@@ -3102,17 +3107,14 @@ class Thermostat extends Device
 		);
 		usort(
 			$channelActors,
-			static fn (DevicesEntities\Channels\Properties\Mapped $a, DevicesEntities\Channels\Properties\Mapped $b): int =>
-				$a->getIdentifier() <=> $b->getIdentifier()
+			static fn (DevicesEntities\Channels\Properties\Mapped $a, DevicesEntities\Channels\Properties\Mapped $b): int => (
+				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
+			),
 		);
 
 		foreach ($channelActors as $channelActor) {
-			$actors[$channelActor->getIdentifier()] = $channelActor->getIdentifier()
-				. (
-					$channelActor->getName() !== null
-						? '[' . $channelActor->getName() . ']'
-						: ' [' . ($channelActor->getParent()->getName() ?? $channelActor->getParent()->getIdentifier()) . ']'
-				);
+			$actors[$channelActor->getIdentifier()] = $channelActor->getName() ?? $channelActor->getIdentifier()
+				. ' [' . ($channelActor->getParent()->getName() ?? $channelActor->getParent()->getIdentifier()) . ']';
 		}
 
 		if (count($actors) === 0) {
@@ -3196,23 +3198,20 @@ class Thermostat extends Device
 		$findChannelPropertiesQuery = new DevicesQueries\Entities\FindChannelMappedProperties();
 		$findChannelPropertiesQuery->forChannel($channel);
 
-		$channelActors = $this->channelsPropertiesRepository->findAllBy(
+		$channelSensors = $this->channelsPropertiesRepository->findAllBy(
 			$findChannelPropertiesQuery,
 			DevicesEntities\Channels\Properties\Mapped::class,
 		);
 		usort(
-			$channelActors,
-			static fn (DevicesEntities\Channels\Properties\Mapped $a, DevicesEntities\Channels\Properties\Mapped $b): int =>
-				$a->getIdentifier() <=> $b->getIdentifier()
+			$channelSensors,
+			static fn (DevicesEntities\Channels\Properties\Mapped $a, DevicesEntities\Channels\Properties\Mapped $b): int => (
+				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
+			),
 		);
 
-		foreach ($channelActors as $channelActor) {
-			$sensors[$channelActor->getIdentifier()] = $channelActor->getIdentifier()
-				. (
-					$channelActor->getName() !== null
-						? '[' . $channelActor->getName() . ']'
-						: ' [' . ($channelActor->getParent()->getName() ?? $channelActor->getParent()->getIdentifier()) . ']'
-				);
+		foreach ($channelSensors as $channelSensor) {
+			$sensors[$channelSensor->getIdentifier()] = $channelSensor->getName() ?? $channelSensor->getIdentifier()
+			. ' [' . ($channelSensor->getParent()->getName() ?? $channelSensor->getParent()->getIdentifier()) . ']';
 		}
 
 		if (count($sensors) === 0) {
