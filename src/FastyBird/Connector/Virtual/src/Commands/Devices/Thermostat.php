@@ -2513,8 +2513,12 @@ class Thermostat extends Device
 		usort(
 			$systemDevices,
 			static fn (DevicesEntities\Devices\Device $a, DevicesEntities\Devices\Device $b): int => (
-				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
-			),
+				(
+					($a->getConnector()->getName() ?? $a->getConnector()->getIdentifier())
+					<=> ($b->getConnector()->getName() ?? $b->getConnector()->getIdentifier())
+				) * 100 +
+				(($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier()))
+			)
 		);
 
 		foreach ($systemDevices as $device) {

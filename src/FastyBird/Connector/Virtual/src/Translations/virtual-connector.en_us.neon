@@ -75,6 +75,9 @@ cmd:
                     identifier: "Provide device identifier"
                     name: "Provide device name"
             select:
+                item:
+                    connector: "Please select connector to manage"
+                    device: "Please select device to manage"
                 device:
                     type: "Please select device type"
             disable:

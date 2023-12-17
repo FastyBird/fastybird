@@ -843,7 +843,7 @@ class Install extends Console\Command\Command
 	): string|null
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate('//virtual-connector.cmd.initialize.questions.provide.connector.name'),
+			$this->translator->translate('//virtual-connector.cmd.install.questions.provide.connector.name'),
 			$connector?->getName(),
 		);
 
@@ -1028,7 +1028,7 @@ class Install extends Console\Command\Command
 		$types = [];
 
 		foreach ($this->commands as $type => $command) {
-			$types[$type] = $this->translator->translate('//virtual-connector.cmd.devices.answers.types.' . $type);
+			$types[$type] = $this->translator->translate('//virtual-connector.cmd.install.answers.types.' . $type);
 		}
 
 		if ($this->commands === []) {
@@ -1036,7 +1036,7 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//virtual-connector.cmd.devices.questions.select.device.type'),
+			$this->translator->translate('//virtual-connector.cmd.install.questions.select.device.type'),
 			array_values($types),
 			count($types) === 1 ? 0 : null,
 		);
