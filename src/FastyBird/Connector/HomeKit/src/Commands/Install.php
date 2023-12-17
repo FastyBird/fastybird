@@ -47,6 +47,7 @@ use Throwable;
 use function array_combine;
 use function array_diff;
 use function array_filter;
+use function array_flip;
 use function array_key_exists;
 use function array_keys;
 use function array_map;
@@ -2487,8 +2488,8 @@ class Install extends Console\Command\Command
 		$default = count($devices) === 1 ? 0 : null;
 
 		if ($connectedDevice !== null) {
-			foreach (array_values($devices) as $index => $value) {
-				if (Utils\Strings::contains($value, $connectedDevice->getIdentifier())) {
+			foreach (array_values(array_flip($devices)) as $index => $value) {
+				if ($value === $connectedDevice->getId()->toString()) {
 					$default = $index;
 
 					break;
@@ -2557,14 +2558,14 @@ class Install extends Console\Command\Command
 		);
 
 		foreach ($deviceChannels as $channel) {
-			$channels[$channel->getIdentifier()] = $channel->getName() ?? $channel->getIdentifier();
+			$channels[$channel->getId()->toString()] = $channel->getName() ?? $channel->getIdentifier();
 		}
 
 		$default = count($channels) === 1 ? 0 : null;
 
 		if ($connectedChannel !== null) {
-			foreach (array_values($channels) as $index => $value) {
-				if (Utils\Strings::contains($value, $connectedChannel->getIdentifier())) {
+			foreach (array_values(array_flip($channels)) as $index => $value) {
+				if ($value === $connectedChannel->getId()->toString()) {
 					$default = $index;
 
 					break;
@@ -2601,7 +2602,7 @@ class Install extends Console\Command\Command
 
 				if ($identifier !== false) {
 					$findChannelQuery = new DevicesQueries\Entities\FindChannels();
-					$findChannelQuery->byIdentifier($identifier);
+					$findChannelQuery->byId(Uuid\Uuid::fromString($identifier));
 					$findChannelQuery->forDevice($device);
 
 					$channel = $this->channelsRepository->findOneBy($findChannelQuery);
@@ -2644,14 +2645,14 @@ class Install extends Console\Command\Command
 				continue;
 			}
 
-			$properties[$property->getIdentifier()] = $property->getName() ?? $property->getIdentifier();
+			$properties[$property->getId()->toString()] = $property->getName() ?? $property->getIdentifier();
 		}
 
 		$default = count($properties) === 1 ? 0 : null;
 
 		if ($connectedProperty !== null) {
-			foreach (array_values($properties) as $index => $value) {
-				if (Utils\Strings::contains($value, $connectedProperty->getIdentifier())) {
+			foreach (array_values(array_flip($properties)) as $index => $value) {
+				if ($value === $connectedProperty->getId()->toString()) {
 					$default = $index;
 
 					break;
@@ -2688,7 +2689,7 @@ class Install extends Console\Command\Command
 
 				if ($identifier !== false) {
 					$findPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
-					$findPropertyQuery->byIdentifier($identifier);
+					$findPropertyQuery->byId(Uuid\Uuid::fromString($identifier));
 					$findPropertyQuery->forChannel($channel);
 
 					$property = $this->channelsPropertiesRepository->findOneBy(

@@ -63,7 +63,7 @@ abstract class Property extends Entities\Property
 
 	/**
 	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\ManyToOne(targetEntity="FastyBird\Module\Devices\Entities\Devices\Properties\Property", inversedBy="children", cascade={"persist"})
+	 * @ORM\ManyToOne(targetEntity="FastyBird\Module\Devices\Entities\Devices\Properties\Property", inversedBy="children")
 	 * @ORM\JoinColumn(name="parent_id", referencedColumnName="property_id", nullable=true, onDelete="CASCADE")
 	 */
 	protected self|null $parent = null;

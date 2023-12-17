@@ -179,7 +179,7 @@ cmd:
                 mode:
                     heat: "Heating"
                     cool: "Cooling"
-                    auto: "Auto - heat and cool according to temerature"
+                    auto: "Auto"
                 preset:
                     away: "Away"
                     eco: "Eco"
