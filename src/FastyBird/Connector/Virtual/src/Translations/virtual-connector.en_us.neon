@@ -141,6 +141,9 @@ cmd:
                     actor: "Edit heaters or coolers actors"
                     sensor: "Edit sensors"
                     preset: "Edit thermostat presets"
+                list:
+                    actors: "List heaters and coolers actors"
+                    sensors: "List sensors"
                 remove:
                     actor: "Remove heater or cooler actor"
                     sensor: "Remove sensor"

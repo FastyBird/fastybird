@@ -1790,18 +1790,34 @@ class Thermostat extends Device
 		);
 		$actors = array_filter(
 			$actors,
-			static fn (DevicesEntities\Channels\Properties\Property $property): bool => in_array(
-				$property->getIdentifier(),
-				[Types\ChannelPropertyIdentifier::HEATER, Types\ChannelPropertyIdentifier::COOLER],
-				true,
-			),
+			static fn (DevicesEntities\Channels\Properties\Property $property): bool =>
+				Utils\Strings::startsWith(
+					$property->getIdentifier(),
+					Types\ChannelPropertyIdentifier::HEATER,
+				)
+				|| Utils\Strings::startsWith(
+					$property->getIdentifier(),
+					Types\ChannelPropertyIdentifier::COOLER,
+				),
 		);
 
 		foreach ($actors as $index => $property) {
+			$type = 'N/A';
+
+			if (Utils\Strings::startsWith($property->getIdentifier(), Types\ChannelPropertyIdentifier::HEATER)) {
+				$type = $this->translator->translate(
+					'//virtual-connector.cmd.devices.thermostat.data.' . Types\ChannelPropertyIdentifier::HEATER,
+				);
+			} elseif (Utils\Strings::startsWith($property->getIdentifier(), Types\ChannelPropertyIdentifier::COOLER)) {
+				$type = $this->translator->translate(
+					'//virtual-connector.cmd.devices.thermostat.data.' . Types\ChannelPropertyIdentifier::COOLER,
+				);
+			}
+
 			$table->addRow([
 				$index + 1,
 				$property->getName() ?? $property->getIdentifier(),
-				$property->getIdentifier(),
+				$type,
 			]);
 		}
 
@@ -2131,22 +2147,45 @@ class Thermostat extends Device
 		);
 		$sensors = array_filter(
 			$sensors,
-			static fn (DevicesEntities\Channels\Properties\Property $property): bool => in_array(
-				$property->getIdentifier(),
-				[
+			static fn (DevicesEntities\Channels\Properties\Property $property): bool =>
+				Utils\Strings::startsWith(
+					$property->getIdentifier(),
 					Types\ChannelPropertyIdentifier::TARGET_SENSOR,
+				)
+				|| Utils\Strings::startsWith(
+					$property->getIdentifier(),
 					Types\ChannelPropertyIdentifier::FLOOR_SENSOR,
+				)
+				|| Utils\Strings::startsWith(
+					$property->getIdentifier(),
 					Types\ChannelPropertyIdentifier::SENSOR,
-				],
-				true,
-			),
+				),
 		);
 
 		foreach ($sensors as $index => $property) {
+			$type = 'N/A';
+
+			if (Utils\Strings::startsWith($property->getIdentifier(), Types\ChannelPropertyIdentifier::TARGET_SENSOR)) {
+				$type = $this->translator->translate(
+					'//virtual-connector.cmd.devices.thermostat.data.' . Types\ChannelPropertyIdentifier::TARGET_SENSOR,
+				);
+			} elseif (Utils\Strings::startsWith(
+				$property->getIdentifier(),
+				Types\ChannelPropertyIdentifier::FLOOR_SENSOR,
+			)) {
+				$type = $this->translator->translate(
+					'//virtual-connector.cmd.devices.thermostat.data.' . Types\ChannelPropertyIdentifier::FLOOR_SENSOR,
+				);
+			} elseif (Utils\Strings::startsWith($property->getIdentifier(), Types\ChannelPropertyIdentifier::SENSOR)) {
+				$type = $this->translator->translate(
+					'//virtual-connector.cmd.devices.thermostat.data.' . Types\ChannelPropertyIdentifier::SENSOR,
+				);
+			}
+
 			$table->addRow([
 				$index + 1,
 				$property->getName() ?? $property->getIdentifier(),
-				$property->getIdentifier(),
+				$type,
 			]);
 		}
 
