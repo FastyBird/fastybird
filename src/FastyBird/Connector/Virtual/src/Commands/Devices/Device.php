@@ -35,6 +35,8 @@ abstract class Device extends Console\Command\Command
 
 	public const ACTION_EDIT = 'edit';
 
+	public const ACTION_MANAGE = 'manage';
+
 	public function __construct(
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 		string|null $name = null,

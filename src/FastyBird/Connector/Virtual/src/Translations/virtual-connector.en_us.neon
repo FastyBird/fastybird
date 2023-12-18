@@ -55,6 +55,7 @@ cmd:
                 device: "Delete device"
             manage:
                 connector: "Manage connector"
+                device: "Manage device"
             list:
                 connectors: "List connectors"
                 devices: "List devices"
@@ -132,10 +133,17 @@ cmd:
     devices:
         thermostat:
             actions:
-                editThermostat: "Edit thermostat configuration"
-                editActor: "Edit thermostat heaters or coolers actors"
-                editSensor: "Edit thermostat sensors"
-                editPreset: "Edit thermostat presets"
+                create:
+                    actor: "Assign heater or cooler actor"
+                    sensor: "Assign sensor"
+                update:
+                    device: "Edit thermostat configuration"
+                    actor: "Edit heaters or coolers actors"
+                    sensor: "Edit sensors"
+                    preset: "Edit thermostat presets"
+                remove:
+                    actor: "Remove heater or cooler actor"
+                    sensor: "Remove sensor"
                 back: "Go to previous menu"
 
             questions:
@@ -152,10 +160,16 @@ cmd:
                     actorToUpdate: "Select actor which you want to update"
                     sensorToUpdate: "Select sensor which you want to update"
                     presetToUpdate: "Select preset which you want to update"
+                    actorType: "Select actor type"
+                    sensorType: "Select sensor type"
                 provide:
                     device:
                         identifier: "Provide thermostat identifier"
                         name: "Provide thermostat name"
+                    actor:
+                        name: "Provide actor name"
+                    sensor:
+                        name: "Provide sensor name"
                     targetTemperature:
                         manual: "Provide target temperature value for manual mode"
                         away: "Provide target temperature value for AWAY mode"
@@ -187,6 +201,13 @@ cmd:
                     comfort: "Comfort"
                     sleep: "Sleep"
                     anti_freeze: "Anti freeze"
+                actor:
+                    heater: "Heater"
+                    cooler: "Cooler"
+                sensor:
+                    targetTemperature: "Target temperature"
+                    floorTemperature: "Floor temperature"
+                    sensor: "Openings sensor"
 
             messages:
                 identifier:
@@ -197,10 +218,31 @@ cmd:
                     device:
                         success: "Thermostat \"%name%\" was successfully created."
                         error: "Something went wrong, thermostat could not be created. Error was logged."
+                    actor:
+                        success: "Thermostat actor \"%name%\" was successfully created."
+                        error: "Something went wrong, thermostat actor could not be created. Error was logged."
+                    sensor:
+                        success: "Thermostat sensor \"%name%\" was successfully created."
+                        error: "Something went wrong, thermostat sensor could not be created. Error was logged."
                 update:
                     device:
                         success: "Thermostat \"%name%\" was successfully updated."
                         error: "Something went wrong, thermostat could not be updated. Error was logged."
+                    actor:
+                        success: "Thermostat actor \"%name%\" was successfully updated."
+                        error: "Something went wrong, thermostat actor could not be updated. Error was logged."
+                    sensor:
+                        success: "Thermostat sensor \"%name%\" was successfully updated."
+                        error: "Something went wrong, thermostat sensor could not be updated. Error was logged."
+                remove:
+                    actor:
+                        confirm: "This action will remove \"%name%\" thermostat actor. This action can not be undone."
+                        success: "Thermostat actor \"%name%\" was successfully removed."
+                        error: "Something went wrong, thermostat actor could not be removed. Error was logged."
+                    sensor:
+                        confirm: "This action will remove \"%name%\" thermostat sensor. This action can not be undone."
+                        success: "Thermostat sensor \"%name%\" was successfully removed."
+                        error: "Something went wrong, thermostat sensor could not be removed. Error was logged."
                 noHardwareDevices: "No devices registered in system"
                 property:
                     notSupported: "Selected property is not supported"
