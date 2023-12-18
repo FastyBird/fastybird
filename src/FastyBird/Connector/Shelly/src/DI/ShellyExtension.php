@@ -15,6 +15,7 @@
 
 namespace FastyBird\Connector\Shelly\DI;
 
+use Contributte\Translation;
 use Doctrine\Persistence;
 use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\API;
@@ -46,7 +47,7 @@ use const DIRECTORY_SEPARATOR;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class ShellyExtension extends DI\CompilerExtension
+class ShellyExtension extends DI\CompilerExtension implements Translation\DI\TranslationProviderInterface
 {
 
 	public const NAME = 'fbShellyConnector';
@@ -353,6 +354,16 @@ class ShellyExtension extends DI\CompilerExtension
 				'FastyBird\Connector\Shelly\Entities',
 			]);
 		}
+	}
+
+	/**
+	 * @return array<string>
+	 */
+	public function getTranslationResources(): array
+	{
+		return [
+			__DIR__ . '/../Translations/',
+		];
 	}
 
 }

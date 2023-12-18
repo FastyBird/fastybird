@@ -15,6 +15,7 @@
 
 namespace FastyBird\Module\Devices\DI;
 
+use Contributte\Translation;
 use Doctrine\Persistence;
 use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
@@ -55,7 +56,7 @@ use const DIRECTORY_SEPARATOR;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class DevicesExtension extends DI\CompilerExtension
+class DevicesExtension extends DI\CompilerExtension implements Translation\DI\TranslationProviderInterface
 {
 
 	public const NAME = 'fbDevicesModule';
@@ -796,6 +797,16 @@ class DevicesExtension extends DI\CompilerExtension
 			'return new ' . Models\Entities\Connectors\Controls\ControlsManager::class
 			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Connectors\Controls\Control::class . '\'));',
 		);
+	}
+
+	/**
+	 * @return array<string>
+	 */
+	public function getTranslationResources(): array
+	{
+		return [
+			__DIR__ . '/../Translations/',
+		];
 	}
 
 }

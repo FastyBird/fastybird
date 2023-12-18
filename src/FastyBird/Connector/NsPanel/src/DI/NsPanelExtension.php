@@ -15,6 +15,7 @@
 
 namespace FastyBird\Connector\NsPanel\DI;
 
+use Contributte\Translation;
 use Doctrine\Persistence;
 use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\API;
@@ -50,7 +51,7 @@ use const DIRECTORY_SEPARATOR;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class NsPanelExtension extends DI\CompilerExtension
+class NsPanelExtension extends DI\CompilerExtension implements Translation\DI\TranslationProviderInterface
 {
 
 	public const NAME = 'fbNsPanelConnector';
@@ -426,6 +427,16 @@ class NsPanelExtension extends DI\CompilerExtension
 				'FastyBird\Connector\NsPanel\Entities',
 			]);
 		}
+	}
+
+	/**
+	 * @return array<string>
+	 */
+	public function getTranslationResources(): array
+	{
+		return [
+			__DIR__ . '/../Translations/',
+		];
 	}
 
 }

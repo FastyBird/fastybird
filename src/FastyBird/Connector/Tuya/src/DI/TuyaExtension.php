@@ -15,6 +15,7 @@
 
 namespace FastyBird\Connector\Tuya\DI;
 
+use Contributte\Translation;
 use Doctrine\Persistence;
 use FastyBird\Connector\Tuya;
 use FastyBird\Connector\Tuya\API;
@@ -46,7 +47,7 @@ use const DIRECTORY_SEPARATOR;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class TuyaExtension extends DI\CompilerExtension
+class TuyaExtension extends DI\CompilerExtension implements Translation\DI\TranslationProviderInterface
 {
 
 	public const NAME = 'fbTuyaConnector';
@@ -364,6 +365,16 @@ class TuyaExtension extends DI\CompilerExtension
 				'FastyBird\Connector\Tuya\Entities',
 			]);
 		}
+	}
+
+	/**
+	 * @return array<string>
+	 */
+	public function getTranslationResources(): array
+	{
+		return [
+			__DIR__ . '/../Translations/',
+		];
 	}
 
 }
