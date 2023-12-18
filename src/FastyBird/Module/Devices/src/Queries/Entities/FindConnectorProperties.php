@@ -87,6 +87,20 @@ class FindConnectorProperties extends DoctrineOrmQuery\QueryObject
 		};
 	}
 
+	public function settable(bool $state): void
+	{
+		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($state): void {
+			$qb->andWhere('p.settable = :settable')->setParameter('settable', $state);
+		};
+	}
+
+	public function queryable(bool $state): void
+	{
+		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($state): void {
+			$qb->andWhere('p.queryable = :queryable')->setParameter('queryable', $state);
+		};
+	}
+
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 */

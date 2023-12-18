@@ -73,9 +73,9 @@ class Install extends Console\Command\Command
 		private readonly DevicesModels\Entities\Connectors\Properties\PropertiesManager $propertiesManager,
 		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\Entities\Devices\DevicesManager $devicesManager,
+		private readonly BootstrapHelpers\Database $databaseHelper,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
-		private readonly BootstrapHelpers\Database $databaseHelper,
 		private readonly Localization\Translator $translator,
 		string|null $name = null,
 	)
@@ -121,6 +121,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
@@ -264,8 +265,6 @@ class Install extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
-			$this->databaseHelper->clear();
-
 			$io->success(
 				$this->translator->translate(
 					'//tuya-connector.cmd.install.messages.create.connector.success',
@@ -291,10 +290,13 @@ class Install extends Console\Command\Command
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
+
+			$this->databaseHelper->clear();
 		}
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
@@ -551,8 +553,6 @@ class Install extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
-			$this->databaseHelper->clear();
-
 			$io->success(
 				$this->translator->translate(
 					'//tuya-connector.cmd.install.messages.update.connector.success',
@@ -578,10 +578,13 @@ class Install extends Console\Command\Command
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
+
+			$this->databaseHelper->clear();
 		}
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
@@ -623,8 +626,6 @@ class Install extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
-			$this->databaseHelper->clear();
-
 			$io->success(
 				$this->translator->translate(
 					'//tuya-connector.cmd.install.messages.remove.connector.success',
@@ -648,6 +649,8 @@ class Install extends Console\Command\Command
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
+
+			$this->databaseHelper->clear();
 		}
 	}
 
@@ -723,6 +726,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
@@ -751,8 +755,6 @@ class Install extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
-			$this->databaseHelper->clear();
-
 			$io->success(
 				$this->translator->translate(
 					'//tuya-connector.cmd.install.messages.update.device.success',
@@ -778,10 +780,13 @@ class Install extends Console\Command\Command
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
+
+			$this->databaseHelper->clear();
 		}
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
@@ -823,8 +828,6 @@ class Install extends Console\Command\Command
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
-			$this->databaseHelper->clear();
-
 			$io->success(
 				$this->translator->translate(
 					'//tuya-connector.cmd.install.messages.remove.device.success',
@@ -848,6 +851,8 @@ class Install extends Console\Command\Command
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
+
+			$this->databaseHelper->clear();
 		}
 	}
 

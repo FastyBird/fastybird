@@ -35,6 +35,7 @@ use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Nette\Utils;
+use function array_merge;
 use function assert;
 use function is_string;
 
@@ -105,11 +106,10 @@ final class StoreChannelPropertyState implements Queue\Consumer
 					'channel' => [
 						'id' => $entity->getChannel()->toString(),
 					],
-					'property' => [
-						'id' => is_string($entity->getProperty())
-							? $entity->getProperty()
-							: $entity->getProperty()->toString(),
-					],
+					'property' => array_merge(
+						is_string($entity->getProperty()) ? ['identifier' => $entity->getProperty()] : [],
+						!is_string($entity->getProperty()) ? ['id' => $entity->getProperty()->toString()] : [],
+					),
 					'data' => $entity->toArray(),
 				],
 			);
@@ -138,11 +138,10 @@ final class StoreChannelPropertyState implements Queue\Consumer
 					'channel' => [
 						'id' => $entity->getChannel()->toString(),
 					],
-					'property' => [
-						'id' => is_string($entity->getProperty())
-							? $entity->getProperty()
-							: $entity->getProperty()->toString(),
-					],
+					'property' => array_merge(
+						is_string($entity->getProperty()) ? ['identifier' => $entity->getProperty()] : [],
+						!is_string($entity->getProperty()) ? ['id' => $entity->getProperty()->toString()] : [],
+					),
 					'data' => $entity->toArray(),
 				],
 			);
@@ -175,11 +174,10 @@ final class StoreChannelPropertyState implements Queue\Consumer
 					'channel' => [
 						'id' => $entity->getChannel()->toString(),
 					],
-					'property' => [
-						'id' => is_string($entity->getProperty())
-							? $entity->getProperty()
-							: $entity->getProperty()->toString(),
-					],
+					'property' => array_merge(
+						is_string($entity->getProperty()) ? ['identifier' => $entity->getProperty()] : [],
+						!is_string($entity->getProperty()) ? ['id' => $entity->getProperty()->toString()] : [],
+					),
 					'data' => $entity->toArray(),
 				],
 			);
@@ -274,11 +272,10 @@ final class StoreChannelPropertyState implements Queue\Consumer
 							'channel' => [
 								'id' => $entity->getChannel()->toString(),
 							],
-							'property' => [
-								'id' => is_string($entity->getProperty())
-									? $entity->getProperty()
-									: $entity->getProperty()->toString(),
-							],
+							'property' => array_merge(
+								is_string($entity->getProperty()) ? ['identifier' => $entity->getProperty()] : [],
+								!is_string($entity->getProperty()) ? ['id' => $entity->getProperty()->toString()] : [],
+							),
 							'data' => $entity->toArray(),
 						],
 					);
@@ -317,11 +314,12 @@ final class StoreChannelPropertyState implements Queue\Consumer
 								'channel' => [
 									'id' => $entity->getChannel()->toString(),
 								],
-								'property' => [
-									'id' => is_string($entity->getProperty())
-										? $entity->getProperty()
-										: $entity->getProperty()->toString(),
-								],
+								'property' => array_merge(
+									is_string($entity->getProperty()) ? ['identifier' => $entity->getProperty()] : [],
+									!is_string(
+										$entity->getProperty(),
+									) ? ['id' => $entity->getProperty()->toString()] : [],
+								),
 								'data' => $entity->toArray(),
 							],
 						);
@@ -335,9 +333,19 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
 				'type' => 'store-channel-property-state-message-consumer',
-				'device' => [
-					'id' => $device->getId()->toString(),
+				'connector' => [
+					'id' => $entity->getConnector()->toString(),
 				],
+				'device' => [
+					'id' => $entity->getDevice()->toString(),
+				],
+				'channel' => [
+					'id' => $entity->getChannel()->toString(),
+				],
+				'property' => array_merge(
+					is_string($entity->getProperty()) ? ['identifier' => $entity->getProperty()] : [],
+					!is_string($entity->getProperty()) ? ['id' => $entity->getProperty()->toString()] : [],
+				),
 				'data' => $entity->toArray(),
 			],
 		);

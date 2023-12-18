@@ -301,8 +301,8 @@ class Thermostat extends Entities\VirtualDevice
 	{
 		return array_filter(
 			$this->getActors(),
-			static fn ($sensor): bool => Utils\Strings::startsWith(
-				$sensor->getIdentifier(),
+			static fn ($actor): bool => Utils\Strings::startsWith(
+				$actor->getIdentifier(),
 				Types\ChannelPropertyIdentifier::HEATER,
 			)
 		) !== [];
@@ -312,8 +312,8 @@ class Thermostat extends Entities\VirtualDevice
 	{
 		return array_filter(
 			$this->getActors(),
-			static fn ($sensor): bool => Utils\Strings::startsWith(
-				$sensor->getIdentifier(),
+			static fn ($actor): bool => Utils\Strings::startsWith(
+				$actor->getIdentifier(),
 				Types\ChannelPropertyIdentifier::COOLER,
 			)
 		) !== [];

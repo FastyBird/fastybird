@@ -94,7 +94,7 @@ abstract class Device implements Entities\Entity,
 	 * @var Common\Collections\Collection<int, Device>
 	 *
 	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\ManyToMany(targetEntity="FastyBird\Module\Devices\Entities\Devices\Device", inversedBy="children", cascade={"persist"})
+	 * @ORM\ManyToMany(targetEntity="FastyBird\Module\Devices\Entities\Devices\Device", inversedBy="children")
 	 * @ORM\JoinTable(
 	 *     name="fb_devices_module_devices_children",
 	 *     joinColumns={@ORM\JoinColumn(name="child_device", referencedColumnName="device_id", onDelete="CASCADE")},

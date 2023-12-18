@@ -85,6 +85,16 @@ class FindDeviceProperties extends QueryObject
 		$this->filter[] = '.[?(@.parent =~ /(?i).*^' . $parentId->toString() . '*$/)]';
 	}
 
+	public function settable(bool $state): void
+	{
+		$this->filter[] = '.[?(@.settable == "' . ($state ? 'true' : 'false') . '")]';
+	}
+
+	public function queryable(bool $state): void
+	{
+		$this->filter[] = '.[?(@.queryable == "' . ($state ? 'true' : 'false') . '")]';
+	}
+
 	/**
 	 * @throws JSONPath\JSONPathException
 	 */

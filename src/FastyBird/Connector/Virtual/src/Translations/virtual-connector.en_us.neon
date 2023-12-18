@@ -24,45 +24,6 @@ cmd:
             noConnectors: "No Virtual connectors registered in system."
             answerNotValid: "Selected answer: \"%s\" is not valid."
 
-    initialize:
-        title: "Virtual connector - initialization"
-        subtitle: "This action will create|update|delete connector configuration"
-
-        actions:
-            create: "Create new connector configuration"
-            update: "Edit existing connector configuration"
-            remove: "Delete existing connector configuration"
-            list: "List Virtual connectors"
-            nothing: "Nothing"
-
-        questions:
-            create: "Would you like to create new Virtual connector configuration?"
-            disable: "Do you want to disable connector?"
-            enable: "Do you want to enable connector?"
-            provide:
-                identifier: "Provide connector identifier"
-                name: "Provide connector name"
-            select:
-                connector: "Please select connector to manage"
-
-        data:
-            name: "Name"
-            devicesCnt: "# Devices"
-
-        messages:
-            identifier:
-                used: "This identifier is already used."
-                missing: "Connector identifier have to be provided."
-            create:
-                success: "Connector \"%name%\" was successfully created."
-                error: "Something went wrong, connector could not be created. An error was logged."
-            update:
-                success: "Connector \"%name%\" was successfully updated."
-                error: "Something went wrong, connector could not be updated. An error was logged."
-            remove:
-                success: "Connector \"%name%\" was successfully removed."
-                error: "Something went wrong, connector could not be removed. An error was logged."
-
     execute:
         title: "Virtual connector - service"
         subtitle: "This action will run connector service"
@@ -78,31 +39,52 @@ cmd:
                 disabled: "Connector is disabled. Disabled connector could not be executed."
             error: "Something went wrong, connector was terminated."
 
-    devices:
-        title: "Virtual connector - devices management"
-        subtitle: "This action will create|update|delete connector device"
+    install:
+        title: "Virtual connector - installer"
+        subtitle: "This action will create|update|delete connector configuration"
 
         actions:
             create:
-                device: "Create new connector device"
+                connector: "Create connector"
+                device: "Create device"
             update:
-                device: "Edit existing connector device"
+                connector: "Edit connector"
+                device: "Edit device"
             remove:
-                device: "Delete existing connector device"
+                connector: "Delete connector"
+                device: "Delete device"
+            manage:
+                connector: "Manage connector"
+                device: "Manage device"
             list:
-                devices: "List connector devices"
+                connectors: "List connectors"
+                devices: "List devices"
             nothing: "Nothing"
 
         questions:
             create:
-                device: "Would you like to create new device in connector?"
-            select:
-                connector: "Please select connector under which you want to manage devices"
-                device: "Please select device to manage"
-                type: "Please select device type"
+                connector: "Would you like to create new connector configuration?"
+                devices: "Would you like to configure connector device(s)?"
+                device: "Would you like to create new device?"
+            manage:
+                devices: "Would you like to manage connector devices?"
             provide:
-                identifier: "Provide device identifier"
-                name: "Provide device name"
+                connector:
+                    identifier: "Provide connector identifier"
+                    name: "Provide connector name"
+                device:
+                    identifier: "Provide device identifier"
+                    name: "Provide device name"
+            select:
+                item:
+                    connector: "Please select connector to manage"
+                    device: "Please select device to manage"
+                device:
+                    type: "Please select device type"
+            disable:
+                connector: "Do you want to disable connector?"
+            enable:
+                connector: "Do you want to enable connector?"
 
         answers:
             none: "None"
@@ -112,36 +94,66 @@ cmd:
         data:
             name: "Name"
             model: "Model"
+            devicesCnt: "# Devices"
 
         messages:
             identifier:
-                used: "This identifier is already used."
-                missing: "Device identifier have to provided."
+                connector:
+                    used: "This identifier is already used."
+                    missing: "Connector identifier have to be provided."
+                device:
+                    used: "This identifier is already used."
+                    missing: "Device identifier have to provided."
             create:
+                connector:
+                    success: "Connector \"%name%\" was successfully created."
+                    error: "Something went wrong, connector could not be created. An error was logged."
                 device:
                     success: "Device \"%name%\" was successfully created."
                     error: "Something went wrong, device could not be created. Error was logged."
             update:
+                connector:
+                    success: "Connector \"%name%\" was successfully updated."
+                    error: "Something went wrong, connector could not be updated. An error was logged."
                 device:
                     success: "Device \"%name%\" was successfully updated."
                     error: "Something went wrong, device could not be updated. Error was logged."
             remove:
+                connector:
+                    confirm: "This action will remove \"%name%\" connector. This action can not be undone."
+                    success: "Connector \"%name%\" was successfully removed."
+                    error: "Something went wrong, connector could not be removed. An error was logged."
                 device:
+                    confirm: "This action will remove \"%name%\" device. This action can not be undone."
                     success: "Device \"%name%\" was successfully removed."
                     error: "Something went wrong, device could not be removed. Error was logged."
-            noDevices: "No devices registered in Virtual connector."
-            noConnector: "Connector could not be loaded"
+            noDevices: "No devices registered in selected connector."
             noService: "Device command service could not be loaded"
 
+    devices:
         thermostat:
             actions:
-                editThermostat: "Edit thermostat configuration"
-                editActor: "Edit thermostat heaters or coolers actors"
-                editSensor: "Edit thermostat sensors"
-                editPreset: "Edit thermostat presets"
+                create:
+                    actor: "Assign heater or cooler actor"
+                    sensor: "Assign sensor"
+                update:
+                    device: "Edit thermostat configuration"
+                    actor: "Edit heaters or coolers actors"
+                    sensor: "Edit sensors"
+                    preset: "Edit thermostat presets"
+                list:
+                    actors: "List heaters and coolers actors"
+                    sensors: "List sensors"
+                remove:
+                    actor: "Remove heater or cooler actor"
+                    sensor: "Remove sensor"
                 back: "Go to previous menu"
 
             questions:
+                create:
+                    device: "Would you like to create new thermostat?"
+                    actor: "Would you like to create new thermostat actor?"
+                    sensor: "Would you like to create new thermostat sensor?"
                 select:
                     mode: "Please select thermostat supported modes (multiple answers available)"
                     mappedDevice: "Select device for mapping"
@@ -151,7 +163,16 @@ cmd:
                     actorToUpdate: "Select actor which you want to update"
                     sensorToUpdate: "Select sensor which you want to update"
                     presetToUpdate: "Select preset which you want to update"
+                    actorType: "Select actor type"
+                    sensorType: "Select sensor type"
                 provide:
+                    device:
+                        identifier: "Provide thermostat identifier"
+                        name: "Provide thermostat name"
+                    actor:
+                        name: "Provide actor name"
+                    sensor:
+                        name: "Provide sensor name"
                     targetTemperature:
                         manual: "Provide target temperature value for manual mode"
                         away: "Provide target temperature value for AWAY mode"
@@ -170,15 +191,12 @@ cmd:
                 addAnotherOpening: "Do you want to add another opnening sensor?"
                 addAnotherSensor: "Do you want to add another temperature sensor?"
                 addAnotherFloorSensor: "Do you want to add another floor temperature sensor?"
-                create:
-                    actor: "Would you like to create new thermostat actor?"
-                    sensor: "Would you like to create new thermostat sensor?"
 
             answers:
                 mode:
                     heat: "Heating"
                     cool: "Cooling"
-                    auto: "Auto - heat and cool according to temerature"
+                    auto: "Auto"
                 preset:
                     away: "Away"
                     eco: "Eco"
@@ -186,8 +204,60 @@ cmd:
                     comfort: "Comfort"
                     sleep: "Sleep"
                     anti_freeze: "Anti freeze"
+                actor:
+                    heater: "Heater actor"
+                    cooler: "Cooler actor"
+                sensor:
+                    targetTemperature: "Temperature sensor"
+                    floorTemperature: "Floor temperature sensor"
+                    sensor: "Openings sensor"
+                device: "Device"
+                channel: "Channel"
+                property: "Property"
+
+            data:
+                name: "Name"
+                type: "Type"
+                heater: "Heater actor"
+                cooler: "Cooler actor"
+                target_sensor: "Temperature sensor"
+                floor_sensor: "Floor temperature sensor"
+                sensor: "Openings sensors"
 
             messages:
+                identifier:
+                    device:
+                        used: "This identifier is already used."
+                        missing: "Thermostat identifier have to provided."
+                create:
+                    device:
+                        success: "Thermostat \"%name%\" was successfully created."
+                        error: "Something went wrong, thermostat could not be created. Error was logged."
+                    actor:
+                        success: "Thermostat actor \"%name%\" was successfully created."
+                        error: "Something went wrong, thermostat actor could not be created. Error was logged."
+                    sensor:
+                        success: "Thermostat sensor \"%name%\" was successfully created."
+                        error: "Something went wrong, thermostat sensor could not be created. Error was logged."
+                update:
+                    device:
+                        success: "Thermostat \"%name%\" was successfully updated."
+                        error: "Something went wrong, thermostat could not be updated. Error was logged."
+                    actor:
+                        success: "Thermostat actor \"%name%\" was successfully updated."
+                        error: "Something went wrong, thermostat actor could not be updated. Error was logged."
+                    sensor:
+                        success: "Thermostat sensor \"%name%\" was successfully updated."
+                        error: "Something went wrong, thermostat sensor could not be updated. Error was logged."
+                remove:
+                    actor:
+                        confirm: "This action will remove \"%name%\" thermostat actor. This action can not be undone."
+                        success: "Thermostat actor \"%name%\" was successfully removed."
+                        error: "Something went wrong, thermostat actor could not be removed. Error was logged."
+                    sensor:
+                        confirm: "This action will remove \"%name%\" thermostat sensor. This action can not be undone."
+                        success: "Thermostat sensor \"%name%\" was successfully removed."
+                        error: "Something went wrong, thermostat sensor could not be removed. Error was logged."
                 noHardwareDevices: "No devices registered in system"
                 property:
                     notSupported: "Selected property is not supported"
@@ -204,3 +274,5 @@ cmd:
                 noPresets: "No presets are configured for this thermostat"
                 noActors: "No actors are configured for this thermostat"
                 noSensors: "No sensors are configured for this thermostat"
+                noConnector: "Connector could not be loaded"
+                noDevice: "Thermostat could not be loaded"

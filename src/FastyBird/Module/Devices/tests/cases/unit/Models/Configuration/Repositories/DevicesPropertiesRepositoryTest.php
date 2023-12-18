@@ -137,6 +137,34 @@ final class DevicesPropertiesRepositoryTest extends DbTestCase
 		$entities = $repository->findAllBy($findQuery, MetadataDocuments\DevicesModule\DeviceMappedProperty::class);
 
 		self::assertCount(0, $entities);
+
+		$findQuery = new Queries\Configuration\FindDeviceProperties();
+		$findQuery->settable(true);
+
+		$entities = $repository->findAllBy($findQuery);
+
+		self::assertCount(0, $entities);
+
+		$findQuery = new Queries\Configuration\FindDeviceProperties();
+		$findQuery->settable(false);
+
+		$entities = $repository->findAllBy($findQuery);
+
+		self::assertCount(2, $entities);
+
+		$findQuery = new Queries\Configuration\FindDeviceProperties();
+		$findQuery->queryable(true);
+
+		$entities = $repository->findAllBy($findQuery);
+
+		self::assertCount(2, $entities);
+
+		$findQuery = new Queries\Configuration\FindDeviceProperties();
+		$findQuery->queryable(false);
+
+		$entities = $repository->findAllBy($findQuery);
+
+		self::assertCount(0, $entities);
 	}
 
 	/**

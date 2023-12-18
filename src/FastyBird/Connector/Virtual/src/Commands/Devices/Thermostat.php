@@ -23,6 +23,7 @@ use FastyBird\Connector\Virtual\Entities;
 use FastyBird\Connector\Virtual\Exceptions;
 use FastyBird\Connector\Virtual\Queries;
 use FastyBird\Connector\Virtual\Types;
+use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -43,6 +44,7 @@ use Symfony\Component\Console\Output;
 use Symfony\Component\Console\Style;
 use Throwable;
 use function array_filter;
+use function array_flip;
 use function array_key_exists;
 use function array_map;
 use function array_merge;
@@ -87,12 +89,13 @@ class Thermostat extends Device
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
+		private readonly BootstrapHelpers\Database $databaseHelper,
+		private readonly Localization\Translator $translator,
 		Persistence\ManagerRegistry $managerRegistry,
-		Localization\Translator $translator,
 		string|null $name = null,
 	)
 	{
-		parent::__construct($translator, $managerRegistry, $name);
+		parent::__construct($managerRegistry, $name);
 	}
 
 	/**
@@ -102,7 +105,7 @@ class Thermostat extends Device
 	{
 		$this
 			->setName(self::NAME)
-			->setDescription('Virtual connector thermostat devices management')
+			->setDescription('Virtual connector thermostat management')
 			->setDefinition(
 				new Input\InputDefinition([
 					new Input\InputOption(
@@ -121,7 +124,7 @@ class Thermostat extends Device
 						'action',
 						'a',
 						Input\InputOption::VALUE_REQUIRED,
-						'Management action',
+						'Manage action',
 						[
 							self::ACTION_CREATE => new Console\Completion\Suggestion(
 								self::ACTION_CREATE,
@@ -153,7 +156,7 @@ class Thermostat extends Device
 
 		if (!Uuid\Uuid::isValid(strval($connector))) {
 			$io->warning(
-				$this->translator->translate('//virtual-connector.cmd.devices.messages.noConnector'),
+				$this->translator->translate('//virtual-connector.cmd.devices.thermostat.messages.noConnector'),
 			);
 
 			return Console\Command\Command::FAILURE;
@@ -166,7 +169,7 @@ class Thermostat extends Device
 
 		if ($connector === null) {
 			$io->warning(
-				$this->translator->translate('//virtual-connector.cmd.devices.messages.noConnector'),
+				$this->translator->translate('//virtual-connector.cmd.devices.thermostat.messages.noConnector'),
 			);
 
 			return Console\Command\Command::FAILURE;
@@ -184,7 +187,7 @@ class Thermostat extends Device
 
 				if (!Uuid\Uuid::isValid(strval($device))) {
 					$io->warning(
-						$this->translator->translate('//virtual-connector.cmd.devices.messages.noDevice'),
+						$this->translator->translate('//virtual-connector.cmd.devices.thermostat.messages.noDevice'),
 					);
 
 					return Console\Command\Command::FAILURE;
@@ -197,10 +200,14 @@ class Thermostat extends Device
 				$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\Thermostat::class);
 
 				if ($device === null) {
-					$io->warning($this->translator->translate('//virtual-connector.cmd.devices.messages.noDevices'));
+					$io->warning(
+						$this->translator->translate('//virtual-connector.cmd.devices.thermostat.messages.noDevice'),
+					);
 
 					$question = new Console\Question\ConfirmationQuestion(
-						$this->translator->translate('//virtual-connector.cmd.devices.questions.create.device'),
+						$this->translator->translate(
+							'//virtual-connector.cmd.devices.thermostat.questions.create.device',
+						),
 						false,
 					);
 
@@ -214,6 +221,34 @@ class Thermostat extends Device
 				}
 
 				$this->editDevice($io, $device);
+
+				break;
+			case self::ACTION_MANAGE:
+				$device = $input->getOption('device');
+
+				if (!Uuid\Uuid::isValid(strval($device))) {
+					$io->warning(
+						$this->translator->translate('//virtual-connector.cmd.devices.thermostat.messages.noDevice'),
+					);
+
+					return Console\Command\Command::FAILURE;
+				}
+
+				$findDeviceQuery = new Queries\Entities\FindThermostatDevices();
+				$findDeviceQuery->forConnector($connector);
+				$findDeviceQuery->byId(Uuid\Uuid::fromString(strval($device)));
+
+				$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\Thermostat::class);
+
+				if ($device === null) {
+					$io->warning(
+						$this->translator->translate('//virtual-connector.cmd.devices.thermostat.messages.noDevice'),
+					);
+
+					break;
+				}
+
+				$this->askManageDeviceAction($io, $device);
 
 				break;
 		}
@@ -232,7 +267,9 @@ class Thermostat extends Device
 	private function createDevice(Style\SymfonyStyle $io, Entities\VirtualConnector $connector): void
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate('//virtual-connector.cmd.devices.questions.provide.identifier'),
+			$this->translator->translate(
+				'//virtual-connector.cmd.devices.thermostat.questions.provide.device.identifier',
+			),
 		);
 
 		$question->setValidator(function (string|null $answer) {
@@ -245,7 +282,7 @@ class Thermostat extends Device
 				) {
 					throw new Exceptions\Runtime(
 						$this->translator->translate(
-							'//virtual-connector.cmd.devices.messages.identifier.used',
+							'//virtual-connector.cmd.devices.thermostat.messages.identifier.device.used',
 						),
 					);
 				}
@@ -275,7 +312,9 @@ class Thermostat extends Device
 
 		if ($identifier === '') {
 			$io->error(
-				$this->translator->translate('//virtual-connector.cmd.devices.messages.identifier.missing'),
+				$this->translator->translate(
+					'//virtual-connector.cmd.devices.thermostat.messages.identifier.device.missing',
+				),
 			);
 
 			return;
@@ -931,7 +970,7 @@ class Thermostat extends Device
 
 			$io->success(
 				$this->translator->translate(
-					'//virtual-connector.cmd.devices.messages.create.device.success',
+					'//virtual-connector.cmd.devices.thermostat.messages.create.device.success',
 					['name' => $device->getName() ?? $device->getIdentifier()],
 				),
 			);
@@ -941,13 +980,13 @@ class Thermostat extends Device
 				'An unhandled error occurred',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
-					'type' => 'devices-cmd',
+					'type' => 'thermostat-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 
 			$io->error(
-				$this->translator->translate('//virtual-connector.cmd.devices.messages.create.device.error'),
+				$this->translator->translate('//virtual-connector.cmd.devices.thermostat.messages.create.device.error'),
 			);
 
 			return;
@@ -956,6 +995,8 @@ class Thermostat extends Device
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
+
+			$this->databaseHelper->clear();
 		}
 
 		$this->channelPropertiesStatesManager->setValue(
@@ -1002,7 +1043,6 @@ class Thermostat extends Device
 	}
 
 	/**
-	 * @throws Console\Exception\ExceptionInterface
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exception
@@ -1011,19 +1051,6 @@ class Thermostat extends Device
 	 * @throws MetadataExceptions\InvalidArgument
 	 */
 	private function editDevice(Style\SymfonyStyle $io, Entities\Devices\Thermostat $device): void
-	{
-		$this->askEditAction($io, $device);
-	}
-
-	/**
-	 * @throws DBAL\Exception
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exception
-	 * @throws Exceptions\Runtime
-	 * @throws Exceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidArgument
-	 */
-	private function editThermostat(Style\SymfonyStyle $io, Entities\Devices\Thermostat $device): void
 	{
 		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($device);
@@ -1492,7 +1519,7 @@ class Thermostat extends Device
 
 			$io->success(
 				$this->translator->translate(
-					'//virtual-connector.cmd.devices.messages.update.device.success',
+					'//virtual-connector.cmd.devices.thermostat.messages.update.device.success',
 					['name' => $device->getName() ?? $device->getIdentifier()],
 				),
 			);
@@ -1502,19 +1529,21 @@ class Thermostat extends Device
 				'An unhandled error occurred',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
-					'type' => 'devices-cmd',
+					'type' => 'thermostat-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 
 			$io->error(
-				$this->translator->translate('//virtual-connector.cmd.devices.messages.update.device.error'),
+				$this->translator->translate('//virtual-connector.cmd.devices.thermostat.messages.update.device.error'),
 			);
 		} finally {
 			// Revert all changes when error occur
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
+
+			$this->databaseHelper->clear();
 		}
 
 		assert($hvacModeProperty instanceof DevicesEntities\Channels\Properties\Dynamic);
@@ -1563,9 +1592,99 @@ class Thermostat extends Device
 		}
 	}
 
+	/**
+	 * @throws BootstrapExceptions\InvalidState
+	 * @throws DBAL\Exception
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\Runtime
+	 * @throws Exception
+	 */
 	private function createActor(Style\SymfonyStyle $io, Entities\Devices\Thermostat $device): void
 	{
-		// TODO: Implement actor creation
+		$findChannelQuery = new Queries\Entities\FindActorChannels();
+		$findChannelQuery->forDevice($device);
+		$findChannelQuery->byIdentifier(Types\ChannelIdentifier::ACTORS);
+
+		$actorsChannel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\Channels\Actors::class);
+		assert($actorsChannel instanceof Entities\Channels\Actors);
+
+		$actorType = $this->askActorType($io, $device);
+
+		$name = $this->askActorName($io);
+
+		$heater = $this->askActor(
+			$io,
+			array_map(
+				static fn (DevicesEntities\Channels\Properties\Dynamic $heater): string => $heater->getId()->toString(),
+				array_filter(
+					$device->getActors(),
+					// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+					static fn (DevicesEntities\Channels\Properties\Property $actor): bool => $actor instanceof DevicesEntities\Channels\Properties\Dynamic,
+				),
+			),
+			[
+				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_SWITCH),
+			],
+		);
+
+		try {
+			// Start transaction connection to the database
+			$this->getOrmConnection()->beginTransaction();
+
+			$property = $this->channelsPropertiesManager->create(Utils\ArrayHash::from([
+				'parent' => $heater,
+				'entity' => DevicesEntities\Channels\Properties\Mapped::class,
+				'identifier' => $this->findChannelPropertyIdentifier(
+					$actorsChannel,
+					$actorType->getValue(),
+				),
+				'name' => $name,
+				'channel' => $actorsChannel,
+				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN),
+				'format' => null,
+				'unit' => null,
+				'invalid' => null,
+				'scale' => null,
+				'step' => null,
+				'settable' => true,
+				'queryable' => true,
+			]));
+			assert($property instanceof DevicesEntities\Channels\Properties\Mapped);
+
+			// Commit all changes into database
+			$this->getOrmConnection()->commit();
+
+			$io->success(
+				$this->translator->translate(
+					'//virtual-connector.cmd.devices.thermostat.messages.create.actor.success',
+					['name' => $property->getName() ?? $property->getIdentifier()],
+				),
+			);
+		} catch (Throwable $ex) {
+			// Log caught exception
+			$this->logger->error(
+				'An unhandled error occurred',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
+					'type' => 'thermostat-cmd',
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
+				],
+			);
+
+			$io->error(
+				$this->translator->translate('//virtual-connector.cmd.devices.thermostat.messages.create.actor.error'),
+			);
+
+			return;
+		} finally {
+			// Revert all changes when error occur
+			if ($this->getOrmConnection()->isTransactionActive()) {
+				$this->getOrmConnection()->rollBack();
+			}
+
+			$this->databaseHelper->clear();
+		}
 	}
 
 	/**
@@ -1596,6 +1715,8 @@ class Thermostat extends Device
 		$parent = $property->getParent();
 		assert($parent instanceof DevicesEntities\Channels\Properties\Dynamic);
 
+		$name = $this->askActorName($io, $property);
+
 		$parent = $this->askActor(
 			$io,
 			[],
@@ -1610,17 +1731,19 @@ class Thermostat extends Device
 			// Start transaction connection to the database
 			$this->getOrmConnection()->beginTransaction();
 
-			$this->channelsPropertiesManager->update($property, Utils\ArrayHash::from([
+			$property = $this->channelsPropertiesManager->update($property, Utils\ArrayHash::from([
+				'name' => $name,
 				'parent' => $parent,
 			]));
+			assert($property instanceof DevicesEntities\Channels\Properties\Mapped);
 
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
 			$io->success(
 				$this->translator->translate(
-					'//virtual-connector.cmd.devices.messages.update.device.success',
-					['name' => $device->getName() ?? $device->getIdentifier()],
+					'//virtual-connector.cmd.devices.thermostat.messages.update.actor.success',
+					['name' => $property->getName() ?? $property->getIdentifier()],
 				),
 			);
 		} catch (Throwable $ex) {
@@ -1629,28 +1752,294 @@ class Thermostat extends Device
 				'An unhandled error occurred',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
-					'type' => 'devices-cmd',
+					'type' => 'thermostat-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 
 			$io->error(
-				$this->translator->translate('//virtual-connector.cmd.devices.messages.update.device.error'),
+				$this->translator->translate('//virtual-connector.cmd.devices.thermostat.messages.update.actor.error'),
+			);
+
+			return;
+		} finally {
+			// Revert all changes when error occur
+			if ($this->getOrmConnection()->isTransactionActive()) {
+				$this->getOrmConnection()->rollBack();
+			}
+
+			$this->databaseHelper->clear();
+		}
+	}
+
+	private function listActors(Style\SymfonyStyle $io, Entities\Devices\Thermostat $device): void
+	{
+		$table = new Console\Helper\Table($io);
+		$table->setHeaders([
+			'#',
+			$this->translator->translate('//virtual-connector.cmd.devices.thermostat.data.name'),
+			$this->translator->translate('//virtual-connector.cmd.devices.thermostat.data.type'),
+		]);
+
+		$actors = $device->getActors();
+		usort(
+			$actors,
+			static fn (DevicesEntities\Channels\Properties\Property $a, DevicesEntities\Channels\Properties\Property $b): int => (
+				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
+			),
+		);
+		$actors = array_filter(
+			$actors,
+			static fn (DevicesEntities\Channels\Properties\Property $property): bool =>
+				Utils\Strings::startsWith(
+					$property->getIdentifier(),
+					Types\ChannelPropertyIdentifier::HEATER,
+				)
+				|| Utils\Strings::startsWith(
+					$property->getIdentifier(),
+					Types\ChannelPropertyIdentifier::COOLER,
+				),
+		);
+
+		foreach ($actors as $index => $property) {
+			$type = 'N/A';
+
+			if (Utils\Strings::startsWith($property->getIdentifier(), Types\ChannelPropertyIdentifier::HEATER)) {
+				$type = $this->translator->translate(
+					'//virtual-connector.cmd.devices.thermostat.data.' . Types\ChannelPropertyIdentifier::HEATER,
+				);
+			} elseif (Utils\Strings::startsWith($property->getIdentifier(), Types\ChannelPropertyIdentifier::COOLER)) {
+				$type = $this->translator->translate(
+					'//virtual-connector.cmd.devices.thermostat.data.' . Types\ChannelPropertyIdentifier::COOLER,
+				);
+			}
+
+			$table->addRow([
+				$index + 1,
+				$property->getName() ?? $property->getIdentifier(),
+				$type,
+			]);
+		}
+
+		$table->render();
+
+		$io->newLine();
+	}
+
+	/**
+	 * @throws BootstrapExceptions\InvalidState
+	 * @throws DBAL\Exception
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\Runtime
+	 */
+	private function deleteActor(Style\SymfonyStyle $io, Entities\Devices\Thermostat $device): void
+	{
+		$property = $this->askWhichActor($io, $device);
+
+		if ($property === null) {
+			$io->warning($this->translator->translate('//virtual-connector.cmd.devices.thermostat.messages.noActors'));
+
+			return;
+		}
+
+		$io->warning(
+			$this->translator->translate(
+				'//virtual-connector.cmd.devices.thermostat.messages.remove.actor.confirm',
+				['name' => $property->getName() ?? $property->getIdentifier()],
+			),
+		);
+
+		$question = new Console\Question\ConfirmationQuestion(
+			$this->translator->translate('//virtual-connector.cmd.base.questions.continue'),
+			false,
+		);
+
+		$continue = (bool) $io->askQuestion($question);
+
+		if (!$continue) {
+			return;
+		}
+
+		try {
+			// Start transaction connection to the database
+			$this->getOrmConnection()->beginTransaction();
+
+			$this->channelsPropertiesManager->delete($property);
+
+			// Commit all changes into database
+			$this->getOrmConnection()->commit();
+
+			$io->success(
+				$this->translator->translate(
+					'//virtual-connector.cmd.devices.thermostat.messages.remove.actor.success',
+					['name' => $property->getName() ?? $property->getIdentifier()],
+				),
+			);
+		} catch (Throwable $ex) {
+			// Log caught exception
+			$this->logger->error(
+				'An unhandled error occurred',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'type' => 'thermostat-cmd',
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
+				],
+			);
+
+			$io->success(
+				$this->translator->translate('//virtual-connector.cmd.devices.thermostat.messages.remove.actor.error'),
 			);
 		} finally {
 			// Revert all changes when error occur
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
+
+			$this->databaseHelper->clear();
 		}
 	}
 
+	/**
+	 * @throws BootstrapExceptions\InvalidState
+	 * @throws DBAL\Exception
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\Runtime
+	 * @throws Exception
+	 */
 	private function createSensor(Style\SymfonyStyle $io, Entities\Devices\Thermostat $device): void
 	{
-		// TODO: Implement sensor creation
+		$findChannelQuery = new Queries\Entities\FindSensorChannels();
+		$findChannelQuery->forDevice($device);
+		$findChannelQuery->byIdentifier(Types\ChannelIdentifier::SENSORS);
+
+		$sensorsChannel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\Channels\Sensors::class);
+		assert($sensorsChannel instanceof Entities\Channels\Sensors);
+
+		$sensorType = $this->askSensorType($io);
+
+		if ($sensorType->equalsValue(Types\ChannelPropertyIdentifier::TARGET_SENSOR)) {
+			$dataTypes = [
+				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_CHAR),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_SHORT),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_USHORT),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_INT),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UINT),
+			];
+			$dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT);
+
+		} elseif ($sensorType->equalsValue(Types\ChannelPropertyIdentifier::FLOOR_SENSOR)) {
+			$dataTypes = [
+				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_CHAR),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_SHORT),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_USHORT),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_INT),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UINT),
+			];
+			$dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT);
+
+		} elseif ($sensorType->equalsValue(Types\ChannelPropertyIdentifier::SENSOR)) {
+			$dataTypes = [
+				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN),
+			];
+			$dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN);
+
+		} else {
+			// Log caught exception
+			$this->logger->error(
+				'Invalid sensor type selected',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'type' => 'thermostat-cmd',
+				],
+			);
+
+			$io->error(
+				$this->translator->translate('//virtual-connector.cmd.devices.thermostat.messages.create.sensor.error'),
+			);
+
+			return;
+		}
+
+		$name = $this->askSensorName($io);
+
+		$sensor = $this->askSensor(
+			$io,
+			array_map(
+				static fn (DevicesEntities\Channels\Properties\Dynamic $heater): string => $heater->getId()->toString(),
+				array_filter(
+					$device->getActors(),
+					// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+					static fn (DevicesEntities\Channels\Properties\Property $actor): bool => $actor instanceof DevicesEntities\Channels\Properties\Dynamic,
+				),
+			),
+			$dataTypes,
+		);
+
+		try {
+			// Start transaction connection to the database
+			$this->getOrmConnection()->beginTransaction();
+
+			$property = $this->channelsPropertiesManager->create(Utils\ArrayHash::from([
+				'parent' => $sensor,
+				'entity' => DevicesEntities\Channels\Properties\Mapped::class,
+				'identifier' => $this->findChannelPropertyIdentifier(
+					$sensorsChannel,
+					$sensorType->getValue(),
+				),
+				'name' => $name,
+				'channel' => $sensorsChannel,
+				'dataType' => $dataType,
+				'format' => null,
+				'unit' => null,
+				'invalid' => null,
+				'scale' => null,
+				'step' => null,
+				'settable' => false,
+				'queryable' => true,
+			]));
+			assert($property instanceof DevicesEntities\Channels\Properties\Mapped);
+
+			// Commit all changes into database
+			$this->getOrmConnection()->commit();
+
+			$io->success(
+				$this->translator->translate(
+					'//virtual-connector.cmd.devices.thermostat.messages.create.sensor.success',
+					['name' => $property->getName() ?? $property->getIdentifier()],
+				),
+			);
+		} catch (Throwable $ex) {
+			// Log caught exception
+			$this->logger->error(
+				'An unhandled error occurred',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
+					'type' => 'thermostat-cmd',
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
+				],
+			);
+
+			$io->error(
+				$this->translator->translate('//virtual-connector.cmd.devices.thermostat.messages.create.sensor.error'),
+			);
+
+			return;
+		} finally {
+			// Revert all changes when error occur
+			if ($this->getOrmConnection()->isTransactionActive()) {
+				$this->getOrmConnection()->rollBack();
+			}
+
+			$this->databaseHelper->clear();
+		}
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exception
 	 */
@@ -1678,6 +2067,8 @@ class Thermostat extends Device
 		$parent = $property->getParent();
 		assert($parent instanceof DevicesEntities\Channels\Properties\Dynamic);
 
+		$name = $this->askSensorName($io, $property);
+
 		$parent = $this->askSensor(
 			$io,
 			[],
@@ -1697,17 +2088,19 @@ class Thermostat extends Device
 			// Start transaction connection to the database
 			$this->getOrmConnection()->beginTransaction();
 
-			$this->channelsPropertiesManager->update($property, Utils\ArrayHash::from([
+			$property = $this->channelsPropertiesManager->update($property, Utils\ArrayHash::from([
 				'parent' => $parent,
+				'name' => $name,
 			]));
+			assert($property instanceof DevicesEntities\Channels\Properties\Mapped);
 
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
 
 			$io->success(
 				$this->translator->translate(
-					'//virtual-connector.cmd.devices.messages.update.device.success',
-					['name' => $device->getName() ?? $device->getIdentifier()],
+					'//virtual-connector.cmd.devices.thermostat.messages.update.sensor.success',
+					['name' => $property->getName() ?? $property->getIdentifier()],
 				),
 			);
 		} catch (Throwable $ex) {
@@ -1716,23 +2109,166 @@ class Thermostat extends Device
 				'An unhandled error occurred',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
-					'type' => 'devices-cmd',
+					'type' => 'thermostat-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 
 			$io->error(
-				$this->translator->translate('//virtual-connector.cmd.devices.messages.update.device.error'),
+				$this->translator->translate('//virtual-connector.cmd.devices.thermostat.messages.update.sensor.error'),
+			);
+
+			return;
+		} finally {
+			// Revert all changes when error occur
+			if ($this->getOrmConnection()->isTransactionActive()) {
+				$this->getOrmConnection()->rollBack();
+			}
+
+			$this->databaseHelper->clear();
+		}
+	}
+
+	private function listSensors(Style\SymfonyStyle $io, Entities\Devices\Thermostat $device): void
+	{
+		$table = new Console\Helper\Table($io);
+		$table->setHeaders([
+			'#',
+			$this->translator->translate('//virtual-connector.cmd.devices.thermostat.data.name'),
+			$this->translator->translate('//virtual-connector.cmd.devices.thermostat.data.type'),
+		]);
+
+		$sensors = $device->getSensors();
+		usort(
+			$sensors,
+			static fn (DevicesEntities\Channels\Properties\Property $a, DevicesEntities\Channels\Properties\Property $b): int => (
+				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
+			),
+		);
+		$sensors = array_filter(
+			$sensors,
+			static fn (DevicesEntities\Channels\Properties\Property $property): bool =>
+				Utils\Strings::startsWith(
+					$property->getIdentifier(),
+					Types\ChannelPropertyIdentifier::TARGET_SENSOR,
+				)
+				|| Utils\Strings::startsWith(
+					$property->getIdentifier(),
+					Types\ChannelPropertyIdentifier::FLOOR_SENSOR,
+				)
+				|| Utils\Strings::startsWith(
+					$property->getIdentifier(),
+					Types\ChannelPropertyIdentifier::SENSOR,
+				),
+		);
+
+		foreach ($sensors as $index => $property) {
+			$type = 'N/A';
+
+			if (Utils\Strings::startsWith($property->getIdentifier(), Types\ChannelPropertyIdentifier::TARGET_SENSOR)) {
+				$type = $this->translator->translate(
+					'//virtual-connector.cmd.devices.thermostat.data.' . Types\ChannelPropertyIdentifier::TARGET_SENSOR,
+				);
+			} elseif (Utils\Strings::startsWith(
+				$property->getIdentifier(),
+				Types\ChannelPropertyIdentifier::FLOOR_SENSOR,
+			)) {
+				$type = $this->translator->translate(
+					'//virtual-connector.cmd.devices.thermostat.data.' . Types\ChannelPropertyIdentifier::FLOOR_SENSOR,
+				);
+			} elseif (Utils\Strings::startsWith($property->getIdentifier(), Types\ChannelPropertyIdentifier::SENSOR)) {
+				$type = $this->translator->translate(
+					'//virtual-connector.cmd.devices.thermostat.data.' . Types\ChannelPropertyIdentifier::SENSOR,
+				);
+			}
+
+			$table->addRow([
+				$index + 1,
+				$property->getName() ?? $property->getIdentifier(),
+				$type,
+			]);
+		}
+
+		$table->render();
+
+		$io->newLine();
+	}
+
+	/**
+	 * @throws BootstrapExceptions\InvalidState
+	 * @throws DBAL\Exception
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\Runtime
+	 */
+	private function deleteSensor(Style\SymfonyStyle $io, Entities\Devices\Thermostat $device): void
+	{
+		$property = $this->askWhichSensor($io, $device);
+
+		if ($property === null) {
+			$io->warning($this->translator->translate('//virtual-connector.cmd.devices.thermostat.messages.noSensors'));
+
+			return;
+		}
+
+		$io->warning(
+			$this->translator->translate(
+				'//virtual-connector.cmd.devices.thermostat.messages.remove.sensor.confirm',
+				['name' => $property->getName() ?? $property->getIdentifier()],
+			),
+		);
+
+		$question = new Console\Question\ConfirmationQuestion(
+			$this->translator->translate('//virtual-connector.cmd.base.questions.continue'),
+			false,
+		);
+
+		$continue = (bool) $io->askQuestion($question);
+
+		if (!$continue) {
+			return;
+		}
+
+		try {
+			// Start transaction connection to the database
+			$this->getOrmConnection()->beginTransaction();
+
+			$this->channelsPropertiesManager->delete($property);
+
+			// Commit all changes into database
+			$this->getOrmConnection()->commit();
+
+			$io->success(
+				$this->translator->translate(
+					'//virtual-connector.cmd.devices.thermostat.messages.remove.sensor.success',
+					['name' => $property->getName() ?? $property->getIdentifier()],
+				),
+			);
+		} catch (Throwable $ex) {
+			// Log caught exception
+			$this->logger->error(
+				'An unhandled error occurred',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'type' => 'thermostat-cmd',
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
+				],
+			);
+
+			$io->success(
+				$this->translator->translate('//virtual-connector.cmd.devices.thermostat.messages.remove.sensor.error'),
 			);
 		} finally {
 			// Revert all changes when error occur
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
+
+			$this->databaseHelper->clear();
 		}
 	}
 
 	/**
+	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
@@ -1864,7 +2400,7 @@ class Thermostat extends Device
 
 			$io->success(
 				$this->translator->translate(
-					'//virtual-connector.cmd.devices.messages.update.device.success',
+					'//virtual-connector.cmd.devices.thermostat.messages.update.device.success',
 					['name' => $device->getName() ?? $device->getIdentifier()],
 				),
 			);
@@ -1874,19 +2410,21 @@ class Thermostat extends Device
 				'An unhandled error occurred',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
-					'type' => 'devices-cmd',
+					'type' => 'thermostat-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
 			);
 
 			$io->error(
-				$this->translator->translate('//virtual-connector.cmd.devices.messages.update.device.error'),
+				$this->translator->translate('//virtual-connector.cmd.devices.thermostat.messages.update.device.error'),
 			);
 		} finally {
 			// Revert all changes when error occur
 			if ($this->getOrmConnection()->isTransactionActive()) {
 				$this->getOrmConnection()->rollBack();
 			}
+
+			$this->databaseHelper->clear();
 		}
 
 		assert($targetTempProperty instanceof DevicesEntities\Channels\Properties\Dynamic);
@@ -1899,6 +2437,18 @@ class Thermostat extends Device
 				DevicesStates\Property::PENDING_FIELD => false,
 			]),
 		);
+	}
+
+	private function askDeviceName(Style\SymfonyStyle $io, Entities\Devices\Thermostat|null $device = null): string|null
+	{
+		$question = new Console\Question\Question(
+			$this->translator->translate('//virtual-connector.cmd.devices.thermostat.questions.provide.device.name'),
+			$device?->getName(),
+		);
+
+		$name = $io->askQuestion($question);
+
+		return strval($name) === '' ? null : strval($name);
 	}
 
 	/**
@@ -2179,6 +2729,86 @@ class Thermostat extends Device
 	}
 
 	/**
+	 * @throws MetadataExceptions\InvalidArgument
+	 */
+	private function askActorType(
+		Style\SymfonyStyle $io,
+		Entities\Devices\Thermostat $device,
+	): Types\ChannelPropertyIdentifier
+	{
+		$types = [];
+
+		if (in_array(Types\HvacMode::HEAT, $device->getHvacModes(), true)) {
+			$types[Types\ChannelPropertyIdentifier::HEATER] = $this->translator->translate(
+				'//virtual-connector.cmd.devices.thermostat.answers.actor.heater',
+			);
+		}
+
+		if (in_array(Types\HvacMode::COOL, $device->getHvacModes(), true)) {
+			$types[Types\ChannelPropertyIdentifier::COOLER] = $this->translator->translate(
+				'//virtual-connector.cmd.devices.thermostat.answers.actor.cooler',
+			);
+		}
+
+		$question = new Console\Question\ChoiceQuestion(
+			$this->translator->translate('//virtual-connector.cmd.devices.thermostat.questions.select.actorType'),
+			array_values($types),
+		);
+		$question->setErrorMessage(
+			$this->translator->translate('//virtual-connector.cmd.base.messages.answerNotValid'),
+		);
+		$question->setValidator(
+			function (string|int|null $answer) use ($types): Types\ChannelPropertyIdentifier {
+				if ($answer === null) {
+					throw new Exceptions\Runtime(
+						sprintf(
+							$this->translator->translate('//virtual-connector.cmd.base.messages.answerNotValid'),
+							$answer,
+						),
+					);
+				}
+
+				if (array_key_exists($answer, array_values($types))) {
+					$answer = array_values($types)[$answer];
+				}
+
+				$type = array_search($answer, $types, true);
+
+				if ($type !== false && Types\ChannelPropertyIdentifier::isValidValue($type)) {
+					return Types\ChannelPropertyIdentifier::get($type);
+				}
+
+				throw new Exceptions\Runtime(
+					sprintf(
+						$this->translator->translate('//virtual-connector.cmd.base.messages.answerNotValid'),
+						$answer,
+					),
+				);
+			},
+		);
+
+		$type = $io->askQuestion($question);
+		assert($type instanceof Types\ChannelPropertyIdentifier);
+
+		return $type;
+	}
+
+	private function askActorName(
+		Style\SymfonyStyle $io,
+		DevicesEntities\Channels\Properties\Property|null $property = null,
+	): string|null
+	{
+		$question = new Console\Question\Question(
+			$this->translator->translate('//virtual-connector.cmd.devices.thermostat.questions.provide.actor.name'),
+			$property?->getName(),
+		);
+
+		$name = $io->askQuestion($question);
+
+		return strval($name) === '' ? null : strval($name);
+	}
+
+	/**
 	 * @param array<string> $ignoredIds
 	 * @param array<MetadataTypes\DataType>|null $allowedDataTypes
 	 *
@@ -2198,6 +2828,7 @@ class Thermostat extends Device
 			$allowedDataTypes,
 			DevicesEntities\Channels\Properties\Dynamic::class,
 			$property,
+			true,
 		);
 
 		if (!$parent instanceof DevicesEntities\Channels\Properties\Dynamic) {
@@ -2211,6 +2842,80 @@ class Thermostat extends Device
 		}
 
 		return $parent;
+	}
+
+	private function askSensorType(
+		Style\SymfonyStyle $io,
+	): Types\ChannelPropertyIdentifier
+	{
+		$types = [
+			Types\ChannelPropertyIdentifier::TARGET_SENSOR => $this->translator->translate(
+				'//virtual-connector.cmd.devices.thermostat.answers.sensor.targetTemperature',
+			),
+			Types\ChannelPropertyIdentifier::FLOOR_SENSOR => $this->translator->translate(
+				'//virtual-connector.cmd.devices.thermostat.answers.sensor.floorTemperature',
+			),
+			Types\ChannelPropertyIdentifier::SENSOR => $this->translator->translate(
+				'//virtual-connector.cmd.devices.thermostat.answers.sensor.sensor',
+			),
+		];
+
+		$question = new Console\Question\ChoiceQuestion(
+			$this->translator->translate('//virtual-connector.cmd.devices.thermostat.questions.select.sensorType'),
+			array_values($types),
+		);
+		$question->setErrorMessage(
+			$this->translator->translate('//virtual-connector.cmd.base.messages.answerNotValid'),
+		);
+		$question->setValidator(
+			function (string|int|null $answer) use ($types): Types\ChannelPropertyIdentifier {
+				if ($answer === null) {
+					throw new Exceptions\Runtime(
+						sprintf(
+							$this->translator->translate('//virtual-connector.cmd.base.messages.answerNotValid'),
+							$answer,
+						),
+					);
+				}
+
+				if (array_key_exists($answer, array_values($types))) {
+					$answer = array_values($types)[$answer];
+				}
+
+				$type = array_search($answer, $types, true);
+
+				if ($type !== false && Types\ChannelPropertyIdentifier::isValidValue($type)) {
+					return Types\ChannelPropertyIdentifier::get($type);
+				}
+
+				throw new Exceptions\Runtime(
+					sprintf(
+						$this->translator->translate('//virtual-connector.cmd.base.messages.answerNotValid'),
+						$answer,
+					),
+				);
+			},
+		);
+
+		$type = $io->askQuestion($question);
+		assert($type instanceof Types\ChannelPropertyIdentifier);
+
+		return $type;
+	}
+
+	private function askSensorName(
+		Style\SymfonyStyle $io,
+		DevicesEntities\Channels\Properties\Property|null $property = null,
+	): string|null
+	{
+		$question = new Console\Question\Question(
+			$this->translator->translate('//virtual-connector.cmd.devices.thermostat.questions.provide.sensor.name'),
+			$property?->getName(),
+		);
+
+		$name = $io->askQuestion($question);
+
+		return strval($name) === '' ? null : strval($name);
 	}
 
 	/**
@@ -2233,6 +2938,8 @@ class Thermostat extends Device
 			$allowedDataTypes,
 			DevicesEntities\Channels\Properties\Dynamic::class,
 			$property,
+			null,
+			true,
 		);
 
 		if (!$parent instanceof DevicesEntities\Channels\Properties\Dynamic) {
@@ -2458,27 +3165,27 @@ class Thermostat extends Device
 		array|null $allowedDataTypes = null,
 		string|null $onlyType = null,
 		DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Variable|null $connectedProperty = null,
+		bool|null $settable = null,
+		bool|null $queryable = null,
 	): DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Variable|null
 	{
 		$devices = [];
 
-		$connectedDevice = null;
-		$connectedChannel = null;
-
-		if (
-			$connectedProperty instanceof DevicesEntities\Channels\Properties\Dynamic
-			|| $connectedProperty instanceof DevicesEntities\Channels\Properties\Variable
-		) {
-			$connectedChannel = $connectedProperty->getChannel();
-			$connectedDevice = $connectedProperty->getChannel()->getDevice();
-		}
+		$connectedChannel = $connectedProperty?->getChannel();
+		$connectedDevice = $connectedProperty?->getChannel()->getDevice();
 
 		$findDevicesQuery = new DevicesQueries\Entities\FindDevices();
 
 		$systemDevices = $this->devicesRepository->findAllBy($findDevicesQuery);
 		usort(
 			$systemDevices,
-			static fn (DevicesEntities\Devices\Device $a, DevicesEntities\Devices\Device $b): int => $a->getIdentifier() <=> $b->getIdentifier()
+			static fn (DevicesEntities\Devices\Device $a, DevicesEntities\Devices\Device $b): int => (
+				(
+					($a->getConnector()->getName() ?? $a->getConnector()->getIdentifier())
+					<=> ($b->getConnector()->getName() ?? $b->getConnector()->getIdentifier())
+				) * 100 +
+				(($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier()))
+			)
 		);
 
 		foreach ($systemDevices as $device) {
@@ -2497,6 +3204,14 @@ class Thermostat extends Device
 				if ($onlyType === null || $onlyType === DevicesEntities\Channels\Properties\Dynamic::class) {
 					$findChannelPropertiesQuery = new DevicesQueries\Entities\FindChannelDynamicProperties();
 					$findChannelPropertiesQuery->forChannel($channel);
+
+					if ($settable === true) {
+						$findChannelPropertiesQuery->settable(true);
+					}
+
+					if ($queryable === true) {
+						$findChannelPropertiesQuery->queryable(true);
+					}
 
 					if ($allowedDataTypes === null) {
 						if (
@@ -2534,6 +3249,14 @@ class Thermostat extends Device
 				if ($onlyType === null || $onlyType === DevicesEntities\Channels\Properties\Variable::class) {
 					$findChannelPropertiesQuery = new DevicesQueries\Entities\FindChannelVariableProperties();
 					$findChannelPropertiesQuery->forChannel($channel);
+
+					if ($settable === true) {
+						$findChannelPropertiesQuery->settable(true);
+					}
+
+					if ($queryable === true) {
+						$findChannelPropertiesQuery->queryable(true);
+					}
 
 					if ($allowedDataTypes === null) {
 						if (
@@ -2573,10 +3296,9 @@ class Thermostat extends Device
 				continue;
 			}
 
-			$devices[$device->getId()->toString()] = $device->getIdentifier()
-				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				. ($device->getConnector()->getName() !== null ? ' [' . $device->getConnector()->getName() . ']' : ' [' . $device->getConnector()->getIdentifier() . ']')
-				. ($device->getName() !== null ? ' [' . $device->getName() . ']' : '');
+			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+			$devices[$device->getId()->toString()] = '[' . ($device->getConnector()->getName() ?? $device->getConnector()->getIdentifier()) . '] '
+				. ($device->getName() ?? $device->getIdentifier());
 		}
 
 		if (count($devices) === 0) {
@@ -2590,8 +3312,8 @@ class Thermostat extends Device
 		$default = count($devices) === 1 ? 0 : null;
 
 		if ($connectedDevice !== null) {
-			foreach (array_values($devices) as $index => $value) {
-				if (Utils\Strings::contains($value, $connectedDevice->getIdentifier())) {
+			foreach (array_values(array_flip($devices)) as $index => $value) {
+				if ($value === $connectedDevice->getId()->toString()) {
 					$default = $index;
 
 					break;
@@ -2654,13 +3376,9 @@ class Thermostat extends Device
 		$deviceChannels = $this->channelsRepository->findAllBy($findChannelsQuery);
 		usort(
 			$deviceChannels,
-			static function (DevicesEntities\Channels\Channel $a, DevicesEntities\Channels\Channel $b): int {
-				if ($a->getIdentifier() === $b->getIdentifier()) {
-					return $a->getName() <=> $b->getName();
-				}
-
-				return $a->getIdentifier() <=> $b->getIdentifier();
-			},
+			static fn (DevicesEntities\Channels\Channel $a, DevicesEntities\Channels\Channel $b): int => (
+				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
+			),
 		);
 
 		foreach ($deviceChannels as $channel) {
@@ -2669,6 +3387,14 @@ class Thermostat extends Device
 			if ($onlyType === null || $onlyType === DevicesEntities\Channels\Properties\Dynamic::class) {
 				$findChannelPropertiesQuery = new DevicesQueries\Entities\FindChannelDynamicProperties();
 				$findChannelPropertiesQuery->forChannel($channel);
+
+				if ($settable === true) {
+					$findChannelPropertiesQuery->settable(true);
+				}
+
+				if ($queryable === true) {
+					$findChannelPropertiesQuery->queryable(true);
+				}
 
 				if ($allowedDataTypes === null) {
 					if (
@@ -2703,6 +3429,14 @@ class Thermostat extends Device
 				$findChannelPropertiesQuery = new DevicesQueries\Entities\FindChannelVariableProperties();
 				$findChannelPropertiesQuery->forChannel($channel);
 
+				if ($settable === true) {
+					$findChannelPropertiesQuery->settable(true);
+				}
+
+				if ($queryable === true) {
+					$findChannelPropertiesQuery->queryable(true);
+				}
+
 				if ($allowedDataTypes === null) {
 					if (
 						$this->channelsPropertiesRepository->getResultSet(
@@ -2736,18 +3470,14 @@ class Thermostat extends Device
 				continue;
 			}
 
-			$channels[$channel->getIdentifier()] = sprintf(
-				'%s%s',
-				$channel->getIdentifier(),
-				($channel->getName() !== null ? ' [' . $channel->getName() . ']' : ''),
-			);
+			$channels[$channel->getId()->toString()] = $channel->getName() ?? $channel->getIdentifier();
 		}
 
 		$default = count($channels) === 1 ? 0 : null;
 
 		if ($connectedChannel !== null) {
-			foreach (array_values($channels) as $index => $value) {
-				if (Utils\Strings::contains($value, $connectedChannel->getIdentifier())) {
+			foreach (array_values(array_flip($channels)) as $index => $value) {
+				if ($value === $connectedChannel->getId()->toString()) {
 					$default = $index;
 
 					break;
@@ -2784,7 +3514,7 @@ class Thermostat extends Device
 
 				if ($identifier !== false) {
 					$findChannelQuery = new DevicesQueries\Entities\FindChannels();
-					$findChannelQuery->byIdentifier($identifier);
+					$findChannelQuery->byId(Uuid\Uuid::fromString($identifier));
 					$findChannelQuery->forDevice($device);
 
 					$channel = $this->channelsRepository->findOneBy($findChannelQuery);
@@ -2808,19 +3538,23 @@ class Thermostat extends Device
 
 		$properties = [];
 
-		$findDevicePropertiesQuery = new DevicesQueries\Entities\FindChannelProperties();
-		$findDevicePropertiesQuery->forChannel($channel);
+		$findChannelPropertiesQuery = new DevicesQueries\Entities\FindChannelProperties();
+		$findChannelPropertiesQuery->forChannel($channel);
 
-		$channelProperties = $this->channelsPropertiesRepository->findAllBy($findDevicePropertiesQuery);
+		if ($settable === true) {
+			$findChannelPropertiesQuery->settable(true);
+		}
+
+		if ($queryable === true) {
+			$findChannelPropertiesQuery->queryable(true);
+		}
+
+		$channelProperties = $this->channelsPropertiesRepository->findAllBy($findChannelPropertiesQuery);
 		usort(
 			$channelProperties,
-			static function (DevicesEntities\Channels\Properties\Property $a, DevicesEntities\Channels\Properties\Property $b): int {
-				if ($a->getIdentifier() === $b->getIdentifier()) {
-					return $a->getName() <=> $b->getName();
-				}
-
-				return $a->getIdentifier() <=> $b->getIdentifier();
-			},
+			static fn (DevicesEntities\Channels\Properties\Property $a, DevicesEntities\Channels\Properties\Property $b): int => (
+				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
+			),
 		);
 
 		foreach ($channelProperties as $property) {
@@ -2840,18 +3574,14 @@ class Thermostat extends Device
 				continue;
 			}
 
-			$properties[$property->getIdentifier()] = sprintf(
-				'%s%s',
-				$property->getIdentifier(),
-				' [' . ($property->getName() ?? DevicesUtilities\Name::createName($property->getIdentifier())) . ']',
-			);
+			$properties[$property->getId()->toString()] = $property->getName() ?? $property->getIdentifier();
 		}
 
 		$default = count($properties) === 1 ? 0 : null;
 
 		if ($connectedProperty !== null) {
-			foreach (array_values($properties) as $index => $value) {
-				if (Utils\Strings::contains($value, $connectedProperty->getIdentifier())) {
+			foreach (array_values(array_flip($properties)) as $index => $value) {
+				if ($value === $connectedProperty->getId()->toString()) {
 					$default = $index;
 
 					break;
@@ -2889,7 +3619,7 @@ class Thermostat extends Device
 
 				if ($identifier !== false) {
 					$findPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
-					$findPropertyQuery->byIdentifier($identifier);
+					$findPropertyQuery->byId(Uuid\Uuid::fromString($identifier));
 					$findPropertyQuery->forChannel($channel);
 
 					$property = $this->channelsPropertiesRepository->findOneBy($findPropertyQuery);
@@ -2932,7 +3662,7 @@ class Thermostat extends Device
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function askEditAction(
+	private function askManageDeviceAction(
 		Style\SymfonyStyle $io,
 		Entities\Devices\Thermostat $device,
 	): void
@@ -2940,13 +3670,19 @@ class Thermostat extends Device
 		$question = new Console\Question\ChoiceQuestion(
 			$this->translator->translate('//virtual-connector.cmd.base.questions.whatToDo'),
 			[
-				0 => $this->translator->translate('//virtual-connector.cmd.devices.thermostat.actions.editThermostat'),
-				1 => $this->translator->translate('//virtual-connector.cmd.devices.thermostat.actions.editActor'),
-				2 => $this->translator->translate('//virtual-connector.cmd.devices.thermostat.actions.editSensor'),
-				3 => $this->translator->translate('//virtual-connector.cmd.devices.thermostat.actions.editPreset'),
-				4 => $this->translator->translate('//virtual-connector.cmd.devices.thermostat.actions.back'),
+				0 => $this->translator->translate('//virtual-connector.cmd.devices.thermostat.actions.update.device'),
+				1 => $this->translator->translate('//virtual-connector.cmd.devices.thermostat.actions.create.actor'),
+				2 => $this->translator->translate('//virtual-connector.cmd.devices.thermostat.actions.update.actor'),
+				3 => $this->translator->translate('//virtual-connector.cmd.devices.thermostat.actions.list.actors'),
+				4 => $this->translator->translate('//virtual-connector.cmd.devices.thermostat.actions.remove.actor'),
+				5 => $this->translator->translate('//virtual-connector.cmd.devices.thermostat.actions.create.sensor'),
+				6 => $this->translator->translate('//virtual-connector.cmd.devices.thermostat.actions.update.sensor'),
+				7 => $this->translator->translate('//virtual-connector.cmd.devices.thermostat.actions.list.sensors'),
+				8 => $this->translator->translate('//virtual-connector.cmd.devices.thermostat.actions.remove.sensor'),
+				9 => $this->translator->translate('//virtual-connector.cmd.devices.thermostat.actions.update.preset'),
+				10 => $this->translator->translate('//virtual-connector.cmd.devices.thermostat.actions.back'),
 			],
-			4,
+			10,
 		);
 
 		$question->setErrorMessage(
@@ -2957,43 +3693,103 @@ class Thermostat extends Device
 
 		if (
 			$whatToDo === $this->translator->translate(
-				'//virtual-connector.cmd.devices.thermostat.actions.editThermostat',
+				'//virtual-connector.cmd.devices.thermostat.actions.update.device',
 			)
 			|| $whatToDo === '0'
 		) {
-			$this->editThermostat($io, $device);
+			$this->editDevice($io, $device);
 
-			$this->askEditAction($io, $device);
+			$this->askManageDeviceAction($io, $device);
 
 		} elseif (
 			$whatToDo === $this->translator->translate(
-				'//virtual-connector.cmd.devices.thermostat.actions.editActor',
+				'//virtual-connector.cmd.devices.thermostat.actions.create.actor',
 			)
 			|| $whatToDo === '1'
 		) {
-			$this->editActor($io, $device);
+			$this->createActor($io, $device);
 
-			$this->askEditAction($io, $device);
+			$this->askManageDeviceAction($io, $device);
 
 		} elseif (
 			$whatToDo === $this->translator->translate(
-				'//virtual-connector.cmd.devices.thermostat.actions.editSensor',
+				'//virtual-connector.cmd.devices.thermostat.actions.update.actor',
 			)
 			|| $whatToDo === '2'
 		) {
-			$this->editSensor($io, $device);
+			$this->editActor($io, $device);
 
-			$this->askEditAction($io, $device);
+			$this->askManageDeviceAction($io, $device);
 
 		} elseif (
 			$whatToDo === $this->translator->translate(
-				'//virtual-connector.cmd.devices.thermostat.actions.editPreset',
+				'//virtual-connector.cmd.devices.thermostat.actions.list.actors',
 			)
 			|| $whatToDo === '3'
 		) {
+			$this->listActors($io, $device);
+
+			$this->askManageDeviceAction($io, $device);
+
+		} elseif (
+			$whatToDo === $this->translator->translate(
+				'//virtual-connector.cmd.devices.thermostat.actions.remove.actor',
+			)
+			|| $whatToDo === '4'
+		) {
+			$this->deleteActor($io, $device);
+
+			$this->askManageDeviceAction($io, $device);
+
+		} elseif (
+			$whatToDo === $this->translator->translate(
+				'//virtual-connector.cmd.devices.thermostat.actions.create.sensor',
+			)
+			|| $whatToDo === '5'
+		) {
+			$this->createSensor($io, $device);
+
+			$this->askManageDeviceAction($io, $device);
+
+		} elseif (
+			$whatToDo === $this->translator->translate(
+				'//virtual-connector.cmd.devices.thermostat.actions.update.sensor',
+			)
+			|| $whatToDo === '6'
+		) {
+			$this->editSensor($io, $device);
+
+			$this->askManageDeviceAction($io, $device);
+
+		} elseif (
+			$whatToDo === $this->translator->translate(
+				'//virtual-connector.cmd.devices.thermostat.actions.list.sensors',
+			)
+			|| $whatToDo === '7'
+		) {
+			$this->listSensors($io, $device);
+
+			$this->askManageDeviceAction($io, $device);
+
+		} elseif (
+			$whatToDo === $this->translator->translate(
+				'//virtual-connector.cmd.devices.thermostat.actions.remove.sensor',
+			)
+			|| $whatToDo === '8'
+		) {
+			$this->deleteSensor($io, $device);
+
+			$this->askManageDeviceAction($io, $device);
+
+		} elseif (
+			$whatToDo === $this->translator->translate(
+				'//virtual-connector.cmd.devices.thermostat.actions.update.preset',
+			)
+			|| $whatToDo === '9'
+		) {
 			$this->editPreset($io, $device);
 
-			$this->askEditAction($io, $device);
+			$this->askManageDeviceAction($io, $device);
 		}
 	}
 
@@ -3102,17 +3898,23 @@ class Thermostat extends Device
 		);
 		usort(
 			$channelActors,
-			static fn (DevicesEntities\Channels\Properties\Mapped $a, DevicesEntities\Channels\Properties\Mapped $b): int =>
-				$a->getIdentifier() <=> $b->getIdentifier()
+			static fn (DevicesEntities\Channels\Properties\Mapped $a, DevicesEntities\Channels\Properties\Mapped $b): int => (
+				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
+			),
 		);
 
 		foreach ($channelActors as $channelActor) {
-			$actors[$channelActor->getIdentifier()] = $channelActor->getIdentifier()
-				. (
-					$channelActor->getName() !== null
-						? '[' . $channelActor->getName() . ']'
-						: ' [' . ($channelActor->getParent()->getName() ?? $channelActor->getParent()->getIdentifier()) . ']'
-				);
+			$actors[$channelActor->getIdentifier()] = sprintf(
+				'%s [%s: %s, %s: %s, %s: %s]',
+				($channelActor->getName() ?? $channelActor->getIdentifier()),
+				$this->translator->translate('//virtual-connector.cmd.devices.thermostat.answers.device'),
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				($channelActor->getParent()->getChannel()->getDevice()->getName() ?? $channelActor->getParent()->getChannel()->getDevice()->getIdentifier()),
+				$this->translator->translate('//virtual-connector.cmd.devices.thermostat.answers.channel'),
+				($channelActor->getParent()->getChannel()->getName() ?? $channelActor->getParent()->getChannel()->getIdentifier()),
+				$this->translator->translate('//virtual-connector.cmd.devices.thermostat.answers.property'),
+				($channelActor->getParent()->getName() ?? $channelActor->getParent()->getIdentifier()),
+			);
 		}
 
 		if (count($actors) === 0) {
@@ -3196,23 +3998,29 @@ class Thermostat extends Device
 		$findChannelPropertiesQuery = new DevicesQueries\Entities\FindChannelMappedProperties();
 		$findChannelPropertiesQuery->forChannel($channel);
 
-		$channelActors = $this->channelsPropertiesRepository->findAllBy(
+		$channelSensors = $this->channelsPropertiesRepository->findAllBy(
 			$findChannelPropertiesQuery,
 			DevicesEntities\Channels\Properties\Mapped::class,
 		);
 		usort(
-			$channelActors,
-			static fn (DevicesEntities\Channels\Properties\Mapped $a, DevicesEntities\Channels\Properties\Mapped $b): int =>
-				$a->getIdentifier() <=> $b->getIdentifier()
+			$channelSensors,
+			static fn (DevicesEntities\Channels\Properties\Mapped $a, DevicesEntities\Channels\Properties\Mapped $b): int => (
+				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
+			),
 		);
 
-		foreach ($channelActors as $channelActor) {
-			$sensors[$channelActor->getIdentifier()] = $channelActor->getIdentifier()
-				. (
-					$channelActor->getName() !== null
-						? '[' . $channelActor->getName() . ']'
-						: ' [' . ($channelActor->getParent()->getName() ?? $channelActor->getParent()->getIdentifier()) . ']'
-				);
+		foreach ($channelSensors as $channelSensor) {
+			$sensors[$channelSensor->getIdentifier()] = sprintf(
+				'%s [%s: %s, %s: %s, %s: %s]',
+				($channelSensor->getName() ?? $channelSensor->getIdentifier()),
+				$this->translator->translate('//virtual-connector.cmd.devices.thermostat.answers.device'),
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				($channelSensor->getParent()->getChannel()->getDevice()->getName() ?? $channelSensor->getParent()->getChannel()->getDevice()->getIdentifier()),
+				$this->translator->translate('//virtual-connector.cmd.devices.thermostat.answers.channel'),
+				($channelSensor->getParent()->getChannel()->getName() ?? $channelSensor->getParent()->getChannel()->getIdentifier()),
+				$this->translator->translate('//virtual-connector.cmd.devices.thermostat.answers.property'),
+				($channelSensor->getParent()->getName() ?? $channelSensor->getParent()->getIdentifier()),
+			);
 		}
 
 		if (count($sensors) === 0) {
@@ -3295,13 +4103,11 @@ class Thermostat extends Device
 			$property = null;
 		}
 
-		if ($property === null) {
-			$property = $this->channelsPropertiesManager->create($data);
-			assert($property instanceof $propertyType);
-		} else {
-			$property = $this->channelsPropertiesManager->update($property, $data);
-			assert($property instanceof $propertyType);
-		}
+		$property = $property === null
+			? $this->channelsPropertiesManager->create($data)
+			: $this->channelsPropertiesManager->update($property, $data);
+
+		assert($property instanceof $propertyType);
 
 		return $property;
 	}

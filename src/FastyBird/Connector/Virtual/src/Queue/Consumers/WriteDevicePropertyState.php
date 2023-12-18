@@ -121,7 +121,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
 					'type' => 'write-device-property-state-message-consumer',
 					'connector' => [
-						'id' => $connector->getId()->toString(),
+						'id' => $entity->getConnector()->toString(),
 					],
 					'device' => [
 						'id' => $entity->getDevice()->toString(),
@@ -152,10 +152,10 @@ final class WriteDevicePropertyState implements Queue\Consumer
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
 					'type' => 'write-device-property-state-message-consumer',
 					'connector' => [
-						'id' => $connector->getId()->toString(),
+						'id' => $entity->getConnector()->toString(),
 					],
 					'device' => [
-						'id' => $device->getId()->toString(),
+						'id' => $entity->getDevice()->toString(),
 					],
 					'property' => [
 						'id' => $entity->getProperty()->toString(),
@@ -177,13 +177,13 @@ final class WriteDevicePropertyState implements Queue\Consumer
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
 					'type' => 'write-device-property-state-message-consumer',
 					'connector' => [
-						'id' => $connector->getId()->toString(),
+						'id' => $entity->getConnector()->toString(),
 					],
 					'device' => [
-						'id' => $device->getId()->toString(),
+						'id' => $entity->getDevice()->toString(),
 					],
 					'property' => [
-						'id' => $property->getId()->toString(),
+						'id' => $entity->getProperty()->toString(),
 					],
 					'data' => $entity->toArray(),
 				],
@@ -248,13 +248,13 @@ final class WriteDevicePropertyState implements Queue\Consumer
 					'type' => 'write-device-property-state-message-consumer',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'connector' => [
-						'id' => $connector->getId()->toString(),
+						'id' => $entity->getConnector()->toString(),
 					],
 					'device' => [
-						'id' => $device->getId()->toString(),
+						'id' => $entity->getDevice()->toString(),
 					],
 					'property' => [
-						'id' => $property->getId()->toString(),
+						'id' => $entity->getProperty()->toString(),
 					],
 					'data' => $entity->toArray(),
 				],
@@ -307,13 +307,13 @@ final class WriteDevicePropertyState implements Queue\Consumer
 						'type' => 'write-device-property-state-message-consumer',
 						'exception' => BootstrapHelpers\Logger::buildException($ex),
 						'connector' => [
-							'id' => $connector->getId()->toString(),
+							'id' => $entity->getConnector()->toString(),
 						],
 						'device' => [
-							'id' => $device->getId()->toString(),
+							'id' => $entity->getDevice()->toString(),
 						],
 						'property' => [
-							'id' => $property->getId()->toString(),
+							'id' => $entity->getProperty()->toString(),
 						],
 						'data' => $entity->toArray(),
 					],
@@ -327,13 +327,13 @@ final class WriteDevicePropertyState implements Queue\Consumer
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
 				'type' => 'write-device-property-state-message-consumer',
 				'connector' => [
-					'id' => $connector->getId()->toString(),
+					'id' => $entity->getConnector()->toString(),
 				],
 				'device' => [
-					'id' => $device->getId()->toString(),
+					'id' => $entity->getDevice()->toString(),
 				],
 				'property' => [
-					'id' => $property->getId()->toString(),
+					'id' => $entity->getProperty()->toString(),
 				],
 				'data' => $entity->toArray(),
 			],

@@ -131,6 +131,20 @@ final class ConnectorsPropertiesRepositoryTest extends DbTestCase
 		);
 
 		self::assertCount(2, $entities);
+
+		$findQuery = new Queries\Configuration\FindConnectorProperties();
+		$findQuery->settable(true);
+
+		$entities = $repository->findAllBy($findQuery);
+
+		self::assertCount(0, $entities);
+
+		$findQuery = new Queries\Configuration\FindConnectorProperties();
+		$findQuery->queryable(true);
+
+		$entities = $repository->findAllBy($findQuery);
+
+		self::assertCount(0, $entities);
 	}
 
 	/**
