@@ -49,7 +49,7 @@ you must set up at least one connector. You can configure the connector using th
 To configure the connector through the console, run the following command:
 
 ```shell
-php bin/fb-console fb:fb-mqtt-connector:initialize
+php bin/fb-console fb:fb-mqtt-connector:install
 ```
 
 > **NOTE:**

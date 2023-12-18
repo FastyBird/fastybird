@@ -22,42 +22,38 @@ A device is an entity that represents a virtual device.
 To use Virtual devices with the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem, you will need to configure at least one connector.
 The connector can be configured using the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) user interface or through the console.
 
-## Configuring the Connector through the Console
+## Configuring the Connectors and Devices through the Console
 
 To configure the connector through the console, run the following command:
 
 ```shell
-php bin/fb-console fb:virtual-connector:initialize
+php bin/fb-console fb:virtual-connector:install
 ```
 
 > **NOTE:**
 The path to the console command may vary depending on your FastyBird application distribution. For more information, refer to the FastyBird documentation.
 
-The console will ask you to confirm that you want to continue with the configuration.
+After triggering the command you will get information message:
 
 ```shell
-Virtual connector - initialization
-==================================
+Virtual connector - installer
+=============================
 
- ! [NOTE] This action will create|update|delete connector configuration.
+ ! [NOTE] This action will create|update|delete connector configuration
 
- Would you like to continue? (yes/no) [no]:
- > y
-```
-
-You will then be prompted to choose an action:
-
-```shell
- What would you like to do?:
-  [0] Create new connector configuration
-  [1] Edit existing connector configuration
-  [2] Delete existing connector configuration
-  [3] List Virtual connectors
-  [4] Nothing
+ What would you like to do? [Nothing]:
+  [0] Create connector
+  [1] Edit connector
+  [2] Delete connector
+  [3] Manage connector
+  [4] List connectors
+  [5] Nothing
  > 0
 ```
 
-You will then be asked to provide a connector identifier and name:
+### Create connector
+
+If you choose to create a new connector, you will be asked to provide a connector identifier and name:
 
 ```shell
  Provide connector identifier:
@@ -74,6 +70,21 @@ After providing the necessary information, your new Virtual connector will be re
 ```shell
  [OK] New connector "My Virtual" was successfully created
 ```
+
+### Create device
+
+After new connector is created you will be asked if you want to create new device:
+
+```shell
+ Would you like to configure connector device(s)? (yes/no) [yes]:
+ > 
+```
+
+Or you could choose to manage connector devices from the main menu.
+
+### Connectors and Devices management
+
+With this console command you could manage all your connectors and their devices. Just use the main menu to navigate to proper action.
 
 ## Configuring the Connector with the FastyBird User Interface
 

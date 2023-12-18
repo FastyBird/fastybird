@@ -98,7 +98,7 @@ After your devices are linked with your Tuya cloud account you are able to get T
 To configure the connector through the console, run the following command:
 
 ```shell
-php bin/fb-console fb:tuya-connector:initialize
+php bin/fb-console fb:tuya-connector:install
 ```
 
 > **NOTE:**
