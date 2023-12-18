@@ -1790,7 +1790,7 @@ class Thermostat extends Device
 
 		$io->warning(
 			$this->translator->translate(
-				'//ns-panel-connector.cmd.install.messages.remove.actor.confirm',
+				'//ns-panel-connector.cmd.devices.thermostat.messages.remove.actor.confirm',
 				['name' => $property->getName() ?? $property->getIdentifier()],
 			),
 		);
@@ -1817,7 +1817,7 @@ class Thermostat extends Device
 
 			$io->success(
 				$this->translator->translate(
-					'//virtual-connector.cmd.install.messages.remove.actor.success',
+					'//virtual-connector.cmd.devices.thermostat.messages.remove.actor.success',
 					['name' => $property->getName() ?? $property->getIdentifier()],
 				),
 			);
@@ -1833,7 +1833,7 @@ class Thermostat extends Device
 			);
 
 			$io->success(
-				$this->translator->translate('//virtual-connector.cmd.install.messages.remove.actor.error'),
+				$this->translator->translate('//virtual-connector.cmd.devices.thermostat.messages.remove.actor.error'),
 			);
 		} finally {
 			// Revert all changes when error occur
@@ -2093,7 +2093,7 @@ class Thermostat extends Device
 
 		$io->warning(
 			$this->translator->translate(
-				'//ns-panel-connector.cmd.install.messages.remove.sensor.confirm',
+				'//ns-panel-connector.cmd.devices.thermostat.messages.remove.sensor.confirm',
 				['name' => $property->getName() ?? $property->getIdentifier()],
 			),
 		);
@@ -2120,7 +2120,7 @@ class Thermostat extends Device
 
 			$io->success(
 				$this->translator->translate(
-					'//virtual-connector.cmd.install.messages.remove.sensor.success',
+					'//virtual-connector.cmd.devices.thermostat.messages.remove.sensor.success',
 					['name' => $property->getName() ?? $property->getIdentifier()],
 				),
 			);
@@ -2136,7 +2136,7 @@ class Thermostat extends Device
 			);
 
 			$io->success(
-				$this->translator->translate('//virtual-connector.cmd.install.messages.remove.sensor.error'),
+				$this->translator->translate('//virtual-connector.cmd.devices.thermostat.messages.remove.sensor.error'),
 			);
 		} finally {
 			// Revert all changes when error occur
@@ -2633,7 +2633,7 @@ class Thermostat extends Device
 
 		$question = new Console\Question\ChoiceQuestion(
 			$this->translator->translate('//virtual-connector.cmd.devices.thermostat.questions.select.actorType'),
-			$types,
+			array_values($types),
 		);
 		$question->setErrorMessage(
 			$this->translator->translate('//virtual-connector.cmd.base.messages.answerNotValid'),
@@ -2680,7 +2680,7 @@ class Thermostat extends Device
 	): string|null
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate('//virtual-connector.cmd.devices.thermostat.questions.provide.property.name'),
+			$this->translator->translate('//virtual-connector.cmd.devices.thermostat.questions.provide.actor.name'),
 			$property?->getName(),
 		);
 
@@ -2709,6 +2709,7 @@ class Thermostat extends Device
 			$allowedDataTypes,
 			DevicesEntities\Channels\Properties\Dynamic::class,
 			$property,
+			true,
 		);
 
 		if (!$parent instanceof DevicesEntities\Channels\Properties\Dynamic) {
@@ -2742,7 +2743,7 @@ class Thermostat extends Device
 
 		$question = new Console\Question\ChoiceQuestion(
 			$this->translator->translate('//virtual-connector.cmd.devices.thermostat.questions.select.sensorType'),
-			$types,
+			array_values($types),
 		);
 		$question->setErrorMessage(
 			$this->translator->translate('//virtual-connector.cmd.base.messages.answerNotValid'),
@@ -2818,6 +2819,8 @@ class Thermostat extends Device
 			$allowedDataTypes,
 			DevicesEntities\Channels\Properties\Dynamic::class,
 			$property,
+			null,
+			true,
 		);
 
 		if (!$parent instanceof DevicesEntities\Channels\Properties\Dynamic) {
@@ -3043,6 +3046,8 @@ class Thermostat extends Device
 		array|null $allowedDataTypes = null,
 		string|null $onlyType = null,
 		DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Variable|null $connectedProperty = null,
+		bool|null $settable = null,
+		bool|null $queryable = null,
 	): DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Variable|null
 	{
 		$devices = [];
@@ -3080,6 +3085,14 @@ class Thermostat extends Device
 				if ($onlyType === null || $onlyType === DevicesEntities\Channels\Properties\Dynamic::class) {
 					$findChannelPropertiesQuery = new DevicesQueries\Entities\FindChannelDynamicProperties();
 					$findChannelPropertiesQuery->forChannel($channel);
+
+					if ($settable === true) {
+						$findChannelPropertiesQuery->settable(true);
+					}
+
+					if ($queryable === true) {
+						$findChannelPropertiesQuery->queryable(true);
+					}
 
 					if ($allowedDataTypes === null) {
 						if (
@@ -3718,8 +3731,17 @@ class Thermostat extends Device
 		);
 
 		foreach ($channelActors as $channelActor) {
-			$actors[$channelActor->getIdentifier()] = $channelActor->getName() ?? $channelActor->getIdentifier()
-				. ' [' . ($channelActor->getParent()->getName() ?? $channelActor->getParent()->getIdentifier()) . ']';
+			$actors[$channelActor->getIdentifier()] = sprintf(
+				'%s [%s: %s, %s: %s, %s: %s]',
+				($channelActor->getName() ?? $channelActor->getIdentifier()),
+				$this->translator->translate('//virtual-connector.cmd.devices.thermostat.answers.device'),
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				($channelActor->getParent()->getChannel()->getDevice()->getName() ?? $channelActor->getParent()->getChannel()->getDevice()->getIdentifier()),
+				$this->translator->translate('//virtual-connector.cmd.devices.thermostat.answers.channel'),
+				($channelActor->getParent()->getChannel()->getName() ?? $channelActor->getParent()->getChannel()->getIdentifier()),
+				$this->translator->translate('//virtual-connector.cmd.devices.thermostat.answers.property'),
+				($channelActor->getParent()->getName() ?? $channelActor->getParent()->getIdentifier()),
+			);
 		}
 
 		if (count($actors) === 0) {
@@ -3815,8 +3837,17 @@ class Thermostat extends Device
 		);
 
 		foreach ($channelSensors as $channelSensor) {
-			$sensors[$channelSensor->getIdentifier()] = $channelSensor->getName() ?? $channelSensor->getIdentifier()
-			. ' [' . ($channelSensor->getParent()->getName() ?? $channelSensor->getParent()->getIdentifier()) . ']';
+			$sensors[$channelSensor->getIdentifier()] = sprintf(
+				'%s [%s: %s, %s: %s, %s: %s]',
+				($channelSensor->getName() ?? $channelSensor->getIdentifier()),
+				$this->translator->translate('//virtual-connector.cmd.devices.thermostat.answers.device'),
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				($channelSensor->getParent()->getChannel()->getDevice()->getName() ?? $channelSensor->getParent()->getChannel()->getDevice()->getIdentifier()),
+				$this->translator->translate('//virtual-connector.cmd.devices.thermostat.answers.channel'),
+				($channelSensor->getParent()->getChannel()->getName() ?? $channelSensor->getParent()->getChannel()->getIdentifier()),
+				$this->translator->translate('//virtual-connector.cmd.devices.thermostat.answers.property'),
+				($channelSensor->getParent()->getName() ?? $channelSensor->getParent()->getIdentifier()),
+			);
 		}
 
 		if (count($sensors) === 0) {

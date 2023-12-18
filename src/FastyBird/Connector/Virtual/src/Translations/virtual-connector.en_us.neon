@@ -208,6 +208,9 @@ cmd:
                     targetTemperature: "Target temperature"
                     floorTemperature: "Floor temperature"
                     sensor: "Openings sensor"
+                device: "Device"
+                channel: "Channel"
+                property: "Property"
 
             messages:
                 identifier:
