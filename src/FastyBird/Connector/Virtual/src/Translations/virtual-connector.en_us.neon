@@ -202,15 +202,24 @@ cmd:
                     sleep: "Sleep"
                     anti_freeze: "Anti freeze"
                 actor:
-                    heater: "Heater"
-                    cooler: "Cooler"
+                    heater: "Heater actor"
+                    cooler: "Cooler actor"
                 sensor:
-                    targetTemperature: "Target temperature"
-                    floorTemperature: "Floor temperature"
+                    targetTemperature: "Temperature sensor"
+                    floorTemperature: "Floor temperature sensor"
                     sensor: "Openings sensor"
                 device: "Device"
                 channel: "Channel"
                 property: "Property"
+
+            data:
+                name: "Name"
+                type: "Type"
+                heater: "Heater actor"
+                cooler: "Cooler actor"
+                target_sensor: "Temperature sensor"
+                floor_sensor: "Floor temperature sensor"
+                sensor: "Openings sensors"
 
             messages:
                 identifier:

@@ -1772,6 +1772,44 @@ class Thermostat extends Device
 		}
 	}
 
+	private function listActors(Style\SymfonyStyle $io, Entities\Devices\Thermostat $device): void
+	{
+		$table = new Console\Helper\Table($io);
+		$table->setHeaders([
+			'#',
+			$this->translator->translate('//virtual-connector.cmd.devices.thermostat.data.name'),
+			$this->translator->translate('//virtual-connector.cmd.devices.thermostat.data.type'),
+		]);
+
+		$actors = $device->getActors();
+		usort(
+			$actors,
+			static fn (DevicesEntities\Channels\Properties\Property $a, DevicesEntities\Channels\Properties\Property $b): int => (
+				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
+			),
+		);
+		$actors = array_filter(
+			$actors,
+			static fn (DevicesEntities\Channels\Properties\Property $property): bool => in_array(
+				$property->getIdentifier(),
+				[Types\ChannelPropertyIdentifier::HEATER, Types\ChannelPropertyIdentifier::COOLER],
+				true,
+			),
+		);
+
+		foreach ($actors as $index => $property) {
+			$table->addRow([
+				$index + 1,
+				$property->getName() ?? $property->getIdentifier(),
+				$property->getIdentifier(),
+			]);
+		}
+
+		$table->render();
+
+		$io->newLine();
+	}
+
 	/**
 	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DBAL\Exception
@@ -1790,7 +1828,7 @@ class Thermostat extends Device
 
 		$io->warning(
 			$this->translator->translate(
-				'//ns-panel-connector.cmd.devices.thermostat.messages.remove.actor.confirm',
+				'//virtual-connector.cmd.devices.thermostat.messages.remove.actor.confirm',
 				['name' => $property->getName() ?? $property->getIdentifier()],
 			),
 		);
@@ -2075,6 +2113,48 @@ class Thermostat extends Device
 		}
 	}
 
+	private function listSensors(Style\SymfonyStyle $io, Entities\Devices\Thermostat $device): void
+	{
+		$table = new Console\Helper\Table($io);
+		$table->setHeaders([
+			'#',
+			$this->translator->translate('//virtual-connector.cmd.devices.thermostat.data.name'),
+			$this->translator->translate('//virtual-connector.cmd.devices.thermostat.data.type'),
+		]);
+
+		$sensors = $device->getSensors();
+		usort(
+			$sensors,
+			static fn (DevicesEntities\Channels\Properties\Property $a, DevicesEntities\Channels\Properties\Property $b): int => (
+				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
+			),
+		);
+		$sensors = array_filter(
+			$sensors,
+			static fn (DevicesEntities\Channels\Properties\Property $property): bool => in_array(
+				$property->getIdentifier(),
+				[
+					Types\ChannelPropertyIdentifier::TARGET_SENSOR,
+					Types\ChannelPropertyIdentifier::FLOOR_SENSOR,
+					Types\ChannelPropertyIdentifier::SENSOR,
+				],
+				true,
+			),
+		);
+
+		foreach ($sensors as $index => $property) {
+			$table->addRow([
+				$index + 1,
+				$property->getName() ?? $property->getIdentifier(),
+				$property->getIdentifier(),
+			]);
+		}
+
+		$table->render();
+
+		$io->newLine();
+	}
+
 	/**
 	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DBAL\Exception
@@ -2093,7 +2173,7 @@ class Thermostat extends Device
 
 		$io->warning(
 			$this->translator->translate(
-				'//ns-panel-connector.cmd.devices.thermostat.messages.remove.sensor.confirm',
+				'//virtual-connector.cmd.devices.thermostat.messages.remove.sensor.confirm',
 				['name' => $property->getName() ?? $property->getIdentifier()],
 			),
 		);
@@ -3131,6 +3211,14 @@ class Thermostat extends Device
 					$findChannelPropertiesQuery = new DevicesQueries\Entities\FindChannelVariableProperties();
 					$findChannelPropertiesQuery->forChannel($channel);
 
+					if ($settable === true) {
+						$findChannelPropertiesQuery->settable(true);
+					}
+
+					if ($queryable === true) {
+						$findChannelPropertiesQuery->queryable(true);
+					}
+
 					if ($allowedDataTypes === null) {
 						if (
 							$this->channelsPropertiesRepository->getResultSet(
@@ -3261,6 +3349,14 @@ class Thermostat extends Device
 				$findChannelPropertiesQuery = new DevicesQueries\Entities\FindChannelDynamicProperties();
 				$findChannelPropertiesQuery->forChannel($channel);
 
+				if ($settable === true) {
+					$findChannelPropertiesQuery->settable(true);
+				}
+
+				if ($queryable === true) {
+					$findChannelPropertiesQuery->queryable(true);
+				}
+
 				if ($allowedDataTypes === null) {
 					if (
 						$this->channelsPropertiesRepository->getResultSet(
@@ -3293,6 +3389,14 @@ class Thermostat extends Device
 			if ($onlyType === null || $onlyType === DevicesEntities\Channels\Properties\Variable::class) {
 				$findChannelPropertiesQuery = new DevicesQueries\Entities\FindChannelVariableProperties();
 				$findChannelPropertiesQuery->forChannel($channel);
+
+				if ($settable === true) {
+					$findChannelPropertiesQuery->settable(true);
+				}
+
+				if ($queryable === true) {
+					$findChannelPropertiesQuery->queryable(true);
+				}
 
 				if ($allowedDataTypes === null) {
 					if (
@@ -3395,10 +3499,18 @@ class Thermostat extends Device
 
 		$properties = [];
 
-		$findDevicePropertiesQuery = new DevicesQueries\Entities\FindChannelProperties();
-		$findDevicePropertiesQuery->forChannel($channel);
+		$findChannelPropertiesQuery = new DevicesQueries\Entities\FindChannelProperties();
+		$findChannelPropertiesQuery->forChannel($channel);
 
-		$channelProperties = $this->channelsPropertiesRepository->findAllBy($findDevicePropertiesQuery);
+		if ($settable === true) {
+			$findChannelPropertiesQuery->settable(true);
+		}
+
+		if ($queryable === true) {
+			$findChannelPropertiesQuery->queryable(true);
+		}
+
+		$channelProperties = $this->channelsPropertiesRepository->findAllBy($findChannelPropertiesQuery);
 		usort(
 			$channelProperties,
 			static fn (DevicesEntities\Channels\Properties\Property $a, DevicesEntities\Channels\Properties\Property $b): int => (
@@ -3522,14 +3634,16 @@ class Thermostat extends Device
 				0 => $this->translator->translate('//virtual-connector.cmd.devices.thermostat.actions.update.device'),
 				1 => $this->translator->translate('//virtual-connector.cmd.devices.thermostat.actions.create.actor'),
 				2 => $this->translator->translate('//virtual-connector.cmd.devices.thermostat.actions.update.actor'),
-				3 => $this->translator->translate('//virtual-connector.cmd.devices.thermostat.actions.remove.actor'),
-				4 => $this->translator->translate('//virtual-connector.cmd.devices.thermostat.actions.create.sensor'),
-				5 => $this->translator->translate('//virtual-connector.cmd.devices.thermostat.actions.update.sensor'),
-				6 => $this->translator->translate('//virtual-connector.cmd.devices.thermostat.actions.remove.sensor'),
-				7 => $this->translator->translate('//virtual-connector.cmd.devices.thermostat.actions.update.preset'),
-				8 => $this->translator->translate('//virtual-connector.cmd.devices.thermostat.actions.back'),
+				3 => $this->translator->translate('//virtual-connector.cmd.devices.thermostat.actions.list.actors'),
+				4 => $this->translator->translate('//virtual-connector.cmd.devices.thermostat.actions.remove.actor'),
+				5 => $this->translator->translate('//virtual-connector.cmd.devices.thermostat.actions.create.sensor'),
+				6 => $this->translator->translate('//virtual-connector.cmd.devices.thermostat.actions.update.sensor'),
+				7 => $this->translator->translate('//virtual-connector.cmd.devices.thermostat.actions.list.sensors'),
+				8 => $this->translator->translate('//virtual-connector.cmd.devices.thermostat.actions.remove.sensor'),
+				9 => $this->translator->translate('//virtual-connector.cmd.devices.thermostat.actions.update.preset'),
+				10 => $this->translator->translate('//virtual-connector.cmd.devices.thermostat.actions.back'),
 			],
-			8,
+			10,
 		);
 
 		$question->setErrorMessage(
@@ -3570,9 +3684,19 @@ class Thermostat extends Device
 
 		} elseif (
 			$whatToDo === $this->translator->translate(
-				'//virtual-connector.cmd.devices.thermostat.actions.remove.actor',
+				'//virtual-connector.cmd.devices.thermostat.actions.list.actors',
 			)
 			|| $whatToDo === '3'
+		) {
+			$this->listActors($io, $device);
+
+			$this->askManageDeviceAction($io, $device);
+
+		} elseif (
+			$whatToDo === $this->translator->translate(
+				'//virtual-connector.cmd.devices.thermostat.actions.remove.actor',
+			)
+			|| $whatToDo === '4'
 		) {
 			$this->deleteActor($io, $device);
 
@@ -3582,7 +3706,7 @@ class Thermostat extends Device
 			$whatToDo === $this->translator->translate(
 				'//virtual-connector.cmd.devices.thermostat.actions.create.sensor',
 			)
-			|| $whatToDo === '4'
+			|| $whatToDo === '5'
 		) {
 			$this->createSensor($io, $device);
 
@@ -3592,7 +3716,7 @@ class Thermostat extends Device
 			$whatToDo === $this->translator->translate(
 				'//virtual-connector.cmd.devices.thermostat.actions.update.sensor',
 			)
-			|| $whatToDo === '5'
+			|| $whatToDo === '6'
 		) {
 			$this->editSensor($io, $device);
 
@@ -3600,9 +3724,19 @@ class Thermostat extends Device
 
 		} elseif (
 			$whatToDo === $this->translator->translate(
+				'//virtual-connector.cmd.devices.thermostat.actions.list.sensors',
+			)
+			|| $whatToDo === '7'
+		) {
+			$this->listSensors($io, $device);
+
+			$this->askManageDeviceAction($io, $device);
+
+		} elseif (
+			$whatToDo === $this->translator->translate(
 				'//virtual-connector.cmd.devices.thermostat.actions.remove.sensor',
 			)
-			|| $whatToDo === '6'
+			|| $whatToDo === '8'
 		) {
 			$this->deleteSensor($io, $device);
 
@@ -3612,7 +3746,7 @@ class Thermostat extends Device
 			$whatToDo === $this->translator->translate(
 				'//virtual-connector.cmd.devices.thermostat.actions.update.preset',
 			)
-			|| $whatToDo === '7'
+			|| $whatToDo === '9'
 		) {
 			$this->editPreset($io, $device);
 
