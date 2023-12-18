@@ -19,6 +19,7 @@ use Brick\Math;
 use DateTimeInterface;
 use Doctrine\DBAL;
 use Doctrine\Persistence;
+use Exception;
 use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\API;
 use FastyBird\Connector\NsPanel\Entities;
@@ -2176,11 +2177,12 @@ class Install extends Console\Command\Command
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws DoctrineCrudExceptions\InvalidArgumentException
+	 * @throws Exception
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws Nette\IOException
-	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 */
 	private function createProtocol(
 		Style\SymfonyStyle $io,
@@ -2188,6 +2190,32 @@ class Install extends Console\Command\Command
 		Entities\NsPanelChannel $channel,
 	): DevicesEntities\Channels\Properties\Property|null
 	{
+		$capabilitiesMetadata = $this->loader->loadCapabilities();
+
+		if (!$capabilitiesMetadata->offsetExists($channel->getCapability()->getValue())) {
+			throw new Exceptions\InvalidArgument(sprintf(
+				'Definition for capability: %s was not found',
+				$channel->getCapability()->getValue(),
+			));
+		}
+
+		$capabilityMetadata = $capabilitiesMetadata->offsetGet($channel->getCapability()->getValue());
+
+		if (
+			!$capabilityMetadata instanceof Utils\ArrayHash
+			|| !$capabilityMetadata->offsetExists('permission')
+			|| !is_string($capabilityMetadata->offsetGet('permission'))
+			|| !Types\Permission::isValidValue($capabilityMetadata->offsetGet('permission'))
+			|| !$capabilityMetadata->offsetExists('protocol')
+			|| !$capabilityMetadata->offsetGet('protocol') instanceof Utils\ArrayHash
+			|| !$capabilityMetadata->offsetExists('multiple')
+			|| !is_bool($capabilityMetadata->offsetGet('multiple'))
+		) {
+			throw new Exceptions\InvalidState('Capability definition is missing required attributes');
+		}
+
+		$capabilityPermission = $capabilityMetadata->offsetGet('permission');
+
 		$protocol = $this->askProtocolType($io, $channel);
 
 		if ($protocol === null) {
@@ -2225,7 +2253,12 @@ class Install extends Console\Command\Command
 		$connect = (bool) $io->askQuestion($question);
 
 		if ($connect) {
-			$connectProperty = $this->askPropertyForConnect($io);
+			$connectProperty = $this->askProperty(
+				$io,
+				null,
+				in_array($capabilityPermission, [Types\Permission::WRITE, Types\Permission::READ_WRITE], true),
+				in_array($capabilityPermission, [Types\Permission::READ, Types\Permission::READ_WRITE], true),
+			);
 
 			$format = $this->askFormat($io, $protocol, $connectProperty);
 
@@ -2286,6 +2319,32 @@ class Install extends Console\Command\Command
 	 */
 	private function editProtocol(Style\SymfonyStyle $io, Entities\NsPanelChannel $channel): void
 	{
+		$capabilitiesMetadata = $this->loader->loadCapabilities();
+
+		if (!$capabilitiesMetadata->offsetExists($channel->getCapability()->getValue())) {
+			throw new Exceptions\InvalidArgument(sprintf(
+				'Definition for capability: %s was not found',
+				$channel->getCapability()->getValue(),
+			));
+		}
+
+		$capabilityMetadata = $capabilitiesMetadata->offsetGet($channel->getCapability()->getValue());
+
+		if (
+			!$capabilityMetadata instanceof Utils\ArrayHash
+			|| !$capabilityMetadata->offsetExists('permission')
+			|| !is_string($capabilityMetadata->offsetGet('permission'))
+			|| !Types\Permission::isValidValue($capabilityMetadata->offsetGet('permission'))
+			|| !$capabilityMetadata->offsetExists('protocol')
+			|| !$capabilityMetadata->offsetGet('protocol') instanceof Utils\ArrayHash
+			|| !$capabilityMetadata->offsetExists('multiple')
+			|| !is_bool($capabilityMetadata->offsetGet('multiple'))
+		) {
+			throw new Exceptions\InvalidState('Capability definition is missing required attributes');
+		}
+
+		$capabilityPermission = $capabilityMetadata->offsetGet('permission');
+
 		$property = $this->askWhichProtocol($io, $channel);
 
 		if ($property === null) {
@@ -2330,14 +2389,16 @@ class Install extends Console\Command\Command
 			$connect = (bool) $io->askQuestion($question);
 
 			if ($connect) {
-				$connectProperty = $this->askPropertyForConnect(
+				$connectProperty = $this->askProperty(
 					$io,
 					(
-					$property instanceof DevicesEntities\Channels\Properties\Mapped
-					&& $property->getParent() instanceof DevicesEntities\Channels\Properties\Dynamic
-						? $property->getParent()
-						: null
+						$property instanceof DevicesEntities\Channels\Properties\Mapped
+						&& $property->getParent() instanceof DevicesEntities\Channels\Properties\Dynamic
+							? $property->getParent()
+							: null
 					),
+					in_array($capabilityPermission, [Types\Permission::WRITE, Types\Permission::READ_WRITE], true),
+					in_array($capabilityPermission, [Types\Permission::READ, Types\Permission::READ_WRITE], true),
 				);
 
 				$format = $this->askFormat($io, $protocol, $connectProperty);
@@ -3582,10 +3643,13 @@ class Install extends Console\Command\Command
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exception
 	 */
-	private function askPropertyForConnect(
+	private function askProperty(
 		Style\SymfonyStyle $io,
 		DevicesEntities\Channels\Properties\Dynamic|null $connectedProperty = null,
+		bool|null $settable = null,
+		bool|null $queryable = null,
 	): DevicesEntities\Channels\Properties\Dynamic|null
 	{
 		$devices = [];
@@ -3616,6 +3680,41 @@ class Install extends Console\Command\Command
 
 		foreach ($systemDevices as $device) {
 			if ($device instanceof Entities\NsPanelDevice) {
+				continue;
+			}
+
+			$findChannelsQuery = new DevicesQueries\Entities\FindChannels();
+			$findChannelsQuery->forDevice($device);
+
+			$channels = $this->channelsRepository->findAllBy($findChannelsQuery);
+
+			$hasProperty = false;
+
+			foreach ($channels as $channel) {
+				$findChannelPropertiesQuery = new DevicesQueries\Entities\FindChannelDynamicProperties();
+				$findChannelPropertiesQuery->forChannel($channel);
+
+				if ($settable === true) {
+					$findChannelPropertiesQuery->settable(true);
+				}
+
+				if ($queryable === true) {
+					$findChannelPropertiesQuery->queryable(true);
+				}
+
+				if (
+					$this->channelsPropertiesRepository->getResultSet(
+						$findChannelPropertiesQuery,
+						DevicesEntities\Channels\Properties\Dynamic::class,
+					)->count() > 0
+				) {
+					$hasProperty = true;
+
+					break;
+				}
+			}
+
+			if (!$hasProperty) {
 				continue;
 			}
 
@@ -3703,6 +3802,32 @@ class Install extends Console\Command\Command
 		);
 
 		foreach ($deviceChannels as $channel) {
+			$hasProperty = false;
+
+			$findChannelPropertiesQuery = new DevicesQueries\Entities\FindChannelDynamicProperties();
+			$findChannelPropertiesQuery->forChannel($channel);
+
+			if ($settable === true) {
+				$findChannelPropertiesQuery->settable(true);
+			}
+
+			if ($queryable === true) {
+				$findChannelPropertiesQuery->queryable(true);
+			}
+
+			if (
+				$this->channelsPropertiesRepository->getResultSet(
+					$findChannelPropertiesQuery,
+					DevicesEntities\Channels\Properties\Dynamic::class,
+				)->count() > 0
+			) {
+				$hasProperty = true;
+			}
+
+			if (!$hasProperty) {
+				continue;
+			}
+
 			$channels[$channel->getId()->toString()] = $channel->getName() ?? $channel->getIdentifier();
 		}
 
@@ -3771,11 +3896,19 @@ class Install extends Console\Command\Command
 
 		$properties = [];
 
-		$findDevicePropertiesQuery = new DevicesQueries\Entities\FindChannelDynamicProperties();
-		$findDevicePropertiesQuery->forChannel($channel);
+		$findChannelPropertiesQuery = new DevicesQueries\Entities\FindChannelDynamicProperties();
+		$findChannelPropertiesQuery->forChannel($channel);
+
+		if ($settable === true) {
+			$findChannelPropertiesQuery->settable(true);
+		}
+
+		if ($queryable === true) {
+			$findChannelPropertiesQuery->queryable(true);
+		}
 
 		$channelProperties = $this->channelsPropertiesRepository->findAllBy(
-			$findDevicePropertiesQuery,
+			$findChannelPropertiesQuery,
 			DevicesEntities\Channels\Properties\Dynamic::class,
 		);
 		usort(
