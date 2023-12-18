@@ -15,6 +15,7 @@
 
 namespace FastyBird\Module\Accounts\DI;
 
+use Contributte\Translation;
 use Doctrine\Persistence;
 use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
 use FastyBird\Module\Accounts\Commands;
@@ -47,7 +48,7 @@ use const DIRECTORY_SEPARATOR;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class AccountsExtension extends DI\CompilerExtension
+class AccountsExtension extends DI\CompilerExtension implements Translation\DI\TranslationProviderInterface
 {
 
 	public const NAME = 'fbAccountsModule';
@@ -312,6 +313,16 @@ class AccountsExtension extends DI\CompilerExtension
 			'return new ' . Models\Entities\Roles\RolesManager::class
 			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Roles\Role::class . '\'));',
 		);
+	}
+
+	/**
+	 * @return array<string>
+	 */
+	public function getTranslationResources(): array
+	{
+		return [
+			__DIR__ . '/../Translations/',
+		];
 	}
 
 }

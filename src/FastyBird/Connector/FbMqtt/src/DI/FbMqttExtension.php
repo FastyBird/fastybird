@@ -15,6 +15,7 @@
 
 namespace FastyBird\Connector\FbMqtt\DI;
 
+use Contributte\Translation;
 use Doctrine\Persistence;
 use FastyBird\Connector\FbMqtt;
 use FastyBird\Connector\FbMqtt\API;
@@ -45,7 +46,7 @@ use const DIRECTORY_SEPARATOR;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class FbMqttExtension extends DI\CompilerExtension
+class FbMqttExtension extends DI\CompilerExtension implements Translation\DI\TranslationProviderInterface
 {
 
 	public const NAME = 'fbFbMqttConnector';
@@ -306,6 +307,16 @@ class FbMqttExtension extends DI\CompilerExtension
 				'FastyBird\Connector\FbMqtt\Entities',
 			]);
 		}
+	}
+
+	/**
+	 * @return array<string>
+	 */
+	public function getTranslationResources(): array
+	{
+		return [
+			__DIR__ . '/../Translations/',
+		];
 	}
 
 }

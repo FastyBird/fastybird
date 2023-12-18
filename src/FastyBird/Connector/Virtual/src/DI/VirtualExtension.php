@@ -15,6 +15,7 @@
 
 namespace FastyBird\Connector\Virtual\DI;
 
+use Contributte\Translation;
 use Doctrine\Persistence;
 use FastyBird\Connector\Virtual;
 use FastyBird\Connector\Virtual\Commands;
@@ -45,7 +46,7 @@ use const DIRECTORY_SEPARATOR;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class VirtualExtension extends DI\CompilerExtension
+class VirtualExtension extends DI\CompilerExtension implements Translation\DI\TranslationProviderInterface
 {
 
 	public const NAME = 'fbVirtualConnector';
@@ -371,6 +372,16 @@ class VirtualExtension extends DI\CompilerExtension
 				'FastyBird\Connector\Virtual\Entities',
 			]);
 		}
+	}
+
+	/**
+	 * @return array<string>
+	 */
+	public function getTranslationResources(): array
+	{
+		return [
+			__DIR__ . '/../Translations/',
+		];
 	}
 
 }

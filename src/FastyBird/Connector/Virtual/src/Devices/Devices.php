@@ -17,7 +17,6 @@ namespace FastyBird\Connector\Virtual\Devices;
 
 use DateTimeInterface;
 use Exception;
-use FastyBird\Connector\Viera\Entities\VieraDevice;
 use FastyBird\Connector\Virtual;
 use FastyBird\Connector\Virtual\Drivers;
 use FastyBird\Connector\Virtual\Entities;
@@ -96,7 +95,7 @@ class Devices
 
 		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDevicesQuery->forConnector($this->connector);
-		$findDevicesQuery->byType(VieraDevice::TYPE);
+		$findDevicesQuery->byType(Entities\VirtualDevice::TYPE);
 
 		foreach ($this->devicesConfigurationRepository->findAllBy($findDevicesQuery) as $device) {
 			$this->devices[$device->getId()->toString()] = $device;

@@ -15,6 +15,7 @@
 
 namespace FastyBird\Module\Triggers\DI;
 
+use Contributte\Translation;
 use Doctrine\Persistence;
 use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
 use FastyBird\Module\Triggers\Commands;
@@ -46,7 +47,7 @@ use const DIRECTORY_SEPARATOR;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class TriggersExtension extends DI\CompilerExtension
+class TriggersExtension extends DI\CompilerExtension implements Translation\DI\TranslationProviderInterface
 {
 
 	public const NAME = 'fbTriggersModule';
@@ -295,6 +296,16 @@ class TriggersExtension extends DI\CompilerExtension
 			'return new ' . Models\Entities\Notifications\NotificationsManager::class
 			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Notifications\Notification::class . '\'));',
 		);
+	}
+
+	/**
+	 * @return array<string>
+	 */
+	public function getTranslationResources(): array
+	{
+		return [
+			__DIR__ . '/../Translations/',
+		];
 	}
 
 }

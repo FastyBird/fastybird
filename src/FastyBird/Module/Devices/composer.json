@@ -40,6 +40,9 @@
     "php": ">=8.1.0",
     "ext-bcmath": "*",
     "ext-pcntl": "*",
+    "contributte/console": "^0.9",
+    "contributte/monolog": "^0.5",
+    "contributte/translation": "^2.0",
     "cweagans/composer-patches": "^1.7",
     "evenement/evenement": "^3.0",
     "fastybird/bootstrap-library": "dev-main",
@@ -65,7 +68,6 @@
   },
   "require-dev": {
     "brianium/paratest": "^7.3",
-    "contributte/translation": "^2.0",
     "dg/bypass-finals": "^1.4",
     "ipub/websockets": "^1.5",
     "ipub/websockets-wamp": "^1.4",
