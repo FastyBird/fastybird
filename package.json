@@ -23,7 +23,6 @@
     "url": "https://github.com/FastyBird/fastybird.git"
   },
   "workspaces": [
-    "src/FastyBird/Application/*",
     "src/FastyBird/Automator/*",
     "src/FastyBird/Bridge/*",
     "src/FastyBird/Connector/*",
