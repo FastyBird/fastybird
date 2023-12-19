@@ -15,13 +15,13 @@ services:
       # Application specific environment variables
       APP_ENV: "dev"
       FB_CONFIG_DIR: /app/var/config
-      FB_APP_PARAMETER__DATABASE_HOST: 127.0.0.1
-      FB_APP_PARAMETER__DATABASE_PORT: 3306
+      FB_APP_PARAMETER__DATABASE_HOST: database
+      FB_APP_PARAMETER__DATABASE_PORT: ${MYSQL_PORT:-3306}
       FB_APP_PARAMETER__DATABASE_USERNAME: ${DATABASE_USERNAME:-fastybird}
       FB_APP_PARAMETER__DATABASE_PASSWORD: ${DATABASE_PASSWORD:-fastybird}
       FB_APP_PARAMETER__DATABASE_DBNAME: ${DATABASE_DBNAME:-fastybird_dev}
-      FB_APP_PARAMETER__REDIS_HOST: 127.0.0.1
-      FB_APP_PARAMETER__REDIS_PORT: 6379
+      FB_APP_PARAMETER__REDIS_HOST: redis
+      FB_APP_PARAMETER__REDIS_PORT: ${REDIS_PORT:-6379}
       FB_APP_PARAMETER__SECURITY_SIGNATURE: ${SECURITY_SIGNATURE}
       FB_APP_PARAMETER__API_PREFIXED_MODULES: ${API_PREFIXED_MODULES:-true}
     volumes:
@@ -29,11 +29,11 @@ services:
       - ./.docker/dev/php.ini:/etc/php/8.1/fpm/php.ini:delegated
       - ./.docker/dev/php.ini:/etc/php/8.1/cli/php.ini:delegated
     ports:
-      - "${HTTP_PORT:-8000}:8000"
+      - "${HTTP_PORT:-8000}:80"
       - "${WS_PORT:-8888}:8888"
       - "${WORKER_STATUS_PORT:-9001}:9001"
-      - "43323:43323"
-    network_mode: host
+    networks:
+      - fastybird
     #devices:
     #  - "/dev/tty.usbserial-31420:/dev/ttyUSB0"
 
@@ -72,6 +72,7 @@ services:
     networks:
       - fastybird
 
+  # REDIS UI
   redis-commander:
     container_name: fastybird-redis-client
     image: rediscommander/redis-commander
