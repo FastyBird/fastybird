@@ -71,7 +71,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 	private const MDNS_SEARCH_TIMEOUT = 30;
 
-	private const MATCH_NAME = '/(?i)^(?P<type>[sS]helly.+)-(?P<id>[0-9A-Fa-f]+)._(http|shelly)._tcp.local$/';
+	private const MATCH_NAME = '/(?i)^(?P<type>shelly.+)-(?P<id>[0-9A-Fa-f]+)._(http|shelly)._tcp.local$/';
 
 	private const MATCH_DOMAIN = '/(?i)^(?P<type>[0-9A-Za-z]+)-(?P<id>[0-9A-Fa-f]+).local$/';
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
