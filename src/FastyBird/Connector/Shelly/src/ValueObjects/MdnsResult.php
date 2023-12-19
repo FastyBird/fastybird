@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Shelly\ValueObjects;
 
 use Orisai\ObjectMapper;
+use function strtolower;
 
 /**
  * mDNS search result
@@ -28,24 +29,11 @@ use Orisai\ObjectMapper;
 final class MdnsResult implements ObjectMapper\MappedObject
 {
 
-	/**
-	 * @param array<string, string|int|float|null> $data
-	 */
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $address,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $name,
-		#[ObjectMapper\Rules\ArrayOf(
-			new ObjectMapper\Rules\AnyOf([
-				new ObjectMapper\Rules\StringValue(notEmpty: true),
-				new ObjectMapper\Rules\IntValue(),
-				new ObjectMapper\Rules\FloatValue(),
-				new ObjectMapper\Rules\NullValue(),
-			]),
-			new ObjectMapper\Rules\StringValue(notEmpty: true),
-		)]
-		private readonly array $data,
 	)
 	{
 	}
@@ -61,22 +49,13 @@ final class MdnsResult implements ObjectMapper\MappedObject
 	}
 
 	/**
-	 * @return array<string, string|int|float|null>
-	 */
-	public function getData(): array
-	{
-		return $this->data;
-	}
-
-	/**
 	 * @return array<string, string|array<string, string|int|float|null>>
 	 */
 	public function __serialize(): array
 	{
 		return [
 			'address' => $this->getAddress(),
-			'name' => $this->getName(),
-			'data' => $this->getData(),
+			'name' => strtolower($this->getName()),
 		];
 	}
 

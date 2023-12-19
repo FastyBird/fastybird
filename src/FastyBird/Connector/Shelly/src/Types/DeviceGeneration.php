@@ -29,6 +29,8 @@ use function strval;
 class DeviceGeneration extends Consistence\Enum\Enum
 {
 
+	public const UNKNOWN = 'unknown';
+
 	public const GENERATION_1 = 'gen1';
 
 	public const GENERATION_2 = 'gen2';
