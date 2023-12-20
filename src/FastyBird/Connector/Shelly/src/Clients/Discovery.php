@@ -152,7 +152,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			return;
 		}
 
-		$this->server->on('message', function ($message, $sender): void {
+		$this->server->on('message', function ($message, string|null $sender = null): void {
 			try {
 				$response = $this->parser->parseMessage($message);
 
