@@ -184,7 +184,38 @@ final class Local implements Client
 				try {
 					$client = $this->createGen2DeviceWsClient($device);
 
-					$client->connect();
+					$client->connect()
+						->then(function () use ($device): void {
+							$this->logger->debug(
+								'Connection with device through websocket was created',
+								[
+									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+									'type' => 'local-client',
+									'connector' => [
+										'id' => $this->connector->getId()->toString(),
+									],
+									'device' => [
+										'id' => $device->getId()->toString(),
+									],
+								],
+							);
+						})
+						->catch(function (Throwable $ex) use ($device): void {
+							$this->logger->error(
+								'Device websocket connection could not be created',
+								[
+									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+									'type' => 'local-client',
+									'exception' => BootstrapHelpers\Logger::buildException($ex),
+									'connector' => [
+										'id' => $this->connector->getId()->toString(),
+									],
+									'device' => [
+										'id' => $device->getId()->toString(),
+									],
+								],
+							);
+						});
 				} catch (Throwable $ex) {
 					$this->logger->error(
 						'Device websocket connection could not be created',
@@ -315,7 +346,38 @@ final class Local implements Client
 							$this->dateTimeFactory->getNow()->getTimestamp() - $client->getLastConnectAttempt()->getTimestamp() >= self::RECONNECT_COOL_DOWN_TIME
 						)
 					) {
-						$client->connect();
+						$client->connect()
+							->then(function () use ($device): void {
+								$this->logger->debug(
+									'Connection with device through websocket was created',
+									[
+										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+										'type' => 'local-client',
+										'connector' => [
+											'id' => $this->connector->getId()->toString(),
+										],
+										'device' => [
+											'id' => $device->getId()->toString(),
+										],
+									],
+								);
+							})
+							->catch(function (Throwable $ex) use ($device): void {
+								$this->logger->error(
+									'Device websocket connection could not be created',
+									[
+										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+										'type' => 'local-client',
+										'exception' => BootstrapHelpers\Logger::buildException($ex),
+										'connector' => [
+											'id' => $this->connector->getId()->toString(),
+										],
+										'device' => [
+											'id' => $device->getId()->toString(),
+										],
+									],
+								);
+							});
 
 					} else {
 						$this->queue->append(

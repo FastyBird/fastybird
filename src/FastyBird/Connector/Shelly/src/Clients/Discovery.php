@@ -71,11 +71,13 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 	private const MDNS_SEARCH_TIMEOUT = 30;
 
-	private const MATCH_NAME = '/^(?P<type>shelly.+)-(?P<id>[0-9A-Fa-f]+)._(http|shelly)._tcp.local$/';
+	private const MATCH_NAME = '/(?i)^(?P<type>shelly.+)-(?P<id>[0-9A-Fa-f]+)._(http|shelly)._tcp.local$/';
 
-	private const MATCH_DOMAIN = '/^(?P<type>[0-9A-Za-z]+)-(?P<id>[0-9A-Fa-f]+).local$/';
+	private const MATCH_DOMAIN = '/(?i)^(?P<type>[0-9A-Za-z]+)-(?P<id>[0-9A-Fa-f]+).local$/';
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 	private const MATCH_IP_ADDRESS = '/^((?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])[.]){3}(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$/';
+	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+	private const MATCH_IP_ADDRESS_PORT = '/^(?P<address>((?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])[.]){3}(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]))(:(?P<port>[0-9]{1,5}))?$/';
 
 	/** @var SplObjectStorage<Entities\Clients\DiscoveredLocalDevice, null> */
 	private SplObjectStorage $discoveredLocalDevices;
@@ -150,7 +152,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			return;
 		}
 
-		$this->server->on('message', function ($message): void {
+		$this->server->on('message', function ($message, string|null $sender = null): void {
 			try {
 				$response = $this->parser->parseMessage($message);
 
@@ -188,6 +190,15 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$serviceDomain = null;
 			$serviceName = null;
 			$serviceData = [];
+
+			if (
+				$sender !== null
+				&& preg_match(self::MATCH_IP_ADDRESS_PORT, $sender, $matches) === 1
+				&& array_key_exists('address', $matches)
+				&& array_key_exists('port', $matches)
+			) {
+				$serviceIpAddress = $matches['address'];
+			}
 
 			foreach ($response->answers as $answer) {
 				if (
@@ -241,7 +252,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 						[
 							'address' => $serviceIpAddress,
 							'name' => $serviceName,
-							'data' => $serviceData,
 						],
 						Shelly\ValueObjects\MdnsResult::class,
 						$options,
@@ -269,15 +279,24 @@ final class Discovery implements Evenement\EventEmitterInterface
 					$this->searchResult->attach($serviceResult);
 
 					if (preg_match(self::MATCH_NAME, $serviceName, $matches) === 1) {
-						$generation = array_key_exists('gen', $serviceData) && strval($serviceData['gen']) === '2'
-							? Types\DeviceGeneration::get(Types\DeviceGeneration::GENERATION_2)
-							: Types\DeviceGeneration::get(Types\DeviceGeneration::GENERATION_1);
+						$generation = Types\DeviceGeneration::UNKNOWN;
+
+						if (array_key_exists('gen', $serviceData) && strval($serviceData['gen']) === '2') {
+							$generation = Types\DeviceGeneration::GENERATION_2;
+						} elseif (
+							array_key_exists('arch', $serviceData)
+							&& strval(
+								$serviceData['arch'],
+							) === 'esp8266'
+						) {
+							$generation = Types\DeviceGeneration::GENERATION_1;
+						}
 
 						$this->discoveredLocalDevices->attach(
 							$this->entityHelper->create(
 								Entities\Clients\DiscoveredLocalDevice::class,
 								[
-									'generation' => $generation->getValue(),
+									'generation' => $generation,
 									'id' => Utils\Strings::lower($matches['id']),
 									'type' => Utils\Strings::lower($matches['type']),
 									'ip_address' => $serviceIpAddress,
@@ -341,42 +360,58 @@ final class Discovery implements Evenement\EventEmitterInterface
 		$gen2HttpApi = $this->gen2HttpApiFactory->create();
 
 		foreach ($devices as $device) {
-			try {
-				if ($device->getGeneration()->equalsValue(Types\DeviceGeneration::GENERATION_1)) {
-					$deviceInformation = await($gen1HttpApi->getDeviceInformation($device->getIpAddress()));
-				} elseif ($device->getGeneration()->equalsValue(Types\DeviceGeneration::GENERATION_2)) {
+			if ($device->getGeneration()->equalsValue(Types\DeviceGeneration::UNKNOWN)) {
+				try {
 					$deviceInformation = await($gen2HttpApi->getDeviceInformation($device->getIpAddress()));
-				} else {
+					$generation = Types\DeviceGeneration::get(Types\DeviceGeneration::GENERATION_2);
+				} catch (Throwable) {
+					try {
+						$deviceInformation = await($gen1HttpApi->getDeviceInformation($device->getIpAddress()));
+						$generation = Types\DeviceGeneration::get(Types\DeviceGeneration::GENERATION_1);
+					} catch (Throwable) {
+						continue;
+					}
+				}
+			} else {
+				try {
+					if ($device->getGeneration()->equalsValue(Types\DeviceGeneration::GENERATION_1)) {
+						$deviceInformation = await($gen1HttpApi->getDeviceInformation($device->getIpAddress()));
+						$generation = Types\DeviceGeneration::get(Types\DeviceGeneration::GENERATION_1);
+					} elseif ($device->getGeneration()->equalsValue(Types\DeviceGeneration::GENERATION_2)) {
+						$deviceInformation = await($gen2HttpApi->getDeviceInformation($device->getIpAddress()));
+						$generation = Types\DeviceGeneration::get(Types\DeviceGeneration::GENERATION_2);
+					} else {
+						continue;
+					}
+				} catch (Throwable $ex) {
+					$this->logger->error(
+						'Could not load device basic information',
+						[
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+							'type' => 'discovery-client',
+							'exception' => BootstrapHelpers\Logger::buildException($ex),
+							'connector' => [
+								'id' => $this->connector->getId()->toString(),
+							],
+							'device' => [
+								'identifier' => $device->getIdentifier(),
+								'ip_address' => $device->getIpAddress(),
+								'domain' => $device->getDomain(),
+								'generation' => $device->getGeneration()->getValue(),
+							],
+						],
+					);
+
 					continue;
 				}
-			} catch (Throwable $ex) {
-				$this->logger->error(
-					'Could not load device basic information',
-					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-						'type' => 'discovery-client',
-						'exception' => BootstrapHelpers\Logger::buildException($ex),
-						'connector' => [
-							'id' => $this->connector->getId()->toString(),
-						],
-						'device' => [
-							'identifier' => $device->getIdentifier(),
-							'ip_address' => $device->getIpAddress(),
-							'domain' => $device->getDomain(),
-							'generation' => $device->getGeneration()->getValue(),
-						],
-					],
-				);
-
-				continue;
 			}
 
 			$deviceDescription = $deviceConfiguration = $deviceStatus = null;
 
 			try {
-				if ($device->getGeneration()->equalsValue(Types\DeviceGeneration::GENERATION_1)) {
+				if ($generation->equalsValue(Types\DeviceGeneration::GENERATION_1)) {
 					$deviceDescription = await($gen1HttpApi->getDeviceDescription($device->getIpAddress(), null, null));
-				} elseif ($device->getGeneration()->equalsValue(Types\DeviceGeneration::GENERATION_2)) {
+				} elseif ($generation->equalsValue(Types\DeviceGeneration::GENERATION_2)) {
 					$deviceConfiguration = await(
 						$gen2HttpApi->getDeviceConfiguration($device->getIpAddress(), null, null),
 					);
@@ -402,7 +437,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 								'identifier' => $device->getIdentifier(),
 								'ip_address' => $device->getIpAddress(),
 								'domain' => $device->getDomain(),
-								'generation' => $device->getGeneration()->getValue(),
+								'generation' => $generation->getValue(),
 							],
 						],
 					);
@@ -420,7 +455,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 								'identifier' => $device->getIdentifier(),
 								'ip_address' => $device->getIpAddress(),
 								'domain' => $device->getDomain(),
-								'generation' => $device->getGeneration()->getValue(),
+								'generation' => $generation->getValue(),
 							],
 						],
 					);
@@ -431,7 +466,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 			try {
 				if (
-					$device->getGeneration()->equalsValue(Types\DeviceGeneration::GENERATION_1)
+					$generation->equalsValue(Types\DeviceGeneration::GENERATION_1)
 					&& $deviceDescription !== null
 				) {
 					$message = $this->entityHelper->create(
@@ -439,7 +474,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 						[
 							'connector' => $this->connector->getId(),
 							'identifier' => $device->getIdentifier(),
-							'generation' => $device->getGeneration(),
+							'generation' => $generation,
 							'ip_address' => $device->getIpAddress(),
 							'domain' => $device->getDomain(),
 							'model' => $deviceInformation->getModel(),
@@ -475,7 +510,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 						],
 					);
 				} elseif (
-					$device->getGeneration()->equalsValue(Types\DeviceGeneration::GENERATION_2)
+					$generation->equalsValue(Types\DeviceGeneration::GENERATION_2)
 					&& $deviceConfiguration !== null
 				) {
 					$message = $this->entityHelper->create(
@@ -483,7 +518,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 						[
 							'connector' => $this->connector->getId(),
 							'identifier' => $device->getIdentifier(),
-							'generation' => $device->getGeneration(),
+							'generation' => $generation,
 							'ip_address' => $device->getIpAddress(),
 							'domain' => $device->getDomain(),
 							'model' => $deviceInformation->getModel(),
@@ -503,26 +538,24 @@ final class Discovery implements Evenement\EventEmitterInterface
 									if ($component instanceof Entities\API\Gen2\DeviceSwitchConfiguration) {
 										$status = $deviceStatus?->findSwitch($component->getId());
 
-										if ($status === null) {
-											$channel['properties'][] = [
-												'identifier' => (
-													$component->getType()->getValue()
-													. '_'
-													. $component->getId()
-													. '_'
-													. Types\ComponentAttributeType::ON
-												),
-												'name' => DevicesUtilities\Name::createName(
-													Types\ComponentAttributeType::ON,
-												),
-												'data_type' => MetadataTypes\DataType::DATA_TYPE_BOOLEAN,
-												'unit' => null,
-												'format' => null,
-												'invalid' => null,
-												'queryable' => true,
-												'settable' => true,
-											];
-										}
+										$channel['properties'][] = [
+											'identifier' => (
+												$component->getType()->getValue()
+												. '_'
+												. $component->getId()
+												. '_'
+												. Types\ComponentAttributeType::ON
+											),
+											'name' => DevicesUtilities\Name::createName(
+												Types\ComponentAttributeType::ON,
+											),
+											'data_type' => MetadataTypes\DataType::DATA_TYPE_BOOLEAN,
+											'unit' => null,
+											'format' => null,
+											'invalid' => null,
+											'queryable' => true,
+											'settable' => true,
+										];
 
 										if (
 											$status === null
@@ -670,33 +703,31 @@ final class Discovery implements Evenement\EventEmitterInterface
 									} elseif ($component instanceof Entities\API\Gen2\DeviceCoverConfiguration) {
 										$status = $deviceStatus?->findCover($component->getId());
 
-										if ($status === null) {
-											$channel['properties'][] = [
-												'identifier' => (
-													$component->getType()->getValue()
-													. '_'
-													. $component->getId()
-													. '_'
-													. Types\ComponentAttributeType::STATE
-												),
-												'name' => DevicesUtilities\Name::createName(
-													Types\ComponentAttributeType::STATE,
-												),
-												'data_type' => MetadataTypes\DataType::DATA_TYPE_ENUM,
-												'unit' => null,
-												'format' => [
-													Types\CoverPayload::OPEN,
-													Types\CoverPayload::CLOSED,
-													Types\CoverPayload::OPENING,
-													Types\CoverPayload::CLOSING,
-													Types\CoverPayload::STOPPED,
-													Types\CoverPayload::CALIBRATING,
-												],
-												'invalid' => null,
-												'queryable' => true,
-												'settable' => false,
-											];
-										}
+										$channel['properties'][] = [
+											'identifier' => (
+												$component->getType()->getValue()
+												. '_'
+												. $component->getId()
+												. '_'
+												. Types\ComponentAttributeType::STATE
+											),
+											'name' => DevicesUtilities\Name::createName(
+												Types\ComponentAttributeType::STATE,
+											),
+											'data_type' => MetadataTypes\DataType::DATA_TYPE_ENUM,
+											'unit' => null,
+											'format' => [
+												Types\CoverPayload::OPEN,
+												Types\CoverPayload::CLOSED,
+												Types\CoverPayload::OPENING,
+												Types\CoverPayload::CLOSING,
+												Types\CoverPayload::STOPPED,
+												Types\CoverPayload::CALIBRATING,
+											],
+											'invalid' => null,
+											'queryable' => true,
+											'settable' => false,
+										];
 
 										$channel['properties'][] = [
 											'identifier' => (
@@ -863,26 +894,24 @@ final class Discovery implements Evenement\EventEmitterInterface
 									} elseif ($component instanceof Entities\API\Gen2\DeviceLightConfiguration) {
 										$status = $deviceStatus?->findLight($component->getId());
 
-										if ($status === null) {
-											$channel['properties'][] = [
-												'identifier' => (
-													$component->getType()->getValue()
-													. '_'
-													. $component->getId()
-													. '_'
-													. Types\ComponentAttributeType::ON
-												),
-												'name' => DevicesUtilities\Name::createName(
-													Types\ComponentAttributeType::ON,
-												),
-												'data_type' => MetadataTypes\DataType::DATA_TYPE_BOOLEAN,
-												'unit' => null,
-												'format' => null,
-												'invalid' => null,
-												'queryable' => true,
-												'settable' => true,
-											];
-										}
+										$channel['properties'][] = [
+											'identifier' => (
+												$component->getType()->getValue()
+												. '_'
+												. $component->getId()
+												. '_'
+												. Types\ComponentAttributeType::ON
+											),
+											'name' => DevicesUtilities\Name::createName(
+												Types\ComponentAttributeType::ON,
+											),
+											'data_type' => MetadataTypes\DataType::DATA_TYPE_BOOLEAN,
+											'unit' => null,
+											'format' => null,
+											'invalid' => null,
+											'queryable' => true,
+											'settable' => true,
+										];
 
 										if (
 											$status === null
