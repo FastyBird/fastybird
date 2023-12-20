@@ -81,7 +81,6 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 										Utils\FileSystem::read(
 											__DIR__ . '/../../../fixtures/Clients/gen1_shelly_rgbw.mdns',
 										),
-										'224.0.0.251:5353',
 									);
 								}
 							},
@@ -278,7 +277,6 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 										Utils\FileSystem::read(
 											__DIR__ . '/../../../fixtures/Clients/gen2_shelly_2pm_plus.mdns',
 										),
-										'224.0.0.251:5353',
 									);
 								}
 							},
