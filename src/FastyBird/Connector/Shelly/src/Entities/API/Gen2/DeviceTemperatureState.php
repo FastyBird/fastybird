@@ -96,8 +96,8 @@ final class DeviceTemperatureState implements Entities\API\Entity
 		return [
 			'id' => $this->getId(),
 			'type' => $this->getType()->getValue(),
-			'temperature_celsius' => $this->getTemperatureCelsius(),
-			'temperature_fahrenheit' => $this->getTemperatureFahrenheit(),
+			'celsius' => $this->getTemperatureCelsius(),
+			'fahrenheit' => $this->getTemperatureFahrenheit(),
 			'errors' => $this->getErrors(),
 		];
 	}

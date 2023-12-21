@@ -323,7 +323,11 @@ final class GetDeviceState implements Entities\API\Entity
 				static fn (DeviceTemperatureState $state): array => $state->toArray(),
 				$this->getTemperature(),
 			),
-			'devicepower' => array_map(
+			'humidity' => array_map(
+				static fn (DeviceHumidityState $state): array => $state->toArray(),
+				$this->getHumidity(),
+			),
+			'device_power' => array_map(
 				static fn (DeviceDevicePowerState $state): array => $state->toArray(),
 				$this->getDevicePower(),
 			),

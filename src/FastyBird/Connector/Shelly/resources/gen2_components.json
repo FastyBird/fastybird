@@ -1,0 +1,375 @@
+{
+  "switch": {
+    "output": {
+      "optional": false,
+      "name": "State",
+      "data_type": "bool",
+      "unit": null,
+      "format": null,
+      "invalid": null,
+      "queryable": true,
+      "settable": true
+    },
+    "active_power": {
+      "optional": true,
+      "name": "Active Power",
+      "data_type": "float",
+      "unit": "W",
+      "format": null,
+      "invalid": null,
+      "queryable": true,
+      "settable": false
+    },
+    "power_factor": {
+      "optional": true,
+      "name": "Power Factor",
+      "data_type": "float",
+      "unit":  null,
+      "format": null,
+      "invalid": null,
+      "queryable": true,
+      "settable": false
+    },
+    "active_energy_total": {
+      "optional": true,
+      "name": "Active Energy",
+      "data_type": "float",
+      "unit":  "Wh",
+      "format": null,
+      "invalid": null,
+      "queryable": true,
+      "settable": false
+    },
+    "current": {
+      "optional": true,
+      "name": "Current",
+      "data_type": "float",
+      "unit":  "A",
+      "format": null,
+      "invalid": null,
+      "queryable": true,
+      "settable": false
+    },
+    "voltage": {
+      "optional": true,
+      "name": "Voltage",
+      "data_type": "float",
+      "unit":  "V",
+      "format": null,
+      "invalid": null,
+      "queryable": true,
+      "settable": false
+    },
+    "temperature_celsius": {
+      "optional": true,
+      "name": "Temperature",
+      "data_type": "float",
+      "unit":  "°C",
+      "format": null,
+      "invalid": null,
+      "queryable": true,
+      "settable": false
+    },
+    "temperature_fahrenheit": {
+      "optional": true,
+      "name": "Temperature",
+      "data_type": "float",
+      "unit":  "F",
+      "format": null,
+      "invalid": null,
+      "queryable": true,
+      "settable": false
+    }
+  },
+  "cover": {
+    "state": {
+      "optional": false,
+      "name": "State",
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "open",
+        "closed",
+        "opening",
+        "closing",
+        "stopped",
+        "calibrating"
+      ],
+      "invalid": null,
+      "queryable": true,
+      "settable": false
+    },
+    "current_position": {
+      "optional": false,
+      "name": "Current Position",
+      "data_type": "uchar",
+      "unit": null,
+      "format": null,
+      "invalid": null,
+      "queryable": true,
+      "settable": false
+    },
+    "target_position": {
+      "optional": false,
+      "name": "Target Position",
+      "data_type": "uchar",
+      "unit": null,
+      "format": null,
+      "invalid": null,
+      "queryable": true,
+      "settable": true
+    },
+    "active_power": {
+      "optional": true,
+      "name": "Active Power",
+      "data_type": "float",
+      "unit": "W",
+      "format": null,
+      "invalid": null,
+      "queryable": true,
+      "settable": false
+    },
+    "power_factor": {
+      "optional": true,
+      "name": "Power Factor",
+      "data_type": "float",
+      "unit":  null,
+      "format": null,
+      "invalid": null,
+      "queryable": true,
+      "settable": false
+    },
+    "active_energy_total": {
+      "optional": true,
+      "name": "Active Energy",
+      "data_type": "float",
+      "unit":  "Wh",
+      "format": null,
+      "invalid": null,
+      "queryable": true,
+      "settable": false
+    },
+    "current": {
+      "optional": true,
+      "name": "Current",
+      "data_type": "float",
+      "unit":  "A",
+      "format": null,
+      "invalid": null,
+      "queryable": true,
+      "settable": false
+    },
+    "voltage": {
+      "optional": true,
+      "name": "Voltage",
+      "data_type": "float",
+      "unit":  "V",
+      "format": null,
+      "invalid": null,
+      "queryable": true,
+      "settable": false
+    },
+    "temperature_celsius": {
+      "optional": true,
+      "name": "Temperature",
+      "data_type": "float",
+      "unit":  "°C",
+      "format": null,
+      "invalid": null,
+      "queryable": true,
+      "settable": false
+    },
+    "temperature_fahrenheit": {
+      "optional": true,
+      "name": "Temperature",
+      "data_type": "float",
+      "unit":  "F",
+      "format": null,
+      "invalid": null,
+      "queryable": true,
+      "settable": false
+    }
+  },
+  "light": {
+    "output": {
+      "optional": false,
+      "name": "State",
+      "data_type": "bool",
+      "unit": null,
+      "format": null,
+      "invalid": null,
+      "queryable": true,
+      "settable": true
+    },
+    "brightness": {
+      "optional": true,
+      "name": "State",
+      "data_type": "uchar",
+      "unit": "%",
+      "format": [0, 100],
+      "invalid": null,
+      "queryable": true,
+      "settable": true
+    }
+  },
+  "input": {
+    "switch": {
+      "optional": true,
+      "name": "Switch",
+      "data_type": "bool",
+      "unit": null,
+      "format": null,
+      "invalid": null,
+      "queryable": true,
+      "settable": false
+    },
+    "button": {
+      "optional": true,
+      "name": "Button",
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "btn_down",
+        "btn_up",
+        "single_push",
+        "double_push",
+        "long_push"
+      ],
+      "invalid": null,
+      "queryable": true,
+      "settable": false
+    },
+    "analog": {
+      "optional": true,
+      "name": "Analog",
+      "data_type": "uchar",
+      "unit": null,
+      "format": [0, 100],
+      "invalid": null,
+      "queryable": true,
+      "settable": false
+    }
+  },
+  "temperature": {
+    "celsius": {
+      "optional": false,
+      "name": "Temperature Celsius",
+      "data_type": "float",
+      "unit": "°C",
+      "format": null,
+      "invalid": null,
+      "queryable": true,
+      "settable": false
+    },
+    "fahrenheit": {
+      "optional": false,
+      "name": "Temperature Fahrenheit",
+      "data_type": "float",
+      "unit": "F",
+      "format": null,
+      "invalid": null,
+      "queryable": true,
+      "settable": false
+    }
+  },
+  "humidity": {
+    "relative_humidity": {
+      "optional": false,
+      "name": "Relative Humidity",
+      "data_type": "float",
+      "unit": "%",
+      "format": null,
+      "invalid": null,
+      "queryable": true,
+      "settable": false
+    }
+  },
+  "voltmeter": {
+    "voltage": {
+      "optional": false,
+      "name": "Voltage",
+      "data_type": "float",
+      "unit": "V",
+      "format": null,
+      "invalid": null,
+      "queryable": true,
+      "settable": false
+    },
+    "xvoltage": {
+      "optional": false,
+      "name": "Calculated",
+      "data_type": "float",
+      "unit": null,
+      "format": null,
+      "invalid": null,
+      "queryable": true,
+      "settable": false
+    }
+  },
+  "script": {
+    "running": {
+      "optional": false,
+      "name": "Running",
+      "data_type": "bool",
+      "unit": null,
+      "format": null,
+      "invalid": null,
+      "queryable": true,
+      "settable": true
+    }
+  },
+  "devicepower": {
+    "battery_voltage": {
+      "optional": false,
+      "name": "Battery Voltage",
+      "data_type": "float",
+      "unit": "V",
+      "format": null,
+      "invalid": null,
+      "queryable": true,
+      "settable": false
+    },
+    "battery_percent": {
+      "optional": false,
+      "name": "Battery Percent",
+      "data_type": "uchar",
+      "unit": "%",
+      "format": [0, 100],
+      "invalid": null,
+      "queryable": true,
+      "settable": false
+    },
+    "external_present": {
+      "optional": true,
+      "name": "External Power Present",
+      "data_type": "bool",
+      "unit": null,
+      "format": null,
+      "invalid": null,
+      "queryable": true,
+      "settable": false
+    }
+  },
+  "smoke": {
+    "alarm": {
+      "optional": true,
+      "name": "Alarm",
+      "data_type": "bool",
+      "unit": null,
+      "format": null,
+      "invalid": null,
+      "queryable": true,
+      "settable": false
+    },
+    "mute": {
+      "optional": true,
+      "name": "Mute",
+      "data_type": "bool",
+      "unit": null,
+      "format": null,
+      "invalid": null,
+      "queryable": true,
+      "settable": false
+    }
+  }
+}

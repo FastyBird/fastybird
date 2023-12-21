@@ -62,8 +62,8 @@ final class TemperatureBlockState implements Entities\API\Entity
 	public function toArray(): array
 	{
 		return [
-			'temperature_celsius' => $this->getTemperatureCelsius(),
-			'temperature_fahrenheit' => $this->getTemperatureFahrenheit(),
+			'celsius' => $this->getTemperatureCelsius(),
+			'fahrenheit' => $this->getTemperatureFahrenheit(),
 		];
 	}
 

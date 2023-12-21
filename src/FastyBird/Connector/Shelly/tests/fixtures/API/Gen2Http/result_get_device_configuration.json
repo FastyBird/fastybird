@@ -1,5 +1,6 @@
 {
   "covers": [],
+  "device_power": [],
   "humidity": [],
   "inputs": [
     {
@@ -13,6 +14,8 @@
     }
   ],
   "lights": [],
+  "scripts": [],
+  "smoke": [],
   "switches": [
     {
       "auto_off": false,
@@ -30,5 +33,6 @@
       "voltage_limit": 280
     }
   ],
-  "temperature": []
+  "temperature": [],
+  "voltmeters": []
 }

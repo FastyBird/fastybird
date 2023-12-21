@@ -37,10 +37,10 @@ final class BatteryStateBlock implements Entities\API\Entity
 		#[ObjectMapper\Modifiers\FieldName('V')]
 		private readonly float|null $voltage,
 		#[ObjectMapper\Rules\ArrayOf(
-			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\IntValue(),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		)]
-		private readonly float|null $percent,
+		private readonly int|null $percent,
 	)
 	{
 	}
@@ -50,7 +50,7 @@ final class BatteryStateBlock implements Entities\API\Entity
 		return $this->voltage;
 	}
 
-	public function getPercent(): float|null
+	public function getPercent(): int|null
 	{
 		return $this->percent;
 	}
