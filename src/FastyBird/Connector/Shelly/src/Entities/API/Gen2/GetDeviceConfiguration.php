@@ -37,6 +37,10 @@ final class GetDeviceConfiguration implements Entities\API\Entity
 	 * @param array<int, DeviceLightConfiguration> $lights
 	 * @param array<int, DeviceTemperatureConfiguration> $temperature
 	 * @param array<int, DeviceHumidityConfiguration> $humidity
+	 * @param array<int, DeviceDevicePowerConfiguration> $devicePower
+	 * @param array<int, DeviceScriptConfiguration> $scripts
+	 * @param array<int, DeviceSmokeConfiguration> $smoke
+	 * @param array<int, DeviceVoltmeterConfiguration> $voltmeters
 	 */
 	public function __construct(
 		#[ObjectMapper\Rules\ArrayOf(
@@ -63,6 +67,22 @@ final class GetDeviceConfiguration implements Entities\API\Entity
 			new ObjectMapper\Rules\MappedObjectValue(DeviceHumidityConfiguration::class),
 		)]
 		private readonly array $humidity = [],
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(DeviceDevicePowerConfiguration::class),
+		)]
+		private readonly array $devicePower = [],
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(DeviceScriptConfiguration::class),
+		)]
+		private readonly array $scripts = [],
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(DeviceSmokeConfiguration::class),
+		)]
+		private readonly array $smoke = [],
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(DeviceVoltmeterConfiguration::class),
+		)]
+		private readonly array $voltmeters = [],
 	)
 	{
 	}
@@ -116,6 +136,38 @@ final class GetDeviceConfiguration implements Entities\API\Entity
 	}
 
 	/**
+	 * @return array<DeviceDevicePowerConfiguration>
+	 */
+	public function getDevicePower(): array
+	{
+		return $this->devicePower;
+	}
+
+	/**
+	 * @return array<DeviceScriptConfiguration>
+	 */
+	public function getScripts(): array
+	{
+		return $this->scripts;
+	}
+
+	/**
+	 * @return array<DeviceSmokeConfiguration>
+	 */
+	public function getSmoke(): array
+	{
+		return $this->smoke;
+	}
+
+	/**
+	 * @return array<DeviceVoltmeterConfiguration>
+	 */
+	public function getVoltmeters(): array
+	{
+		return $this->voltmeters;
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public function toArray(): array
@@ -144,6 +196,22 @@ final class GetDeviceConfiguration implements Entities\API\Entity
 			'humidity' => array_map(
 				static fn (DeviceHumidityConfiguration $configuration): array => $configuration->toArray(),
 				$this->getHumidity(),
+			),
+			'device_power' => array_map(
+				static fn (DeviceDevicePowerConfiguration $configuration): array => $configuration->toArray(),
+				$this->getDevicePower(),
+			),
+			'scripts' => array_map(
+				static fn (DeviceScriptConfiguration $configuration): array => $configuration->toArray(),
+				$this->getScripts(),
+			),
+			'smoke' => array_map(
+				static fn (DeviceSmokeConfiguration $configuration): array => $configuration->toArray(),
+				$this->getSmoke(),
+			),
+			'voltmeters' => array_map(
+				static fn (DeviceVoltmeterConfiguration $configuration): array => $configuration->toArray(),
+				$this->getVoltmeters(),
 			),
 		];
 	}

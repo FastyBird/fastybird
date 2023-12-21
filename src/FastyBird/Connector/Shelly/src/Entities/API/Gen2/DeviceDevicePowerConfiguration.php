@@ -33,6 +33,11 @@ final class DeviceDevicePowerConfiguration implements Entities\API\Entity
 	public function __construct(
 		#[ObjectMapper\Rules\IntValue(unsigned: true)]
 		private readonly int $id,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		private readonly string|null $name,
 	)
 	{
 	}
@@ -47,6 +52,11 @@ final class DeviceDevicePowerConfiguration implements Entities\API\Entity
 		return Types\ComponentType::get(Types\ComponentType::DEVICE_POWER);
 	}
 
+	public function getName(): string|null
+	{
+		return $this->name;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -55,6 +65,7 @@ final class DeviceDevicePowerConfiguration implements Entities\API\Entity
 		return [
 			'id' => $this->getId(),
 			'type' => $this->getType()->getValue(),
+			'name' => $this->getName(),
 		];
 	}
 

@@ -37,6 +37,10 @@ final class GetDeviceState implements Entities\API\Entity
 	 * @param array<int, DeviceLightState> $lights
 	 * @param array<int, DeviceTemperatureState> $temperature
 	 * @param array<int, DeviceHumidityState> $humidity
+	 * @param array<int, DeviceDevicePowerState> $devicePower
+	 * @param array<int, DeviceScriptState> $scripts
+	 * @param array<int, DeviceSmokeState> $smoke
+	 * @param array<int, DeviceVoltmeterState> $voltmeters
 	 */
 	public function __construct(
 		#[ObjectMapper\Rules\ArrayOf(
@@ -63,6 +67,22 @@ final class GetDeviceState implements Entities\API\Entity
 			new ObjectMapper\Rules\MappedObjectValue(DeviceHumidityState::class),
 		)]
 		private readonly array $humidity = [],
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(DeviceDevicePowerState::class),
+		)]
+		private readonly array $devicePower = [],
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(DeviceScriptState::class),
+		)]
+		private readonly array $scripts = [],
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(DeviceSmokeState::class),
+		)]
+		private readonly array $smoke = [],
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(DeviceVoltmeterState::class),
+		)]
+		private readonly array $voltmeters = [],
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\MappedObjectValue(class: EthernetState::class),
 			new ObjectMapper\Rules\NullValue(),
@@ -191,6 +211,82 @@ final class GetDeviceState implements Entities\API\Entity
 		return null;
 	}
 
+	/**
+	 * @return array<DeviceDevicePowerState>
+	 */
+	public function getDevicePower(): array
+	{
+		return $this->devicePower;
+	}
+
+	public function findDevicePower(int $id): DeviceDevicePowerState|null
+	{
+		foreach ($this->devicePower as $devicePower) {
+			if ($devicePower->getId() === $id) {
+				return $devicePower;
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * @return array<DeviceScriptState>
+	 */
+	public function getScripts(): array
+	{
+		return $this->scripts;
+	}
+
+	public function findScript(int $id): DeviceScriptState|null
+	{
+		foreach ($this->scripts as $scripts) {
+			if ($scripts->getId() === $id) {
+				return $scripts;
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * @return array<DeviceSmokeState>
+	 */
+	public function getSmoke(): array
+	{
+		return $this->smoke;
+	}
+
+	public function findSmoke(int $id): DeviceSmokeState|null
+	{
+		foreach ($this->smoke as $smoke) {
+			if ($smoke->getId() === $id) {
+				return $smoke;
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * @return array<DeviceVoltmeterState>
+	 */
+	public function getVoltmeters(): array
+	{
+		return $this->voltmeters;
+	}
+
+	public function findVoltmeter(int $id): DeviceVoltmeterState|null
+	{
+		foreach ($this->voltmeters as $voltmeter) {
+			if ($voltmeter->getId() === $id) {
+				return $voltmeter;
+			}
+		}
+
+		return null;
+	}
+
 	public function getEthernet(): EthernetState|null
 	{
 		return $this->ethernet;
@@ -227,9 +323,21 @@ final class GetDeviceState implements Entities\API\Entity
 				static fn (DeviceTemperatureState $state): array => $state->toArray(),
 				$this->getTemperature(),
 			),
-			'humidity' => array_map(
-				static fn (DeviceHumidityState $state): array => $state->toArray(),
-				$this->getHumidity(),
+			'devicepower' => array_map(
+				static fn (DeviceDevicePowerState $state): array => $state->toArray(),
+				$this->getDevicePower(),
+			),
+			'scripts' => array_map(
+				static fn (DeviceScriptState $state): array => $state->toArray(),
+				$this->getScripts(),
+			),
+			'smoke' => array_map(
+				static fn (DeviceSmokeState $state): array => $state->toArray(),
+				$this->getSmoke(),
+			),
+			'voltmeters' => array_map(
+				static fn (DeviceVoltmeterState $state): array => $state->toArray(),
+				$this->getVoltmeters(),
 			),
 			'ethernet' => $this->getEthernet()?->toArray(),
 			'wifi' => $this->getWifi()?->toArray(),
