@@ -41,6 +41,14 @@ class ComponentType extends Consistence\Enum\Enum
 
 	public const HUMIDITY = 'humidity';
 
+	public const VOLTMETER = 'voltmeter';
+
+	public const SCRIPT = 'script';
+
+	public const DEVICE_POWER = 'devicepower';
+
+	public const SMOKE = 'smoke';
+
 	public const ETHERNET = 'ethernet';
 
 	public const WIFI = 'wifi';

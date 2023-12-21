@@ -625,6 +625,199 @@
       "required": [
         "id"
       ]
+    },
+    "^voltmeter:[0-9]$": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number",
+          "description": "Id of the Voltmeter component instance"
+        },
+        "voltage": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "enum": ["n/a"]
+            }
+          ],
+          "description": "Voltage in volts (null if valid value could not be obtained)",
+          "default": "n/a"
+        },
+        "xvoltage": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "enum": ["n/a"]
+            }
+          ],
+          "description": "voltage transformed with config.xvoltage.expr. Present only when both config.xvoltage.expr and config.xvoltage.unit are set to non-empty values. null if config.xvoltage.expr can not be evaluated.",
+          "default": "n/a"
+        },
+        "errors": {
+          "type": "array",
+          "description": "Shown only if at least one error is present. May contain out_of_range, read when there is problem reading sensor",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "^script:[0-9]$": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number",
+          "description": "Id of the script"
+        },
+        "running": {
+          "oneOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "string",
+              "enum": ["n/a"]
+            }
+          ],
+          "description": "true if the script is currently running, false otherwise",
+          "default": "n/a"
+        },
+        "errors": {
+          "type": "array",
+          "description": "Shown only if at least one error is present. May contain out_of_range, read when there is problem reading sensor",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "^devicepower:[0-9]$": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number",
+          "description": "Id of the script"
+        },
+        "battery": {
+          "type": "object",
+          "properties": {
+            "V": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "description": "Battery voltage in Volts (null if valid value could not be obtained)",
+              "default": null
+            },
+            "percent": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "description": "Battery charge level in % (null if valid value could not be obtained)",
+              "default": null
+            }
+          },
+          "description": "Information about the battery charge"
+        },
+        "external": {
+          "type": "object",
+          "properties": {
+            "present": {
+              "type": "boolean",
+              "description": "Whether external power source is connected",
+              "default": false
+            }
+          },
+          "description": "Information about the external power source (only available if external power source is supported)"
+        },
+        "errors": {
+          "type": "array",
+          "description": "Shown only if at least one error is present. May contain out_of_range, read when there is problem reading sensor",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        }
+      },
+      "required": [
+        "id",
+        "battery"
+      ]
+    },
+    "^smoke:[0-9]$": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number",
+          "description": "Id of the Smoke component instance"
+        },
+        "alarm": {
+          "oneOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "string",
+              "enum": ["n/a"]
+            }
+          ],
+          "description": "Alarm state",
+          "default": "n/a"
+        },
+        "mute": {
+          "oneOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "string",
+              "enum": ["n/a"]
+            }
+          ],
+          "description": "Mute state",
+          "default": "n/a"
+        },
+        "errors": {
+          "type": "array",
+          "description": "Shown only if at least one error is present. May contain out_of_range, read when there is problem reading sensor",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        }
+      },
+      "required": [
+        "id"
+      ]
     }
   },
   "properties": {
