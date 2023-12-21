@@ -22,6 +22,7 @@ use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Types;
 use Nette\Utils;
 use Orisai\ObjectMapper;
+use function array_merge;
 use function intval;
 
 /**
@@ -32,15 +33,14 @@ use function intval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceSwitchState implements Entities\API\Entity
+final class DeviceSwitchState extends DeviceState implements Entities\API\Entity
 {
 
 	/**
 	 * @param array<string> $errors
 	 */
 	public function __construct(
-		#[ObjectMapper\Rules\IntValue(unsigned: true)]
-		private readonly int $id,
+		int $id,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
@@ -102,18 +102,10 @@ final class DeviceSwitchState implements Entities\API\Entity
 			new ObjectMapper\Rules\ArrayEnumValue(cases: [Shelly\Constants::VALUE_NOT_AVAILABLE]),
 		])]
 		private readonly TemperatureBlockState|string $temperature,
-		#[ObjectMapper\Rules\ArrayOf(
-			new ObjectMapper\Rules\StringValue(notEmpty: true),
-			new ObjectMapper\Rules\IntValue(unsigned: true),
-		)]
-		private readonly array $errors = [],
+		array $errors = [],
 	)
 	{
-	}
-
-	public function getId(): int
-	{
-		return $this->id;
+		parent::__construct($id, $errors);
 	}
 
 	public function getType(): Types\ComponentType
@@ -184,35 +176,27 @@ final class DeviceSwitchState implements Entities\API\Entity
 	}
 
 	/**
-	 * @return array<string>
-	 */
-	public function getErrors(): array
-	{
-		return $this->errors;
-	}
-
-	/**
 	 * {@inheritDoc}
 	 *
 	 * @throws Exception
 	 */
 	public function toArray(): array
 	{
-		return [
-			'id' => $this->getId(),
-			'type' => $this->getType()->getValue(),
-			'source' => $this->getSource(),
-			'output' => $this->getOutput(),
-			'timer_started_at' => $this->getTimerStartedAt()?->format(DateTimeInterface::ATOM),
-			'timer_duration' => $this->getTimerDuration(),
-			'active_power' => $this->getActivePower(),
-			'voltage' => $this->getVoltage(),
-			'current' => $this->getCurrent(),
-			'power_factor' => $this->getPowerFactor(),
-			'active_energy' => $this->getActiveEnergy() instanceof ActiveEnergyStateBlock ? $this->getActiveEnergy()->toArray() : null,
-			'temperature' => $this->getTemperature() instanceof TemperatureBlockState ? $this->getTemperature()->toArray() : null,
-			'errors' => $this->getErrors(),
-		];
+		return array_merge(
+			parent::toArray(),
+			[
+				'source' => $this->getSource(),
+				'output' => $this->getOutput(),
+				'timer_started_at' => $this->getTimerStartedAt()?->format(DateTimeInterface::ATOM),
+				'timer_duration' => $this->getTimerDuration(),
+				'active_power' => $this->getActivePower(),
+				'voltage' => $this->getVoltage(),
+				'current' => $this->getCurrent(),
+				'power_factor' => $this->getPowerFactor(),
+				'active_energy' => $this->getActiveEnergy() instanceof ActiveEnergyStateBlock ? $this->getActiveEnergy()->toArray() : null,
+				'temperature' => $this->getTemperature() instanceof TemperatureBlockState ? $this->getTemperature()->toArray() : null,
+			],
+		);
 	}
 
 }

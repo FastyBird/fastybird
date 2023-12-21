@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * DeviceScriptState.php
+ * DeviceState.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -15,47 +15,49 @@
 
 namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
-use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Types;
 use Orisai\ObjectMapper;
-use function array_merge;
 
 /**
- * Generation 2 device script state entity
+ * Generation 2 device state entity
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceScriptState extends DeviceState implements Entities\API\Entity
+abstract class DeviceState implements Entities\API\Entity
 {
 
 	/**
 	 * @param array<string> $errors
 	 */
 	public function __construct(
-		int $id,
-		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\BoolValue(),
-			new ObjectMapper\Rules\ArrayEnumValue(cases: [Shelly\Constants::VALUE_NOT_AVAILABLE]),
-		])]
-		private readonly bool|string $running,
-		array $errors = [],
+		#[ObjectMapper\Rules\IntValue(unsigned: true)]
+		private readonly int $id,
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\IntValue(unsigned: true),
+		)]
+		private readonly array $errors = [],
 	)
 	{
-		parent::__construct($id, $errors);
 	}
 
-	public function getType(): Types\ComponentType
+	public function getId(): int
 	{
-		return Types\ComponentType::get(Types\ComponentType::SCRIPT);
+		return $this->id;
 	}
 
-	public function getRunning(): bool|string
+	abstract public function getType(): Types\ComponentType;
+
+	/**
+	 * @return array<string>
+	 */
+	public function getErrors(): array
 	{
-		return $this->running;
+		return $this->errors;
 	}
 
 	/**
@@ -63,12 +65,11 @@ final class DeviceScriptState extends DeviceState implements Entities\API\Entity
 	 */
 	public function toArray(): array
 	{
-		return array_merge(
-			parent::toArray(),
-			[
-				'running' => $this->getRunning(),
-			],
-		);
+		return [
+			'id' => $this->getId(),
+			'type' => $this->getType()->getValue(),
+			'errors' => $this->getErrors(),
+		];
 	}
 
 }

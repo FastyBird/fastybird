@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
 use FastyBird\Connector\Shelly\Entities;
+use FastyBird\Connector\Shelly\Types;
 use Orisai\ObjectMapper;
 use function array_map;
 
@@ -282,6 +283,34 @@ final class GetDeviceState implements Entities\API\Entity
 			if ($voltmeter->getId() === $id) {
 				return $voltmeter;
 			}
+		}
+
+		return null;
+	}
+
+	public function findComponent(Types\ComponentType $type, int $id): DeviceState|null
+	{
+		switch ($type->getValue()) {
+			case Types\ComponentType::SWITCH:
+				return $this->findSwitch($id);
+			case Types\ComponentType::COVER:
+				return $this->findCover($id);
+			case Types\ComponentType::LIGHT:
+				return $this->findLight($id);
+			case Types\ComponentType::INPUT:
+				return $this->findInput($id);
+			case Types\ComponentType::TEMPERATURE:
+				return $this->findTemperature($id);
+			case Types\ComponentType::HUMIDITY:
+				return $this->findHumidity($id);
+			case Types\ComponentType::VOLTMETER:
+				return $this->findVoltmeter($id);
+			case Types\ComponentType::SCRIPT:
+				return $this->findScript($id);
+			case Types\ComponentType::DEVICE_POWER:
+				return $this->findDevicePower($id);
+			case Types\ComponentType::SMOKE:
+				return $this->findSmoke($id);
 		}
 
 		return null;

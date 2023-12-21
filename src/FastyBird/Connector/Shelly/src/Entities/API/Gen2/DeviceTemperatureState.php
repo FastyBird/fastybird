@@ -19,6 +19,7 @@ use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Types;
 use Orisai\ObjectMapper;
+use function array_merge;
 
 /**
  * Generation 2 device temperature state entity
@@ -28,15 +29,14 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceTemperatureState implements Entities\API\Entity
+final class DeviceTemperatureState extends DeviceState implements Entities\API\Entity
 {
 
 	/**
 	 * @param array<string> $errors
 	 */
 	public function __construct(
-		#[ObjectMapper\Rules\IntValue(unsigned: true)]
-		private readonly int $id,
+		int $id,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\ArrayEnumValue(cases: [Shelly\Constants::VALUE_NOT_AVAILABLE]),
@@ -51,18 +51,10 @@ final class DeviceTemperatureState implements Entities\API\Entity
 		])]
 		#[ObjectMapper\Modifiers\FieldName('tF')]
 		private readonly float|string|null $temperatureFahrenheit,
-		#[ObjectMapper\Rules\ArrayOf(
-			new ObjectMapper\Rules\StringValue(notEmpty: true),
-			new ObjectMapper\Rules\IntValue(unsigned: true),
-		)]
-		private readonly array $errors = [],
+		array $errors = [],
 	)
 	{
-	}
-
-	public function getId(): int
-	{
-		return $this->id;
+		parent::__construct($id, $errors);
 	}
 
 	public function getType(): Types\ComponentType
@@ -81,25 +73,17 @@ final class DeviceTemperatureState implements Entities\API\Entity
 	}
 
 	/**
-	 * @return array<string>
-	 */
-	public function getErrors(): array
-	{
-		return $this->errors;
-	}
-
-	/**
 	 * {@inheritDoc}
 	 */
 	public function toArray(): array
 	{
-		return [
-			'id' => $this->getId(),
-			'type' => $this->getType()->getValue(),
-			'celsius' => $this->getTemperatureCelsius(),
-			'fahrenheit' => $this->getTemperatureFahrenheit(),
-			'errors' => $this->getErrors(),
-		];
+		return array_merge(
+			parent::toArray(),
+			[
+				'celsius' => $this->getTemperatureCelsius(),
+				'fahrenheit' => $this->getTemperatureFahrenheit(),
+			],
+		);
 	}
 
 }

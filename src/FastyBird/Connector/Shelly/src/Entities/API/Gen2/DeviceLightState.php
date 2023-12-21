@@ -22,6 +22,7 @@ use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Types;
 use Nette\Utils;
 use Orisai\ObjectMapper;
+use function array_merge;
 use function intval;
 
 /**
@@ -32,12 +33,14 @@ use function intval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceLightState implements Entities\API\Entity
+final class DeviceLightState extends DeviceState implements Entities\API\Entity
 {
 
+	/**
+	 * @param array<string> $errors
+	 */
 	public function __construct(
-		#[ObjectMapper\Rules\IntValue(unsigned: true)]
-		private readonly int $id,
+		int $id,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
@@ -65,13 +68,10 @@ final class DeviceLightState implements Entities\API\Entity
 		])]
 		#[ObjectMapper\Modifiers\FieldName('timer_duration')]
 		private readonly float|null $timerDuration,
+		array $errors = [],
 	)
 	{
-	}
-
-	public function getId(): int
-	{
-		return $this->id;
+		parent::__construct($id, $errors);
 	}
 
 	public function getType(): Types\ComponentType
@@ -118,15 +118,16 @@ final class DeviceLightState implements Entities\API\Entity
 	 */
 	public function toArray(): array
 	{
-		return [
-			'id' => $this->getId(),
-			'type' => $this->getType()->getValue(),
-			'source' => $this->getSource(),
-			'output' => $this->getOutput(),
-			'brightness' => $this->getBrightness(),
-			'timer_started_at' => $this->getTimerStartedAt()?->format(DateTimeInterface::ATOM),
-			'timer_duration' => $this->getTimerDuration(),
-		];
+		return array_merge(
+			parent::toArray(),
+			[
+				'source' => $this->getSource(),
+				'output' => $this->getOutput(),
+				'brightness' => $this->getBrightness(),
+				'timer_started_at' => $this->getTimerStartedAt()?->format(DateTimeInterface::ATOM),
+				'timer_duration' => $this->getTimerDuration(),
+			],
+		);
 	}
 
 }
