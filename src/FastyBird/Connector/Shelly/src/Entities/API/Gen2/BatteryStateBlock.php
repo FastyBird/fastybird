@@ -66,4 +66,15 @@ final class BatteryStateBlock implements Entities\API\Entity
 		];
 	}
 
+	/**
+	 * @return array<string, float|int|null>
+	 */
+	public function toState(): array
+	{
+		return [
+			'battery_voltage' => $this->getVoltage(),
+			'battery_percent' => $this->getPercent(),
+		];
+	}
+
 }

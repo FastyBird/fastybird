@@ -20,6 +20,8 @@ use FastyBird\Connector\Shelly\Types;
 use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use Orisai\ObjectMapper;
 use function array_merge;
+use function is_bool;
+use function is_int;
 
 /**
  * Generation 2 device input state entity
@@ -80,6 +82,19 @@ final class DeviceInputState extends DeviceState implements Entities\API\Entity
 				'state' => $this->getState() instanceof Types\InputPayload ? $this->getState()->getValue() : $this->getState(),
 				'percent' => $this->getPercent(),
 			],
+		);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function toState(): array
+	{
+		return array_merge(
+			parent::toState(),
+			$this->getState() instanceof Types\InputPayload ? ['button' => $this->getState()->getValue()] : [],
+			is_bool($this->getState()) ? ['switch' => $this->getState()] : [],
+			is_int($this->getPercent()) ? ['analog' => $this->getPercent()] : [],
 		);
 	}
 

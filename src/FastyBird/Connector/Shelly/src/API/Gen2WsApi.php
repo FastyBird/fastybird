@@ -46,6 +46,7 @@ use function gethostbyname;
 use function hash;
 use function implode;
 use function intval;
+use function is_bool;
 use function md5;
 use function preg_match;
 use function property_exists;
@@ -78,6 +79,12 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 	private const COVER_GO_TO_POSITION_METHOD = 'Cover.GoToPosition';
 
 	private const LIGHT_SET_METHOD = 'Light.Set';
+
+	private const SCRIPT_SET_ENABLED_METHOD = 'Script.Start';
+
+	private const SCRIPT_SET_DISABLED_METHOD = 'Script.Stop';
+
+	private const SMOKE_SET_METHOD = 'Smoke.Mute';
 
 	private const NOTIFY_STATUS_METHOD = 'NotifyStatus';
 
@@ -686,10 +693,17 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 		}
 
 		try {
-			$componentMethod = $this->buildComponentMethod($component);
+			$componentMethod = $this->buildComponentMethod($component, $value);
 
 		} catch (Exceptions\InvalidState) {
-			return Promise\reject(new Exceptions\InvalidState('Component action could not be created'));
+			return Promise\reject(new Exceptions\InvalidState('Component method could not be created'));
+		}
+
+		try {
+			$componentAttribute = $this->buildComponentAttribute($component);
+
+		} catch (Exceptions\InvalidState) {
+			return Promise\reject(new Exceptions\InvalidState('Component attribute could not be created'));
 		}
 
 		try {
@@ -700,7 +714,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 					'method' => $componentMethod,
 					'params' => [
 						'id' => intval($propertyMatches['identifier']),
-						$propertyMatches['attribute'] => $value,
+						$componentAttribute => $value,
 					],
 					'auth' => $this->session?->toArray(),
 				],
@@ -789,7 +803,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 			self::DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME,
 		);
 
-		$switches = $covers = $lights = $inputs = $temperature = $humidity = [];
+		$switches = $covers = $lights = $inputs = $temperature = $humidity = $devicePower = $scripts = $smoke = $voltmeters = [];
 		$ethernet = $wifi = null;
 
 		foreach ($data as $key => $state) {
@@ -811,6 +825,14 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 					$temperature[] = (array) $state;
 				} elseif ($componentMatches['component'] === Types\ComponentType::HUMIDITY) {
 					$humidity[] = (array) $state;
+				} elseif ($componentMatches['component'] === Types\ComponentType::DEVICE_POWER) {
+					$devicePower[] = (array) $state;
+				} elseif ($componentMatches['component'] === Types\ComponentType::SCRIPT) {
+					$scripts[] = (array) $state;
+				} elseif ($componentMatches['component'] === Types\ComponentType::SMOKE) {
+					$smoke[] = (array) $state;
+				} elseif ($componentMatches['component'] === Types\ComponentType::VOLTMETER) {
+					$voltmeters[] = (array) $state;
 				} elseif ($componentMatches['component'] === Types\ComponentType::ETHERNET) {
 					$ethernet = (array) $state;
 				} elseif ($componentMatches['component'] === Types\ComponentType::WIFI) {
@@ -820,14 +842,18 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 		}
 
 		return $this->createEntity(Entities\API\Gen2\GetDeviceState::class, Utils\ArrayHash::from([
-			'switches' => $switches,
-			'covers' => $covers,
-			'inputs' => $inputs,
-			'lights' => $lights,
-			'temperature' => $temperature,
-			'humidity' => $humidity,
-			'ethernet' => $ethernet,
-			'wifi' => $wifi,
+			Types\ComponentType::SWITCH => $switches,
+			Types\ComponentType::COVER => $covers,
+			Types\ComponentType::INPUT => $inputs,
+			Types\ComponentType::LIGHT => $lights,
+			Types\ComponentType::TEMPERATURE => $temperature,
+			Types\ComponentType::HUMIDITY => $humidity,
+			Types\ComponentType::DEVICE_POWER => $devicePower,
+			Types\ComponentType::SCRIPT => $scripts,
+			Types\ComponentType::SMOKE => $smoke,
+			Types\ComponentType::VOLTMETER => $voltmeters,
+			Types\ComponentType::ETHERNET => $ethernet,
+			Types\ComponentType::WIFI => $wifi,
 		]));
 	}
 
@@ -925,7 +951,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 		if (!array_key_exists($key, $this->validationSchemas)) {
 			try {
 				$this->validationSchemas[$key] = Utils\FileSystem::read(
-					Shelly\Constants::RESOURCES_FOLDER . DIRECTORY_SEPARATOR . $schemaFilename,
+					Shelly\Constants::RESOURCES_FOLDER . DIRECTORY_SEPARATOR . 'response' . DIRECTORY_SEPARATOR . $schemaFilename,
 				);
 
 			} catch (Nette\IOException) {
@@ -939,7 +965,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	private function buildComponentMethod(string $component): string
+	private function buildComponentMethod(string $component, int|float|string|bool $value): string
 	{
 		if (
 			preg_match(self::PROPERTY_COMPONENT, $component, $componentMatches) !== 1
@@ -952,14 +978,14 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 
 		if (
 			$componentMatches['component'] === Types\ComponentType::SWITCH
-			&& $componentMatches['attribute'] === Types\ComponentAttributeType::ON
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::OUTPUT
 		) {
 			return self::SWITCH_SET_METHOD;
 		}
 
 		if (
 			$componentMatches['component'] === Types\ComponentType::COVER
-			&& $componentMatches['attribute'] === Types\ComponentAttributeType::POSITION
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::TARGET_POSITION
 		) {
 			return self::COVER_GO_TO_POSITION_METHOD;
 		}
@@ -967,14 +993,88 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 		if (
 			$componentMatches['component'] === Types\ComponentType::LIGHT
 			&& (
-				$componentMatches['description'] === Types\ComponentAttributeType::ON
+				$componentMatches['description'] === Types\ComponentAttributeType::OUTPUT
 				|| $componentMatches['attribute'] === Types\ComponentAttributeType::BRIGHTNESS
 			)
 		) {
 			return self::LIGHT_SET_METHOD;
 		}
 
+		if (
+			$componentMatches['component'] === Types\ComponentType::SCRIPT
+			&& $componentMatches['description'] === Types\ComponentAttributeType::RUNNING
+			&& is_bool($value)
+		) {
+			return $value ? self::SCRIPT_SET_ENABLED_METHOD : self::SCRIPT_SET_DISABLED_METHOD;
+		}
+
+		if (
+			$componentMatches['component'] === Types\ComponentType::SMOKE
+			&& $componentMatches['description'] === Types\ComponentAttributeType::MUTE
+		) {
+			return self::SMOKE_SET_METHOD;
+		}
+
 		throw new Exceptions\InvalidState('Property method could not be build');
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
+	private function buildComponentAttribute(string $component): string|null
+	{
+		if (
+			preg_match(self::PROPERTY_COMPONENT, $component, $componentMatches) !== 1
+			|| !array_key_exists('component', $componentMatches)
+			|| !array_key_exists('identifier', $componentMatches)
+			|| !array_key_exists('attribute', $componentMatches)
+		) {
+			throw new Exceptions\InvalidState('Property identifier is not in expected format');
+		}
+
+		if (
+			$componentMatches['component'] === Types\ComponentType::SWITCH
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::OUTPUT
+		) {
+			return Types\ComponentActionAttribute::ON;
+		}
+
+		if (
+			$componentMatches['component'] === Types\ComponentType::COVER
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::TARGET_POSITION
+		) {
+			return Types\ComponentActionAttribute::POSITION;
+		}
+
+		if (
+			$componentMatches['component'] === Types\ComponentType::LIGHT
+			&& $componentMatches['description'] === Types\ComponentAttributeType::OUTPUT
+		) {
+			return Types\ComponentActionAttribute::ON;
+		}
+
+		if (
+			$componentMatches['component'] === Types\ComponentType::LIGHT
+			&& $componentMatches['description'] === Types\ComponentAttributeType::BRIGHTNESS
+		) {
+			return Types\ComponentActionAttribute::BRIGHTNESS;
+		}
+
+		if (
+			$componentMatches['component'] === Types\ComponentType::SCRIPT
+			&& $componentMatches['description'] === Types\ComponentAttributeType::RUNNING
+		) {
+			return null;
+		}
+
+		if (
+			$componentMatches['component'] === Types\ComponentType::SMOKE
+			&& $componentMatches['description'] === Types\ComponentAttributeType::MUTE
+		) {
+			return null;
+		}
+
+		throw new Exceptions\InvalidState('Property attribute could not be build');
 	}
 
 }

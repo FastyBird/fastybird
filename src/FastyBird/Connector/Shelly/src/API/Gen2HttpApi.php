@@ -29,6 +29,7 @@ use Throwable;
 use function array_key_exists;
 use function array_merge;
 use function intval;
+use function is_bool;
 use function preg_match;
 use function sprintf;
 use function uniqid;
@@ -69,6 +70,12 @@ final class Gen2HttpApi extends HttpApi
 	private const COVER_GO_TO_POSITION_METHOD = 'Cover.GoToPosition';
 
 	private const LIGHT_SET_METHOD = 'Light.Set';
+
+	private const SCRIPT_SET_ENABLED_METHOD = 'Script.Start';
+
+	private const SCRIPT_SET_DISABLED_METHOD = 'Script.Stop';
+
+	private const SMOKE_SET_METHOD = 'Smoke.Mute';
 
 	/**
 	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\Gen2\GetDeviceInformation> : Entities\API\Gen2\GetDeviceInformation)
@@ -224,14 +231,25 @@ final class Gen2HttpApi extends HttpApi
 		}
 
 		try {
-			$componentMethod = $this->buildComponentMethod($component);
+			$componentMethod = $this->buildComponentMethod($component, $value);
 
 		} catch (Exceptions\InvalidState) {
 			if ($async) {
-				return Promise\reject(new Exceptions\InvalidState('Component action could not be created'));
+				return Promise\reject(new Exceptions\InvalidState('Component method could not be created'));
 			}
 
-			throw new Exceptions\HttpApiCall('Component action could not be created');
+			throw new Exceptions\HttpApiCall('Component method could not be created');
+		}
+
+		try {
+			$componentAttribute = $this->buildComponentAttribute($component);
+
+		} catch (Exceptions\InvalidState) {
+			if ($async) {
+				return Promise\reject(new Exceptions\InvalidState('Component attribute could not be created'));
+			}
+
+			throw new Exceptions\HttpApiCall('Component attribute could not be created');
 		}
 
 		try {
@@ -240,7 +258,7 @@ final class Gen2HttpApi extends HttpApi
 				'method' => $componentMethod,
 				'params' => [
 					'id' => intval($propertyMatches['identifier']),
-					$propertyMatches['attribute'] => $value,
+					$componentAttribute => $value,
 				],
 			]);
 		} catch (Utils\JsonException $ex) {
@@ -319,7 +337,7 @@ final class Gen2HttpApi extends HttpApi
 			self::GET_DEVICE_CONFIG_MESSAGE_SCHEMA_FILENAME,
 		);
 
-		$switches = $covers = $lights = $inputs = $temperature = $humidity = [];
+		$switches = $covers = $lights = $inputs = $temperature = $humidity = $devicePower = $scripts = $smoke = $voltmeters = [];
 
 		foreach ($body as $key => $configuration) {
 			if (
@@ -354,17 +372,35 @@ final class Gen2HttpApi extends HttpApi
 					$temperature[] = (array) $configuration;
 				} elseif ($componentMatches['component'] === Types\ComponentType::HUMIDITY) {
 					$humidity[] = (array) $configuration;
+				} elseif ($componentMatches['component'] === Types\ComponentType::DEVICE_POWER) {
+					$devicePower[] = (array) $configuration;
+				} elseif ($componentMatches['component'] === Types\ComponentType::SCRIPT) {
+					$scripts[] = (array) $configuration;
+				} elseif ($componentMatches['component'] === Types\ComponentType::SMOKE) {
+					$smoke[] = (array) $configuration;
+				} elseif ($componentMatches['component'] === Types\ComponentType::VOLTMETER) {
+					$voltmeters[] = (array) $configuration;
+					$voltmeters[] = array_merge(
+						(array) $configuration,
+						[
+							'xvoltage' => (array) $configuration->offsetGet('xvoltage'),
+						],
+					);
 				}
 			}
 		}
 
 		return $this->createEntity(Entities\API\Gen2\GetDeviceConfiguration::class, Utils\ArrayHash::from([
-			'switches' => $switches,
-			'covers' => $covers,
-			'inputs' => $inputs,
-			'lights' => $lights,
-			'temperature' => $temperature,
-			'humidity' => $humidity,
+			Types\ComponentType::SWITCH => $switches,
+			Types\ComponentType::COVER => $covers,
+			Types\ComponentType::INPUT => $inputs,
+			Types\ComponentType::LIGHT => $lights,
+			Types\ComponentType::TEMPERATURE => $temperature,
+			Types\ComponentType::HUMIDITY => $humidity,
+			Types\ComponentType::DEVICE_POWER => $devicePower,
+			Types\ComponentType::SCRIPT => $scripts,
+			Types\ComponentType::SMOKE => $smoke,
+			Types\ComponentType::VOLTMETER => $voltmeters,
 		]));
 	}
 
@@ -383,7 +419,7 @@ final class Gen2HttpApi extends HttpApi
 			self::GET_DEVICE_STATE_MESSAGE_SCHEMA_FILENAME,
 		);
 
-		$switches = $covers = $lights = $inputs = $temperature = $humidity = [];
+		$switches = $covers = $lights = $inputs = $temperature = $humidity = $devicePower = $scripts = $smoke = $voltmeters = [];
 		$ethernet = $wifi = null;
 
 		foreach ($body as $key => $state) {
@@ -434,6 +470,36 @@ final class Gen2HttpApi extends HttpApi
 							'errors' => (array) $state->offsetGet('errors'),
 						],
 					);
+				} elseif ($componentMatches['component'] === Types\ComponentType::DEVICE_POWER) {
+					$devicePower[] = array_merge(
+						(array) $state,
+						[
+							'battery' => (array) $state->offsetGet('battery'),
+							'external' => (array) $state->offsetGet('external'),
+							'errors' => (array) $state->offsetGet('errors'),
+						],
+					);
+				} elseif ($componentMatches['component'] === Types\ComponentType::SCRIPT) {
+					$scripts[] = array_merge(
+						(array) $state,
+						[
+							'errors' => (array) $state->offsetGet('errors'),
+						],
+					);
+				} elseif ($componentMatches['component'] === Types\ComponentType::SMOKE) {
+					$smoke[] = array_merge(
+						(array) $state,
+						[
+							'errors' => (array) $state->offsetGet('errors'),
+						],
+					);
+				} elseif ($componentMatches['component'] === Types\ComponentType::VOLTMETER) {
+					$voltmeters[] = array_merge(
+						(array) $state,
+						[
+							'errors' => (array) $state->offsetGet('errors'),
+						],
+					);
 				} elseif ($componentMatches['component'] === Types\ComponentType::ETHERNET) {
 					$ethernet = (array) $state;
 				} elseif ($componentMatches['component'] === Types\ComponentType::WIFI) {
@@ -443,21 +509,25 @@ final class Gen2HttpApi extends HttpApi
 		}
 
 		return $this->createEntity(Entities\API\Gen2\GetDeviceState::class, Utils\ArrayHash::from([
-			'switches' => $switches,
-			'covers' => $covers,
-			'inputs' => $inputs,
-			'lights' => $lights,
-			'temperature' => $temperature,
-			'humidity' => $humidity,
-			'ethernet' => $ethernet,
-			'wifi' => $wifi,
+			Types\ComponentType::SWITCH => $switches,
+			Types\ComponentType::COVER => $covers,
+			Types\ComponentType::INPUT => $inputs,
+			Types\ComponentType::LIGHT => $lights,
+			Types\ComponentType::TEMPERATURE => $temperature,
+			Types\ComponentType::HUMIDITY => $humidity,
+			Types\ComponentType::DEVICE_POWER => $devicePower,
+			Types\ComponentType::SCRIPT => $scripts,
+			Types\ComponentType::SMOKE => $smoke,
+			Types\ComponentType::VOLTMETER => $voltmeters,
+			Types\ComponentType::ETHERNET => $ethernet,
+			Types\ComponentType::WIFI => $wifi,
 		]));
 	}
 
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	private function buildComponentMethod(string $component): string
+	private function buildComponentMethod(string $component, int|float|string|bool $value): string
 	{
 		if (
 			preg_match(self::PROPERTY_COMPONENT, $component, $componentMatches) !== 1
@@ -470,14 +540,14 @@ final class Gen2HttpApi extends HttpApi
 
 		if (
 			$componentMatches['component'] === Types\ComponentType::SWITCH
-			&& $componentMatches['attribute'] === Types\ComponentAttributeType::ON
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::OUTPUT
 		) {
 			return self::SWITCH_SET_METHOD;
 		}
 
 		if (
 			$componentMatches['component'] === Types\ComponentType::COVER
-			&& $componentMatches['attribute'] === Types\ComponentAttributeType::POSITION
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::TARGET_POSITION
 		) {
 			return self::COVER_GO_TO_POSITION_METHOD;
 		}
@@ -485,14 +555,88 @@ final class Gen2HttpApi extends HttpApi
 		if (
 			$componentMatches['component'] === Types\ComponentType::LIGHT
 			&& (
-				$componentMatches['description'] === Types\ComponentAttributeType::ON
+				$componentMatches['description'] === Types\ComponentAttributeType::OUTPUT
 				|| $componentMatches['attribute'] === Types\ComponentAttributeType::BRIGHTNESS
 			)
 		) {
 			return self::LIGHT_SET_METHOD;
 		}
 
+		if (
+			$componentMatches['component'] === Types\ComponentType::SCRIPT
+			&& $componentMatches['description'] === Types\ComponentAttributeType::RUNNING
+			&& is_bool($value)
+		) {
+			return $value ? self::SCRIPT_SET_ENABLED_METHOD : self::SCRIPT_SET_DISABLED_METHOD;
+		}
+
+		if (
+			$componentMatches['component'] === Types\ComponentType::SMOKE
+			&& $componentMatches['description'] === Types\ComponentAttributeType::MUTE
+		) {
+			return self::SMOKE_SET_METHOD;
+		}
+
 		throw new Exceptions\InvalidState('Property method could not be build');
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
+	private function buildComponentAttribute(string $component): string|null
+	{
+		if (
+			preg_match(self::PROPERTY_COMPONENT, $component, $componentMatches) !== 1
+			|| !array_key_exists('component', $componentMatches)
+			|| !array_key_exists('identifier', $componentMatches)
+			|| !array_key_exists('attribute', $componentMatches)
+		) {
+			throw new Exceptions\InvalidState('Property identifier is not in expected format');
+		}
+
+		if (
+			$componentMatches['component'] === Types\ComponentType::SWITCH
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::OUTPUT
+		) {
+			return Types\ComponentActionAttribute::ON;
+		}
+
+		if (
+			$componentMatches['component'] === Types\ComponentType::COVER
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::TARGET_POSITION
+		) {
+			return Types\ComponentActionAttribute::POSITION;
+		}
+
+		if (
+			$componentMatches['component'] === Types\ComponentType::LIGHT
+			&& $componentMatches['description'] === Types\ComponentAttributeType::OUTPUT
+		) {
+			return Types\ComponentActionAttribute::ON;
+		}
+
+		if (
+			$componentMatches['component'] === Types\ComponentType::LIGHT
+			&& $componentMatches['description'] === Types\ComponentAttributeType::BRIGHTNESS
+		) {
+			return Types\ComponentActionAttribute::BRIGHTNESS;
+		}
+
+		if (
+			$componentMatches['component'] === Types\ComponentType::SCRIPT
+			&& $componentMatches['description'] === Types\ComponentAttributeType::RUNNING
+		) {
+			return null;
+		}
+
+		if (
+			$componentMatches['component'] === Types\ComponentType::SMOKE
+			&& $componentMatches['description'] === Types\ComponentAttributeType::MUTE
+		) {
+			return null;
+		}
+
+		throw new Exceptions\InvalidState('Property attribute could not be build');
 	}
 
 }

@@ -16,7 +16,9 @@
 namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
 use FastyBird\Connector\Shelly\Entities;
+use FastyBird\Connector\Shelly\Types;
 use Orisai\ObjectMapper;
+use function array_merge;
 
 /**
  * Generation 2 device wifi state entity
@@ -26,7 +28,7 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class WifiState implements Entities\API\Entity
+final class WifiState extends DeviceState implements Entities\API\Entity
 {
 
 	public function __construct(
@@ -56,6 +58,12 @@ final class WifiState implements Entities\API\Entity
 		private readonly int|null $apClientCount,
 	)
 	{
+		parent::__construct();
+	}
+
+	public function getType(): Types\ComponentType
+	{
+		return Types\ComponentType::get(Types\ComponentType::WIFI);
 	}
 
 	public function getStaIp(): string|null
@@ -88,13 +96,16 @@ final class WifiState implements Entities\API\Entity
 	 */
 	public function toArray(): array
 	{
-		return [
-			'sta_ip' => $this->getStaIp(),
-			'status' => $this->getStatus(),
-			'ssid' => $this->getSsid(),
-			'rssi' => $this->getRssi(),
-			'ap_client_count' => $this->getApClientCount(),
-		];
+		return array_merge(
+			parent::toArray(),
+			[
+				'sta_ip' => $this->getStaIp(),
+				'status' => $this->getStatus(),
+				'ssid' => $this->getSsid(),
+				'rssi' => $this->getRssi(),
+				'ap_client_count' => $this->getApClientCount(),
+			],
+		);
 	}
 
 }

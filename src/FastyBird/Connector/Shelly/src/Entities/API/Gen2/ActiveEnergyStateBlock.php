@@ -78,4 +78,14 @@ final class ActiveEnergyStateBlock implements Entities\API\Entity
 		];
 	}
 
+	/**
+	 * @return array<string, float>
+	 */
+	public function toState(): array
+	{
+		return [
+			'active_energy_total' => $this->getTotal(),
+		];
+	}
+
 }

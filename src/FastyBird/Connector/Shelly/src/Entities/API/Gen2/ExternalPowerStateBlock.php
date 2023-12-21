@@ -51,4 +51,14 @@ final class ExternalPowerStateBlock implements Entities\API\Entity
 		];
 	}
 
+	/**
+	 * @return array<string, bool>
+	 */
+	public function toState(): array
+	{
+		return [
+			'external_present' => $this->isPresent(),
+		];
+	}
+
 }

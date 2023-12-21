@@ -1,9 +1,9 @@
 {
-  "covers": [],
-  "device_power": [],
+  "cover": [],
+  "devicepower": [],
   "ethernet": null,
   "humidity": [],
-  "inputs": [
+  "input": [
     {
       "errors": [],
       "id": 0,
@@ -12,10 +12,10 @@
       "type": "input"
     }
   ],
-  "lights": [],
-  "scripts": [],
+  "light": [],
+  "script": [],
   "smoke": [],
-  "switches": [
+  "switch": [
     {
       "active_energy": {
         "by_minute": [
@@ -44,12 +44,15 @@
     }
   ],
   "temperature": [],
-  "voltmeters": [],
+  "voltmeter": [],
   "wifi": {
+    "id": 0,
     "ap_client_count": null,
     "rssi": -61,
     "ssid": "WifiNetworkName",
     "sta_ip": "10.10.0.100",
-    "status": "got ip"
+    "status": "got ip",
+    "type": "wifi",
+    "errors": []
   }
 }

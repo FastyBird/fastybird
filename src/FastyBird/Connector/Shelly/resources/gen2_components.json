@@ -316,6 +316,16 @@
       "invalid": null,
       "queryable": true,
       "settable": true
+    },
+    "result": {
+      "optional": false,
+      "name": "Result",
+      "data_type": "string",
+      "unit": null,
+      "format": null,
+      "invalid": null,
+      "queryable": true,
+      "settable": false
     }
   },
   "devicepower": {
@@ -369,7 +379,7 @@
       "format": null,
       "invalid": null,
       "queryable": true,
-      "settable": false
+      "settable": true
     }
   }
 }

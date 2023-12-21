@@ -29,17 +29,7 @@ use function strval;
 class ComponentAttributeType extends Consistence\Enum\Enum
 {
 
-	public const ON = 'on';
-
-	public const STATE = 'state';
-
-	public const POSITION = 'pos';
-
-	public const BRIGHTNESS = 'brightness';
-
-	public const CELSIUS = 'celsius';
-
-	public const FAHRENHEIT = 'fahrenheit';
+	public const OUTPUT = 'output';
 
 	public const HUMIDITY = 'humidity';
 
@@ -47,11 +37,53 @@ class ComponentAttributeType extends Consistence\Enum\Enum
 
 	public const POWER_FACTOR = 'power_factor';
 
-	public const ACTIVE_ENERGY = 'active_energy';
+	public const ACTIVE_ENERGY_TOTAL = 'active_energy_total';
 
 	public const CURRENT = 'current';
 
 	public const VOLTAGE = 'voltage';
+
+	public const TEMPERATURE_CELSIUS = 'temperature_celsius';
+
+	public const TEMPERATURE_FAHRENHEIT = 'temperature_fahrenheit';
+
+	public const STATE = 'state';
+
+	public const CURRENT_POSITION = 'current_position';
+
+	public const TARGET_POSITION = 'target_position';
+
+	public const BRIGHTNESS = 'brightness';
+
+	public const SWITCH = 'switch';
+
+	public const BUTTON = 'button';
+
+	public const ANALOG = 'analog';
+
+	public const CELSIUS = 'celsius';
+
+	public const FAHRENHEIT = 'fahrenheit';
+
+	public const RELATIVE_HUMIDITY = 'relative_humidity';
+
+	public const X_VOLTAGE = 'xvoltage';
+
+	public const RUNNING = 'running';
+
+	public const BATTERY_VOLTAGE = 'battery_voltage';
+
+	public const BATTER_PERCENT = 'battery_percent';
+
+	public const EXTERNAL_PRESENT = 'external_present';
+
+	public const ALARM = 'alarm';
+
+	public const MUTE = 'mute';
+
+	public const ON = 'on';
+
+	public const POSITION = 'pos';
 
 	public function getValue(): string
 	{

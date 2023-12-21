@@ -83,4 +83,16 @@ final class DeviceDevicePowerState extends DeviceState implements Entities\API\E
 		);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	public function toState(): array
+	{
+		return array_merge(
+			parent::toArray(),
+			$this->getBattery() instanceof BatteryStateBlock ? $this->getBattery()->toState() : [],
+			$this->getExternal() instanceof ExternalPowerStateBlock ? $this->getExternal()->toState() : [],
+		);
+	}
+
 }

@@ -19,6 +19,7 @@ use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Types;
 use Orisai\ObjectMapper;
+use function array_filter;
 use function array_merge;
 
 /**
@@ -79,6 +80,23 @@ final class DeviceSmokeState extends DeviceState implements Entities\API\Entity
 				'alarm' => $this->getAlarm(),
 				'mute' => $this->getMute(),
 			],
+		);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function toState(): array
+	{
+		return array_filter(
+			array_merge(
+				parent::toState(),
+				[
+					'alarm' => $this->getAlarm(),
+					'mute' => $this->getMute(),
+				],
+			),
+			static fn ($value): bool => $value !== Shelly\Constants::VALUE_NOT_AVAILABLE,
 		);
 	}
 

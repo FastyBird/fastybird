@@ -22,6 +22,7 @@ use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Types;
 use Nette\Utils;
 use Orisai\ObjectMapper;
+use function array_filter;
 use function array_merge;
 use function intval;
 
@@ -196,6 +197,28 @@ final class DeviceSwitchState extends DeviceState implements Entities\API\Entity
 				'active_energy' => $this->getActiveEnergy() instanceof ActiveEnergyStateBlock ? $this->getActiveEnergy()->toArray() : null,
 				'temperature' => $this->getTemperature() instanceof TemperatureBlockState ? $this->getTemperature()->toArray() : null,
 			],
+		);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function toState(): array
+	{
+		return array_filter(
+			array_merge(
+				parent::toState(),
+				[
+					'output' => $this->getOutput(),
+					'active_power' => $this->getActivePower(),
+					'power_factor' => $this->getPowerFactor(),
+					'current' => $this->getCurrent(),
+					'voltage' => $this->getVoltage(),
+				],
+				$this->getActiveEnergy() instanceof ActiveEnergyStateBlock ? $this->getActiveEnergy()->toState() : [],
+				$this->getTemperature() instanceof TemperatureBlockState ? $this->getTemperature()->toState() : [],
+			),
+			static fn ($value): bool => $value !== Shelly\Constants::VALUE_NOT_AVAILABLE,
 		);
 	}
 

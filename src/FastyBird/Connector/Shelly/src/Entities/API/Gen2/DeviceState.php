@@ -35,7 +35,7 @@ abstract class DeviceState implements Entities\API\Entity
 	 */
 	public function __construct(
 		#[ObjectMapper\Rules\IntValue(unsigned: true)]
-		private readonly int $id,
+		private readonly int $id = 0,
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\IntValue(unsigned: true),
@@ -70,6 +70,14 @@ abstract class DeviceState implements Entities\API\Entity
 			'type' => $this->getType()->getValue(),
 			'errors' => $this->getErrors(),
 		];
+	}
+
+	/**
+	 * @return array<string, mixed>
+	 */
+	public function toState(): array
+	{
+		return [];
 	}
 
 }

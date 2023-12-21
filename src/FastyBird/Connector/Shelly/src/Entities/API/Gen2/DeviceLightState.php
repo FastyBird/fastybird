@@ -22,6 +22,7 @@ use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Types;
 use Nette\Utils;
 use Orisai\ObjectMapper;
+use function array_filter;
 use function array_merge;
 use function intval;
 
@@ -127,6 +128,23 @@ final class DeviceLightState extends DeviceState implements Entities\API\Entity
 				'timer_started_at' => $this->getTimerStartedAt()?->format(DateTimeInterface::ATOM),
 				'timer_duration' => $this->getTimerDuration(),
 			],
+		);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function toState(): array
+	{
+		return array_filter(
+			array_merge(
+				parent::toState(),
+				[
+					'output' => $this->getOutput(),
+					'brightness' => $this->getBrightness(),
+				],
+			),
+			static fn ($value): bool => $value !== Shelly\Constants::VALUE_NOT_AVAILABLE,
 		);
 	}
 

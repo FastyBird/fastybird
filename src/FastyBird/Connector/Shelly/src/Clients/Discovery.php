@@ -42,9 +42,11 @@ use Throwable;
 use function array_key_exists;
 use function array_map;
 use function array_merge;
+use function assert;
 use function count;
 use function explode;
 use function is_array;
+use function is_bool;
 use function is_string;
 use function preg_match;
 use function React\Async\async;
@@ -96,6 +98,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 		private readonly API\Gen2HttpApiFactory $gen2HttpApiFactory,
 		private readonly Services\MulticastFactory $multicastFactory,
 		private readonly Helpers\Entity $entityHelper,
+		private readonly Helpers\Loader $loader,
 		private readonly Queue\Queue $queue,
 		private readonly Shelly\Logger $logger,
 		private readonly ObjectMapper\Processing\Processor $entityMapper,
@@ -526,7 +529,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 							'auth_enabled' => $deviceInformation->hasAuthentication(),
 							'firmware_version' => $deviceInformation->getFirmware(),
 							'channels' => array_map(
-								static function ($component) use ($deviceStatus): array {
+								function ($component) use ($deviceStatus): array {
 									$channel = [
 										'identifier' => $component->getType()->getValue() . '_' . $component->getId(),
 										'name' => $component->getName() ?? DevicesUtilities\Name::createName(
@@ -535,531 +538,93 @@ final class Discovery implements Evenement\EventEmitterInterface
 										'properties' => [],
 									];
 
-									if ($component instanceof Entities\API\Gen2\DeviceSwitchConfiguration) {
-										$status = $deviceStatus?->findSwitch($component->getId());
+									$gen2metadata = $this->loader->loadGen2Components();
 
-										$channel['properties'][] = [
-											'identifier' => (
-												$component->getType()->getValue()
-												. '_'
-												. $component->getId()
-												. '_'
-												. Types\ComponentAttributeType::ON
-											),
-											'name' => DevicesUtilities\Name::createName(
-												Types\ComponentAttributeType::ON,
-											),
-											'data_type' => MetadataTypes\DataType::DATA_TYPE_BOOLEAN,
-											'unit' => null,
-											'format' => null,
-											'invalid' => null,
-											'queryable' => true,
-											'settable' => true,
-										];
+									if ($gen2metadata->offsetExists($component->getType()->getValue())) {
+										$componentMetadata = $gen2metadata->offsetGet(
+											$component->getType()->getValue(),
+										);
+										assert($componentMetadata instanceof Utils\ArrayHash);
 
-										if (
-											$status === null
-											|| $status->getActivePower() !== Shelly\Constants::VALUE_NOT_AVAILABLE
-										) {
-											$channel['properties'][] = [
-												'identifier' => (
-													$component->getType()->getValue()
-													. '_'
-													. $component->getId()
-													. '_'
-													. Types\ComponentAttributeType::ACTIVE_POWER
-												),
-												'name' => DevicesUtilities\Name::createName(
-													Types\ComponentAttributeType::ACTIVE_POWER,
-												),
-												'data_type' => MetadataTypes\DataType::DATA_TYPE_FLOAT,
-												'unit' => 'W',
-												'format' => null,
-												'invalid' => null,
-												'queryable' => true,
-												'settable' => false,
-											];
-										}
+										if ($component instanceof Entities\API\Gen2\DeviceInputConfiguration) {
+											$inputType = $component->getInputType()->getValue();
 
-										if (
-											$status === null
-											|| $status->getPowerFactor() !== Shelly\Constants::VALUE_NOT_AVAILABLE
-										) {
-											$channel['properties'][] = [
-												'identifier' => (
-													$component->getType()->getValue()
-													. '_'
-													. $component->getId()
-													. '_'
-													. Types\ComponentAttributeType::POWER_FACTOR
-												),
-												'name' => DevicesUtilities\Name::createName(
-													Types\ComponentAttributeType::POWER_FACTOR,
-												),
-												'data_type' => MetadataTypes\DataType::DATA_TYPE_FLOAT,
-												'unit' => null,
-												'format' => null,
-												'invalid' => null,
-												'queryable' => true,
-												'settable' => false,
-											];
-										}
+											if ($componentMetadata->offsetExists($inputType)) {
+												$channel['properties'][] = array_merge(
+													[
+														'identifier' => (
+															$component->getType()->getValue()
+															. '_'
+															. $component->getId()
+															. '_'
+															. $inputType
+														),
+													],
+													(array) Utils\Json::decode(
+														Utils\Json::encode(
+															(array) $componentMetadata->offsetGet($inputType),
+														),
+														Utils\Json::FORCE_ARRAY,
+													),
+												);
+											}
+										} else {
+											foreach ($componentMetadata as $type => $configuration) {
+												assert(
+													$configuration instanceof Utils\ArrayHash
+													&& $configuration->offsetExists('optional')
+													&& is_bool($configuration->offsetGet('optional')),
+												);
 
-										if (
-											$status === null
-											|| $status->getActiveEnergy() instanceof Entities\API\Gen2\ActiveEnergyStateBlock
-										) {
-											$channel['properties'][] = [
-												'identifier' => (
-													$component->getType()->getValue()
-													. '_'
-													. $component->getId()
-													. '_'
-													. Types\ComponentAttributeType::ACTIVE_ENERGY
-												),
-												'name' => DevicesUtilities\Name::createName(
-													Types\ComponentAttributeType::ACTIVE_ENERGY,
-												),
-												'data_type' => MetadataTypes\DataType::DATA_TYPE_FLOAT,
-												'unit' => 'Wh',
-												'format' => null,
-												'invalid' => null,
-												'queryable' => true,
-												'settable' => false,
-											];
-										}
+												if (!$configuration->offsetGet('optional')) {
+													$channel['properties'][] = array_merge(
+														[
+															'identifier' => (
+																$component->getType()->getValue()
+																. '_'
+																. $component->getId()
+																. '_'
+																. $type
+															),
+														],
+														(array) Utils\Json::decode(
+															Utils\Json::encode((array) $configuration),
+															Utils\Json::FORCE_ARRAY,
+														),
+													);
+												} else {
+													$status = $deviceStatus?->findComponent(
+														$component->getType(),
+														$component->getId(),
+													);
 
-										if (
-											$status === null
-											|| $status->getCurrent() !== Shelly\Constants::VALUE_NOT_AVAILABLE
-										) {
-											$channel['properties'][] = [
-												'identifier' => (
-													$component->getType()->getValue()
-													. '_'
-													. $component->getId()
-													. '_'
-													. Types\ComponentAttributeType::CURRENT
-												),
-												'name' => DevicesUtilities\Name::createName(
-													Types\ComponentAttributeType::CURRENT,
-												),
-												'data_type' => MetadataTypes\DataType::DATA_TYPE_FLOAT,
-												'unit' => 'A',
-												'format' => null,
-												'invalid' => null,
-												'queryable' => true,
-												'settable' => false,
-											];
-										}
+													$status = $status?->toArray();
 
-										if (
-											$status === null
-											|| $status->getVoltage() !== Shelly\Constants::VALUE_NOT_AVAILABLE
-										) {
-											$channel['properties'][] = [
-												'identifier' => (
-													$component->getType()->getValue()
-													. '_'
-													. $component->getId()
-													. '_'
-													. Types\ComponentAttributeType::VOLTAGE
-												),
-												'name' => DevicesUtilities\Name::createName(
-													Types\ComponentAttributeType::VOLTAGE,
-												),
-												'data_type' => MetadataTypes\DataType::DATA_TYPE_FLOAT,
-												'unit' => 'V',
-												'format' => null,
-												'invalid' => null,
-												'queryable' => true,
-												'settable' => false,
-											];
-										}
-
-										if (
-											$status === null
-											|| $status->getTemperature() instanceof Entities\API\Gen2\TemperatureBlockState
-										) {
-											$channel['properties'][] = [
-												'identifier' => (
-													$component->getType()->getValue()
-													. '_'
-													. $component->getId()
-													. '_'
-													. Types\ComponentAttributeType::CELSIUS
-												),
-												'name' => DevicesUtilities\Name::createName(
-													Types\ComponentAttributeType::CELSIUS,
-												),
-												'data_type' => MetadataTypes\DataType::DATA_TYPE_FLOAT,
-												'unit' => '°C',
-												'format' => null,
-												'invalid' => null,
-												'queryable' => true,
-												'settable' => false,
-											];
-										}
-									} elseif ($component instanceof Entities\API\Gen2\DeviceCoverConfiguration) {
-										$status = $deviceStatus?->findCover($component->getId());
-
-										$channel['properties'][] = [
-											'identifier' => (
-												$component->getType()->getValue()
-												. '_'
-												. $component->getId()
-												. '_'
-												. Types\ComponentAttributeType::STATE
-											),
-											'name' => DevicesUtilities\Name::createName(
-												Types\ComponentAttributeType::STATE,
-											),
-											'data_type' => MetadataTypes\DataType::DATA_TYPE_ENUM,
-											'unit' => null,
-											'format' => [
-												Types\CoverPayload::OPEN,
-												Types\CoverPayload::CLOSED,
-												Types\CoverPayload::OPENING,
-												Types\CoverPayload::CLOSING,
-												Types\CoverPayload::STOPPED,
-												Types\CoverPayload::CALIBRATING,
-											],
-											'invalid' => null,
-											'queryable' => true,
-											'settable' => false,
-										];
-
-										$channel['properties'][] = [
-											'identifier' => (
-												$component->getType()->getValue()
-												. '_'
-												. $component->getId()
-												. '_'
-												. Types\ComponentAttributeType::POSITION
-											),
-											'name' => DevicesUtilities\Name::createName(
-												Types\ComponentAttributeType::POSITION,
-											),
-											'data_type' => MetadataTypes\DataType::DATA_TYPE_UCHAR,
-											'unit' => null,
-											'format' => [0, 100],
-											'invalid' => null,
-											'queryable' => true,
-											'settable' => true,
-										];
-
-										if (
-											$status === null
-											|| $status->getActivePower() !== Shelly\Constants::VALUE_NOT_AVAILABLE
-										) {
-											$channel['properties'][] = [
-												'identifier' => (
-													$component->getType()->getValue()
-													. '_'
-													. $component->getId()
-													. '_'
-													. Types\ComponentAttributeType::ACTIVE_POWER
-												),
-												'name' => DevicesUtilities\Name::createName(
-													Types\ComponentAttributeType::ACTIVE_POWER,
-												),
-												'data_type' => MetadataTypes\DataType::DATA_TYPE_FLOAT,
-												'unit' => 'W',
-												'format' => null,
-												'invalid' => null,
-												'queryable' => true,
-												'settable' => false,
-											];
-										}
-
-										if (
-											$status === null
-											|| $status->getPowerFactor() !== Shelly\Constants::VALUE_NOT_AVAILABLE
-										) {
-											$channel['properties'][] = [
-												'identifier' => (
-													$component->getType()->getValue()
-													. '_'
-													. $component->getId()
-													. '_'
-													. Types\ComponentAttributeType::POWER_FACTOR
-												),
-												'name' => DevicesUtilities\Name::createName(
-													Types\ComponentAttributeType::POWER_FACTOR,
-												),
-												'data_type' => MetadataTypes\DataType::DATA_TYPE_FLOAT,
-												'unit' => null,
-												'format' => null,
-												'invalid' => null,
-												'queryable' => true,
-												'settable' => false,
-											];
-										}
-
-										if (
-											$status === null
-											|| $status->getActiveEnergy() instanceof Entities\API\Gen2\ActiveEnergyStateBlock
-										) {
-											$channel['properties'][] = [
-												'identifier' => (
-													$component->getType()->getValue()
-													. '_'
-													. $component->getId()
-													. '_'
-													. Types\ComponentAttributeType::ACTIVE_ENERGY
-												),
-												'name' => DevicesUtilities\Name::createName(
-													Types\ComponentAttributeType::ACTIVE_ENERGY,
-												),
-												'data_type' => MetadataTypes\DataType::DATA_TYPE_FLOAT,
-												'unit' => 'Wh',
-												'format' => null,
-												'invalid' => null,
-												'queryable' => true,
-												'settable' => false,
-											];
-										}
-
-										if (
-											$status === null
-											|| $status->getCurrent() !== Shelly\Constants::VALUE_NOT_AVAILABLE
-										) {
-											$channel['properties'][] = [
-												'identifier' => (
-													$component->getType()->getValue()
-													. '_'
-													. $component->getId()
-													. '_'
-													. Types\ComponentAttributeType::CURRENT
-												),
-												'name' => DevicesUtilities\Name::createName(
-													Types\ComponentAttributeType::CURRENT,
-												),
-												'data_type' => MetadataTypes\DataType::DATA_TYPE_FLOAT,
-												'unit' => 'A',
-												'format' => null,
-												'invalid' => null,
-												'queryable' => true,
-												'settable' => false,
-											];
-										}
-
-										if (
-											$status === null
-											|| $status->getVoltage() !== Shelly\Constants::VALUE_NOT_AVAILABLE
-										) {
-											$channel['properties'][] = [
-												'identifier' => (
-													$component->getType()->getValue()
-													. '_'
-													. $component->getId()
-													. '_'
-													. Types\ComponentAttributeType::VOLTAGE
-												),
-												'name' => DevicesUtilities\Name::createName(
-													Types\ComponentAttributeType::VOLTAGE,
-												),
-												'data_type' => MetadataTypes\DataType::DATA_TYPE_FLOAT,
-												'unit' => 'V',
-												'format' => null,
-												'invalid' => null,
-												'queryable' => true,
-												'settable' => false,
-											];
-										}
-
-										if (
-											$status === null
-											|| $status->getTemperature() instanceof Entities\API\Gen2\TemperatureBlockState
-										) {
-											$channel['properties'][] = [
-												'identifier' => (
-													$component->getType()->getValue()
-													. '_'
-													. $component->getId()
-													. '_'
-													. Types\ComponentAttributeType::CELSIUS
-												),
-												'name' => DevicesUtilities\Name::createName(
-													Types\ComponentAttributeType::CELSIUS,
-												),
-												'data_type' => MetadataTypes\DataType::DATA_TYPE_FLOAT,
-												'unit' => '°C',
-												'format' => null,
-												'invalid' => null,
-												'queryable' => true,
-												'settable' => false,
-											];
-										}
-									} elseif ($component instanceof Entities\API\Gen2\DeviceLightConfiguration) {
-										$status = $deviceStatus?->findLight($component->getId());
-
-										$channel['properties'][] = [
-											'identifier' => (
-												$component->getType()->getValue()
-												. '_'
-												. $component->getId()
-												. '_'
-												. Types\ComponentAttributeType::ON
-											),
-											'name' => DevicesUtilities\Name::createName(
-												Types\ComponentAttributeType::ON,
-											),
-											'data_type' => MetadataTypes\DataType::DATA_TYPE_BOOLEAN,
-											'unit' => null,
-											'format' => null,
-											'invalid' => null,
-											'queryable' => true,
-											'settable' => true,
-										];
-
-										if (
-											$status === null
-											|| $status->getBrightness() !== Shelly\Constants::VALUE_NOT_AVAILABLE
-										) {
-											$channel['properties'][] = [
-												'identifier' => (
-													$component->getType()->getValue()
-													. '_'
-													. $component->getId()
-													. '_'
-													. Types\ComponentAttributeType::BRIGHTNESS
-												),
-												'name' => DevicesUtilities\Name::createName(
-													Types\ComponentAttributeType::BRIGHTNESS,
-												),
-												'data_type' => MetadataTypes\DataType::DATA_TYPE_UCHAR,
-												'unit' => null,
-												'format' => [0, 100],
-												'invalid' => null,
-												'queryable' => true,
-												'settable' => true,
-											];
-										}
-									} elseif ($component instanceof Entities\API\Gen2\DeviceInputConfiguration) {
-										if ($component->getInputType()->equalsValue(Types\InputType::SWITCH)) {
-											$channel['properties'][] = [
-												'identifier' => (
-													$component->getType()->getValue()
-													. '_'
-													. $component->getId()
-												),
-												'name' => null,
-												'data_type' => MetadataTypes\DataType::DATA_TYPE_BOOLEAN,
-												'unit' => null,
-												'format' => null,
-												'invalid' => null,
-												'queryable' => true,
-												'settable' => false,
-											];
-										} elseif ($component->getInputType()->equalsValue(Types\InputType::BUTTON)) {
-											$channel['properties'][] = [
-												'identifier' => (
-													$component->getType()->getValue()
-													. '_'
-													. $component->getId()
-												),
-												'name' => null,
-												'data_type' => MetadataTypes\DataType::DATA_TYPE_ENUM,
-												'unit' => null,
-												'format' => [
-													Types\InputPayload::PRESS,
-													Types\InputPayload::RELEASE,
-													Types\InputPayload::SINGLE_PUSH,
-													Types\InputPayload::DOUBLE_PUSH,
-													Types\InputPayload::LONG_PUSH,
-												],
-												'invalid' => null,
-												'queryable' => true,
-												'settable' => false,
-											];
-										} elseif ($component->getInputType()->equalsValue(Types\InputType::ANALOG)) {
-											$channel['properties'][] = [
-												'identifier' => (
-													$component->getType()->getValue()
-													. '_'
-													. $component->getId()
-												),
-												'name' => null,
-												'data_type' => MetadataTypes\DataType::DATA_TYPE_UCHAR,
-												'unit' => null,
-												'format' => [0, 100],
-												'invalid' => null,
-												'queryable' => true,
-												'settable' => false,
-											];
-										}
-									} elseif ($component instanceof Entities\API\Gen2\DeviceTemperatureConfiguration) {
-										$status = $deviceStatus?->findTemperature($component->getId());
-
-										if (
-											$status === null
-											|| $status->getTemperatureCelsius() !== Shelly\Constants::VALUE_NOT_AVAILABLE
-										) {
-											$channel['properties'][] = [
-												'identifier' => (
-													$component->getType()->getValue()
-													. '_'
-													. $component->getId()
-													. '_'
-													. Types\ComponentAttributeType::CELSIUS
-												),
-												'name' => DevicesUtilities\Name::createName(
-													Types\ComponentAttributeType::CELSIUS,
-												),
-												'data_type' => MetadataTypes\DataType::DATA_TYPE_FLOAT,
-												'unit' => '°C',
-												'format' => null,
-												'invalid' => null,
-												'queryable' => true,
-												'settable' => false,
-											];
-										}
-
-										if (
-											$status === null
-											|| $status->getTemperatureFahrenheit() !== Shelly\Constants::VALUE_NOT_AVAILABLE
-										) {
-											$channel['properties'][] = [
-												'identifier' => (
-													$component->getType()->getValue()
-													. '_'
-													. $component->getId()
-													. '_'
-													. Types\ComponentAttributeType::FAHRENHEIT
-												),
-												'name' => DevicesUtilities\Name::createName(
-													Types\ComponentAttributeType::FAHRENHEIT,
-												),
-												'data_type' => MetadataTypes\DataType::DATA_TYPE_FLOAT,
-												'unit' => '°F',
-												'format' => null,
-												'invalid' => null,
-												'queryable' => true,
-												'settable' => false,
-											];
-										}
-									} else {
-										$status = $deviceStatus?->findHumidity($component->getId());
-
-										if (
-											$status === null
-											|| $status->getRelativeHumidity() !== Shelly\Constants::VALUE_NOT_AVAILABLE
-										) {
-											$channel['properties'][] = [
-												'identifier' => (
-													$component->getType()->getValue()
-													. '_'
-													. $component->getId()
-												),
-												'name' => null,
-												'data_type' => MetadataTypes\DataType::DATA_TYPE_FLOAT,
-												'unit' => '%',
-												'format' => null,
-												'invalid' => null,
-												'queryable' => true,
-												'settable' => false,
-											];
+													if (
+														$status === null
+														|| (
+															array_key_exists($type, $status)
+															&& $status[$type] !== Shelly\Constants::VALUE_NOT_AVAILABLE
+														)
+													) {
+														$channel['properties'][] = array_merge(
+															[
+																'identifier' => (
+																	$component->getType()->getValue()
+																	. '_'
+																	. $component->getId()
+																	. '_'
+																	. $type
+																),
+															],
+															(array) Utils\Json::decode(
+																Utils\Json::encode((array) $configuration),
+																Utils\Json::FORCE_ARRAY,
+															),
+														);
+													}
+												}
+											}
 										}
 									}
 

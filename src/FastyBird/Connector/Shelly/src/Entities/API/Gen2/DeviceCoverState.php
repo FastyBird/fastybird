@@ -23,6 +23,7 @@ use FastyBird\Connector\Shelly\Types;
 use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use Nette\Utils;
 use Orisai\ObjectMapper;
+use function array_filter;
 use function array_merge;
 use function intval;
 
@@ -230,6 +231,30 @@ final class DeviceCoverState extends DeviceState implements Entities\API\Entity
 				'active_energy' => $this->getActiveEnergy() instanceof ActiveEnergyStateBlock ? $this->getActiveEnergy()->toArray() : null,
 				'temperature' => $this->getTemperature() instanceof TemperatureBlockState ? $this->getTemperature()->toArray() : null,
 			],
+		);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function toState(): array
+	{
+		return array_filter(
+			array_merge(
+				parent::toArray(),
+				[
+					'state' => $this->getState()?->getValue(),
+					'current_position' => $this->getCurrentPosition(),
+					'target_position' => $this->getTargetPosition(),
+					'active_power' => $this->getActivePower(),
+					'power_factor' => $this->getPowerFactor(),
+					'current' => $this->getCurrent(),
+					'voltage' => $this->getVoltage(),
+				],
+				$this->getActiveEnergy() instanceof ActiveEnergyStateBlock ? $this->getActiveEnergy()->toState() : [],
+				$this->getTemperature() instanceof TemperatureBlockState ? $this->getTemperature()->toState() : [],
+			),
+			static fn ($value): bool => $value !== Shelly\Constants::VALUE_NOT_AVAILABLE,
 		);
 	}
 

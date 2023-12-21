@@ -1,8 +1,8 @@
 {
-  "covers": [],
-  "device_power": [],
+  "cover": [],
+  "devicepower": [],
   "humidity": [],
-  "inputs": [
+  "input": [
     {
       "factory_reset": true,
       "id": 0,
@@ -13,10 +13,10 @@
       "type": "input"
     }
   ],
-  "lights": [],
-  "scripts": [],
+  "light": [],
+  "script": [],
   "smoke": [],
-  "switches": [
+  "switch": [
     {
       "auto_off": false,
       "auto_off_delay": 60,
@@ -34,5 +34,5 @@
     }
   ],
   "temperature": [],
-  "voltmeters": []
+  "voltmeter": []
 }
