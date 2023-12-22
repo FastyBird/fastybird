@@ -13,8 +13,8 @@
     "version" : "1.1"
   },
   "links" : {
-    "related" : "/accounts-module/v1/me/emails",
-    "self" : "/accounts-module/v1/me/relationships/emails"
+    "related" : "/api/accounts-module/v1/me/emails",
+    "self" : "/api/accounts-module/v1/me/relationships/emails"
   },
   "meta" : {
     "author" : "FastyBird team",

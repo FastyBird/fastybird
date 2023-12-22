@@ -7,7 +7,7 @@
     "version": "1.1"
   },
   "links": {
-    "self": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels"
+    "self": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels"
   },
   "data": {
     "type": "com.fastybird.devices-module/channel/general",
@@ -21,7 +21,7 @@
     "relationships": {
       "device": {
         "links": {
-          "related": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa"
+          "related": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa"
         },
         "data": {
           "type": "com.fastybird.devices-module/device/blank",
@@ -30,9 +30,9 @@
       },
       "properties": {
         "links": {
-          "self": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/e0f879e3-0e8f-4b72-bde4-7e3fbb89decc/relationships/properties",
+          "self": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/e0f879e3-0e8f-4b72-bde4-7e3fbb89decc/relationships/properties",
           "related": {
-            "href": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/e0f879e3-0e8f-4b72-bde4-7e3fbb89decc/properties",
+            "href": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/e0f879e3-0e8f-4b72-bde4-7e3fbb89decc/properties",
             "meta": {
               "count": 0
             }
@@ -42,9 +42,9 @@
       },
       "controls": {
         "links": {
-          "self": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/e0f879e3-0e8f-4b72-bde4-7e3fbb89decc/relationships/controls",
+          "self": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/e0f879e3-0e8f-4b72-bde4-7e3fbb89decc/relationships/controls",
           "related": {
-            "href": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/e0f879e3-0e8f-4b72-bde4-7e3fbb89decc/controls",
+            "href": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/e0f879e3-0e8f-4b72-bde4-7e3fbb89decc/controls",
             "meta": {
               "count": 0
             }
@@ -54,7 +54,7 @@
       }
     },
     "links": {
-      "self": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/e0f879e3-0e8f-4b72-bde4-7e3fbb89decc"
+      "self": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/e0f879e3-0e8f-4b72-bde4-7e3fbb89decc"
     }
   }
 }

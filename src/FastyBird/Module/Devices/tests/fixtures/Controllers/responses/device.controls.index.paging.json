@@ -8,10 +8,10 @@
     "version": "1.1"
   },
   "links": {
-    "self": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/controls?page%5Boffset%5D=1&page%5Blimit%5D=1",
-    "first": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/controls?page%5Boffset%5D=0&page%5Blimit%5D=1",
-    "prev": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/controls?page%5Boffset%5D=0&page%5Blimit%5D=1",
-    "last": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/controls?page%5Boffset%5D=0&page%5Blimit%5D=1"
+    "self": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/controls?page%5Boffset%5D=1&page%5Blimit%5D=1",
+    "first": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/controls?page%5Boffset%5D=0&page%5Blimit%5D=1",
+    "prev": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/controls?page%5Boffset%5D=0&page%5Blimit%5D=1",
+    "last": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/controls?page%5Boffset%5D=0&page%5Blimit%5D=1"
   },
   "data": [
     {
@@ -23,7 +23,7 @@
       "relationships": {
         "device": {
           "links": {
-            "related": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa"
+            "related": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa"
           },
           "data": {
             "type": "com.fastybird.devices-module/device/blank",
@@ -32,7 +32,7 @@
         }
       },
       "links": {
-        "self": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/controls/7c055b2b-60c3-4017-93db-e9478d8aa662"
+        "self": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/controls/7c055b2b-60c3-4017-93db-e9478d8aa662"
       }
     }
   ]

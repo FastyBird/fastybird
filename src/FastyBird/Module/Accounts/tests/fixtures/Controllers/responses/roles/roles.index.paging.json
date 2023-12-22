@@ -8,11 +8,11 @@
     "version" : "1.1"
   },
   "links" : {
-    "self" : "/accounts-module/v1/roles?page%5Boffset%5D=1&page%5Blimit%5D=1",
-    "first" : "/accounts-module/v1/roles?page%5Boffset%5D=0&page%5Blimit%5D=1",
-    "prev" : "/accounts-module/v1/roles?page%5Boffset%5D=0&page%5Blimit%5D=1",
-    "next" : "/accounts-module/v1/roles?page%5Boffset%5D=2&page%5Blimit%5D=1",
-    "last" : "/accounts-module/v1/roles?page%5Boffset%5D=3&page%5Blimit%5D=1"
+    "self" : "/api/accounts-module/v1/roles?page%5Boffset%5D=1&page%5Blimit%5D=1",
+    "first" : "/api/accounts-module/v1/roles?page%5Boffset%5D=0&page%5Blimit%5D=1",
+    "prev" : "/api/accounts-module/v1/roles?page%5Boffset%5D=0&page%5Blimit%5D=1",
+    "next" : "/api/accounts-module/v1/roles?page%5Boffset%5D=2&page%5Blimit%5D=1",
+    "last" : "/api/accounts-module/v1/roles?page%5Boffset%5D=3&page%5Blimit%5D=1"
   },
   "data" : [
     {
@@ -28,9 +28,9 @@
       "relationships" : {
         "children" : {
           "links" : {
-            "self" : "/accounts-module/v1/roles/337a0518-664b-40ef-bfbd-efbfbd7914ef/relationships/children",
+            "self" : "/api/accounts-module/v1/roles/337a0518-664b-40ef-bfbd-efbfbd7914ef/relationships/children",
             "related" : {
-              "href" : "/accounts-module/v1/roles/337a0518-664b-40ef-bfbd-efbfbd7914ef/children",
+              "href" : "/api/accounts-module/v1/roles/337a0518-664b-40ef-bfbd-efbfbd7914ef/children",
               "meta" : {
                 "count" : 0
               }
@@ -40,8 +40,8 @@
         },
         "parent" : {
           "links" : {
-            "self" : "/accounts-module/v1/roles/337a0518-664b-40ef-bfbd-efbfbd7914ef/relationships/parent",
-            "related" : "/accounts-module/v1/roles/337a0518-664b-40ef-bfbd-efbfbd7914ef"
+            "self" : "/api/accounts-module/v1/roles/337a0518-664b-40ef-bfbd-efbfbd7914ef/relationships/parent",
+            "related" : "/api/accounts-module/v1/roles/337a0518-664b-40ef-bfbd-efbfbd7914ef"
           },
           "data" : {
             "type" : "com.fastybird.accounts-module/role",
@@ -50,7 +50,7 @@
         }
       },
       "links" : {
-        "self" : "/accounts-module/v1/roles/337a0518-664b-40ef-bfbd-efbfbd7914ef"
+        "self" : "/api/accounts-module/v1/roles/337a0518-664b-40ef-bfbd-efbfbd7914ef"
       }
     }
   ]

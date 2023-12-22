@@ -592,7 +592,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		}
 
 		$builder->addDefinition($this->prefix('commands.initialize'), new DI\Definitions\ServiceDefinition())
-			->setType(Commands\Initialize::class)
+			->setType(Commands\Install::class)
 			->setArguments([
 				'logger' => $logger,
 			]);

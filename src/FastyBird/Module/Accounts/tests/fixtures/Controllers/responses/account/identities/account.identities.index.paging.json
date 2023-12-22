@@ -8,10 +8,10 @@
     "version" : "1.1"
   },
   "links" : {
-    "self" : "/accounts-module/v1/me/identities?page%5Boffset%5D=1&page%5Blimit%5D=1",
-    "first" : "/accounts-module/v1/me/identities?page%5Boffset%5D=0&page%5Blimit%5D=1",
-    "prev" : "/accounts-module/v1/me/identities?page%5Boffset%5D=0&page%5Blimit%5D=1",
-    "last" : "/accounts-module/v1/me/identities?page%5Boffset%5D=0&page%5Blimit%5D=1"
+    "self" : "/api/accounts-module/v1/me/identities?page%5Boffset%5D=1&page%5Blimit%5D=1",
+    "first" : "/api/accounts-module/v1/me/identities?page%5Boffset%5D=0&page%5Blimit%5D=1",
+    "prev" : "/api/accounts-module/v1/me/identities?page%5Boffset%5D=0&page%5Blimit%5D=1",
+    "last" : "/api/accounts-module/v1/me/identities?page%5Boffset%5D=0&page%5Blimit%5D=1"
   },
   "data" : [
     {
@@ -24,8 +24,8 @@
       "relationships" : {
         "account" : {
           "links" : {
-            "self" : "/accounts-module/v1/me/identities/77331268-efbf-bd34-49ef-bfbdefbfbd04/relationships/account",
-            "related" : "/accounts-module/v1/me"
+            "self" : "/api/accounts-module/v1/me/identities/77331268-efbf-bd34-49ef-bfbdefbfbd04/relationships/account",
+            "related" : "/api/accounts-module/v1/me"
           },
           "data" : {
             "type" : "com.fastybird.accounts-module/account",
@@ -34,7 +34,7 @@
         }
       },
       "links" : {
-        "self" : "/accounts-module/v1/me/identities/77331268-efbf-bd34-49ef-bfbdefbfbd04"
+        "self" : "/api/accounts-module/v1/me/identities/77331268-efbf-bd34-49ef-bfbdefbfbd04"
       }
     }
   ]

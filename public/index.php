@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use Dotenv\Dotenv;
 use FastyBird\Library\Bootstrap\Boot;
-use FastyBird\Plugin\WebServer\Application;
+use FastyBird\Plugin\WebServer\Application as WebServerApplication;
 
 if (isset($_ENV['FB_APP_DIR'])) {
 	$vendorDir = realpath($_ENV['FB_APP_DIR'] . DIRECTORY_SEPARATOR . 'vendor');
@@ -39,7 +39,7 @@ if (file_exists($autoload)) {
 
 	$configurator
 		->createContainer()
-		->getByType(Application\Application::class)
+		->getByType(WebServerApplication\Application::class)
 		->run();
 
 } else {

@@ -176,7 +176,7 @@ final class RolesV1 extends BaseV1
 	{
 		$role = $this->findRole($request);
 
-		$relationEntity = strtolower(strval($request->getAttribute(Router\Routes::RELATION_ENTITY)));
+		$relationEntity = strtolower(strval($request->getAttribute(Router\ApiRoutes::RELATION_ENTITY)));
 
 		if ($relationEntity === Schemas\Roles\Role::RELATIONSHIPS_PARENT) {
 			return $this->buildResponse($request, $response, $role->getParent());

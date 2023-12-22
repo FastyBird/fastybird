@@ -44,7 +44,7 @@ trait TAccount
 		Message\ServerRequestInterface $request,
 	): Entities\Accounts\Account
 	{
-		if (!Uuid\Uuid::isValid(strval($request->getAttribute(Router\Routes::URL_ACCOUNT_ID)))) {
+		if (!Uuid\Uuid::isValid(strval($request->getAttribute(Router\ApiRoutes::URL_ACCOUNT_ID)))) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				$this->translator->translate('//accounts-module.base.messages.notFound.heading'),
@@ -53,7 +53,7 @@ trait TAccount
 		}
 
 		$findQuery = new Queries\Entities\FindAccounts();
-		$findQuery->byId(Uuid\Uuid::fromString(strval($request->getAttribute(Router\Routes::URL_ACCOUNT_ID))));
+		$findQuery->byId(Uuid\Uuid::fromString(strval($request->getAttribute(Router\ApiRoutes::URL_ACCOUNT_ID))));
 
 		$account = $this->accountsRepository->findOneBy($findQuery);
 

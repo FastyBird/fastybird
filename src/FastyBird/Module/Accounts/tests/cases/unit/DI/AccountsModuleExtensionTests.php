@@ -33,7 +33,7 @@ final class AccountsModuleExtensionTests extends DbTestCase
 		self::assertNotNull($this->getContainer()->getByType(Middleware\UrlFormat::class, false));
 
 		self::assertNotNull($this->getContainer()->getByType(Commands\Accounts\Create::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Commands\Initialize::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Commands\Install::class, false));
 
 		self::assertNotNull($this->getContainer()->getByType(Subscribers\ModuleEntities::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Subscribers\AccountEntity::class, false));
@@ -66,7 +66,7 @@ final class AccountsModuleExtensionTests extends DbTestCase
 		self::assertNotNull($this->getContainer()->getByType(Controllers\RoleChildrenV1::class, false));
 
 		self::assertNotNull($this->getContainer()->getByType(Router\Validator::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Router\Routes::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Router\ApiRoutes::class, false));
 
 		self::assertNotNull($this->getContainer()->getByType(Schemas\Accounts\Account::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Schemas\Emails\Email::class, false));

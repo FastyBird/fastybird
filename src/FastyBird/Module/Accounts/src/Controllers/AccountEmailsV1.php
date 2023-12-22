@@ -394,7 +394,7 @@ final class AccountEmailsV1 extends BaseV1
 		$email = $this->findEmail($request, $this->findAccount());
 
 		// & relation entity name
-		$relationEntity = strtolower(strval($request->getAttribute(Router\Routes::RELATION_ENTITY)));
+		$relationEntity = strtolower(strval($request->getAttribute(Router\ApiRoutes::RELATION_ENTITY)));
 
 		if ($relationEntity === Schemas\Emails\Email::RELATIONSHIPS_ACCOUNT) {
 			return $this->buildResponse($request, $response, $email->getAccount());

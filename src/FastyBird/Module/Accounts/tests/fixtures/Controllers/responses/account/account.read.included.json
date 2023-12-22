@@ -7,7 +7,7 @@
     "version" : "1.1"
   },
   "links" : {
-    "self" : "/accounts-module/v1/me?include=emails"
+    "self" : "/api/accounts-module/v1/me?include=emails"
   },
   "data" : {
     "type" : "com.fastybird.accounts-module/account",
@@ -33,9 +33,9 @@
     "relationships" : {
       "identities" : {
         "links" : {
-          "self" : "/accounts-module/v1/me/relationships/identities",
+          "self" : "/api/accounts-module/v1/me/relationships/identities",
           "related" : {
-            "href" : "/accounts-module/v1/me/identities",
+            "href" : "/api/accounts-module/v1/me/identities",
             "meta" : {
               "count" : 1
             }
@@ -50,7 +50,7 @@
       },
       "roles" : {
         "links" : {
-          "self" : "/accounts-module/v1/me/relationships/roles"
+          "self" : "/api/accounts-module/v1/me/relationships/roles"
         },
         "data" : [
           {
@@ -61,9 +61,9 @@
       },
       "emails" : {
         "links" : {
-          "self" : "/accounts-module/v1/me/relationships/emails",
+          "self" : "/api/accounts-module/v1/me/relationships/emails",
           "related" : {
-            "href" : "/accounts-module/v1/me/emails",
+            "href" : "/api/accounts-module/v1/me/emails",
             "meta" : {
               "count" : 2
             }
@@ -82,7 +82,7 @@
       }
     },
     "links" : {
-      "self" : "/accounts-module/v1/me"
+      "self" : "/api/accounts-module/v1/me"
     }
   },
   "included" : [
@@ -98,8 +98,8 @@
       "relationships" : {
         "account" : {
           "links" : {
-            "self" : "/accounts-module/v1/me/emails/0b46d3d6-c980-494a-8b40-f19e6095e610/relationships/account",
-            "related" : "/accounts-module/v1/me"
+            "self" : "/api/accounts-module/v1/me/emails/0b46d3d6-c980-494a-8b40-f19e6095e610/relationships/account",
+            "related" : "/api/accounts-module/v1/me"
           },
           "data" : {
             "type" : "com.fastybird.accounts-module/account",
@@ -108,7 +108,7 @@
         }
       },
       "links" : {
-        "self" : "/accounts-module/v1/me/emails/0b46d3d6-c980-494a-8b40-f19e6095e610"
+        "self" : "/api/accounts-module/v1/me/emails/0b46d3d6-c980-494a-8b40-f19e6095e610"
       }
     },
     {
@@ -123,8 +123,8 @@
       "relationships" : {
         "account" : {
           "links" : {
-            "self" : "/accounts-module/v1/me/emails/32ebe3c3-0238-482e-ab79-6b1d9ee2147c/relationships/account",
-            "related" : "/accounts-module/v1/me"
+            "self" : "/api/accounts-module/v1/me/emails/32ebe3c3-0238-482e-ab79-6b1d9ee2147c/relationships/account",
+            "related" : "/api/accounts-module/v1/me"
           },
           "data" : {
             "type" : "com.fastybird.accounts-module/account",
@@ -133,7 +133,7 @@
         }
       },
       "links" : {
-        "self" : "/accounts-module/v1/me/emails/32ebe3c3-0238-482e-ab79-6b1d9ee2147c"
+        "self" : "/api/accounts-module/v1/me/emails/32ebe3c3-0238-482e-ab79-6b1d9ee2147c"
       }
     }
   ]

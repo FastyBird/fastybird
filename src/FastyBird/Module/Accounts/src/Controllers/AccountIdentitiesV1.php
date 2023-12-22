@@ -232,7 +232,7 @@ final class AccountIdentitiesV1 extends BaseV1
 		$identity = $this->findIdentity($request, $this->findAccount());
 
 		// & relation entity name
-		$relationEntity = strtolower(strval($request->getAttribute(Router\Routes::RELATION_ENTITY)));
+		$relationEntity = strtolower(strval($request->getAttribute(Router\ApiRoutes::RELATION_ENTITY)));
 
 		if ($relationEntity === Schemas\Identities\Identity::RELATIONSHIPS_ACCOUNT) {
 			return $this->buildResponse($request, $response, $identity->getAccount());

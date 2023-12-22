@@ -9,7 +9,7 @@
     "version" : "1.1"
   },
   "links" : {
-    "self" : "/accounts-module/v1/me/relationships/roles"
+    "self" : "/api/accounts-module/v1/me/relationships/roles"
   },
   "meta" : {
     "author" : "FastyBird team",

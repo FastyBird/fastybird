@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Routes.php
+ * ApiRoutes.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -30,7 +30,7 @@ use IPub\SlimRouter\Routing;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Routes
+class ApiRoutes
 {
 
 	public const URL_ITEM_ID = 'id';
@@ -55,16 +55,20 @@ class Routes
 
 	public function registerRoutes(Routing\IRouter $router): void
 	{
-		if ($this->usePrefix) {
-			$routes = $router->group('/' . Metadata\Constants::MODULE_TRIGGERS_PREFIX, function (
-				Routing\RouteCollector $group,
-			): void {
-				$this->buildRoutes($group);
-			});
+		$routes = $router->group('/' . Metadata\Constants::ROUTER_API_PREFIX, function (
+			Routing\RouteCollector $group,
+		): void {
+			if ($this->usePrefix) {
+				$group->group('/' . Metadata\Constants::MODULE_TRIGGERS_PREFIX, function (
+					Routing\RouteCollector $group,
+				): void {
+					$this->buildRoutes($group);
+				});
 
-		} else {
-			$routes = $this->buildRoutes($router);
-		}
+			} else {
+				$this->buildRoutes($group);
+			}
+		});
 
 		$routes->addMiddleware($this->accessControlMiddleware);
 		$routes->addMiddleware($this->userMiddleware);

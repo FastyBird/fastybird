@@ -64,7 +64,7 @@ Example configuration could be found [here](https://github.com/FastyBird/devices
 This module is using database, and need some initial data to be inserted into it.
 
 ```sh
-your-console-entrypoint fb:devices-module:initialize
+your-console-entrypoint fb:devices-module:install
 ```
 
 This console command is interactive and will ask for all required information.

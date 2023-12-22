@@ -382,7 +382,7 @@ final class AccountsV1 extends BaseV1
 		$account = $this->findAccount($request);
 
 		// & relation entity name
-		$relationEntity = strtolower(strval($request->getAttribute(Router\Routes::RELATION_ENTITY)));
+		$relationEntity = strtolower(strval($request->getAttribute(Router\ApiRoutes::RELATION_ENTITY)));
 
 		if ($relationEntity === Schemas\Accounts\Account::RELATIONSHIPS_IDENTITIES) {
 			return $this->buildResponse($request, $response, $account->getIdentities());
@@ -405,7 +405,7 @@ final class AccountsV1 extends BaseV1
 		Message\ServerRequestInterface $request,
 	): Entities\Accounts\Account
 	{
-		if (!Uuid\Uuid::isValid(strval($request->getAttribute(Router\Routes::URL_ITEM_ID)))) {
+		if (!Uuid\Uuid::isValid(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)))) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				$this->translator->translate('//accounts-module.base.messages.notFound.heading'),
@@ -414,7 +414,7 @@ final class AccountsV1 extends BaseV1
 		}
 
 		$findQuery = new Queries\Entities\FindAccounts();
-		$findQuery->byId(Uuid\Uuid::fromString(strval($request->getAttribute(Router\Routes::URL_ITEM_ID))));
+		$findQuery->byId(Uuid\Uuid::fromString(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID))));
 
 		$account = $this->accountsRepository->findOneBy($findQuery);
 

@@ -105,3 +105,27 @@ conditions:
         propertyNotUnique:
             heading	: "Property not unique"
             message	: "Condition property have to be unique per trigger"
+
+cmd:
+    base:
+        questions:
+            continue: "Would you like to continue?"
+            whatToDo: "What would you like to do?"
+            exit: "Do you want to exit?"
+
+        messages:
+            answerNotValid: "Selected answer: \"%s\" is not valid."
+
+    install:
+        title: "Triggers module - installer"
+        subtitle: "This action will create|update|delete module configuration"
+
+        info:
+            database: "Preparing module database"
+
+        messages:
+            success: "Triggers module has been successfully initialized and can be now used."
+            error: "Something went wrong, initialization could not be finished. Error was logged."
+            initialisationFailed: "Something went wrong, initialization could not be finished."
+            databaseReady: "Triggers module database has been successfully initialized."
+            databaseFailed: "Something went wrong, database initialization could not be finished."

@@ -7,7 +7,7 @@
     "version" : "1.1"
   },
   "links" : {
-    "self" : "/triggers-module/v1/triggers/1b17bcaa-a19e-45f0-98b4-56211cc648ae/conditions"
+    "self" : "/api/triggers-module/v1/triggers/1b17bcaa-a19e-45f0-98b4-56211cc648ae/conditions"
   },
   "data" : [
     {
@@ -23,8 +23,8 @@
       "relationships" : {
         "trigger" : {
           "links" : {
-            "self" : "/triggers-module/v1/triggers/1b17bcaa-a19e-45f0-98b4-56211cc648ae/conditions/09c453b3-c55f-4050-8f1c-b50f8d5728c2/relationships/trigger",
-            "related" : "/triggers-module/v1/triggers/1b17bcaa-a19e-45f0-98b4-56211cc648ae"
+            "self" : "/api/triggers-module/v1/triggers/1b17bcaa-a19e-45f0-98b4-56211cc648ae/conditions/09c453b3-c55f-4050-8f1c-b50f8d5728c2/relationships/trigger",
+            "related" : "/api/triggers-module/v1/triggers/1b17bcaa-a19e-45f0-98b4-56211cc648ae"
           },
           "data" : {
             "type" : "com.fastybird.triggers-module/trigger/automatic",
@@ -33,7 +33,7 @@
         }
       },
       "links" : {
-        "self" : "/triggers-module/v1/triggers/1b17bcaa-a19e-45f0-98b4-56211cc648ae/conditions/09c453b3-c55f-4050-8f1c-b50f8d5728c2"
+        "self" : "/api/triggers-module/v1/triggers/1b17bcaa-a19e-45f0-98b4-56211cc648ae/conditions/09c453b3-c55f-4050-8f1c-b50f8d5728c2"
       }
     }
   ]

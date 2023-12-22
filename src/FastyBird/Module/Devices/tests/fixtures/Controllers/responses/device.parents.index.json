@@ -7,7 +7,7 @@
     "version": "1.1"
   },
   "links": {
-    "self": "/devices-module/v1/devices/a1036ff8-6ee8-4405-aaed-58bae0814596/parents"
+    "self": "/api/devices-module/v1/devices/a1036ff8-6ee8-4405-aaed-58bae0814596/parents"
   },
   "data": [
     {
@@ -23,9 +23,9 @@
       "relationships": {
         "properties": {
           "links": {
-            "self": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/relationships/properties",
+            "self": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/relationships/properties",
             "related": {
-              "href": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties",
+              "href": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/properties",
               "meta": {
                 "count": 10
               }
@@ -76,9 +76,9 @@
         },
         "controls": {
           "links": {
-            "self": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/relationships/controls",
+            "self": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/relationships/controls",
             "related": {
-              "href": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/controls",
+              "href": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/controls",
               "meta": {
                 "count": 1
               }
@@ -93,9 +93,9 @@
         },
         "channels": {
           "links": {
-            "self": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/relationships/channels",
+            "self": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/relationships/channels",
             "related": {
-              "href": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels",
+              "href": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels",
               "meta": {
                 "count": 2
               }
@@ -114,8 +114,8 @@
         },
         "connector": {
           "links": {
-            "self": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/relationships/connector",
-            "related": "/devices-module/v1/connectors/17c59dfa-2edd-438e-8c49-faa4e38e5a5e"
+            "self": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/relationships/connector",
+            "related": "/api/devices-module/v1/connectors/17c59dfa-2edd-438e-8c49-faa4e38e5a5e"
           },
           "data": {
             "type": "com.fastybird.devices-module/connector/blank",
@@ -124,9 +124,9 @@
         },
         "parents": {
           "links": {
-            "self": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/relationships/parents",
+            "self": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/relationships/parents",
             "related": {
-              "href": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/parents",
+              "href": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/parents",
               "meta": {
                 "count": 0
               }
@@ -136,9 +136,9 @@
         },
         "children": {
           "links": {
-            "self": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/relationships/children",
+            "self": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/relationships/children",
             "related": {
-              "href": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/children",
+              "href": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/children",
               "meta": {
                 "count": 1
               }
@@ -153,7 +153,7 @@
         }
       },
       "links": {
-        "self": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa"
+        "self": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa"
       }
     }
   ]

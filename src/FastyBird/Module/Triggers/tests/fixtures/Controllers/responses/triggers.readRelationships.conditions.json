@@ -9,8 +9,8 @@
     "version" : "1.1"
   },
   "links" : {
-    "related" : "/triggers-module/v1/triggers/0b48dfbc-fac2-4292-88dc-7981a121602d/conditions",
-    "self" : "/triggers-module/v1/triggers/0b48dfbc-fac2-4292-88dc-7981a121602d/relationships/conditions"
+    "related" : "/api/triggers-module/v1/triggers/0b48dfbc-fac2-4292-88dc-7981a121602d/conditions",
+    "self" : "/api/triggers-module/v1/triggers/0b48dfbc-fac2-4292-88dc-7981a121602d/relationships/conditions"
   },
   "meta" : {
     "author" : "FastyBird team",

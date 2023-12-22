@@ -88,7 +88,7 @@ class AccountsExtension extends DI\CompilerExtension implements Translation\DI\T
 			->addTag('middleware');
 
 		$builder->addDefinition($this->prefix('router.routes'), new DI\Definitions\ServiceDefinition())
-			->setType(Router\Routes::class)
+			->setType(Router\ApiRoutes::class)
 			->setArguments(['usePrefix' => $configuration->apiPrefix]);
 
 		$builder->addDefinition($this->prefix('router.validator'), new DI\Definitions\ServiceDefinition())
@@ -98,7 +98,7 @@ class AccountsExtension extends DI\CompilerExtension implements Translation\DI\T
 			->setType(Commands\Accounts\Create::class);
 
 		$builder->addDefinition($this->prefix('commands.initialize'), new DI\Definitions\ServiceDefinition())
-			->setType(Commands\Initialize::class);
+			->setType(Commands\Install::class);
 
 		$builder->addDefinition($this->prefix('models.accountsRepository'), new DI\Definitions\ServiceDefinition())
 			->setType(Models\Entities\Accounts\AccountsRepository::class);
@@ -272,7 +272,7 @@ class AccountsExtension extends DI\CompilerExtension implements Translation\DI\T
 		if ($routerService instanceof DI\Definitions\ServiceDefinition) {
 			$routerService->addSetup(
 				'?->registerRoutes(?)',
-				[$builder->getDefinitionByType(Router\Routes::class), $routerService],
+				[$builder->getDefinitionByType(Router\ApiRoutes::class), $routerService],
 			);
 		}
 	}

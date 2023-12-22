@@ -9,8 +9,8 @@
     "version" : "1.1"
   },
   "links" : {
-    "related" : "/accounts-module/v1/me/identities",
-    "self" : "/accounts-module/v1/me/relationships/identities"
+    "related" : "/api/accounts-module/v1/me/identities",
+    "self" : "/api/accounts-module/v1/me/relationships/identities"
   },
   "meta" : {
     "author" : "FastyBird team",

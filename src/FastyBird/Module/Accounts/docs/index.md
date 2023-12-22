@@ -61,7 +61,7 @@ found [here](https://github.com/FastyBird/accounts-module/blob/main/config/examp
 This module is using database, and need some initial data to be inserted into it.
 
 ```sh
-your-console-entrypoint fb:accounts-module:initialize
+your-console-entrypoint fb:accounts-module:install
 ```
 
 This console command is interactive and will ask for all required information.

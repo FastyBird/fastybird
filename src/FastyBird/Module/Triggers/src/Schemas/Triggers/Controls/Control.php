@@ -86,8 +86,8 @@ final class Control extends JsonApiSchemas\JsonApi
 			$this->router->urlFor(
 				Triggers\Constants::ROUTE_NAME_TRIGGER_CONTROL,
 				[
-					Router\Routes::URL_TRIGGER_ID => $resource->getTrigger()->getPlainId(),
-					Router\Routes::URL_ITEM_ID => $resource->getPlainId(),
+					Router\ApiRoutes::URL_TRIGGER_ID => $resource->getTrigger()->getPlainId(),
+					Router\ApiRoutes::URL_ITEM_ID => $resource->getPlainId(),
 				],
 			),
 			false,
@@ -127,7 +127,7 @@ final class Control extends JsonApiSchemas\JsonApi
 				$this->router->urlFor(
 					Triggers\Constants::ROUTE_NAME_TRIGGER,
 					[
-						Router\Routes::URL_ITEM_ID => $resource->getTrigger()->getPlainId(),
+						Router\ApiRoutes::URL_ITEM_ID => $resource->getTrigger()->getPlainId(),
 					],
 				),
 				false,

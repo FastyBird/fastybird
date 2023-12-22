@@ -1,25 +1,24 @@
 <?php declare(strict_types = 1);
 
 /**
- * Initialize.php
+ * Install.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:DevicesModule!
+ * @package        FastyBird:TriggersModule!
  * @subpackage     Commands
  * @since          1.0.0
  *
  * @date           08.08.20
  */
 
-namespace FastyBird\Module\Devices\Commands;
+namespace FastyBird\Module\Triggers\Commands;
 
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Module\Devices;
-use FastyBird\Module\Devices\Models;
 use Nette\Localization;
+use Psr\Log;
 use Symfony\Component\Console;
 use Symfony\Component\Console\Input;
 use Symfony\Component\Console\Output;
@@ -29,20 +28,19 @@ use Throwable;
 /**
  * Module initialize command
  *
- * @package        FastyBird:DevicesModule!
+ * @package        FastyBird:TriggersModule!
  * @subpackage     Commands
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Initialize extends Console\Command\Command
+class Install extends Console\Command\Command
 {
 
-	public const NAME = 'fb:devices-module:initialize';
+	public const NAME = 'fb:triggers-module:install';
 
 	public function __construct(
-		private readonly Models\Configuration\Builder $configurationBuilder,
-		private readonly Devices\Logger $logger,
 		private readonly Localization\Translator $translator,
+		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 		string|null $name = null,
 	)
 	{
@@ -56,7 +54,7 @@ class Initialize extends Console\Command\Command
 	{
 		$this
 			->setName(self::NAME)
-			->setDescription('Devices module initialization');
+			->setDescription('Triggers module installer');
 	}
 
 	/**
@@ -73,14 +71,14 @@ class Initialize extends Console\Command\Command
 		$io = new Style\SymfonyStyle($input, $output);
 
 		if ($input->getOption('quiet') === false) {
-			$io->title($this->translator->translate('//devices-module.cmd.initialize.title'));
+			$io->title($this->translator->translate('//triggers-module.cmd.install.title'));
 
-			$io->note($this->translator->translate('//devices-module.cmd.initialize.subtitle'));
+			$io->note($this->translator->translate('//triggers-module.cmd.install.subtitle'));
 		}
 
 		if ($input->getOption('no-interaction') === false) {
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//devices-module.cmd.base.questions.continue'),
+				$this->translator->translate('//triggers-module.cmd.base.questions.continue'),
 				false,
 			);
 
@@ -94,23 +92,21 @@ class Initialize extends Console\Command\Command
 		try {
 			$this->initializeDatabase($io, $input, $output);
 
-			$this->configurationBuilder->clean();
-
 			if ($input->getOption('quiet') === false) {
-				$io->success($this->translator->translate('//devices-module.cmd.initialize.messages.success'));
+				$io->success($this->translator->translate('//triggers-module.cmd.install.messages.success'));
 			}
 
 			return Console\Command\Command::SUCCESS;
 		} catch (Throwable $ex) {
 			// Log caught exception
 			$this->logger->error('An unhandled error occurred', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
-				'type' => 'command',
+				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_TRIGGERS,
+				'type' => 'initialize-cmd',
 				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
 
 			if ($input->getOption('quiet') === false) {
-				$io->error($this->translator->translate('//devices-module.cmd.initialize.messages.error'));
+				$io->error($this->translator->translate('//triggers-module.cmd.install.messages.error'));
 			}
 
 			return Console\Command\Command::FAILURE;
@@ -134,7 +130,7 @@ class Initialize extends Console\Command\Command
 		}
 
 		if ($input->getOption('quiet') === false) {
-			$io->section($this->translator->translate('//devices-module.cmd.initialize.info.database'));
+			$io->section($this->translator->translate('//triggers-module.cmd.install.info.database'));
 		}
 
 		$databaseCmd = $symfonyApp->find('orm:schema-tool:update');
@@ -146,7 +142,7 @@ class Initialize extends Console\Command\Command
 		if ($result !== Console\Command\Command::SUCCESS) {
 			if ($input->getOption('quiet') === false) {
 				$io->error(
-					$this->translator->translate('//devices-module.cmd.initialize.messages.initialisationFailed'),
+					$this->translator->translate('//triggers-module.cmd.install.messages.initialisationFailed'),
 				);
 			}
 
@@ -161,14 +157,14 @@ class Initialize extends Console\Command\Command
 
 		if ($result !== 0) {
 			if ($input->getOption('quiet') === false) {
-				$io->error($this->translator->translate('//devices-module.cmd.initialize.messages.databaseFailed'));
+				$io->error($this->translator->translate('//triggers-module.cmd.install.messages.databaseFailed'));
 			}
 
 			return;
 		}
 
 		if ($input->getOption('quiet') === false) {
-			$io->success($this->translator->translate('//devices-module.cmd.initialize.messages.databaseReady'));
+			$io->success($this->translator->translate('//triggers-module.cmd.install.messages.databaseReady'));
 		}
 	}
 
