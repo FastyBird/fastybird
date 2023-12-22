@@ -182,21 +182,20 @@ final class StoreLocalDevice implements Queue\Consumer
 
 			$channel = $this->channelsRepository->findOneBy($findChannelQuery);
 
-			if ($channel === null) {
-				$channel = $this->databaseHelper->transaction(
-					fn (): DevicesEntities\Channels\Channel => $this->channelsManager->create(Utils\ArrayHash::from([
-						'device' => $device,
-						'identifier' => $channelDescription->getIdentifier(),
+			$channel = $channel === null ? $this->databaseHelper->transaction(
+				fn (): DevicesEntities\Channels\Channel => $this->channelsManager->create(Utils\ArrayHash::from([
+					'device' => $device,
+					'identifier' => $channelDescription->getIdentifier(),
+					'name' => $channelDescription->getName(),
+				])),
+			) : $this->databaseHelper->transaction(
+				fn (): DevicesEntities\Channels\Channel => $this->channelsManager->update(
+					$channel,
+					Utils\ArrayHash::from([
 						'name' => $channelDescription->getName(),
-					])),
-				);
-			} else {
-				$channel = $this->databaseHelper->transaction(
-					fn (): DevicesEntities\Channels\Channel => $this->channelsManager->update($channel, Utils\ArrayHash::from([
-						'name' => $channelDescription->getName(),
-					])),
-				);
-			}
+					]),
+				),
+			);
 
 			$propertiesIdentifiers = [];
 
