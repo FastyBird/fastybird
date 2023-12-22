@@ -27,9 +27,11 @@ use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
+use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
 use Nette;
 use Nette\Utils;
 use function assert;
+use function in_array;
 use function strval;
 
 /**
@@ -65,6 +67,7 @@ final class StoreLocalDevice implements Queue\Consumer
 
 	/**
 	 * @throws DBAL\Exception
+	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Runtime
 	 */
@@ -189,6 +192,8 @@ final class StoreLocalDevice implements Queue\Consumer
 				);
 			}
 
+			$propertiesIdentifiers = [];
+
 			foreach ($channelDescription->getProperties() as $propertyDescription) {
 				$this->setChannelProperty(
 					DevicesEntities\Channels\Properties\Dynamic::class,
@@ -203,6 +208,19 @@ final class StoreLocalDevice implements Queue\Consumer
 					$propertyDescription->isSettable(),
 					$propertyDescription->isQueryable(),
 				);
+
+				$propertiesIdentifiers[] = $propertyDescription->getIdentifier();
+			}
+
+			$findChannelPropertiesQuery = new DevicesQueries\Entities\FindChannelProperties();
+			$findChannelPropertiesQuery->forChannel($channel);
+
+			$properties = $this->channelsPropertiesRepository->findAllBy($findChannelPropertiesQuery);
+
+			foreach ($properties as $property) {
+				if (!in_array($property->getIdentifier(), $propertiesIdentifiers, true)) {
+					$this->channelsPropertiesManager->delete($property);
+				}
 			}
 		}
 
