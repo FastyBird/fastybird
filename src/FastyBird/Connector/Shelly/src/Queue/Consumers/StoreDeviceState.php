@@ -89,30 +89,17 @@ final class StoreDeviceState implements Queue\Consumer
 		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
 		if ($device === null) {
-			$this->logger->error(
-				'Device could not be loaded',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-					'type' => 'store-device-state-message-consumer',
-					'connector' => [
-						'id' => $entity->getConnector()->toString(),
-					],
-					'device' => [
-						'identifier' => $entity->getIdentifier(),
-					],
-					'data' => $entity->toArray(),
-				],
-			);
-
 			return true;
 		}
 
-		$this->setDeviceProperty(
-			$device->getId(),
-			$entity->getIpAddress(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-			Types\DevicePropertyIdentifier::IP_ADDRESS,
-		);
+		if ($entity->getIpAddress() !== null) {
+			$this->setDeviceProperty(
+				$device->getId(),
+				$entity->getIpAddress(),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+				Types\DevicePropertyIdentifier::IP_ADDRESS,
+			);
+		}
 
 		foreach ($entity->getStates() as $state) {
 			if ($state instanceof Entities\Messages\PropertyState) {

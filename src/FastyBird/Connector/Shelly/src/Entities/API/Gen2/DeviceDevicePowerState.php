@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * DeviceTemperatureState.php
+ * DeviceDevicePowerState.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,7 +10,7 @@
  * @subpackage     Entities
  * @since          1.0.0
  *
- * @date           26.12.22
+ * @date           21.12.23
  */
 
 namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
@@ -19,18 +19,18 @@ use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Types;
 use Orisai\ObjectMapper;
-use function array_filter;
 use function array_merge;
+use function is_string;
 
 /**
- * Generation 2 device temperature state entity
+ * Generation 2 device power state entity
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceTemperatureState extends DeviceState implements Entities\API\Entity
+final class DeviceDevicePowerState extends DeviceState implements Entities\API\Entity
 {
 
 	/**
@@ -39,19 +39,15 @@ final class DeviceTemperatureState extends DeviceState implements Entities\API\E
 	public function __construct(
 		int $id,
 		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\MappedObjectValue(class: BatteryStateBlock::class),
 			new ObjectMapper\Rules\ArrayEnumValue(cases: [Shelly\Constants::VALUE_NOT_AVAILABLE]),
-			new ObjectMapper\Rules\NullValue(),
 		])]
-		#[ObjectMapper\Modifiers\FieldName('tC')]
-		private readonly float|string|null $temperatureCelsius,
+		private readonly BatteryStateBlock|string $battery,
 		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\MappedObjectValue(class: ExternalPowerStateBlock::class),
 			new ObjectMapper\Rules\ArrayEnumValue(cases: [Shelly\Constants::VALUE_NOT_AVAILABLE]),
-			new ObjectMapper\Rules\NullValue(),
 		])]
-		#[ObjectMapper\Modifiers\FieldName('tF')]
-		private readonly float|string|null $temperatureFahrenheit,
+		private readonly ExternalPowerStateBlock|string $external,
 		array $errors = [],
 	)
 	{
@@ -60,17 +56,17 @@ final class DeviceTemperatureState extends DeviceState implements Entities\API\E
 
 	public function getType(): Types\ComponentType
 	{
-		return Types\ComponentType::get(Types\ComponentType::TEMPERATURE);
+		return Types\ComponentType::get(Types\ComponentType::DEVICE_POWER);
 	}
 
-	public function getTemperatureCelsius(): float|string|null
+	public function getBattery(): BatteryStateBlock|string
 	{
-		return $this->temperatureCelsius;
+		return $this->battery;
 	}
 
-	public function getTemperatureFahrenheit(): float|string|null
+	public function getExternal(): ExternalPowerStateBlock|string
 	{
-		return $this->temperatureFahrenheit;
+		return $this->external;
 	}
 
 	/**
@@ -81,8 +77,8 @@ final class DeviceTemperatureState extends DeviceState implements Entities\API\E
 		return array_merge(
 			parent::toArray(),
 			[
-				'celsius' => $this->getTemperatureCelsius(),
-				'fahrenheit' => $this->getTemperatureFahrenheit(),
+				'battery' => is_string($this->getBattery()) ? $this->getBattery() : $this->getBattery()->toArray(),
+				'external' => is_string($this->getExternal()) ? $this->getExternal() : $this->getExternal()->toArray(),
 			],
 		);
 	}
@@ -92,15 +88,10 @@ final class DeviceTemperatureState extends DeviceState implements Entities\API\E
 	 */
 	public function toState(): array
 	{
-		return array_filter(
-			array_merge(
-				parent::toState(),
-				[
-					'celsius' => $this->getTemperatureCelsius(),
-					'fahrenheit' => $this->getTemperatureFahrenheit(),
-				],
-			),
-			static fn ($value): bool => $value !== Shelly\Constants::VALUE_NOT_AVAILABLE,
+		return array_merge(
+			parent::toArray(),
+			$this->getBattery() instanceof BatteryStateBlock ? $this->getBattery()->toState() : [],
+			$this->getExternal() instanceof ExternalPowerStateBlock ? $this->getExternal()->toState() : [],
 		);
 	}
 

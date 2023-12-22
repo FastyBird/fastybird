@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "ts": {
+      "type": "number"
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "component": {
+            "type": "string"
+          },
+          "id": {
+            "type": "number"
+          },
+          "event": {
+            "type": "string"
+          },
+          "data": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "object"
+              },
+              {
+                "type": "array"
+              }
+            ]
+          },
+          "ts": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "component",
+          "id",
+          "event"
+        ]
+      }
+    }
+  },
+  "required": [
+    "ts",
+    "events"
+  ]
+}

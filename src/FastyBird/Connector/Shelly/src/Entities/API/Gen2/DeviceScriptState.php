@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * DeviceHumidityState.php
+ * DeviceScriptState.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,7 +10,7 @@
  * @subpackage     Entities
  * @since          1.0.0
  *
- * @date           26.12.22
+ * @date           21.12.23
  */
 
 namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
@@ -23,14 +23,14 @@ use function array_filter;
 use function array_merge;
 
 /**
- * Generation 2 device humidity state entity
+ * Generation 2 device script state entity
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceHumidityState extends DeviceState implements Entities\API\Entity
+final class DeviceScriptState extends DeviceState implements Entities\API\Entity
 {
 
 	/**
@@ -39,12 +39,10 @@ final class DeviceHumidityState extends DeviceState implements Entities\API\Enti
 	public function __construct(
 		int $id,
 		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\BoolValue(),
 			new ObjectMapper\Rules\ArrayEnumValue(cases: [Shelly\Constants::VALUE_NOT_AVAILABLE]),
-			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		#[ObjectMapper\Modifiers\FieldName('rh')]
-		private readonly float|string|null $relativeHumidity,
+		private readonly bool|string $running,
 		array $errors = [],
 	)
 	{
@@ -53,12 +51,12 @@ final class DeviceHumidityState extends DeviceState implements Entities\API\Enti
 
 	public function getType(): Types\ComponentType
 	{
-		return Types\ComponentType::get(Types\ComponentType::HUMIDITY);
+		return Types\ComponentType::get(Types\ComponentType::SCRIPT);
 	}
 
-	public function getRelativeHumidity(): float|string|null
+	public function getRunning(): bool|string
 	{
-		return $this->relativeHumidity;
+		return $this->running;
 	}
 
 	/**
@@ -69,7 +67,7 @@ final class DeviceHumidityState extends DeviceState implements Entities\API\Enti
 		return array_merge(
 			parent::toArray(),
 			[
-				'relative_humidity' => $this->getRelativeHumidity(),
+				'running' => $this->getRunning(),
 			],
 		);
 	}
@@ -83,7 +81,7 @@ final class DeviceHumidityState extends DeviceState implements Entities\API\Enti
 			array_merge(
 				parent::toState(),
 				[
-					'relative_humidity' => $this->getRelativeHumidity(),
+					'running' => $this->getRunning(),
 				],
 			),
 			static fn ($value): bool => $value !== Shelly\Constants::VALUE_NOT_AVAILABLE,

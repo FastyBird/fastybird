@@ -1,18 +1,21 @@
 {
-  "covers": [],
+  "cover": [],
+  "devicepower": [],
   "ethernet": null,
   "humidity": [],
-  "inputs": [
+  "input": [
     {
       "errors": [],
       "id": 0,
-      "percent": null,
+      "percent": "n/a",
       "state": false,
       "type": "input"
     }
   ],
-  "lights": [],
-  "switches": [
+  "light": [],
+  "script": [],
+  "smoke": [],
+  "switch": [
     {
       "active_energy": {
         "by_minute": [
@@ -31,21 +34,25 @@
       "power_factor": "n/a",
       "source": "init",
       "temperature": {
-        "temperature_celsius": 55.1,
-        "temperature_fahrenheit": 131.1
+        "celsius": 55.1,
+        "fahrenheit": 131.1
       },
-      "timer_duration": null,
-      "timer_started_at": null,
+      "timer_duration": "n/a",
+      "timer_started_at": "n/a",
       "type": "switch",
       "voltage": 236.7
     }
   ],
   "temperature": [],
+  "voltmeter": [],
   "wifi": {
-    "ap_client_count": null,
+    "id": 0,
+    "ap_client_count": "n/a",
     "rssi": -61,
     "ssid": "WifiNetworkName",
     "sta_ip": "10.10.0.100",
-    "status": "got ip"
+    "status": "got ip",
+    "type": "wifi",
+    "errors": []
   }
 }

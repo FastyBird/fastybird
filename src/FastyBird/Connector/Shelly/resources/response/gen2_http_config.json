@@ -530,6 +530,137 @@
       "required": [
         "id"
       ]
+    },
+    "^voltmeter:[0-9]$": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number",
+          "description": "Id of the Voltmeter component instance"
+        },
+        "name": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "description": "Name of the Voltmeter instance. name length should not exceed 64 chars",
+          "default": null
+        },
+        "report_thr": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "description": "Voltmeter report threshold in volts. Accepted range is device-specific",
+          "default": null
+        },
+        "xvoltage": {
+          "type": "object",
+          "properties": {
+            "expr": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "string"
+                }
+              ],
+              "description": "JS expression containg x, where x is the raw value to be transformed (status.voltage), for example \"x+1\". Accepted range: null or [0..100] chars. Both null and \"\" mean value transformation is disabled.",
+              "default": null
+            },
+            "unit": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "string"
+                }
+              ],
+              "description": "Unit of the transformed value (status.xvoltage), for example \"m/s\". Accepted range: null or [0..20] chars. Both null and \"\" mean value transformation is disabled.",
+              "default": null
+            }
+          },
+          "description": "Value transformation config for status.voltage"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "^script:[0-9]$": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number",
+          "description": "Id of the script"
+        },
+        "name": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "description": "Name of the script",
+          "default": null
+        },
+        "enable": {
+          "type": "boolean",
+          "description": "true if the script runs by default on boot, false otherwise",
+          "default": false
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "^devicepower:[0-9]$": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number",
+          "description": "Id of the DevicePower component instance"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "^smoke:[0-9]$": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number",
+          "description": "Id of the Smoke component instance"
+        },
+        "name": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "description": "Name of the Smoke instance. name length should not exceed 64 chars",
+          "default": null
+        }
+      },
+      "required": [
+        "id"
+      ]
     }
   }
 }

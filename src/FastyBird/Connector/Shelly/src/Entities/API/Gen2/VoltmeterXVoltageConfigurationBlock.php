@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * EthernetState.php
+ * VoltmeterXVoltageConfigurationBlock.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,25 +10,23 @@
  * @subpackage     Entities
  * @since          1.0.0
  *
- * @date           05.01.23
+ * @date           21.12.23
  */
 
 namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
 use FastyBird\Connector\Shelly\Entities;
-use FastyBird\Connector\Shelly\Types;
 use Orisai\ObjectMapper;
-use function array_merge;
 
 /**
- * Generation 2 device ethernet state entity
+ * Generation 2 device voltage component voltage x configuration entity
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class EthernetState extends DeviceState implements Entities\API\Entity
+final class VoltmeterXVoltageConfigurationBlock implements Entities\API\Entity
 {
 
 	public function __construct(
@@ -36,20 +34,25 @@ final class EthernetState extends DeviceState implements Entities\API\Entity
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly string|null $ip,
+		#[ObjectMapper\Modifiers\FieldName('expr')]
+		private readonly string|null $expression,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		private readonly string|null $unit,
 	)
 	{
-		parent::__construct();
 	}
 
-	public function getType(): Types\ComponentType
+	public function getExpression(): string|null
 	{
-		return Types\ComponentType::get(Types\ComponentType::ETHERNET);
+		return $this->expression;
 	}
 
-	public function getIp(): string|null
+	public function getUnit(): string|null
 	{
-		return $this->ip;
+		return $this->unit;
 	}
 
 	/**
@@ -57,12 +60,10 @@ final class EthernetState extends DeviceState implements Entities\API\Entity
 	 */
 	public function toArray(): array
 	{
-		return array_merge(
-			parent::toArray(),
-			[
-				'ip' => $this->getIp(),
-			],
-		);
+		return [
+			'expression' => $this->getExpression(),
+			'unit' => $this->getUnit(),
+		];
 	}
 
 }

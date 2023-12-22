@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * DeviceHumidityState.php
+ * DeviceVoltmeterState.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,7 +10,7 @@
  * @subpackage     Entities
  * @since          1.0.0
  *
- * @date           26.12.22
+ * @date           20.12.23
  */
 
 namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
@@ -23,14 +23,14 @@ use function array_filter;
 use function array_merge;
 
 /**
- * Generation 2 device humidity state entity
+ * Generation 2 device voltage state entity
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceHumidityState extends DeviceState implements Entities\API\Entity
+final class DeviceVoltmeterState extends DeviceState implements Entities\API\Entity
 {
 
 	/**
@@ -43,8 +43,13 @@ final class DeviceHumidityState extends DeviceState implements Entities\API\Enti
 			new ObjectMapper\Rules\ArrayEnumValue(cases: [Shelly\Constants::VALUE_NOT_AVAILABLE]),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		#[ObjectMapper\Modifiers\FieldName('rh')]
-		private readonly float|string|null $relativeHumidity,
+		private readonly float|string|null $voltage,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\ArrayEnumValue(cases: [Shelly\Constants::VALUE_NOT_AVAILABLE]),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		private readonly float|string|null $xvoltage = null,
 		array $errors = [],
 	)
 	{
@@ -53,12 +58,17 @@ final class DeviceHumidityState extends DeviceState implements Entities\API\Enti
 
 	public function getType(): Types\ComponentType
 	{
-		return Types\ComponentType::get(Types\ComponentType::HUMIDITY);
+		return Types\ComponentType::get(Types\ComponentType::VOLTMETER);
 	}
 
-	public function getRelativeHumidity(): float|string|null
+	public function getVoltage(): float|string|null
 	{
-		return $this->relativeHumidity;
+		return $this->voltage;
+	}
+
+	public function getXvoltage(): float|string|null
+	{
+		return $this->xvoltage;
 	}
 
 	/**
@@ -69,7 +79,8 @@ final class DeviceHumidityState extends DeviceState implements Entities\API\Enti
 		return array_merge(
 			parent::toArray(),
 			[
-				'relative_humidity' => $this->getRelativeHumidity(),
+				'voltage' => $this->getVoltage(),
+				'xvoltage' => $this->getXvoltage(),
 			],
 		);
 	}
@@ -83,7 +94,8 @@ final class DeviceHumidityState extends DeviceState implements Entities\API\Enti
 			array_merge(
 				parent::toState(),
 				[
-					'relative_humidity' => $this->getRelativeHumidity(),
+					'voltage' => $this->getVoltage(),
+					'xvoltage' => $this->getXvoltage(),
 				],
 			),
 			static fn ($value): bool => $value !== Shelly\Constants::VALUE_NOT_AVAILABLE,

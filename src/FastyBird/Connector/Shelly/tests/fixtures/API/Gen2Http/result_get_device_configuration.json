@@ -1,7 +1,8 @@
 {
-  "covers": [],
+  "cover": [],
+  "devicepower": [],
   "humidity": [],
-  "inputs": [
+  "input": [
     {
       "factory_reset": true,
       "id": 0,
@@ -12,8 +13,10 @@
       "type": "input"
     }
   ],
-  "lights": [],
-  "switches": [
+  "light": [],
+  "script": [],
+  "smoke": [],
+  "switch": [
     {
       "auto_off": false,
       "auto_off_delay": 60,
@@ -30,5 +33,6 @@
       "voltage_limit": 280
     }
   ],
-  "temperature": []
+  "temperature": [],
+  "voltmeter": []
 }

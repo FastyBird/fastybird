@@ -40,10 +40,9 @@ use React\EventLoop;
 use RuntimeException;
 use Throwable;
 use function array_key_exists;
-use function array_merge;
 use function count;
 use function in_array;
-use function strval;
+use function preg_match;
 
 /**
  * Local devices client
@@ -63,6 +62,8 @@ final class Local implements Client
 	private const HANDLER_PROCESSING_INTERVAL = 0.01;
 
 	private const RECONNECT_COOL_DOWN_TIME = 300.0;
+
+	private const COMPONENT_KEY = '/^(?P<component>[a-zA-Z]+)(:(?P<channel>[0-9_]+))?$/';
 
 	private const CMD_STATE = 'state';
 
@@ -556,8 +557,27 @@ final class Local implements Client
 		$client->on(
 			'message',
 			function (Entities\API\Gen2\GetDeviceState|Entities\API\Gen2\DeviceEvent $message) use ($device): void {
-				if ($message instanceof Entities\API\Gen2\GetDeviceState) {
-					$this->processGen2DeviceGetState($device, $message);
+				try {
+					if ($message instanceof Entities\API\Gen2\GetDeviceState) {
+						$this->processGen2DeviceGetState($device, $message);
+					} elseif ($message instanceof Entities\API\Gen2\DeviceEvent) {
+						$this->processGen2DeviceEvent($device, $message);
+					}
+				} catch (Throwable $ex) {
+					$this->logger->error(
+						'Received message could not be handled',
+						[
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+							'type' => 'local-client',
+							'exception' => BootstrapHelpers\Logger::buildException($ex),
+							'connector' => [
+								'id' => $this->connector->getId()->toString(),
+							],
+							'device' => [
+								'id' => $device->getId()->toString(),
+							],
+						],
+					);
 				}
 			},
 		);
@@ -983,230 +1003,18 @@ final class Local implements Client
 	{
 		$states = [];
 
-		if ($state->getSwitches() !== []) {
-			foreach ($state->getSwitches() as $component) {
-				if ($component->getOutput() === null) {
-					continue;
-				}
-
+		foreach ($state->getComponents() as $component) {
+			foreach ($component->toState() as $key => $value) {
 				$states[] = [
 					'identifier' => (
 						$component->getType()->getValue()
 						. '_'
 						. $component->getId()
 						. '_'
-						. Types\ComponentAttributeType::ON
-					),
-					'value' => $component->getOutput(),
-				];
-			}
-		}
-
-		if ($state->getCovers() !== []) {
-			foreach ($state->getCovers() as $component) {
-				if ($component->getState() !== null) {
-					$states[] = [
-						'identifier' => (
-							$component->getType()->getValue()
-							. '_'
-							. $component->getId()
-							. '_'
-							. Types\ComponentAttributeType::STATE
-						),
-						'value' => $component->getState()->getValue(),
-					];
-				}
-
-				if ($component->getCurrentPosition() !== null) {
-					$states[] = [
-						'identifier' => (
-							$component->getType()->getValue()
-							. '_'
-							. $component->getId()
-							. '_'
-							. Types\ComponentAttributeType::POSITION
-						),
-						'value' => $component->getCurrentPosition(),
-					];
-				}
-			}
-		}
-
-		if ($state->getLights() !== []) {
-			foreach ($state->getLights() as $component) {
-				if ($component->getOutput() !== null) {
-					$states[] = [
-						'identifier' => (
-							$component->getType()->getValue()
-							. '_'
-							. $component->getId()
-							. '_'
-							. Types\ComponentAttributeType::ON
-						),
-						'value' => $component->getOutput(),
-					];
-				}
-
-				if ($component->getBrightness() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
-					$states[] = [
-						'identifier' => (
-							$component->getType()->getValue()
-							. '_'
-							. $component->getId()
-							. '_'
-							. Types\ComponentAttributeType::BRIGHTNESS
-						),
-						'value' => $component->getBrightness(),
-					];
-				}
-			}
-		}
-
-		if ($state->getInputs() !== []) {
-			foreach ($state->getInputs() as $component) {
-				if ($component->getState() instanceof Types\InputPayload) {
-					$value = strval($component->getState()->getValue());
-				} elseif ($component->getState() !== null) {
-					$value = $component->getState();
-				} else {
-					$value = $component->getPercent();
-				}
-
-				$states[] = [
-					'identifier' => (
-						$component->getType()->getValue()
-						. '_'
-						. $component->getId()
+						. $key
 					),
 					'value' => $value,
 				];
-			}
-		}
-
-		if ($state->getTemperature() !== []) {
-			foreach ($state->getTemperature() as $component) {
-				if ($component->getTemperatureCelsius() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
-					$states[] = [
-						'identifier' => (
-							$component->getType()->getValue()
-							. '_'
-							. $component->getId()
-							. '_'
-							. Types\ComponentAttributeType::CELSIUS
-						),
-						'value' => $component->getTemperatureCelsius(),
-					];
-				}
-
-				if ($component->getTemperatureFahrenheit() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
-					$states[] = [
-						'identifier' => (
-							$component->getType()->getValue()
-							. '_'
-							. $component->getId()
-							. '_'
-							. Types\ComponentAttributeType::FAHRENHEIT
-						),
-						'value' => $component->getTemperatureFahrenheit(),
-					];
-				}
-			}
-		}
-
-		if ($state->getHumidity() !== []) {
-			foreach ($state->getHumidity() as $component) {
-				if ($component->getRelativeHumidity() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
-					$states[] = [
-						'identifier' => (
-							$component->getType()->getValue()
-							. '_'
-							. $component->getId()
-						),
-						'value' => $component->getRelativeHumidity(),
-					];
-				}
-			}
-		}
-
-		if ($state->getSwitches() !== [] || $state->getCovers() !== []) {
-			foreach (array_merge($state->getSwitches(), $state->getCovers()) as $component) {
-				if ($component->getActivePower() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
-					$states[] = [
-						'identifier' => (
-							$component->getType()->getValue()
-							. '_'
-							. $component->getId()
-							. '_'
-							. Types\ComponentAttributeType::ACTIVE_POWER
-						),
-						'value' => $component->getActivePower(),
-					];
-				}
-
-				if ($component->getPowerFactor() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
-					$states[] = [
-						'identifier' => (
-							$component->getType()->getValue()
-							. '_'
-							. $component->getId()
-							. '_'
-							. Types\ComponentAttributeType::POWER_FACTOR
-						),
-						'value' => $component->getPowerFactor(),
-					];
-				}
-
-				if ($component->getActiveEnergy() instanceof Entities\API\Gen2\ActiveEnergyStateBlock) {
-					$states[] = [
-						'identifier' => (
-							$component->getType()->getValue()
-							. '_'
-							. $component->getId()
-							. '_'
-							. Types\ComponentAttributeType::ACTIVE_ENERGY
-						),
-						'value' => $component->getActiveEnergy()->getTotal(),
-					];
-				}
-
-				if ($component->getCurrent() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
-					$states[] = [
-						'identifier' => (
-							$component->getType()->getValue()
-							. '_'
-							. $component->getId()
-							. '_'
-							. Types\ComponentAttributeType::CURRENT
-						),
-						'value' => $component->getCurrent(),
-					];
-				}
-
-				if ($component->getVoltage() !== Shelly\Constants::VALUE_NOT_AVAILABLE) {
-					$states[] = [
-						'identifier' => (
-							$component->getType()->getValue()
-							. '_'
-							. $component->getId()
-							. '_'
-							. Types\ComponentAttributeType::VOLTAGE
-						),
-						'value' => $component->getVoltage(),
-					];
-				}
-
-				if ($component->getTemperature() instanceof Entities\API\Gen2\TemperatureBlockState) {
-					$states[] = [
-						'identifier' => (
-							$component->getType()->getValue()
-							. '_'
-							. $component->getId()
-							. '_'
-							. Types\ComponentAttributeType::CELSIUS
-						),
-						'value' => $component->getTemperature()->getTemperatureCelsius(),
-					];
-				}
 			}
 		}
 
@@ -1223,6 +1031,54 @@ final class Local implements Client
 					],
 				),
 			);
+		}
+	}
+
+	/**
+	 * @throws Exceptions\Runtime
+	 */
+	private function processGen2DeviceEvent(
+		MetadataDocuments\DevicesModule\Device $device,
+		Entities\API\Gen2\DeviceEvent $notification,
+	): void
+	{
+		foreach ($notification->getEvents() as $event) {
+			if (
+				preg_match(self::COMPONENT_KEY, $event->getComponent(), $componentMatches) === 1
+				&& Types\ComponentType::isValidValue($componentMatches['component'])
+				&& array_key_exists('channel', $componentMatches)
+			) {
+				$component = Types\ComponentType::get($componentMatches['component']);
+
+				if (
+					$component->equalsValue(Types\ComponentType::SCRIPT)
+					&& $event->getEvent() === Types\ComponentEvent::RESULT
+					&& $event->getData() !== null
+				) {
+					$this->queue->append(
+						$this->entityHelper->create(
+							Entities\Messages\StoreDeviceState::class,
+							[
+								'connector' => $device->getConnector(),
+								'identifier' => $device->getIdentifier(),
+								'ip_address' => null,
+								'states' => [
+									[
+										'identifier' => (
+											$component->getValue()
+											. '_'
+											. $event->getId()
+											. '_'
+											. Types\ComponentAttributeType::RESULT
+										),
+										'value' => $event->getData(),
+									],
+								],
+							],
+						),
+					);
+				}
+			}
 		}
 	}
 

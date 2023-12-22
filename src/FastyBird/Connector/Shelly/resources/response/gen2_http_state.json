@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "patternProperties": {
-    "^input:[0-9]$": {
+    "^input:[0-9]+$": {
       "properties": {
         "id": {
           "type": "number",
@@ -11,29 +11,37 @@
         "state": {
           "oneOf": [
             {
-              "type": "null"
+              "type": "string",
+              "enum": ["n/a"]
             },
             {
               "type": "boolean"
             },
             {
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ],
           "description": "(only for type switch, button) State of the input (null if the input instance is stateless, i.e. for type button)",
-          "default": null
+          "default": "n/a"
         },
         "percent": {
           "oneOf": [
             {
-              "type": "null"
+              "type": "string",
+              "enum": ["n/a"]
             },
             {
               "type": "number"
+            },
+            {
+              "type": "null"
             }
           ],
           "description": "(only for type analog) Analog value in percent (null if valid value could not be obtained)",
-          "default": null
+          "default": "n/a"
         },
         "errors": {
           "type": "array",
@@ -48,7 +56,7 @@
         "id"
       ]
     },
-    "^switch:[0-9]$": {
+    "^switch:[0-9]+$": {
       "properties": {
         "id": {
           "type": "number",
@@ -57,42 +65,59 @@
         "source": {
           "oneOf": [
             {
-              "type": "null"
+              "type": "string"
             },
             {
-              "type": "string"
+              "type": "null"
             }
           ],
           "description": "Source of the last command, for example: init, WS_in, http, ...",
           "default": null
         },
         "output": {
-          "type": "boolean",
-          "description": "true if the output channel is currently on, false otherwise"
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": ["n/a"]
+            },
+            {
+              "type": "boolean"
+            }
+          ],
+          "description": "true if the output channel is currently on, false otherwise",
+          "default": "n/a"
         },
         "timer_started_at": {
           "oneOf": [
             {
-              "type": "null"
+              "type": "string",
+              "enum": ["n/a"]
             },
             {
               "type": "number"
+            },
+            {
+              "type": "null"
             }
           ],
           "description": "Unix timestamp, start time of the timer (in UTC) (shown if the timer is triggered)",
-          "default": null
+          "default": "n/a"
         },
         "timer_duration": {
           "oneOf": [
             {
-              "type": "null"
+              "type": "string",
+              "enum": ["n/a"]
             },
             {
               "type": "number"
+            },
+            {
+              "type": "null"
             }
           ],
           "description": "Duration of the timer in seconds (shown if the timer is triggered)",
-          "default": null
+          "default": "n/a"
         },
         "apower": {
           "oneOf": [
@@ -202,10 +227,10 @@
             "tC": {
               "oneOf": [
                 {
-                  "type": "null"
+                  "type": "number"
                 },
                 {
-                  "type": "number"
+                  "type": "null"
                 }
               ],
               "description": "Temperature in Celsius (null if temperature is out of the measurement range)",
@@ -214,10 +239,10 @@
             "tF": {
               "oneOf": [
                 {
-                  "type": "null"
+                  "type": "number"
                 },
                 {
-                  "type": "number"
+                  "type": "null"
                 }
               ],
               "description": "Temperature in Fahrenheit (null if temperature is out of the measurement",
@@ -236,31 +261,47 @@
         }
       },
       "required": [
-        "id",
-        "output"
+        "id"
       ]
     },
-    "^cover:[0-9]$": {
+    "^cover:[0-9]+$": {
       "properties": {
         "id": {
           "type": "number",
           "description": "The numeric ID of the Cover component instance"
         },
         "source": {
-          "type": "string",
-          "description": "Source of the last command"
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Source of the last command",
+          "default": null
         },
         "state": {
-          "type": "string",
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": ["n/a"]
+            },
+            {
+              "type": "string",
+              "enum": [
+                "open",
+                "closed",
+                "opening",
+                "closing",
+                "stopped",
+                "calibrating"
+              ]
+            }
+          ],
           "description": "One of open (Cover is fully open), closed (Cover is fully closed), opening (Cover is actively opening), closing (Cover is actively closing), stopped (Cover is not moving, and is neither fully open nor fully closed, or the open/close state is unknown), calibrating (Cover is performing a calibration procedure)",
-          "enum": [
-            "open",
-            "closed",
-            "opening",
-            "closing",
-            "stopped",
-            "calibrating"
-          ]
+          "default": "n/a"
         },
         "apower": {
           "oneOf": [
@@ -359,38 +400,73 @@
         "current_pos": {
           "oneOf": [
             {
-              "type": "null"
+              "type": "string",
+              "enum": ["n/a"]
             },
             {
               "type": "number"
+            },
+            {
+              "type": "null"
             }
           ],
           "description": "Only present if Cover is calibrated. Represents current position in percent from 0 (fully closed) to 100 (fully open); null if position is unknown",
-          "default": null
+          "default": "n/a"
         },
         "target_pos": {
           "oneOf": [
             {
+              "type": "string",
+              "enum": ["n/a"]
+            },
+            {
+              "type": "number"
+            },
+            {
               "type": "null"
+            }
+          ],
+          "description": "Only present if Cover is calibrated and is actively moving to a requested position in either open or close directions. Represents the target position in percent from 0 (fully closed) to 100 (fully open); null if target position has been reached or the movement was cancelled",
+          "default": "n/a"
+        },
+        "move_timeout": {
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": ["n/a"]
             },
             {
               "type": "number"
             }
           ],
-          "description": "Only present if Cover is calibrated and is actively moving to a requested position in either open or close directions. Represents the target position in percent from 0 (fully closed) to 100 (fully open); null if target position has been reached or the movement was cancelled",
-          "default": null
-        },
-        "move_timeout": {
-          "type": "number",
-          "description": "Seconds, only present if Cover is actively moving in either open or close directions. Cover will automatically stop after the timeout expires"
+          "description": "Seconds, only present if Cover is actively moving in either open or close directions. Cover will automatically stop after the timeout expires",
+          "default": "n/a"
         },
         "move_started_at": {
-          "type": "number",
-          "description": "Only present if Cover is actively moving in either open or close directions. Represents the time at which the movement has begun"
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": ["n/a"]
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "description": "Only present if Cover is actively moving in either open or close directions. Represents the time at which the movement has begun",
+          "default": "n/a"
         },
         "pos_control": {
-          "type": "boolean",
-          "description": "False if Cover is not calibrated and only discrete open/close is possible; true if Cover is calibrated and can be commanded to go to arbitrary positions between fully open and fully closed"
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": ["n/a"]
+            },
+            {
+              "type": "boolean"
+            }
+          ],
+          "description": "False if Cover is not calibrated and only discrete open/close is possible; true if Cover is calibrated and can be commanded to go to arbitrary positions between fully open and fully closed",
+          "default": "n/a"
         },
         "temperature": {
           "oneOf": [
@@ -406,10 +482,10 @@
             "tC": {
               "oneOf": [
                 {
-                  "type": "null"
+                  "type": "number"
                 },
                 {
-                  "type": "number"
+                  "type": "null"
                 }
               ],
               "description": "Temperature in Celsius (null if temperature is out of the measurement range)",
@@ -418,10 +494,10 @@
             "tF": {
               "oneOf": [
                 {
-                  "type": "null"
+                  "type": "number"
                 },
                 {
-                  "type": "number"
+                  "type": "null"
                 }
               ],
               "description": "Temperature in Fahrenheit (null if temperature is out of the measurement",
@@ -440,23 +516,39 @@
         }
       },
       "required": [
-        "id",
-        "state"
+        "id"
       ]
     },
-    "^light:[0-9]$": {
+    "^light:[0-9]+$": {
       "properties": {
         "id": {
           "type": "number",
           "description": "The numeric ID of the Cover component instance"
         },
         "source": {
-          "type": "string",
-          "description": "Source of the last command, for example: init, WS_in, http, ..."
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Source of the last command, for example: init, WS_in, http, ...",
+          "default": null
         },
         "output": {
-          "type": "boolean",
-          "description": "True if the output channel is currently on, false otherwise"
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": ["n/a"]
+            },
+            {
+              "type": "boolean"
+            }
+          ],
+          "description": "True if the output channel is currently on, false otherwise",
+          "default": "n/a"
         },
         "brightness": {
           "oneOf": [
@@ -465,7 +557,7 @@
               "enum": ["n/a"]
             },
             {
-              "type": "object"
+              "type": "number"
             }
           ],
           "description": "Current brightness level (in percent)",
@@ -474,34 +566,35 @@
         "timer_started_at": {
           "oneOf": [
             {
-              "type": "null"
+              "type": "string",
+              "enum": ["n/a"]
             },
             {
               "type": "number"
             }
           ],
           "description": "Unix timestamp, start time of the timer (in UTC) (shown if the timer is triggered)",
-          "default": null
+          "default": "n/a"
         },
         "timer_duration": {
           "oneOf": [
             {
-              "type": "null"
+              "type": "string",
+              "enum": ["n/a"]
             },
             {
               "type": "number"
             }
           ],
           "description": "Duration of the timer in seconds (shown if the timer is triggered)",
-          "default": null
+          "default": "n/a"
         }
       },
       "required": [
-        "id",
-        "output"
+        "id"
       ]
     },
-    "^temperature:[0-9]$": {
+    "^temperature:[0-9]+$": {
       "type": "object",
       "properties": {
         "id": {
@@ -511,14 +604,14 @@
         "tC": {
           "oneOf": [
             {
-              "type": "null"
+              "type": "string",
+              "enum": ["n/a"]
             },
             {
               "type": "number"
             },
             {
-              "type": "string",
-              "enum": ["n/a"]
+              "type": "null"
             }
           ],
           "description": "Temperature in Celsius (null if valid value could not be obtained)",
@@ -527,14 +620,14 @@
         "tF": {
           "oneOf": [
             {
-              "type": "null"
+              "type": "string",
+              "enum": ["n/a"]
             },
             {
               "type": "number"
             },
             {
-              "type": "string",
-              "enum": ["n/a"]
+              "type": "null"
             }
           ],
           "description": "Temperature in Fahrenheit (null if valid value could not be obtained)",
@@ -553,7 +646,7 @@
         "id"
       ]
     },
-    "^humidity:[0-9]$": {
+    "^humidity:[0-9]+$": {
       "type": "object",
       "properties": {
         "id": {
@@ -563,17 +656,210 @@
         "rh": {
           "oneOf": [
             {
-              "type": "null"
+              "type": "string",
+              "enum": ["n/a"]
             },
             {
               "type": "number"
             },
             {
-              "type": "string",
-              "enum": ["n/a"]
+              "type": "null"
             }
           ],
           "description": "Relative humidity in % (null if valid value could not be obtained)",
+          "default": "n/a"
+        },
+        "errors": {
+          "type": "array",
+          "description": "Shown only if at least one error is present. May contain out_of_range, read when there is problem reading sensor",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "^voltmeter:[0-9]+$": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number",
+          "description": "Id of the Voltmeter component instance"
+        },
+        "voltage": {
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": ["n/a"]
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Voltage in volts (null if valid value could not be obtained)",
+          "default": "n/a"
+        },
+        "xvoltage": {
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": ["n/a"]
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "voltage transformed with config.xvoltage.expr. Present only when both config.xvoltage.expr and config.xvoltage.unit are set to non-empty values. null if config.xvoltage.expr can not be evaluated.",
+          "default": "n/a"
+        },
+        "errors": {
+          "type": "array",
+          "description": "Shown only if at least one error is present. May contain out_of_range, read when there is problem reading sensor",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "^script:[0-9]+$": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number",
+          "description": "Id of the script"
+        },
+        "running": {
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": ["n/a"]
+            },
+            {
+              "type": "boolean"
+            }
+          ],
+          "description": "true if the script is currently running, false otherwise",
+          "default": "n/a"
+        },
+        "errors": {
+          "type": "array",
+          "description": "Shown only if at least one error is present. May contain out_of_range, read when there is problem reading sensor",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "^devicepower:[0-9]+$": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number",
+          "description": "Id of the script"
+        },
+        "battery": {
+          "type": "object",
+          "properties": {
+            "V": {
+              "oneOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Battery voltage in Volts (null if valid value could not be obtained)",
+              "default": null
+            },
+            "percent": {
+              "oneOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Battery charge level in % (null if valid value could not be obtained)",
+              "default": null
+            }
+          },
+          "description": "Information about the battery charge"
+        },
+        "external": {
+          "type": "object",
+          "properties": {
+            "present": {
+              "type": "boolean",
+              "description": "Whether external power source is connected",
+              "default": false
+            }
+          },
+          "description": "Information about the external power source (only available if external power source is supported)"
+        },
+        "errors": {
+          "type": "array",
+          "description": "Shown only if at least one error is present. May contain out_of_range, read when there is problem reading sensor",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        }
+      },
+      "required": [
+        "id",
+        "battery"
+      ]
+    },
+    "^smoke:[0-9]+$": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number",
+          "description": "Id of the Smoke component instance"
+        },
+        "alarm": {
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": ["n/a"]
+            },
+            {
+              "type": "boolean"
+            }
+          ],
+          "description": "Alarm state",
+          "default": "n/a"
+        },
+        "mute": {
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": ["n/a"]
+            },
+            {
+              "type": "boolean"
+            }
+          ],
+          "description": "Mute state",
           "default": "n/a"
         },
         "errors": {
@@ -597,10 +883,10 @@
         "sta_ip": {
           "oneOf": [
             {
-              "type": "null"
+              "type": "string"
             },
             {
-              "type": "string"
+              "type": "null"
             }
           ],
           "description": "Ip of the device in the network (null if disconnected)",
@@ -609,22 +895,23 @@
         "status": {
           "oneOf": [
             {
-              "type": "null"
+              "type": "string",
+              "enum": ["n/a"]
             },
             {
               "type": "string"
             }
           ],
           "description": "Status of the connection. Range of values: disconnected, connecting, connected, got ip",
-          "default": null
+          "default": "n/a"
         },
         "ssid": {
           "oneOf": [
             {
-              "type": "null"
+              "type": "string"
             },
             {
-              "type": "string"
+              "type": "null"
             }
           ],
           "description": "Ssid of the network (null if disconnected)",
@@ -633,26 +920,28 @@
         "rssi": {
           "oneOf": [
             {
-              "type": "null"
+              "type": "string",
+              "enum": ["n/a"]
             },
             {
               "type": "number"
             }
           ],
           "description": "Strength of the signal in dBms",
-          "default": null
+          "default": "n/a"
         },
         "ap_client_count": {
           "oneOf": [
             {
-              "type": "null"
+              "type": "string",
+              "enum": ["n/a"]
             },
             {
               "type": "number"
             }
           ],
           "description": "Number of clients connected to the access point. Present only when AP is enabled and range extender functionality is present and enabled.",
-          "default": null
+          "default": "n/a"
         }
       }
     },
@@ -662,10 +951,10 @@
         "ip": {
           "oneOf": [
             {
-              "type": "null"
+              "type": "string"
             },
             {
-              "type": "string"
+              "type": "null"
             }
           ],
           "description": "IP of the device in the network",

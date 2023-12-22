@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ComponentType.php
+ * ComponentEvent.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,7 +10,7 @@
  * @subpackage     Types
  * @since          1.0.0
  *
- * @date           25.12.22
+ * @date           22.12.23
  */
 
 namespace FastyBird\Connector\Shelly\Types;
@@ -19,39 +19,17 @@ use Consistence;
 use function strval;
 
 /**
- * Generation 2 devices component types
+ * Generation 2 devices component attribute types
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Types
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class ComponentType extends Consistence\Enum\Enum
+class ComponentEvent extends Consistence\Enum\Enum
 {
 
-	public const SWITCH = 'switch';
-
-	public const COVER = 'cover';
-
-	public const LIGHT = 'light';
-
-	public const INPUT = 'input';
-
-	public const TEMPERATURE = 'temperature';
-
-	public const HUMIDITY = 'humidity';
-
-	public const VOLTMETER = 'voltmeter';
-
-	public const SCRIPT = 'script';
-
-	public const DEVICE_POWER = 'devicepower';
-
-	public const SMOKE = 'smoke';
-
-	public const ETHERNET = 'ethernet';
-
-	public const WIFI = 'wifi';
+	public const RESULT = 'result';
 
 	public function getValue(): string
 	{

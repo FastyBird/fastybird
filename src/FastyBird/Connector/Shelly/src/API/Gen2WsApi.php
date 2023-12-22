@@ -41,11 +41,13 @@ use React\Promise;
 use stdClass;
 use Throwable;
 use function array_key_exists;
+use function array_merge;
 use function assert;
 use function gethostbyname;
 use function hash;
 use function implode;
 use function intval;
+use function is_bool;
 use function md5;
 use function preg_match;
 use function property_exists;
@@ -79,6 +81,12 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 
 	private const LIGHT_SET_METHOD = 'Light.Set';
 
+	private const SCRIPT_SET_ENABLED_METHOD = 'Script.Start';
+
+	private const SCRIPT_SET_DISABLED_METHOD = 'Script.Stop';
+
+	private const SMOKE_SET_METHOD = 'Smoke.Mute';
+
 	private const NOTIFY_STATUS_METHOD = 'NotifyStatus';
 
 	private const NOTIFY_FULL_STATUS_METHOD = 'NotifyFullStatus';
@@ -104,6 +112,8 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 
 	/** @var array<string, string> */
 	private array $validationSchemas = [];
+
+	private string|null $clientIdentifier = null;
 
 	private DateTimeInterface|null $lastConnectAttempt = null;
 
@@ -256,7 +266,9 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 									}
 								} elseif ($payload->method === self::NOTIFY_EVENT_METHOD) {
 									try {
-										$entity = $this->parseDeviceEventResponse(Utils\Json::encode($payload->params));
+										$entity = $this->parseDeviceEventsResponse(
+											Utils\Json::encode($payload->params),
+										);
 
 										$this->emit('message', [$entity]);
 									} catch (Exceptions\WsCall | Exceptions\WsError $ex) {
@@ -634,7 +646,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 			$messageFrame = $this->objectMapper->process(
 				[
 					'id' => uniqid(),
-					'src' => self::REQUEST_SRC,
+					'src' => $this->getClientIdentifier(),
 					'method' => self::DEVICE_STATUS_METHOD,
 					'params' => null,
 					'auth' => $this->session?->toArray(),
@@ -686,21 +698,39 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 		}
 
 		try {
-			$componentMethod = $this->buildComponentMethod($component);
+			$componentMethod = $this->buildComponentMethod($component, $value);
 
 		} catch (Exceptions\InvalidState) {
-			return Promise\reject(new Exceptions\InvalidState('Component action could not be created'));
+			return Promise\reject(new Exceptions\InvalidState('Component method could not be created'));
 		}
 
 		try {
-			$messageFrame = $this->objectMapper->process(
+			$componentAttribute = $this->buildComponentAttribute($component);
+
+		} catch (Exceptions\InvalidState) {
+			return Promise\reject(new Exceptions\InvalidState('Component attribute could not be created'));
+		}
+
+		try {
+			$messageFrame = $componentAttribute !== null ? $this->objectMapper->process(
 				[
 					'id' => uniqid(),
-					'src' => self::REQUEST_SRC,
+					'src' => $this->getClientIdentifier(),
 					'method' => $componentMethod,
 					'params' => [
 						'id' => intval($propertyMatches['identifier']),
-						$propertyMatches['attribute'] => $value,
+						$componentAttribute => $value,
+					],
+					'auth' => $this->session?->toArray(),
+				],
+				ValueObjects\WsFrame::class,
+			) : $this->objectMapper->process(
+				[
+					'id' => uniqid(),
+					'src' => $this->getClientIdentifier(),
+					'method' => $componentMethod,
+					'params' => [
+						'id' => intval($propertyMatches['identifier']),
 					],
 					'auth' => $this->session?->toArray(),
 				],
@@ -789,7 +819,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 			self::DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME,
 		);
 
-		$switches = $covers = $lights = $inputs = $temperature = $humidity = [];
+		$switches = $covers = $lights = $inputs = $temperature = $humidity = $devicePower = $scripts = $smoke = $voltmeters = [];
 		$ethernet = $wifi = null;
 
 		foreach ($data as $key => $state) {
@@ -800,17 +830,106 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 				&& Types\ComponentType::isValidValue($componentMatches['component'])
 			) {
 				if ($componentMatches['component'] === Types\ComponentType::SWITCH) {
-					$switches[] = (array) $state;
+					$switches[] = array_merge(
+						(array) $state,
+						[
+							'aenergy' => $state->offsetGet('aenergy') instanceof Utils\ArrayHash
+								? (array) $state->offsetGet('aenergy')
+								: $state->offsetGet('aenergy'),
+							'temperature' => $state->offsetGet('temperature') instanceof Utils\ArrayHash
+								? (array) $state->offsetGet('temperature')
+								: $state->offsetGet('temperature'),
+							'errors' => $state->offsetExists('errors')
+								? (array) $state->offsetGet('errors')
+								: [],
+						],
+					);
 				} elseif ($componentMatches['component'] === Types\ComponentType::COVER) {
-					$covers[] = (array) $state;
+					$covers[] = array_merge(
+						(array) $state,
+						[
+							'aenergy' => $state->offsetGet('aenergy') instanceof Utils\ArrayHash
+								? (array) $state->offsetGet('aenergy')
+								: $state->offsetGet('aenergy'),
+							'temperature' => $state->offsetGet('temperature') instanceof Utils\ArrayHash
+								? (array) $state->offsetGet('temperature')
+								: $state->offsetGet('temperature'),
+							'errors' => $state->offsetExists('errors')
+								? (array) $state->offsetGet('errors')
+								: [],
+						],
+					);
 				} elseif ($componentMatches['component'] === Types\ComponentType::LIGHT) {
 					$lights[] = (array) $state;
 				} elseif ($componentMatches['component'] === Types\ComponentType::INPUT) {
-					$inputs[] = (array) $state;
+					$inputs[] = array_merge(
+						(array) $state,
+						[
+							'errors' => $state->offsetExists('errors')
+								? (array) $state->offsetGet('errors')
+								: [],
+						],
+					);
 				} elseif ($componentMatches['component'] === Types\ComponentType::TEMPERATURE) {
-					$temperature[] = (array) $state;
+					$temperature[] = array_merge(
+						(array) $state,
+						[
+							'errors' => $state->offsetExists('errors')
+								? (array) $state->offsetGet('errors')
+								: [],
+						],
+					);
 				} elseif ($componentMatches['component'] === Types\ComponentType::HUMIDITY) {
-					$humidity[] = (array) $state;
+					$humidity[] = array_merge(
+						(array) $state,
+						[
+							'errors' => $state->offsetExists('errors')
+								? (array) $state->offsetGet('errors')
+								: [],
+						],
+					);
+				} elseif ($componentMatches['component'] === Types\ComponentType::DEVICE_POWER) {
+					$devicePower[] = array_merge(
+						(array) $state,
+						[
+							'battery' => $state->offsetGet('battery') instanceof Utils\ArrayHash
+								? (array) $state->offsetGet('battery')
+								: $state->offsetGet('battery'),
+							'external' => $state->offsetGet('external') instanceof Utils\ArrayHash
+								? (array) $state->offsetGet('external')
+								: $state->offsetGet('external'),
+							'errors' => $state->offsetExists('errors')
+								? (array) $state->offsetGet('errors')
+								: [],
+						],
+					);
+				} elseif ($componentMatches['component'] === Types\ComponentType::SCRIPT) {
+					$scripts[] = array_merge(
+						(array) $state,
+						[
+							'errors' => $state->offsetExists('errors')
+								? (array) $state->offsetGet('errors')
+								: [],
+						],
+					);
+				} elseif ($componentMatches['component'] === Types\ComponentType::SMOKE) {
+					$smoke[] = array_merge(
+						(array) $state,
+						[
+							'errors' => $state->offsetExists('errors')
+								? (array) $state->offsetGet('errors')
+								: [],
+						],
+					);
+				} elseif ($componentMatches['component'] === Types\ComponentType::VOLTMETER) {
+					$voltmeters[] = array_merge(
+						(array) $state,
+						[
+							'errors' => $state->offsetExists('errors')
+								? (array) $state->offsetGet('errors')
+								: [],
+						],
+					);
 				} elseif ($componentMatches['component'] === Types\ComponentType::ETHERNET) {
 					$ethernet = (array) $state;
 				} elseif ($componentMatches['component'] === Types\ComponentType::WIFI) {
@@ -820,14 +939,18 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 		}
 
 		return $this->createEntity(Entities\API\Gen2\GetDeviceState::class, Utils\ArrayHash::from([
-			'switches' => $switches,
-			'covers' => $covers,
-			'inputs' => $inputs,
-			'lights' => $lights,
-			'temperature' => $temperature,
-			'humidity' => $humidity,
-			'ethernet' => $ethernet,
-			'wifi' => $wifi,
+			Types\ComponentType::SWITCH => $switches,
+			Types\ComponentType::COVER => $covers,
+			Types\ComponentType::INPUT => $inputs,
+			Types\ComponentType::LIGHT => $lights,
+			Types\ComponentType::TEMPERATURE => $temperature,
+			Types\ComponentType::HUMIDITY => $humidity,
+			Types\ComponentType::DEVICE_POWER => $devicePower,
+			Types\ComponentType::SCRIPT => $scripts,
+			Types\ComponentType::SMOKE => $smoke,
+			Types\ComponentType::VOLTMETER => $voltmeters,
+			Types\ComponentType::ETHERNET => $ethernet,
+			Types\ComponentType::WIFI => $wifi,
 		]));
 	}
 
@@ -835,7 +958,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 	 * @throws Exceptions\WsCall
 	 * @throws Exceptions\WsError
 	 */
-	private function parseDeviceEventResponse(
+	private function parseDeviceEventsResponse(
 		string $payload,
 	): Entities\API\Gen2\DeviceEvent
 	{
@@ -849,6 +972,13 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 					'component' => $event->offsetGet('component'),
 					'id' => $event->offsetGet('id'),
 					'event' => $event->offsetGet('event'),
+					'data' => $event->offsetExists('data')
+						? (
+							$event->offsetGet('data') instanceof Utils\ArrayHash
+								? (array) $event->offsetGet('data')
+								: $event->offsetGet('data')
+						)
+						: null,
 					'timestamp' => $event->offsetGet('ts'),
 				];
 			}
@@ -925,7 +1055,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 		if (!array_key_exists($key, $this->validationSchemas)) {
 			try {
 				$this->validationSchemas[$key] = Utils\FileSystem::read(
-					Shelly\Constants::RESOURCES_FOLDER . DIRECTORY_SEPARATOR . $schemaFilename,
+					Shelly\Constants::RESOURCES_FOLDER . DIRECTORY_SEPARATOR . 'response' . DIRECTORY_SEPARATOR . $schemaFilename,
 				);
 
 			} catch (Nette\IOException) {
@@ -939,7 +1069,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	private function buildComponentMethod(string $component): string
+	private function buildComponentMethod(string $component, int|float|string|bool $value): string
 	{
 		if (
 			preg_match(self::PROPERTY_COMPONENT, $component, $componentMatches) !== 1
@@ -952,14 +1082,14 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 
 		if (
 			$componentMatches['component'] === Types\ComponentType::SWITCH
-			&& $componentMatches['attribute'] === Types\ComponentAttributeType::ON
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::OUTPUT
 		) {
 			return self::SWITCH_SET_METHOD;
 		}
 
 		if (
 			$componentMatches['component'] === Types\ComponentType::COVER
-			&& $componentMatches['attribute'] === Types\ComponentAttributeType::POSITION
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::TARGET_POSITION
 		) {
 			return self::COVER_GO_TO_POSITION_METHOD;
 		}
@@ -967,14 +1097,97 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 		if (
 			$componentMatches['component'] === Types\ComponentType::LIGHT
 			&& (
-				$componentMatches['description'] === Types\ComponentAttributeType::ON
+				$componentMatches['attribute'] === Types\ComponentAttributeType::OUTPUT
 				|| $componentMatches['attribute'] === Types\ComponentAttributeType::BRIGHTNESS
 			)
 		) {
 			return self::LIGHT_SET_METHOD;
 		}
 
+		if (
+			$componentMatches['component'] === Types\ComponentType::SCRIPT
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::RUNNING
+			&& is_bool($value)
+		) {
+			return $value ? self::SCRIPT_SET_ENABLED_METHOD : self::SCRIPT_SET_DISABLED_METHOD;
+		}
+
+		if (
+			$componentMatches['component'] === Types\ComponentType::SMOKE
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::MUTE
+		) {
+			return self::SMOKE_SET_METHOD;
+		}
+
 		throw new Exceptions\InvalidState('Property method could not be build');
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
+	private function buildComponentAttribute(string $component): string|null
+	{
+		if (
+			preg_match(self::PROPERTY_COMPONENT, $component, $componentMatches) !== 1
+			|| !array_key_exists('component', $componentMatches)
+			|| !array_key_exists('identifier', $componentMatches)
+			|| !array_key_exists('attribute', $componentMatches)
+		) {
+			throw new Exceptions\InvalidState('Property identifier is not in expected format');
+		}
+
+		if (
+			$componentMatches['component'] === Types\ComponentType::SWITCH
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::OUTPUT
+		) {
+			return Types\ComponentActionAttribute::ON;
+		}
+
+		if (
+			$componentMatches['component'] === Types\ComponentType::COVER
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::TARGET_POSITION
+		) {
+			return Types\ComponentActionAttribute::POSITION;
+		}
+
+		if (
+			$componentMatches['component'] === Types\ComponentType::LIGHT
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::OUTPUT
+		) {
+			return Types\ComponentActionAttribute::ON;
+		}
+
+		if (
+			$componentMatches['component'] === Types\ComponentType::LIGHT
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::BRIGHTNESS
+		) {
+			return Types\ComponentActionAttribute::BRIGHTNESS;
+		}
+
+		if (
+			$componentMatches['component'] === Types\ComponentType::SCRIPT
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::RUNNING
+		) {
+			return null;
+		}
+
+		if (
+			$componentMatches['component'] === Types\ComponentType::SMOKE
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::MUTE
+		) {
+			return null;
+		}
+
+		throw new Exceptions\InvalidState('Property attribute could not be build');
+	}
+
+	private function getClientIdentifier(): string
+	{
+		if ($this->clientIdentifier === null) {
+			$this->clientIdentifier = self::REQUEST_SRC . '_' . uniqid();
+		}
+
+		return $this->clientIdentifier;
 	}
 
 }

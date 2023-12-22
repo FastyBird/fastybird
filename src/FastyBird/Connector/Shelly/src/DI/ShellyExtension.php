@@ -288,6 +288,9 @@ class ShellyExtension extends DI\CompilerExtension implements Translation\DI\Tra
 		$builder->addDefinition($this->prefix('helpers.device'), new DI\Definitions\ServiceDefinition())
 			->setType(Helpers\Device::class);
 
+		$builder->addDefinition($this->prefix('helpers.loader'), new DI\Definitions\ServiceDefinition())
+			->setType(Helpers\Loader::class);
+
 		/**
 		 * COMMANDS
 		 */

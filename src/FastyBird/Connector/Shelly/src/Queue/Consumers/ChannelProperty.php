@@ -179,6 +179,7 @@ trait ChannelProperty
 					$property,
 					Utils\ArrayHash::from(array_merge(
 						[
+							'name' => $name,
 							'dataType' => $dataType,
 							'format' => $format,
 							'unit' => $unit,

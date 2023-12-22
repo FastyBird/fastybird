@@ -17,6 +17,7 @@ namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
 use FastyBird\Connector\Shelly\Entities;
 use Orisai\ObjectMapper;
+use function array_merge;
 
 /**
  * Generation 2 device switch or cover component temperature state entity
@@ -62,9 +63,20 @@ final class TemperatureBlockState implements Entities\API\Entity
 	public function toArray(): array
 	{
 		return [
-			'temperature_celsius' => $this->getTemperatureCelsius(),
-			'temperature_fahrenheit' => $this->getTemperatureFahrenheit(),
+			'celsius' => $this->getTemperatureCelsius(),
+			'fahrenheit' => $this->getTemperatureFahrenheit(),
 		];
+	}
+
+	/**
+	 * @return array<string, float>
+	 */
+	public function toState(): array
+	{
+		return array_merge(
+			$this->getTemperatureCelsius() !== null ? ['temperature_celsius' => $this->getTemperatureCelsius()] : [],
+			$this->getTemperatureFahrenheit() !== null ? ['temperature_fahrenheit' => $this->getTemperatureFahrenheit()] : [],
+		);
 	}
 
 }

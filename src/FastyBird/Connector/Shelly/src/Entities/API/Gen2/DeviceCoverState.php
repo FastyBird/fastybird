@@ -23,7 +23,11 @@ use FastyBird\Connector\Shelly\Types;
 use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use Nette\Utils;
 use Orisai\ObjectMapper;
+use function array_filter;
+use function array_merge;
 use function intval;
+use function is_float;
+use function is_string;
 
 /**
  * Generation 2 device cover state entity
@@ -33,15 +37,14 @@ use function intval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceCoverState implements Entities\API\Entity
+final class DeviceCoverState extends DeviceState implements Entities\API\Entity
 {
 
 	/**
 	 * @param array<string> $errors
 	 */
 	public function __construct(
-		#[ObjectMapper\Rules\IntValue(unsigned: true)]
-		private readonly int $id,
+		int $id,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
@@ -49,9 +52,9 @@ final class DeviceCoverState implements Entities\API\Entity
 		private readonly string|null $source,
 		#[ObjectMapper\Rules\AnyOf([
 			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\CoverPayload::class),
-			new ObjectMapper\Rules\NullValue(),
+			new ObjectMapper\Rules\ArrayEnumValue(cases: [Shelly\Constants::VALUE_NOT_AVAILABLE]),
 		])]
-		private readonly Types\CoverPayload|null $state,
+		private readonly Types\CoverPayload|string $state,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\ArrayEnumValue(cases: [Shelly\Constants::VALUE_NOT_AVAILABLE]),
@@ -88,48 +91,45 @@ final class DeviceCoverState implements Entities\API\Entity
 		private readonly ActiveEnergyStateBlock|string $activeEnergy,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\IntValue(min: 0, max: 100, unsigned: true),
+			new ObjectMapper\Rules\ArrayEnumValue(cases: [Shelly\Constants::VALUE_NOT_AVAILABLE]),
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('current_pos')]
-		private readonly int|null $currentPosition,
+		private readonly int|string|null $currentPosition,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\IntValue(min: 0, max: 100, unsigned: true),
+			new ObjectMapper\Rules\ArrayEnumValue(cases: [Shelly\Constants::VALUE_NOT_AVAILABLE]),
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('target_pos')]
-		private readonly int|null $targetPosition,
+		private readonly int|string|null $targetPosition,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\IntValue(),
-			new ObjectMapper\Rules\NullValue(),
+			new ObjectMapper\Rules\ArrayEnumValue(cases: [Shelly\Constants::VALUE_NOT_AVAILABLE]),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('move_timeout')]
-		private readonly float|null $moveTimeout,
+		private readonly float|string $moveTimeout,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\IntValue(),
-			new ObjectMapper\Rules\NullValue(),
+			new ObjectMapper\Rules\ArrayEnumValue(cases: [Shelly\Constants::VALUE_NOT_AVAILABLE]),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('move_started_at')]
-		private readonly float|null $moveStartedAt,
-		#[ObjectMapper\Rules\BoolValue()]
+		private readonly float|string $moveStartedAt,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\ArrayEnumValue(cases: [Shelly\Constants::VALUE_NOT_AVAILABLE]),
+		])]
 		#[ObjectMapper\Modifiers\FieldName('pos_control')]
-		private readonly bool $hasPositionControl,
+		private readonly bool|string $hasPositionControl,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\MappedObjectValue(class: TemperatureBlockState::class),
 			new ObjectMapper\Rules\ArrayEnumValue(cases: [Shelly\Constants::VALUE_NOT_AVAILABLE]),
 		])]
 		private readonly TemperatureBlockState|string $temperature,
-		#[ObjectMapper\Rules\ArrayOf(
-			new ObjectMapper\Rules\StringValue(notEmpty: true),
-			new ObjectMapper\Rules\IntValue(unsigned: true),
-		)]
-		private readonly array $errors = [],
+		array $errors = [],
 	)
 	{
-	}
-
-	public function getId(): int
-	{
-		return $this->id;
+		parent::__construct($id, $errors);
 	}
 
 	public function getType(): Types\ComponentType
@@ -142,7 +142,7 @@ final class DeviceCoverState implements Entities\API\Entity
 		return $this->source;
 	}
 
-	public function getState(): Types\CoverPayload|null
+	public function getState(): Types\CoverPayload|string
 	{
 		return $this->state;
 	}
@@ -172,17 +172,17 @@ final class DeviceCoverState implements Entities\API\Entity
 		return $this->frequency;
 	}
 
-	public function getCurrentPosition(): int|null
+	public function getCurrentPosition(): int|string|null
 	{
 		return $this->currentPosition;
 	}
 
-	public function getTargetPosition(): int|null
+	public function getTargetPosition(): int|string|null
 	{
 		return $this->targetPosition;
 	}
 
-	public function getMoveTimeout(): float|null
+	public function getMoveTimeout(): float|string
 	{
 		return $this->moveTimeout;
 	}
@@ -190,16 +190,16 @@ final class DeviceCoverState implements Entities\API\Entity
 	/**
 	 * @throws Exception
 	 */
-	public function getMoveStartedAt(): DateTimeInterface|null
+	public function getMoveStartedAt(): DateTimeInterface|string
 	{
-		if ($this->moveStartedAt !== null) {
+		if (is_float($this->moveStartedAt)) {
 			return Utils\DateTime::from(intval($this->moveStartedAt));
 		}
 
-		return null;
+		return $this->moveStartedAt;
 	}
 
-	public function hasPositionControl(): bool
+	public function hasPositionControl(): bool|string
 	{
 		return $this->hasPositionControl;
 	}
@@ -215,38 +215,56 @@ final class DeviceCoverState implements Entities\API\Entity
 	}
 
 	/**
-	 * @return array<string>
-	 */
-	public function getErrors(): array
-	{
-		return $this->errors;
-	}
-
-	/**
 	 * {@inheritDoc}
 	 *
 	 * @throws Exception
 	 */
 	public function toArray(): array
 	{
-		return [
-			'id' => $this->getId(),
-			'type' => $this->getType()->getValue(),
-			'source' => $this->getSource(),
-			'state' => $this->getState()?->getValue(),
-			'active_power' => $this->getActivePower(),
-			'voltage' => $this->getVoltage(),
-			'current' => $this->getCurrent(),
-			'power_factor' => $this->getPowerFactor(),
-			'current_position' => $this->getCurrentPosition(),
-			'target_position' => $this->getTargetPosition(),
-			'move_timeout' => $this->getMoveTimeout(),
-			'move_started_at' => $this->getMoveStartedAt()?->format(DateTimeInterface::ATOM),
-			'has_position_control' => $this->hasPositionControl(),
-			'active_energy' => $this->getActiveEnergy() instanceof ActiveEnergyStateBlock ? $this->getActiveEnergy()->toArray() : null,
-			'temperature' => $this->getTemperature() instanceof TemperatureBlockState ? $this->getTemperature()->toArray() : null,
-			'errors' => $this->getErrors(),
-		];
+		return array_merge(
+			parent::toArray(),
+			[
+				'source' => $this->getSource(),
+				'state' => is_string($this->getState()) ? $this->getState() : $this->getState()->getValue(),
+				'active_power' => $this->getActivePower(),
+				'voltage' => $this->getVoltage(),
+				'current' => $this->getCurrent(),
+				'power_factor' => $this->getPowerFactor(),
+				'current_position' => $this->getCurrentPosition(),
+				'target_position' => $this->getTargetPosition(),
+				'move_timeout' => $this->getMoveTimeout(),
+				'move_started_at' => !$this->getMoveStartedAt() instanceof DateTimeInterface
+					? $this->getMoveStartedAt()
+					: $this->getMoveStartedAt()->format(DateTimeInterface::ATOM),
+				'has_position_control' => $this->hasPositionControl(),
+				'active_energy' => $this->getActiveEnergy() instanceof ActiveEnergyStateBlock ? $this->getActiveEnergy()->toArray() : null,
+				'temperature' => $this->getTemperature() instanceof TemperatureBlockState ? $this->getTemperature()->toArray() : null,
+			],
+		);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function toState(): array
+	{
+		return array_filter(
+			array_merge(
+				parent::toArray(),
+				[
+					'state' => is_string($this->getState()) ? $this->getState() : $this->getState()->getValue(),
+					'current_position' => $this->getCurrentPosition(),
+					'target_position' => $this->getTargetPosition(),
+					'active_power' => $this->getActivePower(),
+					'power_factor' => $this->getPowerFactor(),
+					'current' => $this->getCurrent(),
+					'voltage' => $this->getVoltage(),
+				],
+				$this->getActiveEnergy() instanceof ActiveEnergyStateBlock ? $this->getActiveEnergy()->toState() : [],
+				$this->getTemperature() instanceof TemperatureBlockState ? $this->getTemperature()->toState() : [],
+			),
+			static fn ($value): bool => $value !== Shelly\Constants::VALUE_NOT_AVAILABLE,
+		);
 	}
 
 }

@@ -15,10 +15,15 @@
 
 namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
+use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use Orisai\ObjectMapper;
+use function array_filter;
+use function array_merge;
+use function is_bool;
+use function is_int;
 
 /**
  * Generation 2 device input state entity
@@ -28,38 +33,31 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceInputState implements Entities\API\Entity
+final class DeviceInputState extends DeviceState implements Entities\API\Entity
 {
 
 	/**
 	 * @param array<string> $errors
 	 */
 	public function __construct(
-		#[ObjectMapper\Rules\IntValue(unsigned: true)]
-		private readonly int $id,
+		int $id,
 		#[ObjectMapper\Rules\AnyOf([
 			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\InputPayload::class),
 			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\ArrayEnumValue(cases: [Shelly\Constants::VALUE_NOT_AVAILABLE]),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly Types\InputPayload|bool|null $state,
+		private readonly Types\InputPayload|bool|string|null $state,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\IntValue(min: 0, max: 100, unsigned: true),
+			new ObjectMapper\Rules\ArrayEnumValue(cases: [Shelly\Constants::VALUE_NOT_AVAILABLE]),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		private readonly int|null $percent,
-		#[ObjectMapper\Rules\ArrayOf(
-			new ObjectMapper\Rules\StringValue(notEmpty: true),
-			new ObjectMapper\Rules\IntValue(unsigned: true),
-		)]
-		private readonly array $errors = [],
+		private readonly int|string|null $percent,
+		array $errors = [],
 	)
 	{
-	}
-
-	public function getId(): int
-	{
-		return $this->id;
+		parent::__construct($id, $errors);
 	}
 
 	public function getType(): Types\ComponentType
@@ -67,22 +65,14 @@ final class DeviceInputState implements Entities\API\Entity
 		return Types\ComponentType::get(Types\ComponentType::INPUT);
 	}
 
-	public function getState(): Types\InputPayload|bool|null
+	public function getState(): Types\InputPayload|bool|string|null
 	{
 		return $this->state;
 	}
 
-	public function getPercent(): int|null
+	public function getPercent(): int|string|null
 	{
 		return $this->percent;
-	}
-
-	/**
-	 * @return array<string>
-	 */
-	public function getErrors(): array
-	{
-		return $this->errors;
 	}
 
 	/**
@@ -90,13 +80,29 @@ final class DeviceInputState implements Entities\API\Entity
 	 */
 	public function toArray(): array
 	{
-		return [
-			'id' => $this->getId(),
-			'type' => $this->getType()->getValue(),
-			'state' => $this->getState() instanceof Types\InputPayload ? $this->getState()->getValue() : $this->getState(),
-			'percent' => $this->getPercent(),
-			'errors' => $this->getErrors(),
-		];
+		return array_merge(
+			parent::toArray(),
+			[
+				'state' => $this->getState() instanceof Types\InputPayload ? $this->getState()->getValue() : $this->getState(),
+				'percent' => $this->getPercent(),
+			],
+		);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function toState(): array
+	{
+		return array_filter(
+			array_merge(
+				parent::toState(),
+				$this->getState() instanceof Types\InputPayload ? ['button' => $this->getState()->getValue()] : [],
+				is_bool($this->getState()) ? ['switch' => $this->getState()] : [],
+				is_int($this->getPercent()) ? ['analog' => $this->getPercent()] : [],
+			),
+			static fn ($value): bool => $value !== Shelly\Constants::VALUE_NOT_AVAILABLE,
+		);
 	}
 
 }

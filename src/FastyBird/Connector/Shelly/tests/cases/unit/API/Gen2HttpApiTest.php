@@ -327,7 +327,7 @@ final class Gen2HttpApiTest extends Tests\Cases\Unit\DbTestCase
 
 		$gen2Api = $gen2ApiFactory->create();
 
-		$deviceState = $gen2Api->setDeviceState('10.10.0.100', null, null, 'switch_0_on', false, false);
+		$deviceState = $gen2Api->setDeviceState('10.10.0.100', null, null, 'switch_0_output', false, false);
 
 		self::assertTrue($deviceState);
 	}
