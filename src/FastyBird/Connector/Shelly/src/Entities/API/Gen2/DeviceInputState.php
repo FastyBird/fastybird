@@ -15,10 +15,12 @@
 
 namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
+use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use Orisai\ObjectMapper;
+use function array_filter;
 use function array_merge;
 use function is_bool;
 use function is_int;
@@ -42,14 +44,16 @@ final class DeviceInputState extends DeviceState implements Entities\API\Entity
 		#[ObjectMapper\Rules\AnyOf([
 			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\InputPayload::class),
 			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\ArrayEnumValue(cases: [Shelly\Constants::VALUE_NOT_AVAILABLE]),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly Types\InputPayload|bool|null $state,
+		private readonly Types\InputPayload|bool|string|null $state,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\IntValue(min: 0, max: 100, unsigned: true),
+			new ObjectMapper\Rules\ArrayEnumValue(cases: [Shelly\Constants::VALUE_NOT_AVAILABLE]),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		private readonly int|null $percent,
+		private readonly int|string|null $percent,
 		array $errors = [],
 	)
 	{
@@ -61,12 +65,12 @@ final class DeviceInputState extends DeviceState implements Entities\API\Entity
 		return Types\ComponentType::get(Types\ComponentType::INPUT);
 	}
 
-	public function getState(): Types\InputPayload|bool|null
+	public function getState(): Types\InputPayload|bool|string|null
 	{
 		return $this->state;
 	}
 
-	public function getPercent(): int|null
+	public function getPercent(): int|string|null
 	{
 		return $this->percent;
 	}
@@ -90,11 +94,14 @@ final class DeviceInputState extends DeviceState implements Entities\API\Entity
 	 */
 	public function toState(): array
 	{
-		return array_merge(
-			parent::toState(),
-			$this->getState() instanceof Types\InputPayload ? ['button' => $this->getState()->getValue()] : [],
-			is_bool($this->getState()) ? ['switch' => $this->getState()] : [],
-			is_int($this->getPercent()) ? ['analog' => $this->getPercent()] : [],
+		return array_filter(
+			array_merge(
+				parent::toState(),
+				$this->getState() instanceof Types\InputPayload ? ['button' => $this->getState()->getValue()] : [],
+				is_bool($this->getState()) ? ['switch' => $this->getState()] : [],
+				is_int($this->getPercent()) ? ['analog' => $this->getPercent()] : [],
+			),
+			static fn ($value): bool => $value !== Shelly\Constants::VALUE_NOT_AVAILABLE,
 		);
 	}
 

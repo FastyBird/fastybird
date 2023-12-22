@@ -42,6 +42,7 @@ use Throwable;
 use function array_key_exists;
 use function count;
 use function in_array;
+use function preg_match;
 
 /**
  * Local devices client
@@ -61,6 +62,8 @@ final class Local implements Client
 	private const HANDLER_PROCESSING_INTERVAL = 0.01;
 
 	private const RECONNECT_COOL_DOWN_TIME = 300.0;
+
+	private const COMPONENT_KEY = '/^(?P<component>[a-zA-Z]+)(:(?P<channel>[0-9_]+))?$/';
 
 	private const CMD_STATE = 'state';
 
@@ -554,10 +557,27 @@ final class Local implements Client
 		$client->on(
 			'message',
 			function (Entities\API\Gen2\GetDeviceState|Entities\API\Gen2\DeviceEvent $message) use ($device): void {
-				if ($message instanceof Entities\API\Gen2\GetDeviceState) {
-					$this->processGen2DeviceGetState($device, $message);
-				} elseif ($message instanceof Entities\API\Gen2\DeviceEvent) {
-					// Handle event
+				try {
+					if ($message instanceof Entities\API\Gen2\GetDeviceState) {
+						$this->processGen2DeviceGetState($device, $message);
+					} elseif ($message instanceof Entities\API\Gen2\DeviceEvent) {
+						$this->processGen2DeviceEvent($device, $message);
+					}
+				} catch (Throwable $ex) {
+					$this->logger->error(
+						'Received message could not be handled',
+						[
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+							'type' => 'local-client',
+							'exception' => BootstrapHelpers\Logger::buildException($ex),
+							'connector' => [
+								'id' => $this->connector->getId()->toString(),
+							],
+							'device' => [
+								'id' => $device->getId()->toString(),
+							],
+						],
+					);
 				}
 			},
 		);
@@ -1011,6 +1031,54 @@ final class Local implements Client
 					],
 				),
 			);
+		}
+	}
+
+	/**
+	 * @throws Exceptions\Runtime
+	 */
+	private function processGen2DeviceEvent(
+		MetadataDocuments\DevicesModule\Device $device,
+		Entities\API\Gen2\DeviceEvent $notification,
+	): void
+	{
+		foreach ($notification->getEvents() as $event) {
+			if (
+				preg_match(self::COMPONENT_KEY, $event->getComponent(), $componentMatches) === 1
+				&& Types\ComponentType::isValidValue($componentMatches['component'])
+				&& array_key_exists('channel', $componentMatches)
+			) {
+				$component = Types\ComponentType::get($componentMatches['component']);
+
+				if (
+					$component->equalsValue(Types\ComponentType::SCRIPT)
+					&& $event->getEvent() === Types\ComponentEvent::RESULT
+					&& $event->getData() !== null
+				) {
+					$this->queue->append(
+						$this->entityHelper->create(
+							Entities\Messages\StoreDeviceState::class,
+							[
+								'connector' => $device->getConnector(),
+								'identifier' => $device->getIdentifier(),
+								'ip_address' => null,
+								'states' => [
+									[
+										'identifier' => (
+											$component->getValue()
+											. '_'
+											. $event->getId()
+											. '_'
+											. Types\ComponentAttributeType::RESULT
+										),
+										'value' => $event->getData(),
+									],
+								],
+							],
+						),
+					);
+				}
+			}
 		}
 	}
 

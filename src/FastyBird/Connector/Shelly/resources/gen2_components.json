@@ -324,7 +324,7 @@
       "unit": null,
       "format": null,
       "invalid": null,
-      "queryable": true,
+      "queryable": false,
       "settable": false
     }
   },

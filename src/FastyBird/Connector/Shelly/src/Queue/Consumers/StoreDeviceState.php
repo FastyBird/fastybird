@@ -92,12 +92,14 @@ final class StoreDeviceState implements Queue\Consumer
 			return true;
 		}
 
-		$this->setDeviceProperty(
-			$device->getId(),
-			$entity->getIpAddress(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-			Types\DevicePropertyIdentifier::IP_ADDRESS,
-		);
+		if ($entity->getIpAddress() !== null) {
+			$this->setDeviceProperty(
+				$device->getId(),
+				$entity->getIpAddress(),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+				Types\DevicePropertyIdentifier::IP_ADDRESS,
+			);
+		}
 
 		foreach ($entity->getStates() as $state) {
 			if ($state instanceof Entities\Messages\PropertyState) {

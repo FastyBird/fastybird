@@ -81,9 +81,7 @@ class ComponentAttributeType extends Consistence\Enum\Enum
 
 	public const MUTE = 'mute';
 
-	public const ON = 'on';
-
-	public const POSITION = 'pos';
+	public const RESULT = 'result';
 
 	public function getValue(): string
 	{

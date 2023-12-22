@@ -41,6 +41,7 @@ use React\Promise;
 use stdClass;
 use Throwable;
 use function array_key_exists;
+use function array_merge;
 use function assert;
 use function gethostbyname;
 use function hash;
@@ -111,6 +112,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 
 	/** @var array<string, string> */
 	private array $validationSchemas = [];
+
 	private string|null $clientIdentifier = null;
 
 	private DateTimeInterface|null $lastConnectAttempt = null;
@@ -710,7 +712,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 		}
 
 		try {
-			$messageFrame = $this->objectMapper->process(
+			$messageFrame = $componentAttribute !== null ? $this->objectMapper->process(
 				[
 					'id' => uniqid(),
 					'src' => $this->getClientIdentifier(),
@@ -718,6 +720,17 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 					'params' => [
 						'id' => intval($propertyMatches['identifier']),
 						$componentAttribute => $value,
+					],
+					'auth' => $this->session?->toArray(),
+				],
+				ValueObjects\WsFrame::class,
+			) : $this->objectMapper->process(
+				[
+					'id' => uniqid(),
+					'src' => $this->getClientIdentifier(),
+					'method' => $componentMethod,
+					'params' => [
+						'id' => intval($propertyMatches['identifier']),
 					],
 					'auth' => $this->session?->toArray(),
 				],
@@ -817,25 +830,106 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 				&& Types\ComponentType::isValidValue($componentMatches['component'])
 			) {
 				if ($componentMatches['component'] === Types\ComponentType::SWITCH) {
-					$switches[] = (array) $state;
+					$switches[] = array_merge(
+						(array) $state,
+						[
+							'aenergy' => $state->offsetGet('aenergy') instanceof Utils\ArrayHash
+								? (array) $state->offsetGet('aenergy')
+								: $state->offsetGet('aenergy'),
+							'temperature' => $state->offsetGet('temperature') instanceof Utils\ArrayHash
+								? (array) $state->offsetGet('temperature')
+								: $state->offsetGet('temperature'),
+							'errors' => $state->offsetExists('errors')
+								? (array) $state->offsetGet('errors')
+								: [],
+						],
+					);
 				} elseif ($componentMatches['component'] === Types\ComponentType::COVER) {
-					$covers[] = (array) $state;
+					$covers[] = array_merge(
+						(array) $state,
+						[
+							'aenergy' => $state->offsetGet('aenergy') instanceof Utils\ArrayHash
+								? (array) $state->offsetGet('aenergy')
+								: $state->offsetGet('aenergy'),
+							'temperature' => $state->offsetGet('temperature') instanceof Utils\ArrayHash
+								? (array) $state->offsetGet('temperature')
+								: $state->offsetGet('temperature'),
+							'errors' => $state->offsetExists('errors')
+								? (array) $state->offsetGet('errors')
+								: [],
+						],
+					);
 				} elseif ($componentMatches['component'] === Types\ComponentType::LIGHT) {
 					$lights[] = (array) $state;
 				} elseif ($componentMatches['component'] === Types\ComponentType::INPUT) {
-					$inputs[] = (array) $state;
+					$inputs[] = array_merge(
+						(array) $state,
+						[
+							'errors' => $state->offsetExists('errors')
+								? (array) $state->offsetGet('errors')
+								: [],
+						],
+					);
 				} elseif ($componentMatches['component'] === Types\ComponentType::TEMPERATURE) {
-					$temperature[] = (array) $state;
+					$temperature[] = array_merge(
+						(array) $state,
+						[
+							'errors' => $state->offsetExists('errors')
+								? (array) $state->offsetGet('errors')
+								: [],
+						],
+					);
 				} elseif ($componentMatches['component'] === Types\ComponentType::HUMIDITY) {
-					$humidity[] = (array) $state;
+					$humidity[] = array_merge(
+						(array) $state,
+						[
+							'errors' => $state->offsetExists('errors')
+								? (array) $state->offsetGet('errors')
+								: [],
+						],
+					);
 				} elseif ($componentMatches['component'] === Types\ComponentType::DEVICE_POWER) {
-					$devicePower[] = (array) $state;
+					$devicePower[] = array_merge(
+						(array) $state,
+						[
+							'battery' => $state->offsetGet('battery') instanceof Utils\ArrayHash
+								? (array) $state->offsetGet('battery')
+								: $state->offsetGet('battery'),
+							'external' => $state->offsetGet('external') instanceof Utils\ArrayHash
+								? (array) $state->offsetGet('external')
+								: $state->offsetGet('external'),
+							'errors' => $state->offsetExists('errors')
+								? (array) $state->offsetGet('errors')
+								: [],
+						],
+					);
 				} elseif ($componentMatches['component'] === Types\ComponentType::SCRIPT) {
-					$scripts[] = (array) $state;
+					$scripts[] = array_merge(
+						(array) $state,
+						[
+							'errors' => $state->offsetExists('errors')
+								? (array) $state->offsetGet('errors')
+								: [],
+						],
+					);
 				} elseif ($componentMatches['component'] === Types\ComponentType::SMOKE) {
-					$smoke[] = (array) $state;
+					$smoke[] = array_merge(
+						(array) $state,
+						[
+							'errors' => $state->offsetExists('errors')
+								? (array) $state->offsetGet('errors')
+								: [],
+						],
+					);
 				} elseif ($componentMatches['component'] === Types\ComponentType::VOLTMETER) {
-					$voltmeters[] = (array) $state;
+					$voltmeters[] = array_merge(
+						(array) $state,
+						[
+							'errors' => $state->offsetExists('errors')
+								? (array) $state->offsetGet('errors')
+								: [],
+						],
+					);
 				} elseif ($componentMatches['component'] === Types\ComponentType::ETHERNET) {
 					$ethernet = (array) $state;
 				} elseif ($componentMatches['component'] === Types\ComponentType::WIFI) {
@@ -878,6 +972,13 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 					'component' => $event->offsetGet('component'),
 					'id' => $event->offsetGet('id'),
 					'event' => $event->offsetGet('event'),
+					'data' => $event->offsetExists('data')
+						? (
+							$event->offsetGet('data') instanceof Utils\ArrayHash
+								? (array) $event->offsetGet('data')
+								: $event->offsetGet('data')
+						)
+						: null,
 					'timestamp' => $event->offsetGet('ts'),
 				];
 			}
@@ -996,7 +1097,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 		if (
 			$componentMatches['component'] === Types\ComponentType::LIGHT
 			&& (
-				$componentMatches['description'] === Types\ComponentAttributeType::OUTPUT
+				$componentMatches['attribute'] === Types\ComponentAttributeType::OUTPUT
 				|| $componentMatches['attribute'] === Types\ComponentAttributeType::BRIGHTNESS
 			)
 		) {
@@ -1005,7 +1106,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 
 		if (
 			$componentMatches['component'] === Types\ComponentType::SCRIPT
-			&& $componentMatches['description'] === Types\ComponentAttributeType::RUNNING
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::RUNNING
 			&& is_bool($value)
 		) {
 			return $value ? self::SCRIPT_SET_ENABLED_METHOD : self::SCRIPT_SET_DISABLED_METHOD;
@@ -1013,7 +1114,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 
 		if (
 			$componentMatches['component'] === Types\ComponentType::SMOKE
-			&& $componentMatches['description'] === Types\ComponentAttributeType::MUTE
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::MUTE
 		) {
 			return self::SMOKE_SET_METHOD;
 		}
@@ -1051,28 +1152,28 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 
 		if (
 			$componentMatches['component'] === Types\ComponentType::LIGHT
-			&& $componentMatches['description'] === Types\ComponentAttributeType::OUTPUT
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::OUTPUT
 		) {
 			return Types\ComponentActionAttribute::ON;
 		}
 
 		if (
 			$componentMatches['component'] === Types\ComponentType::LIGHT
-			&& $componentMatches['description'] === Types\ComponentAttributeType::BRIGHTNESS
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::BRIGHTNESS
 		) {
 			return Types\ComponentActionAttribute::BRIGHTNESS;
 		}
 
 		if (
 			$componentMatches['component'] === Types\ComponentType::SCRIPT
-			&& $componentMatches['description'] === Types\ComponentAttributeType::RUNNING
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::RUNNING
 		) {
 			return null;
 		}
 
 		if (
 			$componentMatches['component'] === Types\ComponentType::SMOKE
-			&& $componentMatches['description'] === Types\ComponentAttributeType::MUTE
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::MUTE
 		) {
 			return null;
 		}

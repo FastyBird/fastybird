@@ -253,12 +253,18 @@ final class Gen2HttpApi extends HttpApi
 		}
 
 		try {
-			$body = Utils\Json::encode([
+			$body = $componentAttribute !== null ? Utils\Json::encode([
 				'id' => uniqid(),
 				'method' => $componentMethod,
 				'params' => [
 					'id' => intval($propertyMatches['identifier']),
 					$componentAttribute => $value,
+				],
+			]) : Utils\Json::encode([
+				'id' => uniqid(),
+				'method' => $componentMethod,
+				'params' => [
+					'id' => intval($propertyMatches['identifier']),
 				],
 			]);
 		} catch (Utils\JsonException $ex) {
@@ -433,8 +439,12 @@ final class Gen2HttpApi extends HttpApi
 					$switches[] = array_merge(
 						(array) $state,
 						[
-							'aenergy' => (array) $state->offsetGet('aenergy'),
-							'temperature' => (array) $state->offsetGet('temperature'),
+							'aenergy' => $state->offsetGet('aenergy') instanceof Utils\ArrayHash
+								? (array) $state->offsetGet('aenergy')
+								: $state->offsetGet('aenergy'),
+							'temperature' => $state->offsetGet('temperature') instanceof Utils\ArrayHash
+								? (array) $state->offsetGet('temperature')
+								: $state->offsetGet('temperature'),
 							'errors' => $state->offsetExists('errors')
 								? (array) $state->offsetGet('errors')
 								: [],
@@ -444,8 +454,12 @@ final class Gen2HttpApi extends HttpApi
 					$covers[] = array_merge(
 						(array) $state,
 						[
-							'aenergy' => (array) $state->offsetGet('aenergy'),
-							'temperature' => (array) $state->offsetGet('temperature'),
+							'aenergy' => $state->offsetGet('aenergy') instanceof Utils\ArrayHash
+								? (array) $state->offsetGet('aenergy')
+								: $state->offsetGet('aenergy'),
+							'temperature' => $state->offsetGet('temperature') instanceof Utils\ArrayHash
+								? (array) $state->offsetGet('temperature')
+								: $state->offsetGet('temperature'),
 							'errors' => $state->offsetExists('errors')
 								? (array) $state->offsetGet('errors')
 								: [],
@@ -484,8 +498,12 @@ final class Gen2HttpApi extends HttpApi
 					$devicePower[] = array_merge(
 						(array) $state,
 						[
-							'battery' => (array) $state->offsetGet('battery'),
-							'external' => (array) $state->offsetGet('external'),
+							'battery' => $state->offsetGet('battery') instanceof Utils\ArrayHash
+								? (array) $state->offsetGet('battery')
+								: $state->offsetGet('battery'),
+							'external' => $state->offsetGet('external') instanceof Utils\ArrayHash
+								? (array) $state->offsetGet('external')
+								: $state->offsetGet('external'),
 							'errors' => $state->offsetExists('errors')
 								? (array) $state->offsetGet('errors')
 								: [],
@@ -573,7 +591,7 @@ final class Gen2HttpApi extends HttpApi
 		if (
 			$componentMatches['component'] === Types\ComponentType::LIGHT
 			&& (
-				$componentMatches['description'] === Types\ComponentAttributeType::OUTPUT
+				$componentMatches['attribute'] === Types\ComponentAttributeType::OUTPUT
 				|| $componentMatches['attribute'] === Types\ComponentAttributeType::BRIGHTNESS
 			)
 		) {
@@ -582,7 +600,7 @@ final class Gen2HttpApi extends HttpApi
 
 		if (
 			$componentMatches['component'] === Types\ComponentType::SCRIPT
-			&& $componentMatches['description'] === Types\ComponentAttributeType::RUNNING
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::RUNNING
 			&& is_bool($value)
 		) {
 			return $value ? self::SCRIPT_SET_ENABLED_METHOD : self::SCRIPT_SET_DISABLED_METHOD;
@@ -590,7 +608,7 @@ final class Gen2HttpApi extends HttpApi
 
 		if (
 			$componentMatches['component'] === Types\ComponentType::SMOKE
-			&& $componentMatches['description'] === Types\ComponentAttributeType::MUTE
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::MUTE
 		) {
 			return self::SMOKE_SET_METHOD;
 		}
@@ -628,28 +646,28 @@ final class Gen2HttpApi extends HttpApi
 
 		if (
 			$componentMatches['component'] === Types\ComponentType::LIGHT
-			&& $componentMatches['description'] === Types\ComponentAttributeType::OUTPUT
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::OUTPUT
 		) {
 			return Types\ComponentActionAttribute::ON;
 		}
 
 		if (
 			$componentMatches['component'] === Types\ComponentType::LIGHT
-			&& $componentMatches['description'] === Types\ComponentAttributeType::BRIGHTNESS
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::BRIGHTNESS
 		) {
 			return Types\ComponentActionAttribute::BRIGHTNESS;
 		}
 
 		if (
 			$componentMatches['component'] === Types\ComponentType::SCRIPT
-			&& $componentMatches['description'] === Types\ComponentAttributeType::RUNNING
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::RUNNING
 		) {
 			return null;
 		}
 
 		if (
 			$componentMatches['component'] === Types\ComponentType::SMOKE
-			&& $componentMatches['description'] === Types\ComponentAttributeType::MUTE
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::MUTE
 		) {
 			return null;
 		}

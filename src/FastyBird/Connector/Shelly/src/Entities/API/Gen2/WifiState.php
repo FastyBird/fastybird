@@ -15,6 +15,7 @@
 
 namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
+use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Types;
 use Orisai\ObjectMapper;
@@ -38,7 +39,10 @@ final class WifiState extends DeviceState implements Entities\API\Entity
 		])]
 		#[ObjectMapper\Modifiers\FieldName('sta_ip')]
 		private readonly string|null $staIp,
-		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\ArrayEnumValue(cases: [Shelly\Constants::VALUE_NOT_AVAILABLE]),
+		])]
 		private readonly string $status,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
@@ -47,15 +51,15 @@ final class WifiState extends DeviceState implements Entities\API\Entity
 		private readonly string|null $ssid,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\IntValue(),
-			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+			new ObjectMapper\Rules\ArrayEnumValue(cases: [Shelly\Constants::VALUE_NOT_AVAILABLE]),
 		])]
-		private readonly int|null $rssi,
+		private readonly int|string $rssi,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\IntValue(),
-			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+			new ObjectMapper\Rules\ArrayEnumValue(cases: [Shelly\Constants::VALUE_NOT_AVAILABLE]),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('ap_client_count')]
-		private readonly int|null $apClientCount,
+		private readonly int|string $apClientCount,
 	)
 	{
 		parent::__construct();
@@ -81,12 +85,12 @@ final class WifiState extends DeviceState implements Entities\API\Entity
 		return $this->ssid;
 	}
 
-	public function getRssi(): int|null
+	public function getRssi(): int|string
 	{
 		return $this->rssi;
 	}
 
-	public function getApClientCount(): int|null
+	public function getApClientCount(): int|string
 	{
 		return $this->apClientCount;
 	}

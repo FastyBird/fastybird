@@ -25,6 +25,7 @@ use Orisai\ObjectMapper;
 use function array_filter;
 use function array_merge;
 use function intval;
+use function is_float;
 
 /**
  * Generation 2 device light state entity
@@ -49,9 +50,9 @@ final class DeviceLightState extends DeviceState implements Entities\API\Entity
 		private readonly string|null $source,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\BoolValue(),
-			new ObjectMapper\Rules\NullValue(),
+			new ObjectMapper\Rules\ArrayEnumValue(cases: [Shelly\Constants::VALUE_NOT_AVAILABLE]),
 		])]
-		private readonly bool|null $output,
+		private readonly bool|string $output,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\IntValue(),
 			new ObjectMapper\Rules\ArrayEnumValue(cases: [Shelly\Constants::VALUE_NOT_AVAILABLE]),
@@ -59,16 +60,16 @@ final class DeviceLightState extends DeviceState implements Entities\API\Entity
 		private readonly int|string $brightness,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\FloatValue(),
-			new ObjectMapper\Rules\NullValue(),
+			new ObjectMapper\Rules\ArrayEnumValue(cases: [Shelly\Constants::VALUE_NOT_AVAILABLE]),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('timer_started_at')]
-		private readonly float|null $timerStartedAt,
+		private readonly float|string $timerStartedAt,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\FloatValue(),
-			new ObjectMapper\Rules\NullValue(),
+			new ObjectMapper\Rules\ArrayEnumValue(cases: [Shelly\Constants::VALUE_NOT_AVAILABLE]),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('timer_duration')]
-		private readonly float|null $timerDuration,
+		private readonly float|string $timerDuration,
 		array $errors = [],
 	)
 	{
@@ -85,7 +86,7 @@ final class DeviceLightState extends DeviceState implements Entities\API\Entity
 		return $this->source;
 	}
 
-	public function getOutput(): bool|null
+	public function getOutput(): bool|string
 	{
 		return $this->output;
 	}
@@ -98,16 +99,16 @@ final class DeviceLightState extends DeviceState implements Entities\API\Entity
 	/**
 	 * @throws Exception
 	 */
-	public function getTimerStartedAt(): DateTimeInterface|null
+	public function getTimerStartedAt(): DateTimeInterface|string
 	{
-		if ($this->timerStartedAt !== null) {
+		if (is_float($this->timerStartedAt)) {
 			return Utils\DateTime::from(intval($this->timerStartedAt));
 		}
 
-		return null;
+		return $this->timerStartedAt;
 	}
 
-	public function getTimerDuration(): float|null
+	public function getTimerDuration(): float|string
 	{
 		return $this->timerDuration;
 	}
@@ -125,7 +126,9 @@ final class DeviceLightState extends DeviceState implements Entities\API\Entity
 				'source' => $this->getSource(),
 				'output' => $this->getOutput(),
 				'brightness' => $this->getBrightness(),
-				'timer_started_at' => $this->getTimerStartedAt()?->format(DateTimeInterface::ATOM),
+				'timer_started_at' => !$this->getTimerStartedAt() instanceof DateTimeInterface
+					? $this->getTimerStartedAt()
+					: $this->getTimerStartedAt()->format(DateTimeInterface::ATOM),
 				'timer_duration' => $this->getTimerDuration(),
 			],
 		);
