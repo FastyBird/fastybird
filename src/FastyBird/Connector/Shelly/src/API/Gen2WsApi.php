@@ -94,8 +94,6 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 
 	private const DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME = 'gen2_ws_state.json';
 
-	private const DEVICE_EVENTS_MESSAGE_SCHEMA_FILENAME = 'gen2_ws_events.json';
-
 	private const DEVICE_EVENT_MESSAGE_SCHEMA_FILENAME = 'gen2_ws_event.json';
 
 	private const WAIT_FOR_REPLY_TIMEOUT = 10.0;
@@ -113,6 +111,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 
 	/** @var array<string, string> */
 	private array $validationSchemas = [];
+	private string|null $clientIdentifier = null;
 
 	private DateTimeInterface|null $lastConnectAttempt = null;
 
@@ -282,7 +281,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 												],
 												'response' => [
 													'body' => Utils\Json::encode($payload->params),
-													'schema' => self::DEVICE_EVENTS_MESSAGE_SCHEMA_FILENAME,
+													'schema' => self::DEVICE_EVENT_MESSAGE_SCHEMA_FILENAME,
 												],
 											],
 										);
@@ -304,35 +303,6 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 											],
 										],
 									);
-								}
-							} elseif (
-								property_exists($payload, 'event')
-								&& property_exists($payload, 'data')
-							) {
-								try {
-									$entity = $this->parseDeviceEventNotification(
-										Utils\Json::encode($payload->params),
-									);
-
-									$this->emit('message', [$entity]);
-								} catch (Exceptions\WsCall | Exceptions\WsError $ex) {
-									$this->logger->error(
-										'Could not handle received device event message',
-										[
-											'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-											'type' => 'gen2-ws-api',
-											'exception' => BootstrapHelpers\Logger::buildException($ex),
-											'device' => [
-												'id' => $this->id->toString(),
-											],
-											'response' => [
-												'body' => Utils\Json::encode($payload->params),
-												'schema' => self::DEVICE_EVENT_MESSAGE_SCHEMA_FILENAME,
-											],
-										],
-									);
-
-									$this->emit('error', [$ex]);
 								}
 							}
 
@@ -674,7 +644,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 			$messageFrame = $this->objectMapper->process(
 				[
 					'id' => uniqid(),
-					'src' => self::REQUEST_SRC,
+					'src' => $this->getClientIdentifier(),
 					'method' => self::DEVICE_STATUS_METHOD,
 					'params' => null,
 					'auth' => $this->session?->toArray(),
@@ -743,7 +713,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 			$messageFrame = $this->objectMapper->process(
 				[
 					'id' => uniqid(),
-					'src' => self::REQUEST_SRC,
+					'src' => $this->getClientIdentifier(),
 					'method' => $componentMethod,
 					'params' => [
 						'id' => intval($propertyMatches['identifier']),
@@ -896,9 +866,9 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 	 */
 	private function parseDeviceEventsResponse(
 		string $payload,
-	): Entities\API\Gen2\DeviceEvents
+	): Entities\API\Gen2\DeviceEvent
 	{
-		$data = $this->validatePayload($payload, self::DEVICE_EVENTS_MESSAGE_SCHEMA_FILENAME);
+		$data = $this->validatePayload($payload, self::DEVICE_EVENT_MESSAGE_SCHEMA_FILENAME);
 
 		$events = [];
 
@@ -914,31 +884,9 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 		}
 
 		return $this->createEntity(
-			Entities\API\Gen2\DeviceEvents::class,
-			Utils\ArrayHash::from([
-				'events' => $events,
-			]),
-		);
-	}
-
-	/**
-	 * @throws Exceptions\WsCall
-	 * @throws Exceptions\WsError
-	 */
-	private function parseDeviceEventNotification(
-		string $payload,
-	): Entities\API\Gen2\DeviceEvent
-	{
-		$data = $this->validatePayload($payload, self::DEVICE_EVENT_MESSAGE_SCHEMA_FILENAME);
-
-		return $this->createEntity(
 			Entities\API\Gen2\DeviceEvent::class,
 			Utils\ArrayHash::from([
-				'component' => $data->offsetGet('component'),
-				'id' => $data->offsetGet('id'),
-				'event' => $data->offsetGet('event'),
-				'data' => $data->offsetGet('data'),
-				'timestamp' => $data->offsetGet('ts'),
+				'events' => $events,
 			]),
 		);
 	}
@@ -1130,6 +1078,15 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 		}
 
 		throw new Exceptions\InvalidState('Property attribute could not be build');
+	}
+
+	private function getClientIdentifier(): string
+	{
+		if ($this->clientIdentifier === null) {
+			$this->clientIdentifier = self::REQUEST_SRC . '_' . uniqid();
+		}
+
+		return $this->clientIdentifier;
 	}
 
 }

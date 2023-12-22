@@ -42,6 +42,14 @@ final class ComponentEvent implements Entities\API\Entity
 		private readonly string $event,
 		#[ObjectMapper\Rules\FloatValue(unsigned: true)]
 		private readonly float $timestamp,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\StringValue(),
+			new ObjectMapper\Rules\NullValue(),
+		])]
+		private readonly int|float|bool|string|null $data = null,
 	)
 	{
 	}
@@ -69,6 +77,11 @@ final class ComponentEvent implements Entities\API\Entity
 		return Utils\DateTime::from(intval($this->timestamp));
 	}
 
+	public function getData(): float|bool|int|string|null
+	{
+		return $this->data;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 *
@@ -81,6 +94,7 @@ final class ComponentEvent implements Entities\API\Entity
 			'id' => $this->getId(),
 			'event' => $this->getEvent(),
 			'timestamp' => $this->getTimestamp()->format(DateTimeInterface::ATOM),
+			'data' => $this->getData(),
 		];
 	}
 

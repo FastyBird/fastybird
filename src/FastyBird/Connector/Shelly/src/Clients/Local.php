@@ -553,7 +553,7 @@ final class Local implements Client
 
 		$client->on(
 			'message',
-			function (Entities\API\Gen2\GetDeviceState|Entities\API\Gen2\DeviceEvents|Entities\API\Gen2\DeviceEvent $message) use ($device): void {
+			function (Entities\API\Gen2\GetDeviceState|Entities\API\Gen2\DeviceEvent $message) use ($device): void {
 				if ($message instanceof Entities\API\Gen2\GetDeviceState) {
 					$this->processGen2DeviceGetState($device, $message);
 				} elseif ($message instanceof Entities\API\Gen2\DeviceEvent) {

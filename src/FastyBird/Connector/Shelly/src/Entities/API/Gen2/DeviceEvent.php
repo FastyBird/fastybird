@@ -10,17 +10,14 @@
  * @subpackage     Entities
  * @since          1.0.0
  *
- * @date           22.12.23
+ * @date           12.01.23
  */
 
 namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
-use DateTimeInterface;
-use Exception;
 use FastyBird\Connector\Shelly\Entities;
-use Nette\Utils;
 use Orisai\ObjectMapper;
-use function intval;
+use function array_map;
 
 /**
  * Generation 2 device event entity
@@ -33,68 +30,34 @@ use function intval;
 final class DeviceEvent implements Entities\API\Entity
 {
 
+	/**
+	 * @param array<int, ComponentEvent> $events
+	 */
 	public function __construct(
-		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $component,
-		#[ObjectMapper\Rules\IntValue(unsigned: true)]
-		private readonly int $id,
-		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $event,
-		#[ObjectMapper\Rules\FloatValue(unsigned: true)]
-		private readonly float $timestamp,
-		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\IntValue(),
-			new ObjectMapper\Rules\FloatValue(),
-			new ObjectMapper\Rules\BoolValue(),
-			new ObjectMapper\Rules\StringValue(),
-			new ObjectMapper\Rules\NullValue(),
-		])]
-		private readonly int|float|bool|string|null $data = null,
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(class: ComponentEvent::class),
+			new ObjectMapper\Rules\IntValue(unsigned: true),
+		)]
+		private readonly array $events = [],
 	)
 	{
 	}
 
-	public function getComponent(): string
-	{
-		return $this->component;
-	}
-
-	public function getId(): int
-	{
-		return $this->id;
-	}
-
-	public function getEvent(): string
-	{
-		return $this->event;
-	}
-
 	/**
-	 * @throws Exception
+	 * @return array<ComponentEvent>
 	 */
-	public function getTimestamp(): DateTimeInterface
+	public function getEvents(): array
 	{
-		return Utils\DateTime::from(intval($this->timestamp));
+		return $this->events;
 	}
 
-	public function getData(): float|bool|int|string|null
-	{
-		return $this->data;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @throws Exception
-	 */
 	public function toArray(): array
 	{
 		return [
-			'component' => $this->getComponent(),
-			'id' => $this->getId(),
-			'event' => $this->getEvent(),
-			'data' => $this->getData(),
-			'timestamp' => $this->getTimestamp()->format(DateTimeInterface::ATOM),
+			'events' => array_map(
+				static fn (ComponentEvent $state): array => $state->toArray(),
+				$this->getEvents(),
+			),
 		];
 	}
 

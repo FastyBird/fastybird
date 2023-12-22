@@ -89,21 +89,6 @@ final class StoreDeviceState implements Queue\Consumer
 		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
 		if ($device === null) {
-			$this->logger->error(
-				'Device could not be loaded',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-					'type' => 'store-device-state-message-consumer',
-					'connector' => [
-						'id' => $entity->getConnector()->toString(),
-					],
-					'device' => [
-						'identifier' => $entity->getIdentifier(),
-					],
-					'data' => $entity->toArray(),
-				],
-			);
-
 			return true;
 		}
 
