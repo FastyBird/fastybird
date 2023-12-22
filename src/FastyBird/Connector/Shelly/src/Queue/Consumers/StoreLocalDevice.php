@@ -190,6 +190,12 @@ final class StoreLocalDevice implements Queue\Consumer
 						'name' => $channelDescription->getName(),
 					])),
 				);
+			} else {
+				$channel = $this->databaseHelper->transaction(
+					fn (): DevicesEntities\Channels\Channel => $this->channelsManager->update($channel, Utils\ArrayHash::from([
+						'name' => $channelDescription->getName(),
+					])),
+				);
 			}
 
 			$propertiesIdentifiers = [];
