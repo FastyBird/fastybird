@@ -62,6 +62,7 @@
         "leigh/curve25519": "^0.1",
         "mangoweb/monolog-tracy-handler": "^1.0",
         "mathsolver/mathsolver": "@dev",
+        "nette/application": "^3.1",
         "nette/bootstrap": "^3.1",
         "nette/di": "^3.0",
         "nette/utils": "^3.2",

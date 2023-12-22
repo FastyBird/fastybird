@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 use Dotenv\Dotenv;
 use FastyBird\Library\Bootstrap\Boot;
+use FastyBird\Library\Metadata;
 use FastyBird\Plugin\WebServer\Application as WebServerApplication;
+use Nette\Application as NetteApplication;
 
 if (isset($_ENV['FB_APP_DIR'])) {
 	$vendorDir = realpath($_ENV['FB_APP_DIR'] . DIRECTORY_SEPARATOR . 'vendor');
@@ -37,10 +39,21 @@ if (file_exists($autoload)) {
 
 	$configurator = Boot\Bootstrap::boot();
 
-	$configurator
-		->createContainer()
-		->getByType(WebServerApplication\Application::class)
-		->run();
+	$isApi = substr($_SERVER['REQUEST_URI'], 0, 4) === '/' . Metadata\Constants::ROUTER_API_PREFIX;
+
+	$container = $configurator->createContainer();
+
+	if ($isApi) {
+		// WebServer application
+		$container
+			->getByType(WebServerApplication\Application::class)
+			->run();
+	} else {
+		// Nette application
+		$container
+			->getByType(NetteApplication\Application::class)
+			->run();
+	}
 
 } else {
 	echo 'Composer autoload not found!';
