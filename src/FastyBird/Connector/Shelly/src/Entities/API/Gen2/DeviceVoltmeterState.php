@@ -49,7 +49,7 @@ final class DeviceVoltmeterState extends DeviceState implements Entities\API\Ent
 			new ObjectMapper\Rules\ArrayEnumValue(cases: [Shelly\Constants::VALUE_NOT_AVAILABLE]),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly float|string|null $xvoltage,
+		private readonly float|string|null $xvoltage = null,
 		array $errors = [],
 	)
 	{

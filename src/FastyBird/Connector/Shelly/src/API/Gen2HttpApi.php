@@ -435,7 +435,9 @@ final class Gen2HttpApi extends HttpApi
 						[
 							'aenergy' => (array) $state->offsetGet('aenergy'),
 							'temperature' => (array) $state->offsetGet('temperature'),
-							'errors' => (array) $state->offsetGet('errors'),
+							'errors' => $state->offsetExists('errors')
+								? (array) $state->offsetGet('errors')
+								: [],
 						],
 					);
 				} elseif ($componentMatches['component'] === Types\ComponentType::COVER) {
@@ -444,7 +446,9 @@ final class Gen2HttpApi extends HttpApi
 						[
 							'aenergy' => (array) $state->offsetGet('aenergy'),
 							'temperature' => (array) $state->offsetGet('temperature'),
-							'errors' => (array) $state->offsetGet('errors'),
+							'errors' => $state->offsetExists('errors')
+								? (array) $state->offsetGet('errors')
+								: [],
 						],
 					);
 				} elseif ($componentMatches['component'] === Types\ComponentType::LIGHT) {
@@ -453,21 +457,27 @@ final class Gen2HttpApi extends HttpApi
 					$inputs[] = array_merge(
 						(array) $state,
 						[
-							'errors' => (array) $state->offsetGet('errors'),
+							'errors' => $state->offsetExists('errors')
+								? (array) $state->offsetGet('errors')
+								: [],
 						],
 					);
 				} elseif ($componentMatches['component'] === Types\ComponentType::TEMPERATURE) {
 					$temperature[] = array_merge(
 						(array) $state,
 						[
-							'errors' => (array) $state->offsetGet('errors'),
+							'errors' => $state->offsetExists('errors')
+								? (array) $state->offsetGet('errors')
+								: [],
 						],
 					);
 				} elseif ($componentMatches['component'] === Types\ComponentType::HUMIDITY) {
 					$humidity[] = array_merge(
 						(array) $state,
 						[
-							'errors' => (array) $state->offsetGet('errors'),
+							'errors' => $state->offsetExists('errors')
+								? (array) $state->offsetGet('errors')
+								: [],
 						],
 					);
 				} elseif ($componentMatches['component'] === Types\ComponentType::DEVICE_POWER) {
@@ -476,28 +486,36 @@ final class Gen2HttpApi extends HttpApi
 						[
 							'battery' => (array) $state->offsetGet('battery'),
 							'external' => (array) $state->offsetGet('external'),
-							'errors' => (array) $state->offsetGet('errors'),
+							'errors' => $state->offsetExists('errors')
+								? (array) $state->offsetGet('errors')
+								: [],
 						],
 					);
 				} elseif ($componentMatches['component'] === Types\ComponentType::SCRIPT) {
 					$scripts[] = array_merge(
 						(array) $state,
 						[
-							'errors' => (array) $state->offsetGet('errors'),
+							'errors' => $state->offsetExists('errors')
+								? (array) $state->offsetGet('errors')
+								: [],
 						],
 					);
 				} elseif ($componentMatches['component'] === Types\ComponentType::SMOKE) {
 					$smoke[] = array_merge(
 						(array) $state,
 						[
-							'errors' => (array) $state->offsetGet('errors'),
+							'errors' => $state->offsetExists('errors')
+								? (array) $state->offsetGet('errors')
+								: [],
 						],
 					);
 				} elseif ($componentMatches['component'] === Types\ComponentType::VOLTMETER) {
 					$voltmeters[] = array_merge(
 						(array) $state,
 						[
-							'errors' => (array) $state->offsetGet('errors'),
+							'errors' => $state->offsetExists('errors')
+								? (array) $state->offsetGet('errors')
+								: [],
 						],
 					);
 				} elseif ($componentMatches['component'] === Types\ComponentType::ETHERNET) {
