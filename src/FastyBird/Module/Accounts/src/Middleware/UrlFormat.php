@@ -61,10 +61,18 @@ final class UrlFormat implements MiddlewareInterface
 		if (
 			$this->user->isLoggedIn()
 			&& (
-				Utils\Strings::startsWith($request->getUri()
-					->getPath(), ($this->usePrefix ? '/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX : '') . '/v1/session')
-				|| Utils\Strings::startsWith($request->getUri()
-					->getPath(), ($this->usePrefix ? '/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX : '') . '/v1/me')
+				Utils\Strings::startsWith(
+					$request->getUri()->getPath(),
+					'/' . Metadata\Constants::ROUTER_API_PREFIX
+					. ($this->usePrefix ? '/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX : '')
+					. '/v1/session',
+				)
+				|| Utils\Strings::startsWith(
+					$request->getUri()->getPath(),
+					'/' . Metadata\Constants::ROUTER_API_PREFIX
+					. ($this->usePrefix ? '/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX : '')
+					. '/v1/me',
+				)
 			)
 		) {
 			if ($this->user->getAccount() === null) {
@@ -79,22 +87,34 @@ final class UrlFormat implements MiddlewareInterface
 			$body->rewind();
 
 			$content = $body->getContents();
-			$content = str_replace('\/v1\/emails', '\/v1\/me\/emails', $content);
-			$content = str_replace('\/v1\/identities', '\/v1\/me\/identities', $content);
-			$content = str_replace('\/v1\/accounts\/' . $this->user->getAccount()->getPlainId(), '\/v1\/me', $content);
 			$content = str_replace(
-				'\/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '\/v1\/emails',
-				'\/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '\/v1\/me\/emails',
+				'\/api\/v1\/emails',
+				'\/api\/v1\/me\/emails',
 				$content,
 			);
 			$content = str_replace(
-				'\/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '\/v1\/identities',
-				'\/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '\/v1\/me\/identities',
+				'\/api\/v1\/identities',
+				'\/api\/v1\/me\/identities',
 				$content,
 			);
 			$content = str_replace(
-				'\/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '\/v1\/accounts\/' . $this->user->getAccount()->getPlainId(),
-				'\/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '\/v1\/me',
+				'\/api\/v1\/accounts\/' . $this->user->getAccount()->getPlainId(),
+				'\/v1\/me',
+				$content,
+			);
+			$content = str_replace(
+				'\/api\/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '\/v1\/emails',
+				'\/api\/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '\/v1\/me\/emails',
+				$content,
+			);
+			$content = str_replace(
+				'\/api\/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '\/v1\/identities',
+				'\/api\/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '\/v1\/me\/identities',
+				$content,
+			);
+			$content = str_replace(
+				'\/api\/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '\/v1\/accounts\/' . $this->user->getAccount()->getPlainId(),
+				'\/api\/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '\/v1\/me',
 				$content,
 			);
 

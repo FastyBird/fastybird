@@ -74,7 +74,7 @@ final class ConditionsV1 extends BaseV1
 	): Message\ResponseInterface
 	{
 		// At first, try to load trigger
-		$trigger = $this->findTrigger(strval($request->getAttribute(Router\Routes::URL_TRIGGER_ID)));
+		$trigger = $this->findTrigger(strval($request->getAttribute(Router\ApiRoutes::URL_TRIGGER_ID)));
 
 		if (!$trigger instanceof Entities\Triggers\AutomaticTrigger) {
 			throw new JsonApiExceptions\JsonApiError(
@@ -104,7 +104,7 @@ final class ConditionsV1 extends BaseV1
 	): Message\ResponseInterface
 	{
 		// At first, try to load trigger
-		$trigger = $this->findTrigger(strval($request->getAttribute(Router\Routes::URL_TRIGGER_ID)));
+		$trigger = $this->findTrigger(strval($request->getAttribute(Router\ApiRoutes::URL_TRIGGER_ID)));
 
 		if (!$trigger instanceof Entities\Triggers\AutomaticTrigger) {
 			throw new JsonApiExceptions\JsonApiError(
@@ -115,7 +115,7 @@ final class ConditionsV1 extends BaseV1
 		}
 
 		// & condition
-		$condition = $this->findCondition(strval($request->getAttribute(Router\Routes::URL_ITEM_ID)), $trigger);
+		$condition = $this->findCondition(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)), $trigger);
 
 		return $this->buildResponse($request, $response, $condition);
 	}
@@ -137,7 +137,7 @@ final class ConditionsV1 extends BaseV1
 	): Message\ResponseInterface
 	{
 		// At first, try to load trigger
-		$trigger = $this->findTrigger(strval($request->getAttribute(Router\Routes::URL_TRIGGER_ID)));
+		$trigger = $this->findTrigger(strval($request->getAttribute(Router\ApiRoutes::URL_TRIGGER_ID)));
 
 		if ($trigger instanceof Entities\Triggers\AutomaticTrigger) {
 			$document = $this->createDocument($request);
@@ -266,7 +266,7 @@ final class ConditionsV1 extends BaseV1
 	): Message\ResponseInterface
 	{
 		// At first, try to load trigger
-		$trigger = $this->findTrigger(strval($request->getAttribute(Router\Routes::URL_TRIGGER_ID)));
+		$trigger = $this->findTrigger(strval($request->getAttribute(Router\ApiRoutes::URL_TRIGGER_ID)));
 
 		if (!$trigger instanceof Entities\Triggers\AutomaticTrigger) {
 			throw new JsonApiExceptions\JsonApiError(
@@ -277,7 +277,7 @@ final class ConditionsV1 extends BaseV1
 		}
 
 		// & condition
-		$condition = $this->findCondition(strval($request->getAttribute(Router\Routes::URL_ITEM_ID)), $trigger);
+		$condition = $this->findCondition(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)), $trigger);
 
 		$document = $this->createDocument($request);
 
@@ -347,7 +347,7 @@ final class ConditionsV1 extends BaseV1
 	): Message\ResponseInterface
 	{
 		// At first, try to load trigger
-		$trigger = $this->findTrigger(strval($request->getAttribute(Router\Routes::URL_TRIGGER_ID)));
+		$trigger = $this->findTrigger(strval($request->getAttribute(Router\ApiRoutes::URL_TRIGGER_ID)));
 
 		if (!$trigger instanceof Entities\Triggers\AutomaticTrigger) {
 			throw new JsonApiExceptions\JsonApiError(
@@ -358,7 +358,7 @@ final class ConditionsV1 extends BaseV1
 		}
 
 		// & condition
-		$condition = $this->findCondition(strval($request->getAttribute(Router\Routes::URL_ITEM_ID)), $trigger);
+		$condition = $this->findCondition(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)), $trigger);
 
 		try {
 			// Start transaction connection to the database
@@ -403,7 +403,7 @@ final class ConditionsV1 extends BaseV1
 	): Message\ResponseInterface
 	{
 		// At first, try to load trigger
-		$trigger = $this->findTrigger(strval($request->getAttribute(Router\Routes::URL_TRIGGER_ID)));
+		$trigger = $this->findTrigger(strval($request->getAttribute(Router\ApiRoutes::URL_TRIGGER_ID)));
 
 		if (!$trigger instanceof Entities\Triggers\AutomaticTrigger) {
 			throw new JsonApiExceptions\JsonApiError(
@@ -414,9 +414,9 @@ final class ConditionsV1 extends BaseV1
 		}
 
 		// & condition
-		$condition = $this->findCondition(strval($request->getAttribute(Router\Routes::URL_ITEM_ID)), $trigger);
+		$condition = $this->findCondition(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)), $trigger);
 
-		$relationEntity = strtolower(strval($request->getAttribute(Router\Routes::RELATION_ENTITY)));
+		$relationEntity = strtolower(strval($request->getAttribute(Router\ApiRoutes::RELATION_ENTITY)));
 
 		if ($relationEntity === Schemas\Conditions\Condition::RELATIONSHIPS_TRIGGER) {
 			return $this->buildResponse($request, $response, $condition->getTrigger());

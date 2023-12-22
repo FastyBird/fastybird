@@ -74,7 +74,7 @@ final class ActionsV1 extends BaseV1
 	): Message\ResponseInterface
 	{
 		// At first, try to load trigger
-		$trigger = $this->findTrigger(strval($request->getAttribute(Router\Routes::URL_TRIGGER_ID)));
+		$trigger = $this->findTrigger(strval($request->getAttribute(Router\ApiRoutes::URL_TRIGGER_ID)));
 
 		$findQuery = new Queries\Entities\FindActions();
 		$findQuery->forTrigger($trigger);
@@ -96,10 +96,10 @@ final class ActionsV1 extends BaseV1
 	): Message\ResponseInterface
 	{
 		// At first, try to load trigger
-		$trigger = $this->findTrigger(strval($request->getAttribute(Router\Routes::URL_TRIGGER_ID)));
+		$trigger = $this->findTrigger(strval($request->getAttribute(Router\ApiRoutes::URL_TRIGGER_ID)));
 
 		// & action
-		$action = $this->findAction(strval($request->getAttribute(Router\Routes::URL_ITEM_ID)), $trigger);
+		$action = $this->findAction(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)), $trigger);
 
 		return $this->buildResponse($request, $response, $action);
 	}
@@ -121,7 +121,7 @@ final class ActionsV1 extends BaseV1
 	): Message\ResponseInterface
 	{
 		// At first, try to load trigger
-		$this->findTrigger(strval($request->getAttribute(Router\Routes::URL_TRIGGER_ID)));
+		$this->findTrigger(strval($request->getAttribute(Router\ApiRoutes::URL_TRIGGER_ID)));
 
 		$document = $this->createDocument($request);
 
@@ -242,10 +242,10 @@ final class ActionsV1 extends BaseV1
 	): Message\ResponseInterface
 	{
 		// At first, try to load trigger
-		$trigger = $this->findTrigger(strval($request->getAttribute(Router\Routes::URL_TRIGGER_ID)));
+		$trigger = $this->findTrigger(strval($request->getAttribute(Router\ApiRoutes::URL_TRIGGER_ID)));
 
 		// & action
-		$action = $this->findAction(strval($request->getAttribute(Router\Routes::URL_ITEM_ID)), $trigger);
+		$action = $this->findAction(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)), $trigger);
 
 		$document = $this->createDocument($request);
 
@@ -315,10 +315,10 @@ final class ActionsV1 extends BaseV1
 	): Message\ResponseInterface
 	{
 		// At first, try to load trigger
-		$trigger = $this->findTrigger(strval($request->getAttribute(Router\Routes::URL_TRIGGER_ID)));
+		$trigger = $this->findTrigger(strval($request->getAttribute(Router\ApiRoutes::URL_TRIGGER_ID)));
 
 		// & action
-		$action = $this->findAction(strval($request->getAttribute(Router\Routes::URL_ITEM_ID)), $trigger);
+		$action = $this->findAction(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)), $trigger);
 
 		try {
 			// Start transaction connection to the database
@@ -363,12 +363,12 @@ final class ActionsV1 extends BaseV1
 	): Message\ResponseInterface
 	{
 		// At first, try to load trigger
-		$trigger = $this->findTrigger(strval($request->getAttribute(Router\Routes::URL_TRIGGER_ID)));
+		$trigger = $this->findTrigger(strval($request->getAttribute(Router\ApiRoutes::URL_TRIGGER_ID)));
 
 		// & action
-		$action = $this->findAction(strval($request->getAttribute(Router\Routes::URL_ITEM_ID)), $trigger);
+		$action = $this->findAction(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)), $trigger);
 
-		$relationEntity = strtolower(strval($request->getAttribute(Router\Routes::RELATION_ENTITY)));
+		$relationEntity = strtolower(strval($request->getAttribute(Router\ApiRoutes::RELATION_ENTITY)));
 
 		if ($relationEntity === Schemas\Actions\Action::RELATIONSHIPS_TRIGGER) {
 			return $this->buildResponse($request, $response, $action->getTrigger());

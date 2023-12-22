@@ -16,62 +16,62 @@
 base:
     messages:
         notValidJson:
-            heading	: "Not valid content"
-            message	: "Provided request content is not valid JSON content"
+            heading: "Not valid content"
+            message: "Provided request content is not valid JSON content"
         notValidJsonApi:
-            heading	: "Not valid content"
-            message	: "Provided request content is not valid {JSON:API} content"
+            heading: "Not valid content"
+            message: "Provided request content is not valid {JSON:API} content"
         failed:
-            heading	: "Request failed"
-            message	: "Provided request failed and can't be finished"
+            heading: "Request failed"
+            message: "Provided request failed and can't be finished"
         forbidden:
-            heading	: "Not allowed"
-            message	: "You are not allowed to perform this action"
+            heading: "Not allowed"
+            message: "You are not allowed to perform this action"
         unauthorized:
-            heading	: "Not authorized"
-            message	: "You are not authorized to perform this action"
+            heading: "Not authorized"
+            message: "You are not authorized to perform this action"
         notFound:
-            heading	: "Not found"
-            message	: "Requested entity was not found"
+            heading: "Not found"
+            message: "Requested entity was not found"
         notCreated:
-            heading	: "System error"
-            message	: "Something went wrong, entity could not be created"
+            heading: "System error"
+            message: "Something went wrong, entity could not be created"
         notUpdated:
-            heading	: "System error"
-            message	: "Something went wrong, entity could not be updated"
+            heading: "System error"
+            message: "Something went wrong, entity could not be updated"
         notDeleted:
-            heading	: "System error"
-            message	: "Something went wrong, entity could not be deleted"
+            heading: "System error"
+            message: "Something went wrong, entity could not be deleted"
         invalidIdentifier:
-            heading	: "Invalid identifier"
-            message	: "Provided entity identifier is not valid"
+            heading: "Invalid identifier"
+            message: "Provided entity identifier is not valid"
         invalidType:
-            heading	: "Invalid type"
-            message	: "Provided entity type is not valid"
+            heading: "Invalid type"
+            message: "Provided entity type is not valid"
         invalidAttribute:
-            heading	: "Invalid attribute"
-            message	: "Provided entity attribute is not valid"
+            heading: "Invalid attribute"
+            message: "Provided entity attribute is not valid"
         invalidRelation:
-            heading	: "Invalid relation"
-            message	: "Provided relation is not valid"
+            heading: "Invalid relation"
+            message: "Provided relation is not valid"
         unknownRelation:
-            heading	: "Relation not found"
-            message	: "Requested unknown relation"
+            heading: "Relation not found"
+            message: "Requested unknown relation"
         relationNotFound:
-            heading	: "Relation not found"
-            message	: "Requested relation %relation% was not found"
+            heading: "Relation not found"
+            message: "Requested relation %relation% was not found"
         missingAttribute:
-            heading	: "Missing attribute"
-            message	: "Provided request is missing required attribute"
+            heading: "Missing attribute"
+            message: "Provided request is missing required attribute"
         missingRelation:
-            heading	: "Missing required relation"
-            message	: "Provided request is missing required relation"
+            heading: "Missing required relation"
+            message: "Provided request is missing required relation"
         uniqueIdentifier:
-            heading	: "Identifier not unique"
-            message	: "Provided identifier is not unique"
+            heading: "Identifier not unique"
+            message: "Provided identifier is not unique"
         uniqueAttribute:
-            heading	: "Attribute not unique"
-            message	: "Provided attribute is not unique"
+            heading: "Attribute not unique"
+            message: "Provided attribute is not unique"
 
 cmd:
     base:
@@ -83,9 +83,9 @@ cmd:
         messages:
             answerNotValid: "Selected answer: \"%s\" is not valid."
 
-    initialize:
-        title: "Devices module - initialization"
-        subtitle: "This action will create|update module database structure and build module configuration"
+    install:
+        title: "Devices module - installer"
+        subtitle: "This action will create|update|delete module configuration"
 
         info:
             database: "Preparing module database"
@@ -93,24 +93,16 @@ cmd:
         messages:
             success: "Devices module has been successfully initialized and can be now used."
             error: "Something went wrong, initialization could not be finished. Error was logged."
-            databaseReady: "Devices module database has been successfully initialized."
             initialisationFailed: "Something went wrong, initialization could not be finished."
+            databaseReady: "Devices module database has been successfully initialized."
             databaseFailed: "Something went wrong, database initialization could not be finished."
-
-    configuration:
-        title: "Devices module - configuration"
-        subtitle: "This action will create|update module configuration"
-
-        messages:
-            success: "Devices module configuration has been successfully build."
-            error: "Something went wrong, configuration initialization could not be finished. Error was logged."
 
     exchange:
         title: "Devices module - exchange"
         subtitle: "This action will run module exchange service"
 
         messages:
-            error: "Something went wrong, service could not be finished. Error was logged."
+            error: "Something went wrong, an unhandled error occur. Error was logged."
 
     connector:
         title: "Devices module - connector"

@@ -88,7 +88,7 @@ final class TriggersV1 extends BaseV1
 		Message\ResponseInterface $response,
 	): Message\ResponseInterface
 	{
-		$trigger = $this->findTrigger(strval($request->getAttribute(Router\Routes::URL_ITEM_ID)));
+		$trigger = $this->findTrigger(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)));
 
 		return $this->buildResponse($request, $response, $trigger);
 	}
@@ -227,7 +227,7 @@ final class TriggersV1 extends BaseV1
 	): Message\ResponseInterface
 	{
 		// At first, try to load trigger
-		$trigger = $this->findTrigger(strval($request->getAttribute(Router\Routes::URL_ITEM_ID)));
+		$trigger = $this->findTrigger(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)));
 
 		$document = $this->createDocument($request);
 
@@ -297,7 +297,7 @@ final class TriggersV1 extends BaseV1
 	): Message\ResponseInterface
 	{
 		// At first, try to load trigger
-		$trigger = $this->findTrigger(strval($request->getAttribute(Router\Routes::URL_ITEM_ID)));
+		$trigger = $this->findTrigger(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)));
 
 		try {
 			// Start transaction connection to the database
@@ -342,9 +342,9 @@ final class TriggersV1 extends BaseV1
 	): Message\ResponseInterface
 	{
 		// At first, try to load trigger
-		$trigger = $this->findTrigger(strval($request->getAttribute(Router\Routes::URL_ITEM_ID)));
+		$trigger = $this->findTrigger(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)));
 
-		$relationEntity = strtolower(strval($request->getAttribute(Router\Routes::RELATION_ENTITY)));
+		$relationEntity = strtolower(strval($request->getAttribute(Router\ApiRoutes::RELATION_ENTITY)));
 
 		if ($relationEntity === Schemas\Triggers\Trigger::RELATIONSHIPS_ACTIONS) {
 			return $this->buildResponse($request, $response, $trigger->getActions());

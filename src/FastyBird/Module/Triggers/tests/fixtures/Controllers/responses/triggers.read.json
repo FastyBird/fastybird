@@ -7,7 +7,7 @@
     "version" : "1.1"
   },
   "links" : {
-    "self" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4"
+    "self" : "/api/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4"
   },
   "data" : {
     "type" : "com.fastybird.triggers-module/trigger/manual",
@@ -21,9 +21,9 @@
     "relationships" : {
       "controls" : {
         "links" : {
-          "self" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/relationships/controls",
+          "self" : "/api/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/relationships/controls",
           "related" : {
-            "href" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/controls",
+            "href" : "/api/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/controls",
             "meta" : {
               "count" : 1
             }
@@ -38,9 +38,9 @@
       },
       "actions" : {
         "links" : {
-          "self" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/relationships/actions",
+          "self" : "/api/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/relationships/actions",
           "related" : {
-            "href" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions",
+            "href" : "/api/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/actions",
             "meta" : {
               "count" : 3
             }
@@ -63,9 +63,9 @@
       },
       "notifications" : {
         "links" : {
-          "self" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/relationships/notifications",
+          "self" : "/api/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/relationships/notifications",
           "related" : {
-            "href" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/notifications",
+            "href" : "/api/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/notifications",
             "meta" : {
               "count" : 2
             }
@@ -84,7 +84,7 @@
       }
     },
     "links" : {
-      "self" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4"
+      "self" : "/api/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4"
     }
   }
 }

@@ -436,7 +436,7 @@ final class SessionV1 extends BaseV1
 		Message\ResponseInterface $response,
 	): Message\ResponseInterface
 	{
-		$relationEntity = strtolower(strval($request->getAttribute(Router\Routes::RELATION_ENTITY)));
+		$relationEntity = strtolower(strval($request->getAttribute(Router\ApiRoutes::RELATION_ENTITY)));
 
 		if ($relationEntity === Schemas\Sessions\Session::RELATIONSHIPS_ACCOUNT) {
 			return $this->buildResponse($request, $response, $this->user->getAccount());

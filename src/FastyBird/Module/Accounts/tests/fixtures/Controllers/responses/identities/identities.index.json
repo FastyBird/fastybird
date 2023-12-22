@@ -7,7 +7,7 @@
     "version" : "1.1"
   },
   "links" : {
-    "self" : "/accounts-module/v1/accounts/efbfbdef-bfbd-68ef-bfbd-770b40efbfbd/identities"
+    "self" : "/api/accounts-module/v1/accounts/efbfbdef-bfbd-68ef-bfbd-770b40efbfbd/identities"
   },
   "data" : [
     {
@@ -20,8 +20,8 @@
       "relationships" : {
         "account" : {
           "links" : {
-            "self" : "/accounts-module/v1/accounts/efbfbdef-bfbd-68ef-bfbd-770b40efbfbd/identities/faf7a863-a49c-4428-a757-1de537773355/relationships/account",
-            "related" : "/accounts-module/v1/accounts/efbfbdef-bfbd-68ef-bfbd-770b40efbfbd"
+            "self" : "/api/accounts-module/v1/accounts/efbfbdef-bfbd-68ef-bfbd-770b40efbfbd/identities/faf7a863-a49c-4428-a757-1de537773355/relationships/account",
+            "related" : "/api/accounts-module/v1/accounts/efbfbdef-bfbd-68ef-bfbd-770b40efbfbd"
           },
           "data" : {
             "type" : "com.fastybird.accounts-module/account",
@@ -30,7 +30,7 @@
         }
       },
       "links" : {
-        "self" : "/accounts-module/v1/accounts/efbfbdef-bfbd-68ef-bfbd-770b40efbfbd/identities/faf7a863-a49c-4428-a757-1de537773355"
+        "self" : "/api/accounts-module/v1/accounts/efbfbdef-bfbd-68ef-bfbd-770b40efbfbd/identities/faf7a863-a49c-4428-a757-1de537773355"
       }
     }
   ]

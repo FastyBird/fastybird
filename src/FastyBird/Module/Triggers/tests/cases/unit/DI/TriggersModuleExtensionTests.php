@@ -30,7 +30,7 @@ final class TriggersModuleExtensionTests extends DbTestCase
 	 */
 	public function testServicesRegistration(): void
 	{
-		self::assertNotNull($this->getContainer()->getByType(Commands\Initialize::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Commands\Install::class, false));
 
 		self::assertNotNull(
 			$this->getContainer()->getByType(Models\Entities\Triggers\TriggersRepository::class, false),
@@ -82,7 +82,7 @@ final class TriggersModuleExtensionTests extends DbTestCase
 		self::assertNotNull($this->getContainer()->getByType(Hydrators\Notifications\SmsNotification::class, false));
 
 		self::assertNotNull($this->getContainer()->getByType(Router\Validator::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Router\Routes::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Router\ApiRoutes::class, false));
 
 		self::assertNotNull($this->getContainer()->getByType(Middleware\Access::class, false));
 

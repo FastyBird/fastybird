@@ -7,7 +7,7 @@
     "version": "1.1"
   },
   "links": {
-    "self": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels"
+    "self": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels"
   },
   "data": [
     {
@@ -22,7 +22,7 @@
       "relationships": {
         "device": {
           "links": {
-            "related": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa"
+            "related": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa"
           },
           "data": {
             "type": "com.fastybird.devices-module/device/blank",
@@ -31,9 +31,9 @@
         },
         "properties": {
           "links": {
-            "self": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/relationships/properties",
+            "self": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/relationships/properties",
             "related": {
-              "href": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/properties",
+              "href": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/properties",
               "meta": {
                 "count": 1
               }
@@ -48,9 +48,9 @@
         },
         "controls": {
           "links": {
-            "self": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/relationships/controls",
+            "self": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/relationships/controls",
             "related": {
-              "href": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/controls",
+              "href": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/controls",
               "meta": {
                 "count": 1
               }
@@ -65,7 +65,7 @@
         }
       },
       "links": {
-        "self": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e"
+        "self": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e"
       }
     },
     {
@@ -80,7 +80,7 @@
       "relationships": {
         "device": {
           "links": {
-            "related": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa"
+            "related": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa"
           },
           "data": {
             "type": "com.fastybird.devices-module/device/blank",
@@ -89,9 +89,9 @@
         },
         "properties": {
           "links": {
-            "self": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/6821f8e9-ae69-4d5c-9b7c-d2b213f1ae0a/relationships/properties",
+            "self": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/6821f8e9-ae69-4d5c-9b7c-d2b213f1ae0a/relationships/properties",
             "related": {
-              "href": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/6821f8e9-ae69-4d5c-9b7c-d2b213f1ae0a/properties",
+              "href": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/6821f8e9-ae69-4d5c-9b7c-d2b213f1ae0a/properties",
               "meta": {
                 "count": 2
               }
@@ -110,9 +110,9 @@
         },
         "controls": {
           "links": {
-            "self": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/6821f8e9-ae69-4d5c-9b7c-d2b213f1ae0a/relationships/controls",
+            "self": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/6821f8e9-ae69-4d5c-9b7c-d2b213f1ae0a/relationships/controls",
             "related": {
-              "href": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/6821f8e9-ae69-4d5c-9b7c-d2b213f1ae0a/controls",
+              "href": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/6821f8e9-ae69-4d5c-9b7c-d2b213f1ae0a/controls",
               "meta": {
                 "count": 1
               }
@@ -127,7 +127,7 @@
         }
       },
       "links": {
-        "self": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/6821f8e9-ae69-4d5c-9b7c-d2b213f1ae0a"
+        "self": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/6821f8e9-ae69-4d5c-9b7c-d2b213f1ae0a"
       }
     }
   ]

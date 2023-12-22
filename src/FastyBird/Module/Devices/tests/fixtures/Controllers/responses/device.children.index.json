@@ -7,7 +7,7 @@
     "version": "1.1"
   },
   "links": {
-    "self": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/children"
+    "self": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/children"
   },
   "data": [
     {
@@ -23,9 +23,9 @@
       "relationships": {
         "properties": {
           "links": {
-            "self": "/devices-module/v1/devices/a1036ff8-6ee8-4405-aaed-58bae0814596/relationships/properties",
+            "self": "/api/devices-module/v1/devices/a1036ff8-6ee8-4405-aaed-58bae0814596/relationships/properties",
             "related": {
-              "href": "/devices-module/v1/devices/a1036ff8-6ee8-4405-aaed-58bae0814596/properties",
+              "href": "/api/devices-module/v1/devices/a1036ff8-6ee8-4405-aaed-58bae0814596/properties",
               "meta": {
                 "count": 0
               }
@@ -35,9 +35,9 @@
         },
         "controls": {
           "links": {
-            "self": "/devices-module/v1/devices/a1036ff8-6ee8-4405-aaed-58bae0814596/relationships/controls",
+            "self": "/api/devices-module/v1/devices/a1036ff8-6ee8-4405-aaed-58bae0814596/relationships/controls",
             "related": {
-              "href": "/devices-module/v1/devices/a1036ff8-6ee8-4405-aaed-58bae0814596/controls",
+              "href": "/api/devices-module/v1/devices/a1036ff8-6ee8-4405-aaed-58bae0814596/controls",
               "meta": {
                 "count": 0
               }
@@ -47,9 +47,9 @@
         },
         "channels": {
           "links": {
-            "self": "/devices-module/v1/devices/a1036ff8-6ee8-4405-aaed-58bae0814596/relationships/channels",
+            "self": "/api/devices-module/v1/devices/a1036ff8-6ee8-4405-aaed-58bae0814596/relationships/channels",
             "related": {
-              "href": "/devices-module/v1/devices/a1036ff8-6ee8-4405-aaed-58bae0814596/channels",
+              "href": "/api/devices-module/v1/devices/a1036ff8-6ee8-4405-aaed-58bae0814596/channels",
               "meta": {
                 "count": 0
               }
@@ -59,8 +59,8 @@
         },
         "connector": {
           "links": {
-            "self": "/devices-module/v1/devices/a1036ff8-6ee8-4405-aaed-58bae0814596/relationships/connector",
-            "related": "/devices-module/v1/connectors/17c59dfa-2edd-438e-8c49-faa4e38e5a5e"
+            "self": "/api/devices-module/v1/devices/a1036ff8-6ee8-4405-aaed-58bae0814596/relationships/connector",
+            "related": "/api/devices-module/v1/connectors/17c59dfa-2edd-438e-8c49-faa4e38e5a5e"
           },
           "data": {
             "type": "com.fastybird.devices-module/connector/blank",
@@ -69,9 +69,9 @@
         },
         "parents": {
           "links": {
-            "self": "/devices-module/v1/devices/a1036ff8-6ee8-4405-aaed-58bae0814596/relationships/parents",
+            "self": "/api/devices-module/v1/devices/a1036ff8-6ee8-4405-aaed-58bae0814596/relationships/parents",
             "related": {
-              "href": "/devices-module/v1/devices/a1036ff8-6ee8-4405-aaed-58bae0814596/parents",
+              "href": "/api/devices-module/v1/devices/a1036ff8-6ee8-4405-aaed-58bae0814596/parents",
               "meta": {
                 "count": 1
               }
@@ -86,9 +86,9 @@
         },
         "children": {
           "links": {
-            "self": "/devices-module/v1/devices/a1036ff8-6ee8-4405-aaed-58bae0814596/relationships/children",
+            "self": "/api/devices-module/v1/devices/a1036ff8-6ee8-4405-aaed-58bae0814596/relationships/children",
             "related": {
-              "href": "/devices-module/v1/devices/a1036ff8-6ee8-4405-aaed-58bae0814596/children",
+              "href": "/api/devices-module/v1/devices/a1036ff8-6ee8-4405-aaed-58bae0814596/children",
               "meta": {
                 "count": 0
               }
@@ -98,7 +98,7 @@
         }
       },
       "links": {
-        "self": "/devices-module/v1/devices/a1036ff8-6ee8-4405-aaed-58bae0814596"
+        "self": "/api/devices-module/v1/devices/a1036ff8-6ee8-4405-aaed-58bae0814596"
       }
     }
   ]

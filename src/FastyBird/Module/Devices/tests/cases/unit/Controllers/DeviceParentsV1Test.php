@@ -69,14 +69,14 @@ final class DeviceParentsV1Test extends DbTestCase
 			// Valid responses
 			//////////////////
 			'readAll' => [
-				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/a1036ff8-6ee8-4405-aaed-58bae0814596/parents',
+				'/api/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/a1036ff8-6ee8-4405-aaed-58bae0814596/parents',
 				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_OK,
 				__DIR__ . '/../../../fixtures/Controllers/responses/device.parents.index.json',
 			],
 			'readAllPaging' => [
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/a1036ff8-6ee8-4405-aaed-58bae0814596/parents?page[offset]=1&page[limit]=1',
+				'/api/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/a1036ff8-6ee8-4405-aaed-58bae0814596/parents?page[offset]=1&page[limit]=1',
 				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_OK,
 				__DIR__ . '/../../../fixtures/Controllers/responses/device.parents.index.paging.json',
@@ -85,31 +85,31 @@ final class DeviceParentsV1Test extends DbTestCase
 			// Invalid responses
 			////////////////////
 			'readRelationshipsUnknownDevice' => [
-				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/28bc0d38-2f7c-4a71-aa74-27b102f8dfc4/parents',
+				'/api/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/28bc0d38-2f7c-4a71-aa74-27b102f8dfc4/parents',
 				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/notFound.json',
 			],
 			'readAllMissingToken' => [
-				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/a1036ff8-6ee8-4405-aaed-58bae0814596/parents',
+				'/api/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/a1036ff8-6ee8-4405-aaed-58bae0814596/parents',
 				null,
 				StatusCodeInterface::STATUS_FORBIDDEN,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
 			],
 			'readAllEmptyToken' => [
-				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/a1036ff8-6ee8-4405-aaed-58bae0814596/parents',
+				'/api/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/a1036ff8-6ee8-4405-aaed-58bae0814596/parents',
 				'',
 				StatusCodeInterface::STATUS_FORBIDDEN,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/forbidden.json',
 			],
 			'readAllInvalidToken' => [
-				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/a1036ff8-6ee8-4405-aaed-58bae0814596/parents',
+				'/api/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/a1036ff8-6ee8-4405-aaed-58bae0814596/parents',
 				'Bearer ' . self::INVALID_TOKEN,
 				StatusCodeInterface::STATUS_UNAUTHORIZED,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/unauthorized.json',
 			],
 			'readAllExpiredToken' => [
-				'/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/a1036ff8-6ee8-4405-aaed-58bae0814596/parents',
+				'/api/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/a1036ff8-6ee8-4405-aaed-58bae0814596/parents',
 				'Bearer ' . self::EXPIRED_TOKEN,
 				StatusCodeInterface::STATUS_UNAUTHORIZED,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/unauthorized.json',

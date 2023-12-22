@@ -43,7 +43,7 @@ trait TIdentity
 		Entities\Accounts\Account|null $account = null,
 	): Entities\Identities\Identity
 	{
-		if (!Uuid\Uuid::isValid(strval($request->getAttribute(Router\Routes::URL_ITEM_ID)))) {
+		if (!Uuid\Uuid::isValid(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)))) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				$this->translator->translate('//accounts-module.base.messages.notFound.heading'),
@@ -52,7 +52,7 @@ trait TIdentity
 		}
 
 		$findQuery = new Queries\Entities\FindIdentities();
-		$findQuery->byId(Uuid\Uuid::fromString(strval($request->getAttribute(Router\Routes::URL_ITEM_ID))));
+		$findQuery->byId(Uuid\Uuid::fromString(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID))));
 
 		if ($account !== null) {
 			$findQuery->forAccount($account);

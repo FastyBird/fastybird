@@ -7,7 +7,7 @@
     "version": "1.1"
   },
   "links": {
-    "self": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/properties/bbcccf8c-33ab-431b-a795-d7bb38b6b6db"
+    "self": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/properties/bbcccf8c-33ab-431b-a795-d7bb38b6b6db"
   },
   "data": {
     "type": "com.fastybird.devices-module/property/channel/dynamic",
@@ -32,7 +32,7 @@
     "relationships": {
       "channel": {
         "links": {
-          "related": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e"
+          "related": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e"
         },
         "data": {
           "type": "com.fastybird.devices-module/channel/general",
@@ -41,9 +41,9 @@
       },
       "children": {
         "links": {
-          "self": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/properties/bbcccf8c-33ab-431b-a795-d7bb38b6b6db/relationships/children",
+          "self": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/properties/bbcccf8c-33ab-431b-a795-d7bb38b6b6db/relationships/children",
           "related": {
-            "href": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/properties/bbcccf8c-33ab-431b-a795-d7bb38b6b6db/children",
+            "href": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/properties/bbcccf8c-33ab-431b-a795-d7bb38b6b6db/children",
             "meta": {
               "count": 0
             }
@@ -53,7 +53,7 @@
       }
     },
     "links": {
-      "self": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/properties/bbcccf8c-33ab-431b-a795-d7bb38b6b6db"
+      "self": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels/17c59dfa-2edd-438e-8c49-faa4e38e5a5e/properties/bbcccf8c-33ab-431b-a795-d7bb38b6b6db"
     }
   }
 }

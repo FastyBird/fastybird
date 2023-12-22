@@ -7,8 +7,8 @@
     "version" : "1.1"
   },
   "links" : {
-    "related" : "/accounts-module/v1/roles/efbfbd04-0158-efbf-bdef-bfbd4defbfbd",
-    "self" : "/accounts-module/v1/roles/efbfbdef-bfbd-efbf-bd0f-efbfbd5c4f61/relationships/parent"
+    "related" : "/api/accounts-module/v1/roles/efbfbd04-0158-efbf-bdef-bfbd4defbfbd",
+    "self" : "/api/accounts-module/v1/roles/efbfbdef-bfbd-efbf-bd0f-efbfbd5c4f61/relationships/parent"
   },
   "meta" : {
     "author" : "FastyBird team",

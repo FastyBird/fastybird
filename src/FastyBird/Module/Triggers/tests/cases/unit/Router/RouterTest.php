@@ -65,12 +65,12 @@ final class RouterTest extends DbTestCase
 	{
 		return [
 			'readAllValid' => [
-				'/v1/triggers',
+				'/api/v1/triggers',
 				'Bearer ' . VALID_TOKEN,
 				StatusCodeInterface::STATUS_OK,
 			],
 			'readAllInvalid' => [
-				'/' . Metadata\Constants::MODULE_TRIGGERS_PREFIX . '/v1/triggers',
+				'/api/' . Metadata\Constants::MODULE_TRIGGERS_PREFIX . '/v1/triggers',
 				'Bearer ' . VALID_TOKEN,
 				StatusCodeInterface::STATUS_NOT_FOUND,
 			],

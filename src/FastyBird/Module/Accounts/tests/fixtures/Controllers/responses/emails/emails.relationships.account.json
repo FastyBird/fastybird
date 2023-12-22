@@ -7,8 +7,8 @@
     "version" : "1.1"
   },
   "links" : {
-    "self" : "/accounts-module/v1/accounts/5e79efbf-bd0d-5b7c-46ef-bfbdefbfbd34/emails/32ebe3c3-0238-482e-ab79-6b1d9ee2147c/relationships/account",
-    "related" : "/accounts-module/v1/accounts/5e79efbf-bd0d-5b7c-46ef-bfbdefbfbd34"
+    "self" : "/api/accounts-module/v1/accounts/5e79efbf-bd0d-5b7c-46ef-bfbdefbfbd34/emails/32ebe3c3-0238-482e-ab79-6b1d9ee2147c/relationships/account",
+    "related" : "/api/accounts-module/v1/accounts/5e79efbf-bd0d-5b7c-46ef-bfbdefbfbd34"
   },
   "data" : {
     "type" : "com.fastybird.accounts-module/account",

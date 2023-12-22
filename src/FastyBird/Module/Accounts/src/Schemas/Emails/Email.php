@@ -92,8 +92,8 @@ final class Email extends JsonApis\JsonApi
 			$this->router->urlFor(
 				Accounts\Constants::ROUTE_NAME_ACCOUNT_EMAIL,
 				[
-					Router\Routes::URL_ACCOUNT_ID => $resource->getAccount()->getPlainId(),
-					Router\Routes::URL_ITEM_ID => $resource->getPlainId(),
+					Router\ApiRoutes::URL_ACCOUNT_ID => $resource->getAccount()->getPlainId(),
+					Router\ApiRoutes::URL_ITEM_ID => $resource->getPlainId(),
 				],
 			),
 			false,
@@ -137,7 +137,7 @@ final class Email extends JsonApis\JsonApi
 				$this->router->urlFor(
 					Accounts\Constants::ROUTE_NAME_ACCOUNT,
 					[
-						Router\Routes::URL_ITEM_ID => $resource->getAccount()->getPlainId(),
+						Router\ApiRoutes::URL_ITEM_ID => $resource->getAccount()->getPlainId(),
 					],
 				),
 				false,
@@ -163,9 +163,9 @@ final class Email extends JsonApis\JsonApi
 				$this->router->urlFor(
 					Accounts\Constants::ROUTE_NAME_ACCOUNT_EMAIL_RELATIONSHIP,
 					[
-						Router\Routes::URL_ACCOUNT_ID => $resource->getAccount()->getPlainId(),
-						Router\Routes::URL_ITEM_ID => $resource->getPlainId(),
-						Router\Routes::RELATION_ENTITY => $name,
+						Router\ApiRoutes::URL_ACCOUNT_ID => $resource->getAccount()->getPlainId(),
+						Router\ApiRoutes::URL_ITEM_ID => $resource->getPlainId(),
+						Router\ApiRoutes::RELATION_ENTITY => $name,
 					],
 				),
 				false,

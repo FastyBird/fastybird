@@ -7,7 +7,7 @@
       },
       "id" : "4fe1019c-f49e-4cbf-83e6-20b394e76317",
       "links" : {
-        "self" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/notifications/4fe1019c-f49e-4cbf-83e6-20b394e76317"
+        "self" : "/api/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/notifications/4fe1019c-f49e-4cbf-83e6-20b394e76317"
       },
       "relationships" : {
         "trigger" : {
@@ -16,8 +16,8 @@
             "type" : "com.fastybird.triggers-module/trigger/manual"
           },
           "links" : {
-            "related" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4",
-            "self" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/notifications/4fe1019c-f49e-4cbf-83e6-20b394e76317/relationships/trigger"
+            "related" : "/api/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4",
+            "self" : "/api/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/notifications/4fe1019c-f49e-4cbf-83e6-20b394e76317/relationships/trigger"
           }
         }
       },
@@ -28,10 +28,10 @@
     "version" : "1.1"
   },
   "links" : {
-    "first" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/notifications?page%5Boffset%5D=0&page%5Blimit%5D=1",
-    "last" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/notifications?page%5Boffset%5D=1&page%5Blimit%5D=1",
-    "prev" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/notifications?page%5Boffset%5D=0&page%5Blimit%5D=1",
-    "self" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/notifications?page%5Boffset%5D=1&page%5Blimit%5D=1"
+    "first" : "/api/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/notifications?page%5Boffset%5D=0&page%5Blimit%5D=1",
+    "last" : "/api/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/notifications?page%5Boffset%5D=1&page%5Blimit%5D=1",
+    "prev" : "/api/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/notifications?page%5Boffset%5D=0&page%5Blimit%5D=1",
+    "self" : "/api/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/notifications?page%5Boffset%5D=1&page%5Blimit%5D=1"
   },
   "meta" : {
     "author" : "FastyBird team",

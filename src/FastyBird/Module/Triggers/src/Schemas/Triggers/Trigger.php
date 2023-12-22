@@ -103,7 +103,7 @@ abstract class Trigger extends JsonApiSchemas\JsonApi
 			$this->router->urlFor(
 				Triggers\Constants::ROUTE_NAME_TRIGGER,
 				[
-					Router\Routes::URL_ITEM_ID => $resource->getPlainId(),
+					Router\ApiRoutes::URL_ITEM_ID => $resource->getPlainId(),
 				],
 			),
 			false,
@@ -152,7 +152,7 @@ abstract class Trigger extends JsonApiSchemas\JsonApi
 				$this->router->urlFor(
 					Triggers\Constants::ROUTE_NAME_TRIGGER_ACTIONS,
 					[
-						Router\Routes::URL_TRIGGER_ID => $resource->getPlainId(),
+						Router\ApiRoutes::URL_TRIGGER_ID => $resource->getPlainId(),
 					],
 				),
 				true,
@@ -166,7 +166,7 @@ abstract class Trigger extends JsonApiSchemas\JsonApi
 				$this->router->urlFor(
 					Triggers\Constants::ROUTE_NAME_TRIGGER_NOTIFICATIONS,
 					[
-						Router\Routes::URL_TRIGGER_ID => $resource->getPlainId(),
+						Router\ApiRoutes::URL_TRIGGER_ID => $resource->getPlainId(),
 					],
 				),
 				true,
@@ -198,8 +198,8 @@ abstract class Trigger extends JsonApiSchemas\JsonApi
 				$this->router->urlFor(
 					Triggers\Constants::ROUTE_NAME_TRIGGER_RELATIONSHIP,
 					[
-						Router\Routes::URL_ITEM_ID => $resource->getPlainId(),
-						Router\Routes::RELATION_ENTITY => $name,
+						Router\ApiRoutes::URL_ITEM_ID => $resource->getPlainId(),
+						Router\ApiRoutes::RELATION_ENTITY => $name,
 					],
 				),
 				false,

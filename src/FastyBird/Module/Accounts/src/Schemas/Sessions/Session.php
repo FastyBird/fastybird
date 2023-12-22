@@ -137,7 +137,7 @@ final class Session extends JsonApis\JsonApi
 				$this->router->urlFor(
 					Accounts\Constants::ROUTE_NAME_ACCOUNT,
 					[
-						Router\Routes::URL_ITEM_ID => $resource->getIdentity()
+						Router\ApiRoutes::URL_ITEM_ID => $resource->getIdentity()
 							->getAccount()
 							->getPlainId(),
 					],
@@ -165,7 +165,7 @@ final class Session extends JsonApis\JsonApi
 				$this->router->urlFor(
 					Accounts\Constants::ROUTE_NAME_SESSION_RELATIONSHIP,
 					[
-						Router\Routes::RELATION_ENTITY => $name,
+						Router\ApiRoutes::RELATION_ENTITY => $name,
 					],
 				),
 				false,

@@ -33,6 +33,12 @@ final class Constants
 	public const EXCHANGE_CHANNEL_NAME = 'fb_exchange';
 
 	/**
+	 * Routing
+	 */
+
+	public const ROUTER_API_PREFIX = 'api';
+
+	/**
 	 * App sources
 	 */
 

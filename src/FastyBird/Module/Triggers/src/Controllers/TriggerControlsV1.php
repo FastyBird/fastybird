@@ -63,7 +63,7 @@ final class TriggerControlsV1 extends BaseV1
 	): Message\ResponseInterface
 	{
 		// At first, try to load trigger
-		$trigger = $this->findTrigger(strval($request->getAttribute(Router\Routes::URL_TRIGGER_ID)));
+		$trigger = $this->findTrigger(strval($request->getAttribute(Router\ApiRoutes::URL_TRIGGER_ID)));
 
 		if (!$trigger instanceof Entities\Triggers\ManualTrigger) {
 			throw new JsonApiExceptions\JsonApiError(
@@ -93,7 +93,7 @@ final class TriggerControlsV1 extends BaseV1
 	): Message\ResponseInterface
 	{
 		// At first, try to load trigger
-		$trigger = $this->findTrigger(strval($request->getAttribute(Router\Routes::URL_TRIGGER_ID)));
+		$trigger = $this->findTrigger(strval($request->getAttribute(Router\ApiRoutes::URL_TRIGGER_ID)));
 
 		if (!$trigger instanceof Entities\Triggers\ManualTrigger) {
 			throw new JsonApiExceptions\JsonApiError(
@@ -103,10 +103,10 @@ final class TriggerControlsV1 extends BaseV1
 			);
 		}
 
-		if (Uuid\Uuid::isValid(strval($request->getAttribute(Router\Routes::URL_ITEM_ID)))) {
+		if (Uuid\Uuid::isValid(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)))) {
 			$findQuery = new Queries\Entities\FindTriggerControls();
 			$findQuery->forTrigger($trigger);
-			$findQuery->byId(Uuid\Uuid::fromString(strval($request->getAttribute(Router\Routes::URL_ITEM_ID))));
+			$findQuery->byId(Uuid\Uuid::fromString(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID))));
 
 			// & control
 			$control = $this->controlRepository->findOneBy($findQuery);
@@ -134,7 +134,7 @@ final class TriggerControlsV1 extends BaseV1
 	): Message\ResponseInterface
 	{
 		// At first, try to load trigger
-		$trigger = $this->findTrigger(strval($request->getAttribute(Router\Routes::URL_TRIGGER_ID)));
+		$trigger = $this->findTrigger(strval($request->getAttribute(Router\ApiRoutes::URL_TRIGGER_ID)));
 
 		if (!$trigger instanceof Entities\Triggers\ManualTrigger) {
 			throw new JsonApiExceptions\JsonApiError(
@@ -145,12 +145,12 @@ final class TriggerControlsV1 extends BaseV1
 		}
 
 		// & relation entity name
-		$relationEntity = strtolower(strval($request->getAttribute(Router\Routes::RELATION_ENTITY)));
+		$relationEntity = strtolower(strval($request->getAttribute(Router\ApiRoutes::RELATION_ENTITY)));
 
-		if (Uuid\Uuid::isValid(strval($request->getAttribute(Router\Routes::URL_ITEM_ID)))) {
+		if (Uuid\Uuid::isValid(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)))) {
 			$findQuery = new Queries\Entities\FindTriggerControls();
 			$findQuery->forTrigger($trigger);
-			$findQuery->byId(Uuid\Uuid::fromString(strval($request->getAttribute(Router\Routes::URL_ITEM_ID))));
+			$findQuery->byId(Uuid\Uuid::fromString(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID))));
 
 			// & control
 			$control = $this->controlRepository->findOneBy($findQuery);

@@ -7,7 +7,7 @@
     "version" : "1.1"
   },
   "links" : {
-    "self" : "/accounts-module/v1/accounts"
+    "self" : "/api/accounts-module/v1/accounts"
   },
   "data" : [
     {
@@ -34,9 +34,9 @@
       "relationships" : {
         "identities" : {
           "links" : {
-            "self" : "/accounts-module/v1/accounts/5e79efbf-bd0d-5b7c-46ef-bfbdefbfbd34/relationships/identities",
+            "self" : "/api/accounts-module/v1/accounts/5e79efbf-bd0d-5b7c-46ef-bfbdefbfbd34/relationships/identities",
             "related" : {
-              "href" : "/accounts-module/v1/accounts/5e79efbf-bd0d-5b7c-46ef-bfbdefbfbd34/identities",
+              "href" : "/api/accounts-module/v1/accounts/5e79efbf-bd0d-5b7c-46ef-bfbdefbfbd34/identities",
               "meta" : {
                 "count" : 1
               }
@@ -51,7 +51,7 @@
         },
         "roles" : {
           "links" : {
-            "self" : "/accounts-module/v1/accounts/5e79efbf-bd0d-5b7c-46ef-bfbdefbfbd34/relationships/roles"
+            "self" : "/api/accounts-module/v1/accounts/5e79efbf-bd0d-5b7c-46ef-bfbdefbfbd34/relationships/roles"
           },
           "data" : [
             {
@@ -62,9 +62,9 @@
         },
         "emails" : {
           "links" : {
-            "self" : "/accounts-module/v1/accounts/5e79efbf-bd0d-5b7c-46ef-bfbdefbfbd34/relationships/emails",
+            "self" : "/api/accounts-module/v1/accounts/5e79efbf-bd0d-5b7c-46ef-bfbdefbfbd34/relationships/emails",
             "related" : {
-              "href" : "/accounts-module/v1/accounts/5e79efbf-bd0d-5b7c-46ef-bfbdefbfbd34/emails",
+              "href" : "/api/accounts-module/v1/accounts/5e79efbf-bd0d-5b7c-46ef-bfbdefbfbd34/emails",
               "meta" : {
                 "count" : 2
               }
@@ -83,7 +83,7 @@
         }
       },
       "links" : {
-        "self" : "/accounts-module/v1/accounts/5e79efbf-bd0d-5b7c-46ef-bfbdefbfbd34"
+        "self" : "/api/accounts-module/v1/accounts/5e79efbf-bd0d-5b7c-46ef-bfbdefbfbd34"
       }
     },
     {
@@ -110,9 +110,9 @@
       "relationships" : {
         "identities" : {
           "links" : {
-            "self" : "/accounts-module/v1/accounts/efbfbdef-bfbd-68ef-bfbd-770b40efbfbd/relationships/identities",
+            "self" : "/api/accounts-module/v1/accounts/efbfbdef-bfbd-68ef-bfbd-770b40efbfbd/relationships/identities",
             "related" : {
-              "href" : "/accounts-module/v1/accounts/efbfbdef-bfbd-68ef-bfbd-770b40efbfbd/identities",
+              "href" : "/api/accounts-module/v1/accounts/efbfbdef-bfbd-68ef-bfbd-770b40efbfbd/identities",
               "meta" : {
                 "count" : 1
               }
@@ -127,7 +127,7 @@
         },
         "roles" : {
           "links" : {
-            "self" : "/accounts-module/v1/accounts/efbfbdef-bfbd-68ef-bfbd-770b40efbfbd/relationships/roles"
+            "self" : "/api/accounts-module/v1/accounts/efbfbdef-bfbd-68ef-bfbd-770b40efbfbd/relationships/roles"
           },
           "data" : [
             {
@@ -138,9 +138,9 @@
         },
         "emails" : {
           "links" : {
-            "self" : "/accounts-module/v1/accounts/efbfbdef-bfbd-68ef-bfbd-770b40efbfbd/relationships/emails",
+            "self" : "/api/accounts-module/v1/accounts/efbfbdef-bfbd-68ef-bfbd-770b40efbfbd/relationships/emails",
             "related" : {
-              "href" : "/accounts-module/v1/accounts/efbfbdef-bfbd-68ef-bfbd-770b40efbfbd/emails",
+              "href" : "/api/accounts-module/v1/accounts/efbfbdef-bfbd-68ef-bfbd-770b40efbfbd/emails",
               "meta" : {
                 "count" : 1
               }
@@ -155,7 +155,7 @@
         }
       },
       "links" : {
-        "self" : "/accounts-module/v1/accounts/efbfbdef-bfbd-68ef-bfbd-770b40efbfbd"
+        "self" : "/api/accounts-module/v1/accounts/efbfbdef-bfbd-68ef-bfbd-770b40efbfbd"
       }
     },
     {
@@ -182,9 +182,9 @@
       "relationships" : {
         "identities" : {
           "links" : {
-            "self" : "/accounts-module/v1/accounts/fae8d781-7e2c-4318-9c85-43ba637d14c5/relationships/identities",
+            "self" : "/api/accounts-module/v1/accounts/fae8d781-7e2c-4318-9c85-43ba637d14c5/relationships/identities",
             "related" : {
-              "href" : "/accounts-module/v1/accounts/fae8d781-7e2c-4318-9c85-43ba637d14c5/identities",
+              "href" : "/api/accounts-module/v1/accounts/fae8d781-7e2c-4318-9c85-43ba637d14c5/identities",
               "meta" : {
                 "count" : 1
               }
@@ -199,15 +199,15 @@
         },
         "roles" : {
           "links" : {
-            "self" : "/accounts-module/v1/accounts/fae8d781-7e2c-4318-9c85-43ba637d14c5/relationships/roles"
+            "self" : "/api/accounts-module/v1/accounts/fae8d781-7e2c-4318-9c85-43ba637d14c5/relationships/roles"
           },
           "data" : []
         },
         "emails" : {
           "links" : {
-            "self" : "/accounts-module/v1/accounts/fae8d781-7e2c-4318-9c85-43ba637d14c5/relationships/emails",
+            "self" : "/api/accounts-module/v1/accounts/fae8d781-7e2c-4318-9c85-43ba637d14c5/relationships/emails",
             "related" : {
-              "href" : "/accounts-module/v1/accounts/fae8d781-7e2c-4318-9c85-43ba637d14c5/emails",
+              "href" : "/api/accounts-module/v1/accounts/fae8d781-7e2c-4318-9c85-43ba637d14c5/emails",
               "meta" : {
                 "count" : 1
               }
@@ -222,7 +222,7 @@
         }
       },
       "links" : {
-        "self" : "/accounts-module/v1/accounts/fae8d781-7e2c-4318-9c85-43ba637d14c5"
+        "self" : "/api/accounts-module/v1/accounts/fae8d781-7e2c-4318-9c85-43ba637d14c5"
       }
     },
     {
@@ -249,9 +249,9 @@
       "relationships" : {
         "identities" : {
           "links" : {
-            "self" : "/accounts-module/v1/accounts/fd23ccb4-8d87-4eb3-94da-638ab4e10ae3/relationships/identities",
+            "self" : "/api/accounts-module/v1/accounts/fd23ccb4-8d87-4eb3-94da-638ab4e10ae3/relationships/identities",
             "related" : {
-              "href" : "/accounts-module/v1/accounts/fd23ccb4-8d87-4eb3-94da-638ab4e10ae3/identities",
+              "href" : "/api/accounts-module/v1/accounts/fd23ccb4-8d87-4eb3-94da-638ab4e10ae3/identities",
               "meta" : {
                 "count" : 1
               }
@@ -266,15 +266,15 @@
         },
         "roles" : {
           "links" : {
-            "self" : "/accounts-module/v1/accounts/fd23ccb4-8d87-4eb3-94da-638ab4e10ae3/relationships/roles"
+            "self" : "/api/accounts-module/v1/accounts/fd23ccb4-8d87-4eb3-94da-638ab4e10ae3/relationships/roles"
           },
           "data" : []
         },
         "emails" : {
           "links" : {
-            "self" : "/accounts-module/v1/accounts/fd23ccb4-8d87-4eb3-94da-638ab4e10ae3/relationships/emails",
+            "self" : "/api/accounts-module/v1/accounts/fd23ccb4-8d87-4eb3-94da-638ab4e10ae3/relationships/emails",
             "related" : {
-              "href" : "/accounts-module/v1/accounts/fd23ccb4-8d87-4eb3-94da-638ab4e10ae3/emails",
+              "href" : "/api/accounts-module/v1/accounts/fd23ccb4-8d87-4eb3-94da-638ab4e10ae3/emails",
               "meta" : {
                 "count" : 1
               }
@@ -289,7 +289,7 @@
         }
       },
       "links" : {
-        "self" : "/accounts-module/v1/accounts/fd23ccb4-8d87-4eb3-94da-638ab4e10ae3"
+        "self" : "/api/accounts-module/v1/accounts/fd23ccb4-8d87-4eb3-94da-638ab4e10ae3"
       }
     },
     {
@@ -316,9 +316,9 @@
       "relationships" : {
         "identities" : {
           "links" : {
-            "self" : "/accounts-module/v1/accounts/fdbe2ce2-3b18-41f1-aaab-c3c56d286eb4/relationships/identities",
+            "self" : "/api/accounts-module/v1/accounts/fdbe2ce2-3b18-41f1-aaab-c3c56d286eb4/relationships/identities",
             "related" : {
-              "href" : "/accounts-module/v1/accounts/fdbe2ce2-3b18-41f1-aaab-c3c56d286eb4/identities",
+              "href" : "/api/accounts-module/v1/accounts/fdbe2ce2-3b18-41f1-aaab-c3c56d286eb4/identities",
               "meta" : {
                 "count" : 1
               }
@@ -333,15 +333,15 @@
         },
         "roles" : {
           "links" : {
-            "self" : "/accounts-module/v1/accounts/fdbe2ce2-3b18-41f1-aaab-c3c56d286eb4/relationships/roles"
+            "self" : "/api/accounts-module/v1/accounts/fdbe2ce2-3b18-41f1-aaab-c3c56d286eb4/relationships/roles"
           },
           "data" : []
         },
         "emails" : {
           "links" : {
-            "self" : "/accounts-module/v1/accounts/fdbe2ce2-3b18-41f1-aaab-c3c56d286eb4/relationships/emails",
+            "self" : "/api/accounts-module/v1/accounts/fdbe2ce2-3b18-41f1-aaab-c3c56d286eb4/relationships/emails",
             "related" : {
-              "href" : "/accounts-module/v1/accounts/fdbe2ce2-3b18-41f1-aaab-c3c56d286eb4/emails",
+              "href" : "/api/accounts-module/v1/accounts/fdbe2ce2-3b18-41f1-aaab-c3c56d286eb4/emails",
               "meta" : {
                 "count" : 1
               }
@@ -356,7 +356,7 @@
         }
       },
       "links" : {
-        "self" : "/accounts-module/v1/accounts/fdbe2ce2-3b18-41f1-aaab-c3c56d286eb4"
+        "self" : "/api/accounts-module/v1/accounts/fdbe2ce2-3b18-41f1-aaab-c3c56d286eb4"
       }
     },
     {
@@ -383,9 +383,9 @@
       "relationships" : {
         "identities" : {
           "links" : {
-            "self" : "/accounts-module/v1/accounts/fe115286-8cfd-41bf-aceb-6ca95baf6fe9/relationships/identities",
+            "self" : "/api/accounts-module/v1/accounts/fe115286-8cfd-41bf-aceb-6ca95baf6fe9/relationships/identities",
             "related" : {
-              "href" : "/accounts-module/v1/accounts/fe115286-8cfd-41bf-aceb-6ca95baf6fe9/identities",
+              "href" : "/api/accounts-module/v1/accounts/fe115286-8cfd-41bf-aceb-6ca95baf6fe9/identities",
               "meta" : {
                 "count" : 1
               }
@@ -400,15 +400,15 @@
         },
         "roles" : {
           "links" : {
-            "self" : "/accounts-module/v1/accounts/fe115286-8cfd-41bf-aceb-6ca95baf6fe9/relationships/roles"
+            "self" : "/api/accounts-module/v1/accounts/fe115286-8cfd-41bf-aceb-6ca95baf6fe9/relationships/roles"
           },
           "data" : []
         },
         "emails" : {
           "links" : {
-            "self" : "/accounts-module/v1/accounts/fe115286-8cfd-41bf-aceb-6ca95baf6fe9/relationships/emails",
+            "self" : "/api/accounts-module/v1/accounts/fe115286-8cfd-41bf-aceb-6ca95baf6fe9/relationships/emails",
             "related" : {
-              "href" : "/accounts-module/v1/accounts/fe115286-8cfd-41bf-aceb-6ca95baf6fe9/emails",
+              "href" : "/api/accounts-module/v1/accounts/fe115286-8cfd-41bf-aceb-6ca95baf6fe9/emails",
               "meta" : {
                 "count" : 1
               }
@@ -423,7 +423,7 @@
         }
       },
       "links" : {
-        "self" : "/accounts-module/v1/accounts/fe115286-8cfd-41bf-aceb-6ca95baf6fe9"
+        "self" : "/api/accounts-module/v1/accounts/fe115286-8cfd-41bf-aceb-6ca95baf6fe9"
       }
     }
   ]

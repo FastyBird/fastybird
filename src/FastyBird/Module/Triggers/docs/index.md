@@ -61,7 +61,7 @@ found [here](https://github.com/FastyBird/triggers-module/blob/main/config/examp
 This module is using database, and need some initial data to be inserted into it.
 
 ```sh
-your-console-entrypoint fb:triggers-module:initialize
+your-console-entrypoint fb:triggers-module:install
 ```
 
 This console command is interactive and will ask for all required information.

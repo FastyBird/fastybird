@@ -7,7 +7,7 @@
       },
       "id" : "05f28df9-5f19-4923-b3f8-b9090116dadc",
       "links" : {
-        "self" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/notifications/05f28df9-5f19-4923-b3f8-b9090116dadc"
+        "self" : "/api/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/notifications/05f28df9-5f19-4923-b3f8-b9090116dadc"
       },
       "relationships" : {
         "trigger" : {
@@ -16,8 +16,8 @@
             "type" : "com.fastybird.triggers-module/trigger/manual"
           },
           "links" : {
-            "related" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4",
-            "self" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/notifications/05f28df9-5f19-4923-b3f8-b9090116dadc/relationships/trigger"
+            "related" : "/api/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4",
+            "self" : "/api/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/notifications/05f28df9-5f19-4923-b3f8-b9090116dadc/relationships/trigger"
           }
         }
       },
@@ -30,7 +30,7 @@
       },
       "id" : "4fe1019c-f49e-4cbf-83e6-20b394e76317",
       "links" : {
-        "self" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/notifications/4fe1019c-f49e-4cbf-83e6-20b394e76317"
+        "self" : "/api/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/notifications/4fe1019c-f49e-4cbf-83e6-20b394e76317"
       },
       "relationships" : {
         "trigger" : {
@@ -39,8 +39,8 @@
             "type" : "com.fastybird.triggers-module/trigger/manual"
           },
           "links" : {
-            "related" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4",
-            "self" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/notifications/4fe1019c-f49e-4cbf-83e6-20b394e76317/relationships/trigger"
+            "related" : "/api/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4",
+            "self" : "/api/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/notifications/4fe1019c-f49e-4cbf-83e6-20b394e76317/relationships/trigger"
           }
         }
       },
@@ -51,7 +51,7 @@
     "version" : "1.1"
   },
   "links" : {
-    "self" : "/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/notifications"
+    "self" : "/api/triggers-module/v1/triggers/c64ba1c4-0eda-4cab-87a0-4d634f7b67f4/notifications"
   },
   "meta" : {
     "author" : "FastyBird team",

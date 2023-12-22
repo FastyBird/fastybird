@@ -7,8 +7,8 @@
     "version": "1.1"
   },
   "links": {
-    "self": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/relationships/channels",
-    "related": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels"
+    "self": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/relationships/channels",
+    "related": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels"
   },
   "data": [
     {

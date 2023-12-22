@@ -7,7 +7,7 @@
     "version" : "1.1"
   },
   "links" : {
-    "self" : "/accounts-module/v1/roles/efbfbd04-0158-efbf-bdef-bfbd4defbfbd/children"
+    "self" : "/api/accounts-module/v1/roles/efbfbd04-0158-efbf-bdef-bfbd4defbfbd/children"
   },
   "data" : [
     {
@@ -23,9 +23,9 @@
       "relationships" : {
         "children" : {
           "links" : {
-            "self" : "/accounts-module/v1/roles/efbfbdef-bfbd-efbf-bd0f-efbfbd5c4f61/relationships/children",
+            "self" : "/api/accounts-module/v1/roles/efbfbdef-bfbd-efbf-bd0f-efbfbd5c4f61/relationships/children",
             "related" : {
-              "href" : "/accounts-module/v1/roles/efbfbdef-bfbd-efbf-bd0f-efbfbd5c4f61/children",
+              "href" : "/api/accounts-module/v1/roles/efbfbdef-bfbd-efbf-bd0f-efbfbd5c4f61/children",
               "meta" : {
                 "count" : 1
               }
@@ -40,8 +40,8 @@
         },
         "parent" : {
           "links" : {
-            "self" : "/accounts-module/v1/roles/efbfbdef-bfbd-efbf-bd0f-efbfbd5c4f61/relationships/parent",
-            "related" : "/accounts-module/v1/roles/efbfbdef-bfbd-efbf-bd0f-efbfbd5c4f61"
+            "self" : "/api/accounts-module/v1/roles/efbfbdef-bfbd-efbf-bd0f-efbfbd5c4f61/relationships/parent",
+            "related" : "/api/accounts-module/v1/roles/efbfbdef-bfbd-efbf-bd0f-efbfbd5c4f61"
           },
           "data" : {
             "type" : "com.fastybird.accounts-module/role",
@@ -50,7 +50,7 @@
         }
       },
       "links" : {
-        "self" : "/accounts-module/v1/roles/efbfbdef-bfbd-efbf-bd0f-efbfbd5c4f61"
+        "self" : "/api/accounts-module/v1/roles/efbfbdef-bfbd-efbf-bd0f-efbfbd5c4f61"
       }
     }
   ]

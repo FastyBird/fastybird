@@ -7,7 +7,7 @@
     "version": "1.1"
   },
   "links": {
-    "self": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/controls/7c055b2b-60c3-4017-93db-e9478d8aa662"
+    "self": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/controls/7c055b2b-60c3-4017-93db-e9478d8aa662"
   },
   "data": {
     "type": "com.fastybird.devices-module/control/device",
@@ -18,7 +18,7 @@
     "relationships": {
       "device": {
         "links": {
-          "related": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa"
+          "related": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa"
         },
         "data": {
           "type": "com.fastybird.devices-module/device/blank",
@@ -27,7 +27,7 @@
       }
     },
     "links": {
-      "self": "/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/controls/7c055b2b-60c3-4017-93db-e9478d8aa662"
+      "self": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/controls/7c055b2b-60c3-4017-93db-e9478d8aa662"
     }
   }
 }
