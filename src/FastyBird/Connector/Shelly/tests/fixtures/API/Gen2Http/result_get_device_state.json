@@ -7,7 +7,7 @@
     {
       "errors": [],
       "id": 0,
-      "percent": null,
+      "percent": "n/a",
       "state": false,
       "type": "input"
     }
@@ -37,8 +37,8 @@
         "celsius": 55.1,
         "fahrenheit": 131.1
       },
-      "timer_duration": null,
-      "timer_started_at": null,
+      "timer_duration": "n/a",
+      "timer_started_at": "n/a",
       "type": "switch",
       "voltage": 236.7
     }
@@ -47,7 +47,7 @@
   "voltmeter": [],
   "wifi": {
     "id": 0,
-    "ap_client_count": null,
+    "ap_client_count": "n/a",
     "rssi": -61,
     "ssid": "WifiNetworkName",
     "sta_ip": "10.10.0.100",
