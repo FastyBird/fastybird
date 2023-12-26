@@ -546,7 +546,7 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ConfirmationQuestion(
-			$this->translator->translate('//modbus-connector.cmd.install.questions.manage.devices'),
+			$this->translator->translate('//fb-mqtt-connector.cmd.install.questions.manage.devices'),
 			false,
 		);
 

@@ -140,6 +140,7 @@
             "FastyBird\\Connector\\Tuya\\": "src/FastyBird/Connector/Tuya/src/",
             "FastyBird\\Connector\\Viera\\": "src/FastyBird/Connector/Viera/src/",
             "FastyBird\\Connector\\Virtual\\": "src/FastyBird/Connector/Virtual/src/",
+            "FastyBird\\Connector\\Zigbee2Mqtt\\": "src/FastyBird/Connector/Zigbee2Mqtt/src/",
             "FastyBird\\Library\\Bootstrap\\": "src/FastyBird/Library/Bootstrap/src/",
             "FastyBird\\Library\\Exchange\\": "src/FastyBird/Library/Exchange/src/",
             "FastyBird\\Library\\Metadata\\": "src/FastyBird/Library/Metadata/src/",
@@ -184,6 +185,8 @@
             "FastyBird\\Connector\\Virtual\\Tests\\Fixtures\\": "src/FastyBird/Connector/Virtual/tests/fixtures",
             "FastyBird\\Connector\\Virtual\\Tests\\Fixtures\\Dummy\\": "src/FastyBird/Connector/Virtual/tests/fixtures/dummy",
             "FastyBird\\Connector\\Virtual\\Tests\\Tools\\": "src/FastyBird/Connector/Virtual/tests/tools",
+            "FastyBird\\Connector\\Zigbee2Mqtt\\Tests\\Cases\\Unit\\": "src/FastyBird/Connector/Zigbee2Mqtt/tests/cases/unit",
+            "FastyBird\\Connector\\Zigbee2Mqtt\\Tests\\Tools\\": "src/FastyBird/Connector/Zigbee2Mqtt/tests/tools",
             "FastyBird\\Library\\Bootstrap\\Tests\\Cases\\Unit\\": "src/FastyBird/Library/Bootstrap/tests/cases/unit",
             "FastyBird\\Library\\Exchange\\Tests\\Cases\\Unit\\": "src/FastyBird/Library/Exchange/tests/cases/unit",
             "FastyBird\\Library\\Metadata\\Tests\\Cases\\Unit\\": "src/FastyBird/Library/Metadata/tests/cases/unit",
@@ -279,7 +282,8 @@
         "fastybird/viera-connector": "self.version",
         "fastybird/virtual-connector": "self.version",
         "fastybird/web-server-plugin": "self.version",
-        "fastybird/ws-server-plugin": "self.version"
+        "fastybird/ws-server-plugin": "self.version",
+        "fastybird/zigbee2mqtt-connector": "self.version"
     },
     "minimum-stability": "dev",
     "prefer-stable": true

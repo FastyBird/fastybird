@@ -70,6 +70,11 @@
                 <element key="src/FastyBird/Connector/Virtual/tests/fixtures/dummy" value="FastyBird\Connector\Virtual\Tests\Fixtures\Dummy"/>
                 <element key="src/FastyBird/Connector/Virtual/tests/tools" value="FastyBird\Connector\Virtual\Tests\Tools"/>
 
+                <element key="src/FastyBird/Connector/Zigbee2Mqtt/src" value="FastyBird\Connector\Zigbee2Mqtt"/>
+                <element key="src/FastyBird/Connector/Zigbee2Mqtt/tests/cases/unit" value="FastyBird\Connector\Zigbee2Mqtt\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Connector/Zigbee2Mqtt/tests/fixtures/dummy" value="FastyBird\Connector\Zigbee2Mqtt\Tests\Fixtures\Dummy"/>
+                <element key="src/FastyBird/Connector/Zigbee2Mqtt/tests/tools" value="FastyBird\Connector\Zigbee2Mqtt\Tests\Tools"/>
+
                 <element key="src/FastyBird/Library/Bootstrap/src" value="FastyBird\Library\Bootstrap"/>
                 <element key="src/FastyBird/Library/Bootstrap/tests/cases/unit" value="FastyBird\Library\Bootstrap\Tests\Cases\Unit"/>
 

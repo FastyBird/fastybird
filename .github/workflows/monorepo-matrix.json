@@ -81,6 +81,11 @@
   },
   {
     "organization": "FastyBird",
+    "name": "zigbee2mqtt-connector",
+    "local-path": "src/FastyBird/Connector/Zigbee2Mqtt"
+  },
+  {
+    "organization": "FastyBird",
     "name": "couchdb-plugin",
     "local-path": "src/FastyBird/Plugin/CouchDb"
   },

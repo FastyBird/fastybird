@@ -1,0 +1,129 @@
+#
+# Connector translations
+#
+# @language       en_US
+#
+# @license        More in LICENSE.md
+# @copyright      https://www.fastybird.com
+# @author         Adam Kadlec <adam.kadlec@fastybird.com>
+# @package        FastyBird:Zigbee2MqttConnector!
+# @subpackage     Translations
+# @since          1.0.0
+#
+# @date           23.12.23
+#
+
+cmd:
+    base:
+        questions:
+            continue: "Would you like to continue?"
+            whatToDo: "What would you like to do?"
+            exit: "Do you want to exit?"
+
+        messages:
+            noConnectors: "No Zigbee2MQTT connectors registered in system."
+            answerNotValid: "Selected answer: \"%s\" is not valid."
+
+    execute:
+        title: "Zigbee2MQTT connector - service"
+        subtitle: "This action will run connector service"
+
+        questions:
+            execute: "Would you like to execute \"%connector%\" connector"
+            select:
+                connector: "Please select connector to execute"
+
+        messages:
+            connector:
+                notFound: "Connector was not found in system."
+                disabled: "Connector is disabled. Disabled connector could not be executed."
+            error: "Something went wrong, connector was terminated."
+
+    install:
+        title: "Zigbee2MQTT connector - installer"
+        subtitle: "This action will create|update|delete connector configuration"
+
+        actions:
+            create:
+                connector: "Create connector"
+                device: "Create device"
+            update:
+                connector: "Edit connector"
+                device: "Edit device"
+            remove:
+                connector: "Delete connector"
+                device: "Delete device"
+            manage:
+                connector: "Manage connector"
+            list:
+                connectors: "List connectors"
+                devices: "List devices"
+            nothing: "Nothing"
+
+        questions:
+            create:
+                connector: "Would you like to create new connector configuration?"
+                devices: "Would you like to configure connector device(s)?"
+                device: "Would you like to create new device in connector?"
+            manage:
+                devices: "Would you like to manage connector devices?"
+            select:
+                item:
+                    connector: "Please select connector to manage"
+                    device: "Please select device to manage"
+            provide:
+                connector:
+                    identifier: "Provide connector identifier"
+                    name: "Provide connector name"
+                    address: "Provide server address"
+                    port: "Provide server port"
+                    securedPort: "Provide server secured port"
+                    username: "Provide server username"
+                    password: "Provide server password"
+                device:
+                    identifier: "Provide device identifier"
+                    name: "Provide device name"
+            disable:
+                connector: "Do you want to disable connector?"
+            enable:
+                connector: "Do you want to enable connector?"
+            change:
+                protocol: "Do you want to change connector protocol version?"
+
+        data:
+            name: "Name"
+            devicesCnt: "# Devices"
+
+        messages:
+            identifier:
+                connector:
+                    used: "This identifier is already used."
+                    missing: "Connector identifier have to be provided."
+                device:
+                    used: "This identifier is already used."
+                    missing: "Device identifier have to provided."
+            create:
+                connector:
+                    success: "Connector \"%name%\" was successfully created."
+                    error: "Something went wrong, connector could not be created. An error was logged."
+                device:
+                    success: "Device \"%name%\" was successfully created."
+                    error: "Something went wrong, device could not be created. Error was logged."
+            update:
+                connector:
+                    success: "Connector \"%name%\" was successfully updated."
+                    error: "Something went wrong, connector could not be updated. An error was logged."
+                device:
+                    success: "Device \"%name%\" was successfully updated."
+                    error: "Something went wrong, device could not be updated. Error was logged."
+            remove:
+                connector:
+                    confirm: "This action will remove \"%name%\" connector. This action can not be undone."
+                    success: "Connector \"%name%\" was successfully removed."
+                    error: "Something went wrong, connector could not be removed. An error was logged."
+                device:
+                    confirm: "This action will remove \"%name%\" device. This action can not be undone."
+                    success: "Device \"%name%\" was successfully removed."
+                    error: "Something went wrong, device could not be removed. Error was logged."
+            noConnector: "Connector could not be loaded"
+            noDevices: "No devices registered in selected connector."
