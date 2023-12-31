@@ -104,15 +104,14 @@ abstract class Periodic implements Writer
 
 			$findDevicePropertiesQuery = new DevicesQueries\Configuration\FindDeviceProperties();
 			$findDevicePropertiesQuery->forDevice($device);
+			$findDevicePropertiesQuery->settable(true);
 
 			$properties = $this->devicesPropertiesConfigurationRepository->findAllBy($findDevicePropertiesQuery);
 
 			foreach ($properties as $property) {
 				if (
-					(
-						$property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
-						|| $property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
-					) && $property->isSettable()
+					$property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
+					|| $property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
 				) {
 					$this->properties[$device->getId()->toString()][$property->getId()->toString()] = $property;
 				}
@@ -126,15 +125,14 @@ abstract class Periodic implements Writer
 			foreach ($channels as $channel) {
 				$findChannelPropertiesQuery = new DevicesQueries\Configuration\FindChannelProperties();
 				$findChannelPropertiesQuery->forChannel($channel);
+				$findChannelPropertiesQuery->settable(true);
 
 				$properties = $this->channelsPropertiesConfigurationRepository->findAllBy($findChannelPropertiesQuery);
 
 				foreach ($properties as $property) {
 					if (
-						(
-							$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-							|| $property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
-						) && $property->isSettable()
+						$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+						|| $property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
 					) {
 						$this->properties[$device->getId()->toString()][$property->getId()->toString()] = $property;
 					}

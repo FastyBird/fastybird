@@ -55,8 +55,8 @@ abstract class Periodic
 
 	/** @var array<string, MetadataDocuments\DevicesModule\Device>  */
 	private array $devices = [];
-	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-	/** @var array<string, array<string, MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\ChannelDynamicProperty>>  */
+
+	/** @var array<string, array<string, MetadataDocuments\DevicesModule\ChannelDynamicProperty>>  */
 	private array $properties = [];
 
 	/** @var array<string> */
@@ -73,9 +73,7 @@ abstract class Periodic
 		protected readonly Queue\Queue $queue,
 		protected readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		protected readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
-		private readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
-		private readonly DevicesUtilities\DevicePropertiesStates $devicePropertiesStatesManager,
 		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
@@ -102,20 +100,6 @@ abstract class Periodic
 				$this->properties[$device->getId()->toString()] = [];
 			}
 
-			$findDevicePropertiesQuery = new DevicesQueries\Configuration\FindDeviceDynamicProperties();
-			$findDevicePropertiesQuery->forDevice($device);
-
-			$properties = $this->devicesPropertiesConfigurationRepository->findAllBy(
-				$findDevicePropertiesQuery,
-				MetadataDocuments\DevicesModule\DeviceDynamicProperty::class,
-			);
-
-			foreach ($properties as $property) {
-				if ($property->isSettable()) {
-					$this->properties[$device->getId()->toString()][$property->getId()->toString()] = $property;
-				}
-			}
-
 			$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
 			$findChannelsQuery->forDevice($device);
 
@@ -124,6 +108,7 @@ abstract class Periodic
 			foreach ($channels as $channel) {
 				$findChannelPropertiesQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
 				$findChannelPropertiesQuery->forChannel($channel);
+				$findChannelPropertiesQuery->settable(true);
 
 				$properties = $this->channelsPropertiesConfigurationRepository->findAllBy(
 					$findChannelPropertiesQuery,
@@ -131,9 +116,7 @@ abstract class Periodic
 				);
 
 				foreach ($properties as $property) {
-					if ($property->isSettable()) {
-						$this->properties[$device->getId()->toString()][$property->getId()->toString()] = $property;
-					}
+					$this->properties[$device->getId()->toString()][$property->getId()->toString()] = $property;
 				}
 			}
 		}
@@ -212,66 +195,9 @@ abstract class Periodic
 
 			$this->processedProperties[$property->getId()->toString()] = $now;
 
-			if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-				if ($this->writeDeviceProperty($device, $property)) {
-					return true;
-				}
-			} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-				if ($this->writeChannelProperty($device, $property)) {
-					return true;
-				}
+			if ($this->writeChannelProperty($device, $property)) {
+				return true;
 			}
-		}
-
-		return false;
-	}
-
-	/**
-	 * @throws DevicesExceptions\InvalidArgument
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\Runtime
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 */
-	private function writeDeviceProperty(
-		MetadataDocuments\DevicesModule\Device $device,
-		MetadataDocuments\DevicesModule\DeviceDynamicProperty $property,
-	): bool
-	{
-		$now = $this->dateTimeFactory->getNow();
-
-		$state = $this->devicePropertiesStatesManager->getValue($property);
-
-		if ($state === null) {
-			return false;
-		}
-
-		if ($state->getExpectedValue() === null) {
-			return false;
-		}
-
-		$pending = $state->getPending();
-
-		if (
-			$pending === true
-			|| (
-				$pending instanceof DateTimeInterface
-				&& (float) $now->format('Uv') - (float) $pending->format('Uv') > self::HANDLER_PENDING_DELAY
-			)
-		) {
-			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\WriteDevicePropertyState::class,
-					[
-						'connector' => $device->getConnector(),
-						'device' => $device->getId(),
-						'property' => $property->getId(),
-					],
-				),
-			);
-
-			return true;
 		}
 
 		return false;
@@ -313,7 +239,7 @@ abstract class Periodic
 		) {
 			$this->queue->append(
 				$this->entityHelper->create(
-					Entities\Messages\WriteChannelPropertyState::class,
+					Entities\Messages\WriteSubDeviceState::class,
 					[
 						'connector' => $device->getConnector(),
 						'device' => $device->getId(),

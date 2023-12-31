@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * DeviceConnectionState.php
+ * StoreBridgeLog.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,40 +10,45 @@
  * @subpackage     Entities
  * @since          1.0.0
  *
- * @date           24.12.23
+ * @date           31.12.23
  */
 
 namespace FastyBird\Connector\Zigbee2Mqtt\Entities\Messages;
 
-use FastyBird\Connector\Zigbee2Mqtt\Types;
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_merge;
 
 /**
- * Device connection state description message
+ * Bridge connection state description message
  *
  * @package        FastyBird:Zigbee2MqttConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceConnectionState extends Device implements Entity
+final class StoreBridgeLog extends Bridge implements Entity
 {
 
 	public function __construct(
 		Uuid\UuidInterface $connector,
-		string $device,
-		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\ConnectionState::class)]
-		private readonly Types\ConnectionState $state,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		private readonly string $level,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		private readonly string $message,
 	)
 	{
-		parent::__construct($connector, $device);
+		parent::__construct($connector);
 	}
 
-	public function getState(): Types\ConnectionState
+	public function getLevel(): string
 	{
-		return $this->state;
+		return $this->level;
+	}
+
+	public function getMessage(): string
+	{
+		return $this->message;
 	}
 
 	public function toArray(): array
@@ -51,7 +56,8 @@ final class DeviceConnectionState extends Device implements Entity
 		return array_merge(
 			parent::toArray(),
 			[
-				'state' => $this->getState()->getValue(),
+				'level' => $this->getLevel(),
+				'message' => $this->getMessage(),
 			],
 		);
 	}

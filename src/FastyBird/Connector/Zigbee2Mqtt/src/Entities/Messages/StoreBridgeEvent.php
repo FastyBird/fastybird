@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * BridgeInfo.php
+ * StoreBridgeEvent.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -15,40 +15,42 @@
 
 namespace FastyBird\Connector\Zigbee2Mqtt\Entities\Messages;
 
+use FastyBird\Connector\Zigbee2Mqtt\Types;
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_merge;
 
 /**
- * Bridge info description message
+ * Bridge event message
  *
  * @package        FastyBird:Zigbee2MqttConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class BridgeInfo extends Bridge implements Entity
+final class StoreBridgeEvent extends Bridge implements Entity
 {
 
 	public function __construct(
 		Uuid\UuidInterface $connector,
-		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $version,
-		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $commit,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\BridgeEvent::class)]
+		private readonly Types\BridgeEvent $type,
+		#[ObjectMapper\Rules\MappedObjectValue(EventData::class)]
+		private readonly EventData $data,
 	)
 	{
 		parent::__construct($connector);
 	}
 
-	public function getVersion(): string
+	public function getType(): Types\BridgeEvent
 	{
-		return $this->version;
+		return $this->type;
 	}
 
-	public function getCommit(): string
+	public function getData(): EventData
 	{
-		return $this->commit;
+		return $this->data;
 	}
 
 	public function toArray(): array
@@ -56,8 +58,8 @@ final class BridgeInfo extends Bridge implements Entity
 		return array_merge(
 			parent::toArray(),
 			[
-				'version' => $this->getVersion(),
-				'commit' => $this->getCommit(),
+				'type' => $this->getType()->getValue(),
+				'data' => $this->getData()->toArray(),
 			],
 		);
 	}

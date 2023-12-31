@@ -16,11 +16,10 @@
 namespace FastyBird\Connector\Zigbee2Mqtt\API;
 
 use FastyBird\Connector\Zigbee2Mqtt\API;
-use FastyBird\Connector\Zigbee2Mqtt\Helpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use FastyBird\Connector\Zigbee2Mqtt\Entities\Zigbee2MqttConnector;
 use Nette;
+use function array_key_exists;
+use function md5;
 
 /**
  * Client connections manager
@@ -35,38 +34,42 @@ final class ConnectionManager
 
 	use Nette\SmartObject;
 
-	private Client|null $clientConnection = null;
+	/** @var array<string, Client> */
+	private array $clientConnections = [];
 
-	public function __construct(
-		private readonly ClientFactory $clientFactory,
-		private readonly Helpers\Connector $connectorHelper,
-	)
+	public function __construct(private readonly ClientFactory $clientFactory)
 	{
 	}
 
-	/**
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 */
-	public function getConnection(MetadataDocuments\DevicesModule\Connector $connector): Client
+	public function getClient(
+		string $clientId,
+		string $serverAddress = Zigbee2MqttConnector::DEFAULT_SERVER_ADDRESS,
+		int $serverPort = Zigbee2MqttConnector::DEFAULT_SERVER_PORT,
+		string|null $username = null,
+		string|null $password = null,
+	): Client
 	{
-		if ($this->clientConnection === null) {
-			$this->clientConnection = $this->clientFactory->create(
-				$connector->getId()->toString(),
-				$this->connectorHelper->getServerAddress($connector),
-				$this->connectorHelper->getServerPort($connector),
-				$this->connectorHelper->getUsername($connector),
-				$this->connectorHelper->getPassword($connector),
+		$hash = md5($clientId . $serverAddress . $serverPort . $username . $password);
+
+		if (!array_key_exists($hash, $this->clientConnections)) {
+			$this->clientConnections[$hash] = $this->clientFactory->create(
+				$clientId,
+				$serverAddress,
+				$serverPort,
+				$username,
+				$password,
 			);
 		}
 
-		return $this->clientConnection;
+		return $this->clientConnections[$hash];
 	}
 
 	public function __destruct()
 	{
-		$this->clientConnection?->disconnect();
+		foreach ($this->clientConnections as $connection) {
+			$connection->disconnect();
+
+		}
 	}
 
 }

@@ -66,6 +66,7 @@ final class Connector implements DevicesConnectors\Connector
 	public function __construct(
 		private readonly DevicesEntities\Connectors\Connector $connector,
 		private readonly array $clientsFactories,
+		private readonly Clients\DiscoveryFactory $discoveryClientFactory,
 		private readonly Helpers\Connector $connectorHelper,
 		private readonly Writers\WriterFactory $writerFactory,
 		private readonly Queue\Queue $queue,
@@ -175,8 +176,8 @@ final class Connector implements DevicesConnectors\Connector
 	{
 		assert($this->connector instanceof Entities\Zigbee2MqttConnector);
 
-		$this->logger->error(
-			'Devices discovery is not allowed for Zigbee2MQTT connector type',
+		$this->logger->info(
+			'Starting Zigbee2MQTT connector discovery',
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
 				'type' => 'connector',
@@ -185,6 +186,39 @@ final class Connector implements DevicesConnectors\Connector
 				],
 			],
 		);
+
+		$client = $this->discoveryClientFactory->create($this->connector);
+
+		$client->on('finished', function (): void {
+			$this->dispatcher?->dispatch(
+				new DevicesEvents\TerminateConnector(
+					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT),
+					'Devices discovery finished',
+				),
+			);
+		});
+
+		$this->clients[] = $client;
+
+		$this->consumersTimer = $this->eventLoop->addPeriodicTimer(
+			self::QUEUE_PROCESSING_INTERVAL,
+			async(function (): void {
+				$this->consumers->consume();
+			}),
+		);
+
+		$this->logger->info(
+			'Zigbee2MQTT connector discovery has been started',
+			[
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+				'type' => 'connector',
+				'connector' => [
+					'id' => $this->connector->getId()->toString(),
+				],
+			],
+		);
+
+		$client->discover();
 	}
 
 	public function terminate(): void

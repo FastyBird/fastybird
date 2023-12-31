@@ -6,22 +6,23 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:NsPanelConnector!
+ * @package        FastyBird:Zigbee2MqttConnector!
  * @subpackage     Queue
  * @since          1.0.0
  *
- * @date           18.07.23
+ * @date           32.12.23
  */
 
-namespace FastyBird\Connector\NsPanel\Queue\Consumers;
+namespace FastyBird\Connector\Zigbee2Mqtt\Queue\Consumers;
 
 use DateTimeInterface;
-use FastyBird\Connector\NsPanel;
-use FastyBird\Connector\NsPanel\API;
-use FastyBird\Connector\NsPanel\Entities;
-use FastyBird\Connector\NsPanel\Exceptions;
-use FastyBird\Connector\NsPanel\Helpers;
-use FastyBird\Connector\NsPanel\Queue;
+use FastyBird\Connector\Zigbee2Mqtt;
+use FastyBird\Connector\Zigbee2Mqtt\API;
+use FastyBird\Connector\Zigbee2Mqtt\Entities;
+use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
+use FastyBird\Connector\Zigbee2Mqtt\Helpers;
+use FastyBird\Connector\Zigbee2Mqtt\Queue;
+use FastyBird\Connector\Zigbee2Mqtt\Types;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
@@ -34,14 +35,17 @@ use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Nette\Utils;
+use stdClass;
 use Throwable;
-use function array_merge;
-use function strval;
+use function array_key_exists;
+use function count;
+use function preg_match;
+use function sprintf;
 
 /**
  * Write state to sub-device message consumer
  *
- * @package        FastyBird:NsPanelConnector!
+ * @package        FastyBird:Zigbee2MqttConnector!
  * @subpackage     Queue
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
@@ -49,21 +53,18 @@ use function strval;
 final class WriteSubDeviceState implements Queue\Consumer
 {
 
-	use StateWriter;
 	use Nette\SmartObject;
 
-	private API\LanApi|null $lanApiApi = null;
-
 	public function __construct(
-		protected readonly Helpers\Channel $channelHelper,
 		protected readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
 		protected readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
 		private readonly Queue\Queue $queue,
-		private readonly API\LanApiFactory $lanApiApiFactory,
+		private readonly API\ConnectionManager $connectionManager,
 		private readonly Helpers\Entity $entityHelper,
-		private readonly Helpers\Devices\Gateway $gatewayHelper,
+		private readonly Helpers\Connector $connectorHelper,
+		private readonly Helpers\Devices\Bridge $bridgeHelper,
 		private readonly Helpers\Devices\SubDevice $subDeviceHelper,
-		private readonly NsPanel\Logger $logger,
+		private readonly Zigbee2Mqtt\Logger $logger,
 		private readonly DevicesModels\Configuration\Connectors\Repository $connectorsConfigurationRepository,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
@@ -75,9 +76,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 	/**
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
@@ -90,6 +89,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 
 		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
 		$findConnectorQuery->byId($entity->getConnector());
+		$findConnectorQuery->byType(Entities\Zigbee2MqttConnector::TYPE);
 
 		$connector = $this->connectorsConfigurationRepository->findOneBy($findConnectorQuery);
 
@@ -97,7 +97,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 			$this->logger->error(
 				'Connector could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
 					'type' => 'write-sub-device-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -126,7 +126,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 			$this->logger->error(
 				'Device could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
 					'type' => 'write-sub-device-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -144,43 +144,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 			return true;
 		}
 
-		$gateway = $this->subDeviceHelper->getGateway($device);
-
-		$ipAddress = $this->gatewayHelper->getIpAddress($gateway);
-		$accessToken = $this->gatewayHelper->getAccessToken($gateway);
-
-		if ($ipAddress === null || $accessToken === null) {
-			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\StoreDeviceConnectionState::class,
-					[
-						'connector' => $connector->getId(),
-						'identifier' => $gateway->getIdentifier(),
-						'state' => MetadataTypes\ConnectionState::STATE_ALERT,
-					],
-				),
-			);
-
-			$this->logger->error(
-				'Device owning NS Panel is not configured',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'write-sub-device-state-message-consumer',
-					'connector' => [
-						'id' => $entity->getConnector()->toString(),
-					],
-					'device' => [
-						'id' => $entity->getDevice()->toString(),
-					],
-					'channel' => [
-						'id' => $entity->getChannel()->toString(),
-					],
-					'data' => $entity->toArray(),
-				],
-			);
-
-			return true;
-		}
+		$bridge = $this->subDeviceHelper->getBridge($device);
 
 		$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 		$findChannelQuery->forDevice($device);
@@ -192,7 +156,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 			$this->logger->error(
 				'Channel could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
 					'type' => 'write-sub-device-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -210,35 +174,57 @@ final class WriteSubDeviceState implements Queue\Consumer
 			return true;
 		}
 
-		if (!$this->channelHelper->getCapability($channel)->hasReadWritePermission()) {
+		$findPropertiesQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
+		$findPropertiesQuery->forChannel($channel);
+		$findPropertiesQuery->settable(true);
+
+		$properties = $this->channelsPropertiesConfigurationRepository->findAllBy(
+			$findPropertiesQuery,
+			MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
+		);
+
+		if (
+			preg_match(Zigbee2Mqtt\Constants::CHANNEL_IDENTIFIER, $channel->getIdentifier(), $matches) !== 1
+			&& array_key_exists('type', $matches)
+			&& Types\ExposeType::isValidValue($matches['type'])
+			&& array_key_exists('identifier', $matches)
+		) {
+			if (count($properties) === 1) {
+				return true;
+			}
+
+			$payload = new stdClass();
+
+			foreach ($properties as $property) {
+				$state = $this->channelPropertiesStatesManager->getValue($property);
+
+				if ($state?->getExpectedValue() !== null) {
+					$payload->{$property->getIdentifier()} = $state->getExpectedValue();
+				}
+			}
+		} elseif (
+			preg_match(Zigbee2Mqtt\Constants::CHANNEL_SPECIAL_IDENTIFIER, $channel->getIdentifier(), $matches) !== 1
+			&& array_key_exists('type', $matches)
+			&& Types\ExposeType::isValidValue($matches['type'])
+			&& array_key_exists('subtype', $matches)
+			&& Types\ExposeType::isValidValue($matches['subtype'])
+			&& array_key_exists('identifier', $matches)
+		) {
+			$payload = new stdClass();
+			$payload->{$matches['identifier']} = new stdClass();
+
+			foreach ($properties as $property) {
+				$state = $this->channelPropertiesStatesManager->getValue($property);
+
+				if ($state?->getExpectedValue() !== null) {
+					$payload->{$matches['identifier']}->{$property->getIdentifier()} = $state->getExpectedValue();
+				}
+			}
+		} else {
 			$this->logger->error(
-				'Device state is not writable',
+				'Channel identifier has invalid value',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'write-sub-device-state-message-consumer',
-					'connector' => [
-						'id' => $entity->getConnector()->toString(),
-					],
-					'device' => [
-						'id' => $entity->getDevice()->toString(),
-					],
-					'channel' => [
-						'id' => $entity->getChannel()->toString(),
-					],
-					'data' => $entity->toArray(),
-				],
-			);
-
-			return true;
-		}
-
-		$mapped = $this->mapChannelToState($channel);
-
-		if ($mapped === null) {
-			$this->logger->error(
-				'Device state could not be created',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
 					'type' => 'write-sub-device-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -257,12 +243,11 @@ final class WriteSubDeviceState implements Queue\Consumer
 		}
 
 		try {
-			$this->getApiClient($connector)->setSubDeviceState(
-				$device->getIdentifier(),
-				$mapped,
-				$ipAddress,
-				$accessToken,
-			)
+			$this->getClient($connector)
+				->publish(
+					sprintf('%s/%s/set', $this->bridgeHelper->getBaseTopic($bridge), $device->getIdentifier()),
+					Utils\Json::encode($payload),
+				)
 				->then(function () use ($channel): void {
 					$now = $this->dateTimeFactory->getNow();
 
@@ -288,7 +273,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 						}
 					}
 				})
-				->catch(function (Throwable $ex) use ($entity, $connector, $gateway, $channel): void {
+				->catch(function (Throwable $ex) use ($entity, $connector, $bridge, $channel): void {
 					$findPropertiesQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
 					$findPropertiesQuery->forChannel($channel);
 					$findPropertiesQuery->settable(true);
@@ -308,71 +293,41 @@ final class WriteSubDeviceState implements Queue\Consumer
 						);
 					}
 
-					$extra = [];
-
-					if ($ex instanceof Exceptions\LanApiCall) {
-						$extra = [
-							'request' => [
-								'method' => $ex->getRequest()?->getMethod(),
-								'url' => $ex->getRequest() !== null ? strval($ex->getRequest()->getUri()) : null,
-								'body' => $ex->getRequest()?->getBody()->getContents(),
+					$this->queue->append(
+						$this->entityHelper->create(
+							Entities\Messages\StoreDeviceConnectionState::class,
+							[
+								'connector' => $connector->getId(),
+								'identifier' => $bridge->getIdentifier(),
+								'state' => MetadataTypes\ConnectionState::STATE_LOST,
 							],
-							'response' => [
-								'body' => $ex->getResponse()?->getBody()->getContents(),
-							],
-						];
-
-						$this->queue->append(
-							$this->entityHelper->create(
-								Entities\Messages\StoreDeviceConnectionState::class,
-								[
-									'connector' => $connector->getId(),
-									'identifier' => $gateway->getIdentifier(),
-									'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
-								],
-							),
-						);
-
-					} else {
-						$this->queue->append(
-							$this->entityHelper->create(
-								Entities\Messages\StoreDeviceConnectionState::class,
-								[
-									'connector' => $connector->getId(),
-									'identifier' => $gateway->getIdentifier(),
-									'state' => MetadataTypes\ConnectionState::STATE_LOST,
-								],
-							),
-						);
-					}
+						),
+					);
 
 					$this->logger->error(
 						'Could write state to sub-device',
-						array_merge(
-							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-								'type' => 'write-sub-device-state-message-consumer',
-								'exception' => BootstrapHelpers\Logger::buildException($ex),
-								'connector' => [
-									'id' => $entity->getConnector()->toString(),
-								],
-								'device' => [
-									'id' => $entity->getDevice()->toString(),
-								],
-								'channel' => [
-									'id' => $entity->getChannel()->toString(),
-								],
-								'data' => $entity->toArray(),
+						[
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+							'type' => 'write-sub-device-state-message-consumer',
+							'exception' => BootstrapHelpers\Logger::buildException($ex),
+							'connector' => [
+								'id' => $entity->getConnector()->toString(),
 							],
-							$extra,
-						),
+							'device' => [
+								'id' => $entity->getDevice()->toString(),
+							],
+							'channel' => [
+								'id' => $entity->getChannel()->toString(),
+							],
+							'data' => $entity->toArray(),
+						],
 					);
 				});
 		} catch (Throwable $ex) {
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
 					'type' => 'write-sub-device-state-message-consumer',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'connector' => [
@@ -392,7 +347,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed write sub-device state message',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
 				'type' => 'write-sub-device-state-message-consumer',
 				'connector' => [
 					'id' => $entity->getConnector()->toString(),
@@ -410,13 +365,20 @@ final class WriteSubDeviceState implements Queue\Consumer
 		return true;
 	}
 
-	private function getApiClient(MetadataDocuments\DevicesModule\Connector $connector): API\LanApi
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	private function getClient(MetadataDocuments\DevicesModule\Connector $connector): API\Client
 	{
-		if ($this->lanApiApi === null) {
-			$this->lanApiApi = $this->lanApiApiFactory->create($connector->getIdentifier());
-		}
-
-		return $this->lanApiApi;
+		return $this->connectionManager->getClient(
+			$connector->getId()->toString(),
+			$this->connectorHelper->getServerAddress($connector),
+			$this->connectorHelper->getServerPort($connector),
+			$this->connectorHelper->getUsername($connector),
+			$this->connectorHelper->getPassword($connector),
+		);
 	}
 
 }

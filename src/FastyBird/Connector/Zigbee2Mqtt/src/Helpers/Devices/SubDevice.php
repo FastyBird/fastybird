@@ -6,17 +6,17 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:NsPanelConnector!
+ * @package        FastyBird:Zigbee2MqttConnector!
  * @subpackage     Helpers
  * @since          1.0.0
  *
  * @date           01.12.23
  */
 
-namespace FastyBird\Connector\NsPanel\Helpers\Devices;
+namespace FastyBird\Connector\Zigbee2Mqtt\Helpers\Devices;
 
-use FastyBird\Connector\NsPanel\Entities;
-use FastyBird\Connector\NsPanel\Exceptions;
+use FastyBird\Connector\Zigbee2Mqtt\Entities;
+use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -25,7 +25,7 @@ use FastyBird\Module\Devices\Queries as DevicesQueries;
 /**
  * Sub device helper
  *
- * @package        FastyBird:NsPanelConnector!
+ * @package        FastyBird:Zigbee2MqttConnector!
  * @subpackage     Helpers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
@@ -43,12 +43,12 @@ final class SubDevice
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 */
-	public function getGateway(MetadataDocuments\DevicesModule\Device $device): MetadataDocuments\DevicesModule\Device
+	public function getBridge(MetadataDocuments\DevicesModule\Device $device): MetadataDocuments\DevicesModule\Device
 	{
 		foreach ($device->getParents() as $parent) {
 			$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
 			$findDeviceQuery->byId($parent);
-			$findDeviceQuery->byType(Entities\Devices\Gateway::TYPE);
+			$findDeviceQuery->byType(Entities\Devices\Bridge::TYPE);
 
 			$parent = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
@@ -57,7 +57,7 @@ final class SubDevice
 			}
 		}
 
-		throw new Exceptions\InvalidState('Sub-device have to have parent gateway defined');
+		throw new Exceptions\InvalidState('Sub-device have to have parent bridge defined');
 	}
 
 }

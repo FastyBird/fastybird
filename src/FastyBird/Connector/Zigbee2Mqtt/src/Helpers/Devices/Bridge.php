@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Device.php
+ * Bridge.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,7 +13,7 @@
  * @date           25.12.23
  */
 
-namespace FastyBird\Connector\Zigbee2Mqtt\Helpers;
+namespace FastyBird\Connector\Zigbee2Mqtt\Helpers\Devices;
 
 use FastyBird\Connector\Zigbee2Mqtt\Entities;
 use FastyBird\Connector\Zigbee2Mqtt\Types;
@@ -26,14 +26,14 @@ use function assert;
 use function is_string;
 
 /**
- * Device helper
+ * Bridge device helper
  *
  * @package        FastyBird:Zigbee2MqttConnector!
  * @subpackage     Helpers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Device
+final class Bridge
 {
 
 	public function __construct(

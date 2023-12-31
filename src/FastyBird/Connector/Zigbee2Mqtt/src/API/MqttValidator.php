@@ -41,7 +41,9 @@ final class MqttValidator
 	public const DEVICE_WITH_ACTION_REGEXP = '/(?i)^(?<base_topic>[a-z0-9_-]+)\/(?<name>([a-z0-9-_\/]+))(\/(?<type>(availability|get))){1}$/';
 
 	// TOPIC: /zigbee2mqtt/bridge/<info|state|devices|groups|event|extensions>
-	public const BRIDGE_REGEXP = '/(?i)^(?<base_topic>[a-z0-9_-]+)\/bridge\/(?<type>(info|state|devices|groups|event))$/';
+	public const BRIDGE_REGEXP = '/(?i)^(?<base_topic>[a-z0-9_-]+)\/bridge\/(?<type>(info|state|logging|devices|groups|event))$/';
+	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+	public const BRIDGE_REQUEST_REGEXP = '/(?i)^(?<base_topic>[a-z0-9_-]+)\/bridge\/request\/(?<request>(permit_join|health_check|coordinator_check|restart|networkmap|extension\/save|backup|install_code\/add|device\/remove|device\/ota_update\/check|device\/ota_update\/update|device\/configure|device\/options|device\/rename|device\/bind|device\/unbind|device\/configure_reporting|group\/remove|group\/add|group\/rename|group\/options|group\/members\/add|group\/members\/remove|group\/members\/remove_all|options|config\/last_seen|config\/elapsed|config\/log_level|config\/homeassistant|touchlink\/factory_reset|touchlink\/scan|touchlink\/identify))$/';
 
 	public static function validate(string $topic): bool
 	{
@@ -64,7 +66,8 @@ final class MqttValidator
 
 	public static function validateBridge(string $topic): bool
 	{
-		return preg_match(self::BRIDGE_REGEXP, $topic) === 1;
+		return preg_match(self::BRIDGE_REGEXP, $topic) === 1
+			|| preg_match(self::BRIDGE_REQUEST_REGEXP, $topic) === 1;
 	}
 
 }

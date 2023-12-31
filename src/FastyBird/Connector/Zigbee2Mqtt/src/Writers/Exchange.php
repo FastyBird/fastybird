@@ -53,9 +53,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 		Queue\Queue $queue,
 		DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
-		DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
 		DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
-		DevicesUtilities\DevicePropertiesStates $devicePropertiesStatesManager,
 		DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
 		DateTimeFactory\Factory $dateTimeFactory,
 		EventLoop\LoopInterface $eventLoop,
@@ -68,9 +66,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 			$queue,
 			$devicesConfigurationRepository,
 			$channelsConfigurationRepository,
-			$devicesPropertiesConfigurationRepository,
 			$channelsPropertiesConfigurationRepository,
-			$devicePropertiesStatesManager,
 			$channelPropertiesStatesManager,
 			$dateTimeFactory,
 			$eventLoop,
@@ -112,37 +108,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 		MetadataDocuments\Document|null $entity,
 	): void
 	{
-		if ($entity instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-			if ($entity->getExpectedValue() === null) {
-				return;
-			}
-
-			$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
-			$findDeviceQuery->byId($entity->getDevice());
-			$findDeviceQuery->byType(Entities\Devices\SubDevice::TYPE);
-
-			$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
-
-			if ($device === null) {
-				return;
-			}
-
-			if (!$device->getConnector()->equals($this->connector->getId())) {
-				return;
-			}
-
-			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\WriteDevicePropertyState::class,
-					[
-						'connector' => $this->connector->getId(),
-						'device' => $device->getId(),
-						'property' => $entity->getId(),
-					],
-				),
-			);
-
-		} elseif ($entity instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+		if ($entity instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
 			if ($entity->getExpectedValue() === null) {
 				return;
 			}
@@ -172,7 +138,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 
 			$this->queue->append(
 				$this->entityHelper->create(
-					Entities\Messages\WriteChannelPropertyState::class,
+					Entities\Messages\WriteSubDeviceState::class,
 					[
 						'connector' => $this->connector->getId(),
 						'device' => $device->getId(),

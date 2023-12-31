@@ -15,6 +15,7 @@
 
 namespace FastyBird\Connector\Zigbee2Mqtt\Entities;
 
+use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
 use FastyBird\Connector\Zigbee2Mqtt\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;

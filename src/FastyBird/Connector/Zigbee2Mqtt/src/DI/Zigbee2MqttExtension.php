@@ -115,6 +115,14 @@ class Zigbee2MqttExtension extends DI\CompilerExtension implements Translation\D
 				'logger' => $logger,
 			]);
 
+		$builder->addFactoryDefinition($this->prefix('clients.discovery'))
+			->setImplement(Clients\DiscoveryFactory::class)
+			->getResultDefinition()
+			->setType(Clients\Discovery::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
+
 		/**
 		 * API
 		 */
@@ -214,8 +222,11 @@ class Zigbee2MqttExtension extends DI\CompilerExtension implements Translation\D
 		$builder->addDefinition($this->prefix('helpers.connector'), new DI\Definitions\ServiceDefinition())
 			->setType(Helpers\Connector::class);
 
-		$builder->addDefinition($this->prefix('helpers.device'), new DI\Definitions\ServiceDefinition())
-			->setType(Helpers\Device::class);
+		$builder->addDefinition($this->prefix('helpers.devices.bridge'), new DI\Definitions\ServiceDefinition())
+			->setType(Helpers\Devices\Bridge::class);
+
+		$builder->addDefinition($this->prefix('helpers.devices.subDevice'), new DI\Definitions\ServiceDefinition())
+			->setType(Helpers\Devices\SubDevice::class);
 
 		/**
 		 * COMMANDS
@@ -223,6 +234,9 @@ class Zigbee2MqttExtension extends DI\CompilerExtension implements Translation\D
 
 		$builder->addDefinition($this->prefix('commands.execute'), new DI\Definitions\ServiceDefinition())
 			->setType(Commands\Execute::class);
+
+		$builder->addDefinition($this->prefix('commands.discover'), new DI\Definitions\ServiceDefinition())
+			->setType(Commands\Discover::class);
 
 		$builder->addDefinition($this->prefix('commands.install'), new DI\Definitions\ServiceDefinition())
 			->setType(Commands\Install::class)

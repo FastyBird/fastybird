@@ -66,7 +66,8 @@ final class Mqtt implements Client
 		private readonly Zigbee2Mqtt\Logger $logger,
 		private readonly Queue\Queue $queue,
 		private readonly Helpers\Entity $entityHelper,
-		private readonly Helpers\Device $deviceHelper,
+		private readonly Helpers\Connector $connectorHelper,
+		private readonly Helpers\Devices\Bridge $bridgeHelper,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 	)
 	{
@@ -80,7 +81,13 @@ final class Mqtt implements Client
 	 */
 	public function connect(): void
 	{
-		$client = $this->connectionManager->getConnection($this->connector);
+		$client = $this->connectionManager->getClient(
+			$this->connector->getId()->toString(),
+			$this->connectorHelper->getServerAddress($this->connector),
+			$this->connectorHelper->getServerPort($this->connector),
+			$this->connectorHelper->getUsername($this->connector),
+			$this->connectorHelper->getPassword($this->connector),
+		);
 
 		$client->on('connect', [$this, 'onConnect']);
 		$client->on('message', [$this, 'onMessage']);
@@ -95,7 +102,13 @@ final class Mqtt implements Client
 	 */
 	public function disconnect(): void
 	{
-		$client = $this->connectionManager->getConnection($this->connector);
+		$client = $this->connectionManager->getClient(
+			$this->connector->getId()->toString(),
+			$this->connectorHelper->getServerAddress($this->connector),
+			$this->connectorHelper->getServerPort($this->connector),
+			$this->connectorHelper->getUsername($this->connector),
+			$this->connectorHelper->getPassword($this->connector),
+		);
 
 		$client->disconnect();
 
@@ -105,25 +118,43 @@ final class Mqtt implements Client
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	protected function onConnect(): void
+	private function onConnect(): void
 	{
 		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDevicesQuery->forConnector($this->connector);
 		$findDevicesQuery->byType(Entities\Devices\Bridge::TYPE);
 
-		$devices = $this->devicesConfigurationRepository->findAllBy($findDevicesQuery);
+		$bridges = $this->devicesConfigurationRepository->findAllBy($findDevicesQuery);
 
-		foreach ($devices as $device) {
+		foreach ($bridges as $bridge) {
+			$this->queue->append(
+				$this->entityHelper->create(
+					Entities\Messages\StoreDeviceConnectionState::class,
+					[
+						'connector' => $this->connector->getId(),
+						'identifier' => $bridge->getIdentifier(),
+						'state' => MetadataTypes\ConnectionState::STATE_CONNECTED,
+					],
+				),
+			);
+
 			// Get all topics...
 			foreach (self::CLIENT_TOPICS as $topic) {
-				$topic = sprintf($topic, $this->deviceHelper->getBaseTopic($device));
+				$topic = sprintf($topic, $this->bridgeHelper->getBaseTopic($bridge));
 				$topic = new NetMqtt\DefaultSubscription($topic);
 
 				// ...& subscribe to them
-				$this->connectionManager->getConnection($this->connector)
+				$this->connectionManager->getClient(
+					$this->connector->getId()->toString(),
+					$this->connectorHelper->getServerAddress($this->connector),
+					$this->connectorHelper->getServerPort($this->connector),
+					$this->connectorHelper->getUsername($this->connector),
+					$this->connectorHelper->getPassword($this->connector),
+				)
 					->subscribe($topic)
 					->then(
 						function (mixed $subscription): void {
@@ -160,7 +191,7 @@ final class Mqtt implements Client
 	/**
 	 * @throws Exceptions\Runtime
 	 */
-	protected function onMessage(NetMqtt\Message $message): void
+	private function onMessage(NetMqtt\Message $message): void
 	{
 		if (API\MqttValidator::validateTopic($message->getTopic())) {
 			// Check if message is sent from broker
@@ -188,38 +219,45 @@ final class Mqtt implements Client
 						);
 					}
 
-					assert(array_key_exists('type', $data));
+					if (array_key_exists('type', $data)) {
+						if (!Types\BridgeMessageType::isValidValue($data['type'])) {
+							throw new Exceptions\ParseMessage('Received unsupported bridge message type');
+						}
 
-					if (!Types\BridgeMessageType::isValidValue($data['type'])) {
-						throw new Exceptions\ParseMessage('Received unsupported bridge message type');
-					}
+						$type = Types\BridgeMessageType::get($data['type']);
 
-					$type = Types\BridgeMessageType::get($data['type']);
+						if ($type->equalsValue(Types\BridgeMessageType::INFO)) {
+							$this->queue->append(
+								$this->entityHelper->create(Entities\Messages\StoreBridgeInfo::class, $data),
+							);
 
-					if ($type->equalsValue(Types\BridgeMessageType::INFO)) {
-						$this->queue->append(
-							$this->entityHelper->create(Entities\Messages\BridgeInfo::class, $data),
-						);
+						} elseif ($type->equalsValue(Types\BridgeMessageType::STATE)) {
+							$this->queue->append(
+								$this->entityHelper->create(Entities\Messages\StoreBridgeConnectionState::class, $data),
+							);
 
-					} elseif ($type->equalsValue(Types\BridgeMessageType::STATE)) {
-						$this->queue->append(
-							$this->entityHelper->create(Entities\Messages\BridgeConnectionState::class, $data),
-						);
+						} elseif ($type->equalsValue(Types\BridgeMessageType::LOGGING)) {
+							$this->queue->append(
+								$this->entityHelper->create(Entities\Messages\StoreBridgeLog::class, $data),
+							);
 
-					} elseif ($type->equalsValue(Types\BridgeMessageType::DEVICES)) {
-						$this->queue->append(
-							$this->entityHelper->create(Entities\Messages\BridgeDevices::class, $data),
-						);
+						} elseif ($type->equalsValue(Types\BridgeMessageType::DEVICES)) {
+							$this->queue->append(
+								$this->entityHelper->create(Entities\Messages\StoreBridgeDevices::class, $data),
+							);
 
-					} elseif ($type->equalsValue(Types\BridgeMessageType::GROUPS)) {
-						$this->queue->append(
-							$this->entityHelper->create(Entities\Messages\BridgeGroups::class, $data),
-						);
+						} elseif ($type->equalsValue(Types\BridgeMessageType::GROUPS)) {
+							$this->queue->append(
+								$this->entityHelper->create(Entities\Messages\StoreBridgeGroups::class, $data),
+							);
 
-					} elseif ($type->equalsValue(Types\BridgeMessageType::EVENT)) {
-						$this->queue->append(
-							$this->entityHelper->create(Entities\Messages\BridgeEvent::class, $data),
-						);
+						} elseif ($type->equalsValue(Types\BridgeMessageType::EVENT)) {
+							$this->queue->append(
+								$this->entityHelper->create(Entities\Messages\StoreBridgeEvent::class, $data),
+							);
+						}
+					} elseif (array_key_exists('request', $data)) {
+						// TODO: Handle request messages
 					}
 				} elseif (API\MqttValidator::validateDevice($message->getTopic())) {
 					try {
@@ -249,7 +287,7 @@ final class Mqtt implements Client
 
 						if ($type->equalsValue(Types\DeviceMessageType::AVAILABILITY)) {
 							$this->queue->append(
-								$this->entityHelper->create(Entities\Messages\DeviceConnectionState::class, $data),
+								$this->entityHelper->create(Entities\Messages\StoreDeviceConnectionState::class, $data),
 							);
 						} elseif ($type->equalsValue(Types\DeviceMessageType::GET)) {
 							// Handle GET data
@@ -277,7 +315,7 @@ final class Mqtt implements Client
 						$data['states'] = $this->convertStatePayload($payload);
 
 						$this->queue->append(
-							$this->entityHelper->create(Entities\Messages\DeviceState::class, $data),
+							$this->entityHelper->create(Entities\Messages\StoreDeviceState::class, $data),
 						);
 					}
 				}

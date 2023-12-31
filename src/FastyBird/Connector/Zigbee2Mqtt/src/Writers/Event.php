@@ -38,8 +38,6 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 	public static function getSubscribedEvents(): array
 	{
 		return [
-			DevicesEvents\DevicePropertyStateEntityCreated::class => 'stateChanged',
-			DevicesEvents\DevicePropertyStateEntityUpdated::class => 'stateChanged',
 			DevicesEvents\ChannelPropertyStateEntityCreated::class => 'stateChanged',
 			DevicesEvents\ChannelPropertyStateEntityUpdated::class => 'stateChanged',
 		];
@@ -50,8 +48,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 	 * @throws Exceptions\Runtime
 	 */
 	public function stateChanged(
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		DevicesEvents\DevicePropertyStateEntityCreated|DevicesEvents\DevicePropertyStateEntityUpdated|DevicesEvents\ChannelPropertyStateEntityCreated|DevicesEvents\ChannelPropertyStateEntityUpdated $event,
+		DevicesEvents\ChannelPropertyStateEntityCreated|DevicesEvents\ChannelPropertyStateEntityUpdated $event,
 	): void
 	{
 		$state = $event->getState();
@@ -60,72 +57,40 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 			return;
 		}
 
-		if (
-			$event instanceof DevicesEvents\DevicePropertyStateEntityCreated
-			|| $event instanceof DevicesEvents\DevicePropertyStateEntityUpdated
-		) {
-			$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
-			$findDeviceQuery->byId($event->getProperty()->getDevice());
-			$findDeviceQuery->byType(Entities\Devices\SubDevice::TYPE);
+		$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
+		$findChannelQuery->byId($event->getProperty()->getChannel());
 
-			$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+		$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 
-			if ($device === null) {
-				return;
-			}
-		} else {
-			$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
-			$findChannelQuery->byId($event->getProperty()->getChannel());
+		if ($channel === null) {
+			return;
+		}
 
-			$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
+		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDeviceQuery->byId($channel->getDevice());
+		$findDeviceQuery->byType(Entities\Devices\SubDevice::TYPE);
 
-			if ($channel === null) {
-				return;
-			}
+		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
-			$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
-			$findDeviceQuery->byId($channel->getDevice());
-			$findDeviceQuery->byType(Entities\Devices\SubDevice::TYPE);
-
-			$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
-
-			if ($device === null) {
-				return;
-			}
+		if ($device === null) {
+			return;
 		}
 
 		if (!$device->getConnector()->equals($this->connector->getId())) {
 			return;
 		}
 
-		if (
-			$event instanceof DevicesEvents\DevicePropertyStateEntityCreated
-			|| $event instanceof DevicesEvents\DevicePropertyStateEntityUpdated
-		) {
-			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\WriteDevicePropertyState::class,
-					[
-						'connector' => $this->connector->getId(),
-						'device' => $device->getId(),
-						'property' => $event->getProperty()->getId(),
-					],
-				),
-			);
-
-		} else {
-			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\WriteChannelPropertyState::class,
-					[
-						'connector' => $this->connector->getId(),
-						'device' => $device->getId(),
-						'channel' => $event->getProperty()->getChannel(),
-						'property' => $event->getProperty()->getId(),
-					],
-				),
-			);
-		}
+		$this->queue->append(
+			$this->entityHelper->create(
+				Entities\Messages\WriteSubDeviceState::class,
+				[
+					'connector' => $this->connector->getId(),
+					'device' => $device->getId(),
+					'channel' => $event->getProperty()->getChannel(),
+					'property' => $event->getProperty()->getId(),
+				],
+			),
+		);
 	}
 
 }

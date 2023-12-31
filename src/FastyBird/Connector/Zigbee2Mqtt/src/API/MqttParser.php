@@ -83,14 +83,25 @@ final class MqttParser
 		string $payload,
 	): array
 	{
-		preg_match(MqttValidator::BRIDGE_REGEXP, $topic, $matches);
-		assert(array_key_exists('type', $matches));
+		if (preg_match(MqttValidator::BRIDGE_REGEXP, $topic, $matches) === 1) {
+			preg_match(MqttValidator::BRIDGE_REGEXP, $topic, $matches);
+			assert(array_key_exists('type', $matches));
 
-		return [
-			'connector' => $connector,
-			'type' => $matches['type'],
-			'payload' => $payload,
-		];
+			return [
+				'connector' => $connector,
+				'type' => $matches['type'],
+				'payload' => $payload,
+			];
+		} else {
+			preg_match(MqttValidator::BRIDGE_REQUEST_REGEXP, $topic, $matches);
+			assert(array_key_exists('request', $matches));
+
+			return [
+				'connector' => $connector,
+				'request' => $matches['request'],
+				'payload' => $payload,
+			];
+		}
 	}
 
 	/**

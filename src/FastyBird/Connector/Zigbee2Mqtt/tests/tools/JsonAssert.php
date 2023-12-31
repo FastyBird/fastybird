@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace FastyBird\Connector\tests\Tests\Tools;
+namespace FastyBird\Connector\Zigbee2Mqtt\Tests\Tools;
 
 use Closure;
 use Nette\StaticClass;

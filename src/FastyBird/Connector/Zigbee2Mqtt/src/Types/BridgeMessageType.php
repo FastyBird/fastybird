@@ -33,6 +33,8 @@ class BridgeMessageType extends Consistence\Enum\Enum
 
 	public const STATE = 'state';
 
+	public const LOGGING = 'logging';
+
 	public const DEVICES = 'devices';
 
 	public const GROUPS = 'groups';

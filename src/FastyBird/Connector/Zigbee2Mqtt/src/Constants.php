@@ -42,4 +42,8 @@ final class Constants
 
 	public const VALUE_NOT_AVAILABLE = 'n/a';
 
+	public const CHANNEL_IDENTIFIER = '/^(?P<type>(binary|numeric|enum|text|composite){1})_(?P<identifier>[a-z0-9_]+)$/';
+	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+	public const CHANNEL_SPECIAL_IDENTIFIER = '/^(?P<type>(light|switch|fan|cover|lock|climate){1})_(?P<subtype>(binary|numeric|enum|text|composite){1})_(?P<identifier>[a-z0-9_]+)$/';
+
 }
