@@ -19,25 +19,24 @@ use BinSoul\Net\Mqtt as NetMqtt;
 use Evenement;
 use FastyBird\Connector\Zigbee2Mqtt;
 use FastyBird\Connector\Zigbee2Mqtt\API;
+use FastyBird\Connector\Zigbee2Mqtt\Clients;
 use FastyBird\Connector\Zigbee2Mqtt\Entities;
 use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
-use FastyBird\Connector\Zigbee2Mqtt\Helpers;
 use FastyBird\Connector\Zigbee2Mqtt\Queries;
-use FastyBird\Connector\Zigbee2Mqtt\Queue;
 use FastyBird\Connector\Zigbee2Mqtt\Types;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use InvalidArgumentException;
 use Nette;
 use Nette\Utils;
 use React\Promise;
 use stdClass;
 use Throwable;
-use function array_key_exists;
-use function array_merge;
 use function sprintf;
 
 /**
@@ -58,21 +57,30 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 	private Entities\Devices\Bridge|null $onlyBridge = null;
 
+	private Clients\Subscribers\Bridge $bridgeSubscriber;
+
+	private bool $subscribed = false;
+
 	public function __construct(
 		private readonly Entities\Zigbee2MqttConnector $connector,
+		private readonly Clients\Subscribers\BridgeFactory $bridgeSubscriberFactory,
 		private readonly API\ConnectionManager $connectionManager,
-		private readonly Queue\Queue $queue,
-		private readonly Helpers\Entity $entityHelper,
 		private readonly Zigbee2Mqtt\Logger $logger,
 		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Configuration\Connectors\Properties\Repository $connectorsPropertiesConfigurationRepository,
+		private readonly DevicesUtilities\ConnectorPropertiesStates $connectorPropertiesStatesManager,
 	)
 	{
+		$this->bridgeSubscriber = $this->bridgeSubscriberFactory->create($this->connector);
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidArgument
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws InvalidArgumentException
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function discover(Entities\Devices\Bridge|null $onlyBridge = null): void
 	{
@@ -81,7 +89,23 @@ final class Discovery implements Evenement\EventEmitterInterface
 		$client = $this->getClient();
 
 		$client->on('connect', [$this, 'onConnect']);
-		$client->on('message', [$this, 'onMessage']);
+
+		$findConnectorProperty = new DevicesQueries\Configuration\FindConnectorDynamicProperties();
+		$findConnectorProperty->byConnectorId($this->connector->getId());
+		$findConnectorProperty->byIdentifier(Types\ConnectorPropertyIdentifier::STATE);
+
+		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
+			$findConnectorProperty,
+			MetadataDocuments\DevicesModule\ConnectorDynamicProperty::class,
+		);
+
+		$state = $property !== null ? $this->connectorPropertiesStatesManager->readValue($property) : null;
+
+		if ($state === null || $state->getActualValue() !== MetadataTypes\ConnectionState::STATE_RUNNING) {
+			$this->bridgeSubscriber->subscribe($client);
+
+			$this->subscribed = true;
+		}
 
 		$client->connect();
 	}
@@ -97,7 +121,10 @@ final class Discovery implements Evenement\EventEmitterInterface
 		$client->disconnect();
 
 		$client->removeListener('connect', [$this, 'onConnect']);
-		$client->removeListener('message', [$this, 'onMessage']);
+
+		if ($this->subscribed) {
+			$this->bridgeSubscriber->unsubscribe($client);
+		}
 	}
 
 	/**
@@ -206,94 +233,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 			->catch(function (): void {
 				$this->emit('finished', [[]]);
 			});
-	}
-
-	/**
-	 * @throws Exceptions\Runtime
-	 */
-	private function onMessage(NetMqtt\Message $message): void
-	{
-		if (API\MqttValidator::validateTopic($message->getTopic())) {
-			// Check if message is sent from broker
-			if (!API\MqttValidator::validate($message->getTopic())) {
-				return;
-			}
-
-			try {
-				if (API\MqttValidator::validateBridge($message->getTopic())) {
-					try {
-						$data = array_merge(
-							API\MqttParser::parse(
-								$this->connector->getId(),
-								$message->getTopic(),
-								$message->getPayload(),
-								$message->isRetained(),
-							),
-							(array) Utils\Json::decode($message->getPayload(), Utils\Json::FORCE_ARRAY),
-						);
-					} catch (Utils\JsonException $ex) {
-						throw new Exceptions\ParseMessage(
-							'Bridge message payload could not be parsed',
-							$ex->getCode(),
-							$ex,
-						);
-					}
-
-					if (array_key_exists('type', $data)) {
-						if (!Types\BridgeMessageType::isValidValue($data['type'])) {
-							throw new Exceptions\ParseMessage('Received unsupported bridge message type');
-						}
-
-						$type = Types\BridgeMessageType::get($data['type']);
-
-						if ($type->equalsValue(Types\BridgeMessageType::INFO)) {
-							$this->queue->append(
-								$this->entityHelper->create(Entities\Messages\StoreBridgeInfo::class, $data),
-							);
-
-						} elseif ($type->equalsValue(Types\BridgeMessageType::STATE)) {
-							$this->queue->append(
-								$this->entityHelper->create(Entities\Messages\StoreBridgeConnectionState::class, $data),
-							);
-
-						} elseif ($type->equalsValue(Types\BridgeMessageType::LOGGING)) {
-							$this->queue->append(
-								$this->entityHelper->create(Entities\Messages\StoreBridgeLog::class, $data),
-							);
-
-						} elseif ($type->equalsValue(Types\BridgeMessageType::DEVICES)) {
-							$this->queue->append(
-								$this->entityHelper->create(Entities\Messages\StoreBridgeDevices::class, $data),
-							);
-
-						} elseif ($type->equalsValue(Types\BridgeMessageType::GROUPS)) {
-							$this->queue->append(
-								$this->entityHelper->create(Entities\Messages\StoreBridgeGroups::class, $data),
-							);
-
-						} elseif ($type->equalsValue(Types\BridgeMessageType::EVENT)) {
-							$this->queue->append(
-								$this->entityHelper->create(Entities\Messages\StoreBridgeEvent::class, $data),
-							);
-						}
-					} elseif (array_key_exists('request', $data)) {
-						// TODO: Handle request messages
-					}
-				}
-			} catch (Exceptions\ParseMessage $ex) {
-				$this->logger->debug(
-					'Received message could not be successfully parsed to entity',
-					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
-						'type' => 'mqtt-client',
-						'exception' => BootstrapHelpers\Logger::buildException($ex),
-						'connector' => [
-							'id' => $this->connector->getId()->toString(),
-						],
-					],
-				);
-			}
-		}
 	}
 
 	/**

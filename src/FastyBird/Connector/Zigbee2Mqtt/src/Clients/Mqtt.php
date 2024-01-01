@@ -18,11 +18,11 @@ namespace FastyBird\Connector\Zigbee2Mqtt\Clients;
 use BinSoul\Net\Mqtt as NetMqtt;
 use FastyBird\Connector\Zigbee2Mqtt;
 use FastyBird\Connector\Zigbee2Mqtt\API;
+use FastyBird\Connector\Zigbee2Mqtt\Clients;
 use FastyBird\Connector\Zigbee2Mqtt\Entities;
 use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
 use FastyBird\Connector\Zigbee2Mqtt\Helpers;
 use FastyBird\Connector\Zigbee2Mqtt\Queue;
-use FastyBird\Connector\Zigbee2Mqtt\Types;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -32,14 +32,8 @@ use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use InvalidArgumentException;
 use Nette;
-use Nette\Utils;
 use Throwable;
-use function array_key_exists;
-use function array_map;
-use function array_merge;
 use function assert;
-use function is_array;
-use function is_scalar;
 use function sprintf;
 
 /**
@@ -60,8 +54,14 @@ final class Mqtt implements Client
 		'%s/#',
 	];
 
+	private Clients\Subscribers\Bridge $bridgeSubscriber;
+
+	private Clients\Subscribers\Device $deviceSubscriber;
+
 	public function __construct(
 		private readonly MetadataDocuments\DevicesModule\Connector $connector,
+		private readonly Clients\Subscribers\BridgeFactory $bridgeSubscriberFactory,
+		private readonly Clients\Subscribers\DeviceFactory $deviceSubscriberFactory,
 		private readonly API\ConnectionManager $connectionManager,
 		private readonly Zigbee2Mqtt\Logger $logger,
 		private readonly Queue\Queue $queue,
@@ -71,6 +71,8 @@ final class Mqtt implements Client
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 	)
 	{
+		$this->bridgeSubscriber = $this->bridgeSubscriberFactory->create($this->connector);
+		$this->deviceSubscriber = $this->deviceSubscriberFactory->create($this->connector);
 	}
 
 	/**
@@ -90,7 +92,8 @@ final class Mqtt implements Client
 		);
 
 		$client->on('connect', [$this, 'onConnect']);
-		$client->on('message', [$this, 'onMessage']);
+		$this->bridgeSubscriber->subscribe($client);
+		$this->deviceSubscriber->subscribe($client);
 
 		$client->connect();
 	}
@@ -113,7 +116,8 @@ final class Mqtt implements Client
 		$client->disconnect();
 
 		$client->removeListener('connect', [$this, 'onConnect']);
-		$client->removeListener('message', [$this, 'onMessage']);
+		$this->bridgeSubscriber->unsubscribe($client);
+		$this->deviceSubscriber->unsubscribe($client);
 	}
 
 	/**
@@ -186,183 +190,6 @@ final class Mqtt implements Client
 					);
 			}
 		}
-	}
-
-	/**
-	 * @throws Exceptions\Runtime
-	 */
-	private function onMessage(NetMqtt\Message $message): void
-	{
-		if (API\MqttValidator::validateTopic($message->getTopic())) {
-			// Check if message is sent from broker
-			if (!API\MqttValidator::validate($message->getTopic())) {
-				return;
-			}
-
-			try {
-				if (API\MqttValidator::validateBridge($message->getTopic())) {
-					try {
-						$data = array_merge(
-							API\MqttParser::parse(
-								$this->connector->getId(),
-								$message->getTopic(),
-								$message->getPayload(),
-								$message->isRetained(),
-							),
-							(array) Utils\Json::decode($message->getPayload(), Utils\Json::FORCE_ARRAY),
-						);
-					} catch (Utils\JsonException $ex) {
-						throw new Exceptions\ParseMessage(
-							'Bridge message payload could not be parsed',
-							$ex->getCode(),
-							$ex,
-						);
-					}
-
-					if (array_key_exists('type', $data)) {
-						if (!Types\BridgeMessageType::isValidValue($data['type'])) {
-							throw new Exceptions\ParseMessage('Received unsupported bridge message type');
-						}
-
-						$type = Types\BridgeMessageType::get($data['type']);
-
-						if ($type->equalsValue(Types\BridgeMessageType::INFO)) {
-							$this->queue->append(
-								$this->entityHelper->create(Entities\Messages\StoreBridgeInfo::class, $data),
-							);
-
-						} elseif ($type->equalsValue(Types\BridgeMessageType::STATE)) {
-							$this->queue->append(
-								$this->entityHelper->create(Entities\Messages\StoreBridgeConnectionState::class, $data),
-							);
-
-						} elseif ($type->equalsValue(Types\BridgeMessageType::LOGGING)) {
-							$this->queue->append(
-								$this->entityHelper->create(Entities\Messages\StoreBridgeLog::class, $data),
-							);
-
-						} elseif ($type->equalsValue(Types\BridgeMessageType::DEVICES)) {
-							$this->queue->append(
-								$this->entityHelper->create(Entities\Messages\StoreBridgeDevices::class, $data),
-							);
-
-						} elseif ($type->equalsValue(Types\BridgeMessageType::GROUPS)) {
-							$this->queue->append(
-								$this->entityHelper->create(Entities\Messages\StoreBridgeGroups::class, $data),
-							);
-
-						} elseif ($type->equalsValue(Types\BridgeMessageType::EVENT)) {
-							$this->queue->append(
-								$this->entityHelper->create(Entities\Messages\StoreBridgeEvent::class, $data),
-							);
-						}
-					} elseif (array_key_exists('request', $data)) {
-						// TODO: Handle request messages
-					}
-				} elseif (API\MqttValidator::validateDevice($message->getTopic())) {
-					try {
-						$data = array_merge(
-							API\MqttParser::parse(
-								$this->connector->getId(),
-								$message->getTopic(),
-								$message->getPayload(),
-								$message->isRetained(),
-							),
-							(array) Utils\Json::decode($message->getPayload(), Utils\Json::FORCE_ARRAY),
-						);
-					} catch (Utils\JsonException $ex) {
-						throw new Exceptions\ParseMessage(
-							'Bridge message payload could not be parsed',
-							$ex->getCode(),
-							$ex,
-						);
-					}
-
-					if (array_key_exists('type', $data)) {
-						if (!Types\DeviceMessageType::isValidValue($data['type'])) {
-							throw new Exceptions\ParseMessage('Received unsupported bridge message type');
-						}
-
-						$type = Types\DeviceMessageType::get($data['type']);
-
-						if ($type->equalsValue(Types\DeviceMessageType::AVAILABILITY)) {
-							$this->queue->append(
-								$this->entityHelper->create(Entities\Messages\StoreDeviceConnectionState::class, $data),
-							);
-						} elseif ($type->equalsValue(Types\DeviceMessageType::GET)) {
-							// Handle GET data
-							$this->logger->error(
-								'No handler for GET message type',
-								[
-									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
-									'type' => 'mqtt-client',
-									'payload' => $message->getPayload(),
-								],
-							);
-						}
-					} else {
-						try {
-							$payload = (array) Utils\Json::decode($message->getPayload(), Utils\Json::FORCE_ARRAY);
-
-						} catch (Utils\JsonException $ex) {
-							throw new Exceptions\ParseMessage(
-								'Bridge message payload could not be parsed',
-								$ex->getCode(),
-								$ex,
-							);
-						}
-
-						$data['states'] = $this->convertStatePayload($payload);
-
-						$this->queue->append(
-							$this->entityHelper->create(Entities\Messages\StoreDeviceState::class, $data),
-						);
-					}
-				}
-			} catch (Exceptions\ParseMessage $ex) {
-				$this->logger->debug(
-					'Received message could not be successfully parsed to entity',
-					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
-						'type' => 'mqtt-client',
-						'exception' => BootstrapHelpers\Logger::buildException($ex),
-						'connector' => [
-							'id' => $this->connector->getId()->toString(),
-						],
-					],
-				);
-			}
-		}
-	}
-
-	/**
-	 * @param array<mixed> $payload
-	 *
-	 * @return array<int, array<string, string|int|float|bool|null>>
-	 */
-	private function convertStatePayload(array $payload): array
-	{
-		$converted = [];
-
-		foreach ($payload as $key => $value) {
-			if (is_scalar($value)) {
-				$converted[] = [
-					'identifier' => $key,
-					'value' => $value,
-				];
-			} elseif (is_array($value)) {
-				$converted = array_merge(
-					$converted,
-					array_map(static function (array $item) use ($key): array {
-						$item['parent'] = $key;
-
-						return $item;
-					}, $this->convertStatePayload($value)),
-				);
-			}
-		}
-
-		return $converted;
 	}
 
 }

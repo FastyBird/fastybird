@@ -123,6 +123,22 @@ class Zigbee2MqttExtension extends DI\CompilerExtension implements Translation\D
 				'logger' => $logger,
 			]);
 
+		$builder->addFactoryDefinition($this->prefix('clients.subscriber.bridge'))
+			->setImplement(Clients\Subscribers\BridgeFactory::class)
+			->getResultDefinition()
+			->setType(Clients\Subscribers\Bridge::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
+
+		$builder->addFactoryDefinition($this->prefix('clients.subscriber.device'))
+			->setImplement(Clients\Subscribers\DeviceFactory::class)
+			->getResultDefinition()
+			->setType(Clients\Subscribers\Device::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
+
 		/**
 		 * API
 		 */

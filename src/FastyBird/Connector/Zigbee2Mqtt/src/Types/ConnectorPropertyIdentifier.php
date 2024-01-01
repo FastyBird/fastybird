@@ -30,6 +30,8 @@ use function strval;
 class ConnectorPropertyIdentifier extends Consistence\Enum\Enum
 {
 
+	public const STATE = MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_STATE;
+
 	public const CLIENT_MODE = 'mode';
 
 	public const SERVER = MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_SERVER;

@@ -54,7 +54,8 @@ final class Connector implements DevicesConnectors\Connector
 
 	private const QUEUE_PROCESSING_INTERVAL = 0.01;
 
-	private Zigbee2Mqtt\Clients\Client|null $client = null;
+	/** @var array<Clients\Client|Clients\Discovery> */
+	private array $clients = [];
 
 	private Writers\Writer|null $writer = null;
 
@@ -124,6 +125,8 @@ final class Connector implements DevicesConnectors\Connector
 
 		$mode = $this->connectorHelper->getClientMode($connector);
 
+		$client = null;
+
 		foreach ($this->clientsFactories as $clientFactory) {
 			$rc = new ReflectionClass($clientFactory);
 
@@ -133,11 +136,13 @@ final class Connector implements DevicesConnectors\Connector
 				array_key_exists(Clients\ClientFactory::MODE_CONSTANT_NAME, $constants)
 				&& $mode->equalsValue($constants[Clients\ClientFactory::MODE_CONSTANT_NAME])
 			) {
-				$this->client = $clientFactory->create($connector);
+				$client = $clientFactory->create($connector);
+
+				$this->clients[] = $client;
 			}
 		}
 
-		if ($this->client === null || (!$this->client instanceof Clients\Mqtt)) {
+		if (!$client instanceof Clients\Mqtt) {
 			$this->dispatcher?->dispatch(
 				new DevicesEvents\TerminateConnector(
 					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT),
@@ -148,7 +153,7 @@ final class Connector implements DevicesConnectors\Connector
 			return;
 		}
 
-		$this->client->connect();
+		$client->connect();
 
 		$this->writer = $this->writerFactory->create($connector);
 		$this->writer->connect();
@@ -172,6 +177,12 @@ final class Connector implements DevicesConnectors\Connector
 		);
 	}
 
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws InvalidArgumentException
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
+	 */
 	public function discover(): void
 	{
 		assert($this->connector instanceof Entities\Zigbee2MqttConnector);
@@ -221,9 +232,15 @@ final class Connector implements DevicesConnectors\Connector
 		$client->discover();
 	}
 
+	/**
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
 	public function terminate(): void
 	{
-		$this->client?->disconnect();
+		foreach ($this->clients as $client) {
+			$client->disconnect();
+		}
 
 		$this->writer?->disconnect();
 

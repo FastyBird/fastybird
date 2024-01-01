@@ -36,6 +36,8 @@ final class Zigbee2MqttExtensionTest extends Tests\Cases\Unit\BaseTestCase
 
 		self::assertNotNull($container->getByType(Clients\MqttFactory::class, false));
 		self::assertNotNull($container->getByType(Clients\DiscoveryFactory::class, false));
+		self::assertNotNull($container->getByType(Clients\Subscribers\BridgeFactory::class, false));
+		self::assertNotNull($container->getByType(Clients\Subscribers\DeviceFactory::class, false));
 
 		self::assertNotNull($container->getByType(Queue\Consumers::class, false));
 		self::assertNotNull($container->getByType(Queue\Queue::class, false));
