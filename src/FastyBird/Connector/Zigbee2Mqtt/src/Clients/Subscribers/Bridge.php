@@ -27,8 +27,10 @@ use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette\Utils;
+use Throwable;
 use function array_key_exists;
 use function array_merge;
+use function var_dump;
 
 /**
  * Zigbee2MQTT MQTT bridge messages subscriber
@@ -60,10 +62,7 @@ class Bridge
 		$client->removeListener('message', [$this, 'onMessage']);
 	}
 
-	/**
-	 * @throws Exceptions\Runtime
-	 */
-	private function onMessage(NetMqtt\Message $message): void
+	public function onMessage(NetMqtt\Message $message): void
 	{
 		if (API\MqttValidator::validateTopic($message->getTopic())) {
 			// Check if message is sent from broker
@@ -73,19 +72,18 @@ class Bridge
 
 			try {
 				if (API\MqttValidator::validateBridge($message->getTopic())) {
+					$data = API\MqttParser::parse(
+						$this->connector->getId(),
+						$message->getTopic(),
+						$message->getPayload(),
+					);
+
 					try {
-						$data = array_merge(
-							API\MqttParser::parse(
-								$this->connector->getId(),
-								$message->getTopic(),
-								$message->getPayload(),
-								$message->isRetained(),
-							),
-							(array) Utils\Json::decode($message->getPayload(), Utils\Json::FORCE_ARRAY),
-						);
+						$payload = Utils\Json::decode($message->getPayload(), Utils\Json::FORCE_ARRAY);
+						$payload = $payload !== null ? (array) $payload : null;
 					} catch (Utils\JsonException $ex) {
 						throw new Exceptions\ParseMessage(
-							'Bridge message payload could not be parsed',
+							'Received bridge message payload is not valid JSON message',
 							$ex->getCode(),
 							$ex,
 						);
@@ -98,34 +96,61 @@ class Bridge
 
 						$type = Types\BridgeMessageType::get($data['type']);
 
-						if ($type->equalsValue(Types\BridgeMessageType::INFO)) {
+						if ($type->equalsValue(Types\BridgeMessageType::INFO) && $payload !== null) {
 							$this->queue->append(
-								$this->entityHelper->create(Entities\Messages\StoreBridgeInfo::class, $data),
+								$this->entityHelper->create(
+									Entities\Messages\StoreBridgeInfo::class,
+									array_merge($data, $payload),
+								),
 							);
 
 						} elseif ($type->equalsValue(Types\BridgeMessageType::STATE)) {
+							if ($payload === null && Types\ConnectionState::isValidValue($message->getPayload())) {
+								$this->queue->append(
+									$this->entityHelper->create(
+										Entities\Messages\StoreBridgeConnectionState::class,
+										array_merge($data, ['state' => $message->getPayload()]),
+									),
+								);
+
+							} elseif ($payload !== null) {
+								$this->queue->append(
+									$this->entityHelper->create(
+										Entities\Messages\StoreBridgeConnectionState::class,
+										array_merge($data, $payload),
+									),
+								);
+							}
+						} elseif ($type->equalsValue(Types\BridgeMessageType::LOGGING) && $payload !== null) {
 							$this->queue->append(
-								$this->entityHelper->create(Entities\Messages\StoreBridgeConnectionState::class, $data),
+								$this->entityHelper->create(
+									Entities\Messages\StoreBridgeLog::class,
+									array_merge($data, $payload),
+								),
 							);
 
-						} elseif ($type->equalsValue(Types\BridgeMessageType::LOGGING)) {
+						} elseif ($type->equalsValue(Types\BridgeMessageType::DEVICES) && $payload !== null) {
 							$this->queue->append(
-								$this->entityHelper->create(Entities\Messages\StoreBridgeLog::class, $data),
+								$this->entityHelper->create(
+									Entities\Messages\StoreBridgeDevices::class,
+									array_merge($data, ['devices' => $payload]),
+								),
 							);
 
-						} elseif ($type->equalsValue(Types\BridgeMessageType::DEVICES)) {
+						} elseif ($type->equalsValue(Types\BridgeMessageType::GROUPS) && $payload !== null) {
 							$this->queue->append(
-								$this->entityHelper->create(Entities\Messages\StoreBridgeDevices::class, $data),
+								$this->entityHelper->create(
+									Entities\Messages\StoreBridgeGroups::class,
+									array_merge($data, ['groups' => $payload]),
+								),
 							);
 
-						} elseif ($type->equalsValue(Types\BridgeMessageType::GROUPS)) {
+						} elseif ($type->equalsValue(Types\BridgeMessageType::EVENT) && $payload !== null) {
 							$this->queue->append(
-								$this->entityHelper->create(Entities\Messages\StoreBridgeGroups::class, $data),
-							);
-
-						} elseif ($type->equalsValue(Types\BridgeMessageType::EVENT)) {
-							$this->queue->append(
-								$this->entityHelper->create(Entities\Messages\StoreBridgeEvent::class, $data),
+								$this->entityHelper->create(
+									Entities\Messages\StoreBridgeEvent::class,
+									array_merge($data, $payload),
+								),
 							);
 						}
 					} elseif (array_key_exists('request', $data)) {
@@ -144,6 +169,8 @@ class Bridge
 						],
 					],
 				);
+			} catch (Throwable $ex) {
+				var_dump($ex->getMessage());
 			}
 		}
 	}

@@ -300,7 +300,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 								'connector' => $connector->getId(),
 								'base_topic' => $this->bridgeHelper->getBaseTopic($bridge),
 								'identifier' => $bridge->getIdentifier(),
-								'state' => MetadataTypes\ConnectionState::STATE_LOST,
+								'state' => Types\ConnectionState::UNKNOWN,
 							],
 						),
 					);

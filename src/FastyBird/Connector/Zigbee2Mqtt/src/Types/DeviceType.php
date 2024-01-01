@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ExposeType.php
+ * DeviceType.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,7 +10,7 @@
  * @subpackage     Types
  * @since          1.0.0
  *
- * @date           24.12.23
+ * @date           01.01.24
  */
 
 namespace FastyBird\Connector\Zigbee2Mqtt\Types;
@@ -19,39 +19,21 @@ use Consistence;
 use function strval;
 
 /**
- * Expose data types
+ * Device types
  *
  * @package        FastyBird:Zigbee2MqttConnector!
  * @subpackage     Types
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class ExposeType extends Consistence\Enum\Enum
+class DeviceType extends Consistence\Enum\Enum
 {
 
-	public const BINARY = 'binary';
+	public const END_DEVICE = 'EndDevice';
 
-	public const NUMERIC = 'numeric';
+	public const COORDINATOR = 'Coordinator';
 
-	public const ENUM = 'enum';
-
-	public const TEXT = 'text';
-
-	public const COMPOSITE = 'composite';
-
-	public const LIST = 'list';
-
-	public const LIGHT = 'light';
-
-	public const SWITCH = 'switch';
-
-	public const FAN = 'fan';
-
-	public const COVER = 'cover';
-
-	public const LOCK = 'lock';
-
-	public const CLIMATE = 'climate';
+	public const ROUTER = 'Router';
 
 	public function getValue(): string
 	{

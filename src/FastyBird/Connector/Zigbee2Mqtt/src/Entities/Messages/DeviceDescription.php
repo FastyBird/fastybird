@@ -15,6 +15,8 @@
 
 namespace FastyBird\Connector\Zigbee2Mqtt\Entities\Messages;
 
+use FastyBird\Connector\Zigbee2Mqtt\Types;
+use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use Orisai\ObjectMapper;
 use function array_map;
 
@@ -39,15 +41,21 @@ final class DeviceDescription implements Entity
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('ieee_address')]
 		private readonly string $ieeeAddress,
+		#[ObjectMapper\Rules\IntValue(unsigned: true)]
+		#[ObjectMapper\Modifiers\FieldName('network_address')]
+		private readonly int $networkAddress,
 		#[ObjectMapper\Rules\BoolValue()]
 		#[ObjectMapper\Modifiers\FieldName('interview_completed')]
 		private readonly bool $interviewCompleted,
 		#[ObjectMapper\Rules\BoolValue()]
 		private readonly bool $interviewing,
-		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $type,
-		#[ObjectMapper\Rules\MappedObjectValue(DeviceDefinition::class)]
-		private readonly DeviceDefinition $definition,
+		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\DeviceType::class)]
+		private readonly Types\DeviceType $type,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\MappedObjectValue(DeviceDefinition::class),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		private readonly DeviceDefinition|null $definition,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
@@ -87,6 +95,11 @@ final class DeviceDescription implements Entity
 		return $this->ieeeAddress;
 	}
 
+	public function getNetworkAddress(): int
+	{
+		return $this->networkAddress;
+	}
+
 	public function isInterviewCompleted(): bool
 	{
 		return $this->interviewCompleted;
@@ -97,12 +110,12 @@ final class DeviceDescription implements Entity
 		return $this->interviewing;
 	}
 
-	public function getType(): string
+	public function getType(): Types\DeviceType
 	{
 		return $this->type;
 	}
 
-	public function getDefinition(): DeviceDefinition
+	public function getDefinition(): DeviceDefinition|null
 	{
 		return $this->definition;
 	}
@@ -145,10 +158,11 @@ final class DeviceDescription implements Entity
 		return [
 			'friendly_name' => $this->getFriendlyName(),
 			'ieee_address' => $this->getIeeeAddress(),
+			'network_address' => $this->getNetworkAddress(),
 			'interview_completed' => $this->isInterviewCompleted(),
 			'interviewing' => $this->isInterviewing(),
-			'type' => $this->getType(),
-			'definition' => $this->getDefinition()->toArray(),
+			'type' => $this->getType()->getValue(),
+			'definition' => $this->getDefinition()?->toArray(),
 			'description' => $this->getDescription(),
 			'manufacturer' => $this->getManufacturer(),
 			'model_id' => $this->getModelId(),

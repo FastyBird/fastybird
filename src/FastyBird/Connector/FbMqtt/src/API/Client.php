@@ -586,7 +586,7 @@ final class Client implements Evenement\EventEmitterInterface
 		if ($connection !== null) {
 			// Network connection closed
 			$this->logger->info(
-				'Connection to MQTT broker',
+				'Connection to MQTT broker has been closed',
 				[
 					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 					'type' => 'api-client',
@@ -608,7 +608,7 @@ final class Client implements Evenement\EventEmitterInterface
 	{
 		// Broker warning occur
 		$this->logger->warning(
-			sprintf('There was an error  %s', $error->getMessage()),
+			sprintf('There was an error %s', $error->getMessage()),
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 				'type' => 'api-client',
@@ -632,7 +632,7 @@ final class Client implements Evenement\EventEmitterInterface
 	{
 		// Broker error occur
 		$this->logger->error(
-			sprintf('There was an error  %s', $error->getMessage()),
+			sprintf('There was an error %s', $error->getMessage()),
 			[
 				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
 				'type' => 'api-client',
@@ -771,7 +771,7 @@ final class Client implements Evenement\EventEmitterInterface
 						assert($result instanceof Mqtt\Message);
 
 						// Broker send message
-						$this->logger->info(
+						$this->logger->debug(
 							sprintf(
 								'Received message in topic: %s with payload %s',
 								$result->getTopic(),

@@ -66,7 +66,7 @@ class Device
 	/**
 	 * @throws Exceptions\Runtime
 	 */
-	private function onMessage(NetMqtt\Message $message): void
+	public function onMessage(NetMqtt\Message $message): void
 	{
 		if (API\MqttValidator::validateTopic($message->getTopic())) {
 			// Check if message is sent from broker
@@ -76,19 +76,18 @@ class Device
 
 			try {
 				if (API\MqttValidator::validateDevice($message->getTopic())) {
+					$data = API\MqttParser::parse(
+						$this->connector->getId(),
+						$message->getTopic(),
+						$message->getPayload(),
+					);
+
 					try {
-						$data = array_merge(
-							API\MqttParser::parse(
-								$this->connector->getId(),
-								$message->getTopic(),
-								$message->getPayload(),
-								$message->isRetained(),
-							),
-							(array) Utils\Json::decode($message->getPayload(), Utils\Json::FORCE_ARRAY),
-						);
+						$payload = Utils\Json::decode($message->getPayload(), Utils\Json::FORCE_ARRAY);
+						$payload = $payload !== null ? (array) $payload : null;
 					} catch (Utils\JsonException $ex) {
 						throw new Exceptions\ParseMessage(
-							'Bridge message payload could not be parsed',
+							'Received device message payload is not valid JSON message',
 							$ex->getCode(),
 							$ex,
 						);
@@ -102,10 +101,23 @@ class Device
 						$type = Types\DeviceMessageType::get($data['type']);
 
 						if ($type->equalsValue(Types\DeviceMessageType::AVAILABILITY)) {
-							$this->queue->append(
-								$this->entityHelper->create(Entities\Messages\StoreDeviceConnectionState::class, $data),
-							);
-						} elseif ($type->equalsValue(Types\DeviceMessageType::GET)) {
+							if ($payload === null && Types\ConnectionState::isValidValue($message->getPayload())) {
+								$this->queue->append(
+									$this->entityHelper->create(
+										Entities\Messages\StoreDeviceConnectionState::class,
+										array_merge($data, ['state' => $message->getPayload()]),
+									),
+								);
+
+							} elseif ($payload !== null) {
+								$this->queue->append(
+									$this->entityHelper->create(
+										Entities\Messages\StoreDeviceConnectionState::class,
+										array_merge($data, $payload),
+									),
+								);
+							}
+						} elseif ($type->equalsValue(Types\DeviceMessageType::GET) && $payload !== null) {
 							// Handle GET data
 							$this->logger->error(
 								'No handler for GET message type',
@@ -116,22 +128,12 @@ class Device
 								],
 							);
 						}
-					} else {
-						try {
-							$payload = (array) Utils\Json::decode($message->getPayload(), Utils\Json::FORCE_ARRAY);
-
-						} catch (Utils\JsonException $ex) {
-							throw new Exceptions\ParseMessage(
-								'Bridge message payload could not be parsed',
-								$ex->getCode(),
-								$ex,
-							);
-						}
-
-						$data['states'] = $this->convertStatePayload($payload);
-
+					} elseif ($payload !== null) {
 						$this->queue->append(
-							$this->entityHelper->create(Entities\Messages\StoreDeviceState::class, $data),
+							$this->entityHelper->create(
+								Entities\Messages\StoreDeviceState::class,
+								array_merge($data, ['states' => $this->convertStatePayload($payload)]),
+							),
 						);
 					}
 				}

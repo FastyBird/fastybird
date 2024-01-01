@@ -34,12 +34,21 @@ final class DeviceDefinition implements Entity
 	 * @param array<Entities\Messages\Exposes\Type> $exposes
 	 */
 	public function __construct(
-		#[ObjectMapper\Rules\IntValue(unsigned: true)]
-		private readonly string $model,
-		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $vendor,
-		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $description,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		private readonly string|null $model,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		private readonly string|null $vendor,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		private readonly string|null $description,
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\AnyOf([
 				new ObjectMapper\Rules\MappedObjectValue(class: Entities\Messages\Exposes\BinaryType::class),
@@ -52,21 +61,24 @@ final class DeviceDefinition implements Entity
 			new ObjectMapper\Rules\IntValue(unsigned: true),
 		)]
 		private readonly array $exposes,
+		#[ObjectMapper\Rules\BoolValue()]
+		#[ObjectMapper\Modifiers\FieldName('supports_ota')]
+		private readonly bool $supportsOta,
 	)
 	{
 	}
 
-	public function getModel(): string
+	public function getModel(): string|null
 	{
 		return $this->model;
 	}
 
-	public function getVendor(): string
+	public function getVendor(): string|null
 	{
 		return $this->vendor;
 	}
 
-	public function getDescription(): string
+	public function getDescription(): string|null
 	{
 		return $this->description;
 	}
@@ -79,6 +91,11 @@ final class DeviceDefinition implements Entity
 		return $this->exposes;
 	}
 
+	public function doesSupportsOta(): bool
+	{
+		return $this->supportsOta;
+	}
+
 	public function toArray(): array
 	{
 		return [
@@ -89,6 +106,7 @@ final class DeviceDefinition implements Entity
 				static fn (Entities\Messages\Exposes\Type $expose): array => $expose->toArray(),
 				$this->getExposes(),
 			),
+			'supports_ota' => $this->doesSupportsOta(),
 		];
 	}
 

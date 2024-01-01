@@ -18,9 +18,7 @@ namespace FastyBird\Module\Devices\Queries\Configuration;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions;
-use Nette\Utils;
 use Ramsey\Uuid;
-use function serialize;
 
 /**
  * Find device variable properties entities query
@@ -60,16 +58,9 @@ class FindDeviceVariableProperties extends FindDeviceProperties
 		throw new Exceptions\InvalidState('Searching by parent is not allowed for this type of property');
 	}
 
-	/**
-	 * @throws Exceptions\InvalidState
-	 */
-	public function toString(): string
+	public function byValue(string $value): void
 	{
-		try {
-			return serialize(Utils\Json::encode($this->filter));
-		} catch (Utils\JsonException) {
-			throw new Exceptions\InvalidState('Cache key could not be generated');
-		}
+		$this->filter[] = '.[?(@.value =~ /(?i).*^' . $value . '*$/)]';
 	}
 
 }

@@ -19,7 +19,7 @@ use Doctrine\DBAL;
 use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Queue;
-use FastyBird\Library\Metadata;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -91,17 +91,17 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 			);
 
 			if (
-				$entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_DISCONNECTED)
-				|| $entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_LOST)
-				|| $entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_ALERT)
-				|| $entity->getState()->equalsValue(Metadata\Types\ConnectionState::STATE_UNKNOWN)
+				$entity->getState()->equalsValue(MetadataTypes\ConnectionState::STATE_DISCONNECTED)
+				|| $entity->getState()->equalsValue(MetadataTypes\ConnectionState::STATE_LOST)
+				|| $entity->getState()->equalsValue(MetadataTypes\ConnectionState::STATE_ALERT)
+				|| $entity->getState()->equalsValue(MetadataTypes\ConnectionState::STATE_UNKNOWN)
 			) {
 				$findDevicePropertiesQuery = new DevicesQueries\Configuration\FindDeviceDynamicProperties();
 				$findDevicePropertiesQuery->forDevice($device);
 
 				$properties = $this->devicesPropertiesConfigurationRepository->findAllBy(
 					$findDevicePropertiesQuery,
-					Metadata\Documents\DevicesModule\DeviceDynamicProperty::class,
+					MetadataDocuments\DevicesModule\DeviceDynamicProperty::class,
 				);
 
 				foreach ($properties as $property) {
@@ -119,7 +119,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 
 					$properties = $this->channelsPropertiesConfigurationRepository->findAllBy(
 						$findChannelPropertiesQuery,
-						Metadata\Documents\DevicesModule\ChannelDynamicProperty::class,
+						MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
 					);
 
 					foreach ($properties as $property) {

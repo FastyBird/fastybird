@@ -200,7 +200,7 @@ class Install extends Console\Command\Command
 		$serverPort = $this->askConnectorServerPort($io);
 		$serverSecuredPort = $this->askConnectorServerSecuredPort($io);
 		$username = $this->askConnectorUsername($io);
-		$password = $this->askConnectorPassword($io);
+		$password = $username !== null ? $this->askConnectorPassword($io) : null;
 
 		try {
 			// Start transaction connection to the database
@@ -372,7 +372,7 @@ class Install extends Console\Command\Command
 		$serverPort = $this->askConnectorServerPort($io, $connector);
 		$serverSecuredPort = $this->askConnectorServerSecuredPort($io, $connector);
 		$username = $this->askConnectorUsername($io, $connector);
-		$password = $this->askConnectorPassword($io, $connector);
+		$password = $username !== null ? $this->askConnectorPassword($io, $connector) : null;
 
 		$findConnectorPropertyQuery = new DevicesQueries\Entities\FindConnectorProperties();
 		$findConnectorPropertyQuery->forConnector($connector);
@@ -1555,7 +1555,7 @@ class Install extends Console\Command\Command
 
 		} elseif (
 			$whatToDo === $this->translator->translate(
-				'//zigbee2mqtt-connector.cmd.install.actions.list.bridges',
+				'//zigbee2mqtt-connector.cmd.install.actions.discover.devices',
 			)
 			|| $whatToDo === '5'
 		) {

@@ -33,6 +33,10 @@ class ConnectionState extends Consistence\Enum\Enum
 
 	public const OFFLINE = 'offline';
 
+	public const UNKNOWN = 'unknown';
+
+	public const ALERT = 'alert';
+
 	public function getValue(): string
 	{
 		return strval(parent::getValue());

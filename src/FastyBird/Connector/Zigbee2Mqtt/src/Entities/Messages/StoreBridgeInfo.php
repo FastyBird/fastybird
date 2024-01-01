@@ -37,6 +37,8 @@ final class StoreBridgeInfo extends Bridge implements Entity
 		private readonly string $version,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $commit,
+		#[ObjectMapper\Rules\MappedObjectValue(class: CoordinatorInfo::class)]
+		private readonly CoordinatorInfo $coordinator,
 	)
 	{
 		parent::__construct($connector, $baseTopic);
@@ -52,6 +54,11 @@ final class StoreBridgeInfo extends Bridge implements Entity
 		return $this->commit;
 	}
 
+	public function getCoordinator(): CoordinatorInfo
+	{
+		return $this->coordinator;
+	}
+
 	public function toArray(): array
 	{
 		return array_merge(
@@ -59,6 +66,7 @@ final class StoreBridgeInfo extends Bridge implements Entity
 			[
 				'version' => $this->getVersion(),
 				'commit' => $this->getCommit(),
+				'coordinator' => $this->getCoordinator()->toArray(),
 			],
 		);
 	}

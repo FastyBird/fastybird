@@ -106,7 +106,7 @@ final class FbMqttV1 implements Client
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	protected function onConnect(Mqtt\Connection $connection): void
+	public function onConnect(Mqtt\Connection $connection): void
 	{
 		$systemTopic = new Mqtt\DefaultSubscription(self::MQTT_SYSTEM_TOPIC);
 
@@ -183,7 +183,7 @@ final class FbMqttV1 implements Client
 	/**
 	 * @throws Exceptions\Runtime
 	 */
-	protected function onMessage(Mqtt\Message $message): void
+	public function onMessage(Mqtt\Message $message): void
 	{
 		// Check for broker system topic
 		if (str_contains($message->getTopic(), '$SYS')) {

@@ -19,7 +19,6 @@ use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
 use Nette;
 use Ramsey\Uuid;
 use function array_key_exists;
-use function array_merge;
 use function assert;
 use function preg_match;
 use function strtolower;
@@ -46,7 +45,6 @@ final class MqttParser
 		Uuid\UuidInterface $connector,
 		string $topic,
 		string $payload,
-		bool $retained = false,
 	): array
 	{
 		if (!MqttValidator::validate($topic)) {
@@ -54,21 +52,11 @@ final class MqttParser
 		}
 
 		if (MqttValidator::validateBridge($topic)) {
-			return array_merge(
-				self::parseBridgeMessage($connector, $topic, $payload),
-				[
-					'retained' => $retained,
-				],
-			);
+			return self::parseBridgeMessage($connector, $topic, $payload);
 		}
 
 		if (MqttValidator::validateDevice($topic)) {
-			return array_merge(
-				self::parseDeviceMessage($connector, $topic, $payload),
-				[
-					'retained' => $retained,
-				],
-			);
+			return self::parseDeviceMessage($connector, $topic, $payload);
 		}
 
 		throw new Exceptions\ParseMessage('Provided topic is not valid');

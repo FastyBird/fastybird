@@ -47,11 +47,6 @@ final class Mqtt implements Client
 
 	use Nette\SmartObject;
 
-	// Zigbee2MQTT topics subscribe format
-	public const CLIENT_TOPICS = [
-		'%s/#',
-	];
-
 	private Clients\Subscribers\Bridge $bridgeSubscriber;
 
 	private Clients\Subscribers\Device $deviceSubscriber;
@@ -79,15 +74,9 @@ final class Mqtt implements Client
 	 */
 	public function connect(): void
 	{
-		$client = $this->connectionManager->getClient(
-			$this->connector->getId()->toString(),
-			$this->connectorHelper->getServerAddress($this->connector),
-			$this->connectorHelper->getServerPort($this->connector),
-			$this->connectorHelper->getUsername($this->connector),
-			$this->connectorHelper->getPassword($this->connector),
-		);
-
+		$client = $this->getClient();
 		$client->on('connect', [$this, 'onConnect']);
+
 		$this->bridgeSubscriber->subscribe($client);
 		$this->deviceSubscriber->subscribe($client);
 
@@ -101,19 +90,13 @@ final class Mqtt implements Client
 	 */
 	public function disconnect(): void
 	{
-		$client = $this->connectionManager->getClient(
-			$this->connector->getId()->toString(),
-			$this->connectorHelper->getServerAddress($this->connector),
-			$this->connectorHelper->getServerPort($this->connector),
-			$this->connectorHelper->getUsername($this->connector),
-			$this->connectorHelper->getPassword($this->connector),
-		);
-
-		$client->disconnect();
-
+		$client = $this->getClient();
 		$client->removeListener('connect', [$this, 'onConnect']);
+
 		$this->bridgeSubscriber->unsubscribe($client);
 		$this->deviceSubscriber->unsubscribe($client);
+
+		$client->disconnect();
 	}
 
 	/**
@@ -121,7 +104,7 @@ final class Mqtt implements Client
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function onConnect(): void
+	public function onConnect(): void
 	{
 		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDevicesQuery->forConnector($this->connector);
@@ -130,50 +113,57 @@ final class Mqtt implements Client
 		$bridges = $this->devicesConfigurationRepository->findAllBy($findDevicesQuery);
 
 		foreach ($bridges as $bridge) {
-			// Get all topics...
-			foreach (self::CLIENT_TOPICS as $topic) {
-				$topic = sprintf($topic, $this->bridgeHelper->getBaseTopic($bridge));
-				$topic = new NetMqtt\DefaultSubscription($topic);
+			$topic = sprintf(Zigbee2Mqtt\Constants::BRIDGE_TOPIC, $this->bridgeHelper->getBaseTopic($bridge));
+			$topic = new NetMqtt\DefaultSubscription($topic);
 
-				// ...& subscribe to them
-				$this->connectionManager->getClient(
-					$this->connector->getId()->toString(),
-					$this->connectorHelper->getServerAddress($this->connector),
-					$this->connectorHelper->getServerPort($this->connector),
-					$this->connectorHelper->getUsername($this->connector),
-					$this->connectorHelper->getPassword($this->connector),
-				)
-					->subscribe($topic)
-					->then(
-						function (mixed $subscription): void {
-							assert($subscription instanceof NetMqtt\Subscription);
-							$this->logger->info(
-								sprintf('Subscribed to: %s', $subscription->getFilter()),
-								[
-									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
-									'type' => 'mqtt-client',
-									'connector' => [
-										'id' => $this->connector->getId()->toString(),
-									],
+			$this->getClient()
+				->subscribe($topic)
+				->then(
+					function (mixed $subscription): void {
+						assert($subscription instanceof NetMqtt\Subscription);
+
+						$this->logger->info(
+							sprintf('Subscribed to: %s', $subscription->getFilter()),
+							[
+								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+								'type' => 'mqtt-client',
+								'connector' => [
+									'id' => $this->connector->getId()->toString(),
 								],
-							);
-						},
-						function (Throwable $ex): void {
-							$this->logger->error(
-								$ex->getMessage(),
-								[
-									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
-									'type' => 'mqtt-client',
-									'exception' => BootstrapHelpers\Logger::buildException($ex),
-									'connector' => [
-										'id' => $this->connector->getId()->toString(),
-									],
+							],
+						);
+					},
+					function (Throwable $ex): void {
+						$this->logger->error(
+							$ex->getMessage(),
+							[
+								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+								'type' => 'mqtt-client',
+								'exception' => BootstrapHelpers\Logger::buildException($ex),
+								'connector' => [
+									'id' => $this->connector->getId()->toString(),
 								],
-							);
-						},
-					);
-			}
+							],
+						);
+					},
+				);
 		}
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	private function getClient(): API\Client
+	{
+		return $this->connectionManager->getClient(
+			$this->connector->getId()->toString(),
+			$this->connectorHelper->getServerAddress($this->connector),
+			$this->connectorHelper->getServerPort($this->connector),
+			$this->connectorHelper->getUsername($this->connector),
+			$this->connectorHelper->getPassword($this->connector),
+		);
 	}
 
 }

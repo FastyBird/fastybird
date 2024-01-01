@@ -20,6 +20,7 @@ use FastyBird\Connector\Zigbee2Mqtt\Entities;
 use FastyBird\Connector\Zigbee2Mqtt\Queue;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette;
+use function var_dump;
 
 /**
  * Store bridge devices message consumer
@@ -44,6 +45,7 @@ final class StoreBridgeDevices implements Queue\Consumer
 			return false;
 		}
 
+		var_dump($entity->toArray());
 		$this->logger->debug(
 			'Consumed bridge devices list message',
 			[

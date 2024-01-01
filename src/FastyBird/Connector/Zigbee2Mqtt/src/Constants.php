@@ -27,6 +27,11 @@ final class Constants
 {
 
 	/**
+	 * Zigbee2MQTT topics subscribe format
+	 */
+	public const BRIDGE_TOPIC = '%s/#';
+
+	/**
 	 * MQTT topic delimiter
 	 */
 	public const MQTT_TOPIC_DELIMITER = '/';

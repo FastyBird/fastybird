@@ -58,4 +58,9 @@ class FindChannelVariableProperties extends FindChannelProperties
 		throw new Exceptions\InvalidState('Searching by parent is not allowed for this type of property');
 	}
 
+	public function byValue(string $value): void
+	{
+		$this->filter[] = '.[?(@.value =~ /(?i).*^' . $value . '*$/)]';
+	}
+
 }

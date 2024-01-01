@@ -60,7 +60,7 @@ final class StoreBridgeDevices extends Bridge implements Entity
 		return array_merge(
 			parent::toArray(),
 			[
-				'device' => array_map(
+				'devices' => array_map(
 					static fn (DeviceDescription $device): array => $device->toArray(),
 					$this->getDevices(),
 				),

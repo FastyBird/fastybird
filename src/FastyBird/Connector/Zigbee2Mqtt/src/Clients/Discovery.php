@@ -24,6 +24,7 @@ use FastyBird\Connector\Zigbee2Mqtt\Entities;
 use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
 use FastyBird\Connector\Zigbee2Mqtt\Queries;
 use FastyBird\Connector\Zigbee2Mqtt\Types;
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -34,9 +35,11 @@ use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use InvalidArgumentException;
 use Nette;
 use Nette\Utils;
+use React\EventLoop;
 use React\Promise;
 use stdClass;
 use Throwable;
+use function assert;
 use function sprintf;
 
 /**
@@ -53,7 +56,9 @@ final class Discovery implements Evenement\EventEmitterInterface
 	use Nette\SmartObject;
 	use Evenement\EventEmitterTrait;
 
-	private const DISCOVERY_TIMEOUT = 20;
+	private const DISCOVERY_TIMEOUT = 100;
+
+	public const DISCOVERY_TOPIC = '%s/bridge/request/permit_join';
 
 	private Entities\Devices\Bridge|null $onlyBridge = null;
 
@@ -69,6 +74,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\Configuration\Connectors\Properties\Repository $connectorsPropertiesConfigurationRepository,
 		private readonly DevicesUtilities\ConnectorPropertiesStates $connectorPropertiesStatesManager,
+		private readonly EventLoop\LoopInterface $eventLoop,
 	)
 	{
 		$this->bridgeSubscriber = $this->bridgeSubscriberFactory->create($this->connector);
@@ -90,18 +96,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 		$client->on('connect', [$this, 'onConnect']);
 
-		$findConnectorProperty = new DevicesQueries\Configuration\FindConnectorDynamicProperties();
-		$findConnectorProperty->byConnectorId($this->connector->getId());
-		$findConnectorProperty->byIdentifier(Types\ConnectorPropertyIdentifier::STATE);
-
-		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
-			$findConnectorProperty,
-			MetadataDocuments\DevicesModule\ConnectorDynamicProperty::class,
-		);
-
-		$state = $property !== null ? $this->connectorPropertiesStatesManager->readValue($property) : null;
-
-		if ($state === null || $state->getActualValue() !== MetadataTypes\ConnectionState::STATE_RUNNING) {
+		if (!$this->isRunning()) {
 			$this->bridgeSubscriber->subscribe($client);
 
 			$this->subscribed = true;
@@ -128,60 +123,13 @@ final class Discovery implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @return Promise\PromiseInterface<true>
-	 *
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 */
-	private function discoverSubDevices(
-		API\Client $connection,
-		Entities\Devices\Bridge $bridge,
-	): Promise\PromiseInterface
-	{
-		$deferred = new Promise\Deferred();
-
-		$topic = sprintf('%s/bridge/request/permit_join', $bridge->getBaseTopic());
-
-		$connection->subscribe(new NetMqtt\DefaultSubscription($topic))
-			->then(static function () use ($deferred, $connection, $topic): void {
-				$payload = new stdClass();
-				$payload->value = true;
-				$payload->time = self::DISCOVERY_TIMEOUT;
-
-				try {
-					$connection->publish(
-						$topic,
-						Utils\Json::encode($payload),
-					)
-						->then(static function () use ($deferred): void {
-							$deferred->resolve(true);
-						})
-						->catch(static function (Throwable $ex) use ($deferred): void {
-							$deferred->reject($ex);
-						});
-				} catch (Utils\JsonException $ex) {
-					$deferred->reject(
-						new Exceptions\InvalidState('Discovery action could not be published', $ex->getCode(), $ex),
-					);
-				}
-			})
-			->catch(static function (Throwable $ex) use ($deferred): void {
-				$deferred->reject($ex);
-			});
-
-		return $deferred->promise();
-	}
-
-	/**
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws InvalidArgumentException
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function onConnect(): void
+	public function onConnect(): void
 	{
-		$client = $this->getClient();
-
 		$promises = [];
 
 		if ($this->onlyBridge !== null) {
@@ -199,7 +147,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				],
 			);
 
-			$promises[] = $this->discoverSubDevices($client, $this->onlyBridge);
+			$promises[] = $this->discoverSubDevices($this->onlyBridge);
 
 		} else {
 			$this->logger->debug(
@@ -222,17 +170,148 @@ final class Discovery implements Evenement\EventEmitterInterface
 			);
 
 			foreach ($bridges as $bridge) {
-				$promises[] = $this->discoverSubDevices($client, $bridge);
+				$promises[] = $this->discoverSubDevices($bridge);
 			}
 		}
 
 		Promise\all($promises)
 			->then(function (): void {
-				$this->emit('finished');
+				$this->eventLoop->addTimer(self::DISCOVERY_TIMEOUT, function (): void {
+					$this->emit('finished');
+				});
 			})
 			->catch(function (): void {
-				$this->emit('finished', [[]]);
+				$this->emit('finished');
 			});
+	}
+
+	/**
+	 * @return Promise\PromiseInterface<true>
+	 *
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	private function discoverSubDevices(
+		Entities\Devices\Bridge $bridge,
+	): Promise\PromiseInterface
+	{
+		$deferred = new Promise\Deferred();
+
+		if ($this->subscribed) {
+			$topic = sprintf(Zigbee2Mqtt\Constants::BRIDGE_TOPIC, $bridge->getBaseTopic());
+			$topic = new NetMqtt\DefaultSubscription($topic);
+
+			$this->getClient()
+				->subscribe($topic)
+				->then(
+					function (mixed $subscription) use ($deferred, $bridge): void {
+						assert($subscription instanceof NetMqtt\Subscription);
+
+						$this->logger->info(
+							sprintf('Subscribed to: %s', $subscription->getFilter()),
+							[
+								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+								'type' => 'discovery-client',
+								'connector' => [
+									'id' => $this->connector->getId()->toString(),
+								],
+							],
+						);
+
+						$this->publishDiscoveryRequest($bridge)
+							->then(static function () use ($deferred): void {
+								$deferred->resolve(true);
+							})
+							->catch(static function (Throwable $ex) use ($deferred): void {
+								$deferred->reject($ex);
+							});
+					},
+					function (Throwable $ex): void {
+						$this->logger->error(
+							$ex->getMessage(),
+							[
+								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+								'type' => 'discovery-client',
+								'exception' => BootstrapHelpers\Logger::buildException($ex),
+								'connector' => [
+									'id' => $this->connector->getId()->toString(),
+								],
+							],
+						);
+					},
+				);
+		} else {
+			$this->publishDiscoveryRequest($bridge)
+				->then(static function () use ($deferred): void {
+					$deferred->resolve(true);
+				})
+				->catch(static function (Throwable $ex) use ($deferred): void {
+					$deferred->reject($ex);
+				});
+		}
+
+		return $deferred->promise();
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidArgument
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
+	 */
+	private function isRunning(): bool
+	{
+		$findConnectorProperty = new DevicesQueries\Configuration\FindConnectorDynamicProperties();
+		$findConnectorProperty->byConnectorId($this->connector->getId());
+		$findConnectorProperty->byIdentifier(Types\ConnectorPropertyIdentifier::STATE);
+
+		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
+			$findConnectorProperty,
+			MetadataDocuments\DevicesModule\ConnectorDynamicProperty::class,
+		);
+
+		$state = $property !== null ? $this->connectorPropertiesStatesManager->readValue($property) : null;
+
+		return $state?->getActualValue() === MetadataTypes\ConnectionState::STATE_RUNNING;
+	}
+
+	/**
+	 * @return Promise\PromiseInterface<true>
+	 *
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	private function publishDiscoveryRequest(
+		Entities\Devices\Bridge $bridge,
+	): Promise\PromiseInterface
+	{
+		$deferred = new Promise\Deferred();
+
+		$topic = sprintf(self::DISCOVERY_TOPIC, $bridge->getBaseTopic());
+
+		$payload = new stdClass();
+		$payload->value = true;
+		$payload->time = self::DISCOVERY_TIMEOUT;
+
+		try {
+			$this->getClient()->publish(
+				$topic,
+				Utils\Json::encode($payload),
+			)
+				->then(static function () use ($deferred): void {
+					$deferred->resolve(true);
+				})
+				->catch(static function (Throwable $ex) use ($deferred): void {
+					$deferred->reject($ex);
+				});
+		} catch (Utils\JsonException $ex) {
+			$deferred->reject(
+				new Exceptions\InvalidState('Discovery action could not be published', $ex->getCode(), $ex),
+			);
+		}
+
+		return $deferred->promise();
 	}
 
 	/**
