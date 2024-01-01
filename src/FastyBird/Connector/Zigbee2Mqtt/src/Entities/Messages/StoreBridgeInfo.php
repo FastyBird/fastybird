@@ -32,13 +32,14 @@ final class StoreBridgeInfo extends Bridge implements Entity
 
 	public function __construct(
 		Uuid\UuidInterface $connector,
+		string $baseTopic,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $version,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $commit,
 	)
 	{
-		parent::__construct($connector);
+		parent::__construct($connector, $baseTopic);
 	}
 
 	public function getVersion(): string

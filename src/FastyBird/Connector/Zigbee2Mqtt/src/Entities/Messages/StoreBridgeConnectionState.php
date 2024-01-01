@@ -33,11 +33,12 @@ final class StoreBridgeConnectionState extends Bridge implements Entity
 
 	public function __construct(
 		Uuid\UuidInterface $connector,
+		string $baseTopic,
 		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\ConnectionState::class)]
 		private readonly Types\ConnectionState $state,
 	)
 	{
-		parent::__construct($connector);
+		parent::__construct($connector, $baseTopic);
 	}
 
 	public function getState(): Types\ConnectionState

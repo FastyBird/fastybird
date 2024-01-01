@@ -36,6 +36,7 @@ final class StoreDeviceState extends Device implements Entity
 	 */
 	public function __construct(
 		Uuid\UuidInterface $connector,
+		string $baseTopic,
 		string $device,
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\AnyOf([
@@ -47,7 +48,7 @@ final class StoreDeviceState extends Device implements Entity
 		private readonly array $states,
 	)
 	{
-		parent::__construct($connector, $device);
+		parent::__construct($connector, $baseTopic, $device);
 	}
 
 	/**

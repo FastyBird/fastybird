@@ -32,13 +32,14 @@ final class StoreBridgeLog extends Bridge implements Entity
 
 	public function __construct(
 		Uuid\UuidInterface $connector,
+		string $baseTopic,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $level,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $message,
 	)
 	{
-		parent::__construct($connector);
+		parent::__construct($connector, $baseTopic);
 	}
 
 	public function getLevel(): string

@@ -33,12 +33,13 @@ final class StoreDeviceConnectionState extends Device implements Entity
 
 	public function __construct(
 		Uuid\UuidInterface $connector,
+		string $baseTopic,
 		string $identifier,
 		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\ConnectionState::class)]
 		private readonly MetadataTypes\ConnectionState $state,
 	)
 	{
-		parent::__construct($connector, $identifier);
+		parent::__construct($connector, $baseTopic, $identifier);
 	}
 
 	public function getState(): MetadataTypes\ConnectionState

@@ -159,6 +159,87 @@ class Zigbee2MqttExtension extends DI\CompilerExtension implements Translation\D
 		 */
 
 		$builder->addDefinition(
+			$this->prefix('queue.consumers.store.bridgeConnectionState'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Queue\Consumers\StoreBridgeConnectionState::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
+
+		$builder->addDefinition(
+			$this->prefix('queue.consumers.store.bridgeDevices'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Queue\Consumers\StoreBridgeDevices::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
+
+		$builder->addDefinition(
+			$this->prefix('queue.consumers.store.bridgeEvent'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Queue\Consumers\StoreBridgeEvent::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
+
+		$builder->addDefinition(
+			$this->prefix('queue.consumers.store.bridgeGroups'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Queue\Consumers\StoreBridgeGroups::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
+
+		$builder->addDefinition(
+			$this->prefix('queue.consumers.store.bridgeInfo'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Queue\Consumers\StoreBridgeInfo::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
+
+		$builder->addDefinition(
+			$this->prefix('queue.consumers.store.bridgeLog'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Queue\Consumers\StoreBridgeLog::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
+
+		$builder->addDefinition(
+			$this->prefix('queue.consumers.store.deviceConnectionState'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Queue\Consumers\StoreDeviceConnectionState::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
+
+		$builder->addDefinition(
+			$this->prefix('queue.consumers.store.deviceState'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Queue\Consumers\StoreDeviceState::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
+
+		$builder->addDefinition(
+			$this->prefix('queue.consumers.write.subDeviceState'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Queue\Consumers\WriteSubDeviceState::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
+
+		$builder->addDefinition(
 			$this->prefix('queue.consumers'),
 			new DI\Definitions\ServiceDefinition(),
 		)

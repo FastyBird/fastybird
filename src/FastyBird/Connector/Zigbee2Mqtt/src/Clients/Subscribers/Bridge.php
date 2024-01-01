@@ -137,7 +137,7 @@ class Bridge
 					'Received message could not be successfully parsed to entity',
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
-						'type' => 'mqtt-client',
+						'type' => 'bridge-messages-subscriber',
 						'exception' => BootstrapHelpers\Logger::buildException($ex),
 						'connector' => [
 							'id' => $this->connector->getId()->toString(),

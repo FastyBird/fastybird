@@ -111,7 +111,7 @@ class Device
 								'No handler for GET message type',
 								[
 									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
-									'type' => 'mqtt-client',
+									'type' => 'bridge-messages-subscriber',
 									'payload' => $message->getPayload(),
 								],
 							);
@@ -140,7 +140,7 @@ class Device
 					'Received message could not be successfully parsed to entity',
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
-						'type' => 'mqtt-client',
+						'type' => 'bridge-messages-subscriber',
 						'exception' => BootstrapHelpers\Logger::buildException($ex),
 						'connector' => [
 							'id' => $this->connector->getId()->toString(),

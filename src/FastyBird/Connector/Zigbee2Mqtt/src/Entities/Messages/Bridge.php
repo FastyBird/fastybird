@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Zigbee2Mqtt\Entities\Messages;
 
 use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 
 /**
@@ -32,6 +33,9 @@ abstract class Bridge implements Entity
 	public function __construct(
 		#[BootstrapObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $connector,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		#[ObjectMapper\Modifiers\FieldName('base_topic')]
+		private readonly string $baseTopic,
 	)
 	{
 	}
@@ -41,10 +45,16 @@ abstract class Bridge implements Entity
 		return $this->connector;
 	}
 
+	public function getBaseTopic(): string
+	{
+		return $this->baseTopic;
+	}
+
 	public function toArray(): array
 	{
 		return [
 			'connector' => $this->getConnector()->toString(),
+			'base_topic' => $this->getBaseTopic(),
 		];
 	}
 

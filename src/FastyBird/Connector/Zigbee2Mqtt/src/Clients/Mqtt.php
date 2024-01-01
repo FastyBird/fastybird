@@ -20,9 +20,7 @@ use FastyBird\Connector\Zigbee2Mqtt;
 use FastyBird\Connector\Zigbee2Mqtt\API;
 use FastyBird\Connector\Zigbee2Mqtt\Clients;
 use FastyBird\Connector\Zigbee2Mqtt\Entities;
-use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
 use FastyBird\Connector\Zigbee2Mqtt\Helpers;
-use FastyBird\Connector\Zigbee2Mqtt\Queue;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -64,8 +62,6 @@ final class Mqtt implements Client
 		private readonly Clients\Subscribers\DeviceFactory $deviceSubscriberFactory,
 		private readonly API\ConnectionManager $connectionManager,
 		private readonly Zigbee2Mqtt\Logger $logger,
-		private readonly Queue\Queue $queue,
-		private readonly Helpers\Entity $entityHelper,
 		private readonly Helpers\Connector $connectorHelper,
 		private readonly Helpers\Devices\Bridge $bridgeHelper,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
@@ -122,7 +118,6 @@ final class Mqtt implements Client
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -135,17 +130,6 @@ final class Mqtt implements Client
 		$bridges = $this->devicesConfigurationRepository->findAllBy($findDevicesQuery);
 
 		foreach ($bridges as $bridge) {
-			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\StoreDeviceConnectionState::class,
-					[
-						'connector' => $this->connector->getId(),
-						'identifier' => $bridge->getIdentifier(),
-						'state' => MetadataTypes\ConnectionState::STATE_CONNECTED,
-					],
-				),
-			);
-
 			// Get all topics...
 			foreach (self::CLIENT_TOPICS as $topic) {
 				$topic = sprintf($topic, $this->bridgeHelper->getBaseTopic($bridge));

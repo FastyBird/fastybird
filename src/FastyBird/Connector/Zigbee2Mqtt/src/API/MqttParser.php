@@ -89,6 +89,7 @@ final class MqttParser
 
 			return [
 				'connector' => $connector,
+				'base_topic' => $matches['base_topic'],
 				'type' => $matches['type'],
 				'payload' => $payload,
 			];
@@ -98,6 +99,7 @@ final class MqttParser
 
 			return [
 				'connector' => $connector,
+				'base_topic' => $matches['base_topic'],
 				'request' => $matches['request'],
 				'payload' => $payload,
 			];
@@ -121,6 +123,7 @@ final class MqttParser
 			return [
 				'connector' => $connector,
 				'device' => $matches['name'],
+				'base_topic' => strtolower($matches['base_topic']),
 				'type' => strtolower($matches['type']),
 				'payload' => $payload,
 			];
@@ -131,6 +134,7 @@ final class MqttParser
 			return [
 				'connector' => $connector,
 				'device' => $matches['name'],
+				'base_topic' => $matches['base_topic'],
 				'type' => null,
 				'payload' => $payload,
 			];

@@ -34,13 +34,14 @@ final class StoreBridgeEvent extends Bridge implements Entity
 
 	public function __construct(
 		Uuid\UuidInterface $connector,
+		string $baseTopic,
 		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\BridgeEvent::class)]
 		private readonly Types\BridgeEvent $type,
 		#[ObjectMapper\Rules\MappedObjectValue(EventData::class)]
 		private readonly EventData $data,
 	)
 	{
-		parent::__construct($connector);
+		parent::__construct($connector, $baseTopic);
 	}
 
 	public function getType(): Types\BridgeEvent

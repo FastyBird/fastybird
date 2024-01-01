@@ -36,6 +36,7 @@ final class StoreBridgeGroups extends Bridge implements Entity
 	 */
 	public function __construct(
 		Uuid\UuidInterface $connector,
+		string $baseTopic,
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(class: GroupDescription::class),
 			new ObjectMapper\Rules\IntValue(unsigned: true),
@@ -43,7 +44,7 @@ final class StoreBridgeGroups extends Bridge implements Entity
 		private readonly array $groups,
 	)
 	{
-		parent::__construct($connector);
+		parent::__construct($connector, $baseTopic);
 	}
 
 	/**

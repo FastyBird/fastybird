@@ -34,6 +34,9 @@ abstract class Device implements Entity
 		#[BootstrapObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $connector,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		#[ObjectMapper\Modifiers\FieldName('base_topic')]
+		private readonly string $baseTopic,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $device,
 	)
 	{
@@ -42,6 +45,11 @@ abstract class Device implements Entity
 	public function getConnector(): Uuid\UuidInterface
 	{
 		return $this->connector;
+	}
+
+	public function getBaseTopic(): string
+	{
+		return $this->baseTopic;
 	}
 
 	public function getDevice(): string
@@ -53,6 +61,7 @@ abstract class Device implements Entity
 	{
 		return [
 			'connector' => $this->getConnector()->toString(),
+			'base_topic' => $this->getBaseTopic(),
 			'device' => $this->getDevice(),
 		];
 	}
