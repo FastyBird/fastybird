@@ -17,6 +17,7 @@ namespace FastyBird\Connector\Zigbee2Mqtt\Commands;
 
 use Doctrine\DBAL;
 use Doctrine\Persistence;
+use Exception;
 use FastyBird\Connector\Zigbee2Mqtt;
 use FastyBird\Connector\Zigbee2Mqtt\Entities;
 use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
@@ -101,6 +102,7 @@ class Install extends Console\Command\Command
 	 * @throws Console\Exception\ExceptionInterface
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exception
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
@@ -317,6 +319,7 @@ class Install extends Console\Command\Command
 	 * @throws Console\Exception\ExceptionInterface
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exception
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
@@ -553,6 +556,7 @@ class Install extends Console\Command\Command
 	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exception
 	 * @throws Exceptions\Runtime
 	 */
 	private function deleteConnector(Style\SymfonyStyle $io): void
@@ -627,6 +631,7 @@ class Install extends Console\Command\Command
 	 * @throws Console\Exception\ExceptionInterface
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exception
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
@@ -702,55 +707,7 @@ class Install extends Console\Command\Command
 	 */
 	private function createBridge(Style\SymfonyStyle $io, Entities\Zigbee2MqttConnector $connector): void
 	{
-		$question = new Console\Question\Question(
-			$this->translator->translate('//zigbee2mqtt-connector.cmd.install.questions.provide.device.identifier'),
-		);
-
-		$question->setValidator(function (string|null $answer) {
-			if ($answer !== '' && $answer !== null) {
-				$findDeviceQuery = new Queries\Entities\FindDevices();
-				$findDeviceQuery->byIdentifier($answer);
-
-				if (
-					$this->devicesRepository->findOneBy($findDeviceQuery, Entities\Zigbee2MqttDevice::class) !== null
-				) {
-					throw new Exceptions\Runtime(
-						$this->translator->translate(
-							'//zigbee2mqtt-connector.cmd.install.messages.identifier.device.used',
-						),
-					);
-				}
-			}
-
-			return $answer;
-		});
-
-		$identifier = $io->askQuestion($question);
-
-		if ($identifier === '' || $identifier === null) {
-			$identifierPattern = 'zigbee2mqtt-bridge-%d';
-
-			for ($i = 1; $i <= 100; $i++) {
-				$identifier = sprintf($identifierPattern, $i);
-
-				$findDeviceQuery = new Queries\Entities\FindDevices();
-				$findDeviceQuery->byIdentifier($identifier);
-
-				if (
-					$this->devicesRepository->findOneBy($findDeviceQuery, Entities\Zigbee2MqttDevice::class) === null
-				) {
-					break;
-				}
-			}
-		}
-
-		if ($identifier === '') {
-			$io->error(
-				$this->translator->translate('//zigbee2mqtt-connector.cmd.install.messages.identifier.device.missing'),
-			);
-
-			return;
-		}
+		$identifier = $this->findNextDeviceIdentifier($connector, 'zigbee2mqtt-bridge-%d');
 
 		$name = $this->askDeviceName($io);
 
@@ -1110,12 +1067,22 @@ class Install extends Console\Command\Command
 	 * @throws BootstrapExceptions\InvalidState
 	 * @throws Console\Exception\ExceptionInterface
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exception
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	private function discoverDevices(Style\SymfonyStyle $io, Entities\Zigbee2MqttConnector $connector): void
 	{
+		$findDevicesQuery = new Queries\Entities\FindBridgeDevices();
+		$findDevicesQuery->forConnector($connector);
+
+		if ($this->devicesRepository->getResultSet($findDevicesQuery, Entities\Devices\Bridge::class)->count() === 0) {
+			$io->info($this->translator->translate('//zigbee2mqtt-connector.cmd.install.messages.noBridges'));
+
+			return;
+		}
+
 		if ($this->output === null) {
 			throw new Exceptions\InvalidState('Something went wrong, console output is not configured');
 		}
@@ -1388,6 +1355,7 @@ class Install extends Console\Command\Command
 	 * @throws Console\Exception\ExceptionInterface
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exception
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
@@ -1472,6 +1440,7 @@ class Install extends Console\Command\Command
 	 * @throws Console\Exception\ExceptionInterface
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exception
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
@@ -2054,6 +2023,29 @@ class Install extends Console\Command\Command
 		assert($device instanceof Entities\Devices\SubDevice);
 
 		return $device;
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
+	 */
+	private function findNextDeviceIdentifier(Entities\Zigbee2MqttConnector $connector, string $pattern): string
+	{
+		for ($i = 1; $i <= 100; $i++) {
+			$identifier = sprintf($pattern, $i);
+
+			$findDeviceQuery = new Queries\Entities\FindDevices();
+			$findDeviceQuery->forConnector($connector);
+			$findDeviceQuery->byIdentifier($identifier);
+
+			$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\Zigbee2MqttDevice::class);
+
+			if ($device === null) {
+				return $identifier;
+			}
+		}
+
+		throw new Exceptions\InvalidState('Could not find free device identifier');
 	}
 
 	/**

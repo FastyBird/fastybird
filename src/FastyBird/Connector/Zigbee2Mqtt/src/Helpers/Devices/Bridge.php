@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Zigbee2Mqtt\Helpers\Devices;
 
 use FastyBird\Connector\Zigbee2Mqtt\Entities;
+use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
 use FastyBird\Connector\Zigbee2Mqtt\Types;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -60,6 +61,59 @@ final class Bridge
 
 		if ($property?->getValue() === null) {
 			return Entities\Devices\Bridge::BASE_TOPIC;
+		}
+
+		$value = $property->getValue();
+		assert(is_string($value));
+
+		return $value;
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public function getFriendlyName(MetadataDocuments\DevicesModule\Device $device): string|null
+	{
+		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+		$findPropertyQuery->forDevice($device);
+		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::FRIENDLY_NAME);
+
+		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
+			$findPropertyQuery,
+			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+		);
+
+		if ($property?->getValue() === null) {
+			return null;
+		}
+
+		$value = $property->getValue();
+		assert(is_string($value));
+
+		return $value;
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public function getIeeeAddress(MetadataDocuments\DevicesModule\Device $device): string
+	{
+		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+		$findPropertyQuery->forDevice($device);
+		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IEEE_ADDRESS);
+
+		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
+			$findPropertyQuery,
+			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+		);
+
+		if ($property?->getValue() === null) {
+			throw new Exceptions\InvalidState('Sub-device have to have configured IEEE address');
 		}
 
 		$value = $property->getValue();

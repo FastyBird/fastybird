@@ -39,6 +39,8 @@ final class ConnectorFactoryTest extends DbTestCase
 		$connector = $connectorsRepository->findOneBy($findConnectorQuery);
 		assert($connector instanceof Entities\Zigbee2MqttConnector);
 
+		self::assertSame('0640b179-ee92-4766-a491-70e02e9e2378', $connector->getId()->toString());
+
 		$factory->create($connector);
 
 		$this->expectNotToPerformAssertions();

@@ -249,7 +249,13 @@ final class WriteSubDeviceState implements Queue\Consumer
 		try {
 			$this->getClient($connector)
 				->publish(
-					sprintf('%s/%s/set', $this->bridgeHelper->getBaseTopic($bridge), $device->getIdentifier()),
+					sprintf(
+						'%s/%s/set',
+						$this->bridgeHelper->getBaseTopic($bridge),
+						$this->subDeviceHelper->getFriendlyName($device) ?? $this->subDeviceHelper->getIeeeAddress(
+							$device,
+						),
+					),
 					Utils\Json::encode($payload),
 				)
 				->then(function () use ($channel): void {
