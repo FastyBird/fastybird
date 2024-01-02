@@ -41,9 +41,9 @@ final class ConnectorFactoryTest extends DbTestCase
 
 		self::assertSame('0640b179-ee92-4766-a491-70e02e9e2378', $connector->getId()->toString());
 
-		$factory->create($connector);
+		$connector = $factory->create($connector);
 
-		$this->expectNotToPerformAssertions();
+		self::assertFalse($connector->hasUnfinishedTasks());
 	}
 
 }
