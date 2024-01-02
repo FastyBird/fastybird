@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Zigbee2Mqtt\Queue\Consumers;
 
 use Doctrine\DBAL;
+use Exception;
 use FastyBird\Connector\Zigbee2Mqtt;
 use FastyBird\Connector\Zigbee2Mqtt\Entities;
 use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
@@ -70,6 +71,7 @@ final class StoreBridgeDevices implements Queue\Consumer
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Runtime
+	 * @throws Exception
 	 * @throws Exceptions\InvalidState
 	 */
 	public function consume(Entities\Messages\Entity $entity): bool
@@ -105,14 +107,48 @@ final class StoreBridgeDevices implements Queue\Consumer
 		}
 
 		foreach ($entity->getDevices() as $deviceDescription) {
-			$findDeviceQuery = new Queries\Entities\FindSubDevices();
-			$findDeviceQuery->byConnectorId($entity->getConnector());
-			$findDeviceQuery->forParent($bridge);
-			$findDeviceQuery->byIdentifier($deviceDescription->getIeeeAddress());
+			if ($bridge->getIdentifier() === $deviceDescription->getIeeeAddress()) {
+				$device = $bridge;
 
-			$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\SubDevice::class);
+			} else {
+				$findDeviceQuery = new Queries\Entities\FindSubDevices();
+				$findDeviceQuery->byConnectorId($entity->getConnector());
+				$findDeviceQuery->forParent($bridge);
+				$findDeviceQuery->byIdentifier($deviceDescription->getIeeeAddress());
+
+				$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\SubDevice::class);
+			}
 
 			if ($device === null) {
+				$findDeviceQuery = new Queries\Entities\FindDevices();
+				$findDeviceQuery->byConnectorId($entity->getConnector());
+				$findDeviceQuery->byIdentifier($deviceDescription->getIeeeAddress());
+
+				if ($this->devicesRepository->getResultSet(
+					$findDeviceQuery,
+					Entities\Zigbee2MqttDevice::class,
+				)->count() !== 0) {
+					$this->logger->error(
+						'There is already registered device with same ieee address',
+						[
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+							'type' => 'store-bridge-devices-message-consumer',
+							'connector' => [
+								'id' => $entity->getConnector()->toString(),
+							],
+							'bridge' => [
+								'id' => $bridge->getId()->toString(),
+							],
+							'device' => [
+								'identifier' => $deviceDescription->getIeeeAddress(),
+							],
+							'data' => $deviceDescription->toArray(),
+						],
+					);
+
+					continue;
+				}
+
 				$findConnectorQuery = new Queries\Entities\FindConnectors();
 				$findConnectorQuery->byId($entity->getConnector());
 
@@ -151,6 +187,7 @@ final class StoreBridgeDevices implements Queue\Consumer
 							'parent' => $bridge,
 							'identifier' => $deviceDescription->getIeeeAddress(),
 							'name' => $deviceDescription->getDefinition()?->getDescription(),
+							'comment' => $deviceDescription->getDescription(),
 						]));
 						assert($device instanceof Entities\Devices\SubDevice);
 

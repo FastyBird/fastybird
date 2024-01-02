@@ -1120,6 +1120,7 @@ class Install extends Console\Command\Command
 			$this->translator->translate('//zigbee2mqtt-connector.cmd.install.data.id'),
 			$this->translator->translate('//zigbee2mqtt-connector.cmd.install.data.name'),
 			$this->translator->translate('//zigbee2mqtt-connector.cmd.install.data.model'),
+			$this->translator->translate('//zigbee2mqtt-connector.cmd.install.data.manufacturer'),
 			$this->translator->translate('//zigbee2mqtt-connector.cmd.install.data.bridge'),
 		]);
 
@@ -1150,7 +1151,8 @@ class Install extends Console\Command\Command
 						$foundDevices,
 						$device->getId()->toString(),
 						$device->getName() ?? $device->getIdentifier(),
-						$device->getHardwareType(),
+						$device->getHardwareModel(),
+						$device->getHardwareManufacturer(),
 						$bridge->getName() ?? $bridge->getIdentifier(),
 					]);
 				}

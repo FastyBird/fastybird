@@ -22,6 +22,7 @@ use FastyBird\Connector\Zigbee2Mqtt\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use Ramsey\Uuid;
+use function assert;
 use function count;
 use function is_bool;
 use function is_string;
@@ -113,7 +114,7 @@ class SubDevice extends Entities\Zigbee2MqttDevice
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getHardwareType(): string
+	public function getHardwareType(): Types\DeviceType
 	{
 		$property = $this->properties
 			->filter(
@@ -125,11 +126,58 @@ class SubDevice extends Entities\Zigbee2MqttDevice
 		if (
 			$property instanceof DevicesEntities\Devices\Properties\Variable
 			&& is_string($property->getValue())
+			&& Types\DeviceType::isValidValue($property->getValue())
 		) {
-			return $property->getValue();
+			return Types\DeviceType::get($property->getValue());
 		}
 
 		throw new MetadataExceptions\InvalidState('Device hardware type is not configured');
+	}
+
+	/**
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public function getHardwareModel(): string|null
+	{
+		$property = $this->properties
+			->filter(
+			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::MODEL
+			)
+			->first();
+
+		if (!$property instanceof DevicesEntities\Devices\Properties\Variable || $property->getValue() === null) {
+			return null;
+		}
+
+		$value = $property->getValue();
+		assert(is_string($value));
+
+		return $value;
+	}
+
+	/**
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public function getHardwareManufacturer(): string|null
+	{
+		$property = $this->properties
+			->filter(
+			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::MANUFACTURER
+			)
+			->first();
+
+		if (!$property instanceof DevicesEntities\Devices\Properties\Variable || $property->getValue() === null) {
+			return null;
+		}
+
+		$value = $property->getValue();
+		assert(is_string($value));
+
+		return $value;
 	}
 
 	/**

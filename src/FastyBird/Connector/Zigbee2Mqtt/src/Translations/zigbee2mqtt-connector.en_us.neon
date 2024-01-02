@@ -52,6 +52,7 @@ cmd:
             id: "ID"
             name: "Name"
             model: "Model"
+            manufacturer: "Manufacturer"
             bridge: "Bridge"
 
         messages:
@@ -129,6 +130,7 @@ cmd:
             baseTopic: "Base Topic"
             bridge: "Bridge"
             model: "Model"
+            manufacturer: "Manufacturer"
             bridgesCnt: "# Bridges"
             devicesCnt: "# Devices"
 
