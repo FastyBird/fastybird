@@ -4,7 +4,7 @@ parameters:
             enabled: true
             level: 200
         stdOut:
-            enabled: true
+            enabled: %debugMode%
             level: 200
         console:
             enabled: %debugMode%

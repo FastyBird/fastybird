@@ -305,7 +305,6 @@ final class StoreBridgeDevices implements Queue\Consumer
 								$feature->getProperty(),
 							),
 							$feature->getLabel() ?? $feature->getName(),
-							$bridge,
 							$device,
 						);
 
@@ -367,7 +366,6 @@ final class StoreBridgeDevices implements Queue\Consumer
 							$expose->getProperty(),
 						),
 						$expose->getLabel() ?? $expose->getName(),
-						$bridge,
 						$device,
 					);
 
@@ -437,12 +435,11 @@ final class StoreBridgeDevices implements Queue\Consumer
 	private function createChannel(
 		string $identifier,
 		string|null $name,
-		Entities\Devices\Bridge $bridge,
-		Entities\Devices\SubDevice $device,
+		Entities\Zigbee2MqttDevice $device,
 	): DevicesEntities\Channels\Channel
 	{
 		return $this->databaseHelper->transaction(
-			function () use ($identifier, $name, $bridge, $device): DevicesEntities\Channels\Channel {
+			function () use ($identifier, $name, $device): DevicesEntities\Channels\Channel {
 				$findChannelQuery = new DevicesQueries\Entities\FindChannels();
 				$findChannelQuery->byIdentifier($identifier);
 				$findChannelQuery->forDevice($device);
@@ -463,10 +460,7 @@ final class StoreBridgeDevices implements Queue\Consumer
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
 							'type' => 'store-sub-device-message-consumer',
 							'connector' => [
-								'id' => $bridge->getConnector()->getId()->toString(),
-							],
-							'bridge' => [
-								'id' => $bridge->getId()->toString(),
+								'id' => $device->getConnector()->getId()->toString(),
 							],
 							'device' => [
 								'id' => $device->getId()->toString(),

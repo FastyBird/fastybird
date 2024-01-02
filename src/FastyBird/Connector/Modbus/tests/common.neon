@@ -41,10 +41,6 @@ services:
         factory: IPub\SlimRouter\Routing\Router
         setup:
             - addMiddleware(@fbJsonApi.middlewares.jsonapi)
-    - {
-      create: React\EventLoop\Factory::create()
-      type: React\EventLoop\LoopInterface
-    }
 
     cache.storage: Nette\Caching\Storages\MemoryStorage
 
