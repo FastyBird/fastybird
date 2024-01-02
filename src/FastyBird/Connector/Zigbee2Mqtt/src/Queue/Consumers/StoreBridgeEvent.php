@@ -74,9 +74,9 @@ final class StoreBridgeEvent implements Queue\Consumer
 		$findDeviceQuery->byId($baseTopicProperty->getDevice());
 		$findDeviceQuery->byType(Entities\Devices\Bridge::TYPE);
 
-		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+		$bridge = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
-		if ($device === null) {
+		if ($bridge === null) {
 			return true;
 		}
 
@@ -89,7 +89,7 @@ final class StoreBridgeEvent implements Queue\Consumer
 					'id' => $entity->getConnector()->toString(),
 				],
 				'device' => [
-					'id' => $device->getId()->toString(),
+					'id' => $bridge->getId()->toString(),
 				],
 				'data' => [
 					'type' => $entity->getType()->getValue(),

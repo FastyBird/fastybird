@@ -88,9 +88,9 @@ final class StoreBridgeConnectionState implements Queue\Consumer
 		$findDeviceQuery->byId($baseTopicProperty->getDevice());
 		$findDeviceQuery->byType(Entities\Devices\Bridge::TYPE);
 
-		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+		$bridge = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
-		if ($device === null) {
+		if ($bridge === null) {
 			return true;
 		}
 
@@ -106,10 +106,10 @@ final class StoreBridgeConnectionState implements Queue\Consumer
 
 		// Check device state...
 		if (
-			!$this->deviceConnectionManager->getState($device)->equals($state)
+			!$this->deviceConnectionManager->getState($bridge)->equals($state)
 		) {
 			// ... and if it is not ready, set it to ready
-			$this->deviceConnectionManager->setState($device, $state);
+			$this->deviceConnectionManager->setState($bridge, $state);
 
 			if (
 				$state->equalsValue(MetadataTypes\ConnectionState::STATE_DISCONNECTED)
@@ -117,7 +117,7 @@ final class StoreBridgeConnectionState implements Queue\Consumer
 				|| $state->equalsValue(MetadataTypes\ConnectionState::STATE_UNKNOWN)
 			) {
 				$findDevicePropertiesQuery = new DevicesQueries\Configuration\FindDeviceDynamicProperties();
-				$findDevicePropertiesQuery->forDevice($device);
+				$findDevicePropertiesQuery->forDevice($bridge);
 
 				$properties = $this->devicesPropertiesConfigurationRepository->findAllBy(
 					$findDevicePropertiesQuery,
@@ -129,7 +129,7 @@ final class StoreBridgeConnectionState implements Queue\Consumer
 				}
 
 				$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
-				$findChannelsQuery->forDevice($device);
+				$findChannelsQuery->forDevice($bridge);
 
 				$channels = $this->channelsConfigurationRepository->findAllBy($findChannelsQuery);
 
@@ -148,7 +148,7 @@ final class StoreBridgeConnectionState implements Queue\Consumer
 				}
 
 				$findChildrenDevicesQuery = new DevicesQueries\Configuration\FindDevices();
-				$findChildrenDevicesQuery->forParent($device);
+				$findChildrenDevicesQuery->forParent($bridge);
 				$findChildrenDevicesQuery->byType(Entities\Devices\SubDevice::TYPE);
 
 				$children = $this->devicesConfigurationRepository->findAllBy($findChildrenDevicesQuery);

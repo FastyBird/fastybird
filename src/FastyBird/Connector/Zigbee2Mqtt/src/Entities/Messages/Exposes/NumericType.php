@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Zigbee2Mqtt\Entities\Messages\Exposes;
 
 use FastyBird\Connector\Zigbee2Mqtt\Types;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Orisai\ObjectMapper;
 use function array_merge;
 
@@ -31,7 +32,8 @@ final class NumericType extends Type
 {
 
 	public function __construct(
-		Types\ExposeType $type,
+		#[ObjectMapper\Rules\ArrayEnumValue(cases: [Types\ExposeType::NUMERIC])]
+		private readonly string $type,
 		string $name,
 		string $label,
 		string $property,
@@ -61,7 +63,17 @@ final class NumericType extends Type
 		private readonly string|null $unit = null,
 	)
 	{
-		parent::__construct($type, $name, $label, $property, $access);
+		parent::__construct($name, $label, $property, $access);
+	}
+
+	public function getType(): Types\ExposeType
+	{
+		return Types\ExposeType::get($this->type);
+	}
+
+	public function getDataType(): MetadataTypes\DataType
+	{
+		return MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT);
 	}
 
 	public function getValueMin(): float|null
@@ -77,6 +89,15 @@ final class NumericType extends Type
 	public function getValueStep(): float|null
 	{
 		return $this->valueStep;
+	}
+
+	public function getFormat(): array|null
+	{
+		if ($this->getValueMin() !== null || $this->getValueMax() !== null) {
+			return [$this->getValueMin(), $this->getValueMax()];
+		}
+
+		return parent::getFormat();
 	}
 
 	public function getUnit(): string|null

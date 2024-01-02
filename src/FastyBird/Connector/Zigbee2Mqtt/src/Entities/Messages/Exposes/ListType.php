@@ -31,7 +31,8 @@ final class ListType extends Type
 {
 
 	public function __construct(
-		Types\ExposeType $type,
+		#[ObjectMapper\Rules\ArrayEnumValue(cases: [Types\ExposeType::LIGHT])]
+		private readonly string $type,
 		string $name,
 		string $label,
 		string $property,
@@ -50,7 +51,12 @@ final class ListType extends Type
 		private readonly int|null $length_max,
 	)
 	{
-		parent::__construct($type, $name, $label, $property, $access);
+		parent::__construct($name, $label, $property, $access);
+	}
+
+	public function getType(): Types\ExposeType
+	{
+		return Types\ExposeType::get($this->type);
 	}
 
 	public function getLengthMin(): int|null

@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Zigbee2Mqtt\Entities\Messages\Exposes;
 
 use FastyBird\Connector\Zigbee2Mqtt\Types;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Orisai\ObjectMapper;
 use function array_merge;
 
@@ -31,10 +32,11 @@ final class EnumType extends Type
 {
 
 	/**
-	 * @param array<string> $values
+	 * @param array<int, string> $values
 	 */
 	public function __construct(
-		Types\ExposeType $type,
+		#[ObjectMapper\Rules\ArrayEnumValue(cases: [Types\ExposeType::ENUM])]
+		private readonly string $type,
 		string $name,
 		string $label,
 		string $property,
@@ -46,15 +48,33 @@ final class EnumType extends Type
 		private readonly array $values = [],
 	)
 	{
-		parent::__construct($type, $name, $label, $property, $access);
+		parent::__construct($name, $label, $property, $access);
+	}
+
+	public function getType(): Types\ExposeType
+	{
+		return Types\ExposeType::get($this->type);
+	}
+
+	public function getDataType(): MetadataTypes\DataType
+	{
+		return MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM);
 	}
 
 	/**
-	 * @return array<string>
+	 * @return array<int, string>
 	 */
 	public function getValues(): array
 	{
 		return $this->values;
+	}
+
+	public function getFormat(): array|null
+	{
+		/** @var array<int, string> $values */
+		$values = $this->getValues();
+
+		return $values === [] ? null : $values;
 	}
 
 	public function toArray(): array

@@ -34,9 +34,13 @@ class DevicePropertyIdentifier extends Consistence\Enum\Enum
 
 	public const BASE_TOPIC = 'base_topic';
 
-	public const FIRMWARE_VERSION = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_VERSION;
+	public const MODEL = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL;
 
-	public const FIRMWARE_COMMIT = 'commit';
+	public const MANUFACTURER = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MANUFACTURER;
+
+	public const VERSION = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_VERSION;
+
+	public const COMMIT = 'commit';
 
 	public const IEEE_ADDRESS = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_ADDRESS;
 
@@ -45,6 +49,8 @@ class DevicePropertyIdentifier extends Consistence\Enum\Enum
 	public const SUPPORTED = 'supported';
 
 	public const DISABLED = 'disabled';
+
+	public const FRIENDLY_NAME = 'friendly_name';
 
 	public function getValue(): string
 	{

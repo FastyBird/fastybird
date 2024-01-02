@@ -15,6 +15,10 @@
 
 namespace FastyBird\Connector\Zigbee2Mqtt\Entities\Messages\Exposes;
 
+use FastyBird\Connector\Zigbee2Mqtt\Types;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
+use Orisai\ObjectMapper;
+
 /**
  * Text type expose type message
  *
@@ -25,5 +29,23 @@ namespace FastyBird\Connector\Zigbee2Mqtt\Entities\Messages\Exposes;
  */
 final class TextType extends Type
 {
+
+	public function __construct(
+		#[ObjectMapper\Rules\ArrayEnumValue(cases: [Types\ExposeType::TEXT])]
+		private readonly string $type,
+	)
+	{
+		parent::__construct();
+	}
+
+	public function getType(): Types\ExposeType
+	{
+		return Types\ExposeType::get($this->type);
+	}
+
+	public function getDataType(): MetadataTypes\DataType
+	{
+		return MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING);
+	}
 
 }

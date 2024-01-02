@@ -84,19 +84,19 @@ final class StoreBridgeInfo implements Queue\Consumer
 		$findDeviceQuery->byConnectorId($entity->getConnector());
 		$findDeviceQuery->byId($baseTopicProperty->getDevice());
 
-		$device = $this->devicesRepository->findOneBy(
+		$bridge = $this->devicesRepository->findOneBy(
 			$findDeviceQuery,
 			Entities\Devices\Bridge::class,
 		);
 
-		if ($device === null) {
+		if ($bridge === null) {
 			return true;
 		}
 
 		$this->databaseHelper->transaction(
-			function () use ($device, $entity): void {
+			function () use ($bridge, $entity): void {
 				$this->devicesManager->update(
-					$device,
+					$bridge,
 					Utils\ArrayHash::from([
 						'identifier' => $entity->getCoordinator()->getIeeeAddress(),
 					]),
@@ -105,25 +105,32 @@ final class StoreBridgeInfo implements Queue\Consumer
 		);
 
 		$this->setDeviceProperty(
-			$device->getId(),
+			$bridge->getId(),
 			$entity->getCoordinator()->getType(),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+			Types\DevicePropertyIdentifier::MODEL,
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MODEL),
+		);
+		$this->setDeviceProperty(
+			$bridge->getId(),
+			Types\DeviceType::COORDINATOR,
 			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 			Types\DevicePropertyIdentifier::TYPE,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::TYPE),
 		);
 		$this->setDeviceProperty(
-			$device->getId(),
+			$bridge->getId(),
 			$entity->getVersion(),
 			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-			Types\DevicePropertyIdentifier::FIRMWARE_VERSION,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::FIRMWARE_VERSION),
+			Types\DevicePropertyIdentifier::VERSION,
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::VERSION),
 		);
 		$this->setDeviceProperty(
-			$device->getId(),
+			$bridge->getId(),
 			$entity->getCommit(),
 			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-			Types\DevicePropertyIdentifier::FIRMWARE_COMMIT,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::FIRMWARE_COMMIT),
+			Types\DevicePropertyIdentifier::COMMIT,
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::COMMIT),
 		);
 
 		$this->logger->debug(

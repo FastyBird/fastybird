@@ -184,7 +184,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 		);
 
 		if (
-			preg_match(Zigbee2Mqtt\Constants::CHANNEL_IDENTIFIER, $channel->getIdentifier(), $matches) !== 1
+			preg_match(Zigbee2Mqtt\Constants::CHANNEL_IDENTIFIER_REGEX, $channel->getIdentifier(), $matches) !== 1
 			&& array_key_exists('type', $matches)
 			&& Types\ExposeType::isValidValue($matches['type'])
 			&& array_key_exists('identifier', $matches)
@@ -203,7 +203,11 @@ final class WriteSubDeviceState implements Queue\Consumer
 				}
 			}
 		} elseif (
-			preg_match(Zigbee2Mqtt\Constants::CHANNEL_SPECIAL_IDENTIFIER, $channel->getIdentifier(), $matches) !== 1
+			preg_match(
+				Zigbee2Mqtt\Constants::CHANNEL_SPECIAL_IDENTIFIER_REGEX,
+				$channel->getIdentifier(),
+				$matches,
+			) !== 1
 			&& array_key_exists('type', $matches)
 			&& Types\ExposeType::isValidValue($matches['type'])
 			&& array_key_exists('subtype', $matches)
