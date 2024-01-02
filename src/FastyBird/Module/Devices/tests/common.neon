@@ -39,8 +39,6 @@ services:
         factory: IPub\SlimRouter\Routing\Router
         setup:
             - addMiddleware(@fbJsonApi.middlewares.jsonapi)
-    - {factory: React\EventLoop\Loop::get}
-
     -
         factory: FastyBird\Module\Devices\Tests\Fixtures\Dummy\DummyConnectorFactory
         tags: [connector_type: dummy]
