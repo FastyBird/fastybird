@@ -33,7 +33,7 @@ use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Nette\Utils;
 use function assert;
-use function sprintf;
+use function implode;
 
 /**
  * Store bridge devices message consumer
@@ -124,10 +124,12 @@ final class StoreBridgeDevices implements Queue\Consumer
 				$findDeviceQuery->byConnectorId($entity->getConnector());
 				$findDeviceQuery->byIdentifier($deviceDescription->getIeeeAddress());
 
-				if ($this->devicesRepository->getResultSet(
-					$findDeviceQuery,
-					Entities\Zigbee2MqttDevice::class,
-				)->count() !== 0) {
+				if (
+					$this->devicesRepository->getResultSet(
+						$findDeviceQuery,
+						Entities\Zigbee2MqttDevice::class,
+					)->count() !== 0
+				) {
 					$this->logger->error(
 						'There is already registered device with same ieee address',
 						[
@@ -201,10 +203,10 @@ final class StoreBridgeDevices implements Queue\Consumer
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
 						'type' => 'store-bridge-devices-message-consumer',
 						'connector' => [
-							'id' => $entity->getConnector()->toString(),
+							'id' => $device->getConnector()->getId()->toString(),
 						],
 						'bridge' => [
-							'id' => $bridge->getId()->toString(),
+							'id' => $device->getBridge()->getId()->toString(),
 						],
 						'device' => [
 							'id' => $device->getId()->toString(),
@@ -264,151 +266,8 @@ final class StoreBridgeDevices implements Queue\Consumer
 				DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MANUFACTURER),
 			);
 
-			foreach ($deviceDescription->getDefinition()?->getExposes() ?? [] as $expose) {
-				if ($expose instanceof Entities\Messages\Exposes\ListType) {
-					$this->logger->warning(
-						'List type expose is not supported',
-						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
-							'type' => 'store-bridge-devices-message-consumer',
-							'connector' => [
-								'id' => $entity->getConnector()->toString(),
-							],
-							'bridge' => [
-								'id' => $bridge->getId()->toString(),
-							],
-							'device' => [
-								'id' => $device->getId()->toString(),
-								'identifier' => $deviceDescription->getIeeeAddress(),
-							],
-							'data' => $expose->toArray(),
-						],
-					);
-
-					continue;
-				}
-
-				if (
-					$expose instanceof Entities\Messages\Exposes\ClimateType
-					|| $expose instanceof Entities\Messages\Exposes\CoverType
-					|| $expose instanceof Entities\Messages\Exposes\FanType
-					|| $expose instanceof Entities\Messages\Exposes\LightType
-					|| $expose instanceof Entities\Messages\Exposes\LockType
-					|| $expose instanceof Entities\Messages\Exposes\SwitchType
-				) {
-					foreach ($expose->getFeatures() as $feature) {
-						$channel = $this->createChannel(
-							sprintf(
-								Zigbee2Mqtt\Constants::CHANNEL_SPECIAL_IDENTIFIER_PATTERN,
-								$expose->getType()->getValue(),
-								$feature->getType()->getValue(),
-								$feature->getProperty(),
-							),
-							$feature->getLabel() ?? $feature->getName(),
-							$device,
-						);
-
-						if (
-							$feature instanceof Entities\Messages\Exposes\BinaryType
-							|| $feature instanceof Entities\Messages\Exposes\EnumType
-							|| $feature instanceof Entities\Messages\Exposes\NumericType
-							|| $feature instanceof Entities\Messages\Exposes\TextType
-						) {
-
-						} elseif ($feature instanceof Entities\Messages\Exposes\CompositeType) {
-							foreach ($feature->getFeatures() as $subFeature) {
-								if (
-									$subFeature instanceof Entities\Messages\Exposes\BinaryType
-									|| $subFeature instanceof Entities\Messages\Exposes\EnumType
-									|| $subFeature instanceof Entities\Messages\Exposes\NumericType
-									|| $subFeature instanceof Entities\Messages\Exposes\TextType
-								) {
-									$this->setChannelProperty(
-										DevicesEntities\Channels\Properties\Dynamic::class,
-										$channel->getId(),
-										null,
-										$subFeature->getDataType(),
-										$subFeature->getProperty(),
-										$subFeature->getLabel() ?? $subFeature->getName(),
-										$subFeature->getFormat(),
-										$subFeature->getUnit(),
-										null,
-										$subFeature instanceof Entities\Messages\Exposes\NumericType ? $subFeature->getValueStep() : null,
-										$subFeature->isSettable(),
-										$subFeature->isQueryable(),
-									);
-								} elseif ($subFeature instanceof Entities\Messages\Exposes\CompositeType) {
-									foreach ($subFeature->getFeatures() as $subSubFeature) {
-										$this->setChannelProperty(
-											DevicesEntities\Channels\Properties\Dynamic::class,
-											$channel->getId(),
-											null,
-											$subSubFeature->getDataType(),
-											$subSubFeature->getProperty(),
-											$subSubFeature->getLabel() ?? $subSubFeature->getName(),
-											$subSubFeature->getFormat(),
-											$subSubFeature->getUnit(),
-											null,
-											$subSubFeature instanceof Entities\Messages\Exposes\NumericType ? $subSubFeature->getValueStep() : null,
-											$subSubFeature->isSettable(),
-											$subSubFeature->isQueryable(),
-										);
-									}
-								}
-							}
-						}
-					}
-				} else {
-					$channel = $this->createChannel(
-						sprintf(
-							Zigbee2Mqtt\Constants::CHANNEL_IDENTIFIER_PATTERN,
-							$expose->getType()->getValue(),
-							$expose->getProperty(),
-						),
-						$expose->getLabel() ?? $expose->getName(),
-						$device,
-					);
-
-					if (
-						$expose instanceof Entities\Messages\Exposes\BinaryType
-						|| $expose instanceof Entities\Messages\Exposes\EnumType
-						|| $expose instanceof Entities\Messages\Exposes\NumericType
-						|| $expose instanceof Entities\Messages\Exposes\TextType
-					) {
-						$this->setChannelProperty(
-							DevicesEntities\Channels\Properties\Dynamic::class,
-							$channel->getId(),
-							null,
-							$expose->getDataType(),
-							$expose->getProperty(),
-							$expose->getLabel() ?? $expose->getName(),
-							$expose->getFormat(),
-							$expose->getUnit(),
-							null,
-							$expose instanceof Entities\Messages\Exposes\NumericType ? $expose->getValueStep() : null,
-							$expose->isSettable(),
-							$expose->isQueryable(),
-						);
-
-					} elseif ($expose instanceof Entities\Messages\Exposes\CompositeType) {
-						foreach ($expose->getFeatures() as $feature) {
-							$this->setChannelProperty(
-								DevicesEntities\Channels\Properties\Dynamic::class,
-								$channel->getId(),
-								null,
-								$feature->getDataType(),
-								$feature->getProperty(),
-								$feature->getLabel() ?? $feature->getName(),
-								$feature->getFormat(),
-								$feature->getUnit(),
-								null,
-								$feature instanceof Entities\Messages\Exposes\NumericType ? $feature->getValueStep() : null,
-								$feature->isSettable(),
-								$feature->isQueryable(),
-							);
-						}
-					}
-				}
+			if ($device instanceof Entities\Devices\SubDevice) {
+				$this->processExposes($device, $deviceDescription->getDefinition()?->getExposes() ?? []);
 			}
 		}
 
@@ -428,6 +287,109 @@ final class StoreBridgeDevices implements Queue\Consumer
 	}
 
 	/**
+	 * @param array<Entities\Messages\Exposes\Type> $exposes
+	 * @param array<string> $identifiers
+	 *
+	 * @throws DBAL\Exception
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws DevicesExceptions\Runtime
+	 * @throws Exceptions\InvalidState
+	 */
+	private function processExposes(
+		Entities\Devices\SubDevice $device,
+		array $exposes,
+		array $identifiers = [],
+	): void
+	{
+		foreach ($exposes as $expose) {
+			$identifiers[] = $expose->getType()->getValue();
+
+			if ($expose instanceof Entities\Messages\Exposes\ListType) {
+				$this->logger->warning(
+					'List type expose is not supported',
+					[
+						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+						'type' => 'store-bridge-devices-message-consumer',
+						'connector' => [
+							'id' => $device->getConnector()->getId()->toString(),
+						],
+						'bridge' => [
+							'id' => $device->getBridge()->getId()->toString(),
+						],
+						'device' => [
+							'id' => $device->getId()->toString(),
+							'identifier' => $device->getIdentifier(),
+						],
+						'data' => $expose->toArray(),
+					],
+				);
+
+				continue;
+			}
+
+			if (
+				$expose instanceof Entities\Messages\Exposes\ClimateType
+				|| $expose instanceof Entities\Messages\Exposes\CoverType
+				|| $expose instanceof Entities\Messages\Exposes\FanType
+				|| $expose instanceof Entities\Messages\Exposes\LightType
+				|| $expose instanceof Entities\Messages\Exposes\LockType
+				|| $expose instanceof Entities\Messages\Exposes\SwitchType
+			) {
+				$this->processExposes($device, $expose->getFeatures(), $identifiers);
+
+			} elseif (
+				$expose instanceof Entities\Messages\Exposes\BinaryType
+				|| $expose instanceof Entities\Messages\Exposes\EnumType
+				|| $expose instanceof Entities\Messages\Exposes\NumericType
+				|| $expose instanceof Entities\Messages\Exposes\TextType
+				|| $expose instanceof Entities\Messages\Exposes\CompositeType
+			) {
+				$identifiers[] = $expose->getProperty();
+
+				$channel = $this->createChannel(
+					implode('_', $identifiers),
+					$expose->getLabel() ?? $expose->getName(),
+					$device,
+				);
+
+				if ($expose instanceof Entities\Messages\Exposes\CompositeType) {
+					foreach ($expose->getFeatures() as $feature) {
+						$this->setChannelProperty(
+							DevicesEntities\Channels\Properties\Dynamic::class,
+							$channel->getId(),
+							null,
+							$feature->getDataType(),
+							$feature->getProperty(),
+							$feature->getLabel() ?? $feature->getName(),
+							$feature->getFormat(),
+							$feature->getUnit(),
+							null,
+							$feature instanceof Entities\Messages\Exposes\NumericType ? $feature->getValueStep() : null,
+							$feature->isSettable(),
+							$feature->isQueryable(),
+						);
+					}
+				} else {
+					$this->setChannelProperty(
+						DevicesEntities\Channels\Properties\Dynamic::class,
+						$channel->getId(),
+						null,
+						$expose->getDataType(),
+						$expose->getProperty(),
+						$expose->getLabel() ?? $expose->getName(),
+						$expose->getFormat(),
+						$expose->getUnit(),
+						null,
+						$expose instanceof Entities\Messages\Exposes\NumericType ? $expose->getValueStep() : null,
+						$expose->isSettable(),
+						$expose->isQueryable(),
+					);
+				}
+			}
+		}
+	}
+
+	/**
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Runtime
@@ -435,7 +397,7 @@ final class StoreBridgeDevices implements Queue\Consumer
 	private function createChannel(
 		string $identifier,
 		string|null $name,
-		Entities\Zigbee2MqttDevice $device,
+		Entities\Devices\SubDevice $device,
 	): DevicesEntities\Channels\Channel
 	{
 		return $this->databaseHelper->transaction(
@@ -461,6 +423,9 @@ final class StoreBridgeDevices implements Queue\Consumer
 							'type' => 'store-sub-device-message-consumer',
 							'connector' => [
 								'id' => $device->getConnector()->getId()->toString(),
+							],
+							'bridge' => [
+								'id' => $device->getBridge()->getId()->toString(),
 							],
 							'device' => [
 								'id' => $device->getId()->toString(),

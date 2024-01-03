@@ -27,10 +27,8 @@ use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette\Utils;
-use Throwable;
 use function array_key_exists;
 use function array_merge;
-use function var_dump;
 
 /**
  * Zigbee2MQTT MQTT bridge messages subscriber
@@ -62,6 +60,9 @@ class Bridge
 		$client->removeListener('message', [$this, 'onMessage']);
 	}
 
+	/**
+	 * @throws Exceptions\Runtime
+	 */
 	public function onMessage(NetMqtt\Message $message): void
 	{
 		if (API\MqttValidator::validateTopic($message->getTopic())) {
@@ -152,12 +153,17 @@ class Bridge
 									array_merge($data, $payload),
 								),
 							);
+
+						} elseif ($type->equalsValue(Types\BridgeMessageType::EXTENSIONS) && $payload !== null) {
+							// This message could be ignored
 						}
 					} elseif (array_key_exists('request', $data)) {
 						// TODO: Handle request messages
+					} elseif (array_key_exists('response', $data)) {
+						// TODO: Handle response messages
 					}
 				}
-			} catch (Exceptions\ParseMessage $ex) {
+			} catch (Exceptions\ParseMessage | Exceptions\InvalidArgument $ex) {
 				$this->logger->debug(
 					'Received message could not be successfully parsed to entity',
 					[
@@ -169,8 +175,6 @@ class Bridge
 						],
 					],
 				);
-			} catch (Throwable $ex) {
-				var_dump($ex->getMessage());
 			}
 		}
 	}

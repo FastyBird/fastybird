@@ -28,10 +28,8 @@ use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette\Utils;
 use function array_key_exists;
-use function array_map;
 use function array_merge;
 use function is_array;
-use function is_scalar;
 
 /**
  * Zigbee2MQTT MQTT devices messages subscriber
@@ -74,6 +72,11 @@ class Device
 				return;
 			}
 
+			// Skip messages related to bridge
+			if (API\MqttValidator::validateBridge($message->getTopic())) {
+				return;
+			}
+
 			try {
 				if (API\MqttValidator::validateDevice($message->getTopic())) {
 					$data = API\MqttParser::parse(
@@ -95,7 +98,7 @@ class Device
 
 					if (array_key_exists('type', $data)) {
 						if (!Types\DeviceMessageType::isValidValue($data['type'])) {
-							throw new Exceptions\ParseMessage('Received unsupported bridge message type');
+							throw new Exceptions\ParseMessage('Received unsupported device message type');
 						}
 
 						$type = Types\DeviceMessageType::get($data['type']);
@@ -137,7 +140,7 @@ class Device
 						);
 					}
 				}
-			} catch (Exceptions\ParseMessage $ex) {
+			} catch (Exceptions\ParseMessage | Exceptions\InvalidArgument $ex) {
 				$this->logger->debug(
 					'Received message could not be successfully parsed to entity',
 					[
@@ -156,28 +159,22 @@ class Device
 	/**
 	 * @param array<mixed> $payload
 	 *
-	 * @return array<int, array<string, string|int|float|bool|null>>
+	 * @return array<mixed>
 	 */
 	private function convertStatePayload(array $payload): array
 	{
 		$converted = [];
 
 		foreach ($payload as $key => $value) {
-			if (is_scalar($value)) {
-				$converted[] = [
-					'identifier' => $key,
-					'value' => $value,
-				];
-			} elseif (is_array($value)) {
-				$converted = array_merge(
-					$converted,
-					array_map(static function (array $item) use ($key): array {
-						$item['parent'] = $key;
-
-						return $item;
-					}, $this->convertStatePayload($value)),
-				);
-			}
+			$converted[] = is_array($value) ? [
+				'type' => Types\ExposeDataType::COMPOSITE,
+				'identifier' => $key,
+				'states' => $this->convertStatePayload($value),
+			] : [
+				'type' => Types\ExposeDataType::SINGLE,
+				'identifier' => $key,
+				'value' => $value,
+			];
 		}
 
 		return $converted;

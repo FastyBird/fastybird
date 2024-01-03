@@ -15,7 +15,9 @@
 
 namespace FastyBird\Connector\Zigbee2Mqtt\Entities\Messages;
 
+use FastyBird\Connector\Zigbee2Mqtt\Types;
 use Orisai\ObjectMapper;
+use function array_map;
 
 /**
  * Expose data row
@@ -28,26 +30,29 @@ use Orisai\ObjectMapper;
 final class CompositeExposeData implements Entity
 {
 
+	/**
+	 * @param array<SingleExposeData|CompositeExposeData> $states
+	 */
 	public function __construct(
-		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $parent,
+		#[ObjectMapper\Rules\ArrayEnumValue(cases: [Types\ExposeDataType::COMPOSITE])]
+		private readonly string $type,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $identifier,
-		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\BoolValue(),
-			new ObjectMapper\Rules\IntValue(),
-			new ObjectMapper\Rules\FloatValue(),
-			new ObjectMapper\Rules\StringValue(notEmpty: true),
-			new ObjectMapper\Rules\NullValue(castEmptyString: true),
-		])]
-		private readonly bool|int|float|string|null $value = null,
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\AnyOf([
+				new ObjectMapper\Rules\MappedObjectValue(class: SingleExposeData::class),
+				new ObjectMapper\Rules\MappedObjectValue(class: self::class),
+			]),
+			new ObjectMapper\Rules\IntValue(unsigned: true),
+		)]
+		private readonly array $states,
 	)
 	{
 	}
 
-	public function getParent(): string
+	public function getType(): Types\ExposeDataType
 	{
-		return $this->parent;
+		return Types\ExposeDataType::get($this->type);
 	}
 
 	public function getIdentifier(): string
@@ -55,17 +60,23 @@ final class CompositeExposeData implements Entity
 		return $this->identifier;
 	}
 
-	public function getValue(): float|bool|int|string|null
+	/**
+	 * @return array<SingleExposeData|CompositeExposeData>
+	 */
+	public function getStates(): array
 	{
-		return $this->value;
+		return $this->states;
 	}
 
 	public function toArray(): array
 	{
 		return [
-			'parent' => $this->getParent(),
+			'type' => $this->getType()->getValue(),
 			'identifier' => $this->getIdentifier(),
-			'value' => $this->getValue(),
+			'states' => array_map(
+				static fn (SingleExposeData|self $item): array => $item->toArray(),
+				$this->getStates(),
+			),
 		];
 	}
 

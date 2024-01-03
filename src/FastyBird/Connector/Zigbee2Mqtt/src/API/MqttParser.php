@@ -40,6 +40,7 @@ final class MqttParser
 	 * @return array<string, mixed>
 	 *
 	 * @throws Exceptions\ParseMessage
+	 * @throws Exceptions\InvalidArgument
 	 */
 	public static function parse(
 		Uuid\UuidInterface $connector,
@@ -64,6 +65,8 @@ final class MqttParser
 
 	/**
 	 * @return array<string, Uuid\UuidInterface|string>
+	 *
+	 * @throws Exceptions\InvalidArgument
 	 */
 	private static function parseBridgeMessage(
 		Uuid\UuidInterface $connector,
@@ -71,7 +74,7 @@ final class MqttParser
 		string $payload,
 	): array
 	{
-		if (preg_match(MqttValidator::BRIDGE_REGEXP, $topic, $matches) === 1) {
+		if (preg_match(MqttValidator::BRIDGE_REGEXP, $topic) === 1) {
 			preg_match(MqttValidator::BRIDGE_REGEXP, $topic, $matches);
 			assert(array_key_exists('type', $matches));
 
@@ -81,21 +84,26 @@ final class MqttParser
 				'type' => $matches['type'],
 				'payload' => $payload,
 			];
-		} else {
-			preg_match(MqttValidator::BRIDGE_REQUEST_REGEXP, $topic, $matches);
-			assert(array_key_exists('request', $matches));
+		} elseif (preg_match(MqttValidator::BRIDGE_REQUEST_RESPONSE_REGEXP, $topic) === 1) {
+			preg_match(MqttValidator::BRIDGE_REQUEST_RESPONSE_REGEXP, $topic, $matches);
+			assert(array_key_exists('type', $matches));
+			assert(array_key_exists('request_response', $matches));
 
 			return [
 				'connector' => $connector,
 				'base_topic' => $matches['base_topic'],
-				'request' => $matches['request'],
+				$matches['type'] => $matches['request_response'],
 				'payload' => $payload,
 			];
 		}
+
+		throw new Exceptions\InvalidArgument('Provided unsupported topic to parse');
 	}
 
 	/**
 	 * @return array<string, Uuid\UuidInterface|string|null>
+	 *
+	 * @throws Exceptions\InvalidArgument
 	 */
 	private static function parseDeviceMessage(
 		Uuid\UuidInterface $connector,
@@ -103,7 +111,7 @@ final class MqttParser
 		string $payload,
 	): array
 	{
-		if (preg_match(MqttValidator::DEVICE_WITH_ACTION_REGEXP, $topic, $matches) === 1) {
+		if (preg_match(MqttValidator::DEVICE_WITH_ACTION_REGEXP, $topic) === 1) {
 			preg_match(MqttValidator::DEVICE_WITH_ACTION_REGEXP, $topic, $matches);
 			assert(array_key_exists('name', $matches));
 			assert(array_key_exists('type', $matches));
@@ -115,18 +123,19 @@ final class MqttParser
 				'type' => strtolower($matches['type']),
 				'payload' => $payload,
 			];
-		} else {
-			preg_match(MqttValidator::DEVICE_WITH_ACTION_REGEXP, $topic, $matches);
+		} elseif (preg_match(MqttValidator::DEVICE_REGEXP, $topic) === 1) {
+			preg_match(MqttValidator::DEVICE_REGEXP, $topic, $matches);
 			assert(array_key_exists('name', $matches));
 
 			return [
 				'connector' => $connector,
 				'device' => $matches['name'],
 				'base_topic' => $matches['base_topic'],
-				'type' => null,
 				'payload' => $payload,
 			];
 		}
+
+		throw new Exceptions\InvalidArgument('Provided unsupported topic to parse');
 	}
 
 }

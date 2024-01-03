@@ -105,7 +105,7 @@ final class Connector
 	{
 		$findPropertyQuery = new DevicesQueries\Configuration\FindConnectorVariableProperties();
 		$findPropertyQuery->forConnector($connector);
-		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::SECURED_PORT);
+		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::PORT);
 
 		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
@@ -131,7 +131,7 @@ final class Connector
 	{
 		$findPropertyQuery = new DevicesQueries\Configuration\FindConnectorVariableProperties();
 		$findPropertyQuery->forConnector($connector);
-		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::SERVER);
+		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::SECURED_PORT);
 
 		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,

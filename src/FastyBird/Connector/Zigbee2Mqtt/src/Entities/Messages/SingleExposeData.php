@@ -15,6 +15,7 @@
 
 namespace FastyBird\Connector\Zigbee2Mqtt\Entities\Messages;
 
+use FastyBird\Connector\Zigbee2Mqtt\Types;
 use Orisai\ObjectMapper;
 
 /**
@@ -29,6 +30,8 @@ final class SingleExposeData implements Entity
 {
 
 	public function __construct(
+		#[ObjectMapper\Rules\ArrayEnumValue(cases: [Types\ExposeDataType::SINGLE])]
+		private readonly string $type,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $identifier,
 		#[ObjectMapper\Rules\AnyOf([
@@ -41,6 +44,11 @@ final class SingleExposeData implements Entity
 		private readonly bool|int|float|string|null $value = null,
 	)
 	{
+	}
+
+	public function getType(): Types\ExposeDataType
+	{
+		return Types\ExposeDataType::get($this->type);
 	}
 
 	public function getIdentifier(): string
@@ -56,6 +64,7 @@ final class SingleExposeData implements Entity
 	public function toArray(): array
 	{
 		return [
+			'type' => $this->getType()->getValue(),
 			'identifier' => $this->getIdentifier(),
 			'value' => $this->getValue(),
 		];

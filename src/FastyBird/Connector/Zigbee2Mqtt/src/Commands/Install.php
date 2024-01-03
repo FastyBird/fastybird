@@ -217,6 +217,14 @@ class Install extends Console\Command\Command
 
 			$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
+				'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE,
+				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+				'value' => Types\ClientMode::MQTT,
+				'connector' => $connector,
+			]));
+
+			$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
+				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 				'identifier' => Types\ConnectorPropertyIdentifier::SERVER,
 				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 				'value' => $serverAddress,
@@ -379,6 +387,12 @@ class Install extends Console\Command\Command
 
 		$findConnectorPropertyQuery = new DevicesQueries\Entities\FindConnectorProperties();
 		$findConnectorPropertyQuery->forConnector($connector);
+		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::CLIENT_MODE);
+
+		$clientModeProperty = $this->connectorsPropertiesRepository->findOneBy($findConnectorPropertyQuery);
+
+		$findConnectorPropertyQuery = new DevicesQueries\Entities\FindConnectorProperties();
+		$findConnectorPropertyQuery->forConnector($connector);
 		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::SERVER);
 
 		$serverAddressProperty = $this->connectorsPropertiesRepository->findOneBy($findConnectorPropertyQuery);
@@ -416,6 +430,16 @@ class Install extends Console\Command\Command
 				'enabled' => $enabled,
 			]));
 			assert($connector instanceof Entities\Zigbee2MqttConnector);
+
+			if ($clientModeProperty === null) {
+				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
+					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
+					'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE,
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+					'value' => Types\ClientMode::MQTT,
+					'connector' => $connector,
+				]));
+			}
 
 			if ($serverAddressProperty === null) {
 				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([

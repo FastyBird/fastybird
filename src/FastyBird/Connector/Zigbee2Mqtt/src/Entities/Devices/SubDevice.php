@@ -64,7 +64,7 @@ class SubDevice extends Entities\Zigbee2MqttDevice
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public function getGateway(): Bridge
+	public function getBridge(): Bridge
 	{
 		foreach ($this->parents->toArray() as $parent) {
 			if ($parent instanceof Bridge) {
@@ -72,7 +72,7 @@ class SubDevice extends Entities\Zigbee2MqttDevice
 			}
 		}
 
-		throw new Exceptions\InvalidState('Sub-device have to have parent gateway defined');
+		throw new Exceptions\InvalidState('Sub-device have to have parent bridge defined');
 	}
 
 	/**

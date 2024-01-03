@@ -55,4 +55,6 @@ final class Constants
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 	public const CHANNEL_SPECIAL_IDENTIFIER_REGEX = '/^(?P<type>(light|switch|fan|cover|lock|climate){1})_(?P<subtype>(binary|numeric|enum|text|composite){1})_(?P<identifier>[a-z0-9_]+)$/';
 
+	public const IEEE_ADDRESS_REGEX = '/^0x([a-zA-Z0-9]+)$/';
+
 }
