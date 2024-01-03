@@ -91,7 +91,7 @@ final class ChannelPropertyDocumentTest extends BaseTestCase
 					'created_at' => null,
 					'updated_at' => null,
 
-			],
+				],
 			],
 			'variable' => [
 				file_get_contents(__DIR__ . '/../../../../fixtures/Documents/Modules/channel.property.variable.json'),
