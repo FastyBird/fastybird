@@ -38,8 +38,6 @@ class Zigbee2MqttConnector extends DevicesEntities\Connectors\Connector
 
 	public const DEFAULT_SERVER_SECURED_PORT = 8_883;
 
-	public const BASE_TOPIC = 'zigbee2mqtt';
-
 	public function getType(): string
 	{
 		return self::TYPE;

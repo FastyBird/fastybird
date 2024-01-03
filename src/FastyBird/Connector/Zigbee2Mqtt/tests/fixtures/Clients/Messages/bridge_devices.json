@@ -1,0 +1,193 @@
+[
+  {
+    "definition": null,
+    "disabled": false,
+    "endpoints": {
+      "1": {
+        "bindings": [],
+        "clusters": {
+          "input": [
+            "genBasic",
+            "genIdentify",
+            "genOnOff",
+            "genTime",
+            "genOta",
+            "26",
+            "lightingColorCtrl"
+          ],
+          "output": [
+            "genBasic",
+            "genIdentify",
+            "genGroups",
+            "genScenes",
+            "genOnOff",
+            "genLevelCtrl",
+            "genPollCtrl",
+            "lightingColorCtrl",
+            "msIlluminanceMeasurement",
+            "msTemperatureMeasurement",
+            "msRelativeHumidity",
+            "msOccupancySensing",
+            "ssIasZone",
+            "haMeterIdentification",
+            "haApplianceStatistics",
+            "haElectricalMeasurement",
+            "seMetering",
+            "touchlink",
+            "manuSpecificUbisysDimmerSetup",
+            "manuSpecificSamsungAccelerometer"
+          ]
+        },
+        "configured_reportings": [],
+        "scenes": []
+      },
+      "242": {
+        "bindings": [],
+        "clusters": {
+          "input": [],
+          "output": [
+            "greenPower"
+          ]
+        },
+        "configured_reportings": [],
+        "scenes": []
+      }
+    },
+    "friendly_name": "Coordinator",
+    "ieee_address": "0xe0798dfffed3656e",
+    "interview_completed": true,
+    "interviewing": false,
+    "network_address": 0,
+    "supported": false,
+    "type": "Coordinator"
+  },
+  {
+    "date_code": "",
+    "definition": {
+      "description": "Motion sensor",
+      "exposes": [
+        {
+          "access": 1,
+          "description": "Indicates whether the device detected occupancy",
+          "label": "Occupancy",
+          "name": "occupancy",
+          "property": "occupancy",
+          "type": "binary",
+          "value_off": false,
+          "value_on": true
+        },
+        {
+          "access": 1,
+          "description": "Indicates if the battery of this device is almost empty",
+          "label": "Battery low",
+          "name": "battery_low",
+          "property": "battery_low",
+          "type": "binary",
+          "value_off": false,
+          "value_on": true
+        },
+        {
+          "access": 1,
+          "description": "Remaining battery in %, can take up to 24 hours before reported.",
+          "label": "Battery",
+          "name": "battery",
+          "property": "battery",
+          "type": "numeric",
+          "unit": "%",
+          "value_max": 100,
+          "value_min": 0
+        },
+        {
+          "access": 1,
+          "description": "Voltage of the battery in millivolts",
+          "label": "Voltage",
+          "name": "voltage",
+          "property": "voltage",
+          "type": "numeric",
+          "unit": "mV"
+        },
+        {
+          "access": 1,
+          "description": "Indicates whether the device is tampered",
+          "label": "Tamper",
+          "name": "tamper",
+          "property": "tamper",
+          "type": "binary",
+          "value_off": false,
+          "value_on": true
+        },
+        {
+          "access": 1,
+          "description": "Link quality (signal strength)",
+          "label": "Linkquality",
+          "name": "linkquality",
+          "property": "linkquality",
+          "type": "numeric",
+          "unit": "lqi",
+          "value_max": 255,
+          "value_min": 0
+        }
+      ],
+      "model": "TS0202",
+      "options": [],
+      "supports_ota": false,
+      "vendor": "TuYa"
+    },
+    "disabled": false,
+    "endpoints": {
+      "1": {
+        "bindings": [
+          {
+            "cluster": "genPowerCfg",
+            "target": {
+              "endpoint": 1,
+              "ieee_address": "0xe0798dfffed3656e",
+              "type": "endpoint"
+            }
+          }
+        ],
+        "clusters": {
+          "input": [
+            "genPowerCfg",
+            "ssIasZone",
+            "genIdentify",
+            "genBasic"
+          ],
+          "output": [
+            "touchlink",
+            "genOnOff",
+            "genOta",
+            "genTime"
+          ]
+        },
+        "configured_reportings": [
+          {
+            "attribute": "batteryPercentageRemaining",
+            "cluster": "genPowerCfg",
+            "maximum_report_interval": 65000,
+            "minimum_report_interval": 3600,
+            "reportable_change": 0
+          },
+          {
+            "attribute": "batteryVoltage",
+            "cluster": "genPowerCfg",
+            "maximum_report_interval": 65000,
+            "minimum_report_interval": 3600,
+            "reportable_change": 0
+          }
+        ],
+        "scenes": []
+      }
+    },
+    "friendly_name": "0xa4c138f06eafa3da",
+    "ieee_address": "0xa4c138f06eafa3da",
+    "interview_completed": true,
+    "interviewing": false,
+    "manufacturer": "_TZ3000_tiwq83wk",
+    "model_id": "TS0202",
+    "network_address": 37167,
+    "power_source": "Battery",
+    "supported": true,
+    "type": "EndDevice"
+  }
+]

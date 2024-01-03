@@ -200,30 +200,4 @@ final class Connector
 		return $value;
 	}
 
-	/**
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 */
-	public function getBaseTopic(MetadataDocuments\DevicesModule\Connector $connector): string
-	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindConnectorVariableProperties();
-		$findPropertyQuery->forConnector($connector);
-		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::BASE_TOPIC);
-
-		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
-			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
-		);
-
-		if ($property?->getValue() === null) {
-			return Entities\Zigbee2MqttConnector::BASE_TOPIC;
-		}
-
-		$value = $property->getValue();
-		assert(is_string($value));
-
-		return $value;
-	}
-
 }
