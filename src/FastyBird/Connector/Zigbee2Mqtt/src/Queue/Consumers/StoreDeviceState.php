@@ -29,6 +29,7 @@ use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Nette\Utils;
+use function array_merge;
 use function implode;
 use function preg_match;
 use function sprintf;
@@ -159,12 +160,15 @@ final class StoreDeviceState implements Queue\Consumer
 	): void
 	{
 		foreach ($states as $state) {
-			$identifiers[] = $state->getIdentifier();
-
 			if ($state instanceof Entities\Messages\SingleExposeData) {
 				$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 				$findChannelQuery->forDevice($device);
-				$findChannelQuery->endWithIdentifier(sprintf('_%s', implode('_', $identifiers)));
+				$findChannelQuery->endWithIdentifier(
+					sprintf(
+						'_%s',
+						implode('_', array_merge($identifiers, [$state->getIdentifier()])),
+					),
+				);
 
 				$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 
@@ -228,7 +232,11 @@ final class StoreDeviceState implements Queue\Consumer
 				);
 
 			} else {
-				$this->processStates($device, $state->getStates(), $identifiers);
+				$this->processStates(
+					$device,
+					$state->getStates(),
+					array_merge($identifiers, [$state->getIdentifier()]),
+				);
 			}
 		}
 	}

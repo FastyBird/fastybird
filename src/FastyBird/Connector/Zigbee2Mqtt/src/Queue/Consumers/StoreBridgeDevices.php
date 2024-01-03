@@ -31,6 +31,7 @@ use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Nette\Utils;
+use function array_merge;
 use function assert;
 use function implode;
 
@@ -300,8 +301,6 @@ final class StoreBridgeDevices implements Queue\Consumer
 	): void
 	{
 		foreach ($exposes as $expose) {
-			$identifiers[] = $expose->getType()->getValue();
-
 			if ($expose instanceof Entities\Messages\Exposes\ListType) {
 				$this->logger->warning(
 					'List type expose is not supported',
@@ -333,7 +332,11 @@ final class StoreBridgeDevices implements Queue\Consumer
 				|| $expose instanceof Entities\Messages\Exposes\LockType
 				|| $expose instanceof Entities\Messages\Exposes\SwitchType
 			) {
-				$this->processExposes($device, $expose->getFeatures(), $identifiers);
+				$this->processExposes(
+					$device,
+					$expose->getFeatures(),
+					array_merge($identifiers, [$expose->getType()->getValue()]),
+				);
 
 			} elseif (
 				$expose instanceof Entities\Messages\Exposes\BinaryType
@@ -342,10 +345,11 @@ final class StoreBridgeDevices implements Queue\Consumer
 				|| $expose instanceof Entities\Messages\Exposes\TextType
 				|| $expose instanceof Entities\Messages\Exposes\CompositeType
 			) {
-				$identifiers[] = $expose->getProperty();
-
 				$channel = $this->createChannel(
-					implode('_', $identifiers),
+					implode(
+						'_',
+						array_merge($identifiers, [$expose->getType()->getValue(), $expose->getProperty()]),
+					),
 					$expose->getLabel() ?? $expose->getName(),
 					$device,
 				);

@@ -28,6 +28,7 @@ use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -199,7 +200,11 @@ final class WriteSubDeviceState implements Queue\Consumer
 				$state = $this->channelPropertiesStatesManager->getValue($property);
 
 				if ($state?->getExpectedValue() !== null) {
-					$payload->{$property->getIdentifier()} = $state->getExpectedValue();
+					$payload->{$property->getIdentifier()} = MetadataUtilities\ValueHelper::transformValueToDevice(
+						$property->getDataType(),
+						$property->getFormat(),
+						$state->getExpectedValue(),
+					);
 				}
 			}
 		} elseif (
@@ -221,7 +226,11 @@ final class WriteSubDeviceState implements Queue\Consumer
 				$state = $this->channelPropertiesStatesManager->getValue($property);
 
 				if ($state?->getExpectedValue() !== null) {
-					$payload->{$matches['identifier']}->{$property->getIdentifier()} = $state->getExpectedValue();
+					$payload->{$matches['identifier']}->{$property->getIdentifier()} = MetadataUtilities\ValueHelper::transformValueToDevice(
+						$property->getDataType(),
+						$property->getFormat(),
+						$state->getExpectedValue(),
+					);
 				}
 			}
 		} else {
