@@ -19,7 +19,7 @@
 ## What is Zigbee2MQTT connector?
 
 Zigbee2MQTT connector is extension for [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem
-which is integrating [Zigbee2MQTT](https://www.zigbee2mqtt.io)  devices.
+which is integrating [Zigbee2MQTT](https://www.zigbee2mqtt.io) bridges.
 
 ### Features:
 
