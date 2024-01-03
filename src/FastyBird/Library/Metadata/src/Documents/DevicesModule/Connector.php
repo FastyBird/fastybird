@@ -15,6 +15,7 @@
 
 namespace FastyBird\Library\Metadata\Documents\DevicesModule;
 
+use DateTimeInterface;
 use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use FastyBird\Library\Metadata\Documents;
 use FastyBird\Library\Metadata\Types;
@@ -34,6 +35,8 @@ final class Connector implements Documents\Document, Documents\Owner
 {
 
 	use Documents\TOwner;
+	use Documents\TCreatedAt;
+	use Documents\TUpdatedAt;
 
 	/**
 	 * @param array<Uuid\UuidInterface> $properties
@@ -78,6 +81,18 @@ final class Connector implements Documents\Document, Documents\Owner
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		protected readonly Uuid\UuidInterface|null $owner = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
+			new ObjectMapper\Rules\NullValue(),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('created_at')]
+		private readonly DateTimeInterface|null $createdAt = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
+			new ObjectMapper\Rules\NullValue(),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('updated_at')]
+		private readonly DateTimeInterface|null $updatedAt = null,
 	)
 	{
 	}
@@ -161,6 +176,8 @@ final class Connector implements Documents\Document, Documents\Owner
 			),
 			'devices' => array_map(static fn (Uuid\UuidInterface $id): string => $id->toString(), $this->getDevices()),
 			'owner' => $this->getOwner()?->toString(),
+			'created_at' => $this->getCreatedAt()?->format(DateTimeInterface::ATOM),
+			'updated_at' => $this->getUpdatedAt()?->format(DateTimeInterface::ATOM),
 		];
 	}
 

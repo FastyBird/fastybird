@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * TOwner.php
+ * TUpdatedAt.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,29 +10,29 @@
  * @subpackage     Documents
  * @since          1.0.0
  *
- * @date           05.06.22
+ * @date           03.01.23
  */
 
 namespace FastyBird\Library\Metadata\Documents;
 
-use Ramsey\Uuid;
+use DateTimeInterface;
 
 /**
- * Entity owner trait
+ * Entity updated date trait
  *
  * @package        FastyBird:MetadataLibrary!
  * @subpackage     Documents
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *
- * @property-read Uuid\UuidInterface|null $owner
+ * @property-read DateTimeInterface|null $updatedAt
  */
-trait TOwner
+trait TUpdatedAt
 {
 
-	public function getOwner(): Uuid\UuidInterface|null
+	public function getUpdatedAt(): DateTimeInterface|null
 	{
-		return $this->owner;
+		return $this->updatedAt;
 	}
 
 }

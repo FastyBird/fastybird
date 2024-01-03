@@ -72,6 +72,8 @@ final class ConnectorVariableProperty extends ConnectorProperty
 		])]
 		private readonly bool|float|int|string|null $default = null,
 		Uuid\UuidInterface|null $owner = null,
+		DateTimeInterface|null $createdAt = null,
+		DateTimeInterface|null $updatedAt = null,
 	)
 	{
 		parent::__construct(
@@ -87,6 +89,8 @@ final class ConnectorVariableProperty extends ConnectorProperty
 			$scale,
 			$step,
 			$owner,
+			$createdAt,
+			$updatedAt,
 		);
 	}
 

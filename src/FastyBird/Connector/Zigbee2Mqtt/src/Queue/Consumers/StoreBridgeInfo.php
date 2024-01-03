@@ -21,8 +21,8 @@ use FastyBird\Connector\Zigbee2Mqtt\Entities;
 use FastyBird\Connector\Zigbee2Mqtt\Queries;
 use FastyBird\Connector\Zigbee2Mqtt\Queue;
 use FastyBird\Connector\Zigbee2Mqtt\Types;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -51,7 +51,6 @@ final class StoreBridgeInfo implements Queue\Consumer
 		protected readonly DevicesModels\Entities\Devices\Properties\PropertiesManager $devicesPropertiesManager,
 		protected readonly DevicesUtilities\Database $databaseHelper,
 		private readonly DevicesModels\Entities\Devices\DevicesManager $devicesManager,
-		private readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
 	)
 	{
 	}
@@ -67,13 +66,13 @@ final class StoreBridgeInfo implements Queue\Consumer
 			return false;
 		}
 
-		$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceVariableProperties();
 		$findDevicePropertyQuery->byIdentifier(Zigbee2Mqtt\Types\DevicePropertyIdentifier::BASE_TOPIC);
 		$findDevicePropertyQuery->byValue($entity->getBaseTopic());
 
-		$baseTopicProperty = $this->devicesPropertiesConfigurationRepository->findOneBy(
+		$baseTopicProperty = $this->devicesPropertiesRepository->findOneBy(
 			$findDevicePropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+			DevicesEntities\Devices\Properties\Variable::class,
 		);
 
 		if ($baseTopicProperty === null) {
@@ -82,7 +81,7 @@ final class StoreBridgeInfo implements Queue\Consumer
 
 		$findDeviceQuery = new Queries\Entities\FindBridgeDevices();
 		$findDeviceQuery->byConnectorId($entity->getConnector());
-		$findDeviceQuery->byId($baseTopicProperty->getDevice());
+		$findDeviceQuery->byId($baseTopicProperty->getDevice()->getId());
 
 		$bridge = $this->devicesRepository->findOneBy(
 			$findDeviceQuery,

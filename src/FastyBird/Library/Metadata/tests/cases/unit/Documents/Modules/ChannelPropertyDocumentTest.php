@@ -88,7 +88,10 @@ final class ChannelPropertyDocumentTest extends BaseTestCase
 					'channel' => '247fd6b5-8466-4323-81de-cec3e315015a',
 					'children' => [],
 					'previous_value' => null,
-				],
+					'created_at' => null,
+					'updated_at' => null,
+
+			],
 			],
 			'variable' => [
 				file_get_contents(__DIR__ . '/../../../../fixtures/Documents/Modules/channel.property.variable.json'),
@@ -110,6 +113,8 @@ final class ChannelPropertyDocumentTest extends BaseTestCase
 					'default' => null,
 					'channel' => '247fd6b5-8466-4323-81de-cec3e315015a',
 					'children' => [],
+					'created_at' => null,
+					'updated_at' => null,
 				],
 			],
 			'mapped' => [
@@ -155,6 +160,8 @@ final class ChannelPropertyDocumentTest extends BaseTestCase
 					'channel' => '247fd6b5-8466-4323-81de-cec3e315015a',
 					'parent' => 'f42a8b4c-d5c8-4242-8ff0-6e5f867dcfb1',
 					'previous_value' => null,
+					'created_at' => null,
+					'updated_at' => null,
 				],
 			],
 			'dynamic-created' => [
@@ -182,6 +189,8 @@ final class ChannelPropertyDocumentTest extends BaseTestCase
 					'channel' => '247fd6b5-8466-4323-81de-cec3e315015a',
 					'children' => [],
 					'previous_value' => null,
+					'created_at' => null,
+					'updated_at' => null,
 				],
 			],
 			'dynamic-updated' => [
@@ -209,6 +218,8 @@ final class ChannelPropertyDocumentTest extends BaseTestCase
 					'channel' => '247fd6b5-8466-4323-81de-cec3e315015a',
 					'children' => [],
 					'previous_value' => null,
+					'created_at' => null,
+					'updated_at' => null,
 				],
 			],
 			'dynamic-deleted' => [
@@ -236,6 +247,8 @@ final class ChannelPropertyDocumentTest extends BaseTestCase
 					'channel' => '247fd6b5-8466-4323-81de-cec3e315015a',
 					'children' => [],
 					'previous_value' => null,
+					'created_at' => null,
+					'updated_at' => null,
 				],
 			],
 		];

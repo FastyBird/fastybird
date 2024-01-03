@@ -118,4 +118,56 @@ final class SubDevice
 		return $value;
 	}
 
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public function getHardwareModel(MetadataDocuments\DevicesModule\Device $device): string|null
+	{
+		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+		$findPropertyQuery->forDevice($device);
+		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::MODEL);
+
+		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
+			$findPropertyQuery,
+			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+		);
+
+		if ($property?->getValue() === null) {
+			return null;
+		}
+
+		$value = $property->getValue();
+		assert(is_string($value));
+
+		return $value;
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public function getHardwareManufacturer(MetadataDocuments\DevicesModule\Device $device): string|null
+	{
+		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+		$findPropertyQuery->forDevice($device);
+		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::MANUFACTURER);
+
+		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
+			$findPropertyQuery,
+			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+		);
+
+		if ($property?->getValue() === null) {
+			return null;
+		}
+
+		$value = $property->getValue();
+		assert(is_string($value));
+
+		return $value;
+	}
+
 }

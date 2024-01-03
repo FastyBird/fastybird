@@ -95,6 +95,8 @@ final class ConnectorDynamicProperty extends ConnectorProperty
 		#[ObjectMapper\Rules\BoolValue()]
 		private readonly bool $valid = false,
 		Uuid\UuidInterface|null $owner = null,
+		DateTimeInterface|null $createdAt = null,
+		DateTimeInterface|null $updatedAt = null,
 	)
 	{
 		parent::__construct(
@@ -110,6 +112,8 @@ final class ConnectorDynamicProperty extends ConnectorProperty
 			$scale,
 			$step,
 			$owner,
+			$createdAt,
+			$updatedAt,
 		);
 	}
 

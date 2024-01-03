@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\Zigbee2Mqtt\Clients;
 
-use FastyBird\Connector\Zigbee2Mqtt\Entities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 
 /**
  * Connector sub-devices discovery client factory
@@ -28,6 +28,6 @@ use FastyBird\Connector\Zigbee2Mqtt\Entities;
 interface DiscoveryFactory
 {
 
-	public function create(Entities\Zigbee2MqttConnector $connector): Discovery;
+	public function create(MetadataDocuments\DevicesModule\Connector $connector): Discovery;
 
 }

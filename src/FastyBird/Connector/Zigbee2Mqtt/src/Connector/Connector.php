@@ -198,7 +198,28 @@ final class Connector implements DevicesConnectors\Connector
 			],
 		);
 
-		$client = $this->discoveryClientFactory->create($this->connector);
+		$findConnector = new DevicesQueries\Configuration\FindConnectors();
+		$findConnector->byId($this->connector->getId());
+		$findConnector->byType(Entities\Zigbee2MqttConnector::TYPE);
+
+		$connector = $this->connectorsConfigurationRepository->findOneBy($findConnector);
+
+		if ($connector === null) {
+			$this->logger->error(
+				'Connector could not be loaded',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+					'type' => 'connector',
+					'connector' => [
+						'id' => $this->connector->getId()->toString(),
+					],
+				],
+			);
+
+			return;
+		}
+
+		$client = $this->discoveryClientFactory->create($connector);
 
 		$client->on('finished', function (): void {
 			$this->dispatcher?->dispatch(
@@ -233,6 +254,7 @@ final class Connector implements DevicesConnectors\Connector
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
