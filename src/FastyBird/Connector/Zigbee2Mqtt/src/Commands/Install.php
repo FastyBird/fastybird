@@ -1228,7 +1228,7 @@ class Install extends Console\Command\Command
 			// Start transaction connection to the database
 			$this->getOrmConnection()->beginTransaction();
 
-			$device = $this->devicesManager->update($device, Utils\ArrayHash::from([
+			$this->devicesManager->update($device, Utils\ArrayHash::from([
 				'name' => $name,
 			]));
 
