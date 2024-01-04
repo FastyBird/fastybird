@@ -203,7 +203,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 		);
 
 		self::assertTrue(is_array($expected));
-		self::assertTrue(array_diff($expected, $data) === []);
+		self::assertEmpty(array_diff($expected, $data));
 	}
 
 }
