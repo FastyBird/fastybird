@@ -24,7 +24,9 @@ use React;
 use React\EventLoop;
 use RuntimeException;
 use function array_diff;
+use function file_exists;
 use function in_array;
+use function is_array;
 use function sprintf;
 
 final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
