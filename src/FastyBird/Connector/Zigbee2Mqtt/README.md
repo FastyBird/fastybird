@@ -65,13 +65,13 @@ Documentation is available on [docs.fastybird.com](https://docs.fastybird.com).
 
 ## Contributing
 
-The sources of this package are contained in the [FastyBird monorepo](https://github.com/FastyBird/fastybird). We welcome contributions for this package on [FastyBird/fastybird](https://github.com/FastyBird/).
+The sources of this package are contained in the [FastyBird monorepo](https://github.com/FastyBird/fastybird). We welcome
+contributions for this package on [FastyBird/fastybird](https://github.com/FastyBird/).
 
 ## Feedback
 
-Use the [issue tracker](https://github.com/FastyBird/fastybird/issues) for bugs
-or [mail](mailto:code@fastybird.com) or [Tweet](https://twitter.com/fastybird) us for any idea that can improve the
-project.
+Use the [issue tracker](https://github.com/FastyBird/fastybird/issues) for bugs reporting or send an [mail](mailto:code@fastybird.com)
+to us or you could reach us on [X newtwork](https://x.com/fastybird) for any idea that can improve the project.
 
 Thank you for testing, reporting and contributing.
 
