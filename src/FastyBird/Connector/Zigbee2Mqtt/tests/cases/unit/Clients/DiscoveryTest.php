@@ -41,7 +41,6 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws RuntimeException
-	 * @throws Utils\JsonException
 	 */
 	public function testDiscover(): void
 	{
