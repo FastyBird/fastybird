@@ -189,20 +189,18 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 		$data = [];
 
 		foreach ($channels as $channel) {
-			$data[] = [
-				'identifier' => $channel->getIdentifier(),
-				'name' => $channel->getName(),
-			];
+			$data[$channel->getIdentifier()] = $channel->getName();
 		}
 
-		self::assertTrue(file_exists(__DIR__ . '/../../../fixtures/Clients/Documents/channels.json'));
+		$expected = [
+			'numeric_voltage' => 'Voltage',
+			'binary_occupancy' => 'Occupancy',
+			'numeric_linkquality' => 'Linkquality',
+			'numeric_battery' => 'Battery',
+			'binary_tamper' => 'Tamper',
+			'binary_battery_low' => 'Battery low',
+		];
 
-		$expected = Utils\Json::decode(
-			Utils\FileSystem::read(__DIR__ . '/../../../fixtures/Clients/Documents/channels.json'),
-			Utils\Json::FORCE_ARRAY,
-		);
-
-		self::assertTrue(is_array($expected));
 		self::assertEmpty(array_diff($expected, $data));
 	}
 
