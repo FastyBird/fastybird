@@ -20,7 +20,7 @@ This command is interactive and easy to operate.
 The console will show you basic menu. To navigate in menu you could write value displayed in square brackets or you
 could use arrows to select one of the options:
 
-```shell
+```
 Zigbee2MQTT connector - installer
 =================================
 
@@ -40,12 +40,12 @@ Zigbee2MQTT connector - installer
 
 When opting to create a new connector, you'll be prompted to provide a connector identifier and name:
 
-```shell
+```
  Provide connector identifier:
  > zigbee2mqtt
 ```
 
-```shell
+```
  Provide connector name:
  > Zigbee2MQTT Integration
 ```
@@ -53,29 +53,29 @@ When opting to create a new connector, you'll be prompted to provide a connector
 Next questions are related to connection to MQTT broker. If you are using local MQTT broker with default values, you cloud
 use prefilled values.
 
-```shell
+```
  Provide MQTT server address [127.0.0.1]:
  > 
 ```
 
-```shell
+```
  Provide MQTT server port [1883]:
  > 
 ```
 
-```shell
+```
  Provide MQTT server secured port [8883]:
  > 
 ```
 
-```shell
+```
  Provide MQTT server username (leave blank if no username is required):
  > 
 ```
 
 After providing the necessary information, your new [Zigbee2MQTT](https://www.zigbee2mqtt.io) connector will be ready for use.
 
-```shell
+```
  [OK] New connector "Zigbee2MQTT Integration" was successfully created
 ```
 
@@ -85,7 +85,7 @@ According to naming convention, bridge device have to be created and configured 
 
 After new connector is created you will be asked if you want to create new device:
 
-```shell
+```
  Would you like to configure connector bridge(s)? (yes/no) [yes]:
  > 
 ```
@@ -94,14 +94,14 @@ Or you could choose to manage connector bridges from the main menu.
 
 Now you will be asked to provide some device details:
 
-```shell
+```
  Provide device name:
  > Zigbee2MQTT Bridge
 ```
 
 And that's it! One bridge is running, it will handle all hardware devices automatically.
 
-```shell
+```
  [OK] Bridge "Zigbee2MQTT Bridge" was successfully created.
 ```
 
