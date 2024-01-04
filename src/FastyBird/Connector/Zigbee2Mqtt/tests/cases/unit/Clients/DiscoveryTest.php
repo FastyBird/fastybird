@@ -193,15 +193,15 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 			];
 		}
 
-		self::assertTrue(
-			array_diff(
-				(array) Utils\Json::decode(
-					Utils\FileSystem::read(__DIR__ . '/../../../fixtures/Clients/Documents/channels.json'),
-					Utils\Json::FORCE_ARRAY,
-				),
-				$data,
-			) === [],
+		self::assertTrue(file_exists(__DIR__ . '/../../../fixtures/Clients/Documents/channels.json'));
+
+		$expected = Utils\Json::decode(
+			Utils\FileSystem::read(__DIR__ . '/../../../fixtures/Clients/Documents/channels.json'),
+			Utils\Json::FORCE_ARRAY,
 		);
+
+		self::assertTrue(is_array($expected));
+		self::assertTrue(array_diff($expected, $data) === []);
 	}
 
 }
