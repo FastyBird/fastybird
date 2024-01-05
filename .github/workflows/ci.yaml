@@ -192,10 +192,12 @@ jobs:
       - name: "Checkout"
         uses: "actions/checkout@v4"
 
-      - name : "Setup MySQL"
-        uses : "mirromutth/mysql-action@v1.1"
+      - name: "Shutdown Ubuntu MySQL (SUDO)"
+        run: "sudo service mysql stop" # Shutdown the Default MySQL, "sudo" is necessary, please not remove it
+
+      - name: "Set up MariaDB"
+        uses: "getong/mariadb-action@v1.1"
         with :
-          mysql version : "5.7"
           mysql database : "testdb"
           mysql root password : "root"
 
@@ -259,10 +261,12 @@ jobs:
       - name: "Checkout"
         uses: "actions/checkout@v4"
 
-      - name : "Setup MySQL"
-        uses : "mirromutth/mysql-action@v1.1"
+      - name: "Shutdown Ubuntu MySQL (SUDO)"
+        run: "sudo service mysql stop" # Shutdown the Default MySQL, "sudo" is necessary, please not remove it
+
+      - name: "Set up MariaDB"
+        uses: "getong/mariadb-action@v1.1"
         with :
-          mysql version : "5.7"
           mysql database : "testdb"
           mysql root password : "root"
 
@@ -327,10 +331,12 @@ jobs:
       - name: "Checkout"
         uses: "actions/checkout@v4"
 
-      - name : "Setup MySQL"
-        uses : "mirromutth/mysql-action@v1.1"
+      - name: "Shutdown Ubuntu MySQL (SUDO)"
+        run: "sudo service mysql stop" # Shutdown the Default MySQL, "sudo" is necessary, please not remove it
+
+      - name: "Set up MariaDB"
+        uses: "getong/mariadb-action@v1.1"
         with :
-          mysql version : "5.7"
           mysql database : "testdb"
           mysql root password : "root"
 
