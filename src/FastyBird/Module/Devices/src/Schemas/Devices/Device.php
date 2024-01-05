@@ -15,6 +15,7 @@
 
 namespace FastyBird\Module\Devices\Schemas\Devices;
 
+use DateTimeInterface;
 use Exception;
 use FastyBird\JsonApi\Schemas as JsonApiSchemas;
 use FastyBird\Module\Devices;
@@ -84,6 +85,8 @@ abstract class Device extends JsonApiSchemas\JsonApi
 			'comment' => $resource->getComment(),
 
 			'owner' => $resource->getOwnerId(),
+			'created_at' => $resource->getCreatedAt()?->format(DateTimeInterface::ATOM),
+			'updated_at' => $resource->getUpdatedAt()?->format(DateTimeInterface::ATOM),
 		];
 	}
 

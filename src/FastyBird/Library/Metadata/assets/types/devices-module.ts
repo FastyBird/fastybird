@@ -134,6 +134,8 @@ export interface ConnectorDocument {
 	controls: string[];
 	devices: string[];
 	owner: string | null;
+	createdAt: Date | null;
+	updatedAt: Date | null;
 }
 
 export interface ConnectorPropertyDocument {
@@ -157,6 +159,8 @@ export interface ConnectorPropertyDocument {
 	is_valid?: boolean;
 	connector: string;
 	owner: string | null;
+	createdAt: Date | null;
+	updatedAt: Date | null;
 }
 
 export interface ConnectorControlDocument {
@@ -164,6 +168,8 @@ export interface ConnectorControlDocument {
 	name: string;
 	connector: string;
 	owner: string | null;
+	createdAt: Date | null;
+	updatedAt: Date | null;
 }
 
 export interface DeviceDocument {
@@ -180,6 +186,8 @@ export interface DeviceDocument {
 	controls: string[];
 	channels: string[];
 	owner: string | null;
+	createdAt: Date | null;
+	updatedAt: Date | null;
 }
 
 export interface DevicePropertyDocument {
@@ -204,6 +212,8 @@ export interface DevicePropertyDocument {
 	device: string;
 	children: string[];
 	owner: string | null;
+	createdAt: Date | null;
+	updatedAt: Date | null;
 }
 
 export interface DeviceControlDocument {
@@ -211,6 +221,8 @@ export interface DeviceControlDocument {
 	name: string;
 	device: string;
 	owner: string | null;
+	createdAt: Date | null;
+	updatedAt: Date | null;
 }
 
 export interface ChannelDocument {
@@ -224,6 +236,8 @@ export interface ChannelDocument {
 	properties: string[];
 	controls: string[];
 	owner: string | null;
+	createdAt: Date | null;
+	updatedAt: Date | null;
 }
 
 export interface ChannelPropertyDocument {
@@ -248,6 +262,8 @@ export interface ChannelPropertyDocument {
 	channel: string;
 	children: string[];
 	owner: string | null;
+	createdAt: Date | null;
+	updatedAt: Date | null;
 }
 
 export interface ChannelControlDocument {
@@ -255,4 +271,6 @@ export interface ChannelControlDocument {
 	name: string;
 	channel: string;
 	owner: string | null;
+	createdAt: Date | null;
+	updatedAt: Date | null;
 }

@@ -34,12 +34,12 @@ final class ConnectorFactoryTest extends DbTestCase
 		$factory = $this->getContainer()->getByType(Connector\ConnectorFactory::class);
 
 		$findConnectorQuery = new DevicesQueries\Entities\FindConnectors();
-		$findConnectorQuery->byId(Uuid\Uuid::fromString('0640b179-ee92-4766-a491-70e02e9e2378'));
+		$findConnectorQuery->byId(Uuid\Uuid::fromString('f15d2072-fb60-421a-a85f-2566e4dc13fe'));
 
 		$connector = $connectorsRepository->findOneBy($findConnectorQuery);
 		assert($connector instanceof Entities\Zigbee2MqttConnector);
 
-		self::assertSame('0640b179-ee92-4766-a491-70e02e9e2378', $connector->getId()->toString());
+		self::assertSame('f15d2072-fb60-421a-a85f-2566e4dc13fe', $connector->getId()->toString());
 
 		$connector = $factory->create($connector);
 

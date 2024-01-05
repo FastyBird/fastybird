@@ -15,6 +15,7 @@
 
 namespace FastyBird\Module\Devices\Schemas\Devices\Controls;
 
+use DateTimeInterface;
 use FastyBird\JsonApi\Schemas as JsonApiSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
@@ -75,6 +76,9 @@ final class Control extends JsonApiSchemas\JsonApi
 	{
 		return [
 			'name' => $resource->getName(),
+			'owner' => $resource->getDevice()->getOwnerId(),
+			'created_at' => $resource->getCreatedAt()?->format(DateTimeInterface::ATOM),
+			'updated_at' => $resource->getUpdatedAt()?->format(DateTimeInterface::ATOM),
 		];
 	}
 

@@ -55,7 +55,7 @@
         "ipub/doctrine-crud": "^3.0",
         "ipub/doctrine-dynamic-discriminator-map": "^1.4",
         "ipub/doctrine-phone": "^1.6",
-        "ipub/doctrine-timestampable": "^1.5",
+        "ipub/doctrine-timestampable": "^2.0",
         "ipub/phone": "^2.3",
         "ipub/slim-router": "^0.2",
         "ipub/websockets-wamp": "^1.4",

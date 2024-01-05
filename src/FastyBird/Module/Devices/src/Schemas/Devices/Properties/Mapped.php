@@ -97,9 +97,13 @@ final class Mapped extends Property
 				'queryable' => $resource->isQueryable(),
 				'actual_value' => MetadataUtilities\ValueHelper::flattenValue($state?->getActualValue()),
 				'expected_value' => MetadataUtilities\ValueHelper::flattenValue($state?->getExpectedValue()),
-				'pending' => $state !== null ? (is_bool($state->getPending())
-					? $state->getPending() : $state->getPending()->format(DateTimeInterface::ATOM))
-					: null,
+				'pending' => $state !== null
+					? (
+						is_bool($state->getPending())
+							? $state->getPending()
+							: $state->getPending()->format(DateTimeInterface::ATOM)
+					)
+					: false,
 				'is_valid' => $state !== null && $state->isValid(),
 			],
 		) : array_merge((array) parent::getAttributes($resource, $context), [

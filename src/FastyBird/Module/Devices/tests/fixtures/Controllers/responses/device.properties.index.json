@@ -24,7 +24,10 @@
         "scale": null,
         "step": null,
         "value": "itead",
-        "default": null
+        "default": null,
+        "owner": "455354e8-96bd-4c29-84e7-9f10e1d4db4b",
+        "created_at": "2020-03-20T09:18:20+01:00",
+        "updated_at": "2020-03-20T09:18:20+01:00"
       },
       "relationships": {
         "device": {
@@ -67,7 +70,10 @@
         "scale": null,
         "step": null,
         "value": "sonoff_basic",
-        "default": null
+        "default": null,
+        "owner": "455354e8-96bd-4c29-84e7-9f10e1d4db4b",
+        "created_at": "2020-03-20T09:18:20+01:00",
+        "updated_at": "2020-03-20T09:18:20+01:00"
       },
       "relationships": {
         "device": {
@@ -110,7 +116,10 @@
         "scale": null,
         "step": null,
         "value": "rev1",
-        "default": null
+        "default": null,
+        "owner": "455354e8-96bd-4c29-84e7-9f10e1d4db4b",
+        "created_at": "2020-03-20T09:18:20+01:00",
+        "updated_at": "2020-03-20T09:18:20+01:00"
       },
       "relationships": {
         "device": {
@@ -153,7 +162,10 @@
         "scale": null,
         "step": null,
         "value": "807d3a3dbe6d",
-        "default": null
+        "default": null,
+        "owner": "455354e8-96bd-4c29-84e7-9f10e1d4db4b",
+        "created_at": "2020-03-20T09:18:20+01:00",
+        "updated_at": "2020-03-20T09:18:20+01:00"
       },
       "relationships": {
         "device": {
@@ -196,7 +208,10 @@
         "scale": null,
         "step": null,
         "value": "fastybird",
-        "default": null
+        "default": null,
+        "owner": "455354e8-96bd-4c29-84e7-9f10e1d4db4b",
+        "created_at": "2020-03-20T09:18:20+01:00",
+        "updated_at": "2020-03-20T09:18:20+01:00"
       },
       "relationships": {
         "device": {
@@ -243,7 +258,10 @@
         "actual_value": null,
         "expected_value": null,
         "pending": false,
-        "is_valid": false
+        "is_valid": false,
+        "owner": "455354e8-96bd-4c29-84e7-9f10e1d4db4b",
+        "created_at": "2020-03-20T09:18:20+01:00",
+        "updated_at": "2020-03-20T09:18:20+01:00"
       },
       "relationships": {
         "device": {
@@ -286,7 +304,10 @@
         "scale": null,
         "step": null,
         "value": "device-password",
-        "default": null
+        "default": null,
+        "owner": "455354e8-96bd-4c29-84e7-9f10e1d4db4b",
+        "created_at": "2020-03-20T09:18:20+01:00",
+        "updated_at": "2020-03-20T09:18:20+01:00"
       },
       "relationships": {
         "device": {
@@ -332,7 +353,10 @@
         "scale": null,
         "step": null,
         "value": "on",
-        "default": null
+        "default": null,
+        "owner": "455354e8-96bd-4c29-84e7-9f10e1d4db4b",
+        "created_at": "2020-03-20T09:18:20+01:00",
+        "updated_at": "2020-03-20T09:18:20+01:00"
       },
       "relationships": {
         "device": {
@@ -379,7 +403,10 @@
         "actual_value": null,
         "expected_value": null,
         "pending": false,
-        "is_valid": false
+        "is_valid": false,
+        "owner": "455354e8-96bd-4c29-84e7-9f10e1d4db4b",
+        "created_at": "2020-03-20T09:18:20+01:00",
+        "updated_at": "2020-03-20T09:18:20+01:00"
       },
       "relationships": {
         "device": {
@@ -422,7 +449,10 @@
         "scale": null,
         "step": null,
         "value": "device-username",
-        "default": null
+        "default": null,
+        "owner": "455354e8-96bd-4c29-84e7-9f10e1d4db4b",
+        "created_at": "2020-03-20T09:18:20+01:00",
+        "updated_at": "2020-03-20T09:18:20+01:00"
       },
       "relationships": {
         "device": {

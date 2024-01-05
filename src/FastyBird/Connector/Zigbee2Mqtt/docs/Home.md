@@ -15,11 +15,15 @@ ecosystem, providing a convenient and intuitive interface for managing and monit
 To better understand what some parts of the connector meant to be used for, please refer to the [Naming Convention](Naming-Convention) page.
 
 > [!TIP]
-Basic information on how to install and configure this connector could be found in [Configuration](Configuration) page.
+Find fundamental details regarding the installation and configuration of this connector on the [Configuration](Configuration) page.
 
 > [!TIP]
 Physical devices needs to be mapped to [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things)
 ecosystem. This is done automatically during discovery process. If you need more info of how it is done, check [Exposes](Exposes) page.
+
+> [!TIP]
+The connector features a built-in physical device discovery capability, and you can find detailed information about device
+discovery on the dedicated [Discovery](Discovery) page.
 
 # Troubleshooting
 

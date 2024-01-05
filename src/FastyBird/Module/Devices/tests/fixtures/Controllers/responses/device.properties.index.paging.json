@@ -29,7 +29,10 @@
         "scale": null,
         "step": null,
         "value": "sonoff_basic",
-        "default": null
+        "default": null,
+        "owner": "455354e8-96bd-4c29-84e7-9f10e1d4db4b",
+        "created_at": "2020-03-20T09:18:20+01:00",
+        "updated_at": "2020-03-20T09:18:20+01:00"
       },
       "relationships": {
         "device": {

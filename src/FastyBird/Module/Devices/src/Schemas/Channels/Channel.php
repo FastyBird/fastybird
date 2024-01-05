@@ -15,6 +15,7 @@
 
 namespace FastyBird\Module\Devices\Schemas\Channels;
 
+use DateTimeInterface;
 use FastyBird\JsonApi\Schemas as JsonApiSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
@@ -84,6 +85,9 @@ class Channel extends JsonApiSchemas\JsonApi
 			'identifier' => $resource->getIdentifier(),
 			'name' => $resource->getName(),
 			'comment' => $resource->getComment(),
+			'owner' => $resource->getDevice()->getOwnerId(),
+			'created_at' => $resource->getCreatedAt()?->format(DateTimeInterface::ATOM),
+			'updated_at' => $resource->getUpdatedAt()?->format(DateTimeInterface::ATOM),
 		];
 	}
 

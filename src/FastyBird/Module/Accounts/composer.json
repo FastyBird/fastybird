@@ -49,7 +49,7 @@
     "fastybird/metadata-library": "dev-main",
     "fastybird/simple-auth": "^0.6",
     "ipub/doctrine-consistence": "^0.4",
-    "ipub/doctrine-timestampable": "^1.5",
+    "ipub/doctrine-timestampable": "^2.0",
     "ipub/slim-router": "^0.2",
     "nettrine/dbal": "^0.8",
     "nettrine/orm": "^0.8",
