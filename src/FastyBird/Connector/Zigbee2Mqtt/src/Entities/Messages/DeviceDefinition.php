@@ -57,6 +57,12 @@ final class DeviceDefinition implements Entity
 				new ObjectMapper\Rules\MappedObjectValue(class: Entities\Messages\Exposes\TextType::class),
 				new ObjectMapper\Rules\MappedObjectValue(class: Entities\Messages\Exposes\CompositeType::class),
 				new ObjectMapper\Rules\MappedObjectValue(class: Entities\Messages\Exposes\ListType::class),
+				new ObjectMapper\Rules\MappedObjectValue(class: Entities\Messages\Exposes\ClimateType::class),
+				new ObjectMapper\Rules\MappedObjectValue(class: Entities\Messages\Exposes\CoverType::class),
+				new ObjectMapper\Rules\MappedObjectValue(class: Entities\Messages\Exposes\FanType::class),
+				new ObjectMapper\Rules\MappedObjectValue(class: Entities\Messages\Exposes\LightType::class),
+				new ObjectMapper\Rules\MappedObjectValue(class: Entities\Messages\Exposes\LockType::class),
+				new ObjectMapper\Rules\MappedObjectValue(class: Entities\Messages\Exposes\SwitchType::class),
 			]),
 			new ObjectMapper\Rules\IntValue(unsigned: true),
 		)]

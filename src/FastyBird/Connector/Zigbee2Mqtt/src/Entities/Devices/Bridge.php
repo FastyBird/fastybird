@@ -17,6 +17,7 @@ namespace FastyBird\Connector\Zigbee2Mqtt\Entities\Devices;
 
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Connector\Zigbee2Mqtt\Entities;
+use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
 use FastyBird\Connector\Zigbee2Mqtt\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
@@ -116,6 +117,30 @@ class Bridge extends Entities\Zigbee2MqttDevice
 		}
 
 		return null;
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public function getIeeeAddress(): string|null
+	{
+		$property = $this->properties
+			->filter(
+			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::IEEE_ADDRESS
+			)
+			->first();
+
+		if (
+			!$property instanceof DevicesEntities\Devices\Properties\Variable
+			|| !is_string($property->getValue())
+		) {
+			throw new Exceptions\InvalidState('Bridge have to have configured IEEE address');
+		}
+
+		return $property->getValue();
 	}
 
 }

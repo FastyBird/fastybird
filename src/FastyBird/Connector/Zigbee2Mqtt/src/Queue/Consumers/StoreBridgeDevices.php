@@ -34,6 +34,7 @@ use Nette\Utils;
 use function array_merge;
 use function assert;
 use function implode;
+use function preg_match;
 
 /**
  * Store bridge devices message consumer
@@ -232,14 +233,14 @@ final class StoreBridgeDevices implements Queue\Consumer
 			$this->setDeviceProperty(
 				$device->getId(),
 				$deviceDescription->isDisabled(),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN),
 				Types\DevicePropertyIdentifier::DISABLED,
 				DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::DISABLED),
 			);
 			$this->setDeviceProperty(
 				$device->getId(),
 				$deviceDescription->isSupported(),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN),
 				Types\DevicePropertyIdentifier::SUPPORTED,
 				DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::SUPPORTED),
 			);
@@ -345,11 +346,39 @@ final class StoreBridgeDevices implements Queue\Consumer
 				|| $expose instanceof Entities\Messages\Exposes\TextType
 				|| $expose instanceof Entities\Messages\Exposes\CompositeType
 			) {
+				$channelIdentifier = implode(
+					'_',
+					array_merge($identifiers, [$expose->getType()->getValue(), $expose->getProperty()]),
+				);
+
+				if (
+					preg_match(Zigbee2Mqtt\Constants::CHANNEL_IDENTIFIER_REGEX, $channelIdentifier) !== 1
+					&& preg_match(Zigbee2Mqtt\Constants::CHANNEL_SPECIAL_IDENTIFIER_REGEX, $channelIdentifier) !== 1
+				) {
+					$this->logger->error(
+						'Channel identifier could not be generated',
+						[
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+							'type' => 'store-bridge-devices-message-consumer',
+							'connector' => [
+								'id' => $device->getConnector()->getId()->toString(),
+							],
+							'bridge' => [
+								'id' => $device->getBridge()->getId()->toString(),
+							],
+							'device' => [
+								'id' => $device->getId()->toString(),
+								'identifier' => $device->getIdentifier(),
+							],
+							'data' => $expose->toArray(),
+						],
+					);
+
+					continue;
+				}
+
 				$channel = $this->createChannel(
-					implode(
-						'_',
-						array_merge($identifiers, [$expose->getType()->getValue(), $expose->getProperty()]),
-					),
+					$channelIdentifier,
 					$expose->getLabel() ?? $expose->getName(),
 					$device,
 				);
@@ -421,8 +450,8 @@ final class StoreBridgeDevices implements Queue\Consumer
 					$this->logger->debug(
 						'Device channel was created',
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-							'type' => 'store-sub-device-message-consumer',
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+							'type' => 'store-bridge-devices-message-consumer',
 							'connector' => [
 								'id' => $device->getConnector()->getId()->toString(),
 							],

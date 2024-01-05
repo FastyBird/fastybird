@@ -176,7 +176,7 @@ final class StoreDeviceState implements Queue\Consumer
 					$this->logger->warning(
 						'Channel for storing device state could not be loaded',
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
 							'type' => 'store-device-state-message-consumer',
 							'connector' => [
 								'id' => $device->getConnector()->toString(),
@@ -204,7 +204,7 @@ final class StoreDeviceState implements Queue\Consumer
 					$this->logger->warning(
 						'Channel property for storing device state could not be loaded',
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
 							'type' => 'store-device-state-message-consumer',
 							'connector' => [
 								'id' => $device->getConnector()->toString(),

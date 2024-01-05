@@ -113,7 +113,7 @@ final class Bridge
 		);
 
 		if ($property?->getValue() === null) {
-			throw new Exceptions\InvalidState('Sub-device have to have configured IEEE address');
+			throw new Exceptions\InvalidState('Bridge have to have configured IEEE address');
 		}
 
 		$value = $property->getValue();

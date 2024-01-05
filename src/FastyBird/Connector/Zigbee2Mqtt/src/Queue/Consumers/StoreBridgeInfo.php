@@ -131,6 +131,13 @@ final class StoreBridgeInfo implements Queue\Consumer
 			Types\DevicePropertyIdentifier::COMMIT,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::COMMIT),
 		);
+		$this->setDeviceProperty(
+			$bridge->getId(),
+			$entity->getCoordinator()->getIeeeAddress(),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+			Types\DevicePropertyIdentifier::IEEE_ADDRESS,
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::IEEE_ADDRESS),
+		);
 
 		$this->logger->debug(
 			'Consumed bridge info message',

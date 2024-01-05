@@ -40,6 +40,7 @@ services:
         factory: IPub\SlimRouter\Routing\Router
         setup:
             - addMiddleware(@fbJsonApi.middlewares.jsonapi)
+    - {factory: FastyBird\Connector\Zigbee2Mqtt\Tests\Tools\DateTimeProvider}
 
     cache.storage: Nette\Caching\Storages\MemoryStorage
 

@@ -111,13 +111,15 @@ final class BinaryType extends Type
 					$this->getValueOff(),
 				],
 			],
-			$this->getValueToggle() !== null
-				? [
-					MetadataTypes\SwitchPayload::PAYLOAD_TOGGLE,
-					$this->getValueToggle(),
-					$this->getValueToggle(),
-				]
-				: [],
+			[
+				$this->getValueToggle() !== null
+					? [
+						MetadataTypes\SwitchPayload::PAYLOAD_TOGGLE,
+						$this->getValueToggle(),
+						$this->getValueToggle(),
+					]
+					: [],
+			],
 		);
 	}
 
