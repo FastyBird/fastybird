@@ -40,18 +40,27 @@ The connector will then send request to the [Zigbee2MQTT](https://www.zigbee2mqt
 be able to connect new Zigbee device in next 100 sec to your coordinator. Once finished, a list of found devices will be displayed.
 
 ```shell
-[============================] 100% 36 secs/36 secs %
-
- [INFO] Found 2 new devices
+ [INFO] Starting Zigbee2MQTT connector discovery...
 
 
-+----+--------------------------------------+----------------------------------------+---------------+--------------+
-| #  | ID                                   | Name                                   | Model         | IP address   |
-+----+--------------------------------------+----------------------------------------+---------------+--------------+
-| 1  | eebbc85d-76e0-4597-883d-8a8f93e7cd54 | Filament bulb                          | N/A           | N/A          |
-| 2  | 366e4c13-34c5-4bfe-ac5c-383157f5bd10 | WiFi 2Gang Dimmer Module               | 105b          | 10.10.10.130 |
-+----+--------------------------------------+----------------------------------------+---------------+--------------+
- [OK] Devices discovery was successfully finished
+[============================] 100% 1 min, 44 secs/1 min, 44 secs
+
+
+ [INFO] Stopping Zigbee2MQTT connector discovery...
+
+
+
+ [INFO] Found 1 new devices
+
+
++---+--------------------------------------+---------------+--------+--------------+--------------------+
+| # | ID                                   | Name          | Model  | Manufacturer | Bridge             |
++---+--------------------------------------+---------------+--------+--------------+--------------------+
+| 1 | 68c0ec14-9c0c-47c0-923e-f015dca26d54 | Motion sensor | TS0202 | TuYa         | Zigbee2MQTT Bridge |
++---+--------------------------------------+---------------+--------+--------------+--------------------+
+
+
+ [OK] Devices discovery was successfully finished    
 ```
 
 Now that all newly discovered devices have been found, they are available in the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) system and can be utilized.

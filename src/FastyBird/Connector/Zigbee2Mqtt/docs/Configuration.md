@@ -1,6 +1,6 @@
 # Configuration
 
-To connect to devices that use the [Zigbee2MQTT](https://www.zigbee2mqtt.io) bridge with the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem, you must
+To connect to devices that use the [Zigbee2MQTT](https://www.zigbee2mqtt.io) service with the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem, you must
 set up at least one connector. You can configure the connector using the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) user interface or
 by using the console.
 
@@ -24,7 +24,7 @@ could use arrows to select one of the options:
 Zigbee2MQTT connector - installer
 =================================
 
- ! [NOTE] This action will create|update|delete connector configuration                                                 
+ ! [NOTE] This action will create|update|delete connector configuration
 
  What would you like to do? [Nothing]:
   [0] Create connector
@@ -81,7 +81,7 @@ After providing the necessary information, your new [Zigbee2MQTT](https://www.zi
 
 ### Create bridge
 
-According to naming convention, bridge device have to be created and configured with [Zigbee2MQTT](https://www.zigbee2mqtt.io) bridge.
+According to naming convention, bridge device have to be created and configured with [Zigbee2MQTT](https://www.zigbee2mqtt.io) service.
 
 After new connector is created you will be asked if you want to create new device:
 
@@ -99,7 +99,7 @@ Now you will be asked to provide some device details:
  > Zigbee2MQTT Bridge
 ```
 
-And that's it! One bridge is running, it will handle all hardware devices automatically.
+And that's it! One bridge is ready to by executed, it will handle all hardware devices automatically.
 
 ```
  [OK] Bridge "Zigbee2MQTT Bridge" was successfully created.
@@ -109,3 +109,32 @@ And that's it! One bridge is running, it will handle all hardware devices automa
 
 You can also configure the [Zigbee2MQTT](https://www.zigbee2mqtt.io) connector using the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) user interface. For more information
 on how to do this, please refer to the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) [documentation](https://docs.fastybird.com).
+
+# Configuring Zigbee2MQTT Service
+
+In order of proper cooperation between Zigbee2MQTT connector and [Zigbee2MQTT](https://www.zigbee2mqtt.io) service you have
+to do basic configuration to this service.
+
+This configuration is highly recommended.
+
+> [!TIP]
+Zigbee2MQTT service configuration file could be edited with your favorite editor, path to the file vary on where you have
+installed your Zigbee2MQTT service instance: `/path/to/zigbee2mqtt/data/configuration.yaml`
+
+```yaml
+availability: true
+advanced:
+  legacy_availability_payload: false
+device_options:
+  retain: true
+```
+
+> [!TIP]
+In case you have in your Zigbee2MQTT configuration file sections with same names, just add specific parts.
+
+`availability: true` is used to enable reporting device and bridge status
+
+`advanced -> legacy_availability_payload` is used to define that availability messages are in JSON format
+
+`device_options -> retain` this option will set device state message to be retained. This is useful when connector is starting
+communication, connector will then receive last known status of all devices.

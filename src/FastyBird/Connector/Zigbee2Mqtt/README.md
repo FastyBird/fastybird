@@ -48,7 +48,7 @@ composer require fastybird/zigbee2mqtt-connector
 
 ## Documentation
 
-Learn how to connect FastyBird MQTT devices and manage them with [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) system
+:book: Learn how to connect FastyBird MQTT devices and manage them with [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) system
 in [documentation](https://github.com/FastyBird/zigbee2mqtt-connector/wiki).
 
 # FastyBird
@@ -61,7 +61,7 @@ FastyBird is an Open Source IOT solution built from decoupled components with po
 
 ## Documentation
 
-Documentation is available on [docs.fastybird.com](https://docs.fastybird.com).
+:book: Documentation is available on [docs.fastybird.com](https://docs.fastybird.com).
 
 ## Contributing
 

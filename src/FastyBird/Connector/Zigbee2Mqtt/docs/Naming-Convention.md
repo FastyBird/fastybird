@@ -19,7 +19,7 @@ A bridge device type in the [FastyBird](https://www.fastybird.com) [IoT](https:/
 ### Sub-Device
 
 A sub-device type in the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem refers to a entity which is representing physical device
-that is connected to [Zigbee2MQTT](https://www.zigbee2mqtt.io) bridge.
+that is connected to [Zigbee2MQTT](https://www.zigbee2mqtt.io) service.
 
 ## Channel
 
@@ -50,5 +50,5 @@ Each device is exposing at least one capability. Property entity is then holding
 
 ## MQTT
 
-This connector is using [MQTT broker](https://en.wikipedia.org/wiki/MQTT) for communication with [Zigbee2MQTT](https://www.zigbee2mqtt.io) bridge.
+This connector is using [MQTT broker](https://en.wikipedia.org/wiki/MQTT) for communication with [Zigbee2MQTT](https://www.zigbee2mqtt.io) service.
 In order to use this connector, you have to have configured and running MQTT broker.

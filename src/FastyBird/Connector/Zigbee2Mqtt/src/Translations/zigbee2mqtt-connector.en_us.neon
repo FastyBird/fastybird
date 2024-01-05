@@ -59,6 +59,8 @@ cmd:
             connector:
                 notFound: "Connector was not found in system."
                 disabled: "Connector is disabled. Disabled connector could not be executed."
+            starting: "Starting Zigbee2MQTT connector discovery..."
+            stopping: "Stopping Zigbee2MQTT connector discovery..."
             foundDevices: "Found %d new devices"
             noDevicesFound: "No devices were found"
             success: "Devices discovery was successfully finished"
@@ -173,6 +175,8 @@ cmd:
                     success: "Device \"%name%\" was successfully removed."
                     error: "Something went wrong, device could not be removed. Error was logged."
             discover:
+                starting: "Starting Zigbee2MQTT connector discovery..."
+                stopping: "Stopping Zigbee2MQTT connector discovery..."
                 success: "Devices discovery was successfully finished"
                 error: "Devices discovery failed. An error was logged."
             noConnector: "Connector could not be loaded"
