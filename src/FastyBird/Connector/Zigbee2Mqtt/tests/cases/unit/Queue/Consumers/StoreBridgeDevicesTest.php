@@ -22,6 +22,7 @@ use RuntimeException;
 use function array_diff;
 use function array_merge;
 use function assert;
+use function is_array;
 
 final class StoreBridgeDevicesTest extends DbTestCase
 {
@@ -898,9 +899,12 @@ final class StoreBridgeDevicesTest extends DbTestCase
 			],
 		];
 
+		// @phpstan-ignore-next-line
 		self::assertTrue(is_array($expected));
+		// @phpstan-ignore-next-line
 		self::assertTrue(is_array($transformed));
 
+		// @phpstan-ignore-next-line
 		self::assertTrue($expected !== []);
 		self::assertTrue($transformed !== []);
 
