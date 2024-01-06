@@ -41,7 +41,7 @@ services:
             - addMiddleware(@fbJsonApi.middlewares.jsonapi)
             - addMiddleware(@fbAccountsModule.middlewares.urlFormat)
 
-    cache.storage: Nette\Caching\Storages\MemoryStorage
+    cache.storage: Nette\Caching\Storages\DevNullStorage
 
 contributteTranslation:
     locales:

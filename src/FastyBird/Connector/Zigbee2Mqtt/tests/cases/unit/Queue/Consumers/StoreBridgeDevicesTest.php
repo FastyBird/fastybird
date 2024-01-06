@@ -898,7 +898,15 @@ final class StoreBridgeDevicesTest extends DbTestCase
 			],
 		];
 
-		self::assertEmpty(array_diff($expected, $transformed));
+		self::assertTrue(is_array($expected));
+		self::assertTrue(is_array($transformed));
+
+		self::assertTrue($expected !== []);
+		self::assertTrue($transformed !== []);
+
+		$diff = array_diff($expected, $transformed);
+
+		self::assertEmpty($diff);
 	}
 
 }

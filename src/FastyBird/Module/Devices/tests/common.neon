@@ -45,7 +45,7 @@ services:
     - {factory: FastyBird\Module\Devices\Tests\Fixtures\Dummy\DummyConnectorSchema}
     - {factory: FastyBird\Module\Devices\Tests\Tools\DateTimeProvider}
 
-    cache.storage: Nette\Caching\Storages\MemoryStorage
+    cache.storage: Nette\Caching\Storages\DevNullStorage
 
 decorator:
     Doctrine\Persistence\Mapping\Driver\MappingDriverChain:

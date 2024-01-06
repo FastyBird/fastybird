@@ -43,7 +43,7 @@ services:
         setup:
             - addMiddleware(@fbJsonApi.middlewares.jsonapi)
 
-    cache.storage: Nette\Caching\Storages\MemoryStorage
+    cache.storage: Nette\Caching\Storages\DevNullStorage
 
 contributteTranslation:
     locales:

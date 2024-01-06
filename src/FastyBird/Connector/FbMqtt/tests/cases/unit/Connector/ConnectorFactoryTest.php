@@ -34,7 +34,7 @@ final class ConnectorFactoryTest extends DbTestCase
 		$factory = $this->getContainer()->getByType(Connector\ConnectorFactory::class);
 
 		$findConnectorQuery = new DevicesQueries\Entities\FindConnectors();
-		$findConnectorQuery->byId(Uuid\Uuid::fromString('17c59Dfa-2edd-438e-8c49f-aa4e38e5a5e'));
+		$findConnectorQuery->byId(Uuid\Uuid::fromString('37b86cdc-376b-4d4c-9683-aa4f41daa13a'));
 
 		$connector = $connectorsRepository->findOneBy($findConnectorQuery);
 		assert($connector instanceof Entities\FbMqttConnector);

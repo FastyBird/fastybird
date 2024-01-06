@@ -3,13 +3,13 @@ IGNORE INTO `fb_devices_module_connectors` (`connector_id`, `connector_identifie
 (_binary 0xf15d2072fb60421aa85f2566e4dc13fe, 'zigbee2mqtt', 'Zigbee2MQTT', null, true, 'zigbee2mqtt', '2023-12-23 20:00:00', '2023-12-23 20:00:00');
 
 INSERT
-IGNORE INTO `fb_devices_module_connectors_properties` (`property_id`, `connector_id`, `property_type`, `property_identifier`, `property_name`, `property_settable`, `property_queryable`, `property_data_type`, `property_unit`, `property_format`, `property_invalid`, `property_scale`, `property_value`, `created_at`, `updated_at`) VALUES
-(_binary 0x0a7d3ba9d7e124f7da100eecbed52c567, _binary 0xf15d2072fb60421aa85f2566e4dc13fe, 'variable', 'mode', NULL, 0, 0, 'string', NULL, NULL, NULL, NULL, 'mqtt', '2023-12-23 20:00:00', '2023-12-23 20:00:00');
+IGNORE INTO `fb_devices_module_connectors_controls` (`control_id`, `connector_id`, `control_name`, `created_at`, `updated_at`) VALUES
+(_binary 0xb539c53c4b9d4998a50c13222938f0f4, _binary 0xf15d2072fb60421aa85f2566e4dc13fe, 'reboot', '2023-12-23 20:00:00', '2023-12-23 20:00:00'),
+(_binary 0x028db566d1124483ab520b7c704f8b55, _binary 0xf15d2072fb60421aa85f2566e4dc13fe, 'discover', '2023-12-23 20:00:00', '2023-12-23 20:00:00');
 
 INSERT
-IGNORE INTO `fb_devices_module_connectors_controls` (`control_id`, `connector_id`, `control_name`, `created_at`, `updated_at`) VALUES
-(_binary 0xb84805daea89409f8cbc4454f97a5653, _binary 0xf15d2072fb60421aa85f2566e4dc13fe, 'reboot', '2023-12-23 20:00:00', '2023-12-23 20:00:00'),
-(_binary 0x81586b0dd7ec4778ae300de3e7f7d4da, _binary 0xf15d2072fb60421aa85f2566e4dc13fe, 'discover', '2023-12-23 20:00:00', '2023-12-23 20:00:00');
+IGNORE INTO `fb_devices_module_connectors_properties` (`property_id`, `connector_id`, `property_type`, `property_identifier`, `property_name`, `property_settable`, `property_queryable`, `property_data_type`, `property_unit`, `property_format`, `property_invalid`, `property_scale`, `property_value`, `created_at`, `updated_at`) VALUES
+(_binary 0x6c1ad6abc0a04a00965e24387baac0a, _binary 0xf15d2072fb60421aa85f2566e4dc13fe, 'variable', 'mode', 'Mode', 0, 0, 'string', NULL, NULL, NULL, NULL, 'mqtt', '2023-08-21 22:00:00', '2023-08-21 22:00:00');
 
 INSERT
 IGNORE INTO `fb_devices_module_devices` (`device_id`, `device_type`, `device_identifier`, `device_name`, `device_comment`, `params`, `created_at`, `updated_at`, `owner`, `connector_id`) VALUES
