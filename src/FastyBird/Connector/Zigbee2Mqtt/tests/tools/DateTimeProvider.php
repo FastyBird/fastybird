@@ -10,9 +10,7 @@ use Nette\DI;
 class DateTimeProvider implements DoctrineTimestampableProviders\DateProvider
 {
 
-	public function __construct(
-		private readonly DI\Container $container
-	)
+	public function __construct(private readonly DI\Container $container)
 	{
 	}
 
