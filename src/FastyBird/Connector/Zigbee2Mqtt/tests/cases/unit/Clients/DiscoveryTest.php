@@ -9,6 +9,7 @@ use FastyBird\Connector\Zigbee2Mqtt\API;
 use FastyBird\Connector\Zigbee2Mqtt\Clients;
 use FastyBird\Connector\Zigbee2Mqtt\Entities;
 use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
+use FastyBird\Connector\Zigbee2Mqtt\Queries;
 use FastyBird\Connector\Zigbee2Mqtt\Queue;
 use FastyBird\Connector\Zigbee2Mqtt\Tests;
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
@@ -16,7 +17,6 @@ use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use InvalidArgumentException;
 use Nette\DI;
 use Nette\Utils;
@@ -124,19 +124,28 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 			$connectionManager,
 		);
 
-		$connectorsConfigurationRepository = $this->getContainer()->getByType(
-			DevicesModels\Configuration\Connectors\Repository::class,
+		$connectorsRepository = $this->getContainer()->getByType(
+			DevicesModels\Entities\Connectors\ConnectorsRepository::class,
 		);
 
-		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
+		$findConnectorQuery = new Queries\Entities\FindConnectors();
 		$findConnectorQuery->byIdentifier('zigbee2mqtt');
 
-		$connector = $connectorsConfigurationRepository->findOneBy($findConnectorQuery);
-		self::assertInstanceOf(MetadataDocuments\DevicesModule\Connector::class, $connector);
+		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\Zigbee2MqttConnector::class);
+		self::assertInstanceOf(Entities\Zigbee2MqttConnector::class, $connector);
+
+		$documentFactory = $this->getContainer()->getByType(
+			MetadataDocuments\DocumentFactory::class,
+		);
+
+		$connectorDocument = $documentFactory->create(
+			MetadataDocuments\DevicesModule\Connector::class,
+			$connector->toArray(),
+		);
 
 		$clientFactory = $this->getContainer()->getByType(Clients\DiscoveryFactory::class);
 
-		$client = $clientFactory->create($connector);
+		$client = $clientFactory->create($connectorDocument);
 
 		$client->discover();
 
@@ -158,29 +167,26 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 
 		$consumers->consume();
 
-		$devicesConfigurationRepository = $this->getContainer()->getByType(
-			DevicesModels\Configuration\Devices\Repository::class,
+		$devicesRepository = $this->getContainer()->getByType(
+			DevicesModels\Entities\Devices\DevicesRepository::class,
 		);
 
-		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDeviceQuery = new Queries\Entities\FindSubDevices();
 		$findDeviceQuery->forConnector($connector);
 		$findDeviceQuery->byIdentifier('0xa4c138f06eafa3da');
-		$findDeviceQuery->byType(Entities\Devices\SubDevice::TYPE);
 
-		$device = $devicesConfigurationRepository->findOneBy($findDeviceQuery);
+		$device = $devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\SubDevice::class);
 
-		self::assertInstanceOf(MetadataDocuments\DevicesModule\Device::class, $device);
-		self::assertSame(Entities\Devices\SubDevice::TYPE, $device->getType());
+		self::assertInstanceOf(Entities\Devices\SubDevice::class, $device);
 
-		$channelsConfigurationRepository = $this->getContainer()->getByType(
-			DevicesModels\Configuration\Channels\Repository::class,
+		$channelsRepository = $this->getContainer()->getByType(
+			DevicesModels\Entities\Channels\ChannelsRepository::class,
 		);
 
-		$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
+		$findChannelsQuery = new Queries\Entities\FindChannels();
 		$findChannelsQuery->forDevice($device);
-		$findChannelsQuery->byType(Entities\Zigbee2MqttChannel::TYPE);
 
-		$channels = $channelsConfigurationRepository->findAllBy($findChannelsQuery);
+		$channels = $channelsRepository->findAllBy($findChannelsQuery, Entities\Zigbee2MqttChannel::class);
 
 		self::assertCount(6, $channels);
 

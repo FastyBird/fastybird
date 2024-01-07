@@ -18,7 +18,6 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
 use Ramsey\Uuid;
 use RuntimeException;
@@ -232,10 +231,10 @@ final class StoreBridgeDevicesTest extends DbTestCase
 			DevicesModels\Entities\Connectors\ConnectorsRepository::class,
 		);
 
-		$findConnectorQuery = new DevicesQueries\Entities\FindConnectors();
+		$findConnectorQuery = new Queries\Entities\FindConnectors();
 		$findConnectorQuery->byId(Uuid\Uuid::fromString('f15d2072-fb60-421a-a85f-2566e4dc13fe'));
 
-		$connector = $connectorsRepository->findOneBy($findConnectorQuery);
+		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\Zigbee2MqttConnector::class);
 		assert($connector instanceof Entities\Zigbee2MqttConnector);
 
 		$devicesRepository = $this->getContainer()->getByType(

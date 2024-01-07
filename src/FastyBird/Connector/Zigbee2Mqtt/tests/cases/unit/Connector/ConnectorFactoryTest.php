@@ -6,10 +6,10 @@ use Error;
 use FastyBird\Connector\Zigbee2Mqtt\Connector;
 use FastyBird\Connector\Zigbee2Mqtt\Entities;
 use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
+use FastyBird\Connector\Zigbee2Mqtt\Queries;
 use FastyBird\Connector\Zigbee2Mqtt\Tests\Cases\Unit\DbTestCase;
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
 use Ramsey\Uuid;
 use RuntimeException;
@@ -33,10 +33,10 @@ final class ConnectorFactoryTest extends DbTestCase
 
 		$factory = $this->getContainer()->getByType(Connector\ConnectorFactory::class);
 
-		$findConnectorQuery = new DevicesQueries\Entities\FindConnectors();
+		$findConnectorQuery = new Queries\Entities\FindConnectors();
 		$findConnectorQuery->byId(Uuid\Uuid::fromString('f15d2072-fb60-421a-a85f-2566e4dc13fe'));
 
-		$connector = $connectorsRepository->findOneBy($findConnectorQuery);
+		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\Zigbee2MqttConnector::class);
 		assert($connector instanceof Entities\Zigbee2MqttConnector);
 
 		self::assertSame('f15d2072-fb60-421a-a85f-2566e4dc13fe', $connector->getId()->toString());
