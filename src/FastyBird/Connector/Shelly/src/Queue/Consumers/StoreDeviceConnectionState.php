@@ -110,6 +110,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 
 				$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
 				$findChannelsQuery->forDevice($device);
+				$findChannelsQuery->byType(Entities\ShellyChannel::TYPE);
 
 				$channels = $this->channelsConfigurationRepository->findAllBy($findChannelsQuery);
 

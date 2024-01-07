@@ -155,6 +155,7 @@ final class StoreDeviceState implements Queue\Consumer
 				} else {
 					$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
 					$findChannelsQuery->forDevice($device);
+					$findChannelsQuery->byType(Entities\ShellyChannel::TYPE);
 
 					$channels = $this->channelsConfigurationRepository->findAllBy($findChannelsQuery);
 
@@ -218,6 +219,7 @@ final class StoreDeviceState implements Queue\Consumer
 			} else {
 				$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 				$findChannelQuery->forDevice($device);
+				$findChannelQuery->byType(Entities\ShellyChannel::TYPE);
 
 				if (Utils\Strings::startsWith($state->getIdentifier(), '_')) {
 					$findChannelQuery->endWithIdentifier($state->getIdentifier());

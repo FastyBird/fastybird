@@ -102,6 +102,7 @@ abstract class Periodic
 
 			$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
 			$findChannelsQuery->forDevice($device);
+			$findChannelsQuery->byType(Entities\ShellyChannel::TYPE);
 
 			$channels = $this->channelsConfigurationRepository->findAllBy($findChannelsQuery);
 

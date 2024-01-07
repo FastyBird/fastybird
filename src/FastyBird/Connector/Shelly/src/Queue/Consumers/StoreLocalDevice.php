@@ -176,14 +176,15 @@ final class StoreLocalDevice implements Queue\Consumer
 		);
 
 		foreach ($entity->getChannels() as $channelDescription) {
-			$findChannelQuery = new DevicesQueries\Entities\FindChannels();
+			$findChannelQuery = new Queries\Entities\FindChannels();
 			$findChannelQuery->forDevice($device);
 			$findChannelQuery->byIdentifier($channelDescription->getIdentifier());
 
-			$channel = $this->channelsRepository->findOneBy($findChannelQuery);
+			$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\ShellyChannel::class);
 
 			$channel = $channel === null ? $this->databaseHelper->transaction(
 				fn (): DevicesEntities\Channels\Channel => $this->channelsManager->create(Utils\ArrayHash::from([
+					'entity' => Entities\ShellyChannel::class,
 					'device' => $device,
 					'identifier' => $channelDescription->getIdentifier(),
 					'name' => $channelDescription->getName(),

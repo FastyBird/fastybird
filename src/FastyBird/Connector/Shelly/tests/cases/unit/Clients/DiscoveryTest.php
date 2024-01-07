@@ -242,10 +242,10 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 			DevicesModels\Entities\Channels\ChannelsRepository::class,
 		);
 
-		$findChannelsQuery = new DevicesQueries\Entities\FindChannels();
+		$findChannelsQuery = new Queries\Entities\FindChannels();
 		$findChannelsQuery->forDevice($device);
 
-		$channels = $channelsRepository->findAllBy($findChannelsQuery);
+		$channels = $channelsRepository->findAllBy($findChannelsQuery, Entities\ShellyChannel::class);
 
 		self::assertCount(5, $channels);
 	}
@@ -447,10 +447,10 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 			DevicesModels\Entities\Channels\ChannelsRepository::class,
 		);
 
-		$findChannelsQuery = new DevicesQueries\Entities\FindChannels();
+		$findChannelsQuery = new Queries\Entities\FindChannels();
 		$findChannelsQuery->forDevice($device);
 
-		$channels = $channelsRepository->findAllBy($findChannelsQuery);
+		$channels = $channelsRepository->findAllBy($findChannelsQuery, Entities\ShellyChannel::class);
 
 		self::assertCount(4, $channels);
 	}
