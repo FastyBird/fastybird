@@ -41,7 +41,7 @@ ecosystem. This is done automatically during discovery process. If you need more
 ## Using Connector
 
 The connector is ready to be used as is. Has configured all services in application container and there is no need to develop
-some other services od bridges.
+some other services or bridges.
 
 > [!TIP]
 Find fundamental details regarding the installation and configuration of this connector on the [Configuration](Configuration) page.

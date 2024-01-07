@@ -2,95 +2,59 @@
 	<img src="https://github.com/fastybird/.github/blob/main/assets/repo_title.png?raw=true" alt="FastyBird"/>
 </p>
 
+> [!IMPORTANT]
+This documentation is meant to be used by developers or users which has basic programming skills. If you are regular user
+please use FastyBird IoT documentation which is available on [docs.fastybird.com](https://docs.fastybird.com).
+
 The [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) Virtual Connector is an extension for the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem that enables seamless integration
 of virtual devices. It allows developers to easily create devices which will communicate with the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem.
 
-# Naming Convention
+# About Connector
 
-The connector uses the following naming convention for its entities:
+This connector has some services divided into namespaces. All services are preconfigured and imported into application
+container automatically.
 
-## Connector
+```
+\FastyBird\Connector\Zigbee2Mqtt
+  \Commands - Services used for user console interface
+  \Devices - Services which handle communication with virtual devices
+  \Drivers - Devices drivers responsible for virtual devices
+  \Entities - All entities used by connector
+  \Helpers - Useful helpers for reading values, bulding entities etc.
+  \Queue - Services related to connector internal communication
+  \Schemas - {JSON:API} schemas mapping for API requests
+  \Translations - Connector translations
+  \Writers - Services for handling request from other services
+```
 
-A connector is an entity that manages communication with Virtual devices. It needs to be configured for a specific device interface.
+All services, helpers, etc. are written to be self-descriptive :wink:.
 
-## Device
+> [!TIP]
+To better understand what some parts of the connector meant to be used for, please refer to the [Naming Convention](Naming-Convention) page.
 
-A device is an entity that represents a virtual device.
+## Using Connector
 
-# Configuration
+The main purpose of this connector is to provide interface for other developers to create Virtualized devices - software
+defined devices. All necessary services are preconfigured and ready to be used and there is no need to develop
+some other services or bridges.
 
-To use Virtual devices with the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem, you will need to configure at least one connector.
-The connector can be configured using the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) user interface or through the console.
+> [!TIP]
+Find fundamental details regarding the installation and configuration of this connector on the [Configuration](Configuration) page.
 
-## Configuring the Connectors and Devices through the Console
+> [!TIP]
+This connector is equipped with Thermostat device and this device could be used as a example device. Find fundamental details
+regarding the configuration of this device on the [Thermostat](Thermostat) page.
 
-To configure the connector through the console, run the following command:
+This connector is equipped with interactive console. With this console commands you could manage almost all connector features.
+
+* **fb:virtual-connector:install**: is used for connector installation and configuration. With interactive menu you could manage connector and device.
+* **fb:virtual-connector:execute**: is used for connector execution. It is simple command that will trigger all services which are related to communication with Virtual devices and other [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem services like state storage, or user interface communication.
+
+Each console command could be triggered like this :nerd_face:
 
 ```shell
 php bin/fb-console fb:virtual-connector:install
 ```
 
-> **NOTE:**
+> [!NOTE]
 The path to the console command may vary depending on your FastyBird application distribution. For more information, refer to the FastyBird documentation.
-
-After triggering the command you will get information message:
-
-```shell
-Virtual connector - installer
-=============================
-
- ! [NOTE] This action will create|update|delete connector configuration
-
- What would you like to do? [Nothing]:
-  [0] Create connector
-  [1] Edit connector
-  [2] Delete connector
-  [3] Manage connector
-  [4] List connectors
-  [5] Nothing
- > 0
-```
-
-### Create connector
-
-If you choose to create a new connector, you will be asked to provide a connector identifier and name:
-
-```shell
- Provide connector identifier:
- > my-virtual
-```
-
-```shell
- Provide connector name:
- > My Virtual
-```
-
-After providing the necessary information, your new Virtual connector will be ready for use.
-
-```shell
- [OK] New connector "My Virtual" was successfully created
-```
-
-### Create device
-
-After new connector is created you will be asked if you want to create new device:
-
-```shell
- Would you like to configure connector device(s)? (yes/no) [yes]:
- > 
-```
-
-Or you could choose to manage connector devices from the main menu.
-
-### Connectors and Devices management
-
-With this console command you could manage all your connectors and their devices. Just use the main menu to navigate to proper action.
-
-## Configuring the Connector with the FastyBird User Interface
-
-You can also configure the Virtual connector using the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) user interface. For more information on how to do this,
-please refer to the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) documentation.
-
-# Virtual Devices
-
-This connector is here to provide interface for other developers for creating software base devices.

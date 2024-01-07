@@ -9,7 +9,7 @@ and is responsible for managing communication with physical world and other [Fas
 
 ## Device
 
-In this conector are used two types of devices.
+In this connector are used two types of devices.
 
 ### Bridge
 
