@@ -124,6 +124,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 
 				$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
 				$findChannelsQuery->forDevice($device);
+				$findChannelsQuery->byType(Entities\SonoffChannel::TYPE);
 
 				$channels = $this->channelsConfigurationRepository->findAllBy($findChannelsQuery);
 
@@ -167,6 +168,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 
 					$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
 					$findChannelsQuery->forDevice($child);
+					$findChannelsQuery->byType(Entities\SonoffChannel::TYPE);
 
 					$channels = $this->channelsConfigurationRepository->findAllBy($findChannelsQuery);
 
