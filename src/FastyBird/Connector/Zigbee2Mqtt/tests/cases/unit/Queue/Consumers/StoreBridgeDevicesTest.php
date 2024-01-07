@@ -12,14 +12,13 @@ use FastyBird\Connector\Zigbee2Mqtt\Queries;
 use FastyBird\Connector\Zigbee2Mqtt\Queue;
 use FastyBird\Connector\Zigbee2Mqtt\Tests\Cases\Unit\DbTestCase;
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Module\Devices\Entities\Connectors\Connector;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
-use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use Nette;
 use Ramsey\Uuid;
 use RuntimeException;
@@ -49,14 +48,15 @@ final class StoreBridgeDevicesTest extends DbTestCase
 			->expects(self::exactly(33))
 			->method('publish')
 			->with(
-				self::callback(static function (MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|MetadataTypes\AutomatorSource $source): bool {
-					self::assertTrue($source->equalsValue(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES));
+				self::callback(
+					// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+					static function (MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|MetadataTypes\AutomatorSource $source): bool {
+						self::assertTrue($source->equalsValue(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES));
 
-					return true;
-				}),
-				self::callback(static function (MetadataTypes\RoutingKey $routingKey): bool {
-					return true;
-				}),
+						return true;
+					},
+				),
+				self::callback(static fn (MetadataTypes\RoutingKey $routingKey): bool => true),
 				self::callback(static function (MetadataDocuments\Document|null $entity): bool {
 					self::assertTrue($entity !== null);
 
