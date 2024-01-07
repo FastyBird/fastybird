@@ -12,9 +12,3 @@
 
 php:
     date.timezone: Europe/Prague
-
-services:
-    - {
-      create: React\EventLoop\Factory::create()
-      type: React\EventLoop\LoopInterface
-    }

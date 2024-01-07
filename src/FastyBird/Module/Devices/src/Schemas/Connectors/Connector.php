@@ -15,6 +15,7 @@
 
 namespace FastyBird\Module\Devices\Schemas\Connectors;
 
+use DateTimeInterface;
 use FastyBird\JsonApi\Schemas as JsonApiSchemas;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Entities;
@@ -70,6 +71,9 @@ abstract class Connector extends JsonApiSchemas\JsonApi
 			'comment' => $resource->getComment(),
 
 			'enabled' => $resource->isEnabled(),
+			'owner' => $resource->getOwnerId(),
+			'created_at' => $resource->getCreatedAt()?->format(DateTimeInterface::ATOM),
+			'updated_at' => $resource->getUpdatedAt()?->format(DateTimeInterface::ATOM),
 		];
 	}
 

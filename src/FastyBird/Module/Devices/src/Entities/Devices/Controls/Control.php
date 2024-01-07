@@ -15,6 +15,7 @@
 
 namespace FastyBird\Module\Devices\Entities\Devices\Controls;
 
+use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities;
@@ -101,6 +102,8 @@ class Control implements Entities\Entity,
 			'device' => $this->getDevice()->getId()->toString(),
 
 			'owner' => $this->getDevice()->getOwnerId(),
+			'created_at' => $this->getCreatedAt()?->format(DateTimeInterface::ATOM),
+			'updated_at' => $this->getUpdatedAt()?->format(DateTimeInterface::ATOM),
 		];
 	}
 

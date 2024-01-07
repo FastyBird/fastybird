@@ -101,6 +101,8 @@ final class DeviceDynamicProperty extends DeviceProperty
 		)]
 		private readonly array $children = [],
 		Uuid\UuidInterface|null $owner = null,
+		DateTimeInterface|null $createdAt = null,
+		DateTimeInterface|null $updatedAt = null,
 	)
 	{
 		parent::__construct(
@@ -116,6 +118,8 @@ final class DeviceDynamicProperty extends DeviceProperty
 			$scale,
 			$step,
 			$owner,
+			$createdAt,
+			$updatedAt,
 		);
 	}
 

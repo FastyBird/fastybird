@@ -61,6 +61,7 @@ extensions:
     fbTuyaConnector                     : FastyBird\Connector\Tuya\DI\TuyaExtension
     fbVieraConnector                    : FastyBird\Connector\Viera\DI\VieraExtension
     fbVirtualConnector                  : FastyBird\Connector\Virtual\DI\VirtualExtension
+    fbZigbee2MqttConnector              : FastyBird\Connector\Zigbee2Mqtt\DI\Zigbee2MqttExtension
     # FastyBird bridges
     fbRedisDbDevicesModuleBridge        : FastyBird\Bridge\RedisDbDevicesModule\DI\RedisDbDevicesModuleExtension
     fbRedisDbTriggersModuleBridge       : FastyBird\Bridge\RedisDbTriggersModule\DI\RedisDbTriggersModuleExtension
@@ -165,6 +166,9 @@ fbVieraConnector:
     writer: %connectors.writers%
 
 fbVirtualConnector:
+    writer: %connectors.writers%
+
+fbZigbee2MqttConnector:
     writer: %connectors.writers%
 
 # Application

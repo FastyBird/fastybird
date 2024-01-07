@@ -61,6 +61,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 
 		$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 		$findChannelQuery->byId($property->getChannel());
+		$findChannelQuery->byType(Entities\TuyaChannel::TYPE);
 
 		$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 

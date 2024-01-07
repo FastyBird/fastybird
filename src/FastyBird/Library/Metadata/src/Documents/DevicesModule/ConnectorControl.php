@@ -15,6 +15,7 @@
 
 namespace FastyBird\Library\Metadata\Documents\DevicesModule;
 
+use DateTimeInterface;
 use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
 use Ramsey\Uuid;
 use function array_merge;
@@ -36,9 +37,11 @@ final class ConnectorControl extends Control
 		private readonly Uuid\UuidInterface $connector,
 		string $name,
 		Uuid\UuidInterface|null $owner = null,
+		DateTimeInterface|null $createdAt = null,
+		DateTimeInterface|null $updatedAt = null,
 	)
 	{
-		parent::__construct($id, $name, $owner);
+		parent::__construct($id, $name, $owner, $createdAt, $updatedAt);
 	}
 
 	public function getConnector(): Uuid\UuidInterface

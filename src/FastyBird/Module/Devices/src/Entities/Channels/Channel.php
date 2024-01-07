@@ -16,6 +16,7 @@
 namespace FastyBird\Module\Devices\Entities\Channels;
 
 use Consistence\Doctrine\Enum\EnumAnnotation as Enum;
+use DateTimeInterface;
 use Doctrine\Common;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -280,6 +281,8 @@ class Channel implements Entities\Entity,
 			'connector' => $this->getDevice()->getConnector()->getId()->toString(),
 
 			'owner' => $this->getDevice()->getOwnerId(),
+			'created_at' => $this->getCreatedAt()?->format(DateTimeInterface::ATOM),
+			'updated_at' => $this->getUpdatedAt()?->format(DateTimeInterface::ATOM),
 		];
 	}
 

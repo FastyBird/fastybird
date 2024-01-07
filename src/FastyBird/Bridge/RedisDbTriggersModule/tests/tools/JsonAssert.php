@@ -4,6 +4,7 @@ namespace FastyBird\Bridge\RedisDbTriggersModule\Tests\Tools;
 
 use Closure;
 use Nette\StaticClass;
+use Nette;
 use Nette\Utils;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
@@ -17,6 +18,7 @@ class JsonAssert
 
 	/**
 	 * @throws ExpectationFailedException
+	 * @throws Nette\IOException
 	 *
 	 * @throws Utils\JsonException
 	 */
@@ -76,7 +78,7 @@ class JsonAssert
 		}
 
 		try {
-			return Utils\Json::decode($input, Utils\Json::FORCE_ARRAY);
+			return (array) Utils\Json::decode($input, Utils\Json::FORCE_ARRAY);
 		} catch (Utils\JsonException $e) {
 			throw new Utils\JsonException(
 				sprintf('%s is invalid: "%s"', $nameForMessage, $e->getMessage()),

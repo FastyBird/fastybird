@@ -14,5 +14,7 @@
   "channel": "247fd6b5-8466-4323-81de-cec3e315015a",
   "expected_value" : null,
   "pending" : false,
-  "valid" : true
+  "valid" : true,
+  "created_at" : null,
+  "updated_at" : null
 }

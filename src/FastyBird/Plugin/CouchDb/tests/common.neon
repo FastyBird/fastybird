@@ -17,9 +17,3 @@ extensions:
     ipubPhone               : IPub\Phone\DI\PhoneExtension
     fbDateTimeFactory       : FastyBird\DateTimeFactory\DI\DateTimeFactoryExtension
     fbMetadataLibrary       : FastyBird\Library\Metadata\DI\MetadataExtension
-
-services:
-    - {
-      create: React\EventLoop\Factory::create()
-      type: React\EventLoop\LoopInterface
-    }

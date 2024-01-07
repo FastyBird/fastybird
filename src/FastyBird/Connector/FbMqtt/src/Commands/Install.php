@@ -546,7 +546,7 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ConfirmationQuestion(
-			$this->translator->translate('//modbus-connector.cmd.install.questions.manage.devices'),
+			$this->translator->translate('//fb-mqtt-connector.cmd.install.questions.manage.devices'),
 			false,
 		);
 
@@ -577,7 +577,7 @@ class Install extends Console\Command\Command
 
 		$io->warning(
 			$this->translator->translate(
-				'//fb-mqtt-connector.cmd.install.messages.remove.connector.success',
+				'//fb-mqtt-connector.cmd.install.messages.remove.connector.confirm',
 				['name' => $connector->getName() ?? $connector->getIdentifier()],
 			),
 		);
@@ -888,7 +888,7 @@ class Install extends Console\Command\Command
 
 		$io->warning(
 			$this->translator->translate(
-				'//fb-mqtt-connector.cmd.install.messages.remove.device.success',
+				'//fb-mqtt-connector.cmd.install.messages.remove.device.confirm',
 				['name' => $device->getName() ?? $device->getIdentifier()],
 			),
 		);

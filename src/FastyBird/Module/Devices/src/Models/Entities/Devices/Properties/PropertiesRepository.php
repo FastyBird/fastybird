@@ -72,6 +72,18 @@ final class PropertiesRepository
 	/**
 	 * @template T of Entities\Devices\Properties\Property
 	 *
+	 * @param class-string<T> $type
+	 *
+	 * @return array<T>
+	 */
+	public function findAll(string $type = Entities\Devices\Properties\Property::class): array
+	{
+		return $this->getRepository($type)->findAll();
+	}
+
+	/**
+	 * @template T of Entities\Devices\Properties\Property
+	 *
 	 * @param Queries\Entities\FindDeviceProperties<T> $queryObject
 	 * @param class-string<T> $type
 	 *

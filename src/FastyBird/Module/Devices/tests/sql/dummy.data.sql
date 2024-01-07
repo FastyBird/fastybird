@@ -9,8 +9,8 @@ IGNORE INTO `fb_devices_module_connectors_controls` (`control_id`, `connector_id
 
 INSERT
 IGNORE INTO `fb_devices_module_connectors_properties` (`property_id`, `connector_id`, `property_type`, `property_identifier`, `property_name`, `property_settable`, `property_queryable`, `property_data_type`, `property_unit`, `property_format`, `property_invalid`, `property_scale`, `property_value`, `created_at`, `updated_at`) VALUES
-(_binary 0x5a8b01f2621c4c41bc83c089d72b2366, _binary 0x17C59DFA2EDD438E8C49FAA4E38E5A5E, 'variable', 'username', 'username', 0, 0, 'string', NULL, NULL, NULL, NULL, 'random@username', '2023-16-11 13:00:00', '2023-16-11 13:00:00'),
-(_binary 0x28cb8a0fb33d4398bf6c5d1a0594524c, _binary 0x17C59DFA2EDD438E8C49FAA4E38E5A5E, 'variable', 'password', 'password', 0, 0, 'string', NULL, NULL, NULL, NULL, 'secret_password', '2023-16-11 13:00:00', '2023-16-11 13:00:00');
+(_binary 0x5a8b01f2621c4c41bc83c089d72b2366, _binary 0x17C59DFA2EDD438E8C49FAA4E38E5A5E, 'variable', 'username', 'username', 0, 0, 'string', NULL, NULL, NULL, NULL, 'random@username', '2020-03-20 09:18:20', '2020-03-20 09:18:20'),
+(_binary 0x28cb8a0fb33d4398bf6c5d1a0594524c, _binary 0x17C59DFA2EDD438E8C49FAA4E38E5A5E, 'variable', 'password', 'password', 0, 0, 'string', NULL, NULL, NULL, NULL, 'secret_password', '2020-03-20 09:18:20', '2020-03-20 09:18:20');
 
 INSERT
 IGNORE INTO `fb_devices_module_devices` (`device_id`, `device_type`, `device_identifier`, `device_name`, `device_comment`, `params`, `created_at`, `updated_at`, `owner`, `connector_id`) VALUES

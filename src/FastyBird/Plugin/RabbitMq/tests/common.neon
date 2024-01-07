@@ -19,12 +19,6 @@ extensions:
     fbMetadataLibrary       : FastyBird\Library\Metadata\DI\MetadataExtension
     fbExchangeLibrary       : FastyBird\Library\Exchange\DI\ExchangeExtension
 
-services:
-    - {
-      create: React\EventLoop\Factory::create()
-      type: React\EventLoop\LoopInterface
-    }
-
 fbRabbitMqPlugin:
     queue:
         name: testingQueueName

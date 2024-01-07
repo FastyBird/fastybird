@@ -51,5 +51,7 @@
   "expected_value" : null,
   "pending" : false,
   "valid" : true,
-  "parent" : "f42a8b4c-d5c8-4242-8ff0-6e5f867dcfb1"
+  "parent" : "f42a8b4c-d5c8-4242-8ff0-6e5f867dcfb1",
+  "created_at" : null,
+  "updated_at" : null
 }

@@ -27,7 +27,6 @@ use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -267,32 +266,46 @@ final class WriteSubDeviceState implements Queue\Consumer
 				->then(function () use ($channel): void {
 					$now = $this->dateTimeFactory->getNow();
 
-					foreach ($channel->getProperties() as $property) {
-						if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
-							$state = $this->channelPropertiesStatesManager->getValue($property);
+					$findPropertiesQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
+					$findPropertiesQuery->forChannel($channel);
+					$findPropertiesQuery->settable(true);
 
-							if ($state?->getExpectedValue() !== null) {
-								$this->channelPropertiesStatesManager->setValue(
-									$property,
-									Utils\ArrayHash::from([
-										DevicesStates\Property::PENDING_FIELD => $now->format(DateTimeInterface::ATOM),
-									]),
-								);
-							}
+					$properties = $this->channelsPropertiesConfigurationRepository->findAllBy(
+						$findPropertiesQuery,
+						MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
+					);
+
+					foreach ($properties as $property) {
+						$state = $this->channelPropertiesStatesManager->getValue($property);
+
+						if ($state?->getExpectedValue() !== null) {
+							$this->channelPropertiesStatesManager->setValue(
+								$property,
+								Utils\ArrayHash::from([
+									DevicesStates\Property::PENDING_FIELD => $now->format(DateTimeInterface::ATOM),
+								]),
+							);
 						}
 					}
 				})
 				->catch(function (Throwable $ex) use ($entity, $connector, $gateway, $channel): void {
-					foreach ($channel->getProperties() as $property) {
-						if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
-							$this->channelPropertiesStatesManager->setValue(
-								$property,
-								Utils\ArrayHash::from([
-									DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
-									DevicesStates\Property::PENDING_FIELD => false,
-								]),
-							);
-						}
+					$findPropertiesQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
+					$findPropertiesQuery->forChannel($channel);
+					$findPropertiesQuery->settable(true);
+
+					$properties = $this->channelsPropertiesConfigurationRepository->findAllBy(
+						$findPropertiesQuery,
+						MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
+					);
+
+					foreach ($properties as $property) {
+						$this->channelPropertiesStatesManager->setValue(
+							$property,
+							Utils\ArrayHash::from([
+								DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
+								DevicesStates\Property::PENDING_FIELD => false,
+							]),
+						);
 					}
 
 					$extra = [];

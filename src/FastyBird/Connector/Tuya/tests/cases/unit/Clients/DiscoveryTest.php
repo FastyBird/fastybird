@@ -16,10 +16,8 @@ use FastyBird\Connector\Tuya\Types;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette\DI;
 use Nette\Utils;
 use Psr\Http;
@@ -221,13 +219,13 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 			DevicesModels\Entities\Channels\ChannelsRepository::class,
 		);
 
-		$findChannelQuery = new DevicesQueries\Entities\FindChannels();
+		$findChannelQuery = new Queries\Entities\FindChannels();
 		$findChannelQuery->forDevice($device);
 		$findChannelQuery->byIdentifier(Types\DataPoint::CLOUD);
 
-		$channel = $channelsRepository->findOneBy($findChannelQuery);
+		$channel = $channelsRepository->findOneBy($findChannelQuery, Entities\TuyaChannel::class);
 
-		self::assertInstanceOf(DevicesEntities\Channels\Channel::class, $channel);
+		self::assertInstanceOf(Entities\TuyaChannel::class, $channel);
 		self::assertCount(2, $channel->getProperties());
 	}
 
@@ -507,13 +505,13 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 			DevicesModels\Entities\Channels\ChannelsRepository::class,
 		);
 
-		$findChannelQuery = new DevicesQueries\Entities\FindChannels();
+		$findChannelQuery = new Queries\Entities\FindChannels();
 		$findChannelQuery->forDevice($device);
 		$findChannelQuery->byIdentifier(Types\DataPoint::LOCAL);
 
-		$channel = $channelsRepository->findOneBy($findChannelQuery);
+		$channel = $channelsRepository->findOneBy($findChannelQuery, Entities\TuyaChannel::class);
 
-		self::assertInstanceOf(DevicesEntities\Channels\Channel::class, $channel);
+		self::assertInstanceOf(Entities\TuyaChannel::class, $channel);
 		self::assertCount(2, $channel->getProperties());
 	}
 

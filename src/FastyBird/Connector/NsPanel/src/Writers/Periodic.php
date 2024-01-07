@@ -120,6 +120,7 @@ abstract class Periodic implements Writer
 			foreach ($channels as $channel) {
 				$findChannelPropertiesQuery = new DevicesQueries\Configuration\FindChannelProperties();
 				$findChannelPropertiesQuery->forChannel($channel);
+				$findChannelPropertiesQuery->settable(true);
 
 				$properties = $this->channelsPropertiesConfigurationRepository->findAllBy($findChannelPropertiesQuery);
 
@@ -128,7 +129,6 @@ abstract class Periodic implements Writer
 						(
 							$device->getType() === Entities\Devices\SubDevice::TYPE
 							&& $property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-							&& $property->isSettable()
 						) || (
 							$device->getType() === Entities\Devices\ThirdPartyDevice::TYPE
 						)

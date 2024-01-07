@@ -119,6 +119,8 @@ final class DeviceMappedProperty extends DeviceProperty
 		])]
 		private readonly bool|float|int|string|null $default = null,
 		Uuid\UuidInterface|null $owner = null,
+		DateTimeInterface|null $createdAt = null,
+		DateTimeInterface|null $updatedAt = null,
 	)
 	{
 		parent::__construct(
@@ -134,6 +136,8 @@ final class DeviceMappedProperty extends DeviceProperty
 			$scale,
 			$step,
 			$owner,
+			$createdAt,
+			$updatedAt,
 		);
 	}
 

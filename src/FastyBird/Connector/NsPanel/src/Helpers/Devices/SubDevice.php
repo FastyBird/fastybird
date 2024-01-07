@@ -57,7 +57,7 @@ final class SubDevice
 			}
 		}
 
-		throw new Exceptions\InvalidState('Third-party device have to have parent gateway defined');
+		throw new Exceptions\InvalidState('Sub-device have to have parent gateway defined');
 	}
 
 }

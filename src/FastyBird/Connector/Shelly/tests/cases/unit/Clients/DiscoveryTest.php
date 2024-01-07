@@ -17,7 +17,6 @@ use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette\DI;
 use Nette\Utils;
 use Psr\Http;
@@ -242,10 +241,10 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 			DevicesModels\Entities\Channels\ChannelsRepository::class,
 		);
 
-		$findChannelsQuery = new DevicesQueries\Entities\FindChannels();
+		$findChannelsQuery = new Queries\Entities\FindChannels();
 		$findChannelsQuery->forDevice($device);
 
-		$channels = $channelsRepository->findAllBy($findChannelsQuery);
+		$channels = $channelsRepository->findAllBy($findChannelsQuery, Entities\ShellyChannel::class);
 
 		self::assertCount(5, $channels);
 	}
@@ -447,10 +446,10 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 			DevicesModels\Entities\Channels\ChannelsRepository::class,
 		);
 
-		$findChannelsQuery = new DevicesQueries\Entities\FindChannels();
+		$findChannelsQuery = new Queries\Entities\FindChannels();
 		$findChannelsQuery->forDevice($device);
 
-		$channels = $channelsRepository->findAllBy($findChannelsQuery);
+		$channels = $channelsRepository->findAllBy($findChannelsQuery, Entities\ShellyChannel::class);
 
 		self::assertCount(4, $channels);
 	}

@@ -63,6 +63,14 @@ final class ControlsRepository
 
 	/**
 	 * @return array<Entities\Channels\Controls\Control>
+	 */
+	public function findAll(): array
+	{
+		return $this->getRepository()->findAll();
+	}
+
+	/**
+	 * @return array<Entities\Channels\Controls\Control>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */

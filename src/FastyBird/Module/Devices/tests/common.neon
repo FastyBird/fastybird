@@ -39,14 +39,13 @@ services:
         factory: IPub\SlimRouter\Routing\Router
         setup:
             - addMiddleware(@fbJsonApi.middlewares.jsonapi)
-    - {factory: React\EventLoop\Loop::get}
-
     -
         factory: FastyBird\Module\Devices\Tests\Fixtures\Dummy\DummyConnectorFactory
         tags: [connector_type: dummy]
     - {factory: FastyBird\Module\Devices\Tests\Fixtures\Dummy\DummyConnectorSchema}
+    - {factory: FastyBird\Module\Devices\Tests\Tools\DateTimeProvider}
 
-    cache.storage: Nette\Caching\Storages\MemoryStorage
+    cache.storage: Nette\Caching\Storages\DevNullStorage
 
 decorator:
     Doctrine\Persistence\Mapping\Driver\MappingDriverChain:

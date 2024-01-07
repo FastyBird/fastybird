@@ -37,7 +37,7 @@ final class ApiV1ParserTest extends TestCase
 	 */
 	public static function parseDeviceAttributesProvider(): array
 	{
-		$connectorId = Uuid\Uuid::fromString('17c59Dfa-2edd-438e-8c49f-aa4e38e5a5e');
+		$connectorId = Uuid\Uuid::fromString('37b86cdc-376b-4d4c-9683-aa4f41daa13a');
 
 		return [
 			'attr-' . Entities\Messages\Attribute::NAME => [
@@ -115,7 +115,7 @@ final class ApiV1ParserTest extends TestCase
 	 */
 	public static function parseDeviceHardwareInfoProvider(): array
 	{
-		$connectorId = Uuid\Uuid::fromString('17c59Dfa-2edd-438e-8c49f-aa4e38e5a5e');
+		$connectorId = Uuid\Uuid::fromString('37b86cdc-376b-4d4c-9683-aa4f41daa13a');
 
 		return [
 			'hw-' . Entities\Messages\ExtensionAttribute::MAC_ADDRESS => [
@@ -197,7 +197,7 @@ final class ApiV1ParserTest extends TestCase
 	 */
 	public static function parseDeviceFirmwareInfoProvider(): array
 	{
-		$connectorId = Uuid\Uuid::fromString('17c59Dfa-2edd-438e-8c49f-aa4e38e5a5e');
+		$connectorId = Uuid\Uuid::fromString('37b86cdc-376b-4d4c-9683-aa4f41daa13a');
 
 		return [
 			'fw-' . Entities\Messages\ExtensionAttribute::MANUFACTURER => [
@@ -253,7 +253,7 @@ final class ApiV1ParserTest extends TestCase
 	 */
 	public static function parseDevicePropertiesProvider(): array
 	{
-		$connectorId = Uuid\Uuid::fromString('17c59Dfa-2edd-438e-8c49f-aa4e38e5a5e');
+		$connectorId = Uuid\Uuid::fromString('37b86cdc-376b-4d4c-9683-aa4f41daa13a');
 
 		return [
 			'prop-property-name' => [
@@ -295,7 +295,7 @@ final class ApiV1ParserTest extends TestCase
 	 */
 	public static function parseDevicePropertiesAttributesProvider(): array
 	{
-		$connectorId = Uuid\Uuid::fromString('17c59Dfa-2edd-438e-8c49f-aa4e38e5a5e');
+		$connectorId = Uuid\Uuid::fromString('37b86cdc-376b-4d4c-9683-aa4f41daa13a');
 
 		return [
 			'attr-' . Entities\Messages\PropertyAttribute::NAME => [
@@ -369,7 +369,7 @@ final class ApiV1ParserTest extends TestCase
 		$this->expectExceptionMessage($message);
 
 		API\V1Parser::parse(
-			Uuid\Uuid::fromString('17c59Dfa-2edd-438e-8c49f-aa4e38e5a5e'),
+			Uuid\Uuid::fromString('37b86cdc-376b-4d4c-9683-aa4f41daa13a'),
 			$topic,
 			'bar',
 		);
@@ -406,7 +406,7 @@ final class ApiV1ParserTest extends TestCase
 		$this->expectExceptionMessage($message);
 
 		API\V1Parser::parse(
-			Uuid\Uuid::fromString('17c59Dfa-2edd-438e-8c49f-aa4e38e5a5e'),
+			Uuid\Uuid::fromString('37b86cdc-376b-4d4c-9683-aa4f41daa13a'),
 			$topic,
 			'bar',
 		);
@@ -443,7 +443,7 @@ final class ApiV1ParserTest extends TestCase
 		$this->expectExceptionMessage($message);
 
 		API\V1Parser::parse(
-			Uuid\Uuid::fromString('17c59Dfa-2edd-438e-8c49f-aa4e38e5a5e'),
+			Uuid\Uuid::fromString('37b86cdc-376b-4d4c-9683-aa4f41daa13a'),
 			$topic,
 			'bar',
 		);
@@ -487,7 +487,7 @@ final class ApiV1ParserTest extends TestCase
 	 */
 	public static function parseChannelAttributesProvider(): array
 	{
-		$connectorId = Uuid\Uuid::fromString('17c59Dfa-2edd-438e-8c49f-aa4e38e5a5e');
+		$connectorId = Uuid\Uuid::fromString('37b86cdc-376b-4d4c-9683-aa4f41daa13a');
 
 		return [
 			'attr-' . Entities\Messages\Attribute::NAME => [
@@ -556,7 +556,7 @@ final class ApiV1ParserTest extends TestCase
 	 */
 	public static function parseChannelPropertiesProvider(): array
 	{
-		$connectorId = Uuid\Uuid::fromString('17c59Dfa-2edd-438e-8c49f-aa4e38e5a5e');
+		$connectorId = Uuid\Uuid::fromString('37b86cdc-376b-4d4c-9683-aa4f41daa13a');
 
 		return [
 			'prop-property-name' => [
@@ -599,7 +599,7 @@ final class ApiV1ParserTest extends TestCase
 	 */
 	public static function parseChannelPropertiesAttributesProvider(): array
 	{
-		$connectorId = Uuid\Uuid::fromString('17c59Dfa-2edd-438e-8c49f-aa4e38e5a5e');
+		$connectorId = Uuid\Uuid::fromString('37b86cdc-376b-4d4c-9683-aa4f41daa13a');
 
 		return [
 			'attr-' . Entities\Messages\PropertyAttribute::NAME => [
@@ -676,7 +676,7 @@ final class ApiV1ParserTest extends TestCase
 		$this->expectExceptionMessage($message);
 
 		API\V1Parser::parse(
-			Uuid\Uuid::fromString('17c59Dfa-2edd-438e-8c49f-aa4e38e5a5e'),
+			Uuid\Uuid::fromString('37b86cdc-376b-4d4c-9683-aa4f41daa13a'),
 			$topic,
 			'bar',
 		);

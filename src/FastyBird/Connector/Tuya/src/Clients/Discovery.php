@@ -25,7 +25,6 @@ use FastyBird\Connector\Tuya\Queue;
 use FastyBird\Connector\Tuya\Services;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
-use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -781,7 +780,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					}
 
 					$dataPointCode = null;
-					$dataPointDataType = Metadata\Types\DataType::get(Metadata\Types\DataType::DATA_TYPE_UNKNOWN);
+					$dataPointDataType = MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UNKNOWN);
 
 					if ($dataPointFunction !== null) {
 						$dataPointCode = $dataPointFunction->getCode();
@@ -795,11 +794,11 @@ final class Discovery implements Evenement\EventEmitterInterface
 					}
 
 					if ($dataPointType === 'boolean') {
-						$dataPointDataType = Metadata\Types\DataType::get(Metadata\Types\DataType::DATA_TYPE_BOOLEAN);
+						$dataPointDataType = MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN);
 					} elseif ($dataPointType === 'integer') {
-						$dataPointDataType = Metadata\Types\DataType::get(Metadata\Types\DataType::DATA_TYPE_INT);
+						$dataPointDataType = MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_INT);
 					} elseif ($dataPointType === 'enum') {
-						$dataPointDataType = Metadata\Types\DataType::get(Metadata\Types\DataType::DATA_TYPE_ENUM);
+						$dataPointDataType = MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM);
 					}
 
 					try {
@@ -963,16 +962,16 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 				if (is_array($deviceStatuses)) {
 					foreach ($deviceStatuses as $status) {
-						$dataType = Metadata\Types\DataType::get(Metadata\Types\DataType::DATA_TYPE_UNKNOWN);
+						$dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UNKNOWN);
 
 						if (is_bool($status->getValue())) {
-							$dataType = Metadata\Types\DataType::get(Metadata\Types\DataType::DATA_TYPE_BOOLEAN);
+							$dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN);
 						} elseif (is_float($status->getValue())) {
-							$dataType = Metadata\Types\DataType::get(Metadata\Types\DataType::DATA_TYPE_FLOAT);
+							$dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT);
 						} elseif (is_numeric($status->getValue())) {
-							$dataType = Metadata\Types\DataType::get(Metadata\Types\DataType::DATA_TYPE_INT);
+							$dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_INT);
 						} elseif (is_string($status->getValue())) {
-							$dataType = Metadata\Types\DataType::get(Metadata\Types\DataType::DATA_TYPE_STRING);
+							$dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING);
 						}
 
 						$dataPoints[] = [

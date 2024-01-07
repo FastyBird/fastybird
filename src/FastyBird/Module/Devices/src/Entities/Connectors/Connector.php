@@ -16,6 +16,7 @@
 namespace FastyBird\Module\Devices\Entities\Connectors;
 
 use Consistence\Doctrine\Enum\EnumAnnotation as Enum;
+use DateTimeInterface;
 use Doctrine\Common;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -317,6 +318,8 @@ abstract class Connector implements Entities\Entity,
 			),
 
 			'owner' => $this->getOwnerId(),
+			'created_at' => $this->getCreatedAt()?->format(DateTimeInterface::ATOM),
+			'updated_at' => $this->getUpdatedAt()?->format(DateTimeInterface::ATOM),
 		];
 	}
 

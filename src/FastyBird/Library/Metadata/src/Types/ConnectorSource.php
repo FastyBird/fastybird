@@ -59,6 +59,8 @@ class ConnectorSource extends Consistence\Enum\Enum
 
 	public const SOURCE_CONNECTOR_NS_PANEL = Metadata\Constants::CONNECTOR_NS_PANEL_SOURCE;
 
+	public const SOURCE_CONNECTOR_ZIGBEE2MQTT = Metadata\Constants::CONNECTOR_ZIGBEE2MQTT_SOURCE;
+
 	public function __toString(): string
 	{
 		return strval(self::getValue());

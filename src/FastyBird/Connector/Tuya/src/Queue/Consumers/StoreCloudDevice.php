@@ -25,7 +25,6 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Nette\Utils;
@@ -203,14 +202,15 @@ final class StoreCloudDevice implements Queue\Consumer
 		);
 
 		$this->databaseHelper->transaction(function () use ($entity, $device): bool {
-			$findChannelQuery = new DevicesQueries\Entities\FindChannels();
+			$findChannelQuery = new Queries\Entities\FindChannels();
 			$findChannelQuery->byIdentifier(Types\DataPoint::CLOUD);
 			$findChannelQuery->forDevice($device);
 
-			$channel = $this->channelsRepository->findOneBy($findChannelQuery);
+			$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\TuyaChannel::class);
 
 			if ($channel === null) {
 				$channel = $this->channelsManager->create(Utils\ArrayHash::from([
+					'entity' => Entities\TuyaChannel::class,
 					'device' => $device,
 					'identifier' => Types\DataPoint::CLOUD,
 				]));

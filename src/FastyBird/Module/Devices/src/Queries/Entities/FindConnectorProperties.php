@@ -38,10 +38,10 @@ class FindConnectorProperties extends DoctrineOrmQuery\QueryObject
 {
 
 	/** @var array<Closure(ORM\QueryBuilder $qb): void> */
-	private array $filter = [];
+	protected array $filter = [];
 
 	/** @var array<Closure(ORM\QueryBuilder $qb): void> */
-	private array $select = [];
+	protected array $select = [];
 
 	public function byId(Uuid\UuidInterface $id): void
 	{

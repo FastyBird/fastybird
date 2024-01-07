@@ -16,7 +16,9 @@
 namespace FastyBird\Module\Devices\Commands;
 
 use BadMethodCallException;
+use DateTimeInterface;
 use Doctrine\DBAL;
+use FastyBird\DateTimeFactory;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
@@ -77,6 +79,8 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 
 	private const DISCOVERY_MAX_PROCESSING_INTERVAL = 120.0;
 
+	private bool $isTerminating = false;
+
 	private Entities\Connectors\Connector|null $connector = null;
 
 	private Connectors\Connector|null $service = null;
@@ -91,6 +95,10 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 	private EventLoop\TimerInterface|null $databaseRefreshTimer = null;
 
 	private EventLoop\TimerInterface|null $progressBarTimer = null;
+
+	private EventLoop\TimerInterface|null $discoveryTimer = null;
+
+	private DateTimeInterface|null $executedAt = null;
 
 	/**
 	 * @param array<ExchangeExchange\Factory> $exchangeFactories
@@ -112,6 +120,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 		private readonly BootstrapHelpers\Database $database,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		private readonly ExchangeConsumers\Container $consumer,
+		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly Localization\Translator $translator,
 		private readonly array $exchangeFactories = [],
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
@@ -228,17 +237,29 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 			}
 		}
 
+		if (
+			$input->hasOption('mode')
+			&& is_string($input->getOption('mode'))
+			&& Utils\Strings::lower($input->getOption('mode')) === self::MODE_DISCOVER
+		) {
+			$this->mode = self::MODE_DISCOVER;
+		}
+
 		if ($this->mode === self::MODE_DISCOVER) {
 			$this->progressBar = new Console\Helper\ProgressBar(
 				$output,
-				intval(self::DISCOVERY_MAX_PROCESSING_INTERVAL * 60),
+				intval(self::DISCOVERY_MAX_PROCESSING_INTERVAL),
 			);
 
-			$this->progressBar->setFormat('[%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s% %');
+			$this->progressBar->setFormat('[%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s%');
 		}
 
 		try {
+			$this->isTerminating = false;
+
 			$this->executeConnector($io, $input);
+
+			$this->executedAt = $this->dateTimeFactory->getNow();
 
 			$this->eventLoop->run();
 
@@ -293,14 +314,6 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 	{
 		if ($input->getOption('quiet') === false) {
 			$io->section($this->translator->translate('//devices-module.cmd.connector.info.preparing'));
-		}
-
-		if (
-			$input->hasOption('mode')
-			&& is_string($input->getOption('mode'))
-			&& Utils\Strings::lower($input->getOption('mode')) === self::MODE_DISCOVER
-		) {
-			$this->mode = self::MODE_DISCOVER;
 		}
 
 		if (
@@ -464,7 +477,13 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 			$this->progressBarTimer = $this->eventLoop->addPeriodicTimer(
 				0.1,
 				async(function (): void {
-					$this->progressBar?->advance();
+					if ($this->executedAt !== null) {
+						$this->progressBar?->setProgress(
+							$this->dateTimeFactory->getNow()->getTimestamp() - $this->executedAt->getTimestamp(),
+						);
+					} else {
+						$this->progressBar?->advance();
+					}
 				}),
 			);
 		}
@@ -488,7 +507,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 					// Start connector service
 					$this->service->discover();
 
-					$this->eventLoop->addTimer(
+					$this->discoveryTimer = $this->eventLoop->addTimer(
 						self::DISCOVERY_MAX_PROCESSING_INTERVAL,
 						function (): void {
 							$this->terminate();
@@ -576,6 +595,12 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 			return;
 		}
 
+		if ($this->isTerminating) {
+			return;
+		}
+
+		$this->isTerminating = true;
+
 		$service = $this->service;
 		$connector = $this->connector;
 
@@ -583,6 +608,10 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 			'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
 			'type' => 'command',
 		]);
+
+		if ($this->discoveryTimer !== null) {
+			$this->eventLoop->cancelTimer($this->discoveryTimer);
+		}
 
 		try {
 			$this->dispatcher?->dispatch(new Events\BeforeConnectorTerminate($this->service));

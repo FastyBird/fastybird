@@ -22,7 +22,9 @@
         "identifier": "child-device",
         "name": "Child device",
         "comment": "This is child",
-        "owner": null
+        "owner": null,
+        "created_at": "2020-03-20T21:56:41+01:00",
+        "updated_at": "2020-03-20T21:56:41+01:00"
       },
       "relationships": {
         "properties": {

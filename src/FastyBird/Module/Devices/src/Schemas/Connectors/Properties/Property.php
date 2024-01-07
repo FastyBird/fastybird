@@ -15,6 +15,7 @@
 
 namespace FastyBird\Module\Devices\Schemas\Connectors\Properties;
 
+use DateTimeInterface;
 use FastyBird\JsonApi\Schemas as JsonApiSchemas;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices;
@@ -72,6 +73,9 @@ abstract class Property extends JsonApiSchemas\JsonApi
 			'invalid' => $resource->getInvalid(),
 			'scale' => $resource->getScale(),
 			'step' => $resource->getStep(),
+			'owner' => $resource->getConnector()->getOwnerId(),
+			'created_at' => $resource->getCreatedAt()?->format(DateTimeInterface::ATOM),
+			'updated_at' => $resource->getUpdatedAt()?->format(DateTimeInterface::ATOM),
 		];
 	}
 

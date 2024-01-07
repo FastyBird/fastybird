@@ -115,6 +115,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 
 			$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 			$findChannelQuery->byId($entity->getChannel());
+			$findChannelQuery->byType(Entities\TuyaChannel::TYPE);
 
 			$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 

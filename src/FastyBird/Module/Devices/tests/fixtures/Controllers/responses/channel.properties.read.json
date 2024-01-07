@@ -31,7 +31,10 @@
       "actual_value": null,
       "expected_value": null,
       "pending": false,
-      "is_valid": false
+      "is_valid": false,
+      "owner": "455354e8-96bd-4c29-84e7-9f10e1d4db4b",
+      "created_at": "2019-12-09T23:19:45+01:00",
+      "updated_at": "2019-12-09T23:19:49+01:00"
     },
     "relationships": {
       "channel": {

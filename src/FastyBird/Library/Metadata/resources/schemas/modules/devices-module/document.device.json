@@ -110,6 +110,32 @@
         }
       ],
       "description": "Document owner uuid v4 identifier"
+    },
+    "created_at": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "format": "date-time"
+        }
+      ],
+      "description": "Item creation date",
+      "default": null
+    },
+    "updated_at": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "format": "date-time"
+        }
+      ],
+      "description": "Item creation date",
+      "default": null
     }
   },
   "required": [

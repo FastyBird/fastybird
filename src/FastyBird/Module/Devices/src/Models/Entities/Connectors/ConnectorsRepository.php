@@ -72,6 +72,20 @@ final class ConnectorsRepository
 	/**
 	 * @template T of Entities\Connectors\Connector
 	 *
+	 * @param class-string<T> $type
+	 *
+	 * @return array<T>
+	 */
+	public function findAll(
+		string $type = Entities\Connectors\Connector::class,
+	): array
+	{
+		return $this->getRepository($type)->findAll();
+	}
+
+	/**
+	 * @template T of Entities\Connectors\Connector
+	 *
 	 * @param Queries\Entities\FindConnectors<T> $queryObject
 	 * @param class-string<T> $type
 	 *

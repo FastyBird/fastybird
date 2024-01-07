@@ -15,6 +15,7 @@
 
 namespace FastyBird\Module\Devices\Queries\Entities;
 
+use Doctrine\ORM;
 use FastyBird\Module\Devices\Entities;
 
 /**
@@ -29,5 +30,12 @@ use FastyBird\Module\Devices\Entities;
  */
 class FindChannelVariableProperties extends FindChannelProperties
 {
+
+	public function byValue(string $value): void
+	{
+		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($value): void {
+			$qb->andWhere('p.value = :value')->setParameter('value', $value);
+		};
+	}
 
 }

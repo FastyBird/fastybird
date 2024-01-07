@@ -40,10 +40,6 @@ services:
         factory: IPub\SlimRouter\Routing\Router
         setup:
             - addMiddleware(@fbJsonApi.middlewares.jsonapi)
-    - {
-      create: React\EventLoop\Factory::create()
-      type: React\EventLoop\LoopInterface
-    }
 
     -
         factory: FastyBird\Connector\Virtual\Tests\Fixtures\Dummy\DummyConnectorFactory
@@ -51,7 +47,7 @@ services:
     - {factory: FastyBird\Connector\Virtual\Tests\Fixtures\Dummy\DummyConnectorSchema}
     - {factory: FastyBird\Connector\Virtual\Tests\Fixtures\Dummy\DummyDeviceSchema}
 
-    cache.storage: Nette\Caching\Storages\MemoryStorage
+    cache.storage: Nette\Caching\Storages\DevNullStorage
 
 decorator:
     Doctrine\Persistence\Mapping\Driver\MappingDriverChain:

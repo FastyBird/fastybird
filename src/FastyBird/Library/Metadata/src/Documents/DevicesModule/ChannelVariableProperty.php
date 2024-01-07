@@ -78,6 +78,8 @@ final class ChannelVariableProperty extends ChannelProperty
 		)]
 		private readonly array $children = [],
 		Uuid\UuidInterface|null $owner = null,
+		DateTimeInterface|null $createdAt = null,
+		DateTimeInterface|null $updatedAt = null,
 	)
 	{
 		parent::__construct(
@@ -93,6 +95,8 @@ final class ChannelVariableProperty extends ChannelProperty
 			$scale,
 			$step,
 			$owner,
+			$createdAt,
+			$updatedAt,
 		);
 	}
 

@@ -265,6 +265,9 @@ class ShellyExtension extends DI\CompilerExtension implements Translation\DI\Tra
 		$builder->addDefinition($this->prefix('schemas.device.shelly'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\ShellyDevice::class);
 
+		$builder->addDefinition($this->prefix('schemas.channel.shelly'), new DI\Definitions\ServiceDefinition())
+			->setType(Schemas\ShellyChannel::class);
+
 		/**
 		 * JSON-API HYDRATORS
 		 */
@@ -274,6 +277,9 @@ class ShellyExtension extends DI\CompilerExtension implements Translation\DI\Tra
 
 		$builder->addDefinition($this->prefix('hydrators.device.shelly'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\ShellyDevice::class);
+
+		$builder->addDefinition($this->prefix('hydrators.channel.shelly'), new DI\Definitions\ServiceDefinition())
+			->setType(Hydrators\ShellyChannel::class);
 
 		/**
 		 * HELPERS

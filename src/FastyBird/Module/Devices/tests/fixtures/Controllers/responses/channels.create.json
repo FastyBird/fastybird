@@ -16,7 +16,10 @@
       "category": "generic",
       "identifier": "custom-channel",
       "name": "Device custom added channel",
-      "comment": null
+      "comment": null,
+      "owner": "455354e8-96bd-4c29-84e7-9f10e1d4db4b",
+      "created_at": "2020-04-01T12:00:00+00:00",
+      "updated_at": "2020-04-01T12:00:00+00:00"
     },
     "relationships": {
       "device": {

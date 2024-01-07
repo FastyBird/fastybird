@@ -38,4 +38,9 @@ class FindConnectorVariableProperties extends FindConnectorProperties
 		$this->filter[] = '.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_VARIABLE . '")]';
 	}
 
+	public function byValue(string $value): void
+	{
+		$this->filter[] = '.[?(@.value =~ /(?i).*^' . $value . '*$/)]';
+	}
+
 }
