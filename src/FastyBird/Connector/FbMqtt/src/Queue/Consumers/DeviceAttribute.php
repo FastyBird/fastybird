@@ -88,6 +88,7 @@ final class DeviceAttribute implements Queue\Consumer
 			if (MetadataTypes\ConnectionState::isValidValue($entity->getValue())) {
 				if ($device === null) {
 					$device = $this->devicesManager->create(Utils\ArrayHash::from([
+						'entity' => Entities\FbMqttDevice::class,
 						'identifier' => $entity->getDevice(),
 					]));
 				}
@@ -99,7 +100,9 @@ final class DeviceAttribute implements Queue\Consumer
 			}
 		} else {
 			$this->databaseHelper->transaction(function () use ($entity, $device): void {
-				$toUpdate = [];
+				$toUpdate = [
+					'entity' => Entities\FbMqttDevice::class,
+				];
 
 				if ($entity->getAttribute() === Entities\Messages\Attribute::NAME) {
 					$toUpdate['name'] = $entity->getValue();
@@ -355,6 +358,7 @@ final class DeviceAttribute implements Queue\Consumer
 
 			if ($channel === null) {
 				$this->channelsManager->create(Utils\ArrayHash::from([
+					'entity' => Entities\FbMqttChannel::class,
 					'device' => $device,
 					'identifier' => $channelName,
 				]));

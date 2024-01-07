@@ -268,14 +268,15 @@ final class StoreLocalDevice implements Queue\Consumer
 
 		if (count($entity->getDataPoints()) > 0) {
 			$this->databaseHelper->transaction(function () use ($entity, $device): bool {
-				$findChannelQuery = new DevicesQueries\Entities\FindChannels();
+				$findChannelQuery = new Queries\Entities\FindChannels();
 				$findChannelQuery->byIdentifier(Types\DataPoint::LOCAL);
 				$findChannelQuery->forDevice($device);
 
-				$channel = $this->channelsRepository->findOneBy($findChannelQuery);
+				$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\TuyaChannel::class);
 
 				if ($channel === null) {
 					$channel = $this->channelsManager->create(Utils\ArrayHash::from([
+						'entity' => Entities\TuyaChannel::class,
 						'device' => $device,
 						'identifier' => Types\DataPoint::LOCAL,
 					]));

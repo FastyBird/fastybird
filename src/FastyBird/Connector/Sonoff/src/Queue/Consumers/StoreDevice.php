@@ -298,6 +298,7 @@ final class StoreDevice implements Consumer
 
 					if ($channel === null) {
 						$channel = $this->channelsManager->create(Utils\ArrayHash::from([
+							'entity' => Entities\SonoffChannel::class,
 							'device' => $device,
 							'identifier' => $parameter->getGroup(),
 						]));

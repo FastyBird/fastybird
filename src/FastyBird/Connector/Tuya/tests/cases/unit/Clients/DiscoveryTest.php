@@ -221,11 +221,11 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 			DevicesModels\Entities\Channels\ChannelsRepository::class,
 		);
 
-		$findChannelQuery = new DevicesQueries\Entities\FindChannels();
+		$findChannelQuery = new Queries\Entities\FindChannels();
 		$findChannelQuery->forDevice($device);
 		$findChannelQuery->byIdentifier(Types\DataPoint::CLOUD);
 
-		$channel = $channelsRepository->findOneBy($findChannelQuery);
+		$channel = $channelsRepository->findOneBy($findChannelQuery, Entities\TuyaChannel::class);
 
 		self::assertInstanceOf(DevicesEntities\Channels\Channel::class, $channel);
 		self::assertCount(2, $channel->getProperties());
@@ -507,11 +507,11 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 			DevicesModels\Entities\Channels\ChannelsRepository::class,
 		);
 
-		$findChannelQuery = new DevicesQueries\Entities\FindChannels();
+		$findChannelQuery = new Queries\Entities\FindChannels();
 		$findChannelQuery->forDevice($device);
 		$findChannelQuery->byIdentifier(Types\DataPoint::LOCAL);
 
-		$channel = $channelsRepository->findOneBy($findChannelQuery);
+		$channel = $channelsRepository->findOneBy($findChannelQuery, Entities\TuyaChannel::class);
 
 		self::assertInstanceOf(DevicesEntities\Channels\Channel::class, $channel);
 		self::assertCount(2, $channel->getProperties());

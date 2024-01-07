@@ -252,6 +252,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 
 		$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
 		$findChannelsQuery->forDevice($device);
+		$findChannelsQuery->byType(Entities\TuyaChannel::TYPE);
 
 		$channels = $this->channelsConfigurationRepository->findAllBy($findChannelsQuery);
 

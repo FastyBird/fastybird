@@ -115,10 +115,10 @@ trait ChannelProperty
 		}
 
 		if ($property === null) {
-			$findChannelQuery = new DevicesQueries\Entities\FindChannels();
+			$findChannelQuery = new Tuya\Queries\Entities\FindChannels();
 			$findChannelQuery->byId($channelId);
 
-			$channel = $this->channelsRepository->findOneBy($findChannelQuery);
+			$channel = $this->channelsRepository->findOneBy($findChannelQuery, Tuya\Entities\TuyaChannel::class);
 
 			if ($channel === null) {
 				$this->logger->error(

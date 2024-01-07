@@ -276,6 +276,9 @@ class TuyaExtension extends DI\CompilerExtension implements Translation\DI\Trans
 		$builder->addDefinition($this->prefix('schemas.device.tuya'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\TuyaDevice::class);
 
+		$builder->addDefinition($this->prefix('schemas.channel.tuya'), new DI\Definitions\ServiceDefinition())
+			->setType(Schemas\TuyaChannel::class);
+
 		/**
 		 * JSON-API HYDRATORS
 		 */
@@ -285,6 +288,9 @@ class TuyaExtension extends DI\CompilerExtension implements Translation\DI\Trans
 
 		$builder->addDefinition($this->prefix('hydrators.device.tuya'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\TuyaDevice::class);
+
+		$builder->addDefinition($this->prefix('hydrators.channel.tuya'), new DI\Definitions\ServiceDefinition())
+			->setType(Hydrators\TuyaChannel::class);
 
 		/**
 		 * HELPERS
