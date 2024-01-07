@@ -231,6 +231,15 @@ class Install extends Console\Command\Command
 		$createDevices = (bool) $io->askQuestion($question);
 
 		if ($createDevices) {
+			$findConnectorQuery = new Queries\Entities\FindConnectors();
+			$findConnectorQuery->byId($connector->getId());
+
+			$connector = $this->connectorsRepository->findOneBy(
+				$findConnectorQuery,
+				Entities\VirtualConnector::class,
+			);
+			assert($connector instanceof Entities\VirtualConnector);
+
 			$this->createDevice($io, $connector);
 		}
 	}
@@ -343,6 +352,15 @@ class Install extends Console\Command\Command
 		if (!$manage) {
 			return;
 		}
+
+		$findConnectorQuery = new Queries\Entities\FindConnectors();
+		$findConnectorQuery->byId($connector->getId());
+
+		$connector = $this->connectorsRepository->findOneBy(
+			$findConnectorQuery,
+			Entities\VirtualConnector::class,
+		);
+		assert($connector instanceof Entities\VirtualConnector);
 
 		$this->askManageConnectorAction($io, $connector);
 	}
