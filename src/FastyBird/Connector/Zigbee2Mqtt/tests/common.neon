@@ -42,7 +42,7 @@ services:
             - addMiddleware(@fbJsonApi.middlewares.jsonapi)
     - {factory: FastyBird\Connector\Zigbee2Mqtt\Tests\Tools\DateTimeProvider}
 
-    cache.storage: Nette\Caching\Storages\DevNullStorage
+    cache.storage: Nette\Caching\Storages\MemoryStorage
 
 contributteTranslation:
     locales:

@@ -115,57 +115,39 @@ final class Builder
 			Devices\Constants::DATA_STORAGE_CONTROLS_KEY => [],
 		];
 
-		$findConnectorsQuery = new Queries\Entities\FindConnectors();
-
-		foreach ($this->connectorsRepository->findAllBy($findConnectorsQuery) as $connector) {
+		foreach ($this->connectorsRepository->findAll() as $connector) {
 			$data[Devices\Constants::DATA_STORAGE_CONNECTORS_KEY][] = $connector->toArray();
 		}
 
-		$findConnectorsPropertiesQuery = new Queries\Entities\FindConnectorProperties();
-
-		foreach ($this->connectorsPropertiesRepository->findAllBy($findConnectorsPropertiesQuery) as $property) {
+		foreach ($this->connectorsPropertiesRepository->findAll() as $property) {
 			$data[Devices\Constants::DATA_STORAGE_PROPERTIES_KEY][] = $property->toArray();
 		}
 
-		$findConnectorsControlsQuery = new Queries\Entities\FindConnectorControls();
-
-		foreach ($this->connectorsControlsRepository->findAllBy($findConnectorsControlsQuery) as $control) {
+		foreach ($this->connectorsControlsRepository->findAll() as $control) {
 			$data[Devices\Constants::DATA_STORAGE_CONTROLS_KEY][] = $control->toArray();
 		}
 
-		$findDevicesQuery = new Queries\Entities\FindDevices();
-
-		foreach ($this->devicesRepository->findAllBy($findDevicesQuery) as $device) {
+		foreach ($this->devicesRepository->findAll() as $device) {
 			$data[Devices\Constants::DATA_STORAGE_DEVICES_KEY][] = $device->toArray();
 		}
 
-		$findDevicesPropertiesQuery = new Queries\Entities\FindDeviceProperties();
-
-		foreach ($this->devicesPropertiesRepository->findAllBy($findDevicesPropertiesQuery) as $property) {
+		foreach ($this->devicesPropertiesRepository->findAll() as $property) {
 			$data[Devices\Constants::DATA_STORAGE_PROPERTIES_KEY][] = $property->toArray();
 		}
 
-		$findDevicesControlsQuery = new Queries\Entities\FindDeviceControls();
-
-		foreach ($this->devicesControlsRepository->findAllBy($findDevicesControlsQuery) as $control) {
+		foreach ($this->devicesControlsRepository->findAll() as $control) {
 			$data[Devices\Constants::DATA_STORAGE_CONTROLS_KEY][] = $control->toArray();
 		}
 
-		$findChannelsQuery = new Queries\Entities\FindChannels();
-
-		foreach ($this->channelsRepository->findAllBy($findChannelsQuery) as $channel) {
+		foreach ($this->channelsRepository->findAll() as $channel) {
 			$data[Devices\Constants::DATA_STORAGE_CHANNELS_KEY][] = $channel->toArray();
 		}
 
-		$findChannelsPropertiesQuery = new Queries\Entities\FindChannelProperties();
-
-		foreach ($this->channelsPropertiesRepository->findAllBy($findChannelsPropertiesQuery) as $property) {
+		foreach ($this->channelsPropertiesRepository->findAll() as $property) {
 			$data[Devices\Constants::DATA_STORAGE_PROPERTIES_KEY][] = $property->toArray();
 		}
 
-		$findChannelsControlsQuery = new Queries\Entities\FindChannelControls();
-
-		foreach ($this->channelsControlsRepository->findAllBy($findChannelsControlsQuery) as $control) {
+		foreach ($this->channelsControlsRepository->findAll() as $control) {
 			$data[Devices\Constants::DATA_STORAGE_CONTROLS_KEY][] = $control->toArray();
 		}
 

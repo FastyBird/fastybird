@@ -17,6 +17,7 @@ use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use InvalidArgumentException;
 use Nette\DI;
 use Nette\Utils;
@@ -134,14 +135,18 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\Zigbee2MqttConnector::class);
 		self::assertInstanceOf(Entities\Zigbee2MqttConnector::class, $connector);
 
-		$documentFactory = $this->getContainer()->getByType(
-			MetadataDocuments\DocumentFactory::class,
+		$connectorsConfigurationRepository = $this->getContainer()->getByType(
+			DevicesModels\Configuration\Connectors\Repository::class,
 		);
 
-		$connectorDocument = $documentFactory->create(
-			MetadataDocuments\DevicesModule\Connector::class,
-			$connector->toArray(),
-		);
+		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
+		$findConnectorQuery->byIdentifier('zigbee2mqtt');
+		$findConnectorQuery->byType(Entities\Zigbee2MqttConnector::TYPE);
+
+		$connectorDocument = $connectorsConfigurationRepository->findOneBy($findConnectorQuery);
+		self::assertInstanceOf(MetadataDocuments\DevicesModule\Connector::class, $connectorDocument);
+
+		self::assertEquals($connector->getId(), $connectorDocument->getId());
 
 		$clientFactory = $this->getContainer()->getByType(Clients\DiscoveryFactory::class);
 
