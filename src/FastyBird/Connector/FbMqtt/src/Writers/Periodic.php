@@ -117,6 +117,7 @@ abstract class Periodic
 
 			$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
 			$findChannelsQuery->forDevice($device);
+			$findChannelsQuery->byType(Entities\FbMqttChannel::TYPE);
 
 			$channels = $this->channelsConfigurationRepository->findAllBy($findChannelsQuery);
 

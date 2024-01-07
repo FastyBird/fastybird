@@ -103,6 +103,7 @@ final class ChannelProperty implements Queue\Consumer
 		$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 		$findChannelQuery->forDevice($device);
 		$findChannelQuery->byIdentifier($entity->getChannel());
+		$findChannelQuery->byType(Entities\FbMqttChannel::TYPE);
 
 		$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 

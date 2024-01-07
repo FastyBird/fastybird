@@ -224,6 +224,9 @@ class FbMqttExtension extends DI\CompilerExtension implements Translation\DI\Tra
 		$builder->addDefinition($this->prefix('schemas.device.fbMqtt'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\FbMqttDevice::class);
 
+		$builder->addDefinition($this->prefix('schemas.channel.fbMqtt'), new DI\Definitions\ServiceDefinition())
+			->setType(Schemas\FbMqttChannel::class);
+
 		/**
 		 * JSON-API HYDRATORS
 		 */
@@ -233,6 +236,9 @@ class FbMqttExtension extends DI\CompilerExtension implements Translation\DI\Tra
 
 		$builder->addDefinition($this->prefix('hydrators.device.fbMqtt'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\FbMqttDevice::class);
+
+		$builder->addDefinition($this->prefix('hydrators.channel.fbMqtt'), new DI\Definitions\ServiceDefinition())
+			->setType(Hydrators\FbMqttChannel::class);
 
 		/**
 		 * HELPERS

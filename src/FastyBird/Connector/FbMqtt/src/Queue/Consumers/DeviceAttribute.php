@@ -347,11 +347,11 @@ final class DeviceAttribute implements Queue\Consumer
 	): void
 	{
 		foreach ($channels as $channelName) {
-			$findChannelQuery = new DevicesQueries\Entities\FindChannels();
+			$findChannelQuery = new Queries\Entities\FindChannels();
 			$findChannelQuery->forDevice($device);
 			$findChannelQuery->byIdentifier($channelName);
 
-			$channel = $this->channelsRepository->findOneBy($findChannelQuery);
+			$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\FbMqttChannel::class);
 
 			if ($channel === null) {
 				$this->channelsManager->create(Utils\ArrayHash::from([
@@ -361,11 +361,11 @@ final class DeviceAttribute implements Queue\Consumer
 			}
 		}
 
-		$findChannelsQuery = new DevicesQueries\Entities\FindChannels();
+		$findChannelsQuery = new Queries\Entities\FindChannels();
 		$findChannelsQuery->forDevice($device);
 
 		// Cleanup for unused channels
-		foreach ($this->channelsRepository->findAllBy($findChannelsQuery) as $channel) {
+		foreach ($this->channelsRepository->findAllBy($findChannelsQuery, Entities\FbMqttChannel::class) as $channel) {
 			if (!in_array($channel->getIdentifier(), (array) $channels, true)) {
 				$this->channelsManager->delete($channel);
 			}

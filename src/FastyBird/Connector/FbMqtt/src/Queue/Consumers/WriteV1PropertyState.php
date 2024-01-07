@@ -158,6 +158,7 @@ final class WriteV1PropertyState implements Queue\Consumer
 			$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 			$findChannelQuery->forDevice($device);
 			$findChannelQuery->byId($entity->getChannel());
+			$findChannelQuery->byType(Entities\FbMqttChannel::TYPE);
 
 			$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 

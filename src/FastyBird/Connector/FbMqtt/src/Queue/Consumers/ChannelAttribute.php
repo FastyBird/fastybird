@@ -91,11 +91,11 @@ final class ChannelAttribute implements Queue\Consumer
 			return true;
 		}
 
-		$findChannelQuery = new DevicesQueries\Entities\FindChannels();
+		$findChannelQuery = new Queries\Entities\FindChannels();
 		$findChannelQuery->forDevice($device);
 		$findChannelQuery->byIdentifier($entity->getChannel());
 
-		$channel = $this->channelsRepository->findOneBy($findChannelQuery);
+		$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\FbMqttChannel::class);
 
 		if ($channel === null) {
 			$this->logger->error(

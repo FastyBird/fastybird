@@ -76,6 +76,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 		} else {
 			$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 			$findChannelQuery->byId($event->getProperty()->getChannel());
+			$findChannelQuery->byType(Entities\FbMqttChannel::TYPE);
 
 			$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 
