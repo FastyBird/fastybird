@@ -433,15 +433,15 @@ final class StoreBridgeDevices implements Queue\Consumer
 	{
 		return $this->databaseHelper->transaction(
 			function () use ($identifier, $name, $device): DevicesEntities\Channels\Channel {
-				$findChannelQuery = new DevicesQueries\Entities\FindChannels();
+				$findChannelQuery = new Queries\Entities\FindChannels();
 				$findChannelQuery->byIdentifier($identifier);
 				$findChannelQuery->forDevice($device);
 
-				$channel = $this->channelsRepository->findOneBy($findChannelQuery);
+				$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\Zigbee2MqttChannel::class);
 
 				if ($channel === null) {
 					$channel = $this->channelsManager->create(Utils\ArrayHash::from([
-						'entity' => DevicesEntities\Channels\Channel::class,
+						'entity' => Entities\Zigbee2MqttChannel::class,
 						'device' => $device,
 						'identifier' => $identifier,
 						'name' => $name,

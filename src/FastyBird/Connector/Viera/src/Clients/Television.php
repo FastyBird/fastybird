@@ -116,6 +116,7 @@ final class Television implements Client
 			$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 			$findChannelQuery->forDevice($device);
 			$findChannelQuery->byIdentifier(Types\ChannelType::TELEVISION);
+			$findChannelQuery->byType(Entities\VieraChannel::TYPE);
 
 			$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 

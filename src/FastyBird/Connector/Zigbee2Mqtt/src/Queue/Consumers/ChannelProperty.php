@@ -111,10 +111,13 @@ trait ChannelProperty
 		}
 
 		if ($property === null) {
-			$findChannelQuery = new DevicesQueries\Entities\FindChannels();
+			$findChannelQuery = new Zigbee2Mqtt\Queries\Entities\FindChannels();
 			$findChannelQuery->byId($channelId);
 
-			$channel = $this->channelsRepository->findOneBy($findChannelQuery);
+			$channel = $this->channelsRepository->findOneBy(
+				$findChannelQuery,
+				Zigbee2Mqtt\Entities\Zigbee2MqttChannel::class,
+			);
 
 			if ($channel === null) {
 				$this->logger->error(

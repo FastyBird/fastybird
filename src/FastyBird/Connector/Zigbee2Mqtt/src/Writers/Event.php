@@ -59,6 +59,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 
 		$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 		$findChannelQuery->byId($event->getProperty()->getChannel());
+		$findChannelQuery->byType(Entities\Zigbee2MqttChannel::TYPE);
 
 		$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 

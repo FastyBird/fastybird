@@ -287,6 +287,9 @@ class Zigbee2MqttExtension extends DI\CompilerExtension implements Translation\D
 		)
 			->setType(Schemas\Devices\SubDevice::class);
 
+		$builder->addDefinition($this->prefix('schemas.channel.zigbee2mqtt'), new DI\Definitions\ServiceDefinition())
+			->setType(Schemas\Zigbee2MqttChannel::class);
+
 		/**
 		 * JSON-API HYDRATORS
 		 */
@@ -308,6 +311,12 @@ class Zigbee2MqttExtension extends DI\CompilerExtension implements Translation\D
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Hydrators\Devices\SubDevice::class);
+
+		$builder->addDefinition(
+			$this->prefix('hydrators.channel.zigbee2mqtt'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Hydrators\Zigbee2MqttChannel::class);
 
 		/**
 		 * HELPERS

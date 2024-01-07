@@ -178,6 +178,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 
 		$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
 		$findChannelsQuery->forDevice($device);
+		$findChannelsQuery->byType(Entities\Zigbee2MqttChannel::TYPE);
 
 		$channels = $channelsConfigurationRepository->findAllBy($findChannelsQuery);
 

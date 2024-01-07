@@ -130,6 +130,7 @@ final class StoreBridgeConnectionState implements Queue\Consumer
 
 				$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
 				$findChannelsQuery->forDevice($bridge);
+				$findChannelsQuery->byType(Entities\Zigbee2MqttChannel::TYPE);
 
 				$channels = $this->channelsConfigurationRepository->findAllBy($findChannelsQuery);
 
@@ -170,6 +171,7 @@ final class StoreBridgeConnectionState implements Queue\Consumer
 
 					$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
 					$findChannelsQuery->forDevice($child);
+					$findChannelsQuery->byType(Entities\Zigbee2MqttChannel::TYPE);
 
 					$channels = $this->channelsConfigurationRepository->findAllBy($findChannelsQuery);
 

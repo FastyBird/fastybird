@@ -169,6 +169,7 @@ final class StoreDeviceState implements Queue\Consumer
 						implode('_', array_merge($identifiers, [$state->getIdentifier()])),
 					),
 				);
+				$findChannelQuery->byType(Entities\Zigbee2MqttChannel::TYPE);
 
 				$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 
