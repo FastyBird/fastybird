@@ -21,7 +21,6 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
-use FastyBird\Module\Devices\Queries;
 use Flow\JSONPath;
 use Nette\Caching;
 use Orisai\DataSources;
