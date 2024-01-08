@@ -8,16 +8,18 @@ use FastyBird\Connector\Tuya\API;
 use FastyBird\Connector\Tuya\Clients;
 use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Exceptions;
-use FastyBird\Connector\Tuya\Queries;
+use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Queue;
 use FastyBird\Connector\Tuya\Services;
 use FastyBird\Connector\Tuya\Tests;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette\DI;
 use Nette\Utils;
 use Psr\Http;
@@ -164,15 +166,16 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 			$httpClientFactory,
 		);
 
-		$connectorsRepository = $this->getContainer()->getByType(
-			DevicesModels\Entities\Connectors\ConnectorsRepository::class,
+		$connectorsConfigurationRepository = $this->getContainer()->getByType(
+			DevicesModels\Configuration\Connectors\Repository::class,
 		);
 
-		$findConnectorQuery = new Queries\Entities\FindConnectors();
+		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
 		$findConnectorQuery->byIdentifier('tuya-cloud');
+		$findConnectorQuery->byType(Entities\TuyaConnector::TYPE);
 
-		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\TuyaConnector::class);
-		self::assertInstanceOf(Entities\TuyaConnector::class, $connector);
+		$connector = $connectorsConfigurationRepository->findOneBy($findConnectorQuery);
+		self::assertInstanceOf(MetadataDocuments\DevicesModule\Connector::class, $connector);
 
 		$clientFactory = $this->getContainer()->getByType(Clients\DiscoveryFactory::class);
 
@@ -200,32 +203,38 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 
 		$consumers->consume();
 
-		$devicesRepository = $this->getContainer()->getByType(DevicesModels\Entities\Devices\DevicesRepository::class);
-
-		$findDeviceQuery = new Queries\Entities\FindDevices();
-		$findDeviceQuery->forConnector($connector);
-		$findDeviceQuery->byIdentifier('402675772462ab280dae');
-
-		$device = $devicesRepository->findOneBy($findDeviceQuery, Entities\TuyaDevice::class);
-
-		self::assertInstanceOf(Entities\TuyaDevice::class, $device);
-		self::assertSame('WiFi Smart Timer', $device->getName());
-		self::assertSame('ATMS1601', $device->getModel());
-		self::assertSame('80.78.136.56', $device->getIpAddress());
-		self::assertSame('24:62:ab:28:0d:ae', $device->getMacAddress());
-		self::assertSame('YyGzzRui2Xej4D04', $device->getLocalKey());
-
-		$channelsRepository = $this->getContainer()->getByType(
-			DevicesModels\Entities\Channels\ChannelsRepository::class,
+		$devicesConfigurationRepository = $this->getContainer()->getByType(
+			DevicesModels\Configuration\Devices\Repository::class,
 		);
 
-		$findChannelQuery = new Queries\Entities\FindChannels();
+		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDeviceQuery->forConnector($connector);
+		$findDeviceQuery->byIdentifier('402675772462ab280dae');
+		$findDeviceQuery->byType(Entities\TuyaDevice::TYPE);
+
+		$device = $devicesConfigurationRepository->findOneBy($findDeviceQuery);
+
+		$deviceHelper = $this->getContainer()->getByType(Helpers\Device::class);
+
+		self::assertInstanceOf(MetadataDocuments\DevicesModule\Device::class, $device);
+		self::assertSame('WiFi Smart Timer', $device->getName());
+		self::assertSame('ATMS1601', $deviceHelper->getModel($device));
+		self::assertSame('80.78.136.56', $deviceHelper->getIpAddress($device));
+		self::assertSame('24:62:ab:28:0d:ae', $deviceHelper->getMacAddress($device));
+		self::assertSame('YyGzzRui2Xej4D04', $deviceHelper->getLocalKey($device));
+
+		$channelsConfigurationRepository = $this->getContainer()->getByType(
+			DevicesModels\Configuration\Channels\Repository::class,
+		);
+
+		$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 		$findChannelQuery->forDevice($device);
 		$findChannelQuery->byIdentifier(Types\DataPoint::CLOUD);
+		$findChannelQuery->byType(Entities\TuyaChannel::TYPE);
 
-		$channel = $channelsRepository->findOneBy($findChannelQuery, Entities\TuyaChannel::class);
+		$channel = $channelsConfigurationRepository->findOneBy($findChannelQuery);
 
-		self::assertInstanceOf(Entities\TuyaChannel::class, $channel);
+		self::assertInstanceOf(MetadataDocuments\DevicesModule\Channel::class, $channel);
 		self::assertCount(2, $channel->getProperties());
 	}
 
@@ -450,15 +459,16 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 			$httpClientFactory,
 		);
 
-		$connectorsRepository = $this->getContainer()->getByType(
-			DevicesModels\Entities\Connectors\ConnectorsRepository::class,
+		$connectorsConfigurationRepository = $this->getContainer()->getByType(
+			DevicesModels\Configuration\Connectors\Repository::class,
 		);
 
-		$findConnectorQuery = new Queries\Entities\FindConnectors();
+		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
 		$findConnectorQuery->byIdentifier('tuya-local');
+		$findConnectorQuery->byType(Entities\TuyaConnector::TYPE);
 
-		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\TuyaConnector::class);
-		self::assertInstanceOf(Entities\TuyaConnector::class, $connector);
+		$connector = $connectorsConfigurationRepository->findOneBy($findConnectorQuery);
+		self::assertInstanceOf(MetadataDocuments\DevicesModule\Connector::class, $connector);
 
 		$clientFactory = $this->getContainer()->getByType(Clients\DiscoveryFactory::class);
 
@@ -486,32 +496,38 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 
 		$consumers->consume();
 
-		$devicesRepository = $this->getContainer()->getByType(DevicesModels\Entities\Devices\DevicesRepository::class);
-
-		$findDeviceQuery = new Queries\Entities\FindDevices();
-		$findDeviceQuery->forConnector($connector);
-		$findDeviceQuery->byIdentifier('402675772462ab280dae');
-
-		$device = $devicesRepository->findOneBy($findDeviceQuery, Entities\TuyaDevice::class);
-
-		self::assertInstanceOf(Entities\TuyaDevice::class, $device);
-		self::assertSame('WiFi Smart Timer', $device->getName());
-		self::assertSame('ATMS1601', $device->getModel());
-		self::assertSame('10.10.0.10', $device->getIpAddress());
-		self::assertSame('24:62:ab:28:0d:ae', $device->getMacAddress());
-		self::assertSame('YyGzzRui2Xej4D04', $device->getLocalKey());
-
-		$channelsRepository = $this->getContainer()->getByType(
-			DevicesModels\Entities\Channels\ChannelsRepository::class,
+		$devicesConfigurationRepository = $this->getContainer()->getByType(
+			DevicesModels\Configuration\Devices\Repository::class,
 		);
 
-		$findChannelQuery = new Queries\Entities\FindChannels();
+		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDeviceQuery->forConnector($connector);
+		$findDeviceQuery->byIdentifier('402675772462ab280dae');
+		$findDeviceQuery->byType(Entities\TuyaDevice::TYPE);
+
+		$device = $devicesConfigurationRepository->findOneBy($findDeviceQuery);
+
+		$deviceHelper = $this->getContainer()->getByType(Helpers\Device::class);
+
+		self::assertInstanceOf(MetadataDocuments\DevicesModule\Device::class, $device);
+		self::assertSame('WiFi Smart Timer', $device->getName());
+		self::assertSame('ATMS1601', $deviceHelper->getModel($device));
+		self::assertSame('10.10.0.10', $deviceHelper->getIpAddress($device));
+		self::assertSame('24:62:ab:28:0d:ae', $deviceHelper->getMacAddress($device));
+		self::assertSame('YyGzzRui2Xej4D04', $deviceHelper->getLocalKey($device));
+
+		$channelsConfigurationRepository = $this->getContainer()->getByType(
+			DevicesModels\Configuration\Channels\Repository::class,
+		);
+
+		$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 		$findChannelQuery->forDevice($device);
 		$findChannelQuery->byIdentifier(Types\DataPoint::LOCAL);
+		$findChannelQuery->byType(Entities\TuyaChannel::TYPE);
 
-		$channel = $channelsRepository->findOneBy($findChannelQuery, Entities\TuyaChannel::class);
+		$channel = $channelsConfigurationRepository->findOneBy($findChannelQuery);
 
-		self::assertInstanceOf(Entities\TuyaChannel::class, $channel);
+		self::assertInstanceOf(MetadataDocuments\DevicesModule\Channel::class, $channel);
 		self::assertCount(2, $channel->getProperties());
 	}
 
