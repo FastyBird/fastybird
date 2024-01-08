@@ -23,6 +23,7 @@ use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\Utilities;
 use IPub\DoctrineOrmQuery;
 use Nette;
+use Ramsey\Uuid;
 use Throwable;
 use function is_array;
 
@@ -52,6 +53,18 @@ final class ControlsRepository
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
+	public function find(
+		Uuid\UuidInterface $id,
+	): Entities\Channels\Controls\Control|null
+	{
+		return $this->database->query(
+			fn (): Entities\Channels\Controls\Control|null => $this->getRepository()->find($id),
+		);
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
 	public function findOneBy(
 		Queries\Entities\FindChannelControls $queryObject,
 	): Entities\Channels\Controls\Control|null
@@ -63,10 +76,14 @@ final class ControlsRepository
 
 	/**
 	 * @return array<Entities\Channels\Controls\Control>
+	 *
+	 * @throws Exceptions\InvalidState
 	 */
 	public function findAll(): array
 	{
-		return $this->getRepository()->findAll();
+		return $this->database->query(
+			fn (): array => $this->getRepository()->findAll(),
+		);
 	}
 
 	/**

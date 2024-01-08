@@ -18,7 +18,6 @@ namespace FastyBird\Connector\Shelly\Queue\Consumers;
 use Doctrine\DBAL;
 use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\Entities;
-use FastyBird\Connector\Shelly\Queries;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -108,11 +107,8 @@ trait DeviceProperty
 		}
 
 		if ($property === null) {
-			$findDeviceQuery = new Queries\Entities\FindDevices();
-			$findDeviceQuery->byId($deviceId);
-
-			$device = $this->devicesRepository->findOneBy(
-				$findDeviceQuery,
+			$device = $this->devicesRepository->find(
+				$deviceId,
 				Entities\ShellyDevice::class,
 			);
 

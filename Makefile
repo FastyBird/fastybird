@@ -33,6 +33,9 @@ phpstan: ## Analyse code with PHPStan
 
 .PHONY: tests
 tests: ## Run all tests
+	$(PRE_PHP) $(PARATEST_COMMAND) $(ARGS)
+
+tests-simple: ## Run all tests
 	$(PRE_PHP) $(PHPUNIT_COMMAND) $(ARGS)
 
 coverage-clover: ## Generate code coverage in XML format
@@ -68,8 +71,9 @@ list:
 
 PRE_PHP=XDEBUG_MODE=off
 
-PHPUNIT_COMMAND="vendor/bin/paratest" -c $(PHPUNIT_CONFIG) --runner=WrapperRunner -p$(LOGICAL_CORES)
-PHPUNIT_COVERAGE=php -d pcov.enabled=1 -d pcov.directory=./src $(PHPUNIT_COMMAND)
-PHPUNIT_MUTATIONS=php -d pcov.enabled=1 -d pcov.directory=./src $(PHPUNIT_COMMAND)
+PARATEST_COMMAND="vendor/bin/paratest" -c $(PHPUNIT_CONFIG) --runner=WrapperRunner -p$(LOGICAL_CORES)
+PHPUNIT_COMMAND="vendor/bin/phpunit" -c $(PHPUNIT_CONFIG)
+PHPUNIT_COVERAGE=php -d pcov.enabled=1 -d pcov.directory=./src $(PARATEST_COMMAND)
+PHPUNIT_MUTATIONS=php -d pcov.enabled=1 -d pcov.directory=./src $(PARATEST_COMMAND)
 
 LOGICAL_CORES=$(shell nproc || sysctl -n hw.logicalcpu || echo 4)

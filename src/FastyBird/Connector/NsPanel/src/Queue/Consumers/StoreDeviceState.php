@@ -262,11 +262,8 @@ final class StoreDeviceState implements Queue\Consumer
 		if ($property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
 			$this->databaseHelper->transaction(
 				function () use ($property, $value): void {
-					$findPropertyQuery = new DevicesQueries\Entities\FindChannelVariableProperties();
-					$findPropertyQuery->byId($property->getId());
-
-					$property = $this->channelsPropertiesRepository->findOneBy(
-						$findPropertyQuery,
+					$property = $this->channelsPropertiesRepository->find(
+						$property->getId(),
 						DevicesEntities\Channels\Properties\Variable::class,
 					);
 					assert($property instanceof DevicesEntities\Channels\Properties\Variable);

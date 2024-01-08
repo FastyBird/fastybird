@@ -90,15 +90,12 @@ final class ChannelControlsV1 extends BaseV1
 		$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
 
 		// & channel
-		$channel = $this->findChannel(strval($request->getAttribute(Router\ApiRoutes::URL_CHANNEL_ID)), $device);
+		$this->findChannel(strval($request->getAttribute(Router\ApiRoutes::URL_CHANNEL_ID)), $device);
 
 		if (Uuid\Uuid::isValid(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)))) {
-			$findQuery = new Queries\Entities\FindChannelControls();
-			$findQuery->forChannel($channel);
-			$findQuery->byId(Uuid\Uuid::fromString(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID))));
-
-			// & control
-			$control = $this->channelControlsRepository->findOneBy($findQuery);
+			$control = $this->channelControlsRepository->find(
+				Uuid\Uuid::fromString(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID))),
+			);
 
 			if ($control !== null) {
 				return $this->buildResponse($request, $response, $control);
@@ -125,18 +122,14 @@ final class ChannelControlsV1 extends BaseV1
 		$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
 
 		// & channel
-		$channel = $this->findChannel(strval($request->getAttribute(Router\ApiRoutes::URL_CHANNEL_ID)), $device);
+		$this->findChannel(strval($request->getAttribute(Router\ApiRoutes::URL_CHANNEL_ID)), $device);
 
-		// & relation entity name
 		$relationEntity = Utils\Strings::lower(strval($request->getAttribute(Router\ApiRoutes::RELATION_ENTITY)));
 
 		if (Uuid\Uuid::isValid(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)))) {
-			$findQuery = new Queries\Entities\FindChannelControls();
-			$findQuery->forChannel($channel);
-			$findQuery->byId(Uuid\Uuid::fromString(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID))));
-
-			// & control
-			$control = $this->channelControlsRepository->findOneBy($findQuery);
+			$control = $this->channelControlsRepository->find(
+				Uuid\Uuid::fromString(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID))),
+			);
 
 			if ($control !== null) {
 				if ($relationEntity === Schemas\Channels\Controls\Control::RELATIONSHIPS_CHANNEL) {

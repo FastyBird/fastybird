@@ -202,10 +202,7 @@ class ConnectorsV1 extends BaseV1
 	protected function findConnector(string $id): Entities\Connectors\Connector
 	{
 		try {
-			$findQuery = new Queries\Entities\FindConnectors();
-			$findQuery->byId(Uuid\Uuid::fromString($id));
-
-			$connector = $this->connectorsRepository->findOneBy($findQuery);
+			$connector = $this->connectorsRepository->find(Uuid\Uuid::fromString($id));
 
 			if ($connector === null) {
 				throw new JsonApiExceptions\JsonApiError(

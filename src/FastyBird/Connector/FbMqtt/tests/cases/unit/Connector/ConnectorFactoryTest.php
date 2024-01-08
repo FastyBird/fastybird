@@ -6,7 +6,6 @@ use Error;
 use FastyBird\Connector\FbMqtt\Connector;
 use FastyBird\Connector\FbMqtt\Entities;
 use FastyBird\Connector\FbMqtt\Exceptions;
-use FastyBird\Connector\FbMqtt\Queries;
 use FastyBird\Connector\FbMqtt\Tests\Cases\Unit\DbTestCase;
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -33,10 +32,10 @@ final class ConnectorFactoryTest extends DbTestCase
 
 		$factory = $this->getContainer()->getByType(Connector\ConnectorFactory::class);
 
-		$findConnectorQuery = new Queries\Entities\FindConnectors();
-		$findConnectorQuery->byId(Uuid\Uuid::fromString('37b86cdc-376b-4d4c-9683-aa4f41daa13a'));
-
-		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\FbMqttConnector::class);
+		$connector = $connectorsRepository->find(
+			Uuid\Uuid::fromString('37b86cdc-376b-4d4c-9683-aa4f41daa13a'),
+			Entities\FbMqttConnector::class,
+		);
 		assert($connector instanceof Entities\FbMqttConnector);
 
 		$factory->create($connector);

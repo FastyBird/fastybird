@@ -312,10 +312,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	): void
 	{
 		if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_SET)) {
-			$findConnectorPropertyQuery = new Queries\Entities\FindConnectorProperties();
-			$findConnectorPropertyQuery->byId($entity->getProperty());
-
-			$property = $this->connectorPropertiesRepository->findOneBy($findConnectorPropertyQuery);
+			$property = $this->connectorPropertiesRepository->find($entity->getProperty());
 
 			if (!$property instanceof Entities\Connectors\Properties\Dynamic) {
 				return;
@@ -329,10 +326,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				]),
 			);
 		} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
-			$findConnectorPropertyQuery = new Queries\Entities\FindConnectorProperties();
-			$findConnectorPropertyQuery->byId($entity->getProperty());
-
-			$property = $this->connectorPropertiesRepository->findOneBy($findConnectorPropertyQuery);
+			$property = $this->connectorPropertiesRepository->find($entity->getProperty());
 
 			if ($property === null) {
 				return;
@@ -385,10 +379,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	): void
 	{
 		if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_SET)) {
-			$findConnectorPropertyQuery = new Queries\Entities\FindDeviceProperties();
-			$findConnectorPropertyQuery->byId($entity->getProperty());
-
-			$property = $this->devicePropertiesRepository->findOneBy($findConnectorPropertyQuery);
+			$property = $this->devicePropertiesRepository->find($entity->getProperty());
 
 			if (
 				!$property instanceof Entities\Devices\Properties\Dynamic
@@ -405,10 +396,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				]),
 			);
 		} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
-			$findConnectorPropertyQuery = new Queries\Entities\FindDeviceProperties();
-			$findConnectorPropertyQuery->byId($entity->getProperty());
-
-			$property = $this->devicePropertiesRepository->findOneBy($findConnectorPropertyQuery);
+			$property = $this->devicePropertiesRepository->find($entity->getProperty());
 
 			if ($property === null) {
 				return;
@@ -461,10 +449,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	): void
 	{
 		if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_SET)) {
-			$findConnectorPropertyQuery = new Queries\Entities\FindChannelProperties();
-			$findConnectorPropertyQuery->byId($entity->getProperty());
-
-			$property = $this->channelPropertiesRepository->findOneBy($findConnectorPropertyQuery);
+			$property = $this->channelPropertiesRepository->find($entity->getProperty());
 
 			if (
 				!$property instanceof Entities\Channels\Properties\Dynamic
@@ -481,10 +466,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				]),
 			);
 		} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
-			$findConnectorPropertyQuery = new Queries\Entities\FindChannelProperties();
-			$findConnectorPropertyQuery->byId($entity->getProperty());
-
-			$property = $this->channelPropertiesRepository->findOneBy($findConnectorPropertyQuery);
+			$property = $this->channelPropertiesRepository->find($entity->getProperty());
 
 			if ($property === null) {
 				return;

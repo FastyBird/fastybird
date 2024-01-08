@@ -93,12 +93,8 @@ final class StoreBridgeDevices implements Queue\Consumer
 			return true;
 		}
 
-		$findDeviceQuery = new Queries\Entities\FindBridgeDevices();
-		$findDeviceQuery->byConnectorId($entity->getConnector());
-		$findDeviceQuery->byId($baseTopicProperty->getDevice()->getId());
-
-		$bridge = $this->devicesRepository->findOneBy(
-			$findDeviceQuery,
+		$bridge = $this->devicesRepository->find(
+			$baseTopicProperty->getDevice()->getId(),
 			Entities\Devices\Bridge::class,
 		);
 
@@ -151,11 +147,8 @@ final class StoreBridgeDevices implements Queue\Consumer
 					continue;
 				}
 
-				$findConnectorQuery = new Queries\Entities\FindConnectors();
-				$findConnectorQuery->byId($entity->getConnector());
-
-				$connector = $this->connectorsRepository->findOneBy(
-					$findConnectorQuery,
+				$connector = $this->connectorsRepository->find(
+					$entity->getConnector(),
 					Entities\Zigbee2MqttConnector::class,
 				);
 

@@ -65,10 +65,10 @@ final class StoreBridgeInfoTest extends DbTestCase
 			DevicesModels\Entities\Connectors\ConnectorsRepository::class,
 		);
 
-		$findConnectorQuery = new Queries\Entities\FindConnectors();
-		$findConnectorQuery->byId(Uuid\Uuid::fromString('f15d2072-fb60-421a-a85f-2566e4dc13fe'));
-
-		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\Zigbee2MqttConnector::class);
+		$connector = $connectorsRepository->find(
+			Uuid\Uuid::fromString('f15d2072-fb60-421a-a85f-2566e4dc13fe'),
+			Entities\Zigbee2MqttConnector::class,
+		);
 		assert($connector instanceof Entities\Zigbee2MqttConnector);
 
 		$devicesRepository = $this->getContainer()->getByType(
