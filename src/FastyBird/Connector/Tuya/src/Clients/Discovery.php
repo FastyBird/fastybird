@@ -25,6 +25,7 @@ use FastyBird\Connector\Tuya\Queue;
 use FastyBird\Connector\Tuya\Services;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -98,11 +99,12 @@ final class Discovery implements Evenement\EventEmitterInterface
 	private array $handlerTimer = [];
 
 	public function __construct(
-		private readonly Entities\TuyaConnector $connector,
+		private readonly MetadataDocuments\DevicesModule\Connector $connector,
 		private readonly API\OpenApiFactory $openApiFactory,
 		private readonly API\LocalApiFactory $localApiFactory,
 		private readonly Services\DatagramFactory $datagramFactory,
 		private readonly Helpers\Entity $entityHelper,
+		private readonly Helpers\Connector $connectorHelper,
 		private readonly Queue\Queue $queue,
 		private readonly Tuya\Logger $logger,
 		private readonly EventLoop\LoopInterface $eventLoop,
@@ -124,7 +126,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 	{
 		$this->discoveredLocalDevices = new SplObjectStorage();
 
-		$mode = $this->connector->getClientMode();
+		$mode = $this->connectorHelper->getClientMode($this->connector);
 
 		if ($mode->equalsValue(Types\ClientMode::CLOUD)) {
 			$this->discoverCloudDevices();
@@ -135,6 +137,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -276,7 +279,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 		$this->getCloudApiConnection()
 			->getDevices(
 				[
-					'source_id' => $this->connector->getUid(),
+					'source_id' => $this->connectorHelper->getUid($this->connector),
 					'source_type' => 'tuyaUser',
 				],
 			)
@@ -1026,20 +1029,21 @@ final class Discovery implements Evenement\EventEmitterInterface
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	private function getCloudApiConnection(): API\OpenApi
 	{
 		if ($this->cloudApiConnection === null) {
-			assert(is_string($this->connector->getAccessId()));
-			assert(is_string($this->connector->getAccessSecret()));
+			assert(is_string($this->connectorHelper->getAccessId($this->connector)));
+			assert(is_string($this->connectorHelper->getAccessSecret($this->connector)));
 
 			$this->cloudApiConnection = $this->openApiFactory->create(
 				$this->connector->getIdentifier(),
-				$this->connector->getAccessId(),
-				$this->connector->getAccessSecret(),
-				$this->connector->getOpenApiEndpoint(),
+				$this->connectorHelper->getAccessId($this->connector),
+				$this->connectorHelper->getAccessSecret($this->connector),
+				$this->connectorHelper->getOpenApiEndpoint($this->connector),
 			);
 		}
 
