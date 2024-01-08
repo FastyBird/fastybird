@@ -19,7 +19,6 @@ use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models\Entities\Devices\DevicesRepository;
-use FastyBird\Module\Devices\Queries;
 use Fig\Http\Message\StatusCodeInterface;
 use Nette\Localization;
 use Ramsey\Uuid;
@@ -38,10 +37,7 @@ trait TDevice
 	protected function findDevice(string $id): Entities\Devices\Device
 	{
 		try {
-			$findQuery = new Queries\Entities\FindDevices();
-			$findQuery->byId(Uuid\Uuid::fromString($id));
-
-			$device = $this->devicesRepository->findOneBy($findQuery);
+			$device = $this->devicesRepository->find(Uuid\Uuid::fromString($id));
 
 			if ($device === null) {
 				throw new JsonApiExceptions\JsonApiError(

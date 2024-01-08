@@ -25,6 +25,27 @@ final class DevicesRepositoryTest extends DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
+	public function testFindOne(): void
+	{
+		$builder = $this->getContainer()->getByType(Models\Configuration\Builder::class);
+		$builder->clean();
+
+		$repository = $this->getContainer()->getByType(Models\Configuration\Devices\Repository::class);
+
+		$entity = $repository->find(Uuid\Uuid::fromString('69786d15-fd0c-4d9f-9378-33287c2009fa'));
+
+		self::assertIsObject($entity);
+		self::assertSame('first-device', $entity->getIdentifier());
+	}
+
+	/**
+	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws Exceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws Nette\DI\MissingServiceException
+	 * @throws RuntimeException
+	 * @throws Error
+	 */
 	public function testReadOne(): void
 	{
 		$builder = $this->getContainer()->getByType(Models\Configuration\Builder::class);

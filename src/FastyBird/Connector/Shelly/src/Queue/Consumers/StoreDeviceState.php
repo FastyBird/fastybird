@@ -130,11 +130,8 @@ final class StoreDeviceState implements Queue\Consumer
 					} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty) {
 						$this->databaseHelper->transaction(
 							function () use ($property, $state): void {
-								$findPropertyQuery = new DevicesQueries\Entities\FindDeviceVariableProperties();
-								$findPropertyQuery->byId($property->getId());
-
-								$property = $this->devicesPropertiesRepository->findOneBy(
-									$findPropertyQuery,
+								$property = $this->devicesPropertiesRepository->find(
+									$property->getId(),
 									DevicesEntities\Devices\Properties\Variable::class,
 								);
 								assert($property instanceof DevicesEntities\Devices\Properties\Variable);
@@ -189,11 +186,8 @@ final class StoreDeviceState implements Queue\Consumer
 							} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
 								$this->databaseHelper->transaction(
 									function () use ($property, $state): void {
-										$findPropertyQuery = new DevicesQueries\Entities\FindChannelVariableProperties();
-										$findPropertyQuery->byId($property->getId());
-
-										$property = $this->channelsPropertiesRepository->findOneBy(
-											$findPropertyQuery,
+										$property = $this->channelsPropertiesRepository->find(
+											$property->getId(),
 											DevicesEntities\Channels\Properties\Variable::class,
 										);
 										assert($property instanceof DevicesEntities\Channels\Properties\Variable);
@@ -260,11 +254,8 @@ final class StoreDeviceState implements Queue\Consumer
 						} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
 							$this->databaseHelper->transaction(
 								function () use ($property, $sensor): void {
-									$findPropertyQuery = new DevicesQueries\Entities\FindChannelVariableProperties();
-									$findPropertyQuery->byId($property->getId());
-
-									$property = $this->channelsPropertiesRepository->findOneBy(
-										$findPropertyQuery,
+									$property = $this->channelsPropertiesRepository->find(
+										$property->getId(),
 										DevicesEntities\Channels\Properties\Variable::class,
 									);
 									assert($property instanceof DevicesEntities\Channels\Properties\Variable);

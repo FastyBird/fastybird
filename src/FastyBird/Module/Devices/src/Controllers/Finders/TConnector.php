@@ -19,7 +19,6 @@ use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models\Entities\Connectors\ConnectorsRepository;
-use FastyBird\Module\Devices\Queries;
 use Fig\Http\Message\StatusCodeInterface;
 use Nette\Localization;
 use Ramsey\Uuid;
@@ -38,10 +37,7 @@ trait TConnector
 	protected function findConnector(string $id): Entities\Connectors\Connector
 	{
 		try {
-			$findQuery = new Queries\Entities\FindConnectors();
-			$findQuery->byId(Uuid\Uuid::fromString($id));
-
-			$connector = $this->connectorsRepository->findOneBy($findQuery);
+			$connector = $this->connectorsRepository->find(Uuid\Uuid::fromString($id));
 
 			if ($connector === null) {
 				throw new JsonApiExceptions\JsonApiError(

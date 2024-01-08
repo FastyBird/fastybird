@@ -19,7 +19,7 @@ The path to the console command may vary depending on your FastyBird application
 
 The console will prompt for confirmation before proceeding with the discovery process.
 
-```shell
+```
 Zigbee2MQTT connector - devices discovery
 =========================================
 
@@ -31,7 +31,7 @@ Zigbee2MQTT connector - devices discovery
 
 You will then be prompted to select the connector to use for the discovery process.
 
-```shell
+```
  Would you like to discover devices with "Zigbee2MQTT Integration" connector (yes/no) [no]:
  > y
 ```
@@ -39,7 +39,7 @@ You will then be prompted to select the connector to use for the discovery proce
 The connector will then send request to the [Zigbee2MQTT](https://www.zigbee2mqtt.io) service via MQTT message, and you will
 be able to connect new Zigbee device in next 100 sec to your coordinator. Once finished, a list of found devices will be displayed.
 
-```shell
+```
  [INFO] Starting Zigbee2MQTT connector discovery...
 
 
@@ -60,7 +60,7 @@ be able to connect new Zigbee device in next 100 sec to your coordinator. Once f
 +---+--------------------------------------+---------------+--------+--------------+--------------------+
 
 
- [OK] Devices discovery was successfully finished    
+ [OK] Devices discovery was successfully finished
 ```
 
 Now that all newly discovered devices have been found, they are available in the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) system and can be utilized.

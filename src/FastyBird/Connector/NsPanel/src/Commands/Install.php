@@ -3766,10 +3766,7 @@ class Install extends Console\Command\Command
 			$identifier = array_search($answer, $devices, true);
 
 			if ($identifier !== false) {
-				$findDeviceQuery = new DevicesQueries\Entities\FindDevices();
-				$findDeviceQuery->byId(Uuid\Uuid::fromString($identifier));
-
-				$device = $this->devicesRepository->findOneBy($findDeviceQuery);
+				$device = $this->devicesRepository->find(Uuid\Uuid::fromString($identifier));
 
 				if ($device !== null) {
 					return $device;
@@ -3854,7 +3851,7 @@ class Install extends Console\Command\Command
 			$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(
-			function (string|null $answer) use ($device, $channels): DevicesEntities\Channels\Channel {
+			function (string|null $answer) use ($channels): DevicesEntities\Channels\Channel {
 				if ($answer === null) {
 					throw new Exceptions\Runtime(
 						sprintf(
@@ -3871,11 +3868,7 @@ class Install extends Console\Command\Command
 				$identifier = array_search($answer, $channels, true);
 
 				if ($identifier !== false) {
-					$findChannelQuery = new DevicesQueries\Entities\FindChannels();
-					$findChannelQuery->byId(Uuid\Uuid::fromString($identifier));
-					$findChannelQuery->forDevice($device);
-
-					$channel = $this->channelsRepository->findOneBy($findChannelQuery);
+					$channel = $this->channelsRepository->find(Uuid\Uuid::fromString($identifier));
 
 					if ($channel !== null) {
 						return $channel;
@@ -3945,7 +3938,7 @@ class Install extends Console\Command\Command
 			$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(
-			function (string|null $answer) use ($channel, $properties): DevicesEntities\Channels\Properties\Dynamic {
+			function (string|null $answer) use ($properties): DevicesEntities\Channels\Properties\Dynamic {
 				if ($answer === null) {
 					throw new Exceptions\Runtime(
 						sprintf(
@@ -3962,12 +3955,8 @@ class Install extends Console\Command\Command
 				$identifier = array_search($answer, $properties, true);
 
 				if ($identifier !== false) {
-					$findPropertyQuery = new DevicesQueries\Entities\FindChannelDynamicProperties();
-					$findPropertyQuery->byId(Uuid\Uuid::fromString($identifier));
-					$findPropertyQuery->forChannel($channel);
-
-					$property = $this->channelsPropertiesRepository->findOneBy(
-						$findPropertyQuery,
+					$property = $this->channelsPropertiesRepository->find(
+						Uuid\Uuid::fromString($identifier),
 						DevicesEntities\Channels\Properties\Dynamic::class,
 					);
 

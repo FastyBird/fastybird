@@ -79,10 +79,7 @@ final class DeviceConnection
 			$property = $this->databaseHelper->transaction(
 				function () use ($device): Entities\Devices\Properties\Dynamic {
 					if (!$device instanceof Entities\Devices\Device) {
-						$findDeviceQuery = new Queries\Entities\FindDevices();
-						$findDeviceQuery->byId($device->getId());
-
-						$device = $this->devicesEntitiesRepository->findOneBy($findDeviceQuery);
+						$device = $this->devicesEntitiesRepository->find($device->getId());
 						assert($device instanceof Entities\Devices\Device);
 					}
 

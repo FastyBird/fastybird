@@ -23,6 +23,7 @@ use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\Utilities;
 use IPub\DoctrineOrmQuery;
 use Nette;
+use Ramsey\Uuid;
 use Throwable;
 use function is_array;
 
@@ -52,6 +53,25 @@ final class PropertiesRepository
 	/**
 	 * @template T of Entities\Connectors\Properties\Property
 	 *
+	 * @param class-string<T> $type
+	 *
+	 * @return T|null
+	 *
+	 * @throws Exceptions\InvalidState
+	 */
+	public function find(
+		Uuid\UuidInterface $id,
+		string $type = Entities\Connectors\Properties\Property::class,
+	): Entities\Connectors\Properties\Property|null
+	{
+		return $this->database->query(
+			fn (): Entities\Connectors\Properties\Property|null => $this->getRepository($type)->find($id),
+		);
+	}
+
+	/**
+	 * @template T of Entities\Connectors\Properties\Property
+	 *
 	 * @param Queries\Entities\FindConnectorProperties<T> $queryObject
 	 * @param class-string<T> $type
 	 *
@@ -75,10 +95,14 @@ final class PropertiesRepository
 	 * @param class-string<T> $type
 	 *
 	 * @return array<T>
+	 *
+	 * @throws Exceptions\InvalidState
 	 */
 	public function findAll(string $type = Entities\Connectors\Properties\Property::class): array
 	{
-		return $this->getRepository($type)->findAll();
+		return $this->database->query(
+			fn (): array => $this->getRepository($type)->findAll(),
+		);
 	}
 
 	/**

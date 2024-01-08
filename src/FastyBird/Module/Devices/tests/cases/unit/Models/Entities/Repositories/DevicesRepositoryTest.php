@@ -10,10 +10,29 @@ use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\Tests\Cases\Unit\DbTestCase;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette;
+use Ramsey\Uuid;
 use RuntimeException;
 
 final class DevicesRepositoryTest extends DbTestCase
 {
+
+	/**
+	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Nette\DI\MissingServiceException
+	 * @throws RuntimeException
+	 * @throws Error
+	 */
+	public function testFindOne(): void
+	{
+		$repository = $this->getContainer()->getByType(Models\Entities\Devices\DevicesRepository::class);
+
+		$parent = $repository->find(Uuid\Uuid::fromString('69786D15-FD0C-4D9F-9378-33287C2009FA'));
+
+		self::assertIsObject($parent);
+		self::assertSame('first-device', $parent->getIdentifier());
+	}
 
 	/**
 	 * @throws BootstrapExceptions\InvalidArgument

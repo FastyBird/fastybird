@@ -17,7 +17,6 @@ namespace FastyBird\Connector\Shelly\Queue\Consumers;
 
 use Doctrine\DBAL;
 use FastyBird\Connector\Shelly;
-use FastyBird\Connector\Shelly\Queries;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -111,10 +110,7 @@ trait ChannelProperty
 		}
 
 		if ($property === null) {
-			$findChannelQuery = new Queries\Entities\FindChannels();
-			$findChannelQuery->byId($channelId);
-
-			$channel = $this->channelsRepository->findOneBy($findChannelQuery, Shelly\Entities\ShellyChannel::class);
+			$channel = $this->channelsRepository->find($channelId, Shelly\Entities\ShellyChannel::class);
 
 			if ($channel === null) {
 				$this->logger->error(

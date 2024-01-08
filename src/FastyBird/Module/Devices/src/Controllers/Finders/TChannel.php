@@ -19,7 +19,6 @@ use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models\Entities\Channels\ChannelsRepository;
-use FastyBird\Module\Devices\Queries;
 use Fig\Http\Message\StatusCodeInterface;
 use Nette\Localization;
 use Ramsey\Uuid;
@@ -41,11 +40,7 @@ trait TChannel
 	): Entities\Channels\Channel
 	{
 		try {
-			$findQuery = new Queries\Entities\FindChannels();
-			$findQuery->byId(Uuid\Uuid::fromString($id));
-			$findQuery->forDevice($device);
-
-			$channel = $this->channelsRepository->findOneBy($findQuery);
+			$channel = $this->channelsRepository->find(Uuid\Uuid::fromString($id));
 
 			if ($channel === null) {
 				throw new JsonApiExceptions\JsonApiError(

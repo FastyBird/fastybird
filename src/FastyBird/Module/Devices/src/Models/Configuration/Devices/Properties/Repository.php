@@ -22,6 +22,7 @@ use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
+use Ramsey\Uuid;
 use stdClass;
 use Throwable;
 use function array_filter;
@@ -47,6 +48,32 @@ final class Repository extends Models\Configuration\Repository
 	)
 	{
 		parent::__construct($builder, $cacheFactory);
+	}
+
+	/**
+	 * @template T of MetadataDocuments\DevicesModule\DeviceProperty
+	 *
+	 * @param class-string<T> $type
+	 *
+	 * @return T|null
+	 *
+	 * @throws Exceptions\InvalidState
+	 */
+	public function find(
+		Uuid\UuidInterface $id,
+		string $type = MetadataDocuments\DevicesModule\DeviceProperty::class,
+	): MetadataDocuments\DevicesModule\DeviceProperty|null
+	{
+		$queryObject = new Queries\Configuration\FindDeviceProperties();
+		$queryObject->byId($id);
+
+		$document = $this->findOneBy($queryObject, $type);
+
+		if ($document !== null && !$document instanceof $type) {
+			throw new Exceptions\InvalidState('Could not load document');
+		}
+
+		return $document;
 	}
 
 	/**

@@ -309,11 +309,8 @@ class Install extends Console\Command\Command
 		$createBridge = (bool) $io->askQuestion($question);
 
 		if ($createBridge) {
-			$findConnectorQuery = new Queries\Entities\FindConnectors();
-			$findConnectorQuery->byId($connector->getId());
-
-			$connector = $this->connectorsRepository->findOneBy(
-				$findConnectorQuery,
+			$connector = $this->connectorsRepository->find(
+				$connector->getId(),
 				Entities\Zigbee2MqttConnector::class,
 			);
 			assert($connector instanceof Entities\Zigbee2MqttConnector);
@@ -564,11 +561,8 @@ class Install extends Console\Command\Command
 			return;
 		}
 
-		$findConnectorQuery = new Queries\Entities\FindConnectors();
-		$findConnectorQuery->byId($connector->getId());
-
-		$connector = $this->connectorsRepository->findOneBy(
-			$findConnectorQuery,
+		$connector = $this->connectorsRepository->find(
+			$connector->getId(),
 			Entities\Zigbee2MqttConnector::class,
 		);
 		assert($connector instanceof Entities\Zigbee2MqttConnector);
@@ -802,10 +796,7 @@ class Install extends Console\Command\Command
 			return;
 		}
 
-		$findDeviceQuery = new Queries\Entities\FindBridgeDevices();
-		$findDeviceQuery->byId($bridge->getId());
-
-		$bridge = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\Bridge::class);
+		$bridge = $this->devicesRepository->find($bridge->getId(), Entities\Devices\Bridge::class);
 		assert($bridge instanceof Entities\Devices\Bridge);
 
 		$this->askManageBridgeAction($io, $connector, $bridge);
@@ -924,10 +915,7 @@ class Install extends Console\Command\Command
 			return;
 		}
 
-		$findDeviceQuery = new Queries\Entities\FindBridgeDevices();
-		$findDeviceQuery->byId($bridge->getId());
-
-		$bridge = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\Bridge::class);
+		$bridge = $this->devicesRepository->find($bridge->getId(), Entities\Devices\Bridge::class);
 		assert($bridge instanceof Entities\Devices\Bridge);
 
 		$this->askManageBridgeAction($io, $connector, $bridge);

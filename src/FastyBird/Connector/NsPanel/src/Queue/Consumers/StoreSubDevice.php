@@ -70,11 +70,7 @@ final class StoreSubDevice implements Queue\Consumer
 			return false;
 		}
 
-		$findDeviceQuery = new Queries\Entities\FindGatewayDevices();
-		$findDeviceQuery->byConnectorId($entity->getConnector());
-		$findDeviceQuery->byId($entity->getGateway());
-
-		$parent = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\Gateway::class);
+		$parent = $this->devicesRepository->find($entity->getGateway(), Entities\Devices\Gateway::class);
 
 		if ($parent === null) {
 			$this->logger->error(
@@ -106,11 +102,8 @@ final class StoreSubDevice implements Queue\Consumer
 		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\SubDevice::class);
 
 		if ($device === null) {
-			$findConnectorQuery = new Queries\Entities\FindConnectors();
-			$findConnectorQuery->byId($entity->getConnector());
-
-			$connector = $this->connectorsRepository->findOneBy(
-				$findConnectorQuery,
+			$connector = $this->connectorsRepository->find(
+				$entity->getConnector(),
 				Entities\NsPanelConnector::class,
 			);
 

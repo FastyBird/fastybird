@@ -155,10 +155,7 @@ final class ChannelProperty implements Queue\Consumer
 		if ($entity->getValue() !== FbMqtt\Constants::VALUE_NOT_SET) {
 			if ($property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
 				$this->databaseHelper->transaction(function () use ($entity, $property): void {
-					$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
-					$findChannelPropertyQuery->byId($property->getId());
-
-					$property = $this->channelsPropertiesRepository->findOneBy($findChannelPropertyQuery);
+					$property = $this->channelsPropertiesRepository->find($property->getId());
 					assert($property instanceof DevicesEntities\Channels\Properties\Property);
 
 					$this->channelsPropertiesManager->update(
@@ -180,10 +177,7 @@ final class ChannelProperty implements Queue\Consumer
 		} else {
 			if (count($entity->getAttributes()) > 0) {
 				$this->databaseHelper->transaction(function () use ($entity, $property): void {
-					$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
-					$findChannelPropertyQuery->byId($property->getId());
-
-					$property = $this->channelsPropertiesRepository->findOneBy($findChannelPropertyQuery);
+					$property = $this->channelsPropertiesRepository->find($property->getId());
 					assert($property instanceof DevicesEntities\Channels\Properties\Property);
 
 					$toUpdate = $this->handlePropertyConfiguration($entity);

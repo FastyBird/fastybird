@@ -162,10 +162,10 @@ class Thermostat extends Device
 			return Console\Command\Command::FAILURE;
 		}
 
-		$findConnectorsQuery = new Queries\Entities\FindConnectors();
-		$findConnectorsQuery->byId(Uuid\Uuid::fromString(strval($connector)));
-
-		$connector = $this->connectorsRepository->findOneBy($findConnectorsQuery, Entities\VirtualConnector::class);
+		$connector = $this->connectorsRepository->find(
+			Uuid\Uuid::fromString(strval($connector)),
+			Entities\VirtualConnector::class,
+		);
 
 		if ($connector === null) {
 			$io->warning(
@@ -193,11 +193,10 @@ class Thermostat extends Device
 					return Console\Command\Command::FAILURE;
 				}
 
-				$findDeviceQuery = new Queries\Entities\FindThermostatDevices();
-				$findDeviceQuery->forConnector($connector);
-				$findDeviceQuery->byId(Uuid\Uuid::fromString(strval($device)));
-
-				$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\Thermostat::class);
+				$device = $this->devicesRepository->find(
+					Uuid\Uuid::fromString(strval($device)),
+					Entities\Devices\Thermostat::class,
+				);
 
 				if ($device === null) {
 					$io->warning(
@@ -234,11 +233,10 @@ class Thermostat extends Device
 					return Console\Command\Command::FAILURE;
 				}
 
-				$findDeviceQuery = new Queries\Entities\FindThermostatDevices();
-				$findDeviceQuery->forConnector($connector);
-				$findDeviceQuery->byId(Uuid\Uuid::fromString(strval($device)));
-
-				$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\Thermostat::class);
+				$device = $this->devicesRepository->find(
+					Uuid\Uuid::fromString(strval($device)),
+					Entities\Devices\Thermostat::class,
+				);
 
 				if ($device === null) {
 					$io->warning(
@@ -3346,10 +3344,7 @@ class Thermostat extends Device
 			$identifier = array_search($answer, $devices, true);
 
 			if ($identifier !== false) {
-				$findDeviceQuery = new DevicesQueries\Entities\FindDevices();
-				$findDeviceQuery->byId(Uuid\Uuid::fromString($identifier));
-
-				$device = $this->devicesRepository->findOneBy($findDeviceQuery);
+				$device = $this->devicesRepository->find(Uuid\Uuid::fromString($identifier));
 
 				if ($device !== null) {
 					return $device;
@@ -3496,7 +3491,7 @@ class Thermostat extends Device
 			$this->translator->translate('//virtual-connector.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(
-			function (string|null $answer) use ($device, $channels): DevicesEntities\Channels\Channel {
+			function (string|null $answer) use ($channels): DevicesEntities\Channels\Channel {
 				if ($answer === null) {
 					throw new Exceptions\Runtime(
 						sprintf(
@@ -3513,11 +3508,7 @@ class Thermostat extends Device
 				$identifier = array_search($answer, $channels, true);
 
 				if ($identifier !== false) {
-					$findChannelQuery = new DevicesQueries\Entities\FindChannels();
-					$findChannelQuery->byId(Uuid\Uuid::fromString($identifier));
-					$findChannelQuery->forDevice($device);
-
-					$channel = $this->channelsRepository->findOneBy($findChannelQuery);
+					$channel = $this->channelsRepository->find(Uuid\Uuid::fromString($identifier));
 
 					if ($channel !== null) {
 						return $channel;
@@ -3601,7 +3592,7 @@ class Thermostat extends Device
 		);
 		$question->setValidator(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-			function (string|null $answer) use ($channel, $properties): DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Variable {
+			function (string|null $answer) use ($properties): DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Variable {
 				if ($answer === null) {
 					throw new Exceptions\Runtime(
 						sprintf(
@@ -3618,11 +3609,7 @@ class Thermostat extends Device
 				$identifier = array_search($answer, $properties, true);
 
 				if ($identifier !== false) {
-					$findPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
-					$findPropertyQuery->byId(Uuid\Uuid::fromString($identifier));
-					$findPropertyQuery->forChannel($channel);
-
-					$property = $this->channelsPropertiesRepository->findOneBy($findPropertyQuery);
+					$property = $this->channelsPropertiesRepository->find(Uuid\Uuid::fromString($identifier));
 
 					if ($property !== null) {
 						assert(

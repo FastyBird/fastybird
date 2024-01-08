@@ -10,10 +10,29 @@ use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\Tests\Cases\Unit\DbTestCase;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette;
+use Ramsey\Uuid;
 use RuntimeException;
 
 final class ChannelsRepositoryTest extends DbTestCase
 {
+
+	/**
+	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Nette\DI\MissingServiceException
+	 * @throws RuntimeException
+	 * @throws Error
+	 */
+	public function testFindOne(): void
+	{
+		$repository = $this->getContainer()->getByType(Models\Entities\Channels\ChannelsRepository::class);
+
+		$entity = $repository->find(Uuid\Uuid::fromString('17C59DFA-2EDD-438E-8C49-FAA4E38E5A5E'));
+
+		self::assertIsObject($entity);
+		self::assertSame('channel-one', $entity->getIdentifier());
+	}
 
 	/**
 	 * @throws BootstrapExceptions\InvalidArgument

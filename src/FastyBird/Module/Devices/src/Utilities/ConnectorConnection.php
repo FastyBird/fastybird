@@ -78,10 +78,7 @@ final class ConnectorConnection
 			$property = $this->databaseHelper->transaction(
 				function () use ($connector): Entities\Connectors\Properties\Dynamic {
 					if (!$connector instanceof Entities\Connectors\Connector) {
-						$findConnectorQuery = new Queries\Entities\FindConnectors();
-						$findConnectorQuery->byId($connector->getId());
-
-						$connector = $this->connectorsEntitiesRepository->findOneBy($findConnectorQuery);
+						$connector = $this->connectorsEntitiesRepository->find($connector->getId());
 						assert($connector instanceof Entities\Connectors\Connector);
 					}
 

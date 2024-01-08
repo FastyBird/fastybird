@@ -138,11 +138,8 @@ final class StoreChannelPropertyState implements Queue\Consumer
 					) {
 						$property = $this->databaseHelper->transaction(
 							function () use ($dataPoint, $property, $format): DevicesEntities\Channels\Properties\Dynamic {
-								$findPropertyQuery = new DevicesQueries\Entities\FindChannelDynamicProperties();
-								$findPropertyQuery->byId($property->getId());
-
-								$property = $this->channelsPropertiesRepository->findOneBy(
-									$findPropertyQuery,
+								$property = $this->channelsPropertiesRepository->find(
+									$property->getId(),
 									DevicesEntities\Channels\Properties\Dynamic::class,
 								);
 								assert($property instanceof DevicesEntities\Channels\Properties\Dynamic);

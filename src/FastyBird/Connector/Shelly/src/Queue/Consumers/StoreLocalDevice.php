@@ -84,11 +84,8 @@ final class StoreLocalDevice implements Queue\Consumer
 		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\ShellyDevice::class);
 
 		if ($device === null) {
-			$findConnectorQuery = new Queries\Entities\FindConnectors();
-			$findConnectorQuery->byId($entity->getConnector());
-
-			$connector = $this->connectorsRepository->findOneBy(
-				$findConnectorQuery,
+			$connector = $this->connectorsRepository->find(
+				$entity->getConnector(),
 				Entities\ShellyConnector::class,
 			);
 
