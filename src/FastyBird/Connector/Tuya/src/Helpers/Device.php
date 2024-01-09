@@ -108,12 +108,12 @@ final class Device
 			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
 		);
 
-		if ($property === null) {
+		if ($property?->getValue() === null) {
 			return null;
 		}
 
 		$value = $property->getValue();
-		assert(is_string($value) || $value === null);
+		assert(is_string($value));
 
 		return $value;
 	}
@@ -134,12 +134,12 @@ final class Device
 			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
 		);
 
-		if ($property === null) {
+		if ($property?->getValue() === null) {
 			return null;
 		}
 
 		$value = $property->getValue();
-		assert(is_string($value) || $value === null);
+		assert(is_string($value));
 
 		return $value;
 	}
@@ -160,12 +160,12 @@ final class Device
 			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
 		);
 
-		if ($property === null) {
+		if ($property?->getValue() === null) {
 			return null;
 		}
 
 		$value = $property->getValue();
-		assert(is_string($value) || $value === null);
+		assert(is_string($value));
 
 		return $value;
 	}
@@ -186,12 +186,12 @@ final class Device
 			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
 		);
 
-		if ($property === null) {
+		if ($property?->getValue() === null) {
 			return null;
 		}
 
 		$value = $property->getValue();
-		assert(is_string($value) || $value === null);
+		assert(is_string($value));
 
 		return $value;
 	}
@@ -212,14 +212,14 @@ final class Device
 			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
 		);
 
-		if ($property === null) {
+		if ($property?->getValue() === null) {
 			return false;
 		}
 
 		$value = $property->getValue();
-		assert(is_bool($value) || $value === null);
+		assert(is_bool($value));
 
-		return $value ?? false;
+		return $value;
 	}
 
 	/**
@@ -240,14 +240,14 @@ final class Device
 			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
 		);
 
-		if ($property === null) {
+		if ($property?->getValue() === null) {
 			return [];
 		}
 
 		$value = $property->getValue();
-		assert(is_string($value) || $value === null);
+		assert(is_string($value));
 
-		return $value !== null ? explode(',', $value) : [];
+		return explode(',', $value);
 	}
 
 	/**
@@ -266,12 +266,12 @@ final class Device
 			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
 		);
 
-		if ($property === null) {
+		if ($property?->getValue() === null) {
 			return null;
 		}
 
 		$value = $property->getValue();
-		assert(is_string($value) || $value === null);
+		assert(is_string($value));
 
 		return $value;
 	}
@@ -292,12 +292,12 @@ final class Device
 			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
 		);
 
-		if ($property === null) {
+		if ($property?->getValue() === null) {
 			return null;
 		}
 
 		$value = $property->getValue();
-		assert(is_string($value) || $value === null);
+		assert(is_string($value));
 
 		return $value;
 	}
@@ -318,11 +318,12 @@ final class Device
 			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
 		);
 
-		$value = $property?->getValue();
-
-		if (!is_numeric($value)) {
+		if ($property?->getValue() === null) {
 			return Entities\TuyaDevice::STATE_READING_DELAY;
 		}
+
+		$value = $property->getValue();
+		assert(is_numeric($value));
 
 		return floatval($value);
 	}
@@ -343,11 +344,12 @@ final class Device
 			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
 		);
 
-		$value = $property?->getValue();
-
-		if (!is_numeric($value)) {
+		if ($property?->getValue() === null) {
 			return Entities\TuyaDevice::HEARTBEAT_DELAY;
 		}
+
+		$value = $property->getValue();
+		assert(is_numeric($value));
 
 		return floatval($value);
 	}

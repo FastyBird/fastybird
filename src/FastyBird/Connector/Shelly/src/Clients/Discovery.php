@@ -26,8 +26,10 @@ use FastyBird\Connector\Shelly\Services;
 use FastyBird\Connector\Shelly\Storages;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Fig\Http\Message\StatusCodeInterface;
 use InvalidArgumentException;
@@ -93,12 +95,13 @@ final class Discovery implements Evenement\EventEmitterInterface
 	private Datagram\SocketInterface|null $server = null;
 
 	public function __construct(
-		private readonly Entities\ShellyConnector $connector,
+		private readonly MetadataDocuments\DevicesModule\Connector $connector,
 		private readonly API\Gen1HttpApiFactory $gen1HttpApiFactory,
 		private readonly API\Gen2HttpApiFactory $gen2HttpApiFactory,
 		private readonly Services\MulticastFactory $multicastFactory,
 		private readonly Helpers\Entity $entityHelper,
 		private readonly Helpers\Loader $loader,
+		private readonly Helpers\Connector $connectorHelper,
 		private readonly Queue\Queue $queue,
 		private readonly Shelly\Logger $logger,
 		private readonly ObjectMapper\Processing\Processor $entityMapper,
@@ -112,6 +115,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -120,7 +124,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 	{
 		$this->discoveredLocalDevices = new SplObjectStorage();
 
-		$mode = $this->connector->getClientMode();
+		$mode = $this->connectorHelper->getClientMode($this->connector);
 
 		if ($mode->equalsValue(Types\ClientMode::CLOUD)) {
 			$this->discoverCloudDevices();

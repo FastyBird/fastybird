@@ -2,165 +2,61 @@
 	<img src="https://github.com/fastybird/.github/blob/main/assets/repo_title.png?raw=true" alt="FastyBird"/>
 </p>
 
+> [!IMPORTANT]
+This documentation is meant to be used by developers or users which has basic programming skills. If you are regular user
+please use FastyBird IoT documentation which is available on [docs.fastybird.com](https://docs.fastybird.com).
+
 The [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) Shelly Connector is an extension for the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem that enables seamless integration
 with [Shelly](https://shelly.cloud) devices. It allows users to easily connect and control [Shelly](https://shelly.cloud) devices from within the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem,
 providing a simple and user-friendly interface for managing and monitoring your devices.
 
-# Naming Convention
+# About Connector
 
-The connector uses the following naming convention for its entities:
+This connector has some services divided into namespaces. All services are preconfigured and imported into application
+container automatically.
 
-## Connector
+```
+\FastyBird\Connector\Shelly
+  \API - Services and helpers related to API - for managing data exchange validation and data parsing
+  \Clients - Services which handle communication with Shelly devices or clouds
+  \Commands - Services used for user console interface
+  \Entities - All entities used by connector
+  \Helpers - Useful helpers for reading values, bulding entities etc.
+  \Queue - Services related to connector internal communication
+  \Schemas - {JSON:API} schemas mapping for API requests
+  \Services - Communication services factories
+  \Translations - Connector translations
+  \Writers - Services for handling request from other services
+```
 
-A connector is an entity that manages communication with [Shelly](https://shelly.cloud) devices. It needs to be configured for a specific device interface.
+All services, helpers, etc. are written to be self-descriptive :wink:.
 
-## Device
+> [!TIP]
+To better understand what some parts of the connector meant to be used for, please refer to the [Naming Convention](Naming-Convention) page.
 
-A device is an entity that represents a physical [Shelly](https://shelly.cloud) device.
+## Using Connector
 
-## Device Generation
+The connector is ready to be used as is. Has configured all services in application container and there is no need to develop
+some other services or bridges.
 
-There are two generations of devices supported by this connector.
-The first generation is based on the ES8266 processor and supports HTTP API, CoIoT API (over UDP), and MQTT.
-The second generation is based on the newer ESP32 processor and supports HTTP RPC API, websockets, and MQTT.
+> [!TIP]
+Find fundamental details regarding the installation and configuration of this connector on the [Configuration](Configuration) page.
 
-# Configuration
+> [!TIP]
+The connector features a built-in physical device discovery capability, and you can find detailed information about device
+discovery on the dedicated [Discovery](Discovery) page.
 
-To use [Shelly](https://shelly.cloud) devices with the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem, you will need to configure at least one connector.
-The connector can be configured using the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) user interface or through the console.
+This connector is equipped with interactive console. With this console commands you could manage almost all connector features.
 
-There are three types of connectors available for selection:
+* **fb:shelly-connector:install**: is used for connector installation and configuration. With interactive menu you could manage connector and devices.
+* **fb:shelly-connector:discover**: is used for direct devices discover. This command will trigger actions which are responsible for devices discovery.
+* **fb:shelly-connector:execute**: is used for connector execution. It is simple command that will trigger all services which are related to communication with Shelly devices and services with other [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem services like state storage, or user interface communication.
 
-- **Local** - This connector uses the local network for communication and supports the HTTP API, CoIoT, and web sockets.
-- **Cloud** - This connector communicates with the [Shelly](https://shelly.cloud) cloud instance.
-- **MQTT** - This connector utilizes the MQTT protocol to communicate with an MQTT broker.
-
-## Configuring the Connectors and Devices through the Console
-
-To configure the connector through the console, run the following command:
+Each console command could be triggered like this :nerd_face:
 
 ```shell
 php bin/fb-console fb:shelly-connector:install
 ```
-
-> **NOTE:**
-The path to the console command may vary depending on your FastyBird application distribution. For more information, refer to the FastyBird documentation.
-
-After triggering the command you will get information message:
-
-```shell
-Shelly connector - installer
-============================
-
- ! [NOTE] This action will create|update|delete connector configuration                                                 
-
- What would you like to do? [Nothing]:
-  [0] Create connector
-  [1] Edit connector
-  [2] Delete connector
-  [3] Manage connector
-  [4] List connectors
-  [5] Nothing
- > 0
-```
-
-### Create connector
-
-If you choose to create a new connector, you will be asked to choose the mode in which the connector will communicate with the devices:
-
-```shell
- In what mode should this connector communicate with Shelly devices? [Local network mode]:
-  [0] Local network mode
- > 0
-```
-
-You will then be asked to provide a connector identifier and name:
-
-```shell
- Provide connector identifier:
- > my-shelly
-```
-
-```shell
- Provide connector name:
- > My Shelly
-```
-
-> **NOTE:**
-If you choose the cloud or MQTT broker mode, you will be prompted to answer additional questions.
-
-After providing the necessary information, your new [Shelly](https://shelly.cloud) connector will be ready for use.
-
-```shell
- [OK] New connector "My Shelly" was successfully created                                                                
-```
-
-### Connectors and Devices management
-
-With this console command you could manage all your connectors and their devices. Just use the main menu to navigate to proper action.
-
-## Configuring the Connector with the FastyBird User Interface
-
-You can also configure the [Shelly](https://shelly.cloud) connector using the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) user interface. For more information on how to do this,
-please refer to the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) documentation.
-
-# Devices Discovery
-
-The [Shelly](https://shelly.cloud) connector includes a built-in feature for automatic device discovery. This feature can be triggered manually
-through a console command or from the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) user interface.
-
-## Manual Console Command
-
-To manually trigger device discovery, use the following command:
-
-```shell
-php bin/fb-console fb:shelly-connector:discover
-```
-
-> **NOTE:**
-The path to the console command may vary depending on your FastyBird application distribution. For more information, refer to the FastyBird documentation.
-
-The console will prompt for confirmation before proceeding with the discovery process.
-
-```shell
-Shelly connector - discovery
-============================
-
- ! [NOTE] This action will run connector devices discovery.
-
- Would you like to continue? (yes/no) [no]:
- > y
-```
-
-You will then be prompted to select the connector to use for the discovery process.
-
-```shell
- Would you like to discover devices with "My Shelly" connector (yes/no) [no]:
- > y
-```
-
-The connector will then begin searching for new [Shelly](https://shelly.cloud) devices, which may take a few minutes to complete. Once finished,
-a list of found devices will be displayed.
-
-```shell
- [INFO] Starting Shelly connector discovery...
-
-[============================] 100% 36 secs/36 secs %
-
- [INFO] Found 2 new devices
-
-
-+---+--------------------------------------+--------+---------+--------------+
-| # | ID                                   | Name   | Model   | Address      |
-+---+--------------------------------------+--------+---------+--------------+
-| 1 | 89b1d985-0183-4c05-8d28-69f4acf4128e | 2cc29e | shrgbw2 | 10.10.10.132 |
-| 2 | 8f377380-860f-4ac9-a4de-4be73e5ef59a | e48652 | shrgbw2 | 10.10.10.126 |
-+---+--------------------------------------+--------+---------+--------------+
-
- [OK] Devices discovery was successfully finished
-```
-
-Now that all newly discovered devices have been found, they are available in the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) system and can be utilized.
 
 # Troubleshooting
 

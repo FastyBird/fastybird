@@ -58,9 +58,9 @@ class Discover extends Console\Command\Command
 	private DateTimeInterface|null $executedTime = null;
 
 	public function __construct(
+		private readonly Helpers\Device $deviceHelper,
 		private readonly DevicesModels\Configuration\Connectors\Repository $connectorsConfigurationRepository,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
-		private readonly Helpers\Device $deviceHelper,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly Localization\Translator $translator,
 		string|null $name = null,

@@ -26,6 +26,7 @@ use FastyBird\Module\Devices\Queries as DevicesQueries;
 use function assert;
 use function floatval;
 use function gethostbyname;
+use function is_bool;
 use function is_numeric;
 use function is_string;
 
@@ -104,12 +105,12 @@ final class Device
 			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
 		);
 
-		if ($property === null) {
+		if ($property?->getValue() === null) {
 			return null;
 		}
 
 		$value = $property->getValue();
-		assert(is_string($value) || $value === null);
+		assert(is_string($value));
 
 		return $value;
 	}
@@ -130,12 +131,12 @@ final class Device
 			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
 		);
 
-		if ($property === null) {
+		if ($property?->getValue() === null) {
 			return null;
 		}
 
 		$value = $property->getValue();
-		assert(is_string($value) || $value === null);
+		assert(is_string($value));
 
 		return $value;
 	}
@@ -156,12 +157,12 @@ final class Device
 			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
 		);
 
-		if ($property === null) {
+		if ($property?->getValue() === null) {
 			return null;
 		}
 
 		$value = $property->getValue();
-		assert(is_string($value) || $value === null);
+		assert(is_string($value));
 
 		return $value;
 	}
@@ -182,12 +183,90 @@ final class Device
 			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
 		);
 
-		if ($property === null) {
+		if ($property?->getValue() === null) {
 			return null;
 		}
 
 		$value = $property->getValue();
-		assert(is_string($value) || $value === null);
+		assert(is_string($value));
+
+		return $value;
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public function hasAuthentication(MetadataDocuments\DevicesModule\Device $device): bool
+	{
+		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+		$findPropertyQuery->forDevice($device);
+		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::AUTH_ENABLED);
+
+		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
+			$findPropertyQuery,
+			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+		);
+
+		if ($property?->getValue() === null) {
+			return false;
+		}
+
+		$value = $property->getValue();
+		assert(is_bool($value));
+
+		return $value;
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public function getModel(MetadataDocuments\DevicesModule\Device $device): string|null
+	{
+		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+		$findPropertyQuery->forDevice($device);
+		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::MODEL);
+
+		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
+			$findPropertyQuery,
+			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+		);
+
+		if ($property?->getValue() === null) {
+			return null;
+		}
+
+		$value = $property->getValue();
+		assert(is_string($value));
+
+		return $value;
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	public function getMacAddress(MetadataDocuments\DevicesModule\Device $device): string|null
+	{
+		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+		$findPropertyQuery->forDevice($device);
+		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::MAC_ADDRESS);
+
+		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
+			$findPropertyQuery,
+			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+		);
+
+		if ($property?->getValue() === null) {
+			return null;
+		}
+
+		$value = $property->getValue();
+		assert(is_string($value));
 
 		return $value;
 	}
@@ -208,11 +287,12 @@ final class Device
 			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
 		);
 
-		$value = $property?->getValue();
-
-		if (!is_numeric($value)) {
+		if ($property?->getValue() === null) {
 			return Entities\ShellyDevice::STATE_READING_DELAY;
 		}
+
+		$value = $property->getValue();
+		assert(is_numeric($value));
 
 		return floatval($value);
 	}

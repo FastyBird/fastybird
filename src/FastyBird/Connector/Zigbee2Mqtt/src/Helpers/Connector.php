@@ -164,12 +164,12 @@ final class Connector
 			MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
 		);
 
-		if ($property === null) {
+		if ($property?->getValue() === null) {
 			return null;
 		}
 
 		$value = $property->getValue();
-		assert(is_string($value) || $value === null);
+		assert(is_string($value));
 
 		return $value;
 	}
@@ -190,12 +190,12 @@ final class Connector
 			MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
 		);
 
-		if ($property === null) {
+		if ($property?->getValue() === null) {
 			return null;
 		}
 
 		$value = $property->getValue();
-		assert(is_string($value) || $value === null);
+		assert(is_string($value));
 
 		return $value;
 	}
