@@ -25,7 +25,7 @@ account is different from the account you use for the Tuya mobile app.
 
 ![Login to Tuya cloud platform](https://github.com/FastyBird/tuya-connector/blob/main/docs/_media/tuya_login.png)
 
->**NOTE:**
+> [!NOTE]
 Tuya frequently updates their portal and the process for obtaining credentials may change.
 If you have trouble following these instructions, please create an issue or pull request with screenshots so we can update them.
 

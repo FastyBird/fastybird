@@ -18,12 +18,14 @@ namespace FastyBird\Connector\Shelly\Commands;
 use DateTimeInterface;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
-use FastyBird\Connector\Shelly\Queries;
+use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\DateTimeFactory;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Commands as DevicesCommands;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette\Localization;
 use Ramsey\Uuid;
 use Symfony\Component\Console;
@@ -56,8 +58,9 @@ class Discover extends Console\Command\Command
 	private DateTimeInterface|null $executedTime = null;
 
 	public function __construct(
-		private readonly DevicesModels\Entities\Connectors\ConnectorsRepository $connectorsRepository,
-		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
+		private readonly Helpers\Device $deviceHelper,
+		private readonly DevicesModels\Configuration\Connectors\Repository $connectorsConfigurationRepository,
+		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly Localization\Translator $translator,
 		string|null $name = null,
@@ -129,7 +132,8 @@ class Discover extends Console\Command\Command
 		) {
 			$connectorId = $input->getOption('connector');
 
-			$findConnectorQuery = new Queries\Entities\FindConnectors();
+			$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
+			$findConnectorQuery->byType(Entities\ShellyConnector::TYPE);
 
 			if (Uuid\Uuid::isValid($connectorId)) {
 				$findConnectorQuery->byId(Uuid\Uuid::fromString($connectorId));
@@ -137,7 +141,7 @@ class Discover extends Console\Command\Command
 				$findConnectorQuery->byIdentifier($connectorId);
 			}
 
-			$connector = $this->connectorsRepository->findOneBy($findConnectorQuery, Entities\ShellyConnector::class);
+			$connector = $this->connectorsConfigurationRepository->findOneBy($findConnectorQuery);
 
 			if ($connector === null) {
 				$io->warning(
@@ -149,16 +153,14 @@ class Discover extends Console\Command\Command
 		} else {
 			$connectors = [];
 
-			$findConnectorsQuery = new Queries\Entities\FindConnectors();
+			$findConnectorsQuery = new DevicesQueries\Configuration\FindConnectors();
+			$findConnectorsQuery->byType(Entities\ShellyConnector::TYPE);
 
-			$systemConnectors = $this->connectorsRepository->findAllBy(
-				$findConnectorsQuery,
-				Entities\ShellyConnector::class,
-			);
+			$systemConnectors = $this->connectorsConfigurationRepository->findAllBy($findConnectorsQuery);
 			usort(
 				$systemConnectors,
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (Entities\ShellyConnector $a, Entities\ShellyConnector $b): int => $a->getIdentifier() <=> $b->getIdentifier()
+				static fn (MetadataDocuments\DevicesModule\Connector $a, MetadataDocuments\DevicesModule\Connector $b): int => $a->getIdentifier() <=> $b->getIdentifier()
 			);
 
 			foreach ($systemConnectors as $connector) {
@@ -175,13 +177,11 @@ class Discover extends Console\Command\Command
 			if (count($connectors) === 1) {
 				$connectorIdentifier = array_key_first($connectors);
 
-				$findConnectorQuery = new Queries\Entities\FindConnectors();
+				$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
 				$findConnectorQuery->byIdentifier($connectorIdentifier);
+				$findConnectorQuery->byType(Entities\ShellyConnector::TYPE);
 
-				$connector = $this->connectorsRepository->findOneBy(
-					$findConnectorQuery,
-					Entities\ShellyConnector::class,
-				);
+				$connector = $this->connectorsConfigurationRepository->findOneBy($findConnectorQuery);
 
 				if ($connector === null) {
 					$io->warning(
@@ -213,7 +213,7 @@ class Discover extends Console\Command\Command
 					$this->translator->translate('//shelly-connector.cmd.base.messages.answerNotValid'),
 				);
 				$question->setValidator(
-					function (string|int|null $answer) use ($connectors): Entities\ShellyConnector {
+					function (string|int|null $answer) use ($connectors): MetadataDocuments\DevicesModule\Connector {
 						if ($answer === null) {
 							throw new Exceptions\Runtime(
 								sprintf(
@@ -232,13 +232,11 @@ class Discover extends Console\Command\Command
 						$identifier = array_search($answer, $connectors, true);
 
 						if ($identifier !== false) {
-							$findConnectorQuery = new Queries\Entities\FindConnectors();
+							$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
 							$findConnectorQuery->byIdentifier($identifier);
+							$findConnectorQuery->byType(Entities\ShellyConnector::TYPE);
 
-							$connector = $this->connectorsRepository->findOneBy(
-								$findConnectorQuery,
-								Entities\ShellyConnector::class,
-							);
+							$connector = $this->connectorsConfigurationRepository->findOneBy($findConnectorQuery);
 
 							if ($connector !== null) {
 								return $connector;
@@ -255,7 +253,7 @@ class Discover extends Console\Command\Command
 				);
 
 				$connector = $io->askQuestion($question);
-				assert($connector instanceof Entities\ShellyConnector);
+				assert($connector instanceof MetadataDocuments\DevicesModule\Connector);
 			}
 		}
 
@@ -267,6 +265,8 @@ class Discover extends Console\Command\Command
 			return Console\Command\Command::SUCCESS;
 		}
 
+		$io->info($this->translator->translate('//shelly-connector.cmd.discover.messages.starting'));
+
 		$this->executedTime = $this->dateTimeFactory->getNow();
 
 		$serviceCmd = $symfonyApp->find(DevicesCommands\Connector::NAME);
@@ -277,6 +277,10 @@ class Discover extends Console\Command\Command
 			'--no-interaction' => true,
 			'--quiet' => true,
 		]), $output);
+
+		$io->newLine(2);
+
+		$io->info($this->translator->translate('//shelly-connector.cmd.discover.messages.stopping'));
 
 		if ($result !== Console\Command\Command::SUCCESS) {
 			$io->error($this->translator->translate('//shelly-connector.cmd.execute.messages.error'));
@@ -298,11 +302,9 @@ class Discover extends Console\Command\Command
 	private function showResults(
 		Style\SymfonyStyle $io,
 		Output\OutputInterface $output,
-		Entities\ShellyConnector $connector,
+		MetadataDocuments\DevicesModule\Connector $connector,
 	): void
 	{
-		$io->newLine();
-
 		$table = new Console\Helper\Table($output);
 		$table->setHeaders([
 			'#',
@@ -315,10 +317,11 @@ class Discover extends Console\Command\Command
 
 		$foundDevices = 0;
 
-		$findDevicesQuery = new Queries\Entities\FindDevices();
+		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDevicesQuery->forConnector($connector);
+		$findDevicesQuery->byType(Entities\ShellyDevice::TYPE);
 
-		$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\ShellyDevice::class);
+		$devices = $this->devicesConfigurationRepository->findAllBy($findDevicesQuery);
 
 		foreach ($devices as $device) {
 			$createdAt = $device->getCreatedAt();
@@ -335,17 +338,17 @@ class Discover extends Console\Command\Command
 					$device->getId()->toString(),
 					$device->getName() ?? $device->getIdentifier(),
 					$this->translator->translate(
-						'//shelly-connector.cmd.install.answers.generation.' . $device->getGeneration()->getValue(),
+						'//shelly-connector.cmd.install.answers.generation.' . $this->deviceHelper->getGeneration(
+							$device,
+						)->getValue(),
 					),
-					$device->getModel() ?? 'N/A',
-					$device->getLocalAddress() ?? 'N/A',
+					$this->deviceHelper->getModel($device) ?? 'N/A',
+					$this->deviceHelper->getLocalAddress($device) ?? 'N/A',
 				]);
 			}
 		}
 
 		if ($foundDevices > 0) {
-			$io->newLine();
-
 			$io->info(sprintf(
 				$this->translator->translate('//shelly-connector.cmd.discover.messages.foundDevices'),
 				$foundDevices,

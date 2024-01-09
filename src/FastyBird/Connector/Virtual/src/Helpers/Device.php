@@ -22,6 +22,7 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use function assert;
 use function floatval;
 use function is_numeric;
 
@@ -58,11 +59,12 @@ final class Device
 			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
 		);
 
-		$value = $property?->getValue();
-
-		if (!is_numeric($value)) {
+		if ($property?->getValue() === null) {
 			return Entities\VirtualDevice::STATE_PROCESSING_DELAY;
 		}
+
+		$value = $property->getValue();
+		assert(is_numeric($value));
 
 		return floatval($value);
 	}

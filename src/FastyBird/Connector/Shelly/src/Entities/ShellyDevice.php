@@ -172,7 +172,7 @@ class ShellyDevice extends DevicesEntities\Devices\Device
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function hasAuthentication(): bool|null
+	public function hasAuthentication(): bool
 	{
 		$property = $this->properties
 			->filter(
