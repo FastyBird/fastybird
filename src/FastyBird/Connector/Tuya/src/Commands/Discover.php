@@ -264,6 +264,8 @@ class Discover extends Console\Command\Command
 			return Console\Command\Command::SUCCESS;
 		}
 
+		$io->info($this->translator->translate('//tuya-connector.cmd.discover.messages.starting'));
+
 		$this->executedTime = $this->dateTimeFactory->getNow();
 
 		$serviceCmd = $symfonyApp->find(DevicesCommands\Connector::NAME);
@@ -274,6 +276,10 @@ class Discover extends Console\Command\Command
 			'--no-interaction' => true,
 			'--quiet' => true,
 		]), $output);
+
+		$io->newLine(2);
+
+		$io->info($this->translator->translate('//tuya-connector.cmd.discover.messages.stopping'));
 
 		if ($result !== Console\Command\Command::SUCCESS) {
 			$io->error($this->translator->translate('//tuya-connector.cmd.execute.messages.error'));
@@ -297,8 +303,6 @@ class Discover extends Console\Command\Command
 		MetadataDocuments\DevicesModule\Connector $connector,
 	): void
 	{
-		$io->newLine();
-
 		$table = new Console\Helper\Table($output);
 		$table->setHeaders([
 			'#',
@@ -311,7 +315,7 @@ class Discover extends Console\Command\Command
 		$foundDevices = 0;
 
 		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
-		$findDevicesQuery->byConnectorId($connector->getId());
+		$findDevicesQuery->forConnector($connector);
 		$findDevicesQuery->byType(Entities\TuyaDevice::TYPE);
 
 		$devices = $this->devicesConfigurationRepository->findAllBy($findDevicesQuery);
@@ -337,8 +341,6 @@ class Discover extends Console\Command\Command
 		}
 
 		if ($foundDevices > 0) {
-			$io->newLine();
-
 			$io->info(sprintf(
 				$this->translator->translate('//tuya-connector.cmd.discover.messages.foundDevices'),
 				$foundDevices,

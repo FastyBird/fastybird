@@ -316,7 +316,7 @@ class Discover extends Console\Command\Command
 		$foundDevices = 0;
 
 		$findDevicesQuery = new Queries\Entities\FindDevices();
-		$findDevicesQuery->byConnectorId($connector->getId());
+		$findDevicesQuery->forConnector($connector);
 
 		$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\ShellyDevice::class);
 

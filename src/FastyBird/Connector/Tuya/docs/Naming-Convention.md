@@ -34,10 +34,18 @@ or to communicate with device. In case some of the mandatory property is missing
 ### Channel Property
 
 Channel related properties are used for storing actual state of [Tuya](https://www.tuya.com) device. It could be switch `state` or light `brightness`.
-These values are read from television and stored in system.
+These values are read from device and stored in system.
 
 ## DPS - Data Points
 
 The [Tuya](https://www.tuya.com) devices transmit information, referred to as "data points" (DPS) or "device function points," in a JSON string format.
 These DPS attributes determine the state of the device. The keys within the DPS dictionary correspond to key-value pairs,
 where the key is the DP ID and its value is the dpValue.
+
+## Device Mode
+
+There are two devices modes supported by this connector.
+
+The first mode is **Cloud mode** and uses communication with [Tuya](https://www.tuya.com) cloud servers.
+The second mode is **Local mode** and is supported by [Tuya](https://www.tuya.com) devices. It allows you to control device
+through local API.

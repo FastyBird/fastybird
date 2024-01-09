@@ -18,7 +18,7 @@ The console will prompt for confirmation before proceeding with the discovery pr
 
 ```
 Tuya connector - discovery
-============================
+==========================
 
  ! [NOTE] This action will run connector devices discovery.
 

@@ -5,4 +5,4 @@ Thank you for testing, reporting and contributing.
 
 ***
 Homepage [https://www.fastybird.com](https://www.fastybird.com) and
-repository [https://github.com/fastybird/tuya-connector](https://github.com/fastybird/tuya-connector).
+repository [https://github.com/fastybird/sonoff-connector](https://github.com/fastybird/sonoff-connector).
