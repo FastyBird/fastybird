@@ -231,13 +231,13 @@ final class StoreChannelPropertyState implements Queue\Consumer
 	 * @throws DevicesExceptions\InvalidState
 	 */
 	private function loadProperty(
-		Uuid\UuidInterface $connector,
+		Uuid\UuidInterface $connectorId,
 		string $deviceIdentifier,
 		string $dataPointIdentifier,
 	): MetadataDocuments\DevicesModule\ChannelDynamicProperty|null
 	{
 		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
-		$findDeviceQuery->byConnectorId($connector);
+		$findDeviceQuery->byConnectorId($connectorId);
 		$findDeviceQuery->byIdentifier($deviceIdentifier);
 		$findDeviceQuery->byType(Entities\TuyaDevice::TYPE);
 
