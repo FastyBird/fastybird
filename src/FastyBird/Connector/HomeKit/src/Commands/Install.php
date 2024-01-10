@@ -1062,7 +1062,7 @@ class Install extends Console\Command\Command
 			return;
 		}
 
-		$channel = $this->devicesRepository->find($channel->getId(), Entities\HomeKitChannel::class);
+		$channel = $this->channelsRepository->find($channel->getId(), Entities\HomeKitChannel::class);
 		assert($channel instanceof Entities\HomeKitChannel);
 
 		$this->askManageServiceAction($io, $channel);
@@ -1242,7 +1242,7 @@ class Install extends Console\Command\Command
 			return;
 		}
 
-		$channel = $this->devicesRepository->find($channel->getId(), Entities\HomeKitChannel::class);
+		$channel = $this->channelsRepository->find($channel->getId(), Entities\HomeKitChannel::class);
 		assert($channel instanceof Entities\HomeKitChannel);
 
 		$this->askManageServiceAction($io, $channel);
