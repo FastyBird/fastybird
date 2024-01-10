@@ -14,7 +14,7 @@ A device in the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedi
 ## Channel
 
 A channel in the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem refers to a entity which is representing a logical part of a physical
-[Shelly](https://shelly.cloud) device eg. button, relay state, light state.
+[Shelly](https://shelly.cloud) device e.g. button, relay state, light state.
 
 ## Property
 

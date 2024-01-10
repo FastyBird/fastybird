@@ -29,6 +29,32 @@ Only Zigbee devices are now supported. In future will be supported other types. 
 A third-party device in the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem refers to an entity that represents virtual device which
 is mapped to other device connected to [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) and allow you to be controlled via **Sonoff NS Panel** interface.
 
+## Channel
+
+A channel in the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem refers to a entity which is mapping devices capabilities of connected
+sub-devices or third-party devices like button, relay state, light state.
+
+## Property
+
+A property in the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem refers to a entity which is holding configuration values or
+device actual state of a device. Connector, Device and Channel entity has own Property entities.
+
+### Connector Property
+
+Connector related properties are used to store configuration like `communication mode`. This configuration values are used
+to connect to **Sonoff NS Panel** devices.
+
+### Device Property
+
+Device related properties are used to store configuration like `ip address`, `communication port` or to store basic device information
+like `hardware model`, `manufacturer` or `access credential`. Some of them have to be configured to be able to use this connector
+or to communicate with device. In case some of the mandatory property is missing, connector will log and error.
+
+### Channel Property
+
+Channel related properties are used for mapping devices capabilities protocols which are properties for storing device actual state.
+It could be a switch `state` or a light `brightness`. These values are read from device and stored in system.
+
 ## Device Capability
 
 A capability is an entity that refers to a specific functionality or feature that a device provides. For example,
