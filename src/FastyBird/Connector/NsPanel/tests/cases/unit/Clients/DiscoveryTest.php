@@ -6,15 +6,17 @@ use Error;
 use FastyBird\Connector\NsPanel\Clients;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
-use FastyBird\Connector\NsPanel\Queries;
+use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Connector\NsPanel\Services;
 use FastyBird\Connector\NsPanel\Tests;
 use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette\DI;
 use Nette\Utils;
 use Psr\Http;
@@ -75,15 +77,16 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 			$httpClientFactory,
 		);
 
-		$connectorsRepository = $this->getContainer()->getByType(
-			DevicesModels\Entities\Connectors\ConnectorsRepository::class,
+		$connectorsConfigurationRepository = $this->getContainer()->getByType(
+			DevicesModels\Configuration\Connectors\Repository::class,
 		);
 
-		$findConnectorQuery = new Queries\Entities\FindConnectors();
+		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
 		$findConnectorQuery->byIdentifier('ns-panel');
+		$findConnectorQuery->byType(Entities\NsPanelConnector::TYPE);
 
-		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\NsPanelConnector::class);
-		self::assertInstanceOf(Entities\NsPanelConnector::class, $connector);
+		$connector = $connectorsConfigurationRepository->findOneBy($findConnectorQuery);
+		self::assertInstanceOf(MetadataDocuments\DevicesModule\Connector::class, $connector);
 
 		$clientFactory = $this->getContainer()->getByType(Clients\DiscoveryFactory::class);
 
@@ -170,33 +173,44 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 
 		$consumers->consume();
 
-		$devicesRepository = $this->getContainer()->getByType(DevicesModels\Entities\Devices\DevicesRepository::class);
-
-		$findDeviceQuery = new Queries\Entities\FindSubDevices();
-		$findDeviceQuery->forConnector($connector);
-		$findDeviceQuery->byIdentifier('a480062416');
-
-		$device = $devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\SubDevice::class);
-
-		self::assertInstanceOf(Entities\Devices\SubDevice::class, $device);
-		self::assertSame(Types\Category::TEMPERATURE_HUMIDITY_SENSOR, $device->getDisplayCategory()->getValue());
-		self::assertSame('eWeLink', $device->getManufacturer());
-		self::assertSame('TH01', $device->getModel());
-
-		$channelsRepository = $this->getContainer()->getByType(
-			DevicesModels\Entities\Channels\ChannelsRepository::class,
+		$devicesConfigurationRepository = $this->getContainer()->getByType(
+			DevicesModels\Configuration\Devices\Repository::class,
 		);
 
-		$findChannelsQuery = new Queries\Entities\FindChannels();
-		$findChannelsQuery->forDevice($device);
+		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDeviceQuery->forConnector($connector);
+		$findDeviceQuery->byIdentifier('a480062416');
+		$findDeviceQuery->byType(Entities\Devices\SubDevice::TYPE);
 
-		$channels = $channelsRepository->findAllBy($findChannelsQuery, Entities\NsPanelChannel::class);
+		$device = $devicesConfigurationRepository->findOneBy($findDeviceQuery);
+
+		$deviceHelper = $this->getContainer()->getByType(Helpers\Devices\SubDevice::class);
+
+		self::assertInstanceOf(MetadataDocuments\DevicesModule\Device::class, $device);
+		self::assertSame(
+			Types\Category::TEMPERATURE_HUMIDITY_SENSOR,
+			$deviceHelper->getDisplayCategory($device)->getValue(),
+		);
+		self::assertSame('eWeLink', $deviceHelper->getManufacturer($device));
+		self::assertSame('TH01', $deviceHelper->getModel($device));
+
+		$channelsConfigurationRepository = $this->getContainer()->getByType(
+			DevicesModels\Configuration\Channels\Repository::class,
+		);
+
+		$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
+		$findChannelsQuery->forDevice($device);
+		$findChannelsQuery->byType(Entities\NsPanelChannel::TYPE);
+
+		$channels = $channelsConfigurationRepository->findAllBy($findChannelsQuery);
+
+		$channelHelper = $this->getContainer()->getByType(Helpers\Channel::class);
 
 		self::assertCount(4, $channels);
 
 		foreach ($channels as $channel) {
 			self::assertContains(
-				$channel->getCapability()->getValue(),
+				$channelHelper->getCapability($channel)->getValue(),
 				[
 					Types\Capability::TEMPERATURE,
 					Types\Capability::HUMIDITY,

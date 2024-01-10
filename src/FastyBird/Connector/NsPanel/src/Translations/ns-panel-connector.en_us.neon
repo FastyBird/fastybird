@@ -124,6 +124,8 @@ cmd:
             noDevicesFound: "No devices were found"
             success: "Devices discovery was successfully finished"
             error: "Devices discovery failed. An error was logged."
+            starting: "Starting NS Panel connector discovery..."
+            stopping: "Stopping NS Panel connector discovery..."
 
     install:
         title: "NS Panel connector - installer"
@@ -297,6 +299,8 @@ cmd:
                     success: "Protocol \"%name%\" was successfully removed."
                     error: "Something went wrong, protocol could not be removed. An error was logged."
             discover:
+                starting: "Starting NS Panel connector discovery..."
+                stopping: "Stopping NS Panel connector discovery..."
                 success: "Devices discovery was successfully finished"
                 error: "Devices discovery failed. An error was logged."
             gateway:

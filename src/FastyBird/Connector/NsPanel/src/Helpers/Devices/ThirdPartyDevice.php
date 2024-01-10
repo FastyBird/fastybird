@@ -88,6 +88,10 @@ final class ThirdPartyDevice
 		$value = $property->getValue();
 		assert(is_string($value));
 
+		if (!Types\Category::isValidValue($value)) {
+			return Types\Category::get(Types\Category::UNKNOWN);
+		}
+
 		return Types\Category::get($property->getValue());
 	}
 
@@ -185,12 +189,12 @@ final class ThirdPartyDevice
 			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
 		);
 
-		if ($property === null) {
+		if ($property?->getValue() === null) {
 			return null;
 		}
 
 		$value = $property->getValue();
-		assert(is_string($value) || $value === null);
+		assert(is_string($value));
 
 		return $value;
 	}

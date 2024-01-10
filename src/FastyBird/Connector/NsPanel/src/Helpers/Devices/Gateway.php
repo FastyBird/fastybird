@@ -60,12 +60,12 @@ final class Gateway
 			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
 		);
 
-		if ($property === null) {
+		if ($property?->getValue() === null) {
 			return null;
 		}
 
 		$value = $property->getValue();
-		assert(is_string($value) || $value === null);
+		assert(is_string($value));
 
 		return $value;
 	}
@@ -86,12 +86,12 @@ final class Gateway
 			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
 		);
 
-		if ($property === null) {
+		if ($property?->getValue() === null) {
 			return null;
 		}
 
 		$value = $property->getValue();
-		assert(is_string($value) || $value === null);
+		assert(is_string($value));
 
 		return $value;
 	}
@@ -112,12 +112,12 @@ final class Gateway
 			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
 		);
 
-		if ($property === null) {
+		if ($property?->getValue() === null) {
 			return null;
 		}
 
 		$value = $property->getValue();
-		assert(is_string($value) || $value === null);
+		assert(is_string($value));
 
 		return $value;
 	}
@@ -138,12 +138,12 @@ final class Gateway
 			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
 		);
 
-		if ($property === null) {
+		if ($property?->getValue() === null) {
 			return null;
 		}
 
 		$value = $property->getValue();
-		assert(is_string($value) || $value === null);
+		assert(is_string($value));
 
 		return $value;
 	}
@@ -164,12 +164,12 @@ final class Gateway
 			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
 		);
 
-		if ($property === null) {
+		if ($property?->getValue() === null) {
 			return null;
 		}
 
 		$value = $property->getValue();
-		assert(is_string($value) || $value === null);
+		assert(is_string($value));
 
 		return $value;
 	}
@@ -190,11 +190,12 @@ final class Gateway
 			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
 		);
 
-		$value = $property?->getValue();
-
-		if (!is_numeric($value)) {
+		if ($property?->getValue() === null) {
 			return Entities\Devices\Gateway::STATE_READING_DELAY;
 		}
+
+		$value = $property->getValue();
+		assert(is_numeric($value));
 
 		return floatval($value);
 	}
@@ -215,11 +216,12 @@ final class Gateway
 			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
 		);
 
-		$value = $property?->getValue();
-
-		if (!is_numeric($value)) {
+		if ($property?->getValue() === null) {
 			return Entities\Devices\Gateway::HEARTBEAT_DELAY;
 		}
+
+		$value = $property->getValue();
+		assert(is_numeric($value));
 
 		return floatval($value);
 	}

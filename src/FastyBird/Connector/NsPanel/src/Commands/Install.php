@@ -294,6 +294,9 @@ class Install extends Console\Command\Command
 		$createGateways = (bool) $io->askQuestion($question);
 
 		if ($createGateways) {
+			$connector = $this->connectorsRepository->find($connector->getId(), Entities\NsPanelConnector::class);
+			assert($connector instanceof Entities\NsPanelConnector);
+
 			$this->createGateway($io, $connector);
 		}
 	}
@@ -450,6 +453,9 @@ class Install extends Console\Command\Command
 		if (!$manage) {
 			return;
 		}
+
+		$connector = $this->connectorsRepository->find($connector->getId(), Entities\NsPanelConnector::class);
+		assert($connector instanceof Entities\NsPanelConnector);
 
 		$this->askManageConnectorAction($io, $connector);
 	}
@@ -807,6 +813,9 @@ class Install extends Console\Command\Command
 			$createDevices = (bool) $io->askQuestion($question);
 
 			if ($createDevices) {
+				$gateway = $this->devicesRepository->find($gateway->getId(), Entities\Devices\Gateway::class);
+				assert($gateway instanceof Entities\Devices\Gateway);
+
 				$this->createDevice($io, $connector, $gateway);
 			}
 		}
@@ -1071,6 +1080,9 @@ class Install extends Console\Command\Command
 			return;
 		}
 
+		$gateway = $this->devicesRepository->find($gateway->getId(), Entities\Devices\Gateway::class);
+		assert($gateway instanceof Entities\Devices\Gateway);
+
 		$this->askManageGatewayAction($io, $connector, $gateway);
 	}
 
@@ -1255,6 +1267,8 @@ class Install extends Console\Command\Command
 
 		$serviceCmd = $symfonyApp->find(DevicesCommands\Connector::NAME);
 
+		$io->info($this->translator->translate('//ns-panel-connector.cmd.install.messages.discover.starting'));
+
 		$result = $serviceCmd->run(new Input\ArrayInput([
 			'--connector' => $connector->getId()->toString(),
 			'--mode' => DevicesCommands\Connector::MODE_DISCOVER,
@@ -1264,13 +1278,15 @@ class Install extends Console\Command\Command
 
 		$this->databaseHelper->clear();
 
+		$io->newLine(2);
+
+		$io->info($this->translator->translate('//ns-panel-connector.cmd.install.messages.discover.stopping'));
+
 		if ($result !== Console\Command\Command::SUCCESS) {
 			$io->error($this->translator->translate('//ns-panel-connector.cmd.install.messages.discover.error'));
 
 			return;
 		}
-
-		$io->newLine();
 
 		$table = new Console\Helper\Table($io);
 		$table->setHeaders([
@@ -1316,8 +1332,6 @@ class Install extends Console\Command\Command
 		}
 
 		if ($foundDevices > 0) {
-			$io->newLine();
-
 			$io->info(sprintf(
 				$this->translator->translate('//ns-panel-connector.cmd.install.messages.foundDevices'),
 				$foundDevices,
@@ -1448,6 +1462,9 @@ class Install extends Console\Command\Command
 
 			$this->databaseHelper->clear();
 		}
+
+		$device = $this->devicesRepository->find($device->getId(), Entities\Devices\ThirdPartyDevice::class);
+		assert($device instanceof Entities\Devices\ThirdPartyDevice);
 
 		do {
 			$channel = $this->createCapability($io, $device);
@@ -1873,6 +1890,9 @@ class Install extends Console\Command\Command
 
 			$this->databaseHelper->clear();
 		}
+
+		$channel = $this->channelsRepository->find($channel->getId(), Entities\NsPanelChannel::class);
+		assert($channel instanceof Entities\NsPanelChannel);
 
 		return $channel;
 	}

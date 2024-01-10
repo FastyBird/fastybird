@@ -256,7 +256,28 @@ final class Connector implements DevicesConnectors\Connector
 			],
 		);
 
-		$client = $this->discoveryClientFactory->create($this->connector);
+		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
+		$findConnectorQuery->byId($this->connector->getId());
+		$findConnectorQuery->byType(Entities\NsPanelConnector::TYPE);
+
+		$connector = $this->connectorsConfigurationRepository->findOneBy($findConnectorQuery);
+
+		if ($connector === null) {
+			$this->logger->error(
+				'Connector could not be loaded',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'type' => 'connector',
+					'connector' => [
+						'id' => $this->connector->getId()->toString(),
+					],
+				],
+			);
+
+			return;
+		}
+
+		$client = $this->discoveryClientFactory->create($connector);
 
 		$client->on('finished', function (): void {
 			$this->dispatcher?->dispatch(
