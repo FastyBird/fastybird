@@ -22,14 +22,12 @@ use FastyBird\Connector\FbMqtt\Exceptions;
 use FastyBird\Connector\FbMqtt\Helpers;
 use FastyBird\Connector\FbMqtt\Queue;
 use FastyBird\Connector\FbMqtt\Writers;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Connectors as DevicesConnectors;
-use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
-use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use InvalidArgumentException;
 use Nette;
 use Psr\EventDispatcher as PsrEventDispatcher;
@@ -64,14 +62,13 @@ final class Connector implements DevicesConnectors\Connector
 	 * @param array<Clients\ClientFactory> $clientsFactories
 	 */
 	public function __construct(
-		private readonly DevicesEntities\Connectors\Connector $connector,
+		private readonly MetadataDocuments\DevicesModule\Connector $connector,
 		private readonly array $clientsFactories,
 		private readonly Helpers\Connector $connectorHelper,
 		private readonly Writers\WriterFactory $writerFactory,
 		private readonly Queue\Queue $queue,
 		private readonly Queue\Consumers $consumers,
 		private readonly FbMqtt\Logger $logger,
-		private readonly DevicesModels\Configuration\Connectors\Repository $connectorsConfigurationRepository,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
@@ -87,7 +84,7 @@ final class Connector implements DevicesConnectors\Connector
 	 */
 	public function execute(): void
 	{
-		assert($this->connector instanceof Entities\FbMqttConnector);
+		assert($this->connector->getType() === Entities\FbMqttConnector::TYPE);
 
 		$this->logger->info(
 			'Starting FB MQTT connector service',
@@ -100,28 +97,7 @@ final class Connector implements DevicesConnectors\Connector
 			],
 		);
 
-		$findConnector = new DevicesQueries\Configuration\FindConnectors();
-		$findConnector->byId($this->connector->getId());
-		$findConnector->byType(Entities\FbMqttConnector::TYPE);
-
-		$connector = $this->connectorsConfigurationRepository->findOneBy($findConnector);
-
-		if ($connector === null) {
-			$this->logger->error(
-				'Connector could not be loaded',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
-					'type' => 'connector',
-					'connector' => [
-						'id' => $this->connector->getId()->toString(),
-					],
-				],
-			);
-
-			return;
-		}
-
-		$version = $this->connectorHelper->getProtocolVersion($connector);
+		$version = $this->connectorHelper->getProtocolVersion($this->connector);
 
 		foreach ($this->clientsFactories as $clientFactory) {
 			$rc = new ReflectionClass($clientFactory);
@@ -132,7 +108,7 @@ final class Connector implements DevicesConnectors\Connector
 				array_key_exists(Clients\ClientFactory::VERSION_CONSTANT_NAME, $constants)
 				&& $version->equalsValue($constants[Clients\ClientFactory::VERSION_CONSTANT_NAME])
 			) {
-				$this->client = $clientFactory->create($connector);
+				$this->client = $clientFactory->create($this->connector);
 			}
 		}
 
@@ -149,7 +125,7 @@ final class Connector implements DevicesConnectors\Connector
 
 		$this->client->connect();
 
-		$this->writer = $this->writerFactory->create($connector);
+		$this->writer = $this->writerFactory->create($this->connector);
 		$this->writer->connect();
 
 		$this->consumersTimer = $this->eventLoop->addPeriodicTimer(
@@ -173,7 +149,7 @@ final class Connector implements DevicesConnectors\Connector
 
 	public function discover(): void
 	{
-		assert($this->connector instanceof Entities\FbMqttConnector);
+		assert($this->connector->getType() === Entities\FbMqttConnector::TYPE);
 
 		$this->logger->error(
 			'Devices discovery is not allowed for FB MQTT connector type',

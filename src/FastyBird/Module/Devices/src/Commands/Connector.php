@@ -23,12 +23,12 @@ use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Exchange\Exchange as ExchangeExchange;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Connectors;
 use FastyBird\Module\Devices\Consumers;
-use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
@@ -81,7 +81,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 
 	private bool $isTerminating = false;
 
-	private Entities\Connectors\Connector|null $connector = null;
+	private MetadataDocuments\DevicesModule\Connector|null $connector = null;
 
 	private Connectors\Connector|null $service = null;
 
@@ -104,13 +104,13 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 	 * @param array<ExchangeExchange\Factory> $exchangeFactories
 	 */
 	public function __construct(
-		private readonly Models\Entities\Connectors\ConnectorsRepository $connectorsRepository,
-		private readonly Models\Entities\Connectors\Properties\PropertiesRepository $connectorsPropertiesRepository,
-		private readonly Models\Entities\Connectors\Controls\ControlsRepository $connectorsControlsRepository,
-		private readonly Models\Entities\Devices\DevicesRepository $devicesRepository,
-		private readonly Models\Entities\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
-		private readonly Models\Entities\Channels\ChannelsRepository $channelsRepository,
-		private readonly Models\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
+		private readonly Models\Configuration\Connectors\Repository $connectorsConfigurationRepository,
+		private readonly Models\Configuration\Connectors\Properties\Repository $connectorsPropertiesConfigurationRepository,
+		private readonly Models\Configuration\Connectors\Controls\Repository $connectorsControlsConfigurationRepository,
+		private readonly Models\Configuration\Devices\Repository $devicesConfigurationRepository,
+		private readonly Models\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
+		private readonly Models\Configuration\Channels\Repository $channelsConfigurationRepository,
+		private readonly Models\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
 		private readonly Utilities\ConnectorConnection $connectorConnectionManager,
 		private readonly Utilities\DeviceConnection $deviceConnectionManager,
 		private readonly Utilities\ConnectorPropertiesStates $connectorPropertiesStateManager,
@@ -323,7 +323,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 		) {
 			$connectorId = $input->getOption('connector');
 
-			$findConnectorQuery = new Queries\Entities\FindConnectors();
+			$findConnectorQuery = new Queries\Configuration\FindConnectors();
 
 			if (Uuid\Uuid::isValid($connectorId)) {
 				$findConnectorQuery->byId(Uuid\Uuid::fromString($connectorId));
@@ -331,7 +331,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 				$findConnectorQuery->byIdentifier($connectorId);
 			}
 
-			$this->connector = $this->connectorsRepository->findOneBy($findConnectorQuery);
+			$this->connector = $this->connectorsConfigurationRepository->findOneBy($findConnectorQuery);
 
 			if ($this->connector === null) {
 				if ($input->getOption('quiet') === false) {
@@ -345,15 +345,15 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 		} else {
 			$connectors = [];
 
-			$findConnectorsQuery = new Queries\Entities\FindConnectors();
+			$findConnectorsQuery = new Queries\Configuration\FindConnectors();
 
-			foreach ($this->connectorsRepository->findAllBy($findConnectorsQuery) as $connector) {
+			foreach ($this->connectorsConfigurationRepository->findAllBy($findConnectorsQuery) as $connector) {
 				if ($this->mode === self::MODE_DISCOVER) {
-					$findConnectorControlQuery = new Queries\Entities\FindConnectorControls();
+					$findConnectorControlQuery = new Queries\Configuration\FindConnectorControls();
 					$findConnectorControlQuery->forConnector($connector);
 					$findConnectorControlQuery->byName(MetadataTypes\ControlName::NAME_DISCOVER);
 
-					$control = $this->connectorsControlsRepository->findOneBy($findConnectorControlQuery);
+					$control = $this->connectorsControlsConfigurationRepository->findOneBy($findConnectorControlQuery);
 
 					if ($control === null) {
 						continue;
@@ -408,10 +408,10 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 				return;
 			}
 
-			$findConnectorQuery = new Queries\Entities\FindConnectors();
+			$findConnectorQuery = new Queries\Configuration\FindConnectors();
 			$findConnectorQuery->byIdentifier($connectorIdentifierKey);
 
-			$this->connector = $this->connectorsRepository->findOneBy($findConnectorQuery);
+			$this->connector = $this->connectorsConfigurationRepository->findOneBy($findConnectorQuery);
 
 			if ($this->connector === null) {
 				if ($input->getOption('quiet') === false) {
@@ -438,11 +438,11 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 		}
 
 		if ($this->mode === self::MODE_DISCOVER) {
-			$findConnectorControlQuery = new Queries\Entities\FindConnectorControls();
+			$findConnectorControlQuery = new Queries\Configuration\FindConnectorControls();
 			$findConnectorControlQuery->forConnector($this->connector);
 			$findConnectorControlQuery->byName(MetadataTypes\ControlName::NAME_DISCOVER);
 
-			$control = $this->connectorsControlsRepository->findOneBy($findConnectorControlQuery);
+			$control = $this->connectorsControlsConfigurationRepository->findOneBy($findConnectorControlQuery);
 
 			if ($control === null) {
 				if ($input->getOption('quiet') === false) {
@@ -489,7 +489,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 		}
 
 		$this->eventLoop->futureTick(function (): void {
-			assert($this->connector instanceof Entities\Connectors\Connector);
+			assert($this->connector instanceof MetadataDocuments\DevicesModule\Connector);
 
 			if ($this->mode === self::MODE_DISCOVER) {
 				$this->dispatcher?->dispatch(new Events\BeforeConnectorDiscoveryStart($this->connector));
@@ -539,7 +539,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 					// Start connector service
 					$this->service->execute();
 
-					assert($this->connector instanceof Entities\Connectors\Connector);
+					assert($this->connector instanceof MetadataDocuments\DevicesModule\Connector);
 
 					$this->connectorConnectionManager->setState(
 						$this->connector,
@@ -679,24 +679,26 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function resetConnector(
-		Entities\Connectors\Connector $connector,
+		MetadataDocuments\DevicesModule\Connector $connector,
 		MetadataTypes\ConnectionState $state,
 	): void
 	{
-		$findConnectorPropertiesQuery = new Queries\Entities\FindConnectorDynamicProperties();
+		$findConnectorPropertiesQuery = new Queries\Configuration\FindConnectorDynamicProperties();
 		$findConnectorPropertiesQuery->forConnector($connector);
 
-		foreach ($this->connectorsPropertiesRepository->findAllBy(
+		$properties = $this->connectorsPropertiesConfigurationRepository->findAllBy(
 			$findConnectorPropertiesQuery,
-			Entities\Connectors\Properties\Dynamic::class,
-		) as $property) {
+			MetadataDocuments\DevicesModule\ConnectorDynamicProperty::class,
+		);
+
+		foreach ($properties as $property) {
 			$this->connectorPropertiesStateManager->setValidState($property, false);
 		}
 
-		$findDevicesQuery = new Queries\Entities\FindDevices();
-		$findDevicesQuery->byConnectorId($connector->getId());
+		$findDevicesQuery = new Queries\Configuration\FindDevices();
+		$findDevicesQuery->forConnector($connector);
 
-		foreach ($this->devicesRepository->findAllBy($findDevicesQuery) as $device) {
+		foreach ($this->devicesConfigurationRepository->findAllBy($findDevicesQuery) as $device) {
 			$this->resetDevice($device, $state);
 		}
 	}
@@ -711,41 +713,47 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function resetDevice(
-		Entities\Devices\Device $device,
+		MetadataDocuments\DevicesModule\Device $device,
 		MetadataTypes\ConnectionState $state,
 	): void
 	{
 		$this->deviceConnectionManager->setState($device, $state);
 
-		$findDevicePropertiesQuery = new Queries\Entities\FindDeviceDynamicProperties();
+		$findDevicePropertiesQuery = new Queries\Configuration\FindDeviceDynamicProperties();
 		$findDevicePropertiesQuery->forDevice($device);
 
-		foreach ($this->devicesPropertiesRepository->findAllBy(
+		$properties = $this->devicesPropertiesConfigurationRepository->findAllBy(
 			$findDevicePropertiesQuery,
-			Entities\Devices\Properties\Dynamic::class,
-		) as $property) {
+			MetadataDocuments\DevicesModule\DeviceDynamicProperty::class,
+		);
+
+		foreach ($properties as $property) {
 			$this->devicePropertiesStateManager->setValidState($property, false);
 		}
 
-		$findChannelsQuery = new Queries\Entities\FindChannels();
+		$findChannelsQuery = new Queries\Configuration\FindChannels();
 		$findChannelsQuery->forDevice($device);
 
-		foreach ($this->channelsRepository->findAllBy($findChannelsQuery) as $channel) {
-			$findChannelPropertiesQuery = new Queries\Entities\FindChannelDynamicProperties();
+		$channels = $this->channelsConfigurationRepository->findAllBy($findChannelsQuery);
+
+		foreach ($channels as $channel) {
+			$findChannelPropertiesQuery = new Queries\Configuration\FindChannelDynamicProperties();
 			$findChannelPropertiesQuery->forChannel($channel);
 
-			foreach ($this->channelsPropertiesRepository->findAllBy(
+			$properties = $this->channelsPropertiesConfigurationRepository->findAllBy(
 				$findChannelPropertiesQuery,
-				Entities\Channels\Properties\Dynamic::class,
-			) as $property) {
+				MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
+			);
+
+			foreach ($properties as $property) {
 				$this->channelPropertiesStateManager->setValidState($property, false);
 			}
 		}
 
-		$findChildrenQuery = new Queries\Entities\FindDevices();
+		$findChildrenQuery = new Queries\Configuration\FindDevices();
 		$findChildrenQuery->forParent($device);
 
-		foreach ($this->devicesRepository->findAllBy($findChildrenQuery) as $child) {
+		foreach ($this->devicesConfigurationRepository->findAllBy($findChildrenQuery) as $child) {
 			$this->resetDevice($child, $state);
 		}
 	}

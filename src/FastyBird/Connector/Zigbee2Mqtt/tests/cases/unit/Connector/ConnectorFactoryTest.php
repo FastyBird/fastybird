@@ -8,6 +8,7 @@ use FastyBird\Connector\Zigbee2Mqtt\Entities;
 use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
 use FastyBird\Connector\Zigbee2Mqtt\Tests\Cases\Unit\DbTestCase;
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use Nette;
 use Ramsey\Uuid;
@@ -26,18 +27,18 @@ final class ConnectorFactoryTest extends DbTestCase
 	 */
 	public function testCreateConnector(): void
 	{
-		$connectorsRepository = $this->getContainer()->getByType(
-			DevicesModels\Entities\Connectors\ConnectorsRepository::class,
+		$connectorsConfigurationRepository = $this->getContainer()->getByType(
+			DevicesModels\Configuration\Connectors\Repository::class,
 		);
 
 		$factory = $this->getContainer()->getByType(Connector\ConnectorFactory::class);
 
-		$connector = $connectorsRepository->find(
+		$connector = $connectorsConfigurationRepository->find(
 			Uuid\Uuid::fromString('f15d2072-fb60-421a-a85f-2566e4dc13fe'),
-			Entities\Zigbee2MqttConnector::class,
 		);
-		assert($connector instanceof Entities\Zigbee2MqttConnector);
+		assert($connector instanceof MetadataDocuments\DevicesModule\Connector);
 
+		self::assertSame(Entities\Zigbee2MqttConnector::TYPE, $connector->getType());
 		self::assertSame('f15d2072-fb60-421a-a85f-2566e4dc13fe', $connector->getId()->toString());
 
 		$connector = $factory->create($connector);

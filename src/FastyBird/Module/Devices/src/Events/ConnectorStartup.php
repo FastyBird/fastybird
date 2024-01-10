@@ -15,7 +15,7 @@
 
 namespace FastyBird\Module\Devices\Events;
 
-use FastyBird\Module\Devices\Entities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use Symfony\Contracts\EventDispatcher;
 
 /**
@@ -29,11 +29,11 @@ use Symfony\Contracts\EventDispatcher;
 class ConnectorStartup extends EventDispatcher\Event
 {
 
-	public function __construct(private readonly Entities\Connectors\Connector $connector)
+	public function __construct(private readonly MetadataDocuments\DevicesModule\Connector $connector)
 	{
 	}
 
-	public function getConnector(): Entities\Connectors\Connector
+	public function getConnector(): MetadataDocuments\DevicesModule\Connector
 	{
 		return $this->connector;
 	}

@@ -4,7 +4,8 @@
     "title" : "Devices module API",
     "version" : "1.0",
     "license" : {
-      "name" : "Apache 2.0"
+      "name" : "Apache 2.0",
+      "identifier": ""
     },
     "contact" : {
       "url" : "https://fastybird.com",

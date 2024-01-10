@@ -15,7 +15,7 @@
 
 namespace FastyBird\Module\Devices\Connectors;
 
-use FastyBird\Module\Devices\Entities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 
 /**
  * Connector factory interface
@@ -28,6 +28,6 @@ use FastyBird\Module\Devices\Entities;
 interface ConnectorFactory
 {
 
-	public function create(Entities\Connectors\Connector $connector): Connector;
+	public function create(MetadataDocuments\DevicesModule\Connector $connector): Connector;
 
 }
