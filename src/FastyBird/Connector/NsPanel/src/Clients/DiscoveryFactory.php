@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\NsPanel\Clients;
 
-use FastyBird\Connector\NsPanel\Entities;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 
 /**
  * Connector sub-devices discovery client factory
@@ -28,6 +28,6 @@ use FastyBird\Connector\NsPanel\Entities;
 interface DiscoveryFactory
 {
 
-	public function create(Entities\NsPanelConnector $connector): Discovery;
+	public function create(MetadataDocuments\DevicesModule\Connector $connector): Discovery;
 
 }

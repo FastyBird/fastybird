@@ -21,13 +21,14 @@ use FastyBird\Connector\NsPanel\API;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
-use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
 use React\Promise;
 use Throwable;
@@ -49,12 +50,13 @@ final class Discovery implements Evenement\EventEmitterInterface
 	use Evenement\EventEmitterTrait;
 
 	public function __construct(
-		private readonly Entities\NsPanelConnector $connector,
+		private readonly MetadataDocuments\DevicesModule\Connector $connector,
 		private readonly API\LanApiFactory $lanApiFactory,
 		private readonly Queue\Queue $queue,
 		private readonly Helpers\Entity $entityHelper,
+		private readonly Helpers\Devices\Gateway $gatewayHelper,
 		private readonly NsPanel\Logger $logger,
-		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
+		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 	)
 	{
 	}
@@ -64,7 +66,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function discover(Entities\Devices\Gateway|null $onlyGateway = null): void
+	public function discover(MetadataDocuments\DevicesModule\Device|null $onlyGateway = null): void
 	{
 		$promises = [];
 
@@ -97,13 +99,11 @@ final class Discovery implements Evenement\EventEmitterInterface
 				],
 			);
 
-			$findDevicesQuery = new Queries\Entities\FindGatewayDevices();
+			$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
 			$findDevicesQuery->forConnector($this->connector);
+			$findDevicesQuery->byType(Entities\Devices\Gateway::TYPE);
 
-			$gateways = $this->devicesRepository->findAllBy(
-				$findDevicesQuery,
-				Entities\Devices\Gateway::class,
-			);
+			$gateways = $this->devicesConfigurationRepository->findAllBy($findDevicesQuery);
 
 			foreach ($gateways as $gateway) {
 				$promises[] = $this->discoverSubDevices($gateway);
@@ -139,11 +139,12 @@ final class Discovery implements Evenement\EventEmitterInterface
 	/**
 	 * @return Promise\PromiseInterface<array<Entities\Clients\DiscoveredSubDevice>>
 	 *
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	private function discoverSubDevices(
-		Entities\Devices\Gateway $gateway,
+		MetadataDocuments\DevicesModule\Device $gateway,
 	): Promise\PromiseInterface
 	{
 		$deferred = new Promise\Deferred();
@@ -152,14 +153,17 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$this->connector->getIdentifier(),
 		);
 
-		if ($gateway->getIpAddress() === null || $gateway->getAccessToken() === null) {
+		if (
+			$this->gatewayHelper->getIpAddress($gateway) === null
+			|| $this->gatewayHelper->getAccessToken($gateway) === null
+		) {
 			return Promise\reject(new Exceptions\InvalidArgument('NS Panel is not configured'));
 		}
 
 		try {
 			$lanApi->getSubDevices(
-				$gateway->getIpAddress(),
-				$gateway->getAccessToken(),
+				$this->gatewayHelper->getIpAddress($gateway),
+				$this->gatewayHelper->getAccessToken($gateway),
 			)
 				->then(function (Entities\API\Response\GetSubDevices $response) use ($deferred, $gateway): void {
 					$deferred->resolve($this->handleFoundSubDevices($gateway, $response));
@@ -193,7 +197,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 	 * @return array<Entities\Clients\DiscoveredSubDevice>
 	 */
 	private function handleFoundSubDevices(
-		Entities\Devices\Gateway $gateway,
+		MetadataDocuments\DevicesModule\Device $gateway,
 		Entities\API\Response\GetSubDevices $subDevices,
 	): array
 	{
@@ -221,7 +225,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 						Entities\Messages\StoreSubDevice::class,
 						array_merge(
 							[
-								'connector' => $gateway->getConnector()->getId(),
+								'connector' => $gateway->getConnector(),
 								'gateway' => $gateway->getId(),
 							],
 							$subDevice->toArray(),
