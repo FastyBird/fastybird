@@ -24,11 +24,13 @@ container automatically.
   \API - Services and helpers related to API - for managing data exchange validation and data parsing
   \Clients - Services which handle communication with NsPanel devices or clouds
   \Commands - Services used for user console interface
+  \Controllers - HTTP api services for handling incomming requests
   \Entities - All entities used by connector
   \Helpers - Useful helpers for reading values, bulding entities etc.
   \Queue - Services related to connector internal communication
   \Schemas - {JSON:API} schemas mapping for API requests
   \Services - Communication services factories
+  \Servers - HTTP server related services
   \Translations - Connector translations
   \Writers - Services for handling request from other services
 ```
@@ -61,6 +63,9 @@ Each console command could be triggered like this :nerd_face:
 ```shell
 php bin/fb-console fb:ns-panel-connector:install
 ```
+
+> [!NOTE]
+The path to the console command may vary depending on your FastyBird application distribution. For more information, refer to the FastyBird documentation.
 
 # Known Issues and Limitations
 

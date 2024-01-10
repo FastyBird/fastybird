@@ -58,6 +58,9 @@ Each console command could be triggered like this :nerd_face:
 php bin/fb-console fb:shelly-connector:install
 ```
 
+> [!NOTE]
+The path to the console command may vary depending on your FastyBird application distribution. For more information, refer to the FastyBird documentation.
+
 # Troubleshooting
 
 ## Discovery Issues
