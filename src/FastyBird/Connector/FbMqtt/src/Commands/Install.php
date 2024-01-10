@@ -289,6 +289,9 @@ class Install extends Console\Command\Command
 		$createDevices = (bool) $io->askQuestion($question);
 
 		if ($createDevices) {
+			$connector = $this->connectorsRepository->find($connector->getId(), Entities\FbMqttConnector::class);
+			assert($connector instanceof Entities\FbMqttConnector);
+
 			$this->createDevice($io, $connector);
 		}
 	}
@@ -555,6 +558,9 @@ class Install extends Console\Command\Command
 		if (!$manage) {
 			return;
 		}
+
+		$connector = $this->connectorsRepository->find($connector->getId(), Entities\FbMqttConnector::class);
+		assert($connector instanceof Entities\FbMqttConnector);
 
 		$this->askManageConnectorAction($io, $connector);
 	}
