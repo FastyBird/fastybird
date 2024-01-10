@@ -180,7 +180,7 @@ trait ChannelProperty
 		} else {
 			if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
 				// Some Tuya devices has invalid values configured
-				// Eg. wifi dimmable device has allowed values "incandescent" and "halogen" but it also provide "led" value
+				// E.g. wi-fi dimmable device has allowed values "incandescent" and "halogen" but it also provide "led" value
 				$findPropertyQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
 				$findPropertyQuery->byId($property->getId());
 
