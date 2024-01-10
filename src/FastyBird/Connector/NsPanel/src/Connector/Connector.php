@@ -24,10 +24,10 @@ use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Connector\NsPanel\Servers;
 use FastyBird\Connector\NsPanel\Writers;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Connectors as DevicesConnectors;
-use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -68,7 +68,7 @@ final class Connector implements DevicesConnectors\Connector
 	 * @param array<Clients\ClientFactory> $clientsFactories
 	 */
 	public function __construct(
-		private readonly DevicesEntities\Connectors\Connector $connector,
+		private readonly MetadataDocuments\DevicesModule\Connector $connector,
 		private readonly array $clientsFactories,
 		private readonly Clients\DiscoveryFactory $discoveryClientFactory,
 		private readonly Helpers\Entity $entityHelper,
@@ -79,7 +79,6 @@ final class Connector implements DevicesConnectors\Connector
 		private readonly Servers\ServerFactory $serverFactory,
 		private readonly Writers\WriterFactory $writerFactory,
 		private readonly NsPanel\Logger $logger,
-		private readonly DevicesModels\Configuration\Connectors\Repository $connectorsConfigurationRepository,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		private readonly EventLoop\LoopInterface $eventLoop,
@@ -96,9 +95,7 @@ final class Connector implements DevicesConnectors\Connector
 	 */
 	public function execute(): void
 	{
-		assert($this->connector instanceof Entities\NsPanelConnector);
-
-		$mode = $this->connector->getClientMode();
+		assert($this->connector->getType() === Entities\NsPanelConnector::TYPE);
 
 		$this->logger->info(
 			'Starting NS Panel connector service',
@@ -111,26 +108,7 @@ final class Connector implements DevicesConnectors\Connector
 			],
 		);
 
-		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
-		$findConnectorQuery->byId($this->connector->getId());
-		$findConnectorQuery->byType(Entities\NsPanelConnector::TYPE);
-
-		$connector = $this->connectorsConfigurationRepository->findOneBy($findConnectorQuery);
-
-		if ($connector === null) {
-			$this->logger->error(
-				'Connector could not be loaded',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'connector',
-					'connector' => [
-						'id' => $this->connector->getId()->toString(),
-					],
-				],
-			);
-
-			return;
-		}
+		$mode = $this->connectorHelper->getClientMode($this->connector);
 
 		foreach ($this->clientsFactories as $clientFactory) {
 			$rc = new ReflectionClass($clientFactory);
@@ -143,7 +121,7 @@ final class Connector implements DevicesConnectors\Connector
 					&& $mode->equalsValue($constants[Clients\ClientFactory::MODE_CONSTANT_NAME])
 				) || $mode->equalsValue(NsPanel\Types\ClientMode::BOTH)
 			) {
-				$client = $clientFactory->create($connector);
+				$client = $clientFactory->create($this->connector);
 				$client->connect();
 
 				$this->clients[] = $client;
@@ -151,14 +129,14 @@ final class Connector implements DevicesConnectors\Connector
 		}
 
 		if (
-			$this->connectorHelper->getClientMode($connector)->equalsValue(NsPanel\Types\ClientMode::BOTH)
-			|| $this->connectorHelper->getClientMode($connector)->equalsValue(NsPanel\Types\ClientMode::DEVICE)
+			$mode->equalsValue(NsPanel\Types\ClientMode::BOTH)
+			|| $mode->equalsValue(NsPanel\Types\ClientMode::DEVICE)
 		) {
-			$this->server = $this->serverFactory->create($connector);
+			$this->server = $this->serverFactory->create($this->connector);
 			$this->server->connect();
 		}
 
-		$this->writer = $this->writerFactory->create($connector);
+		$this->writer = $this->writerFactory->create($this->connector);
 		$this->writer->connect();
 
 		$this->consumersTimer = $this->eventLoop->addPeriodicTimer(
@@ -172,9 +150,9 @@ final class Connector implements DevicesConnectors\Connector
 			$mode->equalsValue(NsPanel\Types\ClientMode::BOTH)
 			|| $mode->equalsValue(NsPanel\Types\ClientMode::DEVICE)
 		) {
-			$this->eventLoop->addTimer(1, function () use ($connector): void {
+			$this->eventLoop->addTimer(1, function (): void {
 				$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
-				$findDevicesQuery->forConnector($connector);
+				$findDevicesQuery->forConnector($this->connector);
 				$findDevicesQuery->byType(Entities\Devices\ThirdPartyDevice::TYPE);
 
 				$devices = $this->devicesConfigurationRepository->findAllBy($findDevicesQuery);
@@ -243,7 +221,7 @@ final class Connector implements DevicesConnectors\Connector
 	 */
 	public function discover(): void
 	{
-		assert($this->connector instanceof Entities\NsPanelConnector);
+		assert($this->connector->getType() === Entities\NsPanelConnector::TYPE);
 
 		$this->logger->info(
 			'Starting NS Panel connector discovery',
@@ -256,28 +234,7 @@ final class Connector implements DevicesConnectors\Connector
 			],
 		);
 
-		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
-		$findConnectorQuery->byId($this->connector->getId());
-		$findConnectorQuery->byType(Entities\NsPanelConnector::TYPE);
-
-		$connector = $this->connectorsConfigurationRepository->findOneBy($findConnectorQuery);
-
-		if ($connector === null) {
-			$this->logger->error(
-				'Connector could not be loaded',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-					'type' => 'connector',
-					'connector' => [
-						'id' => $this->connector->getId()->toString(),
-					],
-				],
-			);
-
-			return;
-		}
-
-		$client = $this->discoveryClientFactory->create($connector);
+		$client = $this->discoveryClientFactory->create($this->connector);
 
 		$client->on('finished', function (): void {
 			$this->dispatcher?->dispatch(
@@ -313,6 +270,8 @@ final class Connector implements DevicesConnectors\Connector
 
 	public function terminate(): void
 	{
+		assert($this->connector->getType() === Entities\NsPanelConnector::TYPE);
+
 		foreach ($this->clients as $client) {
 			$client->disconnect();
 		}

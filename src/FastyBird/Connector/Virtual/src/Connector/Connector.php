@@ -20,12 +20,10 @@ use FastyBird\Connector\Virtual\Devices;
 use FastyBird\Connector\Virtual\Entities;
 use FastyBird\Connector\Virtual\Queue;
 use FastyBird\Connector\Virtual\Writers;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Connectors as DevicesConnectors;
-use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
-use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
 use React\EventLoop;
 use function assert;
@@ -53,13 +51,12 @@ final class Connector implements DevicesConnectors\Connector
 	private EventLoop\TimerInterface|null $consumersTimer = null;
 
 	public function __construct(
-		private readonly DevicesEntities\Connectors\Connector $connector,
+		private readonly MetadataDocuments\DevicesModule\Connector $connector,
 		private readonly Devices\DevicesFactory $devicesFactory,
 		private readonly Writers\WriterFactory $writerFactory,
 		private readonly Queue\Queue $queue,
 		private readonly Queue\Consumers $consumers,
 		private readonly Virtual\Logger $logger,
-		private readonly DevicesModels\Configuration\Connectors\Repository $connectorsConfigurationRepository,
 		private readonly EventLoop\LoopInterface $eventLoop,
 	)
 	{
@@ -70,7 +67,7 @@ final class Connector implements DevicesConnectors\Connector
 	 */
 	public function execute(): void
 	{
-		assert($this->connector instanceof Entities\VirtualConnector);
+		assert($this->connector->getType() === Entities\VirtualConnector::TYPE);
 
 		$this->logger->info(
 			'Starting Virtual connector service',
@@ -83,30 +80,9 @@ final class Connector implements DevicesConnectors\Connector
 			],
 		);
 
-		$findConnector = new DevicesQueries\Configuration\FindConnectors();
-		$findConnector->byId($this->connector->getId());
-		$findConnector->byType(Entities\VirtualConnector::TYPE);
+		$this->devices = $this->devicesFactory->create($this->connector);
 
-		$connector = $this->connectorsConfigurationRepository->findOneBy($findConnector);
-
-		if ($connector === null) {
-			$this->logger->error(
-				'Connector could not be loaded',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
-					'type' => 'connector',
-					'connector' => [
-						'id' => $this->connector->getId()->toString(),
-					],
-				],
-			);
-
-			return;
-		}
-
-		$this->devices = $this->devicesFactory->create($connector);
-
-		$this->writer = $this->writerFactory->create($connector);
+		$this->writer = $this->writerFactory->create($this->connector);
 		$this->writer->connect();
 
 		$this->consumersTimer = $this->eventLoop->addPeriodicTimer(
@@ -132,7 +108,7 @@ final class Connector implements DevicesConnectors\Connector
 
 	public function discover(): void
 	{
-		assert($this->connector instanceof Entities\VirtualConnector);
+		assert($this->connector->getType() === Entities\VirtualConnector::TYPE);
 
 		$this->logger->error(
 			'Devices discovery is not allowed for Virtual connector type',
@@ -148,6 +124,8 @@ final class Connector implements DevicesConnectors\Connector
 
 	public function terminate(): void
 	{
+		assert($this->connector->getType() === Entities\VirtualConnector::TYPE);
+
 		$this->devices?->stop();
 
 		$this->writer?->disconnect();

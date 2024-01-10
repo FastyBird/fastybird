@@ -22,14 +22,12 @@ use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
 use FastyBird\Connector\Zigbee2Mqtt\Helpers;
 use FastyBird\Connector\Zigbee2Mqtt\Queue;
 use FastyBird\Connector\Zigbee2Mqtt\Writers;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Connectors as DevicesConnectors;
-use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
-use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use InvalidArgumentException;
 use Nette;
 use Psr\EventDispatcher as PsrEventDispatcher;
@@ -65,7 +63,7 @@ final class Connector implements DevicesConnectors\Connector
 	 * @param array<Clients\ClientFactory> $clientsFactories
 	 */
 	public function __construct(
-		private readonly DevicesEntities\Connectors\Connector $connector,
+		private readonly MetadataDocuments\DevicesModule\Connector $connector,
 		private readonly array $clientsFactories,
 		private readonly Clients\DiscoveryFactory $discoveryClientFactory,
 		private readonly Helpers\Connector $connectorHelper,
@@ -73,7 +71,6 @@ final class Connector implements DevicesConnectors\Connector
 		private readonly Queue\Queue $queue,
 		private readonly Queue\Consumers $consumers,
 		private readonly Zigbee2Mqtt\Logger $logger,
-		private readonly DevicesModels\Configuration\Connectors\Repository $connectorsConfigurationRepository,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
@@ -89,7 +86,7 @@ final class Connector implements DevicesConnectors\Connector
 	 */
 	public function execute(): void
 	{
-		assert($this->connector instanceof Entities\Zigbee2MqttConnector);
+		assert($this->connector->getType() === Entities\Zigbee2MqttConnector::TYPE);
 
 		$this->logger->info(
 			'Starting Zigbee2MQTT connector service',
@@ -102,28 +99,7 @@ final class Connector implements DevicesConnectors\Connector
 			],
 		);
 
-		$findConnector = new DevicesQueries\Configuration\FindConnectors();
-		$findConnector->byId($this->connector->getId());
-		$findConnector->byType(Entities\Zigbee2MqttConnector::TYPE);
-
-		$connector = $this->connectorsConfigurationRepository->findOneBy($findConnector);
-
-		if ($connector === null) {
-			$this->logger->error(
-				'Connector could not be loaded',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
-					'type' => 'connector',
-					'connector' => [
-						'id' => $this->connector->getId()->toString(),
-					],
-				],
-			);
-
-			return;
-		}
-
-		$mode = $this->connectorHelper->getClientMode($connector);
+		$mode = $this->connectorHelper->getClientMode($this->connector);
 
 		$client = null;
 
@@ -136,7 +112,7 @@ final class Connector implements DevicesConnectors\Connector
 				array_key_exists(Clients\ClientFactory::MODE_CONSTANT_NAME, $constants)
 				&& $mode->equalsValue($constants[Clients\ClientFactory::MODE_CONSTANT_NAME])
 			) {
-				$client = $clientFactory->create($connector);
+				$client = $clientFactory->create($this->connector);
 
 				$this->clients[] = $client;
 			}
@@ -155,7 +131,7 @@ final class Connector implements DevicesConnectors\Connector
 
 		$client->connect();
 
-		$this->writer = $this->writerFactory->create($connector);
+		$this->writer = $this->writerFactory->create($this->connector);
 		$this->writer->connect();
 
 		$this->consumersTimer = $this->eventLoop->addPeriodicTimer(
@@ -185,7 +161,7 @@ final class Connector implements DevicesConnectors\Connector
 	 */
 	public function discover(): void
 	{
-		assert($this->connector instanceof Entities\Zigbee2MqttConnector);
+		assert($this->connector->getType() === Entities\Zigbee2MqttConnector::TYPE);
 
 		$this->logger->info(
 			'Starting Zigbee2MQTT connector discovery',
@@ -198,28 +174,7 @@ final class Connector implements DevicesConnectors\Connector
 			],
 		);
 
-		$findConnector = new DevicesQueries\Configuration\FindConnectors();
-		$findConnector->byId($this->connector->getId());
-		$findConnector->byType(Entities\Zigbee2MqttConnector::TYPE);
-
-		$connector = $this->connectorsConfigurationRepository->findOneBy($findConnector);
-
-		if ($connector === null) {
-			$this->logger->error(
-				'Connector could not be loaded',
-				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
-					'type' => 'connector',
-					'connector' => [
-						'id' => $this->connector->getId()->toString(),
-					],
-				],
-			);
-
-			return;
-		}
-
-		$client = $this->discoveryClientFactory->create($connector);
+		$client = $this->discoveryClientFactory->create($this->connector);
 
 		$client->on('finished', function (): void {
 			$this->dispatcher?->dispatch(
@@ -260,6 +215,8 @@ final class Connector implements DevicesConnectors\Connector
 	 */
 	public function terminate(): void
 	{
+		assert($this->connector->getType() === Entities\Zigbee2MqttConnector::TYPE);
+
 		foreach ($this->clients as $client) {
 			$client->disconnect();
 		}
