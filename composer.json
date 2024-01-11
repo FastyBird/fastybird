@@ -14,7 +14,7 @@
         {
             "name": "FastyBird s.r.o.",
             "email": "code@fastybird.com",
-            "homepage": "https://www.fastybird.com"
+            "homepage": "https://www.fastybird.com/"
         },
         {
             "name": "Adam Kadlec",
@@ -127,6 +127,7 @@
     },
     "autoload": {
         "psr-4": {
+            "FastyBird\\Addon\\ThermostatDevice\\": "src/FastyBird/Addon/ThermostatDevice/src/",
             "FastyBird\\Automator\\DateTime\\": "src/FastyBird/Automator/DateTime/src/",
             "FastyBird\\Automator\\DevicesModule\\": "src/FastyBird/Automator/DevicesModule/src/",
             "FastyBird\\Bridge\\RedisDbDevicesModule\\": "src/FastyBird/Bridge/RedisDbDevicesModule/src/",
@@ -157,6 +158,10 @@
     },
     "autoload-dev": {
         "psr-4": {
+            "FastyBird\\Addon\\ThermostatDevice\\Tests\\Cases\\Unit\\": "src/FastyBird/Addon/ThermostatDevice/tests/cases/unit",
+            "FastyBird\\Addon\\ThermostatDevice\\Tests\\Fixtures\\": "src/FastyBird/Addon/ThermostatDevice/tests/fixtures",
+            "FastyBird\\Addon\\ThermostatDevice\\Tests\\Fixtures\\Dummy\\": "src/FastyBird/Addon/ThermostatDevice/tests/fixtures/dummy",
+            "FastyBird\\Addon\\ThermostatDevice\\Tests\\Tools\\": "src/FastyBird/Addon/ThermostatDevice/tests/tools",
             "FastyBird\\Automator\\DateTime\\Tests\\Cases\\Unit\\": "src/FastyBird/Automator/DateTime/tests/cases/unit",
             "FastyBird\\Automator\\DateTime\\Tests\\Tools\\": "src/FastyBird/Automator/DateTime/tests/tools",
             "FastyBird\\Automator\\DevicesModule\\Tests\\Cases\\Unit\\": "src/FastyBird/Automator/DevicesModule/tests/cases/unit",
@@ -277,6 +282,7 @@
         "fastybird/redisdb-triggers-module-bridge": "self.version",
         "fastybird/shelly-connector": "self.version",
         "fastybird/sonoff-connector": "self.version",
+        "fastybird/thermostat-device-addon": "self.version",
         "fastybird/triggers-module": "self.version",
         "fastybird/tuya-connector": "self.version",
         "fastybird/viera-connector": "self.version",

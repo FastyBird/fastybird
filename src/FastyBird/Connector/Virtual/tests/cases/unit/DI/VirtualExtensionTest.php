@@ -43,23 +43,12 @@ final class VirtualExtensionTest extends Tests\Cases\Unit\BaseTestCase
 		self::assertNotNull($container->getByType(Subscribers\Controls::class, false));
 
 		self::assertNotNull($container->getByType(Schemas\VirtualConnector::class, false));
-		self::assertNotNull($container->getByType(Schemas\Devices\Thermostat::class, false));
-		self::assertNotNull($container->getByType(Schemas\Channels\Thermostat::class, false));
-		self::assertNotNull($container->getByType(Schemas\Channels\Actors::class, false));
-		self::assertNotNull($container->getByType(Schemas\Channels\Sensors::class, false));
-		self::assertNotNull($container->getByType(Schemas\Channels\Preset::class, false));
 
 		self::assertNotNull($container->getByType(Hydrators\VirtualConnector::class, false));
-		self::assertNotNull($container->getByType(Hydrators\Devices\Thermostat::class, false));
-		self::assertNotNull($container->getByType(Hydrators\Channels\Thermostat::class, false));
-		self::assertNotNull($container->getByType(Hydrators\Channels\Actors::class, false));
-		self::assertNotNull($container->getByType(Hydrators\Channels\Sensors::class, false));
-		self::assertNotNull($container->getByType(Hydrators\Channels\Preset::class, false));
 
 		self::assertNotNull($container->getByType(Devices\DevicesFactory::class, false));
 
 		self::assertNotNull($container->getByType(Drivers\DriversManager::class, false));
-		self::assertNotNull($container->getByType(Drivers\ThermostatFactory::class, false));
 
 		self::assertNotNull($container->getByType(Helpers\Entity::class, false));
 

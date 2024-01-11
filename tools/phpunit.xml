@@ -12,6 +12,7 @@
          displayDetailsOnTestsThatTriggerWarnings="true"
 >
     <testsuite name="all">
+        <directory>../src/FastyBird/Addon/**/tests/cases/</directory>
         <directory>../src/FastyBird/Automator/**/tests/cases/</directory>
         <directory>../src/FastyBird/Bridge/**/tests/cases/</directory>
         <directory>../src/FastyBird/Connector/**/tests/cases/</directory>
@@ -22,6 +23,7 @@
     <coverage cacheDirectory="../var/tools/PHPUnit/coverage"/>
     <source>
         <include>
+            <directory suffix=".php">../src/FastyBird/Addon/**/tests/cases/</directory>
             <directory suffix=".php">../src/FastyBird/Automator/**/tests/cases/</directory>
             <directory suffix=".php">../src/FastyBird/Bridge/**/tests/cases/</directory>
             <directory suffix=".php">../src/FastyBird/Connector/**/tests/cases/</directory>
@@ -30,6 +32,7 @@
             <directory suffix=".php">../src/FastyBird/Plugin/**/tests/cases/</directory>
         </include>
         <exclude>
+            <directory>./src/FastyBird/Addon/**/tests</directory>
             <directory>./src/FastyBird/Automator/**/tests</directory>
             <directory>./src/FastyBird/Bridge/**/tests</directory>
             <directory>./src/FastyBird/Connector/**/tests</directory>

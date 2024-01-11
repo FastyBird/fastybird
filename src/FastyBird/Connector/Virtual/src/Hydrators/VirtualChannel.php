@@ -31,9 +31,4 @@ use FastyBird\Module\Devices\Hydrators as DevicesHydrators;
 abstract class VirtualChannel extends DevicesHydrators\Channels\Channel
 {
 
-	public function getEntityName(): string
-	{
-		return Entities\VirtualChannel::class;
-	}
-
 }

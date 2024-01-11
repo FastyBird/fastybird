@@ -7,7 +7,7 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:VirtualConnector!
- * @subpackage     Services
+ * @subpackage     Drivers
  * @since          1.0.0
  *
  * @date           16.10.23
@@ -22,7 +22,7 @@ use FastyBird\Library\Metadata\Documents as MetadataDocuments;
  * Driver factory
  *
  * @package        FastyBird:VirtualConnector!
- * @subpackage     Services
+ * @subpackage     Drivers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */

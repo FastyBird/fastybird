@@ -65,6 +65,8 @@ extensions:
     # FastyBird bridges
     fbRedisDbDevicesModuleBridge        : FastyBird\Bridge\RedisDbDevicesModule\DI\RedisDbDevicesModuleExtension
     fbRedisDbTriggersModuleBridge       : FastyBird\Bridge\RedisDbTriggersModule\DI\RedisDbTriggersModuleExtension
+    # FastyBird addons
+    fbThermostatDeviceAddon             : FastyBird\Addon\ThermostatDevice\DI\ThermostatDeviceExtension
 
 decorator:
     FastyBird\Plugin\WebServer\Router\Router:

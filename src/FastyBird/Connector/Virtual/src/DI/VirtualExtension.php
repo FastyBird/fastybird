@@ -107,14 +107,6 @@ class VirtualExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		 * DRIVERS
 		 */
 
-		$builder->addFactoryDefinition($this->prefix('drivers.thermostat'))
-			->setImplement(Drivers\ThermostatFactory::class)
-			->getResultDefinition()
-			->setType(Drivers\Thermostat::class)
-			->setArguments([
-				'logger' => $logger,
-			]);
-
 		$builder->addDefinition($this->prefix('drivers.manager'), new DI\Definitions\ServiceDefinition())
 			->setType(Drivers\DriversManager::class)
 			->setArguments([
@@ -220,69 +212,12 @@ class VirtualExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		$builder->addDefinition($this->prefix('schemas.connector.virtual'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\VirtualConnector::class);
 
-		$builder->addDefinition(
-			$this->prefix('schemas.device.virtual.thermostat'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Schemas\Devices\Thermostat::class);
-
-		$builder->addDefinition($this->prefix('schemas.channel.virtual.actors'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\Channels\Actors::class);
-
-		$builder->addDefinition(
-			$this->prefix('schemas.channel.virtual.preset'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Schemas\Channels\Preset::class);
-
-		$builder->addDefinition(
-			$this->prefix('schemas.channel.virtual.sensors'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Schemas\Channels\Sensors::class);
-
-		$builder->addDefinition(
-			$this->prefix('schemas.channel.virtual.thermostat'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Schemas\Channels\Thermostat::class);
-
 		/**
 		 * JSON-API HYDRATORS
 		 */
 
 		$builder->addDefinition($this->prefix('hydrators.connector.virtual'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\VirtualConnector::class);
-
-		$builder->addDefinition(
-			$this->prefix('hydrators.device.virtual.thermostat'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Hydrators\Devices\Thermostat::class);
-
-		$builder->addDefinition(
-			$this->prefix('hydrators.channel.virtual.actors'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Hydrators\Channels\Actors::class);
-
-		$builder->addDefinition(
-			$this->prefix('hydrators.channel.virtual.preset'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Hydrators\Channels\Preset::class);
-
-		$builder->addDefinition(
-			$this->prefix('hydrators.channel.virtual.sensors'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Hydrators\Channels\Sensors::class);
-
-		$builder->addDefinition(
-			$this->prefix('hydrators.channel.virtual.thermostat'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Hydrators\Channels\Thermostat::class);
 
 		/**
 		 * HELPERS
@@ -294,9 +229,6 @@ class VirtualExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		$builder->addDefinition($this->prefix('helpers.device'), new DI\Definitions\ServiceDefinition())
 			->setType(Helpers\Device::class);
 
-		$builder->addDefinition($this->prefix('helpers.thermostat'), new DI\Definitions\ServiceDefinition())
-			->setType(Helpers\Devices\Thermostat::class);
-
 		/**
 		 * COMMANDS
 		 */
@@ -304,23 +236,10 @@ class VirtualExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		$builder->addDefinition($this->prefix('commands.execute'), new DI\Definitions\ServiceDefinition())
 			->setType(Commands\Execute::class);
 
-		$thermostatCmd = $builder->addDefinition(
-			$this->prefix('commands.device.thermostat'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Commands\Devices\Thermostat::class)
-			->setArguments([
-				'logger' => $logger,
-			])
-			->setAutowired(false);
-
 		$builder->addDefinition($this->prefix('commands.install'), new DI\Definitions\ServiceDefinition())
 			->setType(Commands\Install::class)
 			->setArguments([
 				'logger' => $logger,
-				'commands' => [
-					Entities\Devices\Thermostat::TYPE => $thermostatCmd,
-				],
 			]);
 
 		/**
