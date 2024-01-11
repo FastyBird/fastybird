@@ -25,7 +25,7 @@ use FastyBird\Module\Devices\Entities as DevicesEntities;
 class Zigbee2MqttChannel extends DevicesEntities\Channels\Channel
 {
 
-	public const TYPE = 'zigbee2mqtt';
+	public const TYPE = 'zigbee2mqtt-connector';
 
 	public function getType(): string
 	{

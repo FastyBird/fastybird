@@ -30,7 +30,7 @@ use function is_string;
 class Zigbee2MqttConnector extends DevicesEntities\Connectors\Connector
 {
 
-	public const TYPE = 'zigbee2mqtt';
+	public const TYPE = 'zigbee2mqtt-connector';
 
 	public const DEFAULT_SERVER_ADDRESS = '127.0.0.1';
 

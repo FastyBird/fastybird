@@ -1,6 +1,6 @@
 INSERT
 IGNORE INTO `fb_devices_module_connectors` (`connector_id`, `connector_identifier`, `connector_name`, `connector_comment`, `connector_enabled`, `connector_type`, `created_at`, `updated_at`) VALUES
-(_binary 0x3c75e7f0bdfe407a823083dbbbdf0155, 'ns-panel', 'NS Panel', null, true, 'ns-panel', '2023-07-29 16:00:00', '2023-07-29 16:00:00');
+(_binary 0x3c75e7f0bdfe407a823083dbbbdf0155, 'ns-panel', 'NS Panel', null, true, 'ns-panel-connector', '2023-07-29 16:00:00', '2023-07-29 16:00:00');
 
 INSERT
 IGNORE INTO `fb_devices_module_connectors_controls` (`control_id`, `connector_id`, `control_name`, `created_at`, `updated_at`) VALUES

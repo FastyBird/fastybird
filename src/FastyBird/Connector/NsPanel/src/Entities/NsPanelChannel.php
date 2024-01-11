@@ -31,7 +31,7 @@ use function str_replace;
 class NsPanelChannel extends DevicesEntities\Channels\Channel
 {
 
-	public const TYPE = 'ns-panel';
+	public const TYPE = 'ns-panel-connector';
 
 	public function getType(): string
 	{

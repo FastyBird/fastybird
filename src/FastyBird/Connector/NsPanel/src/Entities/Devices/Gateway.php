@@ -30,7 +30,7 @@ use function is_string;
 class Gateway extends Entities\NsPanelDevice
 {
 
-	public const TYPE = 'ns-panel-gateway';
+	public const TYPE = 'ns-panel-connector-gateway';
 
 	public const STATE_READING_DELAY = 5_000.0;
 

@@ -1,6 +1,6 @@
 INSERT
 IGNORE INTO `fb_devices_module_connectors` (`connector_id`, `connector_identifier`, `connector_name`, `connector_comment`, `connector_enabled`, `connector_type`, `created_at`, `updated_at`) VALUES
-(_binary 0x2b1ce81f99334d52afd4bec3583e6a06, 'virtual', 'Virtual', null, true, 'virtual', '2023-10-15 11:00:00', '2023-10-15 11:00:00'),
+(_binary 0x2b1ce81f99334d52afd4bec3583e6a06, 'virtual', 'Virtual', null, true, 'virtual-connector', '2023-10-15 11:00:00', '2023-10-15 11:00:00'),
 (_binary 0xbda37bc79bd74083a925386ac5522325, 'universal-test-connector', 'Testing connector', null, true, 'dummy', '2023-10-15 11:00:00', '2023-10-15 11:00:00');
 
 INSERT

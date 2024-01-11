@@ -30,7 +30,7 @@ use function is_int;
 class NsPanelConnector extends DevicesEntities\Connectors\Connector
 {
 
-	public const TYPE = 'ns-panel';
+	public const TYPE = 'ns-panel-connector';
 
 	public function getType(): string
 	{

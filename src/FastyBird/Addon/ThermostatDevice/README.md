@@ -18,24 +18,25 @@
 
 ## What is FastyBird Thermostat Device addon?
 
-FastyBird Virtual connector is extension for [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem
-which allow you to create virtual devices composed from other physical devices.
+FastyBird Thermostat Device Addon is extension for [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem
+and its [Virtual connector](https://github.com/fastybird/virtual-connector) which allow you to create virtual software
+defined thermostat.
 
 ### Features:
 
-- Virtual device driver interface for developers
-- Full support for all devices from other connectors
-- Rich devices management for creating virtual devices
-- FastyBird Virtual Connector management for the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) [devices module](https://github.com/FastyBird/devices-module), allowing users to easily manage and monitor virtual devices
-- [{JSON:API}](https://jsonapi.org/) schemas for full API access, providing a standardized and consistent way for developers to access and manipulate virtual device data
+- Support for multiple user presets
+- Support for heater and coolers
+- Full support for mapping physical devices connected to [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem
+- Rich devices management for creating thermostat devices
+- [{JSON:API}](https://jsonapi.org/) schemas for full API access, providing a standardized and consistent way for developers to access and manipulate thermostat device data
 - Regular updates with new features and bug fixes, ensuring that the FastyBird Virtual Connector is always up-to-date and reliable.
 
-FastyBird Virtual Connector is a distributed extension that is developed in [PHP](https://www.php.net), built on the [Nette](https://nette.org) and [Symfony](https://symfony.com) frameworks,
+FastyBird Thermostat Device Addon is a distributed extension that is developed in [PHP](https://www.php.net), built on the [Nette](https://nette.org) and [Symfony](https://symfony.com) frameworks,
 and is licensed under [Apache2](http://www.apache.org/licenses/LICENSE-2.0).
 
 ## Requirements
 
-FastyBird Virtual connector is tested against PHP 8.1 and require installed [Process Control](https://www.php.net/manual/en/book.pcntl.php)
+FastyBird Thermostat Device Addon is tested against PHP 8.1 and require installed [Process Control](https://www.php.net/manual/en/book.pcntl.php)
 PHP extensions.
 
 ## Installation
@@ -49,7 +50,7 @@ composer require fastybird/thermostat-device-addon
 
 ## Documentation
 
-:book: Learn how to configure FastyBird virtual devices and manage them with [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) system
+:book: Learn how to configure FastyBird thermostat devices and manage them with [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) system
 in [documentation](https://github.com/FastyBird/thermostat-device-addon/wiki).
 
 # FastyBird

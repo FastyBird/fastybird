@@ -30,7 +30,7 @@ use function is_string;
 class Bridge extends Entities\Zigbee2MqttDevice
 {
 
-	public const TYPE = 'zigbee2mqtt-bridge';
+	public const TYPE = 'zigbee2mqtt-connector-bridge';
 
 	public const BASE_TOPIC = 'zigbee2mqtt';
 

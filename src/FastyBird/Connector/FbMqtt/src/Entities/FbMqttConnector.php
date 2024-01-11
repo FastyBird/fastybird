@@ -30,7 +30,7 @@ use function is_string;
 class FbMqttConnector extends DevicesEntities\Connectors\Connector
 {
 
-	public const TYPE = 'fb-mqtt';
+	public const TYPE = 'fb-mqtt-connector';
 
 	public const DEFAULT_SERVER_ADDRESS = '127.0.0.1';
 

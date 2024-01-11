@@ -25,7 +25,7 @@ use FastyBird\Module\Devices\Entities as DevicesEntities;
 class VirtualChannel extends DevicesEntities\Channels\Channel
 {
 
-	public const TYPE = 'virtual';
+	public const TYPE = 'virtual-connector';
 
 	public function getType(): string
 	{
