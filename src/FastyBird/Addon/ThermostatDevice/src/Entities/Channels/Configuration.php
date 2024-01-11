@@ -15,6 +15,7 @@
 
 namespace FastyBird\Addon\ThermostatDevice\Entities\Channels;
 
+use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Addon\ThermostatDevice\Entities;
 use FastyBird\Addon\ThermostatDevice\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;

@@ -15,6 +15,7 @@
 
 namespace FastyBird\Addon\ThermostatDevice\Entities;
 
+use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Addon\ThermostatDevice\Exceptions;
 use FastyBird\Addon\ThermostatDevice\Types;
 use FastyBird\Connector\Virtual\Entities as VirtualEntities;
