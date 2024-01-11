@@ -29,7 +29,17 @@ use function is_numeric;
 class Configuration extends Entities\ThermostatChannel
 {
 
-	public const TYPE = 'thermostat-device-configuration';
+	public const TYPE = 'thermostat-device-addon-configuration';
+
+	public function getType(): string
+	{
+		return self::TYPE;
+	}
+
+	public function getDiscriminatorName(): string
+	{
+		return self::TYPE;
+	}
 
 	public function getHvacMode(): DevicesEntities\Channels\Properties\Dynamic|null
 	{

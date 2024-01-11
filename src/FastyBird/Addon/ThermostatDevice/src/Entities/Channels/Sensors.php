@@ -25,7 +25,17 @@ use FastyBird\Module\Devices\Entities as DevicesEntities;
 class Sensors extends Entities\ThermostatChannel
 {
 
-	public const TYPE = 'thermostat-device-sensors';
+	public const TYPE = 'thermostat-device-addon-sensors';
+
+	public function getType(): string
+	{
+		return self::TYPE;
+	}
+
+	public function getDiscriminatorName(): string
+	{
+		return self::TYPE;
+	}
 
 	/**
 	 * @return array<int, DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped>

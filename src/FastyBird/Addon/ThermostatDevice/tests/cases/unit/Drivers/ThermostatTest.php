@@ -175,28 +175,28 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 				// Expected write entities
 				[
 					[
-						'connector' => '93e760e1-f011-4a33-a70d-c9629706ccf8',
+						'connector' => '2b1ce81f-9933-4d52-afd4-bec3583e6a06',
 						'device' => '552cea8a-0e81-41d9-be2f-839b079f315e',
 						'channel' => '9808b386-9ed4-4e58-88f1-b39f5f70ef39',
 						'property' => 'bceca543-2de7-44b1-8a33-87e9574b6731',
 						'value' => false,
 					],
 					[
-						'connector' => '93e760e1-f011-4a33-a70d-c9629706ccf8',
+						'connector' => '2b1ce81f-9933-4d52-afd4-bec3583e6a06',
 						'device' => '552cea8a-0e81-41d9-be2f-839b079f315e',
 						'channel' => 'c2c572b3-3248-44da-aca0-fd329e1d9418',
 						'property' => 'hvac_state',
 						'value' => Types\HvacState::OFF,
 					],
 					[
-						'connector' => '93e760e1-f011-4a33-a70d-c9629706ccf8',
+						'connector' => '2b1ce81f-9933-4d52-afd4-bec3583e6a06',
 						'device' => '552cea8a-0e81-41d9-be2f-839b079f315e',
 						'channel' => 'c2c572b3-3248-44da-aca0-fd329e1d9418',
 						'property' => 'actual_temperature',
 						'value' => 22.3,
 					],
 					[
-						'connector' => '93e760e1-f011-4a33-a70d-c9629706ccf8',
+						'connector' => '2b1ce81f-9933-4d52-afd4-bec3583e6a06',
 						'device' => '552cea8a-0e81-41d9-be2f-839b079f315e',
 						'channel' => 'c2c572b3-3248-44da-aca0-fd329e1d9418',
 						'property' => 'actual_floor_temperature',
@@ -220,28 +220,28 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 				// Expected write entities
 				[
 					[
-						'connector' => '93e760e1-f011-4a33-a70d-c9629706ccf8',
+						'connector' => '2b1ce81f-9933-4d52-afd4-bec3583e6a06',
 						'device' => '552cea8a-0e81-41d9-be2f-839b079f315e',
 						'channel' => '9808b386-9ed4-4e58-88f1-b39f5f70ef39',
 						'property' => 'bceca543-2de7-44b1-8a33-87e9574b6731',
 						'value' => true,
 					],
 					[
-						'connector' => '93e760e1-f011-4a33-a70d-c9629706ccf8',
+						'connector' => '2b1ce81f-9933-4d52-afd4-bec3583e6a06',
 						'device' => '552cea8a-0e81-41d9-be2f-839b079f315e',
 						'channel' => 'c2c572b3-3248-44da-aca0-fd329e1d9418',
 						'property' => 'hvac_state',
 						'value' => Types\HvacState::HEATING,
 					],
 					[
-						'connector' => '93e760e1-f011-4a33-a70d-c9629706ccf8',
+						'connector' => '2b1ce81f-9933-4d52-afd4-bec3583e6a06',
 						'device' => '552cea8a-0e81-41d9-be2f-839b079f315e',
 						'channel' => 'c2c572b3-3248-44da-aca0-fd329e1d9418',
 						'property' => 'actual_temperature',
 						'value' => 21.7,
 					],
 					[
-						'connector' => '93e760e1-f011-4a33-a70d-c9629706ccf8',
+						'connector' => '2b1ce81f-9933-4d52-afd4-bec3583e6a06',
 						'device' => '552cea8a-0e81-41d9-be2f-839b079f315e',
 						'channel' => 'c2c572b3-3248-44da-aca0-fd329e1d9418',
 						'property' => 'actual_floor_temperature',
@@ -265,28 +265,28 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 				// Expected write entities
 				[
 					[
-						'connector' => '93e760e1-f011-4a33-a70d-c9629706ccf8',
+						'connector' => '2b1ce81f-9933-4d52-afd4-bec3583e6a06',
 						'device' => '552cea8a-0e81-41d9-be2f-839b079f315e',
 						'channel' => '9808b386-9ed4-4e58-88f1-b39f5f70ef39',
 						'property' => 'bceca543-2de7-44b1-8a33-87e9574b6731',
 						'value' => true,
 					],
 					[
-						'connector' => '93e760e1-f011-4a33-a70d-c9629706ccf8',
+						'connector' => '2b1ce81f-9933-4d52-afd4-bec3583e6a06',
 						'device' => '552cea8a-0e81-41d9-be2f-839b079f315e',
 						'channel' => 'c2c572b3-3248-44da-aca0-fd329e1d9418',
 						'property' => 'hvac_state',
 						'value' => Types\HvacState::HEATING,
 					],
 					[
-						'connector' => '93e760e1-f011-4a33-a70d-c9629706ccf8',
+						'connector' => '2b1ce81f-9933-4d52-afd4-bec3583e6a06',
 						'device' => '552cea8a-0e81-41d9-be2f-839b079f315e',
 						'channel' => 'c2c572b3-3248-44da-aca0-fd329e1d9418',
 						'property' => 'actual_temperature',
 						'value' => 21.6,
 					],
 					[
-						'connector' => '93e760e1-f011-4a33-a70d-c9629706ccf8',
+						'connector' => '2b1ce81f-9933-4d52-afd4-bec3583e6a06',
 						'device' => '552cea8a-0e81-41d9-be2f-839b079f315e',
 						'channel' => 'c2c572b3-3248-44da-aca0-fd329e1d9418',
 						'property' => 'actual_floor_temperature',
@@ -310,28 +310,28 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 				// Expected write entities
 				[
 					[
-						'connector' => '93e760e1-f011-4a33-a70d-c9629706ccf8',
+						'connector' => '2b1ce81f-9933-4d52-afd4-bec3583e6a06',
 						'device' => '552cea8a-0e81-41d9-be2f-839b079f315e',
 						'channel' => '9808b386-9ed4-4e58-88f1-b39f5f70ef39',
 						'property' => 'bceca543-2de7-44b1-8a33-87e9574b6731',
 						'value' => false,
 					],
 					[
-						'connector' => '93e760e1-f011-4a33-a70d-c9629706ccf8',
+						'connector' => '2b1ce81f-9933-4d52-afd4-bec3583e6a06',
 						'device' => '552cea8a-0e81-41d9-be2f-839b079f315e',
 						'channel' => 'c2c572b3-3248-44da-aca0-fd329e1d9418',
 						'property' => 'hvac_state',
 						'value' => Types\HvacState::OFF,
 					],
 					[
-						'connector' => '93e760e1-f011-4a33-a70d-c9629706ccf8',
+						'connector' => '2b1ce81f-9933-4d52-afd4-bec3583e6a06',
 						'device' => '552cea8a-0e81-41d9-be2f-839b079f315e',
 						'channel' => 'c2c572b3-3248-44da-aca0-fd329e1d9418',
 						'property' => 'actual_temperature',
 						'value' => 22.3,
 					],
 					[
-						'connector' => '93e760e1-f011-4a33-a70d-c9629706ccf8',
+						'connector' => '2b1ce81f-9933-4d52-afd4-bec3583e6a06',
 						'device' => '552cea8a-0e81-41d9-be2f-839b079f315e',
 						'channel' => 'c2c572b3-3248-44da-aca0-fd329e1d9418',
 						'property' => 'actual_floor_temperature',
@@ -355,14 +355,14 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 				// Expected write entities
 				[
 					[
-						'connector' => '93e760e1-f011-4a33-a70d-c9629706ccf8',
+						'connector' => '2b1ce81f-9933-4d52-afd4-bec3583e6a06',
 						'device' => '552cea8a-0e81-41d9-be2f-839b079f315e',
 						'channel' => 'c2c572b3-3248-44da-aca0-fd329e1d9418',
 						'property' => 'actual_temperature',
 						'value' => 22.0,
 					],
 					[
-						'connector' => '93e760e1-f011-4a33-a70d-c9629706ccf8',
+						'connector' => '2b1ce81f-9933-4d52-afd4-bec3583e6a06',
 						'device' => '552cea8a-0e81-41d9-be2f-839b079f315e',
 						'channel' => 'c2c572b3-3248-44da-aca0-fd329e1d9418',
 						'property' => 'actual_floor_temperature',
@@ -386,14 +386,14 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 				// Expected write entities
 				[
 					[
-						'connector' => '93e760e1-f011-4a33-a70d-c9629706ccf8',
+						'connector' => '2b1ce81f-9933-4d52-afd4-bec3583e6a06',
 						'device' => '552cea8a-0e81-41d9-be2f-839b079f315e',
 						'channel' => 'c2c572b3-3248-44da-aca0-fd329e1d9418',
 						'property' => 'actual_temperature',
 						'value' => 22.0,
 					],
 					[
-						'connector' => '93e760e1-f011-4a33-a70d-c9629706ccf8',
+						'connector' => '2b1ce81f-9933-4d52-afd4-bec3583e6a06',
 						'device' => '552cea8a-0e81-41d9-be2f-839b079f315e',
 						'channel' => 'c2c572b3-3248-44da-aca0-fd329e1d9418',
 						'property' => 'actual_floor_temperature',
@@ -417,28 +417,28 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 				// Expected write entities
 				[
 					[
-						'connector' => '93e760e1-f011-4a33-a70d-c9629706ccf8',
+						'connector' => '2b1ce81f-9933-4d52-afd4-bec3583e6a06',
 						'device' => '552cea8a-0e81-41d9-be2f-839b079f315e',
 						'channel' => '9808b386-9ed4-4e58-88f1-b39f5f70ef39',
 						'property' => 'bceca543-2de7-44b1-8a33-87e9574b6731',
 						'value' => false,
 					],
 					[
-						'connector' => '93e760e1-f011-4a33-a70d-c9629706ccf8',
+						'connector' => '2b1ce81f-9933-4d52-afd4-bec3583e6a06',
 						'device' => '552cea8a-0e81-41d9-be2f-839b079f315e',
 						'channel' => 'c2c572b3-3248-44da-aca0-fd329e1d9418',
 						'property' => 'hvac_state',
 						'value' => Types\HvacState::OFF,
 					],
 					[
-						'connector' => '93e760e1-f011-4a33-a70d-c9629706ccf8',
+						'connector' => '2b1ce81f-9933-4d52-afd4-bec3583e6a06',
 						'device' => '552cea8a-0e81-41d9-be2f-839b079f315e',
 						'channel' => 'c2c572b3-3248-44da-aca0-fd329e1d9418',
 						'property' => 'actual_temperature',
 						'value' => 21.6,
 					],
 					[
-						'connector' => '93e760e1-f011-4a33-a70d-c9629706ccf8',
+						'connector' => '2b1ce81f-9933-4d52-afd4-bec3583e6a06',
 						'device' => '552cea8a-0e81-41d9-be2f-839b079f315e',
 						'channel' => 'c2c572b3-3248-44da-aca0-fd329e1d9418',
 						'property' => 'actual_floor_temperature',

@@ -29,7 +29,17 @@ use function is_numeric;
 class Preset extends Entities\ThermostatChannel
 {
 
-	public const TYPE = 'thermostat-device-preset';
+	public const TYPE = 'thermostat-device-addon-preset';
+
+	public function getType(): string
+	{
+		return self::TYPE;
+	}
+
+	public function getDiscriminatorName(): string
+	{
+		return self::TYPE;
+	}
 
 	public function getTargetTemp(): DevicesEntities\Channels\Properties\Dynamic|null
 	{

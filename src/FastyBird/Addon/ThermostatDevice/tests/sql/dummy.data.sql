@@ -9,7 +9,7 @@ IGNORE INTO `fb_devices_module_connectors_controls` (`control_id`, `connector_id
 
 INSERT
 IGNORE INTO `fb_devices_module_devices` (`device_id`, `connector_id`, `device_category`, `device_identifier`, `device_name`, `device_comment`, `params`, `created_at`, `updated_at`, `owner`, `device_type`) VALUES
-(_binary 0x552cea8a0e8141d9be2f839b079f315e, _binary 0x2b1ce81f99334d52afd4bec3583e6a06, 'generic', 'thermostat-office', 'Thermostat - Office', null, null, '2023-10-15 11:00:00', '2023-10-15 11:00:00', null, 'virtual-thermostat'),
+(_binary 0x552cea8a0e8141d9be2f839b079f315e, _binary 0x2b1ce81f99334d52afd4bec3583e6a06, 'generic', 'thermostat-office', 'Thermostat - Office', null, null, '2023-10-15 11:00:00', '2023-10-15 11:00:00', null, 'thermostat-device-addon'),
 (_binary 0x495a7b6804284bdcb098dca416f03363, _binary 0xbda37bc79bd74083a925386ac5522325, 'generic', 'universal-test-device', 'Actor & Sensor device', null, null, '2023-10-15 11:00:00', '2023-10-15 11:00:00', null, 'dummy');
 
 INSERT
@@ -21,12 +21,12 @@ IGNORE INTO `fb_devices_module_devices_properties` (`property_id`, `device_id`, 
 
 INSERT
 IGNORE INTO `fb_devices_module_channels` (`channel_id`, `device_id`, `channel_category`, `channel_identifier`, `channel_name`, `channel_comment`, `params`, `created_at`, `updated_at`, `channel_type`) VALUES
-(_binary 0xc2c572b3324844daaca0fd329e1d9418, _binary 0x552cea8a0e8141d9be2f839b079f315e, 'generic', 'thermostat', null, null, null, '2023-10-15 11:00:00', '2023-10-15 11:00:00', 'virtual-thermostat'),
-(_binary 0x29e4d707142d422499830e568f259639, _binary 0x552cea8a0e8141d9be2f839b079f315e, 'generic', 'sensors', null, null, null, '2023-10-15 11:00:00', '2023-10-15 11:00:00', 'virtual-sensors'),
-(_binary 0x9808b3869ed44e5888f1b39f5f70ef39, _binary 0x552cea8a0e8141d9be2f839b079f315e, 'generic', 'actors', null, null, null, '2023-10-15 11:00:00', '2023-10-15 11:00:00', 'virtual-actors'),
-(_binary 0xc55dcc2f43c84f03862ea5a2c5ba91c4, _binary 0x552cea8a0e8141d9be2f839b079f315e, 'generic', 'preset_away', null, null, null, '2023-10-15 11:00:00', '2023-10-15 11:00:00', 'virtual-preset'),
-(_binary 0xe1cb79d9f61840ac9576258a501a98be, _binary 0x552cea8a0e8141d9be2f839b079f315e, 'generic', 'preset_eco', null, null, null, '2023-10-15 11:00:00', '2023-10-15 11:00:00', 'virtual-preset'),
-(_binary 0x9791d405104c449583a1ffca996924ba, _binary 0x552cea8a0e8141d9be2f839b079f315e, 'generic', 'preset_home', null, null, null, '2023-10-15 11:00:00', '2023-10-15 11:00:00', 'virtual-preset'),
+(_binary 0xc2c572b3324844daaca0fd329e1d9418, _binary 0x552cea8a0e8141d9be2f839b079f315e, 'generic', 'thermostat', null, null, null, '2023-10-15 11:00:00', '2023-10-15 11:00:00', 'thermostat-device-addon-configuration'),
+(_binary 0x29e4d707142d422499830e568f259639, _binary 0x552cea8a0e8141d9be2f839b079f315e, 'generic', 'sensors', null, null, null, '2023-10-15 11:00:00', '2023-10-15 11:00:00', 'thermostat-device-addon-sensors'),
+(_binary 0x9808b3869ed44e5888f1b39f5f70ef39, _binary 0x552cea8a0e8141d9be2f839b079f315e, 'generic', 'actors', null, null, null, '2023-10-15 11:00:00', '2023-10-15 11:00:00', 'thermostat-device-addon-actors'),
+(_binary 0xc55dcc2f43c84f03862ea5a2c5ba91c4, _binary 0x552cea8a0e8141d9be2f839b079f315e, 'generic', 'preset_away', null, null, null, '2023-10-15 11:00:00', '2023-10-15 11:00:00', 'thermostat-device-addon-preset'),
+(_binary 0xe1cb79d9f61840ac9576258a501a98be, _binary 0x552cea8a0e8141d9be2f839b079f315e, 'generic', 'preset_eco', null, null, null, '2023-10-15 11:00:00', '2023-10-15 11:00:00', 'thermostat-device-addon-preset'),
+(_binary 0x9791d405104c449583a1ffca996924ba, _binary 0x552cea8a0e8141d9be2f839b079f315e, 'generic', 'preset_home', null, null, null, '2023-10-15 11:00:00', '2023-10-15 11:00:00', 'thermostat-device-addon-preset'),
 (_binary 0x6ecec6b9a48a48918d61d552e63e5f5a, _binary 0x495a7b6804284bdcb098dca416f03363, 'generic', 'thermometer', 'Heating element', null, null, '2023-10-15 11:00:00', '2023-10-15 11:00:00', 'channel');
 
 INSERT

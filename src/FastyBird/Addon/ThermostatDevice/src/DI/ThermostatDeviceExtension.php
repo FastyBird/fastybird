@@ -25,8 +25,6 @@ use FastyBird\Addon\ThermostatDevice\Hydrators;
 use FastyBird\Addon\ThermostatDevice\Schemas;
 use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
 use Nette\DI;
-use stdClass;
-use function assert;
 use const DIRECTORY_SEPARATOR;
 
 /**
@@ -58,8 +56,6 @@ class ThermostatDeviceExtension extends DI\CompilerExtension implements Translat
 	public function loadConfiguration(): void
 	{
 		$builder = $this->getContainerBuilder();
-		$configuration = $this->getConfig();
-		assert($configuration instanceof stdClass);
 
 		$logger = $builder->addDefinition($this->prefix('logger'), new DI\Definitions\ServiceDefinition())
 			->setType(ThermostatDevice\Logger::class)
