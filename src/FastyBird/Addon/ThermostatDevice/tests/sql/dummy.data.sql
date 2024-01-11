@@ -1,15 +1,15 @@
 INSERT
 IGNORE INTO `fb_devices_module_connectors` (`connector_id`, `connector_identifier`, `connector_name`, `connector_comment`, `connector_enabled`, `connector_type`, `created_at`, `updated_at`) VALUES
-(_binary 0x93e760e1f0114a33a70dc9629706ccf8, 'virtual', 'Virtual', null, true, 'virtual', '2023-10-15 11:00:00', '2023-10-15 11:00:00'),
+(_binary 0x2b1ce81f99334d52afd4bec3583e6a06, 'virtual', 'Virtual', null, true, 'virtual', '2023-10-15 11:00:00', '2023-10-15 11:00:00'),
 (_binary 0xbda37bc79bd74083a925386ac5522325, 'universal-test-connector', 'Testing connector', null, true, 'dummy', '2023-10-15 11:00:00', '2023-10-15 11:00:00');
 
 INSERT
 IGNORE INTO `fb_devices_module_connectors_controls` (`control_id`, `connector_id`, `control_name`, `created_at`, `updated_at`) VALUES
-(_binary 0xe7c9e5834af14b86b647f179207e6456, _binary 0x93e760e1f0114a33a70dc9629706ccf8, 'reboot', '2023-10-15 11:00:00', '2023-10-15 11:00:00');
+(_binary 0xe7c9e5834af14b86b647f179207e6456, _binary 0x2b1ce81f99334d52afd4bec3583e6a06, 'reboot', '2023-10-15 11:00:00', '2023-10-15 11:00:00');
 
 INSERT
 IGNORE INTO `fb_devices_module_devices` (`device_id`, `connector_id`, `device_category`, `device_identifier`, `device_name`, `device_comment`, `params`, `created_at`, `updated_at`, `owner`, `device_type`) VALUES
-(_binary 0x552cea8a0e8141d9be2f839b079f315e, _binary 0x93e760e1f0114a33a70dc9629706ccf8, 'generic', 'thermostat-office', 'Thermostat - Office', null, null, '2023-10-15 11:00:00', '2023-10-15 11:00:00', null, 'virtual-thermostat'),
+(_binary 0x552cea8a0e8141d9be2f839b079f315e, _binary 0x2b1ce81f99334d52afd4bec3583e6a06, 'generic', 'thermostat-office', 'Thermostat - Office', null, null, '2023-10-15 11:00:00', '2023-10-15 11:00:00', null, 'virtual-thermostat'),
 (_binary 0x495a7b6804284bdcb098dca416f03363, _binary 0xbda37bc79bd74083a925386ac5522325, 'generic', 'universal-test-device', 'Actor & Sensor device', null, null, '2023-10-15 11:00:00', '2023-10-15 11:00:00', null, 'dummy');
 
 INSERT
