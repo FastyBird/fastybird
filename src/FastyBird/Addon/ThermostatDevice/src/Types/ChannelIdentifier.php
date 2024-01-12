@@ -29,7 +29,7 @@ use function strval;
 class ChannelIdentifier extends Consistence\Enum\Enum
 {
 
-	public const THERMOSTAT = 'thermostat';
+	public const CONFIGURATION = 'configuration';
 
 	public const PRESET_AWAY = 'preset_away';
 

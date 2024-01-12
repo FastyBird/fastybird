@@ -29,11 +29,11 @@ use function strval;
 class ChannelPropertyIdentifier extends Consistence\Enum\Enum
 {
 
-	public const SENSOR = 'sensor';
+	public const OPENING_SENSOR = 'opening_sensor';
 
-	public const HEATER = 'heater';
+	public const HEATER_ACTOR = 'heater_actor';
 
-	public const COOLER = 'cooler';
+	public const COOLER_ACTOR = 'cooler_actor';
 
 	public const TARGET_SENSOR = 'target_sensor';
 

@@ -54,19 +54,19 @@ final class Device
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 */
-	public function getThermostat(
+	public function getConfiguration(
 		MetadataDocuments\DevicesModule\Device $device,
 	): MetadataDocuments\DevicesModule\Channel
 	{
 		$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 		$findChannelQuery->forDevice($device);
-		$findChannelQuery->byIdentifier(Types\ChannelIdentifier::THERMOSTAT);
+		$findChannelQuery->byIdentifier(Types\ChannelIdentifier::CONFIGURATION);
 		$findChannelQuery->byType(Entities\Channels\Configuration::TYPE);
 
 		$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 
 		if ($channel === null) {
-			throw new Exceptions\InvalidState('Thermostat channel is not configured');
+			throw new Exceptions\InvalidState('Configuration channel is not configured');
 		}
 
 		return $channel;
@@ -103,7 +103,7 @@ final class Device
 		MetadataDocuments\DevicesModule\Device $device,
 	): MetadataDocuments\DevicesModule\ChannelDynamicProperty|null
 	{
-		$channel = $this->getThermostat($device);
+		$channel = $this->getConfiguration($device);
 
 		$findPropertyQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
 		$findPropertyQuery->forChannel($channel);
@@ -123,7 +123,7 @@ final class Device
 		MetadataDocuments\DevicesModule\Device $device,
 	): MetadataDocuments\DevicesModule\ChannelDynamicProperty|null
 	{
-		$channel = $this->getThermostat($device);
+		$channel = $this->getConfiguration($device);
 
 		$findPropertyQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
 		$findPropertyQuery->forChannel($channel);
@@ -161,7 +161,7 @@ final class Device
 		} elseif ($preset->equalsValue(Types\ThermostatMode::ANTI_FREEZE)) {
 			$channel = $this->getPreset($device, Types\ChannelIdentifier::PRESET_ANTI_FREEZE);
 		} elseif ($preset->equalsValue(Types\ThermostatMode::MANUAL)) {
-			$channel = $this->getThermostat($device);
+			$channel = $this->getConfiguration($device);
 		} else {
 			throw new Exceptions\InvalidState('Provided preset is not configured');
 		}
@@ -200,7 +200,7 @@ final class Device
 		} elseif ($preset->equalsValue(Types\ThermostatMode::ANTI_FREEZE)) {
 			$channel = $this->getPreset($device, Types\ChannelIdentifier::PRESET_ANTI_FREEZE);
 		} elseif ($preset->equalsValue(Types\ThermostatMode::MANUAL)) {
-			$channel = $this->getThermostat($device);
+			$channel = $this->getConfiguration($device);
 		} else {
 			throw new Exceptions\InvalidState('Provided preset is not configured');
 		}
@@ -248,7 +248,7 @@ final class Device
 		} elseif ($preset->equalsValue(Types\ThermostatMode::ANTI_FREEZE)) {
 			$channel = $this->getPreset($device, Types\ChannelIdentifier::PRESET_ANTI_FREEZE);
 		} elseif ($preset->equalsValue(Types\ThermostatMode::MANUAL)) {
-			$channel = $this->getThermostat($device);
+			$channel = $this->getConfiguration($device);
 		} else {
 			throw new Exceptions\InvalidState('Provided preset is not configured');
 		}
@@ -280,7 +280,7 @@ final class Device
 	 */
 	public function getMaximumFloorTemp(MetadataDocuments\DevicesModule\Device $device): float
 	{
-		$channel = $this->getThermostat($device);
+		$channel = $this->getConfiguration($device);
 
 		$findPropertyQuery = new DevicesQueries\Configuration\FindChannelVariableProperties();
 		$findPropertyQuery->forChannel($channel);
@@ -309,7 +309,7 @@ final class Device
 	 */
 	public function getMinimumCycleDuration(MetadataDocuments\DevicesModule\Device $device): float|null
 	{
-		$channel = $this->getThermostat($device);
+		$channel = $this->getConfiguration($device);
 
 		$findPropertyQuery = new DevicesQueries\Configuration\FindChannelVariableProperties();
 		$findPropertyQuery->forChannel($channel);
@@ -341,7 +341,7 @@ final class Device
 	 */
 	public function getLowTargetTempTolerance(MetadataDocuments\DevicesModule\Device $device): float|null
 	{
-		$channel = $this->getThermostat($device);
+		$channel = $this->getConfiguration($device);
 
 		$findPropertyQuery = new DevicesQueries\Configuration\FindChannelVariableProperties();
 		$findPropertyQuery->forChannel($channel);
@@ -373,7 +373,7 @@ final class Device
 	 */
 	public function getHighTargetTempTolerance(MetadataDocuments\DevicesModule\Device $device): float|null
 	{
-		$channel = $this->getThermostat($device);
+		$channel = $this->getConfiguration($device);
 
 		$findPropertyQuery = new DevicesQueries\Configuration\FindChannelVariableProperties();
 		$findPropertyQuery->forChannel($channel);
@@ -424,8 +424,11 @@ final class Device
 					$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
 					|| $property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
 				) && (
-					Utils\Strings::startsWith($property->getIdentifier(), Types\ChannelPropertyIdentifier::HEATER)
-					|| Utils\Strings::startsWith($property->getIdentifier(), Types\ChannelPropertyIdentifier::COOLER)
+					Utils\Strings::startsWith($property->getIdentifier(), Types\ChannelPropertyIdentifier::HEATER_ACTOR)
+					|| Utils\Strings::startsWith(
+						$property->getIdentifier(),
+						Types\ChannelPropertyIdentifier::COOLER_ACTOR,
+					)
 				),
 		);
 	}
@@ -439,7 +442,7 @@ final class Device
 			$this->getActors($device),
 			static fn ($actor): bool => Utils\Strings::startsWith(
 				$actor->getIdentifier(),
-				Types\ChannelPropertyIdentifier::HEATER,
+				Types\ChannelPropertyIdentifier::HEATER_ACTOR,
 			)
 		) !== [];
 	}
@@ -453,7 +456,7 @@ final class Device
 			$this->getActors($device),
 			static fn ($actor): bool => Utils\Strings::startsWith(
 				$actor->getIdentifier(),
-				Types\ChannelPropertyIdentifier::COOLER,
+				Types\ChannelPropertyIdentifier::COOLER_ACTOR,
 			)
 		) !== [];
 	}
@@ -557,7 +560,10 @@ final class Device
 				(
 					$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
 					|| $property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
-				) && Utils\Strings::startsWith($property->getIdentifier(), Types\ChannelPropertyIdentifier::SENSOR),
+				) && Utils\Strings::startsWith(
+					$property->getIdentifier(),
+					Types\ChannelPropertyIdentifier::OPENING_SENSOR,
+				),
 		);
 	}
 

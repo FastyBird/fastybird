@@ -46,55 +46,40 @@ cmd:
         actions:
             create:
                 connector: "Create connector"
-                device: "Create device"
             update:
                 connector: "Edit connector"
                 device: "Edit device"
             remove:
                 connector: "Delete connector"
                 device: "Delete device"
-            manage:
-                connector: "Manage connector"
-                device: "Manage device"
             list:
                 connectors: "List connectors"
                 devices: "List devices"
+            manage:
+                connector: "Manage connector"
             nothing: "Nothing"
 
         questions:
             create:
                 connector: "Would you like to create new connector configuration?"
-                devices: "Would you like to configure connector device(s)?"
-                device: "Would you like to create new device?"
             manage:
                 devices: "Would you like to manage connector devices?"
             provide:
                 connector:
                     identifier: "Provide connector identifier"
                     name: "Provide connector name"
-                device:
-                    identifier: "Provide device identifier"
-                    name: "Provide device name"
             select:
                 item:
                     connector: "Please select connector to manage"
                     device: "Please select device to manage"
-                device:
-                    type: "Please select device type"
             disable:
                 connector: "Do you want to disable connector?"
             enable:
                 connector: "Do you want to enable connector?"
 
-        answers:
-            none: "None"
-            types:
-                virtual-thermostat: "Virtual thermostat"
-
         data:
             name: "Name"
             model: "Model"
-            devicesCnt: "# Devices"
 
         messages:
             identifier:
@@ -103,7 +88,7 @@ cmd:
                     missing: "Connector identifier have to be provided."
                 device:
                     used: "This identifier is already used."
-                    missing: "Device identifier have to provided."
+                    missing: "Device identifier have to be provided."
             create:
                 connector:
                     success: "Connector \"%name%\" was successfully created."
@@ -128,4 +113,3 @@ cmd:
                     success: "Device \"%name%\" was successfully removed."
                     error: "Something went wrong, device could not be removed. Error was logged."
             noDevices: "No devices registered in selected connector."
-            noService: "Device command service could not be loaded"
