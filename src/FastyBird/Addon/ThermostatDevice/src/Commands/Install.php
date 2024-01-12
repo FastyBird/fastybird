@@ -3141,8 +3141,8 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function askTargetTemperature(
-		Style\SymfonyStyle             $io,
-		Types\Preset                   $thermostatMode,
+		Style\SymfonyStyle $io,
+		Types\Preset $thermostatMode,
 		Entities\ThermostatDevice|null $device = null,
 	): float
 	{
@@ -3251,8 +3251,8 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	private function askHeatingThresholdTemperature(
-		Style\SymfonyStyle             $io,
-		Types\Preset                   $thermostatMode,
+		Style\SymfonyStyle $io,
+		Types\Preset $thermostatMode,
 		Entities\ThermostatDevice|null $device = null,
 	): float
 	{
@@ -3296,8 +3296,8 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	private function askCoolingThresholdTemperature(
-		Style\SymfonyStyle             $io,
-		Types\Preset                   $thermostatMode,
+		Style\SymfonyStyle $io,
+		Types\Preset $thermostatMode,
 		Entities\ThermostatDevice|null $device = null,
 	): float
 	{

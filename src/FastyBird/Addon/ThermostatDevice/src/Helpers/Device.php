@@ -141,7 +141,7 @@ final class Device
 	 */
 	public function getTargetTemp(
 		MetadataDocuments\DevicesModule\Device $device,
-		Types\Preset                           $preset,
+		Types\Preset $preset,
 	): MetadataDocuments\DevicesModule\ChannelDynamicProperty|null
 	{
 		if ($preset->equalsValue(Types\Preset::AUTO)) {
@@ -184,7 +184,7 @@ final class Device
 	 */
 	public function getCoolingThresholdTemp(
 		MetadataDocuments\DevicesModule\Device $device,
-		Types\Preset                           $preset,
+		Types\Preset $preset,
 	): float|null
 	{
 		if ($preset->equalsValue(Types\Preset::AWAY)) {
@@ -232,7 +232,7 @@ final class Device
 	 */
 	public function getHeatingThresholdTemp(
 		MetadataDocuments\DevicesModule\Device $device,
-		Types\Preset                           $preset,
+		Types\Preset $preset,
 	): float|null
 	{
 		if ($preset->equalsValue(Types\Preset::AWAY)) {
