@@ -118,37 +118,37 @@ class ThermostatDevice extends VirtualEntities\VirtualDevice
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public function getTargetTemp(Types\ThermostatMode $preset): DevicesEntities\Channels\Properties\Dynamic|null
+	public function getTargetTemp(Types\Preset $preset): DevicesEntities\Channels\Properties\Dynamic|null
 	{
-		if ($preset->equalsValue(Types\ThermostatMode::AUTO)) {
+		if ($preset->equalsValue(Types\Preset::AUTO)) {
 			return null;
 		}
 
-		if ($preset->equalsValue(Types\ThermostatMode::AWAY)) {
+		if ($preset->equalsValue(Types\Preset::AWAY)) {
 			return $this->getPreset(Types\ChannelIdentifier::PRESET_AWAY)->getTargetTemp();
 		}
 
-		if ($preset->equalsValue(Types\ThermostatMode::ECO)) {
+		if ($preset->equalsValue(Types\Preset::ECO)) {
 			return $this->getPreset(Types\ChannelIdentifier::PRESET_ECO)->getTargetTemp();
 		}
 
-		if ($preset->equalsValue(Types\ThermostatMode::HOME)) {
+		if ($preset->equalsValue(Types\Preset::HOME)) {
 			return $this->getPreset(Types\ChannelIdentifier::PRESET_HOME)->getTargetTemp();
 		}
 
-		if ($preset->equalsValue(Types\ThermostatMode::COMFORT)) {
+		if ($preset->equalsValue(Types\Preset::COMFORT)) {
 			return $this->getPreset(Types\ChannelIdentifier::PRESET_COMFORT)->getTargetTemp();
 		}
 
-		if ($preset->equalsValue(Types\ThermostatMode::SLEEP)) {
+		if ($preset->equalsValue(Types\Preset::SLEEP)) {
 			return $this->getPreset(Types\ChannelIdentifier::PRESET_SLEEP)->getTargetTemp();
 		}
 
-		if ($preset->equalsValue(Types\ThermostatMode::ANTI_FREEZE)) {
+		if ($preset->equalsValue(Types\Preset::ANTI_FREEZE)) {
 			return $this->getPreset(Types\ChannelIdentifier::PRESET_ANTI_FREEZE)->getTargetTemp();
 		}
 
-		if ($preset->equalsValue(Types\ThermostatMode::MANUAL)) {
+		if ($preset->equalsValue(Types\Preset::MANUAL)) {
 			return $this->getConfiguration()->getTargetTemp();
 		}
 
@@ -160,33 +160,33 @@ class ThermostatDevice extends VirtualEntities\VirtualDevice
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getCoolingThresholdTemp(Types\ThermostatMode $preset): float|null
+	public function getCoolingThresholdTemp(Types\Preset $preset): float|null
 	{
-		if ($preset->equalsValue(Types\ThermostatMode::AWAY)) {
+		if ($preset->equalsValue(Types\Preset::AWAY)) {
 			return $this->getPreset(Types\ChannelIdentifier::PRESET_AWAY)->getCoolingThresholdTemp();
 		}
 
-		if ($preset->equalsValue(Types\ThermostatMode::ECO)) {
+		if ($preset->equalsValue(Types\Preset::ECO)) {
 			return $this->getPreset(Types\ChannelIdentifier::PRESET_ECO)->getCoolingThresholdTemp();
 		}
 
-		if ($preset->equalsValue(Types\ThermostatMode::HOME)) {
+		if ($preset->equalsValue(Types\Preset::HOME)) {
 			return $this->getPreset(Types\ChannelIdentifier::PRESET_HOME)->getCoolingThresholdTemp();
 		}
 
-		if ($preset->equalsValue(Types\ThermostatMode::COMFORT)) {
+		if ($preset->equalsValue(Types\Preset::COMFORT)) {
 			return $this->getPreset(Types\ChannelIdentifier::PRESET_COMFORT)->getCoolingThresholdTemp();
 		}
 
-		if ($preset->equalsValue(Types\ThermostatMode::SLEEP)) {
+		if ($preset->equalsValue(Types\Preset::SLEEP)) {
 			return $this->getPreset(Types\ChannelIdentifier::PRESET_SLEEP)->getCoolingThresholdTemp();
 		}
 
-		if ($preset->equalsValue(Types\ThermostatMode::ANTI_FREEZE)) {
+		if ($preset->equalsValue(Types\Preset::ANTI_FREEZE)) {
 			return $this->getPreset(Types\ChannelIdentifier::PRESET_ANTI_FREEZE)->getCoolingThresholdTemp();
 		}
 
-		if ($preset->equalsValue(Types\ThermostatMode::MANUAL)) {
+		if ($preset->equalsValue(Types\Preset::MANUAL)) {
 			return $this->getConfiguration()->getCoolingThresholdTemp();
 		}
 
@@ -198,33 +198,33 @@ class ThermostatDevice extends VirtualEntities\VirtualDevice
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getHeatingThresholdTemp(Types\ThermostatMode $preset): float|null
+	public function getHeatingThresholdTemp(Types\Preset $preset): float|null
 	{
-		if ($preset->equalsValue(Types\ThermostatMode::AWAY)) {
+		if ($preset->equalsValue(Types\Preset::AWAY)) {
 			return $this->getPreset(Types\ChannelIdentifier::PRESET_AWAY)->getHeatingThresholdTemp();
 		}
 
-		if ($preset->equalsValue(Types\ThermostatMode::ECO)) {
+		if ($preset->equalsValue(Types\Preset::ECO)) {
 			return $this->getPreset(Types\ChannelIdentifier::PRESET_ECO)->getHeatingThresholdTemp();
 		}
 
-		if ($preset->equalsValue(Types\ThermostatMode::HOME)) {
+		if ($preset->equalsValue(Types\Preset::HOME)) {
 			return $this->getPreset(Types\ChannelIdentifier::PRESET_HOME)->getHeatingThresholdTemp();
 		}
 
-		if ($preset->equalsValue(Types\ThermostatMode::COMFORT)) {
+		if ($preset->equalsValue(Types\Preset::COMFORT)) {
 			return $this->getPreset(Types\ChannelIdentifier::PRESET_COMFORT)->getHeatingThresholdTemp();
 		}
 
-		if ($preset->equalsValue(Types\ThermostatMode::SLEEP)) {
+		if ($preset->equalsValue(Types\Preset::SLEEP)) {
 			return $this->getPreset(Types\ChannelIdentifier::PRESET_SLEEP)->getHeatingThresholdTemp();
 		}
 
-		if ($preset->equalsValue(Types\ThermostatMode::ANTI_FREEZE)) {
+		if ($preset->equalsValue(Types\Preset::ANTI_FREEZE)) {
 			return $this->getPreset(Types\ChannelIdentifier::PRESET_ANTI_FREEZE)->getHeatingThresholdTemp();
 		}
 
-		if ($preset->equalsValue(Types\ThermostatMode::MANUAL)) {
+		if ($preset->equalsValue(Types\Preset::MANUAL)) {
 			return $this->getConfiguration()->getHeatingThresholdTemp();
 		}
 
@@ -451,7 +451,7 @@ class ThermostatDevice extends VirtualEntities\VirtualDevice
 		}
 
 		return array_map(
-			static fn (string $item): string => Types\ThermostatMode::get($item)->getValue(),
+			static fn (string $item): string => Types\Preset::get($item)->getValue(),
 			$format->toArray(),
 		);
 	}

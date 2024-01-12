@@ -612,7 +612,7 @@ class Install extends Console\Command\Command
 
 			$targetTemp = $this->askTargetTemperature(
 				$io,
-				Types\ThermostatMode::get(Types\ThermostatMode::MANUAL),
+				Types\Preset::get(Types\Preset::MANUAL),
 			);
 
 			$targetTempProperty = $this->createOrUpdateProperty(
@@ -724,7 +724,7 @@ class Install extends Console\Command\Command
 			if (in_array(Types\HvacMode::AUTO, $modes, true)) {
 				$heatingThresholdTemp = $this->askHeatingThresholdTemperature(
 					$io,
-					Types\ThermostatMode::get(Types\ThermostatMode::MANUAL),
+					Types\Preset::get(Types\Preset::MANUAL),
 				);
 
 				$this->createOrUpdateProperty(
@@ -746,7 +746,7 @@ class Install extends Console\Command\Command
 
 				$coolingThresholdTemp = $this->askCoolingThresholdTemperature(
 					$io,
-					Types\ThermostatMode::get(Types\ThermostatMode::MANUAL),
+					Types\Preset::get(Types\Preset::MANUAL),
 				);
 
 				$this->createOrUpdateProperty(
@@ -777,7 +777,7 @@ class Install extends Console\Command\Command
 					'channel' => $configurationChannel,
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
 					'format' => array_merge(
-						[Types\ThermostatMode::MANUAL],
+						[Types\Preset::MANUAL],
 						$presets,
 					),
 					'unit' => null,
@@ -806,7 +806,7 @@ class Install extends Console\Command\Command
 				$setPresets[$preset] = [
 					'value' => $this->askTargetTemperature(
 						$io,
-						Types\ThermostatMode::get($preset),
+						Types\Preset::get($preset),
 					),
 					'property' => $this->createOrUpdateProperty(
 						DevicesEntities\Channels\Properties\Dynamic::class,
@@ -829,7 +829,7 @@ class Install extends Console\Command\Command
 				if (in_array(Types\HvacMode::AUTO, $modes, true)) {
 					$heatingThresholdTemp = $this->askHeatingThresholdTemperature(
 						$io,
-						Types\ThermostatMode::get($preset),
+						Types\Preset::get($preset),
 					);
 
 					$this->createOrUpdateProperty(
@@ -851,7 +851,7 @@ class Install extends Console\Command\Command
 
 					$coolingThresholdTemp = $this->askCoolingThresholdTemperature(
 						$io,
-						Types\ThermostatMode::get($preset),
+						Types\Preset::get($preset),
 					);
 
 					$this->createOrUpdateProperty(
@@ -948,7 +948,7 @@ class Install extends Console\Command\Command
 		$this->channelPropertiesStatesManager->setValue(
 			$presetModeConfiguration,
 			Utils\ArrayHash::from([
-				DevicesStates\Property::ACTUAL_VALUE_FIELD => Types\ThermostatMode::MANUAL,
+				DevicesStates\Property::ACTUAL_VALUE_FIELD => Types\Preset::MANUAL,
 				DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
 				DevicesStates\Property::VALID_FIELD => true,
 				DevicesStates\Property::PENDING_FIELD => false,
@@ -1087,7 +1087,7 @@ class Install extends Console\Command\Command
 
 		$targetTemp = $this->askTargetTemperature(
 			$io,
-			Types\ThermostatMode::get(Types\ThermostatMode::MANUAL),
+			Types\Preset::get(Types\Preset::MANUAL),
 			$device,
 		);
 
@@ -1102,13 +1102,13 @@ class Install extends Console\Command\Command
 		if (in_array(Types\HvacMode::AUTO, $modes, true)) {
 			$heatingThresholdTemp = $this->askHeatingThresholdTemperature(
 				$io,
-				Types\ThermostatMode::get(Types\ThermostatMode::MANUAL),
+				Types\Preset::get(Types\Preset::MANUAL),
 				$device,
 			);
 
 			$coolingThresholdTemp = $this->askCoolingThresholdTemperature(
 				$io,
-				Types\ThermostatMode::get(Types\ThermostatMode::MANUAL),
+				Types\Preset::get(Types\Preset::MANUAL),
 				$device,
 			);
 		}
@@ -1353,7 +1353,7 @@ class Install extends Console\Command\Command
 					'channel' => $thermostatChannel,
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
 					'format' => array_merge(
-						[Types\ThermostatMode::MANUAL],
+						[Types\Preset::MANUAL],
 						$presets,
 					),
 					'unit' => null,
@@ -1366,8 +1366,8 @@ class Install extends Console\Command\Command
 				$presetModeProperty,
 			);
 
-			foreach (Types\ThermostatMode::getAvailableValues() as $preset) {
-				if ($preset === Types\ThermostatMode::MANUAL) {
+			foreach (Types\Preset::getAvailableValues() as $preset) {
+				if ($preset === Types\Preset::MANUAL) {
 					continue;
 				}
 
@@ -1392,7 +1392,7 @@ class Install extends Console\Command\Command
 						$setPresets[$preset] = [
 							'value' => $this->askTargetTemperature(
 								$io,
-								Types\ThermostatMode::get($preset),
+								Types\Preset::get($preset),
 							),
 							'property' => $this->createOrUpdateProperty(
 								DevicesEntities\Channels\Properties\Dynamic::class,
@@ -1415,7 +1415,7 @@ class Install extends Console\Command\Command
 						if (in_array(Types\HvacMode::AUTO, $modes, true)) {
 							$heatingThresholdTemp = $this->askHeatingThresholdTemperature(
 								$io,
-								Types\ThermostatMode::get($preset),
+								Types\Preset::get($preset),
 							);
 
 							$this->createOrUpdateProperty(
@@ -1437,7 +1437,7 @@ class Install extends Console\Command\Command
 
 							$coolingThresholdTemp = $this->askCoolingThresholdTemperature(
 								$io,
-								Types\ThermostatMode::get($preset),
+								Types\Preset::get($preset),
 							);
 
 							$this->createOrUpdateProperty(
@@ -1544,7 +1544,7 @@ class Install extends Console\Command\Command
 		$this->channelPropertiesStatesManager->setValue(
 			$presetModeConfiguration,
 			Utils\ArrayHash::from([
-				DevicesStates\Property::ACTUAL_VALUE_FIELD => Types\ThermostatMode::MANUAL,
+				DevicesStates\Property::ACTUAL_VALUE_FIELD => Types\Preset::MANUAL,
 				DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
 				DevicesStates\Property::VALID_FIELD => true,
 				DevicesStates\Property::PENDING_FIELD => false,
@@ -1711,7 +1711,7 @@ class Install extends Console\Command\Command
 				)),
 				implode(', ', array_filter(
 					array_map(function (string $item): string|null {
-						if ($item === Types\ThermostatMode::MANUAL) {
+						if ($item === Types\Preset::MANUAL) {
 							return null;
 						}
 
@@ -2766,20 +2766,20 @@ class Install extends Console\Command\Command
 
 		$default = array_filter(
 			array_unique(array_map(static fn ($item): int|null => match ($item) {
-				Types\ThermostatMode::AWAY => 0,
-				Types\ThermostatMode::ECO => 1,
-				Types\ThermostatMode::HOME => 2,
-				Types\ThermostatMode::COMFORT => 3,
-				Types\ThermostatMode::SLEEP => 4,
-				Types\ThermostatMode::ANTI_FREEZE => 5,
+				Types\Preset::AWAY => 0,
+				Types\Preset::ECO => 1,
+				Types\Preset::HOME => 2,
+				Types\Preset::COMFORT => 3,
+				Types\Preset::SLEEP => 4,
+				Types\Preset::ANTI_FREEZE => 5,
 				default => null,
 			}, $format?->toArray() ?? [
-				Types\ThermostatMode::AWAY,
-				Types\ThermostatMode::ECO,
-				Types\ThermostatMode::HOME,
-				Types\ThermostatMode::COMFORT,
-				Types\ThermostatMode::SLEEP,
-				Types\ThermostatMode::ANTI_FREEZE,
+				Types\Preset::AWAY,
+				Types\Preset::ECO,
+				Types\Preset::HOME,
+				Types\Preset::COMFORT,
+				Types\Preset::SLEEP,
+				Types\Preset::ANTI_FREEZE,
 			])),
 			static fn (int|null $item): bool => $item !== null,
 		);
@@ -2788,22 +2788,22 @@ class Install extends Console\Command\Command
 			$this->translator->translate('//thermostat-device-addon.cmd.install.questions.select.preset'),
 			[
 				$this->translator->translate(
-					'//thermostat-device-addon.cmd.install.answers.preset.' . Types\ThermostatMode::AWAY,
+					'//thermostat-device-addon.cmd.install.answers.preset.' . Types\Preset::AWAY,
 				),
 				$this->translator->translate(
-					'//thermostat-device-addon.cmd.install.answers.preset.' . Types\ThermostatMode::ECO,
+					'//thermostat-device-addon.cmd.install.answers.preset.' . Types\Preset::ECO,
 				),
 				$this->translator->translate(
-					'//thermostat-device-addon.cmd.install.answers.preset.' . Types\ThermostatMode::HOME,
+					'//thermostat-device-addon.cmd.install.answers.preset.' . Types\Preset::HOME,
 				),
 				$this->translator->translate(
-					'//thermostat-device-addon.cmd.install.answers.preset.' . Types\ThermostatMode::COMFORT,
+					'//thermostat-device-addon.cmd.install.answers.preset.' . Types\Preset::COMFORT,
 				),
 				$this->translator->translate(
-					'//thermostat-device-addon.cmd.install.answers.preset.' . Types\ThermostatMode::SLEEP,
+					'//thermostat-device-addon.cmd.install.answers.preset.' . Types\Preset::SLEEP,
 				),
 				$this->translator->translate(
-					'//thermostat-device-addon.cmd.install.answers.preset.' . Types\ThermostatMode::ANTI_FREEZE,
+					'//thermostat-device-addon.cmd.install.answers.preset.' . Types\Preset::ANTI_FREEZE,
 				),
 			],
 			implode(',', $default),
@@ -2827,56 +2827,56 @@ class Install extends Console\Command\Command
 			foreach (explode(',', strval($answer)) as $item) {
 				if (
 					$item === $this->translator->translate(
-						'//thermostat-device-addon.cmd.install.answers.preset.' . Types\ThermostatMode::AWAY,
+						'//thermostat-device-addon.cmd.install.answers.preset.' . Types\Preset::AWAY,
 					)
 					|| $item === '0'
 				) {
-					$presets[] = Types\ThermostatMode::AWAY;
+					$presets[] = Types\Preset::AWAY;
 				}
 
 				if (
 					$item === $this->translator->translate(
-						'//thermostat-device-addon.cmd.install.answers.preset.' . Types\ThermostatMode::ECO,
+						'//thermostat-device-addon.cmd.install.answers.preset.' . Types\Preset::ECO,
 					)
 					|| $item === '1'
 				) {
-					$presets[] = Types\ThermostatMode::ECO;
+					$presets[] = Types\Preset::ECO;
 				}
 
 				if (
 					$item === $this->translator->translate(
-						'//thermostat-device-addon.cmd.install.answers.preset.' . Types\ThermostatMode::HOME,
+						'//thermostat-device-addon.cmd.install.answers.preset.' . Types\Preset::HOME,
 					)
 					|| $item === '2'
 				) {
-					$presets[] = Types\ThermostatMode::HOME;
+					$presets[] = Types\Preset::HOME;
 				}
 
 				if (
 					$item === $this->translator->translate(
-						'//thermostat-device-addon.cmd.install.answers.preset.' . Types\ThermostatMode::COMFORT,
+						'//thermostat-device-addon.cmd.install.answers.preset.' . Types\Preset::COMFORT,
 					)
 					|| $item === '3'
 				) {
-					$presets[] = Types\ThermostatMode::COMFORT;
+					$presets[] = Types\Preset::COMFORT;
 				}
 
 				if (
 					$item === $this->translator->translate(
-						'//thermostat-device-addon.cmd.install.answers.preset.' . Types\ThermostatMode::SLEEP,
+						'//thermostat-device-addon.cmd.install.answers.preset.' . Types\Preset::SLEEP,
 					)
 					|| $item === '4'
 				) {
-					$presets[] = Types\ThermostatMode::SLEEP;
+					$presets[] = Types\Preset::SLEEP;
 				}
 
 				if (
 					$item === $this->translator->translate(
-						'//thermostat-device-addon.cmd.install.answers.preset.' . Types\ThermostatMode::ANTI_FREEZE,
+						'//thermostat-device-addon.cmd.install.answers.preset.' . Types\Preset::ANTI_FREEZE,
 					)
 					|| $item === '5'
 				) {
-					$presets[] = Types\ThermostatMode::ANTI_FREEZE;
+					$presets[] = Types\Preset::ANTI_FREEZE;
 				}
 			}
 
@@ -3141,8 +3141,8 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function askTargetTemperature(
-		Style\SymfonyStyle $io,
-		Types\ThermostatMode $thermostatMode,
+		Style\SymfonyStyle             $io,
+		Types\Preset                   $thermostatMode,
 		Entities\ThermostatDevice|null $device = null,
 	): float
 	{
@@ -3251,8 +3251,8 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	private function askHeatingThresholdTemperature(
-		Style\SymfonyStyle $io,
-		Types\ThermostatMode $thermostatMode,
+		Style\SymfonyStyle             $io,
+		Types\Preset                   $thermostatMode,
 		Entities\ThermostatDevice|null $device = null,
 	): float
 	{
@@ -3296,8 +3296,8 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	private function askCoolingThresholdTemperature(
-		Style\SymfonyStyle $io,
-		Types\ThermostatMode $thermostatMode,
+		Style\SymfonyStyle             $io,
+		Types\Preset                   $thermostatMode,
 		Entities\ThermostatDevice|null $device = null,
 	): float
 	{
@@ -4214,7 +4214,7 @@ class Install extends Console\Command\Command
 	private function askWhichPreset(
 		Style\SymfonyStyle $io,
 		Entities\ThermostatDevice $device,
-	): Types\ThermostatMode|null
+	): Types\Preset|null
 	{
 		$allowedValues = $device->getPresetModes();
 
@@ -4224,10 +4224,10 @@ class Install extends Console\Command\Command
 
 		$presets = [];
 
-		foreach (Types\ThermostatMode::getAvailableValues() as $preset) {
+		foreach (Types\Preset::getAvailableValues() as $preset) {
 			if (
 				!in_array($preset, $allowedValues, true)
-				|| in_array($preset, [Types\ThermostatMode::MANUAL, Types\ThermostatMode::AUTO], true)
+				|| in_array($preset, [Types\Preset::MANUAL, Types\Preset::AUTO], true)
 			) {
 				continue;
 			}
@@ -4250,7 +4250,7 @@ class Install extends Console\Command\Command
 			$this->translator->translate('//thermostat-device-addon.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(
-			function (string|int|null $answer) use ($presets): Types\ThermostatMode {
+			function (string|int|null $answer) use ($presets): Types\Preset {
 				if ($answer === null) {
 					throw new Exceptions\Runtime(
 						sprintf(
@@ -4266,8 +4266,8 @@ class Install extends Console\Command\Command
 
 				$preset = array_search($answer, $presets, true);
 
-				if ($preset !== false && Types\ThermostatMode::isValidValue($preset)) {
-					return Types\ThermostatMode::get($preset);
+				if ($preset !== false && Types\Preset::isValidValue($preset)) {
+					return Types\Preset::get($preset);
 				}
 
 				throw new Exceptions\Runtime(
@@ -4280,7 +4280,7 @@ class Install extends Console\Command\Command
 		);
 
 		$preset = $io->askQuestion($question);
-		assert($preset instanceof Types\ThermostatMode);
+		assert($preset instanceof Types\Preset);
 
 		return $preset;
 	}

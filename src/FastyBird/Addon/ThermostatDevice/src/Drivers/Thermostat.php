@@ -78,7 +78,7 @@ class Thermostat implements VirtualDrivers\Driver
 	/** @var array<string, bool|null> */
 	private array $openingsState = [];
 
-	private Types\ThermostatMode|null $presetMode = null;
+	private Types\Preset|null $presetMode = null;
 
 	private Types\HvacMode|null $hvacMode = null;
 
@@ -172,7 +172,7 @@ class Thermostat implements VirtualDrivers\Driver
 		}
 
 		foreach ($this->deviceHelper->getPresetModes($this->device) as $mode) {
-			$property = $this->deviceHelper->getTargetTemp($this->device, Types\ThermostatMode::get($mode));
+			$property = $this->deviceHelper->getTargetTemp($this->device, Types\Preset::get($mode));
 
 			if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
 				$state = $this->channelPropertiesStatesManager->readValue($property);
@@ -198,8 +198,8 @@ class Thermostat implements VirtualDrivers\Driver
 				$this->deviceHelper->getPresetMode($this->device),
 			);
 
-			if ($state !== null && Types\ThermostatMode::isValidValue($state->getActualValue())) {
-				$this->presetMode = Types\ThermostatMode::get($state->getActualValue());
+			if ($state !== null && Types\Preset::isValidValue($state->getActualValue())) {
+				$this->presetMode = Types\Preset::get($state->getActualValue());
 			}
 		}
 
@@ -449,9 +449,9 @@ class Thermostat implements VirtualDrivers\Driver
 				if ($property->getIdentifier() === Types\ChannelPropertyIdentifier::PRESET_MODE) {
 					if (
 						is_string($expectedValue)
-						&& Types\ThermostatMode::isValidValue($expectedValue)
+						&& Types\Preset::isValidValue($expectedValue)
 					) {
-						$this->presetMode = Types\ThermostatMode::get($expectedValue);
+						$this->presetMode = Types\Preset::get($expectedValue);
 
 						$this->queue->append(
 							$this->entityHelper->create(
@@ -496,7 +496,7 @@ class Thermostat implements VirtualDrivers\Driver
 					}
 				} elseif ($property->getIdentifier() === Types\ChannelPropertyIdentifier::TARGET_TEMPERATURE) {
 					if (is_numeric($expectedValue)) {
-						$this->targetTemperature[Types\ThermostatMode::MANUAL] = floatval($expectedValue);
+						$this->targetTemperature[Types\Preset::MANUAL] = floatval($expectedValue);
 
 						$this->queue->append(
 							$this->entityHelper->create(
@@ -525,7 +525,7 @@ class Thermostat implements VirtualDrivers\Driver
 				&& in_array('preset', $matches, true)
 			) {
 				if (
-					Types\ThermostatMode::isValidValue($matches['preset'])
+					Types\Preset::isValidValue($matches['preset'])
 					&& is_numeric($expectedValue)
 				) {
 					$this->targetTemperature[$matches['preset']] = floatval($expectedValue);

@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ThermostatMode.php
+ * Preset.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -19,14 +19,14 @@ use Consistence;
 use function strval;
 
 /**
- * Presets modes types
+ * Presets types
  *
  * @package        FastyBird:ThermostatDeviceAddon!
  * @subpackage     Types
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class ThermostatMode extends Consistence\Enum\Enum
+class Preset extends Consistence\Enum\Enum
 {
 
 	public const AUTO = 'auto';

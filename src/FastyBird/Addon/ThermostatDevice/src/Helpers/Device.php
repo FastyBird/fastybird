@@ -141,26 +141,26 @@ final class Device
 	 */
 	public function getTargetTemp(
 		MetadataDocuments\DevicesModule\Device $device,
-		Types\ThermostatMode $preset,
+		Types\Preset                           $preset,
 	): MetadataDocuments\DevicesModule\ChannelDynamicProperty|null
 	{
-		if ($preset->equalsValue(Types\ThermostatMode::AUTO)) {
+		if ($preset->equalsValue(Types\Preset::AUTO)) {
 			return null;
 		}
 
-		if ($preset->equalsValue(Types\ThermostatMode::AWAY)) {
+		if ($preset->equalsValue(Types\Preset::AWAY)) {
 			$channel = $this->getPreset($device, Types\ChannelIdentifier::PRESET_AWAY);
-		} elseif ($preset->equalsValue(Types\ThermostatMode::ECO)) {
+		} elseif ($preset->equalsValue(Types\Preset::ECO)) {
 			$channel = $this->getPreset($device, Types\ChannelIdentifier::PRESET_ECO);
-		} elseif ($preset->equalsValue(Types\ThermostatMode::HOME)) {
+		} elseif ($preset->equalsValue(Types\Preset::HOME)) {
 			$channel = $this->getPreset($device, Types\ChannelIdentifier::PRESET_HOME);
-		} elseif ($preset->equalsValue(Types\ThermostatMode::COMFORT)) {
+		} elseif ($preset->equalsValue(Types\Preset::COMFORT)) {
 			$channel = $this->getPreset($device, Types\ChannelIdentifier::PRESET_COMFORT);
-		} elseif ($preset->equalsValue(Types\ThermostatMode::SLEEP)) {
+		} elseif ($preset->equalsValue(Types\Preset::SLEEP)) {
 			$channel = $this->getPreset($device, Types\ChannelIdentifier::PRESET_SLEEP);
-		} elseif ($preset->equalsValue(Types\ThermostatMode::ANTI_FREEZE)) {
+		} elseif ($preset->equalsValue(Types\Preset::ANTI_FREEZE)) {
 			$channel = $this->getPreset($device, Types\ChannelIdentifier::PRESET_ANTI_FREEZE);
-		} elseif ($preset->equalsValue(Types\ThermostatMode::MANUAL)) {
+		} elseif ($preset->equalsValue(Types\Preset::MANUAL)) {
 			$channel = $this->getConfiguration($device);
 		} else {
 			throw new Exceptions\InvalidState('Provided preset is not configured');
@@ -184,22 +184,22 @@ final class Device
 	 */
 	public function getCoolingThresholdTemp(
 		MetadataDocuments\DevicesModule\Device $device,
-		Types\ThermostatMode $preset,
+		Types\Preset                           $preset,
 	): float|null
 	{
-		if ($preset->equalsValue(Types\ThermostatMode::AWAY)) {
+		if ($preset->equalsValue(Types\Preset::AWAY)) {
 			$channel = $this->getPreset($device, Types\ChannelIdentifier::PRESET_AWAY);
-		} elseif ($preset->equalsValue(Types\ThermostatMode::ECO)) {
+		} elseif ($preset->equalsValue(Types\Preset::ECO)) {
 			$channel = $this->getPreset($device, Types\ChannelIdentifier::PRESET_ECO);
-		} elseif ($preset->equalsValue(Types\ThermostatMode::HOME)) {
+		} elseif ($preset->equalsValue(Types\Preset::HOME)) {
 			$channel = $this->getPreset($device, Types\ChannelIdentifier::PRESET_HOME);
-		} elseif ($preset->equalsValue(Types\ThermostatMode::COMFORT)) {
+		} elseif ($preset->equalsValue(Types\Preset::COMFORT)) {
 			$channel = $this->getPreset($device, Types\ChannelIdentifier::PRESET_COMFORT);
-		} elseif ($preset->equalsValue(Types\ThermostatMode::SLEEP)) {
+		} elseif ($preset->equalsValue(Types\Preset::SLEEP)) {
 			$channel = $this->getPreset($device, Types\ChannelIdentifier::PRESET_SLEEP);
-		} elseif ($preset->equalsValue(Types\ThermostatMode::ANTI_FREEZE)) {
+		} elseif ($preset->equalsValue(Types\Preset::ANTI_FREEZE)) {
 			$channel = $this->getPreset($device, Types\ChannelIdentifier::PRESET_ANTI_FREEZE);
-		} elseif ($preset->equalsValue(Types\ThermostatMode::MANUAL)) {
+		} elseif ($preset->equalsValue(Types\Preset::MANUAL)) {
 			$channel = $this->getConfiguration($device);
 		} else {
 			throw new Exceptions\InvalidState('Provided preset is not configured');
@@ -232,22 +232,22 @@ final class Device
 	 */
 	public function getHeatingThresholdTemp(
 		MetadataDocuments\DevicesModule\Device $device,
-		Types\ThermostatMode $preset,
+		Types\Preset                           $preset,
 	): float|null
 	{
-		if ($preset->equalsValue(Types\ThermostatMode::AWAY)) {
+		if ($preset->equalsValue(Types\Preset::AWAY)) {
 			$channel = $this->getPreset($device, Types\ChannelIdentifier::PRESET_AWAY);
-		} elseif ($preset->equalsValue(Types\ThermostatMode::ECO)) {
+		} elseif ($preset->equalsValue(Types\Preset::ECO)) {
 			$channel = $this->getPreset($device, Types\ChannelIdentifier::PRESET_ECO);
-		} elseif ($preset->equalsValue(Types\ThermostatMode::HOME)) {
+		} elseif ($preset->equalsValue(Types\Preset::HOME)) {
 			$channel = $this->getPreset($device, Types\ChannelIdentifier::PRESET_HOME);
-		} elseif ($preset->equalsValue(Types\ThermostatMode::COMFORT)) {
+		} elseif ($preset->equalsValue(Types\Preset::COMFORT)) {
 			$channel = $this->getPreset($device, Types\ChannelIdentifier::PRESET_COMFORT);
-		} elseif ($preset->equalsValue(Types\ThermostatMode::SLEEP)) {
+		} elseif ($preset->equalsValue(Types\Preset::SLEEP)) {
 			$channel = $this->getPreset($device, Types\ChannelIdentifier::PRESET_SLEEP);
-		} elseif ($preset->equalsValue(Types\ThermostatMode::ANTI_FREEZE)) {
+		} elseif ($preset->equalsValue(Types\Preset::ANTI_FREEZE)) {
 			$channel = $this->getPreset($device, Types\ChannelIdentifier::PRESET_ANTI_FREEZE);
-		} elseif ($preset->equalsValue(Types\ThermostatMode::MANUAL)) {
+		} elseif ($preset->equalsValue(Types\Preset::MANUAL)) {
 			$channel = $this->getConfiguration($device);
 		} else {
 			throw new Exceptions\InvalidState('Provided preset is not configured');
@@ -604,7 +604,7 @@ final class Device
 		}
 
 		return array_map(
-			static fn (string $item): string => Types\ThermostatMode::get($item)->getValue(),
+			static fn (string $item): string => Types\Preset::get($item)->getValue(),
 			$format->toArray(),
 		);
 	}

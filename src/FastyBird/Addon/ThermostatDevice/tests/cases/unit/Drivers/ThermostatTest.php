@@ -170,7 +170,7 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 					'767ddcf6-24c5-48b0-baaa-e8c7a90d3dc0' => 20.0, // target_temperature - preset_eco
 					'15d157d1-0ec7-42a7-9683-51678de1ce9a' => 22.0, // target_temperature - preset_home
 					'a326ba38-d188-4eac-a6ad-43bdcc84a730' => Types\HvacMode::HEAT, // hvac_mode
-					'f0b8100f-5ddb-4abd-8015-d0dbf9a11aa0' => Types\ThermostatMode::MANUAL, // preset_mode
+					'f0b8100f-5ddb-4abd-8015-d0dbf9a11aa0' => Types\Preset::MANUAL, // preset_mode
 				],
 				// Expected write entities
 				[
@@ -215,7 +215,7 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 					'767ddcf6-24c5-48b0-baaa-e8c7a90d3dc0' => 20.0, // target_temperature - preset_eco
 					'15d157d1-0ec7-42a7-9683-51678de1ce9a' => 22.0, // target_temperature - preset_home
 					'a326ba38-d188-4eac-a6ad-43bdcc84a730' => Types\HvacMode::HEAT, // hvac_mode
-					'f0b8100f-5ddb-4abd-8015-d0dbf9a11aa0' => Types\ThermostatMode::MANUAL, // preset_mode
+					'f0b8100f-5ddb-4abd-8015-d0dbf9a11aa0' => Types\Preset::MANUAL, // preset_mode
 				],
 				// Expected write entities
 				[
@@ -260,7 +260,7 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 					'767ddcf6-24c5-48b0-baaa-e8c7a90d3dc0' => 20.0, // target_temperature - preset_eco
 					'15d157d1-0ec7-42a7-9683-51678de1ce9a' => 22.0, // target_temperature - preset_home
 					'a326ba38-d188-4eac-a6ad-43bdcc84a730' => Types\HvacMode::HEAT, // hvac_mode
-					'f0b8100f-5ddb-4abd-8015-d0dbf9a11aa0' => Types\ThermostatMode::MANUAL, // preset_mode
+					'f0b8100f-5ddb-4abd-8015-d0dbf9a11aa0' => Types\Preset::MANUAL, // preset_mode
 				],
 				// Expected write entities
 				[
@@ -305,7 +305,7 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 					'767ddcf6-24c5-48b0-baaa-e8c7a90d3dc0' => 20.0, // target_temperature - preset_eco
 					'15d157d1-0ec7-42a7-9683-51678de1ce9a' => 22.0, // target_temperature - preset_home
 					'a326ba38-d188-4eac-a6ad-43bdcc84a730' => Types\HvacMode::HEAT, // hvac_mode
-					'f0b8100f-5ddb-4abd-8015-d0dbf9a11aa0' => Types\ThermostatMode::MANUAL, // preset_mode
+					'f0b8100f-5ddb-4abd-8015-d0dbf9a11aa0' => Types\Preset::MANUAL, // preset_mode
 				],
 				// Expected write entities
 				[
@@ -350,7 +350,7 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 					'767ddcf6-24c5-48b0-baaa-e8c7a90d3dc0' => 20.0, // target_temperature - preset_eco
 					'15d157d1-0ec7-42a7-9683-51678de1ce9a' => 22.0, // target_temperature - preset_home
 					'a326ba38-d188-4eac-a6ad-43bdcc84a730' => Types\HvacMode::HEAT, // hvac_mode
-					'f0b8100f-5ddb-4abd-8015-d0dbf9a11aa0' => Types\ThermostatMode::MANUAL, // preset_mode
+					'f0b8100f-5ddb-4abd-8015-d0dbf9a11aa0' => Types\Preset::MANUAL, // preset_mode
 				],
 				// Expected write entities
 				[
@@ -381,7 +381,7 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 					'767ddcf6-24c5-48b0-baaa-e8c7a90d3dc0' => 20.0, // target_temperature - preset_eco
 					'15d157d1-0ec7-42a7-9683-51678de1ce9a' => 22.0, // target_temperature - preset_home
 					'a326ba38-d188-4eac-a6ad-43bdcc84a730' => Types\HvacMode::HEAT, // hvac_mode
-					'f0b8100f-5ddb-4abd-8015-d0dbf9a11aa0' => Types\ThermostatMode::MANUAL, // preset_mode
+					'f0b8100f-5ddb-4abd-8015-d0dbf9a11aa0' => Types\Preset::MANUAL, // preset_mode
 				],
 				// Expected write entities
 				[
@@ -412,7 +412,7 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 					'767ddcf6-24c5-48b0-baaa-e8c7a90d3dc0' => 20.0, // target_temperature - preset_eco
 					'15d157d1-0ec7-42a7-9683-51678de1ce9a' => 22.0, // target_temperature - preset_home
 					'a326ba38-d188-4eac-a6ad-43bdcc84a730' => Types\HvacMode::HEAT, // hvac_mode
-					'f0b8100f-5ddb-4abd-8015-d0dbf9a11aa0' => Types\ThermostatMode::MANUAL, // preset_mode
+					'f0b8100f-5ddb-4abd-8015-d0dbf9a11aa0' => Types\Preset::MANUAL, // preset_mode
 				],
 				// Expected write entities
 				[

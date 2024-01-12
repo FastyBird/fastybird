@@ -21,7 +21,7 @@ IGNORE INTO `fb_devices_module_devices_properties` (`property_id`, `device_id`, 
 
 INSERT
 IGNORE INTO `fb_devices_module_channels` (`channel_id`, `device_id`, `channel_category`, `channel_identifier`, `channel_name`, `channel_comment`, `params`, `created_at`, `updated_at`, `channel_type`) VALUES
-(_binary 0xc2c572b3324844daaca0fd329e1d9418, _binary 0x552cea8a0e8141d9be2f839b079f315e, 'generic', 'thermostat', null, null, null, '2023-10-15 11:00:00', '2023-10-15 11:00:00', 'thermostat-device-addon-configuration'),
+(_binary 0xc2c572b3324844daaca0fd329e1d9418, _binary 0x552cea8a0e8141d9be2f839b079f315e, 'generic', 'configuration', null, null, null, '2023-10-15 11:00:00', '2023-10-15 11:00:00', 'thermostat-device-addon-configuration'),
 (_binary 0x29e4d707142d422499830e568f259639, _binary 0x552cea8a0e8141d9be2f839b079f315e, 'generic', 'sensors', null, null, null, '2023-10-15 11:00:00', '2023-10-15 11:00:00', 'thermostat-device-addon-sensors'),
 (_binary 0x9808b3869ed44e5888f1b39f5f70ef39, _binary 0x552cea8a0e8141d9be2f839b079f315e, 'generic', 'actors', null, null, null, '2023-10-15 11:00:00', '2023-10-15 11:00:00', 'thermostat-device-addon-actors'),
 (_binary 0xc55dcc2f43c84f03862ea5a2c5ba91c4, _binary 0x552cea8a0e8141d9be2f839b079f315e, 'generic', 'preset_away', null, null, null, '2023-10-15 11:00:00', '2023-10-15 11:00:00', 'thermostat-device-addon-preset'),
@@ -31,9 +31,9 @@ IGNORE INTO `fb_devices_module_channels` (`channel_id`, `device_id`, `channel_ca
 
 INSERT
 IGNORE INTO `fb_devices_module_channels_properties` (`property_id`, `channel_id`, `parent_id`, `property_category`, `property_identifier`, `property_name`, `property_settable`, `property_queryable`, `property_data_type`, `property_unit`, `property_format`, `property_invalid`, `property_scale`, `property_step`, `property_value`, `property_default`, `params`, `created_at`, `updated_at`, `property_type`) VALUES
-(_binary 0x9c5e5a5f1b5d4394a9b9199f1701efac, _binary 0x6ecec6b9a48a48918d61d552e63e5f5a, null, 'generic', 'sensor', 'Temperature', 0, 1, 'float', '°C', null, null, null, null, null, null, null, '2023-10-15 11:00:00', '2023-10-15 11:00:00', 'dynamic'),
+(_binary 0x9c5e5a5f1b5d4394a9b9199f1701efac, _binary 0x6ecec6b9a48a48918d61d552e63e5f5a, null, 'generic', 'opening_sensor', 'Temperature', 0, 1, 'float', '°C', null, null, null, null, null, null, null, '2023-10-15 11:00:00', '2023-10-15 11:00:00', 'dynamic'),
 (_binary 0x1e196c5ca4694ec795e7c4bb48d58fe0, _binary 0x6ecec6b9a48a48918d61d552e63e5f5a, null, 'generic', 'floor_sensor', 'Floor temperature', 0, 1, 'float', '°C', null, null, null, null, null, null, null, '2023-10-15 11:00:00', '2023-10-15 11:00:00', 'dynamic'),
-(_binary 0x11807caa082c468b8a1b88ba8a715ca1, _binary 0x6ecec6b9a48a48918d61d552e63e5f5a, null, 'generic', 'actor', 'Switch', 1, 1, 'bool', null, null, null, null, null, null, null, null, '2023-10-15 11:00:00', '2023-10-15 11:00:00', 'dynamic'),
+(_binary 0x11807caa082c468b8a1b88ba8a715ca1, _binary 0x6ecec6b9a48a48918d61d552e63e5f5a, null, 'generic', 'heater_actor', 'Switch', 1, 1, 'bool', null, null, null, null, null, null, null, null, '2023-10-15 11:00:00', '2023-10-15 11:00:00', 'dynamic'),
 (_binary 0x1e196c5ca4694ec795e7c4bb48d58fe0, _binary 0xc55dcc2f43c84f03862ea5a2c5ba91c4, null, 'generic', 'target_temperature', null, 1, 1, 'float', null, '7:35', null, null, 0.1, null, null, null, '2023-10-15 11:00:00', '2023-10-15 11:00:00', 'dynamic'),
 (_binary 0x767ddcf624c548b0baaae8c7a90d3dc0, _binary 0xe1cb79d9f61840ac9576258a501a98be, null, 'generic', 'target_temperature', null, 1, 1, 'float', null, '7:35', null, null, 0.1, null, null, null, '2023-10-15 11:00:00', '2023-10-15 11:00:00', 'dynamic'),
 (_binary 0xf0b8100f5ddb4abd8015d0dbf9a11aa0, _binary 0xc2c572b3324844daaca0fd329e1d9418, null, 'generic', 'preset_mode', null, 0, 1, 'enum', null, 'manual,away,eco,home', null, null, null, null, null, null, '2023-10-15 11:00:00', '2023-10-15 11:00:00', 'dynamic'),
