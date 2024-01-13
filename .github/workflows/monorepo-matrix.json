@@ -108,5 +108,10 @@
     "organization": "FastyBird",
     "name": "ws-server-plugin",
     "local-path": "src/FastyBird/Plugin/WsServer"
+  },
+  {
+    "organization": "FastyBird",
+    "name": "thermostat-device-addon",
+    "local-path": "src/FastyBird/Addon/ThermostatDevice"
   }
 ]

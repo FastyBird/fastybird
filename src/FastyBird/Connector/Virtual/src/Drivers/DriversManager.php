@@ -7,7 +7,7 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:VirtualConnector!
- * @subpackage     Devices
+ * @subpackage     Drivers
  * @since          1.0.0
  *
  * @date           18.10.23
@@ -26,7 +26,7 @@ use function sprintf;
  * API connections manager
  *
  * @package        FastyBird:VirtualConnector!
- * @subpackage     Devices
+ * @subpackage     Drivers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */

@@ -25,7 +25,7 @@ use FastyBird\Module\Devices\Entities as DevicesEntities;
 class ShellyChannel extends DevicesEntities\Channels\Channel
 {
 
-	public const TYPE = 'shelly';
+	public const TYPE = 'shelly-connector';
 
 	public function getType(): string
 	{

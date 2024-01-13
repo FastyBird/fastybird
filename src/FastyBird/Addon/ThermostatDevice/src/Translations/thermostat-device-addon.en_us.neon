@@ -1,0 +1,195 @@
+#
+# Addon translations
+#
+# @language       en_US
+#
+# @license        More in LICENSE.md
+# @copyright      https://www.fastybird.com
+# @author         Adam Kadlec <adam.kadlec@fastybird.com>
+# @package        FastyBird:ThermostatDeviceAddon!
+# @subpackage     Translations
+# @since          1.0.0
+#
+# @date           11.01.24
+#
+
+cmd:
+    base:
+        questions:
+            continue: "Would you like to continue?"
+            whatToDo: "What would you like to do?"
+            exit: "Do you want to exit?"
+
+        messages:
+            noConnectors: "No Virtual connectors registered in system."
+            answerNotValid: "Selected answer: \"%s\" is not valid."
+
+    install:
+        title: "Thermostat device addon - installer"
+        subtitle: "This action will create|update|delete addon configuration"
+
+        actions:
+            create:
+                device: "Create thermostat"
+                actor: "Assign heater or cooler actor"
+                sensor: "Assign sensor"
+            update:
+                device: "Edit thermostat"
+                actor: "Edit heater or cooler actor"
+                sensor: "Edit sensor"
+                preset: "Edit thermostat preset"
+            remove:
+                device: "Remove thermostat"
+                actor: "Remove heater or cooler actor"
+                sensor: "Remove sensor"
+            list:
+                devices: "List thermostats"
+                actors: "List heaters and coolers actors"
+                sensors: "List sensors"
+            manage:
+                device: "Manage thermostat"
+            nothing: "Nothing"
+
+        questions:
+            create:
+                device: "Would you like to create new thermostat?"
+                actor: "Would you like to create new thermostat actor?"
+                sensor: "Would you like to create new thermostat sensor?"
+            select:
+                item:
+                    connector: "Please select connector to manage"
+                    device: "Please select thermostat to manage"
+                mode: "Please select thermostat supported modes (multiple answers available)"
+                mappedDevice: "Select device for mapping"
+                mappedDeviceChannel: "Select device channel for mapping"
+                mappedChannelProperty: "Select channel property for mapping"
+                preset: "Please select thermostat supported presets (multiple answers available)"
+                actorToUpdate: "Select actor which you want to update"
+                sensorToUpdate: "Select sensor which you want to update"
+                presetToUpdate: "Select preset which you want to update"
+                actorType: "Select actor type"
+                sensorType: "Select sensor type"
+            provide:
+                device:
+                    identifier: "Provide thermostat identifier"
+                    name: "Provide thermostat name"
+                    unit: "Provice thermostat units"
+                actor:
+                    name: "Provide actor name"
+                sensor:
+                    name: "Provide sensor name"
+                targetTemperature:
+                    manual: "Provide target temperature value for manual mode (%unit%)"
+                    away: "Provide target temperature value for AWAY mode (%unit%)"
+                    eco: "Provide target temperature value for ECO mode (%unit%)"
+                    home: "Provide target temperature value for HOME mode (%unit%)"
+                    comfort: "Provide target temperature value for COMFORT mode (%unit%)"
+                    sleep: "Provide target temperature value for SLEEP mode (%unit%)"
+                    anti_freeze: "Provide target temperature value for ANTI FREEZE mode (%unit%)"
+                maximumFloorTemperature: "Provide maximum allowed floor temperature (%unit%)"
+                heatingThresholdTemperature: "Provide heating threshold temperature (%unit%)"
+                coolingThresholdTemperature: "Provide cooling threshold temperature (%unit%)"
+            useOpenings: "Do you want to configure openings sensors? Like windows, doors, etc."
+            useFloorSensor: "Do you want to configure floor temperature sensors?"
+            addAnotherHeater: "Do you want to add another heater actor?"
+            addAnotherCooler: "Do you want to add another cooler actor?"
+            addAnotherOpening: "Do you want to add another opnening sensor?"
+            addAnotherTemperatureSensor: "Do you want to add another temperature sensor?"
+            addAnotherFloorSensor: "Do you want to add another floor temperature sensor?"
+
+        answers:
+            mode:
+                off: "Off"
+                heat: "Heating"
+                cool: "Cooling"
+                auto: "Auto"
+            unit:
+                celsius: "°C"
+                fahrenheit: "°F"
+            preset:
+                manual: "Manual"
+                away: "Away"
+                eco: "Eco"
+                home: "Home"
+                comfort: "Comfort"
+                sleep: "Sleep"
+                anti_freeze: "Anti freeze"
+                none: "None"
+            actor:
+                heater: "Heater actor"
+                cooler: "Cooler actor"
+            sensor:
+                targetTemperature: "Temperature sensor"
+                floorTemperature: "Floor temperature sensor"
+                sensor: "Openings sensor"
+            device: "Device"
+            channel: "Channel"
+            property: "Property"
+
+        data:
+            name: "Name"
+            hvacModes: "HVAC modes"
+            presets: "Presets"
+            connector: "Connector"
+            type: "Type"
+            heater_actor: "Heater actor"
+            cooler_actor: "Cooler actor"
+            target_sensor: "Temperature sensor"
+            floor_sensor: "Floor temperature sensor"
+            opening_sensor: "Openings sensors"
+
+        messages:
+            identifier:
+                device:
+                    used: "This identifier is already used."
+                    missing: "Thermostat identifier have to be provided."
+            create:
+                device:
+                    success: "Thermostat \"%name%\" was successfully created."
+                    error: "Something went wrong, thermostat could not be created. Error was logged."
+                actor:
+                    success: "Thermostat actor \"%name%\" was successfully created."
+                    error: "Something went wrong, thermostat actor could not be created. Error was logged."
+                sensor:
+                    success: "Thermostat sensor \"%name%\" was successfully created."
+                    error: "Something went wrong, thermostat sensor could not be created. Error was logged."
+            update:
+                device:
+                    success: "Thermostat \"%name%\" was successfully updated."
+                    error: "Something went wrong, thermostat could not be updated. Error was logged."
+                actor:
+                    success: "Thermostat actor \"%name%\" was successfully updated."
+                    error: "Something went wrong, thermostat actor could not be updated. Error was logged."
+                sensor:
+                    success: "Thermostat sensor \"%name%\" was successfully updated."
+                    error: "Something went wrong, thermostat sensor could not be updated. Error was logged."
+            remove:
+                device:
+                    confirm: "This action will remove \"%name%\" thermostat. This action can not be undone."
+                    success: "Thermostat \"%name%\" was successfully removed."
+                    error: "Something went wrong, thermostat could not be removed. Error was logged."
+                actor:
+                    confirm: "This action will remove \"%name%\" thermostat actor. This action can not be undone."
+                    success: "Thermostat actor \"%name%\" was successfully removed."
+                    error: "Something went wrong, thermostat actor could not be removed. Error was logged."
+                sensor:
+                    confirm: "This action will remove \"%name%\" thermostat sensor. This action can not be undone."
+                    success: "Thermostat sensor \"%name%\" was successfully removed."
+                    error: "Something went wrong, thermostat sensor could not be removed. Error was logged."
+            noHardwareDevices: "No devices registered in system"
+            property:
+                notSupported: "Selected property is not supported"
+            configureHeaters: "Configure thermostat heater actor/s. This device/s will be controled by thermostat according to settings"
+            configureCoolers: "Configure thermostat cooler actor/s. This device/s will be controled by thermostat according to settings"
+            configureTemperatureSensor: "Configure thermostat temperature sensor/s. This device/s will report values to thermostat"
+            preset:
+                away: "Configure thermostat temperature for AWAY preset"
+                eco: "Configure thermostat temperature for ECO preset"
+                home: "Configure thermostat temperature for HOME preset"
+                comfort: "Configure thermostat temperature for COMFORT preset"
+                sleep: "Configure thermostat temperature for SLEEP preset"
+                anti_freeze: "Configure thermostat temperature for ANTI FREEZE preset"
+            noPresets: "No presets are configured for this thermostat"
+            noActors: "No actors are configured for this thermostat"
+            noSensors: "No sensors are configured for this thermostat"
+            noDevices: "No thermostats registered in system."

@@ -29,7 +29,7 @@ use function is_string;
 class ShellyConnector extends DevicesEntities\Connectors\Connector
 {
 
-	public const TYPE = 'shelly';
+	public const TYPE = 'shelly-connector';
 
 	public function getType(): string
 	{

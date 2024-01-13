@@ -31,7 +31,7 @@ use function is_string;
 class SubDevice extends Entities\NsPanelDevice
 {
 
-	public const TYPE = 'ns-panel-sub-device';
+	public const TYPE = 'ns-panel-connector-sub-device';
 
 	/**
 	 * @throws Exceptions\InvalidState

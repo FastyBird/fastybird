@@ -67,7 +67,6 @@
 
                 <element key="src/FastyBird/Connector/Virtual/src" value="FastyBird\Connector\Virtual"/>
                 <element key="src/FastyBird/Connector/Virtual/tests/cases/unit" value="FastyBird\Connector\Virtual\Tests\Cases\Unit"/>
-                <element key="src/FastyBird/Connector/Virtual/tests/fixtures/dummy" value="FastyBird\Connector\Virtual\Tests\Fixtures\Dummy"/>
                 <element key="src/FastyBird/Connector/Virtual/tests/tools" value="FastyBird\Connector\Virtual\Tests\Tools"/>
 
                 <element key="src/FastyBird/Connector/Zigbee2Mqtt/src" value="FastyBird\Connector\Zigbee2Mqtt"/>
@@ -123,6 +122,11 @@
 
                 <element key="src/FastyBird/Plugin/WsServer/src" value="FastyBird\Plugin\WsServer"/>
                 <element key="src/FastyBird/Plugin/WsServer/tests/cases/unit" value="FastyBird\Plugin\WsServer\Tests\Cases\Unit"/>
+
+                <element key="src/FastyBird/Addon/ThermostatDevice/src" value="FastyBird\Addon\ThermostatDevice"/>
+                <element key="src/FastyBird/Addon/ThermostatDevice/tests/cases/unit" value="FastyBird\Addon\ThermostatDevice\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Addon/ThermostatDevice/tests/fixtures/dummy" value="FastyBird\Addon\ThermostatDevice\Tests\Fixtures\Dummy"/>
+                <element key="src/FastyBird/Addon/ThermostatDevice/tests/tools" value="FastyBird\Addon\ThermostatDevice\Tests\Tools"/>
             </property>
         </properties>
     </rule>

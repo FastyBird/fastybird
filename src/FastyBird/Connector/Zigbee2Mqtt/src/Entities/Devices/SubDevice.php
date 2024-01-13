@@ -33,7 +33,7 @@ use function is_string;
 class SubDevice extends Entities\Zigbee2MqttDevice
 {
 
-	public const TYPE = 'zigbee2mqtt-sub-device';
+	public const TYPE = 'zigbee2mqtt-connector-sub-device';
 
 	/**
 	 * @throws Exceptions\InvalidState

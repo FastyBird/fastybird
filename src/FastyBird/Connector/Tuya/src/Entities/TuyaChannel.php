@@ -25,7 +25,7 @@ use FastyBird\Module\Devices\Entities as DevicesEntities;
 class TuyaChannel extends DevicesEntities\Channels\Channel
 {
 
-	public const TYPE = 'tuya';
+	public const TYPE = 'tuya-connector';
 
 	public function getType(): string
 	{

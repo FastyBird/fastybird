@@ -1,6 +1,6 @@
 INSERT
 IGNORE INTO `fb_devices_module_connectors` (`connector_id`, `connector_identifier`, `connector_name`, `connector_comment`, `connector_enabled`, `connector_type`, `created_at`, `updated_at`) VALUES
-(_binary 0x86d6a4ba62924947b8c18681569ac28e, 'shelly-local', 'Shelly Local', null, true, 'shelly', '2023-09-04 10:00:00', '2023-09-04 10:00:00');
+(_binary 0x86d6a4ba62924947b8c18681569ac28e, 'shelly-local', 'Shelly Local', null, true, 'shelly-connector', '2023-09-04 10:00:00', '2023-09-04 10:00:00');
 
 INSERT
 IGNORE INTO `fb_devices_module_connectors_controls` (`control_id`, `connector_id`, `control_name`, `created_at`, `updated_at`) VALUES

@@ -29,7 +29,7 @@ use function is_numeric;
 class VirtualDevice extends DevicesEntities\Devices\Device
 {
 
-	public const TYPE = 'virtual';
+	public const TYPE = 'virtual-connector';
 
 	public const STATE_PROCESSING_DELAY = 120.0;
 

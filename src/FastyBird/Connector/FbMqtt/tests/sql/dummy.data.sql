@@ -1,6 +1,6 @@
 INSERT
 IGNORE INTO `fb_devices_module_connectors` (`connector_id`, `connector_identifier`, `connector_name`, `connector_comment`, `connector_enabled`, `connector_type`, `created_at`, `updated_at`) VALUES
-(_binary 0x37b86cdc376b4d4c9683aa4f41daa13a, 'fb-mqtt', 'FB MQTT', null, true, 'fb-mqtt', '2020-03-20 09:18:20', '2020-03-20 09:18:20');
+(_binary 0x37b86cdc376b4d4c9683aa4f41daa13a, 'fb-mqtt', 'FB MQTT', null, true, 'fb-mqtt-connector', '2020-03-20 09:18:20', '2020-03-20 09:18:20');
 
 INSERT
 IGNORE INTO `fb_devices_module_connectors_properties` (`property_id`, `connector_id`, `property_type`, `property_identifier`, `property_name`, `property_settable`, `property_queryable`, `property_data_type`, `property_unit`, `property_format`, `property_invalid`, `property_scale`, `property_value`, `created_at`, `updated_at`) VALUES

@@ -33,7 +33,7 @@ use function is_string;
 class ShellyDevice extends DevicesEntities\Devices\Device
 {
 
-	public const TYPE = 'shelly';
+	public const TYPE = 'shelly-connector';
 
 	public const STATE_READING_DELAY = 5_000.0;
 

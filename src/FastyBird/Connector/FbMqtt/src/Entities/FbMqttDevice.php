@@ -25,7 +25,7 @@ use FastyBird\Module\Devices\Entities as DevicesEntities;
 class FbMqttDevice extends DevicesEntities\Devices\Device
 {
 
-	public const TYPE = 'fb-mqtt';
+	public const TYPE = 'fb-mqtt-connector';
 
 	public function getType(): string
 	{

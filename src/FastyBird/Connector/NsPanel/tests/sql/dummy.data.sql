@@ -1,6 +1,6 @@
 INSERT
 IGNORE INTO `fb_devices_module_connectors` (`connector_id`, `connector_identifier`, `connector_name`, `connector_comment`, `connector_enabled`, `connector_type`, `created_at`, `updated_at`) VALUES
-(_binary 0x3c75e7f0bdfe407a823083dbbbdf0155, 'ns-panel', 'NS Panel', null, true, 'ns-panel', '2023-07-29 16:00:00', '2023-07-29 16:00:00');
+(_binary 0x3c75e7f0bdfe407a823083dbbbdf0155, 'ns-panel', 'NS Panel', null, true, 'ns-panel-connector', '2023-07-29 16:00:00', '2023-07-29 16:00:00');
 
 INSERT
 IGNORE INTO `fb_devices_module_connectors_controls` (`control_id`, `connector_id`, `control_name`, `created_at`, `updated_at`) VALUES
@@ -12,7 +12,7 @@ IGNORE INTO `fb_devices_module_connectors_properties` (`property_id`, `connector
 
 INSERT
 IGNORE INTO `fb_devices_module_devices` (`device_id`, `device_type`, `device_identifier`, `device_name`, `device_comment`, `params`, `created_at`, `updated_at`, `owner`, `connector_id`) VALUES
-(_binary 0x896a5f357c9a47f29c72f1520d503364, 'ns-panel-gateway', 'Dummy NS Panel', null, null, null, '2023-07-29 16:00:00', '2023-07-29 16:00:00', '455354e8-96bd-4c29-84e7-9f10e1d4db4b', _binary 0x3c75e7f0bdfe407a823083dbbbdf0155);
+(_binary 0x896a5f357c9a47f29c72f1520d503364, 'ns-panel-connector-gateway', 'Dummy NS Panel', null, null, null, '2023-07-29 16:00:00', '2023-07-29 16:00:00', '455354e8-96bd-4c29-84e7-9f10e1d4db4b', _binary 0x3c75e7f0bdfe407a823083dbbbdf0155);
 
 INSERT
 IGNORE INTO `fb_devices_module_devices_properties` (`property_id`, `device_id`, `property_type`, `property_identifier`, `property_name`, `property_settable`, `property_queryable`, `property_data_type`, `property_unit`, `property_format`, `property_invalid`, `property_scale`, `property_value`, `created_at`, `updated_at`) VALUES

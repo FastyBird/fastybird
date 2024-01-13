@@ -41,10 +41,6 @@ some other services or bridges.
 > [!TIP]
 Find fundamental details regarding the installation and configuration of this connector on the [Configuration](Configuration) page.
 
-> [!TIP]
-This connector is equipped with Thermostat device and this device could be used as a example device. Find fundamental details
-regarding the configuration of this device on the [Thermostat](Thermostat) page.
-
 This connector is equipped with interactive console. With this console commands you could manage almost all connector features.
 
 * **fb:virtual-connector:install**: is used for connector installation and configuration. With interactive menu you could manage connector and device.

@@ -29,7 +29,7 @@ use function is_string;
 class TuyaConnector extends DevicesEntities\Connectors\Connector
 {
 
-	public const TYPE = 'tuya';
+	public const TYPE = 'tuya-connector';
 
 	public function getType(): string
 	{

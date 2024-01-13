@@ -60,11 +60,7 @@ class Install extends Console\Command\Command
 
 	private Output\OutputInterface|null $output = null;
 
-	/**
-	 * @param array<string, Console\Command\Command> $commands
-	 */
 	public function __construct(
-		private readonly array $commands,
 		private readonly Virtual\Logger $logger,
 		private readonly DevicesModels\Entities\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Entities\Connectors\ConnectorsManager $connectorsManager,
@@ -118,10 +114,8 @@ class Install extends Console\Command\Command
 
 	/**
 	 * @throws BootstrapExceptions\InvalidState
-	 * @throws Console\Exception\ExceptionInterface
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 */
 	private function createConnector(Style\SymfonyStyle $io): void
@@ -221,23 +215,6 @@ class Install extends Console\Command\Command
 			}
 
 			$this->databaseHelper->clear();
-		}
-
-		$question = new Console\Question\ConfirmationQuestion(
-			$this->translator->translate('//virtual-connector.cmd.install.questions.create.devices'),
-			true,
-		);
-
-		$createDevices = (bool) $io->askQuestion($question);
-
-		if ($createDevices) {
-			$connector = $this->connectorsRepository->find(
-				$connector->getId(),
-				Entities\VirtualConnector::class,
-			);
-			assert($connector instanceof Entities\VirtualConnector);
-
-			$this->createDevice($io, $connector);
 		}
 	}
 
@@ -496,94 +473,6 @@ class Install extends Console\Command\Command
 
 	/**
 	 * @throws BootstrapExceptions\InvalidState
-	 * @throws Console\Exception\InvalidArgumentException
-	 * @throws Console\Exception\ExceptionInterface
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\InvalidState
-	 */
-	private function createDevice(
-		Style\SymfonyStyle $io,
-		Entities\VirtualConnector $connector,
-	): void
-	{
-		if ($this->input === null || $this->output === null) {
-			throw new Exceptions\InvalidState('Something went wrong, console input/output is not configured');
-		}
-
-		$serviceCmd = $this->askWhichDeviceType($io);
-
-		if ($serviceCmd === null) {
-			$this->translator->translate('//virtual-connector.cmd.install.messages.noService');
-
-			return;
-		}
-
-		$serviceCmd->run(new Input\ArrayInput([
-			'--action' => Virtual\Commands\Devices\Device::ACTION_CREATE,
-			'--connector' => $connector->getId()->toString(),
-			'--no-interaction' => $this->input->getOption('no-interaction'),
-			'--quiet' => $this->input->getOption('quiet'),
-		]), $this->output);
-
-		$this->databaseHelper->clear();
-	}
-
-	/**
-	 * @throws BootstrapExceptions\InvalidState
-	 * @throws Console\Exception\InvalidArgumentException
-	 * @throws Console\Exception\ExceptionInterface
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\InvalidState
-	 */
-	private function editDevice(
-		Style\SymfonyStyle $io,
-		Entities\VirtualConnector $connector,
-	): void
-	{
-		if ($this->input === null || $this->output === null) {
-			throw new Exceptions\InvalidState('Something went wrong, console input/output is not configured');
-		}
-
-		$device = $this->askWhichDevice($io, $connector);
-
-		if ($device === null) {
-			$io->warning($this->translator->translate('//virtual-connector.cmd.install.messages.noDevices'));
-
-			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//virtual-connector.cmd.install.questions.create.device'),
-				false,
-			);
-
-			$continue = (bool) $io->askQuestion($question);
-
-			if ($continue) {
-				$this->createDevice($io, $connector);
-			}
-
-			return;
-		}
-
-		if (!array_key_exists($device->getType(), $this->commands)) {
-			$this->translator->translate('//virtual-connector.cmd.install.messages.noService');
-
-			return;
-		}
-
-		$serviceCmd = $this->commands[$device->getType()];
-
-		$serviceCmd->run(new Input\ArrayInput([
-			'--action' => Virtual\Commands\Devices\Device::ACTION_EDIT,
-			'--connector' => $connector->getId()->toString(),
-			'--device' => $device->getId()->toString(),
-			'--no-interaction' => $this->input->getOption('no-interaction'),
-			'--quiet' => $this->input->getOption('quiet'),
-		]), $this->output);
-
-		$this->databaseHelper->clear();
-	}
-
-	/**
-	 * @throws BootstrapExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
@@ -651,60 +540,6 @@ class Install extends Console\Command\Command
 
 			$this->databaseHelper->clear();
 		}
-	}
-
-	/**
-	 * @throws BootstrapExceptions\InvalidState
-	 * @throws Console\Exception\InvalidArgumentException
-	 * @throws Console\Exception\ExceptionInterface
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\InvalidState
-	 */
-	private function manageDevice(
-		Style\SymfonyStyle $io,
-		Entities\VirtualConnector $connector,
-	): void
-	{
-		if ($this->input === null || $this->output === null) {
-			throw new Exceptions\InvalidState('Something went wrong, console input/output is not configured');
-		}
-
-		$device = $this->askWhichDevice($io, $connector);
-
-		if ($device === null) {
-			$io->info($this->translator->translate('//virtual-connector.cmd.install.messages.noDevices'));
-
-			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//virtual-connector.cmd.install.questions.create.device'),
-				false,
-			);
-
-			$continue = (bool) $io->askQuestion($question);
-
-			if ($continue) {
-				$this->createDevice($io, $connector);
-			}
-
-			return;
-		}
-
-		if (!array_key_exists($device->getType(), $this->commands)) {
-			$this->translator->translate('//virtual-connector.cmd.install.messages.noService');
-
-			return;
-		}
-
-		$serviceCmd = $this->commands[$device->getType()];
-
-		$serviceCmd->run(new Input\ArrayInput([
-			'--action' => Virtual\Commands\Devices\Device::ACTION_MANAGE,
-			'--connector' => $connector->getId()->toString(),
-			'--device' => $device->getId()->toString(),
-			'--no-interaction' => $this->input->getOption('no-interaction'),
-			'--quiet' => $this->input->getOption('quiet'),
-		]), $this->output);
-
-		$this->databaseHelper->clear();
 	}
 
 	/**
@@ -846,14 +681,11 @@ class Install extends Console\Command\Command
 		$question = new Console\Question\ChoiceQuestion(
 			$this->translator->translate('//virtual-connector.cmd.base.questions.whatToDo'),
 			[
-				0 => $this->translator->translate('//virtual-connector.cmd.install.actions.create.device'),
-				1 => $this->translator->translate('//virtual-connector.cmd.install.actions.update.device'),
-				2 => $this->translator->translate('//virtual-connector.cmd.install.actions.remove.device'),
-				3 => $this->translator->translate('//virtual-connector.cmd.install.actions.manage.device'),
-				4 => $this->translator->translate('//virtual-connector.cmd.install.actions.list.devices'),
-				5 => $this->translator->translate('//virtual-connector.cmd.install.actions.nothing'),
+				0 => $this->translator->translate('//virtual-connector.cmd.install.actions.remove.device'),
+				1 => $this->translator->translate('//virtual-connector.cmd.install.actions.list.devices'),
+				2 => $this->translator->translate('//virtual-connector.cmd.install.actions.nothing'),
 			],
-			5,
+			2,
 		);
 
 		$question->setErrorMessage(
@@ -864,29 +696,9 @@ class Install extends Console\Command\Command
 
 		if (
 			$whatToDo === $this->translator->translate(
-				'//virtual-connector.cmd.install.actions.create.device',
-			)
-			|| $whatToDo === '0'
-		) {
-			$this->createDevice($io, $connector);
-
-			$this->askManageConnectorAction($io, $connector);
-
-		} elseif (
-			$whatToDo === $this->translator->translate(
-				'//virtual-connector.cmd.install.actions.update.device',
-			)
-			|| $whatToDo === '1'
-		) {
-			$this->editDevice($io, $connector);
-
-			$this->askManageConnectorAction($io, $connector);
-
-		} elseif (
-			$whatToDo === $this->translator->translate(
 				'//virtual-connector.cmd.install.actions.remove.device',
 			)
-			|| $whatToDo === '2'
+			|| $whatToDo === '0'
 		) {
 			$this->deleteDevice($io, $connector);
 
@@ -894,19 +706,9 @@ class Install extends Console\Command\Command
 
 		} elseif (
 			$whatToDo === $this->translator->translate(
-				'//virtual-connector.cmd.install.actions.manage.device',
-			)
-			|| $whatToDo === '3'
-		) {
-			$this->manageDevice($io, $connector);
-
-			$this->askManageConnectorAction($io, $connector);
-
-		} elseif (
-			$whatToDo === $this->translator->translate(
 				'//virtual-connector.cmd.install.actions.list.devices',
 			)
-			|| $whatToDo === '4'
+			|| $whatToDo === '1'
 		) {
 			$this->listDevices($io, $connector);
 
@@ -1096,64 +898,6 @@ class Install extends Console\Command\Command
 		assert($device instanceof Entities\VirtualDevice);
 
 		return $device;
-	}
-
-	private function askWhichDeviceType(
-		Style\SymfonyStyle $io,
-	): Console\Command\Command|null
-	{
-		$types = [];
-
-		foreach ($this->commands as $type => $command) {
-			$types[$type] = $this->translator->translate('//virtual-connector.cmd.install.answers.types.' . $type);
-		}
-
-		if ($this->commands === []) {
-			return null;
-		}
-
-		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//virtual-connector.cmd.install.questions.select.device.type'),
-			array_values($types),
-			count($types) === 1 ? 0 : null,
-		);
-		$question->setErrorMessage(
-			$this->translator->translate('//virtual-connector.cmd.base.messages.answerNotValid'),
-		);
-		$question->setValidator(
-			function (string|int|null $answer) use ($types): Console\Command\Command {
-				if ($answer === null) {
-					throw new Exceptions\Runtime(
-						sprintf(
-							$this->translator->translate('//virtual-connector.cmd.base.messages.answerNotValid'),
-							$answer,
-						),
-					);
-				}
-
-				if (array_key_exists($answer, array_values($types))) {
-					$answer = array_values($types)[$answer];
-				}
-
-				$type = array_search($answer, $types, true);
-
-				if ($type !== false && array_key_exists($type, $this->commands)) {
-					return $this->commands[$type];
-				}
-
-				throw new Exceptions\Runtime(
-					sprintf(
-						$this->translator->translate('//virtual-connector.cmd.base.messages.answerNotValid'),
-						$answer,
-					),
-				);
-			},
-		);
-
-		$command = $io->askQuestion($question);
-		assert($command instanceof Console\Command\Command);
-
-		return $command;
 	}
 
 	/**
