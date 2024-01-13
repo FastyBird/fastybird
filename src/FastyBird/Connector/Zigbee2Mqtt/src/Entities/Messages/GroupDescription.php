@@ -35,7 +35,7 @@ final class GroupDescription implements Entity
 	 */
 	public function __construct(
 		#[ObjectMapper\Rules\IntValue(unsigned: true)]
-		private readonly string $id,
+		private readonly int $id,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('friendly_name')]
 		private readonly string $friendlyName,
@@ -53,7 +53,7 @@ final class GroupDescription implements Entity
 	{
 	}
 
-	public function getId(): string
+	public function getId(): int
 	{
 		return $this->id;
 	}
