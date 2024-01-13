@@ -33,7 +33,7 @@ final class BridgeGroupMember implements Entity
 		#[ObjectMapper\Modifiers\FieldName('ieee_address')]
 		private readonly string $ieeeAddress,
 		#[ObjectMapper\Rules\IntValue(unsigned: true)]
-		private readonly string $endpoint,
+		private readonly int $endpoint,
 	)
 	{
 	}
@@ -43,7 +43,7 @@ final class BridgeGroupMember implements Entity
 		return $this->ieeeAddress;
 	}
 
-	public function getEndpoint(): string
+	public function getEndpoint(): int
 	{
 		return $this->endpoint;
 	}
