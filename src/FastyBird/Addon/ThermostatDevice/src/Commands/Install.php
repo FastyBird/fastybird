@@ -234,6 +234,8 @@ class Install extends Console\Command\Command
 
 			$modes = $this->askThermostatModes($io);
 
+			$unit = $this->askThermostatUnits($io);
+
 			$configurationChannel = $this->channelsManager->create(Utils\ArrayHash::from([
 				'entity' => Entities\Channels\Configuration::class,
 				'device' => $device,
@@ -285,6 +287,18 @@ class Install extends Console\Command\Command
 					'step' => null,
 					'settable' => false,
 					'queryable' => true,
+				]),
+			);
+
+			$this->createOrUpdateProperty(
+				DevicesEntities\Channels\Properties\Variable::class,
+				Utils\ArrayHash::from([
+					'entity' => DevicesEntities\Channels\Properties\Variable::class,
+					'identifier' => Types\ChannelPropertyIdentifier::UNIT,
+					'channel' => $configurationChannel,
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
+					'format' => [Types\Unit::CELSIUS, Types\Unit::FAHRENHEIT],
+					'value' => $unit->getValue(),
 				]),
 			);
 
@@ -613,6 +627,7 @@ class Install extends Console\Command\Command
 			$targetTemp = $this->askTargetTemperature(
 				$io,
 				Types\Preset::get(Types\Preset::MANUAL),
+				$unit,
 			);
 
 			$targetTempProperty = $this->createOrUpdateProperty(
@@ -684,7 +699,7 @@ class Install extends Console\Command\Command
 			);
 
 			if ($useFloorSensor) {
-				$maxFloorTemp = $this->askMaxFloorTemperature($io);
+				$maxFloorTemp = $this->askMaxFloorTemperature($io, $unit);
 
 				$this->createOrUpdateProperty(
 					DevicesEntities\Channels\Properties\Variable::class,
@@ -725,6 +740,7 @@ class Install extends Console\Command\Command
 				$heatingThresholdTemp = $this->askHeatingThresholdTemperature(
 					$io,
 					Types\Preset::get(Types\Preset::MANUAL),
+					$unit,
 				);
 
 				$this->createOrUpdateProperty(
@@ -747,6 +763,7 @@ class Install extends Console\Command\Command
 				$coolingThresholdTemp = $this->askCoolingThresholdTemperature(
 					$io,
 					Types\Preset::get(Types\Preset::MANUAL),
+					$unit,
 				);
 
 				$this->createOrUpdateProperty(
@@ -807,6 +824,7 @@ class Install extends Console\Command\Command
 					'value' => $this->askTargetTemperature(
 						$io,
 						Types\Preset::get($preset),
+						$unit,
 					),
 					'property' => $this->createOrUpdateProperty(
 						DevicesEntities\Channels\Properties\Dynamic::class,
@@ -830,6 +848,7 @@ class Install extends Console\Command\Command
 					$heatingThresholdTemp = $this->askHeatingThresholdTemperature(
 						$io,
 						Types\Preset::get($preset),
+						$unit,
 					);
 
 					$this->createOrUpdateProperty(
@@ -852,6 +871,7 @@ class Install extends Console\Command\Command
 					$coolingThresholdTemp = $this->askCoolingThresholdTemperature(
 						$io,
 						Types\Preset::get($preset),
+						$unit,
 					);
 
 					$this->createOrUpdateProperty(
@@ -1018,7 +1038,7 @@ class Install extends Console\Command\Command
 			Entities\Channels\Configuration::class,
 		);
 
-		$hvacModeProperty = $hvacStateProperty = $presetModeProperty = null;
+		$hvacModeProperty = $unitProperty = $hvacStateProperty = $presetModeProperty = null;
 		$maxFloorTempProperty = $actualFloorTempProperty = $targetTempProperty = $actualTempProperty = null;
 		$heatingThresholdTempProperty = $coolingThresholdTempProperty = null;
 
@@ -1028,6 +1048,12 @@ class Install extends Console\Command\Command
 			$findChannelPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::HVAC_MODE);
 
 			$hvacModeProperty = $this->channelsPropertiesRepository->findOneBy($findChannelPropertyQuery);
+
+			$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
+			$findChannelPropertyQuery->forChannel($thermostatChannel);
+			$findChannelPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::UNIT);
+
+			$unitProperty = $this->channelsPropertiesRepository->findOneBy($findChannelPropertyQuery);
 
 			$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
 			$findChannelPropertyQuery->forChannel($thermostatChannel);
@@ -1085,16 +1111,22 @@ class Install extends Console\Command\Command
 			$hvacModeProperty instanceof DevicesEntities\Channels\Properties\Dynamic ? $hvacModeProperty : null,
 		);
 
+		$unit = $this->askThermostatUnits(
+			$io,
+			$unitProperty instanceof DevicesEntities\Channels\Properties\Variable ? $unitProperty : null,
+		);
+
 		$targetTemp = $this->askTargetTemperature(
 			$io,
 			Types\Preset::get(Types\Preset::MANUAL),
+			$unit,
 			$device,
 		);
 
 		$maxFloorTemp = null;
 
 		if ($device->hasFloorSensors()) {
-			$maxFloorTemp = $this->askMaxFloorTemperature($io, $device);
+			$maxFloorTemp = $this->askMaxFloorTemperature($io, $unit, $device);
 		}
 
 		$heatingThresholdTemp = $coolingThresholdTemp = null;
@@ -1103,12 +1135,14 @@ class Install extends Console\Command\Command
 			$heatingThresholdTemp = $this->askHeatingThresholdTemperature(
 				$io,
 				Types\Preset::get(Types\Preset::MANUAL),
+				$unit,
 				$device,
 			);
 
 			$coolingThresholdTemp = $this->askCoolingThresholdTemperature(
 				$io,
 				Types\Preset::get(Types\Preset::MANUAL),
+				$unit,
 				$device,
 			);
 		}
@@ -1393,6 +1427,7 @@ class Install extends Console\Command\Command
 							'value' => $this->askTargetTemperature(
 								$io,
 								Types\Preset::get($preset),
+								$unit,
 							),
 							'property' => $this->createOrUpdateProperty(
 								DevicesEntities\Channels\Properties\Dynamic::class,
@@ -1416,6 +1451,7 @@ class Install extends Console\Command\Command
 							$heatingThresholdTemp = $this->askHeatingThresholdTemperature(
 								$io,
 								Types\Preset::get($preset),
+								$unit,
 							);
 
 							$this->createOrUpdateProperty(
@@ -1438,6 +1474,7 @@ class Install extends Console\Command\Command
 							$coolingThresholdTemp = $this->askCoolingThresholdTemperature(
 								$io,
 								Types\Preset::get($preset),
+								$unit,
 							);
 
 							$this->createOrUpdateProperty(
@@ -2451,6 +2488,26 @@ class Install extends Console\Command\Command
 			return;
 		}
 
+		$findChannelQuery = new Queries\Entities\FindConfigurationChannels();
+		$findChannelQuery->forDevice($device);
+		$findChannelQuery->byIdentifier(Types\ChannelIdentifier::CONFIGURATION);
+
+		$configuration = $this->channelsRepository->findOneBy(
+			$findChannelQuery,
+			Entities\Channels\Configuration::class,
+		);
+		assert($configuration instanceof Entities\Channels\Configuration);
+
+		$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelVariableProperties();
+		$findChannelPropertyQuery->forChannel($configuration);
+		$findChannelPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::UNIT);
+
+		$unitProperty = $this->channelsPropertiesRepository->findOneBy(
+			$findChannelPropertyQuery,
+			DevicesEntities\Channels\Properties\Variable::class,
+		);
+		assert($unitProperty instanceof DevicesEntities\Channels\Properties\Variable);
+
 		$findChannelQuery = new Queries\Entities\FindPresetChannels();
 		$findChannelQuery->forDevice($device);
 		$findChannelQuery->endWithIdentifier($preset->getValue());
@@ -2479,14 +2536,24 @@ class Install extends Console\Command\Command
 			$coolingThresholdTempProperty = $this->channelsPropertiesRepository->findOneBy($findChannelPropertyQuery);
 		}
 
-		$targetTemp = $this->askTargetTemperature($io, $preset, $device);
+		$targetTemp = $this->askTargetTemperature($io, $preset, Types\Unit::get($unitProperty->getValue()), $device);
 
 		$heatingThresholdTemp = $coolingThresholdTemp = null;
 
 		if (in_array(Types\HvacMode::AUTO, $device->getHvacModes(), true)) {
-			$heatingThresholdTemp = $this->askHeatingThresholdTemperature($io, $preset, $device);
+			$heatingThresholdTemp = $this->askHeatingThresholdTemperature(
+				$io,
+				$preset,
+				Types\Unit::get($unitProperty->getValue()),
+				$device,
+			);
 
-			$coolingThresholdTemp = $this->askCoolingThresholdTemperature($io, $preset, $device);
+			$coolingThresholdTemp = $this->askCoolingThresholdTemperature(
+				$io,
+				$preset,
+				Types\Unit::get($unitProperty->getValue()),
+				$device,
+			);
 		}
 
 		try {
@@ -2741,6 +2808,86 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws Exceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	private function askThermostatUnits(
+		Style\SymfonyStyle $io,
+		DevicesEntities\Channels\Properties\Variable|null $property = null,
+	): Types\Unit
+	{
+		if (
+			$property !== null
+			&& (
+				$property->getIdentifier() !== Types\ChannelPropertyIdentifier::UNIT
+				|| !$property->getFormat() instanceof MetadataValueObjects\StringEnumFormat
+			)
+		) {
+			throw new Exceptions\InvalidArgument('Provided property is not valid');
+		}
+
+		$default = match ($property?->getValue() ?? Types\Unit::CELSIUS) {
+			Types\Unit::CELSIUS => 0,
+			Types\Unit::FAHRENHEIT => 1,
+			default => 0,
+		};
+
+		$question = new Console\Question\ChoiceQuestion(
+			$this->translator->translate('//thermostat-device-addon.cmd.install.questions.select.device.unit'),
+			[
+				0 => $this->translator->translate('//thermostat-device-addon.cmd.install.answers.unit.celsius'),
+				1 => $this->translator->translate('//thermostat-device-addon.cmd.install.answers.unit.fahrenheit'),
+			],
+			$default,
+		);
+
+		$question->setErrorMessage(
+			$this->translator->translate('//thermostat-device-addon.cmd.base.messages.answerNotValid'),
+		);
+		$question->setValidator(function (string|null $answer): Types\Unit {
+			if ($answer === null) {
+				throw new Exceptions\Runtime(
+					sprintf(
+						$this->translator->translate('//thermostat-device-addon.cmd.base.messages.answerNotValid'),
+						$answer,
+					),
+				);
+			}
+
+			if (
+				$answer === $this->translator->translate(
+					'//thermostat-device-addon.cmd.install.answers.unit.celsius',
+				)
+				|| $answer === '0'
+			) {
+				return Types\Unit::get(Types\Unit::CELSIUS);
+			}
+
+			if (
+				$answer === $this->translator->translate(
+					'//thermostat-device-addon.cmd.install.answers.unit.fahrenheit',
+				)
+				|| $answer === '1'
+			) {
+				return Types\Unit::get(Types\Unit::FAHRENHEIT);
+			}
+
+			throw new Exceptions\Runtime(
+				sprintf(
+					$this->translator->translate('//thermostat-device-addon.cmd.base.messages.answerNotValid'),
+					$answer,
+				),
+			);
+		});
+
+		$answer = $io->askQuestion($question);
+		assert($answer instanceof Types\Unit);
+
+		return $answer;
+	}
+
+	/**
 	 * @return array<string>
 	 *
 	 * @throws Exceptions\InvalidArgument
@@ -2805,8 +2952,11 @@ class Install extends Console\Command\Command
 				$this->translator->translate(
 					'//thermostat-device-addon.cmd.install.answers.preset.' . Types\Preset::ANTI_FREEZE,
 				),
+				$this->translator->translate(
+					'//thermostat-device-addon.cmd.install.answers.preset.none',
+				),
 			],
-			implode(',', $default),
+			$default !== [] ? implode(',', $default) : '6',
 		);
 		$question->setMultiselect(true);
 		$question->setErrorMessage(
@@ -2877,6 +3027,15 @@ class Install extends Console\Command\Command
 					|| $item === '5'
 				) {
 					$presets[] = Types\Preset::ANTI_FREEZE;
+				}
+
+				if (
+					$item === $this->translator->translate(
+						'//thermostat-device-addon.cmd.install.answers.preset.none',
+					)
+					|| $item === '6'
+				) {
+					return [];
 				}
 			}
 
@@ -3143,6 +3302,7 @@ class Install extends Console\Command\Command
 	private function askTargetTemperature(
 		Style\SymfonyStyle $io,
 		Types\Preset $thermostatMode,
+		Types\Unit $unit,
 		Entities\ThermostatDevice|null $device = null,
 	): float
 	{
@@ -3170,6 +3330,7 @@ class Install extends Console\Command\Command
 		$question = new Console\Question\Question(
 			$this->translator->translate(
 				'//thermostat-device-addon.cmd.install.questions.provide.targetTemperature.' . $thermostatMode->getValue(),
+				['unit' => $unit->getValue()],
 			),
 			$targetTemp,
 		);
@@ -3208,14 +3369,16 @@ class Install extends Console\Command\Command
 	 */
 	private function askMaxFloorTemperature(
 		Style\SymfonyStyle $io,
+		Types\Unit $unit,
 		Entities\ThermostatDevice|null $device = null,
 	): float
 	{
 		$question = new Console\Question\Question(
 			$this->translator->translate(
 				'//thermostat-device-addon.cmd.install.questions.provide.maximumFloorTemperature',
+				['unit' => $unit->getValue()],
 			),
-			$device?->getMaximumFloorTemp(),
+			$device?->getMaximumFloorTemp() ?? Entities\ThermostatDevice::MAXIMUM_FLOOR_TEMPERATURE,
 		);
 		$question->setValidator(function (string|int|null $answer): float {
 			if ($answer === null) {
@@ -3253,12 +3416,14 @@ class Install extends Console\Command\Command
 	private function askHeatingThresholdTemperature(
 		Style\SymfonyStyle $io,
 		Types\Preset $thermostatMode,
+		Types\Unit $unit,
 		Entities\ThermostatDevice|null $device = null,
 	): float
 	{
 		$question = new Console\Question\Question(
 			$this->translator->translate(
 				'//thermostat-device-addon.cmd.install.questions.provide.heatingThresholdTemperature',
+				['unit' => $unit->getValue()],
 			),
 			$device?->getHeatingThresholdTemp($thermostatMode),
 		);
@@ -3298,12 +3463,14 @@ class Install extends Console\Command\Command
 	private function askCoolingThresholdTemperature(
 		Style\SymfonyStyle $io,
 		Types\Preset $thermostatMode,
+		Types\Unit $unit,
 		Entities\ThermostatDevice|null $device = null,
 	): float
 	{
 		$question = new Console\Question\Question(
 			$this->translator->translate(
 				'//thermostat-device-addon.cmd.install.questions.provide.coolingThresholdTemperature',
+				['unit' => $unit->getValue()],
 			),
 			$device?->getCoolingThresholdTemp($thermostatMode),
 		);

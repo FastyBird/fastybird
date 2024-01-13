@@ -73,21 +73,22 @@ cmd:
                 device:
                     identifier: "Provide thermostat identifier"
                     name: "Provide thermostat name"
+                    unit: "Provice thermostat units"
                 actor:
                     name: "Provide actor name"
                 sensor:
                     name: "Provide sensor name"
                 targetTemperature:
-                    manual: "Provide target temperature value for manual mode"
-                    away: "Provide target temperature value for AWAY mode"
-                    eco: "Provide target temperature value for ECO mode"
-                    home: "Provide target temperature value for HOME mode"
-                    comfort: "Provide target temperature value for COMFORT mode"
-                    sleep: "Provide target temperature value for SLEEP mode"
-                    anti_freeze: "Provide target temperature value for ANTI FREEZE mode"
-                maximumFloorTemperature: "Provide maximum allowed floor temperature"
-                heatingThresholdTemperature: "Provide heating threshold temperature"
-                coolingThresholdTemperature: "Provide cooling threshold temperature"
+                    manual: "Provide target temperature value for manual mode (%unit%)"
+                    away: "Provide target temperature value for AWAY mode (%unit%)"
+                    eco: "Provide target temperature value for ECO mode (%unit%)"
+                    home: "Provide target temperature value for HOME mode (%unit%)"
+                    comfort: "Provide target temperature value for COMFORT mode (%unit%)"
+                    sleep: "Provide target temperature value for SLEEP mode (%unit%)"
+                    anti_freeze: "Provide target temperature value for ANTI FREEZE mode (%unit%)"
+                maximumFloorTemperature: "Provide maximum allowed floor temperature (%unit%)"
+                heatingThresholdTemperature: "Provide heating threshold temperature (%unit%)"
+                coolingThresholdTemperature: "Provide cooling threshold temperature (%unit%)"
             useOpenings: "Do you want to configure openings sensors? Like windows, doors, etc."
             useFloorSensor: "Do you want to configure floor temperature sensors?"
             addAnotherHeater: "Do you want to add another heater actor?"
@@ -102,6 +103,9 @@ cmd:
                 heat: "Heating"
                 cool: "Cooling"
                 auto: "Auto"
+            unit:
+                celsius: "°C"
+                fahrenheit: "°F"
             preset:
                 manual: "Manual"
                 away: "Away"
@@ -110,6 +114,7 @@ cmd:
                 comfort: "Comfort"
                 sleep: "Sleep"
                 anti_freeze: "Anti freeze"
+                none: "None"
             actor:
                 heater: "Heater actor"
                 cooler: "Cooler actor"

@@ -63,6 +63,8 @@ class ChannelPropertyIdentifier extends Consistence\Enum\Enum
 
 	public const HVAC_STATE = 'hvac_state';
 
+	public const UNIT = 'unit';
+
 	public function getValue(): string
 	{
 		return strval(parent::getValue());
