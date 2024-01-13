@@ -85,17 +85,6 @@ class Device
 						$message->getPayload(),
 					);
 
-					try {
-						$payload = Utils\Json::decode($message->getPayload(), Utils\Json::FORCE_ARRAY);
-						$payload = $payload !== null ? (array) $payload : null;
-					} catch (Utils\JsonException $ex) {
-						throw new Exceptions\ParseMessage(
-							'Received device message payload is not valid JSON message',
-							$ex->getCode(),
-							$ex,
-						);
-					}
-
 					if (array_key_exists('type', $data)) {
 						if (!Types\DeviceMessageType::isValidValue($data['type'])) {
 							throw new Exceptions\ParseMessage('Received unsupported device message type');
@@ -104,7 +93,10 @@ class Device
 						$type = Types\DeviceMessageType::get($data['type']);
 
 						if ($type->equalsValue(Types\DeviceMessageType::AVAILABILITY)) {
-							if ($payload === null && Types\ConnectionState::isValidValue($message->getPayload())) {
+							if (
+								$message->getPayload() === ''
+								&& Types\ConnectionState::isValidValue($message->getPayload())
+							) {
 								$this->queue->append(
 									$this->entityHelper->create(
 										Entities\Messages\StoreDeviceConnectionState::class,
@@ -112,7 +104,24 @@ class Device
 									),
 								);
 
-							} elseif ($payload !== null) {
+							} else {
+								$payload = $this->parsePayload($message);
+
+								if ($payload === null) {
+									$this->logger->warning(
+										'Received message payload is not valid for device connection state message',
+										[
+											'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+											'type' => 'device-messages-subscriber',
+											'connector' => [
+												'id' => $this->connector->getId()->toString(),
+											],
+										],
+									);
+
+									return;
+								}
+
 								$this->queue->append(
 									$this->entityHelper->create(
 										Entities\Messages\StoreDeviceConnectionState::class,
@@ -120,18 +129,52 @@ class Device
 									),
 								);
 							}
-						} elseif ($type->equalsValue(Types\DeviceMessageType::GET) && $payload !== null) {
+						} elseif ($type->equalsValue(Types\DeviceMessageType::GET)) {
+							$payload = $this->parsePayload($message);
+
+							if ($payload === null) {
+								$this->logger->warning(
+									'Received message payload is not valid for device get state message',
+									[
+										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+										'type' => 'device-messages-subscriber',
+										'connector' => [
+											'id' => $this->connector->getId()->toString(),
+										],
+									],
+								);
+
+								return;
+							}
+
 							// Handle GET data
 							$this->logger->error(
 								'No handler for GET message type',
 								[
 									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
-									'type' => 'bridge-messages-subscriber',
+									'type' => 'device-messages-subscriber',
 									'payload' => $message->getPayload(),
 								],
 							);
 						}
-					} elseif ($payload !== null) {
+					} else {
+						$payload = $this->parsePayload($message);
+
+						if ($payload === null) {
+							$this->logger->warning(
+								'Received message payload is not valid for device state message',
+								[
+									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+									'type' => 'device-messages-subscriber',
+									'connector' => [
+										'id' => $this->connector->getId()->toString(),
+									],
+								],
+							);
+
+							return;
+						}
+
 						$this->queue->append(
 							$this->entityHelper->create(
 								Entities\Messages\StoreDeviceState::class,
@@ -145,7 +188,7 @@ class Device
 					'Received message could not be successfully parsed to entity',
 					[
 						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
-						'type' => 'bridge-messages-subscriber',
+						'type' => 'device-messages-subscriber',
 						'exception' => BootstrapHelpers\Logger::buildException($ex),
 						'connector' => [
 							'id' => $this->connector->getId()->toString(),
@@ -178,6 +221,32 @@ class Device
 		}
 
 		return $converted;
+	}
+
+	/**
+	 * @return array<mixed>|null
+	 */
+	private function parsePayload(NetMqtt\Message $message): array|null
+	{
+		try {
+			$payload = Utils\Json::decode($message->getPayload(), Utils\Json::FORCE_ARRAY);
+
+			return $payload !== null ? (array) $payload : null;
+		} catch (Utils\JsonException $ex) {
+			$this->logger->error(
+				'Received device message payload is not valid JSON message',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+					'type' => 'device-messages-subscriber',
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'connector' => [
+						'id' => $this->connector->getId()->toString(),
+					],
+				],
+			);
+
+			return null;
+		}
 	}
 
 }

@@ -79,17 +79,6 @@ class Bridge
 						$message->getPayload(),
 					);
 
-					try {
-						$payload = Utils\Json::decode($message->getPayload(), Utils\Json::FORCE_ARRAY);
-						$payload = $payload !== null ? (array) $payload : null;
-					} catch (Utils\JsonException $ex) {
-						throw new Exceptions\ParseMessage(
-							'Received bridge message payload is not valid JSON message',
-							$ex->getCode(),
-							$ex,
-						);
-					}
-
 					if (array_key_exists('type', $data)) {
 						if (!Types\BridgeMessageType::isValidValue($data['type'])) {
 							throw new Exceptions\ParseMessage('Received unsupported bridge message type');
@@ -97,7 +86,24 @@ class Bridge
 
 						$type = Types\BridgeMessageType::get($data['type']);
 
-						if ($type->equalsValue(Types\BridgeMessageType::INFO) && $payload !== null) {
+						if ($type->equalsValue(Types\BridgeMessageType::INFO)) {
+							$payload = $this->parsePayload($message);
+
+							if ($payload === null) {
+								$this->logger->warning(
+									'Received message payload is not valid for bridge info message',
+									[
+										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+										'type' => 'bridge-messages-subscriber',
+										'connector' => [
+											'id' => $this->connector->getId()->toString(),
+										],
+									],
+								);
+
+								return;
+							}
+
 							$this->queue->append(
 								$this->entityHelper->create(
 									Entities\Messages\StoreBridgeInfo::class,
@@ -106,7 +112,10 @@ class Bridge
 							);
 
 						} elseif ($type->equalsValue(Types\BridgeMessageType::STATE)) {
-							if ($payload === null && Types\ConnectionState::isValidValue($message->getPayload())) {
+							if (
+								$message->getPayload() === ''
+								&& Types\ConnectionState::isValidValue($message->getPayload())
+							) {
 								$this->queue->append(
 									$this->entityHelper->create(
 										Entities\Messages\StoreBridgeConnectionState::class,
@@ -114,7 +123,24 @@ class Bridge
 									),
 								);
 
-							} elseif ($payload !== null) {
+							} else {
+								$payload = $this->parsePayload($message);
+
+								if ($payload === null) {
+									$this->logger->warning(
+										'Received message payload is not valid for bridge state message',
+										[
+											'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+											'type' => 'bridge-messages-subscriber',
+											'connector' => [
+												'id' => $this->connector->getId()->toString(),
+											],
+										],
+									);
+
+									return;
+								}
+
 								$this->queue->append(
 									$this->entityHelper->create(
 										Entities\Messages\StoreBridgeConnectionState::class,
@@ -122,7 +148,24 @@ class Bridge
 									),
 								);
 							}
-						} elseif ($type->equalsValue(Types\BridgeMessageType::LOGGING) && $payload !== null) {
+						} elseif ($type->equalsValue(Types\BridgeMessageType::LOGGING)) {
+							$payload = $this->parsePayload($message);
+
+							if ($payload === null) {
+								$this->logger->warning(
+									'Received message payload is not valid for bridge log',
+									[
+										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+										'type' => 'bridge-messages-subscriber',
+										'connector' => [
+											'id' => $this->connector->getId()->toString(),
+										],
+									],
+								);
+
+								return;
+							}
+
 							$this->queue->append(
 								$this->entityHelper->create(
 									Entities\Messages\StoreBridgeLog::class,
@@ -130,7 +173,24 @@ class Bridge
 								),
 							);
 
-						} elseif ($type->equalsValue(Types\BridgeMessageType::DEVICES) && $payload !== null) {
+						} elseif ($type->equalsValue(Types\BridgeMessageType::DEVICES)) {
+							$payload = $this->parsePayload($message);
+
+							if ($payload === null) {
+								$this->logger->warning(
+									'Received message payload is not valid for bridge devices message',
+									[
+										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+										'type' => 'bridge-messages-subscriber',
+										'connector' => [
+											'id' => $this->connector->getId()->toString(),
+										],
+									],
+								);
+
+								return;
+							}
+
 							$this->queue->append(
 								$this->entityHelper->create(
 									Entities\Messages\StoreBridgeDevices::class,
@@ -138,7 +198,24 @@ class Bridge
 								),
 							);
 
-						} elseif ($type->equalsValue(Types\BridgeMessageType::GROUPS) && $payload !== null) {
+						} elseif ($type->equalsValue(Types\BridgeMessageType::GROUPS)) {
+							$payload = $this->parsePayload($message);
+
+							if ($payload === null) {
+								$this->logger->warning(
+									'Received message payload is not valid for bridge groups message',
+									[
+										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+										'type' => 'bridge-messages-subscriber',
+										'connector' => [
+											'id' => $this->connector->getId()->toString(),
+										],
+									],
+								);
+
+								return;
+							}
+
 							$this->queue->append(
 								$this->entityHelper->create(
 									Entities\Messages\StoreBridgeGroups::class,
@@ -146,7 +223,24 @@ class Bridge
 								),
 							);
 
-						} elseif ($type->equalsValue(Types\BridgeMessageType::EVENT) && $payload !== null) {
+						} elseif ($type->equalsValue(Types\BridgeMessageType::EVENT)) {
+							$payload = $this->parsePayload($message);
+
+							if ($payload === null) {
+								$this->logger->warning(
+									'Received message payload is not valid for bridge event message',
+									[
+										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+										'type' => 'bridge-messages-subscriber',
+										'connector' => [
+											'id' => $this->connector->getId()->toString(),
+										],
+									],
+								);
+
+								return;
+							}
+
 							$this->queue->append(
 								$this->entityHelper->create(
 									Entities\Messages\StoreBridgeEvent::class,
@@ -154,7 +248,24 @@ class Bridge
 								),
 							);
 
-						} elseif ($type->equalsValue(Types\BridgeMessageType::EXTENSIONS) && $payload !== null) {
+						} elseif ($type->equalsValue(Types\BridgeMessageType::EXTENSIONS)) {
+							$payload = $this->parsePayload($message);
+
+							if ($payload === null) {
+								$this->logger->warning(
+									'Received message payload is not valid for bridge extensions message',
+									[
+										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+										'type' => 'bridge-messages-subscriber',
+										'connector' => [
+											'id' => $this->connector->getId()->toString(),
+										],
+									],
+								);
+
+								return;
+							}
+
 							// This message could be ignored
 						}
 					} elseif (array_key_exists('request', $data)) {
@@ -176,6 +287,32 @@ class Bridge
 					],
 				);
 			}
+		}
+	}
+
+	/**
+	 * @return array<mixed>|null
+	 */
+	private function parsePayload(NetMqtt\Message $message): array|null
+	{
+		try {
+			$payload = Utils\Json::decode($message->getPayload(), Utils\Json::FORCE_ARRAY);
+
+			return $payload !== null ? (array) $payload : null;
+		} catch (Utils\JsonException $ex) {
+			$this->logger->error(
+				'Received bridge message payload is not valid JSON message',
+				[
+					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+					'type' => 'bridge-messages-subscriber',
+					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'connector' => [
+						'id' => $this->connector->getId()->toString(),
+					],
+				],
+			);
+
+			return null;
 		}
 	}
 
