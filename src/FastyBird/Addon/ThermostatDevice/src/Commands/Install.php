@@ -2834,7 +2834,7 @@ class Install extends Console\Command\Command
 		};
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//thermostat-device-addon.cmd.install.questions.select.device.unit'),
+			$this->translator->translate('//thermostat-device-addon.cmd.install.questions.provide.device.unit'),
 			[
 				0 => $this->translator->translate('//thermostat-device-addon.cmd.install.answers.unit.celsius'),
 				1 => $this->translator->translate('//thermostat-device-addon.cmd.install.answers.unit.fahrenheit'),

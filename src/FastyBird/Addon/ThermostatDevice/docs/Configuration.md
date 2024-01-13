@@ -71,6 +71,16 @@ To select multiple values just enter value numbers separated by commas, e.g. > 0
 - **Cooler** - Used for cooling
 - **Auto** - Combining both modes to automatically heat or cool
 
+```
+ Provice thermostat units [°C]:
+  [0] °C
+  [1] °F
+ > 
+```
+
+> [!TIP]
+Ensure consistency by utilizing a single unit type across all values and mapped properties to prevent potential issues.
+
 #### Heaters mapping
 
 In the subsequent steps, you will be prompted to configure thermostat actors.
@@ -255,14 +265,14 @@ The target temperature for the thermostat in manual mode determines the desired 
 works to heat or cool down to this specific target temperature.
 
 ```
- Provide target temperature value for manual mode:
+ Provide target temperature value for manual mode (°C):
  > 20
 ```
 
 When configuring a thermostat with floor sensors, you will be prompted to set the maximum floor temperature to prevent overheating.
 
 ```
- Provide maximum allowed floor temperature:
+ Provide maximum allowed floor temperature (°C) [28]:
  > 28
 ```
 
@@ -272,12 +282,12 @@ temperature is achieved, and then the actors are turned off. Conversely, if the 
 the thermostat activates cooling actors until the target temperature is reached, and then the actors are deactivated.
 
 ```
- Provide heating threshold temperature:
+ Provide heating threshold temperature (°C):
  > 19
 ```
 
 ```
- Provide cooling threshold temperature:
+ Provide cooling threshold temperature (°C):
  > 21
 ```
 
