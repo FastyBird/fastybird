@@ -199,17 +199,6 @@ final class DevicePropertiesStates
 					);
 
 					if ($forReading) {
-						if ($mapped !== null) {
-							$actualValue = MetadataUtilities\ValueHelper::transformReadValue(
-								$mapped->getDataType(),
-								$actualValue,
-								$mapped->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
-									? $mapped->getValueTransformer()
-									: null,
-								$property->getScale(),
-							);
-						}
-
 						$actualValue = MetadataUtilities\ValueHelper::transformReadValue(
 							$property->getDataType(),
 							$actualValue,
@@ -218,6 +207,17 @@ final class DevicePropertiesStates
 								: null,
 							$property->getScale(),
 						);
+
+						if ($mapped !== null) {
+							$actualValue = MetadataUtilities\ValueHelper::transformReadValue(
+								$mapped->getDataType(),
+								$actualValue,
+								$mapped->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
+									? $mapped->getValueTransformer()
+									: null,
+								$mapped->getScale(),
+							);
+						}
 					}
 
 					if ($mapped !== null) {
@@ -258,17 +258,6 @@ final class DevicePropertiesStates
 					);
 
 					if ($forReading) {
-						if ($mapped !== null) {
-							$expectedValue = MetadataUtilities\ValueHelper::transformReadValue(
-								$mapped->getDataType(),
-								$expectedValue,
-								$mapped->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
-									? $mapped->getValueTransformer()
-									: null,
-								$property->getScale(),
-							);
-						}
-
 						$expectedValue = MetadataUtilities\ValueHelper::transformReadValue(
 							$property->getDataType(),
 							$expectedValue,
@@ -277,6 +266,17 @@ final class DevicePropertiesStates
 								: null,
 							$property->getScale(),
 						);
+
+						if ($mapped !== null) {
+							$expectedValue = MetadataUtilities\ValueHelper::transformReadValue(
+								$mapped->getDataType(),
+								$expectedValue,
+								$mapped->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
+									? $mapped->getValueTransformer()
+									: null,
+								$mapped->getScale(),
+							);
+						}
 					}
 
 					if ($mapped !== null) {
