@@ -247,7 +247,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 								$state = $this->channelPropertiesStatesManager->readValue($property);
 
 								if ($state === null) {
-									return true;
+									continue;
 								}
 
 								$characteristic->setActualValue(
@@ -276,7 +276,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 									],
 								);
 
-								return true;
+								continue;
 							}
 						} elseif ($parent instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
 							$characteristic->setActualValue($parent->getValue());
