@@ -1487,6 +1487,8 @@ class Install extends Console\Command\Command
 					'channel' => $channel,
 					'dataType' => $dataType,
 					'format' => $format,
+					'settable' => $connectProperty?->isSettable(),
+					'queryable' => $connectProperty?->isQueryable(),
 				]));
 			} else {
 				$value = $this->provideCharacteristicValue($io, $characteristic);
@@ -1618,6 +1620,8 @@ class Install extends Console\Command\Command
 						'channel' => $channel,
 						'dataType' => $dataType,
 						'format' => $format,
+						'settable' => $connectProperty?->isSettable(),
+						'queryable' => $connectProperty?->isQueryable(),
 					]));
 				}
 			} else {

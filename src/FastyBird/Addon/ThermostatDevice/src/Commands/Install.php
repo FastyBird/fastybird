@@ -358,7 +358,7 @@ class Install extends Console\Command\Command
 								'scale' => null,
 								'step' => null,
 								'settable' => true,
-								'queryable' => true,
+								'queryable' => $heater->isQueryable(),
 							]),
 						);
 
@@ -416,7 +416,7 @@ class Install extends Console\Command\Command
 								'scale' => null,
 								'step' => null,
 								'settable' => true,
-								'queryable' => true,
+								'queryable' => $cooler->isQueryable(),
 							]),
 						);
 
@@ -481,7 +481,7 @@ class Install extends Console\Command\Command
 								'scale' => null,
 								'step' => null,
 								'settable' => false,
-								'queryable' => true,
+								'queryable' => $opening->isQueryable(),
 							]),
 						);
 
@@ -543,7 +543,7 @@ class Install extends Console\Command\Command
 							'scale' => null,
 							'step' => null,
 							'settable' => false,
-							'queryable' => true,
+							'queryable' => $sensor->isQueryable(),
 						]),
 					);
 
@@ -606,7 +606,7 @@ class Install extends Console\Command\Command
 								'scale' => null,
 								'step' => null,
 								'settable' => false,
-								'queryable' => true,
+								'queryable' => $sensor->isQueryable(),
 							]),
 						);
 
@@ -1827,7 +1827,7 @@ class Install extends Console\Command\Command
 				'scale' => null,
 				'step' => null,
 				'settable' => true,
-				'queryable' => true,
+				'queryable' => $heater->isQueryable(),
 			]));
 			assert($property instanceof DevicesEntities\Channels\Properties\Mapped);
 
@@ -2189,7 +2189,7 @@ class Install extends Console\Command\Command
 				'scale' => null,
 				'step' => null,
 				'settable' => false,
-				'queryable' => true,
+				'queryable' => $sensor->isQueryable(),
 			]));
 			assert($property instanceof DevicesEntities\Channels\Properties\Mapped);
 

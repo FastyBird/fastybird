@@ -2302,6 +2302,8 @@ class Install extends Console\Command\Command
 					'invalid' => $protocolMetadata->offsetExists('invalid_value')
 						? $protocolMetadata->offsetGet('invalid_value')
 						: null,
+					'settable' => $connectProperty->isSettable(),
+					'queryable' => $connectProperty->isQueryable(),
 				]));
 			}
 		} else {
@@ -2451,6 +2453,8 @@ class Install extends Console\Command\Command
 							'invalid' => $protocolMetadata->offsetExists('invalid_value')
 								? $protocolMetadata->offsetGet('invalid_value')
 								: null,
+							'settable' => $connectProperty->isSettable(),
+							'queryable' => $connectProperty->isQueryable(),
 						]));
 					}
 				}
