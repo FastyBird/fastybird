@@ -24,11 +24,11 @@
         "scale": null,
         "step": null,
         "value_transformer": null,
-        "value": "itead",
-        "default": null,
         "owner": "455354e8-96bd-4c29-84e7-9f10e1d4db4b",
         "created_at": "2020-03-20T09:18:20+01:00",
-        "updated_at": "2020-03-20T09:18:20+01:00"
+        "updated_at": "2020-03-20T09:18:20+01:00",
+        "value": "itead",
+        "default": null
       },
       "relationships": {
         "device": {
@@ -71,11 +71,11 @@
         "scale": null,
         "step": null,
         "value_transformer": null,
-        "value": "sonoff_basic",
-        "default": null,
         "owner": "455354e8-96bd-4c29-84e7-9f10e1d4db4b",
         "created_at": "2020-03-20T09:18:20+01:00",
-        "updated_at": "2020-03-20T09:18:20+01:00"
+        "updated_at": "2020-03-20T09:18:20+01:00",
+        "value": "sonoff_basic",
+        "default": null
       },
       "relationships": {
         "device": {
@@ -118,11 +118,11 @@
         "scale": null,
         "step": null,
         "value_transformer": null,
-        "value": "rev1",
-        "default": null,
         "owner": "455354e8-96bd-4c29-84e7-9f10e1d4db4b",
         "created_at": "2020-03-20T09:18:20+01:00",
-        "updated_at": "2020-03-20T09:18:20+01:00"
+        "updated_at": "2020-03-20T09:18:20+01:00",
+        "value": "rev1",
+        "default": null
       },
       "relationships": {
         "device": {
@@ -165,11 +165,11 @@
         "scale": null,
         "step": null,
         "value_transformer": null,
-        "value": "807d3a3dbe6d",
-        "default": null,
         "owner": "455354e8-96bd-4c29-84e7-9f10e1d4db4b",
         "created_at": "2020-03-20T09:18:20+01:00",
-        "updated_at": "2020-03-20T09:18:20+01:00"
+        "updated_at": "2020-03-20T09:18:20+01:00",
+        "value": "807d3a3dbe6d",
+        "default": null
       },
       "relationships": {
         "device": {
@@ -212,11 +212,11 @@
         "scale": null,
         "step": null,
         "value_transformer": null,
-        "value": "fastybird",
-        "default": null,
         "owner": "455354e8-96bd-4c29-84e7-9f10e1d4db4b",
         "created_at": "2020-03-20T09:18:20+01:00",
-        "updated_at": "2020-03-20T09:18:20+01:00"
+        "updated_at": "2020-03-20T09:18:20+01:00",
+        "value": "fastybird",
+        "default": null
       },
       "relationships": {
         "device": {
@@ -252,8 +252,6 @@
         "category": "generic",
         "identifier": "rssi",
         "name": "rssi",
-        "settable": false,
-        "queryable": true,
         "data_type": "int",
         "unit": null,
         "format": null,
@@ -261,13 +259,15 @@
         "scale": null,
         "step": null,
         "value_transformer": null,
+        "owner": "455354e8-96bd-4c29-84e7-9f10e1d4db4b",
+        "created_at": "2020-03-20T09:18:20+01:00",
+        "updated_at": "2020-03-20T09:18:20+01:00",
+        "settable": false,
+        "queryable": true,
         "actual_value": null,
         "expected_value": null,
         "pending": false,
-        "is_valid": false,
-        "owner": "455354e8-96bd-4c29-84e7-9f10e1d4db4b",
-        "created_at": "2020-03-20T09:18:20+01:00",
-        "updated_at": "2020-03-20T09:18:20+01:00"
+        "is_valid": false
       },
       "relationships": {
         "device": {
@@ -310,11 +310,11 @@
         "scale": null,
         "step": null,
         "value_transformer": null,
-        "value": "device-password",
-        "default": null,
         "owner": "455354e8-96bd-4c29-84e7-9f10e1d4db4b",
         "created_at": "2020-03-20T09:18:20+01:00",
-        "updated_at": "2020-03-20T09:18:20+01:00"
+        "updated_at": "2020-03-20T09:18:20+01:00",
+        "value": "device-password",
+        "default": null
       },
       "relationships": {
         "device": {
@@ -360,11 +360,11 @@
         "scale": null,
         "step": null,
         "value_transformer": null,
-        "value": "on",
-        "default": null,
         "owner": "455354e8-96bd-4c29-84e7-9f10e1d4db4b",
         "created_at": "2020-03-20T09:18:20+01:00",
-        "updated_at": "2020-03-20T09:18:20+01:00"
+        "updated_at": "2020-03-20T09:18:20+01:00",
+        "value": "on",
+        "default": null
       },
       "relationships": {
         "device": {
@@ -400,8 +400,6 @@
         "category": "generic",
         "identifier": "uptime",
         "name": "uptime",
-        "settable": false,
-        "queryable": true,
         "data_type": "int",
         "unit": null,
         "format": null,
@@ -409,13 +407,15 @@
         "scale": null,
         "step": null,
         "value_transformer": null,
+        "owner": "455354e8-96bd-4c29-84e7-9f10e1d4db4b",
+        "created_at": "2020-03-20T09:18:20+01:00",
+        "updated_at": "2020-03-20T09:18:20+01:00",
+        "settable": false,
+        "queryable": true,
         "actual_value": null,
         "expected_value": null,
         "pending": false,
-        "is_valid": false,
-        "owner": "455354e8-96bd-4c29-84e7-9f10e1d4db4b",
-        "created_at": "2020-03-20T09:18:20+01:00",
-        "updated_at": "2020-03-20T09:18:20+01:00"
+        "is_valid": false
       },
       "relationships": {
         "device": {
@@ -456,12 +456,13 @@
         "format": null,
         "invalid": null,
         "scale": null,
-        "sttep": null,
-        "value_transformer": "device-username",
-        "default": null,
+        "step": null,
+        "value_transformer": null,
         "owner": "455354e8-96bd-4c29-84e7-9f10e1d4db4b",
         "created_at": "2020-03-20T09:18:20+01:00",
-        "updated_at": "2020-03-20T09:18:20+01:00"
+        "updated_at": "2020-03-20T09:18:20+01:00",
+        "value": "device-username",
+        "default": null
       },
       "relationships": {
         "device": {
