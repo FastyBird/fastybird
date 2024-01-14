@@ -134,37 +134,37 @@ final class ConstantsTest extends BaseTestCase
 		));
 	}
 
-	public function testValueFormatEquation(): void
+	public function testValueEquationTransform(): void
 	{
 		// Valid
 		self::assertSame(1, preg_match(
-			Metadata\Constants::VALUE_FORMAT_EQUATION,
+			Metadata\Constants::VALUE_EQUATION_TRANSFORMER,
 			'equation:x=10y + 2',
 		));
 		self::assertSame(1, preg_match(
-			Metadata\Constants::VALUE_FORMAT_EQUATION,
+			Metadata\Constants::VALUE_EQUATION_TRANSFORMER,
 			'equation:x=(10y + 2) * 10',
 		));
 		self::assertSame(1, preg_match(
-			Metadata\Constants::VALUE_FORMAT_EQUATION,
+			Metadata\Constants::VALUE_EQUATION_TRANSFORMER,
 			'equation:x=(10y + 2) * 10:y=x + 2 / 3',
 		));
 
 		// Invalid
 		self::assertSame(0, preg_match(
-			Metadata\Constants::VALUE_FORMAT_EQUATION,
+			Metadata\Constants::VALUE_EQUATION_TRANSFORMER,
 			'equation:x=10x + 2',
 		));
 		self::assertSame(0, preg_match(
-			Metadata\Constants::VALUE_FORMAT_EQUATION,
+			Metadata\Constants::VALUE_EQUATION_TRANSFORMER,
 			'equation:x=10a + 2',
 		));
 		self::assertSame(0, preg_match(
-			Metadata\Constants::VALUE_FORMAT_EQUATION,
+			Metadata\Constants::VALUE_EQUATION_TRANSFORMER,
 			'equation:x=[10y + 2] * 10',
 		));
 		self::assertFalse(preg_match(
-			Metadata\Constants::VALUE_FORMAT_EQUATION,
+			Metadata\Constants::VALUE_EQUATION_TRANSFORMER,
 			'equation:x=(10y + 2) * 10:y=y + 2 / 3',
 		));
 	}

@@ -76,6 +76,7 @@ final class NumericType extends Type
 
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function getDataType(): MetadataTypes\DataType
 	{

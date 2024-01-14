@@ -20,7 +20,8 @@ use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Metadata\Utilities\ValueHelper;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
+use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
@@ -197,13 +198,16 @@ final class ChannelPropertiesStates
 
 			try {
 				if ($state->getActualValue() !== null) {
-					$actualValue = $forReading ? ValueHelper::normalizeReadValue(
+					$actualValue = $forReading ? MetadataUtilities\ValueHelper::normalizeReadValue(
 						$property->getDataType(),
 						$state->getActualValue(),
 						$property->getFormat(),
 						$property->getScale(),
 						$property->getInvalid(),
-					) : ValueHelper::normalizeValue(
+						$property->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
+							? $property->getValueTransformer()
+							: null,
+					) : MetadataUtilities\ValueHelper::normalizeValue(
 						$property->getDataType(),
 						$state->getActualValue(),
 						$property->getFormat(),
@@ -211,7 +215,7 @@ final class ChannelPropertiesStates
 					);
 
 					$updateValues[States\Property::ACTUAL_VALUE_FIELD] = $mapped !== null
-						? ValueHelper::transformValueFromMappedParent(
+						? MetadataUtilities\ValueHelper::transformValueFromMappedParent(
 							$mapped->getDataType(),
 							$property->getDataType(),
 							$actualValue,
@@ -238,13 +242,16 @@ final class ChannelPropertiesStates
 
 			try {
 				if ($state->getExpectedValue() !== null) {
-					$expectedValue = $forReading ? ValueHelper::normalizeReadValue(
+					$expectedValue = $forReading ? MetadataUtilities\ValueHelper::normalizeReadValue(
 						$property->getDataType(),
 						$state->getExpectedValue(),
 						$property->getFormat(),
 						$property->getScale(),
 						$property->getInvalid(),
-					) : ValueHelper::normalizeValue(
+						$property->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
+							? $property->getValueTransformer()
+							: null,
+					) : MetadataUtilities\ValueHelper::normalizeValue(
 						$property->getDataType(),
 						$state->getExpectedValue(),
 						$property->getFormat(),
@@ -252,7 +259,7 @@ final class ChannelPropertiesStates
 					);
 
 					$updateValues[States\Property::EXPECTED_VALUE_FIELD] = $mapped !== null
-						? ValueHelper::transformValueFromMappedParent(
+						? MetadataUtilities\ValueHelper::transformValueFromMappedParent(
 							$mapped->getDataType(),
 							$property->getDataType(),
 							$expectedValue,
@@ -341,33 +348,39 @@ final class ChannelPropertiesStates
 		if ($data->offsetExists(States\Property::ACTUAL_VALUE_FIELD)) {
 			if ($forWriting) {
 				$actualValue = $mapped !== null
-					? ValueHelper::normalizeWriteValue(
+					? MetadataUtilities\ValueHelper::normalizeWriteValue(
 						$mapped->getDataType(),
 						/** @phpstan-ignore-next-line */
 						$data->offsetGet(States\Property::ACTUAL_VALUE_FIELD),
 						$mapped->getFormat(),
 						$mapped->getScale(),
 						$mapped->getInvalid(),
+						$property->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
+							? $property->getValueTransformer()
+							: null,
 					)
-					: ValueHelper::normalizeWriteValue(
+					: MetadataUtilities\ValueHelper::normalizeWriteValue(
 						$property->getDataType(),
 						/** @phpstan-ignore-next-line */
 						$data->offsetGet(States\Property::ACTUAL_VALUE_FIELD),
 						$property->getFormat(),
 						$property->getScale(),
 						$property->getInvalid(),
+						$property->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
+							? $property->getValueTransformer()
+							: null,
 					);
 
 			} else {
 				$actualValue = $mapped !== null
-					? ValueHelper::normalizeValue(
+					? MetadataUtilities\ValueHelper::normalizeValue(
 						$mapped->getDataType(),
 						/** @phpstan-ignore-next-line */
 						$data->offsetGet(States\Property::ACTUAL_VALUE_FIELD),
 						$mapped->getFormat(),
 						$mapped->getInvalid(),
 					)
-					: ValueHelper::normalizeValue(
+					: MetadataUtilities\ValueHelper::normalizeValue(
 						$property->getDataType(),
 						/** @phpstan-ignore-next-line */
 						$data->offsetGet(States\Property::ACTUAL_VALUE_FIELD),
@@ -377,7 +390,7 @@ final class ChannelPropertiesStates
 			}
 
 			if ($mapped !== null) {
-				$actualValue = ValueHelper::transformValueToMappedParent(
+				$actualValue = MetadataUtilities\ValueHelper::transformValueToMappedParent(
 					$mapped->getDataType(),
 					$property->getDataType(),
 					$actualValue,
@@ -387,7 +400,7 @@ final class ChannelPropertiesStates
 			try {
 				$data->offsetSet(
 					States\Property::ACTUAL_VALUE_FIELD,
-					ValueHelper::flattenValue($actualValue),
+					MetadataUtilities\ValueHelper::flattenValue($actualValue),
 				);
 			} catch (Exceptions\InvalidArgument $ex) {
 				$data->offsetSet(States\Property::ACTUAL_VALUE_FIELD, null);
@@ -407,33 +420,39 @@ final class ChannelPropertiesStates
 		if ($data->offsetExists(States\Property::EXPECTED_VALUE_FIELD)) {
 			if ($forWriting) {
 				$expectedValue = $mapped !== null
-					? ValueHelper::normalizeWriteValue(
+					? MetadataUtilities\ValueHelper::normalizeWriteValue(
 						$mapped->getDataType(),
 						/** @phpstan-ignore-next-line */
 						$data->offsetGet(States\Property::EXPECTED_VALUE_FIELD),
 						$mapped->getFormat(),
 						$mapped->getScale(),
 						$mapped->getInvalid(),
+						$property->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
+							? $property->getValueTransformer()
+							: null,
 					)
-					: ValueHelper::normalizeWriteValue(
+					: MetadataUtilities\ValueHelper::normalizeWriteValue(
 						$property->getDataType(),
 						/** @phpstan-ignore-next-line */
 						$data->offsetGet(States\Property::EXPECTED_VALUE_FIELD),
 						$property->getFormat(),
 						$property->getScale(),
 						$property->getInvalid(),
+						$property->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
+							? $property->getValueTransformer()
+							: null,
 					);
 
 			} else {
 				$expectedValue = $mapped !== null
-					? ValueHelper::normalizeValue(
+					? MetadataUtilities\ValueHelper::normalizeValue(
 						$mapped->getDataType(),
 						/** @phpstan-ignore-next-line */
 						$data->offsetGet(States\Property::EXPECTED_VALUE_FIELD),
 						$mapped->getFormat(),
 						$mapped->getInvalid(),
 					)
-					: ValueHelper::normalizeValue(
+					: MetadataUtilities\ValueHelper::normalizeValue(
 						$property->getDataType(),
 						/** @phpstan-ignore-next-line */
 						$data->offsetGet(States\Property::EXPECTED_VALUE_FIELD),
@@ -443,7 +462,7 @@ final class ChannelPropertiesStates
 			}
 
 			if ($mapped !== null) {
-				$expectedValue = ValueHelper::transformValueToMappedParent(
+				$expectedValue = MetadataUtilities\ValueHelper::transformValueToMappedParent(
 					$mapped->getDataType(),
 					$property->getDataType(),
 					$expectedValue,
@@ -453,7 +472,7 @@ final class ChannelPropertiesStates
 			try {
 				$data->offsetSet(
 					States\Property::EXPECTED_VALUE_FIELD,
-					ValueHelper::flattenValue($expectedValue),
+					MetadataUtilities\ValueHelper::flattenValue($expectedValue),
 				);
 			} catch (Exceptions\InvalidArgument $ex) {
 				$data->offsetSet(States\Property::EXPECTED_VALUE_FIELD, null);

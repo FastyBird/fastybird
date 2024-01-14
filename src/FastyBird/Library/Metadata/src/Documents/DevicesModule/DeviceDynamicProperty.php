@@ -58,6 +58,7 @@ final class DeviceDynamicProperty extends DeviceProperty
 		float|int|string|null $invalid = null,
 		int|null $scale = null,
 		int|float|null $step = null,
+		Uuid\UuidInterface|string|null $valueTransformer = null,
 		#[ObjectMapper\Rules\BoolValue()]
 		private readonly bool $settable = false,
 		#[ObjectMapper\Rules\BoolValue()]
@@ -117,6 +118,7 @@ final class DeviceDynamicProperty extends DeviceProperty
 			$invalid,
 			$scale,
 			$step,
+			$valueTransformer,
 			$owner,
 			$createdAt,
 			$updatedAt,

@@ -46,6 +46,7 @@
   "invalid" : 99,
   "scale" : null,
   "step": null,
+  "value_transformer": null,
   "channel" : "247fd6b5-8466-4323-81de-cec3e315015a",
   "actual_value" : "switch_on",
   "expected_value" : null,

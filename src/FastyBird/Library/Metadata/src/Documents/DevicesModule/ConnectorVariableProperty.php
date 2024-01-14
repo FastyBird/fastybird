@@ -55,6 +55,7 @@ final class ConnectorVariableProperty extends ConnectorProperty
 		float|int|string|null $invalid = null,
 		int|null $scale = null,
 		int|float|null $step = null,
+		Uuid\UuidInterface|string|null $valueTransformer = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\BoolValue(),
 			new ObjectMapper\Rules\IntValue(),
@@ -88,6 +89,7 @@ final class ConnectorVariableProperty extends ConnectorProperty
 			$invalid,
 			$scale,
 			$step,
+			$valueTransformer,
 			$owner,
 			$createdAt,
 			$updatedAt,

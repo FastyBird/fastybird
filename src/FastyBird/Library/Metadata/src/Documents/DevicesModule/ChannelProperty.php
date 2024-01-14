@@ -152,6 +152,13 @@ abstract class ChannelProperty implements Documents\Document, Documents\Owner
 		private readonly int|float|null $step = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new BootstrapObjectMapper\Rules\UuidValue(),
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		#[ObjectMapper\Modifiers\FieldName('value_transformer')]
+		private readonly Uuid\UuidInterface|string|null $valueTransformer = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new BootstrapObjectMapper\Rules\UuidValue(),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		protected readonly Uuid\UuidInterface|null $owner = null,
@@ -212,7 +219,7 @@ abstract class ChannelProperty implements Documents\Document, Documents\Owner
 	 * @throws Exceptions\InvalidArgument
 	 */
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-	public function getFormat(): ValueObjects\StringEnumFormat|ValueObjects\NumberRangeFormat|ValueObjects\CombinedEnumFormat|ValueObjects\EquationFormat|null
+	public function getFormat(): ValueObjects\StringEnumFormat|ValueObjects\NumberRangeFormat|ValueObjects\CombinedEnumFormat|null
 	{
 		return $this->buildFormat($this->format);
 	}
@@ -233,6 +240,41 @@ abstract class ChannelProperty implements Documents\Document, Documents\Owner
 	}
 
 	/**
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
+	 */
+	public function getValueTransformer(): ValueObjects\EquationTransformer|Uuid\UuidInterface|null
+	{
+		if ($this->valueTransformer === null) {
+			return null;
+		}
+
+		if ($this->valueTransformer instanceof Uuid\UuidInterface) {
+			return $this->valueTransformer;
+		}
+
+		if (preg_match(Metadata\Constants::VALUE_EQUATION_TRANSFORMER, $this->valueTransformer) === 1) {
+			if (
+				in_array($this->dataType->getValue(), [
+					Types\DataType::DATA_TYPE_CHAR,
+					Types\DataType::DATA_TYPE_UCHAR,
+					Types\DataType::DATA_TYPE_SHORT,
+					Types\DataType::DATA_TYPE_USHORT,
+					Types\DataType::DATA_TYPE_INT,
+					Types\DataType::DATA_TYPE_UINT,
+					Types\DataType::DATA_TYPE_FLOAT,
+				], true)
+			) {
+				return new ValueObjects\EquationTransformer($this->valueTransformer);
+			}
+
+			throw new Exceptions\InvalidState('Equation transformer is allowed only for numeric data type');
+		}
+
+		return null;
+	}
+
+	/**
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 */
@@ -249,6 +291,7 @@ abstract class ChannelProperty implements Documents\Document, Documents\Owner
 			'invalid' => $this->getInvalid(),
 			'scale' => $this->getScale(),
 			'step' => $this->getStep(),
+			'value_transformer' => $this->getValueTransformer()?->toString(),
 
 			'channel' => $this->getChannel()->toString(),
 			'owner' => $this->getOwner()?->toString(),
@@ -264,7 +307,7 @@ abstract class ChannelProperty implements Documents\Document, Documents\Owner
 	 */
 	private function buildFormat(
 		array|string|null $format,
-	): ValueObjects\StringEnumFormat|ValueObjects\NumberRangeFormat|ValueObjects\CombinedEnumFormat|ValueObjects\EquationFormat|null
+	): ValueObjects\StringEnumFormat|ValueObjects\NumberRangeFormat|ValueObjects\CombinedEnumFormat|null
 	{
 		if ($format === null) {
 			return null;
@@ -297,8 +340,6 @@ abstract class ChannelProperty implements Documents\Document, Documents\Owner
 
 					return strval($item);
 				}, $format));
-			} elseif (preg_match(Metadata\Constants::VALUE_FORMAT_EQUATION, $format) === 1) {
-				return new ValueObjects\EquationFormat($format);
 			}
 
 			if (preg_match(Metadata\Constants::VALUE_FORMAT_NUMBER_RANGE, $format) === 1) {

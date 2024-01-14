@@ -56,6 +56,7 @@ final class ConnectorDynamicProperty extends ConnectorProperty
 		float|int|string|null $invalid = null,
 		int|null $scale = null,
 		int|float|null $step = null,
+		Uuid\UuidInterface|string|null $valueTransformer = null,
 		#[ObjectMapper\Rules\BoolValue()]
 		private readonly bool $settable = false,
 		#[ObjectMapper\Rules\BoolValue()]
@@ -111,6 +112,7 @@ final class ConnectorDynamicProperty extends ConnectorProperty
 			$invalid,
 			$scale,
 			$step,
+			$valueTransformer,
 			$owner,
 			$createdAt,
 			$updatedAt,

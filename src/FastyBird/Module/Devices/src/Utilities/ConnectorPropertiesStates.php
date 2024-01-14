@@ -20,7 +20,8 @@ use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Metadata\Utilities\ValueHelper;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
+use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
@@ -173,13 +174,16 @@ final class ConnectorPropertiesStates
 
 			try {
 				if ($state->getActualValue() !== null) {
-					$updateValues[States\Property::ACTUAL_VALUE_FIELD] = $forReading ? ValueHelper::normalizeReadValue(
+					$updateValues[States\Property::ACTUAL_VALUE_FIELD] = $forReading ? MetadataUtilities\ValueHelper::normalizeReadValue(
 						$property->getDataType(),
 						$state->getActualValue(),
 						$property->getFormat(),
 						$property->getScale(),
 						$property->getInvalid(),
-					) : ValueHelper::normalizeValue(
+						$property->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
+							? $property->getValueTransformer()
+							: null,
+					) : MetadataUtilities\ValueHelper::normalizeValue(
 						$property->getDataType(),
 						$state->getActualValue(),
 						$property->getFormat(),
@@ -206,13 +210,16 @@ final class ConnectorPropertiesStates
 
 			try {
 				if ($state->getExpectedValue() !== null) {
-					$updateValues[States\Property::EXPECTED_VALUE_FIELD] = $forReading ? ValueHelper::normalizeReadValue(
+					$updateValues[States\Property::EXPECTED_VALUE_FIELD] = $forReading ? MetadataUtilities\ValueHelper::normalizeReadValue(
 						$property->getDataType(),
 						$state->getExpectedValue(),
 						$property->getFormat(),
 						$property->getScale(),
 						$property->getInvalid(),
-					) : ValueHelper::normalizeValue(
+						$property->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
+							? $property->getValueTransformer()
+							: null,
+					) : MetadataUtilities\ValueHelper::normalizeValue(
 						$property->getDataType(),
 						$state->getExpectedValue(),
 						$property->getFormat(),
@@ -283,14 +290,17 @@ final class ConnectorPropertiesStates
 				try {
 					$data->offsetSet(
 						States\Property::ACTUAL_VALUE_FIELD,
-						ValueHelper::flattenValue(
-							ValueHelper::normalizeWriteValue(
+						MetadataUtilities\ValueHelper::flattenValue(
+							MetadataUtilities\ValueHelper::normalizeWriteValue(
 								$property->getDataType(),
 								/** @phpstan-ignore-next-line */
 								$data->offsetGet(States\Property::ACTUAL_VALUE_FIELD),
 								$property->getFormat(),
 								$property->getScale(),
 								$property->getInvalid(),
+								$property->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
+									? $property->getValueTransformer()
+									: null,
 							),
 						),
 					);
@@ -311,8 +321,8 @@ final class ConnectorPropertiesStates
 				try {
 					$data->offsetSet(
 						States\Property::ACTUAL_VALUE_FIELD,
-						ValueHelper::flattenValue(
-							ValueHelper::normalizeValue(
+						MetadataUtilities\ValueHelper::flattenValue(
+							MetadataUtilities\ValueHelper::normalizeValue(
 								$property->getDataType(),
 								/** @phpstan-ignore-next-line */
 								$data->offsetGet(States\Property::ACTUAL_VALUE_FIELD),
@@ -342,14 +352,17 @@ final class ConnectorPropertiesStates
 				try {
 					$data->offsetSet(
 						States\Property::EXPECTED_VALUE_FIELD,
-						ValueHelper::flattenValue(
-							ValueHelper::normalizeWriteValue(
+						MetadataUtilities\ValueHelper::flattenValue(
+							MetadataUtilities\ValueHelper::normalizeWriteValue(
 								$property->getDataType(),
 								/** @phpstan-ignore-next-line */
 								$data->offsetGet(States\Property::EXPECTED_VALUE_FIELD),
 								$property->getFormat(),
 								$property->getScale(),
 								$property->getInvalid(),
+								$property->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
+									? $property->getValueTransformer()
+									: null,
 							),
 						),
 					);
@@ -370,8 +383,8 @@ final class ConnectorPropertiesStates
 				try {
 					$data->offsetSet(
 						States\Property::EXPECTED_VALUE_FIELD,
-						ValueHelper::flattenValue(
-							ValueHelper::normalizeValue(
+						MetadataUtilities\ValueHelper::flattenValue(
+							MetadataUtilities\ValueHelper::normalizeValue(
 								$property->getDataType(),
 								/** @phpstan-ignore-next-line */
 								$data->offsetGet(States\Property::EXPECTED_VALUE_FIELD),

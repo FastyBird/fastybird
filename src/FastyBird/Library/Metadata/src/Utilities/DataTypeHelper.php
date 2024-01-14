@@ -15,29 +15,11 @@
 
 namespace FastyBird\Library\Metadata\Utilities;
 
-use Consistence;
-use Contributte\Monolog;
-use DateTime;
-use DateTimeInterface;
 use FastyBird\Library\Metadata\Exceptions;
 use FastyBird\Library\Metadata\Types;
 use FastyBird\Library\Metadata\ValueObjects;
-use Nette\Utils;
-use function array_filter;
-use function array_values;
-use function boolval;
-use function count;
 use function floatval;
-use function implode;
-use function in_array;
 use function intval;
-use function is_bool;
-use function is_float;
-use function is_int;
-use function is_numeric;
-use function round;
-use function sprintf;
-use function strval;
 
 /**
  * Data type helpers
@@ -66,7 +48,8 @@ final class DataTypeHelper
 		ValueObjects\NumberRangeFormat $format,
 		float|int|null $step = null,
 		Types\DataType|null $fallback = null,
-	): Types\DataType {
+	): Types\DataType
+	{
 		if (
 			$format->getMinDataType() !== null
 			|| $format->getMaxDataType() !== null

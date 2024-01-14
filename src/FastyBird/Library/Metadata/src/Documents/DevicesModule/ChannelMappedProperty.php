@@ -58,6 +58,7 @@ final class ChannelMappedProperty extends ChannelProperty
 		float|int|string|null $invalid = null,
 		int|null $scale = null,
 		int|float|null $step = null,
+		Uuid\UuidInterface|string|null $valueTransformer = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\BoolValue(),
 			new ObjectMapper\Rules\NullValue(),
@@ -135,6 +136,7 @@ final class ChannelMappedProperty extends ChannelProperty
 			$invalid,
 			$scale,
 			$step,
+			$valueTransformer,
 			$owner,
 			$createdAt,
 			$updatedAt,

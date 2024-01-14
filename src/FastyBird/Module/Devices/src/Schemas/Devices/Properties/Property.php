@@ -21,6 +21,7 @@ use FastyBird\JsonApi\Schemas as JsonApiSchemas;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Entities;
+use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\Router;
@@ -64,6 +65,7 @@ abstract class Property extends JsonApiSchemas\JsonApi
 	 *
 	 * @return iterable<string, (string|bool|int|float|array<string>|array<int, (int|float|array<int, (string|int|float|null)>|null)>|array<int, array<int, (string|array<int, (string|int|float|bool)>|null)>>|null)>
 	 *
+	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 *
@@ -84,6 +86,7 @@ abstract class Property extends JsonApiSchemas\JsonApi
 			'invalid' => $resource->getInvalid(),
 			'scale' => $resource->getScale(),
 			'step' => $resource->getStep(),
+			'value_transformer' => $resource->getValueTransformer()?->toString(),
 			'owner' => $resource->getDevice()->getOwnerId(),
 			'created_at' => $resource->getCreatedAt()?->format(DateTimeInterface::ATOM),
 			'updated_at' => $resource->getUpdatedAt()?->format(DateTimeInterface::ATOM),

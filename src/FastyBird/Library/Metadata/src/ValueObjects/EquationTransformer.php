@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * EquationFormat.php
+ * EquationTransformer.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -25,14 +25,14 @@ use function is_array;
 use function preg_match;
 
 /**
- * Equation value format
+ * Equation value transformer
  *
  * @package        FastyBird:MetadataLibrary!
  * @subpackage     ValueObjects
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class EquationFormat
+final class EquationTransformer
 {
 
 	use Nette\SmartObject;
@@ -47,7 +47,7 @@ final class EquationFormat
 	public function __construct(string $equation)
 	{
 		if (
-			preg_match(Metadata\Constants::VALUE_FORMAT_EQUATION, $equation, $matches) === 1
+			preg_match(Metadata\Constants::VALUE_EQUATION_TRANSFORMER, $equation, $matches) === 1
 			&& array_key_exists('equation_x', $matches)
 		) {
 			$this->equationFrom = $matches['equation_x'];
@@ -71,6 +71,11 @@ final class EquationFormat
 	}
 
 	public function getValue(): string
+	{
+		return $this->__toString();
+	}
+
+	public function toString(): string
 	{
 		return $this->__toString();
 	}

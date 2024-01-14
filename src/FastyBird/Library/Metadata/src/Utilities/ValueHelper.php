@@ -64,7 +64,7 @@ final class ValueHelper
 		Types\DataType $dataType,
 		bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null $value,
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		ValueObjects\StringEnumFormat|ValueObjects\NumberRangeFormat|ValueObjects\CombinedEnumFormat|ValueObjects\EquationFormat|null $format = null,
+		ValueObjects\StringEnumFormat|ValueObjects\NumberRangeFormat|ValueObjects\CombinedEnumFormat|null $format = null,
 		float|int|string|null $invalid = null,
 	): bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
 	{
@@ -287,9 +287,10 @@ final class ValueHelper
 		Types\DataType $dataType,
 		bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null $value,
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		ValueObjects\StringEnumFormat|ValueObjects\NumberRangeFormat|ValueObjects\CombinedEnumFormat|ValueObjects\EquationFormat|null $format = null,
-		int|null $scale,
+		ValueObjects\StringEnumFormat|ValueObjects\NumberRangeFormat|ValueObjects\CombinedEnumFormat|null $format = null,
+		int|null $scale = null,
 		float|int|string|null $invalid = null,
+		ValueObjects\EquationTransformer|null $transformer = null,
 	): bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
 	{
 		if ($value === null) {
@@ -313,8 +314,8 @@ final class ValueHelper
 				|| is_float($value)
 			)
 		) {
-			if ($format instanceof ValueObjects\EquationFormat) {
-				$value = $format->getEquationFrom()->substitute(['y' => $value])->simplify()->string();
+			if ($transformer instanceof ValueObjects\EquationTransformer) {
+				$value = $transformer->getEquationFrom()->substitute(['y' => $value])->simplify()->string();
 
 				$value = $dataType->equalsValue(Types\DataType::DATA_TYPE_FLOAT)
 					? floatval($value)
@@ -343,9 +344,10 @@ final class ValueHelper
 		Types\DataType $dataType,
 		bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null $value,
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		ValueObjects\StringEnumFormat|ValueObjects\NumberRangeFormat|ValueObjects\CombinedEnumFormat|ValueObjects\EquationFormat|null $format = null,
-		int|null $scale,
+		ValueObjects\StringEnumFormat|ValueObjects\NumberRangeFormat|ValueObjects\CombinedEnumFormat|null $format = null,
+		int|null $scale = null,
 		float|int|string|null $invalid = null,
+		ValueObjects\EquationTransformer|null $transformer = null,
 	): bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
 	{
 		if ($value === null) {
@@ -367,8 +369,8 @@ final class ValueHelper
 				|| is_float($value)
 			)
 		) {
-			if ($format instanceof ValueObjects\EquationFormat && $format->getEquationTo() !== null) {
-				$value = $format->getEquationTo()->substitute(['x' => $value])->simplify()->string();
+			if ($transformer instanceof ValueObjects\EquationTransformer && $transformer->getEquationTo() !== null) {
+				$value = $transformer->getEquationTo()->substitute(['x' => $value])->simplify()->string();
 
 				$value = $dataType->equalsValue(Types\DataType::DATA_TYPE_FLOAT)
 					? floatval($value)
@@ -408,7 +410,7 @@ final class ValueHelper
 	public static function transformValueFromDevice(
 		Types\DataType $dataType,
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		ValueObjects\StringEnumFormat|ValueObjects\NumberRangeFormat|ValueObjects\CombinedEnumFormat|ValueObjects\EquationFormat|null $format,
+		ValueObjects\StringEnumFormat|ValueObjects\NumberRangeFormat|ValueObjects\CombinedEnumFormat|null $format,
 		string|int|float|bool|null $value,
 	): float|int|string|bool|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
 	{
@@ -556,7 +558,7 @@ final class ValueHelper
 	public static function transformValueToDevice(
 		Types\DataType $dataType,
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		ValueObjects\StringEnumFormat|ValueObjects\NumberRangeFormat|ValueObjects\CombinedEnumFormat|ValueObjects\EquationFormat|null $format,
+		ValueObjects\StringEnumFormat|ValueObjects\NumberRangeFormat|ValueObjects\CombinedEnumFormat|null $format,
 		bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null $value,
 	): string|int|float|bool|null
 	{

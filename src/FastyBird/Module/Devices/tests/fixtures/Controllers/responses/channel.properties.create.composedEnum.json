@@ -40,6 +40,7 @@
       "invalid": null,
       "scale": null,
       "step": null,
+      "value_transformer": null,
       "actual_value": null,
       "expected_value": null,
       "pending": false,

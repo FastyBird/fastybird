@@ -154,6 +154,12 @@ abstract class Property implements Entity,
 	 */
 	protected string|null $default = null;
 
+	/**
+	 * @IPubDoctrine\Crud(is="writable")
+	 * @ORM\Column(type="string", name="property_value_transformer", nullable=true, options={"default": null})
+	 */
+	protected string|null $valueTransformer = null;
+
 	public function __construct(
 		string $identifier,
 		Uuid\UuidInterface|null $id = null,
@@ -244,7 +250,7 @@ abstract class Property implements Entity,
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 */
-	public function getFormat(): MetadataValueObjects\StringEnumFormat|MetadataValueObjects\NumberRangeFormat|MetadataValueObjects\CombinedEnumFormat|MetadataValueObjects\EquationFormat|null
+	public function getFormat(): MetadataValueObjects\StringEnumFormat|MetadataValueObjects\NumberRangeFormat|MetadataValueObjects\CombinedEnumFormat|null
 	{
 		return $this->buildFormat($this->format);
 	}
@@ -515,8 +521,85 @@ abstract class Property implements Entity,
 	}
 
 	/**
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 */
+	public function getValueTransformer(): MetadataValueObjects\EquationTransformer|Uuid\UuidInterface|null
+	{
+		if ($this->valueTransformer === null) {
+			return null;
+		}
+
+		if (Uuid\Uuid::isValid($this->valueTransformer)) {
+			return Uuid\Uuid::fromString($this->valueTransformer);
+		}
+
+		if (preg_match(Metadata\Constants::VALUE_EQUATION_TRANSFORMER, $this->valueTransformer) === 1) {
+			if (
+				in_array($this->dataType->getValue(), [
+					MetadataTypes\DataType::DATA_TYPE_CHAR,
+					MetadataTypes\DataType::DATA_TYPE_UCHAR,
+					MetadataTypes\DataType::DATA_TYPE_SHORT,
+					MetadataTypes\DataType::DATA_TYPE_USHORT,
+					MetadataTypes\DataType::DATA_TYPE_INT,
+					MetadataTypes\DataType::DATA_TYPE_UINT,
+					MetadataTypes\DataType::DATA_TYPE_FLOAT,
+				], true)
+			) {
+				return new MetadataValueObjects\EquationTransformer($this->valueTransformer);
+			}
+
+			throw new Exceptions\InvalidState('Equation transformer is allowed only for numeric data type');
+		}
+
+		return null;
+	}
+
+	public function setValueTransformer(
+		string|MetadataValueObjects\EquationTransformer|Uuid\UuidInterface|null $valueTransformer,
+	): void
+	{
+		if ($valueTransformer instanceof Uuid\UuidInterface) {
+			$this->valueTransformer = $valueTransformer->toString();
+
+		} elseif ($valueTransformer instanceof MetadataValueObjects\EquationTransformer) {
+			$this->valueTransformer = in_array($this->dataType->getValue(), [
+				MetadataTypes\DataType::DATA_TYPE_CHAR,
+				MetadataTypes\DataType::DATA_TYPE_UCHAR,
+				MetadataTypes\DataType::DATA_TYPE_SHORT,
+				MetadataTypes\DataType::DATA_TYPE_USHORT,
+				MetadataTypes\DataType::DATA_TYPE_INT,
+				MetadataTypes\DataType::DATA_TYPE_UINT,
+				MetadataTypes\DataType::DATA_TYPE_FLOAT,
+			], true) ? $valueTransformer->getValue() : null;
+
+		} elseif ($valueTransformer !== null) {
+			if (Uuid\Uuid::isValid($valueTransformer)) {
+				$this->valueTransformer = $valueTransformer;
+
+			} elseif (
+				preg_match(Metadata\Constants::VALUE_EQUATION_TRANSFORMER, $valueTransformer) === 1
+				&& in_array($this->dataType->getValue(), [
+					MetadataTypes\DataType::DATA_TYPE_CHAR,
+					MetadataTypes\DataType::DATA_TYPE_UCHAR,
+					MetadataTypes\DataType::DATA_TYPE_SHORT,
+					MetadataTypes\DataType::DATA_TYPE_USHORT,
+					MetadataTypes\DataType::DATA_TYPE_INT,
+					MetadataTypes\DataType::DATA_TYPE_UINT,
+					MetadataTypes\DataType::DATA_TYPE_FLOAT,
+				], true)
+			) {
+				$this->valueTransformer = $valueTransformer;
+			}
+		} else {
+			$this->valueTransformer = null;
+		}
+	}
+
+	/**
 	 * {@inheritDoc}
 	 *
+	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -534,6 +617,7 @@ abstract class Property implements Entity,
 			'invalid' => $this->getInvalid(),
 			'scale' => $this->getScale(),
 			'step' => $this->getStep(),
+			'value_transformer' => $this->getValueTransformer()?->toString(),
 			'created_at' => $this->getCreatedAt()?->format(DateTimeInterface::ATOM),
 			'updated_at' => $this->getUpdatedAt()?->format(DateTimeInterface::ATOM),
 		];
@@ -558,7 +642,7 @@ abstract class Property implements Entity,
 	 */
 	private function buildFormat(
 		string|null $format,
-	): MetadataValueObjects\StringEnumFormat|MetadataValueObjects\NumberRangeFormat|MetadataValueObjects\CombinedEnumFormat|MetadataValueObjects\EquationFormat|null
+	): MetadataValueObjects\StringEnumFormat|MetadataValueObjects\NumberRangeFormat|MetadataValueObjects\CombinedEnumFormat|null
 	{
 		if ($format === null) {
 			return null;
@@ -577,8 +661,6 @@ abstract class Property implements Entity,
 		) {
 			if (preg_match(Metadata\Constants::VALUE_FORMAT_NUMBER_RANGE, $format) === 1) {
 				return new MetadataValueObjects\NumberRangeFormat($format);
-			} elseif (preg_match(Metadata\Constants::VALUE_FORMAT_EQUATION, $format) === 1) {
-				return new MetadataValueObjects\EquationFormat($format);
 			}
 		} elseif (
 			in_array($this->dataType->getValue(), [

@@ -175,10 +175,6 @@
           },
           "minItems": 2,
           "maxItems": 2
-        },
-        {
-          "type": "string",
-          "pattern": "^equation:(?:(?:x=)(?<equation_x>(?:(?:[\\dy]?)*(?:[\\+\\-\\^\\*\\/\\(\\)])*(?:\\s)*)*)){1}(?::(?:(?:y=)(?<equation_y>(?:(?:[\\dx]?)*(?:[\\+\\-\\^\\*\\/\\(\\)])*(?:\\s)*)*))){0,1}$"
         }
       ],
       "default": null
@@ -215,6 +211,22 @@
         },
         {
           "type": "number"
+        }
+      ],
+      "default": null
+    },
+    "value_transformer": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "string",
+          "pattern": "^equation:(?:(?:x=)(?<equation_x>(?:(?:[\\dy]?)*(?:[\\+\\-\\^\\*\\/\\(\\)])*(?:\\s)*)*)){1}(?::(?:(?:y=)(?<equation_y>(?:(?:[\\dx]?)*(?:[\\+\\-\\^\\*\\/\\(\\)])*(?:\\s)*)*))){0,1}$"
         }
       ],
       "default": null
@@ -350,6 +362,7 @@
       "invalid",
       "scale",
       "step",
+      "value_transformer",
       "channel",
       "children"
     ]
@@ -418,6 +431,7 @@
         "invalid",
         "scale",
         "step",
+        "value_transformer",
         "value",
         "default",
         "channel",
@@ -530,6 +544,7 @@
         "invalid",
         "scale",
         "step",
+        "value_transformer",
         "channel",
         "parent"
       ]

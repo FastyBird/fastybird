@@ -29,7 +29,6 @@ use function implode;
 use function in_array;
 use function is_array;
 use function is_scalar;
-use function is_string;
 use function preg_match;
 use function strval;
 
@@ -213,24 +212,6 @@ abstract class Property extends JsonApiHydrators\Hydrator
 			return null;
 		} elseif (!is_scalar($rawFormat) || (string) $rawFormat === '') {
 			return null;
-		}
-
-		if (is_string($rawFormat)) {
-			if (
-				in_array($dataType->getValue(), [
-					MetadataTypes\DataType::DATA_TYPE_CHAR,
-					MetadataTypes\DataType::DATA_TYPE_UCHAR,
-					MetadataTypes\DataType::DATA_TYPE_SHORT,
-					MetadataTypes\DataType::DATA_TYPE_USHORT,
-					MetadataTypes\DataType::DATA_TYPE_INT,
-					MetadataTypes\DataType::DATA_TYPE_UINT,
-					MetadataTypes\DataType::DATA_TYPE_FLOAT,
-				], true)
-			) {
-				if (preg_match(Metadata\Constants::VALUE_FORMAT_EQUATION, $rawFormat) === 1) {
-					return $rawFormat;
-				}
-			}
 		}
 
 		return (string) $rawFormat;
