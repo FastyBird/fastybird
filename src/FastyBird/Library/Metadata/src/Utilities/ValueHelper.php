@@ -279,25 +279,16 @@ final class ValueHelper
 		return $value;
 	}
 
-	/**
-	 * @throws Exceptions\InvalidArgument
-	 * @throws Exceptions\InvalidState
-	 */
-	public static function normalizeReadValue(
+	public static function transformReadValue(
 		Types\DataType $dataType,
 		bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null $value,
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		ValueObjects\StringEnumFormat|ValueObjects\NumberRangeFormat|ValueObjects\CombinedEnumFormat|null $format = null,
-		int|null $scale = null,
-		float|int|string|null $invalid = null,
 		ValueObjects\EquationTransformer|null $transformer = null,
+		int|null $scale = null,
 	): bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
 	{
 		if ($value === null) {
 			return null;
 		}
-
-		$value = self::normalizeValue($dataType, $value, $format, $invalid);
 
 		if (
 			in_array($dataType->getValue(), [
@@ -314,14 +305,6 @@ final class ValueHelper
 				|| is_float($value)
 			)
 		) {
-			if ($transformer instanceof ValueObjects\EquationTransformer) {
-				$value = $transformer->getEquationFrom()->substitute(['y' => $value])->simplify()->string();
-
-				$value = $dataType->equalsValue(Types\DataType::DATA_TYPE_FLOAT)
-					? floatval($value)
-					: intval($value);
-			}
-
 			if ($scale !== null) {
 				$value = intval($value);
 
@@ -331,23 +314,24 @@ final class ValueHelper
 
 				$value = round(floatval($value), $scale);
 			}
+
+			if ($transformer instanceof ValueObjects\EquationTransformer) {
+				$value = $transformer->getEquationFrom()->substitute(['y' => $value])->simplify()->string();
+
+				$value = $dataType->equalsValue(Types\DataType::DATA_TYPE_FLOAT)
+					? floatval($value)
+					: intval($value);
+			}
 		}
 
 		return $value;
 	}
 
-	/**
-	 * @throws Exceptions\InvalidArgument
-	 * @throws Exceptions\InvalidState
-	 */
-	public static function normalizeWriteValue(
+	public static function transformWriteValue(
 		Types\DataType $dataType,
 		bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null $value,
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		ValueObjects\StringEnumFormat|ValueObjects\NumberRangeFormat|ValueObjects\CombinedEnumFormat|null $format = null,
-		int|null $scale = null,
-		float|int|string|null $invalid = null,
 		ValueObjects\EquationTransformer|null $transformer = null,
+		int|null $scale = null,
 	): bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
 	{
 		if ($value === null) {
@@ -369,12 +353,15 @@ final class ValueHelper
 				|| is_float($value)
 			)
 		) {
-			if ($transformer instanceof ValueObjects\EquationTransformer && $transformer->getEquationTo() !== null) {
+			if (
+				$transformer instanceof ValueObjects\EquationTransformer
+				&& $transformer->getEquationTo() !== null
+			) {
 				$value = $transformer->getEquationTo()->substitute(['x' => $value])->simplify()->string();
 
 				$value = $dataType->equalsValue(Types\DataType::DATA_TYPE_FLOAT)
 					? floatval($value)
-					: intval($value);
+					: intval(round(floatval($value)));
 			}
 
 			if ($scale !== null) {
@@ -388,7 +375,7 @@ final class ValueHelper
 			}
 		}
 
-		return self::normalizeValue($dataType, $value, $format, $invalid);
+		return $value;
 	}
 
 	public static function flattenValue(

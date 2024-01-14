@@ -26,7 +26,6 @@ use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
-use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\States;
 use Nette;
 use Nette\Utils;
@@ -156,10 +155,7 @@ final class DevicePropertiesStates
 	): States\DeviceProperty|null
 	{
 		if ($property instanceof Entities\Devices\Properties\Property) {
-			$findPropertyQuery = new Queries\Configuration\FindDeviceProperties();
-			$findPropertyQuery->byId($property->getId());
-
-			$property = $this->devicePropertiesConfigurationRepository->findOneBy($findPropertyQuery);
+			$property = $this->devicePropertiesConfigurationRepository->find($property->getId());
 			assert(
 				$property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
 				|| $property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty,
@@ -169,10 +165,7 @@ final class DevicePropertiesStates
 		$mapped = null;
 
 		if ($property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
-			$findPropertyQuery = new Queries\Configuration\FindDeviceProperties();
-			$findPropertyQuery->byId($property->getParent());
-
-			$parent = $this->devicePropertiesConfigurationRepository->findOneBy($findPropertyQuery);
+			$parent = $this->devicePropertiesConfigurationRepository->find($property->getParent());
 
 			if (!$parent instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
 				throw new Exceptions\InvalidState('Mapped property parent could not be loaded');
@@ -198,29 +191,44 @@ final class DevicePropertiesStates
 
 			try {
 				if ($state->getActualValue() !== null) {
-					$actualValue = $forReading ? MetadataUtilities\ValueHelper::normalizeReadValue(
-						$property->getDataType(),
-						$state->getActualValue(),
-						$property->getFormat(),
-						$property->getScale(),
-						$property->getInvalid(),
-						$property->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
-							? $property->getValueTransformer()
-							: null,
-					) : MetadataUtilities\ValueHelper::normalizeValue(
+					$actualValue = MetadataUtilities\ValueHelper::normalizeValue(
 						$property->getDataType(),
 						$state->getActualValue(),
 						$property->getFormat(),
 						$property->getInvalid(),
 					);
 
-					$updateValues[States\Property::ACTUAL_VALUE_FIELD] = $mapped !== null
-						? MetadataUtilities\ValueHelper::transformValueFromMappedParent(
+					if ($forReading) {
+						if ($mapped !== null) {
+							$actualValue = MetadataUtilities\ValueHelper::transformReadValue(
+								$mapped->getDataType(),
+								$actualValue,
+								$mapped->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
+									? $mapped->getValueTransformer()
+									: null,
+								$property->getScale(),
+							);
+						}
+
+						$actualValue = MetadataUtilities\ValueHelper::transformReadValue(
+							$property->getDataType(),
+							$actualValue,
+							$property->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
+								? $property->getValueTransformer()
+								: null,
+							$property->getScale(),
+						);
+					}
+
+					if ($mapped !== null) {
+						$actualValue = MetadataUtilities\ValueHelper::transformValueFromMappedParent(
 							$mapped->getDataType(),
 							$property->getDataType(),
 							$actualValue,
-						)
-						: $actualValue;
+						);
+					}
+
+					$updateValues[States\Property::ACTUAL_VALUE_FIELD] = $actualValue;
 				}
 			} catch (Exceptions\InvalidArgument $ex) {
 				$this->devicePropertiesStatesManager->update($property, $state, Utils\ArrayHash::from([
@@ -242,29 +250,44 @@ final class DevicePropertiesStates
 
 			try {
 				if ($state->getExpectedValue() !== null) {
-					$expectedValue = $forReading ? MetadataUtilities\ValueHelper::normalizeReadValue(
-						$property->getDataType(),
-						$state->getExpectedValue(),
-						$property->getFormat(),
-						$property->getScale(),
-						$property->getInvalid(),
-						$property->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
-							? $property->getValueTransformer()
-							: null,
-					) : MetadataUtilities\ValueHelper::normalizeValue(
+					$expectedValue = MetadataUtilities\ValueHelper::normalizeValue(
 						$property->getDataType(),
 						$state->getExpectedValue(),
 						$property->getFormat(),
 						$property->getInvalid(),
 					);
 
-					$updateValues[States\Property::EXPECTED_VALUE_FIELD] = $mapped !== null
-						? MetadataUtilities\ValueHelper::transformValueFromMappedParent(
+					if ($forReading) {
+						if ($mapped !== null) {
+							$expectedValue = MetadataUtilities\ValueHelper::transformReadValue(
+								$mapped->getDataType(),
+								$expectedValue,
+								$mapped->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
+									? $mapped->getValueTransformer()
+									: null,
+								$property->getScale(),
+							);
+						}
+
+						$expectedValue = MetadataUtilities\ValueHelper::transformReadValue(
+							$property->getDataType(),
+							$expectedValue,
+							$property->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
+								? $property->getValueTransformer()
+								: null,
+							$property->getScale(),
+						);
+					}
+
+					if ($mapped !== null) {
+						$expectedValue = MetadataUtilities\ValueHelper::transformValueFromMappedParent(
 							$mapped->getDataType(),
 							$property->getDataType(),
 							$expectedValue,
-						)
-						: $expectedValue;
+						);
+					}
+
+					$updateValues[States\Property::EXPECTED_VALUE_FIELD] = $expectedValue;
 				}
 			} catch (Exceptions\InvalidArgument $ex) {
 				$this->devicePropertiesStatesManager->update($property, $state, Utils\ArrayHash::from([
@@ -316,10 +339,7 @@ final class DevicePropertiesStates
 	): void
 	{
 		if ($property instanceof Entities\Devices\Properties\Property) {
-			$findPropertyQuery = new Queries\Configuration\FindDeviceProperties();
-			$findPropertyQuery->byId($property->getId());
-
-			$property = $this->devicePropertiesConfigurationRepository->findOneBy($findPropertyQuery);
+			$property = $this->devicePropertiesConfigurationRepository->find($property->getId());
 			assert(
 				$property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
 				|| $property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty,
@@ -329,10 +349,7 @@ final class DevicePropertiesStates
 		$mapped = null;
 
 		if ($property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
-			$findPropertyQuery = new Queries\Configuration\FindDeviceProperties();
-			$findPropertyQuery->byId($property->getParent());
-
-			$parent = $this->devicePropertiesConfigurationRepository->findOneBy($findPropertyQuery);
+			$parent = $this->devicePropertiesConfigurationRepository->find($property->getParent());
 
 			if (!$parent instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
 				throw new Exceptions\InvalidState('Mapped property parent could not be loaded');
@@ -346,47 +363,42 @@ final class DevicePropertiesStates
 		$state = $this->loadValue($property, $forWriting);
 
 		if ($data->offsetExists(States\Property::ACTUAL_VALUE_FIELD)) {
+			$actualValue = $mapped !== null
+				? MetadataUtilities\ValueHelper::normalizeValue(
+					$mapped->getDataType(),
+					/** @phpstan-ignore-next-line */
+					$data->offsetGet(States\Property::ACTUAL_VALUE_FIELD),
+					$mapped->getFormat(),
+					$mapped->getInvalid(),
+				)
+				: MetadataUtilities\ValueHelper::normalizeValue(
+					$property->getDataType(),
+					/** @phpstan-ignore-next-line */
+					$data->offsetGet(States\Property::ACTUAL_VALUE_FIELD),
+					$property->getFormat(),
+					$property->getInvalid(),
+				);
+
 			if ($forWriting) {
-				$actualValue = $mapped !== null
-					? MetadataUtilities\ValueHelper::normalizeWriteValue(
+				if ($mapped !== null) {
+					$actualValue = MetadataUtilities\ValueHelper::transformWriteValue(
 						$mapped->getDataType(),
-						/** @phpstan-ignore-next-line */
-						$data->offsetGet(States\Property::ACTUAL_VALUE_FIELD),
-						$mapped->getFormat(),
-						$mapped->getScale(),
-						$mapped->getInvalid(),
+						$actualValue,
 						$mapped->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
 							? $mapped->getValueTransformer()
 							: null,
-					)
-					: MetadataUtilities\ValueHelper::normalizeWriteValue(
-						$property->getDataType(),
-						/** @phpstan-ignore-next-line */
-						$data->offsetGet(States\Property::ACTUAL_VALUE_FIELD),
-						$property->getFormat(),
 						$property->getScale(),
-						$property->getInvalid(),
-						$property->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
-							? $property->getValueTransformer()
-							: null,
 					);
+				}
 
-			} else {
-				$actualValue = $mapped !== null
-					? MetadataUtilities\ValueHelper::normalizeValue(
-						$mapped->getDataType(),
-						/** @phpstan-ignore-next-line */
-						$data->offsetGet(States\Property::ACTUAL_VALUE_FIELD),
-						$mapped->getFormat(),
-						$mapped->getInvalid(),
-					)
-					: MetadataUtilities\ValueHelper::normalizeValue(
-						$property->getDataType(),
-						/** @phpstan-ignore-next-line */
-						$data->offsetGet(States\Property::ACTUAL_VALUE_FIELD),
-						$property->getFormat(),
-						$property->getInvalid(),
-					);
+				$actualValue = MetadataUtilities\ValueHelper::transformWriteValue(
+					$property->getDataType(),
+					$actualValue,
+					$property->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
+						? $property->getValueTransformer()
+						: null,
+					$property->getScale(),
+				);
 			}
 
 			if ($mapped !== null) {
@@ -418,47 +430,42 @@ final class DevicePropertiesStates
 		}
 
 		if ($data->offsetExists(States\Property::EXPECTED_VALUE_FIELD)) {
+			$expectedValue = $mapped !== null
+				? MetadataUtilities\ValueHelper::normalizeValue(
+					$mapped->getDataType(),
+					/** @phpstan-ignore-next-line */
+					$data->offsetGet(States\Property::EXPECTED_VALUE_FIELD),
+					$mapped->getFormat(),
+					$mapped->getInvalid(),
+				)
+				: MetadataUtilities\ValueHelper::normalizeValue(
+					$property->getDataType(),
+					/** @phpstan-ignore-next-line */
+					$data->offsetGet(States\Property::EXPECTED_VALUE_FIELD),
+					$property->getFormat(),
+					$property->getInvalid(),
+				);
+
 			if ($forWriting) {
-				$expectedValue = $mapped !== null
-					? MetadataUtilities\ValueHelper::normalizeWriteValue(
+				if ($mapped !== null) {
+					$expectedValue = MetadataUtilities\ValueHelper::transformWriteValue(
 						$mapped->getDataType(),
-						/** @phpstan-ignore-next-line */
-						$data->offsetGet(States\Property::EXPECTED_VALUE_FIELD),
-						$mapped->getFormat(),
-						$mapped->getScale(),
-						$mapped->getInvalid(),
+						$expectedValue,
 						$mapped->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
 							? $mapped->getValueTransformer()
 							: null,
-					)
-					: MetadataUtilities\ValueHelper::normalizeWriteValue(
-						$property->getDataType(),
-						/** @phpstan-ignore-next-line */
-						$data->offsetGet(States\Property::EXPECTED_VALUE_FIELD),
-						$property->getFormat(),
 						$property->getScale(),
-						$property->getInvalid(),
-						$property->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
-							? $property->getValueTransformer()
-							: null,
 					);
+				}
 
-			} else {
-				$expectedValue = $mapped !== null
-					? MetadataUtilities\ValueHelper::normalizeValue(
-						$mapped->getDataType(),
-						/** @phpstan-ignore-next-line */
-						$data->offsetGet(States\Property::EXPECTED_VALUE_FIELD),
-						$mapped->getFormat(),
-						$mapped->getInvalid(),
-					)
-					: MetadataUtilities\ValueHelper::normalizeValue(
-						$property->getDataType(),
-						/** @phpstan-ignore-next-line */
-						$data->offsetGet(States\Property::EXPECTED_VALUE_FIELD),
-						$property->getFormat(),
-						$property->getInvalid(),
-					);
+				$expectedValue = MetadataUtilities\ValueHelper::transformWriteValue(
+					$property->getDataType(),
+					$expectedValue,
+					$property->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
+						? $property->getValueTransformer()
+						: null,
+					$property->getScale(),
+				);
 			}
 
 			if ($mapped !== null) {

@@ -50,16 +50,21 @@ final class ValueHelperTest extends TestCase
 		float|int|string|null $expected = null,
 	): void
 	{
-		$normalized = Utilities\ValueHelper::normalizeReadValue(
+		$normalized = Utilities\ValueHelper::normalizeValue(
 			$dataType,
 			$value,
 			$format,
-			$scale,
 			$invalid,
-			$transformer,
 		);
 
-		self::assertSame($expected, $normalized);
+		$transformed = Utilities\ValueHelper::transformReadValue(
+			$dataType,
+			$normalized,
+			$transformer,
+			$scale,
+		);
+
+		self::assertSame($expected, $transformed);
 	}
 
 	/**
@@ -79,13 +84,18 @@ final class ValueHelperTest extends TestCase
 		float|int|string|null $expected = null,
 	): void
 	{
-		$normalized = Utilities\ValueHelper::normalizeWriteValue(
+		$normalized = Utilities\ValueHelper::normalizeValue(
 			$dataType,
 			$value,
 			$format,
-			$scale,
 			$invalid,
+		);
+
+		$normalized = Utilities\ValueHelper::transformWriteValue(
+			$dataType,
+			$normalized,
 			$transformer,
+			$scale,
 		);
 
 		self::assertSame($expected, $normalized);

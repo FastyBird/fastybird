@@ -26,7 +26,6 @@ use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
-use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\States;
 use Nette;
 use Nette\Utils;
@@ -156,10 +155,7 @@ final class ConnectorPropertiesStates
 	): States\ConnectorProperty|null
 	{
 		if ($property instanceof Entities\Connectors\Properties\Property) {
-			$findPropertyQuery = new Queries\Configuration\FindConnectorProperties();
-			$findPropertyQuery->byId($property->getId());
-
-			$property = $this->connectorPropertiesConfigurationRepository->findOneBy($findPropertyQuery);
+			$property = $this->connectorPropertiesConfigurationRepository->find($property->getId());
 			assert($property instanceof MetadataDocuments\DevicesModule\ConnectorDynamicProperty);
 		}
 
@@ -174,21 +170,25 @@ final class ConnectorPropertiesStates
 
 			try {
 				if ($state->getActualValue() !== null) {
-					$updateValues[States\Property::ACTUAL_VALUE_FIELD] = $forReading ? MetadataUtilities\ValueHelper::normalizeReadValue(
-						$property->getDataType(),
-						$state->getActualValue(),
-						$property->getFormat(),
-						$property->getScale(),
-						$property->getInvalid(),
-						$property->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
-							? $property->getValueTransformer()
-							: null,
-					) : MetadataUtilities\ValueHelper::normalizeValue(
+					$actualValue = MetadataUtilities\ValueHelper::normalizeValue(
 						$property->getDataType(),
 						$state->getActualValue(),
 						$property->getFormat(),
 						$property->getInvalid(),
 					);
+
+					if ($forReading) {
+						$actualValue = MetadataUtilities\ValueHelper::transformReadValue(
+							$property->getDataType(),
+							$actualValue,
+							$property->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
+								? $property->getValueTransformer()
+								: null,
+							$property->getScale(),
+						);
+					}
+
+					$updateValues[States\Property::ACTUAL_VALUE_FIELD] = $actualValue;
 				}
 			} catch (Exceptions\InvalidArgument $ex) {
 				$this->connectorPropertiesStatesManager->update($property, $state, Utils\ArrayHash::from([
@@ -210,21 +210,25 @@ final class ConnectorPropertiesStates
 
 			try {
 				if ($state->getExpectedValue() !== null) {
-					$updateValues[States\Property::EXPECTED_VALUE_FIELD] = $forReading ? MetadataUtilities\ValueHelper::normalizeReadValue(
-						$property->getDataType(),
-						$state->getExpectedValue(),
-						$property->getFormat(),
-						$property->getScale(),
-						$property->getInvalid(),
-						$property->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
-							? $property->getValueTransformer()
-							: null,
-					) : MetadataUtilities\ValueHelper::normalizeValue(
+					$expectedValue = MetadataUtilities\ValueHelper::normalizeValue(
 						$property->getDataType(),
 						$state->getExpectedValue(),
 						$property->getFormat(),
 						$property->getInvalid(),
 					);
+
+					if ($forReading) {
+						$expectedValue = MetadataUtilities\ValueHelper::transformReadValue(
+							$property->getDataType(),
+							$expectedValue,
+							$property->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
+								? $property->getValueTransformer()
+								: null,
+							$property->getScale(),
+						);
+					}
+
+					$updateValues[States\Property::EXPECTED_VALUE_FIELD] = $expectedValue;
 				}
 			} catch (Exceptions\InvalidArgument $ex) {
 				$this->connectorPropertiesStatesManager->update($property, $state, Utils\ArrayHash::from([
@@ -276,136 +280,89 @@ final class ConnectorPropertiesStates
 	): void
 	{
 		if ($property instanceof Entities\Connectors\Properties\Property) {
-			$findPropertyQuery = new Queries\Configuration\FindConnectorProperties();
-			$findPropertyQuery->byId($property->getId());
-
-			$property = $this->connectorPropertiesConfigurationRepository->findOneBy($findPropertyQuery);
+			$property = $this->connectorPropertiesConfigurationRepository->find($property->getId());
 			assert($property instanceof MetadataDocuments\DevicesModule\ConnectorDynamicProperty);
 		}
 
 		$state = $this->loadValue($property, $forWriting);
 
 		if ($data->offsetExists(States\Property::ACTUAL_VALUE_FIELD)) {
+			$actualValue = MetadataUtilities\ValueHelper::normalizeValue(
+				$property->getDataType(),
+				/** @phpstan-ignore-next-line */
+					$data->offsetGet(States\Property::ACTUAL_VALUE_FIELD),
+				$property->getFormat(),
+				$property->getInvalid(),
+			);
+
 			if ($forWriting) {
-				try {
-					$data->offsetSet(
-						States\Property::ACTUAL_VALUE_FIELD,
-						MetadataUtilities\ValueHelper::flattenValue(
-							MetadataUtilities\ValueHelper::normalizeWriteValue(
-								$property->getDataType(),
-								/** @phpstan-ignore-next-line */
-								$data->offsetGet(States\Property::ACTUAL_VALUE_FIELD),
-								$property->getFormat(),
-								$property->getScale(),
-								$property->getInvalid(),
-								$property->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
-									? $property->getValueTransformer()
-									: null,
-							),
-						),
-					);
-				} catch (Exceptions\InvalidArgument $ex) {
-					$data->offsetSet(States\Property::ACTUAL_VALUE_FIELD, null);
-					$data->offsetSet(States\Property::VALID_FIELD, false);
+				$actualValue = MetadataUtilities\ValueHelper::transformWriteValue(
+					$property->getDataType(),
+					$actualValue,
+					$property->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
+						? $property->getValueTransformer()
+						: null,
+					$property->getScale(),
+				);
+			}
 
-					$this->logger->error(
-						'Provided property actual value is not valid',
-						[
-							'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
-							'type' => 'connector-properties-states',
-							'exception' => BootstrapHelpers\Logger::buildException($ex),
-						],
-					);
-				}
-			} else {
-				try {
-					$data->offsetSet(
-						States\Property::ACTUAL_VALUE_FIELD,
-						MetadataUtilities\ValueHelper::flattenValue(
-							MetadataUtilities\ValueHelper::normalizeValue(
-								$property->getDataType(),
-								/** @phpstan-ignore-next-line */
-								$data->offsetGet(States\Property::ACTUAL_VALUE_FIELD),
-								$property->getFormat(),
-								$property->getInvalid(),
-							),
-						),
-					);
-				} catch (Exceptions\InvalidArgument $ex) {
-					$data->offsetSet(States\Property::ACTUAL_VALUE_FIELD, null);
-					$data->offsetSet(States\Property::VALID_FIELD, false);
+			try {
+				$data->offsetSet(
+					States\Property::ACTUAL_VALUE_FIELD,
+					MetadataUtilities\ValueHelper::flattenValue($actualValue),
+				);
+			} catch (Exceptions\InvalidArgument $ex) {
+				$data->offsetSet(States\Property::ACTUAL_VALUE_FIELD, null);
+				$data->offsetSet(States\Property::VALID_FIELD, false);
 
-					$this->logger->error(
-						'Provided property actual value is not valid',
-						[
-							'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
-							'type' => 'connector-properties-states',
-							'exception' => BootstrapHelpers\Logger::buildException($ex),
-						],
-					);
-				}
+				$this->logger->error(
+					'Provided property actual value is not valid',
+					[
+						'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+						'type' => 'connector-properties-states',
+						'exception' => BootstrapHelpers\Logger::buildException($ex),
+					],
+				);
 			}
 		}
 
 		if ($data->offsetExists(States\Property::EXPECTED_VALUE_FIELD)) {
+			$expectedValue = MetadataUtilities\ValueHelper::normalizeValue(
+				$property->getDataType(),
+				/** @phpstan-ignore-next-line */
+					$data->offsetGet(States\Property::EXPECTED_VALUE_FIELD),
+				$property->getFormat(),
+				$property->getInvalid(),
+			);
+
 			if ($forWriting) {
-				try {
-					$data->offsetSet(
-						States\Property::EXPECTED_VALUE_FIELD,
-						MetadataUtilities\ValueHelper::flattenValue(
-							MetadataUtilities\ValueHelper::normalizeWriteValue(
-								$property->getDataType(),
-								/** @phpstan-ignore-next-line */
-								$data->offsetGet(States\Property::EXPECTED_VALUE_FIELD),
-								$property->getFormat(),
-								$property->getScale(),
-								$property->getInvalid(),
-								$property->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
-									? $property->getValueTransformer()
-									: null,
-							),
-						),
-					);
-				} catch (Exceptions\InvalidArgument $ex) {
-					$data->offsetSet(States\Property::EXPECTED_VALUE_FIELD, null);
-					$data->offsetSet(States\Property::PENDING_FIELD, false);
+				$expectedValue = MetadataUtilities\ValueHelper::transformWriteValue(
+					$property->getDataType(),
+					$expectedValue,
+					$property->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
+						? $property->getValueTransformer()
+						: null,
+					$property->getScale(),
+				);
+			}
 
-					$this->logger->error(
-						'Provided property expected value was not valid',
-						[
-							'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
-							'type' => 'connector-properties-states',
-							'exception' => BootstrapHelpers\Logger::buildException($ex),
-						],
-					);
-				}
-			} else {
-				try {
-					$data->offsetSet(
-						States\Property::EXPECTED_VALUE_FIELD,
-						MetadataUtilities\ValueHelper::flattenValue(
-							MetadataUtilities\ValueHelper::normalizeValue(
-								$property->getDataType(),
-								/** @phpstan-ignore-next-line */
-								$data->offsetGet(States\Property::EXPECTED_VALUE_FIELD),
-								$property->getFormat(),
-								$property->getInvalid(),
-							),
-						),
-					);
-				} catch (Exceptions\InvalidArgument $ex) {
-					$data->offsetSet(States\Property::EXPECTED_VALUE_FIELD, null);
-					$data->offsetSet(States\Property::PENDING_FIELD, false);
+			try {
+				$data->offsetSet(
+					States\Property::EXPECTED_VALUE_FIELD,
+					MetadataUtilities\ValueHelper::flattenValue($expectedValue),
+				);
+			} catch (Exceptions\InvalidArgument $ex) {
+				$data->offsetSet(States\Property::EXPECTED_VALUE_FIELD, null);
+				$data->offsetSet(States\Property::PENDING_FIELD, false);
 
-					$this->logger->error(
-						'Provided property expected value was not valid',
-						[
-							'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
-							'type' => 'connector-properties-states',
-							'exception' => BootstrapHelpers\Logger::buildException($ex),
-						],
-					);
-				}
+				$this->logger->error(
+					'Provided property expected value was not valid',
+					[
+						'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+						'type' => 'connector-properties-states',
+						'exception' => BootstrapHelpers\Logger::buildException($ex),
+					],
+				);
 			}
 		}
 
