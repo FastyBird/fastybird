@@ -2277,7 +2277,6 @@ class Install extends Console\Command\Command
 				$io,
 				null,
 				in_array($capabilityPermission, [Types\Permission::WRITE, Types\Permission::READ_WRITE], true),
-				in_array($capabilityPermission, [Types\Permission::READ, Types\Permission::READ_WRITE], true),
 			);
 
 			$format = $this->askFormat($io, $protocol, $connectProperty);
@@ -2420,7 +2419,6 @@ class Install extends Console\Command\Command
 							: null
 					),
 					in_array($capabilityPermission, [Types\Permission::WRITE, Types\Permission::READ_WRITE], true),
-					in_array($capabilityPermission, [Types\Permission::READ, Types\Permission::READ_WRITE], true),
 				);
 
 				$format = $this->askFormat($io, $protocol, $connectProperty);
@@ -3673,7 +3671,6 @@ class Install extends Console\Command\Command
 		Style\SymfonyStyle $io,
 		DevicesEntities\Channels\Properties\Dynamic|null $connectedProperty = null,
 		bool|null $settable = null,
-		bool|null $queryable = null,
 	): DevicesEntities\Channels\Properties\Dynamic|null
 	{
 		$devices = [];
@@ -3720,10 +3717,6 @@ class Install extends Console\Command\Command
 
 				if ($settable === true) {
 					$findChannelPropertiesQuery->settable(true);
-				}
-
-				if ($queryable === true) {
-					$findChannelPropertiesQuery->queryable(true);
 				}
 
 				if (
@@ -3832,10 +3825,6 @@ class Install extends Console\Command\Command
 				$findChannelPropertiesQuery->settable(true);
 			}
 
-			if ($queryable === true) {
-				$findChannelPropertiesQuery->queryable(true);
-			}
-
 			if (
 				$this->channelsPropertiesRepository->getResultSet(
 					$findChannelPropertiesQuery,
@@ -3918,10 +3907,6 @@ class Install extends Console\Command\Command
 
 		if ($settable === true) {
 			$findChannelPropertiesQuery->settable(true);
-		}
-
-		if ($queryable === true) {
-			$findChannelPropertiesQuery->queryable(true);
 		}
 
 		$channelProperties = $this->channelsPropertiesRepository->findAllBy(

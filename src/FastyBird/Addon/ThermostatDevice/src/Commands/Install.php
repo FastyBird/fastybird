@@ -3271,8 +3271,6 @@ class Install extends Console\Command\Command
 			$allowedDataTypes,
 			DevicesEntities\Channels\Properties\Dynamic::class,
 			$property,
-			null,
-			true,
 		);
 
 		if ($parent === null) {
@@ -3517,7 +3515,6 @@ class Install extends Console\Command\Command
 		string|null $onlyType = null,
 		DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Variable|null $connectedProperty = null,
 		bool|null $settable = null,
-		bool|null $queryable = null,
 	): DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Variable|null
 	{
 		$devices = [];
@@ -3560,10 +3557,6 @@ class Install extends Console\Command\Command
 						$findChannelPropertiesQuery->settable(true);
 					}
 
-					if ($queryable === true) {
-						$findChannelPropertiesQuery->queryable(true);
-					}
-
 					if ($allowedDataTypes === null) {
 						if (
 							$this->channelsPropertiesRepository->getResultSet(
@@ -3603,10 +3596,6 @@ class Install extends Console\Command\Command
 
 					if ($settable === true) {
 						$findChannelPropertiesQuery->settable(true);
-					}
-
-					if ($queryable === true) {
-						$findChannelPropertiesQuery->queryable(true);
 					}
 
 					if ($allowedDataTypes === null) {
@@ -3740,10 +3729,6 @@ class Install extends Console\Command\Command
 					$findChannelPropertiesQuery->settable(true);
 				}
 
-				if ($queryable === true) {
-					$findChannelPropertiesQuery->queryable(true);
-				}
-
 				if ($allowedDataTypes === null) {
 					if (
 						$this->channelsPropertiesRepository->getResultSet(
@@ -3779,10 +3764,6 @@ class Install extends Console\Command\Command
 
 				if ($settable === true) {
 					$findChannelPropertiesQuery->settable(true);
-				}
-
-				if ($queryable === true) {
-					$findChannelPropertiesQuery->queryable(true);
 				}
 
 				if ($allowedDataTypes === null) {
@@ -3887,10 +3868,6 @@ class Install extends Console\Command\Command
 
 		if ($settable === true) {
 			$findChannelPropertiesQuery->settable(true);
-		}
-
-		if ($queryable === true) {
-			$findChannelPropertiesQuery->queryable(true);
 		}
 
 		$channelProperties = $this->channelsPropertiesRepository->findAllBy($findChannelPropertiesQuery);
