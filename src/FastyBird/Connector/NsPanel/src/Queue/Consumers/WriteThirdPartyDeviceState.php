@@ -300,14 +300,18 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 									$this->channelPropertiesStatesManager->setValue(
 										$property,
 										Utils\ArrayHash::from([
-											DevicesStates\Property::PENDING_FIELD => $now->format(DateTimeInterface::ATOM),
+											DevicesStates\Property::PENDING_FIELD => $now->format(
+												DateTimeInterface::ATOM,
+											),
 										]),
 									);
 								} else {
 									$this->channelPropertiesStatesManager->writeValue(
 										$property,
 										Utils\ArrayHash::from([
-											DevicesStates\Property::PENDING_FIELD => $now->format(DateTimeInterface::ATOM),
+											DevicesStates\Property::PENDING_FIELD => $now->format(
+												DateTimeInterface::ATOM,
+											),
 										]),
 									);
 								}
