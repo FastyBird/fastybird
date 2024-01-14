@@ -536,7 +536,9 @@ trait StateWriter
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
 	): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
 	{
-		return $this->channelPropertiesStatesManager->readValue($property)?->getActualValue();
+		return $property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+			? $this->channelPropertiesStatesManager->getValue($property)?->getActualValue()
+			: $this->channelPropertiesStatesManager->readValue($property)?->getActualValue();
 	}
 
 	/**
@@ -550,7 +552,9 @@ trait StateWriter
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
 	): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
 	{
-		return $this->channelPropertiesStatesManager->readValue($property)?->getExpectedValue();
+		return $property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+			? $this->channelPropertiesStatesManager->getValue($property)?->getExpectedValue()
+			: $this->channelPropertiesStatesManager->readValue($property)?->getExpectedValue();
 	}
 
 }

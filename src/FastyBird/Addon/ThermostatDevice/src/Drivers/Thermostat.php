@@ -124,7 +124,9 @@ class Thermostat implements VirtualDrivers\Driver
 		}
 
 		foreach ($this->deviceHelper->getActors($this->device) as $actor) {
-			$state = $this->channelPropertiesStatesManager->readValue($actor);
+			$state = $actor instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+				? $this->channelPropertiesStatesManager->getValue($actor)
+				: $this->channelPropertiesStatesManager->readValue($actor);
 
 			$actualValue = $state?->getActualValue();
 
@@ -143,7 +145,9 @@ class Thermostat implements VirtualDrivers\Driver
 		}
 
 		foreach ($this->deviceHelper->getSensors($this->device) as $sensor) {
-			$state = $this->channelPropertiesStatesManager->readValue($sensor);
+			$state = $sensor instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+				? $this->channelPropertiesStatesManager->getValue($sensor)
+				: $this->channelPropertiesStatesManager->readValue($sensor);
 
 			$actualValue = $state?->getActualValue();
 
@@ -162,7 +166,9 @@ class Thermostat implements VirtualDrivers\Driver
 		}
 
 		foreach ($this->deviceHelper->getOpenings($this->device) as $opening) {
-			$state = $this->channelPropertiesStatesManager->readValue($opening);
+			$state = $opening instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+				? $this->channelPropertiesStatesManager->getValue($opening)
+				: $this->channelPropertiesStatesManager->readValue($opening);
 
 			$actualValue = $state?->getActualValue();
 
@@ -175,7 +181,7 @@ class Thermostat implements VirtualDrivers\Driver
 			$property = $this->deviceHelper->getTargetTemp($this->device, Types\Preset::get($mode));
 
 			if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-				$state = $this->channelPropertiesStatesManager->readValue($property);
+				$state = $this->channelPropertiesStatesManager->getValue($property);
 
 				if (is_numeric($state?->getActualValue())) {
 					$this->targetTemperature[$mode] = floatval($state->getActualValue());
@@ -184,7 +190,7 @@ class Thermostat implements VirtualDrivers\Driver
 		}
 
 		if ($this->deviceHelper->getHvacMode($this->device) !== null) {
-			$state = $this->channelPropertiesStatesManager->readValue(
+			$state = $this->channelPropertiesStatesManager->getValue(
 				$this->deviceHelper->getHvacMode($this->device),
 			);
 
@@ -194,7 +200,7 @@ class Thermostat implements VirtualDrivers\Driver
 		}
 
 		if ($this->deviceHelper->getPresetMode($this->device) !== null) {
-			$state = $this->channelPropertiesStatesManager->readValue(
+			$state = $this->channelPropertiesStatesManager->getValue(
 				$this->deviceHelper->getPresetMode($this->device),
 			);
 

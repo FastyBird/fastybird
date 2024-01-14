@@ -313,7 +313,9 @@ abstract class Periodic implements Writer
 			$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
 			|| $property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
 		) {
-			$state = $this->channelPropertiesStatesManager->getValue($property);
+			$state = $property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+				? $this->channelPropertiesStatesManager->getValue($property)
+				: $this->channelPropertiesStatesManager->readValue($property);
 
 			if ($state === null || $state->isValid() === false) {
 				return false;

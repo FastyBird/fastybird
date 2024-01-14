@@ -280,25 +280,38 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 				->then(function () use ($channel): void {
 					$now = $this->dateTimeFactory->getNow();
 
-					$findPropertiesQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
+					$findPropertiesQuery = new DevicesQueries\Configuration\FindChannelProperties();
 					$findPropertiesQuery->forChannel($channel);
 					$findPropertiesQuery->settable(true);
 
-					$properties = $this->channelsPropertiesConfigurationRepository->findAllBy(
-						$findPropertiesQuery,
-						MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
-					);
+					$properties = $this->channelsPropertiesConfigurationRepository->findAllBy($findPropertiesQuery);
 
 					foreach ($properties as $property) {
-						$state = $this->channelPropertiesStatesManager->getValue($property);
+						if (
+							$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+							|| $property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
+						) {
+							$state = $property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+								? $this->channelPropertiesStatesManager->getValue($property)
+								: $this->channelPropertiesStatesManager->readValue($property);
 
-						if ($state?->getExpectedValue() !== null) {
-							$this->channelPropertiesStatesManager->setValue(
-								$property,
-								Utils\ArrayHash::from([
-									DevicesStates\Property::PENDING_FIELD => $now->format(DateTimeInterface::ATOM),
-								]),
-							);
+							if ($state?->getExpectedValue() !== null) {
+								if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+									$this->channelPropertiesStatesManager->setValue(
+										$property,
+										Utils\ArrayHash::from([
+											DevicesStates\Property::PENDING_FIELD => $now->format(DateTimeInterface::ATOM),
+										]),
+									);
+								} else {
+									$this->channelPropertiesStatesManager->writeValue(
+										$property,
+										Utils\ArrayHash::from([
+											DevicesStates\Property::PENDING_FIELD => $now->format(DateTimeInterface::ATOM),
+										]),
+									);
+								}
+							}
 						}
 					}
 				})
@@ -313,7 +326,7 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 					);
 
 					foreach ($properties as $property) {
-						$this->channelPropertiesStatesManager->setValue(
+						$this->channelPropertiesStatesManager->writeValue(
 							$property,
 							Utils\ArrayHash::from([
 								DevicesStates\Property::EXPECTED_VALUE_FIELD => null,

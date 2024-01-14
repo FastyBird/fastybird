@@ -3321,7 +3321,7 @@ class Install extends Console\Command\Command
 			);
 			assert($propertyConfiguration !== null);
 
-			$state = $this->channelPropertiesStatesManager->readValue($propertyConfiguration);
+			$state = $this->channelPropertiesStatesManager->getValue($propertyConfiguration);
 
 			$targetTemp = $state?->getActualValue();
 			assert(is_numeric($targetTemp) || $targetTemp === null);

@@ -220,7 +220,7 @@ final class StoreDeviceState implements Queue\Consumer
 					continue;
 				}
 
-				$this->channelPropertiesStatesManager->writeValue(
+				$this->channelPropertiesStatesManager->setValue(
 					$property,
 					Utils\ArrayHash::from([
 						DevicesStates\Property::ACTUAL_VALUE_FIELD => MetadataUtilities\ValueHelper::transformValueFromDevice(
