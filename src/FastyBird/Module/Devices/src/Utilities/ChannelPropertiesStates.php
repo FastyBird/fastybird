@@ -355,8 +355,8 @@ final class ChannelPropertiesStates
 						$mapped->getFormat(),
 						$mapped->getScale(),
 						$mapped->getInvalid(),
-						$property->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
-							? $property->getValueTransformer()
+						$mapped->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
+							? $mapped->getValueTransformer()
 							: null,
 					)
 					: MetadataUtilities\ValueHelper::normalizeWriteValue(
@@ -427,8 +427,8 @@ final class ChannelPropertiesStates
 						$mapped->getFormat(),
 						$mapped->getScale(),
 						$mapped->getInvalid(),
-						$property->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
-							? $property->getValueTransformer()
+						$mapped->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
+							? $mapped->getValueTransformer()
 							: null,
 					)
 					: MetadataUtilities\ValueHelper::normalizeWriteValue(
