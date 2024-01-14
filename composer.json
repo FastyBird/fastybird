@@ -222,6 +222,9 @@
     "extra": {
         "enable-patching": false,
         "patches": {
+            "contributte/monolog": {
+                "Bug: invalid callback definition": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/contributte-monolog-src-loggerholder-php.patch"
+            },
             "dg/bypass-finals": {
                 "Bug: mkdir check": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/dg-bypass-finals-src-nativewrapper-php.patch"
             },
