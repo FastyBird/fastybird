@@ -90,6 +90,23 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 					return null;
 				},
 			);
+		$channelPropertiesStatesManager
+			->method('getValue')
+			->willReturnCallback(
+				static function (
+					MetadataDocuments\DevicesModule\ChannelProperty $property,
+				) use ($readInitialStates): DevicesStates\ChannelProperty|null {
+					if (array_key_exists($property->getId()->toString(), $readInitialStates)) {
+						$state = new Tests\Fixtures\Dummy\DummyChannelPropertyState($property->getId());
+						$state->setActualValue($readInitialStates[$property->getId()->toString()]);
+						$state->setValid(true);
+
+						return $state;
+					}
+
+					return null;
+				},
+			);
 
 		$this->mockContainerService(
 			DevicesUtilities\ChannelPropertiesStates::class,
