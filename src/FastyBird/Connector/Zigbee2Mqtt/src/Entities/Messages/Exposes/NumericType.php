@@ -16,7 +16,10 @@
 namespace FastyBird\Connector\Zigbee2Mqtt\Entities\Messages\Exposes;
 
 use FastyBird\Connector\Zigbee2Mqtt\Types;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
+use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
 use Orisai\ObjectMapper;
 use function array_merge;
 
@@ -71,9 +74,19 @@ final class NumericType extends Type
 		return Types\ExposeType::get($this->type);
 	}
 
+	/**
+	 * @throws MetadataExceptions\InvalidArgument
+	 */
 	public function getDataType(): MetadataTypes\DataType
 	{
-		return MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT);
+		return MetadataUtilities\DataTypeHelper::determineNumberDataType(
+			new MetadataValueObjects\NumberRangeFormat([
+				$this->getValueMin(),
+				$this->getValueMax(),
+			]),
+			$this->getValueStep(),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+		);
 	}
 
 	public function getValueMin(): float|null

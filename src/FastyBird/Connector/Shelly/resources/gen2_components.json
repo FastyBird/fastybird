@@ -276,9 +276,9 @@
     "relative_humidity": {
       "optional": false,
       "name": "Relative Humidity",
-      "data_type": "float",
+      "data_type": "uchar",
       "unit": "%",
-      "format": null,
+      "format": [0, 100],
       "invalid": null,
       "queryable": true,
       "settable": false
