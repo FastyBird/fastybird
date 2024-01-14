@@ -33,12 +33,12 @@ final class DataTypeHelper
 {
 
 	private const RANGES = [
-		Types\DataTypeShort::DATA_TYPE_CHAR => [-128, 127],
-		Types\DataTypeShort::DATA_TYPE_UCHAR => [0, 255],
-		Types\DataTypeShort::DATA_TYPE_SHORT => [-32_768, 32_767],
-		Types\DataTypeShort::DATA_TYPE_USHORT => [0, 65_535],
-		Types\DataTypeShort::DATA_TYPE_INT => [-2_147_483_648, 2_147_483_647],
-		Types\DataTypeShort::DATA_TYPE_UINT => [0, 4_294_967_295],
+		Types\DataType::DATA_TYPE_CHAR => [-128, 127],
+		Types\DataType::DATA_TYPE_UCHAR => [0, 255],
+		Types\DataType::DATA_TYPE_SHORT => [-32_768, 32_767],
+		Types\DataType::DATA_TYPE_USHORT => [0, 65_535],
+		Types\DataType::DATA_TYPE_INT => [-2_147_483_648, 2_147_483_647],
+		Types\DataType::DATA_TYPE_UINT => [0, 4_294_967_295],
 	];
 
 	/**
