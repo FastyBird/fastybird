@@ -113,7 +113,7 @@ class Bridge
 
 						} elseif ($type->equalsValue(Types\BridgeMessageType::STATE)) {
 							if (
-								$message->getPayload() === ''
+								$message->getPayload() !== ''
 								&& Types\ConnectionState::isValidValue($message->getPayload())
 							) {
 								$this->queue->append(

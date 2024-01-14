@@ -142,25 +142,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 
 				$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
-				if ($device === null) {
-					$this->logger->error(
-						'Device for received device property message could not be loaded',
-						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
-							'type' => 'exchange-writer',
-							'message' => [
-								'source' => $source->getValue(),
-								'routing_key' => $routingKey->getValue(),
-								'entity' => $entity->toArray(),
-							],
-							'property' => $entity->toArray(),
-						],
-					);
-
-					return;
-				}
-
-				if (!$device->getConnector()->equals($this->connector->getId())) {
+				if ($device === null || !$device->getConnector()->equals($this->connector->getId())) {
 					return;
 				}
 
@@ -206,25 +188,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 
 				$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
-				if ($device === null) {
-					$this->logger->error(
-						'Device for received channel property message could not be loaded',
-						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
-							'type' => 'exchange-writer',
-							'message' => [
-								'source' => $source->getValue(),
-								'routing_key' => $routingKey->getValue(),
-								'entity' => $entity->toArray(),
-							],
-							'property' => $entity->toArray(),
-						],
-					);
-
-					return;
-				}
-
-				if (!$device->getConnector()->equals($this->connector->getId())) {
+				if ($device === null || !$device->getConnector()->equals($this->connector->getId())) {
 					return;
 				}
 

@@ -125,11 +125,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 
 			$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
-			if ($device === null) {
-				return;
-			}
-
-			if (!$device->getConnector()->equals($this->connector->getId())) {
+			if ($device === null || !$device->getConnector()->equals($this->connector->getId())) {
 				return;
 			}
 
@@ -166,11 +162,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 
 			$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
-			if ($device === null) {
-				return;
-			}
-
-			if (!$device->getConnector()->equals($this->connector->getId())) {
+			if ($device === null || !$device->getConnector()->equals($this->connector->getId())) {
 				return;
 			}
 

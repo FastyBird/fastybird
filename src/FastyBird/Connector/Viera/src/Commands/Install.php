@@ -36,6 +36,7 @@ use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
+use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
 use Nette\Localization;
 use Nette\Utils;
 use RuntimeException;
@@ -120,6 +121,7 @@ class Install extends Console\Command\Command
 	 * @throws Console\Exception\ExceptionInterface
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
@@ -270,6 +272,7 @@ class Install extends Console\Command\Command
 	 * @throws Console\Exception\ExceptionInterface
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
@@ -458,6 +461,7 @@ class Install extends Console\Command\Command
 	 * @throws Console\Exception\ExceptionInterface
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
@@ -1740,6 +1744,7 @@ class Install extends Console\Command\Command
 	 * @throws BootstrapExceptions\InvalidState
 	 * @throws Console\Exception\ExceptionInterface
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -1792,6 +1797,7 @@ class Install extends Console\Command\Command
 		]);
 
 		$foundDevices = 0;
+		$encryptedDevices = [];
 
 		$findDevicesQuery = new Queries\Entities\FindDevices();
 		$findDevicesQuery->forConnector($connector);
@@ -1817,6 +1823,16 @@ class Install extends Console\Command\Command
 					$device->getIpAddress() ?? 'N/A',
 					$isEncrypted ? 'yes' : 'no',
 				]);
+
+				if (
+					$isEncrypted
+					&& (
+						$device->getAppId() === null
+						|| $device->getEncryptionKey() === null
+					)
+				) {
+					$encryptedDevices[] = $device;
+				}
 			}
 		}
 
@@ -1834,6 +1850,10 @@ class Install extends Console\Command\Command
 			$io->info($this->translator->translate('//viera-connector.cmd.install.messages.noDevicesFound'));
 		}
 
+		if ($encryptedDevices !== []) {
+			$this->processEncryptedDevices($io, $connector, $encryptedDevices);
+		}
+
 		$io->success($this->translator->translate('//viera-connector.cmd.install.messages.discover.success'));
 	}
 
@@ -1842,6 +1862,7 @@ class Install extends Console\Command\Command
 	 * @throws Console\Exception\ExceptionInterface
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
@@ -1926,6 +1947,7 @@ class Install extends Console\Command\Command
 	 * @throws Console\Exception\ExceptionInterface
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
@@ -2369,6 +2391,206 @@ class Install extends Console\Command\Command
 		assert($device instanceof Entities\VieraDevice);
 
 		return $device;
+	}
+
+	/**
+	 * @param array<Entities\VieraDevice> $encryptedDevices
+	 *
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws DoctrineCrudExceptions\InvalidArgumentException
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
+	private function processEncryptedDevices(
+		Style\SymfonyStyle $io,
+		Entities\VieraConnector $connector,
+		array $encryptedDevices,
+	): void
+	{
+		$io->info($this->translator->translate('//viera-connector.cmd.install.messages.foundEncryptedDevices'));
+
+		$question = new Console\Question\ConfirmationQuestion(
+			$this->translator->translate('//viera-connector.cmd.install.questions.pairDevice'),
+			false,
+		);
+
+		$continue = (bool) $io->askQuestion($question);
+
+		if ($continue) {
+			foreach ($encryptedDevices as $device) {
+				if ($device->getIpAddress() === null) {
+					$io->error(
+						$this->translator->translate(
+							'//viera-connector.cmd.install.messages.missingIpAddress',
+							['device' => $device->getName()],
+						),
+					);
+
+					continue;
+				}
+
+				$io->info(
+					$this->translator->translate(
+						'//viera-connector.cmd.install.messages.pairing.started',
+						['device' => $device->getName()],
+					),
+				);
+
+				try {
+					$televisionApi = $this->televisionApiFactory->create(
+						$device->getIdentifier(),
+						$device->getIpAddress(),
+						$device->getPort(),
+					);
+					$televisionApi->connect();
+				} catch (Exceptions\TelevisionApiCall | Exceptions\TelevisionApiError | Exceptions\InvalidState $ex) {
+					$io->error(
+						$this->translator->translate(
+							'//viera-connector.cmd.install.messages.device.connectionFailed',
+							['device' => $device->getName()],
+						),
+					);
+
+					$this->logger->error(
+						'Creating api client failed',
+						[
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+							'type' => 'discovery-cmd',
+							'exception' => BootstrapHelpers\Logger::buildException($ex),
+						],
+					);
+
+					continue;
+				}
+
+				try {
+					$isTurnedOn = $televisionApi->isTurnedOn(true);
+				} catch (Throwable $ex) {
+					$io->error(
+						$this->translator->translate(
+							'//viera-connector.cmd.install.messages.device.pairingFailed',
+							['device' => $device->getName()],
+						),
+					);
+
+					$this->logger->error(
+						'Checking screen status failed',
+						[
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+							'type' => 'discovery-cmd',
+							'exception' => BootstrapHelpers\Logger::buildException($ex),
+						],
+					);
+
+					continue;
+				}
+
+				if ($isTurnedOn === false) {
+					$io->warning(
+						$this->translator->translate(
+							'//viera-connector.cmd.install.messages.device.offline',
+							['device' => $device->getName()],
+						),
+					);
+
+					$question = new Console\Question\ConfirmationQuestion(
+						$this->translator->translate('//viera-connector.cmd.base.questions.continue'),
+						false,
+					);
+
+					$continue = (bool) $io->askQuestion($question);
+
+					if (!$continue) {
+						continue;
+					}
+				}
+
+				try {
+					$this->challengeKey = $televisionApi
+						->requestPinCode($connector->getName() ?? $connector->getIdentifier(), false)
+						->getChallengeKey();
+
+					$authorization = $this->askDevicePinCode($io, $connector, $televisionApi);
+
+					$televisionApi = $this->televisionApiFactory->create(
+						$device->getIdentifier(),
+						$device->getIpAddress(),
+						$device->getPort(),
+						$authorization->getAppId(),
+						$authorization->getEncryptionKey(),
+					);
+					$televisionApi->connect();
+				} catch (Exceptions\TelevisionApiCall | Exceptions\TelevisionApiError | Exceptions\InvalidState $ex) {
+					$io->error(
+						$this->translator->translate('//viera-connector.cmd.install.messages.device.connectionFailed'),
+					);
+
+					$this->logger->error(
+						'Pin code pairing failed',
+						[
+							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+							'type' => 'install-cmd',
+							'exception' => BootstrapHelpers\Logger::buildException($ex),
+						],
+					);
+
+					return;
+				}
+
+				$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
+				$findDevicePropertyQuery->byDeviceId($device->getId());
+				$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::APP_ID);
+
+				$appIdProperty = $this->devicesPropertiesRepository->findOneBy($findDevicePropertyQuery);
+
+				if ($appIdProperty === null) {
+					$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
+						'entity' => DevicesEntities\Devices\Properties\Variable::class,
+						'device' => $device,
+						'identifier' => Types\DevicePropertyIdentifier::APP_ID,
+						'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::APP_ID),
+						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+						'value' => $authorization->getAppId(),
+						'format' => null,
+					]));
+				} else {
+					$this->devicesPropertiesManager->update($appIdProperty, Utils\ArrayHash::from([
+						'value' => $authorization->getAppId(),
+					]));
+				}
+
+				$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
+				$findDevicePropertyQuery->byDeviceId($device->getId());
+				$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::ENCRYPTION_KEY);
+
+				$encryptionKeyProperty = $this->devicesPropertiesRepository->findOneBy($findDevicePropertyQuery);
+
+				if ($encryptionKeyProperty === null) {
+					$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
+						'entity' => DevicesEntities\Devices\Properties\Variable::class,
+						'device' => $device,
+						'identifier' => Types\DevicePropertyIdentifier::ENCRYPTION_KEY,
+						'name' => DevicesUtilities\Name::createName(
+							Types\DevicePropertyIdentifier::ENCRYPTION_KEY,
+						),
+						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+						'value' => $authorization->getEncryptionKey(),
+						'format' => null,
+					]));
+				} else {
+					$this->devicesPropertiesManager->update($encryptionKeyProperty, Utils\ArrayHash::from([
+						'value' => $authorization->getEncryptionKey(),
+					]));
+				}
+
+				$io->success(
+					$this->translator->translate(
+						'//viera-connector.cmd.install.messages.pairing.finished',
+						['device' => $device->getName()],
+					),
+				);
+			}
+		}
 	}
 
 	/**

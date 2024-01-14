@@ -328,10 +328,10 @@ abstract class ConnectorProperty implements Documents\Document, Documents\Owner
 				}, $format));
 			}
 
-			if (preg_match(Metadata\Constants::VALUE_FORMAT_STRING_ENUM, $format) === 1) {
-				return new ValueObjects\StringEnumFormat($format);
-			} elseif (preg_match(Metadata\Constants::VALUE_FORMAT_COMBINED_ENUM, $format) === 1) {
+			if (preg_match(Metadata\Constants::VALUE_FORMAT_COMBINED_ENUM, $format) === 1) {
 				return new ValueObjects\CombinedEnumFormat($format);
+			} elseif (preg_match(Metadata\Constants::VALUE_FORMAT_STRING_ENUM, $format) === 1) {
+				return new ValueObjects\StringEnumFormat($format);
 			}
 		}
 

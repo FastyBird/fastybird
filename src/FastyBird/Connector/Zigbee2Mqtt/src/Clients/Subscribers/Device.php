@@ -94,7 +94,7 @@ class Device
 
 						if ($type->equalsValue(Types\DeviceMessageType::AVAILABILITY)) {
 							if (
-								$message->getPayload() === ''
+								$message->getPayload() !== ''
 								&& Types\ConnectionState::isValidValue($message->getPayload())
 							) {
 								$this->queue->append(

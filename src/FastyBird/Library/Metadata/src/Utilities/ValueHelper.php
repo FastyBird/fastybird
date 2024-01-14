@@ -686,6 +686,37 @@ final class ValueHelper
 			return $value;
 		}
 
+		if (
+			in_array(
+				$dataType->getValue(),
+				[
+					Types\DataType::DATA_TYPE_CHAR,
+					Types\DataType::DATA_TYPE_UCHAR,
+					Types\DataType::DATA_TYPE_SHORT,
+					Types\DataType::DATA_TYPE_USHORT,
+					Types\DataType::DATA_TYPE_INT,
+					Types\DataType::DATA_TYPE_UINT,
+					Types\DataType::DATA_TYPE_FLOAT,
+				],
+				true,
+			)
+			&& in_array(
+				$parentDataType->getValue(),
+				[
+					Types\DataType::DATA_TYPE_CHAR,
+					Types\DataType::DATA_TYPE_UCHAR,
+					Types\DataType::DATA_TYPE_SHORT,
+					Types\DataType::DATA_TYPE_USHORT,
+					Types\DataType::DATA_TYPE_INT,
+					Types\DataType::DATA_TYPE_UINT,
+					Types\DataType::DATA_TYPE_FLOAT,
+				],
+				true,
+			)
+		) {
+			return $value;
+		}
+
 		if ($dataType->equalsValue(Types\DataType::DATA_TYPE_BOOLEAN)) {
 			if (
 				$parentDataType->equalsValue(Types\DataType::DATA_TYPE_SWITCH)
@@ -727,6 +758,37 @@ final class ValueHelper
 	): bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
 	{
 		if ($dataType->equalsValue($parentDataType->getValue())) {
+			return $value;
+		}
+
+		if (
+			in_array(
+				$dataType->getValue(),
+				[
+					Types\DataType::DATA_TYPE_CHAR,
+					Types\DataType::DATA_TYPE_UCHAR,
+					Types\DataType::DATA_TYPE_SHORT,
+					Types\DataType::DATA_TYPE_USHORT,
+					Types\DataType::DATA_TYPE_INT,
+					Types\DataType::DATA_TYPE_UINT,
+					Types\DataType::DATA_TYPE_FLOAT,
+				],
+				true,
+			)
+			&& in_array(
+				$parentDataType->getValue(),
+				[
+					Types\DataType::DATA_TYPE_CHAR,
+					Types\DataType::DATA_TYPE_UCHAR,
+					Types\DataType::DATA_TYPE_SHORT,
+					Types\DataType::DATA_TYPE_USHORT,
+					Types\DataType::DATA_TYPE_INT,
+					Types\DataType::DATA_TYPE_UINT,
+					Types\DataType::DATA_TYPE_FLOAT,
+				],
+				true,
+			)
+		) {
 			return $value;
 		}
 

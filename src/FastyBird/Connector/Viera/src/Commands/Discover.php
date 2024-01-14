@@ -74,6 +74,7 @@ class Discover extends Console\Command\Command
 		private readonly Api\TelevisionApiFactory $televisionApiFactory,
 		private readonly Helpers\Device $deviceHelper,
 		private readonly Viera\Logger $logger,
+		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\Entities\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
 		private readonly DevicesModels\Entities\Devices\Properties\PropertiesManager $devicesPropertiesManager,
 		private readonly DevicesModels\Configuration\Connectors\Repository $connectorsConfigurationRepository,
@@ -419,8 +420,11 @@ class Discover extends Console\Command\Command
 		$continue = (bool) $io->askQuestion($question);
 
 		if ($continue) {
-			foreach ($encryptedDevices as $device) {
-				if ($this->deviceHelper->getIpAddress($device) === null) {
+			foreach ($encryptedDevices as $configuredDevice) {
+				$device = $this->devicesRepository->find($configuredDevice->getId());
+				assert($device instanceof Entities\VieraDevice);
+
+				if ($device->getIpAddress() === null) {
 					$io->error(
 						$this->translator->translate(
 							'//viera-connector.cmd.discover.messages.missingIpAddress',
@@ -441,8 +445,8 @@ class Discover extends Console\Command\Command
 				try {
 					$televisionApi = $this->televisionApiFactory->create(
 						$device->getIdentifier(),
-						$this->deviceHelper->getIpAddress($device),
-						$this->deviceHelper->getPort($device),
+						$device->getIpAddress(),
+						$device->getPort(),
 					);
 					$televisionApi->connect();
 				} catch (Exceptions\TelevisionApiCall | Exceptions\TelevisionApiError | Exceptions\InvalidState $ex) {

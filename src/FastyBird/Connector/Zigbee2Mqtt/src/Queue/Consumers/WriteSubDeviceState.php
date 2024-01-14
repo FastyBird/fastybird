@@ -39,7 +39,6 @@ use Nette\Utils;
 use stdClass;
 use Throwable;
 use function array_key_exists;
-use function count;
 use function preg_match;
 use function sprintf;
 
@@ -186,53 +185,62 @@ final class WriteSubDeviceState implements Queue\Consumer
 		);
 
 		if (
-			preg_match(Zigbee2Mqtt\Constants::CHANNEL_IDENTIFIER_REGEX, $channel->getIdentifier(), $matches) !== 1
+			preg_match(Zigbee2Mqtt\Constants::CHANNEL_IDENTIFIER_REGEX, $channel->getIdentifier(), $matches) === 1
 			&& array_key_exists('type', $matches)
 			&& Types\ExposeType::isValidValue($matches['type'])
 			&& array_key_exists('identifier', $matches)
 		) {
-			if (count($properties) === 1) {
-				return true;
-			}
-
-			$payload = new stdClass();
+			$writeData = new stdClass();
 
 			foreach ($properties as $property) {
 				$state = $this->channelPropertiesStatesManager->getValue($property);
 
 				if ($state?->getExpectedValue() !== null) {
-					$payload->{$property->getIdentifier()} = MetadataUtilities\ValueHelper::transformValueToDevice(
+					$writeData->{$property->getIdentifier()} = MetadataUtilities\ValueHelper::transformValueToDevice(
 						$property->getDataType(),
 						$property->getFormat(),
 						$state->getExpectedValue(),
 					);
 				}
+			}
+
+			if ($matches['type'] === Types\ExposeType::COMPOSITE) {
+				$payload = new stdClass();
+				$payload->{$matches['identifier']} = $writeData;
+			} else {
+				$payload = $writeData;
 			}
 		} elseif (
 			preg_match(
 				Zigbee2Mqtt\Constants::CHANNEL_SPECIAL_IDENTIFIER_REGEX,
 				$channel->getIdentifier(),
 				$matches,
-			) !== 1
+			) === 1
 			&& array_key_exists('type', $matches)
 			&& Types\ExposeType::isValidValue($matches['type'])
 			&& array_key_exists('subtype', $matches)
 			&& Types\ExposeType::isValidValue($matches['subtype'])
 			&& array_key_exists('identifier', $matches)
 		) {
-			$payload = new stdClass();
-			$payload->{$matches['identifier']} = new stdClass();
+			$writeData = new stdClass();
 
 			foreach ($properties as $property) {
 				$state = $this->channelPropertiesStatesManager->getValue($property);
 
 				if ($state?->getExpectedValue() !== null) {
-					$payload->{$matches['identifier']}->{$property->getIdentifier()} = MetadataUtilities\ValueHelper::transformValueToDevice(
+					$writeData->{$property->getIdentifier()} = MetadataUtilities\ValueHelper::transformValueToDevice(
 						$property->getDataType(),
 						$property->getFormat(),
 						$state->getExpectedValue(),
 					);
 				}
+			}
+
+			if ($matches['subtype'] === Types\ExposeType::COMPOSITE) {
+				$payload = new stdClass();
+				$payload->{$matches['identifier']} = $writeData;
+			} else {
+				$payload = $writeData;
 			}
 		} else {
 			$this->logger->error(

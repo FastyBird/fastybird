@@ -174,7 +174,7 @@ final class StoreDeviceState implements Queue\Consumer
 				$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 
 				if ($channel === null) {
-					$this->logger->warning(
+					$this->logger->debug(
 						'Channel for storing device state could not be loaded',
 						[
 							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
