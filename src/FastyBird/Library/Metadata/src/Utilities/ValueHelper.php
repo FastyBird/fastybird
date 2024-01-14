@@ -320,7 +320,7 @@ final class ValueHelper
 
 				$value = $dataType->equalsValue(Types\DataType::DATA_TYPE_FLOAT)
 					? floatval($value)
-					: intval($value);
+					: intval(round(floatval($value)));
 			}
 		}
 
@@ -371,7 +371,7 @@ final class ValueHelper
 					$value *= 10;
 				}
 
-				$value = intval($value);
+				$value = intval(round(floatval($value)));
 			}
 		}
 
