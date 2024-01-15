@@ -33,6 +33,7 @@ use Orisai\ObjectMapper;
 use function array_merge;
 use function assert;
 use function is_array;
+use function strval;
 
 /**
  * Useful device dynamic property state helpers
@@ -374,60 +375,76 @@ final class DevicePropertiesStates
 
 		if ($data->offsetExists(States\Property::ACTUAL_VALUE_FIELD)) {
 			try {
-				$actualValue = $forWriting
-					? $data->offsetGet(States\Property::ACTUAL_VALUE_FIELD)
-					: MetadataUtilities\ValueHelper::transformValueFromDevice(
-						$property->getDataType(),
-						$property->getFormat(),
-						/** @phpstan-ignore-next-line */
-						$data->offsetGet(States\Property::ACTUAL_VALUE_FIELD),
-					);
-
-				$actualValue = $mapped !== null
-					? MetadataUtilities\ValueHelper::normalizeValue(
-						$mapped->getDataType(),
-						/** @phpstan-ignore-next-line */
-						$actualValue,
-						$mapped->getFormat(),
+				if (
+					$property->getInvalid() !== null
+					&& strval(
+						MetadataUtilities\ValueHelper::flattenValue(
+							/** @phpstan-ignore-next-line */
+							$data->offsetGet(States\Property::ACTUAL_VALUE_FIELD),
+						),
+					) === strval(
+						MetadataUtilities\ValueHelper::flattenValue($property->getInvalid()),
 					)
-					: MetadataUtilities\ValueHelper::normalizeValue(
-						$property->getDataType(),
-						/** @phpstan-ignore-next-line */
-						$actualValue,
-						$property->getFormat(),
-					);
+				) {
+					$data->offsetSet(States\Property::ACTUAL_VALUE_FIELD, null);
+					$data->offsetSet(States\Property::VALID_FIELD, false);
 
-				if ($forWriting) {
-					if ($mapped !== null) {
-						$actualValue = MetadataUtilities\ValueHelper::transformWriteValue(
+				} else {
+					$actualValue = $forWriting
+						? $data->offsetGet(States\Property::ACTUAL_VALUE_FIELD)
+						: MetadataUtilities\ValueHelper::transformValueFromDevice(
+							$property->getDataType(),
+							$property->getFormat(),
+							/** @phpstan-ignore-next-line */
+							$data->offsetGet(States\Property::ACTUAL_VALUE_FIELD),
+						);
+
+					$actualValue = $mapped !== null
+						? MetadataUtilities\ValueHelper::normalizeValue(
 							$mapped->getDataType(),
+							/** @phpstan-ignore-next-line */
 							$actualValue,
-							$mapped->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
-								? $mapped->getValueTransformer()
+							$mapped->getFormat(),
+						)
+						: MetadataUtilities\ValueHelper::normalizeValue(
+							$property->getDataType(),
+							/** @phpstan-ignore-next-line */
+							$actualValue,
+							$property->getFormat(),
+						);
+
+					if ($forWriting) {
+						if ($mapped !== null) {
+							$actualValue = MetadataUtilities\ValueHelper::transformWriteValue(
+								$mapped->getDataType(),
+								$actualValue,
+								$mapped->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
+									? $mapped->getValueTransformer()
+									: null,
+								$property->getScale(),
+							);
+							$actualValue = MetadataUtilities\ValueHelper::transformValueToMappedParent(
+								$mapped->getDataType(),
+								$property->getDataType(),
+								$actualValue,
+							);
+						}
+
+						$actualValue = MetadataUtilities\ValueHelper::transformWriteValue(
+							$property->getDataType(),
+							$actualValue,
+							$property->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
+								? $property->getValueTransformer()
 								: null,
 							$property->getScale(),
 						);
-						$actualValue = MetadataUtilities\ValueHelper::transformValueToMappedParent(
-							$mapped->getDataType(),
-							$property->getDataType(),
-							$actualValue,
-						);
 					}
 
-					$actualValue = MetadataUtilities\ValueHelper::transformWriteValue(
-						$property->getDataType(),
-						$actualValue,
-						$property->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
-							? $property->getValueTransformer()
-							: null,
-						$property->getScale(),
+					$data->offsetSet(
+						States\Property::ACTUAL_VALUE_FIELD,
+						MetadataUtilities\ValueHelper::flattenValue($actualValue),
 					);
 				}
-
-				$data->offsetSet(
-					States\Property::ACTUAL_VALUE_FIELD,
-					MetadataUtilities\ValueHelper::flattenValue($actualValue),
-				);
 			} catch (Exceptions\InvalidArgument | MetadataExceptions\InvalidValue $ex) {
 				$data->offsetSet(States\Property::ACTUAL_VALUE_FIELD, null);
 				$data->offsetSet(States\Property::VALID_FIELD, false);
