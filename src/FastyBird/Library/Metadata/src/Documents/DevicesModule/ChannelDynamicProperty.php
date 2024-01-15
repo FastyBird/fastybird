@@ -154,11 +154,15 @@ final class ChannelDynamicProperty extends ChannelProperty
 	 */
 	public function getActualValue(): bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
 	{
-		return Utilities\ValueHelper::normalizeValue(
-			$this->getDataType(),
-			$this->actualValue,
-			$this->getFormat(),
-		);
+		try {
+			return Utilities\ValueHelper::normalizeValue(
+				$this->getDataType(),
+				$this->actualValue,
+				$this->getFormat(),
+			);
+		} catch (Exceptions\InvalidValue) {
+			return null;
+		}
 	}
 
 	/**
@@ -167,11 +171,15 @@ final class ChannelDynamicProperty extends ChannelProperty
 	 */
 	public function getPreviousValue(): bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
 	{
-		return Utilities\ValueHelper::normalizeValue(
-			$this->getDataType(),
-			$this->previousValue,
-			$this->getFormat(),
-		);
+		try {
+			return Utilities\ValueHelper::normalizeValue(
+				$this->getDataType(),
+				$this->previousValue,
+				$this->getFormat(),
+			);
+		} catch (Exceptions\InvalidValue) {
+			return null;
+		}
 	}
 
 	/**
@@ -180,11 +188,15 @@ final class ChannelDynamicProperty extends ChannelProperty
 	 */
 	public function getExpectedValue(): bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
 	{
-		return Utilities\ValueHelper::normalizeValue(
-			$this->getDataType(),
-			$this->expectedValue,
-			$this->getFormat(),
-		);
+		try {
+			return Utilities\ValueHelper::normalizeValue(
+				$this->getDataType(),
+				$this->expectedValue,
+				$this->getFormat(),
+			);
+		} catch (Exceptions\InvalidValue) {
+			return null;
+		}
 	}
 
 	public function getPending(): bool|DateTimeInterface

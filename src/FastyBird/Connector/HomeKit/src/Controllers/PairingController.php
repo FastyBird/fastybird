@@ -1926,7 +1926,9 @@ final class PairingController extends BaseController
 				function () use ($property, $value): void {
 					$this->propertiesManagers->update(
 						$property,
-						Utils\ArrayHash::from(['value' => $value]),
+						Utils\ArrayHash::from([
+							'value' => $value,
+						]),
 					);
 				},
 			);

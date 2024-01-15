@@ -121,11 +121,15 @@ final class ChannelVariableProperty extends ChannelProperty
 	 */
 	public function getValue(): bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
 	{
-		return Utilities\ValueHelper::normalizeValue(
-			$this->getDataType(),
-			$this->value,
-			$this->getFormat(),
-		);
+		try {
+			return Utilities\ValueHelper::normalizeValue(
+				$this->getDataType(),
+				$this->value,
+				$this->getFormat(),
+			);
+		} catch (Exceptions\InvalidValue) {
+			return null;
+		}
 	}
 
 	/**
@@ -134,11 +138,15 @@ final class ChannelVariableProperty extends ChannelProperty
 	 */
 	public function getDefault(): bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
 	{
-		return Utilities\ValueHelper::normalizeValue(
-			$this->getDataType(),
-			$this->default,
-			$this->getFormat(),
-		);
+		try {
+			return Utilities\ValueHelper::normalizeValue(
+				$this->getDataType(),
+				$this->default,
+				$this->getFormat(),
+			);
+		} catch (Exceptions\InvalidValue) {
+			return null;
+		}
 	}
 
 	/**

@@ -15,7 +15,6 @@
 
 namespace FastyBird\Connector\NsPanel\Queue\Consumers;
 
-use DateTimeInterface;
 use Doctrine\DBAL;
 use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Entities;
@@ -177,11 +176,7 @@ final class StoreDeviceState implements Queue\Consumer
 			$this->channelPropertiesStatesManager->writeValue(
 				$property,
 				Utils\ArrayHash::from([
-					DevicesStates\Property::ACTUAL_VALUE_FIELD => MetadataUtilities\ValueHelper::transformValueFromDevice(
-						$property->getDataType(),
-						$property->getFormat(),
-						MetadataUtilities\ValueHelper::flattenValue($item->getValue()),
-					),
+					DevicesStates\Property::ACTUAL_VALUE_FIELD => $item->getValue(),
 					DevicesStates\Property::VALID_FIELD => true,
 				]),
 			);
@@ -230,13 +225,12 @@ final class StoreDeviceState implements Queue\Consumer
 				continue;
 			}
 
-			$value = MetadataUtilities\ValueHelper::transformValueFromDevice(
-				$property->getDataType(),
-				$property->getFormat(),
+			$this->writeThirdPartyProperty(
+				$device,
+				$channel,
+				$property,
 				MetadataUtilities\ValueHelper::flattenValue($item->getValue()),
 			);
-
-			$this->writeThirdPartyProperty($device, $channel, $property, $value);
 		}
 	}
 
@@ -256,7 +250,7 @@ final class StoreDeviceState implements Queue\Consumer
 		MetadataDocuments\DevicesModule\Device $device,
 		MetadataDocuments\DevicesModule\Channel $channel,
 		MetadataDocuments\DevicesModule\ChannelProperty $property,
-		float|int|string|bool|MetadataTypes\ButtonPayload|MetadataTypes\CoverPayload|MetadataTypes\SwitchPayload|DateTimeInterface|null $value,
+		float|int|string|bool|null $value,
 	): void
 	{
 		if ($property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
@@ -281,11 +275,7 @@ final class StoreDeviceState implements Queue\Consumer
 			$this->channelPropertiesStatesManager->setValue(
 				$property,
 				Utils\ArrayHash::from([
-					DevicesStates\Property::ACTUAL_VALUE_FIELD => MetadataUtilities\ValueHelper::transformValueFromDevice(
-						$property->getDataType(),
-						$property->getFormat(),
-						MetadataUtilities\ValueHelper::flattenValue($value),
-					),
+					DevicesStates\Property::ACTUAL_VALUE_FIELD => $value,
 					DevicesStates\Property::VALID_FIELD => true,
 				]),
 			);

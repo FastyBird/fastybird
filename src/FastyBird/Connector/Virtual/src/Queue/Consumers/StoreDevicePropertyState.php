@@ -209,7 +209,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 							DevicesStates\Property::PENDING_FIELD => true,
 						]));
 					}
-				} catch (DevicesExceptions\InvalidState | Utils\JsonException $ex) {
+				} catch (DevicesExceptions\InvalidState | Utils\JsonException | MetadataExceptions\InvalidValue $ex) {
 					$this->logger->warning(
 						'State value could not be converted to mapped parent',
 						[

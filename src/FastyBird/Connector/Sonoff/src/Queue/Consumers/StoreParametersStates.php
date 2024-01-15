@@ -22,7 +22,6 @@ use FastyBird\Connector\Sonoff\Queue\Consumer;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -98,14 +97,13 @@ final class StoreParametersStates implements Consumer
 				$property = $this->devicesPropertiesConfigurationRepository->findOneBy($findDevicePropertyQuery);
 
 				if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-					$this->devicePropertiesStatesManager->setValue($property, Utils\ArrayHash::from([
-						DevicesStates\Property::ACTUAL_VALUE_FIELD => MetadataUtilities\ValueHelper::transformValueFromDevice(
-							$property->getDataType(),
-							$property->getFormat(),
-							$parameter->getValue(),
-						),
-						DevicesStates\Property::VALID_FIELD => true,
-					]));
+					$this->devicePropertiesStatesManager->setValue(
+						$property,
+						Utils\ArrayHash::from([
+							DevicesStates\Property::ACTUAL_VALUE_FIELD => $parameter->getValue(),
+							DevicesStates\Property::VALID_FIELD => true,
+						]),
+					);
 				} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty) {
 					$this->databaseHelper->transaction(
 						function () use ($property, $parameter): void {
@@ -118,11 +116,7 @@ final class StoreParametersStates implements Consumer
 							$this->devicesPropertiesManager->update(
 								$property,
 								Utils\ArrayHash::from([
-									'value' => MetadataUtilities\ValueHelper::transformValueFromDevice(
-										$property->getDataType(),
-										$property->getFormat(),
-										$parameter->getValue(),
-									),
+									'value' => $parameter->getValue(),
 								]),
 							);
 						},
@@ -145,11 +139,7 @@ final class StoreParametersStates implements Consumer
 
 					if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
 						$this->channelPropertiesStatesManager->setValue($property, Utils\ArrayHash::from([
-							DevicesStates\Property::ACTUAL_VALUE_FIELD => MetadataUtilities\ValueHelper::transformValueFromDevice(
-								$property->getDataType(),
-								$property->getFormat(),
-								$parameter->getValue(),
-							),
+							DevicesStates\Property::ACTUAL_VALUE_FIELD => $parameter->getValue(),
 							DevicesStates\Property::VALID_FIELD => true,
 						]));
 					} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
@@ -164,11 +154,7 @@ final class StoreParametersStates implements Consumer
 								$this->channelsPropertiesManager->update(
 									$property,
 									Utils\ArrayHash::from([
-										'value' => MetadataUtilities\ValueHelper::transformValueFromDevice(
-											$property->getDataType(),
-											$property->getFormat(),
-											$parameter->getValue(),
-										),
+										'value' => $parameter->getValue(),
 									]),
 								);
 							},

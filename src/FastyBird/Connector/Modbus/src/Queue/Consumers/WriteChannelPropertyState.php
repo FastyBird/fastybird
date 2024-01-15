@@ -261,9 +261,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$expectedValue = MetadataUtilities\ValueHelper::transformValueToDevice(
-			$property->getDataType(),
-			$property->getFormat(),
+		$expectedValue = MetadataUtilities\ValueHelper::flattenValue(
 			$state->getExpectedValue(),
 		);
 

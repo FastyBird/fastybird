@@ -279,9 +279,7 @@ final class WritePropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$expectedValue = MetadataUtilities\ValueHelper::transformValueToDevice(
-			$property->getDataType(),
-			$property->getFormat(),
+		$expectedValue = MetadataUtilities\ValueHelper::flattenValue(
 			$state->getExpectedValue(),
 		);
 

@@ -37,6 +37,7 @@ use function is_bool;
 use function is_float;
 use function is_int;
 use function is_numeric;
+use function is_string;
 use function round;
 use function sprintf;
 use function strval;
@@ -61,6 +62,7 @@ final class ValueHelper
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\InvalidValue
 	 */
 	public static function normalizeValue(
 		Types\DataType $dataType,
@@ -83,11 +85,19 @@ final class ValueHelper
 		) {
 			if ($format instanceof ValueObjects\NumberRangeFormat) {
 				if ($format->getMin() !== null && intval($format->getMin()) > intval(self::flattenValue($value))) {
-					return intval($format->getMin());
+					throw new Exceptions\InvalidValue(sprintf(
+						'Provided value is out of allowed value range: %s, %s',
+						strval(self::flattenValue($format->getMin())),
+						strval(self::flattenValue($format->getMax())),
+					));
 				}
 
 				if ($format->getMax() !== null && intval($format->getMax()) < intval(self::flattenValue($value))) {
-					return intval($format->getMax());
+					throw new Exceptions\InvalidValue(sprintf(
+						'Provided value is out of allowed value range: %s, %s',
+						strval(self::flattenValue($format->getMin())),
+						strval(self::flattenValue($format->getMax())),
+					));
 				}
 			}
 
@@ -95,11 +105,19 @@ final class ValueHelper
 		} elseif ($dataType->equalsValue(Types\DataType::DATA_TYPE_FLOAT)) {
 			if ($format instanceof ValueObjects\NumberRangeFormat) {
 				if ($format->getMin() !== null && floatval($format->getMin()) > floatval(self::flattenValue($value))) {
-					return floatval($format->getMin());
+					throw new Exceptions\InvalidValue(sprintf(
+						'Provided value is out of allowed value range: %s, %s',
+						strval(self::flattenValue($format->getMin())),
+						strval(self::flattenValue($format->getMax())),
+					));
 				}
 
 				if ($format->getMax() !== null && floatval($format->getMax()) < floatval(self::flattenValue($value))) {
-					return floatval($format->getMax());
+					throw new Exceptions\InvalidValue(sprintf(
+						'Provided value is out of allowed value range: %s, %s',
+						strval(self::flattenValue($format->getMin())),
+						strval(self::flattenValue($format->getMax())),
+					));
 				}
 			}
 
@@ -407,19 +425,7 @@ final class ValueHelper
 		}
 
 		if ($dataType->equalsValue(Types\DataType::DATA_TYPE_FLOAT)) {
-			$floatValue = floatval($value);
-
-			if ($format instanceof ValueObjects\NumberRangeFormat) {
-				if ($format->getMin() !== null && $format->getMin() > $floatValue) {
-					return null;
-				}
-
-				if ($format->getMax() !== null && $format->getMax() < $floatValue) {
-					return null;
-				}
-			}
-
-			return $floatValue;
+			return floatval($value);
 		}
 
 		if (
@@ -430,19 +436,7 @@ final class ValueHelper
 			|| $dataType->equalsValue(Types\DataType::DATA_TYPE_UINT)
 			|| $dataType->equalsValue(Types\DataType::DATA_TYPE_INT)
 		) {
-			$intValue = intval($value);
-
-			if ($format instanceof ValueObjects\NumberRangeFormat) {
-				if ($format->getMin() !== null && $format->getMin() > $intValue) {
-					return null;
-				}
-
-				if ($format->getMax() !== null && $format->getMax() < $intValue) {
-					return null;
-				}
-			}
-
-			return $intValue;
+			return intval($value);
 		}
 
 		if ($dataType->equalsValue(Types\DataType::DATA_TYPE_STRING)) {
@@ -552,6 +546,37 @@ final class ValueHelper
 
 		if ($dataType->equalsValue(Types\DataType::DATA_TYPE_BOOLEAN)) {
 			if (is_bool($value)) {
+				return $value;
+			}
+
+			return null;
+		}
+
+		if ($dataType->equalsValue(Types\DataType::DATA_TYPE_FLOAT)) {
+			if (is_numeric($value)) {
+				return floatval($value);
+			}
+
+			return null;
+		}
+
+		if (
+			$dataType->equalsValue(Types\DataType::DATA_TYPE_UCHAR)
+			|| $dataType->equalsValue(Types\DataType::DATA_TYPE_CHAR)
+			|| $dataType->equalsValue(Types\DataType::DATA_TYPE_USHORT)
+			|| $dataType->equalsValue(Types\DataType::DATA_TYPE_SHORT)
+			|| $dataType->equalsValue(Types\DataType::DATA_TYPE_UINT)
+			|| $dataType->equalsValue(Types\DataType::DATA_TYPE_INT)
+		) {
+			if (is_numeric($value)) {
+				return intval($value);
+			}
+
+			return null;
+		}
+
+		if ($dataType->equalsValue(Types\DataType::DATA_TYPE_STRING)) {
+			if (is_string($value)) {
 				return $value;
 			}
 

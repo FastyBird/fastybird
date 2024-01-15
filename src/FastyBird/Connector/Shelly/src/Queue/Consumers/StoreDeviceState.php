@@ -23,7 +23,6 @@ use FastyBird\Connector\Shelly\Types;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -118,14 +117,13 @@ final class StoreDeviceState implements Queue\Consumer
 
 				if ($property !== null) {
 					if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-						$this->devicePropertiesStatesManager->setValue($property, Utils\ArrayHash::from([
-							DevicesStates\Property::ACTUAL_VALUE_FIELD => MetadataUtilities\ValueHelper::transformValueFromDevice(
-								$property->getDataType(),
-								$property->getFormat(),
-								$state->getValue(),
-							),
-							DevicesStates\Property::VALID_FIELD => true,
-						]));
+						$this->devicePropertiesStatesManager->setValue(
+							$property,
+							Utils\ArrayHash::from([
+								DevicesStates\Property::ACTUAL_VALUE_FIELD => $state->getValue(),
+								DevicesStates\Property::VALID_FIELD => true,
+							]),
+						);
 
 					} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty) {
 						$this->databaseHelper->transaction(
@@ -139,11 +137,7 @@ final class StoreDeviceState implements Queue\Consumer
 								$this->devicesPropertiesManager->update(
 									$property,
 									Utils\ArrayHash::from([
-										'value' => MetadataUtilities\ValueHelper::transformValueFromDevice(
-											$property->getDataType(),
-											$property->getFormat(),
-											$state->getValue(),
-										),
+										'value' => $state->getValue(),
 									]),
 								);
 							},
@@ -175,11 +169,7 @@ final class StoreDeviceState implements Queue\Consumer
 						if ($property !== null) {
 							if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
 								$this->channelPropertiesStatesManager->setValue($property, Utils\ArrayHash::from([
-									DevicesStates\Property::ACTUAL_VALUE_FIELD => MetadataUtilities\ValueHelper::transformValueFromDevice(
-										$property->getDataType(),
-										$property->getFormat(),
-										$state->getValue(),
-									),
+									DevicesStates\Property::ACTUAL_VALUE_FIELD => $state->getValue(),
 									DevicesStates\Property::VALID_FIELD => true,
 								]));
 
@@ -195,11 +185,7 @@ final class StoreDeviceState implements Queue\Consumer
 										$this->channelsPropertiesManager->update(
 											$property,
 											Utils\ArrayHash::from([
-												'value' => MetadataUtilities\ValueHelper::transformValueFromDevice(
-													$property->getDataType(),
-													$property->getFormat(),
-													$state->getValue(),
-												),
+												'value' => $state->getValue(),
 											]),
 										);
 									},
@@ -244,11 +230,7 @@ final class StoreDeviceState implements Queue\Consumer
 
 						if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
 							$this->channelPropertiesStatesManager->setValue($property, Utils\ArrayHash::from([
-								DevicesStates\Property::ACTUAL_VALUE_FIELD => MetadataUtilities\ValueHelper::transformValueFromDevice(
-									$property->getDataType(),
-									$property->getFormat(),
-									$sensor->getValue(),
-								),
+								DevicesStates\Property::ACTUAL_VALUE_FIELD => $sensor->getValue(),
 								DevicesStates\Property::VALID_FIELD => true,
 							]));
 						} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
@@ -263,11 +245,7 @@ final class StoreDeviceState implements Queue\Consumer
 									$this->channelsPropertiesManager->update(
 										$property,
 										Utils\ArrayHash::from([
-											'value' => MetadataUtilities\ValueHelper::transformValueFromDevice(
-												$property->getDataType(),
-												$property->getFormat(),
-												$sensor->getValue(),
-											),
+											'value' => $sensor->getValue(),
 										]),
 									);
 								},

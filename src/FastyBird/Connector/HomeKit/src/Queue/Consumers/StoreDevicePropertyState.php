@@ -153,19 +153,20 @@ final class StoreDevicePropertyState implements Queue\Consumer
 					$this->devicesPropertiesManager->update(
 						$property,
 						Utils\ArrayHash::from([
-							'value' => MetadataUtilities\ValueHelper::flattenValue($valueToStore),
+							'value' => $valueToStore,
 						]),
 					);
 				},
 			);
 
 		} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-			$this->devicePropertiesStatesManager->setValue($property, Utils\ArrayHash::from([
-				DevicesStates\Property::ACTUAL_VALUE_FIELD => MetadataUtilities\ValueHelper::flattenValue(
-					$valueToStore,
-				),
-				DevicesStates\Property::VALID_FIELD => true,
-			]));
+			$this->devicePropertiesStatesManager->setValue(
+				$property,
+				Utils\ArrayHash::from([
+					DevicesStates\Property::ACTUAL_VALUE_FIELD => $valueToStore,
+					DevicesStates\Property::VALID_FIELD => true,
+				]),
+			);
 		} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
 			$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceProperties();
 			$findDevicePropertyQuery->byId($property->getParent());

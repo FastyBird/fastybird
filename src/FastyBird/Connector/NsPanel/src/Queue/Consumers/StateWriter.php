@@ -503,11 +503,7 @@ trait StateWriter
 			throw new Exceptions\InvalidArgument('Provided property is not valid');
 		}
 
-		return MetadataUtilities\ValueHelper::transformValueToDevice(
-			$property->getDataType(),
-			$property->getFormat(),
-			$value,
-		);
+		return MetadataUtilities\ValueHelper::flattenValue($value);
 	}
 
 	/**
