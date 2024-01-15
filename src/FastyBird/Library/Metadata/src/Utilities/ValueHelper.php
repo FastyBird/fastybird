@@ -86,7 +86,8 @@ final class ValueHelper
 			if ($format instanceof ValueObjects\NumberRangeFormat) {
 				if ($format->getMin() !== null && intval($format->getMin()) > intval(self::flattenValue($value))) {
 					throw new Exceptions\InvalidValue(sprintf(
-						'Provided value is out of allowed value range: %s, %s',
+						'Provided value: %s is out of allowed value range: %s, %s',
+						strval(self::flattenValue($value)),
 						strval(self::flattenValue($format->getMin())),
 						strval(self::flattenValue($format->getMax())),
 					));
@@ -94,7 +95,8 @@ final class ValueHelper
 
 				if ($format->getMax() !== null && intval($format->getMax()) < intval(self::flattenValue($value))) {
 					throw new Exceptions\InvalidValue(sprintf(
-						'Provided value is out of allowed value range: %s, %s',
+						'Provided value: %s is out of allowed value range: %s, %s',
+						strval(self::flattenValue($value)),
 						strval(self::flattenValue($format->getMin())),
 						strval(self::flattenValue($format->getMax())),
 					));
@@ -106,7 +108,8 @@ final class ValueHelper
 			if ($format instanceof ValueObjects\NumberRangeFormat) {
 				if ($format->getMin() !== null && floatval($format->getMin()) > floatval(self::flattenValue($value))) {
 					throw new Exceptions\InvalidValue(sprintf(
-						'Provided value is out of allowed value range: %s, %s',
+						'Provided value: %s is out of allowed value range: %s, %s',
+						strval(self::flattenValue($value)),
 						strval(self::flattenValue($format->getMin())),
 						strval(self::flattenValue($format->getMax())),
 					));
@@ -114,7 +117,8 @@ final class ValueHelper
 
 				if ($format->getMax() !== null && floatval($format->getMax()) < floatval(self::flattenValue($value))) {
 					throw new Exceptions\InvalidValue(sprintf(
-						'Provided value is out of allowed value range: %s, %s',
+						'Provided value: %s is out of allowed value range: %s, %s',
+						strval(self::flattenValue($value)),
 						strval(self::flattenValue($format->getMin())),
 						strval(self::flattenValue($format->getMax())),
 					));
@@ -386,7 +390,11 @@ final class ValueHelper
 					$value *= 10;
 				}
 
-				$value = intval(round(floatval($value)));
+				$value = round(floatval($value));
+
+				$value = $dataType->equalsValue(Types\DataType::DATA_TYPE_FLOAT)
+					? $value
+					: intval($value);
 			}
 		}
 

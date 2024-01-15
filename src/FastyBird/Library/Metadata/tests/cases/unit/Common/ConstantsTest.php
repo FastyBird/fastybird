@@ -147,7 +147,7 @@ final class ConstantsTest extends BaseTestCase
 		));
 		self::assertSame(1, preg_match(
 			Metadata\Constants::VALUE_EQUATION_TRANSFORMER,
-			'equation:x=(10y + 2) * 10:y=x + 2 / 3',
+			'equation:x=(10y + 2) * 10|y=x + 2 / 3',
 		));
 
 		// Invalid
@@ -165,7 +165,7 @@ final class ConstantsTest extends BaseTestCase
 		));
 		self::assertFalse(preg_match(
 			Metadata\Constants::VALUE_EQUATION_TRANSFORMER,
-			'equation:x=(10y + 2) * 10:y=y + 2 / 3',
+			'equation:x=(10y + 2) * 10|y=y + 2 / 3',
 		));
 	}
 

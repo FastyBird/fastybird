@@ -27,11 +27,18 @@ final class ValueHelperTest extends TestCase
 		float|int|string|null $invalid = null,
 		ValueObjects\EquationTransformer|null $transformer = null,
 		float|int|string|null $expected = null,
+		bool $throwError = false,
 	): void
 	{
+		if ($throwError) {
+			self::expectException(Exceptions\InvalidValue::class);
+		}
+
 		$normalized = Utilities\ValueHelper::normalizeValue($dataType, $value, $format);
 
-		self::assertSame($expected, $normalized);
+		if (!$throwError) {
+			self::assertSame($expected, $normalized);
+		}
 	}
 
 	/**
@@ -50,8 +57,13 @@ final class ValueHelperTest extends TestCase
 		float|int|string|null $invalid = null,
 		ValueObjects\EquationTransformer|null $transformer = null,
 		float|int|string|null $expected = null,
+		bool $throwError = false,
 	): void
 	{
+		if ($throwError) {
+			self::expectException(Exceptions\InvalidValue::class);
+		}
+
 		$normalized = Utilities\ValueHelper::normalizeValue(
 			$dataType,
 			$value,
@@ -84,19 +96,24 @@ final class ValueHelperTest extends TestCase
 		float|int|string|null $invalid = null,
 		ValueObjects\EquationTransformer|null $transformer = null,
 		float|int|string|null $expected = null,
+		bool $throwError = false,
 	): void
 	{
-		$normalized = Utilities\ValueHelper::normalizeValue(
-			$dataType,
-			$value,
-			$format,
-		);
+		if ($throwError) {
+			self::expectException(Exceptions\InvalidValue::class);
+		}
 
 		$normalized = Utilities\ValueHelper::transformWriteValue(
 			$dataType,
-			$normalized,
+			$value,
 			$transformer,
 			$scale,
+		);
+
+		$normalized = Utilities\ValueHelper::normalizeValue(
+			$dataType,
+			$normalized,
+			$format,
 		);
 
 		self::assertSame($expected, $normalized);
@@ -117,6 +134,7 @@ final class ValueHelperTest extends TestCase
 				null,
 				null,
 				10,
+				false,
 			],
 			'integer_2' => [
 				Types\DataType::get(Types\DataType::DATA_TYPE_CHAR),
@@ -124,7 +142,8 @@ final class ValueHelperTest extends TestCase
 				new ValueObjects\NumberRangeFormat([10, 20]),
 				null,
 				null,
-				10,
+				null,
+				true,
 			],
 			'integer_3' => [
 				Types\DataType::get(Types\DataType::DATA_TYPE_CHAR),
@@ -132,7 +151,8 @@ final class ValueHelperTest extends TestCase
 				new ValueObjects\NumberRangeFormat([10, 20]),
 				null,
 				null,
-				20,
+				null,
+				true,
 			],
 			'float_1' => [
 				Types\DataType::get(Types\DataType::DATA_TYPE_FLOAT),
@@ -161,6 +181,7 @@ final class ValueHelperTest extends TestCase
 				null,
 				null,
 				1.0,
+				false,
 			],
 			'integer_2' => [
 				Types\DataType::get(Types\DataType::DATA_TYPE_CHAR),
@@ -170,6 +191,7 @@ final class ValueHelperTest extends TestCase
 				null,
 				null,
 				23.0,
+				false,
 			],
 			'integer_3' => [
 				Types\DataType::get(Types\DataType::DATA_TYPE_CHAR),
@@ -179,6 +201,7 @@ final class ValueHelperTest extends TestCase
 				null,
 				null,
 				2.0,
+				false,
 			],
 			'float_1' => [
 				Types\DataType::get(Types\DataType::DATA_TYPE_FLOAT),
@@ -188,6 +211,7 @@ final class ValueHelperTest extends TestCase
 				null,
 				null,
 				30.3,
+				false,
 			],
 			'float_2' => [
 				Types\DataType::get(Types\DataType::DATA_TYPE_FLOAT),
@@ -197,6 +221,7 @@ final class ValueHelperTest extends TestCase
 				null,
 				null,
 				3.03,
+				false,
 			],
 			'equation_1' => [
 				Types\DataType::get(Types\DataType::DATA_TYPE_CHAR),
@@ -206,6 +231,7 @@ final class ValueHelperTest extends TestCase
 				null,
 				new ValueObjects\EquationTransformer('equation:x=2y + 10'),
 				30,
+				false,
 			],
 			'equation_2' => [
 				Types\DataType::get(Types\DataType::DATA_TYPE_FLOAT),
@@ -215,6 +241,7 @@ final class ValueHelperTest extends TestCase
 				null,
 				new ValueObjects\EquationTransformer('equation:x=2y + 10'),
 				30.0,
+				false,
 			],
 			'equation_3' => [
 				Types\DataType::get(Types\DataType::DATA_TYPE_FLOAT),
@@ -224,6 +251,7 @@ final class ValueHelperTest extends TestCase
 				null,
 				new ValueObjects\EquationTransformer('equation:x=2y * 10'),
 				200.0,
+				false,
 			],
 			'equation_4' => [
 				Types\DataType::get(Types\DataType::DATA_TYPE_FLOAT),
@@ -233,6 +261,7 @@ final class ValueHelperTest extends TestCase
 				null,
 				new ValueObjects\EquationTransformer('equation:x=2y / 10'),
 				2.0,
+				false,
 			],
 		];
 	}
@@ -253,6 +282,7 @@ final class ValueHelperTest extends TestCase
 				null,
 				null,
 				10,
+				false,
 			],
 			'integer_2' => [
 				Types\DataType::get(Types\DataType::DATA_TYPE_CHAR),
@@ -262,6 +292,7 @@ final class ValueHelperTest extends TestCase
 				null,
 				null,
 				230,
+				false,
 			],
 			'integer_3' => [
 				Types\DataType::get(Types\DataType::DATA_TYPE_CHAR),
@@ -271,6 +302,7 @@ final class ValueHelperTest extends TestCase
 				null,
 				null,
 				15,
+				false,
 			],
 			'float_1' => [
 				Types\DataType::get(Types\DataType::DATA_TYPE_FLOAT),
@@ -280,6 +312,7 @@ final class ValueHelperTest extends TestCase
 				null,
 				null,
 				303.0,
+				false,
 			],
 			'float_2' => [
 				Types\DataType::get(Types\DataType::DATA_TYPE_FLOAT),
@@ -289,6 +322,7 @@ final class ValueHelperTest extends TestCase
 				null,
 				null,
 				303.0,
+				false,
 			],
 			'equation_1' => [
 				Types\DataType::get(Types\DataType::DATA_TYPE_CHAR),
@@ -296,8 +330,9 @@ final class ValueHelperTest extends TestCase
 				null,
 				null,
 				null,
-				new ValueObjects\EquationTransformer('equation:x=2y + 10:y=(x - 10) / 2'),
+				new ValueObjects\EquationTransformer('equation:x=2y + 10|y=(x - 10) / 2'),
 				10,
+				false,
 			],
 			'equation_2' => [
 				Types\DataType::get(Types\DataType::DATA_TYPE_FLOAT),
@@ -305,8 +340,9 @@ final class ValueHelperTest extends TestCase
 				null,
 				null,
 				null,
-				new ValueObjects\EquationTransformer('equation:x=2y + 10:y=(x - 10) / 2'),
+				new ValueObjects\EquationTransformer('equation:x=2y + 10|y=(x - 10) / 2'),
 				10.0,
+				false,
 			],
 			'equation_3' => [
 				Types\DataType::get(Types\DataType::DATA_TYPE_FLOAT),
@@ -314,8 +350,9 @@ final class ValueHelperTest extends TestCase
 				null,
 				null,
 				null,
-				new ValueObjects\EquationTransformer('equation:x=2y * 10:y=x / (10 * 2)'),
+				new ValueObjects\EquationTransformer('equation:x=2y * 10|y=x / (10 * 2)'),
 				10.0,
+				false,
 			],
 			'equation_4' => [
 				Types\DataType::get(Types\DataType::DATA_TYPE_FLOAT),
@@ -323,8 +360,9 @@ final class ValueHelperTest extends TestCase
 				null,
 				null,
 				null,
-				new ValueObjects\EquationTransformer('equation:x=2y / 10:y=10x / 2'),
+				new ValueObjects\EquationTransformer('equation:x=2y / 10|y=10x / 2'),
 				10.0,
+				false,
 			],
 		];
 	}

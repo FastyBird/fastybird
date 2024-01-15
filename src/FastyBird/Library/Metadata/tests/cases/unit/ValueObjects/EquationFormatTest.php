@@ -25,10 +25,10 @@ final class EquationFormatTest extends BaseTestCase
 		self::assertEquals('equation:x=(10y+2)*10', $valueObject->getValue());
 		self::assertEquals('equation:x=(10y+2)*10', strval($valueObject));
 
-		$valueObject = new ValueObjects\EquationTransformer('equation:x=(10y + 2) * 10:y=10x - 50');
+		$valueObject = new ValueObjects\EquationTransformer('equation:x=(10y + 2) * 10|y=10x - 50');
 
-		self::assertEquals('equation:x=(10y+2)*10:y=10x-50', $valueObject->getValue());
-		self::assertEquals('equation:x=(10y+2)*10:y=10x-50', strval($valueObject));
+		self::assertEquals('equation:x=(10y+2)*10|y=10x-50', $valueObject->getValue());
+		self::assertEquals('equation:x=(10y+2)*10|y=10x-50', strval($valueObject));
 	}
 
 }
