@@ -125,7 +125,6 @@ final class ChannelVariableProperty extends ChannelProperty
 			$this->getDataType(),
 			$this->value,
 			$this->getFormat(),
-			$this->getInvalid(),
 		);
 	}
 
@@ -139,7 +138,6 @@ final class ChannelVariableProperty extends ChannelProperty
 			$this->getDataType(),
 			$this->default,
 			$this->getFormat(),
-			$this->getInvalid(),
 		);
 	}
 

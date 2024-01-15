@@ -173,7 +173,6 @@ final class DeviceMappedProperty extends DeviceProperty
 			$this->getDataType(),
 			$this->actualValue,
 			$this->getFormat(),
-			$this->getInvalid(),
 		);
 	}
 
@@ -187,7 +186,6 @@ final class DeviceMappedProperty extends DeviceProperty
 			$this->getDataType(),
 			$this->previousValue,
 			$this->getFormat(),
-			$this->getInvalid(),
 		);
 	}
 
@@ -201,7 +199,6 @@ final class DeviceMappedProperty extends DeviceProperty
 			$this->getDataType(),
 			$this->expectedValue,
 			$this->getFormat(),
-			$this->getInvalid(),
 		);
 	}
 
@@ -230,7 +227,6 @@ final class DeviceMappedProperty extends DeviceProperty
 			$this->getDataType(),
 			$this->value,
 			$this->getFormat(),
-			$this->getInvalid(),
 		);
 	}
 
@@ -244,7 +240,6 @@ final class DeviceMappedProperty extends DeviceProperty
 			$this->getDataType(),
 			$this->default,
 			$this->getFormat(),
-			$this->getInvalid(),
 		);
 	}
 

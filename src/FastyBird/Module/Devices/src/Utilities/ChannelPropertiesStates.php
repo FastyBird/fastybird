@@ -195,7 +195,6 @@ final class ChannelPropertiesStates
 						$property->getDataType(),
 						$state->getActualValue(),
 						$property->getFormat(),
-						$property->getInvalid(),
 					);
 
 					if ($forReading) {
@@ -254,7 +253,6 @@ final class ChannelPropertiesStates
 						$property->getDataType(),
 						$state->getExpectedValue(),
 						$property->getFormat(),
-						$property->getInvalid(),
 					);
 
 					if ($forReading) {
@@ -369,14 +367,12 @@ final class ChannelPropertiesStates
 					/** @phpstan-ignore-next-line */
 					$data->offsetGet(States\Property::ACTUAL_VALUE_FIELD),
 					$mapped->getFormat(),
-					$mapped->getInvalid(),
 				)
 				: MetadataUtilities\ValueHelper::normalizeValue(
 					$property->getDataType(),
 					/** @phpstan-ignore-next-line */
 					$data->offsetGet(States\Property::ACTUAL_VALUE_FIELD),
 					$property->getFormat(),
-					$property->getInvalid(),
 				);
 
 			if ($forWriting) {
@@ -436,14 +432,12 @@ final class ChannelPropertiesStates
 					/** @phpstan-ignore-next-line */
 					$data->offsetGet(States\Property::EXPECTED_VALUE_FIELD),
 					$mapped->getFormat(),
-					$mapped->getInvalid(),
 				)
 				: MetadataUtilities\ValueHelper::normalizeValue(
 					$property->getDataType(),
 					/** @phpstan-ignore-next-line */
 					$data->offsetGet(States\Property::EXPECTED_VALUE_FIELD),
 					$property->getFormat(),
-					$property->getInvalid(),
 				);
 
 			if ($forWriting) {

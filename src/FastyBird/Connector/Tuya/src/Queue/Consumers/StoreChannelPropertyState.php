@@ -22,7 +22,6 @@ use FastyBird\Connector\Tuya\Queue;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -117,15 +116,8 @@ final class StoreChannelPropertyState implements Queue\Consumer
 
 			if ($property !== null) {
 				try {
-					$valueToStore = MetadataUtilities\ValueHelper::normalizeValue(
-						$property->getDataType(),
-						$dataPoint->getValue(),
-						$property->getFormat(),
-						$property->getInvalid(),
-					);
-
 					$this->channelPropertiesStatesManager->setValue($property, Utils\ArrayHash::from([
-						DevicesStates\Property::ACTUAL_VALUE_FIELD => $valueToStore,
+						DevicesStates\Property::ACTUAL_VALUE_FIELD => $dataPoint->getValue(),
 						DevicesStates\Property::VALID_FIELD => true,
 					]));
 				} catch (MetadataExceptions\InvalidArgument $ex) {
@@ -156,20 +148,13 @@ final class StoreChannelPropertyState implements Queue\Consumer
 							},
 						);
 
-						$valueToStore = MetadataUtilities\ValueHelper::normalizeValue(
-							$property->getDataType(),
-							$dataPoint->getValue(),
-							$property->getFormat(),
-							$property->getInvalid(),
-						);
-
 					} else {
 						throw $ex;
 					}
 				}
 
 				$this->channelPropertiesStatesManager->setValue($property, Utils\ArrayHash::from([
-					DevicesStates\Property::ACTUAL_VALUE_FIELD => $valueToStore,
+					DevicesStates\Property::ACTUAL_VALUE_FIELD => $dataPoint->getValue(),
 					DevicesStates\Property::VALID_FIELD => true,
 				]));
 			}

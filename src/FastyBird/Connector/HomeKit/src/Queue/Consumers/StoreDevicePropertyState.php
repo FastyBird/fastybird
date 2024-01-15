@@ -140,12 +140,6 @@ final class StoreDevicePropertyState implements Queue\Consumer
 		}
 
 		$valueToStore = $entity->getValue();
-		$valueToStore = MetadataUtilities\ValueHelper::normalizeValue(
-			$property->getDataType(),
-			$valueToStore,
-			$property->getFormat(),
-			$property->getInvalid(),
-		);
 
 		if ($property instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty) {
 			$this->databaseHelper->transaction(

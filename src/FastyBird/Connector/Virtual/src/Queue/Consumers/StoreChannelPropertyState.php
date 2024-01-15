@@ -185,17 +185,9 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$valueToStore = $entity->getValue();
-		$valueToStore = MetadataUtilities\ValueHelper::normalizeValue(
-			$property->getDataType(),
-			$valueToStore,
-			$property->getFormat(),
-			$property->getInvalid(),
-		);
-
 		if ($property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
 			$this->databaseHelper->transaction(
-				function () use ($valueToStore, $property): void {
+				function () use ($entity, $property): void {
 					$property = $this->channelsPropertiesRepository->find(
 						$property->getId(),
 						DevicesEntities\Channels\Properties\Variable::class,
@@ -205,7 +197,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 					$this->channelsPropertiesManager->update(
 						$property,
 						Utils\ArrayHash::from([
-							'value' => MetadataUtilities\ValueHelper::flattenValue($valueToStore),
+							'value' => $entity->getValue(),
 						]),
 					);
 				},
@@ -213,9 +205,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 
 		} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
 			$this->channelPropertiesStatesManager->setValue($property, Utils\ArrayHash::from([
-				DevicesStates\Property::ACTUAL_VALUE_FIELD => MetadataUtilities\ValueHelper::flattenValue(
-					$valueToStore,
-				),
+				DevicesStates\Property::ACTUAL_VALUE_FIELD => $entity->getValue(),
 				DevicesStates\Property::VALID_FIELD => true,
 			]));
 		} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
@@ -240,7 +230,13 @@ final class StoreChannelPropertyState implements Queue\Consumer
 									'device' => $device->getId()->toString(),
 									'channel' => $channel->getId()->toString(),
 									'property' => $property->getId()->toString(),
-									'expected_value' => MetadataUtilities\ValueHelper::flattenValue($valueToStore),
+									'expected_value' => MetadataUtilities\ValueHelper::flattenValue(
+										MetadataUtilities\ValueHelper::normalizeValue(
+											$property->getDataType(),
+											$entity->getValue(),
+											$property->getFormat(),
+										),
+									),
 								]),
 								MetadataTypes\RoutingKey::get(
 									MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION,

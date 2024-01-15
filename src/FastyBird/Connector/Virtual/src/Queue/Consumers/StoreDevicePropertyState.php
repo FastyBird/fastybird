@@ -146,17 +146,9 @@ final class StoreDevicePropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$valueToStore = $entity->getValue();
-		$valueToStore = MetadataUtilities\ValueHelper::normalizeValue(
-			$property->getDataType(),
-			$valueToStore,
-			$property->getFormat(),
-			$property->getInvalid(),
-		);
-
 		if ($property instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty) {
 			$this->databaseHelper->transaction(
-				function () use ($valueToStore, $property): void {
+				function () use ($entity, $property): void {
 					$property = $this->devicesPropertiesRepository->find(
 						$property->getId(),
 						DevicesEntities\Devices\Properties\Variable::class,
@@ -166,7 +158,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 					$this->devicesPropertiesManager->update(
 						$property,
 						Utils\ArrayHash::from([
-							'value' => MetadataUtilities\ValueHelper::flattenValue($valueToStore),
+							'value' => $entity->getValue(),
 						]),
 					);
 				},
@@ -174,9 +166,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 
 		} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
 			$this->devicePropertiesStatesManager->setValue($property, Utils\ArrayHash::from([
-				DevicesStates\Property::ACTUAL_VALUE_FIELD => MetadataUtilities\ValueHelper::flattenValue(
-					$valueToStore,
-				),
+				DevicesStates\Property::ACTUAL_VALUE_FIELD => $entity->getValue(),
 				DevicesStates\Property::VALID_FIELD => true,
 			]));
 		} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
@@ -200,7 +190,13 @@ final class StoreDevicePropertyState implements Queue\Consumer
 									'action' => MetadataTypes\PropertyAction::ACTION_SET,
 									'device' => $device->getId()->toString(),
 									'property' => $property->getId()->toString(),
-									'expected_value' => MetadataUtilities\ValueHelper::flattenValue($valueToStore),
+									'expected_value' => MetadataUtilities\ValueHelper::flattenValue(
+										MetadataUtilities\ValueHelper::normalizeValue(
+											$property->getDataType(),
+											$entity->getValue(),
+											$property->getFormat(),
+										),
+									),
 								]),
 								MetadataTypes\RoutingKey::get(
 									MetadataTypes\RoutingKey::DEVICE_PROPERTY_ACTION,

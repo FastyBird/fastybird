@@ -174,7 +174,6 @@ final class ConnectorPropertiesStates
 						$property->getDataType(),
 						$state->getActualValue(),
 						$property->getFormat(),
-						$property->getInvalid(),
 					);
 
 					if ($forReading) {
@@ -214,7 +213,6 @@ final class ConnectorPropertiesStates
 						$property->getDataType(),
 						$state->getExpectedValue(),
 						$property->getFormat(),
-						$property->getInvalid(),
 					);
 
 					if ($forReading) {
@@ -292,7 +290,6 @@ final class ConnectorPropertiesStates
 				/** @phpstan-ignore-next-line */
 					$data->offsetGet(States\Property::ACTUAL_VALUE_FIELD),
 				$property->getFormat(),
-				$property->getInvalid(),
 			);
 
 			if ($forWriting) {
@@ -332,7 +329,6 @@ final class ConnectorPropertiesStates
 				/** @phpstan-ignore-next-line */
 					$data->offsetGet(States\Property::EXPECTED_VALUE_FIELD),
 				$property->getFormat(),
-				$property->getInvalid(),
 			);
 
 			if ($forWriting) {

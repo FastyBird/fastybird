@@ -418,7 +418,6 @@ abstract class Property implements Entity,
 				$this->getDataType(),
 				$this->value,
 				$this->getFormat(),
-				$this->getInvalid(),
 			);
 		} catch (Exceptions\InvalidArgument) {
 			return null;
@@ -427,12 +426,20 @@ abstract class Property implements Entity,
 
 	/**
 	 * @throws Exceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function setValue(
 		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
 	): void
 	{
-		$value = MetadataUtilities\ValueHelper::flattenValue($value);
+		$value = MetadataUtilities\ValueHelper::flattenValue(
+			MetadataUtilities\ValueHelper::normalizeValue(
+				$this->getDataType(),
+				$value,
+				$this->getFormat(),
+			),
+		);
 
 		if ($value !== null && $this->getIdentifier() === MetadataTypes\PropertyIdentifier::IDENTIFIER_IP_ADDRESS) {
 			if (!is_string($value)) {
@@ -498,16 +505,25 @@ abstract class Property implements Entity,
 				$this->getDataType(),
 				$this->default,
 				$this->getFormat(),
-				$this->getInvalid(),
 			);
 		} catch (Exceptions\InvalidArgument) {
 			return null;
 		}
 	}
 
+	/**
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 */
 	public function setDefault(string|null $default): void
 	{
-		$default = MetadataUtilities\ValueHelper::flattenValue($default);
+		$default = MetadataUtilities\ValueHelper::flattenValue(
+			MetadataUtilities\ValueHelper::normalizeValue(
+				$this->getDataType(),
+				$default,
+				$this->getFormat(),
+			),
+		);
 
 		if (is_bool($default)) {
 			$this->default = $default ? '1' : '0';

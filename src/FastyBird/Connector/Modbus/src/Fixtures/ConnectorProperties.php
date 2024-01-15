@@ -20,6 +20,7 @@ use Doctrine\Persistence;
 use FastyBird\Connector\Modbus\Entities;
 use FastyBird\Connector\Modbus\Exceptions;
 use FastyBird\Connector\Modbus\Types;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -38,6 +39,8 @@ final class ConnectorProperties extends DataFixtures\AbstractFixture implements 
 	/**
 	 * @throws Exceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function load(Persistence\ObjectManager $manager): void
 	{

@@ -144,7 +144,6 @@ final class ConnectorDynamicProperty extends ConnectorProperty
 			$this->getDataType(),
 			$this->actualValue,
 			$this->getFormat(),
-			$this->getInvalid(),
 		);
 	}
 
@@ -158,7 +157,6 @@ final class ConnectorDynamicProperty extends ConnectorProperty
 			$this->getDataType(),
 			$this->previousValue,
 			$this->getFormat(),
-			$this->getInvalid(),
 		);
 	}
 
@@ -172,7 +170,6 @@ final class ConnectorDynamicProperty extends ConnectorProperty
 			$this->getDataType(),
 			$this->expectedValue,
 			$this->getFormat(),
-			$this->getInvalid(),
 		);
 	}
 

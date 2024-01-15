@@ -125,7 +125,6 @@ final class DeviceVariableProperty extends DeviceProperty
 			$this->getDataType(),
 			$this->value,
 			$this->getFormat(),
-			$this->getInvalid(),
 		);
 	}
 
@@ -139,7 +138,6 @@ final class DeviceVariableProperty extends DeviceProperty
 			$this->getDataType(),
 			$this->default,
 			$this->getFormat(),
-			$this->getInvalid(),
 		);
 	}
 

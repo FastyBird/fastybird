@@ -32,6 +32,7 @@ use function floatval;
 use function implode;
 use function in_array;
 use function intval;
+use function is_array;
 use function is_bool;
 use function is_float;
 use function is_int;
@@ -66,7 +67,6 @@ final class ValueHelper
 		bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null $value,
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		ValueObjects\StringEnumFormat|ValueObjects\NumberRangeFormat|ValueObjects\CombinedEnumFormat|null $format = null,
-		float|int|string|null $invalid = null,
 	): bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
 	{
 		if ($value === null) {
@@ -81,10 +81,6 @@ final class ValueHelper
 			|| $dataType->equalsValue(Types\DataType::DATA_TYPE_INT)
 			|| $dataType->equalsValue(Types\DataType::DATA_TYPE_UINT)
 		) {
-			if ($invalid !== null && intval($invalid) === intval(self::flattenValue($value))) {
-				return $invalid;
-			}
-
 			if ($format instanceof ValueObjects\NumberRangeFormat) {
 				if ($format->getMin() !== null && intval($format->getMin()) > intval(self::flattenValue($value))) {
 					return intval($format->getMin());
@@ -97,10 +93,6 @@ final class ValueHelper
 
 			return intval(self::flattenValue($value));
 		} elseif ($dataType->equalsValue(Types\DataType::DATA_TYPE_FLOAT)) {
-			if ($invalid !== null && floatval($invalid) === floatval(self::flattenValue($value))) {
-				return $invalid;
-			}
-
 			if ($format instanceof ValueObjects\NumberRangeFormat) {
 				if ($format->getMin() !== null && floatval($format->getMin()) > floatval(self::flattenValue($value))) {
 					return floatval($format->getMin());
@@ -317,9 +309,9 @@ final class ValueHelper
 			}
 
 			if ($transformer instanceof ValueObjects\EquationTransformer) {
-				$value = $transformer->getEquationFrom()->substitute(['y' => $value])->simplify()->string();
+				$value = @$transformer->getEquationFrom()->substitute(['y' => $value])->simplify()->string();
 				$value = is_array($value) ? implode('', $value) : $value;
-				$value = MathSolver\Math::from('calc[' . $value . ']')->simplify()->string();
+				$value = @MathSolver\Math::from('calc[' . $value . ']')->simplify()->string();
 
 				$value = $dataType->equalsValue(Types\DataType::DATA_TYPE_FLOAT)
 					? floatval($value)
@@ -360,9 +352,9 @@ final class ValueHelper
 				$transformer instanceof ValueObjects\EquationTransformer
 				&& $transformer->getEquationTo() !== null
 			) {
-				$value = $transformer->getEquationTo()->substitute(['x' => $value])->simplify()->string();
+				$value = @$transformer->getEquationTo()->substitute(['x' => $value])->simplify()->string();
 				$value = is_array($value) ? implode('', $value) : $value;
-				$value = MathSolver\Math::from('calc[' . $value . ']')->simplify()->string();
+				$value = @MathSolver\Math::from('calc[' . $value . ']')->simplify()->string();
 
 				$value = $dataType->equalsValue(Types\DataType::DATA_TYPE_FLOAT)
 					? floatval($value)

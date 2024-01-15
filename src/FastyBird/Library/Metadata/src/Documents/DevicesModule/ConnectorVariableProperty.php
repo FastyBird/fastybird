@@ -111,7 +111,6 @@ final class ConnectorVariableProperty extends ConnectorProperty
 			$this->getDataType(),
 			$this->value,
 			$this->getFormat(),
-			$this->getInvalid(),
 		);
 	}
 
@@ -125,7 +124,6 @@ final class ConnectorVariableProperty extends ConnectorProperty
 			$this->getDataType(),
 			$this->default,
 			$this->getFormat(),
-			$this->getInvalid(),
 		);
 	}
 

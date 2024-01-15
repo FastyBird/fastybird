@@ -158,7 +158,6 @@ final class DeviceDynamicProperty extends DeviceProperty
 			$this->getDataType(),
 			$this->actualValue,
 			$this->getFormat(),
-			$this->getInvalid(),
 		);
 	}
 
@@ -172,7 +171,6 @@ final class DeviceDynamicProperty extends DeviceProperty
 			$this->getDataType(),
 			$this->previousValue,
 			$this->getFormat(),
-			$this->getInvalid(),
 		);
 	}
 
@@ -186,7 +184,6 @@ final class DeviceDynamicProperty extends DeviceProperty
 			$this->getDataType(),
 			$this->expectedValue,
 			$this->getFormat(),
-			$this->getInvalid(),
 		);
 	}
 
