@@ -154,11 +154,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceProperties();
-		$findDevicePropertyQuery->forDevice($device);
-		$findDevicePropertyQuery->byId($entity->getProperty());
-
-		$property = $this->devicesPropertiesConfigurationRepository->findOneBy($findDevicePropertyQuery);
+		$property = $this->devicesPropertiesConfigurationRepository->find($entity->getProperty());
 
 		if (
 			!$property instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty
@@ -192,10 +188,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 					&& $characteristic->getProperty()->getId()->equals($property->getId())
 				) {
 					if ($property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
-						$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceProperties();
-						$findPropertyQuery->byId($property->getParent());
-
-						$parent = $this->devicesPropertiesConfigurationRepository->findOneBy($findPropertyQuery);
+						$parent = $this->devicesPropertiesConfigurationRepository->find($property->getParent());
 
 						if ($parent instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
 							try {

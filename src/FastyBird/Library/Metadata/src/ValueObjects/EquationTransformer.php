@@ -18,6 +18,7 @@ namespace FastyBird\Library\Metadata\ValueObjects;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Exceptions;
 use MathSolver\Math;
+use MathSolver\Utilities\StringToTreeConverter;
 use Nette;
 use function array_key_exists;
 use function implode;
@@ -87,7 +88,7 @@ final class EquationTransformer
 
 		return 'equation:x='
 			. (is_array($from) ? implode($from) : $from)
-			. ($to !== null ? ':y=' . (is_array($to) ? implode($to) : $to) : '');
+			. ($to !== null ? '|y=' . (is_array($to) ? implode($to) : $to) : '');
 	}
 
 }

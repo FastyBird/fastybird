@@ -196,11 +196,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$findChannelPropertyQuery = new DevicesQueries\Configuration\FindChannelProperties();
-		$findChannelPropertyQuery->forChannel($channel);
-		$findChannelPropertyQuery->byId($entity->getProperty());
-
-		$property = $this->channelsPropertiesConfigurationRepository->findOneBy($findChannelPropertyQuery);
+		$property = $this->channelsPropertiesConfigurationRepository->find($entity->getProperty());
 
 		if (
 			!$property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty
@@ -237,10 +233,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					&& $characteristic->getProperty()->getId()->equals($property->getId())
 				) {
 					if ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
-						$findPropertyQuery = new DevicesQueries\Configuration\FindChannelProperties();
-						$findPropertyQuery->byId($property->getParent());
-
-						$parent = $this->channelsPropertiesConfigurationRepository->findOneBy($findPropertyQuery);
+						$parent = $this->channelsPropertiesConfigurationRepository->find($property->getParent());
 
 						if ($parent instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
 							try {

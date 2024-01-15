@@ -22,6 +22,7 @@ use DateTimeInterface;
 use FastyBird\Library\Metadata\Exceptions;
 use FastyBird\Library\Metadata\Types;
 use FastyBird\Library\Metadata\ValueObjects;
+use MathSolver;
 use Nette\Utils;
 use function array_filter;
 use function array_values;
@@ -317,6 +318,8 @@ final class ValueHelper
 
 			if ($transformer instanceof ValueObjects\EquationTransformer) {
 				$value = $transformer->getEquationFrom()->substitute(['y' => $value])->simplify()->string();
+				$value = is_array($value) ? implode('', $value) : $value;
+				$value = MathSolver\Math::from('calc[' . $value . ']')->simplify()->string();
 
 				$value = $dataType->equalsValue(Types\DataType::DATA_TYPE_FLOAT)
 					? floatval($value)
@@ -358,6 +361,8 @@ final class ValueHelper
 				&& $transformer->getEquationTo() !== null
 			) {
 				$value = $transformer->getEquationTo()->substitute(['x' => $value])->simplify()->string();
+				$value = is_array($value) ? implode('', $value) : $value;
+				$value = MathSolver\Math::from('calc[' . $value . ']')->simplify()->string();
 
 				$value = $dataType->equalsValue(Types\DataType::DATA_TYPE_FLOAT)
 					? floatval($value)
