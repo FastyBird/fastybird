@@ -170,9 +170,9 @@ final class DeviceMappedProperty extends DeviceProperty
 	public function getActualValue(): bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
 	{
 		try {
-			return Utilities\ValueHelper::normalizeValue(
-				$this->getDataType(),
+			return Utilities\Value::normalizeValue(
 				$this->actualValue,
+				$this->getDataType(),
 				$this->getFormat(),
 			);
 		} catch (Exceptions\InvalidValue) {
@@ -187,9 +187,9 @@ final class DeviceMappedProperty extends DeviceProperty
 	public function getPreviousValue(): bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
 	{
 		try {
-			return Utilities\ValueHelper::normalizeValue(
-				$this->getDataType(),
+			return Utilities\Value::normalizeValue(
 				$this->previousValue,
+				$this->getDataType(),
 				$this->getFormat(),
 			);
 		} catch (Exceptions\InvalidValue) {
@@ -204,9 +204,9 @@ final class DeviceMappedProperty extends DeviceProperty
 	public function getExpectedValue(): bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
 	{
 		try {
-			return Utilities\ValueHelper::normalizeValue(
-				$this->getDataType(),
+			return Utilities\Value::normalizeValue(
 				$this->expectedValue,
+				$this->getDataType(),
 				$this->getFormat(),
 			);
 		} catch (Exceptions\InvalidValue) {
@@ -236,9 +236,9 @@ final class DeviceMappedProperty extends DeviceProperty
 	public function getValue(): bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
 	{
 		try {
-			return Utilities\ValueHelper::normalizeValue(
-				$this->getDataType(),
+			return Utilities\Value::normalizeValue(
 				$this->value,
+				$this->getDataType(),
 				$this->getFormat(),
 			);
 		} catch (Exceptions\InvalidValue) {
@@ -253,9 +253,9 @@ final class DeviceMappedProperty extends DeviceProperty
 	public function getDefault(): bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
 	{
 		try {
-			return Utilities\ValueHelper::normalizeValue(
-				$this->getDataType(),
+			return Utilities\Value::normalizeValue(
 				$this->default,
+				$this->getDataType(),
 				$this->getFormat(),
 			);
 		} catch (Exceptions\InvalidValue) {
@@ -273,15 +273,15 @@ final class DeviceMappedProperty extends DeviceProperty
 			'type' => $this->getType()->getValue(),
 			'settable' => $this->isSettable(),
 			'queryable' => $this->isQueryable(),
-			'actual_value' => Utilities\ValueHelper::flattenValue($this->getActualValue()),
-			'previous_value' => Utilities\ValueHelper::flattenValue($this->getPreviousValue()),
-			'expected_value' => Utilities\ValueHelper::flattenValue($this->getExpectedValue()),
+			'actual_value' => Utilities\Value::flattenValue($this->getActualValue()),
+			'previous_value' => Utilities\Value::flattenValue($this->getPreviousValue()),
+			'expected_value' => Utilities\Value::flattenValue($this->getExpectedValue()),
 			'pending' => $this->getPending() instanceof DateTimeInterface
 				? $this->getPending()->format(DateTimeInterface::ATOM)
 				: $this->getPending(),
 			'valid' => $this->isValid(),
-			'value' => Utilities\ValueHelper::flattenValue($this->getValue()),
-			'default' => Utilities\ValueHelper::flattenValue($this->getDefault()),
+			'value' => Utilities\Value::flattenValue($this->getValue()),
+			'default' => Utilities\Value::flattenValue($this->getDefault()),
 
 			'parent' => $this->getParent()->toString(),
 		]);

@@ -141,9 +141,9 @@ final class ConnectorDynamicProperty extends ConnectorProperty
 	public function getActualValue(): bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
 	{
 		try {
-			return Utilities\ValueHelper::normalizeValue(
-				$this->getDataType(),
+			return Utilities\Value::normalizeValue(
 				$this->actualValue,
+				$this->getDataType(),
 				$this->getFormat(),
 			);
 		} catch (Exceptions\InvalidValue) {
@@ -158,9 +158,9 @@ final class ConnectorDynamicProperty extends ConnectorProperty
 	public function getPreviousValue(): bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
 	{
 		try {
-			return Utilities\ValueHelper::normalizeValue(
-				$this->getDataType(),
+			return Utilities\Value::normalizeValue(
 				$this->previousValue,
+				$this->getDataType(),
 				$this->getFormat(),
 			);
 		} catch (Exceptions\InvalidValue) {
@@ -175,9 +175,9 @@ final class ConnectorDynamicProperty extends ConnectorProperty
 	public function getExpectedValue(): bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
 	{
 		try {
-			return Utilities\ValueHelper::normalizeValue(
-				$this->getDataType(),
+			return Utilities\Value::normalizeValue(
 				$this->expectedValue,
+				$this->getDataType(),
 				$this->getFormat(),
 			);
 		} catch (Exceptions\InvalidValue) {
@@ -210,9 +210,9 @@ final class ConnectorDynamicProperty extends ConnectorProperty
 			'type' => $this->getType()->getValue(),
 			'settable' => $this->isSettable(),
 			'queryable' => $this->isQueryable(),
-			'actual_value' => Utilities\ValueHelper::flattenValue($this->getActualValue()),
-			'previous_value' => Utilities\ValueHelper::flattenValue($this->getPreviousValue()),
-			'expected_value' => Utilities\ValueHelper::flattenValue($this->getExpectedValue()),
+			'actual_value' => Utilities\Value::flattenValue($this->getActualValue()),
+			'previous_value' => Utilities\Value::flattenValue($this->getPreviousValue()),
+			'expected_value' => Utilities\Value::flattenValue($this->getExpectedValue()),
 			'pending' => $this->getPending() instanceof DateTimeInterface
 				? $this->getPending()->format(DateTimeInterface::ATOM)
 				: $this->getPending(),

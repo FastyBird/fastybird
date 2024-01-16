@@ -285,12 +285,12 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$expectedValue = MetadataUtilities\ValueHelper::flattenValue(
+		$expectedValue = MetadataUtilities\Value::flattenValue(
 			$state->getExpectedValue(),
 		);
 
 		if ($expectedValue === null) {
-			$this->channelPropertiesStatesManager->setValue(
+			$this->channelPropertiesStatesManager->writeValue(
 				$property,
 				Utils\ArrayHash::from([
 					DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
@@ -627,7 +627,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				}
 			},
 			function (Throwable $ex) use ($device, $property): void {
-				$this->channelPropertiesStatesManager->setValue(
+				$this->channelPropertiesStatesManager->writeValue(
 					$property,
 					Utils\ArrayHash::from([
 						DevicesStates\Property::EXPECTED_VALUE_FIELD => null,

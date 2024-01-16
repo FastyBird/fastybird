@@ -87,8 +87,8 @@ final class Dynamic extends Property
 		return array_merge((array) parent::getAttributes($resource, $context), [
 			'settable' => $resource->isSettable(),
 			'queryable' => $resource->isQueryable(),
-			'actual_value' => MetadataUtilities\ValueHelper::flattenValue($state?->getActualValue()),
-			'expected_value' => MetadataUtilities\ValueHelper::flattenValue($state?->getExpectedValue()),
+			'actual_value' => MetadataUtilities\Value::flattenValue($state?->getActualValue()),
+			'expected_value' => MetadataUtilities\Value::flattenValue($state?->getExpectedValue()),
 			'pending' => $state !== null
 				? (
 					is_bool($state->getPending())

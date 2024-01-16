@@ -148,7 +148,7 @@ final class Http implements Server
 			$aid = $aidProperty?->getValue() ?? null;
 
 			if ($aid !== null) {
-				$aid = intval(MetadataUtilities\ValueHelper::flattenValue($aid));
+				$aid = intval(MetadataUtilities\Value::flattenValue($aid));
 			}
 
 			$accessory = $this->accessoryFactory->create(
@@ -258,7 +258,7 @@ final class Http implements Server
 						$characteristic->setActualValue($property->getValue());
 					} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
 						try {
-							$state = $this->channelPropertiesStatesManager->readValue($property);
+							$state = $this->channelPropertiesStatesManager->getValue($property);
 
 							if ($state !== null) {
 								$characteristic->setActualValue($state->getExpectedValue() ?? $state->getActualValue());

@@ -235,19 +235,19 @@ final class Transformer
 					$filtered = array_values(array_filter(
 						$property->getFormat()->getItems(),
 						static fn (string $item): bool => Utils\Strings::lower(
-							strval(MetadataUtilities\ValueHelper::flattenValue($value)),
+							strval(MetadataUtilities\Value::flattenValue($value)),
 						) === $item,
 					));
 
 					if (count($filtered) === 1) {
-						$transformedValue = strval(MetadataUtilities\ValueHelper::flattenValue($value));
+						$transformedValue = strval(MetadataUtilities\Value::flattenValue($value));
 					}
 				} elseif ($property->getFormat() instanceof MetadataValueObjects\CombinedEnumFormat) {
 					$filtered = array_values(array_filter(
 						$property->getFormat()->getItems(),
 						static fn (array $item): bool => $item[0] !== null
 							&& Utils\Strings::lower(strval($item[0]->getValue())) === Utils\Strings::lower(
-								strval(MetadataUtilities\ValueHelper::flattenValue($value)),
+								strval(MetadataUtilities\Value::flattenValue($value)),
 							),
 					));
 
@@ -291,7 +291,7 @@ final class Transformer
 				$transformedValue = false;
 			} elseif (!is_bool($transformedValue)) {
 				$transformedValue = in_array(
-					Utils\Strings::lower(strval(MetadataUtilities\ValueHelper::flattenValue($transformedValue))),
+					Utils\Strings::lower(strval(MetadataUtilities\Value::flattenValue($transformedValue))),
 					[
 						'true',
 						't',
@@ -308,7 +308,7 @@ final class Transformer
 				$transformedValue = str_replace(
 					[' ', ','],
 					['', '.'],
-					strval(MetadataUtilities\ValueHelper::flattenValue($transformedValue)),
+					strval(MetadataUtilities\Value::flattenValue($transformedValue)),
 				);
 
 				if (!is_numeric($transformedValue)) {
@@ -335,7 +335,7 @@ final class Transformer
 				$transformedValue = preg_replace(
 					'~\s~',
 					'',
-					strval(MetadataUtilities\ValueHelper::flattenValue($transformedValue)),
+					strval(MetadataUtilities\Value::flattenValue($transformedValue)),
 				);
 			}
 
@@ -349,20 +349,20 @@ final class Transformer
 			$transformedValue = (int) max($minValue ?? $transformedValue, $transformedValue);
 		} elseif ($dataType->equalsValue(Types\DataType::STRING)) {
 			$transformedValue = $value !== null ? substr(
-				strval(MetadataUtilities\ValueHelper::flattenValue($value)),
+				strval(MetadataUtilities\Value::flattenValue($value)),
 				0,
-				($maxLength ?? strlen(strval(MetadataUtilities\ValueHelper::flattenValue($value)))),
+				($maxLength ?? strlen(strval(MetadataUtilities\Value::flattenValue($value)))),
 			) : '';
 		}
 
 		if (
 			$validValues !== null
-			&& !in_array(intval(MetadataUtilities\ValueHelper::flattenValue($transformedValue)), $validValues, true)
+			&& !in_array(intval(MetadataUtilities\Value::flattenValue($transformedValue)), $validValues, true)
 		) {
 			$transformedValue = null;
 		}
 
-		return MetadataUtilities\ValueHelper::flattenValue($transformedValue);
+		return MetadataUtilities\Value::flattenValue($transformedValue);
 	}
 
 }

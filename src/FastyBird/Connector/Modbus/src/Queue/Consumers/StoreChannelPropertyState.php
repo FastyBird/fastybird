@@ -163,10 +163,13 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$this->channelPropertiesStatesManager->setValue($property, Utils\ArrayHash::from([
-			DevicesStates\Property::ACTUAL_VALUE_FIELD => $entity->getValue(),
-			DevicesStates\Property::VALID_FIELD => true,
-		]));
+		$this->channelPropertiesStatesManager->setValue(
+			$property,
+			Utils\ArrayHash::from([
+				DevicesStates\Property::ACTUAL_VALUE_FIELD => $entity->getValue(),
+				DevicesStates\Property::VALID_FIELD => true,
+			]),
+		);
 
 		$this->logger->debug(
 			'Consumed store device state message',

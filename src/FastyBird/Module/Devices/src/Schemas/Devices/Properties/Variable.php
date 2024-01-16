@@ -74,8 +74,8 @@ final class Variable extends Property
 	): iterable
 	{
 		return array_merge((array) parent::getAttributes($resource, $context), [
-			'value' => MetadataUtilities\ValueHelper::flattenValue($resource->getValue()),
-			'default' => MetadataUtilities\ValueHelper::flattenValue($resource->getDefault()),
+			'value' => MetadataUtilities\Value::flattenValue($resource->getValue()),
+			'default' => MetadataUtilities\Value::flattenValue($resource->getDefault()),
 		]);
 	}
 

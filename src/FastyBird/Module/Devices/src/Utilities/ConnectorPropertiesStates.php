@@ -16,12 +16,12 @@
 namespace FastyBird\Module\Devices\Utilities;
 
 use DateTimeInterface;
+use FastyBird\DateTimeFactory;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
-use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
@@ -30,7 +30,6 @@ use FastyBird\Module\Devices\States;
 use Nette;
 use Nette\Utils;
 use Orisai\ObjectMapper;
-use function array_merge;
 use function assert;
 use function is_array;
 use function strval;
@@ -38,12 +37,14 @@ use function strval;
 /**
  * Useful connector dynamic property state helpers
  *
+ * @extends PropertiesStates<MetadataDocuments\DevicesModule\ConnectorDynamicProperty, null, States\ConnectorProperty>
+ *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Utilities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ConnectorPropertiesStates
+final class ConnectorPropertiesStates extends PropertiesStates
 {
 
 	use Nette\SmartObject;
@@ -53,9 +54,11 @@ final class ConnectorPropertiesStates
 		private readonly Models\States\ConnectorPropertiesRepository $connectorPropertyStateRepository,
 		private readonly Models\States\ConnectorPropertiesManager $connectorPropertiesStatesManager,
 		private readonly Devices\Logger $logger,
-		private readonly ObjectMapper\Processing\Processor $stateMapper,
+		private readonly DateTimeFactory\Factory $dateTimeFactory,
+		ObjectMapper\Processing\Processor $stateMapper,
 	)
 	{
+		parent::__construct($stateMapper);
 	}
 
 	/**
@@ -144,6 +147,49 @@ final class ConnectorPropertiesStates
 	}
 
 	/**
+	 * @param MetadataDocuments\DevicesModule\ConnectorDynamicProperty|array<MetadataDocuments\DevicesModule\ConnectorDynamicProperty>|Entities\Connectors\Properties\Dynamic|array<Entities\Connectors\Properties\Dynamic> $property
+	 *
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
+	 */
+	public function setPendingState(
+		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic|array $property,
+		bool $pending,
+	): void
+	{
+		if (is_array($property)) {
+			foreach ($property as $item) {
+				if ($pending === false) {
+					$this->setValue($item, Utils\ArrayHash::from([
+						States\Property::EXPECTED_VALUE_FIELD => null,
+						States\Property::PENDING_FIELD => false,
+					]));
+				} else {
+					$this->setValue($item, Utils\ArrayHash::from([
+						States\Property::PENDING_FIELD => $this->dateTimeFactory->getNow()->format(
+							DateTimeInterface::ATOM,
+						),
+					]));
+				}
+			}
+		} else {
+			if ($pending === false) {
+				$this->setValue($property, Utils\ArrayHash::from([
+					States\Property::EXPECTED_VALUE_FIELD => null,
+					States\Property::PENDING_FIELD => false,
+				]));
+			} else {
+				$this->setValue($property, Utils\ArrayHash::from([
+					States\Property::PENDING_FIELD => $this->dateTimeFactory->getNow()->format(DateTimeInterface::ATOM),
+				]));
+			}
+		}
+	}
+
+	/**
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
@@ -171,25 +217,13 @@ final class ConnectorPropertiesStates
 
 			if ($state->getActualValue() !== null) {
 				try {
-					$actualValue = MetadataUtilities\ValueHelper::normalizeValue(
-						$property->getDataType(),
+					$updateValues[States\Property::ACTUAL_VALUE_FIELD] = $this->convertReadValue(
 						$state->getActualValue(),
-						$property->getFormat(),
+						$property,
+						null,
+						$forReading,
 					);
-
-					if ($forReading) {
-						$actualValue = MetadataUtilities\ValueHelper::transformReadValue(
-							$property->getDataType(),
-							$actualValue,
-							$property->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
-								? $property->getValueTransformer()
-								: null,
-							$property->getScale(),
-						);
-					}
-
-					$updateValues[States\Property::ACTUAL_VALUE_FIELD] = $actualValue;
-				} catch (Exceptions\InvalidArgument | MetadataExceptions\InvalidValue $ex) {
+				} catch (MetadataExceptions\InvalidValue $ex) {
 					$this->connectorPropertiesStatesManager->update($property, $state, Utils\ArrayHash::from([
 						States\Property::ACTUAL_VALUE_FIELD => null,
 						States\Property::VALID_FIELD => false,
@@ -210,25 +244,32 @@ final class ConnectorPropertiesStates
 
 			if ($state->getExpectedValue() !== null) {
 				try {
-					$expectedValue = MetadataUtilities\ValueHelper::normalizeValue(
-						$property->getDataType(),
+					$expectedValue = $this->convertReadValue(
 						$state->getExpectedValue(),
-						$property->getFormat(),
+						$property,
+						null,
+						$forReading,
 					);
 
-					if ($forReading) {
-						$expectedValue = MetadataUtilities\ValueHelper::transformReadValue(
-							$property->getDataType(),
-							$expectedValue,
-							$property->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
-								? $property->getValueTransformer()
-								: null,
-							$property->getScale(),
+					if ($expectedValue !== null && !$property->isSettable()) {
+						$this->connectorPropertiesStatesManager->update($property, $state, Utils\ArrayHash::from([
+							States\Property::EXPECTED_VALUE_FIELD => null,
+							States\Property::PENDING_FIELD => false,
+						]));
+
+						$this->logger->warning(
+							'Property is not settable but has stored expected value',
+							[
+								'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+								'type' => 'connector-properties-states',
+							],
 						);
+
+						return $this->loadValue($property, $forReading);
 					}
 
 					$updateValues[States\Property::EXPECTED_VALUE_FIELD] = $expectedValue;
-				} catch (Exceptions\InvalidArgument | MetadataExceptions\InvalidValue $ex) {
+				} catch (MetadataExceptions\InvalidValue $ex) {
 					$this->connectorPropertiesStatesManager->update($property, $state, Utils\ArrayHash::from([
 						States\Property::EXPECTED_VALUE_FIELD => null,
 						States\Property::PENDING_FIELD => false,
@@ -251,7 +292,7 @@ final class ConnectorPropertiesStates
 				return $state;
 			}
 
-			return $this->updateState($state, $updateValues);
+			return $this->updateState($state, $state::class, $updateValues);
 		} catch (Exceptions\NotImplemented) {
 			$this->logger->warning(
 				'Connectors states repository is not configured. State could not be fetched',
@@ -290,52 +331,32 @@ final class ConnectorPropertiesStates
 				if (
 					$property->getInvalid() !== null
 					&& strval(
-						MetadataUtilities\ValueHelper::flattenValue(
+						MetadataUtilities\Value::flattenValue(
 							/** @phpstan-ignore-next-line */
 							$data->offsetGet(States\Property::ACTUAL_VALUE_FIELD),
 						),
 					) === strval(
-						MetadataUtilities\ValueHelper::flattenValue($property->getInvalid()),
+						MetadataUtilities\Value::flattenValue($property->getInvalid()),
 					)
 				) {
 					$data->offsetSet(States\Property::ACTUAL_VALUE_FIELD, null);
 					$data->offsetSet(States\Property::VALID_FIELD, false);
 
 				} else {
-					$actualValue = $forWriting
-						? $data->offsetGet(States\Property::ACTUAL_VALUE_FIELD)
-						: MetadataUtilities\ValueHelper::transformValueFromDevice(
-							$property->getDataType(),
-							$property->getFormat(),
-							/** @phpstan-ignore-next-line */
-							$data->offsetGet(States\Property::ACTUAL_VALUE_FIELD),
-						);
-
-					$actualValue = MetadataUtilities\ValueHelper::normalizeValue(
-						$property->getDataType(),
+					$actualValue = $this->convertWriteActualValue(
 						/** @phpstan-ignore-next-line */
-						$actualValue,
-						$property->getFormat(),
+						$data->offsetGet(States\Property::ACTUAL_VALUE_FIELD),
+						$property,
 					);
-
-					if ($forWriting) {
-						$actualValue = MetadataUtilities\ValueHelper::transformWriteValue(
-							$property->getDataType(),
-							$actualValue,
-							$property->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
-								? $property->getValueTransformer()
-								: null,
-							$property->getScale(),
-						);
-					}
 
 					$data->offsetSet(
 						States\Property::ACTUAL_VALUE_FIELD,
-						MetadataUtilities\ValueHelper::flattenValue($actualValue),
+						MetadataUtilities\Value::flattenValue($actualValue),
 					);
+					$data->offsetSet(States\Property::VALID_FIELD, true);
 				}
-			} catch (Exceptions\InvalidArgument | MetadataExceptions\InvalidValue $ex) {
-				$data->offsetSet(States\Property::ACTUAL_VALUE_FIELD, null);
+			} catch (MetadataExceptions\InvalidValue $ex) {
+				$data->offsetUnset(States\Property::ACTUAL_VALUE_FIELD);
 				$data->offsetSet(States\Property::VALID_FIELD, false);
 
 				$this->logger->error(
@@ -350,42 +371,54 @@ final class ConnectorPropertiesStates
 		}
 
 		if ($data->offsetExists(States\Property::EXPECTED_VALUE_FIELD)) {
-			try {
-				$expectedValue = MetadataUtilities\ValueHelper::normalizeValue(
-					$property->getDataType(),
+			if (
+				$data->offsetGet(States\Property::EXPECTED_VALUE_FIELD) !== null
+				&& $data->offsetGet(States\Property::EXPECTED_VALUE_FIELD) !== ''
+			) {
+				try {
+					$expectedValue = $this->convertWriteExpectedValue(
 					/** @phpstan-ignore-next-line */
 						$data->offsetGet(States\Property::EXPECTED_VALUE_FIELD),
-					$property->getFormat(),
-				);
+						$property,
+						null,
+						$forWriting,
+					);
 
-				if ($forWriting) {
-					$expectedValue = MetadataUtilities\ValueHelper::transformWriteValue(
-						$property->getDataType(),
-						$expectedValue,
-						$property->getValueTransformer() instanceof MetadataValueObjects\EquationTransformer
-							? $property->getValueTransformer()
-							: null,
-						$property->getScale(),
+					if ($expectedValue !== null && !$property->isSettable()) {
+						throw new Exceptions\InvalidArgument(
+							'Property is not settable, expected value could not written',
+						);
+					}
+
+					$data->offsetSet(
+						States\Property::EXPECTED_VALUE_FIELD,
+						MetadataUtilities\Value::flattenValue($expectedValue),
+					);
+					$data->offsetSet(
+						States\Property::PENDING_FIELD,
+						$expectedValue !== null,
+					);
+				} catch (MetadataExceptions\InvalidValue $ex) {
+					$data->offsetSet(States\Property::EXPECTED_VALUE_FIELD, null);
+					$data->offsetSet(States\Property::PENDING_FIELD, false);
+
+					$this->logger->error(
+						'Provided property expected value was not valid',
+						[
+							'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+							'type' => 'connector-properties-states',
+							'exception' => BootstrapHelpers\Logger::buildException($ex),
+						],
 					);
 				}
-
-				$data->offsetSet(
-					States\Property::EXPECTED_VALUE_FIELD,
-					MetadataUtilities\ValueHelper::flattenValue($expectedValue),
-				);
-			} catch (Exceptions\InvalidArgument | MetadataExceptions\InvalidValue $ex) {
+			} else {
 				$data->offsetSet(States\Property::EXPECTED_VALUE_FIELD, null);
 				$data->offsetSet(States\Property::PENDING_FIELD, false);
-
-				$this->logger->error(
-					'Provided property expected value was not valid',
-					[
-						'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
-						'type' => 'connector-properties-states',
-						'exception' => BootstrapHelpers\Logger::buildException($ex),
-					],
-				);
 			}
+		}
+
+		if ($data->count() === 0) {
+			return;
 		}
 
 		try {
@@ -435,45 +468,6 @@ final class ConnectorPropertiesStates
 					'type' => 'connector-properties-states',
 				],
 			);
-		}
-	}
-
-	/**
-	 * @param array<string, mixed> $update
-	 *
-	 * @throws Exceptions\InvalidArgument
-	 */
-	private function updateState(
-		States\ConnectorProperty $state,
-		array $update,
-	): States\ConnectorProperty
-	{
-		try {
-			$options = new ObjectMapper\Processing\Options();
-			$options->setAllowUnknownFields();
-
-			return $this->stateMapper->process(
-				array_merge(
-					$state->toArray(),
-					[
-						$state::ACTUAL_VALUE_FIELD => $state->getActualValue(),
-						$state::EXPECTED_VALUE_FIELD => $state->getExpectedValue(),
-						$state::PENDING_FIELD => $state->getPending(),
-						$state::VALID_FIELD => $state->isValid(),
-						$state::CREATED_AT => $state->getCreatedAt()?->format(DateTimeInterface::ATOM),
-						$state::UPDATED_AT => $state->getUpdatedAt()?->format(DateTimeInterface::ATOM),
-					],
-					$update,
-				),
-				$state::class,
-				$options,
-			);
-		} catch (ObjectMapper\Exception\InvalidData $ex) {
-			$errorPrinter = new ObjectMapper\Printers\ErrorVisualPrinter(
-				new ObjectMapper\Printers\TypeToStringConverter(),
-			);
-
-			throw new Exceptions\InvalidArgument('Could not map data to state: ' . $errorPrinter->printError($ex));
 		}
 	}
 

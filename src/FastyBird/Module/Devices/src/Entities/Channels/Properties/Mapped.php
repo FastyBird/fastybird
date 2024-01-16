@@ -22,6 +22,7 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
+use FastyBird\Module\Devices\Utilities;
 use Ramsey\Uuid;
 use function array_merge;
 use function assert;
@@ -165,17 +166,30 @@ class Mapped extends Property
 			throw new Exceptions\InvalidState('Reading default value is allowed only for variable parent properties');
 		}
 
-		return MetadataUtilities\ValueHelper::transformValueFromMappedParent(
-			$this->getDataType(),
-			$this->getParent()->getDataType(),
-			$this->getParent()->getDefault(),
-		);
+		if (!Utilities\Value::compareDataTypes($this->getDataType(), $this->getParent()->getDataType())) {
+			return null;
+		}
+
+		try {
+			return MetadataUtilities\Value::normalizeValue(
+				MetadataUtilities\Value::transformDataType(
+					MetadataUtilities\Value::flattenValue($this->getParent()->getDefault()),
+					$this->getDataType(),
+				),
+				$this->getDataType(),
+				$this->getFormat(),
+			);
+		} catch (MetadataExceptions\InvalidValue) {
+			return null;
+		}
 	}
 
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public function setDefault(string|null $default): void
+	public function setDefault(
+		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $default,
+	): void
 	{
 		if (!$this->getParent() instanceof Variable) {
 			throw new Exceptions\InvalidState('Setting default value is allowed only for variable parent properties');
@@ -196,11 +210,22 @@ class Mapped extends Property
 			throw new Exceptions\InvalidState('Reading value is allowed only for variable parent properties');
 		}
 
-		return MetadataUtilities\ValueHelper::transformValueFromMappedParent(
-			$this->getDataType(),
-			$this->getParent()->getDataType(),
-			$this->getParent()->getValue(),
-		);
+		if (!Utilities\Value::compareDataTypes($this->getDataType(), $this->getParent()->getDataType())) {
+			return null;
+		}
+
+		try {
+			return MetadataUtilities\Value::normalizeValue(
+				MetadataUtilities\Value::transformDataType(
+					MetadataUtilities\Value::flattenValue($this->getParent()->getValue()),
+					$this->getDataType(),
+				),
+				$this->getDataType(),
+				$this->getFormat(),
+			);
+		} catch (MetadataExceptions\InvalidValue) {
+			return null;
+		}
 	}
 
 	/**
@@ -230,8 +255,8 @@ class Mapped extends Property
 			return array_merge(parent::toArray(), [
 				'parent' => $this->getParent()->getId()->toString(),
 
-				'default' => MetadataUtilities\ValueHelper::flattenValue($this->getDefault()),
-				'value' => MetadataUtilities\ValueHelper::flattenValue($this->getValue()),
+				'default' => MetadataUtilities\Value::flattenValue($this->getDefault()),
+				'value' => MetadataUtilities\Value::flattenValue($this->getValue()),
 			]);
 		}
 

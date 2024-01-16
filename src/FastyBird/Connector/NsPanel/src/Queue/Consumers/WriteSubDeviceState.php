@@ -299,7 +299,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 					);
 
 					foreach ($properties as $property) {
-						$this->channelPropertiesStatesManager->setValue(
+						$this->channelPropertiesStatesManager->writeValue(
 							$property,
 							Utils\ArrayHash::from([
 								DevicesStates\Property::EXPECTED_VALUE_FIELD => null,

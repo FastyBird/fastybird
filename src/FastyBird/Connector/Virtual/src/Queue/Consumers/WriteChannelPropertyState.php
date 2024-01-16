@@ -236,19 +236,19 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$state = $this->channelPropertiesStatesManager->readValue($property);
+		$state = $property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+			? $this->channelPropertiesStatesManager->getValue($property)
+			: $this->channelPropertiesStatesManager->readValue($property);
 
 		if ($state === null) {
 			return true;
 		}
 
-		$valueToWrite = $property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
-			? $state->getActualValue()
-			: $state->getExpectedValue();
+		$valueToWrite = $state->getExpectedValue();
 
 		if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
 			if ($valueToWrite === null) {
-				$this->channelPropertiesStatesManager->setValue(
+				$this->channelPropertiesStatesManager->writeValue(
 					$property,
 					Utils\ArrayHash::from([
 						DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
@@ -327,7 +327,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			},
 			function (Throwable $ex) use ($connector, $device, $property, $entity): void {
 				if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-					$this->channelPropertiesStatesManager->setValue(
+					$this->channelPropertiesStatesManager->writeValue(
 						$property,
 						Utils\ArrayHash::from([
 							DevicesStates\Property::EXPECTED_VALUE_FIELD => null,

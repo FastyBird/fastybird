@@ -91,7 +91,7 @@ final class CapabilityState implements Entity
 		return [
 			'capability' => $this->getCapability()->getValue(),
 			'protocol' => $this->getProtocol()->getValue(),
-			'value' => MetadataUtilities\ValueHelper::flattenValue($this->getValue()),
+			'value' => MetadataUtilities\Value::flattenValue($this->getValue()),
 			'identifier' => $this->getIdentifier(),
 		];
 	}

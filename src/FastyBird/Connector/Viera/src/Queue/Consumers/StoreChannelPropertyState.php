@@ -178,17 +178,28 @@ final class StoreChannelPropertyState implements Queue\Consumer
 		}
 
 		if ($property->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)) {
-			$this->channelPropertiesStatesManager->setValue($property, Utils\ArrayHash::from([
-				DevicesStates\Property::ACTUAL_VALUE_FIELD => null,
-				DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
-				DevicesStates\Property::PENDING_FIELD => false,
-				DevicesStates\Property::VALID_FIELD => true,
-			]));
+			$this->channelPropertiesStatesManager->writeValue(
+				$property,
+				Utils\ArrayHash::from([
+					DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
+					DevicesStates\Property::PENDING_FIELD => false,
+				]),
+			);
+			$this->channelPropertiesStatesManager->setValue(
+				$property,
+				Utils\ArrayHash::from([
+					DevicesStates\Property::ACTUAL_VALUE_FIELD => null,
+					DevicesStates\Property::VALID_FIELD => true,
+				]),
+			);
 		} else {
-			$this->channelPropertiesStatesManager->setValue($property, Utils\ArrayHash::from([
-				DevicesStates\Property::ACTUAL_VALUE_FIELD => $entity->getValue(),
-				DevicesStates\Property::VALID_FIELD => true,
-			]));
+			$this->channelPropertiesStatesManager->setValue(
+				$property,
+				Utils\ArrayHash::from([
+					DevicesStates\Property::ACTUAL_VALUE_FIELD => $entity->getValue(),
+					DevicesStates\Property::VALID_FIELD => true,
+				]),
+			);
 		}
 
 		$this->logger->debug(

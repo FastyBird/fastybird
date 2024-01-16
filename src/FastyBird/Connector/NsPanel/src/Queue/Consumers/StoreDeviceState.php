@@ -173,7 +173,7 @@ final class StoreDeviceState implements Queue\Consumer
 				continue;
 			}
 
-			$this->channelPropertiesStatesManager->writeValue(
+			$this->channelPropertiesStatesManager->setValue(
 				$property,
 				Utils\ArrayHash::from([
 					DevicesStates\Property::ACTUAL_VALUE_FIELD => $item->getValue(),
@@ -229,7 +229,7 @@ final class StoreDeviceState implements Queue\Consumer
 				$device,
 				$channel,
 				$property,
-				MetadataUtilities\ValueHelper::flattenValue($item->getValue()),
+				MetadataUtilities\Value::flattenValue($item->getValue()),
 			);
 		}
 	}
@@ -295,7 +295,7 @@ final class StoreDeviceState implements Queue\Consumer
 							'device' => $device->getId()->toString(),
 							'channel' => $channel->getId()->toString(),
 							'property' => $property->getId()->toString(),
-							'expected_value' => MetadataUtilities\ValueHelper::flattenValue($value),
+							'expected_value' => MetadataUtilities\Value::flattenValue($value),
 						]),
 						MetadataTypes\RoutingKey::get(
 							MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION,

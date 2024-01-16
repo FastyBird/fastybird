@@ -1803,7 +1803,7 @@ class Install extends Console\Command\Command
 				&& $metadata->offsetGet($type)->offsetGet('ValidValues') instanceof Utils\ArrayHash
 			) {
 				$enumValue = array_search(
-					intval(MetadataUtilities\ValueHelper::flattenValue($value)),
+					intval(MetadataUtilities\Value::flattenValue($value)),
 					(array) $metadata->offsetGet($type)->offsetGet('ValidValues'),
 					true,
 				);
@@ -2339,15 +2339,15 @@ class Install extends Console\Command\Command
 		} else {
 			$metadata = $this->loader->loadAccessories();
 
-			if (!$metadata->offsetExists(strval(MetadataUtilities\ValueHelper::flattenValue($category->getValue())))) {
+			if (!$metadata->offsetExists(strval(MetadataUtilities\Value::flattenValue($category->getValue())))) {
 				throw new Exceptions\InvalidArgument(sprintf(
 					'Definition for accessory category: %s was not found',
-					strval(MetadataUtilities\ValueHelper::flattenValue($category->getValue())),
+					strval(MetadataUtilities\Value::flattenValue($category->getValue())),
 				));
 			}
 
 			$accessoryMetadata = $metadata->offsetGet(
-				strval(MetadataUtilities\ValueHelper::flattenValue($category->getValue())),
+				strval(MetadataUtilities\Value::flattenValue($category->getValue())),
 			);
 
 			if (
@@ -3024,7 +3024,7 @@ class Install extends Console\Command\Command
 				$this->translator->translate('//homekit-connector.cmd.install.questions.select.device.value'),
 				$options,
 				$value !== null ? array_key_exists(
-					strval(MetadataUtilities\ValueHelper::flattenValue($value)),
+					strval(MetadataUtilities\Value::flattenValue($value)),
 					$options,
 				) : null,
 			);

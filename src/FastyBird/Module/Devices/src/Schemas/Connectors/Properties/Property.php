@@ -75,7 +75,9 @@ abstract class Property extends JsonApiSchemas\JsonApi
 			'invalid' => $resource->getInvalid(),
 			'scale' => $resource->getScale(),
 			'step' => $resource->getStep(),
-			'value_transformer' => $resource->getValueTransformer()?->toString(),
+			'value_transformer' => $resource->getValueTransformer() !== null
+				? strval($resource->getValueTransformer())
+				: null,
 			'owner' => $resource->getConnector()->getOwnerId(),
 			'created_at' => $resource->getCreatedAt()?->format(DateTimeInterface::ATOM),
 			'updated_at' => $resource->getUpdatedAt()?->format(DateTimeInterface::ATOM),

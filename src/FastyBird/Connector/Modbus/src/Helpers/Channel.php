@@ -154,7 +154,7 @@ final class Channel
 
 			if ($type->getValue() === Types\ChannelPropertyIdentifier::TYPE) {
 				if (Types\ChannelType::isValidValue($configuration->getValue())) {
-					return MetadataUtilities\ValueHelper::flattenValue($configuration->getValue());
+					return MetadataUtilities\Value::flattenValue($configuration->getValue());
 				}
 
 				return null;

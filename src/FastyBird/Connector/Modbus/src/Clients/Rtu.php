@@ -251,7 +251,7 @@ class Rtu implements Client
 				);
 
 				foreach ($properties as $property) {
-					$this->channelPropertiesStatesManager->setValue(
+					$this->channelPropertiesStatesManager->writeValue(
 						$property,
 						Utils\ArrayHash::from([
 							DevicesStates\Property::VALID_FIELD => false,

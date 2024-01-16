@@ -177,7 +177,7 @@ final class DirectiveController extends BaseController
 				$state[] = [
 					'capability' => $item->getType()->getValue(),
 					'protocol' => $protocol,
-					'value' => MetadataUtilities\ValueHelper::flattenValue($value),
+					'value' => MetadataUtilities\Value::flattenValue($value),
 					'identifier' => $identifier,
 				];
 			}

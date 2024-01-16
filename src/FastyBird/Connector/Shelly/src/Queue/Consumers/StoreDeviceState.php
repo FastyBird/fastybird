@@ -168,10 +168,13 @@ final class StoreDeviceState implements Queue\Consumer
 
 						if ($property !== null) {
 							if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-								$this->channelPropertiesStatesManager->setValue($property, Utils\ArrayHash::from([
-									DevicesStates\Property::ACTUAL_VALUE_FIELD => $state->getValue(),
-									DevicesStates\Property::VALID_FIELD => true,
-								]));
+								$this->channelPropertiesStatesManager->setValue(
+									$property,
+									Utils\ArrayHash::from([
+										DevicesStates\Property::ACTUAL_VALUE_FIELD => $state->getValue(),
+										DevicesStates\Property::VALID_FIELD => true,
+									]),
+								);
 
 							} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
 								$this->databaseHelper->transaction(
@@ -229,10 +232,13 @@ final class StoreDeviceState implements Queue\Consumer
 						);
 
 						if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-							$this->channelPropertiesStatesManager->setValue($property, Utils\ArrayHash::from([
-								DevicesStates\Property::ACTUAL_VALUE_FIELD => $sensor->getValue(),
-								DevicesStates\Property::VALID_FIELD => true,
-							]));
+							$this->channelPropertiesStatesManager->setValue(
+								$property,
+								Utils\ArrayHash::from([
+									DevicesStates\Property::ACTUAL_VALUE_FIELD => $sensor->getValue(),
+									DevicesStates\Property::VALID_FIELD => true,
+								]),
+							);
 						} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
 							$this->databaseHelper->transaction(
 								function () use ($property, $sensor): void {

@@ -241,9 +241,8 @@ abstract class DeviceProperty implements Documents\Document, Documents\Owner
 
 	/**
 	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\InvalidArgument
 	 */
-	public function getValueTransformer(): ValueObjects\EquationTransformer|Uuid\UuidInterface|null
+	public function getValueTransformer(): Uuid\UuidInterface|string|null
 	{
 		if ($this->valueTransformer === null) {
 			return null;
@@ -265,7 +264,7 @@ abstract class DeviceProperty implements Documents\Document, Documents\Owner
 					Types\DataType::DATA_TYPE_FLOAT,
 				], true)
 			) {
-				return new ValueObjects\EquationTransformer($this->valueTransformer);
+				return $this->valueTransformer;
 			}
 
 			throw new Exceptions\InvalidState('Equation transformer is allowed only for numeric data type');
@@ -291,7 +290,7 @@ abstract class DeviceProperty implements Documents\Document, Documents\Owner
 			'invalid' => $this->getInvalid(),
 			'scale' => $this->getScale(),
 			'step' => $this->getStep(),
-			'value_transformer' => $this->getValueTransformer()?->toString(),
+			'value_transformer' => $this->getValueTransformer() !== null ? strval($this->getValueTransformer()) : null,
 
 			'device' => $this->getDevice()->toString(),
 			'owner' => $this->getOwner()?->toString(),

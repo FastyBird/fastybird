@@ -204,10 +204,13 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			);
 
 		} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-			$this->channelPropertiesStatesManager->setValue($property, Utils\ArrayHash::from([
-				DevicesStates\Property::ACTUAL_VALUE_FIELD => $entity->getValue(),
-				DevicesStates\Property::VALID_FIELD => true,
-			]));
+			$this->channelPropertiesStatesManager->setValue(
+				$property,
+				Utils\ArrayHash::from([
+					DevicesStates\Property::ACTUAL_VALUE_FIELD => $entity->getValue(),
+					DevicesStates\Property::VALID_FIELD => true,
+				]),
+			);
 		} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
 			$findChannelPropertyQuery = new DevicesQueries\Configuration\FindChannelProperties();
 			$findChannelPropertyQuery->byId($property->getParent());
@@ -230,10 +233,10 @@ final class StoreChannelPropertyState implements Queue\Consumer
 									'device' => $device->getId()->toString(),
 									'channel' => $channel->getId()->toString(),
 									'property' => $property->getId()->toString(),
-									'expected_value' => MetadataUtilities\ValueHelper::flattenValue(
-										MetadataUtilities\ValueHelper::normalizeValue(
-											$property->getDataType(),
+									'expected_value' => MetadataUtilities\Value::flattenValue(
+										MetadataUtilities\Value::normalizeValue(
 											$entity->getValue(),
+											$property->getDataType(),
 											$property->getFormat(),
 										),
 									),
@@ -244,10 +247,13 @@ final class StoreChannelPropertyState implements Queue\Consumer
 							),
 						);
 					} else {
-						$this->channelPropertiesStatesManager->writeValue($property, Utils\ArrayHash::from([
-							DevicesStates\Property::EXPECTED_VALUE_FIELD => $entity->getValue(),
-							DevicesStates\Property::PENDING_FIELD => true,
-						]));
+						$this->channelPropertiesStatesManager->writeValue(
+							$property,
+							Utils\ArrayHash::from([
+								DevicesStates\Property::EXPECTED_VALUE_FIELD => $entity->getValue(),
+								DevicesStates\Property::PENDING_FIELD => true,
+							]),
+						);
 					}
 				} catch (DevicesExceptions\InvalidState | Utils\JsonException | MetadataExceptions\InvalidValue $ex) {
 					$this->logger->warning(

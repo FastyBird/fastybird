@@ -204,7 +204,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 
 		if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
 			if ($valueToWrite === null) {
-				$this->devicePropertiesStatesManager->setValue(
+				$this->devicePropertiesStatesManager->writeValue(
 					$property,
 					Utils\ArrayHash::from([
 						DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
@@ -280,7 +280,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 			},
 			function (Throwable $ex) use ($connector, $device, $property, $entity): void {
 				if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-					$this->devicePropertiesStatesManager->setValue(
+					$this->devicePropertiesStatesManager->writeValue(
 						$property,
 						Utils\ArrayHash::from([
 							DevicesStates\Property::EXPECTED_VALUE_FIELD => null,

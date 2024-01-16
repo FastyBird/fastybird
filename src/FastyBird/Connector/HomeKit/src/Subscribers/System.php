@@ -117,7 +117,7 @@ final class System implements Common\EventSubscriber
 
 			if ($property !== null) {
 				$this->propertiesManager->update($property, Utils\ArrayHash::from([
-					'value' => intval(MetadataUtilities\ValueHelper::flattenValue($property->getValue())) + 1,
+					'value' => intval(MetadataUtilities\Value::flattenValue($property->getValue())) + 1,
 				]));
 			}
 		}

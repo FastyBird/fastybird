@@ -188,7 +188,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 									'action' => MetadataTypes\PropertyAction::ACTION_SET,
 									'device' => $device->getId()->toString(),
 									'property' => $property->getId()->toString(),
-									'expected_value' => MetadataUtilities\ValueHelper::flattenValue($valueToStore),
+									'expected_value' => MetadataUtilities\Value::flattenValue($valueToStore),
 								]),
 								MetadataTypes\RoutingKey::get(
 									MetadataTypes\RoutingKey::DEVICE_PROPERTY_ACTION,
@@ -196,10 +196,13 @@ final class StoreDevicePropertyState implements Queue\Consumer
 							),
 						);
 					} else {
-						$this->devicePropertiesStatesManager->writeValue($property, Utils\ArrayHash::from([
-							DevicesStates\Property::EXPECTED_VALUE_FIELD => $entity->getValue(),
-							DevicesStates\Property::PENDING_FIELD => true,
-						]));
+						$this->devicePropertiesStatesManager->writeValue(
+							$property,
+							Utils\ArrayHash::from([
+								DevicesStates\Property::EXPECTED_VALUE_FIELD => $entity->getValue(),
+								DevicesStates\Property::PENDING_FIELD => true,
+							]),
+						);
 					}
 				} catch (DevicesExceptions\InvalidState | Utils\JsonException $ex) {
 					$this->logger->warning(

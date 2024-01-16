@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * DataTypeHelper.php
+ * DataType.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -29,7 +29,7 @@ use function intval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DataTypeHelper
+final class DataType
 {
 
 	private const RANGES = [

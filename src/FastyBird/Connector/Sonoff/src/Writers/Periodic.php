@@ -210,16 +210,25 @@ abstract class Periodic implements Writer
 
 			$this->processedProperties[$property->getId()->toString()] = $now;
 
-			$state = $property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
-			|| $property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
-				? $this->devicePropertiesStatesManager->getValue($property)
-				: $this->channelPropertiesStatesManager->getValue($property);
+			if (
+				$property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
+				|| $property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
+			) {
+				$state = $property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
+					? $this->devicePropertiesStatesManager->getValue($property)
+					: $this->devicePropertiesStatesManager->readValue($property);
+
+			} else {
+				$state = $property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+					? $this->channelPropertiesStatesManager->getValue($property)
+					: $this->channelPropertiesStatesManager->readValue($property);
+			}
 
 			if ($state === null) {
 				continue;
 			}
 
-			$expectedValue = MetadataUtilities\ValueHelper::flattenValue($state->getExpectedValue());
+			$expectedValue = MetadataUtilities\Value::flattenValue($state->getExpectedValue());
 
 			if ($expectedValue === null) {
 				continue;

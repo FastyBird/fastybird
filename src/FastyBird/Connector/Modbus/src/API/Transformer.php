@@ -124,13 +124,13 @@ final class Transformer
 				$filtered = array_values(array_filter(
 					$format->getItems(),
 					static fn (string $item): bool => Utils\Strings::lower(
-						strval(MetadataUtilities\ValueHelper::flattenValue($value)),
+						strval(MetadataUtilities\Value::flattenValue($value)),
 					) === $item,
 				));
 
 				if (count($filtered) === 1) {
 					return new ValueObjects\DeviceData(
-						MetadataUtilities\ValueHelper::flattenValue($value),
+						MetadataUtilities\Value::flattenValue($value),
 						MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
 					);
 				}
@@ -141,7 +141,7 @@ final class Transformer
 					$format->getItems(),
 					static fn (array $item): bool => $item[0] !== null
 							&& Utils\Strings::lower(strval($item[0]->getValue())) === Utils\Strings::lower(
-								strval(MetadataUtilities\ValueHelper::flattenValue($value)),
+								strval(MetadataUtilities\Value::flattenValue($value)),
 							),
 				));
 

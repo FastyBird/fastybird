@@ -277,13 +277,13 @@ final class WriteV1PropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$expectedValue = MetadataUtilities\ValueHelper::flattenValue(
+		$expectedValue = MetadataUtilities\Value::flattenValue(
 			$state->getExpectedValue(),
 		);
 
 		if ($expectedValue === null) {
 			if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-				$this->channelPropertiesStatesManager->setValue(
+				$this->channelPropertiesStatesManager->writeValue(
 					$property,
 					Utils\ArrayHash::from([
 						DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
@@ -291,7 +291,7 @@ final class WriteV1PropertyState implements Queue\Consumer
 					]),
 				);
 			} else {
-				$this->devicePropertiesStatesManager->setValue(
+				$this->devicePropertiesStatesManager->writeValue(
 					$property,
 					Utils\ArrayHash::from([
 						DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
@@ -330,7 +330,7 @@ final class WriteV1PropertyState implements Queue\Consumer
 			->getConnection($connector)
 			->publish(
 				$topic,
-				strval(MetadataUtilities\ValueHelper::flattenValue($expectedValue)),
+				strval(MetadataUtilities\Value::flattenValue($expectedValue)),
 			)
 			->then(function () use ($property, $now): void {
 				if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
@@ -359,7 +359,7 @@ final class WriteV1PropertyState implements Queue\Consumer
 			})
 			->catch(function (Throwable $ex) use ($property, $entity): void {
 				if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-					$this->channelPropertiesStatesManager->setValue(
+					$this->channelPropertiesStatesManager->writeValue(
 						$property,
 						Utils\ArrayHash::from([
 							DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
@@ -367,7 +367,7 @@ final class WriteV1PropertyState implements Queue\Consumer
 						]),
 					);
 				} else {
-					$this->devicePropertiesStatesManager->setValue(
+					$this->devicePropertiesStatesManager->writeValue(
 						$property,
 						Utils\ArrayHash::from([
 							DevicesStates\Property::EXPECTED_VALUE_FIELD => null,

@@ -414,10 +414,17 @@ abstract class Property implements Entity,
 		}
 
 		try {
-			return MetadataUtilities\ValueHelper::normalizeValue(
+			return MetadataUtilities\Value::transformToScale(
+				MetadataUtilities\Value::normalizeValue(
+					MetadataUtilities\Value::transformDataType(
+						$this->value,
+						$this->getDataType(),
+					),
+					$this->getDataType(),
+					$this->getFormat(),
+				),
 				$this->getDataType(),
-				$this->value,
-				$this->getFormat(),
+				$this->getScale(),
 			);
 		} catch (Exceptions\InvalidArgument | MetadataExceptions\InvalidValue) {
 			return null;
@@ -434,10 +441,17 @@ abstract class Property implements Entity,
 	): void
 	{
 		try {
-			$value = MetadataUtilities\ValueHelper::flattenValue(
-				MetadataUtilities\ValueHelper::normalizeValue(
+			$value = MetadataUtilities\Value::flattenValue(
+				MetadataUtilities\Value::normalizeValue(
+					MetadataUtilities\Value::transformFromScale(
+						MetadataUtilities\Value::transformDataType(
+							MetadataUtilities\Value::flattenValue($value),
+							$this->getDataType(),
+						),
+						$this->getDataType(),
+						$this->getScale(),
+					),
 					$this->getDataType(),
-					$value,
 					$this->getFormat(),
 				),
 			);
@@ -505,10 +519,17 @@ abstract class Property implements Entity,
 		}
 
 		try {
-			return MetadataUtilities\ValueHelper::normalizeValue(
+			return MetadataUtilities\Value::transformToScale(
+				MetadataUtilities\Value::normalizeValue(
+					MetadataUtilities\Value::transformDataType(
+						$this->default,
+						$this->getDataType(),
+					),
+					$this->getDataType(),
+					$this->getFormat(),
+				),
 				$this->getDataType(),
-				$this->default,
-				$this->getFormat(),
+				$this->getScale(),
 			);
 		} catch (Exceptions\InvalidArgument | MetadataExceptions\InvalidValue) {
 			return null;
@@ -519,13 +540,22 @@ abstract class Property implements Entity,
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function setDefault(string|null $default): void
+	public function setDefault(
+		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $default,
+	): void
 	{
 		try {
-			$default = MetadataUtilities\ValueHelper::flattenValue(
-				MetadataUtilities\ValueHelper::normalizeValue(
+			$default = MetadataUtilities\Value::flattenValue(
+				MetadataUtilities\Value::normalizeValue(
+					MetadataUtilities\Value::transformFromScale(
+						MetadataUtilities\Value::transformDataType(
+							MetadataUtilities\Value::flattenValue($default),
+							$this->getDataType(),
+						),
+						$this->getDataType(),
+						$this->getScale(),
+					),
 					$this->getDataType(),
-					$default,
 					$this->getFormat(),
 				),
 			);
@@ -546,9 +576,8 @@ abstract class Property implements Entity,
 
 	/**
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
 	 */
-	public function getValueTransformer(): MetadataValueObjects\EquationTransformer|Uuid\UuidInterface|null
+	public function getValueTransformer(): Uuid\UuidInterface|string|null
 	{
 		if ($this->valueTransformer === null) {
 			return null;
@@ -570,7 +599,7 @@ abstract class Property implements Entity,
 					MetadataTypes\DataType::DATA_TYPE_FLOAT,
 				], true)
 			) {
-				return new MetadataValueObjects\EquationTransformer($this->valueTransformer);
+				return $this->valueTransformer;
 			}
 
 			throw new Exceptions\InvalidState('Equation transformer is allowed only for numeric data type');
@@ -641,15 +670,15 @@ abstract class Property implements Entity,
 			'invalid' => $this->getInvalid(),
 			'scale' => $this->getScale(),
 			'step' => $this->getStep(),
-			'value_transformer' => $this->getValueTransformer()?->toString(),
+			'value_transformer' => $this->getValueTransformer() !== null ? strval($this->getValueTransformer()) : null,
 			'created_at' => $this->getCreatedAt()?->format(DateTimeInterface::ATOM),
 			'updated_at' => $this->getUpdatedAt()?->format(DateTimeInterface::ATOM),
 		];
 
 		if ($this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_VARIABLE)) {
 			return array_merge($data, [
-				'default' => MetadataUtilities\ValueHelper::flattenValue($this->getDefault()),
-				'value' => MetadataUtilities\ValueHelper::flattenValue($this->getValue()),
+				'default' => MetadataUtilities\Value::flattenValue($this->getDefault()),
+				'value' => MetadataUtilities\Value::flattenValue($this->getValue()),
 			]);
 		} elseif ($this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_DYNAMIC)) {
 			return array_merge($data, [

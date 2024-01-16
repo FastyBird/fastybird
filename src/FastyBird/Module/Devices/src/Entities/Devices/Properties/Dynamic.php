@@ -108,7 +108,9 @@ class Dynamic extends Property
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public function setDefault(string|null $default): void
+	public function setDefault(
+		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $default,
+	): void
 	{
 		throw new Exceptions\InvalidState(
 			sprintf(

@@ -108,9 +108,9 @@ final class ConnectorVariableProperty extends ConnectorProperty
 	public function getValue(): bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
 	{
 		try {
-			return Utilities\ValueHelper::normalizeValue(
-				$this->getDataType(),
+			return Utilities\Value::normalizeValue(
 				$this->value,
+				$this->getDataType(),
 				$this->getFormat(),
 			);
 		} catch (Exceptions\InvalidValue) {
@@ -125,9 +125,9 @@ final class ConnectorVariableProperty extends ConnectorProperty
 	public function getDefault(): bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
 	{
 		try {
-			return Utilities\ValueHelper::normalizeValue(
-				$this->getDataType(),
+			return Utilities\Value::normalizeValue(
 				$this->default,
+				$this->getDataType(),
 				$this->getFormat(),
 			);
 		} catch (Exceptions\InvalidValue) {
@@ -143,8 +143,8 @@ final class ConnectorVariableProperty extends ConnectorProperty
 	{
 		return array_merge(parent::toArray(), [
 			'type' => $this->getType()->getValue(),
-			'value' => Utilities\ValueHelper::flattenValue($this->getValue()),
-			'default' => Utilities\ValueHelper::flattenValue($this->getDefault()),
+			'value' => Utilities\Value::flattenValue($this->getValue()),
+			'default' => Utilities\Value::flattenValue($this->getDefault()),
 		]);
 	}
 

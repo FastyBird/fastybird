@@ -2654,7 +2654,7 @@ class Install extends Console\Command\Command
 				&& $metadata->offsetGet($type->getValue())->offsetGet('valid_values') instanceof Utils\ArrayHash
 			) {
 				$enumValue = array_search(
-					intval(MetadataUtilities\ValueHelper::flattenValue($value)),
+					intval(MetadataUtilities\Value::flattenValue($value)),
 					(array) $metadata->offsetGet($type->getValue())->offsetGet('valid_values'),
 					true,
 				);
@@ -4226,7 +4226,7 @@ class Install extends Console\Command\Command
 				$this->translator->translate('//ns-panel-connector.cmd.install.questions.select.device.value'),
 				$options,
 				$value !== null ? array_key_exists(
-					strval(MetadataUtilities\ValueHelper::flattenValue($value)),
+					strval(MetadataUtilities\Value::flattenValue($value)),
 					$options,
 				) : null,
 			);

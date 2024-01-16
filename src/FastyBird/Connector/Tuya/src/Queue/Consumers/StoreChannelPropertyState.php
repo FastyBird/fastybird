@@ -116,10 +116,13 @@ final class StoreChannelPropertyState implements Queue\Consumer
 
 			if ($property !== null) {
 				try {
-					$this->channelPropertiesStatesManager->setValue($property, Utils\ArrayHash::from([
-						DevicesStates\Property::ACTUAL_VALUE_FIELD => $dataPoint->getValue(),
-						DevicesStates\Property::VALID_FIELD => true,
-					]));
+					$this->channelPropertiesStatesManager->setValue(
+						$property,
+						Utils\ArrayHash::from([
+							DevicesStates\Property::ACTUAL_VALUE_FIELD => $dataPoint->getValue(),
+							DevicesStates\Property::VALID_FIELD => true,
+						]),
+					);
 				} catch (MetadataExceptions\InvalidArgument $ex) {
 					$format = $property->getFormat();
 
@@ -153,10 +156,13 @@ final class StoreChannelPropertyState implements Queue\Consumer
 					}
 				}
 
-				$this->channelPropertiesStatesManager->setValue($property, Utils\ArrayHash::from([
-					DevicesStates\Property::ACTUAL_VALUE_FIELD => $dataPoint->getValue(),
-					DevicesStates\Property::VALID_FIELD => true,
-				]));
+				$this->channelPropertiesStatesManager->setValue(
+					$property,
+					Utils\ArrayHash::from([
+						DevicesStates\Property::ACTUAL_VALUE_FIELD => $dataPoint->getValue(),
+						DevicesStates\Property::VALID_FIELD => true,
+					]),
+				);
 			}
 		}
 

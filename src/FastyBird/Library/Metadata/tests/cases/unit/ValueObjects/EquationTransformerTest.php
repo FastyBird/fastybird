@@ -7,7 +7,7 @@ use FastyBird\Library\Metadata\Tests\Cases\Unit\BaseTestCase;
 use FastyBird\Library\Metadata\ValueObjects;
 use function strval;
 
-final class EquationFormatTest extends BaseTestCase
+final class EquationTransformerTest extends BaseTestCase
 {
 
 	/**

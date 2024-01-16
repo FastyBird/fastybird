@@ -138,10 +138,13 @@ final class StoreParametersStates implements Consumer
 					$property = $this->channelsPropertiesConfigurationRepository->findOneBy($findChannelPropertyQuery);
 
 					if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-						$this->channelPropertiesStatesManager->setValue($property, Utils\ArrayHash::from([
-							DevicesStates\Property::ACTUAL_VALUE_FIELD => $parameter->getValue(),
-							DevicesStates\Property::VALID_FIELD => true,
-						]));
+						$this->channelPropertiesStatesManager->setValue(
+							$property,
+							Utils\ArrayHash::from([
+								DevicesStates\Property::ACTUAL_VALUE_FIELD => $parameter->getValue(),
+								DevicesStates\Property::VALID_FIELD => true,
+							]),
+						);
 					} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
 						$this->databaseHelper->transaction(
 							function () use ($property, $parameter): void {

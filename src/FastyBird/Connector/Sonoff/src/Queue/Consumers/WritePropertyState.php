@@ -279,13 +279,13 @@ final class WritePropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$expectedValue = MetadataUtilities\ValueHelper::flattenValue(
+		$expectedValue = MetadataUtilities\Value::flattenValue(
 			$state->getExpectedValue(),
 		);
 
 		if ($expectedValue === null) {
 			if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-				$this->channelPropertiesStatesManager->setValue(
+				$this->channelPropertiesStatesManager->writeValue(
 					$property,
 					Utils\ArrayHash::from([
 						DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
@@ -293,7 +293,7 @@ final class WritePropertyState implements Queue\Consumer
 					]),
 				);
 			} else {
-				$this->devicePropertiesStatesManager->setValue(
+				$this->devicePropertiesStatesManager->writeValue(
 					$property,
 					Utils\ArrayHash::from([
 						DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
@@ -550,7 +550,7 @@ final class WritePropertyState implements Queue\Consumer
 			},
 			function (Throwable $ex) use ($connector, $device, $property, $entity): void {
 				if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-					$this->channelPropertiesStatesManager->setValue(
+					$this->channelPropertiesStatesManager->writeValue(
 						$property,
 						Utils\ArrayHash::from([
 							DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
@@ -558,7 +558,7 @@ final class WritePropertyState implements Queue\Consumer
 						]),
 					);
 				} else {
-					$this->devicePropertiesStatesManager->setValue(
+					$this->devicePropertiesStatesManager->writeValue(
 						$property,
 						Utils\ArrayHash::from([
 							DevicesStates\Property::EXPECTED_VALUE_FIELD => null,

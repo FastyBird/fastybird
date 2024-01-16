@@ -95,8 +95,8 @@ final class Mapped extends Property
 			[
 				'settable' => $resource->isSettable(),
 				'queryable' => $resource->isQueryable(),
-				'actual_value' => MetadataUtilities\ValueHelper::flattenValue($state?->getActualValue()),
-				'expected_value' => MetadataUtilities\ValueHelper::flattenValue($state?->getExpectedValue()),
+				'actual_value' => MetadataUtilities\Value::flattenValue($state?->getActualValue()),
+				'expected_value' => MetadataUtilities\Value::flattenValue($state?->getExpectedValue()),
 				'pending' => $state !== null ? (
 					is_bool($state->getPending())
 						? $state->getPending()
@@ -106,8 +106,8 @@ final class Mapped extends Property
 				'is_valid' => $state !== null && $state->isValid(),
 			],
 		) : array_merge((array) parent::getAttributes($resource, $context), [
-			'value' => MetadataUtilities\ValueHelper::flattenValue($resource->getValue()),
-			'default' => MetadataUtilities\ValueHelper::flattenValue($resource->getDefault()),
+			'value' => MetadataUtilities\Value::flattenValue($resource->getValue()),
+			'default' => MetadataUtilities\Value::flattenValue($resource->getDefault()),
 		]);
 	}
 

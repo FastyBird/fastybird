@@ -323,7 +323,7 @@ class Characteristic
 		return sprintf(
 			'<characteristic name=%s value=%s properties=%s>',
 			$this->name,
-			MetadataUtilities\ValueHelper::flattenValue($this->getValue()),
+			MetadataUtilities\Value::flattenValue($this->getValue()),
 			Nette\Utils\Json::encode($properties),
 		);
 	}

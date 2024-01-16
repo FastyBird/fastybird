@@ -320,23 +320,35 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 					}
 				})
 				->catch(function (Throwable $ex) use ($entity, $connector, $gateway, $channel): void {
-					$findPropertiesQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
+					$findPropertiesQuery = new DevicesQueries\Configuration\FindChannelProperties();
 					$findPropertiesQuery->forChannel($channel);
 					$findPropertiesQuery->settable(true);
 
-					$properties = $this->channelsPropertiesConfigurationRepository->findAllBy(
-						$findPropertiesQuery,
-						MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
-					);
+					$properties = $this->channelsPropertiesConfigurationRepository->findAllBy($findPropertiesQuery);
 
 					foreach ($properties as $property) {
-						$this->channelPropertiesStatesManager->writeValue(
-							$property,
-							Utils\ArrayHash::from([
-								DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
-								DevicesStates\Property::PENDING_FIELD => false,
-							]),
-						);
+						if (
+							$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+							|| $property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
+						) {
+							if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+								$this->channelPropertiesStatesManager->writeValue(
+									$property,
+									Utils\ArrayHash::from([
+										DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
+										DevicesStates\Property::PENDING_FIELD => false,
+									]),
+								);
+							} else {
+								$this->channelPropertiesStatesManager->writeValue(
+									$property,
+									Utils\ArrayHash::from([
+										DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
+										DevicesStates\Property::PENDING_FIELD => false,
+									]),
+								);
+							}
+						}
 					}
 
 					$extra = [];

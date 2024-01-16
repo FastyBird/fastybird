@@ -261,7 +261,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$expectedValue = MetadataUtilities\ValueHelper::flattenValue(
+		$expectedValue = MetadataUtilities\Value::flattenValue(
 			$state->getExpectedValue(),
 		);
 
@@ -1041,7 +1041,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 	 */
 	private function resetExpected(MetadataDocuments\DevicesModule\ChannelDynamicProperty $property): void
 	{
-		$this->channelPropertiesStatesManager->setValue(
+		$this->channelPropertiesStatesManager->writeValue(
 			$property,
 			Utils\ArrayHash::from([
 				DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
