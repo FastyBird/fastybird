@@ -15,7 +15,7 @@ use Ramsey\Uuid\Uuid;
 final class ChannelPropertiesManagerTest extends BaseTestCase
 {
 
-	private static $getCalled = 0;
+	private static int $getCalled = 0;
 
 	/**
 	 * @throws Exception
