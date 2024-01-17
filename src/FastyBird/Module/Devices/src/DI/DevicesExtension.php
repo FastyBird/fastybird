@@ -488,37 +488,37 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			$this->prefix('states.repositories.connectors.properties'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\States\ConnectorPropertiesRepository::class);
+			->setType(Models\States\Connectors\Repository::class);
 
 		$builder->addDefinition(
 			$this->prefix('states.repositories.devices.properties'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\States\DevicePropertiesRepository::class);
+			->setType(Models\States\Devices\Repository::class);
 
 		$builder->addDefinition(
 			$this->prefix('states.repositories.channels.properties'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\States\ChannelPropertiesRepository::class);
+			->setType(Models\States\Channels\Repository::class);
 
 		$builder->addDefinition(
 			$this->prefix('states.managers.connectors.properties'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\States\ConnectorPropertiesManager::class);
+			->setType(Models\States\Connectors\Manager::class);
 
 		$builder->addDefinition(
 			$this->prefix('states.managers.devices.properties'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\States\DevicePropertiesManager::class);
+			->setType(Models\States\Devices\Manager::class);
 
 		$builder->addDefinition(
 			$this->prefix('states.managers.channels.properties'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\States\ChannelPropertiesManager::class);
+			->setType(Models\States\Channels\Manager::class);
 
 		$builder->addDefinition(
 			$this->prefix('utilities.database'),
@@ -530,7 +530,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			$this->prefix('utilities.connectors.states'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Utilities\ConnectorPropertiesStates::class)
+			->setType(Models\States\ConnectorPropertiesManager::class)
 			->setArguments([
 				'logger' => $logger,
 			]);
@@ -539,7 +539,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			$this->prefix('utilities.devices.states'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Utilities\DevicePropertiesStates::class)
+			->setType(Models\States\DevicePropertiesManager::class)
 			->setArguments([
 				'logger' => $logger,
 			]);
@@ -548,7 +548,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			$this->prefix('utilities.channels.states'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Utilities\ChannelPropertiesStates::class)
+			->setType(Models\States\ChannelPropertiesManager::class)
 			->setArguments([
 				'logger' => $logger,
 			]);

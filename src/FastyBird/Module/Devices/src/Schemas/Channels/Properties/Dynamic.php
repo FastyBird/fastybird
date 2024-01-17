@@ -26,7 +26,6 @@ use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Router;
 use FastyBird\Module\Devices\Schemas;
-use FastyBird\Module\Devices\Utilities;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use IPub\SlimRouter\Routing;
 use Neomerx\JsonApi;
@@ -55,7 +54,7 @@ final class Dynamic extends Property
 	public function __construct(
 		Routing\IRouter $router,
 		Models\Entities\Channels\Properties\PropertiesRepository $propertiesRepository,
-		private readonly Utilities\ChannelPropertiesStates $channelPropertiesStates,
+		private readonly Models\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 	)
 	{
 		parent::__construct($router, $propertiesRepository);
@@ -89,7 +88,7 @@ final class Dynamic extends Property
 		JsonApi\Contracts\Schema\ContextInterface $context,
 	): iterable
 	{
-		$state = $this->channelPropertiesStates->readValue($resource);
+		$state = $this->channelPropertiesStatesManager->read($resource);
 
 		return array_merge((array) parent::getAttributes($resource, $context), [
 			'settable' => $resource->isSettable(),

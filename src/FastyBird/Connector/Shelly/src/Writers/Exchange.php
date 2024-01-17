@@ -28,7 +28,6 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
-use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use React\EventLoop;
 
 /**
@@ -54,7 +53,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 		DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
-		DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
+		DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 		DateTimeFactory\Factory $dateTimeFactory,
 		EventLoop\LoopInterface $eventLoop,
 		private readonly ExchangeConsumers\Container $consumer,
@@ -124,12 +123,13 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 			}
 
 			$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+			$findDeviceQuery->forConnector($this->connector);
 			$findDeviceQuery->byId($channel->getDevice());
 			$findDeviceQuery->byType(Entities\ShellyDevice::TYPE);
 
 			$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
-			if ($device === null || !$device->getConnector()->equals($this->connector->getId())) {
+			if ($device === null) {
 				return;
 			}
 

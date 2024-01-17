@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ConnectorPropertiesManager.php
+ * ConnectorPropertiesStates.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,151 +10,485 @@
  * @subpackage     Models
  * @since          1.0.0
  *
- * @date           08.02.22
+ * @date           23.08.22
  */
 
 namespace FastyBird\Module\Devices\Models\States;
 
 use DateTimeInterface;
+use FastyBird\DateTimeFactory;
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Module\Devices\Events;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
+use FastyBird\Module\Devices;
+use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\States;
+use FastyBird\Module\Devices\Utilities\PropertiesStates;
 use Nette;
 use Nette\Utils;
-use Psr\EventDispatcher as PsrEventDispatcher;
-use function property_exists;
+use Orisai\ObjectMapper;
+use function assert;
+use function is_array;
+use function strval;
 
 /**
- * Connector property states manager
+ * Useful connector dynamic property state helpers
+ *
+ * @extends PropertiesStates<MetadataDocuments\DevicesModule\ConnectorDynamicProperty, null, States\ConnectorProperty>
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Models
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ConnectorPropertiesManager
+final class ConnectorPropertiesManager extends PropertiesStates
 {
 
 	use Nette\SmartObject;
 
 	public function __construct(
-		protected readonly IConnectorPropertiesManager|null $manager = null,
-		protected readonly IConnectorPropertiesRepository|null $repository = null,
-		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
+		private readonly Models\Configuration\Connectors\Properties\Repository $connectorPropertiesConfigurationRepository,
+		private readonly Connectors\Repository $connectorPropertyStateRepository,
+		private readonly Connectors\Manager $connectorPropertiesStatesManager,
+		private readonly Devices\Logger $logger,
+		private readonly DateTimeFactory\Factory $dateTimeFactory,
+		ObjectMapper\Processing\Processor $stateMapper,
 	)
 	{
+		parent::__construct($stateMapper);
 	}
 
 	/**
-	 * @throws Exceptions\NotImplemented
-	 *
-	 * @interal
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
-	public function create(
-		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
-		Utils\ArrayHash $values,
-	): States\ConnectorProperty
+	public function read(
+		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
+	): States\ConnectorProperty|null
 	{
-		if ($this->manager === null) {
-			throw new Exceptions\NotImplemented('Connector properties state manager is not registered');
-		}
-
-		if (
-			property_exists($values, States\Property::ACTUAL_VALUE_FIELD)
-			&& property_exists($values, States\Property::EXPECTED_VALUE_FIELD)
-			&& $values->offsetGet(States\Property::ACTUAL_VALUE_FIELD) === $values->offsetGet(
-				States\Property::EXPECTED_VALUE_FIELD,
-			)
-		) {
-			$values->offsetSet(States\Property::EXPECTED_VALUE_FIELD, null);
-			$values->offsetSet(States\Property::PENDING_FIELD, null);
-		}
-
-		$createdState = $this->manager->create($property->getId(), $values);
-
-		$this->dispatcher?->dispatch(new Events\ConnectorPropertyStateEntityCreated($property, $createdState));
-
-		return $createdState;
+		return $this->loadValue($property, true);
 	}
 
 	/**
-	 * @throws Exceptions\NotImplemented
-	 *
-	 * @interal
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 */
-	public function update(
-		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
-		States\ConnectorProperty $state,
-		Utils\ArrayHash $values,
-	): States\ConnectorProperty
+	public function get(
+		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
+	): States\ConnectorProperty|null
 	{
-		if ($this->manager === null) {
-			throw new Exceptions\NotImplemented('Connector properties state manager is not registered');
+		return $this->loadValue($property, false);
+	}
+
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
+	 */
+	public function write(
+		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
+		Utils\ArrayHash $data,
+	): void
+	{
+		$this->saveValue($property, $data, true);
+	}
+
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
+	 */
+	public function set(
+		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
+		Utils\ArrayHash $data,
+	): void
+	{
+		$this->saveValue($property, $data, false);
+	}
+
+	/**
+	 * @param MetadataDocuments\DevicesModule\ConnectorDynamicProperty|array<MetadataDocuments\DevicesModule\ConnectorDynamicProperty>|Entities\Connectors\Properties\Dynamic|array<Entities\Connectors\Properties\Dynamic> $property
+	 *
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
+	 */
+	public function setValidState(
+		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic|array $property,
+		bool $state,
+	): void
+	{
+		if (is_array($property)) {
+			foreach ($property as $item) {
+				$this->set($item, Utils\ArrayHash::from([
+					States\Property::VALID_FIELD => $state,
+				]));
+			}
+		} else {
+			$this->set($property, Utils\ArrayHash::from([
+				States\Property::VALID_FIELD => $state,
+			]));
 		}
+	}
 
-		$updatedState = $this->manager->update($state, $values);
-
-		if ($updatedState->getActualValue() === $updatedState->getExpectedValue()) {
-			$updatedState = $this->manager->update(
-				$updatedState,
-				Utils\ArrayHash::from([
+	/**
+	 * @param MetadataDocuments\DevicesModule\ConnectorDynamicProperty|array<MetadataDocuments\DevicesModule\ConnectorDynamicProperty>|Entities\Connectors\Properties\Dynamic|array<Entities\Connectors\Properties\Dynamic> $property
+	 *
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
+	 */
+	public function setPendingState(
+		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic|array $property,
+		bool $pending,
+	): void
+	{
+		if (is_array($property)) {
+			foreach ($property as $item) {
+				if ($pending === false) {
+					$this->set($item, Utils\ArrayHash::from([
+						States\Property::EXPECTED_VALUE_FIELD => null,
+						States\Property::PENDING_FIELD => false,
+					]));
+				} else {
+					$this->set($item, Utils\ArrayHash::from([
+						States\Property::PENDING_FIELD => $this->dateTimeFactory->getNow()->format(
+							DateTimeInterface::ATOM,
+						),
+					]));
+				}
+			}
+		} else {
+			if ($pending === false) {
+				$this->set($property, Utils\ArrayHash::from([
 					States\Property::EXPECTED_VALUE_FIELD => null,
 					States\Property::PENDING_FIELD => false,
-				]),
-			);
+				]));
+			} else {
+				$this->set($property, Utils\ArrayHash::from([
+					States\Property::PENDING_FIELD => $this->dateTimeFactory->getNow()->format(DateTimeInterface::ATOM),
+				]));
+			}
 		}
-
-		if (
-			[
-				States\Property::ACTUAL_VALUE_FIELD => $state->getActualValue(),
-				States\Property::EXPECTED_VALUE_FIELD => $state->getExpectedValue(),
-				States\Property::PENDING_FIELD => $state->getPending() instanceof DateTimeInterface
-					? $state->getPending()->format(DateTimeInterface::ATOM)
-					: $state->getPending(),
-				States\Property::VALID_FIELD => $state->isValid(),
-			] !== [
-				States\Property::ACTUAL_VALUE_FIELD => $updatedState->getActualValue(),
-				States\Property::EXPECTED_VALUE_FIELD => $updatedState->getExpectedValue(),
-				States\Property::PENDING_FIELD => $updatedState->getPending() instanceof DateTimeInterface
-					? $updatedState->getPending()->format(DateTimeInterface::ATOM)
-					: $updatedState->getPending(),
-				States\Property::VALID_FIELD => $updatedState->isValid(),
-			]
-		) {
-			$this->dispatcher?->dispatch(
-				new Events\ConnectorPropertyStateEntityUpdated($property, $state, $updatedState),
-			);
-		}
-
-		return $updatedState;
 	}
 
-	/**
-	 * @throws Exceptions\NotImplemented
-	 *
-	 * @interal
-	 */
 	public function delete(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
 	): bool
 	{
-		if ($this->manager === null || $this->repository === null) {
-			throw new Exceptions\NotImplemented('Connector properties state manager is not registered');
+		try {
+			return $this->connectorPropertiesStatesManager->delete($property);
+		} catch (Exceptions\NotImplemented) {
+			$this->logger->warning(
+				'Connectors states manager is not configured. State could not be saved',
+				[
+					'source' => MetadataTypes\ModuleSource::DEVICES,
+					'type' => 'connector-properties-states',
+				],
+			);
 		}
 
-		$state = $this->repository->findOne($property);
+		return false;
+	}
 
-		if ($state === null) {
-			return true;
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
+	 */
+	private function loadValue(
+		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
+		bool $forReading,
+	): States\ConnectorProperty|null
+	{
+		if ($property instanceof Entities\Connectors\Properties\Property) {
+			$property = $this->connectorPropertiesConfigurationRepository->find($property->getId());
+			assert($property instanceof MetadataDocuments\DevicesModule\ConnectorDynamicProperty);
 		}
 
-		$result = $this->manager->delete($state);
+		try {
+			$state = $this->connectorPropertyStateRepository->findOne($property);
 
-		$this->dispatcher?->dispatch(new Events\ConnectorPropertyStateEntityDeleted($property));
+			if ($state === null) {
+				return null;
+			}
 
-		return $result;
+			$updateValues = [];
+
+			if ($state->getActualValue() !== null) {
+				try {
+					$updateValues[States\Property::ACTUAL_VALUE_FIELD] = $this->convertReadValue(
+						$state->getActualValue(),
+						$property,
+						null,
+						$forReading,
+					);
+				} catch (MetadataExceptions\InvalidValue $ex) {
+					$this->connectorPropertiesStatesManager->update($property, $state, Utils\ArrayHash::from([
+						States\Property::ACTUAL_VALUE_FIELD => null,
+						States\Property::VALID_FIELD => false,
+					]));
+
+					$this->logger->error(
+						'Property stored actual value was not valid',
+						[
+							'source' => MetadataTypes\ModuleSource::DEVICES,
+							'type' => 'connector-properties-states',
+							'exception' => BootstrapHelpers\Logger::buildException($ex),
+						],
+					);
+
+					return $this->loadValue($property, $forReading);
+				}
+			}
+
+			if ($state->getExpectedValue() !== null) {
+				try {
+					$expectedValue = $this->convertReadValue(
+						$state->getExpectedValue(),
+						$property,
+						null,
+						$forReading,
+					);
+
+					if ($expectedValue !== null && !$property->isSettable()) {
+						$this->connectorPropertiesStatesManager->update($property, $state, Utils\ArrayHash::from([
+							States\Property::EXPECTED_VALUE_FIELD => null,
+							States\Property::PENDING_FIELD => false,
+						]));
+
+						$this->logger->warning(
+							'Property is not settable but has stored expected value',
+							[
+								'source' => MetadataTypes\ModuleSource::DEVICES,
+								'type' => 'connector-properties-states',
+							],
+						);
+
+						return $this->loadValue($property, $forReading);
+					}
+
+					$updateValues[States\Property::EXPECTED_VALUE_FIELD] = $expectedValue;
+				} catch (MetadataExceptions\InvalidValue $ex) {
+					$this->connectorPropertiesStatesManager->update($property, $state, Utils\ArrayHash::from([
+						States\Property::EXPECTED_VALUE_FIELD => null,
+						States\Property::PENDING_FIELD => false,
+					]));
+
+					$this->logger->error(
+						'Property stored expected value was not valid',
+						[
+							'source' => MetadataTypes\ModuleSource::DEVICES,
+							'type' => 'connector-properties-states',
+							'exception' => BootstrapHelpers\Logger::buildException($ex),
+						],
+					);
+
+					return $this->loadValue($property, $forReading);
+				}
+			}
+
+			if ($updateValues === []) {
+				return $state;
+			}
+
+			return $this->updateState($state, $state::class, $updateValues);
+		} catch (Exceptions\NotImplemented) {
+			$this->logger->warning(
+				'Connectors states repository is not configured. State could not be fetched',
+				[
+					'source' => MetadataTypes\ModuleSource::DEVICES,
+					'type' => 'connector-properties-states',
+				],
+			);
+		}
+
+		return null;
+	}
+
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
+	 */
+	private function saveValue(
+		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
+		Utils\ArrayHash $data,
+		bool $forWriting,
+	): void
+	{
+		if ($property instanceof Entities\Connectors\Properties\Property) {
+			$property = $this->connectorPropertiesConfigurationRepository->find($property->getId());
+			assert($property instanceof MetadataDocuments\DevicesModule\ConnectorDynamicProperty);
+		}
+
+		$state = $this->loadValue($property, $forWriting);
+
+		if ($data->offsetExists(States\Property::ACTUAL_VALUE_FIELD)) {
+			try {
+				if (
+					$property->getInvalid() !== null
+					&& strval(
+						MetadataUtilities\Value::flattenValue(
+							/** @phpstan-ignore-next-line */
+							$data->offsetGet(States\Property::ACTUAL_VALUE_FIELD),
+						),
+					) === strval(
+						MetadataUtilities\Value::flattenValue($property->getInvalid()),
+					)
+				) {
+					$data->offsetSet(States\Property::ACTUAL_VALUE_FIELD, null);
+					$data->offsetSet(States\Property::VALID_FIELD, false);
+
+				} else {
+					$actualValue = $this->convertWriteActualValue(
+						/** @phpstan-ignore-next-line */
+						$data->offsetGet(States\Property::ACTUAL_VALUE_FIELD),
+						$property,
+					);
+
+					$data->offsetSet(
+						States\Property::ACTUAL_VALUE_FIELD,
+						MetadataUtilities\Value::flattenValue($actualValue),
+					);
+					$data->offsetSet(States\Property::VALID_FIELD, true);
+				}
+			} catch (MetadataExceptions\InvalidValue $ex) {
+				$data->offsetUnset(States\Property::ACTUAL_VALUE_FIELD);
+				$data->offsetSet(States\Property::VALID_FIELD, false);
+
+				$this->logger->error(
+					'Provided property actual value is not valid',
+					[
+						'source' => MetadataTypes\ModuleSource::DEVICES,
+						'type' => 'connector-properties-states',
+						'exception' => BootstrapHelpers\Logger::buildException($ex),
+					],
+				);
+			}
+		}
+
+		if ($data->offsetExists(States\Property::EXPECTED_VALUE_FIELD)) {
+			if (
+				$data->offsetGet(States\Property::EXPECTED_VALUE_FIELD) !== null
+				&& $data->offsetGet(States\Property::EXPECTED_VALUE_FIELD) !== ''
+			) {
+				try {
+					$expectedValue = $this->convertWriteExpectedValue(
+					/** @phpstan-ignore-next-line */
+						$data->offsetGet(States\Property::EXPECTED_VALUE_FIELD),
+						$property,
+						null,
+						$forWriting,
+					);
+
+					if ($expectedValue !== null && !$property->isSettable()) {
+						throw new Exceptions\InvalidArgument(
+							'Property is not settable, expected value could not written',
+						);
+					}
+
+					$data->offsetSet(
+						States\Property::EXPECTED_VALUE_FIELD,
+						MetadataUtilities\Value::flattenValue($expectedValue),
+					);
+					$data->offsetSet(
+						States\Property::PENDING_FIELD,
+						$expectedValue !== null,
+					);
+				} catch (MetadataExceptions\InvalidValue $ex) {
+					$data->offsetSet(States\Property::EXPECTED_VALUE_FIELD, null);
+					$data->offsetSet(States\Property::PENDING_FIELD, false);
+
+					$this->logger->error(
+						'Provided property expected value was not valid',
+						[
+							'source' => MetadataTypes\ModuleSource::DEVICES,
+							'type' => 'connector-properties-states',
+							'exception' => BootstrapHelpers\Logger::buildException($ex),
+						],
+					);
+				}
+			} else {
+				$data->offsetSet(States\Property::EXPECTED_VALUE_FIELD, null);
+				$data->offsetSet(States\Property::PENDING_FIELD, false);
+			}
+		}
+
+		if ($data->count() === 0) {
+			return;
+		}
+
+		try {
+			// In case synchronization failed...
+			if ($state === null) {
+				// ...create state in storage
+				$state = $this->connectorPropertiesStatesManager->create(
+					$property,
+					$data,
+				);
+
+				$this->logger->debug(
+					'Connector property state was created',
+					[
+						'source' => MetadataTypes\ModuleSource::DEVICES,
+						'type' => 'connector-properties-states',
+						'property' => [
+							'id' => $property->getId()->toString(),
+							'state' => $state->toArray(),
+						],
+					],
+				);
+			} else {
+				$state = $this->connectorPropertiesStatesManager->update(
+					$property,
+					$state,
+					$data,
+				);
+
+				$this->logger->debug(
+					'Connector property state was updated',
+					[
+						'source' => MetadataTypes\ModuleSource::DEVICES,
+						'type' => 'connector-properties-states',
+						'property' => [
+							'id' => $property->getId()->toString(),
+							'state' => $state->toArray(),
+						],
+					],
+				);
+			}
+		} catch (Exceptions\NotImplemented) {
+			$this->logger->warning(
+				'Connectors states manager is not configured. State could not be saved',
+				[
+					'source' => MetadataTypes\ModuleSource::DEVICES,
+					'type' => 'connector-properties-states',
+				],
+			);
+		}
 	}
 
 }

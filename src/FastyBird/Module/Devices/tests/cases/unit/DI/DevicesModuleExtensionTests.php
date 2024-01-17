@@ -85,14 +85,17 @@ final class DevicesModuleExtensionTests extends DbTestCase
 		);
 
 		self::assertNotNull(
-			$this->getContainer()->getByType(Models\States\ConnectorPropertiesRepository::class, false),
+			$this->getContainer()->getByType(Models\States\Connectors\Repository::class, false),
 		);
-		self::assertNotNull($this->getContainer()->getByType(Models\States\DevicePropertiesRepository::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Models\States\ChannelPropertiesRepository::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Models\States\Devices\Repository::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Models\States\Channels\Repository::class, false));
 
+		self::assertNotNull($this->getContainer()->getByType(Models\States\Connectors\Manager::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Models\States\Devices\Manager::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Models\States\Channels\Manager::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Models\States\ChannelPropertiesManager::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Models\States\ConnectorPropertiesManager::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Models\States\DevicePropertiesManager::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Models\States\ChannelPropertiesManager::class, false));
 
 		self::assertNotNull(
 			$this->getContainer()->getByType(Models\Configuration\Connectors\Repository::class, false),
@@ -160,9 +163,6 @@ final class DevicesModuleExtensionTests extends DbTestCase
 		self::assertNotNull($this->getContainer()->getByType(Subscribers\StateEntities::class, false));
 
 		self::assertNotNull($this->getContainer()->getByType(Utilities\Database::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Utilities\ChannelPropertiesStates::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Utilities\ConnectorPropertiesStates::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Utilities\DevicePropertiesStates::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Utilities\DeviceConnection::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Utilities\ConnectorConnection::class, false));
 	}

@@ -26,7 +26,6 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
-use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use React\EventLoop;
 use function array_key_exists;
@@ -55,6 +54,12 @@ abstract class Periodic
 
 	private const HANDLER_PENDING_DELAY = 2_000.0;
 
+	/** @var array<string, MetadataDocuments\DevicesModule\Device>  */
+	private array $devices = [];
+
+	/** @var array<string, array<string, MetadataDocuments\DevicesModule\ChannelDynamicProperty>>  */
+	private array $properties = [];
+
 	/** @var array<string> */
 	private array $processedDevices = [];
 
@@ -70,17 +75,53 @@ abstract class Periodic
 		protected readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		protected readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
-		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
+		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
 	)
 	{
 	}
 
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 */
 	public function connect(): void
 	{
 		$this->processedDevices = [];
 		$this->processedProperties = [];
+
+		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDevicesQuery->forConnector($this->connector);
+		$findDevicesQuery->byType(Entities\ModbusDevice::TYPE);
+
+		foreach ($this->devicesConfigurationRepository->findAllBy($findDevicesQuery) as $device) {
+			$this->devices[$device->getId()->toString()] = $device;
+
+			if (!array_key_exists($device->getId()->toString(), $this->properties)) {
+				$this->properties[$device->getId()->toString()] = [];
+			}
+
+			$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
+			$findChannelsQuery->forDevice($device);
+			$findChannelsQuery->byType(Entities\ModbusChannel::TYPE);
+
+			$channels = $this->channelsConfigurationRepository->findAllBy($findChannelsQuery);
+
+			foreach ($channels as $channel) {
+				$findChannelPropertiesQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
+				$findChannelPropertiesQuery->forChannel($channel);
+				$findChannelPropertiesQuery->settable(true);
+
+				$properties = $this->channelsPropertiesConfigurationRepository->findAllBy(
+					$findChannelPropertiesQuery,
+					MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
+				);
+
+				foreach ($properties as $property) {
+					$this->properties[$device->getId()->toString()][$property->getId()->toString()] = $property;
+				}
+			}
+		}
 
 		$this->eventLoop->addTimer(
 			self::HANDLER_START_DELAY,
@@ -109,17 +150,11 @@ abstract class Periodic
 	 */
 	private function handleCommunication(): void
 	{
-		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
-		$findDevicesQuery->forConnector($this->connector);
-		$findDevicesQuery->byType(Entities\ModbusDevice::TYPE);
-
-		$devices = $this->devicesConfigurationRepository->findAllBy($findDevicesQuery);
-
-		foreach ($devices as $device) {
+		foreach ($this->devices as $device) {
 			if (!in_array($device->getId()->toString(), $this->processedDevices, true)) {
 				$this->processedDevices[] = $device->getId()->toString();
 
-				if ($this->writeChannelsProperty($device)) {
+				if ($this->writeProperty($device)) {
 					$this->registerLoopHandler();
 
 					return;
@@ -140,73 +175,63 @@ abstract class Periodic
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
 	 */
-	private function writeChannelsProperty(MetadataDocuments\DevicesModule\Device $device): bool
+	private function writeProperty(MetadataDocuments\DevicesModule\Device $device): bool
 	{
 		$now = $this->dateTimeFactory->getNow();
 
-		$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
-		$findChannelsQuery->forDevice($device);
-		$findChannelsQuery->byType(Entities\ModbusChannel::TYPE);
+		if (!array_key_exists($device->getId()->toString(), $this->properties)) {
+			return false;
+		}
 
-		$channels = $this->channelsConfigurationRepository->findAllBy($findChannelsQuery);
+		foreach ($this->properties[$device->getId()->toString()] as $property) {
+			$debounce = array_key_exists($property->getId()->toString(), $this->processedProperties)
+				? $this->processedProperties[$property->getId()->toString()]
+				: false;
 
-		foreach ($channels as $channel) {
-			$findChannelPropertiesQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
-			$findChannelPropertiesQuery->forChannel($channel);
-
-			$properties = $this->channelsPropertiesConfigurationRepository->findAllBy(
-				$findChannelPropertiesQuery,
-				MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
-			);
-
-			foreach ($properties as $property) {
-				$debounce = array_key_exists($property->getId()->toString(), $this->processedProperties)
-					? $this->processedProperties[$property->getId()->toString()]
-					: false;
-
-				if (
-					$debounce !== false
-					&& (float) $now->format('Uv') - (float) $debounce->format('Uv') < self::HANDLER_DEBOUNCE_INTERVAL
-				) {
-					continue;
-				}
-
-				$this->processedProperties[$property->getId()->toString()] = $now;
-
-				$state = $this->channelPropertiesStatesManager->getValue($property);
-
-				if ($state === null) {
-					continue;
-				}
-
-				if ($state->getExpectedValue() === null) {
-					continue;
-				}
-
-				$pending = $state->getPending();
-
-				if (
-					$pending === true
-					|| (
-						$pending instanceof DateTimeInterface
-						&& (float) $now->format('Uv') - (float) $pending->format('Uv') > self::HANDLER_PENDING_DELAY
-					)
-				) {
-					$this->queue->append(
-						$this->entityHelper->create(
-							Entities\Messages\WriteChannelPropertyState::class,
-							[
-								'connector' => $device->getConnector(),
-								'device' => $device->getId(),
-								'channel' => $property->getChannel(),
-								'property' => $property->getId(),
-							],
-						),
-					);
-
-					return true;
-				}
+			if (
+				$debounce !== false
+				&& (float) $now->format('Uv') - (float) $debounce->format('Uv') < self::HANDLER_DEBOUNCE_INTERVAL
+			) {
+				continue;
 			}
+
+			$this->processedProperties[$property->getId()->toString()] = $now;
+
+			$state = $this->channelPropertiesStatesManager->get($property);
+
+			if ($state === null) {
+				return false;
+			}
+
+			if ($state->getExpectedValue() === null) {
+				return false;
+			}
+
+			$pending = $state->getPending();
+
+			if (
+				$pending === true
+				|| (
+					$pending instanceof DateTimeInterface
+					&& (float) $now->format('Uv') - (float) $pending->format('Uv') > self::HANDLER_PENDING_DELAY
+				)
+			) {
+				$this->queue->append(
+					$this->entityHelper->create(
+						Entities\Messages\WriteChannelPropertyState::class,
+						[
+							'connector' => $device->getConnector(),
+							'device' => $device->getId(),
+							'channel' => $property->getChannel(),
+							'property' => $property->getId(),
+						],
+					),
+				);
+
+				return true;
+			}
+
+			return false;
 		}
 
 		return false;

@@ -37,7 +37,6 @@ use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\States as DevicesStates;
-use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
 use Nette\Localization;
 use Nette\Utils;
@@ -93,7 +92,7 @@ class Install extends Console\Command\Command
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager,
 		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
-		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
+		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly BootstrapHelpers\Database $databaseHelper,
 		private readonly Localization\Translator $translator,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
@@ -933,13 +932,11 @@ class Install extends Console\Command\Command
 		);
 		assert($hvacConfiguration !== null);
 
-		$this->channelPropertiesStatesManager->setValue(
+		$this->channelPropertiesStatesManager->set(
 			$hvacConfiguration,
 			Utils\ArrayHash::from([
 				DevicesStates\Property::ACTUAL_VALUE_FIELD => Types\HvacMode::OFF,
 				DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
-				DevicesStates\Property::VALID_FIELD => true,
-				DevicesStates\Property::PENDING_FIELD => false,
 			]),
 		);
 
@@ -949,13 +946,11 @@ class Install extends Console\Command\Command
 		);
 		assert($targetTempConfiguration !== null);
 
-		$this->channelPropertiesStatesManager->setValue(
+		$this->channelPropertiesStatesManager->set(
 			$targetTempConfiguration,
 			Utils\ArrayHash::from([
 				DevicesStates\Property::ACTUAL_VALUE_FIELD => $targetTemp,
 				DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
-				DevicesStates\Property::VALID_FIELD => true,
-				DevicesStates\Property::PENDING_FIELD => false,
 			]),
 		);
 
@@ -965,13 +960,11 @@ class Install extends Console\Command\Command
 		);
 		assert($presetModeConfiguration !== null);
 
-		$this->channelPropertiesStatesManager->setValue(
+		$this->channelPropertiesStatesManager->set(
 			$presetModeConfiguration,
 			Utils\ArrayHash::from([
 				DevicesStates\Property::ACTUAL_VALUE_FIELD => Types\Preset::MANUAL,
 				DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
-				DevicesStates\Property::VALID_FIELD => true,
-				DevicesStates\Property::PENDING_FIELD => false,
 			]),
 		);
 
@@ -982,13 +975,11 @@ class Install extends Console\Command\Command
 			);
 			assert($presetConfiguration !== null);
 
-			$this->channelPropertiesStatesManager->setValue(
+			$this->channelPropertiesStatesManager->set(
 				$presetConfiguration,
 				Utils\ArrayHash::from([
 					DevicesStates\Property::ACTUAL_VALUE_FIELD => $data['value'],
 					DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
-					DevicesStates\Property::VALID_FIELD => true,
-					DevicesStates\Property::PENDING_FIELD => false,
 				]),
 			);
 		}
@@ -1542,13 +1533,11 @@ class Install extends Console\Command\Command
 		);
 		assert($hvacModeConfiguration !== null);
 
-		$this->channelPropertiesStatesManager->setValue(
+		$this->channelPropertiesStatesManager->set(
 			$hvacModeConfiguration,
 			Utils\ArrayHash::from([
 				DevicesStates\Property::ACTUAL_VALUE_FIELD => Types\HvacMode::OFF,
 				DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
-				DevicesStates\Property::VALID_FIELD => true,
-				DevicesStates\Property::PENDING_FIELD => false,
 			]),
 		);
 
@@ -1560,13 +1549,11 @@ class Install extends Console\Command\Command
 		);
 		assert($targetTempConfiguration !== null);
 
-		$this->channelPropertiesStatesManager->setValue(
+		$this->channelPropertiesStatesManager->set(
 			$targetTempConfiguration,
 			Utils\ArrayHash::from([
 				DevicesStates\Property::ACTUAL_VALUE_FIELD => $targetTemp,
 				DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
-				DevicesStates\Property::VALID_FIELD => true,
-				DevicesStates\Property::PENDING_FIELD => false,
 			]),
 		);
 
@@ -1578,13 +1565,11 @@ class Install extends Console\Command\Command
 		);
 		assert($presetModeConfiguration !== null);
 
-		$this->channelPropertiesStatesManager->setValue(
+		$this->channelPropertiesStatesManager->set(
 			$presetModeConfiguration,
 			Utils\ArrayHash::from([
 				DevicesStates\Property::ACTUAL_VALUE_FIELD => Types\Preset::MANUAL,
 				DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
-				DevicesStates\Property::VALID_FIELD => true,
-				DevicesStates\Property::PENDING_FIELD => false,
 			]),
 		);
 
@@ -1595,13 +1580,11 @@ class Install extends Console\Command\Command
 			);
 			assert($presetConfiguration !== null);
 
-			$this->channelPropertiesStatesManager->setValue(
+			$this->channelPropertiesStatesManager->set(
 				$presetConfiguration,
 				Utils\ArrayHash::from([
 					DevicesStates\Property::ACTUAL_VALUE_FIELD => $data['value'],
 					DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
-					DevicesStates\Property::VALID_FIELD => true,
-					DevicesStates\Property::PENDING_FIELD => false,
 				]),
 			);
 		}
@@ -2665,13 +2648,11 @@ class Install extends Console\Command\Command
 		);
 		assert($targetTempConfiguration !== null);
 
-		$this->channelPropertiesStatesManager->setValue(
+		$this->channelPropertiesStatesManager->set(
 			$targetTempConfiguration,
 			Utils\ArrayHash::from([
 				DevicesStates\Property::ACTUAL_VALUE_FIELD => $targetTemp,
 				DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
-				DevicesStates\Property::VALID_FIELD => true,
-				DevicesStates\Property::PENDING_FIELD => false,
 			]),
 		);
 	}
@@ -3319,7 +3300,7 @@ class Install extends Console\Command\Command
 			);
 			assert($propertyConfiguration !== null);
 
-			$state = $this->channelPropertiesStatesManager->getValue($propertyConfiguration);
+			$state = $this->channelPropertiesStatesManager->get($propertyConfiguration);
 
 			$targetTemp = $state?->getActualValue();
 			assert(is_numeric($targetTemp) || $targetTemp === null);

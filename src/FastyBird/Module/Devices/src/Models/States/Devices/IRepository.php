@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * IDevicePropertiesRepository.php
+ * IRepository.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,10 +10,10 @@
  * @subpackage     Models
  * @since          1.0.0
  *
- * @date           08.02.22
+ * @date           09.01.22
  */
 
-namespace FastyBird\Module\Devices\Models\States;
+namespace FastyBird\Module\Devices\Models\States\Devices;
 
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Module\Devices\Entities;
@@ -21,22 +21,21 @@ use FastyBird\Module\Devices\States;
 use Ramsey\Uuid;
 
 /**
- * Connector property repository interface
+ * Device property repository interface
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Models
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-interface IConnectorPropertiesRepository
+interface IRepository
 {
 
 	public function findOne(
-		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
-	): States\ConnectorProperty|null;
+		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
+	): States\DeviceProperty|null;
 
-	public function findOneById(
-		Uuid\UuidInterface $id,
-	): States\ConnectorProperty|null;
+	public function findOneById(Uuid\UuidInterface $id): States\DeviceProperty|null;
 
 }

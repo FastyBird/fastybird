@@ -13,7 +13,6 @@ use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\States;
 use FastyBird\Module\Devices\Tests\Cases\Unit\BaseTestCase;
 use FastyBird\Module\Devices\Tests\Fixtures;
-use FastyBird\Module\Devices\Utilities;
 use Nette\DI;
 use Ramsey\Uuid;
 
@@ -53,20 +52,22 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 			$channelPropertiesConfigurationRepository,
 		);
 
-		$channelPropertyStateRepository = $this->createMock(Models\States\ChannelPropertiesRepository::class);
+		$channelPropertyStateRepository = $this->createMock(Models\States\Channels\Repository::class);
 		$channelPropertyStateRepository
 			->expects(self::exactly(1))
 			->method('findOne')
 			->willReturn($stored);
 
 		$this->mockContainerService(
-			Models\States\ChannelPropertiesRepository::class,
+			Models\States\Channels\Repository::class,
 			$channelPropertyStateRepository,
 		);
 
-		$channelPropertiesStatesManager = $this->getContainer()->getByType(Utilities\ChannelPropertiesStates::class);
+		$channelPropertiesStatesManager = $this->getContainer()->getByType(
+			Models\States\ChannelPropertiesManager::class,
+		);
 
-		$state = $channelPropertiesStatesManager->readValue($property);
+		$state = $channelPropertiesStatesManager->read($property);
 
 		self::assertInstanceOf(Fixtures\Dummy\ChannelPropertyState::class, $state);
 		self::assertSame($actual, $state->getActualValue(), 'actual value check');
@@ -106,20 +107,22 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 			$channelPropertiesConfigurationRepository,
 		);
 
-		$channelPropertyStateRepository = $this->createMock(Models\States\ChannelPropertiesRepository::class);
+		$channelPropertyStateRepository = $this->createMock(Models\States\Channels\Repository::class);
 		$channelPropertyStateRepository
 			->expects(self::exactly(1))
 			->method('findOne')
 			->willReturn($stored);
 
 		$this->mockContainerService(
-			Models\States\ChannelPropertiesRepository::class,
+			Models\States\Channels\Repository::class,
 			$channelPropertyStateRepository,
 		);
 
-		$channelPropertiesStatesManager = $this->getContainer()->getByType(Utilities\ChannelPropertiesStates::class);
+		$channelPropertiesStatesManager = $this->getContainer()->getByType(
+			Models\States\ChannelPropertiesManager::class,
+		);
 
-		$state = $channelPropertiesStatesManager->getValue($property);
+		$state = $channelPropertiesStatesManager->get($property);
 
 		self::assertInstanceOf(Fixtures\Dummy\ChannelPropertyState::class, $state);
 		self::assertSame($actual, $state->getActualValue(), 'actual value check');

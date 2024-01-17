@@ -32,7 +32,6 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
-use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette\Utils;
 use React\Promise;
 use function array_filter;
@@ -93,7 +92,7 @@ class Thermostat implements VirtualDrivers\Driver
 		private readonly VirtualQueue\Queue $queue,
 		private readonly ThermostatDevice\Logger $logger,
 		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
-		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
+		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 	)
 	{
@@ -125,8 +124,8 @@ class Thermostat implements VirtualDrivers\Driver
 
 		foreach ($this->deviceHelper->getActors($this->device) as $actor) {
 			$state = $actor instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-				? $this->channelPropertiesStatesManager->getValue($actor)
-				: $this->channelPropertiesStatesManager->readValue($actor);
+				? $this->channelPropertiesStatesManager->get($actor)
+				: $this->channelPropertiesStatesManager->read($actor);
 
 			$actualValue = $state?->getActualValue();
 
@@ -146,8 +145,8 @@ class Thermostat implements VirtualDrivers\Driver
 
 		foreach ($this->deviceHelper->getSensors($this->device) as $sensor) {
 			$state = $sensor instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-				? $this->channelPropertiesStatesManager->getValue($sensor)
-				: $this->channelPropertiesStatesManager->readValue($sensor);
+				? $this->channelPropertiesStatesManager->get($sensor)
+				: $this->channelPropertiesStatesManager->read($sensor);
 
 			$actualValue = $state?->getActualValue();
 
@@ -167,8 +166,8 @@ class Thermostat implements VirtualDrivers\Driver
 
 		foreach ($this->deviceHelper->getOpenings($this->device) as $opening) {
 			$state = $opening instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-				? $this->channelPropertiesStatesManager->getValue($opening)
-				: $this->channelPropertiesStatesManager->readValue($opening);
+				? $this->channelPropertiesStatesManager->get($opening)
+				: $this->channelPropertiesStatesManager->read($opening);
 
 			$actualValue = $state?->getActualValue();
 
@@ -181,7 +180,7 @@ class Thermostat implements VirtualDrivers\Driver
 			$property = $this->deviceHelper->getTargetTemp($this->device, Types\Preset::get($mode));
 
 			if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-				$state = $this->channelPropertiesStatesManager->getValue($property);
+				$state = $this->channelPropertiesStatesManager->get($property);
 
 				if (is_numeric($state?->getActualValue())) {
 					$this->targetTemperature[$mode] = floatval($state->getActualValue());
@@ -190,7 +189,7 @@ class Thermostat implements VirtualDrivers\Driver
 		}
 
 		if ($this->deviceHelper->getHvacMode($this->device) !== null) {
-			$state = $this->channelPropertiesStatesManager->getValue(
+			$state = $this->channelPropertiesStatesManager->get(
 				$this->deviceHelper->getHvacMode($this->device),
 			);
 
@@ -200,7 +199,7 @@ class Thermostat implements VirtualDrivers\Driver
 		}
 
 		if ($this->deviceHelper->getPresetMode($this->device) !== null) {
-			$state = $this->channelPropertiesStatesManager->getValue(
+			$state = $this->channelPropertiesStatesManager->get(
 				$this->deviceHelper->getPresetMode($this->device),
 			);
 

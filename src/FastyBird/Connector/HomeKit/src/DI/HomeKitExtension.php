@@ -102,19 +102,13 @@ class HomeKitExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			$builder->addFactoryDefinition($this->prefix('writers.event'))
 				->setImplement(Writers\EventFactory::class)
 				->getResultDefinition()
-				->setType(Writers\Event::class)
-				->setArguments([
-					'logger' => $logger,
-				]);
+				->setType(Writers\Event::class);
 		} elseif ($configuration->writer === Writers\Exchange::NAME) {
 			$builder->addFactoryDefinition($this->prefix('writers.exchange'))
 				->setImplement(Writers\ExchangeFactory::class)
 				->getResultDefinition()
 				->setType(Writers\Exchange::class)
-				->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATE, false)
-				->setArguments([
-					'logger' => $logger,
-				]);
+				->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATE, false);
 		}
 
 		/**

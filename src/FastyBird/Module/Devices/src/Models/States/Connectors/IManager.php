@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * IDevicePropertiesManager.php
+ * IManager.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,30 +10,30 @@
  * @subpackage     Models
  * @since          1.0.0
  *
- * @date           09.01.22
+ * @date           08.02.22
  */
 
-namespace FastyBird\Module\Devices\Models\States;
+namespace FastyBird\Module\Devices\Models\States\Connectors;
 
 use FastyBird\Module\Devices\States;
 use Nette\Utils;
 use Ramsey\Uuid;
 
 /**
- * Device properties manager interface
+ * Connector properties manager interface
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Models
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-interface IDevicePropertiesManager
+interface IManager
 {
 
-	public function create(Uuid\UuidInterface $id, Utils\ArrayHash $values): States\DeviceProperty;
+	public function create(Uuid\UuidInterface $id, Utils\ArrayHash $values): States\ConnectorProperty;
 
-	public function update(States\DeviceProperty $state, Utils\ArrayHash $values): States\DeviceProperty;
+	public function update(States\ConnectorProperty $state, Utils\ArrayHash $values): States\ConnectorProperty;
 
-	public function delete(States\DeviceProperty $state): bool;
+	public function delete(States\ConnectorProperty $state): bool;
 
 }

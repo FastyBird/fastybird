@@ -26,7 +26,6 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
-use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use React\EventLoop;
 use function array_key_exists;
@@ -74,7 +73,7 @@ abstract class Periodic
 		protected readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		protected readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
-		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
+		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
 	)
@@ -153,7 +152,7 @@ abstract class Periodic
 			if (!in_array($device->getId()->toString(), $this->processedDevices, true)) {
 				$this->processedDevices[] = $device->getId()->toString();
 
-				if ($this->writeChannelsProperty($device)) {
+				if ($this->writeProperty($device)) {
 					$this->registerLoopHandler();
 
 					return;
@@ -174,7 +173,7 @@ abstract class Periodic
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
 	 */
-	private function writeChannelsProperty(MetadataDocuments\DevicesModule\Device $device): bool
+	private function writeProperty(MetadataDocuments\DevicesModule\Device $device): bool
 	{
 		$now = $this->dateTimeFactory->getNow();
 
@@ -196,7 +195,7 @@ abstract class Periodic
 
 			$this->processedProperties[$property->getId()->toString()] = $now;
 
-			$state = $this->channelPropertiesStatesManager->getValue($property);
+			$state = $this->channelPropertiesStatesManager->get($property);
 
 			if ($state === null) {
 				continue;

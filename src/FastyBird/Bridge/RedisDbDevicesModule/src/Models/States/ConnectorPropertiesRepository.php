@@ -32,7 +32,7 @@ use Ramsey\Uuid;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class ConnectorPropertiesRepository implements DevicesModels\States\IConnectorPropertiesRepository
+class ConnectorPropertiesRepository implements DevicesModels\States\Connectors\IRepository
 {
 
 	use Nette\SmartObject;

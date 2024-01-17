@@ -59,8 +59,8 @@ final class StoreDeviceState implements Queue\Consumer
 		private readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
-		private readonly DevicesUtilities\DevicePropertiesStates $devicePropertiesStatesManager,
-		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
+		private readonly DevicesModels\States\DevicePropertiesManager $devicePropertiesStatesManager,
+		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 	)
 	{
 	}
@@ -117,11 +117,10 @@ final class StoreDeviceState implements Queue\Consumer
 
 				if ($property !== null) {
 					if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-						$this->devicePropertiesStatesManager->setValue(
+						$this->devicePropertiesStatesManager->set(
 							$property,
 							Utils\ArrayHash::from([
 								DevicesStates\Property::ACTUAL_VALUE_FIELD => $state->getValue(),
-								DevicesStates\Property::VALID_FIELD => true,
 							]),
 						);
 
@@ -168,11 +167,10 @@ final class StoreDeviceState implements Queue\Consumer
 
 						if ($property !== null) {
 							if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-								$this->channelPropertiesStatesManager->setValue(
+								$this->channelPropertiesStatesManager->set(
 									$property,
 									Utils\ArrayHash::from([
 										DevicesStates\Property::ACTUAL_VALUE_FIELD => $state->getValue(),
-										DevicesStates\Property::VALID_FIELD => true,
 									]),
 								);
 
@@ -232,11 +230,10 @@ final class StoreDeviceState implements Queue\Consumer
 						);
 
 						if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-							$this->channelPropertiesStatesManager->setValue(
+							$this->channelPropertiesStatesManager->set(
 								$property,
 								Utils\ArrayHash::from([
 									DevicesStates\Property::ACTUAL_VALUE_FIELD => $sensor->getValue(),
-									DevicesStates\Property::VALID_FIELD => true,
 								]),
 							);
 						} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {

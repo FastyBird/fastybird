@@ -26,7 +26,6 @@ use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\States;
-use FastyBird\Module\Devices\Utilities;
 use IPub\Phone\Exceptions as PhoneExceptions;
 use Nette;
 use Nette\Utils;
@@ -49,9 +48,9 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	public function __construct(
 		private readonly Models\Configuration\Devices\Properties\Repository $devicePropertiesConfigurationRepository,
 		private readonly Models\Configuration\Channels\Properties\Repository $channelPropertiesConfigurationRepository,
-		private readonly Utilities\ConnectorPropertiesStates $connectorPropertiesStates,
-		private readonly Utilities\DevicePropertiesStates $devicePropertiesStates,
-		private readonly Utilities\ChannelPropertiesStates $channelPropertiesStates,
+		private readonly Models\States\ConnectorPropertiesManager $connectorPropertiesStatesManager,
+		private readonly Models\States\DevicePropertiesManager $devicePropertiesStatesManager,
+		private readonly Models\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly ExchangeEntities\DocumentFactory $entityFactory,
 		private readonly ExchangePublisher\Publisher $publisher,
 	)
@@ -157,21 +156,21 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 		if (
 			$property instanceof MetadataDocuments\DevicesModule\ConnectorDynamicProperty
 		) {
-			$state = $this->connectorPropertiesStates->readValue($property);
+			$state = $this->connectorPropertiesStatesManager->read($property);
 
 		} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-			$state = $this->devicePropertiesStates->readValue($property);
+			$state = $this->devicePropertiesStatesManager->read($property);
 
 		} else {
-			$state = $this->channelPropertiesStates->readValue($property);
+			$state = $this->channelPropertiesStatesManager->read($property);
 		}
 
 		$this->publishEntity($property, $state);
 
 		foreach ($this->findChildren($property) as $child) {
 			$state = $child instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
-				? $this->devicePropertiesStates->readValue($child)
-				: $this->channelPropertiesStates->readValue($child);
+				? $this->devicePropertiesStatesManager->read($child)
+				: $this->channelPropertiesStatesManager->read($child);
 
 			$this->publishEntity($child, $state);
 		}

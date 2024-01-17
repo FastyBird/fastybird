@@ -65,6 +65,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 			|| $event instanceof DevicesEvents\DevicePropertyStateEntityUpdated
 		) {
 			$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+			$findDeviceQuery->forConnector($this->connector);
 			$findDeviceQuery->byId($event->getProperty()->getDevice());
 			$findDeviceQuery->byType(Entities\FbMqttDevice::TYPE);
 
@@ -85,6 +86,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 			}
 
 			$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+			$findDeviceQuery->forConnector($this->connector);
 			$findDeviceQuery->byId($channel->getDevice());
 			$findDeviceQuery->byType(Entities\FbMqttDevice::TYPE);
 
@@ -93,10 +95,6 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 			if ($device === null) {
 				return;
 			}
-		}
-
-		if (!$device->getConnector()->equals($this->connector->getId())) {
-			return;
 		}
 
 		if (

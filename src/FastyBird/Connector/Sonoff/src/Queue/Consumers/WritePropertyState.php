@@ -15,7 +15,6 @@
 
 namespace FastyBird\Connector\Sonoff\Queue\Consumers;
 
-use DateTimeInterface;
 use FastyBird\Connector\Sonoff;
 use FastyBird\Connector\Sonoff\API;
 use FastyBird\Connector\Sonoff\Entities;
@@ -23,7 +22,6 @@ use FastyBird\Connector\Sonoff\Exceptions;
 use FastyBird\Connector\Sonoff\Helpers;
 use FastyBird\Connector\Sonoff\Queue;
 use FastyBird\Connector\Sonoff\Types;
-use FastyBird\DateTimeFactory;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -32,10 +30,7 @@ use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
-use FastyBird\Module\Devices\States as DevicesStates;
-use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
-use Nette\Utils;
 use React\Promise;
 use RuntimeException;
 use Throwable;
@@ -70,9 +65,8 @@ final class WritePropertyState implements Queue\Consumer
 		private readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
-		private readonly DevicesUtilities\DevicePropertiesStates $devicePropertiesStatesManager,
-		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
-		private readonly DateTimeFactory\Factory $dateTimeFactory,
+		private readonly DevicesModels\States\DevicePropertiesManager $devicePropertiesStatesManager,
+		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 	)
 	{
 	}
@@ -94,8 +88,6 @@ final class WritePropertyState implements Queue\Consumer
 		) {
 			return false;
 		}
-
-		$now = $this->dateTimeFactory->getNow();
 
 		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
 		$findConnectorQuery->byId($entity->getConnector());
@@ -272,8 +264,8 @@ final class WritePropertyState implements Queue\Consumer
 		}
 
 		$state = $property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-			? $this->channelPropertiesStatesManager->getValue($property)
-			: $this->devicePropertiesStatesManager->getValue($property);
+			? $this->channelPropertiesStatesManager->get($property)
+			: $this->devicePropertiesStatesManager->get($property);
 
 		if ($state === null) {
 			return true;
@@ -285,40 +277,18 @@ final class WritePropertyState implements Queue\Consumer
 
 		if ($expectedValue === null) {
 			if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-				$this->channelPropertiesStatesManager->writeValue(
-					$property,
-					Utils\ArrayHash::from([
-						DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
-						DevicesStates\Property::PENDING_FIELD => false,
-					]),
-				);
+				$this->channelPropertiesStatesManager->setPendingState($property, false);
 			} else {
-				$this->devicePropertiesStatesManager->writeValue(
-					$property,
-					Utils\ArrayHash::from([
-						DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
-						DevicesStates\Property::PENDING_FIELD => false,
-					]),
-				);
+				$this->devicePropertiesStatesManager->setPendingState($property, false);
 			}
 
 			return true;
 		}
 
 		if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-			$this->channelPropertiesStatesManager->setValue(
-				$property,
-				Utils\ArrayHash::from([
-					DevicesStates\Property::PENDING_FIELD => $now->format(DateTimeInterface::ATOM),
-				]),
-			);
+			$this->channelPropertiesStatesManager->setPendingState($property, true);
 		} else {
-			$this->devicePropertiesStatesManager->setValue(
-				$property,
-				Utils\ArrayHash::from([
-					DevicesStates\Property::PENDING_FIELD => $now->format(DateTimeInterface::ATOM),
-				]),
-			);
+			$this->devicePropertiesStatesManager->setPendingState($property, true);
 		}
 
 		$group = $outlet = null;
@@ -522,49 +492,25 @@ final class WritePropertyState implements Queue\Consumer
 
 		$result->then(
 			function () use ($property): void {
-				$now = $this->dateTimeFactory->getNow();
-
 				if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-					$state = $this->channelPropertiesStatesManager->getValue($property);
+					$state = $this->channelPropertiesStatesManager->get($property);
 
 					if ($state?->getExpectedValue() !== null) {
-						$this->channelPropertiesStatesManager->setValue(
-							$property,
-							Utils\ArrayHash::from([
-								DevicesStates\Property::PENDING_FIELD => $now->format(DateTimeInterface::ATOM),
-							]),
-						);
+						$this->channelPropertiesStatesManager->setPendingState($property, true);
 					}
 				} else {
-					$state = $this->devicePropertiesStatesManager->getValue($property);
+					$state = $this->devicePropertiesStatesManager->get($property);
 
 					if ($state?->getExpectedValue() !== null) {
-						$this->devicePropertiesStatesManager->setValue(
-							$property,
-							Utils\ArrayHash::from([
-								DevicesStates\Property::PENDING_FIELD => $now->format(DateTimeInterface::ATOM),
-							]),
-						);
+						$this->devicePropertiesStatesManager->setPendingState($property, true);
 					}
 				}
 			},
 			function (Throwable $ex) use ($connector, $device, $property, $entity): void {
 				if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-					$this->channelPropertiesStatesManager->writeValue(
-						$property,
-						Utils\ArrayHash::from([
-							DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
-							DevicesStates\Property::PENDING_FIELD => false,
-						]),
-					);
+					$this->channelPropertiesStatesManager->setPendingState($property, false);
 				} else {
-					$this->devicePropertiesStatesManager->writeValue(
-						$property,
-						Utils\ArrayHash::from([
-							DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
-							DevicesStates\Property::PENDING_FIELD => false,
-						]),
-					);
+					$this->devicePropertiesStatesManager->setPendingState($property, false);
 				}
 
 				$extra = [];

@@ -33,7 +33,7 @@ use function assert;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class DevicePropertiesManager implements DevicesModels\States\IDevicePropertiesManager
+class DevicePropertiesManager implements DevicesModels\States\Devices\IManager
 {
 
 	use Nette\SmartObject;

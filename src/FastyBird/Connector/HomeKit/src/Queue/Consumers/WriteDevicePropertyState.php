@@ -28,7 +28,6 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
-use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use RuntimeException;
 use function intval;
@@ -53,7 +52,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 		private readonly DevicesModels\Configuration\Connectors\Repository $connectorsConfigurationRepository,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		private readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
-		private readonly DevicesUtilities\DevicePropertiesStates $devicePropertiesStatesManager,
+		private readonly DevicesModels\States\DevicePropertiesManager $devicePropertiesStatesManager,
 	)
 	{
 	}
@@ -192,15 +191,13 @@ final class WriteDevicePropertyState implements Queue\Consumer
 
 						if ($parent instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
 							try {
-								$state = $this->devicePropertiesStatesManager->readValue($property);
+								$state = $this->devicePropertiesStatesManager->read($property);
 
 								if ($state === null) {
 									return true;
 								}
 
-								$characteristic->setActualValue(
-									$state->getExpectedValue() ?? $state->getActualValue(),
-								);
+								$characteristic->setActualValue($state->getExpectedValue() ?? $state->getActualValue());
 							} catch (Exceptions\InvalidState $ex) {
 								$this->logger->warning(
 									'State value could not be converted from mapped parent',

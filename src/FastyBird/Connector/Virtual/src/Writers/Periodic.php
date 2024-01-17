@@ -23,11 +23,9 @@ use FastyBird\Connector\Virtual\Queue;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
-use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use React\EventLoop;
 use function array_key_exists;
@@ -74,10 +72,10 @@ abstract class Periodic implements Writer
 		protected readonly Queue\Queue $queue,
 		protected readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		protected readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
-		private readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
-		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
-		private readonly DevicesUtilities\DevicePropertiesStates $devicePropertiesStatesManager,
-		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
+		protected readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
+		protected readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
+		private readonly DevicesModels\States\DevicePropertiesManager $devicePropertiesStatesManager,
+		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
 	)
@@ -215,22 +213,31 @@ abstract class Periodic implements Writer
 				|| $property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
 			) {
 				$state = $property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
-					? $this->devicePropertiesStatesManager->getValue($property)
-					: $this->devicePropertiesStatesManager->readValue($property);
+					? $this->devicePropertiesStatesManager->get($property)
+					: $this->devicePropertiesStatesManager->read($property);
 
+				if ($state === null) {
+					return false;
+				}
+
+				$propertyValue = $property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
+					? $state->getExpectedValue()
+					: $state->getExpectedValue() ?? ($state->isValid() ? $state->getActualValue() : null);
 			} else {
 				$state = $property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-					? $this->channelPropertiesStatesManager->getValue($property)
-					: $this->channelPropertiesStatesManager->readValue($property);
+					? $this->channelPropertiesStatesManager->get($property)
+					: $this->channelPropertiesStatesManager->read($property);
+
+				if ($state === null) {
+					return false;
+				}
+
+				$propertyValue = $property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+					? $state->getExpectedValue()
+					: $state->getExpectedValue() ?? ($state->isValid() ? $state->getActualValue() : null);
 			}
 
-			if ($state === null) {
-				continue;
-			}
-
-			$expectedValue = MetadataUtilities\Value::flattenValue($state->getExpectedValue());
-
-			if ($expectedValue === null) {
+			if ($propertyValue === null) {
 				continue;
 			}
 

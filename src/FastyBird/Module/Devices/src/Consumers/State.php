@@ -27,7 +27,6 @@ use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\States;
-use FastyBird\Module\Devices\Utilities;
 use Nette\Utils;
 use function array_merge;
 use function in_array;
@@ -56,9 +55,9 @@ final class State implements ExchangeConsumers\Consumer
 		private readonly Models\Configuration\Connectors\Properties\Repository $connectorPropertiesConfigurationRepository,
 		private readonly Models\Configuration\Devices\Properties\Repository $devicePropertiesConfigurationRepository,
 		private readonly Models\Configuration\Channels\Properties\Repository $channelPropertiesConfigurationRepository,
-		private readonly Utilities\ConnectorPropertiesStates $connectorPropertiesStates,
-		private readonly Utilities\DevicePropertiesStates $devicePropertiesStates,
-		private readonly Utilities\ChannelPropertiesStates $channelPropertiesStates,
+		private readonly Models\States\ConnectorPropertiesManager $connectorPropertiesStatesManager,
+		private readonly Models\States\DevicePropertiesManager $devicePropertiesStatesManager,
+		private readonly Models\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 	)
 	{
 	}
@@ -98,11 +97,10 @@ final class State implements ExchangeConsumers\Consumer
 						return;
 					}
 
-					$this->connectorPropertiesStates->writeValue(
+					$this->connectorPropertiesStatesManager->write(
 						$property,
 						Utils\ArrayHash::from([
 							States\Property::EXPECTED_VALUE_FIELD => $entity->getExpectedValue(),
-							States\Property::PENDING_FIELD => true,
 						]),
 					);
 
@@ -136,7 +134,7 @@ final class State implements ExchangeConsumers\Consumer
 						return;
 					}
 
-					$state = $this->connectorPropertiesStates->readValue($property);
+					$state = $this->connectorPropertiesStatesManager->read($property);
 
 					$publishRoutingKey = MetadataTypes\RoutingKey::get(
 						MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_DOCUMENT_REPORTED,
@@ -170,11 +168,10 @@ final class State implements ExchangeConsumers\Consumer
 						return;
 					}
 
-					$this->devicePropertiesStates->writeValue(
+					$this->devicePropertiesStatesManager->write(
 						$property,
 						Utils\ArrayHash::from([
 							States\Property::EXPECTED_VALUE_FIELD => $entity->getExpectedValue(),
-							States\Property::PENDING_FIELD => true,
 						]),
 					);
 
@@ -208,7 +205,7 @@ final class State implements ExchangeConsumers\Consumer
 						return;
 					}
 
-					$state = $this->devicePropertiesStates->readValue($property);
+					$state = $this->devicePropertiesStatesManager->read($property);
 
 					$publishRoutingKey = MetadataTypes\RoutingKey::get(
 						MetadataTypes\RoutingKey::DEVICE_PROPERTY_DOCUMENT_REPORTED,
@@ -242,11 +239,10 @@ final class State implements ExchangeConsumers\Consumer
 						return;
 					}
 
-					$this->channelPropertiesStates->writeValue(
+					$this->channelPropertiesStatesManager->write(
 						$property,
 						Utils\ArrayHash::from([
 							States\Property::EXPECTED_VALUE_FIELD => $entity->getExpectedValue(),
-							States\Property::PENDING_FIELD => true,
 						]),
 					);
 
@@ -280,7 +276,7 @@ final class State implements ExchangeConsumers\Consumer
 						return;
 					}
 
-					$state = $this->channelPropertiesStates->readValue($property);
+					$state = $this->channelPropertiesStatesManager->read($property);
 
 					$publishRoutingKey = MetadataTypes\RoutingKey::get(
 						MetadataTypes\RoutingKey::CHANNEL_PROPERTY_DOCUMENT_REPORTED,

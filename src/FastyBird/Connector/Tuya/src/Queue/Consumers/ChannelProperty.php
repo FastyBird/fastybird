@@ -39,8 +39,8 @@ use function array_merge;
  * @property-read DevicesModels\Entities\Channels\ChannelsRepository $channelsRepository
  * @property-read DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository
  * @property-read DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager
- * @property-read DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager
  * @property-read DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository
+ * @property-read DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager
  * @property-read DevicesUtilities\Database $databaseHelper
  * @property-read Tuya\Logger $logger
  */

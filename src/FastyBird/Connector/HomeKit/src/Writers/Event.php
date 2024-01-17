@@ -67,18 +67,26 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 				MetadataDocuments\DevicesModule\DeviceMappedProperty::class,
 			);
 
+			$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+			$findDeviceQuery->forConnector($this->connector);
+			$findDeviceQuery->byId($event->getProperty()->getDevice());
+			$findDeviceQuery->byType(Entities\HomeKitDevice::TYPE);
+
+			$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+
+			if ($device !== null) {
+				$properties[] = $event->getProperty();
+			}
+
 			foreach ($properties as $property) {
 				$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+				$findDeviceQuery->forConnector($this->connector);
 				$findDeviceQuery->byId($property->getDevice());
 				$findDeviceQuery->byType(Entities\HomeKitDevice::TYPE);
 
 				$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
 				if ($device === null) {
-					return;
-				}
-
-				if (!$device->getConnector()->equals($this->connector->getId())) {
 					return;
 				}
 
@@ -102,6 +110,25 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 				MetadataDocuments\DevicesModule\ChannelMappedProperty::class,
 			);
 
+			$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
+			$findChannelQuery->byId($event->getProperty()->getChannel());
+			$findChannelQuery->byType(Entities\HomeKitChannel::TYPE);
+
+			$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
+
+			if ($channel !== null) {
+				$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+				$findDeviceQuery->forConnector($this->connector);
+				$findDeviceQuery->byId($channel->getDevice());
+				$findDeviceQuery->byType(Entities\HomeKitDevice::TYPE);
+
+				$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+
+				if ($device === null) {
+					$properties[] = $event->getProperty();
+				}
+			}
+
 			foreach ($properties as $property) {
 				$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 				$findChannelQuery->byId($property->getChannel());
@@ -114,16 +141,13 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 				}
 
 				$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+				$findDeviceQuery->forConnector($this->connector);
 				$findDeviceQuery->byId($property->getChannel());
 				$findDeviceQuery->byType(Entities\HomeKitDevice::TYPE);
 
 				$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
 				if ($device === null) {
-					return;
-				}
-
-				if (!$device->getConnector()->equals($this->connector->getId())) {
 					return;
 				}
 

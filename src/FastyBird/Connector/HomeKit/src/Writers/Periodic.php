@@ -27,7 +27,6 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
-use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use React\EventLoop;
 use function array_key_exists;
 use function assert;
@@ -52,8 +51,8 @@ abstract class Periodic
 
 	/** @var array<string, MetadataDocuments\DevicesModule\Device>  */
 	private array $devices = [];
-	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-	/** @var array<string, array<string, MetadataDocuments\DevicesModule\DeviceVariableProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty|MetadataDocuments\DevicesModule\ChannelVariableProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty>>  */
+
+	/** @var array<string, array<string, MetadataDocuments\DevicesModule\DeviceProperty|MetadataDocuments\DevicesModule\ChannelProperty>>  */
 	private array $properties = [];
 
 	/** @var array<string> */
@@ -73,8 +72,8 @@ abstract class Periodic
 		protected readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		protected readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
 		private readonly Protocol\Driver $accessoryDriver,
-		private readonly DevicesUtilities\DevicePropertiesStates $devicePropertiesStatesManager,
-		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
+		private readonly DevicesModels\States\DevicePropertiesManager $devicePropertiesStatesManager,
+		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
 	)
@@ -106,12 +105,7 @@ abstract class Periodic
 			$properties = $this->devicesPropertiesConfigurationRepository->findAllBy($findDevicePropertiesQuery);
 
 			foreach ($properties as $property) {
-				if (
-					$property instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty
-					|| $property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
-				) {
-					$this->properties[$device->getId()->toString()][$property->getId()->toString()] = $property;
-				}
+				$this->properties[$device->getId()->toString()][$property->getId()->toString()] = $property;
 			}
 
 			$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
@@ -127,12 +121,7 @@ abstract class Periodic
 				$properties = $this->channelsPropertiesConfigurationRepository->findAllBy($findChannelPropertiesQuery);
 
 				foreach ($properties as $property) {
-					if (
-						$property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty
-						|| $property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
-					) {
-						$this->properties[$device->getId()->toString()][$property->getId()->toString()] = $property;
-					}
+					$this->properties[$device->getId()->toString()][$property->getId()->toString()] = $property;
 				}
 			}
 		}
@@ -216,22 +205,40 @@ abstract class Periodic
 			$characteristicValue = null;
 
 			if ($property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
-				$state = $this->devicePropertiesStatesManager->readValue($property);
+				$state = $this->devicePropertiesStatesManager->read($property);
 
 				if ($state === null) {
 					continue;
 				}
 
-				$characteristicValue = $state->getExpectedValue() ?? $state->getActualValue();
+				$characteristicValue = $state->getExpectedValue() ?? ($state->isValid() ? $state->getActualValue() : null);
 
 			} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
-				$state = $this->channelPropertiesStatesManager->readValue($property);
+				$state = $this->channelPropertiesStatesManager->read($property);
 
 				if ($state === null) {
 					continue;
 				}
 
-				$characteristicValue = $state->getExpectedValue() ?? $state->getActualValue();
+				$characteristicValue = $state->getExpectedValue() ?? ($state->isValid() ? $state->getActualValue() : null);
+
+			} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
+				$state = $this->devicePropertiesStatesManager->get($property);
+
+				if ($state === null) {
+					continue;
+				}
+
+				$characteristicValue = $state->getExpectedValue();
+
+			} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+				$state = $this->channelPropertiesStatesManager->get($property);
+
+				if ($state === null) {
+					continue;
+				}
+
+				$characteristicValue = $state->getExpectedValue();
 
 			} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty) {
 				$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
@@ -258,6 +265,10 @@ abstract class Periodic
 				$characteristicValue = $property->getValue();
 			}
 
+			if ($characteristicValue === null) {
+				continue;
+			}
+
 			foreach ($accessory->getServices() as $service) {
 				if ($service->getChannel() !== null) {
 					foreach ($service->getCharacteristics() as $characteristic) {
@@ -272,6 +283,7 @@ abstract class Periodic
 							if (
 								$property instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty
 								|| $property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
+								|| $property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
 							) {
 								$this->queue->append(
 									$this->entityHelper->create(
@@ -283,7 +295,11 @@ abstract class Periodic
 										],
 									),
 								);
-							} else {
+							} elseif (
+								$property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty
+								|| $property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
+								|| $property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+							) {
 								$this->queue->append(
 									$this->entityHelper->create(
 										Entities\Messages\WriteChannelPropertyState::class,

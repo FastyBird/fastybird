@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ConnectorPropertiesRepository.php
+ * Repository.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,7 +13,7 @@
  * @date           09.01.22
  */
 
-namespace FastyBird\Module\Devices\Models\States;
+namespace FastyBird\Module\Devices\Models\States\Connectors;
 
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Module\Devices\Entities;
@@ -30,12 +30,12 @@ use Ramsey\Uuid;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ConnectorPropertiesRepository
+final class Repository
 {
 
 	use Nette\SmartObject;
 
-	public function __construct(protected readonly IConnectorPropertiesRepository|null $repository = null)
+	public function __construct(private readonly IRepository|null $repository = null)
 	{
 	}
 

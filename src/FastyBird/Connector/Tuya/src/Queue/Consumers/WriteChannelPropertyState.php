@@ -15,7 +15,6 @@
 
 namespace FastyBird\Connector\Tuya\Queue\Consumers;
 
-use DateTimeInterface;
 use FastyBird\Connector\Tuya;
 use FastyBird\Connector\Tuya\API;
 use FastyBird\Connector\Tuya\Entities;
@@ -23,7 +22,6 @@ use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Queue;
 use FastyBird\Connector\Tuya\Types;
-use FastyBird\DateTimeFactory;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -32,10 +30,7 @@ use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
-use FastyBird\Module\Devices\States as DevicesStates;
-use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
-use Nette\Utils;
 use RuntimeException;
 use Throwable;
 use function array_merge;
@@ -65,8 +60,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
-		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
-		private readonly DateTimeFactory\Factory $dateTimeFactory,
+		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 	)
 	{
 	}
@@ -85,8 +79,6 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		if (!$entity instanceof Entities\Messages\WriteChannelPropertyState) {
 			return false;
 		}
-
-		$now = $this->dateTimeFactory->getNow();
 
 		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
 		$findConnectorQuery->byId($entity->getConnector());
@@ -242,7 +234,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$state = $this->channelPropertiesStatesManager->getValue($property);
+		$state = $this->channelPropertiesStatesManager->get($property);
 
 		if ($state === null) {
 			return true;
@@ -253,23 +245,12 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		);
 
 		if ($expectedValue === null) {
-			$this->channelPropertiesStatesManager->writeValue(
-				$property,
-				Utils\ArrayHash::from([
-					DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
-					DevicesStates\Property::PENDING_FIELD => false,
-				]),
-			);
+			$this->channelPropertiesStatesManager->setPendingState($property, false);
 
 			return true;
 		}
 
-		$this->channelPropertiesStatesManager->setValue(
-			$property,
-			Utils\ArrayHash::from([
-				DevicesStates\Property::PENDING_FIELD => $now->format(DateTimeInterface::ATOM),
-			]),
-		);
+		$this->channelPropertiesStatesManager->setPendingState($property, true);
 
 		try {
 			if ($this->connectorHelper->getClientMode($connector)->equalsValue(Types\ClientMode::CLOUD)) {
@@ -421,26 +402,15 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		}
 
 		$result->then(
-			function () use ($property, $now): void {
-				$state = $this->channelPropertiesStatesManager->getValue($property);
+			function () use ($property): void {
+				$state = $this->channelPropertiesStatesManager->get($property);
 
 				if ($state?->getExpectedValue() !== null) {
-					$this->channelPropertiesStatesManager->setValue(
-						$property,
-						Utils\ArrayHash::from([
-							DevicesStates\Property::PENDING_FIELD => $now->format(DateTimeInterface::ATOM),
-						]),
-					);
+					$this->channelPropertiesStatesManager->setPendingState($property, true);
 				}
 			},
 			function (Throwable $ex) use ($connector, $device, $property, $entity): void {
-				$this->channelPropertiesStatesManager->writeValue(
-					$property,
-					Utils\ArrayHash::from([
-						DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
-						DevicesStates\Property::PENDING_FIELD => false,
-					]),
-				);
+				$this->channelPropertiesStatesManager->setPendingState($property, false);
 
 				$extra = [];
 

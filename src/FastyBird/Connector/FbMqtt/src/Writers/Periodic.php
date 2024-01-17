@@ -26,7 +26,6 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
-use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use React\EventLoop;
 use function array_key_exists;
@@ -75,8 +74,8 @@ abstract class Periodic
 		protected readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		private readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
-		private readonly DevicesUtilities\DevicePropertiesStates $devicePropertiesStatesManager,
-		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
+		private readonly DevicesModels\States\DevicePropertiesManager $devicePropertiesStatesManager,
+		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
 	)
@@ -240,7 +239,7 @@ abstract class Periodic
 	{
 		$now = $this->dateTimeFactory->getNow();
 
-		$state = $this->devicePropertiesStatesManager->getValue($property);
+		$state = $this->devicePropertiesStatesManager->get($property);
 
 		if ($state === null) {
 			return false;
@@ -291,7 +290,7 @@ abstract class Periodic
 	{
 		$now = $this->dateTimeFactory->getNow();
 
-		$state = $this->channelPropertiesStatesManager->getValue($property);
+		$state = $this->channelPropertiesStatesManager->get($property);
 
 		if ($state === null) {
 			return false;

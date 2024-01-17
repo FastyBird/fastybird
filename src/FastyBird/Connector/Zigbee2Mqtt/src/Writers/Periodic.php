@@ -26,7 +26,6 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
-use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use React\EventLoop;
 use function array_key_exists;
@@ -74,7 +73,7 @@ abstract class Periodic
 		protected readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		protected readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
-		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
+		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
 	)
@@ -196,61 +195,39 @@ abstract class Periodic
 
 			$this->processedProperties[$property->getId()->toString()] = $now;
 
-			if ($this->writeChannelProperty($device, $property)) {
+			$state = $this->channelPropertiesStatesManager->get($property);
+
+			if ($state === null) {
+				return false;
+			}
+
+			if ($state->getExpectedValue() === null) {
+				return false;
+			}
+
+			$pending = $state->getPending();
+
+			if (
+				$pending === true
+				|| (
+					$pending instanceof DateTimeInterface
+					&& (float) $now->format('Uv') - (float) $pending->format('Uv') > self::HANDLER_PENDING_DELAY
+				)
+			) {
+				$this->queue->append(
+					$this->entityHelper->create(
+						Entities\Messages\WriteSubDeviceState::class,
+						[
+							'connector' => $device->getConnector(),
+							'device' => $device->getId(),
+							'channel' => $property->getChannel(),
+							'property' => $property->getId(),
+						],
+					),
+				);
+
 				return true;
 			}
-		}
-
-		return false;
-	}
-
-	/**
-	 * @throws DevicesExceptions\InvalidArgument
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\Runtime
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 */
-	private function writeChannelProperty(
-		MetadataDocuments\DevicesModule\Device $device,
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty $property,
-	): bool
-	{
-		$now = $this->dateTimeFactory->getNow();
-
-		$state = $this->channelPropertiesStatesManager->getValue($property);
-
-		if ($state === null) {
-			return false;
-		}
-
-		if ($state->getExpectedValue() === null) {
-			return false;
-		}
-
-		$pending = $state->getPending();
-
-		if (
-			$pending === true
-			|| (
-				$pending instanceof DateTimeInterface
-				&& (float) $now->format('Uv') - (float) $pending->format('Uv') > self::HANDLER_PENDING_DELAY
-			)
-		) {
-			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\WriteSubDeviceState::class,
-					[
-						'connector' => $device->getConnector(),
-						'device' => $device->getId(),
-						'channel' => $property->getChannel(),
-						'property' => $property->getId(),
-					],
-				),
-			);
-
-			return true;
 		}
 
 		return false;

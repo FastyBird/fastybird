@@ -15,14 +15,12 @@
 
 namespace FastyBird\Connector\NsPanel\Queue\Consumers;
 
-use DateTimeInterface;
 use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\API;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Queue;
-use FastyBird\DateTimeFactory;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -30,10 +28,7 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
-use FastyBird\Module\Devices\States as DevicesStates;
-use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
-use Nette\Utils;
 use Throwable;
 use function array_merge;
 use function strval;
@@ -57,7 +52,7 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 	public function __construct(
 		protected readonly Helpers\Channel $channelHelper,
 		protected readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
-		protected readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
+		protected readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly Queue\Queue $queue,
 		private readonly API\LanApiFactory $lanApiApiFactory,
 		private readonly Helpers\Entity $entityHelper,
@@ -67,7 +62,6 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 		private readonly DevicesModels\Configuration\Connectors\Repository $connectorsConfigurationRepository,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
-		private readonly DateTimeFactory\Factory $dateTimeFactory,
 	)
 	{
 	}
@@ -278,77 +272,35 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 				$accessToken,
 			)
 				->then(function () use ($channel): void {
-					$now = $this->dateTimeFactory->getNow();
-
-					$findPropertiesQuery = new DevicesQueries\Configuration\FindChannelProperties();
+					$findPropertiesQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
 					$findPropertiesQuery->forChannel($channel);
 					$findPropertiesQuery->settable(true);
 
-					$properties = $this->channelsPropertiesConfigurationRepository->findAllBy($findPropertiesQuery);
+					$properties = $this->channelsPropertiesConfigurationRepository->findAllBy(
+						$findPropertiesQuery,
+						MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
+					);
 
 					foreach ($properties as $property) {
-						if (
-							$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-							|| $property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
-						) {
-							$state = $property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-								? $this->channelPropertiesStatesManager->getValue($property)
-								: $this->channelPropertiesStatesManager->readValue($property);
+						$state = $this->channelPropertiesStatesManager->get($property);
 
-							if ($state?->getExpectedValue() !== null) {
-								if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-									$this->channelPropertiesStatesManager->setValue(
-										$property,
-										Utils\ArrayHash::from([
-											DevicesStates\Property::PENDING_FIELD => $now->format(
-												DateTimeInterface::ATOM,
-											),
-										]),
-									);
-								} else {
-									$this->channelPropertiesStatesManager->writeValue(
-										$property,
-										Utils\ArrayHash::from([
-											DevicesStates\Property::PENDING_FIELD => $now->format(
-												DateTimeInterface::ATOM,
-											),
-										]),
-									);
-								}
-							}
+						if ($state?->getExpectedValue() !== null) {
+							$this->channelPropertiesStatesManager->setPendingState($property, true);
 						}
 					}
 				})
 				->catch(function (Throwable $ex) use ($entity, $connector, $gateway, $channel): void {
-					$findPropertiesQuery = new DevicesQueries\Configuration\FindChannelProperties();
+					$findPropertiesQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
 					$findPropertiesQuery->forChannel($channel);
 					$findPropertiesQuery->settable(true);
 
-					$properties = $this->channelsPropertiesConfigurationRepository->findAllBy($findPropertiesQuery);
+					$properties = $this->channelsPropertiesConfigurationRepository->findAllBy(
+						$findPropertiesQuery,
+						MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
+					);
 
 					foreach ($properties as $property) {
-						if (
-							$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-							|| $property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
-						) {
-							if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-								$this->channelPropertiesStatesManager->writeValue(
-									$property,
-									Utils\ArrayHash::from([
-										DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
-										DevicesStates\Property::PENDING_FIELD => false,
-									]),
-								);
-							} else {
-								$this->channelPropertiesStatesManager->writeValue(
-									$property,
-									Utils\ArrayHash::from([
-										DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
-										DevicesStates\Property::PENDING_FIELD => false,
-									]),
-								);
-							}
-						}
+						$this->channelPropertiesStatesManager->setPendingState($property, false);
 					}
 
 					$extra = [];

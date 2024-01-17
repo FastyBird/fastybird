@@ -56,7 +56,7 @@ final class ChannelProperty implements Queue\Consumer
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
-		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
+		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly DevicesUtilities\Database $databaseHelper,
 	)
 	{
@@ -166,11 +166,10 @@ final class ChannelProperty implements Queue\Consumer
 					);
 				});
 			} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-				$this->channelPropertiesStatesManager->setValue(
+				$this->channelPropertiesStatesManager->set(
 					$property,
 					Utils\ArrayHash::from([
 						DevicesStates\Property::ACTUAL_VALUE_FIELD => $entity->getValue(),
-						DevicesStates\Property::VALID_FIELD => true,
 					]),
 				);
 			}

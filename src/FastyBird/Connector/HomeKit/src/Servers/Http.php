@@ -89,7 +89,6 @@ final class Http implements Server
 		private readonly Helpers\Channel $channelHelper,
 		private readonly Queue\Queue $queue,
 		private readonly HomeKit\Logger $logger,
-		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
 		private readonly DevicesUtilities\Database $databaseHelper,
 		private readonly DevicesModels\Entities\Connectors\Properties\PropertiesManager $connectorsPropertiesManager,
 		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
@@ -98,6 +97,7 @@ final class Http implements Server
 		private readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
+		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly EventLoop\LoopInterface $eventLoop,
 	)
 	{
@@ -258,7 +258,7 @@ final class Http implements Server
 						$characteristic->setActualValue($property->getValue());
 					} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
 						try {
-							$state = $this->channelPropertiesStatesManager->getValue($property);
+							$state = $this->channelPropertiesStatesManager->get($property);
 
 							if ($state !== null) {
 								$characteristic->setActualValue($state->getExpectedValue() ?? $state->getActualValue());
@@ -295,11 +295,11 @@ final class Http implements Server
 
 						if ($parent instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
 							try {
-								$state = $this->channelPropertiesStatesManager->readValue($property);
+								$state = $this->channelPropertiesStatesManager->read($property);
 
 								if ($state !== null) {
 									$characteristic->setActualValue(
-										$state->getExpectedValue() ?? $state->getActualValue(),
+										$state->getExpectedValue() ?? ($state->isValid() ? $state->getActualValue() : null),
 									);
 								}
 							} catch (Exceptions\InvalidState $ex) {

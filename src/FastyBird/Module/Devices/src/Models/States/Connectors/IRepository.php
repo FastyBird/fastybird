@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * IConnectorPropertiesManager.php
+ * IRepository.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,27 +13,30 @@
  * @date           08.02.22
  */
 
-namespace FastyBird\Module\Devices\Models\States;
+namespace FastyBird\Module\Devices\Models\States\Connectors;
 
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\States;
-use Nette\Utils;
 use Ramsey\Uuid;
 
 /**
- * Connector properties manager interface
+ * Connector property repository interface
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Models
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-interface IConnectorPropertiesManager
+interface IRepository
 {
 
-	public function create(Uuid\UuidInterface $id, Utils\ArrayHash $values): States\ConnectorProperty;
+	public function findOne(
+		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
+	): States\ConnectorProperty|null;
 
-	public function update(States\ConnectorProperty $state, Utils\ArrayHash $values): States\ConnectorProperty;
-
-	public function delete(States\ConnectorProperty $state): bool;
+	public function findOneById(
+		Uuid\UuidInterface $id,
+	): States\ConnectorProperty|null;
 
 }

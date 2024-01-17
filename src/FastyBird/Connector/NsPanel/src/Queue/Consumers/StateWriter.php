@@ -26,7 +26,6 @@ use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
-use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use function boolval;
 use function floatval;
 use function intval;
@@ -45,7 +44,7 @@ use function strval;
  *
  * @property-read Helpers\Channel $channelHelper
  * @property-read DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository
- * @property-read DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager
+ * @property-read DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager
  */
 trait StateWriter
 {
@@ -533,8 +532,8 @@ trait StateWriter
 	): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
 	{
 		return $property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-			? $this->channelPropertiesStatesManager->getValue($property)?->getActualValue()
-			: $this->channelPropertiesStatesManager->readValue($property)?->getActualValue();
+			? $this->channelPropertiesStatesManager->get($property)?->getActualValue()
+			: $this->channelPropertiesStatesManager->read($property)?->getActualValue();
 	}
 
 	/**
@@ -549,8 +548,8 @@ trait StateWriter
 	): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
 	{
 		return $property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-			? $this->channelPropertiesStatesManager->getValue($property)?->getExpectedValue()
-			: $this->channelPropertiesStatesManager->readValue($property)?->getExpectedValue();
+			? $this->channelPropertiesStatesManager->get($property)?->getExpectedValue()
+			: $this->channelPropertiesStatesManager->read($property)?->getExpectedValue();
 	}
 
 }

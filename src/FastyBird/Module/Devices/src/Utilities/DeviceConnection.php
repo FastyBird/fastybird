@@ -46,7 +46,7 @@ final class DeviceConnection
 		private readonly Models\Entities\Devices\DevicesRepository $devicesEntitiesRepository,
 		private readonly Models\Entities\Devices\Properties\PropertiesManager $devicesPropertiesEntitiesManager,
 		private readonly Models\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
-		private readonly DevicePropertiesStates $propertiesStates,
+		private readonly Models\States\DevicePropertiesManager $propertiesStatesManager,
 		private readonly Database $databaseHelper,
 	)
 	{
@@ -109,13 +109,11 @@ final class DeviceConnection
 			);
 		}
 
-		$this->propertiesStates->writeValue(
+		$this->propertiesStatesManager->set(
 			$property,
 			Utils\ArrayHash::from([
 				States\Property::ACTUAL_VALUE_FIELD => $state->getValue(),
 				States\Property::EXPECTED_VALUE_FIELD => null,
-				States\Property::PENDING_FIELD => false,
-				States\Property::VALID_FIELD => true,
 			]),
 		);
 
@@ -143,7 +141,7 @@ final class DeviceConnection
 		);
 
 		if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-			$state = $this->propertiesStates->readValue($property);
+			$state = $this->propertiesStatesManager->read($property);
 
 			if (
 				$state?->getActualValue() !== null
@@ -177,7 +175,7 @@ final class DeviceConnection
 		);
 
 		if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-			$state = $this->propertiesStates->readValue($property);
+			$state = $this->propertiesStatesManager->read($property);
 
 			if (
 				$state?->getActualValue() !== null

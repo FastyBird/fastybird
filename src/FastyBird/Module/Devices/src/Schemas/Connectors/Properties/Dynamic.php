@@ -21,8 +21,8 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
+use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Schemas;
-use FastyBird\Module\Devices\Utilities;
 use IPub\SlimRouter\Routing;
 use Neomerx\JsonApi;
 use function array_merge;
@@ -48,7 +48,7 @@ final class Dynamic extends Property
 
 	public function __construct(
 		Routing\IRouter $router,
-		private readonly Utilities\ConnectorPropertiesStates $connectorPropertiesStates,
+		private readonly Models\States\ConnectorPropertiesManager $connectorPropertiesStatesManager,
 	)
 	{
 		parent::__construct($router);
@@ -82,7 +82,7 @@ final class Dynamic extends Property
 		JsonApi\Contracts\Schema\ContextInterface $context,
 	): iterable
 	{
-		$state = $this->connectorPropertiesStates->readValue($resource);
+		$state = $this->connectorPropertiesStatesManager->read($resource);
 
 		return array_merge((array) parent::getAttributes($resource, $context), [
 			'settable' => $resource->isSettable(),

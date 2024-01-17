@@ -15,7 +15,6 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\States as DevicesStates;
-use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette\DI;
 use React\EventLoop;
 use RuntimeException;
@@ -72,9 +71,9 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 	 */
 	public function testProcess(array $readInitialStates, array $expectedWriteEntities): void
 	{
-		$channelPropertiesStatesManager = $this->createMock(DevicesUtilities\ChannelPropertiesStates::class);
+		$channelPropertiesStatesManager = $this->createMock(DevicesModels\States\ChannelPropertiesManager::class);
 		$channelPropertiesStatesManager
-			->method('readValue')
+			->method('read')
 			->willReturnCallback(
 				static function (
 					MetadataDocuments\DevicesModule\ChannelProperty $property,
@@ -91,7 +90,7 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 				},
 			);
 		$channelPropertiesStatesManager
-			->method('getValue')
+			->method('get')
 			->willReturnCallback(
 				static function (
 					MetadataDocuments\DevicesModule\ChannelProperty $property,
@@ -109,7 +108,7 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 			);
 
 		$this->mockContainerService(
-			DevicesUtilities\ChannelPropertiesStates::class,
+			DevicesModels\States\ChannelPropertiesManager::class,
 			$channelPropertiesStatesManager,
 		);
 

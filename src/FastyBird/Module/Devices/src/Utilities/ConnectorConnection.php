@@ -45,7 +45,7 @@ final class ConnectorConnection
 		private readonly Models\Entities\Connectors\ConnectorsRepository $connectorsEntitiesRepository,
 		private readonly Models\Entities\Connectors\Properties\PropertiesManager $connectorsPropertiesEntitiesManager,
 		private readonly Models\Configuration\Connectors\Properties\Repository $connectorsPropertiesConfigurationRepository,
-		private readonly ConnectorPropertiesStates $propertiesStates,
+		private readonly Models\States\ConnectorPropertiesManager $propertiesStatesManager,
 		private readonly Database $databaseHelper,
 	)
 	{
@@ -105,13 +105,11 @@ final class ConnectorConnection
 			);
 		}
 
-		$this->propertiesStates->writeValue(
+		$this->propertiesStatesManager->set(
 			$property,
 			Utils\ArrayHash::from([
 				States\Property::ACTUAL_VALUE_FIELD => $state->getValue(),
 				States\Property::EXPECTED_VALUE_FIELD => null,
-				States\Property::PENDING_FIELD => false,
-				States\Property::VALID_FIELD => true,
 			]),
 		);
 
@@ -139,7 +137,7 @@ final class ConnectorConnection
 		);
 
 		if ($property instanceof MetadataDocuments\DevicesModule\ConnectorDynamicProperty) {
-			$state = $this->propertiesStates->readValue($property);
+			$state = $this->propertiesStatesManager->read($property);
 
 			if (
 				$state?->getActualValue() !== null

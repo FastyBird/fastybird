@@ -25,7 +25,6 @@ use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\States as DevicesStates;
-use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Nette\Utils;
 use Ramsey\Uuid;
@@ -50,7 +49,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
-		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
+		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 	)
 	{
 	}
@@ -178,26 +177,18 @@ final class StoreChannelPropertyState implements Queue\Consumer
 		}
 
 		if ($property->getDataType()->equalsValue(MetadataTypes\DataType::BUTTON)) {
-			$this->channelPropertiesStatesManager->writeValue(
-				$property,
-				Utils\ArrayHash::from([
-					DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
-					DevicesStates\Property::PENDING_FIELD => false,
-				]),
-			);
-			$this->channelPropertiesStatesManager->setValue(
+			$this->channelPropertiesStatesManager->setPendingState($property, false);
+			$this->channelPropertiesStatesManager->set(
 				$property,
 				Utils\ArrayHash::from([
 					DevicesStates\Property::ACTUAL_VALUE_FIELD => null,
-					DevicesStates\Property::VALID_FIELD => true,
 				]),
 			);
 		} else {
-			$this->channelPropertiesStatesManager->setValue(
+			$this->channelPropertiesStatesManager->set(
 				$property,
 				Utils\ArrayHash::from([
 					DevicesStates\Property::ACTUAL_VALUE_FIELD => $entity->getValue(),
-					DevicesStates\Property::VALID_FIELD => true,
 				]),
 			);
 		}

@@ -111,11 +111,11 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 		private readonly Models\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
 		private readonly Models\Configuration\Channels\Repository $channelsConfigurationRepository,
 		private readonly Models\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
+		private readonly Models\States\ConnectorPropertiesManager $connectorPropertiesStatesManager,
+		private readonly Models\States\DevicePropertiesManager $devicePropertiesStatesManager,
+		private readonly Models\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly Utilities\ConnectorConnection $connectorConnectionManager,
 		private readonly Utilities\DeviceConnection $deviceConnectionManager,
-		private readonly Utilities\ConnectorPropertiesStates $connectorPropertiesStateManager,
-		private readonly Utilities\DevicePropertiesStates $devicePropertiesStateManager,
-		private readonly Utilities\ChannelPropertiesStates $channelPropertiesStateManager,
 		private readonly Devices\Logger $logger,
 		private readonly BootstrapHelpers\Database $database,
 		private readonly EventLoop\LoopInterface $eventLoop,
@@ -692,7 +692,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 		);
 
 		foreach ($properties as $property) {
-			$this->connectorPropertiesStateManager->setValidState($property, false);
+			$this->connectorPropertiesStatesManager->setValidState($property, false);
 		}
 
 		$findDevicesQuery = new Queries\Configuration\FindDevices();
@@ -728,7 +728,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 		);
 
 		foreach ($properties as $property) {
-			$this->devicePropertiesStateManager->setValidState($property, false);
+			$this->devicePropertiesStatesManager->setValidState($property, false);
 		}
 
 		$findChannelsQuery = new Queries\Configuration\FindChannels();
@@ -746,7 +746,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 			);
 
 			foreach ($properties as $property) {
-				$this->channelPropertiesStateManager->setValidState($property, false);
+				$this->channelPropertiesStatesManager->setValidState($property, false);
 			}
 		}
 

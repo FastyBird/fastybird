@@ -55,8 +55,8 @@ final class StoreParametersStates implements Consumer
 		private readonly DevicesModels\Entities\Devices\Properties\PropertiesManager $devicesPropertiesManager,
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager,
-		private readonly DevicesUtilities\DevicePropertiesStates $devicePropertiesStatesManager,
-		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
+		private readonly DevicesModels\States\DevicePropertiesManager $devicePropertiesStatesManager,
+		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly DevicesUtilities\Database $databaseHelper,
 	)
 	{
@@ -97,11 +97,10 @@ final class StoreParametersStates implements Consumer
 				$property = $this->devicesPropertiesConfigurationRepository->findOneBy($findDevicePropertyQuery);
 
 				if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-					$this->devicePropertiesStatesManager->setValue(
+					$this->devicePropertiesStatesManager->set(
 						$property,
 						Utils\ArrayHash::from([
 							DevicesStates\Property::ACTUAL_VALUE_FIELD => $parameter->getValue(),
-							DevicesStates\Property::VALID_FIELD => true,
 						]),
 					);
 				} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty) {
@@ -138,11 +137,10 @@ final class StoreParametersStates implements Consumer
 					$property = $this->channelsPropertiesConfigurationRepository->findOneBy($findChannelPropertyQuery);
 
 					if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-						$this->channelPropertiesStatesManager->setValue(
+						$this->channelPropertiesStatesManager->set(
 							$property,
 							Utils\ArrayHash::from([
 								DevicesStates\Property::ACTUAL_VALUE_FIELD => $parameter->getValue(),
-								DevicesStates\Property::VALID_FIELD => true,
 							]),
 						);
 					} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {

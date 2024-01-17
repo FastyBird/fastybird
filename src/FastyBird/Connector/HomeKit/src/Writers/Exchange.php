@@ -16,7 +16,6 @@
 namespace FastyBird\Connector\HomeKit\Writers;
 
 use Exception;
-use FastyBird\Connector\HomeKit;
 use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Helpers;
@@ -33,7 +32,6 @@ use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
-use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Psr\EventDispatcher as PsrEventDispatcher;
 use React\EventLoop;
 
@@ -57,16 +55,15 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 		MetadataDocuments\DevicesModule\Connector $connector,
 		Helpers\Entity $entityHelper,
 		Queue\Queue $queue,
+		Protocol\Driver $accessoryDriver,
 		DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
 		DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
-		Protocol\Driver $accessoryDriver,
-		DevicesUtilities\DevicePropertiesStates $devicePropertiesStatesManager,
-		DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
+		DevicesModels\States\DevicePropertiesManager $devicePropertiesStatesManager,
+		DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 		DateTimeFactory\Factory $dateTimeFactory,
 		EventLoop\LoopInterface $eventLoop,
-		private readonly HomeKit\Logger $logger,
 		private readonly ExchangeConsumers\Container $consumer,
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
@@ -133,16 +130,27 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 			|| $entity instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty
 		) {
 			if (
+				(
+					$entity instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
+					|| $entity instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
+				)
+				&& $entity->isValid() === false
+			) {
+				return;
+			}
+
+			if (
 				$entity instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
 				|| $entity instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty
 			) {
 				$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+				$findDeviceQuery->forConnector($this->connector);
 				$findDeviceQuery->byId($entity->getDevice());
 				$findDeviceQuery->byType(Entities\HomeKitDevice::TYPE);
 
 				$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
-				if ($device === null || !$device->getConnector()->equals($this->connector->getId())) {
+				if ($device === null) {
 					return;
 				}
 
@@ -165,30 +173,17 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 				$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 
 				if ($channel === null) {
-					$this->logger->error(
-						'Channel for received channel property message could not be loaded',
-						[
-							'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
-							'type' => 'exchange-writer',
-							'message' => [
-								'source' => $source->getValue(),
-								'routing_key' => $routingKey->getValue(),
-								'entity' => $entity->toArray(),
-							],
-							'property' => $entity->toArray(),
-						],
-					);
-
 					return;
 				}
 
 				$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+				$findDeviceQuery->forConnector($this->connector);
 				$findDeviceQuery->byId($channel->getDevice());
 				$findDeviceQuery->byType(Entities\HomeKitDevice::TYPE);
 
 				$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
-				if ($device === null || !$device->getConnector()->equals($this->connector->getId())) {
+				if ($device === null) {
 					return;
 				}
 
@@ -216,7 +211,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 				$this->dispatcher?->dispatch(
 					new DevicesEvents\TerminateConnector(
 						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT),
-						'Connector configuration changed, services have to restarted',
+						'Connector configuration changed, services have to be restarted',
 					),
 				);
 			}
@@ -225,7 +220,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 				$this->dispatcher?->dispatch(
 					new DevicesEvents\TerminateConnector(
 						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT),
-						'Connector shared key changed, services have to restarted',
+						'Connector shared key changed, services have to be restarted',
 					),
 				);
 			}

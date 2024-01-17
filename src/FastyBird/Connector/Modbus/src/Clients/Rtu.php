@@ -32,10 +32,8 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
-use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
-use Nette\Utils;
 use React\EventLoop;
 use function array_key_exists;
 use function array_merge;
@@ -91,7 +89,7 @@ class Rtu implements Client
 		private readonly Modbus\Logger $logger,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
-		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
+		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
@@ -251,14 +249,8 @@ class Rtu implements Client
 				);
 
 				foreach ($properties as $property) {
-					$this->channelPropertiesStatesManager->writeValue(
-						$property,
-						Utils\ArrayHash::from([
-							DevicesStates\Property::VALID_FIELD => false,
-							DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
-							DevicesStates\Property::PENDING_FIELD => false,
-						]),
-					);
+					$this->channelPropertiesStatesManager->setValidState($property, false);
+					$this->channelPropertiesStatesManager->setPendingState($property, false);
 				}
 
 				$this->logger->warning(

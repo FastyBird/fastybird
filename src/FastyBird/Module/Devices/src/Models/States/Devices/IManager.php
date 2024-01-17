@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * IChannelPropertiesManager.php
+ * IManager.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,27 +13,27 @@
  * @date           09.01.22
  */
 
-namespace FastyBird\Module\Devices\Models\States;
+namespace FastyBird\Module\Devices\Models\States\Devices;
 
 use FastyBird\Module\Devices\States;
 use Nette\Utils;
 use Ramsey\Uuid;
 
 /**
- * Channel properties manager interface
+ * Device properties manager interface
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Models
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-interface IChannelPropertiesManager
+interface IManager
 {
 
-	public function create(Uuid\UuidInterface $id, Utils\ArrayHash $values): States\ChannelProperty;
+	public function create(Uuid\UuidInterface $id, Utils\ArrayHash $values): States\DeviceProperty;
 
-	public function update(States\ChannelProperty $state, Utils\ArrayHash $values): States\ChannelProperty;
+	public function update(States\DeviceProperty $state, Utils\ArrayHash $values): States\DeviceProperty;
 
-	public function delete(States\ChannelProperty $state): bool;
+	public function delete(States\DeviceProperty $state): bool;
 
 }

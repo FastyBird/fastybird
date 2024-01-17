@@ -58,7 +58,7 @@ final class StoreDeviceState implements Queue\Consumer
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
-		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
+		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly DevicesUtilities\Database $databaseHelper,
 		private readonly ExchangeEntities\DocumentFactory $entityFactory,
 		private readonly ExchangePublisher\Publisher $publisher,
@@ -173,11 +173,10 @@ final class StoreDeviceState implements Queue\Consumer
 				continue;
 			}
 
-			$this->channelPropertiesStatesManager->setValue(
+			$this->channelPropertiesStatesManager->set(
 				$property,
 				Utils\ArrayHash::from([
 					DevicesStates\Property::ACTUAL_VALUE_FIELD => $item->getValue(),
-					DevicesStates\Property::VALID_FIELD => true,
 				]),
 			);
 		}
@@ -272,11 +271,10 @@ final class StoreDeviceState implements Queue\Consumer
 			);
 
 		} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-			$this->channelPropertiesStatesManager->setValue(
+			$this->channelPropertiesStatesManager->set(
 				$property,
 				Utils\ArrayHash::from([
 					DevicesStates\Property::ACTUAL_VALUE_FIELD => $value,
-					DevicesStates\Property::VALID_FIELD => true,
 				]),
 			);
 
@@ -303,11 +301,10 @@ final class StoreDeviceState implements Queue\Consumer
 					),
 				);
 			} else {
-				$this->channelPropertiesStatesManager->writeValue(
+				$this->channelPropertiesStatesManager->write(
 					$property,
 					Utils\ArrayHash::from([
 						DevicesStates\Property::EXPECTED_VALUE_FIELD => $value,
-						DevicesStates\Property::PENDING_FIELD => true,
 					]),
 				);
 			}

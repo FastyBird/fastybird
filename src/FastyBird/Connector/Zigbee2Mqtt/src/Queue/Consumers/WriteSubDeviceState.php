@@ -15,7 +15,6 @@
 
 namespace FastyBird\Connector\Zigbee2Mqtt\Queue\Consumers;
 
-use DateTimeInterface;
 use FastyBird\Connector\Zigbee2Mqtt;
 use FastyBird\Connector\Zigbee2Mqtt\API;
 use FastyBird\Connector\Zigbee2Mqtt\Entities;
@@ -23,7 +22,6 @@ use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
 use FastyBird\Connector\Zigbee2Mqtt\Helpers;
 use FastyBird\Connector\Zigbee2Mqtt\Queue;
 use FastyBird\Connector\Zigbee2Mqtt\Types;
-use FastyBird\DateTimeFactory;
 use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -32,8 +30,6 @@ use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
-use FastyBird\Module\Devices\States as DevicesStates;
-use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Nette\Utils;
 use stdClass;
@@ -57,7 +53,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 
 	public function __construct(
 		protected readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
-		protected readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
+		protected readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly Queue\Queue $queue,
 		private readonly API\ConnectionManager $connectionManager,
 		private readonly Helpers\Entity $entityHelper,
@@ -68,7 +64,6 @@ final class WriteSubDeviceState implements Queue\Consumer
 		private readonly DevicesModels\Configuration\Connectors\Repository $connectorsConfigurationRepository,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
-		private readonly DateTimeFactory\Factory $dateTimeFactory,
 	)
 	{
 	}
@@ -193,7 +188,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 			$writeData = new stdClass();
 
 			foreach ($properties as $property) {
-				$state = $this->channelPropertiesStatesManager->getValue($property);
+				$state = $this->channelPropertiesStatesManager->get($property);
 
 				if ($state?->getExpectedValue() !== null) {
 					$writeData->{$property->getIdentifier()} = MetadataUtilities\Value::flattenValue(
@@ -223,7 +218,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 			$writeData = new stdClass();
 
 			foreach ($properties as $property) {
-				$state = $this->channelPropertiesStatesManager->getValue($property);
+				$state = $this->channelPropertiesStatesManager->get($property);
 
 				if ($state?->getExpectedValue() !== null) {
 					$writeData->{$property->getIdentifier()} = MetadataUtilities\Value::flattenValue(
@@ -273,8 +268,6 @@ final class WriteSubDeviceState implements Queue\Consumer
 					Utils\Json::encode($payload),
 				)
 				->then(function () use ($channel): void {
-					$now = $this->dateTimeFactory->getNow();
-
 					$findPropertiesQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
 					$findPropertiesQuery->forChannel($channel);
 					$findPropertiesQuery->settable(true);
@@ -285,15 +278,10 @@ final class WriteSubDeviceState implements Queue\Consumer
 					);
 
 					foreach ($properties as $property) {
-						$state = $this->channelPropertiesStatesManager->getValue($property);
+						$state = $this->channelPropertiesStatesManager->get($property);
 
 						if ($state?->getExpectedValue() !== null) {
-							$this->channelPropertiesStatesManager->setValue(
-								$property,
-								Utils\ArrayHash::from([
-									DevicesStates\Property::PENDING_FIELD => $now->format(DateTimeInterface::ATOM),
-								]),
-							);
+							$this->channelPropertiesStatesManager->setPendingState($property, true);
 						}
 					}
 				})
@@ -308,13 +296,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 					);
 
 					foreach ($properties as $property) {
-						$this->channelPropertiesStatesManager->writeValue(
-							$property,
-							Utils\ArrayHash::from([
-								DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
-								DevicesStates\Property::PENDING_FIELD => false,
-							]),
-						);
+						$this->channelPropertiesStatesManager->setPendingState($property, false);
 					}
 
 					$this->queue->append(

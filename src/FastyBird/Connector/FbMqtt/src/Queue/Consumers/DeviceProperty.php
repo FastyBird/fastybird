@@ -55,7 +55,7 @@ final class DeviceProperty implements Queue\Consumer
 		private readonly DevicesModels\Entities\Devices\Properties\PropertiesManager $devicesPropertiesManager,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		private readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
-		private readonly DevicesUtilities\DevicePropertiesStates $devicePropertiesStatesManager,
+		private readonly DevicesModels\States\DevicePropertiesManager $devicePropertiesStatesManager,
 		private readonly DevicesUtilities\Database $databaseHelper,
 	)
 	{
@@ -137,11 +137,10 @@ final class DeviceProperty implements Queue\Consumer
 					);
 				});
 			} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-				$this->devicePropertiesStatesManager->setValue(
+				$this->devicePropertiesStatesManager->set(
 					$property,
 					Utils\ArrayHash::from([
 						DevicesStates\Property::ACTUAL_VALUE_FIELD => $entity->getValue(),
-						DevicesStates\Property::VALID_FIELD => true,
 					]),
 				);
 			}

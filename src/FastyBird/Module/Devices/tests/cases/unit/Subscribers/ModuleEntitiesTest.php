@@ -12,7 +12,6 @@ use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Subscribers;
-use FastyBird\Module\Devices\Utilities;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid;
@@ -27,26 +26,20 @@ final class ModuleEntitiesTest extends TestCase
 
 		$entityManager = $this->createMock(ORM\EntityManagerInterface::class);
 
-		$connectorPropertiesStates = $this->createMock(Utilities\ConnectorPropertiesStates::class);
+		$connectorPropertiesStates = $this->createMock(Models\States\ConnectorPropertiesManager::class);
 		$connectorPropertiesStates
-			->method('getValue')
+			->method('get')
 			->willReturn(null);
 
-		$connectorPropertiesStateManager = $this->createMock(Models\States\ConnectorPropertiesManager::class);
-
-		$devicePropertiesStates = $this->createMock(Utilities\DevicePropertiesStates::class);
+		$devicePropertiesStates = $this->createMock(Models\States\DevicePropertiesManager::class);
 		$devicePropertiesStates
-			->method('getValue')
+			->method('get')
 			->willReturn(null);
 
-		$devicePropertiesStateManager = $this->createMock(Models\States\DevicePropertiesManager::class);
-
-		$channelPropertiesStates = $this->createMock(Utilities\ChannelPropertiesStates::class);
+		$channelPropertiesStates = $this->createMock(Models\States\ChannelPropertiesManager::class);
 		$channelPropertiesStates
-			->method('getValue')
+			->method('get')
 			->willReturn(null);
-
-		$channelPropertiesStateManager = $this->createMock(Models\States\ChannelPropertiesManager::class);
 
 		$entityFactory = $this->createMock(ExchangeEntities\DocumentFactory::class);
 
@@ -70,9 +63,6 @@ final class ModuleEntitiesTest extends TestCase
 			$devicesPropertiesConfigurationRepository,
 			$channelsPropertiesConfigurationRepository,
 			$configurationBuilder,
-			$connectorPropertiesStateManager,
-			$devicePropertiesStateManager,
-			$channelPropertiesStateManager,
 			$connectorPropertiesStates,
 			$devicePropertiesStates,
 			$channelPropertiesStates,
@@ -135,26 +125,20 @@ final class ModuleEntitiesTest extends TestCase
 
 		$entityManager = $this->getEntityManager();
 
-		$connectorPropertiesStates = $this->createMock(Utilities\ConnectorPropertiesStates::class);
+		$connectorPropertiesStates = $this->createMock(Models\States\ConnectorPropertiesManager::class);
 		$connectorPropertiesStates
-			->method('getValue')
+			->method('get')
 			->willReturn(null);
 
-		$connectorPropertiesStateManager = $this->createMock(Models\States\ConnectorPropertiesManager::class);
-
-		$devicePropertiesStates = $this->createMock(Utilities\DevicePropertiesStates::class);
+		$devicePropertiesStates = $this->createMock(Models\States\DevicePropertiesManager::class);
 		$devicePropertiesStates
-			->method('getValue')
+			->method('get')
 			->willReturn(null);
 
-		$devicePropertiesStateManager = $this->createMock(Models\States\DevicePropertiesManager::class);
-
-		$channelPropertiesStates = $this->createMock(Utilities\ChannelPropertiesStates::class);
+		$channelPropertiesStates = $this->createMock(Models\States\ChannelPropertiesManager::class);
 		$channelPropertiesStates
-			->method('getValue')
+			->method('get')
 			->willReturn(null);
-
-		$channelPropertiesStateManager = $this->createMock(Models\States\ChannelPropertiesManager::class);
 
 		$entityItem = $this->createMock(MetadataDocuments\DevicesModule\Device::class);
 		$entityItem
@@ -195,9 +179,6 @@ final class ModuleEntitiesTest extends TestCase
 			$devicesPropertiesConfigurationRepository,
 			$channelsPropertiesConfigurationRepository,
 			$configurationBuilder,
-			$connectorPropertiesStateManager,
-			$devicePropertiesStateManager,
-			$channelPropertiesStateManager,
 			$connectorPropertiesStates,
 			$devicePropertiesStates,
 			$channelPropertiesStates,
@@ -269,26 +250,20 @@ final class ModuleEntitiesTest extends TestCase
 
 		$entityManager = $this->getEntityManager(true);
 
-		$connectorPropertiesStates = $this->createMock(Utilities\ConnectorPropertiesStates::class);
+		$connectorPropertiesStates = $this->createMock(Models\States\ConnectorPropertiesManager::class);
 		$connectorPropertiesStates
-			->method('getValue')
+			->method('get')
 			->willReturn(null);
 
-		$connectorPropertiesStateManager = $this->createMock(Models\States\ConnectorPropertiesManager::class);
-
-		$devicePropertiesStates = $this->createMock(Utilities\DevicePropertiesStates::class);
+		$devicePropertiesStates = $this->createMock(Models\States\DevicePropertiesManager::class);
 		$devicePropertiesStates
-			->method('getValue')
+			->method('get')
 			->willReturn(null);
 
-		$devicePropertiesStateManager = $this->createMock(Models\States\DevicePropertiesManager::class);
-
-		$channelPropertiesStates = $this->createMock(Utilities\ChannelPropertiesStates::class);
+		$channelPropertiesStates = $this->createMock(Models\States\ChannelPropertiesManager::class);
 		$channelPropertiesStates
-			->method('getValue')
+			->method('get')
 			->willReturn(null);
-
-		$channelPropertiesStateManager = $this->createMock(Models\States\ChannelPropertiesManager::class);
 
 		$entityItem = $this->createMock(MetadataDocuments\DevicesModule\Device::class);
 		$entityItem
@@ -329,9 +304,6 @@ final class ModuleEntitiesTest extends TestCase
 			$devicesPropertiesConfigurationRepository,
 			$channelsPropertiesConfigurationRepository,
 			$configurationBuilder,
-			$connectorPropertiesStateManager,
-			$devicePropertiesStateManager,
-			$channelPropertiesStateManager,
 			$connectorPropertiesStates,
 			$devicePropertiesStates,
 			$channelPropertiesStates,
@@ -411,26 +383,20 @@ final class ModuleEntitiesTest extends TestCase
 
 		$entityManager = $this->getEntityManager();
 
-		$connectorPropertiesStates = $this->createMock(Utilities\ConnectorPropertiesStates::class);
+		$connectorPropertiesStates = $this->createMock(Models\States\ConnectorPropertiesManager::class);
 		$connectorPropertiesStates
-			->method('getValue')
+			->method('get')
 			->willReturn(null);
 
-		$connectorPropertiesStateManager = $this->createMock(Models\States\ConnectorPropertiesManager::class);
-
-		$devicePropertiesStates = $this->createMock(Utilities\DevicePropertiesStates::class);
+		$devicePropertiesStates = $this->createMock(Models\States\DevicePropertiesManager::class);
 		$devicePropertiesStates
-			->method('getValue')
+			->method('get')
 			->willReturn(null);
 
-		$devicePropertiesStateManager = $this->createMock(Models\States\DevicePropertiesManager::class);
-
-		$channelPropertiesStates = $this->createMock(Utilities\ChannelPropertiesStates::class);
+		$channelPropertiesStates = $this->createMock(Models\States\ChannelPropertiesManager::class);
 		$channelPropertiesStates
-			->method('getValue')
+			->method('get')
 			->willReturn(null);
-
-		$channelPropertiesStateManager = $this->createMock(Models\States\ChannelPropertiesManager::class);
 
 		$entityItem = $this->createMock(MetadataDocuments\DevicesModule\Device::class);
 		$entityItem
@@ -471,9 +437,6 @@ final class ModuleEntitiesTest extends TestCase
 			$devicesPropertiesConfigurationRepository,
 			$channelsPropertiesConfigurationRepository,
 			$configurationBuilder,
-			$connectorPropertiesStateManager,
-			$devicePropertiesStateManager,
-			$channelPropertiesStateManager,
 			$connectorPropertiesStates,
 			$devicePropertiesStates,
 			$channelPropertiesStates,

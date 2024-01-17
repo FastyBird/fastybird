@@ -31,7 +31,6 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
-use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use InvalidArgumentException;
 use Nette;
 use Nette\Utils;
@@ -75,7 +74,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 		private readonly Zigbee2Mqtt\Logger $logger,
 		private readonly DevicesModels\Configuration\Connectors\Properties\Repository $connectorsPropertiesConfigurationRepository,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
-		private readonly DevicesUtilities\ConnectorPropertiesStates $connectorPropertiesStatesManager,
+		private readonly DevicesModels\States\ConnectorPropertiesManager $connectorPropertiesStatesManager,
 		private readonly EventLoop\LoopInterface $eventLoop,
 	)
 	{
@@ -273,7 +272,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			MetadataDocuments\DevicesModule\ConnectorDynamicProperty::class,
 		);
 
-		$state = $property !== null ? $this->connectorPropertiesStatesManager->readValue($property) : null;
+		$state = $property !== null ? $this->connectorPropertiesStatesManager->read($property) : null;
 
 		return $state?->getActualValue() === MetadataTypes\ConnectionState::RUNNING;
 	}

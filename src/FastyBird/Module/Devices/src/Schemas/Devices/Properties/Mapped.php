@@ -26,7 +26,6 @@ use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Router;
 use FastyBird\Module\Devices\Schemas;
-use FastyBird\Module\Devices\Utilities;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use IPub\SlimRouter\Routing;
 use Neomerx\JsonApi;
@@ -54,7 +53,7 @@ final class Mapped extends Property
 	public function __construct(
 		Routing\IRouter $router,
 		Models\Entities\Devices\Properties\PropertiesRepository $propertiesRepository,
-		private readonly Utilities\DevicePropertiesStates $devicePropertiesStates,
+		private readonly Models\States\DevicePropertiesManager $devicePropertiesStatesManager,
 	)
 	{
 		parent::__construct($router, $propertiesRepository);
@@ -88,7 +87,7 @@ final class Mapped extends Property
 		JsonApi\Contracts\Schema\ContextInterface $context,
 	): iterable
 	{
-		$state = $this->devicePropertiesStates->readValue($resource);
+		$state = $this->devicePropertiesStatesManager->read($resource);
 
 		return $resource->getParent() instanceof Entities\Devices\Properties\Dynamic ? array_merge(
 			(array) parent::getAttributes($resource, $context),

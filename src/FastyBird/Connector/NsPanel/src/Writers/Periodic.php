@@ -27,7 +27,6 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
-use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use React\EventLoop;
 use function array_key_exists;
@@ -65,9 +64,6 @@ abstract class Periodic implements Writer
 
 	/** @var array<string, DateTimeInterface> */
 	private array $processedProperties = [];
-	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-	/** @var array<string, bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null> */
-	private array $lastReportedValue = [];
 
 	private EventLoop\TimerInterface|null $handlerTimer = null;
 
@@ -79,7 +75,7 @@ abstract class Periodic implements Writer
 		protected readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		protected readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		protected readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
-		protected readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
+		protected readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 		protected readonly DateTimeFactory\Factory $dateTimeFactory,
 		protected readonly EventLoop\LoopInterface $eventLoop,
 	)
@@ -93,7 +89,6 @@ abstract class Periodic implements Writer
 	{
 		$this->processedDevices = [];
 		$this->processedProperties = [];
-		$this->lastReportedValue = [];
 
 		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDevicesQuery->forConnector($this->connector);
@@ -170,7 +165,7 @@ abstract class Periodic implements Writer
 			if (!in_array($device->getId()->toString(), $this->processedDevices, true)) {
 				$this->processedDevices[] = $device->getId()->toString();
 
-				if ($this->writeChannelsProperty($device)) {
+				if ($this->writeProperty($device)) {
 					$this->registerLoopHandler();
 
 					return;
@@ -191,7 +186,7 @@ abstract class Periodic implements Writer
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
 	 */
-	private function writeChannelsProperty(MetadataDocuments\DevicesModule\Device $device): bool
+	private function writeProperty(MetadataDocuments\DevicesModule\Device $device): bool
 	{
 		if (!array_key_exists($device->getId()->toString(), $this->properties)) {
 			return false;
@@ -202,9 +197,13 @@ abstract class Periodic implements Writer
 				$device->getType() === Entities\Devices\SubDevice::TYPE
 				&& $property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
 			) {
-				$this->writeSubDeviceChannelProperty($device, $property);
+				if ($this->writeSubDeviceChannelProperty($device, $property)) {
+					return true;
+				}
 			} elseif ($device->getType() === Entities\Devices\ThirdPartyDevice::TYPE) {
-				$this->writeThirdPartyDeviceChannelProperty($device, $property);
+				if ($this->writeThirdPartyDeviceChannelProperty($device, $property)) {
+					return true;
+				}
 			}
 		}
 
@@ -239,7 +238,7 @@ abstract class Periodic implements Writer
 
 		$this->processedProperties[$property->getId()->toString()] = $now;
 
-		$state = $this->channelPropertiesStatesManager->getValue($property);
+		$state = $this->channelPropertiesStatesManager->get($property);
 
 		if ($state === null) {
 			return false;
@@ -309,29 +308,6 @@ abstract class Periodic implements Writer
 			return false;
 		}
 
-		if (
-			$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-			|| $property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
-		) {
-			$state = $property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-				? $this->channelPropertiesStatesManager->getValue($property)
-				: $this->channelPropertiesStatesManager->readValue($property);
-
-			if ($state === null || $state->isValid() === false) {
-				return false;
-			}
-
-			$propertyValue = $state->getExpectedValue() ?? $state->getActualValue();
-
-			if ($propertyValue === null) {
-				return false;
-			}
-		} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
-			$propertyValue = $property->getValue();
-		} else {
-			return false;
-		}
-
 		$debounce = array_key_exists($property->getId()->toString(), $this->processedProperties)
 			? $this->processedProperties[$property->getId()->toString()]
 			: false;
@@ -343,21 +319,28 @@ abstract class Periodic implements Writer
 			return false;
 		}
 
-		$lastReportedValue = array_key_exists(
-			$property->getId()->toString(),
-			$this->lastReportedValue,
-		)
-			? $this->lastReportedValue[$property->getId()->toString()]
-			: null;
-
-		if ($lastReportedValue === $propertyValue) {
-			return false;
-		}
-
-		unset($this->processedProperties[$property->getId()->toString()]);
-
 		$this->processedProperties[$property->getId()->toString()] = $now;
-		$this->lastReportedValue[$property->getId()->toString()] = $propertyValue;
+
+		if (
+			$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+			|| $property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
+		) {
+			$state = $property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+				? $this->channelPropertiesStatesManager->get($property)
+				: $this->channelPropertiesStatesManager->read($property);
+
+			if ($state === null) {
+				return false;
+			}
+
+			$propertyValue = $property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+				? $state->getExpectedValue()
+				: $state->getExpectedValue() ?? ($state->isValid() ? $state->getActualValue() : null);
+
+			if ($propertyValue === null) {
+				return false;
+			}
+		}
 
 		$this->queue->append(
 			$this->entityHelper->create(

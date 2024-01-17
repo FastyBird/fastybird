@@ -11,7 +11,6 @@ use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\States;
 use FastyBird\Module\Devices\Tests\Cases\Unit\BaseTestCase;
-use FastyBird\Module\Devices\Utilities;
 use Nette\DI;
 use Nette\Utils;
 use Ramsey\Uuid;
@@ -60,7 +59,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 			$channelPropertiesConfigurationRepository,
 		);
 
-		$channelPropertiesStatesManager = $this->createMock(Models\States\ChannelPropertiesManager::class);
+		$channelPropertiesStatesManager = $this->createMock(Models\States\Channels\Manager::class);
 		$channelPropertiesStatesManager
 			->expects(self::exactly($stored !== null || $exception !== null ? 0 : 1))
 			->method('create')
@@ -110,24 +109,26 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 			);
 
 		$this->mockContainerService(
-			Models\States\ChannelPropertiesManager::class,
+			Models\States\Channels\Manager::class,
 			$channelPropertiesStatesManager,
 		);
 
-		$channelPropertyStateRepository = $this->createMock(Models\States\ChannelPropertiesRepository::class);
+		$channelPropertyStateRepository = $this->createMock(Models\States\Channels\Repository::class);
 		$channelPropertyStateRepository
 			->expects(self::exactly(1))
 			->method('findOne')
 			->willReturn($stored);
 
 		$this->mockContainerService(
-			Models\States\ChannelPropertiesRepository::class,
+			Models\States\Channels\Repository::class,
 			$channelPropertyStateRepository,
 		);
 
-		$channelPropertiesStatesManager = $this->getContainer()->getByType(Utilities\ChannelPropertiesStates::class);
+		$channelPropertiesStatesManager = $this->getContainer()->getByType(
+			Models\States\ChannelPropertiesManager::class,
+		);
 
-		$channelPropertiesStatesManager->writeValue($property, $data);
+		$channelPropertiesStatesManager->write($property, $data);
 	}
 
 	/**
@@ -170,7 +171,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 			$channelPropertiesConfigurationRepository,
 		);
 
-		$channelPropertiesStatesManager = $this->createMock(Models\States\ChannelPropertiesManager::class);
+		$channelPropertiesStatesManager = $this->createMock(Models\States\Channels\Manager::class);
 		$channelPropertiesStatesManager
 			->expects(self::exactly($stored !== null || $exception !== null ? 0 : 1))
 			->method('create')
@@ -220,24 +221,26 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 			);
 
 		$this->mockContainerService(
-			Models\States\ChannelPropertiesManager::class,
+			Models\States\Channels\Manager::class,
 			$channelPropertiesStatesManager,
 		);
 
-		$channelPropertyStateRepository = $this->createMock(Models\States\ChannelPropertiesRepository::class);
+		$channelPropertyStateRepository = $this->createMock(Models\States\Channels\Repository::class);
 		$channelPropertyStateRepository
 			->expects(self::exactly(1))
 			->method('findOne')
 			->willReturn($stored);
 
 		$this->mockContainerService(
-			Models\States\ChannelPropertiesRepository::class,
+			Models\States\Channels\Repository::class,
 			$channelPropertyStateRepository,
 		);
 
-		$channelPropertiesStatesManager = $this->getContainer()->getByType(Utilities\ChannelPropertiesStates::class);
+		$channelPropertiesStatesManager = $this->getContainer()->getByType(
+			Models\States\ChannelPropertiesManager::class,
+		);
 
-		$channelPropertiesStatesManager->setValue($property, $data);
+		$channelPropertiesStatesManager->set($property, $data);
 	}
 
 	/**

@@ -30,7 +30,6 @@ use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\States;
-use FastyBird\Module\Devices\Utilities;
 use IPub\WebSockets;
 use IPub\WebSocketsWAMP;
 use Nette\Utils;
@@ -54,9 +53,9 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 		private readonly Models\Entities\Connectors\Properties\PropertiesRepository $connectorPropertiesRepository,
 		private readonly Models\Entities\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
 		private readonly Models\Entities\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
-		private readonly Utilities\ConnectorPropertiesStates $connectorPropertiesStates,
-		private readonly Utilities\DevicePropertiesStates $devicePropertiesStates,
-		private readonly Utilities\ChannelPropertiesStates $channelPropertiesStates,
+		private readonly Models\States\ConnectorPropertiesManager $connectorPropertiesStatesManager,
+		private readonly Models\States\DevicePropertiesManager $devicePropertiesStatesManager,
+		private readonly Models\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly Devices\Logger $logger,
 		private readonly MetadataLoaders\SchemaLoader $schemaLoader,
 		private readonly MetadataSchemas\Validator $jsonValidator,
@@ -96,7 +95,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 					$deviceProperty instanceof Entities\Devices\Properties\Dynamic
 					|| $deviceProperty instanceof Entities\Devices\Properties\Mapped
 				) {
-					$state = $this->devicePropertiesStates->readValue($deviceProperty);
+					$state = $this->devicePropertiesStatesManager->read($deviceProperty);
 
 					if ($state instanceof States\DeviceProperty) {
 						$dynamicData = $state->toArray();
@@ -128,7 +127,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 					$channelProperty instanceof Entities\Channels\Properties\Dynamic
 					|| $channelProperty instanceof Entities\Channels\Properties\Mapped
 				) {
-					$state = $this->channelPropertiesStates->readValue($channelProperty);
+					$state = $this->channelPropertiesStatesManager->read($channelProperty);
 
 					if ($state instanceof States\ChannelProperty) {
 						$dynamicData = $state->toArray();
@@ -157,7 +156,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				$dynamicData = [];
 
 				if ($connectorProperty instanceof Entities\Connectors\Properties\Dynamic) {
-					$state = $this->connectorPropertiesStates->readValue($connectorProperty);
+					$state = $this->connectorPropertiesStatesManager->read($connectorProperty);
 
 					if ($state instanceof States\ConnectorProperty) {
 						$dynamicData = $state->toArray();
@@ -318,11 +317,10 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				return;
 			}
 
-			$this->connectorPropertiesStates->writeValue(
+			$this->connectorPropertiesStatesManager->write(
 				$property,
 				Utils\ArrayHash::from([
 					States\Property::EXPECTED_VALUE_FIELD => $entity->getExpectedValue(),
-					States\Property::PENDING_FIELD => true,
 				]),
 			);
 		} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::GET)) {
@@ -333,7 +331,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 			}
 
 			$state = $property instanceof Entities\Connectors\Properties\Dynamic
-				? $this->connectorPropertiesStates->readValue($property)
+				? $this->connectorPropertiesStatesManager->read($property)
 				: null;
 
 			$publishRoutingKey = MetadataTypes\RoutingKey::get(
@@ -388,11 +386,10 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				return;
 			}
 
-			$this->devicePropertiesStates->writeValue(
+			$this->devicePropertiesStatesManager->write(
 				$property,
 				Utils\ArrayHash::from([
 					States\Property::EXPECTED_VALUE_FIELD => $entity->getExpectedValue(),
-					States\Property::PENDING_FIELD => true,
 				]),
 			);
 		} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::GET)) {
@@ -404,7 +401,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 
 			$state = $property instanceof Entities\Devices\Properties\Dynamic
 			|| $property instanceof Entities\Devices\Properties\Mapped
-				? $this->devicePropertiesStates->readValue($property) : null;
+				? $this->devicePropertiesStatesManager->read($property) : null;
 
 			$publishRoutingKey = MetadataTypes\RoutingKey::get(
 				MetadataTypes\RoutingKey::DEVICE_PROPERTY_DOCUMENT_REPORTED,
@@ -458,11 +455,10 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				return;
 			}
 
-			$this->channelPropertiesStates->writeValue(
+			$this->channelPropertiesStatesManager->write(
 				$property,
 				Utils\ArrayHash::from([
 					States\Property::EXPECTED_VALUE_FIELD => $entity->getExpectedValue(),
-					States\Property::PENDING_FIELD => true,
 				]),
 			);
 		} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::GET)) {
@@ -474,7 +470,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 
 			$state = $property instanceof Entities\Channels\Properties\Dynamic
 			|| $property instanceof Entities\Channels\Properties\Mapped
-				? $this->channelPropertiesStates->readValue($property) : null;
+				? $this->channelPropertiesStatesManager->read($property) : null;
 
 			$publishRoutingKey = MetadataTypes\RoutingKey::get(
 				MetadataTypes\RoutingKey::CHANNEL_PROPERTY_DOCUMENT_REPORTED,

@@ -68,16 +68,13 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 		}
 
 		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDeviceQuery->forConnector($this->connector);
 		$findDeviceQuery->byId($channel->getDevice());
 		$findDeviceQuery->byType(Entities\Devices\SubDevice::TYPE);
 
 		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
 		if ($device === null) {
-			return;
-		}
-
-		if (!$device->getConnector()->equals($this->connector->getId())) {
 			return;
 		}
 

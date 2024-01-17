@@ -28,7 +28,6 @@ use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
-use FastyBird\Module\Devices\Utilities;
 use Nette;
 use Nette\Utils;
 use ReflectionClass;
@@ -65,9 +64,6 @@ final class ModuleEntities implements Common\EventSubscriber
 		private readonly Models\States\ConnectorPropertiesManager $connectorPropertiesStatesManager,
 		private readonly Models\States\DevicePropertiesManager $devicePropertiesStatesManager,
 		private readonly Models\States\ChannelPropertiesManager $channelPropertiesStatesManager,
-		private readonly Utilities\ConnectorPropertiesStates $connectorPropertiesStates,
-		private readonly Utilities\DevicePropertiesStates $devicePropertiesStates,
-		private readonly Utilities\ChannelPropertiesStates $channelPropertiesStates,
 		private readonly ExchangeEntities\DocumentFactory $entityFactory,
 		private readonly ExchangePublisher\Publisher $publisher,
 	)
@@ -290,7 +286,7 @@ final class ModuleEntities implements Common\EventSubscriber
 		if ($publishRoutingKey !== null) {
 			if ($entity instanceof Entities\Devices\Properties\Dynamic) {
 				try {
-					$state = $action === self::ACTION_UPDATED ? $this->devicePropertiesStates->readValue(
+					$state = $action === self::ACTION_UPDATED ? $this->devicePropertiesStatesManager->read(
 						$entity,
 					) : null;
 
@@ -323,7 +319,7 @@ final class ModuleEntities implements Common\EventSubscriber
 			} elseif ($entity instanceof Entities\Channels\Properties\Dynamic) {
 				try {
 					$state = $action === self::ACTION_UPDATED
-						? $this->channelPropertiesStates->readValue($entity)
+						? $this->channelPropertiesStatesManager->read($entity)
 						: null;
 
 					$this->publisher->publish(
@@ -355,7 +351,7 @@ final class ModuleEntities implements Common\EventSubscriber
 			} elseif ($entity instanceof Entities\Connectors\Properties\Dynamic) {
 				try {
 					$state = $action === self::ACTION_UPDATED
-						? $this->connectorPropertiesStates->readValue($entity)
+						? $this->connectorPropertiesStatesManager->read($entity)
 						: null;
 
 					$this->publisher->publish(
