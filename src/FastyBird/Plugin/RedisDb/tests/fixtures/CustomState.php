@@ -27,11 +27,13 @@ class CustomState extends States\State
 			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
+		#[ObjectMapper\Modifiers\FieldName(self::CREATED_AT_FIELD)]
 		private readonly DateTimeInterface|null $createdAt = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
+		#[ObjectMapper\Modifiers\FieldName(self::UPDATED_AT_FIELD)]
 		private readonly DateTimeInterface|null $updatedAt = null,
 	)
 	{
@@ -71,7 +73,7 @@ class CustomState extends States\State
 	{
 		return array_merge([
 			'value' => $this->getValue(),
-			'camel_cased' => $this->getCamelCased(),
+			'camelCased' => $this->getCamelCased(),
 			'created_at' => $this->getCreated()?->format(DateTimeInterface::ATOM),
 			'updated_at' => $this->getUpdated()?->format(DateTimeInterface::ATOM),
 		], parent::toArray());

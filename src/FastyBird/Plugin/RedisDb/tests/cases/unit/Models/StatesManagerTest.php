@@ -204,14 +204,14 @@ final class StatesManagerTest extends TestCase
 				[
 					'id' => $id->toString(),
 					'value' => 'keyValue',
-					'camel_cased' => null,
+					'camelCased' => null,
 					'created_at' => '2020-04-01T12:00:00+00:00',
 					'updated_at' => null,
 				],
 				[
 					'id' => $id->toString(),
 					'value' => 'keyValue',
-					'camel_cased' => null,
+					'camelCased' => null,
 					'created_at' => '2020-04-01T12:00:00+00:00',
 					'updated_at' => null,
 				],
@@ -225,14 +225,14 @@ final class StatesManagerTest extends TestCase
 				[
 					'id' => $id->toString(),
 					'value' => null,
-					'camel_cased' => null,
+					'camelCased' => null,
 					'created_at' => '2020-04-01T12:00:00+00:00',
 					'updated_at' => null,
 				],
 				[
 					'id' => $id->toString(),
 					'value' => null,
-					'camel_cased' => null,
+					'camelCased' => null,
 					'created_at' => '2020-04-01T12:00:00+00:00',
 					'updated_at' => null,
 				],
