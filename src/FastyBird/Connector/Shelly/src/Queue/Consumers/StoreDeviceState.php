@@ -95,7 +95,7 @@ final class StoreDeviceState implements Queue\Consumer
 			$this->setDeviceProperty(
 				$device->getId(),
 				$entity->getIpAddress(),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 				Types\DevicePropertyIdentifier::IP_ADDRESS,
 			);
 		}
@@ -265,7 +265,7 @@ final class StoreDeviceState implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed store device state message',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
 				'type' => 'store-device-state-message-consumer',
 				'connector' => [
 					'id' => $entity->getConnector()->toString(),

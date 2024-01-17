@@ -72,7 +72,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Starting Viera connector service',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -96,7 +96,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Viera connector service has been started',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -112,7 +112,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Starting Viera connector discovery',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -125,7 +125,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->client->on('finished', function (): void {
 			$this->dispatcher?->dispatch(
 				new DevicesEvents\TerminateConnector(
-					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA),
+					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_VIERA),
 					'Devices discovery finished',
 				),
 			);
@@ -141,7 +141,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Viera connector discovery has been started',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -167,7 +167,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Viera connector has been terminated',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),

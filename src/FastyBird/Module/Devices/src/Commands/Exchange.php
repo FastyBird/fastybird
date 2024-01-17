@@ -126,7 +126,7 @@ final class Exchange extends Console\Command\Command
 		} catch (Throwable $ex) {
 			// Log caught exception
 			$this->logger->error('An unhandled error occurred', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+				'source' => MetadataTypes\ModuleSource::DEVICES,
 				'type' => 'exchange-cmd',
 				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
@@ -144,7 +144,7 @@ final class Exchange extends Console\Command\Command
 	private function terminate(): void
 	{
 		$this->logger->info('Stopping exchange...', [
-			'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+			'source' => MetadataTypes\ModuleSource::DEVICES,
 			'type' => 'exchange-cmd',
 		]);
 

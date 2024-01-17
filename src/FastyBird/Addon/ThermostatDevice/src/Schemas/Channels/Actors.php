@@ -35,7 +35,7 @@ final class Actors extends Schemas\ThermostatChannel
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL . '/channel/' . Entities\Channels\Actors::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL . '/channel/' . Entities\Channels\Actors::TYPE;
 
 	public function getEntityClass(): string
 	{

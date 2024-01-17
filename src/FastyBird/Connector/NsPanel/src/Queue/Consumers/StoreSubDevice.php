@@ -76,7 +76,7 @@ final class StoreSubDevice implements Queue\Consumer
 			$this->logger->error(
 				'Device could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 					'type' => 'store-sub-device-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -111,7 +111,7 @@ final class StoreSubDevice implements Queue\Consumer
 				$this->logger->error(
 					'Connector could not be loaded',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 						'type' => 'store-sub-device-message-consumer',
 						'connector' => [
 							'id' => $entity->getConnector()->toString(),
@@ -147,7 +147,7 @@ final class StoreSubDevice implements Queue\Consumer
 			$this->logger->info(
 				'Sub-device was created',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 					'type' => 'store-sub-device-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -167,35 +167,35 @@ final class StoreSubDevice implements Queue\Consumer
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getManufacturer(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 			Types\DevicePropertyIdentifier::MANUFACTURER,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MANUFACTURER),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getModel(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 			Types\DevicePropertyIdentifier::MODEL,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MODEL),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getFirmwareVersion(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 			Types\DevicePropertyIdentifier::FIRMWARE_VERSION,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::FIRMWARE_VERSION),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getDisplayCategory()->getValue(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 			Types\DevicePropertyIdentifier::CATEGORY,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::CATEGORY),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getMacAddress(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 			Types\DevicePropertyIdentifier::MAC_ADDRESS,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MAC_ADDRESS),
 		);
@@ -227,7 +227,7 @@ final class StoreSubDevice implements Queue\Consumer
 					$this->logger->debug(
 						'Device channel was created',
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+							'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 							'type' => 'store-sub-device-message-consumer',
 							'connector' => [
 								'id' => $entity->getConnector()->toString(),
@@ -275,7 +275,7 @@ final class StoreSubDevice implements Queue\Consumer
 							$this->logger->debug(
 								'Toggle channel name was set',
 								[
-									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+									'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 									'type' => 'store-sub-device-message-consumer',
 									'connector' => [
 										'id' => $entity->getConnector()->toString(),
@@ -300,7 +300,7 @@ final class StoreSubDevice implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed store device message',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 				'type' => 'store-sub-device-message-consumer',
 				'connector' => [
 					'id' => $entity->getConnector()->toString(),

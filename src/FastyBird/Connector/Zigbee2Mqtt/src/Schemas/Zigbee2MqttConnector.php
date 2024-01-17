@@ -34,7 +34,7 @@ final class Zigbee2MqttConnector extends DevicesSchemas\Connectors\Connector
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT . '/connector/' . Entities\Zigbee2MqttConnector::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT . '/connector/' . Entities\Zigbee2MqttConnector::TYPE;
 
 	public function getEntityClass(): string
 	{

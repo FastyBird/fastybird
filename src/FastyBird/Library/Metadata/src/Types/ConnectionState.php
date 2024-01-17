@@ -32,25 +32,25 @@ class ConnectionState extends Consistence\Enum\Enum
 	/**
 	 * Define device states
 	 */
-	public const STATE_CONNECTED = 'connected';
+	public const CONNECTED = 'connected';
 
-	public const STATE_DISCONNECTED = 'disconnected';
+	public const DISCONNECTED = 'disconnected';
 
-	public const STATE_INIT = 'init';
+	public const INIT = 'init';
 
-	public const STATE_READY = 'ready';
+	public const READY = 'ready';
 
-	public const STATE_RUNNING = 'running';
+	public const RUNNING = 'running';
 
-	public const STATE_SLEEPING = 'sleeping';
+	public const SLEEPING = 'sleeping';
 
-	public const STATE_STOPPED = 'stopped';
+	public const STOPPED = 'stopped';
 
-	public const STATE_LOST = 'lost';
+	public const LOST = 'lost';
 
-	public const STATE_ALERT = 'alert';
+	public const ALERT = 'alert';
 
-	public const STATE_UNKNOWN = 'unknown';
+	public const UNKNOWN = 'unknown';
 
 	public function getValue(): string
 	{

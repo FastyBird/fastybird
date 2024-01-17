@@ -92,7 +92,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Device could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 					'type' => 'store-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -127,7 +127,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 					$format = $property->getFormat();
 
 					if (
-						$property->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_ENUM)
+						$property->getDataType()->equalsValue(MetadataTypes\DataType::ENUM)
 						&& $dataPoint->getValue() !== null
 						&& $format instanceof MetadataValueObjects\StringEnumFormat
 					) {
@@ -169,7 +169,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed store device state message',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 				'type' => 'store-channel-property-state-message-consumer',
 				'connector' => [
 					'id' => $entity->getConnector()->toString(),

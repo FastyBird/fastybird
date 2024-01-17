@@ -99,7 +99,7 @@ final class WriteV1PropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Connector could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
 					'type' => 'write-v1-property-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -134,7 +134,7 @@ final class WriteV1PropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Device could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
 					'type' => 'write-v1-property-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -166,7 +166,7 @@ final class WriteV1PropertyState implements Queue\Consumer
 				$this->logger->error(
 					'Channel could not be loaded',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
 						'type' => 'write-v1-property-state-message-consumer',
 						'connector' => [
 							'id' => $entity->getConnector()->toString(),
@@ -197,7 +197,7 @@ final class WriteV1PropertyState implements Queue\Consumer
 				$this->logger->error(
 					'Channel property could not be loaded',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
 						'type' => 'write-v1-property-state-message-consumer',
 						'connector' => [
 							'id' => $entity->getConnector()->toString(),
@@ -228,7 +228,7 @@ final class WriteV1PropertyState implements Queue\Consumer
 				$this->logger->error(
 					'Device property could not be loaded',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
 						'type' => 'write-v1-property-state-message-consumer',
 						'connector' => [
 							'id' => $entity->getConnector()->toString(),
@@ -251,7 +251,7 @@ final class WriteV1PropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Property is not writable',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
 					'type' => 'write-v1-property-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -379,7 +379,7 @@ final class WriteV1PropertyState implements Queue\Consumer
 				$this->logger->error(
 					'Could write state to device',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
 						'type' => 'write-v1-property-state-message-consumer',
 						'exception' => BootstrapHelpers\Logger::buildException($ex),
 						'connector' => [
@@ -399,7 +399,7 @@ final class WriteV1PropertyState implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed write device state message',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
 				'type' => 'write-v1-property-state-message-consumer',
 				'connector' => [
 					'id' => $entity->getConnector()->toString(),

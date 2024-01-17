@@ -123,17 +123,17 @@ final class DocumentFactory
 				throw new Exceptions\InvalidArgument('Provided data could not be validated', $ex->getCode(), $ex);
 			}
 
-			if ($type->equalsValue(MetadataTypes\PropertyType::TYPE_DYNAMIC)) {
+			if ($type->equalsValue(MetadataTypes\PropertyType::DYNAMIC)) {
 				return $this->documentFactory->create(
 					MetadataDocuments\DevicesModule\DeviceDynamicProperty::class,
 					$data,
 				);
-			} elseif ($type->equalsValue(MetadataTypes\PropertyType::TYPE_VARIABLE)) {
+			} elseif ($type->equalsValue(MetadataTypes\PropertyType::VARIABLE)) {
 				return $this->documentFactory->create(
 					MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
 					$data,
 				);
-			} elseif ($type->equalsValue(MetadataTypes\PropertyType::TYPE_MAPPED)) {
+			} elseif ($type->equalsValue(MetadataTypes\PropertyType::MAPPED)) {
 				return $this->documentFactory->create(
 					MetadataDocuments\DevicesModule\DeviceMappedProperty::class,
 					$data,
@@ -174,17 +174,17 @@ final class DocumentFactory
 				throw new Exceptions\InvalidArgument('Provided data could not be validated', $ex->getCode(), $ex);
 			}
 
-			if ($type->equalsValue(MetadataTypes\PropertyType::TYPE_DYNAMIC)) {
+			if ($type->equalsValue(MetadataTypes\PropertyType::DYNAMIC)) {
 				return $this->documentFactory->create(
 					MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
 					$data,
 				);
-			} elseif ($type->equalsValue(MetadataTypes\PropertyType::TYPE_VARIABLE)) {
+			} elseif ($type->equalsValue(MetadataTypes\PropertyType::VARIABLE)) {
 				return $this->documentFactory->create(
 					MetadataDocuments\DevicesModule\ChannelVariableProperty::class,
 					$data,
 				);
-			} elseif ($type->equalsValue(MetadataTypes\PropertyType::TYPE_MAPPED)) {
+			} elseif ($type->equalsValue(MetadataTypes\PropertyType::MAPPED)) {
 				return $this->documentFactory->create(
 					MetadataDocuments\DevicesModule\ChannelMappedProperty::class,
 					$data,
@@ -225,12 +225,12 @@ final class DocumentFactory
 				throw new Exceptions\InvalidArgument('Provided data could not be validated', $ex->getCode(), $ex);
 			}
 
-			if ($type->equalsValue(MetadataTypes\PropertyType::TYPE_DYNAMIC)) {
+			if ($type->equalsValue(MetadataTypes\PropertyType::DYNAMIC)) {
 				return $this->documentFactory->create(
 					MetadataDocuments\DevicesModule\ConnectorDynamicProperty::class,
 					$data,
 				);
-			} elseif ($type->equalsValue(MetadataTypes\PropertyType::TYPE_VARIABLE)) {
+			} elseif ($type->equalsValue(MetadataTypes\PropertyType::VARIABLE)) {
 				return $this->documentFactory->create(
 					MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
 					$data,
@@ -266,9 +266,9 @@ final class DocumentFactory
 				throw new Exceptions\InvalidArgument('Provided data could not be validated', $ex->getCode(), $ex);
 			}
 
-			if ($type->equalsValue(MetadataTypes\TriggerType::TYPE_MANUAL)) {
+			if ($type->equalsValue(MetadataTypes\TriggerType::MANUAL)) {
 				return $this->documentFactory->create(MetadataDocuments\TriggersModule\ManualTrigger::class, $data);
-			} elseif ($type->equalsValue(MetadataTypes\TriggerType::TYPE_AUTOMATIC)) {
+			} elseif ($type->equalsValue(MetadataTypes\TriggerType::AUTOMATIC)) {
 				return $this->documentFactory->create(MetadataDocuments\TriggersModule\AutomaticTrigger::class, $data);
 			} else {
 				throw new Exceptions\InvalidArgument('Provided data and routing key is for unsupported trigger type');
@@ -299,14 +299,14 @@ final class DocumentFactory
 				throw new Exceptions\InvalidArgument('Provided data could not be validated', $ex->getCode(), $ex);
 			}
 
-			if ($type->equalsValue(MetadataTypes\TriggerActionType::TYPE_DUMMY)) {
+			if ($type->equalsValue(MetadataTypes\TriggerActionType::DUMMY)) {
 				return $this->documentFactory->create(MetadataDocuments\TriggersModule\DummyAction::class, $data);
-			} elseif ($type->equalsValue(MetadataTypes\TriggerActionType::TYPE_DEVICE_PROPERTY)) {
+			} elseif ($type->equalsValue(MetadataTypes\TriggerActionType::DEVICE_PROPERTY)) {
 				return $this->documentFactory->create(
 					MetadataDocuments\TriggersModule\DevicePropertyAction::class,
 					$data,
 				);
-			} elseif ($type->equalsValue(MetadataTypes\TriggerActionType::TYPE_CHANNEL_PROPERTY)) {
+			} elseif ($type->equalsValue(MetadataTypes\TriggerActionType::CHANNEL_PROPERTY)) {
 				return $this->documentFactory->create(
 					MetadataDocuments\TriggersModule\ChannelPropertyAction::class,
 					$data,
@@ -333,9 +333,9 @@ final class DocumentFactory
 				throw new Exceptions\InvalidArgument('Provided data could not be validated', $ex->getCode(), $ex);
 			}
 
-			if ($type->equalsValue(MetadataTypes\TriggerNotificationType::TYPE_EMAIL)) {
+			if ($type->equalsValue(MetadataTypes\TriggerNotificationType::EMAIL)) {
 				return $this->documentFactory->create(MetadataDocuments\TriggersModule\EmailNotification::class, $data);
-			} elseif ($type->equalsValue(MetadataTypes\TriggerNotificationType::TYPE_SMS)) {
+			} elseif ($type->equalsValue(MetadataTypes\TriggerNotificationType::SMS)) {
 				return $this->documentFactory->create(MetadataDocuments\TriggersModule\SmsNotification::class, $data);
 			} else {
 				throw new Exceptions\InvalidArgument(
@@ -361,21 +361,21 @@ final class DocumentFactory
 				throw new Exceptions\InvalidArgument('Provided data could not be validated', $ex->getCode(), $ex);
 			}
 
-			if ($type->equalsValue(MetadataTypes\TriggerConditionType::TYPE_DUMMY)) {
+			if ($type->equalsValue(MetadataTypes\TriggerConditionType::DUMMY)) {
 				return $this->documentFactory->create(MetadataDocuments\TriggersModule\DummyCondition::class, $data);
-			} elseif ($type->equalsValue(MetadataTypes\TriggerConditionType::TYPE_DEVICE_PROPERTY)) {
+			} elseif ($type->equalsValue(MetadataTypes\TriggerConditionType::DEVICE_PROPERTY)) {
 				return $this->documentFactory->create(
 					MetadataDocuments\TriggersModule\DevicePropertyCondition::class,
 					$data,
 				);
-			} elseif ($type->equalsValue(MetadataTypes\TriggerConditionType::TYPE_CHANNEL_PROPERTY)) {
+			} elseif ($type->equalsValue(MetadataTypes\TriggerConditionType::CHANNEL_PROPERTY)) {
 				return $this->documentFactory->create(
 					MetadataDocuments\TriggersModule\ChannelPropertyCondition::class,
 					$data,
 				);
-			} elseif ($type->equalsValue(MetadataTypes\TriggerConditionType::TYPE_TIME)) {
+			} elseif ($type->equalsValue(MetadataTypes\TriggerConditionType::TIME)) {
 				return $this->documentFactory->create(MetadataDocuments\TriggersModule\TimeCondition::class, $data);
-			} elseif ($type->equalsValue(MetadataTypes\TriggerConditionType::TYPE_DATE)) {
+			} elseif ($type->equalsValue(MetadataTypes\TriggerConditionType::DATE)) {
 				return $this->documentFactory->create(MetadataDocuments\TriggersModule\DateCondition::class, $data);
 			} else {
 				throw new Exceptions\InvalidArgument('Provided data and routing key is for unsupported condition type');

@@ -266,16 +266,16 @@ trait TReading
 			$registerBytes = [];
 
 			if (
-				$deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_CHAR)
-				|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_UCHAR)
-				|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SHORT)
-				|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_USHORT)
+				$deviceExpectedDataType->equalsValue(MetadataTypes\DataType::CHAR)
+				|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::UCHAR)
+				|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::SHORT)
+				|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::USHORT)
 			) {
 				$registerBytes = array_splice($registersBytes, 0, 2);
 			} elseif (
-				$deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_INT)
-				|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_UINT)
-				|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_FLOAT)
+				$deviceExpectedDataType->equalsValue(MetadataTypes\DataType::INT)
+				|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::UINT)
+				|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::FLOAT)
 			) {
 				$registerBytes = array_splice($registersBytes, 0, 4);
 			}
@@ -283,24 +283,24 @@ trait TReading
 			$value = null;
 
 			if (
-				$deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_CHAR)
-				|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SHORT)
-				|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_INT)
+				$deviceExpectedDataType->equalsValue(MetadataTypes\DataType::CHAR)
+				|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::SHORT)
+				|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::INT)
 			) {
 				$value = $this->transformer->unpackSignedInt(
 					$registerBytes,
 					$this->deviceHelper->getByteOrder($device),
 				);
 			} elseif (
-				$deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_UCHAR)
-				|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_USHORT)
-				|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_UINT)
+				$deviceExpectedDataType->equalsValue(MetadataTypes\DataType::UCHAR)
+				|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::USHORT)
+				|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::UINT)
 			) {
 				$value = $this->transformer->unpackUnsignedInt(
 					$registerBytes,
 					$this->deviceHelper->getByteOrder($device),
 				);
-			} elseif ($deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_FLOAT)) {
+			} elseif ($deviceExpectedDataType->equalsValue(MetadataTypes\DataType::FLOAT)) {
 				$value = $this->transformer->unpackFloat($registerBytes, $this->deviceHelper->getByteOrder($device));
 			}
 

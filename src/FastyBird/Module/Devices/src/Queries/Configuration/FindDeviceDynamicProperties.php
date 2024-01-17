@@ -37,7 +37,7 @@ class FindDeviceDynamicProperties extends FindDeviceProperties
 	{
 		parent::__construct();
 
-		$this->filter[] = '.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_DYNAMIC . '")]';
+		$this->filter[] = '.[?(@.type == "' . MetadataTypes\PropertyType::DYNAMIC . '")]';
 	}
 
 	/**

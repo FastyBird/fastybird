@@ -170,11 +170,11 @@ abstract class Property implements Entity,
 
 		$this->identifier = $identifier;
 
-		$this->category = MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::CATEGORY_GENERIC);
-		$this->dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UNKNOWN);
+		$this->category = MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::GENERIC);
+		$this->dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::UNKNOWN);
 
 		// Static property can not be set or read from device/channel property
-		if ($this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_VARIABLE)) {
+		if ($this->getType()->equalsValue(MetadataTypes\PropertyType::VARIABLE)) {
 			$this->settable = false;
 			$this->queryable = false;
 		}
@@ -274,13 +274,13 @@ abstract class Property implements Entity,
 		} elseif (is_array($format)) {
 			if (
 				in_array($this->dataType->getValue(), [
-					MetadataTypes\DataType::DATA_TYPE_CHAR,
-					MetadataTypes\DataType::DATA_TYPE_UCHAR,
-					MetadataTypes\DataType::DATA_TYPE_SHORT,
-					MetadataTypes\DataType::DATA_TYPE_USHORT,
-					MetadataTypes\DataType::DATA_TYPE_INT,
-					MetadataTypes\DataType::DATA_TYPE_UINT,
-					MetadataTypes\DataType::DATA_TYPE_FLOAT,
+					MetadataTypes\DataType::CHAR,
+					MetadataTypes\DataType::UCHAR,
+					MetadataTypes\DataType::SHORT,
+					MetadataTypes\DataType::USHORT,
+					MetadataTypes\DataType::INT,
+					MetadataTypes\DataType::UINT,
+					MetadataTypes\DataType::FLOAT,
 				], true)
 			) {
 				$plainFormat = implode(':', array_map(static function ($item): string {
@@ -306,10 +306,10 @@ abstract class Property implements Entity,
 				throw new Exceptions\InvalidArgument('Provided property format is not valid');
 			} elseif (
 				in_array($this->dataType->getValue(), [
-					MetadataTypes\DataType::DATA_TYPE_ENUM,
-					MetadataTypes\DataType::DATA_TYPE_BUTTON,
-					MetadataTypes\DataType::DATA_TYPE_SWITCH,
-					MetadataTypes\DataType::DATA_TYPE_COVER,
+					MetadataTypes\DataType::ENUM,
+					MetadataTypes\DataType::BUTTON,
+					MetadataTypes\DataType::SWITCH,
+					MetadataTypes\DataType::COVER,
 				], true)
 			) {
 				$plainFormat = implode(',', array_map(static function ($item): string {
@@ -355,19 +355,19 @@ abstract class Property implements Entity,
 		}
 
 		if (
-			$this->dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_CHAR)
-			|| $this->dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_UCHAR)
-			|| $this->dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SHORT)
-			|| $this->dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_USHORT)
-			|| $this->dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_INT)
-			|| $this->dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_UINT)
+			$this->dataType->equalsValue(MetadataTypes\DataType::CHAR)
+			|| $this->dataType->equalsValue(MetadataTypes\DataType::UCHAR)
+			|| $this->dataType->equalsValue(MetadataTypes\DataType::SHORT)
+			|| $this->dataType->equalsValue(MetadataTypes\DataType::USHORT)
+			|| $this->dataType->equalsValue(MetadataTypes\DataType::INT)
+			|| $this->dataType->equalsValue(MetadataTypes\DataType::UINT)
 		) {
 			if (is_numeric($this->invalid)) {
 				return intval($this->invalid);
 			}
 
 			return null;
-		} elseif ($this->dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_FLOAT)) {
+		} elseif ($this->dataType->equalsValue(MetadataTypes\DataType::FLOAT)) {
 			if (is_numeric($this->invalid)) {
 				return floatval($this->invalid);
 			}
@@ -459,7 +459,7 @@ abstract class Property implements Entity,
 			$value = null;
 		}
 
-		if ($value !== null && $this->getIdentifier() === MetadataTypes\PropertyIdentifier::IDENTIFIER_IP_ADDRESS) {
+		if ($value !== null && $this->getIdentifier() === MetadataTypes\PropertyIdentifier::IP_ADDRESS) {
 			if (!is_string($value)) {
 				throw new Exceptions\InvalidArgument(
 					'Provided property value is not valid value for IP address property',
@@ -475,7 +475,7 @@ abstract class Property implements Entity,
 			}
 		} elseif (
 			$value !== null
-			&& $this->getIdentifier() === MetadataTypes\PropertyIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS
+			&& $this->getIdentifier() === MetadataTypes\PropertyIdentifier::HARDWARE_MAC_ADDRESS
 		) {
 			if (!is_string($value)) {
 				throw new Exceptions\InvalidArgument(
@@ -590,13 +590,13 @@ abstract class Property implements Entity,
 		if (preg_match(Metadata\Constants::VALUE_EQUATION_TRANSFORMER, $this->valueTransformer) === 1) {
 			if (
 				in_array($this->dataType->getValue(), [
-					MetadataTypes\DataType::DATA_TYPE_CHAR,
-					MetadataTypes\DataType::DATA_TYPE_UCHAR,
-					MetadataTypes\DataType::DATA_TYPE_SHORT,
-					MetadataTypes\DataType::DATA_TYPE_USHORT,
-					MetadataTypes\DataType::DATA_TYPE_INT,
-					MetadataTypes\DataType::DATA_TYPE_UINT,
-					MetadataTypes\DataType::DATA_TYPE_FLOAT,
+					MetadataTypes\DataType::CHAR,
+					MetadataTypes\DataType::UCHAR,
+					MetadataTypes\DataType::SHORT,
+					MetadataTypes\DataType::USHORT,
+					MetadataTypes\DataType::INT,
+					MetadataTypes\DataType::UINT,
+					MetadataTypes\DataType::FLOAT,
 				], true)
 			) {
 				return $this->valueTransformer;
@@ -617,13 +617,13 @@ abstract class Property implements Entity,
 
 		} elseif ($valueTransformer instanceof MetadataValueObjects\EquationTransformer) {
 			$this->valueTransformer = in_array($this->dataType->getValue(), [
-				MetadataTypes\DataType::DATA_TYPE_CHAR,
-				MetadataTypes\DataType::DATA_TYPE_UCHAR,
-				MetadataTypes\DataType::DATA_TYPE_SHORT,
-				MetadataTypes\DataType::DATA_TYPE_USHORT,
-				MetadataTypes\DataType::DATA_TYPE_INT,
-				MetadataTypes\DataType::DATA_TYPE_UINT,
-				MetadataTypes\DataType::DATA_TYPE_FLOAT,
+				MetadataTypes\DataType::CHAR,
+				MetadataTypes\DataType::UCHAR,
+				MetadataTypes\DataType::SHORT,
+				MetadataTypes\DataType::USHORT,
+				MetadataTypes\DataType::INT,
+				MetadataTypes\DataType::UINT,
+				MetadataTypes\DataType::FLOAT,
 			], true) ? $valueTransformer->getValue() : null;
 
 		} elseif ($valueTransformer !== null) {
@@ -633,13 +633,13 @@ abstract class Property implements Entity,
 			} elseif (
 				preg_match(Metadata\Constants::VALUE_EQUATION_TRANSFORMER, $valueTransformer) === 1
 				&& in_array($this->dataType->getValue(), [
-					MetadataTypes\DataType::DATA_TYPE_CHAR,
-					MetadataTypes\DataType::DATA_TYPE_UCHAR,
-					MetadataTypes\DataType::DATA_TYPE_SHORT,
-					MetadataTypes\DataType::DATA_TYPE_USHORT,
-					MetadataTypes\DataType::DATA_TYPE_INT,
-					MetadataTypes\DataType::DATA_TYPE_UINT,
-					MetadataTypes\DataType::DATA_TYPE_FLOAT,
+					MetadataTypes\DataType::CHAR,
+					MetadataTypes\DataType::UCHAR,
+					MetadataTypes\DataType::SHORT,
+					MetadataTypes\DataType::USHORT,
+					MetadataTypes\DataType::INT,
+					MetadataTypes\DataType::UINT,
+					MetadataTypes\DataType::FLOAT,
 				], true)
 			) {
 				$this->valueTransformer = $valueTransformer;
@@ -675,12 +675,12 @@ abstract class Property implements Entity,
 			'updated_at' => $this->getUpdatedAt()?->format(DateTimeInterface::ATOM),
 		];
 
-		if ($this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_VARIABLE)) {
+		if ($this->getType()->equalsValue(MetadataTypes\PropertyType::VARIABLE)) {
 			return array_merge($data, [
 				'default' => MetadataUtilities\Value::flattenValue($this->getDefault()),
 				'value' => MetadataUtilities\Value::flattenValue($this->getValue()),
 			]);
-		} elseif ($this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_DYNAMIC)) {
+		} elseif ($this->getType()->equalsValue(MetadataTypes\PropertyType::DYNAMIC)) {
 			return array_merge($data, [
 				'settable' => $this->isSettable(),
 				'queryable' => $this->isQueryable(),
@@ -703,13 +703,13 @@ abstract class Property implements Entity,
 
 		if (
 			in_array($this->dataType->getValue(), [
-				MetadataTypes\DataType::DATA_TYPE_CHAR,
-				MetadataTypes\DataType::DATA_TYPE_UCHAR,
-				MetadataTypes\DataType::DATA_TYPE_SHORT,
-				MetadataTypes\DataType::DATA_TYPE_USHORT,
-				MetadataTypes\DataType::DATA_TYPE_INT,
-				MetadataTypes\DataType::DATA_TYPE_UINT,
-				MetadataTypes\DataType::DATA_TYPE_FLOAT,
+				MetadataTypes\DataType::CHAR,
+				MetadataTypes\DataType::UCHAR,
+				MetadataTypes\DataType::SHORT,
+				MetadataTypes\DataType::USHORT,
+				MetadataTypes\DataType::INT,
+				MetadataTypes\DataType::UINT,
+				MetadataTypes\DataType::FLOAT,
 			], true)
 		) {
 			if (preg_match(Metadata\Constants::VALUE_FORMAT_NUMBER_RANGE, $format) === 1) {
@@ -717,10 +717,10 @@ abstract class Property implements Entity,
 			}
 		} elseif (
 			in_array($this->dataType->getValue(), [
-				MetadataTypes\DataType::DATA_TYPE_ENUM,
-				MetadataTypes\DataType::DATA_TYPE_BUTTON,
-				MetadataTypes\DataType::DATA_TYPE_SWITCH,
-				MetadataTypes\DataType::DATA_TYPE_COVER,
+				MetadataTypes\DataType::ENUM,
+				MetadataTypes\DataType::BUTTON,
+				MetadataTypes\DataType::SWITCH,
+				MetadataTypes\DataType::COVER,
 			], true)
 		) {
 			if (preg_match(Metadata\Constants::VALUE_FORMAT_COMBINED_ENUM, $format) === 1) {
@@ -735,7 +735,7 @@ abstract class Property implements Entity,
 
 	public function getSource(): MetadataTypes\ModuleSource
 	{
-		return MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES);
+		return MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES);
 	}
 
 }

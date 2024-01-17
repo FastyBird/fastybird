@@ -299,7 +299,7 @@ abstract class Periodic implements Writer
 					[
 						'connector' => $device->getConnector(),
 						'identifier' => $device->getIdentifier(),
-						'state' => MetadataTypes\ConnectionState::STATE_ALERT,
+						'state' => MetadataTypes\ConnectionState::ALERT,
 					],
 				),
 			);

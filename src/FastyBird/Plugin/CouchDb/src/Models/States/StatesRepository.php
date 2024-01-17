@@ -104,7 +104,7 @@ class StatesRepository
 			return null;
 		} catch (Throwable $ex) {
 			$this->logger->error('Content could not be loaded', [
-				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_COUCHDB,
+				'source' => MetadataTypes\PluginSource::COUCHDB,
 				'type' => 'state-repository',
 				'record' => [
 					'id' => $id->toString(),

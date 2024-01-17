@@ -53,7 +53,7 @@ class Channel implements EventDispatcher\EventSubscriberInterface
 		$this->logger->debug(
 			'Rabbit MQ channel from async client was assigned to publisher service',
 			[
-				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_RABBITMQ,
+				'source' => MetadataTypes\PluginSource::RABBITMQ,
 				'type' => 'subscriber',
 			],
 		);

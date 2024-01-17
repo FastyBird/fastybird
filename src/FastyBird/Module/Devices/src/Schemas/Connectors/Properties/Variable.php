@@ -40,7 +40,7 @@ final class Variable extends Property
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES . '/property/connector/' . MetadataTypes\PropertyType::TYPE_VARIABLE;
+	public const SCHEMA_TYPE = MetadataTypes\ModuleSource::DEVICES . '/property/connector/' . MetadataTypes\PropertyType::VARIABLE;
 
 	public function getEntityClass(): string
 	{

@@ -57,7 +57,7 @@ class EmailNotification extends Notification
 
 	public function getType(): MetadataTypes\TriggerNotificationType
 	{
-		return MetadataTypes\TriggerNotificationType::get(MetadataTypes\TriggerNotificationType::TYPE_EMAIL);
+		return MetadataTypes\TriggerNotificationType::get(MetadataTypes\TriggerNotificationType::EMAIL);
 	}
 
 	public function getEmail(): string

@@ -242,7 +242,7 @@ class Install extends Console\Command\Command
 			$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 				'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
+				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
 				'value' => $mode->getValue(),
 				'format' => [
 					Types\ClientMode::GATEWAY,
@@ -266,7 +266,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -398,7 +398,7 @@ class Install extends Console\Command\Command
 				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
 					'value' => $mode->getValue(),
 					'format' => [Types\ClientMode::GATEWAY, Types\ClientMode::DEVICE, Types\ClientMode::BOTH],
 					'connector' => $connector,
@@ -423,7 +423,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -514,7 +514,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -732,7 +732,7 @@ class Install extends Console\Command\Command
 			$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
 				'identifier' => Types\DevicePropertyIdentifier::IP_ADDRESS,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 				'value' => $panelInfo->getIpAddress(),
 				'device' => $gateway,
 			]));
@@ -740,7 +740,7 @@ class Install extends Console\Command\Command
 			$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
 				'identifier' => Types\DevicePropertyIdentifier::DOMAIN,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 				'value' => $panelInfo->getDomain(),
 				'device' => $gateway,
 			]));
@@ -748,7 +748,7 @@ class Install extends Console\Command\Command
 			$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
 				'identifier' => Types\DevicePropertyIdentifier::MAC_ADDRESS,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 				'value' => $panelInfo->getMacAddress(),
 				'device' => $gateway,
 			]));
@@ -756,7 +756,7 @@ class Install extends Console\Command\Command
 			$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
 				'identifier' => Types\DevicePropertyIdentifier::FIRMWARE_VERSION,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 				'value' => $panelInfo->getFirmwareVersion(),
 				'device' => $gateway,
 			]));
@@ -764,7 +764,7 @@ class Install extends Console\Command\Command
 			$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
 				'identifier' => Types\DevicePropertyIdentifier::ACCESS_TOKEN,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 				'value' => $accessToken->getData()->getAccessToken(),
 				'device' => $gateway,
 			]));
@@ -783,7 +783,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -969,7 +969,7 @@ class Install extends Console\Command\Command
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
 					'identifier' => Types\DevicePropertyIdentifier::IP_ADDRESS,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 					'value' => $panelInfo->getIpAddress(),
 					'device' => $gateway,
 				]));
@@ -983,7 +983,7 @@ class Install extends Console\Command\Command
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
 					'identifier' => Types\DevicePropertyIdentifier::DOMAIN,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 					'value' => $panelInfo->getDomain(),
 					'device' => $gateway,
 				]));
@@ -997,7 +997,7 @@ class Install extends Console\Command\Command
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
 					'identifier' => Types\DevicePropertyIdentifier::MAC_ADDRESS,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 					'value' => $panelInfo->getMacAddress(),
 					'device' => $gateway,
 				]));
@@ -1011,7 +1011,7 @@ class Install extends Console\Command\Command
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
 					'identifier' => Types\DevicePropertyIdentifier::FIRMWARE_VERSION,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 					'value' => $panelInfo->getFirmwareVersion(),
 					'device' => $gateway,
 				]));
@@ -1026,7 +1026,7 @@ class Install extends Console\Command\Command
 					$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Devices\Properties\Variable::class,
 						'identifier' => Types\DevicePropertyIdentifier::ACCESS_TOKEN,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 						'value' => $accessToken->getData()->getAccessToken(),
 						'device' => $gateway,
 					]));
@@ -1051,7 +1051,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -1143,7 +1143,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -1426,7 +1426,7 @@ class Install extends Console\Command\Command
 			$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
 				'identifier' => Types\DevicePropertyIdentifier::CATEGORY,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 				'value' => $category->getValue(),
 				'device' => $device,
 			]));
@@ -1445,7 +1445,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -1532,7 +1532,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -1610,7 +1610,7 @@ class Install extends Console\Command\Command
 				$this->logger->error(
 					'Calling NS Panel api failed',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 						'type' => 'install-cmd',
 						'exception' => BootstrapHelpers\Logger::buildException($ex),
 					],
@@ -1646,7 +1646,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -1871,7 +1871,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -2006,7 +2006,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -2121,7 +2121,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -2505,7 +2505,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -2585,7 +2585,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -2647,7 +2647,7 @@ class Install extends Console\Command\Command
 			$value = $property instanceof DevicesEntities\Channels\Properties\Variable ? $property->getValue() : 'N/A';
 
 			if (
-				$property->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_ENUM)
+				$property->getDataType()->equalsValue(MetadataTypes\DataType::ENUM)
 				&& $metadata->offsetExists($type->getValue())
 				&& $metadata->offsetGet($type->getValue()) instanceof Utils\ArrayHash
 				&& $metadata->offsetGet($type->getValue())->offsetExists('valid_values')
@@ -4040,9 +4040,9 @@ class Install extends Console\Command\Command
 
 		if (
 			(
-				$dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_ENUM)
-				|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SWITCH)
-				|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)
+				$dataType->equalsValue(MetadataTypes\DataType::ENUM)
+				|| $dataType->equalsValue(MetadataTypes\DataType::SWITCH)
+				|| $dataType->equalsValue(MetadataTypes\DataType::BUTTON)
 			)
 			&& $protocolMetadata->offsetExists('valid_values')
 			&& $protocolMetadata->offsetGet('valid_values') instanceof Utils\ArrayHash
@@ -4056,21 +4056,21 @@ class Install extends Console\Command\Command
 				&& (
 					(
 						(
-							$connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_ENUM)
-							|| $connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_SWITCH)
-							|| $connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)
+							$connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::ENUM)
+							|| $connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::SWITCH)
+							|| $connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::BUTTON)
 						) && (
 							$connectProperty->getFormat() instanceof MetadataValueObjects\StringEnumFormat
 							|| $connectProperty->getFormat() instanceof MetadataValueObjects\CombinedEnumFormat
 						)
 					)
-					|| $connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_BOOLEAN)
+					|| $connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::BOOLEAN)
 				)
 			) {
 				$mappedFormat = [];
 
 				foreach ($protocolMetadata->offsetGet('valid_values') as $name) {
-					if ($connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_BOOLEAN)) {
+					if ($connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::BOOLEAN)) {
 						$options = [
 							'true',
 							'false',
@@ -4158,19 +4158,19 @@ class Install extends Console\Command\Command
 					$value = is_array($value) ? $value[1] : $value;
 
 					if (MetadataTypes\SwitchPayload::isValidValue($value)) {
-						$valueDataType = MetadataTypes\DataTypeShort::DATA_TYPE_SWITCH;
+						$valueDataType = MetadataTypes\DataTypeShort::SWITCH;
 
 					} elseif (MetadataTypes\ButtonPayload::isValidValue($value)) {
-						$valueDataType = MetadataTypes\DataTypeShort::DATA_TYPE_BUTTON;
+						$valueDataType = MetadataTypes\DataTypeShort::BUTTON;
 
 					} elseif (MetadataTypes\CoverPayload::isValidValue($value)) {
-						$valueDataType = MetadataTypes\DataTypeShort::DATA_TYPE_COVER;
+						$valueDataType = MetadataTypes\DataTypeShort::COVER;
 					}
 
 					$mappedFormat[] = [
 						[$valueDataType, strval($value)],
-						[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, strval($name)],
-						[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, strval($name)],
+						[MetadataTypes\DataTypeShort::STRING, strval($name)],
+						[MetadataTypes\DataTypeShort::STRING, strval($name)],
 					];
 				}
 
@@ -4267,7 +4267,7 @@ class Install extends Console\Command\Command
 			return $value;
 		}
 
-		if ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BOOLEAN)) {
+		if ($dataType->equalsValue(MetadataTypes\DataType::BOOLEAN)) {
 			$question = new Console\Question\ChoiceQuestion(
 				$this->translator->translate('//ns-panel-connector.cmd.install.questions.select.value'),
 				[
@@ -4323,11 +4323,11 @@ class Install extends Console\Command\Command
 					);
 				}
 
-				if ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_STRING)) {
+				if ($dataType->equalsValue(MetadataTypes\DataType::STRING)) {
 					return strval($answer);
 				}
 
-				if ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_FLOAT)) {
+				if ($dataType->equalsValue(MetadataTypes\DataType::FLOAT)) {
 					if ($minValue !== null && floatval($answer) < $minValue) {
 						throw new Exceptions\Runtime(
 							sprintf(
@@ -4364,12 +4364,12 @@ class Install extends Console\Command\Command
 				}
 
 				if (
-					$dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_CHAR)
-					|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_UCHAR)
-					|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SHORT)
-					|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_USHORT)
-					|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_INT)
-					|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_UINT)
+					$dataType->equalsValue(MetadataTypes\DataType::CHAR)
+					|| $dataType->equalsValue(MetadataTypes\DataType::UCHAR)
+					|| $dataType->equalsValue(MetadataTypes\DataType::SHORT)
+					|| $dataType->equalsValue(MetadataTypes\DataType::USHORT)
+					|| $dataType->equalsValue(MetadataTypes\DataType::INT)
+					|| $dataType->equalsValue(MetadataTypes\DataType::UINT)
 				) {
 					if ($minValue !== null && intval($answer) < $minValue) {
 						throw new Exceptions\Runtime(
@@ -4522,7 +4522,7 @@ class Install extends Console\Command\Command
 						$this->logger->error(
 							'Could not get NS Panel basic information',
 							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+								'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 								'type' => 'install-cmd',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'request' => [

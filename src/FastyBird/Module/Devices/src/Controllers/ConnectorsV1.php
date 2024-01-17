@@ -124,7 +124,7 @@ class ConnectorsV1 extends BaseV1
 			} catch (Throwable $ex) {
 				// Log caught exception
 				$this->logger->error('An unhandled error occurred', [
-					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+					'source' => MetadataTypes\ModuleSource::DEVICES,
 					'type' => 'connectors-controller',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				]);

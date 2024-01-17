@@ -86,18 +86,18 @@ final class DeviceConnection
 					$property = $this->devicesPropertiesEntitiesManager->create(Utils\ArrayHash::from([
 						'device' => $device,
 						'entity' => Entities\Devices\Properties\Dynamic::class,
-						'identifier' => MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_STATE,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
+						'identifier' => MetadataTypes\ConnectorPropertyIdentifier::STATE,
+						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
 						'unit' => null,
 						'format' => [
-							MetadataTypes\ConnectionState::STATE_CONNECTED,
-							MetadataTypes\ConnectionState::STATE_DISCONNECTED,
-							MetadataTypes\ConnectionState::STATE_RUNNING,
-							MetadataTypes\ConnectionState::STATE_SLEEPING,
-							MetadataTypes\ConnectionState::STATE_STOPPED,
-							MetadataTypes\ConnectionState::STATE_LOST,
-							MetadataTypes\ConnectionState::STATE_ALERT,
-							MetadataTypes\ConnectionState::STATE_UNKNOWN,
+							MetadataTypes\ConnectionState::CONNECTED,
+							MetadataTypes\ConnectionState::DISCONNECTED,
+							MetadataTypes\ConnectionState::RUNNING,
+							MetadataTypes\ConnectionState::SLEEPING,
+							MetadataTypes\ConnectionState::STOPPED,
+							MetadataTypes\ConnectionState::LOST,
+							MetadataTypes\ConnectionState::ALERT,
+							MetadataTypes\ConnectionState::UNKNOWN,
 						],
 						'settable' => false,
 						'queryable' => false,
@@ -153,7 +153,7 @@ final class DeviceConnection
 			}
 		}
 
-		return MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_UNKNOWN);
+		return MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::UNKNOWN);
 	}
 
 	/**
@@ -182,7 +182,7 @@ final class DeviceConnection
 			if (
 				$state?->getActualValue() !== null
 				&& MetadataTypes\ConnectionState::isValidValue($state->getActualValue())
-				&& $state->getActualValue() === MetadataTypes\ConnectionState::STATE_LOST
+				&& $state->getActualValue() === MetadataTypes\ConnectionState::LOST
 			) {
 				return $state->getUpdatedAt();
 			}

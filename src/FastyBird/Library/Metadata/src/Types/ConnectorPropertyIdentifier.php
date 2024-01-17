@@ -32,19 +32,19 @@ class ConnectorPropertyIdentifier extends Consistence\Enum\Enum
 	/**
 	 * Define connector properties identifiers
 	 */
-	public const IDENTIFIER_STATE = PropertyIdentifier::IDENTIFIER_STATE;
+	public const STATE = PropertyIdentifier::STATE;
 
-	public const IDENTIFIER_SERVER = PropertyIdentifier::IDENTIFIER_SERVER;
+	public const SERVER = PropertyIdentifier::SERVER;
 
-	public const IDENTIFIER_PORT = PropertyIdentifier::IDENTIFIER_PORT;
+	public const PORT = PropertyIdentifier::PORT;
 
-	public const IDENTIFIER_SECURED_PORT = PropertyIdentifier::IDENTIFIER_SECURED_PORT;
+	public const SECURED_PORT = PropertyIdentifier::SECURED_PORT;
 
-	public const IDENTIFIER_BAUD_RATE = PropertyIdentifier::IDENTIFIER_BAUD_RATE;
+	public const BAUD_RATE = PropertyIdentifier::BAUD_RATE;
 
-	public const IDENTIFIER_INTERFACE = PropertyIdentifier::IDENTIFIER_INTERFACE;
+	public const INTERFACE = PropertyIdentifier::INTERFACE;
 
-	public const IDENTIFIER_ADDRESS = PropertyIdentifier::IDENTIFIER_ADDRESS;
+	public const ADDRESS = PropertyIdentifier::ADDRESS;
 
 	public function getValue(): string
 	{

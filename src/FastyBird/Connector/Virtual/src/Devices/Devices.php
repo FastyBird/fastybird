@@ -164,7 +164,7 @@ class Devices
 		if (!$service->isConnected()) {
 			$deviceState = $this->deviceConnectionManager->getState($device);
 
-			if ($deviceState->equalsValue(MetadataTypes\ConnectionState::STATE_ALERT)) {
+			if ($deviceState->equalsValue(MetadataTypes\ConnectionState::ALERT)) {
 				unset($this->devices[$device->getId()->toString()]);
 
 				return false;
@@ -184,7 +184,7 @@ class Devices
 							$this->logger->debug(
 								'Connected to virtual device',
 								[
-									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
+									'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
 									'type' => 'devices-driver',
 									'connector' => [
 										'id' => $this->connector->getId()->toString(),
@@ -199,7 +199,7 @@ class Devices
 							$this->logger->error(
 								'Virtual device service could not be created',
 								[
-									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
+									'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
 									'type' => 'devices-driver',
 									'exception' => BootstrapHelpers\Logger::buildException($ex),
 									'connector' => [
@@ -217,7 +217,7 @@ class Devices
 									[
 										'connector' => $device->getConnector(),
 										'device' => $device->getId(),
-										'state' => MetadataTypes\ConnectionState::STATE_ALERT,
+										'state' => MetadataTypes\ConnectionState::ALERT,
 									],
 								),
 							);
@@ -230,7 +230,7 @@ class Devices
 							[
 								'connector' => $device->getConnector(),
 								'device' => $device->getId(),
-								'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
+								'state' => MetadataTypes\ConnectionState::DISCONNECTED,
 							],
 						),
 					);
@@ -260,7 +260,7 @@ class Devices
 
 		$deviceState = $this->deviceConnectionManager->getState($device);
 
-		if ($deviceState->equalsValue(MetadataTypes\ConnectionState::STATE_ALERT)) {
+		if ($deviceState->equalsValue(MetadataTypes\ConnectionState::ALERT)) {
 			unset($this->devices[$device->getId()->toString()]);
 
 			return false;
@@ -276,7 +276,7 @@ class Devices
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
-							'state' => MetadataTypes\ConnectionState::STATE_CONNECTED,
+							'state' => MetadataTypes\ConnectionState::CONNECTED,
 						],
 					),
 				);
@@ -287,7 +287,7 @@ class Devices
 				$this->logger->warning(
 					'Could not call local api',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
 						'type' => 'devices-driver',
 						'exception' => BootstrapHelpers\Logger::buildException($ex),
 						'connector' => [
@@ -305,7 +305,7 @@ class Devices
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
-							'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
+							'state' => MetadataTypes\ConnectionState::DISCONNECTED,
 						],
 					),
 				);

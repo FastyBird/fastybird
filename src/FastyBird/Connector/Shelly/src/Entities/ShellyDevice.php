@@ -49,7 +49,7 @@ class ShellyDevice extends DevicesEntities\Devices\Device
 
 	public function getSource(): MetadataTypes\ConnectorSource
 	{
-		return MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY);
+		return MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_SHELLY);
 	}
 
 	/**

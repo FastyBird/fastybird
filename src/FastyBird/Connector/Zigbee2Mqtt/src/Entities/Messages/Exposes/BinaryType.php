@@ -71,10 +71,10 @@ final class BinaryType extends Type
 	public function getDataType(): MetadataTypes\DataType
 	{
 		if (is_bool($this->getValueOn()) && is_bool($this->getValueOff())) {
-			return MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN);
+			return MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN);
 		}
 
-		return MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_SWITCH);
+		return MetadataTypes\DataType::get(MetadataTypes\DataType::SWITCH);
 	}
 
 	public function getValueOn(): bool|string
@@ -101,12 +101,12 @@ final class BinaryType extends Type
 		return array_merge(
 			[
 				[
-					MetadataTypes\SwitchPayload::PAYLOAD_ON,
+					MetadataTypes\SwitchPayload::ON,
 					$this->getValueOn(),
 					$this->getValueOn(),
 				],
 				[
-					MetadataTypes\SwitchPayload::PAYLOAD_OFF,
+					MetadataTypes\SwitchPayload::OFF,
 					$this->getValueOff(),
 					$this->getValueOff(),
 				],
@@ -114,7 +114,7 @@ final class BinaryType extends Type
 			[
 				$this->getValueToggle() !== null
 					? [
-						MetadataTypes\SwitchPayload::PAYLOAD_TOGGLE,
+						MetadataTypes\SwitchPayload::TOGGLE,
 						$this->getValueToggle(),
 						$this->getValueToggle(),
 					]

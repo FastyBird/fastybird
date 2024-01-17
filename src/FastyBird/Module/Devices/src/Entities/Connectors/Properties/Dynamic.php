@@ -30,7 +30,7 @@ class Dynamic extends Property
 
 	public function getType(): MetadataTypes\PropertyType
 	{
-		return MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::TYPE_DYNAMIC);
+		return MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::DYNAMIC);
 	}
 
 	/**

@@ -130,10 +130,10 @@ abstract class Property extends JsonApiHydrators\Hydrator
 
 		if (is_array($rawFormat)) {
 			if (
-				$dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_ENUM)
-				|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)
-				|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SWITCH)
-				|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_COVER)
+				$dataType->equalsValue(MetadataTypes\DataType::ENUM)
+				|| $dataType->equalsValue(MetadataTypes\DataType::BUTTON)
+				|| $dataType->equalsValue(MetadataTypes\DataType::SWITCH)
+				|| $dataType->equalsValue(MetadataTypes\DataType::COVER)
 			) {
 				$plainFormat = implode(',', array_map(static function ($item): string {
 					if (is_array($item) || $item instanceof Utils\ArrayHash) {
@@ -172,13 +172,13 @@ abstract class Property extends JsonApiHydrators\Hydrator
 				);
 			} elseif (
 				in_array($dataType->getValue(), [
-					MetadataTypes\DataType::DATA_TYPE_CHAR,
-					MetadataTypes\DataType::DATA_TYPE_UCHAR,
-					MetadataTypes\DataType::DATA_TYPE_SHORT,
-					MetadataTypes\DataType::DATA_TYPE_USHORT,
-					MetadataTypes\DataType::DATA_TYPE_INT,
-					MetadataTypes\DataType::DATA_TYPE_UINT,
-					MetadataTypes\DataType::DATA_TYPE_FLOAT,
+					MetadataTypes\DataType::CHAR,
+					MetadataTypes\DataType::UCHAR,
+					MetadataTypes\DataType::SHORT,
+					MetadataTypes\DataType::USHORT,
+					MetadataTypes\DataType::INT,
+					MetadataTypes\DataType::UINT,
+					MetadataTypes\DataType::FLOAT,
 				], true)
 			) {
 				$plainFormat = implode(':', array_map(static function ($item): string {

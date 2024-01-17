@@ -71,7 +71,7 @@ final class Publisher implements ExchangePublisher\Publisher
 			$this->logger->error(
 				'Data could not be converted to message',
 				[
-					'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
+					'source' => MetadataTypes\PluginSource::REDISDB,
 					'type' => 'messages-publisher',
 					'message' => [
 						'routingKey' => $routingKey->getValue(),
@@ -89,7 +89,7 @@ final class Publisher implements ExchangePublisher\Publisher
 			$this->logger->debug(
 				'Received message was pushed into data exchange',
 				[
-					'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
+					'source' => MetadataTypes\PluginSource::REDISDB,
 					'type' => 'messages-publisher',
 					'message' => [
 						'routingKey' => $routingKey->getValue(),
@@ -102,7 +102,7 @@ final class Publisher implements ExchangePublisher\Publisher
 			$this->logger->error(
 				'Received message could not be pushed into data exchange',
 				[
-					'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
+					'source' => MetadataTypes\PluginSource::REDISDB,
 					'type' => 'messages-publisher',
 					'message' => [
 						'routingKey' => $routingKey->getValue(),

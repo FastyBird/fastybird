@@ -104,7 +104,7 @@ class Install extends Console\Command\Command
 		} catch (Throwable $ex) {
 			// Log caught exception
 			$this->logger->error('An unhandled error occurred', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+				'source' => MetadataTypes\ModuleSource::DEVICES,
 				'type' => 'initialize-cmd',
 				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);

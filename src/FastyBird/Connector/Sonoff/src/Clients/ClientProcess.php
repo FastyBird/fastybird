@@ -146,7 +146,7 @@ abstract class ClientProcess
 
 		$deviceState = $this->deviceConnectionManager->getState($device);
 
-		if ($deviceState->equalsValue(MetadataTypes\ConnectionState::STATE_ALERT)) {
+		if ($deviceState->equalsValue(MetadataTypes\ConnectionState::ALERT)) {
 			unset($this->devices[$device->getId()->toString()]);
 
 			return false;
@@ -191,7 +191,7 @@ abstract class ClientProcess
 
 		$deviceState = $this->deviceConnectionManager->getState($device);
 
-		if ($deviceState->equalsValue(MetadataTypes\ConnectionState::STATE_ALERT)) {
+		if ($deviceState->equalsValue(MetadataTypes\ConnectionState::ALERT)) {
 			unset($this->devices[$device->getId()->toString()]);
 
 			return false;

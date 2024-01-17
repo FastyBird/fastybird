@@ -43,7 +43,7 @@ final class Account extends JsonApis\JsonApi
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ModuleSource::SOURCE_MODULE_ACCOUNTS . '/account';
+	public const SCHEMA_TYPE = MetadataTypes\ModuleSource::ACCOUNTS . '/account';
 
 	/**
 	 * Define relationships names

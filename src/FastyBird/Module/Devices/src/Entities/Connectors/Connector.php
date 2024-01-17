@@ -143,7 +143,7 @@ abstract class Connector implements Entities\Entity,
 
 		$this->identifier = $identifier;
 
-		$this->category = MetadataTypes\ConnectorCategory::get(MetadataTypes\ConnectorCategory::CATEGORY_GENERIC);
+		$this->category = MetadataTypes\ConnectorCategory::get(MetadataTypes\ConnectorCategory::GENERIC);
 
 		$this->devices = new Common\Collections\ArrayCollection();
 		$this->properties = new Common\Collections\ArrayCollection();
@@ -325,7 +325,7 @@ abstract class Connector implements Entities\Entity,
 
 	public function getSource(): MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource
 	{
-		return MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES);
+		return MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES);
 	}
 
 	/**

@@ -67,7 +67,7 @@ final class ConnectorConnection
 	{
 		$findConnectorPropertyQuery = new Queries\Configuration\FindConnectorDynamicProperties();
 		$findConnectorPropertyQuery->byConnectorId($connector->getId());
-		$findConnectorPropertyQuery->byIdentifier(MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_STATE);
+		$findConnectorPropertyQuery->byIdentifier(MetadataTypes\ConnectorPropertyIdentifier::STATE);
 
 		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
 			$findConnectorPropertyQuery,
@@ -85,15 +85,15 @@ final class ConnectorConnection
 					$property = $this->connectorsPropertiesEntitiesManager->create(Utils\ArrayHash::from([
 						'connector' => $connector,
 						'entity' => Entities\Connectors\Properties\Dynamic::class,
-						'identifier' => MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_STATE,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
+						'identifier' => MetadataTypes\ConnectorPropertyIdentifier::STATE,
+						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
 						'unit' => null,
 						'format' => [
-							MetadataTypes\ConnectionState::STATE_RUNNING,
-							MetadataTypes\ConnectionState::STATE_STOPPED,
-							MetadataTypes\ConnectionState::STATE_UNKNOWN,
-							MetadataTypes\ConnectionState::STATE_SLEEPING,
-							MetadataTypes\ConnectionState::STATE_ALERT,
+							MetadataTypes\ConnectionState::RUNNING,
+							MetadataTypes\ConnectionState::STOPPED,
+							MetadataTypes\ConnectionState::UNKNOWN,
+							MetadataTypes\ConnectionState::SLEEPING,
+							MetadataTypes\ConnectionState::ALERT,
 						],
 						'settable' => false,
 						'queryable' => false,
@@ -131,7 +131,7 @@ final class ConnectorConnection
 	{
 		$findConnectorPropertyQuery = new Queries\Configuration\FindConnectorDynamicProperties();
 		$findConnectorPropertyQuery->byConnectorId($connector->getId());
-		$findConnectorPropertyQuery->byIdentifier(MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_STATE);
+		$findConnectorPropertyQuery->byIdentifier(MetadataTypes\ConnectorPropertyIdentifier::STATE);
 
 		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
 			$findConnectorPropertyQuery,
@@ -149,7 +149,7 @@ final class ConnectorConnection
 			}
 		}
 
-		return MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_UNKNOWN);
+		return MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::UNKNOWN);
 	}
 
 }

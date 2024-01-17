@@ -35,7 +35,7 @@ class FindChannelMappedProperties extends FindChannelProperties
 	{
 		parent::__construct();
 
-		$this->filter[] = '.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_MAPPED . '")]';
+		$this->filter[] = '.[?(@.type == "' . MetadataTypes\PropertyType::MAPPED . '")]';
 	}
 
 }

@@ -32,11 +32,11 @@ class TriggerActionType extends Consistence\Enum\Enum
 	/**
 	 * Define types
 	 */
-	public const TYPE_DUMMY = 'dummy';
+	public const DUMMY = 'dummy';
 
-	public const TYPE_DEVICE_PROPERTY = 'device_property';
+	public const DEVICE_PROPERTY = 'device_property';
 
-	public const TYPE_CHANNEL_PROPERTY = 'channel_property';
+	public const CHANNEL_PROPERTY = 'channel_property';
 
 	public function getValue(): string
 	{

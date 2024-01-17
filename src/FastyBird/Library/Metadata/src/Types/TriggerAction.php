@@ -32,7 +32,7 @@ class TriggerAction extends Consistence\Enum\Enum
 	/**
 	 * Define actions
 	 */
-	public const ACTION_SET = 'set';
+	public const SET = 'set';
 
 	public function getValue(): string
 	{

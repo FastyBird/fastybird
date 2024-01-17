@@ -89,7 +89,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Starting FB MQTT connector service',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -115,7 +115,7 @@ final class Connector implements DevicesConnectors\Connector
 		if ($this->client === null) {
 			$this->dispatcher?->dispatch(
 				new DevicesEvents\TerminateConnector(
-					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT),
+					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT),
 					'Connector protocol version is not configured',
 				),
 			);
@@ -138,7 +138,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'FB MQTT connector service has been started',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -154,7 +154,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->error(
 			'Devices discovery is not allowed for FB MQTT connector type',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -176,7 +176,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'FB MQTT connector has been terminated',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),

@@ -32,9 +32,9 @@ class PropertyAction extends Consistence\Enum\Enum
 	/**
 	 * Define actions
 	 */
-	public const ACTION_SET = 'set';
+	public const SET = 'set';
 
-	public const ACTION_GET = 'get';
+	public const GET = 'get';
 
 	public function getValue(): string
 	{

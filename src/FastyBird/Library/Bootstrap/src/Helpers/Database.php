@@ -108,7 +108,7 @@ class Database
 			} catch (Throwable $ex) {
 				// Log caught exception
 				$this->logger->error('An unhandled error occurred during flushing entity manager', [
-					'source' => MetadataTypes\ModuleSource::SOURCE_NOT_SPECIFIED,
+					'source' => MetadataTypes\ModuleSource::NOT_SPECIFIED,
 					'type' => 'helper',
 					'exception' => Logger::buildException($ex),
 				]);
@@ -119,7 +119,7 @@ class Database
 			} catch (Throwable $ex) {
 				// Log caught exception
 				$this->logger->error('An unhandled error occurred during closing entity manager', [
-					'source' => MetadataTypes\ModuleSource::SOURCE_NOT_SPECIFIED,
+					'source' => MetadataTypes\ModuleSource::NOT_SPECIFIED,
 					'type' => 'helper',
 					'exception' => Logger::buildException($ex),
 				]);
@@ -130,7 +130,7 @@ class Database
 			} catch (Throwable $ex) {
 				// Log caught exception
 				$this->logger->error('An unhandled error occurred during clearing entity manager', [
-					'source' => MetadataTypes\ModuleSource::SOURCE_NOT_SPECIFIED,
+					'source' => MetadataTypes\ModuleSource::NOT_SPECIFIED,
 					'type' => 'helper',
 					'exception' => Logger::buildException($ex),
 				]);

@@ -35,7 +35,7 @@ final class Gateway extends Schemas\NsPanelDevice
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL . '/device/' . Entities\Devices\Gateway::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL . '/device/' . Entities\Devices\Gateway::TYPE;
 
 	public function getEntityClass(): string
 	{

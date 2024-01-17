@@ -54,7 +54,7 @@ final class DevicesProperties extends DataFixtures\AbstractFixture implements Da
 			$device,
 			Types\DevicePropertyIdentifier::ADDRESS,
 		);
-		$addressProperty->setDataType(MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UINT));
+		$addressProperty->setDataType(MetadataTypes\DataType::get(MetadataTypes\DataType::UINT));
 		$addressProperty->setValue('1');
 
 		$manager->persist($addressProperty);

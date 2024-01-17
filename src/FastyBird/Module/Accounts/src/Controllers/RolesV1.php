@@ -143,7 +143,7 @@ final class RolesV1 extends BaseV1
 		} catch (Throwable $ex) {
 			// Log caught exception
 			$this->logger->error('An unhandled error occurred', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_ACCOUNTS,
+				'source' => MetadataTypes\ModuleSource::ACCOUNTS,
 				'type' => 'roles-controller',
 				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);

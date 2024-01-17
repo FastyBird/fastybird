@@ -85,7 +85,7 @@ final class State implements ExchangeConsumers\Consumer
 
 		if (in_array($routingKey->getValue(), self::PROPERTIES_ACTIONS_ROUTING_KEYS, true)) {
 			if ($entity instanceof MetadataDocuments\Actions\ActionConnectorProperty) {
-				if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_SET)) {
+				if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::SET)) {
 					$findConnectorPropertyQuery = new Queries\Configuration\FindConnectorDynamicProperties();
 					$findConnectorPropertyQuery->byId($entity->getProperty());
 
@@ -107,7 +107,7 @@ final class State implements ExchangeConsumers\Consumer
 					);
 
 					$this->logger->info('Requested write value to connector property', [
-						'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+						'source' => MetadataTypes\ModuleSource::DEVICES,
 						'type' => 'state-consumer',
 						'connector' => [
 							'id' => $entity->getConnector()->toString(),
@@ -123,7 +123,7 @@ final class State implements ExchangeConsumers\Consumer
 							'data' => $entity->toArray(),
 						],
 					]);
-				} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
+				} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::GET)) {
 					$findConnectorPropertyQuery = new Queries\Configuration\FindConnectorDynamicProperties();
 					$findConnectorPropertyQuery->byId($entity->getProperty());
 
@@ -143,7 +143,7 @@ final class State implements ExchangeConsumers\Consumer
 					);
 
 					$this->publisher->publish(
-						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
+						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 						$publishRoutingKey,
 						$this->entityFactory->create(
 							Utils\Json::encode(
@@ -157,7 +157,7 @@ final class State implements ExchangeConsumers\Consumer
 					);
 				}
 			} elseif ($entity instanceof MetadataDocuments\Actions\ActionDeviceProperty) {
-				if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_SET)) {
+				if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::SET)) {
 					$findConnectorPropertyQuery = new Queries\Configuration\FindDeviceProperties();
 					$findConnectorPropertyQuery->byId($entity->getProperty());
 
@@ -179,7 +179,7 @@ final class State implements ExchangeConsumers\Consumer
 					);
 
 					$this->logger->info('Requested write value to device property', [
-						'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+						'source' => MetadataTypes\ModuleSource::DEVICES,
 						'type' => 'state-consumer',
 						'device' => [
 							'id' => $entity->getDevice()->toString(),
@@ -195,7 +195,7 @@ final class State implements ExchangeConsumers\Consumer
 							'data' => $entity->toArray(),
 						],
 					]);
-				} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
+				} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::GET)) {
 					$findConnectorPropertyQuery = new Queries\Configuration\FindDeviceProperties();
 					$findConnectorPropertyQuery->byId($entity->getProperty());
 
@@ -215,7 +215,7 @@ final class State implements ExchangeConsumers\Consumer
 					);
 
 					$this->publisher->publish(
-						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
+						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 						$publishRoutingKey,
 						$this->entityFactory->create(
 							Utils\Json::encode(
@@ -229,7 +229,7 @@ final class State implements ExchangeConsumers\Consumer
 					);
 				}
 			} elseif ($entity instanceof MetadataDocuments\Actions\ActionChannelProperty) {
-				if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_SET)) {
+				if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::SET)) {
 					$findConnectorPropertyQuery = new Queries\Configuration\FindChannelProperties();
 					$findConnectorPropertyQuery->byId($entity->getProperty());
 
@@ -251,7 +251,7 @@ final class State implements ExchangeConsumers\Consumer
 					);
 
 					$this->logger->info('Requested write value to channel property', [
-						'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+						'source' => MetadataTypes\ModuleSource::DEVICES,
 						'type' => 'state-consumer',
 						'channel' => [
 							'id' => $entity->getChannel()->toString(),
@@ -267,7 +267,7 @@ final class State implements ExchangeConsumers\Consumer
 							'data' => $entity->toArray(),
 						],
 					]);
-				} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
+				} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::GET)) {
 					$findConnectorPropertyQuery = new Queries\Configuration\FindChannelProperties();
 					$findConnectorPropertyQuery->byId($entity->getProperty());
 
@@ -287,7 +287,7 @@ final class State implements ExchangeConsumers\Consumer
 					);
 
 					$this->publisher->publish(
-						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
+						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 						$publishRoutingKey,
 						$this->entityFactory->create(
 							Utils\Json::encode(

@@ -80,7 +80,7 @@ final class ChannelAttribute implements Queue\Consumer
 			$this->logger->error(
 				sprintf('Device "%s" is not registered', $entity->getDevice()),
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
 					'type' => 'channel-attribute-message-consumer',
 					'device' => [
 						'identifier' => $entity->getDevice(),
@@ -101,7 +101,7 @@ final class ChannelAttribute implements Queue\Consumer
 			$this->logger->error(
 				sprintf('Device channel "%s" is not registered', $entity->getChannel()),
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
 					'type' => 'channel-attribute-message-consumer',
 					'device' => [
 						'identifier' => $entity->getDevice(),
@@ -138,7 +138,7 @@ final class ChannelAttribute implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed channel message',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
 				'type' => 'channel-attribute-message-consumer',
 				'device' => [
 					'identifier' => $entity->getDevice(),
@@ -173,7 +173,7 @@ final class ChannelAttribute implements Queue\Consumer
 					'identifier' => $propertyName,
 					'settable' => false,
 					'queryable' => false,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UNKNOWN),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UNKNOWN),
 				]));
 			}
 		}

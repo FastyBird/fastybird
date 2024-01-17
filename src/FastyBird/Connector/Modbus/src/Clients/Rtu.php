@@ -124,7 +124,7 @@ class Rtu implements Client
 						[
 							'connector' => $this->connector->getId(),
 							'device' => $device->getId(),
-							'state' => MetadataTypes\ConnectionState::STATE_ALERT,
+							'state' => MetadataTypes\ConnectionState::ALERT,
 						],
 					),
 				);
@@ -187,7 +187,7 @@ class Rtu implements Client
 								[
 									'connector' => $this->connector->getId(),
 									'device' => $device->getId(),
-									'state' => MetadataTypes\ConnectionState::STATE_LOST,
+									'state' => MetadataTypes\ConnectionState::LOST,
 								],
 							),
 						);
@@ -264,7 +264,7 @@ class Rtu implements Client
 				$this->logger->warning(
 					'Channel address is missing',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_MODBUS,
 						'type' => 'rtu-client',
 						'connector' => [
 							'id' => $this->connector->getId()->toString(),
@@ -339,7 +339,7 @@ class Rtu implements Client
 
 		if (
 			$this->deviceConnectionManager->getState($device)->equalsValue(
-				MetadataTypes\ConnectionState::STATE_ALERT,
+				MetadataTypes\ConnectionState::ALERT,
 			)
 		) {
 			return false;
@@ -471,7 +471,7 @@ class Rtu implements Client
 				$this->logger->error(
 					'Could not handle register reading',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_MODBUS,
 						'type' => 'rtu-client',
 						'exception' => BootstrapHelpers\Logger::buildException($ex),
 						'connector' => [
@@ -491,7 +491,7 @@ class Rtu implements Client
 		// Check device state...
 		if (
 			!$this->deviceConnectionManager->getState($device)->equalsValue(
-				MetadataTypes\ConnectionState::STATE_CONNECTED,
+				MetadataTypes\ConnectionState::CONNECTED,
 			)
 		) {
 			// ... and if it is not ready, set it to ready
@@ -501,7 +501,7 @@ class Rtu implements Client
 					[
 						'connector' => $this->connector->getId(),
 						'device' => $device->getId(),
-						'state' => MetadataTypes\ConnectionState::STATE_CONNECTED,
+						'state' => MetadataTypes\ConnectionState::CONNECTED,
 					],
 				),
 			);
@@ -560,7 +560,7 @@ class Rtu implements Client
 						[
 							'connector' => $this->connector->getId(),
 							'device' => $device->getId(),
-							'state' => MetadataTypes\ConnectionState::STATE_LOST,
+							'state' => MetadataTypes\ConnectionState::LOST,
 						],
 					),
 				);
@@ -568,7 +568,7 @@ class Rtu implements Client
 				$this->logger->warning(
 					'Maximum channel property read attempts reached. Device is lost',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_MODBUS,
 						'type' => 'rtu-client',
 						'connector' => [
 							'id' => $this->connector->getId()->toString(),
@@ -604,18 +604,18 @@ class Rtu implements Client
 			$property->getFormat(),
 		);
 
-		if ($deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BOOLEAN)) {
+		if ($deviceExpectedDataType->equalsValue(MetadataTypes\DataType::BOOLEAN)) {
 			return $property->isSettable()
 				? new Entities\Clients\ReadCoilAddress($address, $channel, $deviceExpectedDataType)
 				: new Entities\Clients\ReadDiscreteInputAddress($address, $channel, $deviceExpectedDataType);
 		} elseif (
-			$deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_CHAR)
-			|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_UCHAR)
-			|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SHORT)
-			|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_USHORT)
-			|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_INT)
-			|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_UINT)
-			|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_FLOAT)
+			$deviceExpectedDataType->equalsValue(MetadataTypes\DataType::CHAR)
+			|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::UCHAR)
+			|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::SHORT)
+			|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::USHORT)
+			|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::INT)
+			|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::UINT)
+			|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::FLOAT)
 		) {
 			return $property->isSettable()
 				? new Entities\Clients\ReadHoldingRegisterAddress($address, $channel, $deviceExpectedDataType)
@@ -625,7 +625,7 @@ class Rtu implements Client
 		$this->logger->warning(
 			'Channel property data type is not supported for now',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_MODBUS,
 				'type' => 'rtu-client',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),

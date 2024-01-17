@@ -34,7 +34,7 @@ class ManualTrigger extends Trigger
 
 	public function getType(): MetadataTypes\TriggerType
 	{
-		return MetadataTypes\TriggerType::get(MetadataTypes\TriggerType::TYPE_MANUAL);
+		return MetadataTypes\TriggerType::get(MetadataTypes\TriggerType::MANUAL);
 	}
 
 }

@@ -203,7 +203,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 					[
 						'connector' => $device->getConnector(),
 						'identifier' => $device->getIdentifier(),
-						'state' => MetadataTypes\ConnectionState::STATE_ALERT,
+						'state' => MetadataTypes\ConnectionState::ALERT,
 					],
 				),
 			);

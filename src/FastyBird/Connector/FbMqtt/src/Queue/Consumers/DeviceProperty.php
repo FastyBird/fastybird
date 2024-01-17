@@ -88,7 +88,7 @@ final class DeviceProperty implements Queue\Consumer
 			$this->logger->error(
 				sprintf('Device "%s" is not registered', $entity->getDevice()),
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
 					'type' => 'device-property-message-consumer',
 					'device' => [
 						'identifier' => $entity->getDevice(),
@@ -109,7 +109,7 @@ final class DeviceProperty implements Queue\Consumer
 			$this->logger->error(
 				sprintf('Property "%s" is not registered', $entity->getProperty()),
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
 					'type' => 'device-property-message-consumer',
 					'device' => [
 						'identifier' => $entity->getDevice(),
@@ -163,7 +163,7 @@ final class DeviceProperty implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed channel property message',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
 				'type' => 'device-property-message-consumer',
 				'device' => [
 					'identifier' => $entity->getDevice(),

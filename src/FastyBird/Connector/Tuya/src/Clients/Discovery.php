@@ -166,7 +166,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$this->logger->debug(
 				'Starting local devices discovery',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 					'type' => 'discovery-client',
 					'protocol' => $protocolVersion,
 				],
@@ -200,7 +200,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					$this->logger->error(
 						'Could not create local discovery server',
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+							'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 							'type' => 'discovery-client',
 							'exception' => BootstrapHelpers\Logger::buildException($ex),
 							'protocol' => $protocolVersion,
@@ -256,7 +256,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 		$this->logger->debug(
 			'Starting cloud devices discovery',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 				'type' => 'discovery-client',
 			],
 		);
@@ -267,7 +267,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$this->logger->error(
 				'Could not connect to cloud api',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 					'type' => 'discovery-client',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -303,7 +303,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 							$this->logger->warning(
 								'Loading devices factory infos from cloud failed',
 								[
-									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+									'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 									'type' => 'discovery-client',
 									'error' => $ex->getMessage(),
 								],
@@ -312,7 +312,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 							$this->logger->error(
 								'Loading devices factory infos from cloud failed',
 								[
-									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+									'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 									'type' => 'discovery-client',
 									'exception' => BootstrapHelpers\Logger::buildException($ex),
 								],
@@ -321,7 +321,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 							$this->logger->error(
 								'Could not load device factory infos from Tuya cloud',
 								[
-									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+									'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 									'type' => 'discovery-client',
 									'exception' => BootstrapHelpers\Logger::buildException($ex),
 								],
@@ -334,7 +334,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					$this->logger->warning(
 						'Loading devices from cloud failed',
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+							'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 							'type' => 'discovery-client',
 							'error' => $ex->getMessage(),
 						],
@@ -343,7 +343,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					$this->logger->error(
 						'Loading devices from cloud failed',
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+							'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 							'type' => 'discovery-client',
 							'exception' => BootstrapHelpers\Logger::buildException($ex),
 						],
@@ -352,7 +352,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					$this->logger->error(
 						'Could not load devices from Tuya cloud',
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+							'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 							'type' => 'discovery-client',
 							'exception' => BootstrapHelpers\Logger::buildException($ex),
 						],
@@ -374,7 +374,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$this->logger->error(
 				'Received invalid packet. Received data could not be decrypted',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 					'type' => 'discovery-client',
 				],
 			);
@@ -389,7 +389,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$this->logger->error(
 					'Decoded discovered local message has invalid format',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 						'type' => 'discovery-client',
 					],
 				);
@@ -409,7 +409,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$this->logger->error(
 					'Decoded discovered local message has invalid format',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 						'type' => 'discovery-client',
 					],
 				);
@@ -434,7 +434,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$this->logger->error(
 				'Received invalid packet. Received data are not valid JSON string',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 					'type' => 'discovery-client',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -445,7 +445,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$this->logger->error(
 				'Received data could not be transformed to entity',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 					'type' => 'discovery-client',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -475,7 +475,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$this->logger->error(
 				'Could not connect to cloud api',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 					'type' => 'discovery-client',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -501,7 +501,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$this->logger->error(
 				'Loading device factory infos from cloud failed',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 					'type' => 'discovery-client',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -517,7 +517,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$this->logger->error(
 					'Could not load device basic information from Tuya cloud',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 						'type' => 'discovery-client',
 						'exception' => BootstrapHelpers\Logger::buildException($ex),
 						'device' => [
@@ -578,7 +578,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$this->logger->error(
 					'Could not create device description message',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 						'type' => 'discovery-client',
 						'exception' => BootstrapHelpers\Logger::buildException($ex),
 					],
@@ -596,7 +596,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					$this->logger->error(
 						'Could not load device children from Tuya cloud',
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+							'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 							'type' => 'discovery-client',
 							'exception' => BootstrapHelpers\Logger::buildException($ex),
 							'device' => [
@@ -618,7 +618,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 						$this->logger->error(
 							'Could not load child device basic information from Tuya cloud',
 							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+								'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 								'type' => 'discovery-client',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'device' => [
@@ -683,7 +683,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 						$this->logger->error(
 							'Could not create child device description message',
 							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+								'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 								'type' => 'discovery-client',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 							],
@@ -724,7 +724,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$this->logger->error(
 				'Could not connect to cloud api',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 					'type' => 'discovery-client',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -783,7 +783,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					}
 
 					$dataPointCode = null;
-					$dataPointDataType = MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UNKNOWN);
+					$dataPointDataType = MetadataTypes\DataType::get(MetadataTypes\DataType::UNKNOWN);
 
 					if ($dataPointFunction !== null) {
 						$dataPointCode = $dataPointFunction->getCode();
@@ -797,11 +797,11 @@ final class Discovery implements Evenement\EventEmitterInterface
 					}
 
 					if ($dataPointType === 'boolean') {
-						$dataPointDataType = MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN);
+						$dataPointDataType = MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN);
 					} elseif ($dataPointType === 'integer') {
-						$dataPointDataType = MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_INT);
+						$dataPointDataType = MetadataTypes\DataType::get(MetadataTypes\DataType::INT);
 					} elseif ($dataPointType === 'enum') {
-						$dataPointDataType = MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM);
+						$dataPointDataType = MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM);
 					}
 
 					try {
@@ -853,7 +853,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$this->logger->warning(
 					'Device specification could not be loaded',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 						'type' => 'discovery-client',
 						'error' => $ex->getMessage(),
 						'device' => [
@@ -865,7 +865,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$this->logger->error(
 					'Device specification could not be loaded',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 						'type' => 'discovery-client',
 						'exception' => BootstrapHelpers\Logger::buildException($ex),
 						'device' => [
@@ -941,7 +941,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$this->logger->error(
 				'Could not establish local connection with device',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 					'type' => 'discovery-client',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'device' => [
@@ -965,16 +965,16 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 				if (is_array($deviceStatuses)) {
 					foreach ($deviceStatuses as $status) {
-						$dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UNKNOWN);
+						$dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::UNKNOWN);
 
 						if (is_bool($status->getValue())) {
-							$dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN);
+							$dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN);
 						} elseif (is_float($status->getValue())) {
-							$dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT);
+							$dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT);
 						} elseif (is_numeric($status->getValue())) {
-							$dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_INT);
+							$dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::INT);
 						} elseif (is_string($status->getValue())) {
-							$dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING);
+							$dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::STRING);
 						}
 
 						$dataPoints[] = [
@@ -997,7 +997,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$this->logger->error(
 					'Local connection with device failed',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 						'type' => 'discovery-client',
 						'device' => [
 							'identifier' => $id,
@@ -1012,7 +1012,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$this->logger->error(
 				'Could not read device data points states',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 					'type' => 'discovery-client',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'device' => [

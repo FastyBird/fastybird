@@ -87,7 +87,7 @@ abstract class ConnectorProperty implements Documents\Document, Documents\Owner
 							item: new ObjectMapper\Rules\AnyOf([
 								new ObjectMapper\Rules\ArrayEnumValue(
 								// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-									cases: [Types\DataTypeShort::DATA_TYPE_CHAR, Types\DataTypeShort::DATA_TYPE_UCHAR, Types\DataTypeShort::DATA_TYPE_SHORT, Types\DataTypeShort::DATA_TYPE_USHORT, Types\DataTypeShort::DATA_TYPE_INT, Types\DataTypeShort::DATA_TYPE_UINT, Types\DataTypeShort::DATA_TYPE_FLOAT, Types\DataTypeShort::DATA_TYPE_BOOLEAN, Types\DataTypeShort::DATA_TYPE_STRING, Types\DataTypeShort::DATA_TYPE_BUTTON, Types\DataTypeShort::DATA_TYPE_SWITCH, Types\DataTypeShort::DATA_TYPE_COVER],
+									cases: [Types\DataTypeShort::CHAR, Types\DataTypeShort::UCHAR, Types\DataTypeShort::SHORT, Types\DataTypeShort::USHORT, Types\DataTypeShort::INT, Types\DataTypeShort::UINT, Types\DataTypeShort::FLOAT, Types\DataTypeShort::BOOLEAN, Types\DataTypeShort::STRING, Types\DataTypeShort::BUTTON, Types\DataTypeShort::SWITCH, Types\DataTypeShort::COVER],
 								),
 								new ObjectMapper\Rules\StringValue(notEmpty: true),
 								new ObjectMapper\Rules\IntValue(),
@@ -114,7 +114,7 @@ abstract class ConnectorProperty implements Documents\Document, Documents\Owner
 						item: new ObjectMapper\Rules\AnyOf([
 							new ObjectMapper\Rules\ArrayEnumValue(
 							// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-								cases: [Types\DataTypeShort::DATA_TYPE_CHAR, Types\DataTypeShort::DATA_TYPE_UCHAR, Types\DataTypeShort::DATA_TYPE_SHORT, Types\DataTypeShort::DATA_TYPE_USHORT, Types\DataTypeShort::DATA_TYPE_INT, Types\DataTypeShort::DATA_TYPE_UINT, Types\DataTypeShort::DATA_TYPE_FLOAT],
+								cases: [Types\DataTypeShort::CHAR, Types\DataTypeShort::UCHAR, Types\DataTypeShort::SHORT, Types\DataTypeShort::USHORT, Types\DataTypeShort::INT, Types\DataTypeShort::UINT, Types\DataTypeShort::FLOAT],
 							),
 							new ObjectMapper\Rules\IntValue(),
 							new ObjectMapper\Rules\FloatValue(),
@@ -255,13 +255,13 @@ abstract class ConnectorProperty implements Documents\Document, Documents\Owner
 		if (preg_match(Metadata\Constants::VALUE_EQUATION_TRANSFORMER, $this->valueTransformer) === 1) {
 			if (
 				in_array($this->dataType->getValue(), [
-					Types\DataType::DATA_TYPE_CHAR,
-					Types\DataType::DATA_TYPE_UCHAR,
-					Types\DataType::DATA_TYPE_SHORT,
-					Types\DataType::DATA_TYPE_USHORT,
-					Types\DataType::DATA_TYPE_INT,
-					Types\DataType::DATA_TYPE_UINT,
-					Types\DataType::DATA_TYPE_FLOAT,
+					Types\DataType::CHAR,
+					Types\DataType::UCHAR,
+					Types\DataType::SHORT,
+					Types\DataType::USHORT,
+					Types\DataType::INT,
+					Types\DataType::UINT,
+					Types\DataType::FLOAT,
 				], true)
 			) {
 				return $this->valueTransformer;
@@ -314,13 +314,13 @@ abstract class ConnectorProperty implements Documents\Document, Documents\Owner
 
 		if (
 			in_array($this->dataType->getValue(), [
-				Types\DataType::DATA_TYPE_CHAR,
-				Types\DataType::DATA_TYPE_UCHAR,
-				Types\DataType::DATA_TYPE_SHORT,
-				Types\DataType::DATA_TYPE_USHORT,
-				Types\DataType::DATA_TYPE_INT,
-				Types\DataType::DATA_TYPE_UINT,
-				Types\DataType::DATA_TYPE_FLOAT,
+				Types\DataType::CHAR,
+				Types\DataType::UCHAR,
+				Types\DataType::SHORT,
+				Types\DataType::USHORT,
+				Types\DataType::INT,
+				Types\DataType::UINT,
+				Types\DataType::FLOAT,
 			], true)
 		) {
 			if (is_array($format)) {
@@ -346,10 +346,10 @@ abstract class ConnectorProperty implements Documents\Document, Documents\Owner
 			}
 		} elseif (
 			in_array($this->dataType->getValue(), [
-				Types\DataType::DATA_TYPE_ENUM,
-				Types\DataType::DATA_TYPE_BUTTON,
-				Types\DataType::DATA_TYPE_SWITCH,
-				Types\DataType::DATA_TYPE_COVER,
+				Types\DataType::ENUM,
+				Types\DataType::BUTTON,
+				Types\DataType::SWITCH,
+				Types\DataType::COVER,
 			], true)
 		) {
 			if (is_array($format)) {

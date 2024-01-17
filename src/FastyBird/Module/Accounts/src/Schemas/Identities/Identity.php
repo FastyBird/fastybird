@@ -40,7 +40,7 @@ final class Identity extends JsonApis\JsonApi
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ModuleSource::SOURCE_MODULE_ACCOUNTS . '/identity';
+	public const SCHEMA_TYPE = MetadataTypes\ModuleSource::ACCOUNTS . '/identity';
 
 	/**
 	 * Define relationships names

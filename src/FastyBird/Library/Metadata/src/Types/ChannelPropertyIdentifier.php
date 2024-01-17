@@ -32,7 +32,7 @@ class ChannelPropertyIdentifier extends Consistence\Enum\Enum
 	/**
 	 * Define device properties identifiers
 	 */
-	public const IDENTIFIER_ADDRESS = PropertyIdentifier::IDENTIFIER_ADDRESS;
+	public const ADDRESS = PropertyIdentifier::ADDRESS;
 
 	public function getValue(): string
 	{

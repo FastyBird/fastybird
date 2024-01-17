@@ -154,13 +154,13 @@ final class CloudDeviceDataPoint implements Entity
 	{
 		if (
 			(
-				$this->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_CHAR)
-				|| $this->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_UCHAR)
-				|| $this->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_SHORT)
-				|| $this->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_USHORT)
-				|| $this->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_INT)
-				|| $this->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_UINT)
-				|| $this->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_FLOAT)
+				$this->getDataType()->equalsValue(MetadataTypes\DataType::CHAR)
+				|| $this->getDataType()->equalsValue(MetadataTypes\DataType::UCHAR)
+				|| $this->getDataType()->equalsValue(MetadataTypes\DataType::SHORT)
+				|| $this->getDataType()->equalsValue(MetadataTypes\DataType::USHORT)
+				|| $this->getDataType()->equalsValue(MetadataTypes\DataType::INT)
+				|| $this->getDataType()->equalsValue(MetadataTypes\DataType::UINT)
+				|| $this->getDataType()->equalsValue(MetadataTypes\DataType::FLOAT)
 			) && (
 				$this->getMin() !== null
 				|| $this->getMax() !== null
@@ -168,16 +168,16 @@ final class CloudDeviceDataPoint implements Entity
 		) {
 			return [
 				[
-					MetadataTypes\DataTypeShort::DATA_TYPE_FLOAT,
+					MetadataTypes\DataTypeShort::FLOAT,
 					$this->getMin(),
 				],
 				[
-					MetadataTypes\DataTypeShort::DATA_TYPE_FLOAT,
+					MetadataTypes\DataTypeShort::FLOAT,
 					$this->getMax(),
 				],
 			];
 		} elseif (
-			$this->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_ENUM)
+			$this->getDataType()->equalsValue(MetadataTypes\DataType::ENUM)
 			&& $this->getRange() !== []
 		) {
 			return $this->getRange();

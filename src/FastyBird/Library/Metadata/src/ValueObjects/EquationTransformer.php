@@ -85,7 +85,7 @@ final class EquationTransformer
 
 		$value = is_array($value) ? implode(' ', $value) : $value;
 
-		return $dataType->equalsValue(Metadata\Types\DataType::DATA_TYPE_FLOAT)
+		return $dataType->equalsValue(Metadata\Types\DataType::FLOAT)
 			? floatval($value)
 			: intval(round(floatval($value)));
 	}
@@ -113,7 +113,7 @@ final class EquationTransformer
 
 		$value = is_array($value) ? implode(' ', $value) : $value;
 
-		return $dataType->equalsValue(Metadata\Types\DataType::DATA_TYPE_FLOAT)
+		return $dataType->equalsValue(Metadata\Types\DataType::FLOAT)
 			? floatval($value)
 			: intval(round(floatval($value)));
 	}

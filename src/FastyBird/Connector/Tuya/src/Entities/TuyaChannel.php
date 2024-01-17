@@ -39,7 +39,7 @@ class TuyaChannel extends DevicesEntities\Channels\Channel
 
 	public function getSource(): MetadataTypes\ConnectorSource
 	{
-		return MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA);
+		return MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_TUYA);
 	}
 
 }

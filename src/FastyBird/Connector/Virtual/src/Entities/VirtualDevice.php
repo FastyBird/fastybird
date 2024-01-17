@@ -45,7 +45,7 @@ class VirtualDevice extends DevicesEntities\Devices\Device
 
 	public function getSource(): MetadataTypes\ConnectorSource
 	{
-		return MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL);
+		return MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL);
 	}
 
 	/**

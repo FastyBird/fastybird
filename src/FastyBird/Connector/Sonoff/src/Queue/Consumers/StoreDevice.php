@@ -108,7 +108,7 @@ final class StoreDevice implements Consumer
 			$this->logger->info(
 				'Device was created',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 					'type' => 'store-device-message-consumer',
 					'device' => [
 						'id' => $device->getId()->toString(),
@@ -123,77 +123,77 @@ final class StoreDevice implements Consumer
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getApiKey(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 			Types\DevicePropertyIdentifier::API_KEY,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::API_KEY),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getDeviceKey(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 			Types\DevicePropertyIdentifier::DEVICE_KEY,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::DEVICE_KEY),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getUiid(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
 			Types\DevicePropertyIdentifier::UIID,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::UIID),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getBrandName(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 			Types\DevicePropertyIdentifier::BRAND_NAME,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::BRAND_NAME),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getBrandLogo(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 			Types\DevicePropertyIdentifier::BRAND_LOGO,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::BRAND_LOGO),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getProductModel(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 			Types\DevicePropertyIdentifier::PRODUCT_MODEL,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::PRODUCT_MODEL),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getModel(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 			Types\DevicePropertyIdentifier::HARDWARE_MODEL,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::HARDWARE_MODEL),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getMac(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 			Types\DevicePropertyIdentifier::HARDWARE_MAC_ADDRESS,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::HARDWARE_MAC_ADDRESS),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getIpAddress(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 			Types\DevicePropertyIdentifier::IP_ADDRESS,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::IP_ADDRESS),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getDomain(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 			Types\DevicePropertyIdentifier::ADDRESS,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::ADDRESS),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getPort(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UINT),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::UINT),
 			Types\DevicePropertyIdentifier::PORT,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::PORT),
 		);
@@ -239,7 +239,7 @@ final class StoreDevice implements Consumer
 					$this->logger->debug(
 						'Device dynamic property was created',
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
+							'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 							'type' => 'store-device-message-consumer',
 							'device' => [
 								'id' => $device->getId()->toString(),
@@ -269,7 +269,7 @@ final class StoreDevice implements Consumer
 					$this->logger->debug(
 						'Device dynamic property was updated',
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
+							'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 							'type' => 'store-device-message-consumer',
 							'device' => [
 								'id' => $device->getId()->toString(),
@@ -303,7 +303,7 @@ final class StoreDevice implements Consumer
 						$this->logger->debug(
 							'Device channel was created',
 							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
+								'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 								'type' => 'store-device-message-consumer',
 								'device' => [
 									'id' => $device->getId()->toString(),
@@ -338,7 +338,7 @@ final class StoreDevice implements Consumer
 		$this->logger->debug(
 			'Consumed store device message',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 				'type' => 'store-device-message-consumer',
 				'device' => [
 					'id' => $device->getId()->toString(),

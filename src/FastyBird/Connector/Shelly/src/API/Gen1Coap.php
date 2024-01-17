@@ -99,7 +99,7 @@ final class Gen1Coap implements Evenement\EventEmitterInterface
 			$this->logger->debug(
 				'CoAP connection was successfully closed',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
 					'type' => 'gen1-coap-api',
 				],
 			);
@@ -202,7 +202,7 @@ final class Gen1Coap implements Evenement\EventEmitterInterface
 					str_replace(' ', '', $message),
 				),
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
 					'type' => 'gen1-coap-api',
 				],
 			);

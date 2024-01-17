@@ -50,7 +50,7 @@ class Zigbee2MqttConnector extends DevicesEntities\Connectors\Connector
 
 	public function getSource(): MetadataTypes\ConnectorSource
 	{
-		return MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT);
+		return MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT);
 	}
 
 	/**

@@ -130,7 +130,7 @@ final class StoreBridgeDevices implements Queue\Consumer
 					$this->logger->error(
 						'There is already registered device with same ieee address',
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+							'source' => MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT,
 							'type' => 'store-bridge-devices-message-consumer',
 							'connector' => [
 								'id' => $entity->getConnector()->toString(),
@@ -157,7 +157,7 @@ final class StoreBridgeDevices implements Queue\Consumer
 					$this->logger->error(
 						'Connector could not be loaded',
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+							'source' => MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT,
 							'type' => 'store-bridge-devices-message-consumer',
 							'connector' => [
 								'id' => $entity->getConnector()->toString(),
@@ -194,7 +194,7 @@ final class StoreBridgeDevices implements Queue\Consumer
 				$this->logger->info(
 					'Sub-device was created',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT,
 						'type' => 'store-bridge-devices-message-consumer',
 						'connector' => [
 							'id' => $device->getConnector()->getId()->toString(),
@@ -213,49 +213,49 @@ final class StoreBridgeDevices implements Queue\Consumer
 			$this->setDeviceProperty(
 				$device->getId(),
 				$deviceDescription->getFriendlyName(),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 				Types\DevicePropertyIdentifier::FRIENDLY_NAME,
 				DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::FRIENDLY_NAME),
 			);
 			$this->setDeviceProperty(
 				$device->getId(),
 				$deviceDescription->getIeeeAddress(),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 				Types\DevicePropertyIdentifier::IEEE_ADDRESS,
 				DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::IEEE_ADDRESS),
 			);
 			$this->setDeviceProperty(
 				$device->getId(),
 				$deviceDescription->isDisabled(),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN),
 				Types\DevicePropertyIdentifier::DISABLED,
 				DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::DISABLED),
 			);
 			$this->setDeviceProperty(
 				$device->getId(),
 				$deviceDescription->isSupported(),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN),
 				Types\DevicePropertyIdentifier::SUPPORTED,
 				DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::SUPPORTED),
 			);
 			$this->setDeviceProperty(
 				$device->getId(),
 				$deviceDescription->getType()->getValue(),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 				Types\DevicePropertyIdentifier::TYPE,
 				DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::TYPE),
 			);
 			$this->setDeviceProperty(
 				$device->getId(),
 				$deviceDescription->getDefinition()?->getModel(),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 				Types\DevicePropertyIdentifier::MODEL,
 				DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MODEL),
 			);
 			$this->setDeviceProperty(
 				$device->getId(),
 				$deviceDescription->getDefinition()?->getVendor(),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 				Types\DevicePropertyIdentifier::MANUFACTURER,
 				DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MANUFACTURER),
 			);
@@ -268,7 +268,7 @@ final class StoreBridgeDevices implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed bridge devices list message',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT,
 				'type' => 'store-bridge-devices-message-consumer',
 				'connector' => [
 					'id' => $entity->getConnector()->toString(),
@@ -302,7 +302,7 @@ final class StoreBridgeDevices implements Queue\Consumer
 				$this->logger->warning(
 					'List type expose is not supported',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT,
 						'type' => 'store-bridge-devices-message-consumer',
 						'connector' => [
 							'id' => $device->getConnector()->getId()->toString(),
@@ -354,7 +354,7 @@ final class StoreBridgeDevices implements Queue\Consumer
 					$this->logger->error(
 						'Channel identifier could not be generated',
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+							'source' => MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT,
 							'type' => 'store-bridge-devices-message-consumer',
 							'connector' => [
 								'id' => $device->getConnector()->getId()->toString(),
@@ -446,7 +446,7 @@ final class StoreBridgeDevices implements Queue\Consumer
 					$this->logger->debug(
 						'Device channel was created',
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+							'source' => MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT,
 							'type' => 'store-bridge-devices-message-consumer',
 							'connector' => [
 								'id' => $device->getConnector()->getId()->toString(),

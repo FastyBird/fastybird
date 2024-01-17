@@ -122,7 +122,7 @@ final class Device implements Client
 							[
 								'connector' => $gateway->getConnector(),
 								'identifier' => $gateway->getIdentifier(),
-								'state' => MetadataTypes\ConnectionState::STATE_ALERT,
+								'state' => MetadataTypes\ConnectionState::ALERT,
 							],
 						),
 					);
@@ -223,7 +223,7 @@ final class Device implements Client
 							[
 								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
-								'state' => MetadataTypes\ConnectionState::STATE_ALERT,
+								'state' => MetadataTypes\ConnectionState::ALERT,
 							],
 						),
 					);
@@ -267,7 +267,7 @@ final class Device implements Client
 							$this->logger->debug(
 								'NS Panel third-party devices was successfully synchronised',
 								[
-									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+									'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 									'type' => 'device-client',
 									'connector' => [
 										'id' => $this->connector->getId()->toString(),
@@ -293,7 +293,7 @@ final class Device implements Client
 											[
 												'connector' => $device->getConnector(),
 												'identifier' => $device->getIdentifier(),
-												'state' => MetadataTypes\ConnectionState::STATE_CONNECTED,
+												'state' => MetadataTypes\ConnectionState::CONNECTED,
 											],
 										),
 									);
@@ -313,7 +313,7 @@ final class Device implements Client
 									$this->logger->error(
 										'Could not finish third-party device synchronisation',
 										[
-											'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+											'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 											'type' => 'device-client',
 											'connector' => [
 												'id' => $this->connector->getId()->toString(),
@@ -354,7 +354,7 @@ final class Device implements Client
 										[
 											'connector' => $gateway->getConnector(),
 											'identifier' => $gateway->getIdentifier(),
-											'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
+											'state' => MetadataTypes\ConnectionState::DISCONNECTED,
 										],
 									),
 								);
@@ -366,7 +366,7 @@ final class Device implements Client
 										[
 											'connector' => $gateway->getConnector(),
 											'identifier' => $gateway->getIdentifier(),
-											'state' => MetadataTypes\ConnectionState::STATE_ALERT,
+											'state' => MetadataTypes\ConnectionState::ALERT,
 										],
 									),
 								);
@@ -376,7 +376,7 @@ final class Device implements Client
 								'Could not synchronise third-party devices with NS Panel',
 								array_merge(
 									[
-										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+										'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 										'type' => 'device-client',
 										'exception' => BootstrapHelpers\Logger::buildException($ex),
 										'connector' => [
@@ -424,7 +424,7 @@ final class Device implements Client
 											$this->logger->debug(
 												'Removed third-party from NS Panel',
 												[
-													'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+													'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 													'type' => 'device-client',
 													'connector' => [
 														'id' => $this->connector->getId()->toString(),
@@ -461,7 +461,7 @@ final class Device implements Client
 														[
 															'connector' => $gateway->getConnector(),
 															'identifier' => $gateway->getIdentifier(),
-															'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
+															'state' => MetadataTypes\ConnectionState::DISCONNECTED,
 														],
 													),
 												);
@@ -473,7 +473,7 @@ final class Device implements Client
 														[
 															'connector' => $gateway->getConnector(),
 															'identifier' => $gateway->getIdentifier(),
-															'state' => MetadataTypes\ConnectionState::STATE_ALERT,
+															'state' => MetadataTypes\ConnectionState::ALERT,
 														],
 													),
 												);
@@ -483,7 +483,7 @@ final class Device implements Client
 												'Could not remove deleted third-party device from NS Panel',
 												array_merge(
 													[
-														'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+														'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 														'type' => 'device-client',
 														'exception' => BootstrapHelpers\Logger::buildException($ex),
 														'connector' => [
@@ -526,7 +526,7 @@ final class Device implements Client
 										[
 											'connector' => $gateway->getConnector(),
 											'identifier' => $gateway->getIdentifier(),
-											'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
+											'state' => MetadataTypes\ConnectionState::DISCONNECTED,
 										],
 									),
 								);
@@ -538,7 +538,7 @@ final class Device implements Client
 										[
 											'connector' => $gateway->getConnector(),
 											'identifier' => $gateway->getIdentifier(),
-											'state' => MetadataTypes\ConnectionState::STATE_ALERT,
+											'state' => MetadataTypes\ConnectionState::ALERT,
 										],
 									),
 								);
@@ -548,7 +548,7 @@ final class Device implements Client
 								'Could not fetch NS Panel registered devices',
 								array_merge(
 									[
-										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+										'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 										'type' => 'device-client',
 										'exception' => BootstrapHelpers\Logger::buildException($ex),
 										'connector' => [
@@ -568,7 +568,7 @@ final class Device implements Client
 				$this->logger->error(
 					'An unhandled error occurred',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 						'type' => 'device-client',
 						'exception' => BootstrapHelpers\Logger::buildException($ex),
 						'connector' => [
@@ -586,7 +586,7 @@ final class Device implements Client
 						[
 							'connector' => $gateway->getConnector(),
 							'identifier' => $gateway->getIdentifier(),
-							'state' => MetadataTypes\ConnectionState::STATE_ALERT,
+							'state' => MetadataTypes\ConnectionState::ALERT,
 						],
 					),
 				);
@@ -627,7 +627,7 @@ final class Device implements Client
 						[
 							'connector' => $gateway->getConnector(),
 							'identifier' => $device->getIdentifier(),
-							'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
+							'state' => MetadataTypes\ConnectionState::DISCONNECTED,
 						],
 					),
 				);
@@ -653,7 +653,7 @@ final class Device implements Client
 							$this->logger->debug(
 								'State for NS Panel third-party device was successfully updated',
 								[
-									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+									'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 									'type' => 'device-client',
 									'connector' => [
 										'id' => $this->connector->getId()->toString(),
@@ -689,7 +689,7 @@ final class Device implements Client
 								'State for NS Panel third-party device could not be updated',
 								array_merge(
 									[
-										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+										'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 										'type' => 'device-client',
 										'exception' => BootstrapHelpers\Logger::buildException($ex),
 										'connector' => [
@@ -707,7 +707,7 @@ final class Device implements Client
 					$this->logger->error(
 						'An unhandled error occurred',
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+							'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 							'type' => 'device-client',
 							'exception' => BootstrapHelpers\Logger::buildException($ex),
 							'connector' => [
@@ -727,7 +727,7 @@ final class Device implements Client
 					[
 						'connector' => $gateway->getConnector(),
 						'identifier' => $gateway->getIdentifier(),
-						'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
+						'state' => MetadataTypes\ConnectionState::DISCONNECTED,
 					],
 				),
 			);

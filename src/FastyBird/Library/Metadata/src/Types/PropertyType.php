@@ -32,11 +32,11 @@ class PropertyType extends Consistence\Enum\Enum
 	/**
 	 * Define states
 	 */
-	public const TYPE_VARIABLE = 'variable';
+	public const VARIABLE = 'variable';
 
-	public const TYPE_DYNAMIC = 'dynamic';
+	public const DYNAMIC = 'dynamic';
 
-	public const TYPE_MAPPED = 'mapped';
+	public const MAPPED = 'mapped';
 
 	public function getValue(): string
 	{

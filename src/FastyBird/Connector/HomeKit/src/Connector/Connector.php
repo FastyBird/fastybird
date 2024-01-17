@@ -72,7 +72,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Starting HomeKit connector service',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -100,7 +100,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'HomeKit connector service has been started',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -116,7 +116,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->error(
 			'Devices discovery is not allowed for HomeKit connector type',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -142,7 +142,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'HomeKit connector has been terminated',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),

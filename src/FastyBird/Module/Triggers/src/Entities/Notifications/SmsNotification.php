@@ -56,7 +56,7 @@ class SmsNotification extends Notification
 
 	public function getType(): MetadataTypes\TriggerNotificationType
 	{
-		return MetadataTypes\TriggerNotificationType::get(MetadataTypes\TriggerNotificationType::TYPE_SMS);
+		return MetadataTypes\TriggerNotificationType::get(MetadataTypes\TriggerNotificationType::SMS);
 	}
 
 	public function getPhone(): Phone\Entities\Phone

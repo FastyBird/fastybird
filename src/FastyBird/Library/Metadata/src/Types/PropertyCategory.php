@@ -32,7 +32,7 @@ class PropertyCategory extends Consistence\Enum\Enum
 	/**
 	 * Define types
 	 */
-	public const CATEGORY_GENERIC = 'generic';
+	public const GENERIC = 'generic';
 
 	public function getValue(): string
 	{

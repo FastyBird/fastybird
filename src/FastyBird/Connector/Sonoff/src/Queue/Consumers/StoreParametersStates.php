@@ -170,7 +170,7 @@ final class StoreParametersStates implements Consumer
 		$this->logger->debug(
 			'Consumed store device state message',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 				'type' => 'status-parameters-states-message-consumer',
 				'device' => [
 					'id' => $device->getId()->toString(),

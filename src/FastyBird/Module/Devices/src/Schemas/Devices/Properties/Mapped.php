@@ -49,7 +49,7 @@ final class Mapped extends Property
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES . '/property/device/' . MetadataTypes\PropertyType::TYPE_MAPPED;
+	public const SCHEMA_TYPE = MetadataTypes\ModuleSource::DEVICES . '/property/device/' . MetadataTypes\PropertyType::MAPPED;
 
 	public function __construct(
 		Routing\IRouter $router,

@@ -191,7 +191,7 @@ final class ConnectorPropertiesV1 extends BaseV1
 			} catch (Throwable $ex) {
 				// Log caught exception
 				$this->logger->error('An unhandled error occurred', [
-					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+					'source' => MetadataTypes\ModuleSource::DEVICES,
 					'type' => 'connector-properties-controller',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				]);
@@ -266,7 +266,7 @@ final class ConnectorPropertiesV1 extends BaseV1
 			} catch (Throwable $ex) {
 				// Log caught exception
 				$this->logger->error('An unhandled error occurred', [
-					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+					'source' => MetadataTypes\ModuleSource::DEVICES,
 					'type' => 'connector-properties-controller',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				]);
@@ -332,7 +332,7 @@ final class ConnectorPropertiesV1 extends BaseV1
 		} catch (Throwable $ex) {
 			// Log caught exception
 			$this->logger->error('An unhandled error occurred', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+				'source' => MetadataTypes\ModuleSource::DEVICES,
 				'type' => 'connector-properties-controller',
 				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);

@@ -141,7 +141,7 @@ final class ModuleEntities implements Common\EventSubscriber
 
 		if ($entity instanceof Entities\Triggers\ManualTrigger) {
 			new Entities\Triggers\Controls\Control(
-				MetadataTypes\ControlName::NAME_TRIGGER,
+				MetadataTypes\ControlName::TRIGGER,
 				$entity,
 			);
 		}

@@ -64,7 +64,7 @@ class FindConditions extends TriggersQueries\Entities\FindConditions
 	 */
 	public function withPropertyValue(
 		string $value,
-		string $operator = MetadataTypes\TriggerConditionOperator::OPERATOR_VALUE_EQUAL,
+		string $operator = MetadataTypes\TriggerConditionOperator::EQUAL,
 	): void
 	{
 		if (!MetadataTypes\TriggerConditionOperator::isValidValue($operator)) {
@@ -94,9 +94,9 @@ class FindConditions extends TriggersQueries\Entities\FindConditions
 					)
 					->setParameter('value', $value)
 					->setParameter('previousValue', $previousValue)
-					->setParameter('operatorAbove', MetadataTypes\TriggerConditionOperator::OPERATOR_VALUE_ABOVE)
-					->setParameter('operatorBelow', MetadataTypes\TriggerConditionOperator::OPERATOR_VALUE_BELOW)
-					->setParameter('operatorEqual', MetadataTypes\TriggerConditionOperator::OPERATOR_VALUE_EQUAL);
+					->setParameter('operatorAbove', MetadataTypes\TriggerConditionOperator::ABOVE)
+					->setParameter('operatorBelow', MetadataTypes\TriggerConditionOperator::BELOW)
+					->setParameter('operatorEqual', MetadataTypes\TriggerConditionOperator::EQUAL);
 
 			} else {
 				$qb
@@ -108,9 +108,9 @@ class FindConditions extends TriggersQueries\Entities\FindConditions
 						. '(cdc.operand = :value AND cdc.operator = :operatorEqual)',
 					)
 					->setParameter('value', $value)
-					->setParameter('operatorAbove', MetadataTypes\TriggerConditionOperator::OPERATOR_VALUE_ABOVE)
-					->setParameter('operatorBelow', MetadataTypes\TriggerConditionOperator::OPERATOR_VALUE_BELOW)
-					->setParameter('operatorEqual', MetadataTypes\TriggerConditionOperator::OPERATOR_VALUE_EQUAL);
+					->setParameter('operatorAbove', MetadataTypes\TriggerConditionOperator::ABOVE)
+					->setParameter('operatorBelow', MetadataTypes\TriggerConditionOperator::BELOW)
+					->setParameter('operatorEqual', MetadataTypes\TriggerConditionOperator::EQUAL);
 			}
 		};
 	}
@@ -122,7 +122,7 @@ class FindConditions extends TriggersQueries\Entities\FindConditions
 				->andWhere('cdc.operand >= :previousValue AND cdc.operand < :value AND cdc.operator = :operator')
 				->setParameter('value', $value)
 				->setParameter('previousValue', $previousValue)
-				->setParameter('operator', MetadataTypes\TriggerConditionOperator::OPERATOR_VALUE_ABOVE);
+				->setParameter('operator', MetadataTypes\TriggerConditionOperator::ABOVE);
 		};
 	}
 
@@ -133,7 +133,7 @@ class FindConditions extends TriggersQueries\Entities\FindConditions
 				->andWhere('cdc.operand <= :previousValue AND cdc.operand > :value AND cdc.operator = :operator')
 				->setParameter('value', $value)
 				->setParameter('previousValue', $previousValue)
-				->setParameter('operator', MetadataTypes\TriggerConditionOperator::OPERATOR_VALUE_BELOW);
+				->setParameter('operator', MetadataTypes\TriggerConditionOperator::BELOW);
 		};
 	}
 

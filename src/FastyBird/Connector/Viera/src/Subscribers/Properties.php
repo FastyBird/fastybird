@@ -132,13 +132,13 @@ final class Properties implements Common\EventSubscriber
 
 		if ($stateProperty !== null) {
 			$this->devicesPropertiesManager->update($stateProperty, Utils\ArrayHash::from([
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
+				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
 				'unit' => null,
 				'format' => [
-					MetadataTypes\ConnectionState::STATE_CONNECTED,
-					MetadataTypes\ConnectionState::STATE_DISCONNECTED,
-					MetadataTypes\ConnectionState::STATE_ALERT,
-					MetadataTypes\ConnectionState::STATE_UNKNOWN,
+					MetadataTypes\ConnectionState::CONNECTED,
+					MetadataTypes\ConnectionState::DISCONNECTED,
+					MetadataTypes\ConnectionState::ALERT,
+					MetadataTypes\ConnectionState::UNKNOWN,
 				],
 				'settable' => false,
 				'queryable' => false,
@@ -149,13 +149,13 @@ final class Properties implements Common\EventSubscriber
 				'entity' => DevicesEntities\Devices\Properties\Dynamic::class,
 				'identifier' => Types\DevicePropertyIdentifier::STATE,
 				'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::STATE),
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
+				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
 				'unit' => null,
 				'format' => [
-					MetadataTypes\ConnectionState::STATE_CONNECTED,
-					MetadataTypes\ConnectionState::STATE_DISCONNECTED,
-					MetadataTypes\ConnectionState::STATE_ALERT,
-					MetadataTypes\ConnectionState::STATE_UNKNOWN,
+					MetadataTypes\ConnectionState::CONNECTED,
+					MetadataTypes\ConnectionState::DISCONNECTED,
+					MetadataTypes\ConnectionState::ALERT,
+					MetadataTypes\ConnectionState::UNKNOWN,
 				],
 				'settable' => false,
 				'queryable' => false,
@@ -235,11 +235,11 @@ final class Properties implements Common\EventSubscriber
 				'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 				'identifier' => $identifier->getValue(),
 				'name' => DevicesUtilities\Name::createName($identifier->getValue()),
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BUTTON),
+				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::BUTTON),
 				'unit' => null,
 				'format' => [
 					[
-						MetadataTypes\ButtonPayload::PAYLOAD_CLICKED,
+						MetadataTypes\ButtonPayload::CLICKED,
 						$key->getValue(),
 						$key->getValue(),
 					],
@@ -250,7 +250,7 @@ final class Properties implements Common\EventSubscriber
 		} else {
 			$this->channelsPropertiesManager->update($property, Utils\ArrayHash::from([
 				'name' => DevicesUtilities\Name::createName($identifier->getValue()),
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BUTTON),
+				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::BUTTON),
 				'unit' => null,
 				'format' => [
 					$key->getValue(),
@@ -315,7 +315,7 @@ final class Properties implements Common\EventSubscriber
 						'channel' => $channel,
 						'identifier' => Types\ChannelPropertyIdentifier::INPUT_SOURCE,
 						'name' => DevicesUtilities\Name::createName(Types\ChannelPropertyIdentifier::INPUT_SOURCE),
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
+						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
 						'settable' => true,
 						'queryable' => false,
 						'format' => array_merge(
@@ -337,7 +337,7 @@ final class Properties implements Common\EventSubscriber
 				$inputSourceProperty,
 				Utils\ArrayHash::from(
 					[
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
+						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
 						'settable' => true,
 						'queryable' => false,
 						'format' => array_merge(

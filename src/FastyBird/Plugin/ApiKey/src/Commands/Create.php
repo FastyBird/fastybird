@@ -93,7 +93,7 @@ class Create extends Console\Command\Command
 			return self::SUCCESS;
 		} catch (Throwable $ex) {
 			$this->logger->error('Api key could not be created', [
-				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_API_KEY,
+				'source' => MetadataTypes\PluginSource::API_KEY,
 				'type' => 'create-command',
 				'exception' => BootstrapHelpers\Logger::buildException($ex),
 				'cmd' => $this->getName(),

@@ -124,7 +124,7 @@ final class Lan extends ClientProcess implements Client
 							[
 								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
-								'state' => MetadataTypes\ConnectionState::STATE_CONNECTED,
+								'state' => MetadataTypes\ConnectionState::CONNECTED,
 							],
 						),
 					);
@@ -176,7 +176,7 @@ final class Lan extends ClientProcess implements Client
 					[
 						'connector' => $device->getConnector(),
 						'identifier' => $device->getIdentifier(),
-						'state' => MetadataTypes\ConnectionState::STATE_ALERT,
+						'state' => MetadataTypes\ConnectionState::ALERT,
 					],
 				),
 			);
@@ -200,7 +200,7 @@ final class Lan extends ClientProcess implements Client
 							[
 								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
-								'state' => MetadataTypes\ConnectionState::STATE_CONNECTED,
+								'state' => MetadataTypes\ConnectionState::CONNECTED,
 							],
 						),
 					);
@@ -217,7 +217,7 @@ final class Lan extends ClientProcess implements Client
 								[
 									'connector' => $device->getConnector(),
 									'identifier' => $device->getIdentifier(),
-									'state' => MetadataTypes\ConnectionState::STATE_ALERT,
+									'state' => MetadataTypes\ConnectionState::ALERT,
 								],
 							),
 						);
@@ -225,7 +225,7 @@ final class Lan extends ClientProcess implements Client
 						$this->logger->warning(
 							'Calling device lan api for reading state failed',
 							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
+								'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 								'type' => 'lan-client',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'connector' => [
@@ -242,7 +242,7 @@ final class Lan extends ClientProcess implements Client
 						$this->logger->warning(
 							'Calling device lan api for reading state failed',
 							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
+								'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 								'type' => 'lan-client',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'connector' => [
@@ -257,7 +257,7 @@ final class Lan extends ClientProcess implements Client
 						$this->logger->error(
 							'Could not call device lan api',
 							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
+								'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 								'type' => 'lan-client',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'connector' => [
@@ -272,7 +272,7 @@ final class Lan extends ClientProcess implements Client
 						$this->dispatcher?->dispatch(
 							new DevicesEvents\TerminateConnector(
 								MetadataTypes\ConnectorSource::get(
-									MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
+									MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 								),
 								'Could not call device lan api',
 								$ex,
@@ -340,7 +340,7 @@ final class Lan extends ClientProcess implements Client
 				$this->logger->error(
 					'Sonoff SPM sub-device could not be found',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 						'type' => 'lan-client',
 						'connector' => [
 							'id' => $this->connector->getId()->toString(),

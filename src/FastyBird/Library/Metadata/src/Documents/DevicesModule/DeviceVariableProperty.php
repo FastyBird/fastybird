@@ -44,7 +44,7 @@ final class DeviceVariableProperty extends DeviceProperty
 		Uuid\UuidInterface $id,
 		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(
 			class: Types\PropertyType::class,
-			allowedValues: [Types\PropertyType::TYPE_VARIABLE],
+			allowedValues: [Types\PropertyType::VARIABLE],
 		)]
 		private readonly Types\PropertyType $type,
 		Uuid\UuidInterface $device,

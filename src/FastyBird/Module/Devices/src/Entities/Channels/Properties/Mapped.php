@@ -49,7 +49,7 @@ class Mapped extends Property
 
 	public function getType(): MetadataTypes\PropertyType
 	{
-		return MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::TYPE_MAPPED);
+		return MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::MAPPED);
 	}
 
 	/**

@@ -43,7 +43,7 @@ final class ChannelMappedProperty extends ChannelProperty
 		Uuid\UuidInterface $id,
 		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(
 			class: Types\PropertyType::class,
-			allowedValues: [Types\PropertyType::TYPE_MAPPED],
+			allowedValues: [Types\PropertyType::MAPPED],
 		)]
 		private readonly Types\PropertyType $type,
 		Uuid\UuidInterface $channel,

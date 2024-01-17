@@ -145,15 +145,15 @@ final class NumberRangeFormat
 	{
 		if ($this->getMinDataType() !== null) {
 			if (
-				$this->getMinDataType()->equalsValue(Types\DataTypeShort::DATA_TYPE_CHAR)
-				|| $this->getMinDataType()->equalsValue(Types\DataTypeShort::DATA_TYPE_UCHAR)
-				|| $this->getMinDataType()->equalsValue(Types\DataTypeShort::DATA_TYPE_SHORT)
-				|| $this->getMinDataType()->equalsValue(Types\DataTypeShort::DATA_TYPE_USHORT)
-				|| $this->getMinDataType()->equalsValue(Types\DataTypeShort::DATA_TYPE_INT)
-				|| $this->getMinDataType()->equalsValue(Types\DataTypeShort::DATA_TYPE_UINT)
+				$this->getMinDataType()->equalsValue(Types\DataTypeShort::CHAR)
+				|| $this->getMinDataType()->equalsValue(Types\DataTypeShort::UCHAR)
+				|| $this->getMinDataType()->equalsValue(Types\DataTypeShort::SHORT)
+				|| $this->getMinDataType()->equalsValue(Types\DataTypeShort::USHORT)
+				|| $this->getMinDataType()->equalsValue(Types\DataTypeShort::INT)
+				|| $this->getMinDataType()->equalsValue(Types\DataTypeShort::UINT)
 			) {
 				return intval($this->min);
-			} elseif ($this->getMinDataType()->equalsValue(Types\DataTypeShort::DATA_TYPE_FLOAT)) {
+			} elseif ($this->getMinDataType()->equalsValue(Types\DataTypeShort::FLOAT)) {
 				return floatval($this->min);
 			}
 
@@ -170,15 +170,15 @@ final class NumberRangeFormat
 	{
 		if ($this->getMaxDataType() !== null) {
 			if (
-				$this->getMaxDataType()->equalsValue(Types\DataTypeShort::DATA_TYPE_CHAR)
-				|| $this->getMaxDataType()->equalsValue(Types\DataTypeShort::DATA_TYPE_UCHAR)
-				|| $this->getMaxDataType()->equalsValue(Types\DataTypeShort::DATA_TYPE_SHORT)
-				|| $this->getMaxDataType()->equalsValue(Types\DataTypeShort::DATA_TYPE_USHORT)
-				|| $this->getMaxDataType()->equalsValue(Types\DataTypeShort::DATA_TYPE_INT)
-				|| $this->getMaxDataType()->equalsValue(Types\DataTypeShort::DATA_TYPE_UINT)
+				$this->getMaxDataType()->equalsValue(Types\DataTypeShort::CHAR)
+				|| $this->getMaxDataType()->equalsValue(Types\DataTypeShort::UCHAR)
+				|| $this->getMaxDataType()->equalsValue(Types\DataTypeShort::SHORT)
+				|| $this->getMaxDataType()->equalsValue(Types\DataTypeShort::USHORT)
+				|| $this->getMaxDataType()->equalsValue(Types\DataTypeShort::INT)
+				|| $this->getMaxDataType()->equalsValue(Types\DataTypeShort::UINT)
 			) {
 				return intval($this->max);
-			} elseif ($this->getMaxDataType()->equalsValue(Types\DataTypeShort::DATA_TYPE_FLOAT)) {
+			} elseif ($this->getMaxDataType()->equalsValue(Types\DataTypeShort::FLOAT)) {
 				return floatval($this->max);
 			}
 

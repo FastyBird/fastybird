@@ -138,7 +138,7 @@ class Channel implements Entities\Entity,
 
 		$this->name = $name;
 
-		$this->category = MetadataTypes\ChannelCategory::get(MetadataTypes\ChannelCategory::CATEGORY_GENERIC);
+		$this->category = MetadataTypes\ChannelCategory::get(MetadataTypes\ChannelCategory::GENERIC);
 
 		$this->properties = new Common\Collections\ArrayCollection();
 		$this->controls = new Common\Collections\ArrayCollection();
@@ -289,7 +289,7 @@ class Channel implements Entities\Entity,
 	// @phpstan-ignore-next-line
 	public function getSource(): MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource
 	{
-		return MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES);
+		return MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES);
 	}
 
 	public function getDiscriminatorName(): string

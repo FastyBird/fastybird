@@ -99,7 +99,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Connector could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 					'type' => 'write-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -131,7 +131,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Device could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 					'type' => 'write-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -159,7 +159,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					[
 						'connector' => $connector->getId(),
 						'device' => $device->getId(),
-						'state' => MetadataTypes\ConnectionState::STATE_ALERT,
+						'state' => MetadataTypes\ConnectionState::ALERT,
 					],
 				),
 			);
@@ -167,7 +167,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Device is not configured',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 					'type' => 'write-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -199,7 +199,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Channel could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 					'type' => 'write-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -233,7 +233,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Channel property could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 					'type' => 'write-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -258,7 +258,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Channel property is not writable',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 					'type' => 'write-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -349,14 +349,14 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				default:
 					if (
 						Types\ChannelPropertyIdentifier::isValidValue($property->getIdentifier())
-						&& $property->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)
+						&& $property->getDataType()->equalsValue(MetadataTypes\DataType::BUTTON)
 					) {
 						$result = $client->sendKey(Types\ActionKey::get($expectedValue));
 					} else {
 						$this->logger->error(
 							'Provided property is not supported for writing',
 							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+								'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 								'type' => 'write-channel-property-state-message-consumer',
 								'connector' => [
 									'id' => $entity->getConnector()->toString(),
@@ -386,7 +386,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					[
 						'connector' => $connector->getId(),
 						'device' => $device->getId(),
-						'state' => MetadataTypes\ConnectionState::STATE_ALERT,
+						'state' => MetadataTypes\ConnectionState::ALERT,
 					],
 				),
 			);
@@ -394,7 +394,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Device is not properly configured',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 					'type' => 'write-channel-property-state-message-consumer',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'connector' => [
@@ -421,7 +421,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					[
 						'connector' => $connector->getId(),
 						'device' => $device->getId(),
-						'state' => MetadataTypes\ConnectionState::STATE_ALERT,
+						'state' => MetadataTypes\ConnectionState::ALERT,
 					],
 				),
 			);
@@ -429,7 +429,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Preparing api request failed',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 					'type' => 'write-channel-property-state-message-consumer',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'connector' => [
@@ -456,7 +456,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					[
 						'connector' => $connector->getId(),
 						'device' => $device->getId(),
-						'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
+						'state' => MetadataTypes\ConnectionState::DISCONNECTED,
 					],
 				),
 			);
@@ -464,7 +464,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Calling device api failed',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 					'type' => 'write-channel-property-state-message-consumer',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'connector' => [
@@ -531,7 +531,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					default:
 						if (
 							Types\ChannelPropertyIdentifier::isValidValue($property->getIdentifier())
-							&& $property->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)
+							&& $property->getDataType()->equalsValue(MetadataTypes\DataType::BUTTON)
 						) {
 							$this->queue->append(
 								$this->entityHelper->create(
@@ -642,7 +642,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 							[
 								'connector' => $device->getConnector(),
 								'device' => $device->getId(),
-								'state' => MetadataTypes\ConnectionState::STATE_ALERT,
+								'state' => MetadataTypes\ConnectionState::ALERT,
 							],
 						),
 					);
@@ -653,7 +653,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 							[
 								'connector' => $device->getConnector(),
 								'device' => $device->getId(),
-								'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
+								'state' => MetadataTypes\ConnectionState::DISCONNECTED,
 							],
 						),
 					);
@@ -664,7 +664,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed write device state message',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 				'type' => 'write-channel-property-state-message-consumer',
 				'connector' => [
 					'id' => $entity->getConnector()->toString(),

@@ -95,7 +95,7 @@ class StatesManager
 
 		} catch (Throwable $ex) {
 			$this->logger->error('Record could not be created', [
-				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
+				'source' => MetadataTypes\PluginSource::REDISDB,
 				'type' => 'states-manager',
 				'record' => [
 					'id' => $id->toString(),
@@ -133,7 +133,7 @@ class StatesManager
 			return $state;
 		} catch (Throwable $ex) {
 			$this->logger->error('Record could not be updated', [
-				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
+				'source' => MetadataTypes\PluginSource::REDISDB,
 				'type' => 'states-manager',
 				'record' => [
 					'id' => $state->getId()->toString(),
@@ -244,7 +244,7 @@ class StatesManager
 			return $raw;
 		} catch (Throwable $ex) {
 			$this->logger->error('Record key could not be created', [
-				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
+				'source' => MetadataTypes\PluginSource::REDISDB,
 				'type' => 'states-manager',
 				'record' => [
 					'id' => $id->toString(),
@@ -351,7 +351,7 @@ class StatesManager
 			throw $ex;
 		} catch (Throwable $ex) {
 			$this->logger->error('Record key could not be updated', [
-				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
+				'source' => MetadataTypes\PluginSource::REDISDB,
 				'type' => 'states-manager',
 				'record' => [
 					'id' => $state->getId()->toString(),
@@ -380,7 +380,7 @@ class StatesManager
 			return $delResult;
 		} catch (Throwable $ex) {
 			$this->logger->error('Record could not be deleted', [
-				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_REDISDB,
+				'source' => MetadataTypes\PluginSource::REDISDB,
 				'type' => 'states-manager',
 				'record' => [
 					'id' => $id->toString(),

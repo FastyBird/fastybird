@@ -171,7 +171,7 @@ final class CloudWs implements Evenement\EventEmitterInterface
 							$this->logger->debug(
 								'Connected to Sonoff sockets server',
 								[
-									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
+									'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 									'type' => 'cloud-ws-api',
 								],
 							);
@@ -231,7 +231,7 @@ final class CloudWs implements Evenement\EventEmitterInterface
 					$this->logger->debug(
 						'Connection to Sonoff sockets server was closed',
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
+							'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 							'type' => 'cloud-ws-api',
 							'connection' => [
 								'code' => $code,
@@ -459,7 +459,7 @@ final class CloudWs implements Evenement\EventEmitterInterface
 			$this->logger->debug(
 				'Received message from Sonoff sockets server not be parsed',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 					'type' => 'cloud-ws-api',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -763,7 +763,7 @@ final class CloudWs implements Evenement\EventEmitterInterface
 			$request->getMethod(),
 			$request->getUri(),
 		), [
-			'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
+			'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 			'type' => 'cloud-ws-api',
 			'request' => [
 				'method' => $request->getMethod(),
@@ -797,7 +797,7 @@ final class CloudWs implements Evenement\EventEmitterInterface
 							}
 
 							$this->logger->debug('Received response', [
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
+								'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 								'type' => 'cloud-ws-api',
 								'request' => [
 									'method' => $request->getMethod(),
@@ -848,7 +848,7 @@ final class CloudWs implements Evenement\EventEmitterInterface
 			}
 
 			$this->logger->debug('Received response', [
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 				'type' => 'cloud-ws-api',
 				'request' => [
 					'method' => $request->getMethod(),

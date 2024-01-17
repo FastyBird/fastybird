@@ -75,9 +75,9 @@ final class ActionDeviceProperty implements Documents\Document
 	 */
 	public function getExpectedValue(): float|bool|int|string|null
 	{
-		if (!$this->getAction()->equalsValue(Types\PropertyAction::ACTION_SET)) {
+		if (!$this->getAction()->equalsValue(Types\PropertyAction::SET)) {
 			throw new Exceptions\InvalidState(
-				sprintf('Expected value is available only for action: %s', Types\PropertyAction::ACTION_SET),
+				sprintf('Expected value is available only for action: %s', Types\PropertyAction::SET),
 			);
 		}
 
@@ -95,7 +95,7 @@ final class ActionDeviceProperty implements Documents\Document
 			'property' => $this->getProperty()->toString(),
 		];
 
-		if ($this->getAction()->equalsValue(Types\PropertyAction::ACTION_SET)) {
+		if ($this->getAction()->equalsValue(Types\PropertyAction::SET)) {
 			$data = array_merge($data, [
 				'expected_value' => $this->getExpectedValue(),
 			]);

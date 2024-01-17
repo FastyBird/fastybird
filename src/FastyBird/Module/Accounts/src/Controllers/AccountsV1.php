@@ -196,7 +196,7 @@ final class AccountsV1 extends BaseV1
 		} catch (Throwable $ex) {
 			// Log caught exception
 			$this->logger->error('An unhandled error occurred', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_ACCOUNTS,
+				'source' => MetadataTypes\ModuleSource::ACCOUNTS,
 				'type' => 'accounts-controller',
 				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
@@ -277,7 +277,7 @@ final class AccountsV1 extends BaseV1
 		} catch (Throwable $ex) {
 			// Log caught exception
 			$this->logger->error('An unhandled error occurred', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_ACCOUNTS,
+				'source' => MetadataTypes\ModuleSource::ACCOUNTS,
 				'type' => 'accounts-controller',
 				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
@@ -330,14 +330,14 @@ final class AccountsV1 extends BaseV1
 			$this->getOrmConnection()->beginTransaction();
 
 			$updateData = Utils\ArrayHash::from([
-				'state' => MetadataTypes\AccountState::get(MetadataTypes\AccountState::STATE_DELETED),
+				'state' => MetadataTypes\AccountState::get(MetadataTypes\AccountState::DELETED),
 			]);
 
 			$this->accountsManager->update($account, $updateData);
 
 			foreach ($account->getIdentities() as $identity) {
 				$updateIdentity = Utils\ArrayHash::from([
-					'state' => MetadataTypes\IdentityState::get(MetadataTypes\IdentityState::STATE_DELETED),
+					'state' => MetadataTypes\IdentityState::get(MetadataTypes\IdentityState::DELETED),
 				]);
 
 				$this->identitiesManager->update($identity, $updateIdentity);
@@ -349,7 +349,7 @@ final class AccountsV1 extends BaseV1
 		} catch (Throwable $ex) {
 			// Log caught exception
 			$this->logger->error('An unhandled error occurred', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_ACCOUNTS,
+				'source' => MetadataTypes\ModuleSource::ACCOUNTS,
 				'type' => 'accounts-controller',
 				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);

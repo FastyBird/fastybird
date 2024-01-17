@@ -125,7 +125,7 @@ final class Cloud implements Client
 				$this->logger->debug(
 					'Connected to Tuya cloud API',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 						'type' => 'cloud-client',
 						'connector' => [
 							'id' => $this->connector->getId()->toString(),
@@ -137,7 +137,7 @@ final class Cloud implements Client
 				$this->logger->error(
 					'Tuya cloud API client could not be created',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 						'type' => 'cloud-client',
 						'exception' => BootstrapHelpers\Logger::buildException($ex),
 						'connector' => [
@@ -148,7 +148,7 @@ final class Cloud implements Client
 
 				$this->dispatcher?->dispatch(
 					new DevicesEvents\TerminateConnector(
-						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA),
+						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_TUYA),
 						'Tuya cloud API client could not be created',
 					),
 				);
@@ -167,8 +167,8 @@ final class Cloud implements Client
 									'connector' => $this->connector->getId(),
 									'identifier' => $message->getIdentifier(),
 									'state' => $message->isOnline()
-										? MetadataTypes\ConnectionState::STATE_CONNECTED
-										: MetadataTypes\ConnectionState::STATE_DISCONNECTED,
+										? MetadataTypes\ConnectionState::CONNECTED
+										: MetadataTypes\ConnectionState::DISCONNECTED,
 								],
 							),
 						);
@@ -196,7 +196,7 @@ final class Cloud implements Client
 				$this->logger->error(
 					'An error occurred in Tuya cloud WS client',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 						'type' => 'cloud-client',
 						'exception' => BootstrapHelpers\Logger::buildException($ex),
 						'connector' => [
@@ -207,7 +207,7 @@ final class Cloud implements Client
 
 				$this->dispatcher?->dispatch(
 					new DevicesEvents\TerminateConnector(
-						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA),
+						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_TUYA),
 						'An error occurred in Tuya cloud WS client',
 					),
 				);
@@ -217,7 +217,7 @@ final class Cloud implements Client
 				$this->logger->debug(
 					'Connected to Tuya cloud WS server',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 						'type' => 'cloud-client',
 						'connector' => [
 							'id' => $this->connector->getId()->toString(),
@@ -229,7 +229,7 @@ final class Cloud implements Client
 				$this->logger->error(
 					'Tuya cloud WS client could not be created',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 						'type' => 'cloud-client',
 						'exception' => BootstrapHelpers\Logger::buildException($ex),
 						'connector' => [
@@ -240,7 +240,7 @@ final class Cloud implements Client
 
 				$this->dispatcher?->dispatch(
 					new DevicesEvents\TerminateConnector(
-						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA),
+						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_TUYA),
 						'Tuya cloud WS client could not be created',
 					),
 				);
@@ -348,7 +348,7 @@ final class Cloud implements Client
 
 		$deviceState = $this->deviceConnectionManager->getState($device);
 
-		if ($deviceState->equalsValue(MetadataTypes\ConnectionState::STATE_ALERT)) {
+		if ($deviceState->equalsValue(MetadataTypes\ConnectionState::ALERT)) {
 			unset($this->devices[$device->getId()->toString()]);
 
 			return false;
@@ -367,8 +367,8 @@ final class Cloud implements Client
 							'connector' => $device->getConnector(),
 							'identifier' => $device->getIdentifier(),
 							'state' => $detail->getResult()->isOnline()
-								? MetadataTypes\ConnectionState::STATE_CONNECTED
-								: MetadataTypes\ConnectionState::STATE_DISCONNECTED,
+								? MetadataTypes\ConnectionState::CONNECTED
+								: MetadataTypes\ConnectionState::DISCONNECTED,
 						],
 					),
 				);
@@ -377,7 +377,7 @@ final class Cloud implements Client
 				$this->logger->error(
 					'Could not call cloud openapi',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 						'type' => 'cloud-client',
 						'exception' => BootstrapHelpers\Logger::buildException($ex),
 						'connector' => [
@@ -393,7 +393,7 @@ final class Cloud implements Client
 							[
 								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
-								'state' => MetadataTypes\ConnectionState::STATE_ALERT,
+								'state' => MetadataTypes\ConnectionState::ALERT,
 							],
 						),
 					);
@@ -404,14 +404,14 @@ final class Cloud implements Client
 							[
 								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
-								'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
+								'state' => MetadataTypes\ConnectionState::DISCONNECTED,
 							],
 						),
 					);
 				} else {
 					$this->dispatcher?->dispatch(
 						new DevicesEvents\TerminateConnector(
-							MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA),
+							MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_TUYA),
 							'Unhandled error occur',
 						),
 					);
@@ -454,7 +454,7 @@ final class Cloud implements Client
 
 		$deviceState = $this->deviceConnectionManager->getState($device);
 
-		if ($deviceState->equalsValue(MetadataTypes\ConnectionState::STATE_ALERT)) {
+		if ($deviceState->equalsValue(MetadataTypes\ConnectionState::ALERT)) {
 			unset($this->devices[$device->getId()->toString()]);
 
 			return false;
@@ -487,7 +487,7 @@ final class Cloud implements Client
 				$this->logger->warning(
 					'Calling Tuya cloud failed',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 						'type' => 'cloud-client',
 						'error' => $ex->getMessage(),
 						'connector' => [
@@ -503,7 +503,7 @@ final class Cloud implements Client
 							[
 								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
-								'state' => MetadataTypes\ConnectionState::STATE_ALERT,
+								'state' => MetadataTypes\ConnectionState::ALERT,
 							],
 						),
 					);
@@ -514,14 +514,14 @@ final class Cloud implements Client
 							[
 								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
-								'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
+								'state' => MetadataTypes\ConnectionState::DISCONNECTED,
 							],
 						),
 					);
 				} else {
 					$this->dispatcher?->dispatch(
 						new DevicesEvents\TerminateConnector(
-							MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA),
+							MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_TUYA),
 							'Unhandled error occur',
 						),
 					);

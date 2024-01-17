@@ -43,7 +43,7 @@ trait TEntity
 
 	public function getSource(): MetadataTypes\ModuleSource|MetadataTypes\ConnectorSource|MetadataTypes\PluginSource
 	{
-		return MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_TRIGGERS);
+		return MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::TRIGGERS);
 	}
 
 }

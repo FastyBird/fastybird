@@ -33,19 +33,19 @@ class PluginSource extends Consistence\Enum\Enum
 	/**
 	 * Define types
 	 */
-	public const SOURCE_NOT_SPECIFIED = Metadata\Constants::NOT_SPECIFIED_SOURCE;
+	public const NOT_SPECIFIED = Metadata\Constants::NOT_SPECIFIED_SOURCE;
 
-	public const SOURCE_PLUGIN_COUCHDB = Metadata\Constants::PLUGIN_COUCHDB_SOURCE;
+	public const COUCHDB = Metadata\Constants::PLUGIN_COUCHDB_SOURCE;
 
-	public const SOURCE_PLUGIN_RABBITMQ = Metadata\Constants::PLUGIN_RABBITMQ_SOURCE;
+	public const RABBITMQ = Metadata\Constants::PLUGIN_RABBITMQ_SOURCE;
 
-	public const SOURCE_PLUGIN_REDISDB = Metadata\Constants::PLUGIN_REDISDB_SOURCE;
+	public const REDISDB = Metadata\Constants::PLUGIN_REDISDB_SOURCE;
 
-	public const SOURCE_PLUGIN_WS_SERVER = Metadata\Constants::PLUGIN_WS_SERVER_SOURCE;
+	public const WS_SERVER = Metadata\Constants::PLUGIN_WS_SERVER_SOURCE;
 
-	public const SOURCE_PLUGIN_WEB_SERVER = Metadata\Constants::PLUGIN_WEB_SERVER_SOURCE;
+	public const WEB_SERVER = Metadata\Constants::PLUGIN_WEB_SERVER_SOURCE;
 
-	public const SOURCE_PLUGIN_API_KEY = Metadata\Constants::PLUGIN_API_KEY;
+	public const API_KEY = Metadata\Constants::PLUGIN_API_KEY;
 
 	public function getValue(): string
 	{

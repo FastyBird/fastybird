@@ -94,14 +94,14 @@ final class StoreBridgeConnectionState implements Queue\Consumer
 			return true;
 		}
 
-		$state = MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_UNKNOWN);
+		$state = MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::UNKNOWN);
 
 		if ($entity->getState()->equalsValue(Types\ConnectionState::ONLINE)) {
-			$state = MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_CONNECTED);
+			$state = MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::CONNECTED);
 		} elseif ($entity->getState()->equalsValue(Types\ConnectionState::OFFLINE)) {
-			$state = MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_DISCONNECTED);
+			$state = MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::DISCONNECTED);
 		} elseif ($entity->getState()->equalsValue(Types\ConnectionState::ALERT)) {
-			$state = MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_ALERT);
+			$state = MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::ALERT);
 		}
 
 		// Check device state...
@@ -112,9 +112,9 @@ final class StoreBridgeConnectionState implements Queue\Consumer
 			$this->deviceConnectionManager->setState($bridge, $state);
 
 			if (
-				$state->equalsValue(MetadataTypes\ConnectionState::STATE_DISCONNECTED)
-				|| $state->equalsValue(MetadataTypes\ConnectionState::STATE_ALERT)
-				|| $state->equalsValue(MetadataTypes\ConnectionState::STATE_UNKNOWN)
+				$state->equalsValue(MetadataTypes\ConnectionState::DISCONNECTED)
+				|| $state->equalsValue(MetadataTypes\ConnectionState::ALERT)
+				|| $state->equalsValue(MetadataTypes\ConnectionState::UNKNOWN)
 			) {
 				$findDevicePropertiesQuery = new DevicesQueries\Configuration\FindDeviceDynamicProperties();
 				$findDevicePropertiesQuery->forDevice($bridge);
@@ -195,7 +195,7 @@ final class StoreBridgeConnectionState implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed bridge connection state message',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT,
 				'type' => 'store-bridge-connection-state-message-consumer',
 				'connector' => [
 					'id' => $entity->getConnector()->toString(),

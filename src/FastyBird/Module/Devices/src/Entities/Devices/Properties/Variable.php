@@ -31,7 +31,7 @@ class Variable extends Property
 
 	public function getType(): MetadataTypes\PropertyType
 	{
-		return MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::TYPE_VARIABLE);
+		return MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::VARIABLE);
 	}
 
 	/**

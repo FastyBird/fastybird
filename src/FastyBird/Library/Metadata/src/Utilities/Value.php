@@ -72,12 +72,12 @@ final class Value
 		}
 
 		if (
-			$dataType->equalsValue(Types\DataType::DATA_TYPE_CHAR)
-			|| $dataType->equalsValue(Types\DataType::DATA_TYPE_UCHAR)
-			|| $dataType->equalsValue(Types\DataType::DATA_TYPE_SHORT)
-			|| $dataType->equalsValue(Types\DataType::DATA_TYPE_USHORT)
-			|| $dataType->equalsValue(Types\DataType::DATA_TYPE_INT)
-			|| $dataType->equalsValue(Types\DataType::DATA_TYPE_UINT)
+			$dataType->equalsValue(Types\DataType::CHAR)
+			|| $dataType->equalsValue(Types\DataType::UCHAR)
+			|| $dataType->equalsValue(Types\DataType::SHORT)
+			|| $dataType->equalsValue(Types\DataType::USHORT)
+			|| $dataType->equalsValue(Types\DataType::INT)
+			|| $dataType->equalsValue(Types\DataType::UINT)
 		) {
 			$value = intval(self::flattenValue($value));
 
@@ -102,7 +102,7 @@ final class Value
 			}
 
 			return $value;
-		} elseif ($dataType->equalsValue(Types\DataType::DATA_TYPE_FLOAT)) {
+		} elseif ($dataType->equalsValue(Types\DataType::FLOAT)) {
 			$value = floatval(self::flattenValue($value));
 
 			if (
@@ -126,15 +126,15 @@ final class Value
 			}
 
 			return $value;
-		} elseif ($dataType->equalsValue(Types\DataType::DATA_TYPE_STRING)) {
+		} elseif ($dataType->equalsValue(Types\DataType::STRING)) {
 			return strval(self::flattenValue($value));
-		} elseif ($dataType->equalsValue(Types\DataType::DATA_TYPE_BOOLEAN)) {
+		} elseif ($dataType->equalsValue(Types\DataType::BOOLEAN)) {
 			return in_array(
 				Utils\Strings::lower(strval(self::flattenValue($value))),
 				self::BOOL_TRUE_VALUES,
 				true,
 			);
-		} elseif ($dataType->equalsValue(Types\DataType::DATA_TYPE_DATE)) {
+		} elseif ($dataType->equalsValue(Types\DataType::DATE)) {
 			if ($value instanceof DateTime) {
 				return $value;
 			}
@@ -142,7 +142,7 @@ final class Value
 			$value = Utils\DateTime::createFromFormat(self::DATE_FORMAT, strval(self::flattenValue($value)));
 
 			return $value === false ? null : $value;
-		} elseif ($dataType->equalsValue(Types\DataType::DATA_TYPE_TIME)) {
+		} elseif ($dataType->equalsValue(Types\DataType::TIME)) {
 			if ($value instanceof DateTime) {
 				return $value;
 			}
@@ -150,7 +150,7 @@ final class Value
 			$value = Utils\DateTime::createFromFormat(self::TIME_FORMAT, strval(self::flattenValue($value)));
 
 			return $value === false ? null : $value;
-		} elseif ($dataType->equalsValue(Types\DataType::DATA_TYPE_DATETIME)) {
+		} elseif ($dataType->equalsValue(Types\DataType::DATETIME)) {
 			if ($value instanceof DateTime) {
 				return $value;
 			}
@@ -166,19 +166,19 @@ final class Value
 
 			return $formatted === false ? null : $formatted;
 		} elseif (
-			$dataType->equalsValue(Types\DataType::DATA_TYPE_BUTTON)
-			|| $dataType->equalsValue(Types\DataType::DATA_TYPE_SWITCH)
-			|| $dataType->equalsValue(Types\DataType::DATA_TYPE_COVER)
-			|| $dataType->equalsValue(Types\DataType::DATA_TYPE_ENUM)
+			$dataType->equalsValue(Types\DataType::BUTTON)
+			|| $dataType->equalsValue(Types\DataType::SWITCH)
+			|| $dataType->equalsValue(Types\DataType::COVER)
+			|| $dataType->equalsValue(Types\DataType::ENUM)
 		) {
 			/** @var class-string<Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload>|null $payloadClass */
 			$payloadClass = null;
 
-			if ($dataType->equalsValue(Types\DataType::DATA_TYPE_BUTTON)) {
+			if ($dataType->equalsValue(Types\DataType::BUTTON)) {
 				$payloadClass = Types\ButtonPayload::class;
-			} elseif ($dataType->equalsValue(Types\DataType::DATA_TYPE_SWITCH)) {
+			} elseif ($dataType->equalsValue(Types\DataType::SWITCH)) {
 				$payloadClass = Types\SwitchPayload::class;
-			} elseif ($dataType->equalsValue(Types\DataType::DATA_TYPE_COVER)) {
+			} elseif ($dataType->equalsValue(Types\DataType::COVER)) {
 				$payloadClass = Types\CoverPayload::class;
 			}
 
@@ -192,9 +192,9 @@ final class Value
 					if (
 						$payloadClass !== null
 						&& (
-							$dataType->equalsValue(Types\DataType::DATA_TYPE_BUTTON)
-							|| $dataType->equalsValue(Types\DataType::DATA_TYPE_SWITCH)
-							|| $dataType->equalsValue(Types\DataType::DATA_TYPE_COVER)
+							$dataType->equalsValue(Types\DataType::BUTTON)
+							|| $dataType->equalsValue(Types\DataType::SWITCH)
+							|| $dataType->equalsValue(Types\DataType::COVER)
 						)
 					) {
 						return $payloadClass::isValidValue(self::flattenValue($value))
@@ -234,9 +234,9 @@ final class Value
 					if (
 						$payloadClass !== null
 						&& (
-							$dataType->equalsValue(Types\DataType::DATA_TYPE_BUTTON)
-							|| $dataType->equalsValue(Types\DataType::DATA_TYPE_SWITCH)
-							|| $dataType->equalsValue(Types\DataType::DATA_TYPE_COVER)
+							$dataType->equalsValue(Types\DataType::BUTTON)
+							|| $dataType->equalsValue(Types\DataType::SWITCH)
+							|| $dataType->equalsValue(Types\DataType::COVER)
 						)
 					) {
 						return $payloadClass::isValidValue(self::flattenValue($filtered[0][0]->getValue()))
@@ -269,9 +269,9 @@ final class Value
 				if (
 					$payloadClass !== null
 					&& (
-						$dataType->equalsValue(Types\DataType::DATA_TYPE_BUTTON)
-						|| $dataType->equalsValue(Types\DataType::DATA_TYPE_SWITCH)
-						|| $dataType->equalsValue(Types\DataType::DATA_TYPE_COVER)
+						$dataType->equalsValue(Types\DataType::BUTTON)
+						|| $dataType->equalsValue(Types\DataType::SWITCH)
+						|| $dataType->equalsValue(Types\DataType::COVER)
 					)
 				) {
 					if ($payloadClass::isValidValue(self::flattenValue($value))) {
@@ -307,43 +307,43 @@ final class Value
 			return null;
 		}
 
-		if ($dataType->equalsValue(Types\DataType::DATA_TYPE_BOOLEAN)) {
+		if ($dataType->equalsValue(Types\DataType::BOOLEAN)) {
 			return in_array(Utils\Strings::lower(strval($value)), self::BOOL_TRUE_VALUES, true);
 		}
 
-		if ($dataType->equalsValue(Types\DataType::DATA_TYPE_FLOAT)) {
+		if ($dataType->equalsValue(Types\DataType::FLOAT)) {
 			return floatval($value);
 		}
 
 		if (
-			$dataType->equalsValue(Types\DataType::DATA_TYPE_UCHAR)
-			|| $dataType->equalsValue(Types\DataType::DATA_TYPE_CHAR)
-			|| $dataType->equalsValue(Types\DataType::DATA_TYPE_USHORT)
-			|| $dataType->equalsValue(Types\DataType::DATA_TYPE_SHORT)
-			|| $dataType->equalsValue(Types\DataType::DATA_TYPE_UINT)
-			|| $dataType->equalsValue(Types\DataType::DATA_TYPE_INT)
+			$dataType->equalsValue(Types\DataType::UCHAR)
+			|| $dataType->equalsValue(Types\DataType::CHAR)
+			|| $dataType->equalsValue(Types\DataType::USHORT)
+			|| $dataType->equalsValue(Types\DataType::SHORT)
+			|| $dataType->equalsValue(Types\DataType::UINT)
+			|| $dataType->equalsValue(Types\DataType::INT)
 		) {
 			return intval($value);
 		}
 
-		if ($dataType->equalsValue(Types\DataType::DATA_TYPE_STRING)) {
+		if ($dataType->equalsValue(Types\DataType::STRING)) {
 			return strval($value);
 		}
 
 		if (
-			$dataType->equalsValue(Types\DataType::DATA_TYPE_BUTTON)
-			|| $dataType->equalsValue(Types\DataType::DATA_TYPE_SWITCH)
-			|| $dataType->equalsValue(Types\DataType::DATA_TYPE_COVER)
-			|| $dataType->equalsValue(Types\DataType::DATA_TYPE_ENUM)
+			$dataType->equalsValue(Types\DataType::BUTTON)
+			|| $dataType->equalsValue(Types\DataType::SWITCH)
+			|| $dataType->equalsValue(Types\DataType::COVER)
+			|| $dataType->equalsValue(Types\DataType::ENUM)
 		) {
 			/** @var class-string<Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload>|null $payloadClass */
 			$payloadClass = null;
 
-			if ($dataType->equalsValue(Types\DataType::DATA_TYPE_BUTTON)) {
+			if ($dataType->equalsValue(Types\DataType::BUTTON)) {
 				$payloadClass = Types\ButtonPayload::class;
-			} elseif ($dataType->equalsValue(Types\DataType::DATA_TYPE_SWITCH)) {
+			} elseif ($dataType->equalsValue(Types\DataType::SWITCH)) {
 				$payloadClass = Types\SwitchPayload::class;
-			} elseif ($dataType->equalsValue(Types\DataType::DATA_TYPE_COVER)) {
+			} elseif ($dataType->equalsValue(Types\DataType::COVER)) {
 				$payloadClass = Types\CoverPayload::class;
 			}
 
@@ -357,9 +357,9 @@ final class Value
 					if (
 						$payloadClass !== null
 						&& (
-							$dataType->equalsValue(Types\DataType::DATA_TYPE_BUTTON)
-							|| $dataType->equalsValue(Types\DataType::DATA_TYPE_SWITCH)
-							|| $dataType->equalsValue(Types\DataType::DATA_TYPE_COVER)
+							$dataType->equalsValue(Types\DataType::BUTTON)
+							|| $dataType->equalsValue(Types\DataType::SWITCH)
+							|| $dataType->equalsValue(Types\DataType::COVER)
 						)
 					) {
 						return $payloadClass::isValidValue(self::flattenValue($value))
@@ -393,9 +393,9 @@ final class Value
 					if (
 						$payloadClass !== null
 						&& (
-							$dataType->equalsValue(Types\DataType::DATA_TYPE_BUTTON)
-							|| $dataType->equalsValue(Types\DataType::DATA_TYPE_SWITCH)
-							|| $dataType->equalsValue(Types\DataType::DATA_TYPE_COVER)
+							$dataType->equalsValue(Types\DataType::BUTTON)
+							|| $dataType->equalsValue(Types\DataType::SWITCH)
+							|| $dataType->equalsValue(Types\DataType::COVER)
 						)
 					) {
 						return $payloadClass::isValidValue(self::flattenValue($filtered[0][0]->getValue()))
@@ -430,7 +430,7 @@ final class Value
 			return null;
 		}
 
-		if ($dataType->equalsValue(Types\DataType::DATA_TYPE_BOOLEAN)) {
+		if ($dataType->equalsValue(Types\DataType::BOOLEAN)) {
 			if (is_bool($value)) {
 				return $value;
 			}
@@ -438,7 +438,7 @@ final class Value
 			return null;
 		}
 
-		if ($dataType->equalsValue(Types\DataType::DATA_TYPE_FLOAT)) {
+		if ($dataType->equalsValue(Types\DataType::FLOAT)) {
 			if (is_numeric($value)) {
 				return floatval($value);
 			}
@@ -447,12 +447,12 @@ final class Value
 		}
 
 		if (
-			$dataType->equalsValue(Types\DataType::DATA_TYPE_UCHAR)
-			|| $dataType->equalsValue(Types\DataType::DATA_TYPE_CHAR)
-			|| $dataType->equalsValue(Types\DataType::DATA_TYPE_USHORT)
-			|| $dataType->equalsValue(Types\DataType::DATA_TYPE_SHORT)
-			|| $dataType->equalsValue(Types\DataType::DATA_TYPE_UINT)
-			|| $dataType->equalsValue(Types\DataType::DATA_TYPE_INT)
+			$dataType->equalsValue(Types\DataType::UCHAR)
+			|| $dataType->equalsValue(Types\DataType::CHAR)
+			|| $dataType->equalsValue(Types\DataType::USHORT)
+			|| $dataType->equalsValue(Types\DataType::SHORT)
+			|| $dataType->equalsValue(Types\DataType::UINT)
+			|| $dataType->equalsValue(Types\DataType::INT)
 		) {
 			if (is_numeric($value)) {
 				return intval($value);
@@ -461,7 +461,7 @@ final class Value
 			return null;
 		}
 
-		if ($dataType->equalsValue(Types\DataType::DATA_TYPE_STRING)) {
+		if ($dataType->equalsValue(Types\DataType::STRING)) {
 			if (is_string($value)) {
 				return $value;
 			}
@@ -469,7 +469,7 @@ final class Value
 			return null;
 		}
 
-		if ($dataType->equalsValue(Types\DataType::DATA_TYPE_DATE)) {
+		if ($dataType->equalsValue(Types\DataType::DATE)) {
 			if ($value instanceof DateTime) {
 				return $value->format(self::DATE_FORMAT);
 			}
@@ -479,7 +479,7 @@ final class Value
 			return $value === false ? null : $value->format(self::DATE_FORMAT);
 		}
 
-		if ($dataType->equalsValue(Types\DataType::DATA_TYPE_TIME)) {
+		if ($dataType->equalsValue(Types\DataType::TIME)) {
 			if ($value instanceof DateTime) {
 				return $value->format(self::TIME_FORMAT);
 			}
@@ -489,7 +489,7 @@ final class Value
 			return $value === false ? null : $value->format(self::TIME_FORMAT);
 		}
 
-		if ($dataType->equalsValue(Types\DataType::DATA_TYPE_DATETIME)) {
+		if ($dataType->equalsValue(Types\DataType::DATETIME)) {
 			if ($value instanceof DateTime) {
 				return $value->format(DateTimeInterface::ATOM);
 			}
@@ -507,19 +507,19 @@ final class Value
 		}
 
 		if (
-			$dataType->equalsValue(Types\DataType::DATA_TYPE_BUTTON)
-			|| $dataType->equalsValue(Types\DataType::DATA_TYPE_SWITCH)
-			|| $dataType->equalsValue(Types\DataType::DATA_TYPE_COVER)
-			|| $dataType->equalsValue(Types\DataType::DATA_TYPE_ENUM)
+			$dataType->equalsValue(Types\DataType::BUTTON)
+			|| $dataType->equalsValue(Types\DataType::SWITCH)
+			|| $dataType->equalsValue(Types\DataType::COVER)
+			|| $dataType->equalsValue(Types\DataType::ENUM)
 		) {
 			/** @var class-string<Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload>|null $payloadClass */
 			$payloadClass = null;
 
-			if ($dataType->equalsValue(Types\DataType::DATA_TYPE_BUTTON)) {
+			if ($dataType->equalsValue(Types\DataType::BUTTON)) {
 				$payloadClass = Types\ButtonPayload::class;
-			} elseif ($dataType->equalsValue(Types\DataType::DATA_TYPE_SWITCH)) {
+			} elseif ($dataType->equalsValue(Types\DataType::SWITCH)) {
 				$payloadClass = Types\SwitchPayload::class;
-			} elseif ($dataType->equalsValue(Types\DataType::DATA_TYPE_COVER)) {
+			} elseif ($dataType->equalsValue(Types\DataType::COVER)) {
 				$payloadClass = Types\CoverPayload::class;
 			}
 
@@ -585,13 +585,13 @@ final class Value
 
 		if (
 			in_array($dataType->getValue(), [
-				Types\DataType::DATA_TYPE_CHAR,
-				Types\DataType::DATA_TYPE_UCHAR,
-				Types\DataType::DATA_TYPE_SHORT,
-				Types\DataType::DATA_TYPE_USHORT,
-				Types\DataType::DATA_TYPE_INT,
-				Types\DataType::DATA_TYPE_UINT,
-				Types\DataType::DATA_TYPE_FLOAT,
+				Types\DataType::CHAR,
+				Types\DataType::UCHAR,
+				Types\DataType::SHORT,
+				Types\DataType::USHORT,
+				Types\DataType::INT,
+				Types\DataType::UINT,
+				Types\DataType::FLOAT,
 			], true)
 			&& (
 				is_int($value)
@@ -607,7 +607,7 @@ final class Value
 
 				$value = round(floatval($value), $scale);
 
-				$value = $dataType->equalsValue(Types\DataType::DATA_TYPE_FLOAT)
+				$value = $dataType->equalsValue(Types\DataType::FLOAT)
 					? $value
 					: intval($value);
 			}
@@ -628,13 +628,13 @@ final class Value
 
 		if (
 			in_array($dataType->getValue(), [
-				Types\DataType::DATA_TYPE_CHAR,
-				Types\DataType::DATA_TYPE_UCHAR,
-				Types\DataType::DATA_TYPE_SHORT,
-				Types\DataType::DATA_TYPE_USHORT,
-				Types\DataType::DATA_TYPE_INT,
-				Types\DataType::DATA_TYPE_UINT,
-				Types\DataType::DATA_TYPE_FLOAT,
+				Types\DataType::CHAR,
+				Types\DataType::UCHAR,
+				Types\DataType::SHORT,
+				Types\DataType::USHORT,
+				Types\DataType::INT,
+				Types\DataType::UINT,
+				Types\DataType::FLOAT,
 			], true)
 			&& (
 				is_int($value)
@@ -650,7 +650,7 @@ final class Value
 
 				$value = round(floatval($value));
 
-				$value = $dataType->equalsValue(Types\DataType::DATA_TYPE_FLOAT)
+				$value = $dataType->equalsValue(Types\DataType::FLOAT)
 					? $value
 					: intval($value);
 			}
@@ -681,26 +681,26 @@ final class Value
 			return null;
 		}
 
-		if ($dataType->equalsValue(Types\DataType::DATA_TYPE_BOOLEAN)) {
+		if ($dataType->equalsValue(Types\DataType::BOOLEAN)) {
 			return in_array(Utils\Strings::lower(strval($value)), self::BOOL_TRUE_VALUES, true);
 		}
 
-		if ($dataType->equalsValue(Types\DataType::DATA_TYPE_FLOAT)) {
+		if ($dataType->equalsValue(Types\DataType::FLOAT)) {
 			return floatval($value);
 		}
 
 		if (
-			$dataType->equalsValue(Types\DataType::DATA_TYPE_UCHAR)
-			|| $dataType->equalsValue(Types\DataType::DATA_TYPE_CHAR)
-			|| $dataType->equalsValue(Types\DataType::DATA_TYPE_USHORT)
-			|| $dataType->equalsValue(Types\DataType::DATA_TYPE_SHORT)
-			|| $dataType->equalsValue(Types\DataType::DATA_TYPE_UINT)
-			|| $dataType->equalsValue(Types\DataType::DATA_TYPE_INT)
+			$dataType->equalsValue(Types\DataType::UCHAR)
+			|| $dataType->equalsValue(Types\DataType::CHAR)
+			|| $dataType->equalsValue(Types\DataType::USHORT)
+			|| $dataType->equalsValue(Types\DataType::SHORT)
+			|| $dataType->equalsValue(Types\DataType::UINT)
+			|| $dataType->equalsValue(Types\DataType::INT)
 		) {
 			return intval($value);
 		}
 
-		if ($dataType->equalsValue(Types\DataType::DATA_TYPE_STRING)) {
+		if ($dataType->equalsValue(Types\DataType::STRING)) {
 			return strval($value);
 		}
 
@@ -717,25 +717,25 @@ final class Value
 		}
 
 		if (
-			$dataType->equalsValue(Types\DataTypeShort::DATA_TYPE_CHAR)
-			|| $dataType->equalsValue(Types\DataTypeShort::DATA_TYPE_UCHAR)
-			|| $dataType->equalsValue(Types\DataTypeShort::DATA_TYPE_SHORT)
-			|| $dataType->equalsValue(Types\DataTypeShort::DATA_TYPE_USHORT)
-			|| $dataType->equalsValue(Types\DataTypeShort::DATA_TYPE_INT)
-			|| $dataType->equalsValue(Types\DataTypeShort::DATA_TYPE_UINT)
+			$dataType->equalsValue(Types\DataTypeShort::CHAR)
+			|| $dataType->equalsValue(Types\DataTypeShort::UCHAR)
+			|| $dataType->equalsValue(Types\DataTypeShort::SHORT)
+			|| $dataType->equalsValue(Types\DataTypeShort::USHORT)
+			|| $dataType->equalsValue(Types\DataTypeShort::INT)
+			|| $dataType->equalsValue(Types\DataTypeShort::UINT)
 		) {
 			return intval(self::flattenValue($value));
-		} elseif ($dataType->equalsValue(Types\DataTypeShort::DATA_TYPE_FLOAT)) {
+		} elseif ($dataType->equalsValue(Types\DataTypeShort::FLOAT)) {
 			return floatval(self::flattenValue($value));
-		} elseif ($dataType->equalsValue(Types\DataTypeShort::DATA_TYPE_STRING)) {
+		} elseif ($dataType->equalsValue(Types\DataTypeShort::STRING)) {
 			return strval(self::flattenValue($value));
-		} elseif ($dataType->equalsValue(Types\DataTypeShort::DATA_TYPE_BOOLEAN)) {
+		} elseif ($dataType->equalsValue(Types\DataTypeShort::BOOLEAN)) {
 			return in_array(
 				Utils\Strings::lower(strval(self::flattenValue($value))),
 				self::BOOL_TRUE_VALUES,
 				true,
 			);
-		} elseif ($dataType->equalsValue(Types\DataTypeShort::DATA_TYPE_BUTTON)) {
+		} elseif ($dataType->equalsValue(Types\DataTypeShort::BUTTON)) {
 			if ($value instanceof Types\ButtonPayload) {
 				return $value;
 			}
@@ -743,7 +743,7 @@ final class Value
 			return Types\ButtonPayload::isValidValue(self::flattenValue($value))
 				? Types\ButtonPayload::get(self::flattenValue($value))
 				: false;
-		} elseif ($dataType->equalsValue(Types\DataTypeShort::DATA_TYPE_SWITCH)) {
+		} elseif ($dataType->equalsValue(Types\DataTypeShort::SWITCH)) {
 			if ($value instanceof Types\SwitchPayload) {
 				return $value;
 			}
@@ -751,7 +751,7 @@ final class Value
 			return Types\SwitchPayload::isValidValue(self::flattenValue($value))
 				? Types\SwitchPayload::get(self::flattenValue($value))
 				: false;
-		} elseif ($dataType->equalsValue(Types\DataTypeShort::DATA_TYPE_COVER)) {
+		} elseif ($dataType->equalsValue(Types\DataTypeShort::COVER)) {
 			if ($value instanceof Types\CoverPayload) {
 				return $value;
 			}
@@ -759,7 +759,7 @@ final class Value
 			return Types\CoverPayload::isValidValue(self::flattenValue($value))
 				? Types\CoverPayload::get(self::flattenValue($value))
 				: false;
-		} elseif ($dataType->equalsValue(Types\DataTypeShort::DATA_TYPE_DATE)) {
+		} elseif ($dataType->equalsValue(Types\DataTypeShort::DATE)) {
 			if ($value instanceof DateTime) {
 				return $value;
 			}
@@ -767,7 +767,7 @@ final class Value
 			$value = Utils\DateTime::createFromFormat(self::DATE_FORMAT, strval(self::flattenValue($value)));
 
 			return $value === false ? null : $value;
-		} elseif ($dataType->equalsValue(Types\DataTypeShort::DATA_TYPE_TIME)) {
+		} elseif ($dataType->equalsValue(Types\DataTypeShort::TIME)) {
 			if ($value instanceof DateTime) {
 				return $value;
 			}
@@ -775,7 +775,7 @@ final class Value
 			$value = Utils\DateTime::createFromFormat(self::TIME_FORMAT, strval(self::flattenValue($value)));
 
 			return $value === false ? null : $value;
-		} elseif ($dataType->equalsValue(Types\DataTypeShort::DATA_TYPE_DATETIME)) {
+		} elseif ($dataType->equalsValue(Types\DataTypeShort::DATETIME)) {
 			if ($value instanceof DateTime) {
 				return $value;
 			}

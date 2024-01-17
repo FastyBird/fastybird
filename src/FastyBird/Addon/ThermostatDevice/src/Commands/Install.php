@@ -228,7 +228,7 @@ class Install extends Console\Command\Command
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
 				'identifier' => VirtualTypes\DevicePropertyIdentifier::MODEL,
 				'device' => $device,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 				'value' => Entities\ThermostatDevice::TYPE,
 			]));
 
@@ -249,7 +249,7 @@ class Install extends Console\Command\Command
 					'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 					'identifier' => Types\ChannelPropertyIdentifier::HVAC_MODE,
 					'channel' => $configurationChannel,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
 					'format' => array_merge(
 						[Types\HvacMode::OFF],
 						$modes,
@@ -269,7 +269,7 @@ class Install extends Console\Command\Command
 					'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 					'identifier' => Types\ChannelPropertyIdentifier::HVAC_STATE,
 					'channel' => $configurationChannel,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
 					'format' => array_merge(
 						[Types\HvacState::OFF, Types\HvacState::INACTIVE],
 						array_filter(
@@ -296,7 +296,7 @@ class Install extends Console\Command\Command
 					'entity' => DevicesEntities\Channels\Properties\Variable::class,
 					'identifier' => Types\ChannelPropertyIdentifier::UNIT,
 					'channel' => $configurationChannel,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
 					'format' => [Types\Unit::CELSIUS, Types\Unit::FAHRENHEIT],
 					'value' => $unit->getValue(),
 				]),
@@ -333,8 +333,8 @@ class Install extends Console\Command\Command
 							$heaters,
 						),
 						[
-							MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN),
-							MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_SWITCH),
+							MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN),
+							MetadataTypes\DataType::get(MetadataTypes\DataType::SWITCH),
 						],
 					);
 
@@ -351,7 +351,7 @@ class Install extends Console\Command\Command
 									Types\ChannelPropertyIdentifier::HEATER_ACTOR,
 								),
 								'channel' => $actorsChannel,
-								'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN),
+								'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN),
 								'format' => null,
 								'unit' => null,
 								'invalid' => null,
@@ -391,8 +391,8 @@ class Install extends Console\Command\Command
 							$coolers,
 						),
 						[
-							MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN),
-							MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_SWITCH),
+							MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN),
+							MetadataTypes\DataType::get(MetadataTypes\DataType::SWITCH),
 						],
 					);
 
@@ -409,7 +409,7 @@ class Install extends Console\Command\Command
 									Types\ChannelPropertyIdentifier::COOLER_ACTOR,
 								),
 								'channel' => $actorsChannel,
-								'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN),
+								'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN),
 								'format' => null,
 								'unit' => null,
 								'invalid' => null,
@@ -457,7 +457,7 @@ class Install extends Console\Command\Command
 							$openings,
 						),
 						[
-							MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN),
+							MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN),
 						],
 					);
 
@@ -474,7 +474,7 @@ class Install extends Console\Command\Command
 									Types\ChannelPropertyIdentifier::OPENING_SENSOR,
 								),
 								'channel' => $openingsChannel,
-								'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN),
+								'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN),
 								'format' => null,
 								'unit' => null,
 								'invalid' => null,
@@ -513,13 +513,13 @@ class Install extends Console\Command\Command
 						$sensors,
 					),
 					[
-						MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
-						MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_CHAR),
-						MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
-						MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_SHORT),
-						MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_USHORT),
-						MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_INT),
-						MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UINT),
+						MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
+						MetadataTypes\DataType::get(MetadataTypes\DataType::CHAR),
+						MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
+						MetadataTypes\DataType::get(MetadataTypes\DataType::SHORT),
+						MetadataTypes\DataType::get(MetadataTypes\DataType::USHORT),
+						MetadataTypes\DataType::get(MetadataTypes\DataType::INT),
+						MetadataTypes\DataType::get(MetadataTypes\DataType::UINT),
 					],
 				);
 
@@ -536,7 +536,7 @@ class Install extends Console\Command\Command
 								Types\ChannelPropertyIdentifier::TARGET_SENSOR,
 							),
 							'channel' => $sensorsChannel,
-							'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+							'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
 							'format' => null,
 							'unit' => null,
 							'invalid' => null,
@@ -576,13 +576,13 @@ class Install extends Console\Command\Command
 							$floorSensors,
 						),
 						[
-							MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
-							MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_CHAR),
-							MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
-							MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_SHORT),
-							MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_USHORT),
-							MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_INT),
-							MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UINT),
+							MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
+							MetadataTypes\DataType::get(MetadataTypes\DataType::CHAR),
+							MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
+							MetadataTypes\DataType::get(MetadataTypes\DataType::SHORT),
+							MetadataTypes\DataType::get(MetadataTypes\DataType::USHORT),
+							MetadataTypes\DataType::get(MetadataTypes\DataType::INT),
+							MetadataTypes\DataType::get(MetadataTypes\DataType::UINT),
 						],
 					);
 
@@ -599,7 +599,7 @@ class Install extends Console\Command\Command
 									Types\ChannelPropertyIdentifier::FLOOR_SENSOR,
 								),
 								'channel' => $sensorsChannel,
-								'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+								'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
 								'format' => null,
 								'unit' => null,
 								'invalid' => null,
@@ -636,7 +636,7 @@ class Install extends Console\Command\Command
 					'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 					'identifier' => Types\ChannelPropertyIdentifier::TARGET_TEMPERATURE,
 					'channel' => $configurationChannel,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
 					'format' => [Entities\ThermostatDevice::MINIMUM_TEMPERATURE, Entities\ThermostatDevice::MAXIMUM_TEMPERATURE],
 					'unit' => null,
 					'invalid' => null,
@@ -653,7 +653,7 @@ class Install extends Console\Command\Command
 					'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 					'identifier' => Types\ChannelPropertyIdentifier::ACTUAL_TEMPERATURE,
 					'channel' => $configurationChannel,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
 					'format' => [Entities\ThermostatDevice::MINIMUM_TEMPERATURE, Entities\ThermostatDevice::MAXIMUM_TEMPERATURE],
 					'unit' => null,
 					'invalid' => null,
@@ -670,7 +670,7 @@ class Install extends Console\Command\Command
 					'entity' => DevicesEntities\Channels\Properties\Variable::class,
 					'identifier' => Types\ChannelPropertyIdentifier::LOW_TARGET_TEMPERATURE_TOLERANCE,
 					'channel' => $configurationChannel,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
 					'format' => null,
 					'unit' => null,
 					'invalid' => null,
@@ -687,7 +687,7 @@ class Install extends Console\Command\Command
 					'entity' => DevicesEntities\Channels\Properties\Variable::class,
 					'identifier' => Types\ChannelPropertyIdentifier::HIGH_TARGET_TEMPERATURE_TOLERANCE,
 					'channel' => $configurationChannel,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
 					'format' => null,
 					'unit' => null,
 					'invalid' => null,
@@ -707,7 +707,7 @@ class Install extends Console\Command\Command
 						'entity' => DevicesEntities\Channels\Properties\Variable::class,
 						'identifier' => Types\ChannelPropertyIdentifier::MAXIMUM_FLOOR_TEMPERATURE,
 						'channel' => $configurationChannel,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
 						'format' => [0, Entities\ThermostatDevice::MAXIMUM_TEMPERATURE],
 						'unit' => null,
 						'invalid' => null,
@@ -724,7 +724,7 @@ class Install extends Console\Command\Command
 						'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 						'identifier' => Types\ChannelPropertyIdentifier::ACTUAL_FLOOR_TEMPERATURE,
 						'channel' => $configurationChannel,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
 						'format' => [0, Entities\ThermostatDevice::MAXIMUM_TEMPERATURE],
 						'unit' => null,
 						'invalid' => null,
@@ -749,7 +749,7 @@ class Install extends Console\Command\Command
 						'entity' => DevicesEntities\Channels\Properties\Variable::class,
 						'identifier' => Types\ChannelPropertyIdentifier::HEATING_THRESHOLD_TEMPERATURE,
 						'channel' => $configurationChannel,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
 						'format' => [Entities\ThermostatDevice::MINIMUM_TEMPERATURE, Entities\ThermostatDevice::MAXIMUM_TEMPERATURE],
 						'unit' => null,
 						'invalid' => null,
@@ -772,7 +772,7 @@ class Install extends Console\Command\Command
 						'entity' => DevicesEntities\Channels\Properties\Variable::class,
 						'identifier' => Types\ChannelPropertyIdentifier::COOLING_THRESHOLD_TEMPERATURE,
 						'channel' => $configurationChannel,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
 						'format' => [Entities\ThermostatDevice::MINIMUM_TEMPERATURE, Entities\ThermostatDevice::MAXIMUM_TEMPERATURE],
 						'unit' => null,
 						'invalid' => null,
@@ -792,7 +792,7 @@ class Install extends Console\Command\Command
 					'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 					'identifier' => Types\ChannelPropertyIdentifier::PRESET_MODE,
 					'channel' => $configurationChannel,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
 					'format' => array_merge(
 						[Types\Preset::MANUAL],
 						$presets,
@@ -832,7 +832,7 @@ class Install extends Console\Command\Command
 							'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 							'identifier' => Types\ChannelPropertyIdentifier::TARGET_TEMPERATURE,
 							'channel' => $presetChannel,
-							'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+							'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
 							'format' => [Entities\ThermostatDevice::MINIMUM_TEMPERATURE, Entities\ThermostatDevice::MAXIMUM_TEMPERATURE],
 							'unit' => null,
 							'invalid' => null,
@@ -857,7 +857,7 @@ class Install extends Console\Command\Command
 							'entity' => DevicesEntities\Channels\Properties\Variable::class,
 							'identifier' => Types\ChannelPropertyIdentifier::HEATING_THRESHOLD_TEMPERATURE,
 							'channel' => $presetChannel,
-							'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+							'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
 							'format' => [Entities\ThermostatDevice::MINIMUM_TEMPERATURE, Entities\ThermostatDevice::MAXIMUM_TEMPERATURE],
 							'unit' => null,
 							'invalid' => null,
@@ -880,7 +880,7 @@ class Install extends Console\Command\Command
 							'entity' => DevicesEntities\Channels\Properties\Variable::class,
 							'identifier' => Types\ChannelPropertyIdentifier::COOLING_THRESHOLD_TEMPERATURE,
 							'channel' => $presetChannel,
-							'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+							'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
 							'format' => [Entities\ThermostatDevice::MINIMUM_TEMPERATURE, Entities\ThermostatDevice::MAXIMUM_TEMPERATURE],
 							'unit' => null,
 							'invalid' => null,
@@ -907,7 +907,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
 					'type' => 'thermostat-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -1177,12 +1177,12 @@ class Install extends Console\Command\Command
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
 					'identifier' => VirtualTypes\DevicePropertyIdentifier::MODEL,
 					'device' => $device,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 					'value' => Entities\ThermostatDevice::TYPE,
 				]));
 			} else {
 				$this->devicesPropertiesManager->update($deviceModelProperty, Utils\ArrayHash::from([
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 					'format' => null,
 					'unit' => null,
 					'invalid' => null,
@@ -1208,7 +1208,7 @@ class Install extends Console\Command\Command
 					'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 					'identifier' => Types\ChannelPropertyIdentifier::HVAC_MODE,
 					'channel' => $thermostatChannel,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
 					'format' => array_merge(
 						[Types\HvacMode::OFF],
 						$modes,
@@ -1229,7 +1229,7 @@ class Install extends Console\Command\Command
 					'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 					'identifier' => Types\ChannelPropertyIdentifier::HVAC_STATE,
 					'channel' => $thermostatChannel,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
 					'format' => array_merge(
 						[Types\HvacState::OFF, Types\HvacState::INACTIVE],
 						array_filter(
@@ -1257,7 +1257,7 @@ class Install extends Console\Command\Command
 					'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 					'identifier' => Types\ChannelPropertyIdentifier::TARGET_TEMPERATURE,
 					'channel' => $thermostatChannel,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
 					'format' => [Entities\ThermostatDevice::MINIMUM_TEMPERATURE, Entities\ThermostatDevice::MAXIMUM_TEMPERATURE],
 					'unit' => null,
 					'invalid' => null,
@@ -1275,7 +1275,7 @@ class Install extends Console\Command\Command
 					'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 					'identifier' => Types\ChannelPropertyIdentifier::ACTUAL_TEMPERATURE,
 					'channel' => $thermostatChannel,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
 					'format' => [Entities\ThermostatDevice::MINIMUM_TEMPERATURE, Entities\ThermostatDevice::MAXIMUM_TEMPERATURE],
 					'unit' => null,
 					'invalid' => null,
@@ -1294,7 +1294,7 @@ class Install extends Console\Command\Command
 						'entity' => DevicesEntities\Channels\Properties\Variable::class,
 						'identifier' => Types\ChannelPropertyIdentifier::MAXIMUM_FLOOR_TEMPERATURE,
 						'channel' => $thermostatChannel,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
 						'format' => [0, Entities\ThermostatDevice::MAXIMUM_TEMPERATURE],
 						'unit' => null,
 						'invalid' => null,
@@ -1312,7 +1312,7 @@ class Install extends Console\Command\Command
 						'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 						'identifier' => Types\ChannelPropertyIdentifier::ACTUAL_FLOOR_TEMPERATURE,
 						'channel' => $thermostatChannel,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
 						'format' => [0, Entities\ThermostatDevice::MAXIMUM_TEMPERATURE],
 						'unit' => null,
 						'invalid' => null,
@@ -1340,7 +1340,7 @@ class Install extends Console\Command\Command
 						'entity' => DevicesEntities\Channels\Properties\Variable::class,
 						'identifier' => Types\ChannelPropertyIdentifier::HEATING_THRESHOLD_TEMPERATURE,
 						'channel' => $thermostatChannel,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
 						'format' => [Entities\ThermostatDevice::MINIMUM_TEMPERATURE, Entities\ThermostatDevice::MAXIMUM_TEMPERATURE],
 						'unit' => null,
 						'invalid' => null,
@@ -1358,7 +1358,7 @@ class Install extends Console\Command\Command
 						'entity' => DevicesEntities\Channels\Properties\Variable::class,
 						'identifier' => Types\ChannelPropertyIdentifier::COOLING_THRESHOLD_TEMPERATURE,
 						'channel' => $thermostatChannel,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
 						'format' => [Entities\ThermostatDevice::MINIMUM_TEMPERATURE, Entities\ThermostatDevice::MAXIMUM_TEMPERATURE],
 						'unit' => null,
 						'invalid' => null,
@@ -1385,7 +1385,7 @@ class Install extends Console\Command\Command
 					'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 					'identifier' => Types\ChannelPropertyIdentifier::PRESET_MODE,
 					'channel' => $thermostatChannel,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
 					'format' => array_merge(
 						[Types\Preset::MANUAL],
 						$presets,
@@ -1435,7 +1435,7 @@ class Install extends Console\Command\Command
 									'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 									'identifier' => Types\ChannelPropertyIdentifier::TARGET_TEMPERATURE,
 									'channel' => $presetChannel,
-									'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+									'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
 									'format' => [Entities\ThermostatDevice::MINIMUM_TEMPERATURE, Entities\ThermostatDevice::MAXIMUM_TEMPERATURE],
 									'unit' => null,
 									'invalid' => null,
@@ -1460,7 +1460,7 @@ class Install extends Console\Command\Command
 									'entity' => DevicesEntities\Channels\Properties\Variable::class,
 									'identifier' => Types\ChannelPropertyIdentifier::HEATING_THRESHOLD_TEMPERATURE,
 									'channel' => $presetChannel,
-									'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+									'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
 									'format' => [Entities\ThermostatDevice::MINIMUM_TEMPERATURE, Entities\ThermostatDevice::MAXIMUM_TEMPERATURE],
 									'unit' => null,
 									'invalid' => null,
@@ -1483,7 +1483,7 @@ class Install extends Console\Command\Command
 									'entity' => DevicesEntities\Channels\Properties\Variable::class,
 									'identifier' => Types\ChannelPropertyIdentifier::COOLING_THRESHOLD_TEMPERATURE,
 									'channel' => $presetChannel,
-									'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+									'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
 									'format' => [Entities\ThermostatDevice::MINIMUM_TEMPERATURE, Entities\ThermostatDevice::MAXIMUM_TEMPERATURE],
 									'unit' => null,
 									'invalid' => null,
@@ -1516,7 +1516,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
 					'type' => 'thermostat-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -1661,7 +1661,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
 					'type' => 'initialize-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -1798,8 +1798,8 @@ class Install extends Console\Command\Command
 				),
 			),
 			[
-				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_SWITCH),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::SWITCH),
 			],
 		);
 
@@ -1820,7 +1820,7 @@ class Install extends Console\Command\Command
 				),
 				'name' => $name,
 				'channel' => $actorsChannel,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN),
+				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN),
 				'format' => null,
 				'unit' => null,
 				'invalid' => null,
@@ -1845,7 +1845,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
 					'type' => 'thermostat-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -1900,8 +1900,8 @@ class Install extends Console\Command\Command
 			$io,
 			[],
 			[
-				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_SWITCH),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::SWITCH),
 			],
 			$parent,
 		);
@@ -1934,7 +1934,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
 					'type' => 'thermostat-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -2066,7 +2066,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 					'type' => 'thermostat-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -2105,40 +2105,40 @@ class Install extends Console\Command\Command
 
 		if ($sensorType->equalsValue(Types\ChannelPropertyIdentifier::TARGET_SENSOR)) {
 			$dataTypes = [
-				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_CHAR),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_SHORT),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_USHORT),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_INT),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UINT),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::CHAR),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::SHORT),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::USHORT),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::INT),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::UINT),
 			];
-			$dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT);
+			$dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT);
 
 		} elseif ($sensorType->equalsValue(Types\ChannelPropertyIdentifier::FLOOR_SENSOR)) {
 			$dataTypes = [
-				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_CHAR),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_SHORT),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_USHORT),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_INT),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UINT),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::CHAR),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::SHORT),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::USHORT),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::INT),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::UINT),
 			];
-			$dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT);
+			$dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT);
 
 		} elseif ($sensorType->equalsValue(Types\ChannelPropertyIdentifier::OPENING_SENSOR)) {
 			$dataTypes = [
-				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN),
 			];
-			$dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN);
+			$dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN);
 
 		} else {
 			// Log caught exception
 			$this->logger->error(
 				'Invalid sensor type selected',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 					'type' => 'thermostat-cmd',
 				],
 			);
@@ -2207,7 +2207,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
 					'type' => 'thermostat-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -2263,13 +2263,13 @@ class Install extends Console\Command\Command
 			$io,
 			[],
 			[
-				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_CHAR),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_SHORT),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_USHORT),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_INT),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UINT),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::CHAR),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::SHORT),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::USHORT),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::INT),
+				MetadataTypes\DataType::get(MetadataTypes\DataType::UINT),
 			],
 			$parent,
 		);
@@ -2302,7 +2302,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
 					'type' => 'thermostat-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -2448,7 +2448,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 					'type' => 'thermostat-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -2575,7 +2575,7 @@ class Install extends Console\Command\Command
 					'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 					'identifier' => Types\ChannelPropertyIdentifier::TARGET_TEMPERATURE,
 					'channel' => $channel,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
 					'format' => [Entities\ThermostatDevice::MINIMUM_TEMPERATURE, Entities\ThermostatDevice::MAXIMUM_TEMPERATURE],
 					'unit' => null,
 					'invalid' => null,
@@ -2594,7 +2594,7 @@ class Install extends Console\Command\Command
 						'entity' => DevicesEntities\Channels\Properties\Variable::class,
 						'identifier' => Types\ChannelPropertyIdentifier::HEATING_THRESHOLD_TEMPERATURE,
 						'channel' => $channel,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
 						'format' => [Entities\ThermostatDevice::MINIMUM_TEMPERATURE, Entities\ThermostatDevice::MAXIMUM_TEMPERATURE],
 						'unit' => null,
 						'invalid' => null,
@@ -2612,7 +2612,7 @@ class Install extends Console\Command\Command
 						'entity' => DevicesEntities\Channels\Properties\Variable::class,
 						'identifier' => Types\ChannelPropertyIdentifier::COOLING_THRESHOLD_TEMPERATURE,
 						'channel' => $channel,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
 						'format' => [Entities\ThermostatDevice::MINIMUM_TEMPERATURE, Entities\ThermostatDevice::MAXIMUM_TEMPERATURE],
 						'unit' => null,
 						'invalid' => null,
@@ -2639,7 +2639,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
 					'type' => 'thermostat-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],

@@ -60,7 +60,7 @@ final class IdentitiesRepository
 	{
 		$findQuery = new Queries\Entities\FindIdentities();
 		$findQuery->forAccount($account);
-		$findQuery->inState(MetadataTypes\IdentityState::STATE_ACTIVE);
+		$findQuery->inState(MetadataTypes\IdentityState::ACTIVE);
 
 		return $this->findOneBy($findQuery);
 	}
@@ -73,7 +73,7 @@ final class IdentitiesRepository
 	{
 		$findQuery = new Queries\Entities\FindIdentities();
 		$findQuery->byUid($uid);
-		$findQuery->inState(MetadataTypes\IdentityState::STATE_ACTIVE);
+		$findQuery->inState(MetadataTypes\IdentityState::ACTIVE);
 
 		return $this->findOneBy($findQuery);
 	}

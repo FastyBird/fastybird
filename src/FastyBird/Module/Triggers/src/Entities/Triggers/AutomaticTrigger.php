@@ -53,7 +53,7 @@ class AutomaticTrigger extends Trigger
 
 	public function getType(): MetadataTypes\TriggerType
 	{
-		return MetadataTypes\TriggerType::get(MetadataTypes\TriggerType::TYPE_AUTOMATIC);
+		return MetadataTypes\TriggerType::get(MetadataTypes\TriggerType::AUTOMATIC);
 	}
 
 	/**

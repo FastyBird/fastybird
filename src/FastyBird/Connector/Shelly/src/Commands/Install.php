@@ -212,7 +212,7 @@ class Install extends Console\Command\Command
 			$this->propertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 				'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
+				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
 				'value' => $mode->getValue(),
 				'format' => [
 					Types\ClientMode::LOCAL,
@@ -227,7 +227,7 @@ class Install extends Console\Command\Command
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::CLOUD_AUTH_KEY,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 					'value' => $cloudAuthKey,
 					'connector' => $connector,
 				]));
@@ -235,7 +235,7 @@ class Install extends Console\Command\Command
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::CLOUD_SERVER,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 					'value' => $cloudServer,
 					'connector' => $connector,
 				]));
@@ -255,7 +255,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
 					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -423,7 +423,7 @@ class Install extends Console\Command\Command
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
 					'value' => $mode->getValue(),
 					'format' => [
 						Types\ClientMode::LOCAL,
@@ -451,7 +451,7 @@ class Install extends Console\Command\Command
 					$this->propertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 						'identifier' => Types\ConnectorPropertyIdentifier::CLOUD_AUTH_KEY,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 						'value' => $cloudAuthKey,
 						'connector' => $connector,
 					]));
@@ -465,7 +465,7 @@ class Install extends Console\Command\Command
 					$this->propertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 						'identifier' => Types\ConnectorPropertyIdentifier::CLOUD_SERVER,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 						'value' => $cloudServer,
 						'connector' => $connector,
 					]));
@@ -486,7 +486,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
 					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -559,7 +559,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
 					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -688,7 +688,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
 					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -761,7 +761,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
 					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],

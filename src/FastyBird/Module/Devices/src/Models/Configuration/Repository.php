@@ -41,7 +41,7 @@ abstract class Repository
 	)
 	{
 		$this->cache = $this->cacheFactory->create(
-			MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES . '_configuration',
+			MetadataTypes\ModuleSource::DEVICES . '_configuration',
 		);
 	}
 

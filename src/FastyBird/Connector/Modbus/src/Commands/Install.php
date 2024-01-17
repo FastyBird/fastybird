@@ -223,7 +223,7 @@ class Install extends Console\Command\Command
 			$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 				'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 				'value' => $mode->getValue(),
 				'connector' => $connector,
 			]));
@@ -232,7 +232,7 @@ class Install extends Console\Command\Command
 				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::RTU_INTERFACE,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 					'value' => $interface,
 					'connector' => $connector,
 				]));
@@ -240,7 +240,7 @@ class Install extends Console\Command\Command
 				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::RTU_BAUD_RATE,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UINT),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UINT),
 					'value' => $baudRate?->getValue(),
 					'connector' => $connector,
 				]));
@@ -248,7 +248,7 @@ class Install extends Console\Command\Command
 				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::RTU_BYTE_SIZE,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
 					'value' => $byteSize?->getValue(),
 					'connector' => $connector,
 				]));
@@ -256,7 +256,7 @@ class Install extends Console\Command\Command
 				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::RTU_PARITY,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
 					'value' => $dataParity?->getValue(),
 					'connector' => $connector,
 				]));
@@ -264,7 +264,7 @@ class Install extends Console\Command\Command
 				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::RTU_STOP_BITS,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
 					'value' => $stopBits?->getValue(),
 					'connector' => $connector,
 				]));
@@ -284,7 +284,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_MODBUS,
 					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -457,7 +457,7 @@ class Install extends Console\Command\Command
 				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
 					'value' => $mode->getValue(),
 					'format' => [
 						Types\ClientMode::RTU,
@@ -479,7 +479,7 @@ class Install extends Console\Command\Command
 					$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 						'identifier' => Types\ConnectorPropertyIdentifier::RTU_INTERFACE,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 						'value' => $interface,
 						'connector' => $connector,
 					]));
@@ -493,7 +493,7 @@ class Install extends Console\Command\Command
 					$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 						'identifier' => Types\ConnectorPropertyIdentifier::RTU_BAUD_RATE,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UINT),
+						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UINT),
 						'value' => $baudRate?->getValue(),
 						'connector' => $connector,
 					]));
@@ -507,7 +507,7 @@ class Install extends Console\Command\Command
 					$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 						'identifier' => Types\ConnectorPropertyIdentifier::RTU_BYTE_SIZE,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
+						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
 						'value' => $byteSize?->getValue(),
 						'connector' => $connector,
 					]));
@@ -521,7 +521,7 @@ class Install extends Console\Command\Command
 					$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 						'identifier' => Types\ConnectorPropertyIdentifier::RTU_PARITY,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
+						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
 						'value' => $dataParity?->getValue(),
 						'connector' => $connector,
 					]));
@@ -535,7 +535,7 @@ class Install extends Console\Command\Command
 					$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 						'identifier' => Types\ConnectorPropertyIdentifier::RTU_STOP_BITS,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
+						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
 						'value' => $stopBits?->getValue(),
 						'connector' => $connector,
 					]));
@@ -580,7 +580,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_MODBUS,
 					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -669,7 +669,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_MODBUS,
 					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -857,7 +857,7 @@ class Install extends Console\Command\Command
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
 					'identifier' => Types\DevicePropertyIdentifier::ADDRESS,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
 					'value' => $address,
 					'device' => $device,
 				]));
@@ -867,7 +867,7 @@ class Install extends Console\Command\Command
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
 					'identifier' => Types\DevicePropertyIdentifier::IP_ADDRESS,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 					'value' => $ipAddress,
 					'device' => $device,
 				]));
@@ -875,7 +875,7 @@ class Install extends Console\Command\Command
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
 					'identifier' => Types\DevicePropertyIdentifier::PORT,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UINT),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UINT),
 					'value' => $port,
 					'device' => $device,
 				]));
@@ -883,7 +883,7 @@ class Install extends Console\Command\Command
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
 					'identifier' => Types\DevicePropertyIdentifier::UNIT_ID,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
 					'value' => $unitId,
 					'device' => $device,
 				]));
@@ -892,7 +892,7 @@ class Install extends Console\Command\Command
 			$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
 				'identifier' => Types\DevicePropertyIdentifier::BYTE_ORDER,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 				'value' => $byteOrder->getValue(),
 				'device' => $device,
 			]));
@@ -911,7 +911,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_MODBUS,
 					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -1046,7 +1046,7 @@ class Install extends Console\Command\Command
 					$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Devices\Properties\Variable::class,
 						'identifier' => Types\DevicePropertyIdentifier::ADDRESS,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
+						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
 						'value' => $address,
 						'device' => $device,
 					]));
@@ -1064,7 +1064,7 @@ class Install extends Console\Command\Command
 					$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Devices\Properties\Variable::class,
 						'identifier' => Types\DevicePropertyIdentifier::IP_ADDRESS,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 						'value' => $ipAddress,
 						'device' => $device,
 					]));
@@ -1078,7 +1078,7 @@ class Install extends Console\Command\Command
 					$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Devices\Properties\Variable::class,
 						'identifier' => Types\DevicePropertyIdentifier::PORT,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 						'value' => $port,
 						'device' => $device,
 					]));
@@ -1092,7 +1092,7 @@ class Install extends Console\Command\Command
 					$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Devices\Properties\Variable::class,
 						'identifier' => Types\DevicePropertyIdentifier::UNIT_ID,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
+						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
 						'value' => $unitId,
 						'device' => $device,
 					]));
@@ -1119,7 +1119,7 @@ class Install extends Console\Command\Command
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
 					'identifier' => Types\DevicePropertyIdentifier::BYTE_ORDER,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 					'value' => $byteOrder->getValue(),
 					'device' => $device,
 				]));
@@ -1143,7 +1143,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_MODBUS,
 					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -1232,7 +1232,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_MODBUS,
 					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -1371,8 +1371,8 @@ class Install extends Console\Command\Command
 		$format = null;
 
 		if (
-			$dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SWITCH)
-			|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)
+			$dataType->equalsValue(MetadataTypes\DataType::SWITCH)
+			|| $dataType->equalsValue(MetadataTypes\DataType::BUTTON)
 		) {
 			$format = $this->askRegisterFormat($io, $dataType);
 		}
@@ -1392,7 +1392,7 @@ class Install extends Console\Command\Command
 				$this->channelsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Channels\Properties\Variable::class,
 					'identifier' => Types\ChannelPropertyIdentifier::ADDRESS,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
 					'value' => $address,
 					'channel' => $channel,
 				]));
@@ -1400,7 +1400,7 @@ class Install extends Console\Command\Command
 				$this->channelsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Channels\Properties\Variable::class,
 					'identifier' => Types\ChannelPropertyIdentifier::TYPE,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 					'value' => $type->getValue(),
 					'channel' => $channel,
 				]));
@@ -1408,7 +1408,7 @@ class Install extends Console\Command\Command
 				$this->channelsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Channels\Properties\Variable::class,
 					'identifier' => Types\ChannelPropertyIdentifier::READING_DELAY,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UINT),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UINT),
 					'value' => $readingDelay,
 					'channel' => $channel,
 				]));
@@ -1450,7 +1450,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_MODBUS,
 					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -1538,8 +1538,8 @@ class Install extends Console\Command\Command
 		$format = null;
 
 		if (
-			$dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SWITCH)
-			|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)
+			$dataType->equalsValue(MetadataTypes\DataType::SWITCH)
+			|| $dataType->equalsValue(MetadataTypes\DataType::BUTTON)
 		) {
 			$format = $this->askRegisterFormat($io, $dataType, $channel);
 		}
@@ -1580,7 +1580,7 @@ class Install extends Console\Command\Command
 				$this->channelsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Channels\Properties\Variable::class,
 					'identifier' => Types\ChannelPropertyIdentifier::ADDRESS,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
 					'value' => $address,
 					'channel' => $channel,
 				]));
@@ -1594,7 +1594,7 @@ class Install extends Console\Command\Command
 				$this->channelsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Channels\Properties\Variable::class,
 					'identifier' => Types\ChannelPropertyIdentifier::TYPE,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 					'value' => $type->getValue(),
 					'channel' => $channel,
 				]));
@@ -1604,7 +1604,7 @@ class Install extends Console\Command\Command
 				$this->channelsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Channels\Properties\Variable::class,
 					'identifier' => Types\ChannelPropertyIdentifier::READING_DELAY,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
 					'value' => $readingDelay,
 					'channel' => $channel,
 				]));
@@ -1652,7 +1652,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_MODBUS,
 					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -1727,7 +1727,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_MODBUS,
 					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -2933,25 +2933,25 @@ class Install extends Console\Command\Command
 			$type->equalsValue(Types\ChannelType::DISCRETE_INPUT)
 			|| $type->equalsValue(Types\ChannelType::COIL)
 		) {
-			return MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN);
+			return MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN);
 		} elseif (
 			$type->equalsValue(Types\ChannelType::HOLDING_REGISTER)
 			|| $type->equalsValue(Types\ChannelType::INPUT_REGISTER)
 		) {
 			$dataTypes = [
-				MetadataTypes\DataType::DATA_TYPE_CHAR,
-				MetadataTypes\DataType::DATA_TYPE_UCHAR,
-				MetadataTypes\DataType::DATA_TYPE_SHORT,
-				MetadataTypes\DataType::DATA_TYPE_USHORT,
-				MetadataTypes\DataType::DATA_TYPE_INT,
-				MetadataTypes\DataType::DATA_TYPE_UINT,
-				MetadataTypes\DataType::DATA_TYPE_FLOAT,
-				MetadataTypes\DataType::DATA_TYPE_STRING,
+				MetadataTypes\DataType::CHAR,
+				MetadataTypes\DataType::UCHAR,
+				MetadataTypes\DataType::SHORT,
+				MetadataTypes\DataType::USHORT,
+				MetadataTypes\DataType::INT,
+				MetadataTypes\DataType::UINT,
+				MetadataTypes\DataType::FLOAT,
+				MetadataTypes\DataType::STRING,
 			];
 
 			$dataTypes[] = $type->equalsValue(Types\ChannelType::HOLDING_REGISTER)
-				? MetadataTypes\DataType::DATA_TYPE_SWITCH
-				: MetadataTypes\DataType::DATA_TYPE_BUTTON;
+				? MetadataTypes\DataType::SWITCH
+				: MetadataTypes\DataType::BUTTON;
 
 			if ($channel !== null) {
 				$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
@@ -2961,43 +2961,43 @@ class Install extends Console\Command\Command
 				$valueProperty = $this->channelsPropertiesRepository->findOneBy($findChannelPropertyQuery);
 
 				switch ($valueProperty?->getDataType()->getValue()) {
-					case MetadataTypes\DataType::DATA_TYPE_CHAR:
+					case MetadataTypes\DataType::CHAR:
 						$default = 0;
 
 						break;
-					case MetadataTypes\DataType::DATA_TYPE_UCHAR:
+					case MetadataTypes\DataType::UCHAR:
 						$default = 1;
 
 						break;
-					case MetadataTypes\DataType::DATA_TYPE_SHORT:
+					case MetadataTypes\DataType::SHORT:
 						$default = 2;
 
 						break;
-					case MetadataTypes\DataType::DATA_TYPE_USHORT:
+					case MetadataTypes\DataType::USHORT:
 						$default = 3;
 
 						break;
-					case MetadataTypes\DataType::DATA_TYPE_INT:
+					case MetadataTypes\DataType::INT:
 						$default = 4;
 
 						break;
-					case MetadataTypes\DataType::DATA_TYPE_UINT:
+					case MetadataTypes\DataType::UINT:
 						$default = 5;
 
 						break;
-					case MetadataTypes\DataType::DATA_TYPE_FLOAT:
+					case MetadataTypes\DataType::FLOAT:
 						$default = 6;
 
 						break;
-					case MetadataTypes\DataType::DATA_TYPE_STRING:
+					case MetadataTypes\DataType::STRING:
 						$default = 7;
 
 						break;
-					case MetadataTypes\DataType::DATA_TYPE_SWITCH:
+					case MetadataTypes\DataType::SWITCH:
 						$default = 8;
 
 						break;
-					case MetadataTypes\DataType::DATA_TYPE_BUTTON:
+					case MetadataTypes\DataType::BUTTON:
 						$default = 9;
 
 						break;
@@ -3067,11 +3067,11 @@ class Install extends Console\Command\Command
 	{
 		$format = [];
 
-		if ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SWITCH)) {
+		if ($dataType->equalsValue(MetadataTypes\DataType::SWITCH)) {
 			foreach ([
-				MetadataTypes\SwitchPayload::get(MetadataTypes\SwitchPayload::PAYLOAD_ON),
-				MetadataTypes\SwitchPayload::get(MetadataTypes\SwitchPayload::PAYLOAD_OFF),
-				MetadataTypes\SwitchPayload::get(MetadataTypes\SwitchPayload::PAYLOAD_TOGGLE),
+				MetadataTypes\SwitchPayload::get(MetadataTypes\SwitchPayload::ON),
+				MetadataTypes\SwitchPayload::get(MetadataTypes\SwitchPayload::OFF),
+				MetadataTypes\SwitchPayload::get(MetadataTypes\SwitchPayload::TOGGLE),
 			] as $payloadType) {
 				$result = $this->askFormatSwitchAction($io, $payloadType, $channel);
 
@@ -3081,15 +3081,15 @@ class Install extends Console\Command\Command
 			}
 
 			return $format;
-		} elseif ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)) {
+		} elseif ($dataType->equalsValue(MetadataTypes\DataType::BUTTON)) {
 			foreach ([
-				MetadataTypes\ButtonPayload::get(MetadataTypes\ButtonPayload::PAYLOAD_PRESSED),
-				MetadataTypes\ButtonPayload::get(MetadataTypes\ButtonPayload::PAYLOAD_RELEASED),
-				MetadataTypes\ButtonPayload::get(MetadataTypes\ButtonPayload::PAYLOAD_CLICKED),
-				MetadataTypes\ButtonPayload::get(MetadataTypes\ButtonPayload::PAYLOAD_DOUBLE_CLICKED),
-				MetadataTypes\ButtonPayload::get(MetadataTypes\ButtonPayload::PAYLOAD_TRIPLE_CLICKED),
-				MetadataTypes\ButtonPayload::get(MetadataTypes\ButtonPayload::PAYLOAD_LONG_CLICKED),
-				MetadataTypes\ButtonPayload::get(MetadataTypes\ButtonPayload::PAYLOAD_EXTRA_LONG_CLICKED),
+				MetadataTypes\ButtonPayload::get(MetadataTypes\ButtonPayload::PRESSED),
+				MetadataTypes\ButtonPayload::get(MetadataTypes\ButtonPayload::RELEASED),
+				MetadataTypes\ButtonPayload::get(MetadataTypes\ButtonPayload::CLICKED),
+				MetadataTypes\ButtonPayload::get(MetadataTypes\ButtonPayload::DOUBLE_CLICKED),
+				MetadataTypes\ButtonPayload::get(MetadataTypes\ButtonPayload::TRIPLE_CLICKED),
+				MetadataTypes\ButtonPayload::get(MetadataTypes\ButtonPayload::LONG_CLICKED),
+				MetadataTypes\ButtonPayload::get(MetadataTypes\ButtonPayload::EXTRA_LONG_CLICKED),
 			] as $payloadType) {
 				$result = $this->askFormatButtonAction($io, $payloadType, $channel);
 
@@ -3153,11 +3153,11 @@ class Install extends Console\Command\Command
 			}
 		}
 
-		if ($payload->equalsValue(MetadataTypes\SwitchPayload::PAYLOAD_ON)) {
+		if ($payload->equalsValue(MetadataTypes\SwitchPayload::ON)) {
 			$questionText = $this->translator->translate('//modbus-connector.cmd.install.questions.switch.hasOn');
-		} elseif ($payload->equalsValue(MetadataTypes\SwitchPayload::PAYLOAD_OFF)) {
+		} elseif ($payload->equalsValue(MetadataTypes\SwitchPayload::OFF)) {
 			$questionText = $this->translator->translate('//modbus-connector.cmd.install.questions.switch.hasOff');
-		} elseif ($payload->equalsValue(MetadataTypes\SwitchPayload::PAYLOAD_TOGGLE)) {
+		} elseif ($payload->equalsValue(MetadataTypes\SwitchPayload::TOGGLE)) {
 			$questionText = $this->translator->translate('//modbus-connector.cmd.install.questions.switch.hasToggle');
 		} else {
 			throw new Exceptions\InvalidArgument('Provided payload type is not valid');
@@ -3173,7 +3173,7 @@ class Install extends Console\Command\Command
 
 		return [
 			[
-				MetadataTypes\DataTypeShort::DATA_TYPE_SWITCH,
+				MetadataTypes\DataTypeShort::SWITCH,
 				strval($payload->getValue()),
 			],
 			$this->askFormatSwitchActionValues($io, $payload, true, $defaultReading),
@@ -3198,21 +3198,21 @@ class Install extends Console\Command\Command
 		assert((is_array($default) && count($default) === 2) || $default === null);
 
 		if ($reading) {
-			if ($payload->equalsValue(MetadataTypes\SwitchPayload::PAYLOAD_ON)) {
+			if ($payload->equalsValue(MetadataTypes\SwitchPayload::ON)) {
 				$questionText = $this->translator->translate(
 					'//modbus-connector.cmd.install.questions.provide.switch.readOnValue',
 				);
 				$questionError = $this->translator->translate(
 					'//modbus-connector.cmd.install.messages.provide.switch.readOnValueError',
 				);
-			} elseif ($payload->equalsValue(MetadataTypes\SwitchPayload::PAYLOAD_OFF)) {
+			} elseif ($payload->equalsValue(MetadataTypes\SwitchPayload::OFF)) {
 				$questionText = $this->translator->translate(
 					'//modbus-connector.cmd.install.questions.provide.switch.readOffValue',
 				);
 				$questionError = $this->translator->translate(
 					'//modbus-connector.cmd.install.messages.provide.switch.readOffValueError',
 				);
-			} elseif ($payload->equalsValue(MetadataTypes\SwitchPayload::PAYLOAD_TOGGLE)) {
+			} elseif ($payload->equalsValue(MetadataTypes\SwitchPayload::TOGGLE)) {
 				$questionText = $this->translator->translate(
 					'//modbus-connector.cmd.install.questions.provide.switch.readToggleValue',
 				);
@@ -3223,21 +3223,21 @@ class Install extends Console\Command\Command
 				throw new Exceptions\InvalidArgument('Provided payload type is not valid');
 			}
 		} else {
-			if ($payload->equalsValue(MetadataTypes\SwitchPayload::PAYLOAD_ON)) {
+			if ($payload->equalsValue(MetadataTypes\SwitchPayload::ON)) {
 				$questionText = $this->translator->translate(
 					'//modbus-connector.cmd.install.questions.provide.switch.writeOnValue',
 				);
 				$questionError = $this->translator->translate(
 					'//modbus-connector.cmd.install.messages.provide.switch.writeOnValueError',
 				);
-			} elseif ($payload->equalsValue(MetadataTypes\SwitchPayload::PAYLOAD_OFF)) {
+			} elseif ($payload->equalsValue(MetadataTypes\SwitchPayload::OFF)) {
 				$questionText = $this->translator->translate(
 					'//modbus-connector.cmd.install.questions.provide.switch.writeOffValue',
 				);
 				$questionError = $this->translator->translate(
 					'//modbus-connector.cmd.install.messages.provide.switch.writeOffValueError',
 				);
-			} elseif ($payload->equalsValue(MetadataTypes\SwitchPayload::PAYLOAD_TOGGLE)) {
+			} elseif ($payload->equalsValue(MetadataTypes\SwitchPayload::TOGGLE)) {
 				$questionText = $this->translator->translate(
 					'//modbus-connector.cmd.install.questions.provide.switch.writeToggleValue',
 				);
@@ -3278,34 +3278,34 @@ class Install extends Console\Command\Command
 
 		if (strval(intval($switchReading)) === $switchReading) {
 			$dataTypes = [
-				MetadataTypes\DataTypeShort::DATA_TYPE_BOOLEAN,
-				MetadataTypes\DataTypeShort::DATA_TYPE_CHAR,
-				MetadataTypes\DataTypeShort::DATA_TYPE_UCHAR,
-				MetadataTypes\DataTypeShort::DATA_TYPE_SHORT,
-				MetadataTypes\DataTypeShort::DATA_TYPE_USHORT,
-				MetadataTypes\DataTypeShort::DATA_TYPE_INT,
-				MetadataTypes\DataTypeShort::DATA_TYPE_UINT,
-				MetadataTypes\DataTypeShort::DATA_TYPE_FLOAT,
+				MetadataTypes\DataTypeShort::BOOLEAN,
+				MetadataTypes\DataTypeShort::CHAR,
+				MetadataTypes\DataTypeShort::UCHAR,
+				MetadataTypes\DataTypeShort::SHORT,
+				MetadataTypes\DataTypeShort::USHORT,
+				MetadataTypes\DataTypeShort::INT,
+				MetadataTypes\DataTypeShort::UINT,
+				MetadataTypes\DataTypeShort::FLOAT,
 			];
 
 			$selected = null;
 
 			if ($default !== null) {
-				if ($default[0] === MetadataTypes\DataTypeShort::DATA_TYPE_BOOLEAN) {
+				if ($default[0] === MetadataTypes\DataTypeShort::BOOLEAN) {
 					$selected = 0;
-				} elseif ($default[0] === MetadataTypes\DataTypeShort::DATA_TYPE_CHAR) {
+				} elseif ($default[0] === MetadataTypes\DataTypeShort::CHAR) {
 					$selected = 1;
-				} elseif ($default[0] === MetadataTypes\DataTypeShort::DATA_TYPE_UCHAR) {
+				} elseif ($default[0] === MetadataTypes\DataTypeShort::UCHAR) {
 					$selected = 2;
-				} elseif ($default[0] === MetadataTypes\DataTypeShort::DATA_TYPE_SHORT) {
+				} elseif ($default[0] === MetadataTypes\DataTypeShort::SHORT) {
 					$selected = 3;
-				} elseif ($default[0] === MetadataTypes\DataTypeShort::DATA_TYPE_USHORT) {
+				} elseif ($default[0] === MetadataTypes\DataTypeShort::USHORT) {
 					$selected = 4;
-				} elseif ($default[0] === MetadataTypes\DataTypeShort::DATA_TYPE_INT) {
+				} elseif ($default[0] === MetadataTypes\DataTypeShort::INT) {
 					$selected = 5;
-				} elseif ($default[0] === MetadataTypes\DataTypeShort::DATA_TYPE_UINT) {
+				} elseif ($default[0] === MetadataTypes\DataTypeShort::UINT) {
 					$selected = 6;
-				} elseif ($default[0] === MetadataTypes\DataTypeShort::DATA_TYPE_FLOAT) {
+				} elseif ($default[0] === MetadataTypes\DataTypeShort::FLOAT) {
 					$selected = 7;
 				}
 			}
@@ -3357,7 +3357,7 @@ class Install extends Console\Command\Command
 		}
 
 		return [
-			MetadataTypes\DataTypeShort::DATA_TYPE_STRING,
+			MetadataTypes\DataTypeShort::STRING,
 			$switchReading,
 		];
 	}
@@ -3411,25 +3411,25 @@ class Install extends Console\Command\Command
 			}
 		}
 
-		if ($payload->equalsValue(MetadataTypes\ButtonPayload::PAYLOAD_PRESSED)) {
+		if ($payload->equalsValue(MetadataTypes\ButtonPayload::PRESSED)) {
 			$questionText = $this->translator->translate('//modbus-connector.cmd.install.questions.button.hasPress');
-		} elseif ($payload->equalsValue(MetadataTypes\ButtonPayload::PAYLOAD_RELEASED)) {
+		} elseif ($payload->equalsValue(MetadataTypes\ButtonPayload::RELEASED)) {
 			$questionText = $this->translator->translate('//modbus-connector.cmd.install.questions.button.hasRelease');
-		} elseif ($payload->equalsValue(MetadataTypes\ButtonPayload::PAYLOAD_CLICKED)) {
+		} elseif ($payload->equalsValue(MetadataTypes\ButtonPayload::CLICKED)) {
 			$questionText = $this->translator->translate('//modbus-connector.cmd.install.questions.button.hasClick');
-		} elseif ($payload->equalsValue(MetadataTypes\ButtonPayload::PAYLOAD_DOUBLE_CLICKED)) {
+		} elseif ($payload->equalsValue(MetadataTypes\ButtonPayload::DOUBLE_CLICKED)) {
 			$questionText = $this->translator->translate(
 				'//modbus-connector.cmd.install.questions.button.hasDoubleClick',
 			);
-		} elseif ($payload->equalsValue(MetadataTypes\ButtonPayload::PAYLOAD_TRIPLE_CLICKED)) {
+		} elseif ($payload->equalsValue(MetadataTypes\ButtonPayload::TRIPLE_CLICKED)) {
 			$questionText = $this->translator->translate(
 				'//modbus-connector.cmd.install.questions.button.hasTripleClick',
 			);
-		} elseif ($payload->equalsValue(MetadataTypes\ButtonPayload::PAYLOAD_LONG_CLICKED)) {
+		} elseif ($payload->equalsValue(MetadataTypes\ButtonPayload::LONG_CLICKED)) {
 			$questionText = $this->translator->translate(
 				'//modbus-connector.cmd.install.questions.button.hasLongClick',
 			);
-		} elseif ($payload->equalsValue(MetadataTypes\ButtonPayload::PAYLOAD_EXTRA_LONG_CLICKED)) {
+		} elseif ($payload->equalsValue(MetadataTypes\ButtonPayload::EXTRA_LONG_CLICKED)) {
 			$questionText = $this->translator->translate(
 				'//modbus-connector.cmd.install.questions.button.hasExtraLongClick',
 			);
@@ -3447,7 +3447,7 @@ class Install extends Console\Command\Command
 
 		return [
 			[
-				MetadataTypes\DataTypeShort::DATA_TYPE_BUTTON,
+				MetadataTypes\DataTypeShort::BUTTON,
 				strval($payload->getValue()),
 			],
 			$this->askFormatButtonActionValues($io, $payload, true, $defaultReading),
@@ -3472,49 +3472,49 @@ class Install extends Console\Command\Command
 		assert((is_array($default) && count($default) === 2) || $default === null);
 
 		if ($reading) {
-			if ($payload->equalsValue(MetadataTypes\ButtonPayload::PAYLOAD_PRESSED)) {
+			if ($payload->equalsValue(MetadataTypes\ButtonPayload::PRESSED)) {
 				$questionText = $this->translator->translate(
 					'//modbus-connector.cmd.install.questions.provide.button.readPressValue',
 				);
 				$questionError = $this->translator->translate(
 					'//modbus-connector.cmd.install.messages.provide.button.readPressValueError',
 				);
-			} elseif ($payload->equalsValue(MetadataTypes\ButtonPayload::PAYLOAD_RELEASED)) {
+			} elseif ($payload->equalsValue(MetadataTypes\ButtonPayload::RELEASED)) {
 				$questionText = $this->translator->translate(
 					'//modbus-connector.cmd.install.questions.provide.button.readReleaseValue',
 				);
 				$questionError = $this->translator->translate(
 					'//modbus-connector.cmd.install.messages.provide.button.readReleaseValueError',
 				);
-			} elseif ($payload->equalsValue(MetadataTypes\ButtonPayload::PAYLOAD_CLICKED)) {
+			} elseif ($payload->equalsValue(MetadataTypes\ButtonPayload::CLICKED)) {
 				$questionText = $this->translator->translate(
 					'//modbus-connector.cmd.install.questions.provide.button.readClickValue',
 				);
 				$questionError = $this->translator->translate(
 					'//modbus-connector.cmd.install.messages.provide.button.readClickValueError',
 				);
-			} elseif ($payload->equalsValue(MetadataTypes\ButtonPayload::PAYLOAD_DOUBLE_CLICKED)) {
+			} elseif ($payload->equalsValue(MetadataTypes\ButtonPayload::DOUBLE_CLICKED)) {
 				$questionText = $this->translator->translate(
 					'//modbus-connector.cmd.install.questions.provide.button.readDoubleClickValue',
 				);
 				$questionError = $this->translator->translate(
 					'//modbus-connector.cmd.install.messages.provide.button.readDoubleClickValueError',
 				);
-			} elseif ($payload->equalsValue(MetadataTypes\ButtonPayload::PAYLOAD_TRIPLE_CLICKED)) {
+			} elseif ($payload->equalsValue(MetadataTypes\ButtonPayload::TRIPLE_CLICKED)) {
 				$questionText = $this->translator->translate(
 					'//modbus-connector.cmd.install.questions.provide.button.readTripleClickValue',
 				);
 				$questionError = $this->translator->translate(
 					'//modbus-connector.cmd.install.messages.provide.button.readTripleClickValueError',
 				);
-			} elseif ($payload->equalsValue(MetadataTypes\ButtonPayload::PAYLOAD_LONG_CLICKED)) {
+			} elseif ($payload->equalsValue(MetadataTypes\ButtonPayload::LONG_CLICKED)) {
 				$questionText = $this->translator->translate(
 					'//modbus-connector.cmd.install.questions.provide.button.readLongClickValue',
 				);
 				$questionError = $this->translator->translate(
 					'//modbus-connector.cmd.install.messages.provide.button.readLongClickValueError',
 				);
-			} elseif ($payload->equalsValue(MetadataTypes\ButtonPayload::PAYLOAD_EXTRA_LONG_CLICKED)) {
+			} elseif ($payload->equalsValue(MetadataTypes\ButtonPayload::EXTRA_LONG_CLICKED)) {
 				$questionText = $this->translator->translate(
 					'//modbus-connector.cmd.install.questions.provide.button.readExtraLongClickValue',
 				);
@@ -3525,49 +3525,49 @@ class Install extends Console\Command\Command
 				throw new Exceptions\InvalidArgument('Provided payload type is not valid');
 			}
 		} else {
-			if ($payload->equalsValue(MetadataTypes\ButtonPayload::PAYLOAD_PRESSED)) {
+			if ($payload->equalsValue(MetadataTypes\ButtonPayload::PRESSED)) {
 				$questionText = $this->translator->translate(
 					'//modbus-connector.cmd.install.questions.provide.button.writePressValue',
 				);
 				$questionError = $this->translator->translate(
 					'//modbus-connector.cmd.install.messages.provide.button.writePressValueError',
 				);
-			} elseif ($payload->equalsValue(MetadataTypes\ButtonPayload::PAYLOAD_RELEASED)) {
+			} elseif ($payload->equalsValue(MetadataTypes\ButtonPayload::RELEASED)) {
 				$questionText = $this->translator->translate(
 					'//modbus-connector.cmd.install.questions.provide.button.writeReleaseValue',
 				);
 				$questionError = $this->translator->translate(
 					'//modbus-connector.cmd.install.messages.provide.button.writeReleaseValueError',
 				);
-			} elseif ($payload->equalsValue(MetadataTypes\ButtonPayload::PAYLOAD_CLICKED)) {
+			} elseif ($payload->equalsValue(MetadataTypes\ButtonPayload::CLICKED)) {
 				$questionText = $this->translator->translate(
 					'//modbus-connector.cmd.install.questions.provide.button.writeClickValue',
 				);
 				$questionError = $this->translator->translate(
 					'//modbus-connector.cmd.install.messages.provide.button.writeClickValueError',
 				);
-			} elseif ($payload->equalsValue(MetadataTypes\ButtonPayload::PAYLOAD_DOUBLE_CLICKED)) {
+			} elseif ($payload->equalsValue(MetadataTypes\ButtonPayload::DOUBLE_CLICKED)) {
 				$questionText = $this->translator->translate(
 					'//modbus-connector.cmd.install.questions.provide.button.writeDoubleClickValue',
 				);
 				$questionError = $this->translator->translate(
 					'//modbus-connector.cmd.install.messages.provide.button.writeDoubleClickValueError',
 				);
-			} elseif ($payload->equalsValue(MetadataTypes\ButtonPayload::PAYLOAD_TRIPLE_CLICKED)) {
+			} elseif ($payload->equalsValue(MetadataTypes\ButtonPayload::TRIPLE_CLICKED)) {
 				$questionText = $this->translator->translate(
 					'//modbus-connector.cmd.install.questions.provide.button.writeTripleClickValue',
 				);
 				$questionError = $this->translator->translate(
 					'//modbus-connector.cmd.install.messages.provide.button.writeTripleClickValueError',
 				);
-			} elseif ($payload->equalsValue(MetadataTypes\ButtonPayload::PAYLOAD_LONG_CLICKED)) {
+			} elseif ($payload->equalsValue(MetadataTypes\ButtonPayload::LONG_CLICKED)) {
 				$questionText = $this->translator->translate(
 					'//modbus-connector.cmd.install.questions.provide.button.writeLongClickValue',
 				);
 				$questionError = $this->translator->translate(
 					'//modbus-connector.cmd.install.messages.provide.button.writeLongClickValueError',
 				);
-			} elseif ($payload->equalsValue(MetadataTypes\ButtonPayload::PAYLOAD_EXTRA_LONG_CLICKED)) {
+			} elseif ($payload->equalsValue(MetadataTypes\ButtonPayload::EXTRA_LONG_CLICKED)) {
 				$questionText = $this->translator->translate(
 					'//modbus-connector.cmd.install.questions.provide.button.writeExtraLongClickValue',
 				);
@@ -3608,31 +3608,31 @@ class Install extends Console\Command\Command
 
 		if (strval(intval($switchReading)) === $switchReading) {
 			$dataTypes = [
-				MetadataTypes\DataTypeShort::DATA_TYPE_CHAR,
-				MetadataTypes\DataTypeShort::DATA_TYPE_UCHAR,
-				MetadataTypes\DataTypeShort::DATA_TYPE_SHORT,
-				MetadataTypes\DataTypeShort::DATA_TYPE_USHORT,
-				MetadataTypes\DataTypeShort::DATA_TYPE_INT,
-				MetadataTypes\DataTypeShort::DATA_TYPE_UINT,
-				MetadataTypes\DataTypeShort::DATA_TYPE_FLOAT,
+				MetadataTypes\DataTypeShort::CHAR,
+				MetadataTypes\DataTypeShort::UCHAR,
+				MetadataTypes\DataTypeShort::SHORT,
+				MetadataTypes\DataTypeShort::USHORT,
+				MetadataTypes\DataTypeShort::INT,
+				MetadataTypes\DataTypeShort::UINT,
+				MetadataTypes\DataTypeShort::FLOAT,
 			];
 
 			$selected = null;
 
 			if ($default !== null) {
-				if ($default[0] === MetadataTypes\DataTypeShort::DATA_TYPE_CHAR) {
+				if ($default[0] === MetadataTypes\DataTypeShort::CHAR) {
 					$selected = 0;
-				} elseif ($default[0] === MetadataTypes\DataTypeShort::DATA_TYPE_UCHAR) {
+				} elseif ($default[0] === MetadataTypes\DataTypeShort::UCHAR) {
 					$selected = 1;
-				} elseif ($default[0] === MetadataTypes\DataTypeShort::DATA_TYPE_SHORT) {
+				} elseif ($default[0] === MetadataTypes\DataTypeShort::SHORT) {
 					$selected = 2;
-				} elseif ($default[0] === MetadataTypes\DataTypeShort::DATA_TYPE_USHORT) {
+				} elseif ($default[0] === MetadataTypes\DataTypeShort::USHORT) {
 					$selected = 3;
-				} elseif ($default[0] === MetadataTypes\DataTypeShort::DATA_TYPE_INT) {
+				} elseif ($default[0] === MetadataTypes\DataTypeShort::INT) {
 					$selected = 4;
-				} elseif ($default[0] === MetadataTypes\DataTypeShort::DATA_TYPE_UINT) {
+				} elseif ($default[0] === MetadataTypes\DataTypeShort::UINT) {
 					$selected = 5;
-				} elseif ($default[0] === MetadataTypes\DataTypeShort::DATA_TYPE_FLOAT) {
+				} elseif ($default[0] === MetadataTypes\DataTypeShort::FLOAT) {
 					$selected = 6;
 				}
 			}
@@ -3684,7 +3684,7 @@ class Install extends Console\Command\Command
 		}
 
 		return [
-			MetadataTypes\DataTypeShort::DATA_TYPE_STRING,
+			MetadataTypes\DataTypeShort::STRING,
 			$switchReading,
 		];
 	}

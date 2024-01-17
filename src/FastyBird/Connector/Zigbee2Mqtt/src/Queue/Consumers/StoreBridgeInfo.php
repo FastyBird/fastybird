@@ -101,35 +101,35 @@ final class StoreBridgeInfo implements Queue\Consumer
 		$this->setDeviceProperty(
 			$bridge->getId(),
 			$entity->getCoordinator()->getType(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 			Types\DevicePropertyIdentifier::MODEL,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MODEL),
 		);
 		$this->setDeviceProperty(
 			$bridge->getId(),
 			Types\DeviceType::COORDINATOR,
-			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 			Types\DevicePropertyIdentifier::TYPE,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::TYPE),
 		);
 		$this->setDeviceProperty(
 			$bridge->getId(),
 			$entity->getVersion(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 			Types\DevicePropertyIdentifier::VERSION,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::VERSION),
 		);
 		$this->setDeviceProperty(
 			$bridge->getId(),
 			$entity->getCommit(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 			Types\DevicePropertyIdentifier::COMMIT,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::COMMIT),
 		);
 		$this->setDeviceProperty(
 			$bridge->getId(),
 			$entity->getCoordinator()->getIeeeAddress(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 			Types\DevicePropertyIdentifier::IEEE_ADDRESS,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::IEEE_ADDRESS),
 		);
@@ -137,7 +137,7 @@ final class StoreBridgeInfo implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed bridge info message',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT,
 				'type' => 'store-bridge-info-message-consumer',
 				'connector' => [
 					'id' => $entity->getConnector()->toString(),

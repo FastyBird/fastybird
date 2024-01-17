@@ -198,7 +198,7 @@ final class ChannelPropertiesV1 extends BaseV1
 			} catch (Throwable $ex) {
 				// Log caught exception
 				$this->logger->error('An unhandled error occurred', [
-					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+					'source' => MetadataTypes\ModuleSource::DEVICES,
 					'type' => 'channel-properties-controller',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				]);
@@ -275,7 +275,7 @@ final class ChannelPropertiesV1 extends BaseV1
 			} catch (Throwable $ex) {
 				// Log caught exception
 				$this->logger->error('An unhandled error occurred', [
-					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+					'source' => MetadataTypes\ModuleSource::DEVICES,
 					'type' => 'channel-properties-controller',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				]);
@@ -343,7 +343,7 @@ final class ChannelPropertiesV1 extends BaseV1
 		} catch (Throwable $ex) {
 			// Log caught exception
 			$this->logger->error('An unhandled error occurred', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+				'source' => MetadataTypes\ModuleSource::DEVICES,
 				'type' => 'channel-properties-controller',
 				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);

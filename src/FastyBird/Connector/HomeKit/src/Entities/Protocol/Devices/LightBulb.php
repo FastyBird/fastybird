@@ -40,7 +40,7 @@ final class LightBulb extends Entities\Protocol\Device
 	): void
 	{
 		$updatePropertyType = MetadataTypes\PropertyType::get(
-			$fromDevice ? MetadataTypes\PropertyType::TYPE_DYNAMIC : MetadataTypes\PropertyType::TYPE_MAPPED,
+			$fromDevice ? MetadataTypes\PropertyType::DYNAMIC : MetadataTypes\PropertyType::MAPPED,
 		);
 
 		if ($service->getName() === Types\ServiceType::LIGHTBULB) {
@@ -154,7 +154,7 @@ final class LightBulb extends Entities\Protocol\Device
 			if (
 				$brightnessCharacteristic->getProperty() !== null
 				&& $brightnessCharacteristic->getProperty()->getType()->equalsValue(
-					MetadataTypes\PropertyType::TYPE_MAPPED,
+					MetadataTypes\PropertyType::MAPPED,
 				)
 			) {
 				$brightness = 100;

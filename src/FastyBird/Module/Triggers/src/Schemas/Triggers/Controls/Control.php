@@ -40,7 +40,7 @@ final class Control extends JsonApiSchemas\JsonApi
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = ModuleSource::SOURCE_MODULE_TRIGGERS . '/control/trigger';
+	public const SCHEMA_TYPE = ModuleSource::TRIGGERS . '/control/trigger';
 
 	/**
 	 * Define relationships names

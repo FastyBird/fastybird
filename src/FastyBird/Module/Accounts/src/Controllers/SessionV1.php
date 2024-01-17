@@ -157,7 +157,7 @@ final class SessionV1 extends BaseV1
 			} else {
 				// Log caught exception
 				$this->logger->error('An unhandled error occurred', [
-					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_ACCOUNTS,
+					'source' => MetadataTypes\ModuleSource::ACCOUNTS,
 					'type' => 'session-controller',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				]);
@@ -210,7 +210,7 @@ final class SessionV1 extends BaseV1
 		} catch (Throwable $ex) {
 			// Log caught exception
 			$this->logger->error('An unhandled error occurred', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_ACCOUNTS,
+				'source' => MetadataTypes\ModuleSource::ACCOUNTS,
 				'type' => 'session-controller',
 				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
@@ -346,7 +346,7 @@ final class SessionV1 extends BaseV1
 		} catch (Throwable $ex) {
 			// Log caught exception
 			$this->logger->error('An unhandled error occurred', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_ACCOUNTS,
+				'source' => MetadataTypes\ModuleSource::ACCOUNTS,
 				'type' => 'session-controller',
 				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
@@ -404,7 +404,7 @@ final class SessionV1 extends BaseV1
 		} catch (Throwable $ex) {
 			// Log caught exception
 			$this->logger->error('An unhandled error occurred', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_ACCOUNTS,
+				'source' => MetadataTypes\ModuleSource::ACCOUNTS,
 				'type' => 'session-controller',
 				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);

@@ -107,7 +107,7 @@ final class WritePropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Connector could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 					'type' => 'write-property-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -136,7 +136,7 @@ final class WritePropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Device could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 					'type' => 'write-property-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -168,7 +168,7 @@ final class WritePropertyState implements Queue\Consumer
 				$this->logger->error(
 					'Channel could not be loaded',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 						'type' => 'write-property-state-message-consumer',
 						'connector' => [
 							'id' => $entity->getConnector()->toString(),
@@ -199,7 +199,7 @@ final class WritePropertyState implements Queue\Consumer
 				$this->logger->error(
 					'Channel property could not be loaded',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 						'type' => 'write-property-state-message-consumer',
 						'connector' => [
 							'id' => $entity->getConnector()->toString(),
@@ -230,7 +230,7 @@ final class WritePropertyState implements Queue\Consumer
 				$this->logger->error(
 					'Device property could not be loaded',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 						'type' => 'write-property-state-message-consumer',
 						'connector' => [
 							'id' => $entity->getConnector()->toString(),
@@ -253,7 +253,7 @@ final class WritePropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Property is not writable',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 					'type' => 'write-property-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -443,7 +443,7 @@ final class WritePropertyState implements Queue\Consumer
 					[
 						'connector' => $connector->getId()->toString(),
 						'device' => $device->getId()->toString(),
-						'state' => MetadataTypes\ConnectionState::STATE_ALERT,
+						'state' => MetadataTypes\ConnectionState::ALERT,
 					],
 				),
 			);
@@ -451,7 +451,7 @@ final class WritePropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Device is not properly configured',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 					'type' => 'write-property-state-message-consumer',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'connector' => [
@@ -475,7 +475,7 @@ final class WritePropertyState implements Queue\Consumer
 					[
 						'connector' => $connector->getId()->toString(),
 						'device' => $device->getId()->toString(),
-						'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
+						'state' => MetadataTypes\ConnectionState::DISCONNECTED,
 					],
 				),
 			);
@@ -499,7 +499,7 @@ final class WritePropertyState implements Queue\Consumer
 				'Calling device api failed',
 				array_merge(
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 						'type' => 'write-property-state-message-consumer',
 						'exception' => BootstrapHelpers\Logger::buildException($ex),
 						'connector' => [
@@ -587,7 +587,7 @@ final class WritePropertyState implements Queue\Consumer
 							[
 								'connector' => $connector->getId()->toString(),
 								'identifier' => $device->getIdentifier(),
-								'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
+								'state' => MetadataTypes\ConnectionState::DISCONNECTED,
 							],
 						),
 					);
@@ -599,7 +599,7 @@ final class WritePropertyState implements Queue\Consumer
 							[
 								'connector' => $connector->getId()->toString(),
 								'identifier' => $device->getIdentifier(),
-								'state' => MetadataTypes\ConnectionState::STATE_ALERT,
+								'state' => MetadataTypes\ConnectionState::ALERT,
 							],
 						),
 					);
@@ -609,7 +609,7 @@ final class WritePropertyState implements Queue\Consumer
 					'Could write state to device',
 					array_merge(
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
+							'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 							'type' => 'write-property-state-message-consumer',
 							'exception' => BootstrapHelpers\Logger::buildException($ex),
 							'connector' => [
@@ -632,7 +632,7 @@ final class WritePropertyState implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed write device state message',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 				'type' => 'write-property-state-message-consumer',
 				'connector' => [
 					'id' => $entity->getConnector()->toString(),

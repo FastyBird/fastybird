@@ -167,7 +167,7 @@ abstract class Device implements Entities\Entity,
 		$this->identifier = $identifier;
 		$this->name = $name;
 
-		$this->category = MetadataTypes\DeviceCategory::get(MetadataTypes\DeviceCategory::CATEGORY_GENERIC);
+		$this->category = MetadataTypes\DeviceCategory::get(MetadataTypes\DeviceCategory::GENERIC);
 
 		$this->connector = $connector;
 
@@ -437,7 +437,7 @@ abstract class Device implements Entities\Entity,
 
 	public function getSource(): MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource
 	{
-		return MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES);
+		return MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES);
 	}
 
 	/**

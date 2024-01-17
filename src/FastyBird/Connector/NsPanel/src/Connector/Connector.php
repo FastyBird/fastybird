@@ -100,7 +100,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Starting NS Panel connector service',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -179,7 +179,7 @@ final class Connector implements DevicesConnectors\Connector
 							$this->logger->error(
 								'Could report device initial state to NS Panel',
 								[
-									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+									'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 									'type' => 'connector',
 									'exception' => BootstrapHelpers\Logger::buildException($ex),
 									'connector' => [
@@ -205,7 +205,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'NS Panel connector service has been started',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -226,7 +226,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Starting NS Panel connector discovery',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -239,7 +239,7 @@ final class Connector implements DevicesConnectors\Connector
 		$client->on('finished', function (): void {
 			$this->dispatcher?->dispatch(
 				new DevicesEvents\TerminateConnector(
-					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL),
+					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL),
 					'Devices discovery finished',
 				),
 			);
@@ -257,7 +257,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'NS Panel connector discovery has been started',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -287,7 +287,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'NS Panel connector has been terminated',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),

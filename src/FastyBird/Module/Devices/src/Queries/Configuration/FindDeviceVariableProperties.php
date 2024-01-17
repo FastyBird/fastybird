@@ -37,7 +37,7 @@ class FindDeviceVariableProperties extends FindDeviceProperties
 	{
 		parent::__construct();
 
-		$this->filter[] = '.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_VARIABLE . '")]';
+		$this->filter[] = '.[?(@.type == "' . MetadataTypes\PropertyType::VARIABLE . '")]';
 	}
 
 	/**

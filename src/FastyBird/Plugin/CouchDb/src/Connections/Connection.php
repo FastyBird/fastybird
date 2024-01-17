@@ -95,7 +95,7 @@ final class Connection
 		} catch (Throwable $ex) {
 			// Log error action reason
 			$this->logger->error('Could not connect do database', [
-				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_COUCHDB,
+				'source' => MetadataTypes\PluginSource::COUCHDB,
 				'type' => 'connection',
 				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);

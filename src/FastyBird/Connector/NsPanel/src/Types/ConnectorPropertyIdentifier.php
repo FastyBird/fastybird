@@ -30,7 +30,7 @@ use function strval;
 class ConnectorPropertyIdentifier extends Consistence\Enum\Enum
 {
 
-	public const PORT = MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_PORT;
+	public const PORT = MetadataTypes\ConnectorPropertyIdentifier::PORT;
 
 	public const CLIENT_MODE = 'mode';
 

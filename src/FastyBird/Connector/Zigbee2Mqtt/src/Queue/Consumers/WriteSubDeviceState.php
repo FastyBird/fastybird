@@ -97,7 +97,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 			$this->logger->error(
 				'Connector could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT,
 					'type' => 'write-sub-device-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -126,7 +126,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 			$this->logger->error(
 				'Device could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT,
 					'type' => 'write-sub-device-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -157,7 +157,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 			$this->logger->error(
 				'Channel could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT,
 					'type' => 'write-sub-device-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -242,7 +242,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 			$this->logger->error(
 				'Channel identifier has invalid value',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT,
 					'type' => 'write-sub-device-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -332,7 +332,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 					$this->logger->error(
 						'Could write state to sub-device',
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+							'source' => MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT,
 							'type' => 'write-sub-device-state-message-consumer',
 							'exception' => BootstrapHelpers\Logger::buildException($ex),
 							'connector' => [
@@ -352,7 +352,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT,
 					'type' => 'write-sub-device-state-message-consumer',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'connector' => [
@@ -372,7 +372,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed write sub-device state message',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT,
 				'type' => 'write-sub-device-state-message-consumer',
 				'connector' => [
 					'id' => $entity->getConnector()->toString(),

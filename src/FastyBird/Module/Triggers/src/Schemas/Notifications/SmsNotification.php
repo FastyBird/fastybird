@@ -36,7 +36,7 @@ final class SmsNotification extends Notification
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = ModuleSource::SOURCE_MODULE_TRIGGERS . '/notification/sms';
+	public const SCHEMA_TYPE = ModuleSource::TRIGGERS . '/notification/sms';
 
 	public function getType(): string
 	{

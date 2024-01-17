@@ -33,15 +33,15 @@ class ModuleSource extends Consistence\Enum\Enum
 	/**
 	 * Define types
 	 */
-	public const SOURCE_NOT_SPECIFIED = Metadata\Constants::NOT_SPECIFIED_SOURCE;
+	public const NOT_SPECIFIED = Metadata\Constants::NOT_SPECIFIED_SOURCE;
 
-	public const SOURCE_MODULE_ACCOUNTS = Metadata\Constants::MODULE_ACCOUNTS_SOURCE;
+	public const ACCOUNTS = Metadata\Constants::MODULE_ACCOUNTS_SOURCE;
 
-	public const SOURCE_MODULE_DEVICES = Metadata\Constants::MODULE_DEVICES_SOURCE;
+	public const DEVICES = Metadata\Constants::MODULE_DEVICES_SOURCE;
 
-	public const SOURCE_MODULE_TRIGGERS = Metadata\Constants::MODULE_TRIGGERS_SOURCE;
+	public const TRIGGERS = Metadata\Constants::MODULE_TRIGGERS_SOURCE;
 
-	public const SOURCE_MODULE_UI = Metadata\Constants::MODULE_UI_SOURCE;
+	public const UI = Metadata\Constants::MODULE_UI_SOURCE;
 
 	public function getValue(): string
 	{

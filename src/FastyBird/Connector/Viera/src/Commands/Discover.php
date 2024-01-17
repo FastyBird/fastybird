@@ -460,7 +460,7 @@ class Discover extends Console\Command\Command
 					$this->logger->error(
 						'Creating api client failed',
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+							'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 							'type' => 'discovery-cmd',
 							'exception' => BootstrapHelpers\Logger::buildException($ex),
 						],
@@ -482,7 +482,7 @@ class Discover extends Console\Command\Command
 					$this->logger->error(
 						'Checking screen status failed',
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+							'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 							'type' => 'discovery-cmd',
 							'exception' => BootstrapHelpers\Logger::buildException($ex),
 						],
@@ -526,7 +526,7 @@ class Discover extends Console\Command\Command
 					$this->logger->error(
 						'Preparing api request failed',
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+							'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 							'type' => 'discovery-cmd',
 							'exception' => BootstrapHelpers\Logger::buildException($ex),
 						],
@@ -544,7 +544,7 @@ class Discover extends Console\Command\Command
 					$this->logger->error(
 						'Calling device api failed',
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+							'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 							'type' => 'discovery-cmd',
 							'exception' => BootstrapHelpers\Logger::buildException($ex),
 						],
@@ -567,7 +567,7 @@ class Discover extends Console\Command\Command
 						'device' => $device,
 						'identifier' => Types\DevicePropertyIdentifier::APP_ID,
 						'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::APP_ID),
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 						'value' => $authorization->getAppId(),
 						'format' => null,
 					]));
@@ -591,7 +591,7 @@ class Discover extends Console\Command\Command
 						'name' => DevicesUtilities\Name::createName(
 							Types\DevicePropertyIdentifier::ENCRYPTION_KEY,
 						),
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 						'value' => $authorization->getEncryptionKey(),
 						'format' => null,
 					]));

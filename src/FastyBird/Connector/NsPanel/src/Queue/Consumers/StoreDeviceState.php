@@ -94,7 +94,7 @@ final class StoreDeviceState implements Queue\Consumer
 			$this->logger->error(
 				'Device could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 					'type' => 'store-device-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -118,7 +118,7 @@ final class StoreDeviceState implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed store device state message',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 				'type' => 'store-device-state-message-consumer',
 				'connector' => [
 					'id' => $entity->getConnector()->toString(),
@@ -284,14 +284,14 @@ final class StoreDeviceState implements Queue\Consumer
 			if ($this->useExchange) {
 				$this->publisher->publish(
 					MetadataTypes\ConnectorSource::get(
-						MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+						MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 					),
 					MetadataTypes\RoutingKey::get(
 						MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION,
 					),
 					$this->entityFactory->create(
 						Utils\Json::encode([
-							'action' => MetadataTypes\PropertyAction::ACTION_SET,
+							'action' => MetadataTypes\PropertyAction::SET,
 							'device' => $device->getId()->toString(),
 							'channel' => $channel->getId()->toString(),
 							'property' => $property->getId()->toString(),

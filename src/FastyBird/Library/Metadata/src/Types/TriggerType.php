@@ -32,9 +32,9 @@ class TriggerType extends Consistence\Enum\Enum
 	/**
 	 * Define types
 	 */
-	public const TYPE_AUTOMATIC = 'automatic';
+	public const AUTOMATIC = 'automatic';
 
-	public const TYPE_MANUAL = 'manual';
+	public const MANUAL = 'manual';
 
 	public function getValue(): string
 	{

@@ -33,13 +33,13 @@ class ModulePrefix extends Consistence\Enum\Enum
 	/**
 	 * Define types
 	 */
-	public const PREFIX_MODULE_ACCOUNTS = Metadata\Constants::MODULE_ACCOUNTS_PREFIX;
+	public const ACCOUNTS = Metadata\Constants::MODULE_ACCOUNTS_PREFIX;
 
-	public const PREFIX_MODULE_DEVICES = Metadata\Constants::MODULE_DEVICES_PREFIX;
+	public const DEVICES = Metadata\Constants::MODULE_DEVICES_PREFIX;
 
-	public const PREFIX_MODULE_TRIGGERS = Metadata\Constants::MODULE_TRIGGERS_PREFIX;
+	public const TRIGGERS = Metadata\Constants::MODULE_TRIGGERS_PREFIX;
 
-	public const PREFIX_MODULE_UI = Metadata\Constants::MODULE_UI_PREFIX;
+	public const UI = Metadata\Constants::MODULE_UI_PREFIX;
 
 	public function getValue(): string
 	{

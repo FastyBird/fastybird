@@ -35,7 +35,7 @@ final class HomeKitConnector extends DevicesSchemas\Connectors\Connector
 	 * Define entity schema type string
 	 */
 	public const SCHEMA_TYPE
-		= MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT
+		= MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT
 		. '/connector/'
 		. Entities\HomeKitConnector::TYPE;
 

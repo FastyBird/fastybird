@@ -51,13 +51,13 @@ final class HttpServerCommandTest extends TestCase
 					$valid = [
 						[
 							[
-								'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WEB_SERVER,
+								'source' => MetadataTypes\PluginSource::WEB_SERVER,
 								'type' => 'server-command',
 							],
 						],
 						[
 							[
-								'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WEB_SERVER,
+								'source' => MetadataTypes\PluginSource::WEB_SERVER,
 								'type' => 'factory',
 							],
 						],

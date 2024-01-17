@@ -356,7 +356,7 @@ final class Gen1HttpApi extends HttpApi
 					$this->logger->debug(
 						'Received device block description is not in valid format',
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+							'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
 							'type' => 'gen1-http-api',
 							'description' => (array) $block,
 						],
@@ -382,7 +382,7 @@ final class Gen1HttpApi extends HttpApi
 						$this->logger->debug(
 							'Received block sensor description is not in valid format',
 							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+								'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
 								'type' => 'gen1-http-api',
 								'description' => (array) $sensor,
 							],
@@ -613,7 +613,7 @@ final class Gen1HttpApi extends HttpApi
 					'data_type' => $this->adjustSensorDataType(
 						$block,
 						$description,
-						MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UNKNOWN),
+						MetadataTypes\DataType::get(MetadataTypes\DataType::UNKNOWN),
 					)->getValue(),
 					'format' => $this->adjustSensorFormat($block, $description, null),
 					'invalid' => null,
@@ -628,7 +628,7 @@ final class Gen1HttpApi extends HttpApi
 					'data_type' => $this->adjustSensorDataType(
 						$block,
 						$description,
-						MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN),
+						MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN),
 					)->getValue(),
 					'format' => $this->adjustSensorFormat($block, $description, null),
 					'invalid' => $invalidValue,
@@ -643,7 +643,7 @@ final class Gen1HttpApi extends HttpApi
 					'data_type' => $this->adjustSensorDataType(
 						$block,
 						$description,
-						MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
+						MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
 					)->getValue(),
 					'format' => $this->adjustSensorFormat($block, $description, null),
 					'invalid' => $invalidValue,
@@ -658,7 +658,7 @@ final class Gen1HttpApi extends HttpApi
 					'data_type' => $this->adjustSensorDataType(
 						$block,
 						$description,
-						MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_USHORT),
+						MetadataTypes\DataType::get(MetadataTypes\DataType::USHORT),
 					)->getValue(),
 					'format' => $this->adjustSensorFormat($block, $description, null),
 					'invalid' => $invalidValue,
@@ -673,7 +673,7 @@ final class Gen1HttpApi extends HttpApi
 					'data_type' => $this->adjustSensorDataType(
 						$block,
 						$description,
-						MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UINT),
+						MetadataTypes\DataType::get(MetadataTypes\DataType::UINT),
 					)->getValue(),
 					'format' => $this->adjustSensorFormat($block, $description, null),
 					'invalid' => $invalidValue,
@@ -688,7 +688,7 @@ final class Gen1HttpApi extends HttpApi
 					'data_type' => $this->adjustSensorDataType(
 						$block,
 						$description,
-						MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_CHAR),
+						MetadataTypes\DataType::get(MetadataTypes\DataType::CHAR),
 					)->getValue(),
 					'format' => $this->adjustSensorFormat($block, $description, null),
 					'invalid' => $invalidValue,
@@ -703,7 +703,7 @@ final class Gen1HttpApi extends HttpApi
 					'data_type' => $this->adjustSensorDataType(
 						$block,
 						$description,
-						MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_SHORT),
+						MetadataTypes\DataType::get(MetadataTypes\DataType::SHORT),
 					)->getValue(),
 					'format' => $this->adjustSensorFormat($block, $description, null),
 					'invalid' => $invalidValue,
@@ -718,7 +718,7 @@ final class Gen1HttpApi extends HttpApi
 					'data_type' => $this->adjustSensorDataType(
 						$block,
 						$description,
-						MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_INT),
+						MetadataTypes\DataType::get(MetadataTypes\DataType::INT),
 					)->getValue(),
 					'format' => $this->adjustSensorFormat($block, $description, null),
 					'invalid' => $invalidValue,
@@ -740,7 +740,7 @@ final class Gen1HttpApi extends HttpApi
 						'data_type' => $this->adjustSensorDataType(
 							$block,
 							$description,
-							MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_INT),
+							MetadataTypes\DataType::get(MetadataTypes\DataType::INT),
 						)->getValue(),
 						'format' => $this->adjustSensorFormat(
 							$block,
@@ -763,7 +763,7 @@ final class Gen1HttpApi extends HttpApi
 						'data_type' => $this->adjustSensorDataType(
 							$block,
 							$description,
-							MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+							MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
 						)->getValue(),
 						'format' => $this->adjustSensorFormat(
 							$block,
@@ -781,7 +781,7 @@ final class Gen1HttpApi extends HttpApi
 					'data_type' => $this->adjustSensorDataType(
 						$block,
 						$description,
-						MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
+						MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
 					)->getValue(),
 					'format' => $this->adjustSensorFormat(
 						$block,
@@ -799,7 +799,7 @@ final class Gen1HttpApi extends HttpApi
 				'data_type' => $this->adjustSensorDataType(
 					$block,
 					$description,
-					MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UNKNOWN),
+					MetadataTypes\DataType::get(MetadataTypes\DataType::UNKNOWN),
 				)->getValue(),
 				'format' => $this->adjustSensorFormat($block, $description, null),
 				'invalid' => null,
@@ -817,14 +817,14 @@ final class Gen1HttpApi extends HttpApi
 			Utils\Strings::startsWith($block, Types\BlockDescription::RELAY)
 			&& Utils\Strings::lower($description) === Types\SensorDescription::OUTPUT
 		) {
-			return MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_SWITCH);
+			return MetadataTypes\DataType::get(MetadataTypes\DataType::SWITCH);
 		}
 
 		if (
 			Utils\Strings::startsWith($block, Types\BlockDescription::LIGHT)
 			&& Utils\Strings::lower($description) === Types\SensorDescription::OUTPUT
 		) {
-			return MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_SWITCH);
+			return MetadataTypes\DataType::get(MetadataTypes\DataType::SWITCH);
 		}
 
 		return $dataType;
@@ -847,19 +847,19 @@ final class Gen1HttpApi extends HttpApi
 		) {
 			return [
 				[
-					[MetadataTypes\DataTypeShort::DATA_TYPE_SWITCH, MetadataTypes\SwitchPayload::PAYLOAD_ON],
-					[MetadataTypes\DataTypeShort::DATA_TYPE_BOOLEAN, true],
-					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\RelayPayload::ON],
+					[MetadataTypes\DataTypeShort::SWITCH, MetadataTypes\SwitchPayload::ON],
+					[MetadataTypes\DataTypeShort::BOOLEAN, true],
+					[MetadataTypes\DataTypeShort::STRING, Types\RelayPayload::ON],
 				],
 				[
-					[MetadataTypes\DataTypeShort::DATA_TYPE_SWITCH, MetadataTypes\SwitchPayload::PAYLOAD_OFF],
-					[MetadataTypes\DataTypeShort::DATA_TYPE_BOOLEAN, false],
-					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\RelayPayload::OFF],
+					[MetadataTypes\DataTypeShort::SWITCH, MetadataTypes\SwitchPayload::OFF],
+					[MetadataTypes\DataTypeShort::BOOLEAN, false],
+					[MetadataTypes\DataTypeShort::STRING, Types\RelayPayload::OFF],
 				],
 				[
-					[MetadataTypes\DataTypeShort::DATA_TYPE_SWITCH, MetadataTypes\SwitchPayload::PAYLOAD_TOGGLE],
+					[MetadataTypes\DataTypeShort::SWITCH, MetadataTypes\SwitchPayload::TOGGLE],
 					null,
-					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\RelayPayload::TOGGLE],
+					[MetadataTypes\DataTypeShort::STRING, Types\RelayPayload::TOGGLE],
 				],
 			];
 		}
@@ -870,28 +870,28 @@ final class Gen1HttpApi extends HttpApi
 		) {
 			return [
 				[
-					[MetadataTypes\DataTypeShort::DATA_TYPE_COVER, MetadataTypes\CoverPayload::PAYLOAD_OPEN],
-					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\RollerPayload::OPEN],
+					[MetadataTypes\DataTypeShort::COVER, MetadataTypes\CoverPayload::OPEN],
+					[MetadataTypes\DataTypeShort::STRING, Types\RollerPayload::OPEN],
 					null,
 				],
 				[
-					[MetadataTypes\DataTypeShort::DATA_TYPE_COVER, MetadataTypes\CoverPayload::PAYLOAD_OPENED],
+					[MetadataTypes\DataTypeShort::COVER, MetadataTypes\CoverPayload::OPENED],
 					null,
-					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\RollerPayload::OPEN],
+					[MetadataTypes\DataTypeShort::STRING, Types\RollerPayload::OPEN],
 				],
 				[
-					[MetadataTypes\DataTypeShort::DATA_TYPE_COVER, MetadataTypes\CoverPayload::PAYLOAD_CLOSE],
-					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\RollerPayload::CLOSE],
+					[MetadataTypes\DataTypeShort::COVER, MetadataTypes\CoverPayload::CLOSE],
+					[MetadataTypes\DataTypeShort::STRING, Types\RollerPayload::CLOSE],
 					null,
 				],
 				[
-					[MetadataTypes\DataTypeShort::DATA_TYPE_COVER, MetadataTypes\CoverPayload::PAYLOAD_CLOSED],
+					[MetadataTypes\DataTypeShort::COVER, MetadataTypes\CoverPayload::CLOSED],
 					null,
-					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\RollerPayload::CLOSE],
+					[MetadataTypes\DataTypeShort::STRING, Types\RollerPayload::CLOSE],
 				],
 				[
-					[MetadataTypes\DataTypeShort::DATA_TYPE_COVER, MetadataTypes\CoverPayload::PAYLOAD_STOP],
-					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\RollerPayload::STOP],
+					[MetadataTypes\DataTypeShort::COVER, MetadataTypes\CoverPayload::STOP],
+					[MetadataTypes\DataTypeShort::STRING, Types\RollerPayload::STOP],
 					null,
 				],
 			];
@@ -903,19 +903,19 @@ final class Gen1HttpApi extends HttpApi
 		) {
 			return [
 				[
-					[MetadataTypes\DataTypeShort::DATA_TYPE_SWITCH, MetadataTypes\SwitchPayload::PAYLOAD_ON],
-					[MetadataTypes\DataTypeShort::DATA_TYPE_BOOLEAN, true],
-					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\LightSwitchPayload::ON],
+					[MetadataTypes\DataTypeShort::SWITCH, MetadataTypes\SwitchPayload::ON],
+					[MetadataTypes\DataTypeShort::BOOLEAN, true],
+					[MetadataTypes\DataTypeShort::STRING, Types\LightSwitchPayload::ON],
 				],
 				[
-					[MetadataTypes\DataTypeShort::DATA_TYPE_SWITCH, MetadataTypes\SwitchPayload::PAYLOAD_OFF],
-					[MetadataTypes\DataTypeShort::DATA_TYPE_BOOLEAN, false],
-					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\LightSwitchPayload::OFF],
+					[MetadataTypes\DataTypeShort::SWITCH, MetadataTypes\SwitchPayload::OFF],
+					[MetadataTypes\DataTypeShort::BOOLEAN, false],
+					[MetadataTypes\DataTypeShort::STRING, Types\LightSwitchPayload::OFF],
 				],
 				[
-					[MetadataTypes\DataTypeShort::DATA_TYPE_SWITCH, MetadataTypes\SwitchPayload::PAYLOAD_TOGGLE],
+					[MetadataTypes\DataTypeShort::SWITCH, MetadataTypes\SwitchPayload::TOGGLE],
 					null,
-					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\LightSwitchPayload::TOGGLE],
+					[MetadataTypes\DataTypeShort::STRING, Types\LightSwitchPayload::TOGGLE],
 				],
 			];
 		}

@@ -175,7 +175,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 	{
 		if ($event->getException() !== null) {
 			$this->logger->warning('Triggering connector termination due to some error', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+				'source' => MetadataTypes\ModuleSource::DEVICES,
 				'type' => 'command',
 				'reason' => [
 					'source' => $event->getSource()->getValue(),
@@ -185,7 +185,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 			]);
 		} else {
 			$this->logger->info('Triggering connector termination', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+				'source' => MetadataTypes\ModuleSource::DEVICES,
 				'type' => 'command',
 				'reason' => [
 					'source' => $event->getSource()->getValue(),
@@ -201,7 +201,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 				return;
 			} catch (Exceptions\Terminate $ex) {
 				$this->logger->error('Connector could not be safely terminated', [
-					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+					'source' => MetadataTypes\ModuleSource::DEVICES,
 					'type' => 'command',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				]);
@@ -269,13 +269,13 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 		} catch (Exceptions\Terminate $ex) {
 			if ($ex->getPrevious() !== null) {
 				$this->logger->error('An error occurred. Stopping connector', [
-					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+					'source' => MetadataTypes\ModuleSource::DEVICES,
 					'type' => 'command',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				]);
 			} else {
 				$this->logger->debug('Stopping connector', [
-					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+					'source' => MetadataTypes\ModuleSource::DEVICES,
 					'type' => 'command',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				]);
@@ -287,7 +287,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 		} catch (Throwable $ex) {
 			// Log caught exception
 			$this->logger->error('An unhandled error occurred', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+				'source' => MetadataTypes\ModuleSource::DEVICES,
 				'type' => 'command',
 				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
@@ -351,7 +351,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 				if ($this->mode === self::MODE_DISCOVER) {
 					$findConnectorControlQuery = new Queries\Configuration\FindConnectorControls();
 					$findConnectorControlQuery->forConnector($connector);
-					$findConnectorControlQuery->byName(MetadataTypes\ControlName::NAME_DISCOVER);
+					$findConnectorControlQuery->byName(MetadataTypes\ControlName::DISCOVER);
 
 					$control = $this->connectorsControlsConfigurationRepository->findOneBy($findConnectorControlQuery);
 
@@ -401,7 +401,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 				}
 
 				$this->logger->error('Connector identifier was not able to get from answer', [
-					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+					'source' => MetadataTypes\ModuleSource::DEVICES,
 					'type' => 'command',
 				]);
 
@@ -421,7 +421,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 				}
 
 				$this->logger->error('Connector was not found', [
-					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+					'source' => MetadataTypes\ModuleSource::DEVICES,
 					'type' => 'command',
 				]);
 
@@ -440,7 +440,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 		if ($this->mode === self::MODE_DISCOVER) {
 			$findConnectorControlQuery = new Queries\Configuration\FindConnectorControls();
 			$findConnectorControlQuery->forConnector($this->connector);
-			$findConnectorControlQuery->byName(MetadataTypes\ControlName::NAME_DISCOVER);
+			$findConnectorControlQuery->byName(MetadataTypes\ControlName::DISCOVER);
 
 			$control = $this->connectorsControlsConfigurationRepository->findOneBy($findConnectorControlQuery);
 
@@ -495,7 +495,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 				$this->dispatcher?->dispatch(new Events\BeforeConnectorDiscoveryStart($this->connector));
 
 				$this->logger->info('Starting connector...', [
-					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+					'source' => MetadataTypes\ModuleSource::DEVICES,
 					'type' => 'command',
 				]);
 
@@ -524,14 +524,14 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 				$this->dispatcher?->dispatch(new Events\BeforeConnectorExecutionStart($this->connector));
 
 				$this->logger->info('Starting connector...', [
-					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+					'source' => MetadataTypes\ModuleSource::DEVICES,
 					'type' => 'command',
 				]);
 
 				try {
 					$this->resetConnector(
 						$this->connector,
-						MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_UNKNOWN),
+						MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::UNKNOWN),
 					);
 
 					assert($this->service instanceof Connectors\Connector);
@@ -543,7 +543,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 
 					$this->connectorConnectionManager->setState(
 						$this->connector,
-						MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_RUNNING),
+						MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::RUNNING),
 					);
 				} catch (Throwable $ex) {
 					throw new Exceptions\Terminate('Connector can\'t be started', $ex->getCode(), $ex);
@@ -605,7 +605,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 		$connector = $this->connector;
 
 		$this->logger->info('Stopping connector...', [
-			'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+			'source' => MetadataTypes\ModuleSource::DEVICES,
 			'type' => 'command',
 		]);
 
@@ -621,7 +621,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 			if ($this->mode === self::MODE_EXECUTE) {
 				$this->resetConnector(
 					$this->connector,
-					MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_DISCONNECTED),
+					MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::DISCONNECTED),
 				);
 			}
 
@@ -638,7 +638,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 					if ($this->mode === self::MODE_EXECUTE) {
 						$this->connectorConnectionManager->setState(
 							$connector,
-							MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_STOPPED),
+							MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STOPPED),
 						);
 					}
 
@@ -656,7 +656,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 
 		} catch (Throwable $ex) {
 			$this->logger->error('Connector could not be stopped. An unexpected error occurred', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+				'source' => MetadataTypes\ModuleSource::DEVICES,
 				'type' => 'command',
 				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);

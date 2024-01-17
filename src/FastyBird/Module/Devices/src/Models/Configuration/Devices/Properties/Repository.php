@@ -100,15 +100,15 @@ final class Repository extends Models\Configuration\Repository
 						->find('.' . Devices\Constants::DATA_STORAGE_PROPERTIES_KEY . '.*');
 
 					if ($type === MetadataDocuments\DevicesModule\DeviceDynamicProperty::class) {
-						$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_DYNAMIC . '")]');
+						$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::DYNAMIC . '")]');
 
 					} elseif ($type === MetadataDocuments\DevicesModule\DeviceVariableProperty::class) {
 						$space = $space->find(
-							'.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_VARIABLE . '")]',
+							'.[?(@.type == "' . MetadataTypes\PropertyType::VARIABLE . '")]',
 						);
 
 					} elseif ($type === MetadataDocuments\DevicesModule\DeviceMappedProperty::class) {
-						$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_MAPPED . '")]');
+						$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::MAPPED . '")]');
 					}
 
 					$result = $queryObject->fetch($space);
@@ -176,15 +176,15 @@ final class Repository extends Models\Configuration\Repository
 						->find('.' . Devices\Constants::DATA_STORAGE_PROPERTIES_KEY . '.*');
 
 					if ($type === MetadataDocuments\DevicesModule\DeviceDynamicProperty::class) {
-						$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_DYNAMIC . '")]');
+						$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::DYNAMIC . '")]');
 
 					} elseif ($type === MetadataDocuments\DevicesModule\DeviceVariableProperty::class) {
 						$space = $space->find(
-							'.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_VARIABLE . '")]',
+							'.[?(@.type == "' . MetadataTypes\PropertyType::VARIABLE . '")]',
 						);
 
 					} elseif ($type === MetadataDocuments\DevicesModule\DeviceMappedProperty::class) {
-						$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_MAPPED . '")]');
+						$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::MAPPED . '")]');
 					}
 
 					$result = $queryObject->fetch($space);

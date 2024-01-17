@@ -127,7 +127,7 @@ final class Television implements Client
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
-							'state' => MetadataTypes\ConnectionState::STATE_ALERT,
+							'state' => MetadataTypes\ConnectionState::ALERT,
 						],
 					),
 				);
@@ -226,7 +226,7 @@ final class Television implements Client
 		if (!$client->isConnected()) {
 			$deviceState = $this->deviceConnectionManager->getState($device);
 
-			if ($deviceState->equalsValue(MetadataTypes\ConnectionState::STATE_ALERT)) {
+			if ($deviceState->equalsValue(MetadataTypes\ConnectionState::ALERT)) {
 				unset($this->devices[$device->getId()->toString()]);
 
 				return false;
@@ -248,14 +248,14 @@ final class Television implements Client
 							[
 								'connector' => $device->getConnector(),
 								'device' => $device->getId(),
-								'state' => MetadataTypes\ConnectionState::STATE_CONNECTED,
+								'state' => MetadataTypes\ConnectionState::CONNECTED,
 							],
 						),
 					);
 
 				} catch (Exceptions\TelevisionApiCall $ex) {
 					$this->logger->error('Calling device api failed', [
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 						'type' => 'television-client',
 						'exception' => BootstrapHelpers\Logger::buildException($ex),
 						'connector' => [
@@ -274,13 +274,13 @@ final class Television implements Client
 							[
 								'connector' => $device->getConnector(),
 								'device' => $device->getId(),
-								'state' => MetadataTypes\ConnectionState::STATE_ALERT,
+								'state' => MetadataTypes\ConnectionState::ALERT,
 							],
 						),
 					);
 
 					$this->logger->error('Connection to device could not be created', [
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 						'type' => 'television-client',
 						'exception' => BootstrapHelpers\Logger::buildException($ex),
 						'connector' => [
@@ -299,7 +299,7 @@ final class Television implements Client
 							[
 								'connector' => $device->getConnector(),
 								'device' => $device->getId(),
-								'state' => MetadataTypes\ConnectionState::STATE_ALERT,
+								'state' => MetadataTypes\ConnectionState::ALERT,
 							],
 						),
 					);
@@ -311,7 +311,7 @@ final class Television implements Client
 					}
 
 					$this->logger->error('Device is in invalid state and could not be handled', [
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 						'type' => 'television-client',
 						'exception' => BootstrapHelpers\Logger::buildException($ex),
 						'connector' => [
@@ -331,7 +331,7 @@ final class Television implements Client
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
-							'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
+							'state' => MetadataTypes\ConnectionState::DISCONNECTED,
 						],
 					),
 				);
@@ -366,7 +366,7 @@ final class Television implements Client
 
 			$deviceState = $this->deviceConnectionManager->getState($device);
 
-			if ($deviceState->equalsValue(MetadataTypes\ConnectionState::STATE_ALERT)) {
+			if ($deviceState->equalsValue(MetadataTypes\ConnectionState::ALERT)) {
 				unset($this->devices[$device->getId()->toString()]);
 
 				return false;
@@ -396,13 +396,13 @@ final class Television implements Client
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
-							'state' => MetadataTypes\ConnectionState::STATE_ALERT,
+							'state' => MetadataTypes\ConnectionState::ALERT,
 						],
 					),
 				);
 
 				$this->logger->error('Preparing api request failed', [
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 					'type' => 'television-client',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'connector' => [
@@ -416,7 +416,7 @@ final class Television implements Client
 				continue;
 			} catch (Exceptions\TelevisionApiCall $ex) {
 				$this->logger->error('Calling device api failed', [
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 					'type' => 'television-client',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'connector' => [
@@ -435,7 +435,7 @@ final class Television implements Client
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
-							'state' => MetadataTypes\ConnectionState::STATE_ALERT,
+							'state' => MetadataTypes\ConnectionState::ALERT,
 						],
 					),
 				);
@@ -447,7 +447,7 @@ final class Television implements Client
 				}
 
 				$this->logger->error('Device is in invalid state and could not be handled', [
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 					'type' => 'television-client',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'connector' => [
@@ -489,7 +489,7 @@ final class Television implements Client
 					$this->logger->warning(
 						'Could not call local api',
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+							'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 							'type' => 'television-client',
 							'exception' => BootstrapHelpers\Logger::buildException($ex),
 							'connector' => [
@@ -508,7 +508,7 @@ final class Television implements Client
 								[
 									'connector' => $device->getConnector(),
 									'device' => $device->getId(),
-									'state' => MetadataTypes\ConnectionState::STATE_ALERT,
+									'state' => MetadataTypes\ConnectionState::ALERT,
 								],
 							),
 						);
@@ -519,7 +519,7 @@ final class Television implements Client
 								[
 									'connector' => $device->getConnector(),
 									'device' => $device->getId(),
-									'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
+									'state' => MetadataTypes\ConnectionState::DISCONNECTED,
 								],
 							),
 						);
@@ -569,7 +569,7 @@ final class Television implements Client
 				$this->logger->warning(
 					'Event subscription with device failed',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 						'type' => 'television-client',
 						'exception' => BootstrapHelpers\Logger::buildException($ex),
 						'connector' => [
@@ -587,7 +587,7 @@ final class Television implements Client
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
-							'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
+							'state' => MetadataTypes\ConnectionState::DISCONNECTED,
 						],
 					),
 				);

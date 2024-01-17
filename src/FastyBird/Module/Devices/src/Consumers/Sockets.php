@@ -50,7 +50,7 @@ final class Sockets implements ExchangeConsumer\Consumer
 		MetadataDocuments\Document|null $entity,
 	): void
 	{
-		if ($source->equalsValue(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES)) {
+		if ($source->equalsValue(MetadataTypes\ModuleSource::DEVICES)) {
 			return;
 		}
 
@@ -64,7 +64,7 @@ final class Sockets implements ExchangeConsumer\Consumer
 
 		if ($result) {
 			$this->logger->debug('Successfully published message', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+				'source' => MetadataTypes\ModuleSource::DEVICES,
 				'type' => 'exchange-consumer',
 				'message' => [
 					'routing_key' => $routingKey->getValue(),
@@ -75,7 +75,7 @@ final class Sockets implements ExchangeConsumer\Consumer
 
 		} else {
 			$this->logger->error('Message could not be published to exchange', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+				'source' => MetadataTypes\ModuleSource::DEVICES,
 				'type' => 'exchange-consumer',
 				'message' => [
 					'routing_key' => $routingKey->getValue(),
@@ -86,7 +86,7 @@ final class Sockets implements ExchangeConsumer\Consumer
 		}
 
 		$this->logger->debug('Received message from exchange was pushed to WS clients', [
-			'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+			'source' => MetadataTypes\ModuleSource::DEVICES,
 			'type' => 'exchange-consumer',
 			'message' => [
 				'source' => $source->getValue(),
@@ -108,7 +108,7 @@ final class Sockets implements ExchangeConsumer\Consumer
 				$topic = $this->topicsStorage->getTopic($link);
 
 				$this->logger->debug('Broadcasting message to topic', [
-					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+					'source' => MetadataTypes\ModuleSource::DEVICES,
 					'type' => 'exchange-consumer',
 					'link' => $link,
 				]);
@@ -119,14 +119,14 @@ final class Sockets implements ExchangeConsumer\Consumer
 			return true;
 		} catch (Utils\JsonException $ex) {
 			$this->logger->error('Data could not be converted to message', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+				'source' => MetadataTypes\ModuleSource::DEVICES,
 				'type' => 'exchange-consumer',
 				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
 
 		} catch (Throwable $ex) {
 			$this->logger->error('Data could not be broadcasts to clients', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+				'source' => MetadataTypes\ModuleSource::DEVICES,
 				'type' => 'exchange-consumer',
 				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);

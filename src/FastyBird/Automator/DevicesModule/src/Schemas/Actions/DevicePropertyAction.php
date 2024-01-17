@@ -37,7 +37,7 @@ final class DevicePropertyAction extends TriggersSchemas\Actions\Action
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = ModuleSource::SOURCE_MODULE_TRIGGERS . '/action/device-property';
+	public const SCHEMA_TYPE = ModuleSource::TRIGGERS . '/action/device-property';
 
 	public function getType(): string
 	{

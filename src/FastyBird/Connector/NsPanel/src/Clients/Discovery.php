@@ -74,7 +74,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$this->logger->debug(
 				'Starting sub-devices discovery for selected NS Panel',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 					'type' => 'discovery-client',
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
@@ -91,7 +91,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$this->logger->debug(
 				'Starting sub-devices discovery for all registered NS Panels',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 					'type' => 'discovery-client',
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
@@ -175,7 +175,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$this->logger->error(
 				'Loading sub-devices from NS Panel failed',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 					'type' => 'discovery-client',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'connector' => [
@@ -236,7 +236,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$this->logger->error(
 					'Could not map discovered device to result',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 						'type' => 'discovery-client',
 						'exception' => BootstrapHelpers\Logger::buildException($ex),
 						'connector' => [

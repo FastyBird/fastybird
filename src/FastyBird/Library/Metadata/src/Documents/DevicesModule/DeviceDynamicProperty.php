@@ -45,7 +45,7 @@ final class DeviceDynamicProperty extends DeviceProperty
 		Uuid\UuidInterface $id,
 		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(
 			class: Types\PropertyType::class,
-			allowedValues: [Types\PropertyType::TYPE_DYNAMIC],
+			allowedValues: [Types\PropertyType::DYNAMIC],
 		)]
 		private readonly Types\PropertyType $type,
 		Uuid\UuidInterface $device,

@@ -30,9 +30,9 @@ use function strval;
 class ConnectorControlName extends Consistence\Enum\Enum
 {
 
-	public const REBOOT = MetadataTypes\ControlName::NAME_REBOOT;
+	public const REBOOT = MetadataTypes\ControlName::REBOOT;
 
-	public const DISCOVER = MetadataTypes\ControlName::NAME_DISCOVER;
+	public const DISCOVER = MetadataTypes\ControlName::DISCOVER;
 
 	public function getValue(): string
 	{

@@ -84,15 +84,15 @@ class DummyConditionEntity extends Entities\Conditions\Condition
 
 	public function validate(string $value): bool
 	{
-		if ($this->operator->equalsValue(MetadataTypes\TriggerConditionOperator::OPERATOR_VALUE_EQUAL)) {
+		if ($this->operator->equalsValue(MetadataTypes\TriggerConditionOperator::EQUAL)) {
 			return $this->operand === $value;
 		}
 
-		if ($this->operator->equalsValue(MetadataTypes\TriggerConditionOperator::OPERATOR_VALUE_ABOVE)) {
+		if ($this->operator->equalsValue(MetadataTypes\TriggerConditionOperator::ABOVE)) {
 			return (float) ($this->operand) < (float) $value;
 		}
 
-		if ($this->operator->equalsValue(MetadataTypes\TriggerConditionOperator::OPERATOR_VALUE_BELOW)) {
+		if ($this->operator->equalsValue(MetadataTypes\TriggerConditionOperator::BELOW)) {
 			return (float) ($this->operand) > (float) $value;
 		}
 

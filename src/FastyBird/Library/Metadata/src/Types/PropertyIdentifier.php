@@ -32,65 +32,65 @@ class PropertyIdentifier extends Consistence\Enum\Enum
 	/**
 	 * Define device properties identifiers
 	 */
-	public const IDENTIFIER_STATE = 'state';
+	public const STATE = 'state';
 
-	public const IDENTIFIER_SERVER = 'server';
+	public const SERVER = 'server';
 
-	public const IDENTIFIER_PORT = 'port';
+	public const PORT = 'port';
 
-	public const IDENTIFIER_SECURED_PORT = 'secured_port';
+	public const SECURED_PORT = 'secured_port';
 
-	public const IDENTIFIER_BAUD_RATE = 'baud_rate';
+	public const BAUD_RATE = 'baud_rate';
 
-	public const IDENTIFIER_INTERFACE = 'interface';
+	public const INTERFACE = 'interface';
 
-	public const IDENTIFIER_ADDRESS = 'address';
+	public const ADDRESS = 'address';
 
-	public const IDENTIFIER_BATTERY = 'battery';
+	public const BATTERY = 'battery';
 
-	public const IDENTIFIER_WIFI = 'wifi';
+	public const WIFI = 'wifi';
 
-	public const IDENTIFIER_SIGNAL = 'signal';
+	public const SIGNAL = 'signal';
 
-	public const IDENTIFIER_RSSI = 'rssi';
+	public const RSSI = 'rssi';
 
-	public const IDENTIFIER_SSID = 'ssid';
+	public const SSID = 'ssid';
 
-	public const IDENTIFIER_VCC = 'vcc';
+	public const VCC = 'vcc';
 
-	public const IDENTIFIER_CPU_LOAD = 'cpu_load';
+	public const CPU_LOAD = 'cpu_load';
 
-	public const IDENTIFIER_UPTIME = 'uptime';
+	public const UPTIME = 'uptime';
 
-	public const IDENTIFIER_IP_ADDRESS = 'ip_address';
+	public const IP_ADDRESS = 'ip_address';
 
-	public const IDENTIFIER_DOMAIN = 'domain';
+	public const DOMAIN = 'domain';
 
-	public const IDENTIFIER_STATUS_LED = 'status_led';
+	public const STATUS_LED = 'status_led';
 
-	public const IDENTIFIER_FREE_HEAP = 'free_heap';
+	public const FREE_HEAP = 'free_heap';
 
-	public const IDENTIFIER_HARDWARE_MANUFACTURER = 'hardware_manufacturer';
+	public const HARDWARE_MANUFACTURER = 'hardware_manufacturer';
 
-	public const IDENTIFIER_HARDWARE_MODEL = 'hardware_model';
+	public const HARDWARE_MODEL = 'hardware_model';
 
-	public const IDENTIFIER_HARDWARE_VERSION = 'hardware_version';
+	public const HARDWARE_VERSION = 'hardware_version';
 
-	public const IDENTIFIER_HARDWARE_MAC_ADDRESS = 'hardware_mac_address';
+	public const HARDWARE_MAC_ADDRESS = 'hardware_mac_address';
 
-	public const IDENTIFIER_FIRMWARE_MANUFACTURER = 'firmware_manufacturer';
+	public const FIRMWARE_MANUFACTURER = 'firmware_manufacturer';
 
-	public const IDENTIFIER_FIRMWARE_NAME = 'firmware_name';
+	public const FIRMWARE_NAME = 'firmware_name';
 
-	public const IDENTIFIER_FIRMWARE_VERSION = 'firmware_version';
+	public const FIRMWARE_VERSION = 'firmware_version';
 
-	public const IDENTIFIER_SERIAL_NUMBER = 'serial_number';
+	public const SERIAL_NUMBER = 'serial_number';
 
-	public const IDENTIFIER_ACCESS_TOKEN = 'access_token';
+	public const ACCESS_TOKEN = 'access_token';
 
-	public const IDENTIFIER_STATE_READING_DELAY = 'state_reading_delay';
+	public const STATE_READING_DELAY = 'state_reading_delay';
 
-	public const IDENTIFIER_STATE_PROCESSING_DELAY = 'state_processing_delay';
+	public const STATE_PROCESSING_DELAY = 'state_processing_delay';
 
 	public function getValue(): string
 	{

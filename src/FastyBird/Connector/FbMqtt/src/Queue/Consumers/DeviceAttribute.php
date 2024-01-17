@@ -150,7 +150,7 @@ final class DeviceAttribute implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed device message',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
 				'type' => 'device-attribute-message-consumer',
 				'device' => [
 					'identifier' => $entity->getDevice(),
@@ -183,7 +183,7 @@ final class DeviceAttribute implements Queue\Consumer
 			if ($propertyName === Types\DevicePropertyIdentifier::STATE) {
 				$this->deviceConnectionManager->setState(
 					$device,
-					MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_UNKNOWN),
+					MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::UNKNOWN),
 				);
 			} else {
 				$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
@@ -202,7 +202,7 @@ final class DeviceAttribute implements Queue\Consumer
 							'name' => $propertyName,
 							'settable' => false,
 							'queryable' => false,
-							'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+							'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 						]));
 
 					} elseif (in_array($propertyName, [
@@ -219,7 +219,7 @@ final class DeviceAttribute implements Queue\Consumer
 							'name' => $propertyName,
 							'settable' => false,
 							'queryable' => false,
-							'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UINT),
+							'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UINT),
 						]));
 
 					} else {
@@ -229,7 +229,7 @@ final class DeviceAttribute implements Queue\Consumer
 							'identifier' => $propertyName,
 							'settable' => false,
 							'queryable' => false,
-							'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UNKNOWN),
+							'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UNKNOWN),
 						]));
 					}
 				}
@@ -274,7 +274,7 @@ final class DeviceAttribute implements Queue\Consumer
 							'entity' => DevicesEntities\Devices\Properties\Variable::class,
 							'device' => $device,
 							'identifier' => $propertyName,
-							'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+							'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 						]));
 					}
 				}
@@ -293,7 +293,7 @@ final class DeviceAttribute implements Queue\Consumer
 							'entity' => DevicesEntities\Devices\Properties\Variable::class,
 							'device' => $device,
 							'identifier' => $propertyName,
-							'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+							'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 						]));
 					}
 				}

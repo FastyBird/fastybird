@@ -107,7 +107,7 @@ final class StoreCloudDevice implements Queue\Consumer
 			$this->logger->debug(
 				'Device was created',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 					'type' => 'store-cloud-device-message-consumer',
 					'device' => [
 						'id' => $device->getId()->toString(),
@@ -122,56 +122,56 @@ final class StoreCloudDevice implements Queue\Consumer
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getLocalKey(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 			Types\DevicePropertyIdentifier::LOCAL_KEY,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::LOCAL_KEY),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getIpAddress(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 			Types\DevicePropertyIdentifier::IP_ADDRESS,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::IP_ADDRESS),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getCategory(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 			Types\DevicePropertyIdentifier::CATEGORY,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::CATEGORY),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getIcon(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 			Types\DevicePropertyIdentifier::ICON,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::ICON),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getLatitude(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 			Types\DevicePropertyIdentifier::LATITUDE,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::LATITUDE),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getLongitude(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 			Types\DevicePropertyIdentifier::LONGITUDE,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::LONGITUDE),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getProductId(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 			Types\DevicePropertyIdentifier::PRODUCT_ID,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::PRODUCT_ID),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getProductName(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 			Types\DevicePropertyIdentifier::PRODUCT_NAME,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::PRODUCT_NAME),
 		);
@@ -179,21 +179,21 @@ final class StoreCloudDevice implements Queue\Consumer
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getModel(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 			Types\DevicePropertyIdentifier::MODEL,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MODEL),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getMac(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 			Types\DevicePropertyIdentifier::MAC_ADDRESS,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MAC_ADDRESS),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getSn(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
 			Types\DevicePropertyIdentifier::SERIAL_NUMBER,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::SERIAL_NUMBER),
 		);
@@ -215,7 +215,7 @@ final class StoreCloudDevice implements Queue\Consumer
 				$this->logger->debug(
 					'Device channel was created',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 						'type' => 'store-cloud-device-message-consumer',
 						'device' => [
 							'id' => $device->getId()->toString(),
@@ -251,7 +251,7 @@ final class StoreCloudDevice implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed store device message',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 				'type' => 'store-cloud-device-message-consumer',
 				'device' => [
 					'id' => $device->getId()->toString(),

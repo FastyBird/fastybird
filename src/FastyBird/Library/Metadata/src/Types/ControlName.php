@@ -32,17 +32,17 @@ class ControlName extends Consistence\Enum\Enum
 	/**
 	 * Define controls names
 	 */
-	public const NAME_CONFIGURE = 'configure';
+	public const CONFIGURE = 'configure';
 
-	public const NAME_RESET = 'reset';
+	public const RESET = 'reset';
 
-	public const NAME_FACTORY_RESET = 'factory_reset';
+	public const FACTORY_RESET = 'factory_reset';
 
-	public const NAME_REBOOT = 'reboot';
+	public const REBOOT = 'reboot';
 
-	public const NAME_TRIGGER = 'trigger';
+	public const TRIGGER = 'trigger';
 
-	public const NAME_DISCOVER = 'discover';
+	public const DISCOVER = 'discover';
 
 	public function getValue(): string
 	{

@@ -83,7 +83,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Connector could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'write-device-property-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -112,7 +112,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Device could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'write-device-property-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -136,7 +136,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 			$this->logger->warning(
 				'Accessory for received device property message was not found in accessory driver',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'write-device-property-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -163,7 +163,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Device property could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'write-device-property-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -205,7 +205,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 								$this->logger->warning(
 									'State value could not be converted from mapped parent',
 									[
-										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+										'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 										'type' => 'exchange-writer',
 										'exception' => BootstrapHelpers\Logger::buildException($ex),
 										'connector' => [
@@ -272,7 +272,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed write device state message',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 				'type' => 'write-device-property-state-message-consumer',
 				'connector' => [
 					'id' => $entity->getConnector()->toString(),

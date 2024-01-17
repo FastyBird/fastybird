@@ -125,7 +125,7 @@ final class Mqtt implements Client
 						$this->logger->info(
 							sprintf('Subscribed to: %s', $subscription->getFilter()),
 							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+								'source' => MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT,
 								'type' => 'mqtt-client',
 								'connector' => [
 									'id' => $this->connector->getId()->toString(),
@@ -137,7 +137,7 @@ final class Mqtt implements Client
 						$this->logger->error(
 							$ex->getMessage(),
 							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+								'source' => MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT,
 								'type' => 'mqtt-client',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'connector' => [

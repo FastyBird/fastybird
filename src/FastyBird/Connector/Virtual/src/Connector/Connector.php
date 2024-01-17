@@ -72,7 +72,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Starting Virtual connector service',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -97,7 +97,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Virtual connector service has been started',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -113,7 +113,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->error(
 			'Devices discovery is not allowed for Virtual connector type',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -137,7 +137,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Virtual connector has been terminated',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),

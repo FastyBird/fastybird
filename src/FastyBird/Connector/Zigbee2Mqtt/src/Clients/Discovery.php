@@ -139,7 +139,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$this->logger->debug(
 				'Starting sub-devices discovery for selected Zigbee2MQTT bridge',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT,
 					'type' => 'discovery-client',
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
@@ -156,7 +156,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$this->logger->debug(
 				'Starting sub-devices discovery for all registered Zigbee2MQTT bridges',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT,
 					'type' => 'discovery-client',
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
@@ -212,7 +212,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 						$this->logger->info(
 							sprintf('Subscribed to: %s', $subscription->getFilter()),
 							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+								'source' => MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT,
 								'type' => 'discovery-client',
 								'connector' => [
 									'id' => $this->connector->getId()->toString(),
@@ -232,7 +232,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 						$this->logger->error(
 							$ex->getMessage(),
 							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+								'source' => MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT,
 								'type' => 'discovery-client',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 								'connector' => [
@@ -275,7 +275,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 		$state = $property !== null ? $this->connectorPropertiesStatesManager->readValue($property) : null;
 
-		return $state?->getActualValue() === MetadataTypes\ConnectionState::STATE_RUNNING;
+		return $state?->getActualValue() === MetadataTypes\ConnectionState::RUNNING;
 	}
 
 	/**

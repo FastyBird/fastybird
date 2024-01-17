@@ -32,13 +32,13 @@ class IdentityState extends Consistence\Enum\Enum
 	/**
 	 * Define states
 	 */
-	public const STATE_ACTIVE = 'active';
+	public const ACTIVE = 'active';
 
-	public const STATE_BLOCKED = 'blocked';
+	public const BLOCKED = 'blocked';
 
-	public const STATE_DELETED = 'deleted';
+	public const DELETED = 'deleted';
 
-	public const STATE_INVALID = 'invalid';
+	public const INVALID = 'invalid';
 
 	public function getValue(): string
 	{

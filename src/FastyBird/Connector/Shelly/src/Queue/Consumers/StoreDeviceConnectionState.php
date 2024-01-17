@@ -91,10 +91,10 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 			);
 
 			if (
-				$entity->getState()->equalsValue(MetadataTypes\ConnectionState::STATE_DISCONNECTED)
-				|| $entity->getState()->equalsValue(MetadataTypes\ConnectionState::STATE_LOST)
-				|| $entity->getState()->equalsValue(MetadataTypes\ConnectionState::STATE_ALERT)
-				|| $entity->getState()->equalsValue(MetadataTypes\ConnectionState::STATE_UNKNOWN)
+				$entity->getState()->equalsValue(MetadataTypes\ConnectionState::DISCONNECTED)
+				|| $entity->getState()->equalsValue(MetadataTypes\ConnectionState::LOST)
+				|| $entity->getState()->equalsValue(MetadataTypes\ConnectionState::ALERT)
+				|| $entity->getState()->equalsValue(MetadataTypes\ConnectionState::UNKNOWN)
 			) {
 				$findDevicePropertiesQuery = new DevicesQueries\Configuration\FindDeviceDynamicProperties();
 				$findDevicePropertiesQuery->forDevice($device);
@@ -133,7 +133,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed device connection state message',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
 				'type' => 'store-device-connection-state-message-consumer',
 				'connector' => [
 					'id' => $entity->getConnector()->toString(),

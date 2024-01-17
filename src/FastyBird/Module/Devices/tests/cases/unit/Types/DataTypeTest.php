@@ -11,29 +11,29 @@ final class DataTypeTest extends TestCase
 
 	public function testCreateDatatype(): void
 	{
-		$datatype = MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_INT);
+		$datatype = MetadataTypes\DataType::get(MetadataTypes\DataType::INT);
 
-		self::assertSame(MetadataTypes\DataType::DATA_TYPE_INT, $datatype->getValue());
+		self::assertSame(MetadataTypes\DataType::INT, $datatype->getValue());
 
-		$datatype = MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT);
+		$datatype = MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT);
 
-		self::assertSame(MetadataTypes\DataType::DATA_TYPE_FLOAT, $datatype->getValue());
+		self::assertSame(MetadataTypes\DataType::FLOAT, $datatype->getValue());
 
-		$datatype = MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN);
+		$datatype = MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN);
 
-		self::assertSame(MetadataTypes\DataType::DATA_TYPE_BOOLEAN, $datatype->getValue());
+		self::assertSame(MetadataTypes\DataType::BOOLEAN, $datatype->getValue());
 
-		$datatype = MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING);
+		$datatype = MetadataTypes\DataType::get(MetadataTypes\DataType::STRING);
 
-		self::assertSame(MetadataTypes\DataType::DATA_TYPE_STRING, $datatype->getValue());
+		self::assertSame(MetadataTypes\DataType::STRING, $datatype->getValue());
 
-		$datatype = MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM);
+		$datatype = MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM);
 
-		self::assertSame(MetadataTypes\DataType::DATA_TYPE_ENUM, $datatype->getValue());
+		self::assertSame(MetadataTypes\DataType::ENUM, $datatype->getValue());
 
-		$datatype = MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_COLOR);
+		$datatype = MetadataTypes\DataType::get(MetadataTypes\DataType::COLOR);
 
-		self::assertSame(MetadataTypes\DataType::DATA_TYPE_COLOR, $datatype->getValue());
+		self::assertSame(MetadataTypes\DataType::COLOR, $datatype->getValue());
 	}
 
 	public function testInvalidDatatype(): void

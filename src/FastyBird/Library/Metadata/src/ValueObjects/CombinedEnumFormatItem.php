@@ -108,33 +108,33 @@ final class CombinedEnumFormatItem
 		}
 
 		if (
-			$this->dataType->equalsValue(Types\DataTypeShort::DATA_TYPE_CHAR)
-			|| $this->dataType->equalsValue(Types\DataTypeShort::DATA_TYPE_UCHAR)
-			|| $this->dataType->equalsValue(Types\DataTypeShort::DATA_TYPE_SHORT)
-			|| $this->dataType->equalsValue(Types\DataTypeShort::DATA_TYPE_USHORT)
-			|| $this->dataType->equalsValue(Types\DataTypeShort::DATA_TYPE_INT)
-			|| $this->dataType->equalsValue(Types\DataTypeShort::DATA_TYPE_UINT)
+			$this->dataType->equalsValue(Types\DataTypeShort::CHAR)
+			|| $this->dataType->equalsValue(Types\DataTypeShort::UCHAR)
+			|| $this->dataType->equalsValue(Types\DataTypeShort::SHORT)
+			|| $this->dataType->equalsValue(Types\DataTypeShort::USHORT)
+			|| $this->dataType->equalsValue(Types\DataTypeShort::INT)
+			|| $this->dataType->equalsValue(Types\DataTypeShort::UINT)
 		) {
 			return intval($this->value);
-		} elseif ($this->dataType->equalsValue(Types\DataTypeShort::DATA_TYPE_FLOAT)) {
+		} elseif ($this->dataType->equalsValue(Types\DataTypeShort::FLOAT)) {
 			return floatval($this->value);
-		} elseif ($this->dataType->equalsValue(Types\DataTypeShort::DATA_TYPE_STRING)) {
+		} elseif ($this->dataType->equalsValue(Types\DataTypeShort::STRING)) {
 			return strval($this->value);
-		} elseif ($this->dataType->equalsValue(Types\DataTypeShort::DATA_TYPE_BOOLEAN)) {
+		} elseif ($this->dataType->equalsValue(Types\DataTypeShort::BOOLEAN)) {
 			return in_array(Utils\Strings::lower(strval($this->value)), ['true', 't', 'yes', 'y', '1', 'on'], true);
-		} elseif ($this->dataType->equalsValue(Types\DataTypeShort::DATA_TYPE_BUTTON)) {
+		} elseif ($this->dataType->equalsValue(Types\DataTypeShort::BUTTON)) {
 			if (Types\ButtonPayload::isValidValue(Utils\Strings::lower(strval($this->value)))) {
 				return Types\ButtonPayload::get(Utils\Strings::lower(strval($this->value)));
 			}
 
 			throw new Exceptions\InvalidState('Combined enum value is not valid');
-		} elseif ($this->dataType->equalsValue(Types\DataTypeShort::DATA_TYPE_SWITCH)) {
+		} elseif ($this->dataType->equalsValue(Types\DataTypeShort::SWITCH)) {
 			if (Types\SwitchPayload::isValidValue(Utils\Strings::lower(strval($this->value)))) {
 				return Types\SwitchPayload::get(Utils\Strings::lower(strval($this->value)));
 			}
 
 			throw new Exceptions\InvalidState('Combined enum value is not valid');
-		} elseif ($this->dataType->equalsValue(Types\DataTypeShort::DATA_TYPE_COVER)) {
+		} elseif ($this->dataType->equalsValue(Types\DataTypeShort::COVER)) {
 			if (Types\CoverPayload::isValidValue(Utils\Strings::lower(strval($this->value)))) {
 				return Types\CoverPayload::get(Utils\Strings::lower(strval($this->value)));
 			}
@@ -176,18 +176,18 @@ final class CombinedEnumFormatItem
 	private function validateDataType(Types\DataTypeShort $dataType): bool
 	{
 		return in_array($dataType->getValue(), [
-			Types\DataTypeShort::DATA_TYPE_CHAR,
-			Types\DataTypeShort::DATA_TYPE_UCHAR,
-			Types\DataTypeShort::DATA_TYPE_SHORT,
-			Types\DataTypeShort::DATA_TYPE_USHORT,
-			Types\DataTypeShort::DATA_TYPE_INT,
-			Types\DataTypeShort::DATA_TYPE_UINT,
-			Types\DataTypeShort::DATA_TYPE_FLOAT,
-			Types\DataTypeShort::DATA_TYPE_BOOLEAN,
-			Types\DataTypeShort::DATA_TYPE_STRING,
-			Types\DataTypeShort::DATA_TYPE_BUTTON,
-			Types\DataTypeShort::DATA_TYPE_SWITCH,
-			Types\DataTypeShort::DATA_TYPE_COVER,
+			Types\DataTypeShort::CHAR,
+			Types\DataTypeShort::UCHAR,
+			Types\DataTypeShort::SHORT,
+			Types\DataTypeShort::USHORT,
+			Types\DataTypeShort::INT,
+			Types\DataTypeShort::UINT,
+			Types\DataTypeShort::FLOAT,
+			Types\DataTypeShort::BOOLEAN,
+			Types\DataTypeShort::STRING,
+			Types\DataTypeShort::BUTTON,
+			Types\DataTypeShort::SWITCH,
+			Types\DataTypeShort::COVER,
 		], true);
 	}
 

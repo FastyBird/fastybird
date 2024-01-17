@@ -97,13 +97,13 @@ final class Properties implements Common\EventSubscriber
 
 		if ($stateProperty !== null) {
 			$this->devicesPropertiesManager->update($stateProperty, Utils\ArrayHash::from([
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
+				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
 				'unit' => null,
 				'format' => [
-					MetadataTypes\ConnectionState::STATE_CONNECTED,
-					MetadataTypes\ConnectionState::STATE_DISCONNECTED,
-					MetadataTypes\ConnectionState::STATE_ALERT,
-					MetadataTypes\ConnectionState::STATE_UNKNOWN,
+					MetadataTypes\ConnectionState::CONNECTED,
+					MetadataTypes\ConnectionState::DISCONNECTED,
+					MetadataTypes\ConnectionState::ALERT,
+					MetadataTypes\ConnectionState::UNKNOWN,
 				],
 				'settable' => false,
 				'queryable' => false,
@@ -114,13 +114,13 @@ final class Properties implements Common\EventSubscriber
 				'entity' => DevicesEntities\Devices\Properties\Dynamic::class,
 				'identifier' => Types\DevicePropertyIdentifier::STATE,
 				'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::STATE),
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
+				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
 				'unit' => null,
 				'format' => [
-					MetadataTypes\ConnectionState::STATE_CONNECTED,
-					MetadataTypes\ConnectionState::STATE_DISCONNECTED,
-					MetadataTypes\ConnectionState::STATE_ALERT,
-					MetadataTypes\ConnectionState::STATE_UNKNOWN,
+					MetadataTypes\ConnectionState::CONNECTED,
+					MetadataTypes\ConnectionState::DISCONNECTED,
+					MetadataTypes\ConnectionState::ALERT,
+					MetadataTypes\ConnectionState::UNKNOWN,
 				],
 				'settable' => false,
 				'queryable' => false,

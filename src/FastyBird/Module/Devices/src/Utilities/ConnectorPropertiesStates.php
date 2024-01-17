@@ -232,7 +232,7 @@ final class ConnectorPropertiesStates extends PropertiesStates
 					$this->logger->error(
 						'Property stored actual value was not valid',
 						[
-							'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+							'source' => MetadataTypes\ModuleSource::DEVICES,
 							'type' => 'connector-properties-states',
 							'exception' => BootstrapHelpers\Logger::buildException($ex),
 						],
@@ -260,7 +260,7 @@ final class ConnectorPropertiesStates extends PropertiesStates
 						$this->logger->warning(
 							'Property is not settable but has stored expected value',
 							[
-								'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+								'source' => MetadataTypes\ModuleSource::DEVICES,
 								'type' => 'connector-properties-states',
 							],
 						);
@@ -278,7 +278,7 @@ final class ConnectorPropertiesStates extends PropertiesStates
 					$this->logger->error(
 						'Property stored expected value was not valid',
 						[
-							'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+							'source' => MetadataTypes\ModuleSource::DEVICES,
 							'type' => 'connector-properties-states',
 							'exception' => BootstrapHelpers\Logger::buildException($ex),
 						],
@@ -297,7 +297,7 @@ final class ConnectorPropertiesStates extends PropertiesStates
 			$this->logger->warning(
 				'Connectors states repository is not configured. State could not be fetched',
 				[
-					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+					'source' => MetadataTypes\ModuleSource::DEVICES,
 					'type' => 'connector-properties-states',
 				],
 			);
@@ -362,7 +362,7 @@ final class ConnectorPropertiesStates extends PropertiesStates
 				$this->logger->error(
 					'Provided property actual value is not valid',
 					[
-						'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+						'source' => MetadataTypes\ModuleSource::DEVICES,
 						'type' => 'connector-properties-states',
 						'exception' => BootstrapHelpers\Logger::buildException($ex),
 					],
@@ -405,7 +405,7 @@ final class ConnectorPropertiesStates extends PropertiesStates
 					$this->logger->error(
 						'Provided property expected value was not valid',
 						[
-							'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+							'source' => MetadataTypes\ModuleSource::DEVICES,
 							'type' => 'connector-properties-states',
 							'exception' => BootstrapHelpers\Logger::buildException($ex),
 						],
@@ -433,7 +433,7 @@ final class ConnectorPropertiesStates extends PropertiesStates
 				$this->logger->debug(
 					'Connector property state was created',
 					[
-						'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+						'source' => MetadataTypes\ModuleSource::DEVICES,
 						'type' => 'connector-properties-states',
 						'property' => [
 							'id' => $property->getId()->toString(),
@@ -451,7 +451,7 @@ final class ConnectorPropertiesStates extends PropertiesStates
 				$this->logger->debug(
 					'Connector property state was updated',
 					[
-						'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+						'source' => MetadataTypes\ModuleSource::DEVICES,
 						'type' => 'connector-properties-states',
 						'property' => [
 							'id' => $property->getId()->toString(),
@@ -464,7 +464,7 @@ final class ConnectorPropertiesStates extends PropertiesStates
 			$this->logger->warning(
 				'Connectors states manager is not configured. State could not be saved',
 				[
-					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+					'source' => MetadataTypes\ModuleSource::DEVICES,
 					'type' => 'connector-properties-states',
 				],
 			);

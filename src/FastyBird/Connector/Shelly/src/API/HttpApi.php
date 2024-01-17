@@ -128,7 +128,7 @@ abstract class HttpApi
 			$request->getMethod(),
 			strval($request->getUri()),
 		), [
-			'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+			'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
 			'type' => 'http-api',
 			'request' => [
 				'method' => $request->getMethod(),
@@ -171,7 +171,7 @@ abstract class HttpApi
 							}
 
 							$this->logger->debug('Received response', [
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+								'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
 								'type' => 'http-api',
 								'request' => [
 									'method' => $request->getMethod(),
@@ -301,7 +301,7 @@ abstract class HttpApi
 			}
 
 			$this->logger->debug('Received response', [
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
 				'type' => 'http-api',
 				'request' => [
 					'method' => $request->getMethod(),

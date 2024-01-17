@@ -32,48 +32,48 @@ class DataTypeShort extends Consistence\Enum\Enum
 	/**
 	 * Define data types
 	 */
-	public const DATA_TYPE_CHAR = 'i8';
+	public const CHAR = 'i8';
 
-	public const DATA_TYPE_UCHAR = 'u8';
+	public const UCHAR = 'u8';
 
-	public const DATA_TYPE_SHORT = 'i16';
+	public const SHORT = 'i16';
 
-	public const DATA_TYPE_USHORT = 'u16';
+	public const USHORT = 'u16';
 
-	public const DATA_TYPE_INT = 'i32';
+	public const INT = 'i32';
 
-	public const DATA_TYPE_UINT = 'u32';
+	public const UINT = 'u32';
 
-	public const DATA_TYPE_FLOAT = 'f';
+	public const FLOAT = 'f';
 
-	public const DATA_TYPE_BOOLEAN = 'b';
+	public const BOOLEAN = 'b';
 
-	public const DATA_TYPE_STRING = 's';
+	public const STRING = 's';
 
-	public const DATA_TYPE_ENUM = 'e';
+	public const ENUM = 'e';
 
-	public const DATA_TYPE_DATE = 'd';
+	public const DATE = 'd';
 
-	public const DATA_TYPE_TIME = 't';
+	public const TIME = 't';
 
-	public const DATA_TYPE_DATETIME = 'dt';
+	public const DATETIME = 'dt';
 
-	public const DATA_TYPE_BUTTON = 'btn';
+	public const BUTTON = 'btn';
 
-	public const DATA_TYPE_SWITCH = 'sw';
+	public const SWITCH = 'sw';
 
-	public const DATA_TYPE_COVER = 'cvr';
+	public const COVER = 'cvr';
 
-	public const DATA_TYPE_UNKNOWN = 'unk';
+	public const UNKNOWN = 'unk';
 
 	public function isInteger(): bool
 	{
-		return self::equalsValue(self::DATA_TYPE_CHAR)
-			|| self::equalsValue(self::DATA_TYPE_UCHAR)
-			|| self::equalsValue(self::DATA_TYPE_SHORT)
-			|| self::equalsValue(self::DATA_TYPE_USHORT)
-			|| self::equalsValue(self::DATA_TYPE_INT)
-			|| self::equalsValue(self::DATA_TYPE_UINT);
+		return self::equalsValue(self::CHAR)
+			|| self::equalsValue(self::UCHAR)
+			|| self::equalsValue(self::SHORT)
+			|| self::equalsValue(self::USHORT)
+			|| self::equalsValue(self::INT)
+			|| self::equalsValue(self::UINT);
 	}
 
 	public function getValue(): string

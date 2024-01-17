@@ -86,7 +86,7 @@ final class NumericType extends Type
 				$this->getValueMax(),
 			]),
 			$this->getValueStep(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
+			MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
 		);
 	}
 

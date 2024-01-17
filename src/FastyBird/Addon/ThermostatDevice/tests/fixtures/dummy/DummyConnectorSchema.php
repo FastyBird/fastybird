@@ -11,7 +11,7 @@ final class DummyConnectorSchema extends DevicesSchemas\Connectors\Connector
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL . '/connector/dummy';
+	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL . '/connector/dummy';
 
 	public function getEntityClass(): string
 	{

@@ -87,7 +87,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Starting Modbus connector service',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_MODBUS,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -113,7 +113,7 @@ final class Connector implements DevicesConnectors\Connector
 		if ($this->client === null) {
 			$this->dispatcher?->dispatch(
 				new DevicesEvents\TerminateConnector(
-					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS),
+					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_MODBUS),
 					'Connector client is not configured',
 				),
 			);
@@ -136,7 +136,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Modbus connector service has been started',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_MODBUS,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -152,7 +152,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->error(
 			'Devices discovery is not allowed for Modbus connector type',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_MODBUS,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -176,7 +176,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Modbus connector has been terminated',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_MODBUS,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_MODBUS,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),

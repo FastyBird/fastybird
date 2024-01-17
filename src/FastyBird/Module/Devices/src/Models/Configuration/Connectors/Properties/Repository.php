@@ -100,11 +100,11 @@ final class Repository extends Models\Configuration\Repository
 						->find('.' . Devices\Constants::DATA_STORAGE_PROPERTIES_KEY . '.*');
 
 					if ($type === MetadataDocuments\DevicesModule\ConnectorDynamicProperty::class) {
-						$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_DYNAMIC . '")]');
+						$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::DYNAMIC . '")]');
 
 					} elseif ($type === MetadataDocuments\DevicesModule\ConnectorVariableProperty::class) {
 						$space = $space->find(
-							'.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_VARIABLE . '")]',
+							'.[?(@.type == "' . MetadataTypes\PropertyType::VARIABLE . '")]',
 						);
 					}
 
@@ -172,11 +172,11 @@ final class Repository extends Models\Configuration\Repository
 						->find('.' . Devices\Constants::DATA_STORAGE_PROPERTIES_KEY . '.*');
 
 					if ($type === MetadataDocuments\DevicesModule\ConnectorDynamicProperty::class) {
-						$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_DYNAMIC . '")]');
+						$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::DYNAMIC . '")]');
 
 					} elseif ($type === MetadataDocuments\DevicesModule\ConnectorVariableProperty::class) {
 						$space = $space->find(
-							'.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_VARIABLE . '")]',
+							'.[?(@.type == "' . MetadataTypes\PropertyType::VARIABLE . '")]',
 						);
 					}
 

@@ -232,7 +232,7 @@ class Install extends Console\Command\Command
 			$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 				'identifier' => Types\ConnectorPropertyIdentifier::PORT,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
+				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
 				'value' => $port,
 				'connector' => $connector,
 			]));
@@ -251,7 +251,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -362,7 +362,7 @@ class Install extends Console\Command\Command
 				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::PORT,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
 					'value' => $port,
 					'connector' => $connector,
 				]));
@@ -386,7 +386,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -475,7 +475,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'install-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -636,7 +636,7 @@ class Install extends Console\Command\Command
 			$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
 				'identifier' => Types\DevicePropertyIdentifier::CATEGORY,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
+				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
 				'value' => $category->getValue(),
 				'device' => $device,
 			]));
@@ -655,7 +655,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'devices-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -734,7 +734,7 @@ class Install extends Console\Command\Command
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
 					'identifier' => Types\DevicePropertyIdentifier::CATEGORY,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
+					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
 					'value' => $category->getValue(),
 					'device' => $device,
 				]));
@@ -758,7 +758,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'devices-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -847,7 +847,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'devices-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -1033,7 +1033,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'devices-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -1213,7 +1213,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'devices-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -1308,7 +1308,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'devices-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -1662,7 +1662,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'devices-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -1741,7 +1741,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'devices-cmd',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				],
@@ -1796,7 +1796,7 @@ class Install extends Console\Command\Command
 			$value = $property instanceof DevicesEntities\Channels\Properties\Variable ? $property->getValue() : 'N/A';
 
 			if (
-				$property->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_ENUM)
+				$property->getDataType()->equalsValue(MetadataTypes\DataType::ENUM)
 				&& $metadata->offsetExists($type)
 				&& $metadata->offsetGet($type) instanceof Utils\ArrayHash
 				&& $metadata->offsetGet($type)->offsetExists('ValidValues')
@@ -2855,9 +2855,9 @@ class Install extends Console\Command\Command
 
 		if (
 			(
-				$dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_ENUM)
-				|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SWITCH)
-				|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)
+				$dataType->equalsValue(MetadataTypes\DataType::ENUM)
+				|| $dataType->equalsValue(MetadataTypes\DataType::SWITCH)
+				|| $dataType->equalsValue(MetadataTypes\DataType::BUTTON)
 			)
 			&& $characteristicMetadata->offsetExists('ValidValues')
 			&& $characteristicMetadata->offsetGet('ValidValues') instanceof Utils\ArrayHash
@@ -2869,9 +2869,9 @@ class Install extends Console\Command\Command
 			if (
 				$connectProperty !== null
 				&& (
-					$connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_ENUM)
-					|| $connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_SWITCH)
-					|| $connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)
+					$connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::ENUM)
+					|| $connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::SWITCH)
+					|| $connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::BUTTON)
 				) && (
 					$connectProperty->getFormat() instanceof MetadataValueObjects\StringEnumFormat
 					|| $connectProperty->getFormat() instanceof MetadataValueObjects\CombinedEnumFormat
@@ -2956,19 +2956,19 @@ class Install extends Console\Command\Command
 					$value = is_array($value) ? $value[1] : $value;
 
 					if (MetadataTypes\SwitchPayload::isValidValue($value)) {
-						$valueDataType = MetadataTypes\DataTypeShort::DATA_TYPE_SWITCH;
+						$valueDataType = MetadataTypes\DataTypeShort::SWITCH;
 
 					} elseif (MetadataTypes\ButtonPayload::isValidValue($value)) {
-						$valueDataType = MetadataTypes\DataTypeShort::DATA_TYPE_BUTTON;
+						$valueDataType = MetadataTypes\DataTypeShort::BUTTON;
 
 					} elseif (MetadataTypes\CoverPayload::isValidValue($value)) {
-						$valueDataType = MetadataTypes\DataTypeShort::DATA_TYPE_COVER;
+						$valueDataType = MetadataTypes\DataTypeShort::COVER;
 					}
 
 					$mappedFormat[] = [
 						[$valueDataType, strval($value)],
-						[MetadataTypes\DataTypeShort::DATA_TYPE_UCHAR, strval($item)],
-						[MetadataTypes\DataTypeShort::DATA_TYPE_UCHAR, strval($item)],
+						[MetadataTypes\DataTypeShort::UCHAR, strval($item)],
+						[MetadataTypes\DataTypeShort::UCHAR, strval($item)],
 					];
 				}
 
@@ -3065,7 +3065,7 @@ class Install extends Console\Command\Command
 			return $value;
 		}
 
-		if ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BOOLEAN)) {
+		if ($dataType->equalsValue(MetadataTypes\DataType::BOOLEAN)) {
 			$question = new Console\Question\ChoiceQuestion(
 				$this->translator->translate('//homekit-connector.cmd.install.questions.select.device.value'),
 				[
@@ -3127,11 +3127,11 @@ class Install extends Console\Command\Command
 					);
 				}
 
-				if ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_STRING)) {
+				if ($dataType->equalsValue(MetadataTypes\DataType::STRING)) {
 					return strval($answer);
 				}
 
-				if ($dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_FLOAT)) {
+				if ($dataType->equalsValue(MetadataTypes\DataType::FLOAT)) {
 					if ($minValue !== null && floatval($answer) < $minValue) {
 						throw new Exceptions\Runtime(
 							sprintf(
@@ -3168,12 +3168,12 @@ class Install extends Console\Command\Command
 				}
 
 				if (
-					$dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_CHAR)
-					|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_UCHAR)
-					|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SHORT)
-					|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_USHORT)
-					|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_INT)
-					|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_UINT)
+					$dataType->equalsValue(MetadataTypes\DataType::CHAR)
+					|| $dataType->equalsValue(MetadataTypes\DataType::UCHAR)
+					|| $dataType->equalsValue(MetadataTypes\DataType::SHORT)
+					|| $dataType->equalsValue(MetadataTypes\DataType::USHORT)
+					|| $dataType->equalsValue(MetadataTypes\DataType::INT)
+					|| $dataType->equalsValue(MetadataTypes\DataType::UINT)
 				) {
 					if ($minValue !== null && intval($answer) < $minValue) {
 						throw new Exceptions\Runtime(
@@ -3417,7 +3417,7 @@ class Install extends Console\Command\Command
 			$this->logger->alert(
 				'Could not read service identifier from console answer',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'devices-cmd',
 				],
 			);
@@ -3437,7 +3437,7 @@ class Install extends Console\Command\Command
 			$this->logger->alert(
 				'Channel was not found',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'devices-cmd',
 				],
 			);
@@ -3475,7 +3475,7 @@ class Install extends Console\Command\Command
 			$this->logger->alert(
 				'Could not read characteristic identifier from console answer',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'devices-cmd',
 				],
 			);
@@ -3495,7 +3495,7 @@ class Install extends Console\Command\Command
 			$this->logger->alert(
 				'Property was not found',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'devices-cmd',
 				],
 			);

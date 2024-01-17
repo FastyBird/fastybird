@@ -32,25 +32,25 @@ class CoverPayload extends Consistence\Enum\Enum
 	/**
 	 * Define types
 	 */
-	public const PAYLOAD_OPEN = 'cover_open';
+	public const OPEN = 'cover_open';
 
-	public const PAYLOAD_OPENING = 'cover_opening';
+	public const OPENING = 'cover_opening';
 
-	public const PAYLOAD_OPENED = 'cover_opened';
+	public const OPENED = 'cover_opened';
 
-	public const PAYLOAD_CLOSE = 'cover_close';
+	public const CLOSE = 'cover_close';
 
-	public const PAYLOAD_CLOSING = 'cover_closing';
+	public const CLOSING = 'cover_closing';
 
-	public const PAYLOAD_CLOSED = 'cover_closed';
+	public const CLOSED = 'cover_closed';
 
-	public const PAYLOAD_STOP = 'cover_stop';
+	public const STOP = 'cover_stop';
 
-	public const PAYLOAD_STOPPED = 'cover_stopped';
+	public const STOPPED = 'cover_stopped';
 
-	public const PAYLOAD_CALIBRATE = 'cover_calibrate';
+	public const CALIBRATE = 'cover_calibrate';
 
-	public const PAYLOAD_CALIBRATING = 'cover_calibrating';
+	public const CALIBRATING = 'cover_calibrating';
 
 	public function getValue(): string
 	{

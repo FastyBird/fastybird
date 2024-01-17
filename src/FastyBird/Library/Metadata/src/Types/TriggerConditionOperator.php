@@ -32,11 +32,11 @@ class TriggerConditionOperator extends Consistence\Enum\Enum
 	/**
 	 * Define states
 	 */
-	public const OPERATOR_VALUE_EQUAL = 'eq';
+	public const EQUAL = 'eq';
 
-	public const OPERATOR_VALUE_ABOVE = 'above';
+	public const ABOVE = 'above';
 
-	public const OPERATOR_VALUE_BELOW = 'below';
+	public const BELOW = 'below';
 
 	public function getValue(): string
 	{

@@ -86,16 +86,16 @@ final class Authenticator implements SimpleAuthSecurity\IAuthenticator
 		$account = $identity->getAccount();
 
 		if ($account->getState()
-			->equalsValue(MetadataTypes\AccountState::STATE_ACTIVE)) {
+			->equalsValue(MetadataTypes\AccountState::ACTIVE)) {
 			return $identity;
 		}
 
-		if ($account->getState()->equalsValue(MetadataTypes\AccountState::STATE_BLOCKED)) {
+		if ($account->getState()->equalsValue(MetadataTypes\AccountState::BLOCKED)) {
 			throw new Exceptions\AuthenticationFailed(
 				'Account profile is blocked',
 				self::ACCOUNT_PROFILE_BLOCKED,
 			);
-		} elseif ($account->getState()->equalsValue(MetadataTypes\AccountState::STATE_DELETED)) {
+		} elseif ($account->getState()->equalsValue(MetadataTypes\AccountState::DELETED)) {
 			throw new Exceptions\AuthenticationFailed(
 				'Account profile is deleted',
 				self::ACCOUNT_PROFILE_DELETED,

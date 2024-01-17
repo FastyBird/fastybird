@@ -35,7 +35,7 @@ final class Blank extends Device
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES . '/device/' . Entities\Devices\Blank::DEVICE_TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\ModuleSource::DEVICES . '/device/' . Entities\Devices\Blank::DEVICE_TYPE;
 
 	public function getEntityClass(): string
 	{

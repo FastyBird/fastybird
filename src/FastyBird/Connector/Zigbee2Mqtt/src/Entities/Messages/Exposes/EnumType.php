@@ -58,7 +58,7 @@ final class EnumType extends Type
 
 	public function getDataType(): MetadataTypes\DataType
 	{
-		return MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM);
+		return MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM);
 	}
 
 	/**

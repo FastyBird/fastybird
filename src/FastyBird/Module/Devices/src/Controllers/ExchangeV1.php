@@ -77,7 +77,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 		$this->logger->debug(
 			'Client subscribed to topic',
 			[
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+				'source' => MetadataTypes\ModuleSource::DEVICES,
 				'type' => 'exchange-controller',
 				'client' => $client->getId(),
 				'topic' => $topic->getId(),
@@ -108,7 +108,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 					$topic->getId(),
 					Utils\Json::encode([
 						'routing_key' => MetadataTypes\RoutingKey::DEVICE_PROPERTY_DOCUMENT_REPORTED,
-						'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+						'source' => MetadataTypes\ModuleSource::DEVICES,
 						'data' => array_merge(
 							$deviceProperty->toArray(),
 							$dynamicData,
@@ -140,7 +140,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 					$topic->getId(),
 					Utils\Json::encode([
 						'routing_key' => MetadataTypes\RoutingKey::CHANNEL_PROPERTY_DOCUMENT_REPORTED,
-						'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+						'source' => MetadataTypes\ModuleSource::DEVICES,
 						'data' => array_merge(
 							$channelProperty->toArray(),
 							$dynamicData,
@@ -169,7 +169,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 					$topic->getId(),
 					Utils\Json::encode([
 						'routing_key' => MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_DOCUMENT_REPORTED,
-						'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+						'source' => MetadataTypes\ModuleSource::DEVICES,
 						'data' => array_merge(
 							$connectorProperty->toArray(),
 							$dynamicData,
@@ -179,7 +179,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 			}
 		} catch (Throwable $ex) {
 			$this->logger->error('State could not be sent to subscriber', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+				'source' => MetadataTypes\ModuleSource::DEVICES,
 				'type' => 'subscriber',
 				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
@@ -209,7 +209,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 		$this->logger->debug(
 			'Received RPC call from client',
 			[
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+				'source' => MetadataTypes\ModuleSource::DEVICES,
 				'type' => 'exchange-controller',
 				'client' => $client->getId(),
 				'topic' => $topic->getId(),
@@ -270,7 +270,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 			return $this->jsonValidator->validate(Utils\Json::encode($data), $schema);
 		} catch (Utils\JsonException $ex) {
 			$this->logger->error('Received message could not be validated', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+				'source' => MetadataTypes\ModuleSource::DEVICES,
 				'type' => 'exchange-controller',
 				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
@@ -278,7 +278,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 			throw new Exceptions\InvalidArgument('Provided data are not valid json format', 0, $ex);
 		} catch (MetadataExceptions\InvalidData $ex) {
 			$this->logger->debug('Received message is not valid', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+				'source' => MetadataTypes\ModuleSource::DEVICES,
 				'type' => 'exchange-controller',
 				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
@@ -286,7 +286,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 			throw new Exceptions\InvalidArgument('Provided data are not in valid structure', 0, $ex);
 		} catch (Throwable $ex) {
 			$this->logger->error('Received message is not valid', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+				'source' => MetadataTypes\ModuleSource::DEVICES,
 				'type' => 'exchange-controller',
 				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
@@ -311,7 +311,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 		MetadataDocuments\Actions\ActionConnectorProperty $entity,
 	): void
 	{
-		if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_SET)) {
+		if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::SET)) {
 			$property = $this->connectorPropertiesRepository->find($entity->getProperty());
 
 			if (!$property instanceof Entities\Connectors\Properties\Dynamic) {
@@ -325,7 +325,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 					States\Property::PENDING_FIELD => true,
 				]),
 			);
-		} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
+		} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::GET)) {
 			$property = $this->connectorPropertiesRepository->find($entity->getProperty());
 
 			if ($property === null) {
@@ -355,7 +355,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				$topic->getId(),
 				Utils\Json::encode([
 					'routing_key' => MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_DOCUMENT_REPORTED,
-					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+					'source' => MetadataTypes\ModuleSource::DEVICES,
 					'data' => $responseEntity->toArray(),
 				]),
 			]));
@@ -378,7 +378,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 		MetadataDocuments\Actions\ActionDeviceProperty $entity,
 	): void
 	{
-		if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_SET)) {
+		if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::SET)) {
 			$property = $this->devicePropertiesRepository->find($entity->getProperty());
 
 			if (
@@ -395,7 +395,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 					States\Property::PENDING_FIELD => true,
 				]),
 			);
-		} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
+		} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::GET)) {
 			$property = $this->devicePropertiesRepository->find($entity->getProperty());
 
 			if ($property === null) {
@@ -425,7 +425,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				$topic->getId(),
 				Utils\Json::encode([
 					'routing_key' => MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_DOCUMENT_REPORTED,
-					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+					'source' => MetadataTypes\ModuleSource::DEVICES,
 					'data' => $responseEntity->toArray(),
 				]),
 			]));
@@ -448,7 +448,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 		MetadataDocuments\Actions\ActionChannelProperty $entity,
 	): void
 	{
-		if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_SET)) {
+		if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::SET)) {
 			$property = $this->channelPropertiesRepository->find($entity->getProperty());
 
 			if (
@@ -465,7 +465,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 					States\Property::PENDING_FIELD => true,
 				]),
 			);
-		} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
+		} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::GET)) {
 			$property = $this->channelPropertiesRepository->find($entity->getProperty());
 
 			if ($property === null) {
@@ -495,7 +495,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				$topic->getId(),
 				Utils\Json::encode([
 					'routing_key' => MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_DOCUMENT_REPORTED,
-					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+					'source' => MetadataTypes\ModuleSource::DEVICES,
 					'data' => $responseEntity->toArray(),
 				]),
 			]));

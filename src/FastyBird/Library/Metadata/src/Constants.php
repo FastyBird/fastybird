@@ -78,8 +78,6 @@ final class Constants
 
 	public const CONNECTOR_HOMEKIT_SOURCE = 'com.fastybird.homekit-connector';
 
-	public const CONNECTOR_ITEAD_SOURCE = 'com.fastybird.itead-connector';
-
 	public const CONNECTOR_VIRTUAL_SOURCE = 'com.fastybird.virtual-connector';
 
 	public const CONNECTOR_TERMINAL_SOURCE = 'com.fastybird.terminal-connector';

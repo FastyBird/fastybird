@@ -33,12 +33,12 @@ final class DataType
 {
 
 	private const RANGES = [
-		Types\DataType::DATA_TYPE_CHAR => [-128, 127],
-		Types\DataType::DATA_TYPE_UCHAR => [0, 255],
-		Types\DataType::DATA_TYPE_SHORT => [-32_768, 32_767],
-		Types\DataType::DATA_TYPE_USHORT => [0, 65_535],
-		Types\DataType::DATA_TYPE_INT => [-2_147_483_648, 2_147_483_647],
-		Types\DataType::DATA_TYPE_UINT => [0, 4_294_967_295],
+		Types\DataType::CHAR => [-128, 127],
+		Types\DataType::UCHAR => [0, 255],
+		Types\DataType::SHORT => [-32_768, 32_767],
+		Types\DataType::USHORT => [0, 65_535],
+		Types\DataType::INT => [-2_147_483_648, 2_147_483_647],
+		Types\DataType::UINT => [0, 4_294_967_295],
 	];
 
 	/**
@@ -55,14 +55,14 @@ final class DataType
 			|| $format->getMaxDataType() !== null
 		) {
 			return match ($format->getMinDataType()?->getValue() ?? $format->getMaxDataType()?->getValue()) {
-				Types\DataTypeShort::DATA_TYPE_CHAR => Types\DataType::get(Types\DataType::DATA_TYPE_CHAR),
-				Types\DataTypeShort::DATA_TYPE_UCHAR => Types\DataType::get(Types\DataType::DATA_TYPE_UCHAR),
-				Types\DataTypeShort::DATA_TYPE_SHORT => Types\DataType::get(Types\DataType::DATA_TYPE_SHORT),
-				Types\DataTypeShort::DATA_TYPE_USHORT => Types\DataType::get(Types\DataType::DATA_TYPE_USHORT),
-				Types\DataTypeShort::DATA_TYPE_INT => Types\DataType::get(Types\DataType::DATA_TYPE_INT),
-				Types\DataTypeShort::DATA_TYPE_UINT => Types\DataType::get(Types\DataType::DATA_TYPE_UINT),
-				Types\DataTypeShort::DATA_TYPE_FLOAT => Types\DataType::get(Types\DataType::DATA_TYPE_FLOAT),
-				default => Types\DataType::get(Types\DataType::DATA_TYPE_UNKNOWN),
+				Types\DataTypeShort::CHAR => Types\DataType::get(Types\DataType::CHAR),
+				Types\DataTypeShort::UCHAR => Types\DataType::get(Types\DataType::UCHAR),
+				Types\DataTypeShort::SHORT => Types\DataType::get(Types\DataType::SHORT),
+				Types\DataTypeShort::USHORT => Types\DataType::get(Types\DataType::USHORT),
+				Types\DataTypeShort::INT => Types\DataType::get(Types\DataType::INT),
+				Types\DataTypeShort::UINT => Types\DataType::get(Types\DataType::UINT),
+				Types\DataTypeShort::FLOAT => Types\DataType::get(Types\DataType::FLOAT),
+				default => Types\DataType::get(Types\DataType::UNKNOWN),
 			};
 		}
 
@@ -71,7 +71,7 @@ final class DataType
 			// If step is defined and is float number, data type have to be float
 			&& floatval(intval($step)) !== $step
 		) {
-			Types\DataType::get(Types\DataType::DATA_TYPE_FLOAT);
+			Types\DataType::get(Types\DataType::FLOAT);
 		}
 
 		if (
@@ -85,7 +85,7 @@ final class DataType
 				&& floatval(intval($format->getMax())) !== $format->getMax()
 			)
 		) {
-			Types\DataType::get(Types\DataType::DATA_TYPE_FLOAT);
+			Types\DataType::get(Types\DataType::FLOAT);
 		}
 
 		if ($format->getMin() !== null || $format->getMax() !== null) {
@@ -109,10 +109,10 @@ final class DataType
 				}
 			}
 
-			Types\DataType::get(Types\DataType::DATA_TYPE_FLOAT);
+			Types\DataType::get(Types\DataType::FLOAT);
 		}
 
-		return $fallback ?? Types\DataType::get(Types\DataType::DATA_TYPE_UNKNOWN);
+		return $fallback ?? Types\DataType::get(Types\DataType::UNKNOWN);
 	}
 
 }

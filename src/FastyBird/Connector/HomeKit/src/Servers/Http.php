@@ -242,7 +242,7 @@ final class Http implements Server
 						$this->devicesPropertiesManager->create(Nette\Utils\ArrayHash::from([
 							'entity' => DevicesEntities\Devices\Properties\Variable::class,
 							'identifier' => Types\DevicePropertyIdentifier::AID,
-							'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
+							'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
 							'value' => $accessory->getAid(),
 							'device' => $device,
 						]));
@@ -267,7 +267,7 @@ final class Http implements Server
 							$this->logger->warning(
 								'State value could not be set to characteristic',
 								[
-									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+									'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 									'type' => 'http-server',
 									'exception' => BootstrapHelpers\Logger::buildException($ex),
 									'connector' => [
@@ -306,7 +306,7 @@ final class Http implements Server
 								$this->logger->warning(
 									'State value could not be set to characteristic',
 									[
-										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+										'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 										'type' => 'http-server',
 										'exception' => BootstrapHelpers\Logger::buildException($ex),
 										'connector' => [
@@ -339,7 +339,7 @@ final class Http implements Server
 					[
 						'connector' => $accessory->getDevice()->getConnector(),
 						'device' => $accessory->getDevice()->getId(),
-						'state' => MetadataTypes\ConnectionState::STATE_CONNECTED,
+						'state' => MetadataTypes\ConnectionState::CONNECTED,
 					],
 				),
 			);
@@ -349,7 +349,7 @@ final class Http implements Server
 			$this->logger->debug(
 				'Creating HAP web server',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'http-server',
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
@@ -373,7 +373,7 @@ final class Http implements Server
 			$this->logger->error(
 				'Socket server could not be created',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'http-server',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'connector' => [
@@ -393,7 +393,7 @@ final class Http implements Server
 			$this->logger->debug(
 				'New client has connected to server',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'http-server',
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
@@ -410,7 +410,7 @@ final class Http implements Server
 				$this->logger->debug(
 					'Connected client has closed connection',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 						'type' => 'http-server',
 						'connector' => [
 							'id' => $this->connector->getId()->toString(),
@@ -429,7 +429,7 @@ final class Http implements Server
 			$this->logger->error(
 				'An error occurred during socket handling',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'http-server',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'connector' => [
@@ -449,7 +449,7 @@ final class Http implements Server
 			$this->logger->info(
 				'Server was closed',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'http-server',
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
@@ -476,7 +476,7 @@ final class Http implements Server
 			$this->logger->error(
 				'An error occurred during server handling',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'http-server',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'connector' => [
@@ -508,7 +508,7 @@ final class Http implements Server
 		$this->logger->debug(
 			'Closing HAP web server',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 				'type' => 'http-server',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -549,7 +549,7 @@ final class Http implements Server
 			$this->logger->debug(
 				'Shared key has been updated',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'http-server',
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),

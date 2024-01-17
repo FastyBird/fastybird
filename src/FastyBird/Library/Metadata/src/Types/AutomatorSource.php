@@ -33,11 +33,11 @@ class AutomatorSource extends Consistence\Enum\Enum
 	/**
 	 * Define types
 	 */
-	public const SOURCE_NOT_SPECIFIED = Metadata\Constants::NOT_SPECIFIED_SOURCE;
+	public const NOT_SPECIFIED = Metadata\Constants::NOT_SPECIFIED_SOURCE;
 
-	public const SOURCE_AUTOMATOR_DEVICE_MODULE = Metadata\Constants::AUTOMATOR_DEVICE_MODULE;
+	public const DEVICE_MODULE = Metadata\Constants::AUTOMATOR_DEVICE_MODULE;
 
-	public const SOURCE_AUTOMATOR_DATE_TIME = Metadata\Constants::AUTOMATOR_DATE_TIME;
+	public const DATE_TIME = Metadata\Constants::AUTOMATOR_DATE_TIME;
 
 	public function getValue(): string
 	{

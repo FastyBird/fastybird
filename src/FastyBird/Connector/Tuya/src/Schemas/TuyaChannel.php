@@ -34,7 +34,7 @@ final class TuyaChannel extends DevicesSchemas\Channels\Channel
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA . '/channel/' . Entities\TuyaChannel::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::CONNECTOR_TUYA . '/channel/' . Entities\TuyaChannel::TYPE;
 
 	public function getEntityClass(): string
 	{

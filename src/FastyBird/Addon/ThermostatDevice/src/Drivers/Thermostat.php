@@ -693,7 +693,7 @@ class Thermostat implements VirtualDrivers\Driver
 			$this->logger->warning(
 				'Floor is overheating. Turning off heaters actors',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
 					'type' => 'thermostat-driver',
 					'connector' => [
 						'id' => $this->device->getConnector()->toString(),

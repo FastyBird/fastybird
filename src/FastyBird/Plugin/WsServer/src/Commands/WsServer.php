@@ -81,7 +81,7 @@ final class WsServer extends Console\Command\Command
 		$this->logger->info(
 			'Starting WS server',
 			[
-				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_SERVER,
+				'source' => MetadataTypes\PluginSource::WS_SERVER,
 				'type' => 'server-command',
 			],
 		);
@@ -101,7 +101,7 @@ final class WsServer extends Console\Command\Command
 				$this->logger->error(
 					'An error occurred during handling requests. Stopping WS server',
 					[
-						'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_SERVER,
+						'source' => MetadataTypes\PluginSource::WS_SERVER,
 						'type' => 'server-command',
 						'exception' => BootstrapHelpers\Logger::buildException($ex),
 					],
@@ -121,7 +121,7 @@ final class WsServer extends Console\Command\Command
 			$this->logger->error(
 				'WS server was forced to close',
 				[
-					'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_SERVER,
+					'source' => MetadataTypes\PluginSource::WS_SERVER,
 					'type' => 'server-command',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'cmd' => $this->getName(),
@@ -135,7 +135,7 @@ final class WsServer extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred. Stopping WS server',
 				[
-					'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_SERVER,
+					'source' => MetadataTypes\PluginSource::WS_SERVER,
 					'type' => 'server-command',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 					'cmd' => $this->getName(),

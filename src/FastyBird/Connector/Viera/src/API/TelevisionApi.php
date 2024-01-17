@@ -1407,7 +1407,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 
 				$connection->on('error', function (Throwable $ex): void {
 					$this->logger->error('Something went wrong with subscription socket', [
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 						'type' => 'television-api',
 						'exception' => BootstrapHelpers\Logger::buildException($ex),
 						'device' => [
@@ -1430,7 +1430,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 			$client = $this->httpClientFactory->create(false);
 		} catch (InvalidArgumentException $ex) {
 			$this->logger->error('Could not get http client', [
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 				'type' => 'television-api',
 				'exception' => BootstrapHelpers\Logger::buildException($ex),
 				'device' => [
@@ -1445,7 +1445,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 
 		if ($localIpAddress === null) {
 			$this->logger->error('Could not get connector local address', [
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 				'type' => 'television-api',
 				'device' => [
 					'identifier' => $this->identifier,
@@ -1502,7 +1502,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 			$client = $this->httpClientFactory->create(false);
 		} catch (InvalidArgumentException $ex) {
 			$this->logger->error('Could not get http client', [
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 				'type' => 'television-api',
 				'exception' => BootstrapHelpers\Logger::buildException($ex),
 				'device' => [
@@ -2052,7 +2052,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 			$request->getMethod(),
 			$request->getUri(),
 		), [
-			'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+			'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 			'type' => 'television-api',
 			'request' => [
 				'method' => $request->getMethod(),
@@ -2091,7 +2091,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 							}
 
 							$this->logger->debug('Received response', [
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+								'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 								'type' => 'television-api',
 								'request' => [
 									'method' => $request->getMethod(),
@@ -2149,7 +2149,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 			}
 
 			$this->logger->debug('Received response', [
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 				'type' => 'television-api',
 				'request' => [
 					'method' => $request->getMethod(),
@@ -2195,7 +2195,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 			$request->getMethod(),
 			$request->getUri(),
 		), [
-			'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+			'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 			'type' => 'television-api',
 			'request' => [
 				'method' => $request->getMethod(),
@@ -2234,7 +2234,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 							}
 
 							$this->logger->debug('Received response', [
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+								'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 								'type' => 'television-api',
 								'request' => [
 									'method' => $request->getMethod(),
@@ -2292,7 +2292,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 			}
 
 			$this->logger->debug('Received response', [
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIERA,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 				'type' => 'television-api',
 				'request' => [
 					'method' => $request->getMethod(),

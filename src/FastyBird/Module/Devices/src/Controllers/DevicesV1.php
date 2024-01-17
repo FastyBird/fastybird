@@ -180,7 +180,7 @@ class DevicesV1 extends BaseV1
 			} catch (Throwable $ex) {
 				// Log caught exception
 				$this->logger->error('An unhandled error occurred', [
-					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+					'source' => MetadataTypes\ModuleSource::DEVICES,
 					'type' => 'devices-controller',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				]);
@@ -273,7 +273,7 @@ class DevicesV1 extends BaseV1
 			} catch (Throwable $ex) {
 				// Log caught exception
 				$this->logger->error('An unhandled error occurred', [
-					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+					'source' => MetadataTypes\ModuleSource::DEVICES,
 					'type' => 'devices-controller',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				]);
@@ -343,7 +343,7 @@ class DevicesV1 extends BaseV1
 		} catch (Throwable $ex) {
 			// Log caught exception
 			$this->logger->error('An unhandled error occurred', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+				'source' => MetadataTypes\ModuleSource::DEVICES,
 				'type' => 'devices-controller',
 				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);

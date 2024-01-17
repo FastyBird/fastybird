@@ -214,7 +214,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 		}
 
 		$this->publisher->publish(
-			MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
+			MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 			$routingKey,
 			$this->entityFactory->create(
 				Utils\Json::encode(

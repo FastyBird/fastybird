@@ -32,50 +32,50 @@ class DataType extends Consistence\Enum\Enum
 	/**
 	 * Define data types
 	 */
-	public const DATA_TYPE_CHAR = 'char';
+	public const CHAR = 'char';
 
-	public const DATA_TYPE_UCHAR = 'uchar';
+	public const UCHAR = 'uchar';
 
-	public const DATA_TYPE_SHORT = 'short';
+	public const SHORT = 'short';
 
-	public const DATA_TYPE_USHORT = 'ushort';
+	public const USHORT = 'ushort';
 
-	public const DATA_TYPE_INT = 'int';
+	public const INT = 'int';
 
-	public const DATA_TYPE_UINT = 'uint';
+	public const UINT = 'uint';
 
-	public const DATA_TYPE_FLOAT = 'float';
+	public const FLOAT = 'float';
 
-	public const DATA_TYPE_BOOLEAN = 'bool';
+	public const BOOLEAN = 'bool';
 
-	public const DATA_TYPE_STRING = 'string';
+	public const STRING = 'string';
 
-	public const DATA_TYPE_ENUM = 'enum';
+	public const ENUM = 'enum';
 
-	public const DATA_TYPE_DATE = 'date';
+	public const DATE = 'date';
 
-	public const DATA_TYPE_TIME = 'time';
+	public const TIME = 'time';
 
-	public const DATA_TYPE_DATETIME = 'datetime';
+	public const DATETIME = 'datetime';
 
-	public const DATA_TYPE_COLOR = 'color';
+	public const COLOR = 'color';
 
-	public const DATA_TYPE_BUTTON = 'button';
+	public const BUTTON = 'button';
 
-	public const DATA_TYPE_SWITCH = 'switch';
+	public const SWITCH = 'switch';
 
-	public const DATA_TYPE_COVER = 'cover';
+	public const COVER = 'cover';
 
-	public const DATA_TYPE_UNKNOWN = 'unknown';
+	public const UNKNOWN = 'unknown';
 
 	public function isInteger(): bool
 	{
-		return self::equalsValue(self::DATA_TYPE_CHAR)
-			|| self::equalsValue(self::DATA_TYPE_UCHAR)
-			|| self::equalsValue(self::DATA_TYPE_SHORT)
-			|| self::equalsValue(self::DATA_TYPE_USHORT)
-			|| self::equalsValue(self::DATA_TYPE_INT)
-			|| self::equalsValue(self::DATA_TYPE_UINT);
+		return self::equalsValue(self::CHAR)
+			|| self::equalsValue(self::UCHAR)
+			|| self::equalsValue(self::SHORT)
+			|| self::equalsValue(self::USHORT)
+			|| self::equalsValue(self::INT)
+			|| self::equalsValue(self::UINT);
 	}
 
 	public function getValue(): string

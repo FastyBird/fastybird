@@ -168,7 +168,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 					$this->logger->error(
 						'Channel for received channel property message could not be loaded',
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+							'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 							'type' => 'exchange-writer',
 							'message' => [
 								'source' => $source->getValue(),
@@ -215,7 +215,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 			) {
 				$this->dispatcher?->dispatch(
 					new DevicesEvents\TerminateConnector(
-						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT),
+						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT),
 						'Connector configuration changed, services have to restarted',
 					),
 				);
@@ -224,7 +224,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 			if ($entity->getIdentifier() === Types\ConnectorPropertyIdentifier::SHARED_KEY) {
 				$this->dispatcher?->dispatch(
 					new DevicesEvents\TerminateConnector(
-						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT),
+						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT),
 						'Connector shared key changed, services have to restarted',
 					),
 				);

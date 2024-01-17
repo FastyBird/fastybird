@@ -91,7 +91,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Starting Zigbee2MQTT connector service',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -121,7 +121,7 @@ final class Connector implements DevicesConnectors\Connector
 		if (!$client instanceof Clients\Mqtt) {
 			$this->dispatcher?->dispatch(
 				new DevicesEvents\TerminateConnector(
-					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT),
+					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT),
 					'Connector client is not configured',
 				),
 			);
@@ -144,7 +144,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Zigbee2MQTT connector service has been started',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -166,7 +166,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Starting Zigbee2MQTT connector discovery',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -179,7 +179,7 @@ final class Connector implements DevicesConnectors\Connector
 		$client->on('finished', function (): void {
 			$this->dispatcher?->dispatch(
 				new DevicesEvents\TerminateConnector(
-					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT),
+					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT),
 					'Devices discovery finished',
 				),
 			);
@@ -197,7 +197,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Zigbee2MQTT connector discovery has been started',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -230,7 +230,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Zigbee2MQTT connector has been terminated',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),

@@ -189,7 +189,7 @@ final class ChannelsV1 extends BaseV1
 			} catch (Throwable $ex) {
 				// Log caught exception
 				$this->logger->error('An unhandled error occurred', [
-					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+					'source' => MetadataTypes\ModuleSource::DEVICES,
 					'type' => 'channels-controller',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				]);
@@ -261,7 +261,7 @@ final class ChannelsV1 extends BaseV1
 			} catch (Throwable $ex) {
 				// Log caught exception
 				$this->logger->error('An unhandled error occurred', [
-					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+					'source' => MetadataTypes\ModuleSource::DEVICES,
 					'type' => 'channels-controller',
 					'exception' => BootstrapHelpers\Logger::buildException($ex),
 				]);
@@ -327,7 +327,7 @@ final class ChannelsV1 extends BaseV1
 		} catch (Throwable $ex) {
 			// Log caught exception
 			$this->logger->error('An unhandled error occurred', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+				'source' => MetadataTypes\ModuleSource::DEVICES,
 				'type' => 'channels-controller',
 				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);

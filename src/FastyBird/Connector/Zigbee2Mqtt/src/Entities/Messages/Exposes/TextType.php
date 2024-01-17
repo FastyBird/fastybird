@@ -45,7 +45,7 @@ final class TextType extends Type
 
 	public function getDataType(): MetadataTypes\DataType
 	{
-		return MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING);
+		return MetadataTypes\DataType::get(MetadataTypes\DataType::STRING);
 	}
 
 }

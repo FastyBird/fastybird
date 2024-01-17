@@ -252,7 +252,7 @@ final class DevicePropertiesStates extends PropertiesStates
 						$this->logger->error(
 							'Property stored actual value could not be converted to mapped property',
 							[
-								'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+								'source' => MetadataTypes\ModuleSource::DEVICES,
 								'type' => 'device-properties-states',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 							],
@@ -267,7 +267,7 @@ final class DevicePropertiesStates extends PropertiesStates
 						$this->logger->error(
 							'Property stored actual value was not valid',
 							[
-								'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+								'source' => MetadataTypes\ModuleSource::DEVICES,
 								'type' => 'device-properties-states',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 							],
@@ -296,7 +296,7 @@ final class DevicePropertiesStates extends PropertiesStates
 						$this->logger->warning(
 							'Property is not settable but has stored expected value',
 							[
-								'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+								'source' => MetadataTypes\ModuleSource::DEVICES,
 								'type' => 'device-properties-states',
 							],
 						);
@@ -313,7 +313,7 @@ final class DevicePropertiesStates extends PropertiesStates
 						$this->logger->error(
 							'Property stored actual value could not be converted to mapped property',
 							[
-								'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+								'source' => MetadataTypes\ModuleSource::DEVICES,
 								'type' => 'device-properties-states',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 							],
@@ -328,7 +328,7 @@ final class DevicePropertiesStates extends PropertiesStates
 						$this->logger->error(
 							'Property stored expected value was not valid',
 							[
-								'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+								'source' => MetadataTypes\ModuleSource::DEVICES,
 								'type' => 'device-properties-states',
 								'exception' => BootstrapHelpers\Logger::buildException($ex),
 							],
@@ -348,7 +348,7 @@ final class DevicePropertiesStates extends PropertiesStates
 			$this->logger->warning(
 				'Devices states repository is not configured. State could not be fetched',
 				[
-					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+					'source' => MetadataTypes\ModuleSource::DEVICES,
 					'type' => 'device-properties-states',
 				],
 			);
@@ -434,7 +434,7 @@ final class DevicePropertiesStates extends PropertiesStates
 				$this->logger->error(
 					'Provided property actual value is not valid',
 					[
-						'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+						'source' => MetadataTypes\ModuleSource::DEVICES,
 						'type' => 'device-properties-states',
 						'exception' => BootstrapHelpers\Logger::buildException($ex),
 					],
@@ -486,7 +486,7 @@ final class DevicePropertiesStates extends PropertiesStates
 					$this->logger->error(
 						'Provided property expected value was not valid',
 						[
-							'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+							'source' => MetadataTypes\ModuleSource::DEVICES,
 							'type' => 'device-properties-states',
 							'exception' => BootstrapHelpers\Logger::buildException($ex),
 						],
@@ -514,7 +514,7 @@ final class DevicePropertiesStates extends PropertiesStates
 				$this->logger->debug(
 					'Device property state was created',
 					[
-						'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+						'source' => MetadataTypes\ModuleSource::DEVICES,
 						'type' => 'device-properties-states',
 						'property' => [
 							'id' => $property->getId()->toString(),
@@ -532,7 +532,7 @@ final class DevicePropertiesStates extends PropertiesStates
 				$this->logger->debug(
 					'Device property state was updated',
 					[
-						'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+						'source' => MetadataTypes\ModuleSource::DEVICES,
 						'type' => 'device-properties-states',
 						'property' => [
 							'id' => $property->getId()->toString(),
@@ -545,7 +545,7 @@ final class DevicePropertiesStates extends PropertiesStates
 			$this->logger->warning(
 				'Devices states manager is not configured. State could not be saved',
 				[
-					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+					'source' => MetadataTypes\ModuleSource::DEVICES,
 					'type' => 'device-properties-states',
 				],
 			);

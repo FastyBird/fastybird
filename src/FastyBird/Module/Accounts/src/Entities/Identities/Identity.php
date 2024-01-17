@@ -114,7 +114,7 @@ class Identity implements Entities\Entity,
 		$this->account = $account;
 		$this->uid = $uid;
 
-		$this->state = MetadataTypes\IdentityState::get(MetadataTypes\IdentityState::STATE_ACTIVE);
+		$this->state = MetadataTypes\IdentityState::get(MetadataTypes\IdentityState::ACTIVE);
 
 		$this->setPassword($password);
 	}
@@ -170,22 +170,22 @@ class Identity implements Entities\Entity,
 
 	public function isActive(): bool
 	{
-		return $this->state === MetadataTypes\IdentityState::get(MetadataTypes\IdentityState::STATE_ACTIVE);
+		return $this->state === MetadataTypes\IdentityState::get(MetadataTypes\IdentityState::ACTIVE);
 	}
 
 	public function isBlocked(): bool
 	{
-		return $this->state === MetadataTypes\IdentityState::get(MetadataTypes\IdentityState::STATE_BLOCKED);
+		return $this->state === MetadataTypes\IdentityState::get(MetadataTypes\IdentityState::BLOCKED);
 	}
 
 	public function isDeleted(): bool
 	{
-		return $this->state === MetadataTypes\IdentityState::get(MetadataTypes\IdentityState::STATE_DELETED);
+		return $this->state === MetadataTypes\IdentityState::get(MetadataTypes\IdentityState::DELETED);
 	}
 
 	public function isInvalid(): bool
 	{
-		return $this->state === MetadataTypes\IdentityState::get(MetadataTypes\IdentityState::STATE_INVALID);
+		return $this->state === MetadataTypes\IdentityState::get(MetadataTypes\IdentityState::INVALID);
 	}
 
 	/**
@@ -201,7 +201,7 @@ class Identity implements Entities\Entity,
 
 	public function invalidate(): void
 	{
-		$this->state = MetadataTypes\IdentityState::get(MetadataTypes\IdentityState::STATE_INVALID);
+		$this->state = MetadataTypes\IdentityState::get(MetadataTypes\IdentityState::INVALID);
 	}
 
 	public function getAccount(): Entities\Accounts\Account
@@ -247,7 +247,7 @@ class Identity implements Entities\Entity,
 		// @phpstan-ignore-next-line
 		$this->id = Uuid\Uuid::uuid4();
 		$this->createdAt = new Utils\DateTime();
-		$this->state = MetadataTypes\IdentityState::get(MetadataTypes\IdentityState::STATE_ACTIVE);
+		$this->state = MetadataTypes\IdentityState::get(MetadataTypes\IdentityState::ACTIVE);
 	}
 
 	/**

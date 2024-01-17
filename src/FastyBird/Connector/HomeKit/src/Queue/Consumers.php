@@ -59,7 +59,7 @@ final class Consumers
 		$this->logger->debug(
 			'Appended new messages consumer',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 				'type' => 'consumers',
 			],
 		);
@@ -79,7 +79,7 @@ final class Consumers
 			$this->logger->error(
 				'No consumer is registered, messages could not be consumed',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'consumers',
 				],
 			);
@@ -96,7 +96,7 @@ final class Consumers
 		$this->logger->error(
 			'Message could not be consumed',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 				'type' => 'consumers',
 				'message' => $entity->toArray(),
 			],

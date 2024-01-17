@@ -37,7 +37,7 @@ final class ChannelPropertyCondition extends TriggersSchemas\Conditions\Conditio
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = ModuleSource::SOURCE_MODULE_TRIGGERS . '/condition/channel-property';
+	public const SCHEMA_TYPE = ModuleSource::TRIGGERS . '/condition/channel-property';
 
 	public function getType(): string
 	{

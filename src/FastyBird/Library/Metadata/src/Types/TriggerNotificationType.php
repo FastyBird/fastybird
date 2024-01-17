@@ -32,9 +32,9 @@ class TriggerNotificationType extends Consistence\Enum\Enum
 	/**
 	 * Define types
 	 */
-	public const TYPE_EMAIL = 'email';
+	public const EMAIL = 'email';
 
-	public const TYPE_SMS = 'sms';
+	public const SMS = 'sms';
 
 	public function getValue(): string
 	{

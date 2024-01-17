@@ -295,7 +295,7 @@ final class ModuleEntities implements Common\EventSubscriber
 					) : null;
 
 					$this->publisher->publish(
-						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
+						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 						$publishRoutingKey,
 						$this->entityFactory->create(
 							Utils\Json::encode(
@@ -310,7 +310,7 @@ final class ModuleEntities implements Common\EventSubscriber
 
 				} catch (Exceptions\NotImplemented) {
 					$this->publisher->publish(
-						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
+						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 						$publishRoutingKey,
 						$this->entityFactory->create(
 							Utils\Json::encode(
@@ -327,7 +327,7 @@ final class ModuleEntities implements Common\EventSubscriber
 						: null;
 
 					$this->publisher->publish(
-						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
+						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 						$publishRoutingKey,
 						$this->entityFactory->create(
 							Utils\Json::encode(
@@ -342,7 +342,7 @@ final class ModuleEntities implements Common\EventSubscriber
 
 				} catch (Exceptions\NotImplemented) {
 					$this->publisher->publish(
-						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
+						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 						$publishRoutingKey,
 						$this->entityFactory->create(
 							Utils\Json::encode(
@@ -359,7 +359,7 @@ final class ModuleEntities implements Common\EventSubscriber
 						: null;
 
 					$this->publisher->publish(
-						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
+						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 						$publishRoutingKey,
 						$this->entityFactory->create(
 							Utils\Json::encode(
@@ -374,7 +374,7 @@ final class ModuleEntities implements Common\EventSubscriber
 
 				} catch (Exceptions\NotImplemented) {
 					$this->publisher->publish(
-						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
+						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 						$publishRoutingKey,
 						$this->entityFactory->create(
 							Utils\Json::encode(
@@ -386,7 +386,7 @@ final class ModuleEntities implements Common\EventSubscriber
 				}
 			} else {
 				$this->publisher->publish(
-					MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
+					MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 					$publishRoutingKey,
 					$this->entityFactory->create(
 						Utils\Json::encode(

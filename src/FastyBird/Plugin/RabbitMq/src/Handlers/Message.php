@@ -77,7 +77,7 @@ final class Message extends Evenement\EventEmitter
 			} else {
 				// Log error action reason
 				$this->logger->warning('Received message is not in valid format', [
-					'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_RABBITMQ,
+					'source' => MetadataTypes\PluginSource::RABBITMQ,
 					'type' => 'messages-handler',
 				]);
 
@@ -86,7 +86,7 @@ final class Message extends Evenement\EventEmitter
 		} catch (Nette\Utils\JsonException $ex) {
 			// Log error action reason
 			$this->logger->warning('Received message is not valid json', [
-				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_RABBITMQ,
+				'source' => MetadataTypes\PluginSource::RABBITMQ,
 				'type' => 'messages-handler',
 				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);
@@ -119,7 +119,7 @@ final class Message extends Evenement\EventEmitter
 
 		} catch (Throwable $ex) {
 			$this->logger->error('Message could not be transformed into entity', [
-				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_RABBITMQ,
+				'source' => MetadataTypes\PluginSource::RABBITMQ,
 				'type' => 'messages-handler',
 				'exception' => BootstrapHelpers\Logger::buildException($ex),
 				'data' => $data,
@@ -142,7 +142,7 @@ final class Message extends Evenement\EventEmitter
 		} catch (Exceptions\UnprocessableMessage $ex) {
 			// Log error consume reason
 			$this->logger->error('Message could not be handled', [
-				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_RABBITMQ,
+				'source' => MetadataTypes\PluginSource::RABBITMQ,
 				'type' => 'messages-handler',
 				'exception' => BootstrapHelpers\Logger::buildException($ex),
 			]);

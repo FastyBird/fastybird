@@ -93,7 +93,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Device could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'store-device-property-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -121,7 +121,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Device device property could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'store-device-property-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -178,14 +178,14 @@ final class StoreDevicePropertyState implements Queue\Consumer
 					if ($this->useExchange) {
 						$this->publisher->publish(
 							MetadataTypes\ConnectorSource::get(
-								MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+								MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 							),
 							MetadataTypes\RoutingKey::get(
 								MetadataTypes\RoutingKey::DEVICE_PROPERTY_ACTION,
 							),
 							$this->entityFactory->create(
 								Utils\Json::encode([
-									'action' => MetadataTypes\PropertyAction::ACTION_SET,
+									'action' => MetadataTypes\PropertyAction::SET,
 									'device' => $device->getId()->toString(),
 									'property' => $property->getId()->toString(),
 									'expected_value' => MetadataUtilities\Value::flattenValue($valueToStore),
@@ -208,7 +208,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 					$this->logger->warning(
 						'State value could not be converted to mapped parent',
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+							'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 							'type' => 'store-device-property-state-message-consumer',
 							'exception' => BootstrapHelpers\Logger::buildException($ex),
 							'connector' => [
@@ -244,7 +244,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 						$this->logger->error(
 							'Mapped variable property could not be updated',
 							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+								'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 								'type' => 'store-device-property-state-message-consumer',
 								'connector' => [
 									'id' => $entity->getConnector()->toString(),
@@ -266,7 +266,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed store device state message',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_HOMEKIT,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 				'type' => 'store-device-property-state-message-consumer',
 				'device' => [
 					'id' => $device->getId()->toString(),

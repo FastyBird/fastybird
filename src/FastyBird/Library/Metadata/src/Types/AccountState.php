@@ -32,15 +32,15 @@ class AccountState extends Consistence\Enum\Enum
 	/**
 	 * Define states
 	 */
-	public const STATE_ACTIVE = 'active';
+	public const ACTIVE = 'active';
 
-	public const STATE_BLOCKED = 'blocked';
+	public const BLOCKED = 'blocked';
 
-	public const STATE_DELETED = 'deleted';
+	public const DELETED = 'deleted';
 
-	public const STATE_NOT_ACTIVATED = 'not_activated';
+	public const NOT_ACTIVATED = 'not_activated';
 
-	public const STATE_APPROVAL_WAITING = 'approval_waiting';
+	public const APPROVAL_WAITING = 'approval_waiting';
 
 	/**
 	 * List of allowed states
@@ -48,9 +48,9 @@ class AccountState extends Consistence\Enum\Enum
 	 * @var array<string>
 	 */
 	public static array $allowedStates = [
-		self::STATE_ACTIVE,
-		self::STATE_BLOCKED,
-		self::STATE_DELETED,
+		self::ACTIVE,
+		self::BLOCKED,
+		self::DELETED,
 	];
 
 	public function getValue(): string

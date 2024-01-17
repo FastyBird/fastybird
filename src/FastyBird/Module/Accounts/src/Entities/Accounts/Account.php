@@ -124,7 +124,7 @@ class Account implements Entities\Entity,
 		// @phpstan-ignore-next-line
 		$this->id = $id ?? Uuid\Uuid::uuid4();
 
-		$this->state = MetadataTypes\AccountState::get(MetadataTypes\AccountState::STATE_NOT_ACTIVATED);
+		$this->state = MetadataTypes\AccountState::get(MetadataTypes\AccountState::NOT_ACTIVATED);
 
 		$this->emails = new Common\Collections\ArrayCollection();
 		$this->identities = new Common\Collections\ArrayCollection();
@@ -133,27 +133,27 @@ class Account implements Entities\Entity,
 
 	public function isActivated(): bool
 	{
-		return $this->state->equalsValue(MetadataTypes\AccountState::STATE_ACTIVE);
+		return $this->state->equalsValue(MetadataTypes\AccountState::ACTIVE);
 	}
 
 	public function isBlocked(): bool
 	{
-		return $this->state->equalsValue(MetadataTypes\AccountState::STATE_BLOCKED);
+		return $this->state->equalsValue(MetadataTypes\AccountState::BLOCKED);
 	}
 
 	public function isDeleted(): bool
 	{
-		return $this->state->equalsValue(MetadataTypes\AccountState::STATE_DELETED);
+		return $this->state->equalsValue(MetadataTypes\AccountState::DELETED);
 	}
 
 	public function isNotActivated(): bool
 	{
-		return $this->state->equalsValue(MetadataTypes\AccountState::STATE_NOT_ACTIVATED);
+		return $this->state->equalsValue(MetadataTypes\AccountState::NOT_ACTIVATED);
 	}
 
 	public function isApprovalRequired(): bool
 	{
-		return $this->state->equalsValue(MetadataTypes\AccountState::STATE_APPROVAL_WAITING);
+		return $this->state->equalsValue(MetadataTypes\AccountState::APPROVAL_WAITING);
 	}
 
 	public function getRequestHash(): string|null

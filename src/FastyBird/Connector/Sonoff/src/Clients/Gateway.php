@@ -50,7 +50,7 @@ final class Gateway implements Client
 		$this->logger->error(
 			'Trying to connect with gateway client',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 				'type' => 'gateway-client',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -71,7 +71,7 @@ final class Gateway implements Client
 		$this->logger->error(
 			'Trying to disconnect with gateway client',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SONOFF,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 				'type' => 'gateway-client',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),

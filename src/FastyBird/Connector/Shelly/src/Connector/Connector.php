@@ -89,7 +89,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Starting Shelly connector service',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -122,7 +122,7 @@ final class Connector implements DevicesConnectors\Connector
 		) {
 			$this->dispatcher?->dispatch(
 				new DevicesEvents\TerminateConnector(
-					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY),
+					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_SHELLY),
 					'Connector client is not configured',
 				),
 			);
@@ -145,7 +145,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Shelly connector service has been started',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -167,7 +167,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Starting Shelly connector discovery',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -180,7 +180,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->client->on('finished', function (): void {
 			$this->dispatcher?->dispatch(
 				new DevicesEvents\TerminateConnector(
-					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY),
+					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_SHELLY),
 					'Devices discovery finished',
 				),
 			);
@@ -196,7 +196,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Shelly connector discovery has been started',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -222,7 +222,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Shelly connector has been terminated',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),

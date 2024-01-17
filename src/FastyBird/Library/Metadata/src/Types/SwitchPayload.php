@@ -32,11 +32,11 @@ class SwitchPayload extends Consistence\Enum\Enum
 	/**
 	 * Define types
 	 */
-	public const PAYLOAD_ON = 'switch_on';
+	public const ON = 'switch_on';
 
-	public const PAYLOAD_OFF = 'switch_off';
+	public const OFF = 'switch_off';
 
-	public const PAYLOAD_TOGGLE = 'switch_toggle';
+	public const TOGGLE = 'switch_toggle';
 
 	public function getValue(): string
 	{
