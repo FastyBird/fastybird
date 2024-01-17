@@ -42,12 +42,10 @@ use function is_numeric;
 use function is_object;
 use function is_string;
 use function method_exists;
-use function preg_replace;
 use function property_exists;
 use function React\Async\await;
 use function serialize;
 use function sprintf;
-use function strtolower;
 
 /**
  * States manager

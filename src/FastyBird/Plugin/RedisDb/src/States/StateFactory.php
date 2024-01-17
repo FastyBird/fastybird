@@ -19,12 +19,8 @@ use FastyBird\Plugin\RedisDb\Exceptions;
 use FastyBird\Plugin\RedisDb\States;
 use Nette\Utils;
 use Orisai\ObjectMapper;
-use function array_map;
 use function class_exists;
-use function explode;
-use function implode;
 use function is_array;
-use function lcfirst;
 
 /**
  * State object factory
