@@ -162,14 +162,14 @@ class Property extends RedisDbStates\State implements DevicesStates\Property
 	public function toArray(): array
 	{
 		return array_merge(parent::toArray(), [
-			'actual_value' => MetadataUtilities\Value::flattenValue($this->getActualValue()),
-			'expected_value' => MetadataUtilities\Value::flattenValue($this->getExpectedValue()),
-			'pending' => $this->getPending() instanceof DateTimeInterface
+			self::ACTUAL_VALUE_FIELD => MetadataUtilities\Value::flattenValue($this->getActualValue()),
+			self::EXPECTED_VALUE_FIELD => MetadataUtilities\Value::flattenValue($this->getExpectedValue()),
+			self::PENDING_FIELD => $this->getPending() instanceof DateTimeInterface
 				? $this->getPending()->format(DateTimeInterface::ATOM)
 				: $this->getPending(),
-			'valid' => $this->isValid(),
-			'created_at' => $this->getCreatedAt()?->format(DateTimeInterface::ATOM),
-			'updated_at' => $this->getUpdatedAt()?->format(DateTimeInterface::ATOM),
+			self::VALID_FIELD => $this->isValid(),
+			self::CREATED_AT_FIELD => $this->getCreatedAt()?->format(DateTimeInterface::ATOM),
+			self::UPDATED_AT_FIELD => $this->getUpdatedAt()?->format(DateTimeInterface::ATOM),
 		]);
 	}
 

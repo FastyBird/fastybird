@@ -36,9 +36,14 @@ class PropertyAction extends Consistence\Enum\Enum
 
 	public const ACTION_GET = 'get';
 
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
+
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }

@@ -76,9 +76,14 @@ class DataTypeShort extends Consistence\Enum\Enum
 			|| self::equalsValue(self::DATA_TYPE_UINT);
 	}
 
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
+
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }

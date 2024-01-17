@@ -92,9 +92,14 @@ class PropertyIdentifier extends Consistence\Enum\Enum
 
 	public const IDENTIFIER_STATE_PROCESSING_DELAY = 'state_processing_delay';
 
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
+
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }

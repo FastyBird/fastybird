@@ -32,15 +32,20 @@ class KeyState extends Consistence\Enum\Enum
 	/**
 	 * Define states
 	 */
-	public const STATE_ACTIVE = 'active';
+	public const ACTIVE = 'active';
 
-	public const STATE_SUSPENDED = 'suspended';
+	public const SUSPENDED = 'suspended';
 
-	public const STATE_DELETED = 'deleted';
+	public const DELETED = 'deleted';
+
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
 
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }

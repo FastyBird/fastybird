@@ -32,13 +32,18 @@ class EmailVisibility extends Consistence\Enum\Enum
 	/**
 	 * Define states
 	 */
-	public const VISIBILITY_PUBLIC = 'public';
+	public const PUBLIC = 'public';
 
-	public const VISIBILITY_PRIVATE = 'private';
+	public const PRIVATE = 'private';
+
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
 
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }

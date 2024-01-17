@@ -38,9 +38,14 @@ class PropertyType extends Consistence\Enum\Enum
 
 	public const TYPE_MAPPED = 'mapped';
 
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
+
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }

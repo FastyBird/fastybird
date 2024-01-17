@@ -34,9 +34,14 @@ class PropertyCategory extends Consistence\Enum\Enum
 	 */
 	public const CATEGORY_GENERIC = 'generic';
 
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
+
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }

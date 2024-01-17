@@ -126,7 +126,7 @@ class Email implements Entities\Entity,
 		$this->id = $id ?? Uuid\Uuid::uuid4();
 
 		$this->account = $account;
-		$this->visibility = Types\EmailVisibility::get(Types\EmailVisibility::VISIBILITY_PUBLIC);
+		$this->visibility = Types\EmailVisibility::get(Types\EmailVisibility::PUBLIC);
 
 		$this->setAddress($address);
 
@@ -207,7 +207,7 @@ class Email implements Entities\Entity,
 
 	public function isPrivate(): bool
 	{
-		return $this->getVisibility()->equalsValue(Types\EmailVisibility::VISIBILITY_PRIVATE);
+		return $this->getVisibility()->equalsValue(Types\EmailVisibility::PRIVATE);
 	}
 
 	public function getVisibility(): Types\EmailVisibility
@@ -222,7 +222,7 @@ class Email implements Entities\Entity,
 
 	public function isPublic(): bool
 	{
-		return $this->getVisibility()->equalsValue(Types\EmailVisibility::VISIBILITY_PUBLIC);
+		return $this->getVisibility()->equalsValue(Types\EmailVisibility::PUBLIC);
 	}
 
 	/**

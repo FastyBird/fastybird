@@ -46,9 +46,14 @@ class ButtonPayload extends Consistence\Enum\Enum
 
 	public const PAYLOAD_EXTRA_LONG_CLICKED = 'btn_extra_long_clicked';
 
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
+
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }

@@ -80,9 +80,14 @@ class DevicePropertyIdentifier extends Consistence\Enum\Enum
 
 	public const IDENTIFIER_STATE_PROCESSING_DELAY = PropertyIdentifier::IDENTIFIER_STATE_PROCESSING_DELAY;
 
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
+
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }

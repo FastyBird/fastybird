@@ -44,9 +44,14 @@ class ControlName extends Consistence\Enum\Enum
 
 	public const NAME_DISCOVER = 'discover';
 
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
+
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }

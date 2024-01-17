@@ -90,9 +90,14 @@ class DeviceModel extends Consistence\Enum\Enum
 
 	public const MODEL_FASTYBIRD_16CH_BUTTONS = '16ch_buttons';
 
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
+
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }

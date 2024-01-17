@@ -39,9 +39,14 @@ class AutomatorSource extends Consistence\Enum\Enum
 
 	public const SOURCE_AUTOMATOR_DATE_TIME = Metadata\Constants::AUTOMATOR_DATE_TIME;
 
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
+
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }

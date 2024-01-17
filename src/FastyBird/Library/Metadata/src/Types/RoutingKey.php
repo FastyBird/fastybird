@@ -199,9 +199,14 @@ class RoutingKey extends Consistence\Enum\Enum
 
 	public const TRIGGER_CONDITION_DOCUMENT_DELETED = Metadata\Constants::MESSAGE_BUS_TRIGGER_CONDITION_DOCUMENT_DELETED_ROUTING_KEY;
 
+	public function getValue(): string
+	{
+		return strval(parent::getValue());
+	}
+
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }
