@@ -243,6 +243,25 @@ class Mapped extends Property
 	}
 
 	/**
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 */
+	public function setDataType(MetadataTypes\DataType $dataType): void
+	{
+		if (!Utilities\Value::compareDataTypes($this->getParent()->getDataType(), $this->getDataType())) {
+			throw new Exceptions\InvalidArgument(
+				sprintf(
+					'Mapped property data type: %s is not compatible with parent data type: %s',
+					$this->getParent()->getDataType()->getValue(),
+					$this->getDataType()->getValue(),
+				),
+			);
+		}
+
+		parent::setDataType($dataType);
+	}
+
+	/**
 	 * {@inheritDoc}
 	 *
 	 * @throws Exceptions\InvalidState

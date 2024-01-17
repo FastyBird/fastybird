@@ -18,15 +18,12 @@ namespace FastyBird\Module\Devices\Entities\Channels\Properties;
 use Doctrine\Common;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
-use FastyBird\Module\Devices\Utilities;
 use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
 use Nette\Utils;
 use Ramsey\Uuid;
 use function array_merge;
-use function sprintf;
 
 /**
  * @ORM\Entity
@@ -151,27 +148,6 @@ abstract class Property extends Entities\Property
 	public function getChannel(): Entities\Channels\Channel
 	{
 		return $this->channel;
-	}
-
-	/**
-	 * @throws Exceptions\InvalidArgument
-	 */
-	public function setDataType(MetadataTypes\DataType $dataType): void
-	{
-		if (
-			$this->getParent() !== null
-			&& !Utilities\Value::compareDataTypes($this->getParent()->getDataType(), $this->getDataType())
-		) {
-			throw new Exceptions\InvalidArgument(
-				sprintf(
-					'Parent - child data types are not compatible. Parent data type is: %s, child data type: %s',
-					$this->getParent()->getDataType()->getValue(),
-					$this->getDataType()->getValue(),
-				),
-			);
-		}
-
-		parent::setDataType($dataType);
 	}
 
 	/**
