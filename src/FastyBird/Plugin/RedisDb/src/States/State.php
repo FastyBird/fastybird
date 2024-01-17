@@ -32,9 +32,9 @@ class State implements ObjectMapper\MappedObject
 
 	public const ID_FIELD = 'id';
 
-	public const CREATED_AT_FIELD = 'createdAt';
+	public const CREATED_AT_FIELD = 'created_at';
 
-	public const UPDATED_AT_FIELD = 'updatedAt';
+	public const UPDATED_AT_FIELD = 'updated_at';
 
 	public function __construct(
 		#[BootstrapObjectMapper\Rules\UuidValue()]

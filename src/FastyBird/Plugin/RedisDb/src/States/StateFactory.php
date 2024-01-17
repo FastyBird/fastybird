@@ -69,8 +69,6 @@ final class StateFactory
 			throw new Exceptions\InvalidArgument('Provided state content is not valid JSON', $ex->getCode(), $ex);
 		}
 
-		$decoded = $this->convertKeys($decoded);
-
 		try {
 			$options = new ObjectMapper\Processing\Options();
 			$options->setAllowUnknownFields();
@@ -83,24 +81,6 @@ final class StateFactory
 
 			throw new Exceptions\InvalidArgument('Could not map data to state: ' . $errorPrinter->printError($ex));
 		}
-	}
-
-	/**
-	 * @param array<mixed> $xs
-	 *
-	 * @return array<mixed>
-	 */
-	private function convertKeys(array $xs): array
-	{
-		$out = [];
-
-		foreach ($xs as $key => $value) {
-			$out[lcfirst(implode('', array_map('ucfirst', explode('_', $key))))] = is_array($value)
-				? self::convertKeys($value)
-				: $value;
-		}
-
-		return $out;
 	}
 
 }

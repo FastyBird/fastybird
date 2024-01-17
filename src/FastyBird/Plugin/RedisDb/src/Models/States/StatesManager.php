@@ -218,7 +218,7 @@ class StatesManager
 					}
 				}
 
-				$data->{$this->camelToSnake($field)} = $value;
+				$data->{$field} = $value;
 			}
 
 			$this->client->select($database);
@@ -306,15 +306,15 @@ class StatesManager
 
 					if (
 						!in_array($field, array_keys(get_object_vars($data)), true)
-						|| $data->{$this->camelToSnake($field)} !== $value
+						|| $data->{$field} !== $value
 					) {
-						$data->{$this->camelToSnake($field)} = $value;
+						$data->{$field} = $value;
 
 						$isUpdated = true;
 					}
 				} else {
 					if ($field === States\State::UPDATED_AT_FIELD) {
-						$data->{$this->camelToSnake($field)} = $this->dateTimeFactory->getNow()->format(
+						$data->{$field} = $this->dateTimeFactory->getNow()->format(
 							DateTimeInterface::ATOM,
 						);
 					}
@@ -390,13 +390,6 @@ class StatesManager
 		}
 
 		return false;
-	}
-
-	protected function camelToSnake(string $input): string
-	{
-		$transformed = preg_replace('/(?<!^)[A-Z]/', '_$0', $input);
-
-		return $transformed !== null ? strtolower($transformed) : $input;
 	}
 
 }

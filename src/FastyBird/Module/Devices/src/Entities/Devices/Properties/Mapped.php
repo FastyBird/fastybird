@@ -248,12 +248,12 @@ class Mapped extends Property
 	 */
 	public function setDataType(MetadataTypes\DataType $dataType): void
 	{
-		if (!Utilities\Value::compareDataTypes($this->getParent()->getDataType(), $this->getDataType())) {
+		if (!Utilities\Value::compareDataTypes($this->getParent()->getDataType(), $dataType)) {
 			throw new Exceptions\InvalidArgument(
 				sprintf(
 					'Mapped property data type: %s is not compatible with parent data type: %s',
+					$dataType->getValue(),
 					$this->getParent()->getDataType()->getValue(),
-					$this->getDataType()->getValue(),
 				),
 			);
 		}

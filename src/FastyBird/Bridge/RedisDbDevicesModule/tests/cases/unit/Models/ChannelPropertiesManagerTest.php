@@ -15,6 +15,8 @@ use Ramsey\Uuid\Uuid;
 final class ChannelPropertiesManagerTest extends BaseTestCase
 {
 
+	private static $getCalled = 0;
+
 	/**
 	 * @throws Exception
 	 */
@@ -87,6 +89,7 @@ final class ChannelPropertiesManagerTest extends BaseTestCase
 	public function testUpdate(): void
 	{
 		$id = Uuid::uuid4();
+		self::$getCalled = 0;
 
 		$redisDbClient = $this->createMock(RedisDbClient\Client::class);
 
@@ -118,12 +121,20 @@ final class ChannelPropertiesManagerTest extends BaseTestCase
 			->expects(self::exactly(3))
 			->method('get')
 			->with($id->toString())
-			->willReturn(Utils\Json::encode([
-				'actual_value' => 10,
-				'expected_value' => 40,
-				'created_at' => '2020-04-01T12:00:00+00:00',
-				'id' => $id->toString(),
-			]));
+			->willReturnCallback(
+				static function (string $id): string {
+					$expected = self::$getCalled > 1 ? 40 : 20;
+
+					self::$getCalled++;
+
+					return Utils\Json::encode([
+						'actual_value' => 10,
+						'expected_value' => $expected,
+						'created_at' => '2020-04-01T12:00:00+00:00',
+						'id' => $id,
+					]);
+				},
+			);
 
 		$this->mockContainerService(RedisDbClient\Client::class, $redisDbClient);
 
