@@ -34,6 +34,7 @@ use Nette\Utils;
 use Orisai\ObjectMapper;
 use function assert;
 use function is_array;
+use function is_bool;
 use function strval;
 
 /**
@@ -206,7 +207,10 @@ final class DevicePropertiesManager extends PropertiesManager
 	): bool
 	{
 		try {
-			return $this->devicePropertiesStatesManager->delete($property);
+			$result = $this->devicePropertiesStatesManager->delete($property);
+			assert(is_bool($result));
+
+			return $result;
 		} catch (Exceptions\NotImplemented) {
 			$this->logger->warning(
 				'Devices states manager is not configured. State could not be saved',
@@ -586,6 +590,7 @@ final class DevicePropertiesManager extends PropertiesManager
 					$property,
 					$data,
 				);
+				assert($state instanceof States\DeviceProperty);
 
 				$this->logger->debug(
 					'Device property state was created',
@@ -604,6 +609,7 @@ final class DevicePropertiesManager extends PropertiesManager
 					$state,
 					$data,
 				);
+				assert($state instanceof States\DeviceProperty);
 
 				$this->logger->debug(
 					'Device property state was updated',

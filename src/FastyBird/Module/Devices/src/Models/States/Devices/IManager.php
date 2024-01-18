@@ -18,6 +18,7 @@ namespace FastyBird\Module\Devices\Models\States\Devices;
 use FastyBird\Module\Devices\States;
 use Nette\Utils;
 use Ramsey\Uuid;
+use React\Promise;
 
 /**
  * Device properties manager interface
@@ -30,10 +31,25 @@ use Ramsey\Uuid;
 interface IManager
 {
 
-	public function create(Uuid\UuidInterface $id, Utils\ArrayHash $values): States\DeviceProperty;
+	/**
+	 * @return States\DeviceProperty|Promise\PromiseInterface<States\DeviceProperty>
+	 */
+	public function create(
+		Uuid\UuidInterface $id,
+		Utils\ArrayHash $values,
+	): States\DeviceProperty|Promise\PromiseInterface;
 
-	public function update(Uuid\UuidInterface $id, Utils\ArrayHash $values): States\DeviceProperty|false;
+	/**
+	 * @return States\DeviceProperty|Promise\PromiseInterface<States\DeviceProperty>|false
+	 */
+	public function update(
+		Uuid\UuidInterface $id,
+		Utils\ArrayHash $values,
+	): States\DeviceProperty|Promise\PromiseInterface|false;
 
-	public function delete(Uuid\UuidInterface $id): bool;
+	/**
+	 * @return Promise\PromiseInterface<bool>|bool
+	 */
+	public function delete(Uuid\UuidInterface $id): Promise\PromiseInterface|bool;
 
 }
