@@ -14,14 +14,14 @@ use FastyBird\Connector\FbMqtt\Schemas;
 use FastyBird\Connector\FbMqtt\Subscribers;
 use FastyBird\Connector\FbMqtt\Tests;
 use FastyBird\Connector\FbMqtt\Writers;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Nette;
 
 final class FbMqttExtensionTest extends Tests\Cases\Unit\BaseTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws Error
 	 */

@@ -37,7 +37,7 @@
     "bunny/bunny": "dev-promise-v3",
     "cweagans/composer-patches": "^1.7",
     "evenement/evenement": "^3.0",
-    "fastybird/bootstrap-library": "dev-main",
+    "fastybird/application-library": "dev-main",
     "fastybird/datetime-factory": "^0.6",
     "fastybird/exchange-library": "dev-main",
     "fastybird/metadata-library": "dev-main",

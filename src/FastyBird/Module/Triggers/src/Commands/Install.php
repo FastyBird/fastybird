@@ -15,7 +15,7 @@
 
 namespace FastyBird\Module\Triggers\Commands;
 
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette\Localization;
 use Psr\Log;
@@ -102,7 +102,7 @@ class Install extends Console\Command\Command
 			$this->logger->error('An unhandled error occurred', [
 				'source' => MetadataTypes\ModuleSource::TRIGGERS,
 				'type' => 'initialize-cmd',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'exception' => ApplicationHelpers\Logger::buildException($ex),
 			]);
 
 			if ($input->getOption('quiet') === false) {

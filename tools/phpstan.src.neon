@@ -18,7 +18,7 @@ includes:
     - ../src/FastyBird/Connector/Virtual/tools/phpstan.config.src.neon
     - ../src/FastyBird/Connector/Zigbee2Mqtt/tools/phpstan.config.src.neon
 
-    - ../src/FastyBird/Library/Bootstrap/tools/phpstan.config.src.neon
+    - ../src/FastyBird/Library/Application/tools/phpstan.config.src.neon
     - ../src/FastyBird/Library/Exchange/tools/phpstan.config.src.neon
     - ../src/FastyBird/Library/Metadata/tools/phpstan.config.src.neon
     - ../src/FastyBird/Library/Tools/tools/phpstan.config.src.neon

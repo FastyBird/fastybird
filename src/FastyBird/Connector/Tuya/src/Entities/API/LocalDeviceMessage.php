@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\Tuya\Entities\API;
 
 use FastyBird\Connector\Tuya\Types;
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 use function array_map;
 use function is_array;
@@ -38,7 +38,7 @@ final class LocalDeviceMessage implements Entity
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $identifier,
-		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\LocalDeviceCommand::class)]
+		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\LocalDeviceCommand::class)]
 		private readonly Types\LocalDeviceCommand $command,
 		#[ObjectMapper\Rules\IntValue(unsigned: true)]
 		private readonly int $sequence,
@@ -58,7 +58,7 @@ final class LocalDeviceMessage implements Entity
 		])]
 		private readonly string|array|LocalDeviceWifiScan|null $data = null,
 		#[ObjectMapper\Rules\AnyOf([
-			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\LocalDeviceError::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\LocalDeviceError::class),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		private readonly Types\LocalDeviceError|null $error = null,

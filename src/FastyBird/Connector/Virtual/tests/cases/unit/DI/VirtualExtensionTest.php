@@ -14,14 +14,14 @@ use FastyBird\Connector\Virtual\Schemas;
 use FastyBird\Connector\Virtual\Subscribers;
 use FastyBird\Connector\Virtual\Tests;
 use FastyBird\Connector\Virtual\Writers;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Nette;
 
 final class VirtualExtensionTest extends Tests\Cases\Unit\BaseTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws Error
 	 */

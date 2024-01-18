@@ -17,7 +17,7 @@ namespace FastyBird\Connector\Shelly\Entities\API\Gen1;
 
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Types;
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Orisai\ObjectMapper;
 
@@ -38,11 +38,11 @@ final class BlockSensorDescription implements Entities\API\Entity
 	public function __construct(
 		#[ObjectMapper\Rules\IntValue()]
 		private readonly int $identifier,
-		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\SensorType::class)]
+		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\SensorType::class)]
 		private readonly Types\SensorType $type,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $description,
-		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\DataType::class)]
+		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\DataType::class)]
 		#[ObjectMapper\Modifiers\FieldName('data_type')]
 		private readonly MetadataTypes\DataType $dataType,
 		#[ObjectMapper\Rules\AnyOf([

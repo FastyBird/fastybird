@@ -18,7 +18,7 @@ namespace FastyBird\Module\Devices\Controllers;
 use Doctrine;
 use Exception;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Controllers;
 use FastyBird\Module\Devices\Exceptions;
@@ -191,7 +191,7 @@ final class ChannelsV1 extends BaseV1
 				$this->logger->error('An unhandled error occurred', [
 					'source' => MetadataTypes\ModuleSource::DEVICES,
 					'type' => 'channels-controller',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				]);
 
 				throw new JsonApiExceptions\JsonApiError(
@@ -263,7 +263,7 @@ final class ChannelsV1 extends BaseV1
 				$this->logger->error('An unhandled error occurred', [
 					'source' => MetadataTypes\ModuleSource::DEVICES,
 					'type' => 'channels-controller',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				]);
 
 				throw new JsonApiExceptions\JsonApiError(
@@ -329,7 +329,7 @@ final class ChannelsV1 extends BaseV1
 			$this->logger->error('An unhandled error occurred', [
 				'source' => MetadataTypes\ModuleSource::DEVICES,
 				'type' => 'channels-controller',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'exception' => ApplicationHelpers\Logger::buildException($ex),
 			]);
 
 			throw new JsonApiExceptions\JsonApiError(

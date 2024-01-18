@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\Tuya\ValueObjects;
 
 use FastyBird\Connector\Tuya\Types;
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 
 /**
@@ -36,7 +36,7 @@ final class LocalChild implements ObjectMapper\MappedObject
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('node_id')]
 		private readonly string $nodeId,
-		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\LocalDeviceType::class)]
+		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\LocalDeviceType::class)]
 		private readonly Types\LocalDeviceType $type,
 	)
 	{

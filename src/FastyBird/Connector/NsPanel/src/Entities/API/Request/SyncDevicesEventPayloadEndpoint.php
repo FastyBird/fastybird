@@ -17,7 +17,7 @@ namespace FastyBird\Connector\NsPanel\Entities\API\Request;
 
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Types;
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use stdClass;
@@ -40,12 +40,12 @@ final class SyncDevicesEventPayloadEndpoint implements Entities\API\Entity
 	 * @param array<string, string|array<string, string>> $tags
 	 */
 	public function __construct(
-		#[BootstrapObjectMapper\Rules\UuidValue()]
+		#[ApplicationObjectMapper\Rules\UuidValue()]
 		#[ObjectMapper\Modifiers\FieldName('third_serial_number')]
 		private readonly Uuid\UuidInterface $thirdSerialNumber,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $name,
-		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\Category::class)]
+		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\Category::class)]
 		#[ObjectMapper\Modifiers\FieldName('display_category')]
 		private readonly Types\Category $displayCategory,
 		#[ObjectMapper\Rules\ArrayOf(

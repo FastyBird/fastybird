@@ -3,7 +3,7 @@
 namespace FastyBird\Module\Devices\Tests\Cases\Unit\Models\Configuration\Repositories;
 
 use Error;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
@@ -16,7 +16,7 @@ final class ConnectorsRepositoryTest extends DbTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\DI\MissingServiceException
@@ -40,7 +40,7 @@ final class ConnectorsRepositoryTest extends DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\DI\MissingServiceException

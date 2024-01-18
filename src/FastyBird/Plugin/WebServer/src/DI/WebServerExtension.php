@@ -15,7 +15,7 @@
 
 namespace FastyBird\Plugin\WebServer\DI;
 
-use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
+use FastyBird\Library\Application\Boot as ApplicationBoot;
 use FastyBird\Plugin\WebServer\Application;
 use FastyBird\Plugin\WebServer\Commands;
 use FastyBird\Plugin\WebServer\Http;
@@ -43,12 +43,12 @@ class WebServerExtension extends DI\CompilerExtension
 	public const NAME = 'fbWebServerPlugin';
 
 	public static function register(
-		BootstrapBoot\Configurator $config,
+		ApplicationBoot\Configurator $config,
 		string $extensionName = self::NAME,
 	): void
 	{
 		$config->onCompile[] = static function (
-			BootstrapBoot\Configurator $config,
+			ApplicationBoot\Configurator $config,
 			DI\Compiler $compiler,
 		) use (
 			$extensionName,

@@ -20,7 +20,7 @@ use FastyBird\Connector\NsPanel\Events;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Servers;
 use FastyBird\Connector\NsPanel\Types;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Fig\Http\Message\StatusCodeInterface;
 use InvalidArgumentException;
@@ -104,7 +104,7 @@ final class Router
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 					'type' => 'router-middleware',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'request' => [
 						'method' => $request->getMethod(),
 						'path' => $request->getUri()->getPath(),
@@ -133,7 +133,7 @@ final class Router
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 					'type' => 'router-middleware',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'request' => [
 						'method' => $request->getMethod(),
 						'path' => $request->getUri()->getPath(),
@@ -162,7 +162,7 @@ final class Router
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 					'type' => 'router-middleware',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 

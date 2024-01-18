@@ -15,7 +15,7 @@
 
 namespace FastyBird\Library\Metadata\Documents\Actions;
 
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Metadata\Documents;
 use FastyBird\Library\Metadata\Types;
 use Orisai\ObjectMapper;
@@ -33,11 +33,11 @@ final class ActionTriggerControl implements Documents\Document
 {
 
 	public function __construct(
-		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\TriggerAction::class)]
+		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\TriggerAction::class)]
 		private readonly Types\TriggerAction $action,
-		#[BootstrapObjectMapper\Rules\UuidValue()]
+		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $trigger,
-		#[BootstrapObjectMapper\Rules\UuidValue()]
+		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $control,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\BoolValue(),

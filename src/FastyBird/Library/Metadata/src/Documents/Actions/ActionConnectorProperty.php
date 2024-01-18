@@ -15,7 +15,7 @@
 
 namespace FastyBird\Library\Metadata\Documents\Actions;
 
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Metadata\Documents;
 use FastyBird\Library\Metadata\Exceptions;
 use FastyBird\Library\Metadata\Types;
@@ -36,11 +36,11 @@ final class ActionConnectorProperty implements Documents\Document
 {
 
 	public function __construct(
-		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\PropertyAction::class)]
+		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\PropertyAction::class)]
 		private readonly Types\PropertyAction $action,
-		#[BootstrapObjectMapper\Rules\UuidValue()]
+		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $connector,
-		#[BootstrapObjectMapper\Rules\UuidValue()]
+		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $property,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\BoolValue(),

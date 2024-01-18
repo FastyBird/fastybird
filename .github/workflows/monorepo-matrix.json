@@ -1,8 +1,8 @@
 [
   {
     "organization": "FastyBird",
-    "name": "bootstrap-library",
-    "local-path": "src/FastyBird/Library/Bootstrap"
+    "name": "application-library",
+    "local-path": "src/FastyBird/Library/Application"
   },
   {
     "organization": "FastyBird",

@@ -15,7 +15,9 @@
 
 namespace FastyBird\Module\Devices\Entities;
 
+use Consistence\Doctrine\Enum\EnumAnnotation as Enum;
 use DateTimeInterface;
+use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -23,6 +25,7 @@ use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
 use FastyBird\Library\Tools\Transformers as ToolsTransformers;
 use FastyBird\Module\Devices\Exceptions;
+use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
 use IPub\DoctrineTimestampable;
 use Nette\Utils;
 use Ramsey\Uuid;

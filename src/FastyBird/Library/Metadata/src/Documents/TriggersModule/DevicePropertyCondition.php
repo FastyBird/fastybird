@@ -15,7 +15,7 @@
 
 namespace FastyBird\Library\Metadata\Documents\TriggersModule;
 
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Metadata\Types;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
@@ -37,13 +37,13 @@ final class DevicePropertyCondition extends Condition
 		Uuid\UuidInterface $trigger,
 		Types\TriggerConditionType $type,
 		bool $enabled,
-		#[BootstrapObjectMapper\Rules\UuidValue()]
+		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $device,
-		#[BootstrapObjectMapper\Rules\UuidValue()]
+		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $property,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $operand,
-		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\TriggerConditionOperator::class)]
+		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\TriggerConditionOperator::class)]
 		private readonly Types\TriggerConditionOperator $operator,
 		bool|null $isFulfilled = null,
 		Uuid\UuidInterface|null $owner = null,

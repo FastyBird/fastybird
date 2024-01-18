@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\Zigbee2Mqtt\Entities\Messages;
 
 use FastyBird\Connector\Zigbee2Mqtt\Types;
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Ramsey\Uuid;
 use function array_merge;
 
@@ -35,7 +35,7 @@ final class StoreDeviceConnectionState extends Device implements Entity
 		Uuid\UuidInterface $connector,
 		string $baseTopic,
 		string $identifier,
-		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\ConnectionState::class)]
+		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\ConnectionState::class)]
 		private readonly Types\ConnectionState $state,
 	)
 	{

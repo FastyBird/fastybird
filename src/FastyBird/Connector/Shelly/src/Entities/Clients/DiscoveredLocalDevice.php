@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\Shelly\Entities\Clients;
 
 use FastyBird\Connector\Shelly\Types;
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 
 /**
@@ -31,7 +31,7 @@ final class DiscoveredLocalDevice implements Entity
 {
 
 	public function __construct(
-		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\DeviceGeneration::class)]
+		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\DeviceGeneration::class)]
 		private readonly Types\DeviceGeneration $generation,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $id,

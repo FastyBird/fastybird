@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\Shelly\Entities\Messages;
 
 use FastyBird\Connector\Shelly\Types;
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_map;
@@ -41,7 +41,7 @@ final class StoreLocalDevice extends Device
 	public function __construct(
 		Uuid\UuidInterface $connector,
 		string $identifier,
-		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\DeviceGeneration::class)]
+		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\DeviceGeneration::class)]
 		private readonly Types\DeviceGeneration $generation,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('ip_address')]

@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\NsPanel\Entities\API\States;
 
 use FastyBird\Connector\NsPanel\Types;
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 use stdClass;
 
@@ -32,11 +32,11 @@ final class ToggleState implements State
 {
 
 	public function __construct(
-		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\TogglePayload::class)]
+		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\TogglePayload::class)]
 		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::TOGGLE_STATE)]
 		private readonly Types\TogglePayload $toggleState,
 		#[ObjectMapper\Rules\AnyOf([
-			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\StartupPayload::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\StartupPayload::class),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::STARTUP)]

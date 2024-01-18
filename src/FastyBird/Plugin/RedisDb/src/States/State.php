@@ -15,7 +15,7 @@
 
 namespace FastyBird\Plugin\RedisDb\States;
 
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 
@@ -37,7 +37,7 @@ class State implements ObjectMapper\MappedObject
 	public const UPDATED_AT_FIELD = 'updated_at';
 
 	public function __construct(
-		#[BootstrapObjectMapper\Rules\UuidValue()]
+		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $id,
 	)
 	{

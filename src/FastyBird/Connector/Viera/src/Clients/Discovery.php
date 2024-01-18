@@ -23,7 +23,7 @@ use FastyBird\Connector\Viera\Exceptions;
 use FastyBird\Connector\Viera\Helpers;
 use FastyBird\Connector\Viera\Queue;
 use FastyBird\Connector\Viera\Services;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette;
@@ -109,7 +109,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 					'type' => 'discovery-client',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -207,7 +207,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					[
 						'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 						'type' => 'discovery-client',
-						'exception' => BootstrapHelpers\Logger::buildException($ex),
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'device' => [
 							'id' => $id,
 							'host' => $host,
@@ -257,7 +257,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 					'type' => 'discovery-client',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -268,7 +268,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 					'type' => 'discovery-client',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'request' => [
 						'method' => $ex->getRequest()?->getMethod(),
 						'url' => $ex->getRequest() !== null ? strval($ex->getRequest()->getUri()) : null,
@@ -287,7 +287,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 					'type' => 'discovery-client',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 

@@ -23,7 +23,7 @@ use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -256,7 +256,7 @@ final class Gateway implements Client
 							[
 								'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 								'type' => 'gateway-client',
-								'exception' => BootstrapHelpers\Logger::buildException($ex),
+								'exception' => ApplicationHelpers\Logger::buildException($ex),
 								'connector' => [
 									'id' => $this->connector->getId()->toString(),
 								],
@@ -282,7 +282,7 @@ final class Gateway implements Client
 							[
 								'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 								'type' => 'gateway-client',
-								'exception' => BootstrapHelpers\Logger::buildException($ex),
+								'exception' => ApplicationHelpers\Logger::buildException($ex),
 								'connector' => [
 									'id' => $this->connector->getId()->toString(),
 								],
@@ -316,7 +316,7 @@ final class Gateway implements Client
 							[
 								'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 								'type' => 'gateway-client',
-								'exception' => BootstrapHelpers\Logger::buildException($ex),
+								'exception' => ApplicationHelpers\Logger::buildException($ex),
 								'connector' => [
 									'id' => $this->connector->getId()->toString(),
 								],
@@ -342,7 +342,7 @@ final class Gateway implements Client
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 					'type' => 'gateway-client',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
 					],
@@ -496,7 +496,7 @@ final class Gateway implements Client
 							[
 								'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 								'type' => 'gateway-client',
-								'exception' => BootstrapHelpers\Logger::buildException($ex),
+								'exception' => ApplicationHelpers\Logger::buildException($ex),
 								'connector' => [
 									'id' => $this->connector->getId()->toString(),
 								],
@@ -556,7 +556,7 @@ final class Gateway implements Client
 							[
 								'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 								'type' => 'gateway-client',
-								'exception' => BootstrapHelpers\Logger::buildException($ex),
+								'exception' => ApplicationHelpers\Logger::buildException($ex),
 								'connector' => [
 									'id' => $this->connector->getId()->toString(),
 								],
@@ -582,7 +582,7 @@ final class Gateway implements Client
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 					'type' => 'gateway-client',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
 					],

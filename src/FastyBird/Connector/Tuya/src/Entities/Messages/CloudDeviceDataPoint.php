@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\Tuya\Entities\Messages;
 
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Orisai\ObjectMapper;
 
@@ -40,7 +40,7 @@ final class CloudDeviceDataPoint implements Entity
 		private readonly string $code,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $name,
-		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\DataType::class)]
+		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\DataType::class)]
 		#[ObjectMapper\Modifiers\FieldName('data_type')]
 		private readonly MetadataTypes\DataType $dataType,
 		#[ObjectMapper\Rules\AnyOf([

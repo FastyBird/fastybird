@@ -15,7 +15,7 @@
 
 namespace FastyBird\Library\Metadata\Documents\AccountsModule;
 
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Metadata\Documents;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
@@ -32,7 +32,7 @@ final class Role implements Documents\Document
 {
 
 	public function __construct(
-		#[BootstrapObjectMapper\Rules\UuidValue()]
+		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $id,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $name,
@@ -48,7 +48,7 @@ final class Role implements Documents\Document
 		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
 		private readonly bool $administrator = false,
 		#[ObjectMapper\Rules\AnyOf([
-			new BootstrapObjectMapper\Rules\UuidValue(),
+			new ApplicationObjectMapper\Rules\UuidValue(),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		private readonly Uuid\UuidInterface|null $parent = null,

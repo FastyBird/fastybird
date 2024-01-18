@@ -23,8 +23,8 @@ use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Queries;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Commands as DevicesCommands;
@@ -73,7 +73,7 @@ class Install extends Console\Command\Command
 		private readonly DevicesModels\Entities\Connectors\Properties\PropertiesManager $propertiesManager,
 		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\Entities\Devices\DevicesManager $devicesManager,
-		private readonly BootstrapHelpers\Database $databaseHelper,
+		private readonly ApplicationHelpers\Database $databaseHelper,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 		private readonly Localization\Translator $translator,
@@ -94,7 +94,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Console\Exception\ExceptionInterface
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
@@ -121,7 +121,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
@@ -257,7 +257,7 @@ class Install extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
 					'type' => 'install-cmd',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -275,7 +275,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
@@ -488,7 +488,7 @@ class Install extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
 					'type' => 'install-cmd',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -506,7 +506,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
@@ -561,7 +561,7 @@ class Install extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
 					'type' => 'install-cmd',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -577,7 +577,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Console\Exception\ExceptionInterface
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
@@ -648,7 +648,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
@@ -690,7 +690,7 @@ class Install extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
 					'type' => 'install-cmd',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -708,7 +708,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
@@ -763,7 +763,7 @@ class Install extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
 					'type' => 'install-cmd',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -824,7 +824,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Console\Exception\ExceptionInterface
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
@@ -925,7 +925,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Console\Exception\ExceptionInterface
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
@@ -1009,7 +1009,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Console\Exception\ExceptionInterface
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState

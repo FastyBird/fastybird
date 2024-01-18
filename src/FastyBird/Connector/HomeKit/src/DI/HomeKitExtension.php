@@ -34,7 +34,7 @@ use FastyBird\Connector\HomeKit\Schemas;
 use FastyBird\Connector\HomeKit\Servers;
 use FastyBird\Connector\HomeKit\Subscribers;
 use FastyBird\Connector\HomeKit\Writers;
-use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
+use FastyBird\Library\Application\Boot as ApplicationBoot;
 use FastyBird\Library\Exchange\DI as ExchangeDI;
 use FastyBird\Module\Devices\DI as DevicesDI;
 use IPub\DoctrineCrud;
@@ -60,12 +60,12 @@ class HomeKitExtension extends DI\CompilerExtension implements Translation\DI\Tr
 	public const NAME = 'fbHomeKitConnector';
 
 	public static function register(
-		BootstrapBoot\Configurator $config,
+		ApplicationBoot\Configurator $config,
 		string $extensionName = self::NAME,
 	): void
 	{
 		$config->onCompile[] = static function (
-			BootstrapBoot\Configurator $config,
+			ApplicationBoot\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new self());

@@ -23,7 +23,7 @@ use FastyBird\Addon\ThermostatDevice\Drivers;
 use FastyBird\Addon\ThermostatDevice\Helpers;
 use FastyBird\Addon\ThermostatDevice\Hydrators;
 use FastyBird\Addon\ThermostatDevice\Schemas;
-use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
+use FastyBird\Library\Application\Boot as ApplicationBoot;
 use Nette\DI;
 use const DIRECTORY_SEPARATOR;
 
@@ -41,12 +41,12 @@ class ThermostatDeviceExtension extends DI\CompilerExtension implements Translat
 	public const NAME = 'fbThermostatDeviceAddon';
 
 	public static function register(
-		BootstrapBoot\Configurator $config,
+		ApplicationBoot\Configurator $config,
 		string $extensionName = self::NAME,
 	): void
 	{
 		$config->onCompile[] = static function (
-			BootstrapBoot\Configurator $config,
+			ApplicationBoot\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new self());

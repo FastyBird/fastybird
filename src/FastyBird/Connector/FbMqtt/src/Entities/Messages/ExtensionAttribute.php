@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\FbMqtt\Entities\Messages;
 
 use FastyBird\Connector\FbMqtt\Types;
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 
@@ -50,11 +50,11 @@ final class ExtensionAttribute implements Entity
 	];
 
 	public function __construct(
-		#[BootstrapObjectMapper\Rules\UuidValue()]
+		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $connector,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $device,
-		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\ExtensionType::class)]
+		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\ExtensionType::class)]
 		private readonly Types\ExtensionType $extension,
 		#[ObjectMapper\Rules\ArrayEnumValue(cases: self::ALLOWED_PARAMETERS)]
 		private readonly string $parameter,

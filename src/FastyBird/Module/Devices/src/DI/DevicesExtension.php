@@ -17,7 +17,7 @@ namespace FastyBird\Module\Devices\DI;
 
 use Contributte\Translation;
 use Doctrine\Persistence;
-use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
+use FastyBird\Library\Application\Boot as ApplicationBoot;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
 use FastyBird\Library\Exchange\DI as ExchangeDI;
 use FastyBird\Library\Exchange\Exchange as ExchangeExchange;
@@ -64,12 +64,12 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 	public const CONNECTOR_TYPE_TAG = 'connector_type';
 
 	public static function register(
-		BootstrapBoot\Configurator $config,
+		ApplicationBoot\Configurator $config,
 		string $extensionName = self::NAME,
 	): void
 	{
 		$config->onCompile[] = static function (
-			BootstrapBoot\Configurator $config,
+			ApplicationBoot\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new self());

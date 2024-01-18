@@ -3,7 +3,7 @@
 namespace FastyBird\Module\Triggers\Tests\Cases\Unit\DI;
 
 use Error;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Triggers\Commands;
 use FastyBird\Module\Triggers\Controllers;
 use FastyBird\Module\Triggers\Exceptions;
@@ -22,7 +22,7 @@ final class TriggersModuleExtensionTests extends DbTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException

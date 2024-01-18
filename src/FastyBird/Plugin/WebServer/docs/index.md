@@ -230,7 +230,7 @@ You can copy & paste it to your project, for example to `<app_root>/www/index.ph
 
 require __DIR__ . '/../vendor/autoload.php';
 
-exit(Your\CoolApp\Bootstrap::boot()
+exit(Your\CoolApp\Application::boot()
     ->createContainer()
     ->getByType(FastyBird\Plugin\WebServer\Application\Application::class)
     ->run());

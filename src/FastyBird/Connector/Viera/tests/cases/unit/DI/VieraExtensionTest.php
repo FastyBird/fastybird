@@ -15,14 +15,14 @@ use FastyBird\Connector\Viera\Services;
 use FastyBird\Connector\Viera\Subscribers;
 use FastyBird\Connector\Viera\Tests;
 use FastyBird\Connector\Viera\Writers;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Nette;
 
 final class VieraExtensionTest extends Tests\Cases\Unit\BaseTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws Error
 	 */

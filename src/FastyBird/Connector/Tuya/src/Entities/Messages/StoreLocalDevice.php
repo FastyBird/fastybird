@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\Tuya\Entities\Messages;
 
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_map;
@@ -35,7 +35,7 @@ final class StoreLocalDevice implements Entity
 	 * @param array<LocalDeviceDataPoint> $dataPoints
 	 */
 	public function __construct(
-		#[BootstrapObjectMapper\Rules\UuidValue()]
+		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $connector,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $id,

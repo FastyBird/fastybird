@@ -15,7 +15,7 @@
 
 namespace FastyBird\Library\Metadata\Documents\TriggersModule;
 
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Metadata\Types;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
@@ -37,12 +37,12 @@ final class DummyCondition extends Condition
 		Uuid\UuidInterface $trigger,
 		Types\TriggerConditionType $type,
 		bool $enabled,
-		#[BootstrapObjectMapper\Rules\UuidValue()]
+		#[ApplicationObjectMapper\Rules\UuidValue()]
 		#[ObjectMapper\Modifiers\FieldName('watch_item')]
 		private readonly Uuid\UuidInterface $watchItem,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $operand,
-		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\TriggerConditionOperator::class)]
+		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\TriggerConditionOperator::class)]
 		private readonly Types\TriggerConditionOperator $operator,
 		bool|null $isFulfilled = null,
 		Uuid\UuidInterface|null $owner = null,

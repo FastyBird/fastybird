@@ -22,7 +22,7 @@ use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Queue;
 use FastyBird\Connector\Shelly\Types;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -345,7 +345,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
 					'type' => 'write-channel-property-state-message-consumer',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
 					],
@@ -484,7 +484,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						[
 							'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
 							'type' => 'write-channel-property-state-message-consumer',
-							'exception' => BootstrapHelpers\Logger::buildException($ex),
+							'exception' => ApplicationHelpers\Logger::buildException($ex),
 							'connector' => [
 								'id' => $entity->getConnector()->toString(),
 							],

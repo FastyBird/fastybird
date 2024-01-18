@@ -18,7 +18,7 @@ namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Types;
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 use function array_filter;
 use function array_merge;
@@ -42,7 +42,7 @@ final class DeviceInputState extends DeviceState implements Entities\API\Entity
 	public function __construct(
 		int $id,
 		#[ObjectMapper\Rules\AnyOf([
-			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\InputPayload::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\InputPayload::class),
 			new ObjectMapper\Rules\BoolValue(),
 			new ObjectMapper\Rules\ArrayEnumValue(cases: [Shelly\Constants::VALUE_NOT_AVAILABLE]),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),

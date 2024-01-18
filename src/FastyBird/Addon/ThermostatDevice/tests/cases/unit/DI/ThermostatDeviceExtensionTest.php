@@ -9,14 +9,14 @@ use FastyBird\Addon\ThermostatDevice\Helpers;
 use FastyBird\Addon\ThermostatDevice\Hydrators;
 use FastyBird\Addon\ThermostatDevice\Schemas;
 use FastyBird\Addon\ThermostatDevice\Tests;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Nette;
 
 final class ThermostatDeviceExtensionTest extends Tests\Cases\Unit\BaseTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws Error
 	 */

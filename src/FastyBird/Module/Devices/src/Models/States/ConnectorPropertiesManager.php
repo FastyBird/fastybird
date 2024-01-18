@@ -17,7 +17,7 @@ namespace FastyBird\Module\Devices\Models\States;
 
 use DateTimeInterface;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -283,7 +283,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 						[
 							'source' => MetadataTypes\ModuleSource::DEVICES,
 							'type' => 'connector-properties-states',
-							'exception' => BootstrapHelpers\Logger::buildException($ex),
+							'exception' => ApplicationHelpers\Logger::buildException($ex),
 						],
 					);
 
@@ -329,7 +329,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 						[
 							'source' => MetadataTypes\ModuleSource::DEVICES,
 							'type' => 'connector-properties-states',
-							'exception' => BootstrapHelpers\Logger::buildException($ex),
+							'exception' => ApplicationHelpers\Logger::buildException($ex),
 						],
 					);
 
@@ -414,7 +414,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 					[
 						'source' => MetadataTypes\ModuleSource::DEVICES,
 						'type' => 'connector-properties-states',
-						'exception' => BootstrapHelpers\Logger::buildException($ex),
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
 					],
 				);
 			}
@@ -457,7 +457,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 						[
 							'source' => MetadataTypes\ModuleSource::DEVICES,
 							'type' => 'connector-properties-states',
-							'exception' => BootstrapHelpers\Logger::buildException($ex),
+							'exception' => ApplicationHelpers\Logger::buildException($ex),
 						],
 					);
 				}

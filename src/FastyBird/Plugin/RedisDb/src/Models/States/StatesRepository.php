@@ -16,7 +16,7 @@
 namespace FastyBird\Plugin\RedisDb\Models\States;
 
 use Clue\React\Redis;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\RedisDb\Clients;
 use FastyBird\Plugin\RedisDb\Exceptions;
@@ -99,7 +99,7 @@ class StatesRepository
 				'record' => [
 					'id' => $id->toString(),
 				],
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'exception' => ApplicationHelpers\Logger::buildException($ex),
 			]);
 
 			throw new Exceptions\InvalidState(

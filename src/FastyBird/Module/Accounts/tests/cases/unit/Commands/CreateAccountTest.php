@@ -5,7 +5,7 @@ namespace FastyBird\Module\Accounts\Tests\Cases\Unit\Commands;
 use Contributte\Translation;
 use Doctrine\Persistence;
 use Error;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Accounts\Commands;
 use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\Module\Accounts\Helpers;
@@ -24,7 +24,7 @@ final class CreateAccountTest extends DbTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
 	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 * @throws Console\Exception\CommandNotFoundException

@@ -19,7 +19,7 @@ use BadMethodCallException;
 use DateTimeInterface;
 use Doctrine\DBAL;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Exchange\Exchange as ExchangeExchange;
@@ -118,7 +118,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 		private readonly Utilities\ConnectorConnection $connectorConnectionManager,
 		private readonly Utilities\DeviceConnection $deviceConnectionManager,
 		private readonly Devices\Logger $logger,
-		private readonly BootstrapHelpers\Database $database,
+		private readonly ApplicationHelpers\Database $database,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		private readonly ExchangeConsumers\Container $consumer,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
@@ -182,7 +182,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 					'source' => $event->getSource()->getValue(),
 					'message' => $event->getReason(),
 				],
-				'exception' => BootstrapHelpers\Logger::buildException($event->getException()),
+				'exception' => ApplicationHelpers\Logger::buildException($event->getException()),
 			]);
 		} else {
 			$this->logger->info('Triggering connector termination', [
@@ -204,7 +204,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 				$this->logger->error('Connector could not be safely terminated', [
 					'source' => MetadataTypes\ModuleSource::DEVICES,
 					'type' => 'command',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				]);
 			}
 		}
@@ -272,13 +272,13 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 				$this->logger->error('An error occurred. Stopping connector', [
 					'source' => MetadataTypes\ModuleSource::DEVICES,
 					'type' => 'command',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				]);
 			} else {
 				$this->logger->debug('Stopping connector', [
 					'source' => MetadataTypes\ModuleSource::DEVICES,
 					'type' => 'command',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				]);
 			}
 
@@ -290,7 +290,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 			$this->logger->error('An unhandled error occurred', [
 				'source' => MetadataTypes\ModuleSource::DEVICES,
 				'type' => 'command',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'exception' => ApplicationHelpers\Logger::buildException($ex),
 			]);
 
 			if ($input->getOption('quiet') === false) {
@@ -659,7 +659,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 			$this->logger->error('Connector could not be stopped. An unexpected error occurred', [
 				'source' => MetadataTypes\ModuleSource::DEVICES,
 				'type' => 'command',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'exception' => ApplicationHelpers\Logger::buildException($ex),
 			]);
 
 			throw new Exceptions\Terminate(

@@ -7,7 +7,7 @@ use FastyBird\Automator\DateTime\Exceptions;
 use FastyBird\Automator\DateTime\Hydrators;
 use FastyBird\Automator\DateTime\Schemas;
 use FastyBird\Automator\DateTime\Tests\Cases\Unit\DbTestCase;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Nette;
 use RuntimeException;
 
@@ -15,7 +15,7 @@ final class DateTimeExtensionTests extends DbTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException

@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\Modbus\Entities\Messages;
 
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_merge;
@@ -34,9 +34,9 @@ final class StoreChannelPropertyState extends Device
 	public function __construct(
 		Uuid\UuidInterface $connector,
 		Uuid\UuidInterface $device,
-		#[BootstrapObjectMapper\Rules\UuidValue()]
+		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $channel,
-		#[BootstrapObjectMapper\Rules\UuidValue()]
+		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $property,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\BoolValue(),

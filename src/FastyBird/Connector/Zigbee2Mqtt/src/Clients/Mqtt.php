@@ -21,7 +21,7 @@ use FastyBird\Connector\Zigbee2Mqtt\API;
 use FastyBird\Connector\Zigbee2Mqtt\Clients;
 use FastyBird\Connector\Zigbee2Mqtt\Entities;
 use FastyBird\Connector\Zigbee2Mqtt\Helpers;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -139,7 +139,7 @@ final class Mqtt implements Client
 							[
 								'source' => MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT,
 								'type' => 'mqtt-client',
-								'exception' => BootstrapHelpers\Logger::buildException($ex),
+								'exception' => ApplicationHelpers\Logger::buildException($ex),
 								'connector' => [
 									'id' => $this->connector->getId()->toString(),
 								],

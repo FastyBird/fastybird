@@ -16,7 +16,7 @@
 namespace FastyBird\Library\Metadata\Documents\DevicesModule;
 
 use DateTimeInterface;
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Metadata\Documents;
 use FastyBird\Library\Metadata\Types;
 use Orisai\ObjectMapper;
@@ -46,15 +46,15 @@ final class Device implements Documents\Document, Documents\Owner
 	 * @param array<Uuid\UuidInterface> $channels
 	 */
 	public function __construct(
-		#[BootstrapObjectMapper\Rules\UuidValue()]
+		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $id,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $type,
-		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\DeviceCategory::class)]
+		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\DeviceCategory::class)]
 		private readonly Types\DeviceCategory $category,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $identifier,
-		#[BootstrapObjectMapper\Rules\UuidValue()]
+		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $connector,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
@@ -67,27 +67,27 @@ final class Device implements Documents\Document, Documents\Owner
 		])]
 		private readonly string|null $comment = null,
 		#[ObjectMapper\Rules\ArrayOf(
-			new BootstrapObjectMapper\Rules\UuidValue(),
+			new ApplicationObjectMapper\Rules\UuidValue(),
 		)]
 		private readonly array $parents = [],
 		#[ObjectMapper\Rules\ArrayOf(
-			new BootstrapObjectMapper\Rules\UuidValue(),
+			new ApplicationObjectMapper\Rules\UuidValue(),
 		)]
 		private readonly array $children = [],
 		#[ObjectMapper\Rules\ArrayOf(
-			new BootstrapObjectMapper\Rules\UuidValue(),
+			new ApplicationObjectMapper\Rules\UuidValue(),
 		)]
 		private readonly array $properties = [],
 		#[ObjectMapper\Rules\ArrayOf(
-			new BootstrapObjectMapper\Rules\UuidValue(),
+			new ApplicationObjectMapper\Rules\UuidValue(),
 		)]
 		private readonly array $controls = [],
 		#[ObjectMapper\Rules\ArrayOf(
-			new BootstrapObjectMapper\Rules\UuidValue(),
+			new ApplicationObjectMapper\Rules\UuidValue(),
 		)]
 		private readonly array $channels = [],
 		#[ObjectMapper\Rules\AnyOf([
-			new BootstrapObjectMapper\Rules\UuidValue(),
+			new ApplicationObjectMapper\Rules\UuidValue(),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		protected readonly Uuid\UuidInterface|null $owner = null,

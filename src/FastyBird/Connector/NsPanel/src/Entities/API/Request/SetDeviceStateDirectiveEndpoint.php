@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\NsPanel\Entities\API\Request;
 
 use FastyBird\Connector\NsPanel\Entities;
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use stdClass;
@@ -37,7 +37,7 @@ final class SetDeviceStateDirectiveEndpoint implements Entities\API\Entity
 	 * @param array<string, string|array<string, string>> $tags
 	 */
 	public function __construct(
-		#[BootstrapObjectMapper\Rules\UuidValue()]
+		#[ApplicationObjectMapper\Rules\UuidValue()]
 		#[ObjectMapper\Modifiers\FieldName('third_serial_number')]
 		private readonly Uuid\UuidInterface $thirdSerialNumber,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]

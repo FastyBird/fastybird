@@ -25,7 +25,7 @@ use FastyBird\Connector\Sonoff\Services;
 use FastyBird\Connector\Sonoff\Types;
 use FastyBird\Connector\Sonoff\ValueObjects;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -461,7 +461,7 @@ final class CloudWs implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 					'type' => 'cloud-ws-api',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 

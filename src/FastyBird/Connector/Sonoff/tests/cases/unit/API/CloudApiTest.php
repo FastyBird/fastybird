@@ -8,7 +8,7 @@ use FastyBird\Connector\Sonoff\API;
 use FastyBird\Connector\Sonoff\Exceptions;
 use FastyBird\Connector\Sonoff\Services;
 use FastyBird\Connector\Sonoff\Tests;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Fig\Http\Message\RequestMethodInterface;
 use GuzzleHttp;
 use Nette\DI;
@@ -25,7 +25,7 @@ final class CloudApiTest extends Tests\Cases\Unit\DbTestCase
 	private const PASSWORD = 'dBCQZohQNR2U4rW9';
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\CloudApiCall
@@ -149,7 +149,7 @@ final class CloudApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\CloudApiCall
@@ -235,7 +235,7 @@ final class CloudApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\CloudApiCall
@@ -321,7 +321,7 @@ final class CloudApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\CloudApiCall

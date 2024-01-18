@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\NsPanel\Entities\Clients;
 
 use FastyBird\Connector\NsPanel\Types;
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_map;
@@ -37,7 +37,7 @@ final class DiscoveredSubDevice implements Entity
 	 * @param array<string, string|array<string, string>> $tags
 	 */
 	public function __construct(
-		#[BootstrapObjectMapper\Rules\UuidValue()]
+		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $parent,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('serial_number')]
@@ -51,11 +51,11 @@ final class DiscoveredSubDevice implements Entity
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('firmware_version')]
 		private readonly string $firmwareVersion,
-		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\Category::class)]
+		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\Category::class)]
 		#[ObjectMapper\Modifiers\FieldName('display_category')]
 		private readonly Types\Category $displayCategory,
 		#[ObjectMapper\Rules\AnyOf([
-			new BootstrapObjectMapper\Rules\UuidValue(),
+			new ApplicationObjectMapper\Rules\UuidValue(),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('third_serial_number')]

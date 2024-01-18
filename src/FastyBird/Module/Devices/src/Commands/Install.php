@@ -15,7 +15,7 @@
 
 namespace FastyBird\Module\Devices\Commands;
 
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Models;
@@ -106,7 +106,7 @@ class Install extends Console\Command\Command
 			$this->logger->error('An unhandled error occurred', [
 				'source' => MetadataTypes\ModuleSource::DEVICES,
 				'type' => 'initialize-cmd',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'exception' => ApplicationHelpers\Logger::buildException($ex),
 			]);
 
 			if ($input->getOption('quiet') === false) {

@@ -9,7 +9,7 @@ use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Models;
 use FastyBird\Connector\HomeKit\Queries;
 use FastyBird\Connector\HomeKit\Tests\Cases\Unit\DbTestCase;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use IPub\DoctrineCrud;
 use Nette;
@@ -26,7 +26,7 @@ final class SessionsManagerTest extends DbTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DoctrineCrud\Exceptions\InvalidArgumentException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
@@ -62,7 +62,7 @@ final class SessionsManagerTest extends DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DoctrineCrud\Exceptions\InvalidArgumentException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState

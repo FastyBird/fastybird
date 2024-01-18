@@ -20,7 +20,7 @@ use Exception;
 use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Types;
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Nette\Utils;
 use Orisai\ObjectMapper;
 use function array_filter;
@@ -51,7 +51,7 @@ final class DeviceCoverState extends DeviceState implements Entities\API\Entity
 		])]
 		private readonly string|null $source,
 		#[ObjectMapper\Rules\AnyOf([
-			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\CoverPayload::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\CoverPayload::class),
 			new ObjectMapper\Rules\ArrayEnumValue(cases: [Shelly\Constants::VALUE_NOT_AVAILABLE]),
 		])]
 		private readonly Types\CoverPayload|string $state,

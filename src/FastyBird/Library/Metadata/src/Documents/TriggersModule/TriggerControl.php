@@ -15,7 +15,7 @@
 
 namespace FastyBird\Library\Metadata\Documents\TriggersModule;
 
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Metadata\Documents;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
@@ -34,13 +34,13 @@ final class TriggerControl implements Documents\Document, Documents\Owner
 	use Documents\TOwner;
 
 	public function __construct(
-		#[BootstrapObjectMapper\Rules\UuidValue()]
+		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $id,
-		#[BootstrapObjectMapper\Rules\UuidValue()]
+		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $trigger,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $name,
-		#[BootstrapObjectMapper\Rules\UuidValue()]
+		#[ApplicationObjectMapper\Rules\UuidValue()]
 		protected readonly Uuid\UuidInterface|null $owner = null,
 	)
 	{

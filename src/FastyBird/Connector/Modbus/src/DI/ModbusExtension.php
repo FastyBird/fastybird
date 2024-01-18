@@ -30,7 +30,7 @@ use FastyBird\Connector\Modbus\Queue;
 use FastyBird\Connector\Modbus\Schemas;
 use FastyBird\Connector\Modbus\Subscribers;
 use FastyBird\Connector\Modbus\Writers;
-use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
+use FastyBird\Library\Application\Boot as ApplicationBoot;
 use FastyBird\Library\Exchange\DI as ExchangeDI;
 use FastyBird\Module\Devices\DI as DevicesDI;
 use Nette\DI;
@@ -54,12 +54,12 @@ class ModbusExtension extends DI\CompilerExtension implements Translation\DI\Tra
 	public const NAME = 'fbModbusConnector';
 
 	public static function register(
-		BootstrapBoot\Configurator $config,
+		ApplicationBoot\Configurator $config,
 		string $extensionName = self::NAME,
 	): void
 	{
 		$config->onCompile[] = static function (
-			BootstrapBoot\Configurator $config,
+			ApplicationBoot\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new self());

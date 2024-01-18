@@ -30,7 +30,7 @@ use FastyBird\Connector\Shelly\Schemas;
 use FastyBird\Connector\Shelly\Services;
 use FastyBird\Connector\Shelly\Subscribers;
 use FastyBird\Connector\Shelly\Writers;
-use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
+use FastyBird\Library\Application\Boot as ApplicationBoot;
 use FastyBird\Library\Exchange\DI as ExchangeDI;
 use FastyBird\Module\Devices\DI as DevicesDI;
 use Nette\DI;
@@ -53,12 +53,12 @@ class ShellyExtension extends DI\CompilerExtension implements Translation\DI\Tra
 	public const NAME = 'fbShellyConnector';
 
 	public static function register(
-		BootstrapBoot\Configurator $config,
+		ApplicationBoot\Configurator $config,
 		string $extensionName = self::NAME,
 	): void
 	{
 		$config->onCompile[] = static function (
-			BootstrapBoot\Configurator $config,
+			ApplicationBoot\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new self());

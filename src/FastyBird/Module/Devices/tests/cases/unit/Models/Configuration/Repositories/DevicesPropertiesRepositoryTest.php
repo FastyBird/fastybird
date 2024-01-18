@@ -3,7 +3,7 @@
 namespace FastyBird\Module\Devices\Tests\Cases\Unit\Models\Configuration\Repositories;
 
 use Error;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions;
@@ -18,7 +18,7 @@ final class DevicesPropertiesRepositoryTest extends DbTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\DI\MissingServiceException
@@ -82,7 +82,7 @@ final class DevicesPropertiesRepositoryTest extends DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\DI\MissingServiceException
@@ -168,7 +168,7 @@ final class DevicesPropertiesRepositoryTest extends DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\DI\MissingServiceException

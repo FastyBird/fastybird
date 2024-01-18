@@ -15,7 +15,7 @@
 
 namespace FastyBird\Module\Devices\Controllers;
 
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Exchange\Documents as ExchangeEntities;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Metadata;
@@ -181,7 +181,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 			$this->logger->error('State could not be sent to subscriber', [
 				'source' => MetadataTypes\ModuleSource::DEVICES,
 				'type' => 'subscriber',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'exception' => ApplicationHelpers\Logger::buildException($ex),
 			]);
 		}
 	}
@@ -273,7 +273,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 			$this->logger->error('Received message could not be validated', [
 				'source' => MetadataTypes\ModuleSource::DEVICES,
 				'type' => 'exchange-controller',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'exception' => ApplicationHelpers\Logger::buildException($ex),
 			]);
 
 			throw new Exceptions\InvalidArgument('Provided data are not valid json format', 0, $ex);
@@ -281,7 +281,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 			$this->logger->debug('Received message is not valid', [
 				'source' => MetadataTypes\ModuleSource::DEVICES,
 				'type' => 'exchange-controller',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'exception' => ApplicationHelpers\Logger::buildException($ex),
 			]);
 
 			throw new Exceptions\InvalidArgument('Provided data are not in valid structure', 0, $ex);
@@ -289,7 +289,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 			$this->logger->error('Received message is not valid', [
 				'source' => MetadataTypes\ModuleSource::DEVICES,
 				'type' => 'exchange-controller',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'exception' => ApplicationHelpers\Logger::buildException($ex),
 			]);
 
 			throw new Exceptions\InvalidArgument('Provided data could not be validated', 0, $ex);

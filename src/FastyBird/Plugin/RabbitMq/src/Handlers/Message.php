@@ -17,7 +17,7 @@ namespace FastyBird\Plugin\RabbitMq\Handlers;
 
 use Bunny;
 use Evenement;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumer;
 use FastyBird\Library\Exchange\Documents as ExchangeEntities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -88,7 +88,7 @@ final class Message extends Evenement\EventEmitter
 			$this->logger->warning('Received message is not valid json', [
 				'source' => MetadataTypes\PluginSource::RABBITMQ,
 				'type' => 'messages-handler',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'exception' => ApplicationHelpers\Logger::buildException($ex),
 			]);
 		}
 
@@ -121,7 +121,7 @@ final class Message extends Evenement\EventEmitter
 			$this->logger->error('Message could not be transformed into entity', [
 				'source' => MetadataTypes\PluginSource::RABBITMQ,
 				'type' => 'messages-handler',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'exception' => ApplicationHelpers\Logger::buildException($ex),
 				'data' => $data,
 			]);
 
@@ -144,7 +144,7 @@ final class Message extends Evenement\EventEmitter
 			$this->logger->error('Message could not be handled', [
 				'source' => MetadataTypes\PluginSource::RABBITMQ,
 				'type' => 'messages-handler',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'exception' => ApplicationHelpers\Logger::buildException($ex),
 			]);
 
 			return self::MESSAGE_REJECT;

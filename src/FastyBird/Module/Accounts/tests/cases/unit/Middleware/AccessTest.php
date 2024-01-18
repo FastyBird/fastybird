@@ -3,7 +3,7 @@
 namespace FastyBird\Module\Accounts\Tests\Cases\Unit\Middleware;
 
 use Error;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata;
 use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\Module\Accounts\Tests\Cases\Unit\DbTestCase;
@@ -22,7 +22,7 @@ final class AccessTest extends DbTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws InvalidArgumentException
 	 * @throws Nette\DI\MissingServiceException

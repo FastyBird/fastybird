@@ -10,7 +10,7 @@ use FastyBird\Connector\Zigbee2Mqtt\Helpers;
 use FastyBird\Connector\Zigbee2Mqtt\Queries;
 use FastyBird\Connector\Zigbee2Mqtt\Queue;
 use FastyBird\Connector\Zigbee2Mqtt\Tests\Cases\Unit\DbTestCase;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -24,7 +24,7 @@ final class StoreBridgeInfoTest extends DbTestCase
 
 	/**
 	 * @throws DBAL\Exception
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Runtime
 	 * @throws Exceptions\InvalidArgument

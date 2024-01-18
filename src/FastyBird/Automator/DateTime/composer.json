@@ -34,7 +34,7 @@
     "ext-pcntl": "*",
     "binsoul/net-mqtt": "^0.8",
     "cweagans/composer-patches": "^1.7",
-    "fastybird/bootstrap-library": "dev-main",
+    "fastybird/application-library": "dev-main",
     "fastybird/datetime-factory": "^0.6",
     "fastybird/metadata-library": "dev-main",
     "fastybird/triggers-module": "dev-main",

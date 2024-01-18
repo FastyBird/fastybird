@@ -15,14 +15,14 @@ use FastyBird\Connector\Shelly\Services;
 use FastyBird\Connector\Shelly\Subscribers;
 use FastyBird\Connector\Shelly\Tests;
 use FastyBird\Connector\Shelly\Writers;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Nette;
 
 final class ShellyExtensionTest extends Tests\Cases\Unit\BaseTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws Error
 	 */

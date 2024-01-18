@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\Zigbee2Mqtt\Entities\Messages;
 
 use FastyBird\Connector\Zigbee2Mqtt\Types;
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 use function array_merge;
 
@@ -39,7 +39,7 @@ final class EventData implements Entity
 		#[ObjectMapper\Modifiers\FieldName('ieee_address')]
 		private readonly string $ieeeAddress,
 		#[ObjectMapper\Rules\AnyOf([
-			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\BridgeEvent::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\BridgeEvent::class),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		private readonly Types\EventStatus|null $status = null,

@@ -3,7 +3,7 @@
 namespace FastyBird\Module\Devices\Tests\Fixtures\Dummy;
 
 use DateTimeInterface;
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\States;
@@ -19,7 +19,7 @@ class ChannelPropertyState implements States\ChannelProperty
 	public const UPDATED_AT_FIELD = 'updatedAt';
 
 	public function __construct(
-		#[BootstrapObjectMapper\Rules\UuidValue()]
+		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $id,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\BoolValue(),
@@ -27,9 +27,9 @@ class ChannelPropertyState implements States\ChannelProperty
 			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
-			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\ButtonPayload::class),
-			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\SwitchPayload::class),
-			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\CoverPayload::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\ButtonPayload::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\SwitchPayload::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\CoverPayload::class),
 			new ObjectMapper\Rules\ObjectValue(),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
@@ -42,9 +42,9 @@ class ChannelPropertyState implements States\ChannelProperty
 			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
-			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\ButtonPayload::class),
-			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\SwitchPayload::class),
-			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\CoverPayload::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\ButtonPayload::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\SwitchPayload::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\CoverPayload::class),
 			new ObjectMapper\Rules\ObjectValue(),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]

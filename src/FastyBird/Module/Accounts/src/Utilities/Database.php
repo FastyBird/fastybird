@@ -18,7 +18,7 @@ namespace FastyBird\Module\Accounts\Utilities;
 use Doctrine\DBAL;
 use Doctrine\ORM;
 use Doctrine\Persistence;
-use FastyBird\Library\Bootstrap;
+use FastyBird\Library\Application;
 use FastyBird\Module\Accounts\Exceptions;
 use Nette;
 use Throwable;
@@ -37,7 +37,7 @@ final class Database
 	use Nette\SmartObject;
 
 	public function __construct(
-		private readonly Bootstrap\Helpers\Database $database,
+		private readonly Application\Helpers\Database $database,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 	)
 	{

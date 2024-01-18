@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\NsPanel\Entities\Messages;
 
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_merge;
@@ -33,7 +33,7 @@ final class StoreThirdPartyDevice extends Device implements Entity
 
 	public function __construct(
 		Uuid\UuidInterface $connector,
-		#[BootstrapObjectMapper\Rules\UuidValue()]
+		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $gateway,
 		string $identifier,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]

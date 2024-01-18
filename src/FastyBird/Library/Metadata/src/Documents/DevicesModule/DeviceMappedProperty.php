@@ -16,7 +16,7 @@
 namespace FastyBird\Library\Metadata\Documents\DevicesModule;
 
 use DateTimeInterface;
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Metadata\Exceptions;
 use FastyBird\Library\Metadata\Types;
 use FastyBird\Library\Metadata\Utilities;
@@ -41,13 +41,13 @@ final class DeviceMappedProperty extends DeviceProperty
 	 */
 	public function __construct(
 		Uuid\UuidInterface $id,
-		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(
+		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(
 			class: Types\PropertyType::class,
 			allowedValues: [Types\PropertyType::MAPPED],
 		)]
 		private readonly Types\PropertyType $type,
 		Uuid\UuidInterface $device,
-		#[BootstrapObjectMapper\Rules\UuidValue()]
+		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $parent,
 		Types\PropertyCategory $category,
 		string $identifier,

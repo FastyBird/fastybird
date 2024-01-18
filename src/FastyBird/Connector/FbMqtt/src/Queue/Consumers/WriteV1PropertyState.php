@@ -21,7 +21,7 @@ use FastyBird\Connector\FbMqtt\Entities;
 use FastyBird\Connector\FbMqtt\Exceptions;
 use FastyBird\Connector\FbMqtt\Helpers;
 use FastyBird\Connector\FbMqtt\Queue;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -329,7 +329,7 @@ final class WriteV1PropertyState implements Queue\Consumer
 					[
 						'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
 						'type' => 'write-v1-property-state-message-consumer',
-						'exception' => BootstrapHelpers\Logger::buildException($ex),
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'connector' => [
 							'id' => $entity->getConnector()->toString(),
 						],

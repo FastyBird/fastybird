@@ -3,7 +3,7 @@
 namespace FastyBird\Module\Accounts\Tests\Cases\Unit\Controllers;
 
 use Error;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata;
 use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\Module\Accounts\Schemas;
@@ -32,7 +32,7 @@ final class RolesV1Test extends DbTestCase
 	private const UNKNOWN_ID = '83985c13-238c-46bd-aacb-2359d5c921a7';
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws InvalidArgumentException
 	 * @throws Nette\DI\MissingServiceException
@@ -213,7 +213,7 @@ final class RolesV1Test extends DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws InvalidArgumentException
 	 * @throws Nette\DI\MissingServiceException

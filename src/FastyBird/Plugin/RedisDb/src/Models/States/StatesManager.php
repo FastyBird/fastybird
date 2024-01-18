@@ -19,7 +19,7 @@ use Clue\React\Redis;
 use Consistence;
 use DateTimeInterface;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\RedisDb\Clients;
 use FastyBird\Plugin\RedisDb\Events;
@@ -98,7 +98,7 @@ class StatesManager
 				'record' => [
 					'id' => $id->toString(),
 				],
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'exception' => ApplicationHelpers\Logger::buildException($ex),
 			]);
 
 			throw new Exceptions\InvalidState('State could not be created', $ex->getCode(), $ex);
@@ -136,7 +136,7 @@ class StatesManager
 				'record' => [
 					'id' => $state->getId()->toString(),
 				],
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'exception' => ApplicationHelpers\Logger::buildException($ex),
 			]);
 
 			throw new Exceptions\InvalidState('State could not be updated', $ex->getCode(), $ex);
@@ -247,7 +247,7 @@ class StatesManager
 				'record' => [
 					'id' => $id->toString(),
 				],
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'exception' => ApplicationHelpers\Logger::buildException($ex),
 			]);
 
 			throw new Exceptions\InvalidState('State could not be created', $ex->getCode(), $ex);
@@ -354,7 +354,7 @@ class StatesManager
 				'record' => [
 					'id' => $state->getId()->toString(),
 				],
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'exception' => ApplicationHelpers\Logger::buildException($ex),
 			]);
 
 			throw new Exceptions\InvalidState('State could not be updated', $ex->getCode(), $ex);
@@ -383,7 +383,7 @@ class StatesManager
 				'record' => [
 					'id' => $id->toString(),
 				],
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'exception' => ApplicationHelpers\Logger::buildException($ex),
 			]);
 		}
 

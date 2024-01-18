@@ -19,7 +19,7 @@ use Doctrine\DBAL;
 use FastyBird\Connector\HomeKit;
 use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Queue;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Exchange\Documents as ExchangeEntities;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
@@ -213,7 +213,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 						[
 							'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 							'type' => 'store-device-property-state-message-consumer',
-							'exception' => BootstrapHelpers\Logger::buildException($ex),
+							'exception' => ApplicationHelpers\Logger::buildException($ex),
 							'connector' => [
 								'id' => $entity->getConnector()->toString(),
 							],

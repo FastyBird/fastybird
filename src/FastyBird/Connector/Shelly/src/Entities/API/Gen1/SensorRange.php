@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\Shelly\Entities\API\Gen1;
 
 use FastyBird\Connector\Shelly\Entities;
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Orisai\ObjectMapper;
 
@@ -35,7 +35,7 @@ final class SensorRange implements Entities\API\Entity
 	 * @param array<string>|array<int>|array<float>|array<int, array<int, (array<int, bool|string>|null)>>|null $format
 	 */
 	public function __construct(
-		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\DataType::class)]
+		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\DataType::class)]
 		#[ObjectMapper\Modifiers\FieldName('data_type')]
 		private readonly MetadataTypes\DataType $dataType,
 		#[ObjectMapper\Rules\AnyOf([

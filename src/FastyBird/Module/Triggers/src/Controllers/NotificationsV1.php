@@ -18,7 +18,7 @@ namespace FastyBird\Module\Triggers\Controllers;
 use Doctrine;
 use Exception;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Module\Triggers\Controllers;
 use FastyBird\Module\Triggers\Entities;
 use FastyBird\Module\Triggers\Exceptions;
@@ -216,7 +216,7 @@ final class NotificationsV1 extends BaseV1
 				$this->logger->error('An unhandled error occurred', [
 					'source' => 'triggers-module-notifications-controller',
 					'type' => 'create',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				]);
 
 				throw new JsonApiExceptions\JsonApiError(
@@ -297,7 +297,7 @@ final class NotificationsV1 extends BaseV1
 				$this->logger->error('An unhandled error occurred', [
 					'source' => 'triggers-module-notifications-controller',
 					'type' => 'update',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				]);
 
 				throw new JsonApiExceptions\JsonApiError(
@@ -364,7 +364,7 @@ final class NotificationsV1 extends BaseV1
 			$this->logger->error('An unhandled error occurred', [
 				'source' => 'triggers-module-notifications-controller',
 				'type' => 'delete',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'exception' => ApplicationHelpers\Logger::buildException($ex),
 			]);
 
 			throw new JsonApiExceptions\JsonApiError(

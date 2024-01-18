@@ -45,7 +45,7 @@
     "contributte/translation": "^2.0",
     "cweagans/composer-patches": "^1.7",
     "evenement/evenement": "^3.0",
-    "fastybird/bootstrap-library": "dev-main",
+    "fastybird/application-library": "dev-main",
     "fastybird/datetime-factory": "^0.6",
     "fastybird/exchange-library": "dev-main",
     "fastybird/json-api": "^0.13",

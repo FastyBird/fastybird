@@ -8,7 +8,7 @@ use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Services;
 use FastyBird\Connector\Tuya\Tests;
 use FastyBird\Connector\Tuya\Types;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use GuzzleHttp;
 use Nette\DI;
 use Nette\Utils;
@@ -26,7 +26,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 	private const UID = 'Bjhq01pE7q4ijNMN';
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\OpenApiCall
@@ -234,7 +234,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\OpenApiCall
@@ -325,7 +325,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\OpenApiCall
@@ -430,7 +430,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\OpenApiCall
@@ -530,7 +530,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\OpenApiCall
@@ -615,7 +615,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\OpenApiCall
@@ -706,7 +706,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\OpenApiCall
@@ -891,7 +891,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\OpenApiCall
@@ -982,7 +982,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\OpenApiCall
@@ -1080,7 +1080,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\OpenApiCall
@@ -1184,7 +1184,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\OpenApiCall
@@ -1269,7 +1269,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\OpenApiCall
@@ -1341,7 +1341,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\OpenApiCall

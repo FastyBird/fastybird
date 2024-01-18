@@ -15,7 +15,7 @@
 
 namespace FastyBird\Library\Metadata\Documents\TriggersModule;
 
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Metadata\Types;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
@@ -37,7 +37,7 @@ final class DummyAction extends Action
 		Uuid\UuidInterface $trigger,
 		Types\TriggerActionType $type,
 		bool $enabled,
-		#[BootstrapObjectMapper\Rules\UuidValue()]
+		#[ApplicationObjectMapper\Rules\UuidValue()]
 		#[ObjectMapper\Modifiers\FieldName('do_item')]
 		private readonly Uuid\UuidInterface $doItem,
 		#[ObjectMapper\Rules\AnyOf([

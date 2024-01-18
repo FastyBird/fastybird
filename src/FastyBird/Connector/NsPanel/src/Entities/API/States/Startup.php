@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\NsPanel\Entities\API\States;
 
 use FastyBird\Connector\NsPanel\Types;
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 use stdClass;
 
@@ -32,7 +32,7 @@ final class Startup implements State
 {
 
 	public function __construct(
-		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\StartupPayload::class)]
+		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\StartupPayload::class)]
 		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::STARTUP)]
 		private readonly Types\StartupPayload $startup,
 	)

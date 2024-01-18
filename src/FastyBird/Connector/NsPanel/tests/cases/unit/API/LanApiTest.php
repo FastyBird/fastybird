@@ -10,7 +10,7 @@ use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Services;
 use FastyBird\Connector\NsPanel\Tests;
 use FastyBird\Connector\NsPanel\Tests\Tools;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -27,7 +27,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
@@ -112,7 +112,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
@@ -201,7 +201,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
@@ -287,7 +287,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
@@ -437,7 +437,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
@@ -562,7 +562,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
@@ -683,7 +683,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
@@ -776,7 +776,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument

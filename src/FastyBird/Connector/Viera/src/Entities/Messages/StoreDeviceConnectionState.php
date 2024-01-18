@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\Viera\Entities\Messages;
 
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Ramsey\Uuid;
 use function array_merge;
@@ -34,7 +34,7 @@ final class StoreDeviceConnectionState extends Device implements Entity
 	public function __construct(
 		Uuid\UuidInterface $connector,
 		Uuid\UuidInterface $device,
-		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\ConnectionState::class)]
+		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\ConnectionState::class)]
 		private readonly MetadataTypes\ConnectionState $state,
 	)
 	{

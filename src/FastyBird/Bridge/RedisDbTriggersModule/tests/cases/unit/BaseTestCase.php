@@ -6,8 +6,8 @@ use DateTimeImmutable;
 use Error;
 use FastyBird\Bridge\RedisDbTriggersModule;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Boot as ApplicationBoot;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Nette;
 use Nette\DI;
 use PHPUnit\Framework\TestCase;
@@ -25,7 +25,7 @@ abstract class BaseTestCase extends TestCase
 	protected DI\Container $container;
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Error
 	 */
 	protected function setUp(): void
@@ -46,7 +46,7 @@ abstract class BaseTestCase extends TestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Error
 	 */
 	protected function createContainer(string|null $additionalConfig = null): Nette\DI\Container
@@ -54,7 +54,7 @@ abstract class BaseTestCase extends TestCase
 		$rootDir = __DIR__ . '/../..';
 		$vendorDir = defined('FB_VENDOR_DIR') ? constant('FB_VENDOR_DIR') : $rootDir . '/../vendor';
 
-		$config = BootstrapBoot\Bootstrap::boot();
+		$config = ApplicationBoot\Bootstrap::boot();
 		$config->setForceReloadContainer();
 		$config->setTempDirectory(FB_TEMP_DIR);
 

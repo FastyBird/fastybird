@@ -7,7 +7,7 @@ use FastyBird\Connector\Virtual\Connector;
 use FastyBird\Connector\Virtual\Entities;
 use FastyBird\Connector\Virtual\Exceptions;
 use FastyBird\Connector\Virtual\Tests\Cases\Unit\DbTestCase;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use Nette;
@@ -19,7 +19,7 @@ final class ConnectorFactoryTest extends DbTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException

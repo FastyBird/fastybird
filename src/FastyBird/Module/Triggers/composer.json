@@ -41,7 +41,7 @@
     "contributte/monolog": "^0.5",
     "contributte/translation": "^2.0",
     "cweagans/composer-patches": "^1.7",
-    "fastybird/bootstrap-library": "dev-main",
+    "fastybird/application-library": "dev-main",
     "fastybird/exchange-library": "dev-main",
     "fastybird/json-api": "^0.13",
     "fastybird/metadata-library": "dev-main",

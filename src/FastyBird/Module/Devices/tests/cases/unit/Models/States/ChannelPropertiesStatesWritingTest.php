@@ -3,7 +3,7 @@
 namespace FastyBird\Module\Devices\Tests\Cases\Unit\Models\States;
 
 use Error;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -23,7 +23,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 	/**
 	 * @param class-string<Throwable>|null $exception
 	 *
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Error
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
@@ -136,7 +136,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 	/**
 	 * @param class-string<Throwable>|null $exception
 	 *
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Error
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState

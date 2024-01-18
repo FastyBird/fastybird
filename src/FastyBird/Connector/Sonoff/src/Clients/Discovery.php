@@ -24,7 +24,7 @@ use FastyBird\Connector\Sonoff\Exceptions;
 use FastyBird\Connector\Sonoff\Helpers;
 use FastyBird\Connector\Sonoff\Queue;
 use FastyBird\Connector\Sonoff\Types;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -181,7 +181,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 					'type' => 'discovery-client',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -202,7 +202,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 							[
 								'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 								'type' => 'discovery-client',
-								'exception' => BootstrapHelpers\Logger::buildException($ex),
+								'exception' => ApplicationHelpers\Logger::buildException($ex),
 							],
 						);
 
@@ -215,7 +215,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					[
 						'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 						'type' => 'discovery-client',
-						'exception' => BootstrapHelpers\Logger::buildException($ex),
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
 					],
 				);
 
@@ -290,7 +290,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					[
 						'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 						'type' => 'discovery-client',
-						'exception' => BootstrapHelpers\Logger::buildException($ex),
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'device' => [
 							'id' => $device->getDeviceId(),
 							'uiid' => $device->getExtra()->getUiid(),
@@ -305,7 +305,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					[
 						'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 						'type' => 'discovery-client',
-						'exception' => BootstrapHelpers\Logger::buildException($ex),
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'device' => [
 							'id' => $device->getDeviceId(),
 							'uiid' => $device->getExtra()->getUiid(),
@@ -487,7 +487,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					[
 						'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 						'type' => 'discovery-client',
-						'exception' => BootstrapHelpers\Logger::buildException($ex),
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'device' => $device->toArray(),
 					],
 				);

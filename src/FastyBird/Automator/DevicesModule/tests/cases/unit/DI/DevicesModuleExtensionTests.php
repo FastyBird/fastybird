@@ -8,7 +8,7 @@ use FastyBird\Automator\DevicesModule\Hydrators;
 use FastyBird\Automator\DevicesModule\Schemas;
 use FastyBird\Automator\DevicesModule\Subscribers;
 use FastyBird\Automator\DevicesModule\Tests\Cases\Unit\DbTestCase;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Nette;
 use RuntimeException;
 
@@ -16,7 +16,7 @@ final class DevicesModuleExtensionTests extends DbTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException

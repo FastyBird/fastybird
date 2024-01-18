@@ -14,7 +14,7 @@ use FastyBird\Connector\Tuya\Services;
 use FastyBird\Connector\Tuya\Tests;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -37,7 +37,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws RuntimeException
@@ -59,7 +59,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
@@ -239,7 +239,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument

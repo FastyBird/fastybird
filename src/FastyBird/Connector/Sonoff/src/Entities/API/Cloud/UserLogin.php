@@ -17,7 +17,7 @@ namespace FastyBird\Connector\Sonoff\Entities\API\Cloud;
 
 use FastyBird\Connector\Sonoff\Entities;
 use FastyBird\Connector\Sonoff\Types;
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 
 /**
@@ -38,7 +38,7 @@ final class UserLogin implements Entities\API\Entity
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('rt')]
 		private readonly string $refreshToken,
-		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\Region::class)]
+		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\Region::class)]
 		private readonly Types\Region $region,
 		#[ObjectMapper\Rules\MappedObjectValue(User::class)]
 		private readonly User $user,

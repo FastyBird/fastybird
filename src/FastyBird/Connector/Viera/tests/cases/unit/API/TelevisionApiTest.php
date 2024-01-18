@@ -7,7 +7,7 @@ use FastyBird\Connector\Viera\API;
 use FastyBird\Connector\Viera\Exceptions;
 use FastyBird\Connector\Viera\Services;
 use FastyBird\Connector\Viera\Tests;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Fig\Http\Message\RequestMethodInterface;
 use GuzzleHttp;
 use Nette\DI;
@@ -20,7 +20,7 @@ final class TelevisionApiTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\TelevisionApiCall
@@ -98,7 +98,7 @@ final class TelevisionApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\TelevisionApiCall
@@ -263,7 +263,7 @@ final class TelevisionApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\TelevisionApiCall
@@ -356,7 +356,7 @@ final class TelevisionApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\TelevisionApiCall
@@ -450,7 +450,7 @@ final class TelevisionApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\TelevisionApiCall
@@ -542,7 +542,7 @@ final class TelevisionApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\TelevisionApiCall
@@ -636,7 +636,7 @@ final class TelevisionApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\TelevisionApiCall
@@ -728,7 +728,7 @@ final class TelevisionApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\TelevisionApiCall
@@ -820,7 +820,7 @@ final class TelevisionApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\TelevisionApiCall

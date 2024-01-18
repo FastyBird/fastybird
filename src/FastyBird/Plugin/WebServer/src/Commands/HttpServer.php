@@ -15,7 +15,7 @@
 
 namespace FastyBird\Plugin\WebServer\Commands;
 
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\WebServer\Events;
 use FastyBird\Plugin\WebServer\Exceptions;
@@ -124,7 +124,7 @@ class HttpServer extends Console\Command\Command
 				[
 					'source' => MetadataTypes\PluginSource::WEB_SERVER,
 					'type' => 'server-command',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'cmd' => $this->getName(),
 				],
 			);
@@ -138,7 +138,7 @@ class HttpServer extends Console\Command\Command
 				[
 					'source' => MetadataTypes\PluginSource::WEB_SERVER,
 					'type' => 'server-command',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'cmd' => $this->getName(),
 				],
 			);

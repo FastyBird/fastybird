@@ -3,7 +3,7 @@
 namespace FastyBird\Module\Triggers\Tests\Cases\Unit\Controllers;
 
 use Error;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata;
 use FastyBird\Module\Triggers\Tests\Cases\Unit\DbTestCase;
 use FastyBird\Module\Triggers\Tests\Tools;
@@ -29,7 +29,7 @@ final class TriggersV1Test extends DbTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws InvalidArgumentException
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
@@ -207,7 +207,7 @@ final class TriggersV1Test extends DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws InvalidArgumentException
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
@@ -345,7 +345,7 @@ final class TriggersV1Test extends DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws InvalidArgumentException
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
@@ -459,7 +459,7 @@ final class TriggersV1Test extends DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws InvalidArgumentException
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException

@@ -18,14 +18,14 @@ use FastyBird\Connector\NsPanel\Services;
 use FastyBird\Connector\NsPanel\Subscribers;
 use FastyBird\Connector\NsPanel\Tests;
 use FastyBird\Connector\NsPanel\Writers;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Nette;
 
 final class NsPanelExtensionTest extends Tests\Cases\Unit\BaseTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws Error
 	 */

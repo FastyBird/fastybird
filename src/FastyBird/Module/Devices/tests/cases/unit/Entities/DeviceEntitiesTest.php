@@ -3,7 +3,7 @@
 namespace FastyBird\Module\Devices\Tests\Cases\Unit\Entities;
 
 use Error;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
@@ -19,7 +19,7 @@ final class DeviceEntitiesTest extends DbTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
 	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 * @throws Exceptions\InvalidArgument
@@ -49,7 +49,7 @@ final class DeviceEntitiesTest extends DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
 	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 * @throws Exceptions\InvalidArgument
@@ -86,7 +86,7 @@ final class DeviceEntitiesTest extends DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
 	 * @throws DoctrineOrmQueryExceptions\QueryException
@@ -127,7 +127,7 @@ final class DeviceEntitiesTest extends DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
 	 * @throws DoctrineOrmQueryExceptions\QueryException

@@ -15,7 +15,7 @@
 
 namespace FastyBird\Library\Exchange\DI;
 
-use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
+use FastyBird\Library\Application\Boot as ApplicationBoot;
 use FastyBird\Library\Exchange\Consumers;
 use FastyBird\Library\Exchange\Documents;
 use FastyBird\Library\Exchange\Publisher;
@@ -41,12 +41,12 @@ class ExchangeExtension extends DI\CompilerExtension
 	public const CONSUMER_ROUTING_KEY = 'consumer_routing_key';
 
 	public static function register(
-		BootstrapBoot\Configurator $config,
+		ApplicationBoot\Configurator $config,
 		string $extensionName = 'fbExchangeLibrary',
 	): void
 	{
 		$config->onCompile[] = static function (
-			BootstrapBoot\Configurator $config,
+			ApplicationBoot\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new self());

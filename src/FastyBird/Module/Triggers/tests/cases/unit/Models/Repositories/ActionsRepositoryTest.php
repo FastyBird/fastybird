@@ -3,7 +3,7 @@
 namespace FastyBird\Module\Triggers\Tests\Cases\Unit\Models\Repositories;
 
 use Error;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Triggers\Exceptions;
 use FastyBird\Module\Triggers\Models;
 use FastyBird\Module\Triggers\Queries;
@@ -22,7 +22,7 @@ final class ActionsRepositoryTest extends DbTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Nette\DI\MissingServiceException
@@ -43,7 +43,7 @@ final class ActionsRepositoryTest extends DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState

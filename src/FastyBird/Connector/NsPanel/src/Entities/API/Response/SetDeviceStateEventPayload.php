@@ -17,7 +17,7 @@ namespace FastyBird\Connector\NsPanel\Entities\API\Response;
 
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Types;
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use stdClass;
 
 /**
@@ -32,7 +32,7 @@ final class SetDeviceStateEventPayload implements Entities\API\Entity
 {
 
 	public function __construct(
-		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\ServerStatus::class)]
+		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\ServerStatus::class)]
 		private readonly Types\ServerStatus $type,
 	)
 	{

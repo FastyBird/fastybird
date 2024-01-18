@@ -17,7 +17,7 @@ namespace FastyBird\Connector\NsPanel\Entities\API\Response;
 
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Types;
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use stdClass;
@@ -52,13 +52,13 @@ final class GetSubDevicesDataSubDevice implements Entities\API\Entity
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('firmware_version')]
 		private readonly string $firmwareVersion,
-		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\Category::class)]
+		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\Category::class)]
 		#[ObjectMapper\Modifiers\FieldName('display_category')]
 		private readonly Types\Category $displayCategory,
 		#[ObjectMapper\Rules\MappedObjectValue(Entities\API\State::class)]
 		private readonly Entities\API\State $state,
 		#[ObjectMapper\Rules\AnyOf([
-			new BootstrapObjectMapper\Rules\UuidValue(),
+			new ApplicationObjectMapper\Rules\UuidValue(),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('third_serial_number')]

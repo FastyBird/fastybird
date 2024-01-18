@@ -15,7 +15,7 @@
 
 namespace FastyBird\Module\Devices\Consumers;
 
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumer;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -121,14 +121,14 @@ final class Sockets implements ExchangeConsumer\Consumer
 			$this->logger->error('Data could not be converted to message', [
 				'source' => MetadataTypes\ModuleSource::DEVICES,
 				'type' => 'exchange-consumer',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'exception' => ApplicationHelpers\Logger::buildException($ex),
 			]);
 
 		} catch (Throwable $ex) {
 			$this->logger->error('Data could not be broadcasts to clients', [
 				'source' => MetadataTypes\ModuleSource::DEVICES,
 				'type' => 'exchange-consumer',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'exception' => ApplicationHelpers\Logger::buildException($ex),
 			]);
 		}
 

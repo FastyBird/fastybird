@@ -19,7 +19,7 @@ use Doctrine\DBAL;
 use FastyBird\Connector\Virtual;
 use FastyBird\Connector\Virtual\Entities;
 use FastyBird\Connector\Virtual\Queue;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Exchange\Documents as ExchangeEntities;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
@@ -220,7 +220,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 						[
 							'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
 							'type' => 'store-device-property-state-message-consumer',
-							'exception' => BootstrapHelpers\Logger::buildException($ex),
+							'exception' => ApplicationHelpers\Logger::buildException($ex),
 							'connector' => [
 								'id' => $entity->getConnector()->toString(),
 							],

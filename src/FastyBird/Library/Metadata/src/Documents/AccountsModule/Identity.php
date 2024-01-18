@@ -15,7 +15,7 @@
 
 namespace FastyBird\Library\Metadata\Documents\AccountsModule;
 
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Metadata\Documents;
 use FastyBird\Library\Metadata\Types;
 use Orisai\ObjectMapper;
@@ -33,11 +33,11 @@ final class Identity implements Documents\Document
 {
 
 	public function __construct(
-		#[BootstrapObjectMapper\Rules\UuidValue()]
+		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $id,
-		#[BootstrapObjectMapper\Rules\UuidValue()]
+		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $account,
-		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\IdentityState::class)]
+		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\IdentityState::class)]
 		private readonly Types\IdentityState $state,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $uid,

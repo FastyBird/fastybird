@@ -24,7 +24,7 @@ use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\Connector\Shelly\ValueObjects;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -215,7 +215,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 									[
 										'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
 										'type' => 'gen2-ws-api',
-										'exception' => BootstrapHelpers\Logger::buildException($ex),
+										'exception' => ApplicationHelpers\Logger::buildException($ex),
 										'device' => [
 											'id' => $this->id->toString(),
 										],
@@ -251,7 +251,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 											[
 												'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
 												'type' => 'gen2-ws-api',
-												'exception' => BootstrapHelpers\Logger::buildException($ex),
+												'exception' => ApplicationHelpers\Logger::buildException($ex),
 												'device' => [
 													'id' => $this->id->toString(),
 												],
@@ -277,7 +277,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 											[
 												'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
 												'type' => 'gen2-ws-api',
-												'exception' => BootstrapHelpers\Logger::buildException($ex),
+												'exception' => ApplicationHelpers\Logger::buildException($ex),
 												'device' => [
 													'id' => $this->id->toString(),
 												],
@@ -329,7 +329,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 											[
 												'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
 												'type' => 'gen2-ws-api',
-												'exception' => BootstrapHelpers\Logger::buildException($ex),
+												'exception' => ApplicationHelpers\Logger::buildException($ex),
 												'device' => [
 													'id' => $this->id->toString(),
 												],
@@ -502,7 +502,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 							[
 								'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
 								'type' => 'gen2-ws-api',
-								'exception' => BootstrapHelpers\Logger::buildException($ex),
+								'exception' => ApplicationHelpers\Logger::buildException($ex),
 								'device' => [
 									'id' => $this->id->toString(),
 								],
@@ -545,7 +545,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 						[
 							'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
 							'type' => 'gen2-ws-api',
-							'exception' => BootstrapHelpers\Logger::buildException($ex),
+							'exception' => ApplicationHelpers\Logger::buildException($ex),
 							'device' => [
 								'id' => $this->id->toString(),
 							],
@@ -572,7 +572,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
 					'type' => 'gen2-ws-api',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'device' => [
 						'id' => $this->id->toString(),
 					],

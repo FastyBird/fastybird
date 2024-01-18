@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\Viera\Entities\Messages;
 
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_merge;
@@ -35,12 +35,12 @@ final class StoreChannelPropertyState extends Device
 		Uuid\UuidInterface $connector,
 		Uuid\UuidInterface $device,
 		#[ObjectMapper\Rules\AnyOf([
-			new BootstrapObjectMapper\Rules\UuidValue(),
+			new ApplicationObjectMapper\Rules\UuidValue(),
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 		])]
 		private readonly Uuid\UuidInterface|string $channel,
 		#[ObjectMapper\Rules\AnyOf([
-			new BootstrapObjectMapper\Rules\UuidValue(),
+			new ApplicationObjectMapper\Rules\UuidValue(),
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 		])]
 		private readonly Uuid\UuidInterface|string $property,

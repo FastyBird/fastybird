@@ -26,8 +26,8 @@ use FastyBird\Addon\ThermostatDevice\Types;
 use FastyBird\Connector\Virtual\Entities as VirtualEntities;
 use FastyBird\Connector\Virtual\Queries as VirtualQueries;
 use FastyBird\Connector\Virtual\Types as VirtualTypes;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -94,7 +94,7 @@ class Install extends Console\Command\Command
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager,
 		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
 		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
-		private readonly BootstrapHelpers\Database $databaseHelper,
+		private readonly ApplicationHelpers\Database $databaseHelper,
 		private readonly Localization\Translator $translator,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 		string|null $name = null,
@@ -910,7 +910,7 @@ class Install extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
 					'type' => 'thermostat-cmd',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -1511,7 +1511,7 @@ class Install extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
 					'type' => 'thermostat-cmd',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -1593,7 +1593,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
@@ -1648,7 +1648,7 @@ class Install extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
 					'type' => 'initialize-cmd',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -1666,7 +1666,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Console\Exception\ExceptionInterface
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
@@ -1754,7 +1754,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
@@ -1833,7 +1833,7 @@ class Install extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
 					'type' => 'thermostat-cmd',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -1922,7 +1922,7 @@ class Install extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
 					'type' => 'thermostat-cmd',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -1999,7 +1999,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
@@ -2054,7 +2054,7 @@ class Install extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 					'type' => 'thermostat-cmd',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -2072,7 +2072,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
@@ -2195,7 +2195,7 @@ class Install extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
 					'type' => 'thermostat-cmd',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -2215,7 +2215,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exception
 	 */
@@ -2290,7 +2290,7 @@ class Install extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
 					'type' => 'thermostat-cmd',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -2381,7 +2381,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
@@ -2436,7 +2436,7 @@ class Install extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 					'type' => 'thermostat-cmd',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -2454,7 +2454,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
@@ -2628,7 +2628,7 @@ class Install extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
 					'type' => 'thermostat-cmd',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -3955,7 +3955,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Console\Exception\ExceptionInterface
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState

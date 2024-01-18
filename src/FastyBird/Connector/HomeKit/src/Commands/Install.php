@@ -26,8 +26,8 @@ use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Helpers;
 use FastyBird\Connector\HomeKit\Queries;
 use FastyBird\Connector\HomeKit\Types;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
@@ -106,7 +106,7 @@ class Install extends Console\Command\Command
 		private readonly DevicesModels\Entities\Channels\ChannelsManager $channelsManager,
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager,
-		private readonly BootstrapHelpers\Database $databaseHelper,
+		private readonly ApplicationHelpers\Database $databaseHelper,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 		private readonly Localization\Translator $translator,
 		string|null $name = null,
@@ -126,7 +126,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -150,7 +150,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -253,7 +253,7 @@ class Install extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'install-cmd',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -285,7 +285,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -388,7 +388,7 @@ class Install extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'install-cmd',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -422,7 +422,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
@@ -477,7 +477,7 @@ class Install extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'install-cmd',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -493,7 +493,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -557,7 +557,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -657,7 +657,7 @@ class Install extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'devices-cmd',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -680,7 +680,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -760,7 +760,7 @@ class Install extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'devices-cmd',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -794,7 +794,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
@@ -849,7 +849,7 @@ class Install extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'devices-cmd',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -865,7 +865,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -929,7 +929,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -1035,7 +1035,7 @@ class Install extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'devices-cmd',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -1069,7 +1069,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -1215,7 +1215,7 @@ class Install extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'devices-cmd',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -1249,7 +1249,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
@@ -1310,7 +1310,7 @@ class Install extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'devices-cmd',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -1326,7 +1326,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -1520,7 +1520,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -1664,7 +1664,7 @@ class Install extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'devices-cmd',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -1682,7 +1682,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
@@ -1743,7 +1743,7 @@ class Install extends Console\Command\Command
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'devices-cmd',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -1827,7 +1827,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -1911,7 +1911,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -1998,7 +1998,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -2085,7 +2085,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument

@@ -5,8 +5,8 @@ namespace FastyBird\Module\Devices\Tests\Cases\Unit;
 use DateTimeImmutable;
 use Error;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Boot as ApplicationBoot;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Devices\DI;
 use Nette;
 use PHPUnit\Framework\TestCase;
@@ -27,7 +27,7 @@ abstract class BaseTestCase extends TestCase
 	protected array $neonFiles = [];
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Error
 	 */
 	protected function setUp(): void
@@ -46,7 +46,7 @@ abstract class BaseTestCase extends TestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Error
 	 */
 	protected function mockContainerService(
@@ -63,7 +63,7 @@ abstract class BaseTestCase extends TestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Error
 	 */
 	protected function getContainer(): Nette\DI\Container
@@ -76,7 +76,7 @@ abstract class BaseTestCase extends TestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Error
 	 */
 	private function createContainer(): Nette\DI\Container
@@ -84,7 +84,7 @@ abstract class BaseTestCase extends TestCase
 		$rootDir = __DIR__ . '/../..';
 		$vendorDir = defined('FB_VENDOR_DIR') ? constant('FB_VENDOR_DIR') : $rootDir . '/../vendor';
 
-		$config = BootstrapBoot\Bootstrap::boot();
+		$config = ApplicationBoot\Bootstrap::boot();
 		$config->setForceReloadContainer();
 		$config->setTempDirectory(FB_TEMP_DIR);
 
@@ -109,7 +109,7 @@ abstract class BaseTestCase extends TestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Error
 	 */
 	private function replaceContainerService(string $serviceName, object $service): void

@@ -15,14 +15,14 @@ use FastyBird\Connector\Sonoff\Services;
 use FastyBird\Connector\Sonoff\Subscribers;
 use FastyBird\Connector\Sonoff\Tests;
 use FastyBird\Connector\Sonoff\Writers;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Nette;
 
 final class SonoffExtensionTest extends Tests\Cases\Unit\BaseTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws Error
 	 */

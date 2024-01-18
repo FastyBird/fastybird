@@ -3,7 +3,7 @@
 namespace FastyBird\Module\Accounts\Tests\Cases\Unit\DI;
 
 use Error;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Accounts\Commands;
 use FastyBird\Module\Accounts\Controllers;
 use FastyBird\Module\Accounts\Exceptions;
@@ -21,7 +21,7 @@ final class AccountsModuleExtensionTests extends DbTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException

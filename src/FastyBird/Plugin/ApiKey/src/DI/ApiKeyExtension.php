@@ -16,7 +16,7 @@
 namespace FastyBird\Plugin\ApiKey\DI;
 
 use Doctrine\Persistence;
-use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
+use FastyBird\Library\Application\Boot as ApplicationBoot;
 use FastyBird\Plugin\ApiKey\Commands;
 use FastyBird\Plugin\ApiKey\Entities;
 use FastyBird\Plugin\ApiKey\Middleware;
@@ -42,12 +42,12 @@ class ApiKeyExtension extends DI\CompilerExtension
 	public const NAME = 'fbApiKeyPlugin';
 
 	public static function register(
-		BootstrapBoot\Configurator $config,
+		ApplicationBoot\Configurator $config,
 		string $extensionName = self::NAME,
 	): void
 	{
 		$config->onCompile[] = static function (
-			BootstrapBoot\Configurator $config,
+			ApplicationBoot\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new self());

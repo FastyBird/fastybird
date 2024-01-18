@@ -15,7 +15,7 @@
 
 namespace FastyBird\Module\Devices\Commands;
 
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
 use FastyBird\Library\Exchange\Exchange as ExchangeExchange;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -128,7 +128,7 @@ final class Exchange extends Console\Command\Command
 			$this->logger->error('An unhandled error occurred', [
 				'source' => MetadataTypes\ModuleSource::DEVICES,
 				'type' => 'exchange-cmd',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'exception' => ApplicationHelpers\Logger::buildException($ex),
 			]);
 
 			if ($input->getOption('quiet') === false) {

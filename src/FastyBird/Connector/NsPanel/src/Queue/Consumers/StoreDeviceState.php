@@ -20,7 +20,7 @@ use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Queue;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Exchange\Documents as ExchangeEntities;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
@@ -323,7 +323,7 @@ final class StoreDeviceState implements Queue\Consumer
 					[
 						'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 						'type' => 'store-device-state-message-consumer',
-						'exception' => BootstrapHelpers\Logger::buildException($ex),
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'connector' => [
 							'id' => $device->getConnector()->toString(),
 						],

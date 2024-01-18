@@ -17,7 +17,7 @@ namespace FastyBird\Connector\Shelly\Entities\API\Gen2;
 
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Types;
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 
 /**
@@ -39,7 +39,7 @@ final class DeviceInputConfiguration implements Entities\API\Entity
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		private readonly string|null $name,
-		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\InputType::class)]
+		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\InputType::class)]
 		private readonly Types\InputType $type,
 		#[ObjectMapper\Rules\BoolValue()]
 		#[ObjectMapper\Modifiers\FieldName('invert')]

@@ -24,7 +24,7 @@ use FastyBird\Connector\Virtual\Exceptions;
 use FastyBird\Connector\Virtual\Helpers;
 use FastyBird\Connector\Virtual\Queue;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -204,7 +204,7 @@ class Devices
 								[
 									'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
 									'type' => 'devices-driver',
-									'exception' => BootstrapHelpers\Logger::buildException($ex),
+									'exception' => ApplicationHelpers\Logger::buildException($ex),
 									'connector' => [
 										'id' => $this->connector->getId()->toString(),
 									],
@@ -292,7 +292,7 @@ class Devices
 					[
 						'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
 						'type' => 'devices-driver',
-						'exception' => BootstrapHelpers\Logger::buildException($ex),
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'connector' => [
 							'id' => $this->connector->getId()->toString(),
 						],

@@ -9,7 +9,7 @@ use FastyBird\Addon\ThermostatDevice\Types;
 use FastyBird\Connector\Virtual\Drivers as VirtualDrivers;
 use FastyBird\Connector\Virtual\Entities as VirtualEntities;
 use FastyBird\Connector\Virtual\Queue as VirtualQueue;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -27,7 +27,7 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws Error
 	 * @throws Exceptions\InvalidArgument
@@ -60,7 +60,7 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 	 * @param array<string, int|float|bool|string> $readInitialStates
 	 * @param array<mixed> $expectedWriteEntities
 	 *
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws Error
 	 * @throws Exceptions\InvalidArgument

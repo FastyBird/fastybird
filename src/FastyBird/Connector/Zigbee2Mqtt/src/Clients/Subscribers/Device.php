@@ -23,7 +23,7 @@ use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
 use FastyBird\Connector\Zigbee2Mqtt\Helpers;
 use FastyBird\Connector\Zigbee2Mqtt\Queue;
 use FastyBird\Connector\Zigbee2Mqtt\Types;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette\Utils;
@@ -189,7 +189,7 @@ class Device
 					[
 						'source' => MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT,
 						'type' => 'device-messages-subscriber',
-						'exception' => BootstrapHelpers\Logger::buildException($ex),
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'connector' => [
 							'id' => $this->connector->getId()->toString(),
 						],
@@ -238,7 +238,7 @@ class Device
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT,
 					'type' => 'device-messages-subscriber',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
 					],

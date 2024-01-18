@@ -18,7 +18,7 @@ namespace FastyBird\Automator\DateTime\DI;
 use Doctrine\Persistence;
 use FastyBird\Automator\DateTime\Hydrators;
 use FastyBird\Automator\DateTime\Schemas;
-use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
+use FastyBird\Library\Application\Boot as ApplicationBoot;
 use Nette;
 use Nette\DI;
 use const DIRECTORY_SEPARATOR;
@@ -37,12 +37,12 @@ class DateTimeExtension extends DI\CompilerExtension
 	public const NAME = 'fbDateTimeAutomator';
 
 	public static function register(
-		BootstrapBoot\Configurator $config,
+		ApplicationBoot\Configurator $config,
 		string $extensionName = self::NAME,
 	): void
 	{
 		$config->onCompile[] = static function (
-			BootstrapBoot\Configurator $config,
+			ApplicationBoot\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new self());

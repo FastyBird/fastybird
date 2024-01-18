@@ -16,7 +16,7 @@
 namespace FastyBird\Bridge\RedisDbDevicesModule\States;
 
 use DateTimeInterface;
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\States as DevicesStates;
@@ -45,9 +45,9 @@ class Property extends RedisDbStates\State implements DevicesStates\Property
 			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
-			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\ButtonPayload::class),
-			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\SwitchPayload::class),
-			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\CoverPayload::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\ButtonPayload::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\SwitchPayload::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\CoverPayload::class),
 			new ObjectMapper\Rules\ObjectValue(),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
@@ -60,9 +60,9 @@ class Property extends RedisDbStates\State implements DevicesStates\Property
 			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
-			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\ButtonPayload::class),
-			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\SwitchPayload::class),
-			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\CoverPayload::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\ButtonPayload::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\SwitchPayload::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\CoverPayload::class),
 			new ObjectMapper\Rules\ObjectValue(),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]

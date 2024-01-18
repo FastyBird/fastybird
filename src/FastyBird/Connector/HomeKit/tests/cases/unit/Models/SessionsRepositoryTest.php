@@ -8,7 +8,7 @@ use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Models;
 use FastyBird\Connector\HomeKit\Queries;
 use FastyBird\Connector\HomeKit\Tests\Cases\Unit\DbTestCase;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use IPub\DoctrineOrmQuery;
 use Nette;
 use RuntimeException;
@@ -21,7 +21,7 @@ final class SessionsRepositoryTest extends DbTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DoctrineOrmQuery\Exceptions\QueryException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
@@ -44,7 +44,7 @@ final class SessionsRepositoryTest extends DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DoctrineOrmQuery\Exceptions\QueryException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState

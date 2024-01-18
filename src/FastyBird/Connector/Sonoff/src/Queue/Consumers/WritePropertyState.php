@@ -22,7 +22,7 @@ use FastyBird\Connector\Sonoff\Exceptions;
 use FastyBird\Connector\Sonoff\Helpers;
 use FastyBird\Connector\Sonoff\Queue;
 use FastyBird\Connector\Sonoff\Types;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -435,7 +435,7 @@ final class WritePropertyState implements Queue\Consumer
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 					'type' => 'write-property-state-message-consumer',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
 					],
@@ -489,7 +489,7 @@ final class WritePropertyState implements Queue\Consumer
 					[
 						'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 						'type' => 'write-property-state-message-consumer',
-						'exception' => BootstrapHelpers\Logger::buildException($ex),
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'connector' => [
 							'id' => $entity->getConnector()->toString(),
 						],
@@ -575,7 +575,7 @@ final class WritePropertyState implements Queue\Consumer
 						[
 							'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 							'type' => 'write-property-state-message-consumer',
-							'exception' => BootstrapHelpers\Logger::buildException($ex),
+							'exception' => ApplicationHelpers\Logger::buildException($ex),
 							'connector' => [
 								'id' => $entity->getConnector()->toString(),
 							],

@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\NsPanel\Entities\API\States;
 
 use FastyBird\Connector\NsPanel\Types;
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 use stdClass;
 
@@ -32,7 +32,7 @@ final class MotorCalibration implements State
 {
 
 	public function __construct(
-		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\MotorCalibrationPayload::class)]
+		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\MotorCalibrationPayload::class)]
 		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::MOTOR_CALIBRATION)]
 		private readonly Types\MotorCalibrationPayload $motorCalibration,
 	)

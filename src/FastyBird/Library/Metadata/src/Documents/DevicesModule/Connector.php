@@ -16,7 +16,7 @@
 namespace FastyBird\Library\Metadata\Documents\DevicesModule;
 
 use DateTimeInterface;
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Metadata\Documents;
 use FastyBird\Library\Metadata\Types;
 use Orisai\ObjectMapper;
@@ -44,11 +44,11 @@ final class Connector implements Documents\Document, Documents\Owner
 	 * @param array<Uuid\UuidInterface> $devices
 	 */
 	public function __construct(
-		#[BootstrapObjectMapper\Rules\UuidValue()]
+		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $id,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $type,
-		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\ConnectorCategory::class)]
+		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\ConnectorCategory::class)]
 		private readonly Types\ConnectorCategory $category,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $identifier,
@@ -65,19 +65,19 @@ final class Connector implements Documents\Document, Documents\Owner
 		#[ObjectMapper\Rules\BoolValue()]
 		private readonly bool $enabled = false,
 		#[ObjectMapper\Rules\ArrayOf(
-			new BootstrapObjectMapper\Rules\UuidValue(),
+			new ApplicationObjectMapper\Rules\UuidValue(),
 		)]
 		private readonly array $properties = [],
 		#[ObjectMapper\Rules\ArrayOf(
-			new BootstrapObjectMapper\Rules\UuidValue(),
+			new ApplicationObjectMapper\Rules\UuidValue(),
 		)]
 		private readonly array $controls = [],
 		#[ObjectMapper\Rules\ArrayOf(
-			new BootstrapObjectMapper\Rules\UuidValue(),
+			new ApplicationObjectMapper\Rules\UuidValue(),
 		)]
 		private readonly array $devices = [],
 		#[ObjectMapper\Rules\AnyOf([
-			new BootstrapObjectMapper\Rules\UuidValue(),
+			new ApplicationObjectMapper\Rules\UuidValue(),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		protected readonly Uuid\UuidInterface|null $owner = null,

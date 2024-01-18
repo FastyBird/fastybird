@@ -18,7 +18,7 @@ namespace FastyBird\Module\Accounts\Controllers;
 use Doctrine;
 use Exception;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Accounts\Controllers;
 use FastyBird\Module\Accounts\Entities;
@@ -225,7 +225,7 @@ final class AccountEmailsV1 extends BaseV1
 			$this->logger->error('An unhandled error occurred', [
 				'source' => MetadataTypes\ModuleSource::ACCOUNTS,
 				'type' => 'account-email-controller',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'exception' => ApplicationHelpers\Logger::buildException($ex),
 			]);
 
 			throw new JsonApiExceptions\JsonApiError(
@@ -300,7 +300,7 @@ final class AccountEmailsV1 extends BaseV1
 			$this->logger->error('An unhandled error occurred', [
 				'source' => MetadataTypes\ModuleSource::ACCOUNTS,
 				'type' => 'account-email-controller',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'exception' => ApplicationHelpers\Logger::buildException($ex),
 			]);
 
 			throw new JsonApiExceptions\JsonApiError(
@@ -358,7 +358,7 @@ final class AccountEmailsV1 extends BaseV1
 			$this->logger->error('An unhandled error occurred', [
 				'source' => MetadataTypes\ModuleSource::ACCOUNTS,
 				'type' => 'account-email-controller',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'exception' => ApplicationHelpers\Logger::buildException($ex),
 			]);
 
 			throw new JsonApiExceptions\JsonApiError(

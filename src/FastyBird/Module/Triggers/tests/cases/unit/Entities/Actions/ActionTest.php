@@ -3,7 +3,7 @@
 namespace FastyBird\Module\Triggers\Tests\Cases\Unit\Entities\Actions;
 
 use Error;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Triggers\Exceptions;
 use FastyBird\Module\Triggers\Models;
 use FastyBird\Module\Triggers\Queries;
@@ -21,7 +21,7 @@ final class ActionTest extends DbTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Nette\DI\MissingServiceException

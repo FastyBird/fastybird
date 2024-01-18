@@ -17,7 +17,7 @@ namespace FastyBird\Connector\FbMqtt\Entities\Messages;
 
 use FastyBird\Connector\FbMqtt;
 use FastyBird\Connector\FbMqtt\Exceptions;
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 
@@ -36,7 +36,7 @@ abstract class Property implements Entity
 	 * @param array<PropertyAttribute> $attributes
 	 */
 	public function __construct(
-		#[BootstrapObjectMapper\Rules\UuidValue()]
+		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $connector,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $device,

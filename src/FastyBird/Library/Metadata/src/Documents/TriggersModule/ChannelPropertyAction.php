@@ -15,7 +15,7 @@
 
 namespace FastyBird\Library\Metadata\Documents\TriggersModule;
 
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Metadata\Types;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
@@ -37,11 +37,11 @@ final class ChannelPropertyAction extends Action
 		Uuid\UuidInterface $trigger,
 		Types\TriggerActionType $type,
 		bool $enabled,
-		#[BootstrapObjectMapper\Rules\UuidValue()]
+		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $device,
-		#[BootstrapObjectMapper\Rules\UuidValue()]
+		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $channel,
-		#[BootstrapObjectMapper\Rules\UuidValue()]
+		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $property,
 		#[ObjectMapper\Rules\BoolValue()]
 		private readonly string $value,

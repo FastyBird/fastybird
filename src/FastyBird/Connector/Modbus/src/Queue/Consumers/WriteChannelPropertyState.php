@@ -23,7 +23,7 @@ use FastyBird\Connector\Modbus\Exceptions;
 use FastyBird\Connector\Modbus\Helpers;
 use FastyBird\Connector\Modbus\Queue;
 use FastyBird\Connector\Modbus\Types;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -617,7 +617,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					[
 						'source' => MetadataTypes\ConnectorSource::CONNECTOR_MODBUS,
 						'type' => 'write-channel-property-state-message-consumer',
-						'exception' => BootstrapHelpers\Logger::buildException($ex),
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'connector' => [
 							'id' => $entity->getConnector()->toString(),
 						],
@@ -958,7 +958,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						[
 							'source' => MetadataTypes\ConnectorSource::CONNECTOR_MODBUS,
 							'type' => 'write-channel-property-state-message-consumer',
-							'exception' => BootstrapHelpers\Logger::buildException($ex),
+							'exception' => ApplicationHelpers\Logger::buildException($ex),
 							'connector' => [
 								'id' => $entity->getConnector()->toString(),
 							],

@@ -15,7 +15,7 @@
 
 namespace FastyBird\Library\Metadata\Documents\TriggersModule;
 
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Metadata\Documents;
 use FastyBird\Library\Metadata\Types;
 use Orisai\ObjectMapper;
@@ -35,9 +35,9 @@ abstract class Trigger implements Documents\Document, Documents\Owner
 	use Documents\TOwner;
 
 	public function __construct(
-		#[BootstrapObjectMapper\Rules\UuidValue()]
+		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $id,
-		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\TriggerType::class)]
+		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\TriggerType::class)]
 		private readonly Types\TriggerType $type,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $name,
@@ -55,7 +55,7 @@ abstract class Trigger implements Documents\Document, Documents\Owner
 		#[ObjectMapper\Modifiers\FieldName('is_triggered')]
 		private readonly bool|null $isTriggered = null,
 		#[ObjectMapper\Rules\AnyOf([
-			new BootstrapObjectMapper\Rules\UuidValue(),
+			new ApplicationObjectMapper\Rules\UuidValue(),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		protected readonly Uuid\UuidInterface|null $owner = null,

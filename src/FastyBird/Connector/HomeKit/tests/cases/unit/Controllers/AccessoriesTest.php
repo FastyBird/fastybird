@@ -11,7 +11,7 @@ use FastyBird\Connector\HomeKit\Servers;
 use FastyBird\Connector\HomeKit\Tests\Cases\Unit\DbTestCase;
 use FastyBird\Connector\HomeKit\Tests\Tools;
 use FastyBird\Connector\HomeKit\Types;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -37,7 +37,7 @@ final class AccessoriesTest extends DbTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState

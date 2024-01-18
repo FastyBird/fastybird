@@ -26,7 +26,7 @@ use FastyBird\Connector\HomeKit\Protocol;
 use FastyBird\Connector\HomeKit\Queries;
 use FastyBird\Connector\HomeKit\Servers;
 use FastyBird\Connector\HomeKit\Types;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -892,7 +892,7 @@ final class PairingController extends BaseController
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'pairing-controller',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
 						'id' => $connector->getId()->toString(),
 					],
@@ -1126,7 +1126,7 @@ final class PairingController extends BaseController
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'pairing-controller',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
 						'id' => $connector->getId()->toString(),
 					],
@@ -1273,7 +1273,7 @@ final class PairingController extends BaseController
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'pairing-controller',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
 						'id' => $connector->getId()->toString(),
 					],
@@ -1414,7 +1414,7 @@ final class PairingController extends BaseController
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'pairing-controller',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
 						'id' => $connector->getId()->toString(),
 					],

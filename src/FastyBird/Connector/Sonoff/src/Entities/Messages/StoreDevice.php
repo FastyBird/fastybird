@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\Sonoff\Entities\Messages;
 
 use FastyBird\Connector\Sonoff\Entities;
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_map;
@@ -36,7 +36,7 @@ final class StoreDevice implements Entity
 	 * @param array<Entities\Messages\Parameters\DiscoveredDeviceParameter> $parameters
 	 */
 	public function __construct(
-		#[BootstrapObjectMapper\Rules\UuidValue()]
+		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $connector,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $id,

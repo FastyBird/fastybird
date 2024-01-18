@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\Tuya\Entities\API;
 
 use FastyBird\Connector\Tuya\Types;
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 
 /**
@@ -31,7 +31,7 @@ final class LocalMessagePayload implements Entity
 {
 
 	public function __construct(
-		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\LocalDeviceCommand::class)]
+		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\LocalDeviceCommand::class)]
 		private readonly Types\LocalDeviceCommand $command,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),

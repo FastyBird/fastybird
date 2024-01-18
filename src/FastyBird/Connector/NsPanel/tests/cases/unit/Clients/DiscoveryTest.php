@@ -11,7 +11,7 @@ use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Connector\NsPanel\Services;
 use FastyBird\Connector\NsPanel\Tests;
 use FastyBird\Connector\NsPanel\Types;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -28,7 +28,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument

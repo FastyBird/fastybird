@@ -18,7 +18,7 @@ namespace FastyBird\Plugin\RabbitMq\Publishers;
 use Bunny;
 use DateTimeInterface;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -86,7 +86,7 @@ final class Publisher implements ExchangePublisher\Publisher
 						'source' => $source->getValue(),
 						'data' => $entity?->toArray(),
 					],
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -164,7 +164,7 @@ final class Publisher implements ExchangePublisher\Publisher
 									'data' => $entity?->toArray(),
 									'body' => $body,
 								],
-								'exception' => BootstrapHelpers\Logger::buildException($ex),
+								'exception' => ApplicationHelpers\Logger::buildException($ex),
 							],
 						);
 					},

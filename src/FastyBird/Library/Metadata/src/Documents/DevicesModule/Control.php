@@ -16,7 +16,7 @@
 namespace FastyBird\Library\Metadata\Documents\DevicesModule;
 
 use DateTimeInterface;
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Metadata\Documents;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
@@ -37,12 +37,12 @@ abstract class Control implements Documents\Document, Documents\Owner
 	use Documents\TUpdatedAt;
 
 	public function __construct(
-		#[BootstrapObjectMapper\Rules\UuidValue()]
+		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $id,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $name,
 		#[ObjectMapper\Rules\AnyOf([
-			new BootstrapObjectMapper\Rules\UuidValue(),
+			new ApplicationObjectMapper\Rules\UuidValue(),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		protected readonly Uuid\UuidInterface|null $owner = null,

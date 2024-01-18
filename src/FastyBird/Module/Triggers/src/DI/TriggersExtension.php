@@ -17,7 +17,7 @@ namespace FastyBird\Module\Triggers\DI;
 
 use Contributte\Translation;
 use Doctrine\Persistence;
-use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
+use FastyBird\Library\Application\Boot as ApplicationBoot;
 use FastyBird\Module\Triggers\Commands;
 use FastyBird\Module\Triggers\Controllers;
 use FastyBird\Module\Triggers\Entities;
@@ -55,12 +55,12 @@ class TriggersExtension extends DI\CompilerExtension implements Translation\DI\T
 	public const TRIGGER_TYPE_TAG = 'trigger_type';
 
 	public static function register(
-		BootstrapBoot\Configurator $config,
+		ApplicationBoot\Configurator $config,
 		string $extensionName = self::NAME,
 	): void
 	{
 		$config->onCompile[] = static function (
-			BootstrapBoot\Configurator $config,
+			ApplicationBoot\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new self());

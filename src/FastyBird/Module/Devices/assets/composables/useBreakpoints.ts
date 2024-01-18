@@ -1,10 +1,10 @@
 import { computed } from 'vue';
 
-import { breakpointsBootstrapV5, useBreakpoints as vueUseBreakpoints } from '@vueuse/core';
+import { breakpointsApplicationV5, useBreakpoints as vueUseBreakpoints } from '@vueuse/core';
 
 import { UseBreakpoints } from '@/composables/types';
 
-const breakpoints = vueUseBreakpoints(breakpointsBootstrapV5);
+const breakpoints = vueUseBreakpoints(breakpointsApplicationV5);
 
 export function useBreakpoints(): UseBreakpoints {
 	const isExtraSmallDevice = computed<boolean>((): boolean => !breakpoints.md.value);

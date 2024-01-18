@@ -16,7 +16,7 @@
 namespace FastyBird\Library\Metadata\Documents\AccountsModule;
 
 use DateTimeInterface;
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Metadata\Documents;
 use FastyBird\Library\Metadata\Types;
 use Orisai\ObjectMapper;
@@ -39,7 +39,7 @@ final class Account implements Documents\Document
 	 * @param array<int, Uuid\UuidInterface> $children
 	 */
 	public function __construct(
-		#[BootstrapObjectMapper\Rules\UuidValue()]
+		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $id,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('first_name')]
@@ -49,7 +49,7 @@ final class Account implements Documents\Document
 		private readonly string $lastName,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $language,
-		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\AccountState::class)]
+		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\AccountState::class)]
 		private readonly Types\AccountState $state,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
@@ -79,12 +79,12 @@ final class Account implements Documents\Document
 		)]
 		private readonly array $roles = [],
 		#[ObjectMapper\Rules\AnyOf([
-			new BootstrapObjectMapper\Rules\UuidValue(),
+			new ApplicationObjectMapper\Rules\UuidValue(),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		private readonly Uuid\UuidInterface|null $parent = null,
 		#[ObjectMapper\Rules\ArrayOf(
-			new BootstrapObjectMapper\Rules\UuidValue(),
+			new ApplicationObjectMapper\Rules\UuidValue(),
 		)]
 		private readonly array $children = [],
 	)

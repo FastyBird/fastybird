@@ -6,7 +6,7 @@ use Error;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Tests;
 use FastyBird\Connector\NsPanel\Types;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Nette;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
@@ -16,7 +16,7 @@ final class HeaderTest extends Tests\Cases\Unit\BaseTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws ObjectMapper\Exception\InvalidData
 	 * @throws Error

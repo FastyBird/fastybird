@@ -16,7 +16,7 @@
 namespace FastyBird\Library\Metadata\Documents\DevicesModule;
 
 use DateTimeInterface;
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Documents;
 use FastyBird\Library\Metadata\Exceptions;
@@ -50,11 +50,11 @@ abstract class DeviceProperty implements Documents\Document, Documents\Owner
 	 * @param string|array<int, string>|array<int, bool|string|int|float|array<int, bool|string|int|float>|null>|array<int, array<int, string|array<int, string|int|float|bool>|null>>|null $format
 	 */
 	public function __construct(
-		#[BootstrapObjectMapper\Rules\UuidValue()]
+		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $id,
-		#[BootstrapObjectMapper\Rules\UuidValue()]
+		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $device,
-		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\PropertyCategory::class)]
+		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\PropertyCategory::class)]
 		private readonly Types\PropertyCategory $category,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $identifier,
@@ -63,7 +63,7 @@ abstract class DeviceProperty implements Documents\Document, Documents\Owner
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		private readonly string|null $name,
-		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\DataType::class)]
+		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\DataType::class)]
 		#[ObjectMapper\Modifiers\FieldName('data_type')]
 		private readonly Types\DataType $dataType,
 		#[ObjectMapper\Rules\AnyOf([
@@ -151,14 +151,14 @@ abstract class DeviceProperty implements Documents\Document, Documents\Owner
 		])]
 		private readonly int|float|null $step = null,
 		#[ObjectMapper\Rules\AnyOf([
-			new BootstrapObjectMapper\Rules\UuidValue(),
+			new ApplicationObjectMapper\Rules\UuidValue(),
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('value_transformer')]
 		private readonly Uuid\UuidInterface|string|null $valueTransformer = null,
 		#[ObjectMapper\Rules\AnyOf([
-			new BootstrapObjectMapper\Rules\UuidValue(),
+			new ApplicationObjectMapper\Rules\UuidValue(),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		protected readonly Uuid\UuidInterface|null $owner = null,

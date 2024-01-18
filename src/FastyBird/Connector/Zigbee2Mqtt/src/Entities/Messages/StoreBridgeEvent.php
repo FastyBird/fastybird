@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\Zigbee2Mqtt\Entities\Messages;
 
 use FastyBird\Connector\Zigbee2Mqtt\Types;
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_merge;
@@ -35,7 +35,7 @@ final class StoreBridgeEvent extends Bridge implements Entity
 	public function __construct(
 		Uuid\UuidInterface $connector,
 		string $baseTopic,
-		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\BridgeEvent::class)]
+		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\BridgeEvent::class)]
 		private readonly Types\BridgeEvent $type,
 		#[ObjectMapper\Rules\MappedObjectValue(EventData::class)]
 		private readonly EventData $data,

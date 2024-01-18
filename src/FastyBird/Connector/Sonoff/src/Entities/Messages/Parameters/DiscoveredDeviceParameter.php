@@ -17,7 +17,7 @@ namespace FastyBird\Connector\Sonoff\Entities\Messages\Parameters;
 
 use FastyBird\Connector\Sonoff\Entities;
 use FastyBird\Connector\Sonoff\Types;
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Orisai\ObjectMapper;
 
@@ -42,9 +42,9 @@ final class DiscoveredDeviceParameter implements Entities\Messages\Entity
 		private readonly string $identifier,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $name,
-		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\ParameterType::class)]
+		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\ParameterType::class)]
 		private readonly Types\ParameterType $type,
-		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\DataType::class)]
+		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\DataType::class)]
 		private readonly MetadataTypes\DataType $dataType,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\ArrayOf(

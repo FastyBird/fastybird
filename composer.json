@@ -142,7 +142,8 @@
             "FastyBird\\Connector\\Viera\\": "src/FastyBird/Connector/Viera/src/",
             "FastyBird\\Connector\\Virtual\\": "src/FastyBird/Connector/Virtual/src/",
             "FastyBird\\Connector\\Zigbee2Mqtt\\": "src/FastyBird/Connector/Zigbee2Mqtt/src/",
-            "FastyBird\\Library\\Bootstrap\\": "src/FastyBird/Library/Bootstrap/src/",
+            "FastyBird\\Library\\Application\\": "src/FastyBird/Library/Application/src/",
+            "FastyBird\\Library\\Bootstrap\\": "src/FastyBird/Library/Application/src/",
             "FastyBird\\Library\\Exchange\\": "src/FastyBird/Library/Exchange/src/",
             "FastyBird\\Library\\Metadata\\": "src/FastyBird/Library/Metadata/src/",
             "FastyBird\\Library\\Tools\\": "src/FastyBird/Library/Tools/src/",
@@ -193,7 +194,8 @@
             "FastyBird\\Connector\\Virtual\\Tests\\Tools\\": "src/FastyBird/Connector/Virtual/tests/tools",
             "FastyBird\\Connector\\Zigbee2Mqtt\\Tests\\Cases\\Unit\\": "src/FastyBird/Connector/Zigbee2Mqtt/tests/cases/unit",
             "FastyBird\\Connector\\Zigbee2Mqtt\\Tests\\Tools\\": "src/FastyBird/Connector/Zigbee2Mqtt/tests/tools",
-            "FastyBird\\Library\\Bootstrap\\Tests\\Cases\\Unit\\": "src/FastyBird/Library/Bootstrap/tests/cases/unit",
+            "FastyBird\\Library\\Application\\Tests\\Cases\\Unit\\": "src/FastyBird/Library/Application/tests/cases/unit",
+            "FastyBird\\Library\\Bootstrap\\Tests\\Cases\\Unit\\": "src/FastyBird/Library/Application/tests/cases/unit",
             "FastyBird\\Library\\Exchange\\Tests\\Cases\\Unit\\": "src/FastyBird/Library/Exchange/tests/cases/unit",
             "FastyBird\\Library\\Metadata\\Tests\\Cases\\Unit\\": "src/FastyBird/Library/Metadata/tests/cases/unit",
             "FastyBird\\Library\\Metadata\\Tests\\Fixtures\\": "src/FastyBird/Library/Metadata/tests/fixtures",
@@ -259,15 +261,15 @@
         }
     },
     "bin": [
-        "src/FastyBird/Library/Bootstrap/bin/fb-console",
-        "src/FastyBird/Library/Bootstrap/bin/fb-console.php",
-        "src/FastyBird/Library/Bootstrap/bin/fb-supervisor",
-        "src/FastyBird/Library/Bootstrap/bin/fb-supervisor.php"
+        "src/FastyBird/Library/Application/bin/fb-console",
+        "src/FastyBird/Library/Application/bin/fb-console.php",
+        "src/FastyBird/Library/Application/bin/fb-supervisor",
+        "src/FastyBird/Library/Application/bin/fb-supervisor.php"
     ],
     "replace": {
         "fastybird/accounts-module": "self.version",
         "fastybird/apikey-plugin": "self.version",
-        "fastybird/bootstrap-library": "self.version",
+        "fastybird/application-library": "self.version",
         "fastybird/couchdb-plugin": "self.version",
         "fastybird/date-time-automator": "self.version",
         "fastybird/devices-module": "self.version",

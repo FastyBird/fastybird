@@ -15,7 +15,7 @@
 
 namespace FastyBird\Plugin\WsServer\DI;
 
-use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
+use FastyBird\Library\Application\Boot as ApplicationBoot;
 use FastyBird\Library\Exchange\Exchange as ExchangeExchange;
 use FastyBird\Plugin\WsServer\Commands;
 use FastyBird\Plugin\WsServer\Events;
@@ -46,12 +46,12 @@ class WsServerExtension extends DI\CompilerExtension
 	public const NAME = 'fbWsServerPlugin';
 
 	public static function register(
-		BootstrapBoot\Configurator $config,
+		ApplicationBoot\Configurator $config,
 		string $extensionName = self::NAME,
 	): void
 	{
 		$config->onCompile[] = static function (
-			BootstrapBoot\Configurator $config,
+			ApplicationBoot\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new self());

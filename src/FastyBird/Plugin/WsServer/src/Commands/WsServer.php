@@ -15,7 +15,7 @@
 
 namespace FastyBird\Plugin\WsServer\Commands;
 
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Exchange\Exchange as ExchangeExchange;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\WsServer\Events;
@@ -103,7 +103,7 @@ final class WsServer extends Console\Command\Command
 					[
 						'source' => MetadataTypes\PluginSource::WS_SERVER,
 						'type' => 'server-command',
-						'exception' => BootstrapHelpers\Logger::buildException($ex),
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
 					],
 				);
 			});
@@ -123,7 +123,7 @@ final class WsServer extends Console\Command\Command
 				[
 					'source' => MetadataTypes\PluginSource::WS_SERVER,
 					'type' => 'server-command',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'cmd' => $this->getName(),
 				],
 			);
@@ -137,7 +137,7 @@ final class WsServer extends Console\Command\Command
 				[
 					'source' => MetadataTypes\PluginSource::WS_SERVER,
 					'type' => 'server-command',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'cmd' => $this->getName(),
 				],
 			);

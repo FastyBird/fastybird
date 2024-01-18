@@ -16,7 +16,7 @@
 namespace FastyBird\Library\Metadata\Documents\DevicesModule;
 
 use DateTimeInterface;
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Metadata\Exceptions;
 use FastyBird\Library\Metadata\Types;
 use FastyBird\Library\Metadata\Utilities;
@@ -43,7 +43,7 @@ final class ChannelDynamicProperty extends ChannelProperty
 	 */
 	public function __construct(
 		Uuid\UuidInterface $id,
-		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(
+		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(
 			class: Types\PropertyType::class,
 			allowedValues: [Types\PropertyType::DYNAMIC],
 		)]
@@ -98,7 +98,7 @@ final class ChannelDynamicProperty extends ChannelProperty
 		#[ObjectMapper\Rules\BoolValue()]
 		private readonly bool $valid = false,
 		#[ObjectMapper\Rules\ArrayOf(
-			new BootstrapObjectMapper\Rules\UuidValue(),
+			new ApplicationObjectMapper\Rules\UuidValue(),
 		)]
 		private readonly array $children = [],
 		Uuid\UuidInterface|null $owner = null,

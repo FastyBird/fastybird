@@ -22,7 +22,7 @@ use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Queue;
 use FastyBird\Connector\Tuya\Types;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -297,7 +297,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 					'type' => 'write-channel-property-state-message-consumer',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
 					],
@@ -334,7 +334,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 					'type' => 'write-channel-property-state-message-consumer',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
 					],
@@ -387,7 +387,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					[
 						'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 						'type' => 'write-channel-property-state-message-consumer',
-						'exception' => BootstrapHelpers\Logger::buildException($ex),
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'connector' => [
 							'id' => $entity->getConnector()->toString(),
 						],
@@ -478,7 +478,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						[
 							'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 							'type' => 'write-channel-property-state-message-consumer',
-							'exception' => BootstrapHelpers\Logger::buildException($ex),
+							'exception' => ApplicationHelpers\Logger::buildException($ex),
 							'connector' => [
 								'id' => $entity->getConnector()->toString(),
 							],

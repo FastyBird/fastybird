@@ -18,14 +18,14 @@ use FastyBird\Connector\HomeKit\Schemas;
 use FastyBird\Connector\HomeKit\Servers;
 use FastyBird\Connector\HomeKit\Subscribers;
 use FastyBird\Connector\HomeKit\Tests\Cases\Unit\BaseTestCase;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Nette;
 
 final class HomeKitExtensionTest extends BaseTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws Error
 	 */

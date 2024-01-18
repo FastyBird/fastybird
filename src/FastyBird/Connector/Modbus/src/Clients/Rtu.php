@@ -25,7 +25,7 @@ use FastyBird\Connector\Modbus\Helpers;
 use FastyBird\Connector\Modbus\Queue;
 use FastyBird\Connector\Modbus\Types;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -468,7 +468,7 @@ class Rtu implements Client
 					[
 						'source' => MetadataTypes\ConnectorSource::CONNECTOR_MODBUS,
 						'type' => 'rtu-client',
-						'exception' => BootstrapHelpers\Logger::buildException($ex),
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'connector' => [
 							'id' => $this->connector->getId()->toString(),
 						],

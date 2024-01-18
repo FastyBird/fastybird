@@ -15,14 +15,14 @@ use FastyBird\Connector\Tuya\Services;
 use FastyBird\Connector\Tuya\Subscribers;
 use FastyBird\Connector\Tuya\Tests;
 use FastyBird\Connector\Tuya\Writers;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Nette;
 
 final class TuyaExtensionTest extends Tests\Cases\Unit\BaseTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws Error
 	 */

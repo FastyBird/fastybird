@@ -15,7 +15,7 @@
 
 namespace FastyBird\Plugin\CouchDb\Connections;
 
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\CouchDb\Exceptions;
 use Nette;
@@ -97,7 +97,7 @@ final class Connection
 			$this->logger->error('Could not connect do database', [
 				'source' => MetadataTypes\PluginSource::COUCHDB,
 				'type' => 'connection',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'exception' => ApplicationHelpers\Logger::buildException($ex),
 			]);
 
 			throw new Exceptions\InvalidState('Connection could not be established', 0, $ex);

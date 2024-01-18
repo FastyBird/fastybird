@@ -4,7 +4,7 @@ namespace FastyBird\Plugin\RedisDb\Tests\Cases\Unit\Models;
 
 use DateTimeImmutable;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Plugin\RedisDb\Clients;
 use FastyBird\Plugin\RedisDb\Exceptions;
 use FastyBird\Plugin\RedisDb\Models;
@@ -98,8 +98,8 @@ final class StatesManagerTest extends TestCase
 		$injectorManager = new ObjectMapper\Processing\DefaultDependencyInjectorManager();
 		$objectCreator = new ObjectMapper\Processing\ObjectCreator($injectorManager);
 		$ruleManager = new ObjectMapper\Rules\DefaultRuleManager();
-		$ruleManager->addRule(new BootstrapObjectMapper\Rules\UuidRule());
-		$ruleManager->addRule(new BootstrapObjectMapper\Rules\ConsistenceEnumRule());
+		$ruleManager->addRule(new ApplicationObjectMapper\Rules\UuidRule());
+		$ruleManager->addRule(new ApplicationObjectMapper\Rules\ConsistenceEnumRule());
 		$resolverFactory = new ObjectMapper\Meta\MetaResolverFactory($ruleManager, $objectCreator);
 		$cache = new ObjectMapper\Meta\Cache\ArrayMetaCache();
 		$metaLoader = new ObjectMapper\Meta\MetaLoader($cache, $sourceManager, $resolverFactory);
@@ -166,8 +166,8 @@ final class StatesManagerTest extends TestCase
 		$injectorManager = new ObjectMapper\Processing\DefaultDependencyInjectorManager();
 		$objectCreator = new ObjectMapper\Processing\ObjectCreator($injectorManager);
 		$ruleManager = new ObjectMapper\Rules\DefaultRuleManager();
-		$ruleManager->addRule(new BootstrapObjectMapper\Rules\UuidRule());
-		$ruleManager->addRule(new BootstrapObjectMapper\Rules\ConsistenceEnumRule());
+		$ruleManager->addRule(new ApplicationObjectMapper\Rules\UuidRule());
+		$ruleManager->addRule(new ApplicationObjectMapper\Rules\ConsistenceEnumRule());
 		$resolverFactory = new ObjectMapper\Meta\MetaResolverFactory($ruleManager, $objectCreator);
 		$cache = new ObjectMapper\Meta\Cache\ArrayMetaCache();
 		$metaLoader = new ObjectMapper\Meta\MetaLoader($cache, $sourceManager, $resolverFactory);

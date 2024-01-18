@@ -17,7 +17,7 @@ namespace FastyBird\Connector\NsPanel\Entities\Messages;
 
 use DateTimeInterface;
 use FastyBird\Connector\NsPanel\Types;
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use Orisai\ObjectMapper;
 
@@ -33,21 +33,21 @@ final class CapabilityState implements Entity
 {
 
 	public function __construct(
-		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\Capability::class)]
+		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\Capability::class)]
 		private readonly Types\Capability $capability,
-		#[BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\Protocol::class)]
+		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\Protocol::class)]
 		private readonly Types\Protocol $protocol,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\IntValue(),
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\BoolValue(),
-			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\MotorCalibrationPayload::class),
-			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\MotorControlPayload::class),
-			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\PowerPayload::class),
-			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\PressPayload::class),
-			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\StartupPayload::class),
-			new BootstrapObjectMapper\Rules\ConsistenceEnumValue(class: Types\TogglePayload::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\MotorCalibrationPayload::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\MotorControlPayload::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\PowerPayload::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\PressPayload::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\StartupPayload::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\TogglePayload::class),
 			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]

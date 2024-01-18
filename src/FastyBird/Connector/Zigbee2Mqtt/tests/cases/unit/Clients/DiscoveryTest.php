@@ -12,7 +12,7 @@ use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
 use FastyBird\Connector\Zigbee2Mqtt\Queries;
 use FastyBird\Connector\Zigbee2Mqtt\Queue;
 use FastyBird\Connector\Zigbee2Mqtt\Tests;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -32,7 +32,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DI\MissingServiceException
 	 * @throws Error

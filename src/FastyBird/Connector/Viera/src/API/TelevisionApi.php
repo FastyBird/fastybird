@@ -24,7 +24,7 @@ use FastyBird\Connector\Viera\Helpers;
 use FastyBird\Connector\Viera\Services;
 use FastyBird\Connector\Viera\Types;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Fig\Http\Message\RequestMethodInterface;
 use GuzzleHttp;
@@ -1409,7 +1409,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 					$this->logger->error('Something went wrong with subscription socket', [
 						'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 						'type' => 'television-api',
-						'exception' => BootstrapHelpers\Logger::buildException($ex),
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'device' => [
 							'identifier' => $this->identifier,
 						],
@@ -1432,7 +1432,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 			$this->logger->error('Could not get http client', [
 				'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 				'type' => 'television-api',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'exception' => ApplicationHelpers\Logger::buildException($ex),
 				'device' => [
 					'identifier' => $this->identifier,
 				],
@@ -1504,7 +1504,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 			$this->logger->error('Could not get http client', [
 				'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 				'type' => 'television-api',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'exception' => ApplicationHelpers\Logger::buildException($ex),
 				'device' => [
 					'identifier' => $this->identifier,
 				],
