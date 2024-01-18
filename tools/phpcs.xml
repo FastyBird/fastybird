@@ -84,6 +84,9 @@
                 <element key="src/FastyBird/Library/Metadata/tests/cases/unit" value="FastyBird\Library\Metadata\Tests\Cases\Unit"/>
                 <element key="src/FastyBird/Library/Metadata/tests/fixtures" value="FastyBird\Library\Metadata\Tests\Fixtures"/>
 
+                <element key="src/FastyBird/Library/Tools/src" value="FastyBird\Library\Tools"/>
+                <element key="src/FastyBird/Library/Tools/tests/cases/unit" value="FastyBird\Library\Tools\Tests\Cases\Unit"/>
+
                 <element key="src/FastyBird/Module/Accounts/src" value="FastyBird\Module\Accounts"/>
                 <element key="src/FastyBird/Module/Accounts/tests/cases/unit" value="FastyBird\Module\Accounts\Tests\Cases\Unit"/>
                 <element key="src/FastyBird/Module/Accounts/tests/fixtures" value="FastyBird\Module\Accounts\Tests\Fixtures"/>

@@ -15,16 +15,14 @@
 
 namespace FastyBird\Module\Devices\Entities;
 
-use Consistence\Doctrine\Enum\EnumAnnotation as Enum;
 use DateTimeInterface;
-use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
+use FastyBird\Library\Tools\Transformers as ToolsTransformers;
 use FastyBird\Module\Devices\Exceptions;
-use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
 use IPub\DoctrineTimestampable;
 use Nette\Utils;
 use Ramsey\Uuid;
@@ -609,13 +607,13 @@ abstract class Property implements Entity,
 	}
 
 	public function setValueTransformer(
-		string|MetadataValueObjects\EquationTransformer|Uuid\UuidInterface|null $valueTransformer,
+		string|ToolsTransformers\EquationTransformer|Uuid\UuidInterface|null $valueTransformer,
 	): void
 	{
 		if ($valueTransformer instanceof Uuid\UuidInterface) {
 			$this->valueTransformer = $valueTransformer->toString();
 
-		} elseif ($valueTransformer instanceof MetadataValueObjects\EquationTransformer) {
+		} elseif ($valueTransformer instanceof ToolsTransformers\EquationTransformer) {
 			$this->valueTransformer = in_array($this->dataType->getValue(), [
 				MetadataTypes\DataType::CHAR,
 				MetadataTypes\DataType::UCHAR,

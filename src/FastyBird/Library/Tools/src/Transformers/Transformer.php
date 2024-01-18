@@ -6,20 +6,20 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:MetadataLibrary!
- * @subpackage     ValueObjects
+ * @package        FastyBird:ToolsLibrary!
+ * @subpackage     Transformers
  * @since          1.0.0
  *
  * @date           03.02.23
  */
 
-namespace FastyBird\Library\Metadata\ValueObjects;
+namespace FastyBird\Library\Tools\Transformers;
 
 /**
  * Transformer base value object interface
  *
- * @package        FastyBird:MetadataLibrary!
- * @subpackage     ValueObjects
+ * @package        FastyBird:ToolsLibrary!
+ * @subpackage     Transformers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */

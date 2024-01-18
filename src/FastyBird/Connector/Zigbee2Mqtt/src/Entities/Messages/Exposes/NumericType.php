@@ -80,7 +80,7 @@ final class NumericType extends Type
 	 */
 	public function getDataType(): MetadataTypes\DataType
 	{
-		return MetadataUtilities\DataType::determineNumberDataType(
+		return MetadataUtilities\DataType::inferNumberDataType(
 			new MetadataValueObjects\NumberRangeFormat([
 				$this->getValueMin(),
 				$this->getValueMax(),

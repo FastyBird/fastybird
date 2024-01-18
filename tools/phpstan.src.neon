@@ -21,6 +21,7 @@ includes:
     - ../src/FastyBird/Library/Bootstrap/tools/phpstan.config.src.neon
     - ../src/FastyBird/Library/Exchange/tools/phpstan.config.src.neon
     - ../src/FastyBird/Library/Metadata/tools/phpstan.config.src.neon
+    - ../src/FastyBird/Library/Tools/tools/phpstan.config.src.neon
 
     - ../src/FastyBird/Module/Accounts/tools/phpstan.config.src.neon
     - ../src/FastyBird/Module/Devices/tools/phpstan.config.src.neon

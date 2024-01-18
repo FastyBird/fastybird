@@ -24,6 +24,7 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Loaders as MetadataLoaders;
 use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
@@ -197,6 +198,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws Utils\JsonException
 	 */
 	public function actionCall(
@@ -302,6 +304,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws Utils\JsonException
 	 */
 	private function handleConnectorAction(
@@ -368,6 +371,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws Utils\JsonException
 	 */
 	private function handleDeviceAction(
@@ -437,6 +441,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws Utils\JsonException
 	 */
 	private function handleChannelAction(

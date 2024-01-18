@@ -6,39 +6,30 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:MetadataLibrary!
- * @subpackage     ValueObjects
+ * @package        FastyBird:ToolsLibrary!
+ * @subpackage     Transformers
  * @since          1.0.0
  *
  * @date           26.04.23
  */
 
-namespace FastyBird\Library\Metadata\ValueObjects;
+namespace FastyBird\Library\Tools\Transformers;
 
 use FastyBird\Library\Metadata;
-use FastyBird\Library\Metadata\Exceptions;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Tools\Exceptions;
 use MathSolver\Math;
-use Nette;
-use function array_key_exists;
-use function floatval;
-use function implode;
-use function intval;
-use function is_array;
-use function preg_match;
-use function round;
 
 /**
  * Equation value transformer
  *
- * @package        FastyBird:MetadataLibrary!
- * @subpackage     ValueObjects
+ * @package        FastyBird:ToolsLibrary!
+ * @subpackage     Transformers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 final class EquationTransformer
 {
-
-	use Nette\SmartObject;
 
 	private string|null $equationFrom = null;
 
@@ -69,7 +60,7 @@ final class EquationTransformer
 
 	public function calculateEquationFrom(
 		int|float $value,
-		Metadata\Types\DataType $dataType,
+		MetadataTypes\DataType $dataType,
 	): int|float
 	{
 		$equation = $this->getEquationFrom();
@@ -85,7 +76,7 @@ final class EquationTransformer
 
 		$value = is_array($value) ? implode(' ', $value) : $value;
 
-		return $dataType->equalsValue(Metadata\Types\DataType::FLOAT)
+		return $dataType->equalsValue(MetadataTypes\DataType::FLOAT)
 			? floatval($value)
 			: intval(round(floatval($value)));
 	}
@@ -97,7 +88,7 @@ final class EquationTransformer
 
 	public function calculateEquationTo(
 		int|float $value,
-		Metadata\Types\DataType $dataType,
+		MetadataTypes\DataType $dataType,
 	): int|float
 	{
 		$equation = $this->getEquationTo();
@@ -113,7 +104,7 @@ final class EquationTransformer
 
 		$value = is_array($value) ? implode(' ', $value) : $value;
 
-		return $dataType->equalsValue(Metadata\Types\DataType::FLOAT)
+		return $dataType->equalsValue(MetadataTypes\DataType::FLOAT)
 			? floatval($value)
 			: intval(round(floatval($value)));
 	}

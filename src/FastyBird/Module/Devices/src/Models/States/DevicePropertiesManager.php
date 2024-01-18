@@ -22,6 +22,7 @@ use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
+use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
@@ -68,6 +69,7 @@ final class DevicePropertiesManager extends PropertiesManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function read(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
@@ -83,6 +85,7 @@ final class DevicePropertiesManager extends PropertiesManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function get(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
@@ -98,6 +101,7 @@ final class DevicePropertiesManager extends PropertiesManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function write(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
@@ -114,6 +118,7 @@ final class DevicePropertiesManager extends PropertiesManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function set(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
@@ -132,6 +137,7 @@ final class DevicePropertiesManager extends PropertiesManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function setValidState(
 		MetadataDocuments\DevicesModule\DeviceDynamicProperty|Entities\Devices\Properties\Dynamic|array $property,
@@ -159,6 +165,7 @@ final class DevicePropertiesManager extends PropertiesManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function setPendingState(
 		MetadataDocuments\DevicesModule\DeviceDynamicProperty|Entities\Devices\Properties\Dynamic|array $property,
@@ -288,6 +295,7 @@ final class DevicePropertiesManager extends PropertiesManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	private function loadValue(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
@@ -457,6 +465,7 @@ final class DevicePropertiesManager extends PropertiesManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	private function saveValue(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong

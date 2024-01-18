@@ -29,6 +29,7 @@ use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -135,9 +136,10 @@ final class Local implements Client
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exception
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws Exception
+	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	private function handleCommunication(): void
 	{
@@ -166,6 +168,7 @@ final class Local implements Client
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	private function processDevice(MetadataDocuments\DevicesModule\Device $device): bool
 	{

@@ -16,6 +16,11 @@
   },
   {
     "organization": "FastyBird",
+    "name": "tools-library",
+    "local-path": "src/FastyBird/Library/Tools"
+  },
+  {
+    "organization": "FastyBird",
     "name": "web-ui-library",
     "local-path": "src/FastyBird/Library/WebUi"
   },

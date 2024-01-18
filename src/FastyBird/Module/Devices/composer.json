@@ -54,7 +54,6 @@
     "ipub/doctrine-dynamic-discriminator-map": "^1.4",
     "ipub/doctrine-timestampable": "^2.0",
     "ipub/slim-router": "^0.2",
-    "mathsolver/mathsolver": "@dev",
     "nettrine/dbal": "^0.8",
     "nettrine/orm": "^0.8",
     "psr/event-dispatcher": "^1.0",
@@ -137,12 +136,6 @@
       }
     }
   },
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/mathsolver/mathsolver.git"
-    }
-  ],
   "minimum-stability": "dev",
   "prefer-stable": true
 }

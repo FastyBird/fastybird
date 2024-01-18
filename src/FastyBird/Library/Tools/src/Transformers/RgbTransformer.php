@@ -6,26 +6,20 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:MetadataLibrary!
- * @subpackage     ValueObjects
+ * @package        FastyBird:ToolsLibrary!
+ * @subpackage     Transformers
  * @since          1.0.0
  *
  * @date           12.04.23
  */
 
-namespace FastyBird\Library\Metadata\ValueObjects;
-
-use function abs;
-use function floatval;
-use function max;
-use function min;
-use function round;
+namespace FastyBird\Library\Tools\Transformers;
 
 /**
  * RGB value object
  *
- * @package        FastyBird:MetadataLibrary!
- * @subpackage     ValueObjects
+ * @package        FastyBird:ToolsLibrary!
+ * @subpackage     Transformers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */

@@ -7,6 +7,7 @@ use FastyBird\Library\Metadata\Exceptions;
 use FastyBird\Library\Metadata\Types;
 use FastyBird\Library\Metadata\Utilities;
 use FastyBird\Library\Metadata\ValueObjects;
+use FastyBird\Library\Tools\Transformers as ToolsTransformers;
 use PHPUnit\Framework\TestCase;
 
 final class ValueTest extends TestCase
@@ -24,7 +25,7 @@ final class ValueTest extends TestCase
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		ValueObjects\StringEnumFormat|ValueObjects\NumberRangeFormat|ValueObjects\CombinedEnumFormat|null $format = null,
 		float|int|string|null $invalid = null,
-		ValueObjects\EquationTransformer|null $transformer = null,
+		ToolsTransformers\EquationTransformer|null $transformer = null,
 		float|int|string|null $expected = null,
 		bool $throwError = false,
 	): void

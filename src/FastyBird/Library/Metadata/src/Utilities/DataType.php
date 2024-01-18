@@ -44,7 +44,7 @@ final class DataType
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public static function determineNumberDataType(
+	public static function inferNumberDataType(
 		ValueObjects\NumberRangeFormat $format,
 		float|int|null $step = null,
 		Types\DataType|null $fallback = null,

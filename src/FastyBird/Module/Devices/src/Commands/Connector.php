@@ -26,6 +26,7 @@ use FastyBird\Library\Exchange\Exchange as ExchangeExchange;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Connectors;
 use FastyBird\Module\Devices\Consumers;
@@ -677,6 +678,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	private function resetConnector(
 		MetadataDocuments\DevicesModule\Connector $connector,
@@ -711,6 +713,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	private function resetDevice(
 		MetadataDocuments\DevicesModule\Device $device,

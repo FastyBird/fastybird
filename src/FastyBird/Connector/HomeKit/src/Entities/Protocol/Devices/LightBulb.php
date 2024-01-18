@@ -18,7 +18,7 @@ namespace FastyBird\Connector\HomeKit\Entities\Protocol\Devices;
 use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Types;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
+use FastyBird\Library\Tools\Transformers as ToolsTransformers;
 use function is_float;
 use function is_int;
 
@@ -78,7 +78,7 @@ final class LightBulb extends Entities\Protocol\Device
 			&& is_int($greenCharacteristic?->getValue())
 			&& is_int($blueCharacteristic?->getValue())
 		) {
-			$rgb = new MetadataValueObjects\RgbTransformer(
+			$rgb = new ToolsTransformers\RgbTransformer(
 				$redCharacteristic->getValue(),
 				$greenCharacteristic->getValue(),
 				$blueCharacteristic->getValue(),
@@ -88,7 +88,7 @@ final class LightBulb extends Entities\Protocol\Device
 			$hsb = $rgb->toHsb();
 
 		} else {
-			$hsb = new MetadataValueObjects\HsbTransformer(0, 0, 0);
+			$hsb = new ToolsTransformers\HsbTransformer(0, 0, 0);
 		}
 
 		$hue = $service->findCharacteristic(Types\CharacteristicType::HUE);
@@ -160,7 +160,7 @@ final class LightBulb extends Entities\Protocol\Device
 				$brightness = 100;
 			}
 
-			$hsb = new MetadataValueObjects\HsbTransformer(
+			$hsb = new ToolsTransformers\HsbTransformer(
 				$hueCharacteristic->getValue(),
 				$saturationCharacteristic->getValue(),
 				$brightness,
@@ -169,7 +169,7 @@ final class LightBulb extends Entities\Protocol\Device
 			$rgb = $hsb->toRgb();
 
 		} else {
-			$rgb = new MetadataValueObjects\RgbTransformer(0, 0, 0);
+			$rgb = new ToolsTransformers\RgbTransformer(0, 0, 0);
 		}
 
 		if ($service->hasCharacteristic(Types\CharacteristicType::COLOR_WHITE)) {

@@ -22,7 +22,8 @@ use FastyBird\Library\Metadata\Documents\DevicesModule\DeviceMappedProperty as T
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
-use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
+use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Library\Tools\Transformers as ToolsTransformers;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\States;
 use FastyBird\Module\Devices\States\ConnectorProperty as TState;
@@ -96,6 +97,7 @@ abstract class PropertiesManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidValue
+	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	protected function convertReadValue(
 		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
@@ -129,7 +131,7 @@ abstract class PropertiesManager
 			);
 
 			if (is_string($property->getValueTransformer())) {
-				$transformer = new MetadataValueObjects\EquationTransformer($property->getValueTransformer());
+				$transformer = new ToolsTransformers\EquationTransformer($property->getValueTransformer());
 
 				if (is_int($value) || is_float($value)) {
 					$value = $transformer->calculateEquationTo(
@@ -161,7 +163,7 @@ abstract class PropertiesManager
 			}
 
 			if (is_string($mappedProperty->getValueTransformer())) {
-				$transformer = new MetadataValueObjects\EquationTransformer($mappedProperty->getValueTransformer());
+				$transformer = new ToolsTransformers\EquationTransformer($mappedProperty->getValueTransformer());
 
 				if (is_int($value) || is_float($value)) {
 					$value = $transformer->calculateEquationFrom(
@@ -250,6 +252,7 @@ abstract class PropertiesManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidValue
+	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	protected function convertWriteExpectedValue(
 		bool|float|int|string|null $value,
@@ -301,7 +304,7 @@ abstract class PropertiesManager
 			 * If property has some value transformer, it is now applied
 			 */
 			if (is_string($mappedProperty->getValueTransformer())) {
-				$transformer = new MetadataValueObjects\EquationTransformer($mappedProperty->getValueTransformer());
+				$transformer = new ToolsTransformers\EquationTransformer($mappedProperty->getValueTransformer());
 
 				if (is_int($value) || is_float($value)) {
 					$value = $transformer->calculateEquationTo($value, $mappedProperty->getDataType());
@@ -319,7 +322,7 @@ abstract class PropertiesManager
 
 		if ($forWriting) {
 			if (is_string($property->getValueTransformer())) {
-				$transformer = new MetadataValueObjects\EquationTransformer($property->getValueTransformer());
+				$transformer = new ToolsTransformers\EquationTransformer($property->getValueTransformer());
 
 				if (is_int($value) || is_float($value)) {
 					$value = $transformer->calculateEquationFrom(

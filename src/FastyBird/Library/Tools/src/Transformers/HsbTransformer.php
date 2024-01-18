@@ -6,25 +6,19 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:MetadataLibrary!
- * @subpackage     ValueObjects
+ * @package        FastyBird:ToolsLibrary!
+ * @subpackage     Transformers
  * @since          1.0.0
  *
  * @date           12.04.23
  */
 
-namespace FastyBird\Library\Metadata\ValueObjects;
-
-use function abs;
-use function floor;
-use function intval;
-use function min;
-use function round;
+namespace FastyBird\Library\Tools\Transformers;
 
 /**
  * HSB value object
  *
- * @package        FastyBird:MetadataLibrary!
+ * @package        FastyBird:Transformers!
  * @subpackage     ValueObjects
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
