@@ -497,7 +497,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 			$property = $parent;
 		}
 
-		$state = $this->loadValue($mappedProperty ?? $property, $forWriting);
+		$state = $this->loadValue($property, $forWriting);
 
 		/**
 		 * IMPORTANT: ACTUAL VALUE field is meant to be used only by connectors for saving device actual value

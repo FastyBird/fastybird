@@ -40,7 +40,7 @@ extensions:
     fbSimpleAuth                        : FastyBird\SimpleAuth\DI\SimpleAuthExtension
     fbJsonApi                           : FastyBird\JsonApi\DI\JsonApiExtension
     # FastyBird app libs
-    fbBootstrapLibrary                  : FastyBird\Library\Bootstrap\DI\BootstrapExtension
+    fbApplicationLibrary                : FastyBird\Library\Application\DI\ApplicationExtension
     fbMetadataLibrary                   : FastyBird\Library\Metadata\DI\MetadataExtension
     fbExchangeLibrary                   : FastyBird\Library\Exchange\DI\ExchangeExtension
     # FastyBird plugins
