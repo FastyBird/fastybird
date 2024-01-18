@@ -16,6 +16,8 @@
 namespace FastyBird\Connector\HomeKit\Entities\Messages;
 
 use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 
@@ -45,8 +47,11 @@ final class StoreChannelPropertyState implements Entity
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\BoolValue(),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\SwitchPayload::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\ButtonPayload::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\CoverPayload::class),
 		])]
-		private readonly float|int|string|bool|null $value,
+		private readonly float|int|string|bool|MetadataTypes\SwitchPayload|MetadataTypes\ButtonPayload|MetadataTypes\CoverPayload|null $value,
 	)
 	{
 	}
@@ -71,7 +76,7 @@ final class StoreChannelPropertyState implements Entity
 		return $this->property;
 	}
 
-	public function getValue(): float|bool|int|string|null
+	public function getValue(): float|int|string|bool|MetadataTypes\SwitchPayload|MetadataTypes\ButtonPayload|MetadataTypes\CoverPayload|null
 	{
 		return $this->value;
 	}
@@ -86,7 +91,7 @@ final class StoreChannelPropertyState implements Entity
 			'device' => $this->getDevice()->toString(),
 			'channel' => $this->getChannel()->toString(),
 			'property' => $this->getProperty()->toString(),
-			'value' => $this->getValue(),
+			'value' => MetadataUtilities\Value::flattenValue($this->getValue()),
 		];
 	}
 
