@@ -177,13 +177,14 @@ final class StoreChannelPropertyState implements Queue\Consumer
 		}
 
 		if ($property->getDataType()->equalsValue(MetadataTypes\DataType::BUTTON)) {
-			$this->channelPropertiesStatesManager->setPendingState($property, false);
 			$this->channelPropertiesStatesManager->set(
 				$property,
 				Utils\ArrayHash::from([
 					DevicesStates\Property::ACTUAL_VALUE_FIELD => null,
+					DevicesStates\Property::VALID_FIELD => true,
 				]),
 			);
+			$this->channelPropertiesStatesManager->setPendingState($property, false);
 		} else {
 			$this->channelPropertiesStatesManager->set(
 				$property,

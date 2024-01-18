@@ -236,10 +236,18 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$valueToWrite = $state->getExpectedValue();
+		if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+			$valueToWrite = $state->getExpectedValue();
+		} else {
+			$valueToWrite = $state->getExpectedValue() ?? ($state->isValid() ? $state->getActualValue() : null);
+		}
 
 		if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
 			$this->channelPropertiesStatesManager->setPendingState($property, $valueToWrite !== null);
+		}
+
+		if ($valueToWrite === null) {
+			return true;
 		}
 
 		try {
@@ -259,6 +267,10 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					],
 				),
 			);
+
+			if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+				$this->channelPropertiesStatesManager->setPendingState($property, false);
+			}
 
 			$this->logger->error(
 				'Device is not properly configured',

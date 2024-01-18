@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace FastyBird\Module\Devices\Tests\Cases\Unit\Utilities;
+namespace FastyBird\Module\Devices\Tests\Cases\Unit\Models\States;
 
 use DateTimeInterface;
 use Error;

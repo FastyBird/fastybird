@@ -27,7 +27,6 @@ use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\States;
-use FastyBird\Module\Devices\Utilities\PropertiesStates;
 use Nette;
 use Nette\Utils;
 use Orisai\ObjectMapper;
@@ -38,14 +37,14 @@ use function strval;
 /**
  * Useful device dynamic property state helpers
  *
- * @extends PropertiesStates<MetadataDocuments\DevicesModule\DeviceDynamicProperty, MetadataDocuments\DevicesModule\DeviceMappedProperty | null, States\DeviceProperty>
+ * @extends PropertiesManager<MetadataDocuments\DevicesModule\DeviceDynamicProperty, MetadataDocuments\DevicesModule\DeviceMappedProperty | null, States\DeviceProperty>
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Models
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DevicePropertiesManager extends PropertiesStates
+final class DevicePropertiesManager extends PropertiesManager
 {
 
 	use Nette\SmartObject;
@@ -211,6 +210,14 @@ final class DevicePropertiesManager extends PropertiesStates
 		}
 
 		return false;
+	}
+
+	public function normalizeWriteValue(
+		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty $property,
+		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
+	): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
+	{
+		return $value;
 	}
 
 	/**

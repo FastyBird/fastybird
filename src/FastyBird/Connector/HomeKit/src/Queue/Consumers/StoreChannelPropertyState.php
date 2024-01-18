@@ -58,8 +58,8 @@ final class StoreChannelPropertyState implements Queue\Consumer
 		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager,
-		private readonly DevicesUtilities\Database $databaseHelper,
 		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
+		private readonly DevicesUtilities\Database $databaseHelper,
 		private readonly ExchangeEntities\DocumentFactory $entityFactory,
 		private readonly ExchangePublisher\Publisher $publisher,
 	)
@@ -226,10 +226,9 @@ final class StoreChannelPropertyState implements Queue\Consumer
 									'channel' => $channel->getId()->toString(),
 									'property' => $property->getId()->toString(),
 									'expected_value' => MetadataUtilities\Value::flattenValue(
-										MetadataUtilities\Value::normalizeValue(
+										$this->channelPropertiesStatesManager->normalizeWriteValue(
+											$property,
 											$entity->getValue(),
-											$property->getDataType(),
-											$property->getFormat(),
 										),
 									),
 								]),

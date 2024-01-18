@@ -293,7 +293,12 @@ final class StoreDeviceState implements Queue\Consumer
 							'device' => $device->getId()->toString(),
 							'channel' => $channel->getId()->toString(),
 							'property' => $property->getId()->toString(),
-							'expected_value' => MetadataUtilities\Value::flattenValue($value),
+							'expected_value' => MetadataUtilities\Value::flattenValue(
+								$this->channelPropertiesStatesManager->normalizeWriteValue(
+									$property,
+									$value,
+								),
+							),
 						]),
 						MetadataTypes\RoutingKey::get(
 							MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION,

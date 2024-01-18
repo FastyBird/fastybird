@@ -153,14 +153,14 @@ final class StoreChannelPropertyState implements Queue\Consumer
 					} else {
 						throw $ex;
 					}
-				}
 
-				$this->channelPropertiesStatesManager->set(
-					$property,
-					Utils\ArrayHash::from([
-						DevicesStates\Property::ACTUAL_VALUE_FIELD => $dataPoint->getValue(),
-					]),
-				);
+					$this->channelPropertiesStatesManager->set(
+						$property,
+						Utils\ArrayHash::from([
+							DevicesStates\Property::ACTUAL_VALUE_FIELD => $dataPoint->getValue(),
+						]),
+					);
+				}
 			}
 		}
 

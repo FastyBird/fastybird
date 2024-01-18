@@ -225,7 +225,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		if (!$property->isSettable()) {
 			$this->resetExpected($property);
 
-			$this->logger->error(
+			$this->logger->warning(
 				'Channel property is not writable',
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_MODBUS,
@@ -255,9 +255,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$expectedValue = MetadataUtilities\Value::flattenValue(
-			$state->getExpectedValue(),
-		);
+		$expectedValue = MetadataUtilities\Value::flattenValue($state->getExpectedValue());
 
 		if ($expectedValue === null) {
 			$this->resetExpected($property);
@@ -422,11 +420,21 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						$this->connectionManager->getRtuClient($connector)->writeSingleCoil(
 							$station,
 							$address,
-							is_bool(
-								$valueToWrite->getValue(),
-							) ? $valueToWrite->getValue() : $valueToWrite->getValue() === 1,
+							is_bool($valueToWrite->getValue())
+									? $valueToWrite->getValue()
+									: $valueToWrite->getValue() === 1,
 						);
 
+						$state = $this->channelPropertiesStatesManager->get($property);
+
+						if ($state?->getExpectedValue() !== null) {
+							$this->channelPropertiesStatesManager->set(
+								$property,
+								Utils\ArrayHash::from([
+									DevicesStates\Property::ACTUAL_VALUE_FIELD => $state->getExpectedValue(),
+								]),
+							);
+						}
 					} else {
 						$this->resetExpected($property);
 
@@ -669,7 +677,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 
 			$port = $this->deviceHelper->getPort($device);
 
-			$deviceAddress = $ipAddress . ':' . $port;
+			$deviceAddress = sprintf('%s:%s', $ipAddress, $port);
 
 			$unitId = $this->deviceHelper->getUnitId($device);
 

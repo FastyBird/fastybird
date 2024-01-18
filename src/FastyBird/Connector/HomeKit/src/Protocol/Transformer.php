@@ -128,6 +128,7 @@ final class Transformer
 		if (
 			$property->getDataType()->equalsValue(MetadataTypes\DataType::ENUM)
 			|| $property->getDataType()->equalsValue(MetadataTypes\DataType::SWITCH)
+			|| $property->getDataType()->equalsValue(MetadataTypes\DataType::COVER)
 			|| $property->getDataType()->equalsValue(MetadataTypes\DataType::BUTTON)
 		) {
 			if ($property->getFormat() instanceof MetadataValueObjects\StringEnumFormat) {
@@ -229,6 +230,7 @@ final class Transformer
 			if (
 				$property->getDataType()->equalsValue(MetadataTypes\DataType::ENUM)
 				|| $property->getDataType()->equalsValue(MetadataTypes\DataType::SWITCH)
+				|| $property->getDataType()->equalsValue(MetadataTypes\DataType::COVER)
 				|| $property->getDataType()->equalsValue(MetadataTypes\DataType::BUTTON)
 			) {
 				if ($property->getFormat() instanceof MetadataValueObjects\StringEnumFormat) {

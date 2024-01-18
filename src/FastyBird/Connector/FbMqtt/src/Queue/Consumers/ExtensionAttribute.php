@@ -71,7 +71,7 @@ final class ExtensionAttribute implements Queue\Consumer
 		$device = $this->deviceRepository->findOneBy($findDeviceQuery, Entities\FbMqttDevice::class);
 
 		if ($device === null) {
-			$this->logger->error(
+			$this->logger->warning(
 				sprintf('Device "%s" is not registered', $entity->getDevice()),
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
@@ -143,7 +143,7 @@ final class ExtensionAttribute implements Queue\Consumer
 		$property = $this->propertiesRepository->findOneBy($findDevicePropertyQuery);
 
 		if ($property === null) {
-			$this->logger->error(
+			$this->logger->warning(
 				sprintf('Device property "%s" is not registered', $entity->getParameter()),
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,

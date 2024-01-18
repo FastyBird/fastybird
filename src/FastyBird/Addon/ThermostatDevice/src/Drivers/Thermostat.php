@@ -38,6 +38,7 @@ use function array_filter;
 use function array_key_exists;
 use function array_sum;
 use function assert;
+use function boolval;
 use function count;
 use function floatval;
 use function in_array;
@@ -713,6 +714,12 @@ class Thermostat implements VirtualDrivers\Driver
 				continue;
 			}
 
+			if ($actor->getDataType()->equalsValue(MetadataTypes\DataType::BOOLEAN)) {
+				$state = boolval($state);
+			} elseif ($actor->getDataType()->equalsValue(MetadataTypes\DataType::SWITCH)) {
+				$state = $state === true ? MetadataTypes\SwitchPayload::ON : MetadataTypes\SwitchPayload::OFF;
+			}
+
 			$this->queue->append(
 				$this->entityHelper->create(
 					VirtualEntities\Messages\StoreChannelPropertyState::class,
@@ -739,6 +746,12 @@ class Thermostat implements VirtualDrivers\Driver
 
 			if (!Utils\Strings::startsWith($actor->getIdentifier(), Types\ChannelPropertyIdentifier::COOLER_ACTOR)) {
 				continue;
+			}
+
+			if ($actor->getDataType()->equalsValue(MetadataTypes\DataType::BOOLEAN)) {
+				$state = boolval($state);
+			} elseif ($actor->getDataType()->equalsValue(MetadataTypes\DataType::SWITCH)) {
+				$state = $state === true ? MetadataTypes\SwitchPayload::ON : MetadataTypes\SwitchPayload::OFF;
 			}
 
 			$this->queue->append(

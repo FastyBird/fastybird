@@ -132,10 +132,12 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 					$findChannelPropertiesQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
 					$findChannelPropertiesQuery->forChannel($channel);
 
-					foreach ($this->channelsPropertiesConfigurationRepository->findAllBy(
+					$properties = $this->channelsPropertiesConfigurationRepository->findAllBy(
 						$findChannelPropertiesQuery,
 						MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
-					) as $property) {
+					);
+
+					foreach ($properties as $property) {
 						$this->channelPropertiesStatesManager->setValidState($property, false);
 					}
 				}

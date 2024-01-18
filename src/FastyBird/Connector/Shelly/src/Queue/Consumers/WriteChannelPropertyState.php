@@ -211,7 +211,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		}
 
 		if (!$property->isSettable()) {
-			$this->logger->error(
+			$this->logger->warning(
 				'Channel property is not writable',
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
@@ -241,9 +241,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$expectedValue = MetadataUtilities\Value::flattenValue(
-			$state->getExpectedValue(),
-		);
+		$expectedValue = MetadataUtilities\Value::flattenValue($state->getExpectedValue());
 
 		if ($expectedValue === null) {
 			$this->channelPropertiesStatesManager->setPendingState($property, false);
@@ -269,6 +267,8 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						),
 					);
 
+					$this->channelPropertiesStatesManager->setPendingState($property, false);
+
 					$this->logger->error(
 						'Device is not properly configured. Address is missing',
 						[
@@ -293,7 +293,9 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					return true;
 				}
 
-				if ($this->deviceHelper->getGeneration($device)->equalsValue(Types\DeviceGeneration::GENERATION_2)) {
+				if (
+					$this->deviceHelper->getGeneration($device)->equalsValue(Types\DeviceGeneration::GENERATION_2)
+				) {
 					$result = $this->connectionManager->getGen2HttpApiConnection()->setDeviceState(
 						$address,
 						$this->deviceHelper->getUsername($device),
@@ -301,9 +303,9 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						$property->getIdentifier(),
 						$expectedValue,
 					);
-				} elseif ($this->deviceHelper->getGeneration($device)->equalsValue(
-					Types\DeviceGeneration::GENERATION_1,
-				)) {
+				} elseif (
+					$this->deviceHelper->getGeneration($device)->equalsValue(Types\DeviceGeneration::GENERATION_1)
+				) {
 					$result = $this->connectionManager->getGen1HttpApiConnection()->setDeviceState(
 						$address,
 						$this->deviceHelper->getUsername($device),
@@ -313,9 +315,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						$expectedValue,
 					);
 				} else {
+					$this->channelPropertiesStatesManager->setPendingState($property, false);
+
 					return true;
 				}
 			} else {
+				$this->channelPropertiesStatesManager->setPendingState($property, false);
+
 				return true;
 			}
 		} catch (Throwable $ex) {
@@ -329,6 +335,8 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					],
 				),
 			);
+
+			$this->channelPropertiesStatesManager->setPendingState($property, false);
 
 			$this->logger->error(
 				'Channel state could not be written into device',
@@ -356,7 +364,9 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		}
 
 		$result->then(
-			function () use ($entity): void {
+			function () use ($property, $entity): void {
+				$this->channelPropertiesStatesManager->setPendingState($property, true);
+
 				$this->logger->debug(
 					'Channel state was successfully sent to device',
 					[

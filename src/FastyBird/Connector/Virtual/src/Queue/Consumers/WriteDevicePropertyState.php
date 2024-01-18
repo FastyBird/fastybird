@@ -192,12 +192,18 @@ final class WriteDevicePropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$valueToWrite = $property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
-			? $state->getActualValue()
-			: $state->getExpectedValue();
+		if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
+			$valueToWrite = $state->getExpectedValue();
+		} else {
+			$valueToWrite = $state->getExpectedValue() ?? ($state->isValid() ? $state->getActualValue() : null);
+		}
 
 		if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
 			$this->devicePropertiesStatesManager->setPendingState($property, $valueToWrite !== null);
+		}
+
+		if ($valueToWrite === null) {
+			return true;
 		}
 
 		try {
@@ -217,6 +223,10 @@ final class WriteDevicePropertyState implements Queue\Consumer
 					],
 				),
 			);
+
+			if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
+				$this->devicePropertiesStatesManager->setPendingState($property, false);
+			}
 
 			$this->logger->error(
 				'Device is not properly configured',

@@ -15,13 +15,11 @@
 
 namespace FastyBird\Connector\NsPanel\Queue\Consumers;
 
-use DateTimeInterface;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -488,14 +486,14 @@ trait StateWriter
 		MetadataDocuments\DevicesModule\ChannelProperty $property,
 	): string|int|float|bool|null
 	{
-		if (
-			$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-			|| $property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
-		) {
-			$actualValue = $this->getActualValue($property);
-			$expectedValue = $this->getExpectedValue($property);
+		if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+			$state = $this->channelPropertiesStatesManager->get($property);
 
-			$value = $expectedValue ?? $actualValue;
+			$value = $state?->getActualValue();
+		} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
+			$state = $this->channelPropertiesStatesManager->read($property);
+
+			$value = $state?->getExpectedValue() ?? ($state?->isValid() === true ? $state->getActualValue() : null);
 		} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
 			$value = $property->getValue();
 		} else {
@@ -518,38 +516,6 @@ trait StateWriter
 		$findChannelPropertyQuery->byIdentifier(Helpers\Name::convertProtocolToProperty($protocol));
 
 		return $this->channelsPropertiesConfigurationRepository->findOneBy($findChannelPropertyQuery);
-	}
-
-	/**
-	 * @throws DevicesExceptions\InvalidArgument
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 */
-	public function getActualValue(
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
-	): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
-	{
-		return $property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-			? $this->channelPropertiesStatesManager->get($property)?->getActualValue()
-			: $this->channelPropertiesStatesManager->read($property)?->getActualValue();
-	}
-
-	/**
-	 * @throws DevicesExceptions\InvalidArgument
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 */
-	public function getExpectedValue(
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
-	): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
-	{
-		return $property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-			? $this->channelPropertiesStatesManager->get($property)?->getExpectedValue()
-			: $this->channelPropertiesStatesManager->read($property)?->getExpectedValue();
 	}
 
 }

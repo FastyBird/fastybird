@@ -234,6 +234,10 @@ final class WriteSubDeviceState implements Queue\Consumer
 				$payload = $writeData;
 			}
 		} else {
+			foreach ($properties as $property) {
+				$this->channelPropertiesStatesManager->setPendingState($property, false);
+			}
+
 			$this->logger->error(
 				'Channel identifier has invalid value',
 				[
@@ -331,6 +335,10 @@ final class WriteSubDeviceState implements Queue\Consumer
 					);
 				});
 		} catch (Throwable $ex) {
+			foreach ($properties as $property) {
+				$this->channelPropertiesStatesManager->setPendingState($property, false);
+			}
+
 			$this->logger->error(
 				'An unhandled error occurred',
 				[

@@ -85,7 +85,7 @@ final class DeviceProperty implements Queue\Consumer
 		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
 		if ($device === null) {
-			$this->logger->error(
+			$this->logger->warning(
 				sprintf('Device "%s" is not registered', $entity->getDevice()),
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
@@ -106,7 +106,7 @@ final class DeviceProperty implements Queue\Consumer
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy($findDevicePropertyQuery);
 
 		if ($property === null) {
-			$this->logger->error(
+			$this->logger->warning(
 				sprintf('Property "%s" is not registered', $entity->getProperty()),
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,

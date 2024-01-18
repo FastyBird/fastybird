@@ -247,7 +247,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		}
 
 		if (!$property->isSettable()) {
-			$this->logger->error(
+			$this->logger->warning(
 				'Channel property is not writable',
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
@@ -334,6 +334,8 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					) {
 						$result = $client->sendKey(Types\ActionKey::get($expectedValue));
 					} else {
+						$this->channelPropertiesStatesManager->setPendingState($property, false);
+
 						$this->logger->error(
 							'Provided property is not supported for writing',
 							[
@@ -372,6 +374,8 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				),
 			);
 
+			$this->channelPropertiesStatesManager->setPendingState($property, false);
+
 			$this->logger->error(
 				'Device is not properly configured',
 				[
@@ -407,6 +411,8 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				),
 			);
 
+			$this->channelPropertiesStatesManager->setPendingState($property, false);
+
 			$this->logger->error(
 				'Preparing api request failed',
 				[
@@ -441,6 +447,8 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					],
 				),
 			);
+
+			$this->channelPropertiesStatesManager->setPendingState($property, false);
 
 			$this->logger->error(
 				'Calling device api failed',

@@ -27,25 +27,25 @@ use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\States;
-use FastyBird\Module\Devices\Utilities\PropertiesStates;
 use Nette;
 use Nette\Utils;
 use Orisai\ObjectMapper;
 use function assert;
+use function boolval;
 use function is_array;
 use function strval;
 
 /**
  * Useful channel dynamic property state helpers
  *
- * @extends PropertiesStates<MetadataDocuments\DevicesModule\ChannelDynamicProperty, MetadataDocuments\DevicesModule\ChannelMappedProperty | null, States\ChannelProperty>
+ * @extends PropertiesManager<MetadataDocuments\DevicesModule\ChannelDynamicProperty, MetadataDocuments\DevicesModule\ChannelMappedProperty | null, States\ChannelProperty>
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Models
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ChannelPropertiesManager extends PropertiesStates
+final class ChannelPropertiesManager extends PropertiesManager
 {
 
 	use Nette\SmartObject;
@@ -211,6 +211,14 @@ final class ChannelPropertiesManager extends PropertiesStates
 		}
 
 		return false;
+	}
+
+	public function normalizeWriteValue(
+		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
+		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
+	): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
+	{
+		return $value;
 	}
 
 	/**
@@ -462,7 +470,15 @@ final class ChannelPropertiesManager extends PropertiesStates
 						States\Property::ACTUAL_VALUE_FIELD,
 						MetadataUtilities\Value::flattenValue($actualValue),
 					);
-					$data->offsetSet(States\Property::VALID_FIELD, true);
+
+					if ($data->offsetExists(States\Property::VALID_FIELD)) {
+						$data->offsetSet(
+							States\Property::VALID_FIELD,
+							boolval($data->offsetGet(States\Property::VALID_FIELD)),
+						);
+					} else {
+						$data->offsetSet(States\Property::VALID_FIELD, true);
+					}
 				}
 			} catch (MetadataExceptions\InvalidValue $ex) {
 				$data->offsetUnset(States\Property::ACTUAL_VALUE_FIELD);

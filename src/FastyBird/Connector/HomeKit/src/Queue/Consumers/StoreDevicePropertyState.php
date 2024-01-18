@@ -57,8 +57,8 @@ final class StoreDevicePropertyState implements Queue\Consumer
 		private readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
 		private readonly DevicesModels\Entities\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
 		private readonly DevicesModels\Entities\Devices\Properties\PropertiesManager $devicesPropertiesManager,
-		private readonly DevicesUtilities\Database $databaseHelper,
 		private readonly DevicesModels\States\DevicePropertiesManager $devicePropertiesStatesManager,
+		private readonly DevicesUtilities\Database $databaseHelper,
 		private readonly ExchangeEntities\DocumentFactory $entityFactory,
 		private readonly ExchangePublisher\Publisher $publisher,
 	)
@@ -139,11 +139,9 @@ final class StoreDevicePropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$valueToStore = $entity->getValue();
-
 		if ($property instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty) {
 			$this->databaseHelper->transaction(
-				function () use ($valueToStore, $property): void {
+				function () use ($entity, $property): void {
 					$property = $this->devicesPropertiesRepository->find(
 						$property->getId(),
 						DevicesEntities\Devices\Properties\Variable::class,
@@ -153,7 +151,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 					$this->devicesPropertiesManager->update(
 						$property,
 						Utils\ArrayHash::from([
-							'value' => $valueToStore,
+							'value' => $entity->getValue(),
 						]),
 					);
 				},
@@ -163,7 +161,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 			$this->devicePropertiesStatesManager->set(
 				$property,
 				Utils\ArrayHash::from([
-					DevicesStates\Property::ACTUAL_VALUE_FIELD => $valueToStore,
+					DevicesStates\Property::ACTUAL_VALUE_FIELD => $entity->getValue(),
 				]),
 			);
 		} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
@@ -187,7 +185,12 @@ final class StoreDevicePropertyState implements Queue\Consumer
 									'action' => MetadataTypes\PropertyAction::SET,
 									'device' => $device->getId()->toString(),
 									'property' => $property->getId()->toString(),
-									'expected_value' => MetadataUtilities\Value::flattenValue($valueToStore),
+									'expected_value' => MetadataUtilities\Value::flattenValue(
+										$this->devicePropertiesStatesManager->normalizeWriteValue(
+											$property,
+											$entity->getValue(),
+										),
+									),
 								]),
 								MetadataTypes\RoutingKey::get(
 									MetadataTypes\RoutingKey::DEVICE_PROPERTY_ACTION,

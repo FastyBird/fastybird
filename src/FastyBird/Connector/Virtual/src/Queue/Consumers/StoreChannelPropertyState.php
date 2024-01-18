@@ -233,10 +233,9 @@ final class StoreChannelPropertyState implements Queue\Consumer
 									'channel' => $channel->getId()->toString(),
 									'property' => $property->getId()->toString(),
 									'expected_value' => MetadataUtilities\Value::flattenValue(
-										MetadataUtilities\Value::normalizeValue(
+										$this->channelPropertiesStatesManager->normalizeWriteValue(
+											$property,
 											$entity->getValue(),
-											$property->getDataType(),
-											$property->getFormat(),
 										),
 									),
 								]),

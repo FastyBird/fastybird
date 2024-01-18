@@ -1,28 +1,31 @@
 <?php declare(strict_types = 1);
 
 /**
- * PropertiesStates.php
+ * PropertiesManager.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:DevicesModule!
- * @subpackage     Utilities
+ * @subpackage     Models
  * @since          1.0.0
  *
  * @date           16.01.24
  */
 
-namespace FastyBird\Module\Devices\Utilities;
+namespace FastyBird\Module\Devices\Models\States;
 
 use DateTimeInterface;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Library\Metadata\Documents\DevicesModule\ConnectorDynamicProperty as TParent;
+use FastyBird\Library\Metadata\Documents\DevicesModule\DeviceMappedProperty as TChild;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\States;
+use FastyBird\Module\Devices\States\ConnectorProperty as TState;
 use FastyBird\Module\Devices\Utilities;
 use Orisai\ObjectMapper;
 use function array_merge;
@@ -38,11 +41,11 @@ use function is_string;
  * @template TState of States\ConnectorProperty | States\DeviceProperty | States\ChannelProperty
  *
  * @package        FastyBird:DevicesModule!
- * @subpackage     Utilities
+ * @subpackage     Models
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-abstract class PropertiesStates
+abstract class PropertiesManager
 {
 
 	public function __construct(
@@ -275,13 +278,15 @@ abstract class PropertiesStates
 				$mappedProperty->getDataType(),
 			);
 
-			if ($forWriting) {
-				$value = MetadataUtilities\Value::transformFromScale(
-					$value,
-					$mappedProperty->getDataType(),
-					$mappedProperty->getScale(),
-				);
-			}
+			$value = $forWriting ? MetadataUtilities\Value::transformFromScale(
+				$value,
+				$mappedProperty->getDataType(),
+				$mappedProperty->getScale(),
+			) : MetadataUtilities\Value::transformValueFromDevice(
+				$value,
+				$mappedProperty->getDataType(),
+				$mappedProperty->getFormat(),
+			);
 
 			/**
 			 * Write value is now normalized and validated against property configuration

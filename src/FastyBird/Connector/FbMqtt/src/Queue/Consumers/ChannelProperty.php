@@ -86,7 +86,7 @@ final class ChannelProperty implements Queue\Consumer
 		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
 		if ($device === null) {
-			$this->logger->error(
+			$this->logger->warning(
 				sprintf('Device "%s" is not registered', $entity->getDevice()),
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
@@ -108,7 +108,7 @@ final class ChannelProperty implements Queue\Consumer
 		$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 
 		if ($channel === null) {
-			$this->logger->error(
+			$this->logger->warning(
 				sprintf('Device channel "%s" is not registered', $entity->getChannel()),
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
@@ -132,7 +132,7 @@ final class ChannelProperty implements Queue\Consumer
 		$property = $this->channelsPropertiesConfigurationRepository->findOneBy($findChannelPropertyQuery);
 
 		if ($property === null) {
-			$this->logger->error(
+			$this->logger->warning(
 				sprintf('Property "%s" is not registered', $entity->getProperty()),
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,

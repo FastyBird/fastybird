@@ -193,11 +193,15 @@ final class WriteDevicePropertyState implements Queue\Consumer
 							try {
 								$state = $this->devicePropertiesStatesManager->read($property);
 
-								if ($state === null) {
+								if ($state === null || !$state->isValid()) {
 									return true;
 								}
 
-								$characteristic->setActualValue($state->getExpectedValue() ?? $state->getActualValue());
+								if ($state->getExpectedValue() !== null) {
+									$characteristic->setActualValue($state->getExpectedValue());
+								} elseif ($state->getActualValue() !== null && $state->isValid()) {
+									$characteristic->setActualValue($state->getActualValue());
+								}
 							} catch (Exceptions\InvalidState $ex) {
 								$this->logger->warning(
 									'State value could not be converted from mapped parent',

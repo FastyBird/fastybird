@@ -27,7 +27,6 @@ use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\States;
-use FastyBird\Module\Devices\Utilities\PropertiesStates;
 use Nette;
 use Nette\Utils;
 use Orisai\ObjectMapper;
@@ -38,14 +37,14 @@ use function strval;
 /**
  * Useful connector dynamic property state helpers
  *
- * @extends PropertiesStates<MetadataDocuments\DevicesModule\ConnectorDynamicProperty, null, States\ConnectorProperty>
+ * @extends PropertiesManager<MetadataDocuments\DevicesModule\ConnectorDynamicProperty, null, States\ConnectorProperty>
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Models
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ConnectorPropertiesManager extends PropertiesStates
+final class ConnectorPropertiesManager extends PropertiesManager
 {
 
 	use Nette\SmartObject;
@@ -207,6 +206,14 @@ final class ConnectorPropertiesManager extends PropertiesStates
 		}
 
 		return false;
+	}
+
+	public function normalizeWriteValue(
+		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
+		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
+	): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
+	{
+		return $value;
 	}
 
 	/**

@@ -240,7 +240,7 @@ final class WriteV1PropertyState implements Queue\Consumer
 		}
 
 		if (!$property->isSettable()) {
-			$this->logger->error(
+			$this->logger->warning(
 				'Property is not writable',
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
@@ -269,9 +269,7 @@ final class WriteV1PropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$expectedValue = MetadataUtilities\Value::flattenValue(
-			$state->getExpectedValue(),
-		);
+		$expectedValue = MetadataUtilities\Value::flattenValue($state->getExpectedValue());
 
 		if ($expectedValue === null) {
 			if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
@@ -300,7 +298,7 @@ final class WriteV1PropertyState implements Queue\Consumer
 			->getConnection($connector)
 			->publish(
 				$topic,
-				strval(MetadataUtilities\Value::flattenValue($expectedValue)),
+				strval($expectedValue),
 			)
 			->then(function () use ($property): void {
 				if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {

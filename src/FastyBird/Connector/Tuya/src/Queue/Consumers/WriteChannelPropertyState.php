@@ -210,7 +210,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		}
 
 		if (!$property->isSettable()) {
-			$this->logger->error(
+			$this->logger->warning(
 				'Channel property is not writable',
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
@@ -240,9 +240,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$expectedValue = MetadataUtilities\Value::flattenValue(
-			$state->getExpectedValue(),
-		);
+		$expectedValue = MetadataUtilities\Value::flattenValue($state->getExpectedValue());
 
 		if ($expectedValue === null) {
 			$this->channelPropertiesStatesManager->setPendingState($property, false);
@@ -274,6 +272,8 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					$this->deviceHelper->getGateway($device) !== null ? $device->getIdentifier() : null,
 				);
 			} else {
+				$this->channelPropertiesStatesManager->setPendingState($property, false);
+
 				return true;
 			}
 		} catch (Exceptions\InvalidState $ex) {
@@ -287,6 +287,8 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					],
 				),
 			);
+
+			$this->channelPropertiesStatesManager->setPendingState($property, false);
 
 			$this->logger->error(
 				'Device is not properly configured',
@@ -323,6 +325,8 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				),
 			);
 
+			$this->channelPropertiesStatesManager->setPendingState($property, false);
+
 			$this->logger->error(
 				'Preparing api request failed',
 				[
@@ -357,6 +361,8 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					],
 				),
 			);
+
+			$this->channelPropertiesStatesManager->setPendingState($property, false);
 
 			$extra = [];
 

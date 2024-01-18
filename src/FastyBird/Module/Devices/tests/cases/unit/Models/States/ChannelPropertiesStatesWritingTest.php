@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace FastyBird\Module\Devices\Tests\Cases\Unit\Utilities;
+namespace FastyBird\Module\Devices\Tests\Cases\Unit\Models\States;
 
 use Error;
 use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
@@ -1304,6 +1304,84 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 					States\Property::VALID_FIELD => true,
 				]),
 				Exceptions\InvalidArgument::class,
+			],
+			'set_16' => [
+				new MetadataDocuments\DevicesModule\ChannelMappedProperty(
+					$child01,
+					MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::MAPPED),
+					$channel02,
+					$property01,
+					MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::GENERIC),
+					'child-property-16',
+					'Child Property 16',
+					MetadataTypes\DataType::get(MetadataTypes\DataType::SWITCH),
+					null,
+					[
+						[
+							MetadataTypes\SwitchPayload::ON,
+							[
+								MetadataTypes\DataTypeShort::BOOLEAN,
+								true,
+							],
+							[
+								MetadataTypes\DataTypeShort::BOOLEAN,
+								true,
+							],
+						],
+						[
+							MetadataTypes\SwitchPayload::OFF,
+							[
+								MetadataTypes\DataTypeShort::BOOLEAN,
+								false,
+							],
+							[
+								MetadataTypes\DataTypeShort::BOOLEAN,
+								false,
+							],
+						],
+					],
+					null,
+					null,
+					null,
+					null,
+					true,
+				),
+				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
+					$property01,
+					MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::DYNAMIC),
+					$channel01,
+					MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::GENERIC),
+					'test-property-16',
+					'Testing Property 16',
+					MetadataTypes\DataType::get(MetadataTypes\DataType::SWITCH),
+					null,
+					[
+						[
+							MetadataTypes\SwitchPayload::ON,
+							'ON',
+							'ON',
+						],
+						[
+							MetadataTypes\SwitchPayload::OFF,
+							'OFF',
+							'OFF',
+						],
+					],
+					null,
+					null,
+					null,
+					null,
+					true,
+				),
+				null,
+				Utils\ArrayHash::from([
+					States\Property::EXPECTED_VALUE_FIELD => true,
+				]),
+				Utils\ArrayHash::from([
+					States\Property::EXPECTED_VALUE_FIELD => MetadataTypes\SwitchPayload::ON,
+					States\Property::PENDING_FIELD => true,
+				]),
+				null,
 			],
 		];
 	}

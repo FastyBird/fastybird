@@ -242,7 +242,7 @@ final class WritePropertyState implements Queue\Consumer
 		}
 
 		if (!$property->isSettable()) {
-			$this->logger->error(
+			$this->logger->warning(
 				'Property is not writable',
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
@@ -271,9 +271,7 @@ final class WritePropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$expectedValue = MetadataUtilities\Value::flattenValue(
-			$state->getExpectedValue(),
-		);
+		$expectedValue = MetadataUtilities\Value::flattenValue($state->getExpectedValue());
 
 		if ($expectedValue === null) {
 			if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
@@ -404,6 +402,12 @@ final class WritePropertyState implements Queue\Consumer
 					$outlet,
 				);
 			} else {
+				if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+					$this->channelPropertiesStatesManager->setPendingState($property, false);
+				} else {
+					$this->devicePropertiesStatesManager->setPendingState($property, false);
+				}
+
 				return true;
 			}
 		} catch (Exceptions\InvalidState $ex) {
@@ -417,6 +421,12 @@ final class WritePropertyState implements Queue\Consumer
 					],
 				),
 			);
+
+			if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+				$this->channelPropertiesStatesManager->setPendingState($property, false);
+			} else {
+				$this->devicePropertiesStatesManager->setPendingState($property, false);
+			}
 
 			$this->logger->error(
 				'Device is not properly configured',
@@ -449,6 +459,12 @@ final class WritePropertyState implements Queue\Consumer
 					],
 				),
 			);
+
+			if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+				$this->channelPropertiesStatesManager->setPendingState($property, false);
+			} else {
+				$this->devicePropertiesStatesManager->setPendingState($property, false);
+			}
 
 			$extra = [];
 

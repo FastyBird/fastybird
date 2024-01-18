@@ -72,12 +72,13 @@ final class ChannelAttribute implements Queue\Consumer
 		}
 
 		$findDeviceQuery = new Queries\Entities\FindDevices();
+		$findDeviceQuery->byConnectorId($entity->getConnector());
 		$findDeviceQuery->byIdentifier($entity->getDevice());
 
 		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\FbMqttDevice::class);
 
 		if ($device === null) {
-			$this->logger->error(
+			$this->logger->warning(
 				sprintf('Device "%s" is not registered', $entity->getDevice()),
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
@@ -98,7 +99,7 @@ final class ChannelAttribute implements Queue\Consumer
 		$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\FbMqttChannel::class);
 
 		if ($channel === null) {
-			$this->logger->error(
+			$this->logger->warning(
 				sprintf('Device channel "%s" is not registered', $entity->getChannel()),
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
