@@ -186,7 +186,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 									'device' => $device->getId()->toString(),
 									'property' => $property->getId()->toString(),
 									'expected_value' => MetadataUtilities\Value::flattenValue(
-										$this->devicePropertiesStatesManager->normalizeWriteValue(
+										$this->devicePropertiesStatesManager->normalizePublishValue(
 											$property,
 											$entity->getValue(),
 										),

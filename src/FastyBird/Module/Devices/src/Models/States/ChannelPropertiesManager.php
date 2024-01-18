@@ -27,6 +27,7 @@ use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\States;
+use FastyBird\Module\Devices\Utilities;
 use Nette;
 use Nette\Utils;
 use Orisai\ObjectMapper;
@@ -213,11 +214,72 @@ final class ChannelPropertiesManager extends PropertiesManager
 		return false;
 	}
 
-	public function normalizeWriteValue(
+	/**
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidValue
+	 */
+	public function normalizePublishValue(
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
 		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
 	): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
 	{
+		$mappedProperty = null;
+
+		if ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
+			$parent = $this->channelPropertiesConfigurationRepository->find($property->getParent());
+
+			if (!$parent instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+				throw new Exceptions\InvalidState('Mapped property parent could not be loaded');
+			}
+
+			$mappedProperty = $property;
+
+			$property = $parent;
+		}
+
+		if ($mappedProperty !== null) {
+			if (
+				!Utilities\Value::compareDataTypes(
+					$mappedProperty->getDataType(),
+					$property->getDataType(),
+				)
+			) {
+				throw new Exceptions\InvalidState(
+					'Mapped property data type is not compatible with dynamic property data type',
+				);
+			}
+
+			$value = MetadataUtilities\Value::transformDataType(
+				MetadataUtilities\Value::flattenValue($value),
+				$mappedProperty->getDataType(),
+			);
+
+			$value = MetadataUtilities\Value::transformValueFromDevice(
+				$value,
+				$mappedProperty->getDataType(),
+				$mappedProperty->getFormat(),
+			);
+
+			$value = MetadataUtilities\Value::normalizeValue(
+				$value,
+				$mappedProperty->getDataType(),
+				$mappedProperty->getFormat(),
+			);
+		} else {
+				$value = MetadataUtilities\Value::transformDataType(
+					MetadataUtilities\Value::flattenValue($value),
+					$property->getDataType(),
+				);
+
+				$value = MetadataUtilities\Value::normalizeValue(
+					$value,
+					$property->getDataType(),
+					$property->getFormat(),
+				);
+		}
+
 		return $value;
 	}
 

@@ -208,12 +208,26 @@ final class ConnectorPropertiesManager extends PropertiesManager
 		return false;
 	}
 
-	public function normalizeWriteValue(
+	/**
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidValue
+	 */
+	public function normalizePublishValue(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
 		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
 	): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
 	{
-		return $value;
+		$value = MetadataUtilities\Value::transformDataType(
+			MetadataUtilities\Value::flattenValue($value),
+			$property->getDataType(),
+		);
+
+		return MetadataUtilities\Value::normalizeValue(
+			$value,
+			$property->getDataType(),
+			$property->getFormat(),
+		);
 	}
 
 	/**

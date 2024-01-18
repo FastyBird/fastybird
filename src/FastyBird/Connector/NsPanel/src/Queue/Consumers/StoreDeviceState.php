@@ -294,7 +294,7 @@ final class StoreDeviceState implements Queue\Consumer
 							'channel' => $channel->getId()->toString(),
 							'property' => $property->getId()->toString(),
 							'expected_value' => MetadataUtilities\Value::flattenValue(
-								$this->channelPropertiesStatesManager->normalizeWriteValue(
+								$this->channelPropertiesStatesManager->normalizePublishValue(
 									$property,
 									$value,
 								),
