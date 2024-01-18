@@ -222,14 +222,11 @@ final class DevicePropertiesManager extends PropertiesManager
 
 	/**
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidValue
 	 */
 	public function normalizePublishValue(
 		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty $property,
 		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
-	): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
+	): bool|float|int|string|null
 	{
 		$mappedProperty = null;
 
@@ -256,37 +253,12 @@ final class DevicePropertiesManager extends PropertiesManager
 					'Mapped property data type is not compatible with dynamic property data type',
 				);
 			}
-
-			$value = MetadataUtilities\Value::transformDataType(
-				MetadataUtilities\Value::flattenValue($value),
-				$mappedProperty->getDataType(),
-			);
-
-			$value = MetadataUtilities\Value::transformValueFromDevice(
-				$value,
-				$mappedProperty->getDataType(),
-				$mappedProperty->getFormat(),
-			);
-
-			$value = MetadataUtilities\Value::normalizeValue(
-				$value,
-				$mappedProperty->getDataType(),
-				$mappedProperty->getFormat(),
-			);
-		} else {
-			$value = MetadataUtilities\Value::transformDataType(
-				MetadataUtilities\Value::flattenValue($value),
-				$property->getDataType(),
-			);
-
-			$value = MetadataUtilities\Value::normalizeValue(
-				$value,
-				$property->getDataType(),
-				$property->getFormat(),
-			);
 		}
 
-		return $value;
+		return MetadataUtilities\Value::transformDataType(
+			MetadataUtilities\Value::flattenValue($value),
+			$mappedProperty?->getDataType() ?? $property->getDataType(),
+		);
 	}
 
 	/**

@@ -26,7 +26,6 @@ use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -194,11 +193,9 @@ final class StoreDevicePropertyState implements Queue\Consumer
 									'action' => MetadataTypes\PropertyAction::SET,
 									'device' => $device->getId()->toString(),
 									'property' => $property->getId()->toString(),
-									'expected_value' => MetadataUtilities\Value::flattenValue(
-										$this->devicePropertiesStatesManager->normalizePublishValue(
-											$property,
-											$entity->getValue(),
-										),
+									'expected_value' => $this->devicePropertiesStatesManager->normalizePublishValue(
+										$property,
+										$entity->getValue(),
 									),
 								]),
 								MetadataTypes\RoutingKey::get(

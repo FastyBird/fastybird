@@ -140,21 +140,15 @@ final class Transformer
 				if (count($filtered) === 1) {
 					if ($property->getDataType()->equalsValue(MetadataTypes\DataType::SWITCH)) {
 						return MetadataTypes\SwitchPayload::isValidValue(strval($transformedValue))
-							? MetadataTypes\SwitchPayload::get(
-								strval($transformedValue),
-							)
+							? MetadataTypes\SwitchPayload::get(strval($transformedValue))
 							: null;
 					} elseif ($property->getDataType()->equalsValue(MetadataTypes\DataType::BUTTON)) {
 						return MetadataTypes\ButtonPayload::isValidValue(strval($transformedValue))
-							? MetadataTypes\ButtonPayload::get(
-								strval($transformedValue),
-							)
+							? MetadataTypes\ButtonPayload::get(strval($transformedValue))
 							: null;
 					} elseif ($property->getDataType()->equalsValue(MetadataTypes\DataType::COVER)) {
 						return MetadataTypes\CoverPayload::isValidValue(strval($transformedValue))
-							? MetadataTypes\CoverPayload::get(
-								strval($transformedValue),
-							)
+							? MetadataTypes\CoverPayload::get(strval($transformedValue))
 							: null;
 					} else {
 						return strval($transformedValue);
@@ -177,21 +171,15 @@ final class Transformer
 				) {
 					if ($property->getDataType()->equalsValue(MetadataTypes\DataType::SWITCH)) {
 						return MetadataTypes\SwitchPayload::isValidValue(strval($filtered[0][0]->getValue()))
-							? MetadataTypes\SwitchPayload::get(
-								strval($filtered[0][0]->getValue()),
-							)
+							? MetadataTypes\SwitchPayload::get(strval($filtered[0][0]->getValue()))
 							: null;
 					} elseif ($property->getDataType()->equalsValue(MetadataTypes\DataType::BUTTON)) {
 						return MetadataTypes\ButtonPayload::isValidValue(strval($filtered[0][0]->getValue()))
-							? MetadataTypes\ButtonPayload::get(
-								strval($filtered[0][0]->getValue()),
-							)
+							? MetadataTypes\ButtonPayload::get(strval($filtered[0][0]->getValue()))
 							: null;
 					} elseif ($property->getDataType()->equalsValue(MetadataTypes\DataType::COVER)) {
 						return MetadataTypes\CoverPayload::isValidValue(strval($filtered[0][0]->getValue()))
-							? MetadataTypes\CoverPayload::get(
-								strval($filtered[0][0]->getValue()),
-							)
+							? MetadataTypes\CoverPayload::get(strval($filtered[0][0]->getValue()))
 							: null;
 					} else {
 						return strval($filtered[0][0]->getValue());
@@ -242,7 +230,7 @@ final class Transformer
 					));
 
 					if (count($filtered) === 1) {
-						$transformedValue = strval(MetadataUtilities\Value::flattenValue($value));
+						$transformedValue = MetadataUtilities\Value::flattenValue($value);
 					}
 				} elseif ($property->getFormat() instanceof MetadataValueObjects\CombinedEnumFormat) {
 					$filtered = array_values(array_filter(
@@ -259,25 +247,23 @@ final class Transformer
 					) {
 						$transformedValue = is_scalar($filtered[0][2]->getValue())
 							? $filtered[0][2]->getValue()
-							: strval(
-								$filtered[0][2]->getValue(),
-							);
+							: MetadataUtilities\Value::flattenValue($filtered[0][2]->getValue());
 					}
-				}
-
-				if (
-					(
-						$property->getDataType()->equalsValue(MetadataTypes\DataType::SWITCH)
-						&& $value instanceof MetadataTypes\SwitchPayload
-					) || (
-						$property->getDataType()->equalsValue(MetadataTypes\DataType::BUTTON)
-						&& $value instanceof MetadataTypes\ButtonPayload
-					) || (
-						$property->getDataType()->equalsValue(MetadataTypes\DataType::COVER)
-						&& $value instanceof MetadataTypes\CoverPayload
-					)
-				) {
-					$transformedValue = strval($value->getValue());
+				} else {
+					if (
+						(
+							$property->getDataType()->equalsValue(MetadataTypes\DataType::SWITCH)
+							&& $value instanceof MetadataTypes\SwitchPayload
+						) || (
+							$property->getDataType()->equalsValue(MetadataTypes\DataType::BUTTON)
+							&& $value instanceof MetadataTypes\ButtonPayload
+						) || (
+							$property->getDataType()->equalsValue(MetadataTypes\DataType::COVER)
+							&& $value instanceof MetadataTypes\CoverPayload
+						)
+					) {
+						$transformedValue = strval($value->getValue());
+					}
 				}
 			} else {
 				$transformedValue = $value;
