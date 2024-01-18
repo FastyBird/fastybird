@@ -20,6 +20,7 @@ use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Queue;
+use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
 use FastyBird\Library\Exchange\Documents as ExchangeEntities;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
@@ -76,7 +77,6 @@ final class StoreDeviceState implements Queue\Consumer
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
-	 * @throws Utils\JsonException
 	 */
 	public function consume(Entities\Messages\Entity $entity): bool
 	{
@@ -194,7 +194,6 @@ final class StoreDeviceState implements Queue\Consumer
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
-	 * @throws Utils\JsonException
 	 */
 	private function processThirdPartyDevice(
 		MetadataDocuments\DevicesModule\Device $device,
@@ -243,7 +242,6 @@ final class StoreDeviceState implements Queue\Consumer
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
-	 * @throws Utils\JsonException
 	 */
 	private function writeThirdPartyProperty(
 		MetadataDocuments\DevicesModule\Device $device,
@@ -279,38 +277,59 @@ final class StoreDeviceState implements Queue\Consumer
 			);
 
 		} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
-			if ($this->useExchange) {
-				$this->publisher->publish(
-					MetadataTypes\ConnectorSource::get(
-						MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
-					),
-					MetadataTypes\RoutingKey::get(
-						MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION,
-					),
-					$this->entityFactory->create(
-						Utils\Json::encode([
-							'action' => MetadataTypes\PropertyAction::SET,
-							'device' => $device->getId()->toString(),
-							'channel' => $channel->getId()->toString(),
-							'property' => $property->getId()->toString(),
-							'expected_value' => MetadataUtilities\Value::flattenValue(
-								$this->channelPropertiesStatesManager->normalizePublishValue(
-									$property,
-									$value,
-								),
-							),
-						]),
+			try {
+				if ($this->useExchange) {
+					$this->publisher->publish(
+						MetadataTypes\ConnectorSource::get(
+							MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
+						),
 						MetadataTypes\RoutingKey::get(
 							MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION,
 						),
-					),
-				);
-			} else {
-				$this->channelPropertiesStatesManager->write(
-					$property,
-					Utils\ArrayHash::from([
-						DevicesStates\Property::EXPECTED_VALUE_FIELD => $value,
-					]),
+						$this->entityFactory->create(
+							Utils\Json::encode([
+								'action' => MetadataTypes\PropertyAction::SET,
+								'device' => $device->getId()->toString(),
+								'channel' => $channel->getId()->toString(),
+								'property' => $property->getId()->toString(),
+								'expected_value' => MetadataUtilities\Value::flattenValue(
+									$this->channelPropertiesStatesManager->normalizePublishValue(
+										$property,
+										$value,
+									),
+								),
+							]),
+							MetadataTypes\RoutingKey::get(
+								MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION,
+							),
+						),
+					);
+				} else {
+					$this->channelPropertiesStatesManager->write(
+						$property,
+						Utils\ArrayHash::from([
+							DevicesStates\Property::EXPECTED_VALUE_FIELD => $value,
+						]),
+					);
+				}
+			} catch (DevicesExceptions\InvalidState | Utils\JsonException | MetadataExceptions\InvalidValue $ex) {
+				$this->logger->warning(
+					'State value could not be converted to mapped parent',
+					[
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
+						'type' => 'store-device-state-message-consumer',
+						'exception' => BootstrapHelpers\Logger::buildException($ex),
+						'connector' => [
+							'id' => $device->getConnector()->toString(),
+						],
+						'device' => [
+							'id' => $device->getId()->toString(),
+						],
+						'property' => [
+							'id' => $property->getId()->toString(),
+						],
+						'value' => $value,
+					],
 				);
 			}
 		}
