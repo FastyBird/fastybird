@@ -3,7 +3,6 @@ parameters:
 
     paths:
         - ../src/
-        - ../bin/
 
     bootstrapFiles:
         - phpstan-bootstrap.php
