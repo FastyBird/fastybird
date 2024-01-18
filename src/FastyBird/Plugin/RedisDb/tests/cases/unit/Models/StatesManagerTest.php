@@ -114,15 +114,13 @@ final class StatesManagerTest extends TestCase
 
 		$original = $factory->create(Fixtures\CustomState::class, Utils\Json::encode($originalData));
 
-		$state = $manager->update($original, Utils\ArrayHash::from($data));
+		$state = $manager->update($original->getId(), Utils\ArrayHash::from($data));
 
+		self::assertIsObject($state);
 		self::assertSame(Fixtures\CustomState::class, $state::class);
 		self::assertEquals($expected, $state->toArray());
 	}
 
-	/**
-	 * @throws Utils\JsonException
-	 */
 	public function testDeleteEntity(): void
 	{
 		$id = Uuid\Uuid::uuid4();
@@ -146,12 +144,7 @@ final class StatesManagerTest extends TestCase
 
 		$manager = $this->createManager($redisClient);
 
-		$original = new Fixtures\CustomState(
-			Uuid\Uuid::fromString($originalData['id']),
-			Utils\Json::encode($originalData),
-		);
-
-		self::assertTrue($manager->delete($original));
+		self::assertTrue($manager->delete(Uuid\Uuid::fromString($originalData['id'])));
 	}
 
 	/**

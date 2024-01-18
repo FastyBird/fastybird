@@ -140,7 +140,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 
 		$accessory = $this->accessoryDriver->findAccessory($device->getId());
 
-		if (!$accessory instanceof Entities\Protocol\Device) {
+		if (!$accessory instanceof Entities\Protocol\Accessories\Generic) {
 			$this->logger->warning(
 				'Accessory for received channel property message was not found in accessory driver',
 				[
@@ -240,7 +240,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 							try {
 								$state = $this->channelPropertiesStatesManager->read($property);
 
-								if ($state === null || !$state->isValid()) {
+								if ($state === null) {
 									continue;
 								}
 

@@ -17,13 +17,11 @@ namespace FastyBird\Bridge\RedisDbDevicesModule\Models\States;
 
 use FastyBird\Bridge\RedisDbDevicesModule\States;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Plugin\RedisDb\Exceptions as RedisDbExceptions;
 use FastyBird\Plugin\RedisDb\Models as RedisDbModels;
 use Nette;
 use Nette\Utils;
 use Ramsey\Uuid;
-use function assert;
 
 /**
  * Connector property states manager
@@ -65,21 +63,14 @@ class ConnectorPropertiesManager implements DevicesModels\States\Connectors\IMan
 	/**
 	 * @throws RedisDbExceptions\InvalidState
 	 */
-	public function update(
-		DevicesStates\ConnectorProperty $state,
-		Utils\ArrayHash $values,
-	): States\ConnectorProperty
+	public function update(Uuid\UuidInterface $id, Utils\ArrayHash $values): States\ConnectorProperty|false
 	{
-		assert($state instanceof States\ConnectorProperty);
-
-		return $this->statesManager->update($state, $values, $this->database);
+		return $this->statesManager->update($id, $values, $this->database);
 	}
 
-	public function delete(DevicesStates\ConnectorProperty $state): bool
+	public function delete(Uuid\UuidInterface $id): bool
 	{
-		assert($state instanceof States\ConnectorProperty);
-
-		return $this->statesManager->delete($state, $this->database);
+		return $this->statesManager->delete($id, $this->database);
 	}
 
 }

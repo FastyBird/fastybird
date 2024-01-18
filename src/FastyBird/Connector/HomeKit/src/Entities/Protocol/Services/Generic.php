@@ -13,19 +13,19 @@
  * @date           12.04.23
  */
 
-namespace FastyBird\Connector\HomeKit\Entities\Protocol\Devices;
+namespace FastyBird\Connector\HomeKit\Entities\Protocol\Services;
 
 use FastyBird\Connector\HomeKit\Entities;
 
 /**
- * HAP generic device accessory
+ * HAP accessory generic service
  *
  * @package        FastyBird:HomeKitConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Generic extends Entities\Protocol\Device
+class Generic extends Entities\Protocol\Service
 {
 
 }

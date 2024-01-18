@@ -58,7 +58,7 @@ class StatesRepository
 	}
 
 	/**
-	 * @phpstan-return T|null
+	 * @phpstan-return T
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState

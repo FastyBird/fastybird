@@ -32,8 +32,8 @@ interface IManager
 
 	public function create(Uuid\UuidInterface $id, Utils\ArrayHash $values): States\DeviceProperty;
 
-	public function update(States\DeviceProperty $state, Utils\ArrayHash $values): States\DeviceProperty;
+	public function update(Uuid\UuidInterface $id, Utils\ArrayHash $values): States\DeviceProperty|false;
 
-	public function delete(States\DeviceProperty $state): bool;
+	public function delete(Uuid\UuidInterface $id): bool;
 
 }

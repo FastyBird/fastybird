@@ -32,8 +32,8 @@ interface IManager
 
 	public function create(Uuid\UuidInterface $id, Utils\ArrayHash $values): States\ConnectorProperty;
 
-	public function update(States\ConnectorProperty $state, Utils\ArrayHash $values): States\ConnectorProperty;
+	public function update(Uuid\UuidInterface $id, Utils\ArrayHash $values): States\ConnectorProperty|false;
 
-	public function delete(States\ConnectorProperty $state): bool;
+	public function delete(Uuid\UuidInterface $id): bool;
 
 }

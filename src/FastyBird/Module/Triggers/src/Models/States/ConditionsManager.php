@@ -91,7 +91,11 @@ final class ConditionsManager
 			throw new Exceptions\NotImplemented('Condition state manager is not registered');
 		}
 
-		$updatedState = $this->manager->update($state, $values);
+		$updatedState = $this->manager->update($condition->getId(), $values);
+
+		if ($updatedState === false) {
+			return $state;
+		}
 
 		$this->publishEntity($condition, $updatedState);
 
@@ -115,7 +119,7 @@ final class ConditionsManager
 			throw new Exceptions\NotImplemented('Condition state manager is not registered');
 		}
 
-		$result = $this->manager->delete($state);
+		$result = $this->manager->delete($condition->getId());
 
 		if ($result) {
 			$this->publishEntity($condition, null);

@@ -17,13 +17,11 @@ namespace FastyBird\Bridge\RedisDbTriggersModule\Models\States;
 
 use FastyBird\Bridge\RedisDbTriggersModule\States;
 use FastyBird\Module\Triggers\Models as TriggersModels;
-use FastyBird\Module\Triggers\States as TriggersStates;
 use FastyBird\Plugin\RedisDb\Exceptions as RedisDbExceptions;
 use FastyBird\Plugin\RedisDb\Models as RedisDbModels;
 use Nette;
 use Nette\Utils;
 use Ramsey\Uuid;
-use function assert;
 
 /**
  * Condition states manager
@@ -65,18 +63,14 @@ class ConditionsManager implements TriggersModels\States\IConditionsManager
 	/**
 	 * @throws RedisDbExceptions\InvalidState
 	 */
-	public function update(TriggersStates\Condition $state, Utils\ArrayHash $values): States\Condition
+	public function update(Uuid\UuidInterface $id, Utils\ArrayHash $values): States\Condition|false
 	{
-		assert($state instanceof States\Condition);
-
-		return $this->statesManager->update($state, $values, $this->database);
+		return $this->statesManager->update($id, $values, $this->database);
 	}
 
-	public function delete(TriggersStates\Condition $state): bool
+	public function delete(Uuid\UuidInterface $id): bool
 	{
-		assert($state instanceof States\Condition);
-
-		return $this->statesManager->delete($state, $this->database);
+		return $this->statesManager->delete($id, $this->database);
 	}
 
 }

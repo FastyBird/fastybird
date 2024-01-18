@@ -152,10 +152,11 @@ final class ChannelPropertiesManagerTest extends BaseTestCase
 
 		$manager = $this->container->getByType(Models\States\ChannelPropertiesManager::class);
 
-		$state = $manager->update($state, Utils\ArrayHash::from([
+		$state = $manager->update($state->getId(), Utils\ArrayHash::from([
 			DevicesStates\Property::EXPECTED_VALUE_FIELD => 40,
 		]));
 
+		self::assertIsObject($state);
 		self::assertSame(10, $state->getActualValue());
 		self::assertSame(40, $state->getExpectedValue());
 		self::assertNotNull($state->getCreatedAt());

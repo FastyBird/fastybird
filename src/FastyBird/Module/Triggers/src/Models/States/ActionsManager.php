@@ -91,7 +91,11 @@ final class ActionsManager
 			throw new Exceptions\NotImplemented('Action state manager is not registered');
 		}
 
-		$updatedState = $this->manager->update($state, $values);
+		$updatedState = $this->manager->update($action->getId(), $values);
+
+		if ($updatedState === false) {
+			return $state;
+		}
 
 		$this->publishEntity($action, $updatedState);
 
@@ -115,7 +119,7 @@ final class ActionsManager
 			throw new Exceptions\NotImplemented('Action state manager is not registered');
 		}
 
-		$result = $this->manager->delete($state);
+		$result = $this->manager->delete($action->getId());
 
 		if ($result) {
 			$this->publishEntity($action, null);

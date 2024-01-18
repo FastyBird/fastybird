@@ -13,7 +13,7 @@
  * @date           13.09.22
  */
 
-namespace FastyBird\Connector\HomeKit\Entities\Protocol;
+namespace FastyBird\Connector\HomeKit\Entities\Protocol\Accessories;
 
 use FastyBird\Connector\HomeKit;
 use FastyBird\Connector\HomeKit\Entities;
@@ -31,10 +31,10 @@ use SplObjectStorage;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Bridge extends Accessory
+class Bridge extends Entities\Protocol\Accessory
 {
 
-	/** @var SplObjectStorage<Device, null> */
+	/** @var SplObjectStorage<Generic, null> */
 	private SplObjectStorage $accessories;
 
 	public function __construct(
@@ -64,7 +64,7 @@ class Bridge extends Accessory
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 */
-	public function addAccessory(Device $accessory): void
+	public function addAccessory(Generic $accessory): void
 	{
 		if ($accessory->getCategory()->equalsValue(Types\AccessoryCategory::BRIDGE)) {
 			throw new Exceptions\InvalidArgument('Bridges cannot be bridged');
@@ -114,7 +114,7 @@ class Bridge extends Accessory
 	}
 
 	/**
-	 * @return array<Device>
+	 * @return array<Generic>
 	 */
 	public function getAccessories(): array
 	{
@@ -129,7 +129,7 @@ class Bridge extends Accessory
 		return $accessories;
 	}
 
-	public function getAccessory(int $aid): Device|null
+	public function getAccessory(int $aid): Generic|null
 	{
 		$this->accessories->rewind();
 

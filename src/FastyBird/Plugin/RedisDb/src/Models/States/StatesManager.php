@@ -104,37 +104,35 @@ class StatesManager
 			throw new Exceptions\InvalidState('State could not be created', $ex->getCode(), $ex);
 		}
 
-		$this->dispatcher?->dispatch(new Events\StateCreated($state));
+		$this->dispatcher?->dispatch(new Events\StateCreated($id, $state));
 
 		return $state;
 	}
 
 	/**
-	 * @phpstan-param T $state
-	 *
 	 * @phpstan-return T
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
 	public function update(
-		States\State $state,
+		Uuid\UuidInterface $id,
 		Utils\ArrayHash $values,
 		int $database = 0,
-	): States\State
+	): States\State|false
 	{
 		try {
-			$raw = $this->updateKey($state, $values, $state::getUpdateFields(), $database);
+			$raw = $this->updateKey($id, $values, $this->entity::getUpdateFields(), $database);
 
-			$updatedState = $this->stateFactory->create($state::class, $raw);
+			$updatedState = $this->stateFactory->create($this->entity, $raw);
 
 		} catch (Exceptions\NotUpdated) {
-			return $state;
+			return false;
 		} catch (Throwable $ex) {
 			$this->logger->error('Record could not be updated', [
 				'source' => MetadataTypes\PluginSource::REDISDB,
 				'type' => 'states-manager',
 				'record' => [
-					'id' => $state->getId()->toString(),
+					'id' => $id->toString(),
 				],
 				'exception' => ApplicationHelpers\Logger::buildException($ex),
 			]);
@@ -142,23 +140,20 @@ class StatesManager
 			throw new Exceptions\InvalidState('State could not be updated', $ex->getCode(), $ex);
 		}
 
-		$this->dispatcher?->dispatch(new Events\StateUpdated($updatedState, $state));
+		$this->dispatcher?->dispatch(new Events\StateUpdated($id, $updatedState));
 
 		return $updatedState;
 	}
 
-	/**
-	 * @phpstan-param T $state
-	 */
-	public function delete(States\State $state, int $database = 0): bool
+	public function delete(Uuid\UuidInterface $id, int $database = 0): bool
 	{
-		$result = $this->deleteKey($state->getId(), $database);
+		$result = $this->deleteKey($id, $database);
 
 		if ($result === false) {
 			return false;
 		}
 
-		$this->dispatcher?->dispatch(new Events\StateDeleted($state));
+		$this->dispatcher?->dispatch(new Events\StateDeleted($id));
 
 		return true;
 	}
@@ -260,14 +255,14 @@ class StatesManager
 	 * @throws Exceptions\InvalidState
 	 */
 	private function updateKey(
-		States\State $state,
+		Uuid\UuidInterface $id,
 		Utils\ArrayHash $values,
 		array $fields,
 		int $database,
 	): string
 	{
 		try {
-			$getResult = $this->client->get($state->getId()->toString());
+			$getResult = $this->client->get($id->toString());
 
 			if ($getResult instanceof Promise\PromiseInterface) {
 				$raw = await($getResult);
@@ -325,13 +320,13 @@ class StatesManager
 			}
 
 			$this->client->select($database);
-			$setResult = $this->client->set($state->getId()->toString(), Utils\Json::encode($data));
+			$setResult = $this->client->set($id->toString(), Utils\Json::encode($data));
 
 			if ($setResult instanceof Promise\PromiseInterface) {
 				await($setResult);
 			}
 
-			$getResult = $this->client->get($state->getId()->toString());
+			$getResult = $this->client->get($id->toString());
 
 			if ($getResult instanceof Promise\PromiseInterface) {
 				$raw = await($getResult);
@@ -352,7 +347,7 @@ class StatesManager
 				'source' => MetadataTypes\PluginSource::REDISDB,
 				'type' => 'states-manager',
 				'record' => [
-					'id' => $state->getId()->toString(),
+					'id' => $id->toString(),
 				],
 				'exception' => ApplicationHelpers\Logger::buildException($ex),
 			]);

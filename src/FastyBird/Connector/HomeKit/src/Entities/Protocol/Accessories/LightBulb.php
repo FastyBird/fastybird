@@ -13,7 +13,7 @@
  * @date           12.04.23
  */
 
-namespace FastyBird\Connector\HomeKit\Entities\Protocol\Devices;
+namespace FastyBird\Connector\HomeKit\Entities\Protocol\Accessories;
 
 use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Types;
@@ -30,7 +30,7 @@ use function is_int;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class LightBulb extends Entities\Protocol\Device
+final class LightBulb extends Generic
 {
 
 	public function recalculateValues(

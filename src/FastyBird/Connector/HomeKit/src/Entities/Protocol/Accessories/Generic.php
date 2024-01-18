@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Bridge.php
+ * Generic.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,10 +10,10 @@
  * @subpackage     Entities
  * @since          1.0.0
  *
- * @date           13.09.22
+ * @date           12.04.23
  */
 
-namespace FastyBird\Connector\HomeKit\Entities\Protocol;
+namespace FastyBird\Connector\HomeKit\Entities\Protocol\Accessories;
 
 use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Types;
@@ -21,14 +21,14 @@ use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use Ramsey\Uuid;
 
 /**
- * HAP device accessory
+ * HAP generic device accessory
  *
  * @package        FastyBird:HomeKitConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-abstract class Device extends Accessory
+class Generic extends Entities\Protocol\Accessory
 {
 
 	public function __construct(

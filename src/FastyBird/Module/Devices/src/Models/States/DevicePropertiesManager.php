@@ -472,7 +472,7 @@ final class DevicePropertiesManager extends PropertiesManager
 			throw new Exceptions\InvalidArgument('Mapped property could not be stored as from device');
 		}
 
-		$state = $this->loadValue($property, $forWriting);
+		$state = $this->loadValue($mappedProperty ?? $property, $forWriting);
 
 		if ($data->offsetExists(States\Property::ACTUAL_VALUE_FIELD)) {
 			try {

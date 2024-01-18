@@ -94,16 +94,24 @@ final class Manager
 			throw new Exceptions\NotImplemented('Channel properties state manager is not registered');
 		}
 
-		$updatedState = $this->manager->update($state, $values);
+		$updatedState = $this->manager->update($property->getId(), $values);
+
+		if ($updatedState === false) {
+			return $state;
+		}
 
 		if ($updatedState->getActualValue() === $updatedState->getExpectedValue()) {
 			$updatedState = $this->manager->update(
-				$updatedState,
+				$property->getId(),
 				Utils\ArrayHash::from([
 					States\Property::EXPECTED_VALUE_FIELD => null,
 					States\Property::PENDING_FIELD => false,
 				]),
 			);
+
+			if ($updatedState === false) {
+				return $state;
+			}
 		}
 
 		if (
@@ -150,7 +158,7 @@ final class Manager
 			return true;
 		}
 
-		$result = $this->manager->delete($state);
+		$result = $this->manager->delete($property->getId());
 
 		$this->dispatcher?->dispatch(new Events\ChannelPropertyStateEntityDeleted($property));
 

@@ -71,7 +71,7 @@ final class CharacteristicsTest extends DbTestCase
 
 		$accessoryDriver = $this->getContainer()->getByType(Protocol\Driver::class);
 
-		assert($accessory instanceof Entities\Protocol\Bridge);
+		assert($accessory instanceof Entities\Protocol\Accessories\Bridge);
 
 		$accessoryDriver->addBridge($accessory);
 	}

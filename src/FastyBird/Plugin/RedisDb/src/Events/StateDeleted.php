@@ -15,7 +15,7 @@
 
 namespace FastyBird\Plugin\RedisDb\Events;
 
-use FastyBird\Plugin\RedisDb\States;
+use Ramsey\Uuid;
 use Symfony\Contracts\EventDispatcher;
 
 /**
@@ -29,13 +29,13 @@ use Symfony\Contracts\EventDispatcher;
 class StateDeleted extends EventDispatcher\Event
 {
 
-	public function __construct(private readonly States\State $state)
+	public function __construct(private readonly Uuid\UuidInterface $id)
 	{
 	}
 
-	public function getState(): States\State
+	public function getId(): Uuid\UuidInterface
 	{
-		return $this->state;
+		return $this->id;
 	}
 
 }

@@ -16,6 +16,7 @@
 namespace FastyBird\Plugin\RedisDb\Events;
 
 use FastyBird\Plugin\RedisDb\States;
+use Ramsey\Uuid;
 use Symfony\Contracts\EventDispatcher;
 
 /**
@@ -29,8 +30,16 @@ use Symfony\Contracts\EventDispatcher;
 class StateCreated extends EventDispatcher\Event
 {
 
-	public function __construct(private readonly States\State $state)
+	public function __construct(
+		private readonly Uuid\UuidInterface $id,
+		private readonly States\State $state,
+	)
 	{
+	}
+
+	public function getId(): Uuid\UuidInterface
+	{
+		return $this->id;
 	}
 
 	public function getState(): States\State

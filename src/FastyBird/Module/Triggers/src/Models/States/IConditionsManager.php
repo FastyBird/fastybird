@@ -32,8 +32,8 @@ interface IConditionsManager
 
 	public function create(Uuid\UuidInterface $id, Utils\ArrayHash $values): States\Condition;
 
-	public function update(States\Condition $state, Utils\ArrayHash $values): States\Condition;
+	public function update(Uuid\UuidInterface $id, Utils\ArrayHash $values): States\Condition|false;
 
-	public function delete(States\Condition $state): bool;
+	public function delete(Uuid\UuidInterface $id): bool;
 
 }

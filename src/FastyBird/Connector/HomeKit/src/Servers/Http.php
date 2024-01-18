@@ -126,7 +126,7 @@ final class Http implements Server
 			null,
 			Types\AccessoryCategory::get(Types\AccessoryCategory::BRIDGE),
 		);
-		assert($bridge instanceof Entities\Protocol\Bridge);
+		assert($bridge instanceof Entities\Protocol\Accessories\Bridge);
 
 		$this->accessoriesDriver->reset();
 		$this->accessoriesDriver->addBridge($bridge);
@@ -158,7 +158,7 @@ final class Http implements Server
 				$aid,
 				$this->deviceHelper->getAccessoryCategory($device),
 			);
-			assert($accessory instanceof Entities\Protocol\Device);
+			assert($accessory instanceof Entities\Protocol\Accessories\Generic);
 
 			$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
 			$findChannelsQuery->forDevice($device);
@@ -204,21 +204,24 @@ final class Http implements Server
 			$bridgedAccessories[] = $accessory;
 		}
 
-		usort($bridgedAccessories, static function (Entities\Protocol\Device $a, Entities\Protocol\Device $b) {
-			if ($a->getAid() === null) {
-				return 1;
-			}
+		usort(
+			$bridgedAccessories,
+			static function (Entities\Protocol\Accessories\Generic $a, Entities\Protocol\Accessories\Generic $b) {
+				if ($a->getAid() === null) {
+					return 1;
+				}
 
-			if ($b->getAid() === null) {
-				return -1;
-			}
+				if ($b->getAid() === null) {
+					return -1;
+				}
 
-			if ($a->getAid() === $b->getAid()) {
-				return 0;
-			}
+				if ($a->getAid() === $b->getAid()) {
+					return 0;
+				}
 
-			return $a->getAid() <=> $b->getAid();
-		});
+				return $a->getAid() <=> $b->getAid();
+			},
+		);
 
 		foreach ($bridgedAccessories as $accessory) {
 			$this->accessoriesDriver->addBridgedAccessory($accessory);

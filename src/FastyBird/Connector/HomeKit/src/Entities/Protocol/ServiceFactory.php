@@ -15,6 +15,7 @@
 
 namespace FastyBird\Connector\HomeKit\Entities\Protocol;
 
+use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Helpers;
 use FastyBird\Connector\HomeKit\Types;
@@ -72,7 +73,9 @@ final class ServiceFactory
 			throw new Exceptions\InvalidState('Service definition is missing required attributes');
 		}
 
-		return new Service(
+		$serviceClassName = $this->getServiceClass($type);
+
+		return new $serviceClassName(
 			Helpers\Protocol::hapTypeToUuid(strval($serviceMetadata->offsetGet('UUID'))),
 			strval($type->getValue()),
 			$accessory,
@@ -89,6 +92,18 @@ final class ServiceFactory
 				'VirtualCharacteristics',
 			) : [],
 		);
+	}
+
+	/**
+	 * @return class-string<Entities\Protocol\Services\Generic>
+	 */
+	private function getServiceClass(Types\ServiceType $category): string
+	{
+		if ($category->equalsValue(Types\ServiceType::BATTERY_SERVICE)) {
+			return Entities\Protocol\Services\Battery::class;
+		}
+
+		return Entities\Protocol\Services\Generic::class;
 	}
 
 }

@@ -71,13 +71,13 @@ final class AccessoryFactory
 				throw new Exceptions\InvalidArgument('Bridge accessory owner have to be connector item instance');
 			}
 
-			$accessory = new Bridge($owner->getName() ?? $owner->getIdentifier(), $owner);
+			$accessory = new Entities\Protocol\Accessories\Bridge($owner->getName() ?? $owner->getIdentifier(), $owner);
 		} else {
 			if (!$owner instanceof MetadataDocuments\DevicesModule\Device) {
 				throw new Exceptions\InvalidArgument('Device accessory owner have to be device item instance');
 			}
 
-			$accessoryClassName = $this->getDeviceClass($category);
+			$accessoryClassName = $this->getAccessoryClass($category);
 			$accessory = new $accessoryClassName($owner->getName() ?? $owner->getIdentifier(), $aid, $category, $owner);
 		}
 
@@ -138,7 +138,7 @@ final class AccessoryFactory
 			$accessoryInformation,
 		);
 
-		if ($accessory instanceof Bridge) {
+		if ($accessory instanceof Entities\Protocol\Accessories\Bridge) {
 			$accessoryModel->setValue(HomeKit\Constants::DEFAULT_BRIDGE_MODEL);
 		} else {
 			$accessoryModel->setValue(HomeKit\Constants::DEFAULT_DEVICE_MODEL);
@@ -156,7 +156,7 @@ final class AccessoryFactory
 
 		$accessory->addService($accessoryInformation);
 
-		if ($accessory instanceof Bridge) {
+		if ($accessory instanceof Entities\Protocol\Accessories\Bridge) {
 			$accessoryProtocolInformation = new Service(
 				Uuid\Uuid::fromString(Service::HAP_PROTOCOL_INFORMATION_SERVICE_UUID),
 				'HAPProtocolInformation',
@@ -180,15 +180,15 @@ final class AccessoryFactory
 	}
 
 	/**
-	 * @return class-string<Device>
+	 * @return class-string<Entities\Protocol\Accessories\Generic>
 	 */
-	private function getDeviceClass(Types\AccessoryCategory $category): string
+	private function getAccessoryClass(Types\AccessoryCategory $category): string
 	{
 		if ($category->equalsValue(Types\AccessoryCategory::LIGHT_BULB)) {
-			return Entities\Protocol\Devices\LightBulb::class;
+			return Entities\Protocol\Accessories\LightBulb::class;
 		}
 
-		return Entities\Protocol\Devices\Generic::class;
+		return Entities\Protocol\Accessories\Generic::class;
 	}
 
 }

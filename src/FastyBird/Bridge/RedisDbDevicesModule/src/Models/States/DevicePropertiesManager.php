@@ -17,13 +17,11 @@ namespace FastyBird\Bridge\RedisDbDevicesModule\Models\States;
 
 use FastyBird\Bridge\RedisDbDevicesModule\States;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Plugin\RedisDb\Exceptions as RedisDbExceptions;
 use FastyBird\Plugin\RedisDb\Models as RedisDbModels;
 use Nette;
 use Nette\Utils;
 use Ramsey\Uuid;
-use function assert;
 
 /**
  * Device property states manager
@@ -65,18 +63,14 @@ class DevicePropertiesManager implements DevicesModels\States\Devices\IManager
 	/**
 	 * @throws RedisDbExceptions\InvalidState
 	 */
-	public function update(DevicesStates\DeviceProperty $state, Utils\ArrayHash $values): States\DeviceProperty
+	public function update(Uuid\UuidInterface $id, Utils\ArrayHash $values): States\DeviceProperty|false
 	{
-		assert($state instanceof States\DeviceProperty);
-
-		return $this->statesManager->update($state, $values, $this->database);
+		return $this->statesManager->update($id, $values, $this->database);
 	}
 
-	public function delete(DevicesStates\DeviceProperty $state): bool
+	public function delete(Uuid\UuidInterface $id): bool
 	{
-		assert($state instanceof States\DeviceProperty);
-
-		return $this->statesManager->delete($state, $this->database);
+		return $this->statesManager->delete($id, $this->database);
 	}
 
 }
