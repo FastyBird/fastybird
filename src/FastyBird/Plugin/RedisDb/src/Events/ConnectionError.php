@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * StateCreated.php
+ * ConnectionError.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,41 +10,32 @@
  * @subpackage     Events
  * @since          1.0.0
  *
- * @date           13.10.22
+ * @date           09.10.21
  */
 
 namespace FastyBird\Plugin\RedisDb\Events;
 
-use FastyBird\Plugin\RedisDb\States;
-use Ramsey\Uuid;
 use Symfony\Contracts\EventDispatcher;
+use Throwable;
 
 /**
- * After state is created event
+ * Connection error event
  *
  * @package        FastyBird:RedisDbPlugin!
  * @subpackage     Events
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class StateCreated extends EventDispatcher\Event
+class ConnectionError extends EventDispatcher\Event
 {
 
-	public function __construct(
-		private readonly Uuid\UuidInterface $id,
-		private readonly States\State $state,
-	)
+	public function __construct(private readonly Throwable $ex)
 	{
 	}
 
-	public function getId(): Uuid\UuidInterface
+	public function getException(): Throwable
 	{
-		return $this->id;
-	}
-
-	public function getState(): States\State
-	{
-		return $this->state;
+		return $this->ex;
 	}
 
 }

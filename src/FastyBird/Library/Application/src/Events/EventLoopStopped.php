@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Error.php
+ * EventLoopStopped.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,38 +10,22 @@
  * @subpackage     Events
  * @since          1.0.0
  *
- * @date           09.10.21
+ * @date           19.01.24
  */
 
-namespace FastyBird\Plugin\RedisDb\Events;
+namespace FastyBird\Library\Application\Events;
 
-use Clue\React\Redis;
 use Symfony\Contracts\EventDispatcher;
-use Throwable;
 
 /**
- * Connection error event
+ * Event loop was stopped event
  *
  * @package        FastyBird:RedisDbPlugin!
  * @subpackage     Events
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Error extends EventDispatcher\Event
+class EventLoopStopped extends EventDispatcher\Event
 {
-
-	public function __construct(private readonly Throwable $ex, private readonly Redis\RedisClient $client)
-	{
-	}
-
-	public function getException(): Throwable
-	{
-		return $this->ex;
-	}
-
-	public function getClient(): Redis\RedisClient
-	{
-		return $this->client;
-	}
 
 }

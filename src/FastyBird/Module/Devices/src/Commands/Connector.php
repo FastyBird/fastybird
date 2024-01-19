@@ -489,7 +489,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 			);
 		}
 
-		$this->eventLoop->futureTick(function (): void {
+		$this->eventLoop->futureTick(async(function (): void {
 			assert($this->connector instanceof MetadataDocuments\DevicesModule\Connector);
 
 			if ($this->mode === self::MODE_DISCOVER) {
@@ -556,20 +556,20 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 			foreach ($this->exchangeFactories as $exchangeFactory) {
 				$exchangeFactory->create();
 			}
-		});
+		}));
 
-		$this->eventLoop->addSignal(SIGTERM, function (): void {
+		$this->eventLoop->addSignal(SIGTERM, async(function (): void {
 			$this->terminate();
-		});
+		}));
 
-		$this->eventLoop->addSignal(SIGINT, function (): void {
+		$this->eventLoop->addSignal(SIGINT, async(function (): void {
 			$this->terminate();
-		});
+		}));
 
 		$this->databaseRefreshTimer = $this->eventLoop->addPeriodicTimer(
 			self::DATABASE_REFRESH_INTERVAL,
-			function (): void {
-				$this->eventLoop->futureTick(function (): void {
+			async(function (): void {
+				$this->eventLoop->futureTick(async(function (): void {
 					// Check if ping to DB is possible...
 					if (!$this->database->ping()) {
 						// ...if not, try to reconnect
@@ -580,8 +580,8 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 							throw new Exceptions\Terminate('Connection to database could not be re-established');
 						}
 					}
-				});
-			},
+				}));
+			}),
 		);
 	}
 
@@ -629,7 +629,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 			// Wait until connector is fully terminated
 			$this->eventLoop->addTimer(
 				self::SHUTDOWN_WAITING_DELAY,
-				function () use ($connector, $service): void {
+				async(function () use ($connector, $service): void {
 					if ($this->mode === self::MODE_DISCOVER) {
 						$this->dispatcher?->dispatch(new Events\AfterConnectorDiscoveryTerminate($service));
 					} else {
@@ -652,7 +652,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 					}
 
 					$this->eventLoop->stop();
-				},
+				}),
 			);
 
 		} catch (Throwable $ex) {

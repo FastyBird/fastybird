@@ -118,7 +118,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 		$channelPropertyStateRepository = $this->createMock(Models\States\Channels\Repository::class);
 		$channelPropertyStateRepository
 			->expects(self::exactly(1))
-			->method('findOne')
+			->method('find')
 			->willReturn($stored);
 
 		$this->mockContainerService(
@@ -231,7 +231,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 		$channelPropertyStateRepository = $this->createMock(Models\States\Channels\Repository::class);
 		$channelPropertyStateRepository
 			->expects(self::exactly(1))
-			->method('findOne')
+			->method('find')
 			->willReturn($stored);
 
 		$this->mockContainerService(

@@ -34,7 +34,6 @@ use Nette\Utils;
 use Orisai\ObjectMapper;
 use function assert;
 use function is_array;
-use function is_bool;
 use function strval;
 
 /**
@@ -204,13 +203,10 @@ final class DevicePropertiesManager extends PropertiesManager
 
 	public function delete(
 		MetadataDocuments\DevicesModule\DeviceDynamicProperty $property,
-	): bool
+	): void
 	{
 		try {
-			$result = $this->devicePropertiesStatesManager->delete($property);
-			assert(is_bool($result));
-
-			return $result;
+			$this->devicePropertiesStatesManager->delete($property);
 		} catch (Exceptions\NotImplemented) {
 			$this->logger->warning(
 				'Devices states manager is not configured. State could not be saved',
@@ -220,8 +216,6 @@ final class DevicePropertiesManager extends PropertiesManager
 				],
 			);
 		}
-
-		return false;
 	}
 
 	/**
@@ -302,7 +296,7 @@ final class DevicePropertiesManager extends PropertiesManager
 		}
 
 		try {
-			$state = $this->devicePropertyStateRepository->findOne($property);
+			$state = $this->devicePropertyStateRepository->find($property->getId());
 
 			if ($state === null) {
 				return null;
@@ -582,47 +576,37 @@ final class DevicePropertiesManager extends PropertiesManager
 			return;
 		}
 
+		if (
+			$state !== null
+			&& MetadataUtilities\Value::flattenValue($state->getActualValue()) === $data->offsetGet(
+				States\Property::EXPECTED_VALUE_FIELD,
+			)
+		) {
+			$data->offsetSet(States\Property::EXPECTED_VALUE_FIELD, null);
+			$data->offsetSet(States\Property::PENDING_FIELD, false);
+		}
+
 		try {
-			// In case synchronization failed...
-			if ($state === null) {
-				// ...create state in storage
-				$state = $this->devicePropertiesStatesManager->create(
-					$property,
-					$data,
-				);
-				assert($state instanceof States\DeviceProperty);
+			$result = $state === null ? $this->devicePropertiesStatesManager->create(
+				$property,
+				$data,
+			) : $this->devicePropertiesStatesManager->update(
+				$property,
+				$state,
+				$data,
+			);
 
-				$this->logger->debug(
-					'Device property state was created',
-					[
-						'source' => MetadataTypes\ModuleSource::DEVICES,
-						'type' => 'device-properties-states',
-						'property' => [
-							'id' => $property->getId()->toString(),
-							'state' => $state->toArray(),
-						],
+			$this->logger->debug(
+				$state === null ? 'Device property state was created' : 'Device property state was updated',
+				[
+					'source' => MetadataTypes\ModuleSource::DEVICES,
+					'type' => 'device-properties-states',
+					'property' => [
+						'id' => $property->getId()->toString(),
+						'state' => $result->toArray(),
 					],
-				);
-			} else {
-				$state = $this->devicePropertiesStatesManager->update(
-					$property,
-					$state,
-					$data,
-				);
-				assert($state instanceof States\DeviceProperty);
-
-				$this->logger->debug(
-					'Device property state was updated',
-					[
-						'source' => MetadataTypes\ModuleSource::DEVICES,
-						'type' => 'device-properties-states',
-						'property' => [
-							'id' => $property->getId()->toString(),
-							'state' => $state->toArray(),
-						],
-					],
-				);
-			}
+				],
+			);
 		} catch (Exceptions\NotImplemented) {
 			$this->logger->warning(
 				'Devices states manager is not configured. State could not be saved',

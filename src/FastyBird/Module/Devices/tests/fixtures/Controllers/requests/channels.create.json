@@ -1,7 +1,7 @@
 {
   "data": {
     "id": "e0f879e3-0e8f-4b72-bde4-7e3fbb89decc",
-    "type": "com.fastybird.devices-module/channel/general",
+    "type": "com.fastybird.devices-module/channel/generic",
     "attributes": {
       "identifier": "custom-channel",
       "name": "Device custom added channel"

@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Publishers.php
+ * Publisher.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -67,50 +67,49 @@ final class Publisher implements ExchangePublisher\Publisher
 				]),
 			);
 
+			if ($result === true) {
+				$this->logger->debug(
+					'Received message was pushed into data exchange',
+					[
+						'source' => MetadataTypes\PluginSource::REDISDB,
+						'type' => 'messages-publisher',
+						'message' => [
+							'routingKey' => $routingKey->getValue(),
+							'source' => $source->getValue(),
+							'data' => $entity?->toArray(),
+						],
+					],
+				);
+			} else {
+				$this->logger->error(
+					'Received message could not be pushed into data exchange',
+					[
+						'source' => MetadataTypes\PluginSource::REDISDB,
+						'type' => 'messages-publisher',
+						'message' => [
+							'routingKey' => $routingKey->getValue(),
+							'source' => $source->getValue(),
+							'data' => $entity?->toArray(),
+						],
+					],
+				);
+			}
 		} catch (Nette\Utils\JsonException $ex) {
 			$this->logger->error(
 				'Data could not be converted to message',
 				[
 					'source' => MetadataTypes\PluginSource::REDISDB,
 					'type' => 'messages-publisher',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'message' => [
 						'routingKey' => $routingKey->getValue(),
 						'source' => $source->getValue(),
 						'data' => $entity?->toArray(),
 					],
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
 			return;
-		}
-
-		if ($result === true) {
-			$this->logger->debug(
-				'Received message was pushed into data exchange',
-				[
-					'source' => MetadataTypes\PluginSource::REDISDB,
-					'type' => 'messages-publisher',
-					'message' => [
-						'routingKey' => $routingKey->getValue(),
-						'source' => $source->getValue(),
-						'data' => $entity?->toArray(),
-					],
-				],
-			);
-		} else {
-			$this->logger->error(
-				'Received message could not be pushed into data exchange',
-				[
-					'source' => MetadataTypes\PluginSource::REDISDB,
-					'type' => 'messages-publisher',
-					'message' => [
-						'routingKey' => $routingKey->getValue(),
-						'source' => $source->getValue(),
-						'data' => $entity?->toArray(),
-					],
-				],
-			);
 		}
 	}
 

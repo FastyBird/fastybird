@@ -50,11 +50,11 @@ use function array_map;
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="connector_type", type="string", length=40)
  * @ORM\DiscriminatorMap({
- *    "connector" = "FastyBird\Module\Devices\Entities\Connectors\Connector"
+ *    "generic" = "FastyBird\Module\Devices\Entities\Connectors\Connector"
  * })
  * @ORM\MappedSuperclass
  */
-abstract class Connector implements Entities\Entity,
+class Connector implements Entities\Entity,
 	Entities\EntityParams,
 	SimpleAuthEntities\Owner,
 	DoctrineTimestampable\Entities\IEntityCreated, DoctrineTimestampable\Entities\IEntityUpdated,
@@ -66,6 +66,8 @@ abstract class Connector implements Entities\Entity,
 	use SimpleAuthEntities\TOwner;
 	use DoctrineTimestampable\Entities\TEntityCreated;
 	use DoctrineTimestampable\Entities\TEntityUpdated;
+
+	public const TYPE = 'generic';
 
 	/**
 	 * @ORM\Id
@@ -150,7 +152,10 @@ abstract class Connector implements Entities\Entity,
 		$this->controls = new Common\Collections\ArrayCollection();
 	}
 
-	abstract public function getType(): string;
+	public function getType(): string
+	{
+		return self::TYPE;
+	}
 
 	public function getCategory(): MetadataTypes\ConnectorCategory
 	{
@@ -326,6 +331,11 @@ abstract class Connector implements Entities\Entity,
 	public function getSource(): MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource
 	{
 		return MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES);
+	}
+
+	public function getDiscriminatorName(): string
+	{
+		return self::TYPE;
 	}
 
 	/**

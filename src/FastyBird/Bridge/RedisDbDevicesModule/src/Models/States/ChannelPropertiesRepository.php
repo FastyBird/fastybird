@@ -16,8 +16,6 @@
 namespace FastyBird\Bridge\RedisDbDevicesModule\Models\States;
 
 use FastyBird\Bridge\RedisDbDevicesModule\States;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Plugin\RedisDb\Exceptions as RedisDbExceptions;
 use FastyBird\Plugin\RedisDb\Models as RedisDbModels;
@@ -57,19 +55,7 @@ class ChannelPropertiesRepository implements DevicesModels\States\Channels\IRepo
 	 * @throws RedisDbExceptions\InvalidArgument
 	 * @throws RedisDbExceptions\InvalidState
 	 */
-	public function findOne(
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty|DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped $property,
-	): States\ChannelProperty|null
-	{
-		return $this->stateRepository->findOne($property->getId(), $this->database);
-	}
-
-	/**
-	 * @throws RedisDbExceptions\InvalidArgument
-	 * @throws RedisDbExceptions\InvalidState
-	 */
-	public function findOneById(Uuid\UuidInterface $id): States\ChannelProperty|null
+	public function find(Uuid\UuidInterface $id): States\ChannelProperty|null
 	{
 		return $this->stateRepository->findOne($id, $this->database);
 	}

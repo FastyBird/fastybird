@@ -110,7 +110,7 @@ final class ModuleEntitiesTest extends TestCase
 
 					self::assertEquals([
 						'identifier' => 'device-name',
-						'type' => 'blank',
+						'type' => 'generic',
 						'owner' => null,
 						'name' => 'Device custom name',
 						'comment' => null,
@@ -145,7 +145,7 @@ final class ModuleEntitiesTest extends TestCase
 			->method('toArray')
 			->willReturn([
 				'identifier' => 'device-name',
-				'type' => 'blank',
+				'type' => 'generic',
 				'owner' => null,
 				'name' => 'Device custom name',
 				'comment' => null,
@@ -186,12 +186,12 @@ final class ModuleEntitiesTest extends TestCase
 			$publisher,
 		);
 
-		$connectorEntity = new Entities\Connectors\Blank(
-			'blank-connector-name',
+		$connectorEntity = new Entities\Connectors\Connector(
+			'generic-connector-name',
 			Uuid\Uuid::fromString('dd6aa4bc-2611-40c3-84ef-0a438cf51e67'),
 		);
 
-		$entity = new Entities\Devices\Blank('device-name', $connectorEntity, 'device-name');
+		$entity = new Entities\Devices\Device('device-name', $connectorEntity, 'device-name');
 		$entity->setName('Device custom name');
 
 		$eventArgs = $this->createMock(Persistence\Event\LifecycleEventArgs::class);
@@ -235,7 +235,7 @@ final class ModuleEntitiesTest extends TestCase
 
 					self::assertEquals([
 						'identifier' => 'device-name',
-						'type' => 'blank',
+						'type' => 'generic',
 						'owner' => null,
 						'name' => 'Device custom name',
 						'comment' => null,
@@ -270,7 +270,7 @@ final class ModuleEntitiesTest extends TestCase
 			->method('toArray')
 			->willReturn([
 				'identifier' => 'device-name',
-				'type' => 'blank',
+				'type' => 'generic',
 				'owner' => null,
 				'name' => 'Device custom name',
 				'comment' => null,
@@ -311,12 +311,12 @@ final class ModuleEntitiesTest extends TestCase
 			$publisher,
 		);
 
-		$connectorEntity = new Entities\Connectors\Blank(
-			'blank-connector-name',
+		$connectorEntity = new Entities\Connectors\Connector(
+			'generic-connector-name',
 			Uuid\Uuid::fromString('dd6aa4bc-2611-40c3-84ef-0a438cf51e67'),
 		);
 
-		$entity = new Entities\Devices\Blank('device-name', $connectorEntity, 'device-name');
+		$entity = new Entities\Devices\Device('device-name', $connectorEntity, 'device-name');
 		$entity->setName('Device custom name');
 
 		$eventArgs = $this->createMock(Persistence\Event\LifecycleEventArgs::class);
@@ -360,7 +360,7 @@ final class ModuleEntitiesTest extends TestCase
 
 					self::assertEquals([
 						'identifier' => 'device-name',
-						'type' => 'blank',
+						'type' => 'generic',
 						'owner' => null,
 						'name' => 'Device custom name',
 						'comment' => null,
@@ -373,12 +373,12 @@ final class ModuleEntitiesTest extends TestCase
 				}),
 			);
 
-		$connectorEntity = new Entities\Connectors\Blank(
-			'blank-connector-name',
+		$connectorEntity = new Entities\Connectors\Connector(
+			'generic-connector-name',
 			Uuid\Uuid::fromString('dd6aa4bc-2611-40c3-84ef-0a438cf51e67'),
 		);
 
-		$entity = new Entities\Devices\Blank('device-name', $connectorEntity, 'device-name');
+		$entity = new Entities\Devices\Device('device-name', $connectorEntity, 'device-name');
 		$entity->setName('Device custom name');
 
 		$entityManager = $this->getEntityManager();
@@ -403,7 +403,7 @@ final class ModuleEntitiesTest extends TestCase
 			->method('toArray')
 			->willReturn([
 				'identifier' => 'device-name',
-				'type' => 'blank',
+				'type' => 'generic',
 				'owner' => null,
 				'name' => 'Device custom name',
 				'comment' => null,

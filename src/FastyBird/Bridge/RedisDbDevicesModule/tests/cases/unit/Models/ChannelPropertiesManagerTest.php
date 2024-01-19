@@ -146,7 +146,7 @@ final class ChannelPropertiesManagerTest extends BaseTestCase
 
 		$repository = $this->container->getByType(Models\States\ChannelPropertiesRepository::class);
 
-		$state = $repository->findOne($property);
+		$state = $repository->find($property->getId());
 
 		self::assertNotNull($state);
 

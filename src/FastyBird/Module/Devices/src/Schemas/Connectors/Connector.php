@@ -17,6 +17,7 @@ namespace FastyBird\Module\Devices\Schemas\Connectors;
 
 use DateTimeInterface;
 use FastyBird\JsonApi\Schemas as JsonApiSchemas;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Router;
@@ -36,8 +37,13 @@ use function strval;
  * @subpackage     Schemas
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-abstract class Connector extends JsonApiSchemas\JsonApi
+class Connector extends JsonApiSchemas\JsonApi
 {
+
+	/**
+	 * Define entity schema type string
+	 */
+	public const SCHEMA_TYPE = MetadataTypes\ModuleSource::DEVICES . '/connector/' . Entities\Connectors\Connector::TYPE;
 
 	/**
 	 * Define relationships names
@@ -50,6 +56,16 @@ abstract class Connector extends JsonApiSchemas\JsonApi
 
 	public function __construct(private readonly Routing\IRouter $router)
 	{
+	}
+
+	public function getEntityClass(): string
+	{
+		return Entities\Connectors\Connector::class;
+	}
+
+	public function getType(): string
+	{
+		return self::SCHEMA_TYPE;
 	}
 
 	/**

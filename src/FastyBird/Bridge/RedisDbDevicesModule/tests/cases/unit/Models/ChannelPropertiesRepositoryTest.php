@@ -46,7 +46,7 @@ final class ChannelPropertiesRepositoryTest extends BaseTestCase
 
 		$repository = $this->container->getByType(Models\States\ChannelPropertiesRepository::class);
 
-		$state = $repository->findOneById($id);
+		$state = $repository->find($id);
 
 		self::assertIsObject($state);
 		self::assertSame($id->toString(), $state->getId()->toString());
@@ -93,7 +93,7 @@ final class ChannelPropertiesRepositoryTest extends BaseTestCase
 			->method('getId')
 			->willReturn($id);
 
-		$state = $repository->findOne($property);
+		$state = $repository->find($property->getId());
 
 		self::assertIsObject($state);
 		self::assertSame($id->toString(), $state->getId()->toString());

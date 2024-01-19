@@ -65,7 +65,11 @@ class ChannelPropertiesManager implements DevicesModels\States\Channels\IManager
 	 */
 	public function update(Uuid\UuidInterface $id, Utils\ArrayHash $values): States\ChannelProperty|false
 	{
-		return $this->statesManager->update($id, $values, $this->database);
+		try {
+			return $this->statesManager->update($id, $values, $this->database);
+		} catch (RedisDbExceptions\NotUpdated) {
+			return false;
+		}
 	}
 
 	public function delete(Uuid\UuidInterface $id): bool

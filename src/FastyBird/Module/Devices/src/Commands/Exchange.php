@@ -31,6 +31,7 @@ use Symfony\Component\Console\Input;
 use Symfony\Component\Console\Output;
 use Symfony\Component\Console\Style;
 use Throwable;
+use function React\Async\async;
 use const SIGINT;
 use const SIGTERM;
 
@@ -113,13 +114,13 @@ final class Exchange extends Console\Command\Command
 
 			$this->consumer->enable(Consumers\State::class);
 
-			$this->eventLoop->addSignal(SIGTERM, function (): void {
+			$this->eventLoop->addSignal(SIGTERM, async(function (): void {
 				$this->terminate();
-			});
+			}));
 
-			$this->eventLoop->addSignal(SIGINT, function (): void {
+			$this->eventLoop->addSignal(SIGINT, async(function (): void {
 				$this->terminate();
-			});
+			}));
 
 			$this->eventLoop->run();
 

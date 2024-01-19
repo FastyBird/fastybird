@@ -47,7 +47,7 @@ use function array_map;
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="channel_type", type="string", length=40)
  * @ORM\DiscriminatorMap({
- *    "channel" = "FastyBird\Module\Devices\Entities\Channels\Channel"
+ *    "generic" = "FastyBird\Module\Devices\Entities\Channels\Channel"
  * })
  * @ORM\MappedSuperclass
  */
@@ -62,7 +62,7 @@ class Channel implements Entities\Entity,
 	use DoctrineTimestampable\Entities\TEntityCreated;
 	use DoctrineTimestampable\Entities\TEntityUpdated;
 
-	public const TYPE = 'general';
+	public const TYPE = 'generic';
 
 	/**
 	 * @ORM\Id
@@ -294,7 +294,7 @@ class Channel implements Entities\Entity,
 
 	public function getDiscriminatorName(): string
 	{
-		return 'channel';
+		return self::TYPE;
 	}
 
 	/**

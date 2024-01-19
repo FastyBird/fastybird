@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Connection.php
+ * Configuration.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -25,7 +25,7 @@ use Nette;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Connection
+final class Configuration
 {
 
 	use Nette\SmartObject;

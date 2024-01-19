@@ -27,7 +27,7 @@ IGNORE INTO `fb_devices_module_channels` (`channel_id`, `device_id`, `channel_ca
 (_binary 0xc55dcc2f43c84f03862ea5a2c5ba91c4, _binary 0x552cea8a0e8141d9be2f839b079f315e, 'generic', 'preset_away', null, null, null, '2023-10-15 11:00:00', '2023-10-15 11:00:00', 'thermostat-device-addon-preset'),
 (_binary 0xe1cb79d9f61840ac9576258a501a98be, _binary 0x552cea8a0e8141d9be2f839b079f315e, 'generic', 'preset_eco', null, null, null, '2023-10-15 11:00:00', '2023-10-15 11:00:00', 'thermostat-device-addon-preset'),
 (_binary 0x9791d405104c449583a1ffca996924ba, _binary 0x552cea8a0e8141d9be2f839b079f315e, 'generic', 'preset_home', null, null, null, '2023-10-15 11:00:00', '2023-10-15 11:00:00', 'thermostat-device-addon-preset'),
-(_binary 0x6ecec6b9a48a48918d61d552e63e5f5a, _binary 0x495a7b6804284bdcb098dca416f03363, 'generic', 'thermometer', 'Heating element', null, null, '2023-10-15 11:00:00', '2023-10-15 11:00:00', 'channel');
+(_binary 0x6ecec6b9a48a48918d61d552e63e5f5a, _binary 0x495a7b6804284bdcb098dca416f03363, 'generic', 'thermometer', 'Heating element', null, null, '2023-10-15 11:00:00', '2023-10-15 11:00:00', 'generic');
 
 INSERT
 IGNORE INTO `fb_devices_module_channels_properties` (`property_id`, `channel_id`, `parent_id`, `property_category`, `property_identifier`, `property_name`, `property_settable`, `property_queryable`, `property_data_type`, `property_unit`, `property_format`, `property_invalid`, `property_scale`, `property_step`, `property_value`, `property_default`, `params`, `created_at`, `updated_at`, `property_type`) VALUES

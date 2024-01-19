@@ -20,7 +20,6 @@ use FastyBird\Plugin\RedisDb\Clients;
 use FastyBird\Plugin\RedisDb\Exceptions;
 use FastyBird\Plugin\RedisDb\States;
 use Nette;
-use Psr\EventDispatcher;
 use Psr\Log;
 use function class_exists;
 use function sprintf;
@@ -43,7 +42,6 @@ class StatesManagerFactory
 		private readonly Clients\Client $client,
 		private readonly States\StateFactory $stateFactory,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
-		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
@@ -67,7 +65,6 @@ class StatesManagerFactory
 			$this->stateFactory,
 			$this->dateTimeFactory,
 			$entity,
-			$this->dispatcher,
 			$this->logger,
 		);
 	}

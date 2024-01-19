@@ -245,7 +245,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 		}
 
 		try {
-			$state = $this->connectorPropertyStateRepository->findOne($property);
+			$state = $this->connectorPropertyStateRepository->find($property->getId());
 
 			if ($state === null) {
 				return null;

@@ -65,7 +65,11 @@ class DevicePropertiesManager implements DevicesModels\States\Devices\IManager
 	 */
 	public function update(Uuid\UuidInterface $id, Utils\ArrayHash $values): States\DeviceProperty|false
 	{
-		return $this->statesManager->update($id, $values, $this->database);
+		try {
+			return $this->statesManager->update($id, $values, $this->database);
+		} catch (RedisDbExceptions\NotUpdated) {
+			return false;
+		}
 	}
 
 	public function delete(Uuid\UuidInterface $id): bool

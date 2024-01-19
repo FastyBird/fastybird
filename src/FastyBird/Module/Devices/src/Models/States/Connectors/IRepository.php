@@ -15,8 +15,6 @@
 
 namespace FastyBird\Module\Devices\Models\States\Connectors;
 
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\States;
 use Ramsey\Uuid;
 
@@ -31,11 +29,7 @@ use Ramsey\Uuid;
 interface IRepository
 {
 
-	public function findOne(
-		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
-	): States\ConnectorProperty|null;
-
-	public function findOneById(
+	public function find(
 		Uuid\UuidInterface $id,
 	): States\ConnectorProperty|null;
 

@@ -23,14 +23,4 @@
             </property>
         </properties>
     </rule>
-
-    <!--Exclude rules/files -->
-    <rule ref="SlevomatCodingStandard.Files.LineLength.LineTooLong">
-        <exclude-pattern>src/Models/ChannelPropertiesManager\.php</exclude-pattern>
-        <exclude-pattern>src/Models/ChannelPropertiesRepository\.php</exclude-pattern>
-        <exclude-pattern>src/Models/ConnectorPropertiesManager\.php</exclude-pattern>
-        <exclude-pattern>src/Models/ConnectorPropertiesRepository\.php</exclude-pattern>
-        <exclude-pattern>src/Models/DevicePropertiesManager\.php</exclude-pattern>
-        <exclude-pattern>src/Models/DevicePropertiesRepository\.php</exclude-pattern>
-    </rule>
 </ruleset>

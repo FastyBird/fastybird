@@ -168,7 +168,7 @@ final class ConnectorsPropertiesRepositoryTest extends DbTestCase
 		$connector = $devicesRepository->findOneBy($findQuery);
 
 		self::assertInstanceOf(MetadataDocuments\DevicesModule\Connector::class, $connector);
-		self::assertSame('blank', $connector->getIdentifier());
+		self::assertSame('generic', $connector->getIdentifier());
 
 		$repository = $this->getContainer()->getByType(Models\Configuration\Connectors\Properties\Repository::class);
 

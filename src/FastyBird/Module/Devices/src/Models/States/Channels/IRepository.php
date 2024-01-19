@@ -15,8 +15,6 @@
 
 namespace FastyBird\Module\Devices\Models\States\Channels;
 
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\States;
 use Ramsey\Uuid;
 
@@ -31,13 +29,6 @@ use Ramsey\Uuid;
 interface IRepository
 {
 
-	public function findOne(
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped $property,
-	): States\ChannelProperty|null;
-
-	public function findOneById(
-		Uuid\UuidInterface $id,
-	): States\ChannelProperty|null;
+	public function find(Uuid\UuidInterface $id): States\ChannelProperty|null;
 
 }

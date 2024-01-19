@@ -1,30 +1,27 @@
 <?php declare(strict_types = 1);
 
 /**
- * Message.php
+ * Handler.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:RedisDbPlugin!
- * @subpackage     Handlers
+ * @subpackage     Exchange
  * @since          1.0.0
  *
  * @date           09.10.21
  */
 
-namespace FastyBird\Plugin\RedisDb\Handlers;
+namespace FastyBird\Plugin\RedisDb\Exchange;
 
 use Evenement;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumer;
 use FastyBird\Library\Exchange\Documents as ExchangeEntities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Plugin\RedisDb\Events;
-use FastyBird\Plugin\RedisDb\Exceptions;
 use FastyBird\Plugin\RedisDb\Utilities;
 use Nette;
-use Psr\EventDispatcher as PsrEventDispatcher;
 use Psr\Log;
 use Throwable;
 use function array_key_exists;
@@ -35,18 +32,17 @@ use function strval;
  * Redis client message handler
  *
  * @package        FastyBird:RedisDbPlugin!
- * @subpackage     Handlers
+ * @subpackage     Exchange
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Message extends Evenement\EventEmitter
+final class Handler extends Evenement\EventEmitter
 {
 
 	public function __construct(
 		private readonly Utilities\IdentifierGenerator $identifier,
 		private readonly ExchangeEntities\DocumentFactory $entityFactory,
 		private readonly ExchangeConsumer\Container $consumer,
-		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
@@ -54,8 +50,6 @@ final class Message extends Evenement\EventEmitter
 
 	public function handle(string $payload): void
 	{
-		$this->dispatcher?->dispatch(new Events\BeforeMessageHandled($payload));
-
 		try {
 			$data = Nette\Utils\Json::decode($payload, Nette\Utils\Json::FORCE_ARRAY);
 
@@ -87,8 +81,6 @@ final class Message extends Evenement\EventEmitter
 				'exception' => ApplicationHelpers\Logger::buildException($ex),
 			]);
 		}
-
-		$this->dispatcher?->dispatch(new Events\AfterMessageHandled($payload));
 	}
 
 	private function consume(
@@ -122,27 +114,9 @@ final class Message extends Evenement\EventEmitter
 			return;
 		}
 
-		try {
-			$this->dispatcher?->dispatch(new Events\MessageReceived(
-				$source,
-				$routingKey,
-				$entity,
-			));
+		$this->consumer->consume($source, $routingKey, $entity);
 
-			$this->consumer->consume($source, $routingKey, $entity);
-
-			$this->emit('message', [$source, $routingKey, $entity]);
-
-		} catch (Exceptions\UnprocessableMessage $ex) {
-			// Log error consume reason
-			$this->logger->error('Message could not be handled', [
-				'source' => MetadataTypes\PluginSource::REDISDB,
-				'type' => 'messages-handler',
-				'exception' => ApplicationHelpers\Logger::buildException($ex),
-			]);
-
-			return;
-		}
+		$this->emit('message', [$source, $routingKey, $entity]);
 	}
 
 	private function validateSource(

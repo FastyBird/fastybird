@@ -55,7 +55,12 @@ final class PublisherTest extends TestCase
 			->method('getIdentifier')
 			->willReturn('redis_client_identifier');
 
-		$publisher = new Publishers\Publisher($identifierGenerator, 'exchange_channel', $client, $dateTimeFactory);
+		$publisher = new Publishers\Publisher(
+			$identifierGenerator,
+			'exchange_channel',
+			$client,
+			$dateTimeFactory,
+		);
 
 		$publisher->publish(
 			MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),

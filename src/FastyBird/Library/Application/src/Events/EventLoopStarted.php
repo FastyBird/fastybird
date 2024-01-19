@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * AfterMessageHandled.php
+ * EventLoopStarted.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,31 +10,22 @@
  * @subpackage     Events
  * @since          1.0.0
  *
- * @date           09.10.21
+ * @date           19.01.24
  */
 
-namespace FastyBird\Plugin\RedisDb\Events;
+namespace FastyBird\Library\Application\Events;
 
 use Symfony\Contracts\EventDispatcher;
 
 /**
- * After message handled event
+ * Event loop was started event
  *
  * @package        FastyBird:RedisDbPlugin!
  * @subpackage     Events
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class AfterMessageHandled extends EventDispatcher\Event
+class EventLoopStarted extends EventDispatcher\Event
 {
-
-	public function __construct(private readonly string $payload)
-	{
-	}
-
-	public function getPayload(): string
-	{
-		return $this->payload;
-	}
 
 }

@@ -15,7 +15,6 @@
 
 namespace FastyBird\Plugin\RedisDb\Models\States;
 
-use Clue\React\Redis;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\RedisDb\Clients;
@@ -25,11 +24,7 @@ use FastyBird\Plugin\RedisDb\States\State as T;
 use Nette;
 use Psr\Log;
 use Ramsey\Uuid;
-use React\Promise;
 use Throwable;
-use function assert;
-use function is_string;
-use function React\Async\await;
 
 /**
  * State repository
@@ -49,7 +44,7 @@ class StatesRepository
 	 * @param class-string<T> $entity
 	 */
 	public function __construct(
-		private readonly Clients\Client|Redis\RedisClient $client,
+		private readonly Clients\Client $client,
 		private readonly States\StateFactory $stateFactory,
 		private readonly string $entity = States\State::class,
 		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
@@ -82,16 +77,7 @@ class StatesRepository
 		try {
 			$this->client->select($database);
 
-			$getResult = $this->client->get($id->toString());
-
-			if ($getResult instanceof Promise\PromiseInterface) {
-				$result = await($getResult);
-				assert(is_string($result) || $result === null);
-
-				return $result;
-			}
-
-			return $getResult;
+			return $this->client->get($id->toString());
 		} catch (Throwable $ex) {
 			$this->logger->error('Content could not be loaded', [
 				'source' => MetadataTypes\PluginSource::REDISDB,

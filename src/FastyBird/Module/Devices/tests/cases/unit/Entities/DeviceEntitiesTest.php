@@ -72,7 +72,7 @@ final class DeviceEntitiesTest extends DbTestCase
 		self::assertSame('first-device', $parent->getIdentifier());
 
 		$child = $manager->create(Utils\ArrayHash::from([
-			'entity' => Entities\Devices\Blank::class,
+			'entity' => Entities\Devices\Device::class,
 			'identifier' => 'new-child-device',
 			'connector' => $parent->getConnector(),
 			'name' => 'New child device',

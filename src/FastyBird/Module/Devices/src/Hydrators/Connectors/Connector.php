@@ -31,7 +31,7 @@ use function is_scalar;
  * @subpackage     Hydrators
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-abstract class Connector extends JsonApiHydrators\Hydrator
+class Connector extends JsonApiHydrators\Hydrator
 {
 
 	/** @var array<int|string, string> */

@@ -24,7 +24,6 @@ use FastyBird\Module\Devices\States;
 use Nette;
 use Nette\Utils;
 use Psr\EventDispatcher as PsrEventDispatcher;
-use React\Promise;
 use function property_exists;
 
 /**
@@ -42,15 +41,12 @@ final class Manager
 
 	public function __construct(
 		private readonly IManager|null $manager = null,
-		private readonly IRepository|null $repository = null,
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
 	}
 
 	/**
-	 * @return States\DeviceProperty|Promise\PromiseInterface<States\DeviceProperty>
-	 *
 	 * @throws Exceptions\NotImplemented
 	 *
 	 * @interal
@@ -58,7 +54,7 @@ final class Manager
 	public function create(
 		MetadataDocuments\DevicesModule\DeviceDynamicProperty $property,
 		Utils\ArrayHash $values,
-	): States\DeviceProperty|Promise\PromiseInterface
+	): States\DeviceProperty
 	{
 		if ($this->manager === null) {
 			throw new Exceptions\NotImplemented('Device properties state manager is not registered');
@@ -77,18 +73,12 @@ final class Manager
 
 		$result = $this->manager->create($property->getId(), $values);
 
-		if ($result instanceof Promise\PromiseInterface) {
-			throw new Exceptions\NotImplemented('Promise base manager is not implemented');
-		}
-
 		$this->dispatcher?->dispatch(new Events\DevicePropertyStateEntityCreated($property, $result));
 
 		return $result;
 	}
 
 	/**
-	 * @return States\DeviceProperty|Promise\PromiseInterface<States\DeviceProperty|false>
-	 *
 	 * @throws Exceptions\NotImplemented
 	 *
 	 * @interal
@@ -97,38 +87,27 @@ final class Manager
 		MetadataDocuments\DevicesModule\DeviceDynamicProperty $property,
 		States\DeviceProperty $state,
 		Utils\ArrayHash $values,
-	): States\DeviceProperty|Promise\PromiseInterface
+	): States\DeviceProperty
 	{
 		if ($this->manager === null) {
 			throw new Exceptions\NotImplemented('Device properties state manager is not registered');
 		}
 
-		$result = $this->manager->update($property->getId(), $values);
-
-		if ($result instanceof Promise\PromiseInterface) {
-			throw new Exceptions\NotImplemented('Promise base manager is not implemented');
+		if (
+			property_exists($values, States\Property::ACTUAL_VALUE_FIELD)
+			&& property_exists($values, States\Property::EXPECTED_VALUE_FIELD)
+			&& $values->offsetGet(States\Property::ACTUAL_VALUE_FIELD) === $values->offsetGet(
+				States\Property::EXPECTED_VALUE_FIELD,
+			)
+		) {
+			$values->offsetSet(States\Property::EXPECTED_VALUE_FIELD, null);
+			$values->offsetSet(States\Property::PENDING_FIELD, null);
 		}
+
+		$result = $this->manager->update($property->getId(), $values);
 
 		if ($result === false) {
 			return $state;
-		}
-
-		if ($result->getActualValue() === $result->getExpectedValue()) {
-			$result = $this->manager->update(
-				$property->getId(),
-				Utils\ArrayHash::from([
-					States\Property::EXPECTED_VALUE_FIELD => null,
-					States\Property::PENDING_FIELD => false,
-				]),
-			);
-
-			if ($result instanceof Promise\PromiseInterface) {
-				throw new Exceptions\NotImplemented('Promise base manager is not implemented');
-			}
-
-			if ($result === false) {
-				return $state;
-			}
 		}
 
 		if (
@@ -155,31 +134,19 @@ final class Manager
 	}
 
 	/**
-	 * @return Promise\PromiseInterface<bool>|bool
-	 *
 	 * @throws Exceptions\NotImplemented
 	 *
 	 * @interal
 	 */
 	public function delete(
 		MetadataDocuments\DevicesModule\DeviceDynamicProperty $property,
-	): Promise\PromiseInterface|bool
+	): bool
 	{
-		if ($this->manager === null || $this->repository === null) {
+		if ($this->manager === null) {
 			throw new Exceptions\NotImplemented('Device properties state manager is not registered');
 		}
 
-		$state = $this->repository->findOne($property);
-
-		if ($state === null) {
-			return true;
-		}
-
 		$result = $this->manager->delete($property->getId());
-
-		if ($result instanceof Promise\PromiseInterface) {
-			return $result;
-		}
 
 		$this->dispatcher?->dispatch(new Events\DevicePropertyStateEntityDeleted($property));
 

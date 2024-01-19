@@ -41,7 +41,6 @@ final class Manager
 
 	public function __construct(
 		private readonly IManager|null $manager = null,
-		private readonly IRepository|null $repository = null,
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
@@ -72,11 +71,11 @@ final class Manager
 			$values->offsetSet(States\Property::PENDING_FIELD, null);
 		}
 
-		$createdState = $this->manager->create($property->getId(), $values);
+		$result = $this->manager->create($property->getId(), $values);
 
-		$this->dispatcher?->dispatch(new Events\ConnectorPropertyStateEntityCreated($property, $createdState));
+		$this->dispatcher?->dispatch(new Events\ConnectorPropertyStateEntityCreated($property, $result));
 
-		return $createdState;
+		return $result;
 	}
 
 	/**
@@ -94,24 +93,21 @@ final class Manager
 			throw new Exceptions\NotImplemented('Connector properties state manager is not registered');
 		}
 
-		$updatedState = $this->manager->update($property->getId(), $values);
-
-		if ($updatedState === false) {
-			return $state;
+		if (
+			property_exists($values, States\Property::ACTUAL_VALUE_FIELD)
+			&& property_exists($values, States\Property::EXPECTED_VALUE_FIELD)
+			&& $values->offsetGet(States\Property::ACTUAL_VALUE_FIELD) === $values->offsetGet(
+				States\Property::EXPECTED_VALUE_FIELD,
+			)
+		) {
+			$values->offsetSet(States\Property::EXPECTED_VALUE_FIELD, null);
+			$values->offsetSet(States\Property::PENDING_FIELD, null);
 		}
 
-		if ($updatedState->getActualValue() === $updatedState->getExpectedValue()) {
-			$updatedState = $this->manager->update(
-				$property->getId(),
-				Utils\ArrayHash::from([
-					States\Property::EXPECTED_VALUE_FIELD => null,
-					States\Property::PENDING_FIELD => false,
-				]),
-			);
+		$result = $this->manager->update($property->getId(), $values);
 
-			if ($updatedState === false) {
-				return $state;
-			}
+		if ($result === false) {
+			return $state;
 		}
 
 		if (
@@ -123,20 +119,18 @@ final class Manager
 					: $state->getPending(),
 				States\Property::VALID_FIELD => $state->isValid(),
 			] !== [
-				States\Property::ACTUAL_VALUE_FIELD => $updatedState->getActualValue(),
-				States\Property::EXPECTED_VALUE_FIELD => $updatedState->getExpectedValue(),
-				States\Property::PENDING_FIELD => $updatedState->getPending() instanceof DateTimeInterface
-					? $updatedState->getPending()->format(DateTimeInterface::ATOM)
-					: $updatedState->getPending(),
-				States\Property::VALID_FIELD => $updatedState->isValid(),
+				States\Property::ACTUAL_VALUE_FIELD => $result->getActualValue(),
+				States\Property::EXPECTED_VALUE_FIELD => $result->getExpectedValue(),
+				States\Property::PENDING_FIELD => $result->getPending() instanceof DateTimeInterface
+					? $result->getPending()->format(DateTimeInterface::ATOM)
+					: $result->getPending(),
+				States\Property::VALID_FIELD => $result->isValid(),
 			]
 		) {
-			$this->dispatcher?->dispatch(
-				new Events\ConnectorPropertyStateEntityUpdated($property, $state, $updatedState),
-			);
+			$this->dispatcher?->dispatch(new Events\ConnectorPropertyStateEntityUpdated($property, $state, $result));
 		}
 
-		return $updatedState;
+		return $result;
 	}
 
 	/**
@@ -148,14 +142,8 @@ final class Manager
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
 	): bool
 	{
-		if ($this->manager === null || $this->repository === null) {
+		if ($this->manager === null) {
 			throw new Exceptions\NotImplemented('Connector properties state manager is not registered');
-		}
-
-		$state = $this->repository->findOne($property);
-
-		if ($state === null) {
-			return true;
 		}
 
 		$result = $this->manager->delete($property->getId());

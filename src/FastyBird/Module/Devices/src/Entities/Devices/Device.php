@@ -50,11 +50,11 @@ use function strval;
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="device_type", type="string", length=40)
  * @ORM\DiscriminatorMap({
- *    "device" = "FastyBird\Module\Devices\Entities\Devices\Device"
+ *    "generic" = "FastyBird\Module\Devices\Entities\Devices\Device"
  * })
  * @ORM\MappedSuperclass
  */
-abstract class Device implements Entities\Entity,
+class Device implements Entities\Entity,
 	Entities\EntityParams,
 	SimpleAuthEntities\Owner,
 	DoctrineTimestampable\Entities\IEntityCreated, DoctrineTimestampable\Entities\IEntityUpdated,
@@ -66,6 +66,8 @@ abstract class Device implements Entities\Entity,
 	use SimpleAuthEntities\TOwner;
 	use DoctrineTimestampable\Entities\TEntityCreated;
 	use DoctrineTimestampable\Entities\TEntityUpdated;
+
+	public const TYPE = 'generic';
 
 	/**
 	 * @ORM\Id
@@ -178,7 +180,10 @@ abstract class Device implements Entities\Entity,
 		$this->properties = new Common\Collections\ArrayCollection();
 	}
 
-	abstract public function getType(): string;
+	public function getType(): string
+	{
+		return self::TYPE;
+	}
 
 	public function getCategory(): MetadataTypes\DeviceCategory
 	{
@@ -438,6 +443,11 @@ abstract class Device implements Entities\Entity,
 	public function getSource(): MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource
 	{
 		return MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES);
+	}
+
+	public function getDiscriminatorName(): string
+	{
+		return self::TYPE;
 	}
 
 	/**

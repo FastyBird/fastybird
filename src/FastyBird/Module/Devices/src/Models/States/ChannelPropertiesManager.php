@@ -299,7 +299,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 		}
 
 		try {
-			$state = $this->channelPropertyStateRepository->findOne($property);
+			$state = $this->channelPropertyStateRepository->find($property->getId());
 
 			if ($state === null) {
 				return null;

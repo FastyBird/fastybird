@@ -15,6 +15,8 @@
 
 namespace FastyBird\Library\Application\Helpers;
 
+use FastyBird\Library\Application\Events;
+use Psr\EventDispatcher;
 use React\EventLoop as ReactEventLoop;
 use function error_get_last;
 use function register_shutdown_function;
@@ -38,6 +40,12 @@ class LoopWrapper implements ReactEventLoop\LoopInterface
 	private ReactEventLoop\LoopInterface|null $instance = null;
 
 	private bool $stopped = false;
+
+	public function __construct(
+		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
+	)
+	{
+	}
 
 	public function addTimer($interval, $callback)
 	{
@@ -91,12 +99,16 @@ class LoopWrapper implements ReactEventLoop\LoopInterface
 
 	public function run(): void
 	{
+		$this->dispatcher?->dispatch(new Events\EventLoopStarted());
+
 		$this->get()->run();
 	}
 
 	public function stop(): void
 	{
 		$this->get()->stop();
+
+		$this->dispatcher?->dispatch(new Events\EventLoopStopped());
 	}
 
 	private function get(): ReactEventLoop\LoopInterface

@@ -1,7 +1,7 @@
 {
   "data": {
     "id": "69786d15-fd0c-4d9f-9378-33287c2009fa",
-    "type": "com.fastybird.devices-module/device/blank",
+    "type": "com.fastybird.devices-module/device/generic",
     "attributes": {
       "identifier": "updated-device",
       "name": "With name"

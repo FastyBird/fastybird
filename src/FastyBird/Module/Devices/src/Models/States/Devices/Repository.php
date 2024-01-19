@@ -15,8 +15,6 @@
 
 namespace FastyBird\Module\Devices\Models\States\Devices;
 
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\States;
 use Nette;
@@ -40,50 +38,17 @@ final class Repository
 	}
 
 	/**
-	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\NotImplemented
 	 *
 	 * @interal
 	 */
-	public function findOne(
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
-	): States\DeviceProperty|null
+	public function find(Uuid\UuidInterface $id): States\DeviceProperty|null
 	{
 		if ($this->repository === null) {
 			throw new Exceptions\NotImplemented('Device properties state repository is not registered');
 		}
 
-		if (
-			$property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
-			|| $property instanceof Entities\Devices\Properties\Mapped
-		) {
-			$parent = $property->getParent();
-
-			if ($parent instanceof Entities\Devices\Properties\Dynamic) {
-				return $this->findOne($parent);
-			} elseif ($parent instanceof Uuid\UuidInterface) {
-				return $this->findOneById($parent);
-			} else {
-				return null;
-			}
-		}
-
-		return $this->repository->findOne($property);
-	}
-
-	/**
-	 * @throws Exceptions\NotImplemented
-	 *
-	 * @interal
-	 */
-	public function findOneById(Uuid\UuidInterface $id): States\DeviceProperty|null
-	{
-		if ($this->repository === null) {
-			throw new Exceptions\NotImplemented('Device properties state repository is not registered');
-		}
-
-		return $this->repository->findOneById($id);
+		return $this->repository->find($id);
 	}
 
 }

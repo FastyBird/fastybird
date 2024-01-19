@@ -10,7 +10,7 @@
     "self": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa/channels"
   },
   "data": {
-    "type": "com.fastybird.devices-module/channel/general",
+    "type": "com.fastybird.devices-module/channel/generic",
     "id": "e0f879e3-0e8f-4b72-bde4-7e3fbb89decc",
     "attributes": {
       "category": "generic",
@@ -27,7 +27,7 @@
           "related": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa"
         },
         "data": {
-          "type": "com.fastybird.devices-module/device/blank",
+          "type": "com.fastybird.devices-module/device/generic",
           "id": "69786d15-fd0c-4d9f-9378-33287c2009fa"
         }
       },
