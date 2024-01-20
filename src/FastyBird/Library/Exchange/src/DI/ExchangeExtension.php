@@ -63,6 +63,9 @@ class ExchangeExtension extends DI\CompilerExtension
 		$builder->addDefinition($this->prefix('publisher'), new DI\Definitions\ServiceDefinition())
 			->setType(Publisher\Container::class);
 
+		$builder->addDefinition($this->prefix('publisher.async'), new DI\Definitions\ServiceDefinition())
+			->setType(Publisher\Async\Container::class);
+
 		$builder->addDefinition($this->prefix('entityFactory'), new DI\Definitions\ServiceDefinition())
 			->setType(Documents\DocumentFactory::class);
 	}
@@ -129,6 +132,37 @@ class ExchangeExtension extends DI\CompilerExtension
 			foreach ($publisherServices as $publisherService) {
 				if (
 					$publisherService->getType() !== Publisher\Container::class
+					&& (
+						$publisherService->getAutowired() === true
+						|| !is_bool($publisherService->getAutowired())
+					)
+				) {
+					// Container is not allowed to be autowired
+					$publisherService->setAutowired(false);
+
+					$publisherProxyService->addSetup('?->register(?)', [
+						'@self',
+						$publisherService,
+					]);
+				}
+			}
+		}
+
+		/**
+		 * ASYNC PUBLISHERS PROXY
+		 */
+
+		$publisherProxyServiceName = $builder->getByType(Publisher\Async\Container::class);
+
+		if ($publisherProxyServiceName !== null) {
+			$publisherProxyService = $builder->getDefinition($publisherProxyServiceName);
+			assert($publisherProxyService instanceof DI\Definitions\ServiceDefinition);
+
+			$publisherServices = $builder->findByType(Publisher\Async\Publisher::class);
+
+			foreach ($publisherServices as $publisherService) {
+				if (
+					$publisherService->getType() !== Publisher\Async\Container::class
 					&& (
 						$publisherService->getAutowired() === true
 						|| !is_bool($publisherService->getAutowired())
