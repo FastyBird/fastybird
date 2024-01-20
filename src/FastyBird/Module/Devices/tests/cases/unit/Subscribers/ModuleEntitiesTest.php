@@ -24,6 +24,8 @@ final class ModuleEntitiesTest extends TestCase
 	{
 		$publisher = $this->createMock(ExchangePublisher\Publisher::class);
 
+		$asyncPublisher = $this->createMock(ExchangePublisher\Async\Publisher::class);
+
 		$entityManager = $this->createMock(ORM\EntityManagerInterface::class);
 
 		$connectorPropertiesStates = $this->createMock(Models\States\ConnectorPropertiesManager::class);
@@ -68,6 +70,7 @@ final class ModuleEntitiesTest extends TestCase
 			$channelPropertiesStates,
 			$entityFactory,
 			$publisher,
+			$asyncPublisher,
 		);
 
 		self::assertSame([
@@ -122,6 +125,8 @@ final class ModuleEntitiesTest extends TestCase
 					return true;
 				}),
 			);
+
+		$asyncPublisher = $this->createMock(ExchangePublisher\Async\Publisher::class);
 
 		$entityManager = $this->getEntityManager();
 
@@ -184,6 +189,7 @@ final class ModuleEntitiesTest extends TestCase
 			$channelPropertiesStates,
 			$entityFactory,
 			$publisher,
+			$asyncPublisher,
 		);
 
 		$connectorEntity = new Entities\Connectors\Connector(
@@ -248,6 +254,8 @@ final class ModuleEntitiesTest extends TestCase
 				}),
 			);
 
+		$asyncPublisher = $this->createMock(ExchangePublisher\Async\Publisher::class);
+
 		$entityManager = $this->getEntityManager(true);
 
 		$connectorPropertiesStates = $this->createMock(Models\States\ConnectorPropertiesManager::class);
@@ -309,6 +317,7 @@ final class ModuleEntitiesTest extends TestCase
 			$channelPropertiesStates,
 			$entityFactory,
 			$publisher,
+			$asyncPublisher,
 		);
 
 		$connectorEntity = new Entities\Connectors\Connector(
@@ -372,6 +381,8 @@ final class ModuleEntitiesTest extends TestCase
 					return true;
 				}),
 			);
+
+		$asyncPublisher = $this->createMock(ExchangePublisher\Async\Publisher::class);
 
 		$connectorEntity = new Entities\Connectors\Connector(
 			'generic-connector-name',
@@ -442,6 +453,7 @@ final class ModuleEntitiesTest extends TestCase
 			$channelPropertiesStates,
 			$entityFactory,
 			$publisher,
+			$asyncPublisher,
 		);
 
 		$eventArgs = $this->createMock(Persistence\Event\LifecycleEventArgs::class);

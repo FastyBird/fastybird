@@ -25,6 +25,8 @@ use const E_CORE_ERROR;
 use const E_ERROR;
 use const E_RECOVERABLE_ERROR;
 use const E_USER_ERROR;
+use const SIGINT;
+use const SIGTERM;
 
 /**
  * React event loop wrapper
@@ -100,6 +102,14 @@ class LoopWrapper implements ReactEventLoop\LoopInterface
 	public function run(): void
 	{
 		$this->dispatcher?->dispatch(new Events\EventLoopStarted());
+
+		$this->addSignal(SIGTERM, function (): void {
+			$this->dispatcher?->dispatch(new Events\EventLoopStopped());
+		});
+
+		$this->addSignal(SIGINT, function (): void {
+			$this->dispatcher?->dispatch(new Events\EventLoopStopped());
+		});
 
 		$this->get()->run();
 	}

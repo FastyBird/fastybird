@@ -30,7 +30,6 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 	 * @throws DI\MissingServiceException
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 *
 	 * @dataProvider writeStates
@@ -143,7 +142,6 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 	 * @throws DI\MissingServiceException
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 *
 	 * @dataProvider setStates

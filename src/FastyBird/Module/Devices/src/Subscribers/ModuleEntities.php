@@ -78,10 +78,10 @@ final class ModuleEntities implements Common\EventSubscriber
 	public function getSubscribedEvents(): array
 	{
 		return [
-			ORM\Events::postPersist,
-			ORM\Events::postUpdate,
-			ORM\Events::preRemove,
-			ORM\Events::postRemove,
+			0 => ORM\Events::postPersist,
+			1 => ORM\Events::postUpdate,
+			2 => ORM\Events::preRemove,
+			3 => ORM\Events::postRemove,
 
 			ApplicationEvents\EventLoopStarted::class => 'enableAsync',
 			ApplicationEvents\EventLoopStopped::class => 'disableAsync',

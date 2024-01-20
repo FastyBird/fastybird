@@ -97,7 +97,6 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function write(
@@ -113,7 +112,6 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function set(
@@ -131,7 +129,6 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function setValidState(
@@ -159,7 +156,6 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function setPendingState(
@@ -349,7 +345,6 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	private function saveValue(
@@ -363,7 +358,11 @@ final class ConnectorPropertiesManager extends PropertiesManager
 			assert($property instanceof MetadataDocuments\DevicesModule\ConnectorDynamicProperty);
 		}
 
-		$state = $this->loadValue($property, $forWriting);
+		try {
+			$state = $this->connectorPropertyStateRepository->find($property->getId());
+		} catch (Exceptions\NotImplemented) {
+			$state = null;
+		}
 
 		if ($data->offsetExists(States\Property::ACTUAL_VALUE_FIELD)) {
 			try {

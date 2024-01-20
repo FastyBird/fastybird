@@ -101,7 +101,6 @@ final class ChannelPropertiesManager extends PropertiesManager
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function write(
@@ -118,7 +117,6 @@ final class ChannelPropertiesManager extends PropertiesManager
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function set(
@@ -137,7 +135,6 @@ final class ChannelPropertiesManager extends PropertiesManager
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function setValidState(
@@ -165,7 +162,6 @@ final class ChannelPropertiesManager extends PropertiesManager
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function setPendingState(
@@ -437,7 +433,6 @@ final class ChannelPropertiesManager extends PropertiesManager
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	private function saveValue(
@@ -469,7 +464,11 @@ final class ChannelPropertiesManager extends PropertiesManager
 			$property = $parent;
 		}
 
-		$state = $this->loadValue($mappedProperty ?? $property, $forWriting);
+		try {
+			$state = $this->channelPropertyStateRepository->find($property->getId());
+		} catch (Exceptions\NotImplemented) {
+			$state = null;
+		}
 
 		/**
 		 * IMPORTANT: ACTUAL VALUE field is meant to be used only by connectors for saving device actual value
