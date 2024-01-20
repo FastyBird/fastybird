@@ -23,8 +23,6 @@ use Psr\EventDispatcher as PsrEventDispatcher;
 use React\Promise;
 use SplObjectStorage;
 use Throwable;
-use function React\Async\async;
-use function React\Async\await;
 
 /**
  * Exchange async publishers proxy
@@ -58,48 +56,25 @@ class Container implements Publisher\Async\Publisher
 	{
 		$deferred = new Promise\Deferred();
 
-		$promise = async(function () use ($source, $routingKey, $entity): bool {
-			$promises = [];
+		$promises = [];
 
-			$this->dispatcher?->dispatch(new Events\BeforeMessagePublished($source, $routingKey, $entity));
+		$this->dispatcher?->dispatch(new Events\BeforeMessagePublished($source, $routingKey, $entity));
 
-			$this->publishers->rewind();
+		$this->publishers->rewind();
 
-			foreach ($this->publishers as $publisher) {
-				$promises[] = $publisher->publish($source, $routingKey, $entity);
-			}
+		foreach ($this->publishers as $publisher) {
+			$promises[] = $publisher->publish($source, $routingKey, $entity);
+		}
 
-			try {
-				$responses = await(Promise\all($promises));
+		Promise\all($promises)
+			->then(function () use($source, $routingKey, $entity, $deferred): void {
+				$this->dispatcher?->dispatch(new Events\AfterMessagePublished($source, $routingKey, $entity));
 
-			} catch (Throwable $ex) {
-				foreach ($promises as $promise) {
-					$promise->cancel();
-				}
-
-				throw $ex;
-			}
-
-			$this->dispatcher?->dispatch(new Events\AfterMessagePublished($source, $routingKey, $entity));
-
-			foreach ($responses as $response) {
-				if ($response === false) {
-					return false;
-				}
-			}
-
-			return true;
-		})();
-
-		$promise
-			->then(
-				static function (bool $result) use ($deferred): void {
-					$deferred->resolve($result);
-				},
-				static function (Throwable $ex) use ($deferred): void {
-					$deferred->reject($ex);
-				},
-			);
+				$deferred->resolve(true);
+			})
+			->catch(function (Throwable $ex) use($deferred) :void {
+				$deferred->reject($ex);
+			});
 
 		return $deferred->promise();
 	}
