@@ -112,16 +112,6 @@ class Client
 		return $deferred->promise();
 	}
 
-	/**
-	 * @param callable(string $channel, string $payload): void $handler
-	 */
-	public function subscribe(string $channel, callable $handler): void
-	{
-		$this->getClient()->subscribe($channel);
-
-		$this->getClient()->on('message', $handler);
-	}
-
 	public function select(int $database): void
 	{
 		if ($this->selectedDatabase !== $database) {
