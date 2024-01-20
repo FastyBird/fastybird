@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * IManagerAsync.php
+ * IManager.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,7 +13,7 @@
  * @date           19.01.23
  */
 
-namespace FastyBird\Module\Devices\Models\States\Devices;
+namespace FastyBird\Module\Devices\Models\States\Devices\Async;
 
 use FastyBird\Module\Devices\States;
 use Nette\Utils;
@@ -28,7 +28,7 @@ use React\Promise;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-interface IManagerAsync
+interface IManager
 {
 
 	/**

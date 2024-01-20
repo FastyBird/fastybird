@@ -341,13 +341,13 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			$this->prefix('models.states.repositories.connectorsProperties.async'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\States\Connectors\RepositoryAsync::class);
+			->setType(Models\States\Connectors\Async\Repository::class);
 
 		$builder->addDefinition(
 			$this->prefix('models.states.managers.connectorsProperties.async'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\States\Connectors\ManagerAsync::class);
+			->setType(Models\States\Connectors\Async\Manager::class);
 
 		// DEVICES
 		$builder->addDefinition(
@@ -366,13 +366,13 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			$this->prefix('models.states.repositories.devicesProperties.async'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\States\Devices\RepositoryAsync::class);
+			->setType(Models\States\Devices\Async\Repository::class);
 
 		$builder->addDefinition(
 			$this->prefix('models.states.managers.devicesProperties.async'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\States\Devices\ManagerAsync::class);
+			->setType(Models\States\Devices\Async\Manager::class);
 
 		// CHANNELS
 		$builder->addDefinition(
@@ -391,13 +391,13 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			$this->prefix('models.states.repositories.channelsProperties.async'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\States\Channels\RepositoryAsync::class);
+			->setType(Models\States\Channels\Async\Repository::class);
 
 		$builder->addDefinition(
 			$this->prefix('models.states.managers.channelsProperties.async'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\States\Channels\ManagerAsync::class);
+			->setType(Models\States\Channels\Async\Manager::class);
 
 		$builder->addDefinition(
 			$this->prefix('models.states.connectors.states'),

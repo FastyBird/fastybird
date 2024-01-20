@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ManagerAsync.php
+ * Manager.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,7 +13,7 @@
  * @date           08.02.22
  */
 
-namespace FastyBird\Module\Devices\Models\States\Devices;
+namespace FastyBird\Module\Devices\Models\States\Connectors\Async;
 
 use DateTimeInterface;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
@@ -26,36 +26,35 @@ use Nette\Utils;
 use Psr\EventDispatcher as PsrEventDispatcher;
 use React\Promise;
 use Throwable;
-use function property_exists;
 
 /**
- * Asynchronous device property states manager
+ * Asynchronous connector property states manager
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Models
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ManagerAsync
+final class Manager
 {
 
 	use Nette\SmartObject;
 
 	public function __construct(
-		private readonly Manager $fallback,
-		private readonly IManagerAsync|null $manager = null,
+		private readonly Models\States\Connectors\Manager $fallback,
+		private readonly IManager|null $manager = null,
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
 	}
 
 	/**
-	 * @return Promise\PromiseInterface<States\DeviceProperty>
+	 * @return Promise\PromiseInterface<States\ConnectorProperty>
 	 *
 	 * @interal
 	 */
 	public function create(
-		MetadataDocuments\DevicesModule\DeviceDynamicProperty $property,
+		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
 		Utils\ArrayHash $values,
 	): Promise\PromiseInterface
 	{
@@ -68,8 +67,8 @@ final class ManagerAsync
 		}
 
 		if (
-			property_exists($values, States\Property::ACTUAL_VALUE_FIELD)
-			&& property_exists($values, States\Property::EXPECTED_VALUE_FIELD)
+			$values->offsetExists(States\Property::ACTUAL_VALUE_FIELD)
+			&& $values->offsetExists(States\Property::EXPECTED_VALUE_FIELD)
 			&& $values->offsetGet(States\Property::ACTUAL_VALUE_FIELD) === $values->offsetGet(
 				States\Property::EXPECTED_VALUE_FIELD,
 			)
@@ -81,8 +80,8 @@ final class ManagerAsync
 		$deferred = new Promise\Deferred();
 
 		$this->manager->create($property->getId(), $values)
-			->then(function (States\DeviceProperty $result) use ($deferred, $property): void {
-				$this->dispatcher?->dispatch(new Events\DevicePropertyStateEntityCreated($property, $result));
+			->then(function (States\ConnectorProperty $result) use ($deferred, $property): void {
+				$this->dispatcher?->dispatch(new Events\ConnectorPropertyStateEntityCreated($property, $result));
 
 				$deferred->resolve($result);
 			})
@@ -94,13 +93,13 @@ final class ManagerAsync
 	}
 
 	/**
-	 * @return Promise\PromiseInterface<States\DeviceProperty|false>
+	 * @return Promise\PromiseInterface<States\ConnectorProperty|false>
 	 *
 	 * @interal
 	 */
 	public function update(
-		MetadataDocuments\DevicesModule\DeviceDynamicProperty $property,
-		States\DeviceProperty $state,
+		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
+		States\ConnectorProperty $state,
 		Utils\ArrayHash $values,
 	): Promise\PromiseInterface
 	{
@@ -113,8 +112,8 @@ final class ManagerAsync
 		}
 
 		if (
-			property_exists($values, States\Property::ACTUAL_VALUE_FIELD)
-			&& property_exists($values, States\Property::EXPECTED_VALUE_FIELD)
+			$values->offsetExists(States\Property::ACTUAL_VALUE_FIELD)
+			&& $values->offsetExists(States\Property::EXPECTED_VALUE_FIELD)
 			&& $values->offsetGet(States\Property::ACTUAL_VALUE_FIELD) === $values->offsetGet(
 				States\Property::EXPECTED_VALUE_FIELD,
 			)
@@ -126,7 +125,7 @@ final class ManagerAsync
 		$deferred = new Promise\Deferred();
 
 		$this->manager->update($property->getId(), $values)
-			->then(function (States\DeviceProperty|false $result) use ($deferred, $property, $state): void {
+			->then(function (States\ConnectorProperty|false $result) use ($deferred, $property, $state): void {
 				if ($result === false) {
 					$deferred->resolve($state);
 
@@ -151,7 +150,7 @@ final class ManagerAsync
 					]
 				) {
 					$this->dispatcher?->dispatch(
-						new Events\DevicePropertyStateEntityUpdated($property, $state, $result),
+						new Events\ConnectorPropertyStateEntityUpdated($property, $state, $result),
 					);
 				}
 
@@ -170,7 +169,7 @@ final class ManagerAsync
 	 * @interal
 	 */
 	public function delete(
-		MetadataDocuments\DevicesModule\DeviceDynamicProperty $property,
+		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
 	): Promise\PromiseInterface
 	{
 		if ($this->manager === null) {
@@ -185,7 +184,7 @@ final class ManagerAsync
 
 		$this->manager->delete($property->getId())
 			->then(function (bool $result) use ($deferred, $property): void {
-				$this->dispatcher?->dispatch(new Events\DevicePropertyStateEntityDeleted($property));
+				$this->dispatcher?->dispatch(new Events\ConnectorPropertyStateEntityDeleted($property));
 
 				$deferred->resolve($result);
 			})

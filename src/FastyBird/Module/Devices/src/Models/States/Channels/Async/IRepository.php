@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * IRepositoryAsync.php
+ * IRepository.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,25 +13,25 @@
  * @date           09.01.22
  */
 
-namespace FastyBird\Module\Devices\Models\States\Devices;
+namespace FastyBird\Module\Devices\Models\States\Channels\Async;
 
 use FastyBird\Module\Devices\States;
 use Ramsey\Uuid;
 use React\Promise;
 
 /**
- * Asynchronous device property repository interface
+ * Asynchronous channel property repository interface
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Models
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-interface IRepositoryAsync
+interface IRepository
 {
 
 	/**
-	 * @return Promise\PromiseInterface<States\DeviceProperty|null>
+	 * @return Promise\PromiseInterface<States\ChannelProperty|null>
 	 */
 	public function find(Uuid\UuidInterface $id): Promise\PromiseInterface;
 

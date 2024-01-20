@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * RepositoryAsync.php
+ * Repository.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,36 +13,37 @@
  * @date           09.01.22
  */
 
-namespace FastyBird\Module\Devices\Models\States\Channels;
+namespace FastyBird\Module\Devices\Models\States\Connectors\Async;
 
 use FastyBird\Module\Devices\Exceptions;
+use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\States;
 use Nette;
 use Ramsey\Uuid;
 use React\Promise;
 
 /**
- * Asynchronous channel property repository
+ * Asynchronous connector property repository
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Models
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class RepositoryAsync
+final class Repository
 {
 
 	use Nette\SmartObject;
 
 	public function __construct(
-		private readonly Repository $fallback,
-		private readonly IRepositoryAsync|null $repository = null,
+		private readonly Models\States\Connectors\Repository $fallback,
+		private readonly IRepository|null $repository = null,
 	)
 	{
 	}
 
 	/**
-	 * @return Promise\PromiseInterface<States\ChannelProperty|null>
+	 * @return Promise\PromiseInterface<States\ConnectorProperty|null>
 	 *
 	 * @interal
 	 */

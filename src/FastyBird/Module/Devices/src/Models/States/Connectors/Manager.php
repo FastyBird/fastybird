@@ -24,7 +24,6 @@ use FastyBird\Module\Devices\States;
 use Nette;
 use Nette\Utils;
 use Psr\EventDispatcher as PsrEventDispatcher;
-use function property_exists;
 
 /**
  * Connector property states manager
@@ -61,8 +60,8 @@ final class Manager
 		}
 
 		if (
-			property_exists($values, States\Property::ACTUAL_VALUE_FIELD)
-			&& property_exists($values, States\Property::EXPECTED_VALUE_FIELD)
+			$values->offsetExists(States\Property::ACTUAL_VALUE_FIELD)
+			&& $values->offsetExists(States\Property::EXPECTED_VALUE_FIELD)
 			&& $values->offsetGet(States\Property::ACTUAL_VALUE_FIELD) === $values->offsetGet(
 				States\Property::EXPECTED_VALUE_FIELD,
 			)
@@ -94,8 +93,8 @@ final class Manager
 		}
 
 		if (
-			property_exists($values, States\Property::ACTUAL_VALUE_FIELD)
-			&& property_exists($values, States\Property::EXPECTED_VALUE_FIELD)
+			$values->offsetExists(States\Property::ACTUAL_VALUE_FIELD)
+			&& $values->offsetExists(States\Property::EXPECTED_VALUE_FIELD)
 			&& $values->offsetGet(States\Property::ACTUAL_VALUE_FIELD) === $values->offsetGet(
 				States\Property::EXPECTED_VALUE_FIELD,
 			)

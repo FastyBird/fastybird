@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * IManagerAsync.php
+ * IManager.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,7 +13,7 @@
  * @date           19.01.23
  */
 
-namespace FastyBird\Module\Devices\Models\States\Connectors;
+namespace FastyBird\Module\Devices\Models\States\Channels\Async;
 
 use FastyBird\Module\Devices\States;
 use Nette\Utils;
@@ -21,18 +21,18 @@ use Ramsey\Uuid;
 use React\Promise;
 
 /**
- * Asynchronous connector properties manager interface
+ * Asynchronous channel properties manager interface
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Models
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-interface IManagerAsync
+interface IManager
 {
 
 	/**
-	 * @return Promise\PromiseInterface<States\ConnectorProperty>
+	 * @return Promise\PromiseInterface<States\ChannelProperty>
 	 */
 	public function create(
 		Uuid\UuidInterface $id,
@@ -40,7 +40,7 @@ interface IManagerAsync
 	): Promise\PromiseInterface;
 
 	/**
-	 * @return Promise\PromiseInterface<States\ConnectorProperty|false>
+	 * @return Promise\PromiseInterface<States\ChannelProperty|false>
 	 */
 	public function update(
 		Uuid\UuidInterface $id,
