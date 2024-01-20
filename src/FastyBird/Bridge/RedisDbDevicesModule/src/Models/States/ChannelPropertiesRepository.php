@@ -57,7 +57,7 @@ class ChannelPropertiesRepository implements DevicesModels\States\Channels\IRepo
 	 */
 	public function find(Uuid\UuidInterface $id): States\ChannelProperty|null
 	{
-		return $this->stateRepository->findOne($id, $this->database);
+		return $this->stateRepository->find($id, $this->database);
 	}
 
 }

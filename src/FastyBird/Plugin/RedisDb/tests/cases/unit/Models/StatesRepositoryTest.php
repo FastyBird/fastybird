@@ -34,7 +34,7 @@ final class StatesRepositoryTest extends TestCase
 
 		$repository = $this->createRepository($redisClient);
 
-		$state = $repository->findOne($id);
+		$state = $repository->find($id);
 
 		self::assertIsObject($state, States\State::class);
 	}

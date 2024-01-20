@@ -57,7 +57,7 @@ class DevicePropertiesRepository implements DevicesModels\States\Devices\IReposi
 	 */
 	public function find(Uuid\UuidInterface $id): States\DeviceProperty|null
 	{
-		return $this->stateRepository->findOne($id, $this->database);
+		return $this->stateRepository->find($id, $this->database);
 	}
 
 }

@@ -58,7 +58,7 @@ class StatesRepository
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 */
-	public function findOne(Uuid\UuidInterface $id, int $database = 0): States\State|null
+	public function find(Uuid\UuidInterface $id, int $database = 0): States\State|null
 	{
 		$raw = $this->getRaw($id, $database);
 

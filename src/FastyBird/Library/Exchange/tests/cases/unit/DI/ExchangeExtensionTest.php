@@ -17,7 +17,10 @@ final class ExchangeExtensionTest extends BaseTestCase
 	public function testCompilersServices(): void
 	{
 		self::assertNotNull($this->container->getByType(Documents\DocumentFactory::class, false));
+
 		self::assertNotNull($this->container->getByType(Publisher\Container::class, false));
+		self::assertNotNull($this->container->getByType(Publisher\Async\Container::class, false));
+
 		self::assertNotNull($this->container->getByType(Consumers\Container::class, false));
 	}
 

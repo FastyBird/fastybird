@@ -16,6 +16,7 @@
 namespace FastyBird\Plugin\RedisDb\Clients\Async;
 
 use Clue\React\Redis;
+use FastyBird\Library\Exchange\Events as ExchangeEvents;
 use FastyBird\Plugin\RedisDb\Connections;
 use FastyBird\Plugin\RedisDb\Events;
 use Nette;
@@ -144,7 +145,7 @@ class Client
 			});
 
 			$this->redis->on('error', function (Throwable $ex): void {
-				$this->dispatcher?->dispatch(new Events\ConnectionError($ex));
+				$this->dispatcher?->dispatch(new ExchangeEvents\ExchangeError($ex));
 			});
 		}
 

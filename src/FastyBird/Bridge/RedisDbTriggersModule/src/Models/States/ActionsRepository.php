@@ -61,7 +61,7 @@ class ActionsRepository implements TriggersModels\States\IActionsRepository
 		MetadataDocuments\TriggersModule\Action|TriggersEntities\Actions\Action $action,
 	): States\Action|null
 	{
-		return $this->stateRepository->findOne($action->getId(), $this->database);
+		return $this->stateRepository->find($action->getId(), $this->database);
 	}
 
 	/**
@@ -70,7 +70,7 @@ class ActionsRepository implements TriggersModels\States\IActionsRepository
 	 */
 	public function findOneById(Uuid\UuidInterface $id): States\Action|null
 	{
-		return $this->stateRepository->findOne($id, $this->database);
+		return $this->stateRepository->find($id, $this->database);
 	}
 
 }

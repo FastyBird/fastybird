@@ -56,7 +56,7 @@ class StatesRepository
 	/**
 	 * @return Promise\PromiseInterface<T|null>
 	 */
-	public function findOne(Uuid\UuidInterface $id, int $database = 0): Promise\PromiseInterface
+	public function find(Uuid\UuidInterface $id, int $database = 0): Promise\PromiseInterface
 	{
 		$deferred = new Promise\Deferred();
 

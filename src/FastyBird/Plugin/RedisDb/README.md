@@ -31,6 +31,10 @@ ecosystem and also a states manager for reading and storing application states.
 Redis DB plugin is an [Apache2 licensed](http://www.apache.org/licenses/LICENSE-2.0) distributed extension, developed
 in [PHP](https://www.php.net) on top of the [Nette framework](https://nette.org) and [Symfony framework](https://symfony.com).
 
+## Requirements
+
+Application library is tested against PHP 8.1.
+
 ## Installation
 
 This extension is part of the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem and is installed by default.

@@ -57,7 +57,7 @@ class ConnectorPropertiesRepository implements DevicesModels\States\Connectors\I
 	 */
 	public function find(Uuid\UuidInterface $id): States\ConnectorProperty|null
 	{
-		return $this->stateRepository->findOne($id, $this->database);
+		return $this->stateRepository->find($id, $this->database);
 	}
 
 }

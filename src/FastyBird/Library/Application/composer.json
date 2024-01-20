@@ -5,12 +5,13 @@
   "keywords": [
     "bootstrap",
     "core",
-    "php",
-    "nette",
     "configuration",
-    "fb",
     "fastybird",
-    "iot"
+    "fb",
+    "iot",
+    "nette",
+    "library",
+    "php"
   ],
   "homepage": "https://www.fastybird.com",
   "license": "Apache-2.0",

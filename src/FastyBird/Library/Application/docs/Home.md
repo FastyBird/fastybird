@@ -25,7 +25,7 @@ container automatically.
 
 All services, helpers, etc. are written to be self-descriptive :wink:.
 
-## Using library
+## Using Library
 
 This extension is configured via **env** variables or via Neon **parameters** or their combination.
 
@@ -99,7 +99,7 @@ local.neon - file for additional configuration or user specific
 **common.neon** and **defaults.neon** should be versioned in you application repository, **local.neon** is meant to be
 custom local file not be stored in repository.
 
-## Create application container
+## Create Application Container
 
 Now when you have application configured you could move to next step, creating application entrypoint which will
 loads DI and fire `Nette\Application\Bootstrap::run`
@@ -120,11 +120,11 @@ exit(FastyBird\Library\Application\Boot\Bootstrap::boot()
 When a call `FastyBird\Library\Application\Boot\Bootstrap::boot()` is made, application will try to configure application and
 prepare everything for building container.
 
-## Default extensions
+## Default Extensions
 
 This extension has preconfigured some useful extensions.
 
-### Console support
+### Console Support
 
 Is implemented via [contribute/console](https://github.com/contributte/console) package. Console entrypoint could be
 found in composer `bin` folder and to run command just run:
@@ -133,7 +133,7 @@ found in composer `bin` folder and to run command just run:
 vendor/bin/fb_console your:command
 ```
 
-### Application logger
+### Application Logger
 
 Is implemented via [contribute/monolog](https://github.com/contributte/monolog) package. And is configured to log all
 actions with severity errors and higher.
@@ -155,7 +155,7 @@ parameters:
         level: 400 # Levels: DEBUG = 100, INFO = 200, NOTICE = 250, WARNING = 300, ERROR = 400, CRITICAL = 500, ALERT = 550, EMERGENCY = 600
 ```
 
-### Sentry bug tracking
+### Sentry Bug Tracking
 
 If you would like to track bugs in [Sentry](https://sentry.io/), all what you have to do, is to configure you Sentry
 DSN

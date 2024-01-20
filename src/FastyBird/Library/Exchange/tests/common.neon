@@ -8,7 +8,7 @@
 # @subpackage     config
 # @since          1.0.0
 #
-# @date          19.12.20
+# @date           19.12.20
 
 php:
     date.timezone: Europe/Prague

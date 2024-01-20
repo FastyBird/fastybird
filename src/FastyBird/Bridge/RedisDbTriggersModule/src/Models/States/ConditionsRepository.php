@@ -61,7 +61,7 @@ class ConditionsRepository implements TriggersModels\States\IConditionsRepositor
 		MetadataDocuments\TriggersModule\Condition|TriggersEntities\Conditions\Condition $condition,
 	): States\Condition|null
 	{
-		return $this->stateRepository->findOne($condition->getId(), $this->database);
+		return $this->stateRepository->find($condition->getId(), $this->database);
 	}
 
 	/**
@@ -70,7 +70,7 @@ class ConditionsRepository implements TriggersModels\States\IConditionsRepositor
 	 */
 	public function findOneById(Uuid\UuidInterface $id): States\Condition|null
 	{
-		return $this->stateRepository->findOne($id, $this->database);
+		return $this->stateRepository->find($id, $this->database);
 	}
 
 }

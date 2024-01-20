@@ -1,25 +1,22 @@
+<p align="center">
+	<img src="https://github.com/fastybird/.github/blob/main/assets/repo_title.png?raw=true" alt="FastyBird"/>
+</p>
+
+> [!IMPORTANT]
+This documentation is meant to be used by developers or users which has basic programming skills. If you are regular user
+please use FastyBird IoT documentation which is available on [docs.fastybird.com](https://docs.fastybird.com).
+
 # Quick start
 
-The purpose of this library is to provide unified interface for data exchange bus.
+When a service within your extension requires the publication of messages to the data exchange bus for other extensions,
+a recommended approach is to implement the `FastyBird\Library\Exchange\Publisher\Publisher` interface. This allows seamless
+integration with the data exchange bus.
 
-Create consumers and publishers proxies, collect registered application consumers and publishers and rule them.
+Following this implementation, you can register your custom publisher as a service. This structured approach ensures that
+your extension's services can efficiently communicate and share relevant information with other components in
+the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem.
 
 ***
-
-## Installation
-
-The best way to install **fastybird/exchange-library** is using [Composer](http://getcomposer.org/):
-
-```sh
-composer require fastybird/exchange-library
-```
-
-After that, you have to register extension in *services.neon*.
-
-```neon
-extensions:
-    fbExchangeLibrary: FastyBird\Library\Exchange\DI\ExchangeExtension
-```
 
 ## Creating custom publisher
 
@@ -49,6 +46,43 @@ class ModuleDataPublisher implements Publisher
 ```
 
 You could create as many publishers as you need. Publisher proxy then will collect all of them.
+
+### Asynchronous publisher
+
+As the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem utilizes
+an asynchronous event-loop system within its services, it is recommended to implement asynchronous publishers. This ensures
+that code processing remains unblocked. These publishers have to follow a Promise-based approach when publishing messages.
+
+```php
+namespace Your\CoolApp\Publishers;
+
+use FastyBird\Library\Exchange\Publisher\Async\Publisher;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
+use Nette\Utils;
+use React\Promise\Deferred;
+use React\Promise\PromiseInterface;
+
+class ModuleDataPublisher implements Publisher
+{
+
+    /**
+    * @return PromiseInterface<true>
+     */
+    public function publish(
+        MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource $source,
+        MetadataTypes\RoutingKey $routingKey,
+        MetadataDocuments\Document|null $entity,
+    ) : PromiseInterface {
+        $deferred  = new Deferred();
+
+        // Service logic here, e.g. publish message to RabbitMQ or Redis etc.
+        
+        return $deferred->promise(); 
+    }
+
+}
+```
 
 ## Publishing message
 
@@ -115,7 +149,3 @@ class DataConsumer implements Consumer
 ```
 
 You could create as many consumers as you need. Consumer proxy then will collect all of them.
-
-***
-Homepage [https://www.fastybird.com](https://www.fastybird.com) and
-repository [https://github.com/FastyBird/exchange-library](https://github.com/FastyBird/exchange-library).

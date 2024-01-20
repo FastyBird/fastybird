@@ -1,14 +1,16 @@
 {
   "name": "fastybird/tools-library",
   "type": "fastybird-library",
-  "description": "FastyBird IoT application tools",
+  "description": "FastyBird IoT application tools & utilities",
   "keywords": [
     "tools",
-    "php",
-    "nette",
-    "configuration",
+    "utilities",
+    "fastybird",
     "fb",
-    "fastybird"
+    "iot",
+    "nette",
+    "library",
+    "php"
   ],
   "homepage": "https://www.fastybird.com",
   "license": "Apache-2.0",
@@ -30,7 +32,6 @@
   },
   "require": {
     "php": ">=8.1.0",
-    "cweagans/composer-patches": "^1.7",
     "fastybird/metadata-library": "dev-main",
     "mathsolver/mathsolver": "@dev"
   },
