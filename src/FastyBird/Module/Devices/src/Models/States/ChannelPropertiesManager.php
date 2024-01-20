@@ -602,45 +602,47 @@ final class ChannelPropertiesManager extends PropertiesManager
 			return;
 		}
 
+		if (
+			$state !== null
+			&& (
+				(
+					$data->offsetExists(States\Property::EXPECTED_VALUE_FIELD)
+					&& MetadataUtilities\Value::flattenValue($state->getActualValue()) === $data->offsetGet(
+						States\Property::EXPECTED_VALUE_FIELD,
+					)
+				) || (
+					$data->offsetExists(States\Property::ACTUAL_VALUE_FIELD)
+					&& MetadataUtilities\Value::flattenValue($state->getExpectedValue()) === $data->offsetGet(
+						States\Property::ACTUAL_VALUE_FIELD,
+					)
+				)
+			)
+		) {
+			$data->offsetSet(States\Property::EXPECTED_VALUE_FIELD, null);
+			$data->offsetSet(States\Property::PENDING_FIELD, false);
+		}
+
 		try {
-			// In case synchronization failed...
-			if ($state === null) {
-				// ...create state in storage
-				$state = $this->channelPropertiesStatesManager->create(
-					$property,
-					$data,
-				);
+			$result = $state === null ? $this->channelPropertiesStatesManager->create(
+				$property,
+				$data,
+			) : $this->channelPropertiesStatesManager->update(
+				$property,
+				$state,
+				$data,
+			);
 
-				$this->logger->debug(
-					'Channel property state was created',
-					[
-						'source' => MetadataTypes\ModuleSource::DEVICES,
-						'type' => 'channel-properties-states',
-						'property' => [
-							'id' => $property->getId()->toString(),
-							'state' => $state->toArray(),
-						],
+			$this->logger->debug(
+				$state === null ? 'Channel property state was created' : 'Channel property state was updated',
+				[
+					'source' => MetadataTypes\ModuleSource::DEVICES,
+					'type' => 'channel-properties-states',
+					'property' => [
+						'id' => $property->getId()->toString(),
+						'state' => $result->toArray(),
 					],
-				);
-			} else {
-				$state = $this->channelPropertiesStatesManager->update(
-					$property,
-					$state,
-					$data,
-				);
-
-				$this->logger->debug(
-					'Channel property state was updated',
-					[
-						'source' => MetadataTypes\ModuleSource::DEVICES,
-						'type' => 'channel-properties-states',
-						'property' => [
-							'id' => $property->getId()->toString(),
-							'state' => $state->toArray(),
-						],
-					],
-				);
-			}
+				],
+			);
 		} catch (Exceptions\NotImplemented) {
 			$this->logger->warning(
 				'Channels states manager is not configured. State could not be saved',

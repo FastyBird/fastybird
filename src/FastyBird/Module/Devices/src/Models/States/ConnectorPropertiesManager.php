@@ -460,45 +460,47 @@ final class ConnectorPropertiesManager extends PropertiesManager
 			return;
 		}
 
+		if (
+			$state !== null
+			&& (
+				(
+					$data->offsetExists(States\Property::EXPECTED_VALUE_FIELD)
+					&& MetadataUtilities\Value::flattenValue($state->getActualValue()) === $data->offsetGet(
+						States\Property::EXPECTED_VALUE_FIELD,
+					)
+				) || (
+					$data->offsetExists(States\Property::ACTUAL_VALUE_FIELD)
+					&& MetadataUtilities\Value::flattenValue($state->getExpectedValue()) === $data->offsetGet(
+						States\Property::ACTUAL_VALUE_FIELD,
+					)
+				)
+			)
+		) {
+			$data->offsetSet(States\Property::EXPECTED_VALUE_FIELD, null);
+			$data->offsetSet(States\Property::PENDING_FIELD, false);
+		}
+
 		try {
-			// In case synchronization failed...
-			if ($state === null) {
-				// ...create state in storage
-				$state = $this->connectorPropertiesStatesManager->create(
-					$property,
-					$data,
-				);
+			$result = $state === null ? $this->connectorPropertiesStatesManager->create(
+				$property,
+				$data,
+			) : $this->connectorPropertiesStatesManager->update(
+				$property,
+				$state,
+				$data,
+			);
 
-				$this->logger->debug(
-					'Connector property state was created',
-					[
-						'source' => MetadataTypes\ModuleSource::DEVICES,
-						'type' => 'connector-properties-states',
-						'property' => [
-							'id' => $property->getId()->toString(),
-							'state' => $state->toArray(),
-						],
+			$this->logger->debug(
+				$state === null ? 'Connector property state was created' : 'Connector property state was updated',
+				[
+					'source' => MetadataTypes\ModuleSource::DEVICES,
+					'type' => 'connector-properties-states',
+					'property' => [
+						'id' => $property->getId()->toString(),
+						'state' => $result->toArray(),
 					],
-				);
-			} else {
-				$state = $this->connectorPropertiesStatesManager->update(
-					$property,
-					$state,
-					$data,
-				);
-
-				$this->logger->debug(
-					'Connector property state was updated',
-					[
-						'source' => MetadataTypes\ModuleSource::DEVICES,
-						'type' => 'connector-properties-states',
-						'property' => [
-							'id' => $property->getId()->toString(),
-							'state' => $state->toArray(),
-						],
-					],
-				);
-			}
+				],
+			);
 		} catch (Exceptions\NotImplemented) {
 			$this->logger->warning(
 				'Connectors states manager is not configured. State could not be saved',

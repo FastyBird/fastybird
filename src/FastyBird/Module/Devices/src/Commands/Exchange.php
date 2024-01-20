@@ -31,7 +31,6 @@ use Symfony\Component\Console\Input;
 use Symfony\Component\Console\Output;
 use Symfony\Component\Console\Style;
 use Throwable;
-use function React\Async\async;
 use const SIGINT;
 use const SIGTERM;
 

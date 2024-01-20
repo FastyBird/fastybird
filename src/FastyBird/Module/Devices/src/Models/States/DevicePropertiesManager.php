@@ -578,8 +578,18 @@ final class DevicePropertiesManager extends PropertiesManager
 
 		if (
 			$state !== null
-			&& MetadataUtilities\Value::flattenValue($state->getActualValue()) === $data->offsetGet(
-				States\Property::EXPECTED_VALUE_FIELD,
+			&& (
+				(
+					$data->offsetExists(States\Property::EXPECTED_VALUE_FIELD)
+					&& MetadataUtilities\Value::flattenValue($state->getActualValue()) === $data->offsetGet(
+						States\Property::EXPECTED_VALUE_FIELD,
+					)
+				) || (
+					$data->offsetExists(States\Property::ACTUAL_VALUE_FIELD)
+					&& MetadataUtilities\Value::flattenValue($state->getExpectedValue()) === $data->offsetGet(
+						States\Property::ACTUAL_VALUE_FIELD,
+					)
+				)
 			)
 		) {
 			$data->offsetSet(States\Property::EXPECTED_VALUE_FIELD, null);
