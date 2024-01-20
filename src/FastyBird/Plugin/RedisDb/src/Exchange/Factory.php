@@ -60,11 +60,13 @@ final class Factory implements ExchangeExchange\Factory
 			$this->dispatcher?->dispatch(new ExchangeEvents\ExchangeError($ex));
 		});
 
-		$redis->subscribe($this->channel);
-
 		$redis->on('message', function (string $channel, string $payload): void {
-			$this->messagesHandler->handle($payload);
+			if ($channel === $this->channel) {
+				$this->messagesHandler->handle($payload);
+			}
 		});
+
+		$redis->subscribe($this->channel);
 	}
 
 }
