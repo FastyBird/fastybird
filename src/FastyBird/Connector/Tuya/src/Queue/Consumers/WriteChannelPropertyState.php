@@ -428,12 +428,27 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		}
 
 		$result->then(
-			function () use ($property): void {
-				$state = $this->channelPropertiesStatesManager->get($property);
-
-				if ($state?->getExpectedValue() !== null) {
-					$this->channelPropertiesStatesManager->setPendingState($property, true);
-				}
+			function () use ($entity): void {
+				$this->logger->debug(
+					'Channel state was successfully sent to device',
+					[
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
+						'type' => 'write-channel-property-state-message-consumer',
+						'connector' => [
+							'id' => $entity->getConnector()->toString(),
+						],
+						'device' => [
+							'id' => $entity->getDevice()->toString(),
+						],
+						'channel' => [
+							'id' => $entity->getChannel()->toString(),
+						],
+						'property' => [
+							'id' => $entity->getProperty()->toString(),
+						],
+						'data' => $entity->toArray(),
+					],
+				);
 			},
 			function (Throwable $ex) use ($connector, $device, $property, $entity): void {
 				$this->channelPropertiesStatesManager->setPendingState($property, false);

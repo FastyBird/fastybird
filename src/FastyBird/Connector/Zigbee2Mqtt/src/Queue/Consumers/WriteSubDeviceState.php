@@ -359,23 +359,27 @@ final class WriteSubDeviceState implements Queue\Consumer
 					),
 					Utils\Json::encode($payload),
 				)
-				->then(function () use ($channel): void {
-					$findPropertiesQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
-					$findPropertiesQuery->forChannel($channel);
-					$findPropertiesQuery->settable(true);
-
-					$properties = $this->channelsPropertiesConfigurationRepository->findAllBy(
-						$findPropertiesQuery,
-						MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
+				->then(function () use ($entity): void {
+					$this->logger->debug(
+						'Channel state was successfully sent to device',
+						[
+							'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
+							'type' => 'write-sub-device-state-message-consumer',
+							'connector' => [
+								'id' => $entity->getConnector()->toString(),
+							],
+							'device' => [
+								'id' => $entity->getDevice()->toString(),
+							],
+							'channel' => [
+								'id' => $entity->getChannel()->toString(),
+							],
+							'property' => [
+								'id' => $entity->getProperty()->toString(),
+							],
+							'data' => $entity->toArray(),
+						],
 					);
-
-					foreach ($properties as $property) {
-						$state = $this->channelPropertiesStatesManager->get($property);
-
-						if ($state?->getExpectedValue() !== null) {
-							$this->channelPropertiesStatesManager->setPendingState($property, true);
-						}
-					}
 				})
 				->catch(function (Throwable $ex) use ($entity, $connector, $bridge, $channel): void {
 					$findPropertiesQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();

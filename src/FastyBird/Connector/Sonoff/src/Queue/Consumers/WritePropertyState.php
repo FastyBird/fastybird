@@ -527,20 +527,24 @@ final class WritePropertyState implements Queue\Consumer
 		}
 
 		$result->then(
-			function () use ($property): void {
-				if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-					$state = $this->channelPropertiesStatesManager->get($property);
-
-					if ($state?->getExpectedValue() !== null) {
-						$this->channelPropertiesStatesManager->setPendingState($property, true);
-					}
-				} else {
-					$state = $this->devicePropertiesStatesManager->get($property);
-
-					if ($state?->getExpectedValue() !== null) {
-						$this->devicePropertiesStatesManager->setPendingState($property, true);
-					}
-				}
+			function () use ($entity): void {
+				$this->logger->debug(
+					'Channel state was successfully sent to device',
+					[
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
+						'type' => 'write-property-state-message-consumer',
+						'connector' => [
+							'id' => $entity->getConnector()->toString(),
+						],
+						'device' => [
+							'id' => $entity->getDevice()->toString(),
+						],
+						'property' => [
+							'id' => $entity->getProperty()->toString(),
+						],
+						'data' => $entity->toArray(),
+					],
+				);
 			},
 			function (Throwable $ex) use ($connector, $device, $property, $entity): void {
 				if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {

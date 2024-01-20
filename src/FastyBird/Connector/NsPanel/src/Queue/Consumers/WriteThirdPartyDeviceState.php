@@ -273,23 +273,8 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 				$ipAddress,
 				$accessToken,
 			)
-				->then(function () use ($channel): void {
-					$findPropertiesQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
-					$findPropertiesQuery->forChannel($channel);
-					$findPropertiesQuery->settable(true);
-
-					$properties = $this->channelsPropertiesConfigurationRepository->findAllBy(
-						$findPropertiesQuery,
-						MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
-					);
-
-					foreach ($properties as $property) {
-						$state = $this->channelPropertiesStatesManager->get($property);
-
-						if ($state?->getExpectedValue() !== null) {
-							$this->channelPropertiesStatesManager->setPendingState($property, true);
-						}
-					}
+				->then(static function (): void {
+					// Everything is ok, nothing to do
 				})
 				->catch(function (Throwable $ex) use ($entity, $connector, $gateway, $channel): void {
 					$findPropertiesQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();

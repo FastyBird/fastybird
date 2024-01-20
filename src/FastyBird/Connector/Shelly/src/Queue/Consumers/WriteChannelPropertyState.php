@@ -384,9 +384,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		}
 
 		$result->then(
-			function () use ($property, $entity): void {
-				$this->channelPropertiesStatesManager->setPendingState($property, true);
-
+			function () use ($entity): void {
 				$this->logger->debug(
 					'Channel state was successfully sent to device',
 					[

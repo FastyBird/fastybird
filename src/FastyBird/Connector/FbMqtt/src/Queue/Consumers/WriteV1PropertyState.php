@@ -320,20 +320,24 @@ final class WriteV1PropertyState implements Queue\Consumer
 				$topic,
 				strval($expectedValue),
 			)
-			->then(function () use ($property): void {
-				if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-					$state = $this->channelPropertiesStatesManager->get($property);
-
-					if ($state?->getExpectedValue() !== null) {
-						$this->channelPropertiesStatesManager->setPendingState($property, true);
-					}
-				} else {
-					$state = $this->devicePropertiesStatesManager->get($property);
-
-					if ($state?->getExpectedValue() !== null) {
-						$this->devicePropertiesStatesManager->setPendingState($property, true);
-					}
-				}
+			->then(function () use ($entity): void {
+				$this->logger->debug(
+					'Channel state was successfully sent to device',
+					[
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
+						'type' => 'write-v1-property-state-message-consumer',
+						'connector' => [
+							'id' => $entity->getConnector()->toString(),
+						],
+						'device' => [
+							'id' => $entity->getDevice()->toString(),
+						],
+						'property' => [
+							'id' => $entity->getProperty()->toString(),
+						],
+						'data' => $entity->toArray(),
+					],
+				);
 			})
 			->catch(function (Throwable $ex) use ($property, $entity): void {
 				if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
