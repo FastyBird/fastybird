@@ -52,7 +52,6 @@ class ConnectorPropertiesRepository implements DevicesModels\States\Connectors\I
 	}
 
 	/**
-	 * @throws RedisDbExceptions\InvalidArgument
 	 * @throws RedisDbExceptions\InvalidState
 	 */
 	public function find(Uuid\UuidInterface $id): States\ConnectorProperty|null

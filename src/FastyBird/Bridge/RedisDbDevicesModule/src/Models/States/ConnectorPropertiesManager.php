@@ -53,6 +53,7 @@ class ConnectorPropertiesManager implements DevicesModels\States\Connectors\IMan
 	}
 
 	/**
+	 * @throws RedisDbExceptions\InvalidArgument
 	 * @throws RedisDbExceptions\InvalidState
 	 */
 	public function create(Uuid\UuidInterface $id, Utils\ArrayHash $values): States\ConnectorProperty

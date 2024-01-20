@@ -53,6 +53,7 @@ class DevicePropertiesManager implements DevicesModels\States\Devices\IManager
 	}
 
 	/**
+	 * @throws RedisDbExceptions\InvalidArgument
 	 * @throws RedisDbExceptions\InvalidState
 	 */
 	public function create(Uuid\UuidInterface $id, Utils\ArrayHash $values): States\DeviceProperty

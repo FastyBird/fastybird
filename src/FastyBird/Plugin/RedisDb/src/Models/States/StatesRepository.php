@@ -55,7 +55,6 @@ class StatesRepository
 	/**
 	 * @phpstan-return T
 	 *
-	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 */
 	public function find(Uuid\UuidInterface $id, int $database = 0): States\State|null
@@ -66,7 +65,30 @@ class StatesRepository
 			return null;
 		}
 
-		return $this->stateFactory->create($this->entity, $raw);
+		try {
+			return $this->stateFactory->create($this->entity, $raw);
+		} catch (Throwable $ex) {
+			$this->logger->error(
+				'Data stored in database are noc compatible with state entity',
+				[
+					'source' => MetadataTypes\PluginSource::REDISDB,
+					'type' => 'state-repository',
+					'record' => [
+						'id' => $id->toString(),
+						'data' => $raw,
+					],
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+				],
+			);
+
+			$this->client->del($id->toString());
+
+			throw new Exceptions\InvalidState(
+				'State could not be loaded, stored data are not valid',
+				$ex->getCode(),
+				$ex,
+			);
+		}
 	}
 
 	/**
@@ -79,14 +101,17 @@ class StatesRepository
 
 			return $this->client->get($id->toString());
 		} catch (Throwable $ex) {
-			$this->logger->error('Content could not be loaded', [
-				'source' => MetadataTypes\PluginSource::REDISDB,
-				'type' => 'state-repository',
-				'record' => [
-					'id' => $id->toString(),
+			$this->logger->error(
+				'Content could not be loaded',
+				[
+					'source' => MetadataTypes\PluginSource::REDISDB,
+					'type' => 'state-repository',
+					'record' => [
+						'id' => $id->toString(),
+					],
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
-				'exception' => ApplicationHelpers\Logger::buildException($ex),
-			]);
+			);
 
 			throw new Exceptions\InvalidState(
 				'Content could not be loaded from database: ' . $ex->getMessage(),

@@ -72,6 +72,7 @@ class StatesManager
 	/**
 	 * @phpstan-return T
 	 *
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 */
 	public function create(
@@ -80,22 +81,30 @@ class StatesManager
 		int $database = 0,
 	): States\State
 	{
+		$raw = $this->createKey($id, $values, $this->entity::getCreateFields(), $database);
+
 		try {
-			$raw = $this->createKey($id, $values, $this->entity::getCreateFields(), $database);
-
 			$state = $this->stateFactory->create($this->entity, $raw);
-
 		} catch (Throwable $ex) {
-			$this->logger->error('Record could not be created', [
-				'source' => MetadataTypes\PluginSource::REDISDB,
-				'type' => 'states-manager',
-				'exception' => ApplicationHelpers\Logger::buildException($ex),
-				'record' => [
-					'id' => $id->toString(),
+			$this->logger->error(
+				'Record could not be created',
+				[
+					'source' => MetadataTypes\PluginSource::REDISDB,
+					'type' => 'states-manager',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'record' => [
+						'id' => $id->toString(),
+					],
 				],
-			]);
+			);
 
-			throw new Exceptions\InvalidState('State could not be created', $ex->getCode(), $ex);
+			$this->client->del($id->toString());
+
+			throw new Exceptions\InvalidState(
+				'State could not be created, stored data are not valid',
+				$ex->getCode(),
+				$ex,
+			);
 		}
 
 		return $state;
@@ -115,21 +124,32 @@ class StatesManager
 		try {
 			$raw = $this->updateKey($id, $values, $this->entity::getUpdateFields(), $database);
 
-			$updatedState = $this->stateFactory->create($this->entity, $raw);
-
 		} catch (Exceptions\NotUpdated) {
 			return false;
-		} catch (Throwable $ex) {
-			$this->logger->error('Record could not be updated', [
-				'source' => MetadataTypes\PluginSource::REDISDB,
-				'type' => 'states-manager',
-				'exception' => ApplicationHelpers\Logger::buildException($ex),
-				'record' => [
-					'id' => $id->toString(),
-				],
-			]);
+		}
 
-			throw new Exceptions\InvalidState('State could not be updated', $ex->getCode(), $ex);
+		try {
+			$updatedState = $this->stateFactory->create($this->entity, $raw);
+		} catch (Throwable $ex) {
+			$this->logger->error(
+				'Record could not be updated',
+				[
+					'source' => MetadataTypes\PluginSource::REDISDB,
+					'type' => 'states-manager',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'record' => [
+						'id' => $id->toString(),
+					],
+				],
+			);
+
+			$this->client->del($id->toString());
+
+			throw new Exceptions\InvalidState(
+				'State could not be loaded, stored data are not valid',
+				$ex->getCode(),
+				$ex,
+			);
 		}
 
 		return $updatedState;

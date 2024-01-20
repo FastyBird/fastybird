@@ -83,18 +83,48 @@ class StatesManager
 		$deferred = new Promise\Deferred();
 
 		$this->createKey($id, $values, $this->entity::getCreateFields(), $database)
-			->then(function (string $raw) use ($deferred): void {
-				$deferred->resolve($this->stateFactory->create($this->entity, $raw));
+			->then(function (string $raw) use ($id, $deferred): void {
+				try {
+					$state = $this->stateFactory->create($this->entity, $raw);
+
+					$deferred->resolve($state);
+				} catch (Throwable $ex) {
+					$this->logger->error(
+						'Data stored in database are noc compatible with state entity',
+						[
+							'source' => MetadataTypes\PluginSource::REDISDB,
+							'type' => 'states-async-manager',
+							'record' => [
+								'id' => $id->toString(),
+								'data' => $raw,
+							],
+							'exception' => ApplicationHelpers\Logger::buildException($ex),
+						],
+					);
+
+					await($this->client->del($id->toString()));
+
+					$deferred->reject(
+						new Exceptions\InvalidState(
+							'State could not be created, stored data are not valid',
+							$ex->getCode(),
+							$ex,
+						),
+					);
+				}
 			})
 			->catch(function (Throwable $ex) use ($id, $deferred): void {
-				$this->logger->error('Record could not be created', [
-					'source' => MetadataTypes\PluginSource::REDISDB,
-					'type' => 'states-async-manager',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
-					'record' => [
-						'id' => $id->toString(),
+				$this->logger->error(
+					'Record could not be created',
+					[
+						'source' => MetadataTypes\PluginSource::REDISDB,
+						'type' => 'states-async-manager',
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
+						'record' => [
+							'id' => $id->toString(),
+						],
 					],
-				]);
+				);
 
 				$deferred->reject($ex);
 			});
@@ -114,21 +144,51 @@ class StatesManager
 		$deferred = new Promise\Deferred();
 
 		$this->updateKey($id, $values, $this->entity::getUpdateFields(), $database)
-			->then(function (string $raw) use ($deferred): void {
-				$deferred->resolve($this->stateFactory->create($this->entity, $raw));
+			->then(function (string $raw) use ($id, $deferred): void {
+				try {
+					$state = $this->stateFactory->create($this->entity, $raw);
+
+					$deferred->resolve($state);
+				} catch (Throwable $ex) {
+					$this->logger->error(
+						'Data stored in database are noc compatible with state entity',
+						[
+							'source' => MetadataTypes\PluginSource::REDISDB,
+							'type' => 'states-async-manager',
+							'record' => [
+								'id' => $id->toString(),
+								'data' => $raw,
+							],
+							'exception' => ApplicationHelpers\Logger::buildException($ex),
+						],
+					);
+
+					await($this->client->del($id->toString()));
+
+					$deferred->reject(
+						new Exceptions\InvalidState(
+							'State could not be updated, stored data are not valid',
+							$ex->getCode(),
+							$ex,
+						),
+					);
+				}
 			})
 			->catch(function (Throwable $ex) use ($id, $deferred): void {
 				if ($ex instanceof Exceptions\NotUpdated) {
 					$deferred->resolve(false);
 				} else {
-					$this->logger->error('Record could not be updated', [
-						'source' => MetadataTypes\PluginSource::REDISDB,
-						'type' => 'states-async-manager',
-						'exception' => ApplicationHelpers\Logger::buildException($ex),
-						'record' => [
-							'id' => $id->toString(),
+					$this->logger->error(
+						'Record could not be updated',
+						[
+							'source' => MetadataTypes\PluginSource::REDISDB,
+							'type' => 'states-async-manager',
+							'exception' => ApplicationHelpers\Logger::buildException($ex),
+							'record' => [
+								'id' => $id->toString(),
+							],
 						],
-					]);
+					);
 
 					$deferred->reject($ex);
 				}

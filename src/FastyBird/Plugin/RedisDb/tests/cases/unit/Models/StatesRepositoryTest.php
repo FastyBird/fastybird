@@ -17,7 +17,6 @@ final class StatesRepositoryTest extends TestCase
 {
 
 	/**
-	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Utils\JsonException
 	 */

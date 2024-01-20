@@ -54,7 +54,6 @@ class ActionsRepository implements TriggersModels\States\IActionsRepository
 	}
 
 	/**
-	 * @throws RedisDbExceptions\InvalidArgument
 	 * @throws RedisDbExceptions\InvalidState
 	 */
 	public function findOne(
@@ -65,7 +64,6 @@ class ActionsRepository implements TriggersModels\States\IActionsRepository
 	}
 
 	/**
-	 * @throws RedisDbExceptions\InvalidArgument
 	 * @throws RedisDbExceptions\InvalidState
 	 */
 	public function findOneById(Uuid\UuidInterface $id): States\Action|null

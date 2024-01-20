@@ -24,6 +24,7 @@ final class StatesManagerTest extends TestCase
 	 * @param array<Uuid\UuidInterface|array<string, mixed>> $dbData
 	 * @param array<Uuid\UuidInterface|array<string, mixed>> $expected
 	 *
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Utils\JsonException
 	 *

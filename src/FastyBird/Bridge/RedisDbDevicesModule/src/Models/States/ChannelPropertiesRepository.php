@@ -52,7 +52,6 @@ class ChannelPropertiesRepository implements DevicesModels\States\Channels\IRepo
 	}
 
 	/**
-	 * @throws RedisDbExceptions\InvalidArgument
 	 * @throws RedisDbExceptions\InvalidState
 	 */
 	public function find(Uuid\UuidInterface $id): States\ChannelProperty|null

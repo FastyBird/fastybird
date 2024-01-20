@@ -66,17 +66,6 @@ final class Manager
 			}
 		}
 
-		if (
-			$values->offsetExists(States\Property::ACTUAL_VALUE_FIELD)
-			&& $values->offsetExists(States\Property::EXPECTED_VALUE_FIELD)
-			&& $values->offsetGet(States\Property::ACTUAL_VALUE_FIELD) === $values->offsetGet(
-				States\Property::EXPECTED_VALUE_FIELD,
-			)
-		) {
-			$values->offsetSet(States\Property::EXPECTED_VALUE_FIELD, null);
-			$values->offsetSet(States\Property::PENDING_FIELD, null);
-		}
-
 		$deferred = new Promise\Deferred();
 
 		$this->manager->create($property->getId(), $values)
@@ -109,17 +98,6 @@ final class Manager
 			} catch (Exceptions\NotImplemented $ex) {
 				return Promise\reject($ex);
 			}
-		}
-
-		if (
-			$values->offsetExists(States\Property::ACTUAL_VALUE_FIELD)
-			&& $values->offsetExists(States\Property::EXPECTED_VALUE_FIELD)
-			&& $values->offsetGet(States\Property::ACTUAL_VALUE_FIELD) === $values->offsetGet(
-				States\Property::EXPECTED_VALUE_FIELD,
-			)
-		) {
-			$values->offsetSet(States\Property::EXPECTED_VALUE_FIELD, null);
-			$values->offsetSet(States\Property::PENDING_FIELD, null);
 		}
 
 		$deferred = new Promise\Deferred();

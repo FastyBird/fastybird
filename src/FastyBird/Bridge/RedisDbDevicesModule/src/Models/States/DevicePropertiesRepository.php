@@ -52,7 +52,6 @@ class DevicePropertiesRepository implements DevicesModels\States\Devices\IReposi
 	}
 
 	/**
-	 * @throws RedisDbExceptions\InvalidArgument
 	 * @throws RedisDbExceptions\InvalidState
 	 */
 	public function find(Uuid\UuidInterface $id): States\DeviceProperty|null

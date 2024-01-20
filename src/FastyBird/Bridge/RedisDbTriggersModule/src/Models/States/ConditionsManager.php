@@ -53,6 +53,7 @@ class ConditionsManager implements TriggersModels\States\IConditionsManager
 	}
 
 	/**
+	 * @throws RedisDbExceptions\InvalidArgument
 	 * @throws RedisDbExceptions\InvalidState
 	 */
 	public function create(Uuid\UuidInterface $id, Utils\ArrayHash $values): States\Condition

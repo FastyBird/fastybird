@@ -53,6 +53,7 @@ class ActionsManager implements TriggersModels\States\IActionsManager
 	}
 
 	/**
+	 * @throws RedisDbExceptions\InvalidArgument
 	 * @throws RedisDbExceptions\InvalidState
 	 */
 	public function create(Uuid\UuidInterface $id, Utils\ArrayHash $values): States\Action

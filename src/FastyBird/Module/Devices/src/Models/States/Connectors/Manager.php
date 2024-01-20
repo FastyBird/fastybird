@@ -59,17 +59,6 @@ final class Manager
 			throw new Exceptions\NotImplemented('Connector properties state manager is not registered');
 		}
 
-		if (
-			$values->offsetExists(States\Property::ACTUAL_VALUE_FIELD)
-			&& $values->offsetExists(States\Property::EXPECTED_VALUE_FIELD)
-			&& $values->offsetGet(States\Property::ACTUAL_VALUE_FIELD) === $values->offsetGet(
-				States\Property::EXPECTED_VALUE_FIELD,
-			)
-		) {
-			$values->offsetSet(States\Property::EXPECTED_VALUE_FIELD, null);
-			$values->offsetSet(States\Property::PENDING_FIELD, null);
-		}
-
 		$result = $this->manager->create($property->getId(), $values);
 
 		$this->dispatcher?->dispatch(new Events\ConnectorPropertyStateEntityCreated($property, $result));
@@ -90,17 +79,6 @@ final class Manager
 	{
 		if ($this->manager === null) {
 			throw new Exceptions\NotImplemented('Connector properties state manager is not registered');
-		}
-
-		if (
-			$values->offsetExists(States\Property::ACTUAL_VALUE_FIELD)
-			&& $values->offsetExists(States\Property::EXPECTED_VALUE_FIELD)
-			&& $values->offsetGet(States\Property::ACTUAL_VALUE_FIELD) === $values->offsetGet(
-				States\Property::EXPECTED_VALUE_FIELD,
-			)
-		) {
-			$values->offsetSet(States\Property::EXPECTED_VALUE_FIELD, null);
-			$values->offsetSet(States\Property::PENDING_FIELD, null);
 		}
 
 		$result = $this->manager->update($property->getId(), $values);

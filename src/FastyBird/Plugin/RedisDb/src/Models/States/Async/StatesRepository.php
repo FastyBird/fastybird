@@ -26,6 +26,7 @@ use Psr\Log;
 use Ramsey\Uuid;
 use React\Promise;
 use Throwable;
+use function React\Async\await;
 
 /**
  * Asynchronous state repository
@@ -61,16 +62,41 @@ class StatesRepository
 		$deferred = new Promise\Deferred();
 
 		$this->getRaw($id, $database)
-			->then(function (string|null $raw) use ($deferred): void {
+			->then(function (string|null $raw) use ($id, $deferred): void {
 				if ($raw === null) {
 					$deferred->resolve(null);
 
 					return;
 				}
 
-				$state = $this->stateFactory->create($this->entity, $raw);
+				try {
+					$state = $this->stateFactory->create($this->entity, $raw);
 
-				$deferred->resolve($state);
+					$deferred->resolve($state);
+				} catch (Throwable $ex) {
+					$this->logger->error(
+						'Data stored in database are noc compatible with state entity',
+						[
+							'source' => MetadataTypes\PluginSource::REDISDB,
+							'type' => 'state-async-repository',
+							'record' => [
+								'id' => $id->toString(),
+								'data' => $raw,
+							],
+							'exception' => ApplicationHelpers\Logger::buildException($ex),
+						],
+					);
+
+					await($this->client->del($id->toString()));
+
+					$deferred->reject(
+						new Exceptions\InvalidState(
+							'State could not be loaded, stored data are not valid',
+							$ex->getCode(),
+							$ex,
+						),
+					);
+				}
 			})
 			->catch(static function (Throwable $ex) use ($deferred): void {
 				$deferred->reject($ex);
@@ -92,14 +118,17 @@ class StatesRepository
 				$deferred->resolve($result);
 			})
 			->catch(function (Throwable $ex) use ($id, $deferred): void {
-				$this->logger->error('Content could not be loaded', [
-					'source' => MetadataTypes\PluginSource::REDISDB,
-					'type' => 'state-async-repository',
-					'record' => [
-						'id' => $id->toString(),
+				$this->logger->error(
+					'Content could not be loaded',
+					[
+						'source' => MetadataTypes\PluginSource::REDISDB,
+						'type' => 'state-async-repository',
+						'record' => [
+							'id' => $id->toString(),
+						],
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
 					],
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
-				]);
+				);
 
 				$deferred->reject(
 					new Exceptions\InvalidState(
