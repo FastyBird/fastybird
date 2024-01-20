@@ -15,6 +15,7 @@
 
 namespace FastyBird\Connector\Zigbee2Mqtt\Queue\Consumers;
 
+use DateTimeInterface;
 use FastyBird\Connector\Zigbee2Mqtt;
 use FastyBird\Connector\Zigbee2Mqtt\API;
 use FastyBird\Connector\Zigbee2Mqtt\Entities;
@@ -22,6 +23,7 @@ use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
 use FastyBird\Connector\Zigbee2Mqtt\Helpers;
 use FastyBird\Connector\Zigbee2Mqtt\Queue;
 use FastyBird\Connector\Zigbee2Mqtt\Types;
+use FastyBird\DateTimeFactory;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -52,6 +54,8 @@ final class WriteSubDeviceState implements Queue\Consumer
 
 	use Nette\SmartObject;
 
+	private const WRITE_PENDING_DELAY = 2_000.0;
+
 	public function __construct(
 		protected readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
 		protected readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
@@ -65,6 +69,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 		private readonly DevicesModels\Configuration\Connectors\Repository $connectorsConfigurationRepository,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
+		private readonly DateTimeFactory\Factory $dateTimeFactory,
 	)
 	{
 	}
@@ -171,6 +176,87 @@ final class WriteSubDeviceState implements Queue\Consumer
 
 			return true;
 		}
+
+		$findChannelPropertyQuery = new DevicesQueries\Configuration\FindChannelProperties();
+		$findChannelPropertyQuery->forChannel($channel);
+		$findChannelPropertyQuery->byId($entity->getProperty());
+
+		$propertyToUpdate = $this->channelsPropertiesConfigurationRepository->findOneBy($findChannelPropertyQuery);
+
+		if (!$propertyToUpdate instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+			$this->logger->error(
+				'Channel property could not be loaded',
+				[
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
+					'type' => 'write-sub-device-state-message-consumer',
+					'connector' => [
+						'id' => $entity->getConnector()->toString(),
+					],
+					'device' => [
+						'id' => $entity->getDevice()->toString(),
+					],
+					'channel' => [
+						'id' => $entity->getChannel()->toString(),
+					],
+					'property' => [
+						'id' => $entity->getProperty()->toString(),
+					],
+					'data' => $entity->toArray(),
+				],
+			);
+
+			return true;
+		}
+
+		if (!$propertyToUpdate->isSettable()) {
+			$this->logger->error(
+				'Channel property is not writable',
+				[
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
+					'type' => 'write-sub-device-state-message-consumer',
+					'connector' => [
+						'id' => $entity->getConnector()->toString(),
+					],
+					'device' => [
+						'id' => $entity->getDevice()->toString(),
+					],
+					'channel' => [
+						'id' => $entity->getChannel()->toString(),
+					],
+					'property' => [
+						'id' => $entity->getProperty()->toString(),
+					],
+					'data' => $entity->toArray(),
+				],
+			);
+
+			return true;
+		}
+
+		$state = $this->channelPropertiesStatesManager->get($propertyToUpdate);
+
+		if ($state === null) {
+			return true;
+		}
+
+		if ($state->getExpectedValue() === null) {
+			return true;
+		}
+
+		$now = $this->dateTimeFactory->getNow();
+		$pending = $state->getPending();
+
+		if (
+			$pending === false
+			|| (
+				$pending instanceof DateTimeInterface
+				&& (float) $now->format('Uv') - (float) $pending->format('Uv') <= self::WRITE_PENDING_DELAY
+			)
+		) {
+			return true;
+		}
+
+		$this->channelPropertiesStatesManager->setPendingState($propertyToUpdate, true);
 
 		$findPropertiesQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
 		$findPropertiesQuery->forChannel($channel);

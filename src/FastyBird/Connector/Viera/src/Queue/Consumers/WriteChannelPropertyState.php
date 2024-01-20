@@ -15,6 +15,7 @@
 
 namespace FastyBird\Connector\Viera\Queue\Consumers;
 
+use DateTimeInterface;
 use FastyBird\Connector\Viera;
 use FastyBird\Connector\Viera\API;
 use FastyBird\Connector\Viera\Entities;
@@ -22,6 +23,7 @@ use FastyBird\Connector\Viera\Exceptions;
 use FastyBird\Connector\Viera\Helpers;
 use FastyBird\Connector\Viera\Queue;
 use FastyBird\Connector\Viera\Types;
+use FastyBird\DateTimeFactory;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -51,6 +53,8 @@ final class WriteChannelPropertyState implements Queue\Consumer
 
 	use Nette\SmartObject;
 
+	private const WRITE_PENDING_DELAY = 2_000.0;
+
 	public function __construct(
 		private readonly Queue\Queue $queue,
 		private readonly API\ConnectionManager $connectionManager,
@@ -62,6 +66,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
 		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
+		private readonly DateTimeFactory\Factory $dateTimeFactory,
 	)
 	{
 	}
@@ -286,6 +291,19 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		if ($expectedValue === null) {
 			$this->channelPropertiesStatesManager->setPendingState($property, false);
 
+			return true;
+		}
+
+		$now = $this->dateTimeFactory->getNow();
+		$pending = $state->getPending();
+
+		if (
+			$pending === false
+			|| (
+				$pending instanceof DateTimeInterface
+				&& (float) $now->format('Uv') - (float) $pending->format('Uv') <= self::WRITE_PENDING_DELAY
+			)
+		) {
 			return true;
 		}
 

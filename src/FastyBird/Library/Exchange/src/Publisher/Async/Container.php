@@ -67,12 +67,12 @@ class Container implements Publisher\Async\Publisher
 		}
 
 		Promise\all($promises)
-			->then(function () use($source, $routingKey, $entity, $deferred): void {
+			->then(function () use ($source, $routingKey, $entity, $deferred): void {
 				$this->dispatcher?->dispatch(new Events\AfterMessagePublished($source, $routingKey, $entity));
 
 				$deferred->resolve(true);
 			})
-			->catch(function (Throwable $ex) use($deferred) :void {
+			->catch(static function (Throwable $ex) use ($deferred): void {
 				$deferred->reject($ex);
 			});
 

@@ -15,12 +15,14 @@
 
 namespace FastyBird\Connector\Virtual\Queue\Consumers;
 
+use DateTimeInterface;
 use FastyBird\Connector\Virtual;
 use FastyBird\Connector\Virtual\Drivers;
 use FastyBird\Connector\Virtual\Entities;
 use FastyBird\Connector\Virtual\Exceptions;
 use FastyBird\Connector\Virtual\Helpers;
 use FastyBird\Connector\Virtual\Queue;
+use FastyBird\DateTimeFactory;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -46,6 +48,8 @@ final class WriteDevicePropertyState implements Queue\Consumer
 
 	use Nette\SmartObject;
 
+	private const WRITE_PENDING_DELAY = 2_000.0;
+
 	public function __construct(
 		private readonly Queue\Queue $queue,
 		private readonly Drivers\DriversManager $driversManager,
@@ -55,6 +59,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		private readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
 		private readonly DevicesModels\States\DevicePropertiesManager $devicePropertiesStatesManager,
+		private readonly DateTimeFactory\Factory $dateTimeFactory,
 	)
 	{
 	}
@@ -206,6 +211,23 @@ final class WriteDevicePropertyState implements Queue\Consumer
 
 		if ($valueToWrite === null) {
 			return true;
+		}
+
+		$now = $this->dateTimeFactory->getNow();
+		$pending = $state->getPending();
+
+		if (
+			$pending === false
+			|| (
+				$pending instanceof DateTimeInterface
+				&& (float) $now->format('Uv') - (float) $pending->format('Uv') <= self::WRITE_PENDING_DELAY
+			)
+		) {
+			return true;
+		}
+
+		if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
+			$this->devicePropertiesStatesManager->setPendingState($property, true);
 		}
 
 		try {

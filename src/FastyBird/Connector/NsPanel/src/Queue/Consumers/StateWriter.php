@@ -74,12 +74,12 @@ trait StateWriter
 
 				$value = $this->getPropertyValue($property);
 
-				if ($value === null || !Types\PowerPayload::isValidValue($value)) {
-					$value = $property->getInvalid();
+				if ($value === null || $property->getInvalid() === null) {
+					return null;
 				}
 
-				if ($value === null) {
-					return null;
+				if (!Types\PowerPayload::isValidValue($value)) {
+					$value = $property->getInvalid();
 				}
 
 				return [
@@ -96,12 +96,12 @@ trait StateWriter
 
 				$value = $this->getPropertyValue($property);
 
-				if ($value === null || !Types\TogglePayload::isValidValue($value)) {
-					$value = $property->getInvalid();
+				if ($value === null || $property->getInvalid() === null) {
+					return null;
 				}
 
-				if ($value === null) {
-					return null;
+				if (!Types\TogglePayload::isValidValue($value)) {
+					$value = $property->getInvalid();
 				}
 
 				return [
@@ -120,12 +120,12 @@ trait StateWriter
 
 				$value = $this->getPropertyValue($property);
 
-				if (!is_int($value)) {
-					$value = $property->getInvalid();
+				if ($value === null || $property->getInvalid() === null) {
+					return null;
 				}
 
-				if ($value === null) {
-					return null;
+				if (!is_int($value)) {
+					$value = $property->getInvalid();
 				}
 
 				return [
@@ -145,12 +145,12 @@ trait StateWriter
 
 				$value = $this->getPropertyValue($property);
 
-				if (!is_int($value)) {
-					$value = $property->getInvalid();
+				if ($value === null || $property->getInvalid() === null) {
+					return null;
 				}
 
-				if ($value === null) {
-					return null;
+				if (!is_int($value)) {
+					$value = $property->getInvalid();
 				}
 
 				return [
@@ -159,52 +159,57 @@ trait StateWriter
 					],
 				];
 			case Types\Capability::COLOR_RGB:
-				$property = $this->findProtocolProperty($channel, Types\Protocol::get(Types\Protocol::COLOR_RED));
+				$propertyRed = $this->findProtocolProperty(
+					$channel,
+					Types\Protocol::get(Types\Protocol::COLOR_RED),
+				);
 
-				if ($property === null) {
+				if ($propertyRed === null) {
 					return null;
 				}
 
-				$red = $this->getPropertyValue($property);
+				$red = $this->getPropertyValue($propertyRed);
+
+				$propertyGreen = $this->findProtocolProperty(
+					$channel,
+					Types\Protocol::get(Types\Protocol::COLOR_GREEN),
+				);
+
+				if ($propertyGreen === null) {
+					return null;
+				}
+
+				$green = $this->getPropertyValue($propertyGreen);
+
+				$propertyBlue = $this->findProtocolProperty(
+					$channel,
+					Types\Protocol::get(Types\Protocol::COLOR_BLUE),
+				);
+
+				if ($propertyBlue === null) {
+					return null;
+				}
+
+				$blue = $this->getPropertyValue($propertyBlue);
+
+				if (
+					$red === null || $propertyRed->getInvalid() === null
+					|| $green === null || $propertyGreen->getInvalid() === null
+					|| $blue === null || $propertyBlue->getInvalid() === null
+				) {
+					return null;
+				}
 
 				if (!is_int($red)) {
-					$red = $property->getInvalid();
+					$red = $propertyRed->getInvalid();
 				}
-
-				if ($red === null) {
-					return null;
-				}
-
-				$property = $this->findProtocolProperty($channel, Types\Protocol::get(Types\Protocol::COLOR_GREEN));
-
-				if ($property === null) {
-					return null;
-				}
-
-				$green = $this->getPropertyValue($property);
 
 				if (!is_int($green)) {
-					$green = $property->getInvalid();
+					$green = $propertyGreen->getInvalid();
 				}
-
-				if ($green === null) {
-					return null;
-				}
-
-				$property = $this->findProtocolProperty($channel, Types\Protocol::get(Types\Protocol::COLOR_BLUE));
-
-				if ($property === null) {
-					return null;
-				}
-
-				$blue = $this->getPropertyValue($property);
 
 				if (!is_int($blue)) {
-					$blue = $property->getInvalid();
-				}
-
-				if ($blue === null) {
-					return null;
+					$blue = $propertyBlue->getInvalid();
 				}
 
 				return [
@@ -223,12 +228,12 @@ trait StateWriter
 
 				$value = $this->getPropertyValue($property);
 
-				if (!is_int($value)) {
-					$value = $property->getInvalid();
+				if ($value === null || $property->getInvalid() === null) {
+					return null;
 				}
 
-				if ($value === null) {
-					return null;
+				if (!is_int($value)) {
+					$value = $property->getInvalid();
 				}
 
 				return [
@@ -245,12 +250,12 @@ trait StateWriter
 
 				$value = $this->getPropertyValue($property);
 
-				if ($value === null || !Types\MotorControlPayload::isValidValue($value)) {
-					$value = $property->getInvalid();
+				if ($value === null || $property->getInvalid() === null) {
+					return null;
 				}
 
-				if ($value === null) {
-					return null;
+				if (!Types\MotorControlPayload::isValidValue($value)) {
+					$value = $property->getInvalid();
 				}
 
 				return [
@@ -267,12 +272,12 @@ trait StateWriter
 
 				$value = $this->getPropertyValue($property);
 
-				if (!is_bool($value)) {
-					$value = $property->getInvalid();
+				if ($value === null || $property->getInvalid() === null) {
+					return null;
 				}
 
-				if ($value === null) {
-					return null;
+				if (!is_bool($value)) {
+					$value = $property->getInvalid();
 				}
 
 				return [
@@ -292,12 +297,12 @@ trait StateWriter
 
 				$value = $this->getPropertyValue($property);
 
-				if ($value === null || !Types\MotorCalibrationPayload::isValidValue($value)) {
-					$value = $property->getInvalid();
+				if ($value === null || $property->getInvalid() === null) {
+					return null;
 				}
 
-				if ($value === null) {
-					return null;
+				if (!Types\MotorCalibrationPayload::isValidValue($value)) {
+					$value = $property->getInvalid();
 				}
 
 				return [
@@ -314,12 +319,12 @@ trait StateWriter
 
 				$value = $this->getPropertyValue($property);
 
-				if ($value === null || !Types\StartupPayload::isValidValue($value)) {
-					$value = $property->getInvalid();
+				if ($value === null || $property->getInvalid() === null) {
+					return null;
 				}
 
-				if ($value === null) {
-					return null;
+				if (!Types\StartupPayload::isValidValue($value)) {
+					$value = $property->getInvalid();
 				}
 
 				return [
@@ -335,6 +340,10 @@ trait StateWriter
 				}
 
 				$value = $this->getPropertyValue($property);
+
+				if ($value === null) {
+					return null;
+				}
 
 				return [
 					$this->channelHelper->getCapability($channel)->getValue() => [
@@ -352,12 +361,12 @@ trait StateWriter
 
 				$value = $this->getPropertyValue($property);
 
-				if (!is_bool($value)) {
-					$value = $property->getInvalid();
+				if ($value === null || $property->getInvalid() === null) {
+					return null;
 				}
 
-				if ($value === null) {
-					return null;
+				if (!is_bool($value)) {
+					$value = $property->getInvalid();
 				}
 
 				return [
@@ -374,12 +383,12 @@ trait StateWriter
 
 				$value = $this->getPropertyValue($property);
 
-				if (!is_int($value)) {
-					$value = $property->getInvalid();
+				if ($value === null || $property->getInvalid() === null) {
+					return null;
 				}
 
-				if ($value === null) {
-					return null;
+				if (!is_int($value)) {
+					$value = $property->getInvalid();
 				}
 
 				return [
@@ -396,12 +405,12 @@ trait StateWriter
 
 				$value = $this->getPropertyValue($property);
 
-				if (!is_float($value)) {
-					$value = $property->getInvalid();
+				if ($value === null || $property->getInvalid() === null) {
+					return null;
 				}
 
-				if ($value === null) {
-					return null;
+				if (!is_float($value)) {
+					$value = $property->getInvalid();
 				}
 
 				return [
@@ -418,12 +427,12 @@ trait StateWriter
 
 				$value = $this->getPropertyValue($property);
 
-				if (!is_int($value)) {
-					$value = $property->getInvalid();
+				if ($value === null || $property->getInvalid() === null) {
+					return null;
 				}
 
-				if ($value === null) {
-					return null;
+				if (!is_int($value)) {
+					$value = $property->getInvalid();
 				}
 
 				return [
@@ -458,12 +467,12 @@ trait StateWriter
 
 				$value = $this->getPropertyValue($property);
 
-				if (!is_int($value)) {
-					$value = $property->getInvalid();
+				if ($value === null || $property->getInvalid() === null) {
+					return null;
 				}
 
-				if ($value === null) {
-					return null;
+				if (!is_int($value)) {
+					$value = $property->getInvalid();
 				}
 
 				return [
@@ -492,7 +501,7 @@ trait StateWriter
 		if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
 			$state = $this->channelPropertiesStatesManager->get($property);
 
-			$value = $state?->getActualValue();
+			$value = $state?->getExpectedValue();
 		} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
 			$state = $this->channelPropertiesStatesManager->read($property);
 
