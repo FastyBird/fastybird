@@ -35,7 +35,9 @@ use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Nette\Utils;
+use Throwable;
 use function assert;
+use function React\Async\await;
 
 /**
  * Store device property state message consumer
@@ -60,7 +62,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 		private readonly DevicesModels\States\DevicePropertiesManager $devicePropertiesStatesManager,
 		private readonly DevicesUtilities\Database $databaseHelper,
 		private readonly ExchangeEntities\DocumentFactory $entityFactory,
-		private readonly ExchangePublisher\Publisher $publisher,
+		private readonly ExchangePublisher\Async\Publisher $publisher,
 	)
 	{
 	}
@@ -76,6 +78,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws Throwable
 	 */
 	public function consume(Entities\Messages\Entity $entity): bool
 	{
@@ -174,7 +177,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 			if ($parent instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
 				try {
 					if ($this->useExchange) {
-						$this->publisher->publish(
+						await($this->publisher->publish(
 							MetadataTypes\ConnectorSource::get(
 								MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 							),
@@ -195,7 +198,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 									MetadataTypes\RoutingKey::DEVICE_PROPERTY_ACTION,
 								),
 							),
-						);
+						));
 					} else {
 						$this->devicePropertiesStatesManager->write(
 							$property,

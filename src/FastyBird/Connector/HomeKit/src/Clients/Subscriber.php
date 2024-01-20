@@ -28,6 +28,7 @@ use function array_diff;
 use function array_key_exists;
 use function in_array;
 use function parse_url;
+use function React\Async\async;
 use function sprintf;
 use function strlen;
 use function strval;
@@ -182,16 +183,16 @@ final class Subscriber
 
 		if ($immediate) {
 			$this->eventLoop->futureTick(
-				function () use ($aid, $iid, $value, $senderAddress): void {
+				async(function () use ($aid, $iid, $value, $senderAddress): void {
 					$this->sendToClients($aid, $iid, $value, $senderAddress);
-				},
+				}),
 			);
 		} else {
 			$this->eventLoop->addTimer(
 				self::PUBLISH_EVENT_DELAY,
-				function () use ($aid, $iid, $value, $senderAddress): void {
+				async(function () use ($aid, $iid, $value, $senderAddress): void {
 					$this->sendToClients($aid, $iid, $value, $senderAddress);
-				},
+				}),
 			);
 		}
 	}

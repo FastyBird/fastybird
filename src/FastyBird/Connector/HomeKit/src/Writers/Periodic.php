@@ -32,6 +32,7 @@ use React\EventLoop;
 use function array_key_exists;
 use function assert;
 use function in_array;
+use function React\Async\async;
 
 /**
  * Periodic properties writer
@@ -330,9 +331,9 @@ abstract class Periodic
 	{
 		$this->handlerTimer = $this->eventLoop->addTimer(
 			self::HANDLER_PROCESSING_INTERVAL,
-			function (): void {
+			async(function (): void {
 				$this->handleCommunication();
-			},
+			}),
 		);
 	}
 
