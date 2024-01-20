@@ -10,4 +10,4 @@ parameters:
 
     excludePaths:
         analyseAndScan:
-            - ../src/Helpers/LoopWrapper.php
+            - ../src/EventLoop/Wrapper.php

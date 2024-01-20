@@ -76,6 +76,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 
 			ApplicationEvents\EventLoopStarted::class => 'enableAsync',
 			ApplicationEvents\EventLoopStopped::class => 'disableAsync',
+			ApplicationEvents\EventLoopStopping::class => 'disableAsync',
 		];
 	}
 

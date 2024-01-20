@@ -85,6 +85,7 @@ final class ModuleEntities implements Common\EventSubscriber
 
 			ApplicationEvents\EventLoopStarted::class => 'enableAsync',
 			ApplicationEvents\EventLoopStopped::class => 'disableAsync',
+			ApplicationEvents\EventLoopStopping::class => 'disableAsync',
 		];
 	}
 

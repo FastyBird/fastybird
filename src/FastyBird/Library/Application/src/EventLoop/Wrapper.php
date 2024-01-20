@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * LoopWrapper.php
+ * Wrapper.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,7 +13,7 @@
  * @date           02.01.24
  */
 
-namespace FastyBird\Library\Application\Helpers;
+namespace FastyBird\Library\Application\EventLoop;
 
 use FastyBird\Library\Application\Events;
 use Psr\EventDispatcher;
@@ -36,7 +36,7 @@ use const SIGTERM;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class LoopWrapper implements ReactEventLoop\LoopInterface
+class Wrapper implements ReactEventLoop\LoopInterface
 {
 
 	private ReactEventLoop\LoopInterface|null $instance = null;
@@ -104,11 +104,11 @@ class LoopWrapper implements ReactEventLoop\LoopInterface
 		$this->dispatcher?->dispatch(new Events\EventLoopStarted());
 
 		$this->addSignal(SIGTERM, function (): void {
-			$this->dispatcher?->dispatch(new Events\EventLoopStopped());
+			$this->dispatcher?->dispatch(new Events\EventLoopStopping());
 		});
 
 		$this->addSignal(SIGINT, function (): void {
-			$this->dispatcher?->dispatch(new Events\EventLoopStopped());
+			$this->dispatcher?->dispatch(new Events\EventLoopStopping());
 		});
 
 		$this->get()->run();

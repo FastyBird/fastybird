@@ -51,7 +51,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 			Models\Configuration\Channels\Properties\Repository::class,
 		);
 		$channelPropertiesConfigurationRepository
-			->expects(self::exactly($parent !== null ? 2 : 0))
+			->expects(self::exactly($parent !== null ? 1 : 0))
 			->method('find')
 			->willReturn($parent);
 
@@ -163,7 +163,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 			Models\Configuration\Channels\Properties\Repository::class,
 		);
 		$channelPropertiesConfigurationRepository
-			->expects(self::exactly($parent !== null ? 2 : 0))
+			->expects(self::exactly($parent !== null ? 1 : 0))
 			->method('find')
 			->willReturn($parent);
 

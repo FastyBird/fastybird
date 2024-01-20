@@ -46,6 +46,67 @@ class Database
 	}
 
 	/**
+	 * @template T
+	 *
+	 * @param callable(): T $callback
+	 *
+	 * @return T
+	 *
+	 * @throws Exceptions\InvalidState
+	 */
+	public function query(callable $callback)
+	{
+		try {
+			$this->pingAndReconnect();
+
+			return $callback();
+		} catch (Throwable $ex) {
+			throw new Exceptions\InvalidState('An error occurred: ' . $ex->getMessage(), $ex->getCode(), $ex);
+		}
+	}
+
+	/**
+	 * @param callable(): T $callback
+	 *
+	 * @return T
+	 *
+	 * @throws DBAL\Exception
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\Runtime
+	 *
+	 * @template T
+	 */
+	public function transaction(callable $callback)
+	{
+		$connection = $this->getConnection();
+
+		if ($connection === null) {
+			throw new Exceptions\Runtime('Entity manager could not be loaded');
+		}
+
+		try {
+			$this->pingAndReconnect();
+
+			// Start transaction connection to the database
+			$connection->beginTransaction();
+
+			$result = $callback();
+
+			// Commit all changes into database
+			$connection->commit();
+
+			return $result;
+		} catch (Throwable $ex) {
+			// Revert all changes when error occur
+			if ($connection->isTransactionActive()) {
+				$connection->rollBack();
+			}
+
+			throw new Exceptions\InvalidState('An error occurred: ' . $ex->getMessage(), $ex->getCode(), $ex);
+		}
+	}
+
+	/**
 	 * @throws Exceptions\InvalidState
 	 */
 	public function ping(): bool
@@ -159,6 +220,31 @@ class Database
 		}
 
 		return null;
+	}
+
+	/**
+	 * @throws Exceptions\Runtime
+	 */
+	private function pingAndReconnect(): void
+	{
+		try {
+			// Check if ping to DB is possible...
+			if (!$this->ping()) {
+				// ...if not, try to reconnect
+				$this->reconnect();
+
+				// ...and ping again
+				if (!$this->ping()) {
+					throw new Exceptions\Runtime('Connection to database could not be re-established');
+				}
+			}
+		} catch (Throwable $ex) {
+			throw new Exceptions\Runtime(
+				'Connection to database could not be re-established',
+				$ex->getCode(),
+				$ex,
+			);
+		}
 	}
 
 	/**
