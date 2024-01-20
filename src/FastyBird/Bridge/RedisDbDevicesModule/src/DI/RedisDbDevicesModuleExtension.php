@@ -69,10 +69,24 @@ class RedisDbDevicesModuleExtension extends DI\CompilerExtension
 			->setArguments(['database' => $configuration->database]);
 
 		$builder->addDefinition(
+			$this->prefix('models.connectorPropertyRepository.async'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\States\Async\ConnectorPropertiesRepository::class)
+			->setArguments(['database' => $configuration->database]);
+
+		$builder->addDefinition(
 			$this->prefix('models.devicePropertyRepository'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Models\States\DevicePropertiesRepository::class)
+			->setArguments(['database' => $configuration->database]);
+
+		$builder->addDefinition(
+			$this->prefix('models.devicePropertyRepository.async'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\States\Async\DevicePropertiesRepository::class)
 			->setArguments(['database' => $configuration->database]);
 
 		$builder->addDefinition(
@@ -83,10 +97,24 @@ class RedisDbDevicesModuleExtension extends DI\CompilerExtension
 			->setArguments(['database' => $configuration->database]);
 
 		$builder->addDefinition(
+			$this->prefix('models.channelPropertyRepository.async'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\States\Async\ChannelPropertiesRepository::class)
+			->setArguments(['database' => $configuration->database]);
+
+		$builder->addDefinition(
 			$this->prefix('models.connectorPropertiesManager'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Models\States\ConnectorPropertiesManager::class)
+			->setArguments(['database' => $configuration->database]);
+
+		$builder->addDefinition(
+			$this->prefix('models.connectorPropertiesManager.async'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\States\Async\ConnectorPropertiesManager::class)
 			->setArguments(['database' => $configuration->database]);
 
 		$builder->addDefinition(
@@ -97,10 +125,24 @@ class RedisDbDevicesModuleExtension extends DI\CompilerExtension
 			->setArguments(['database' => $configuration->database]);
 
 		$builder->addDefinition(
+			$this->prefix('models.devicePropertiesManager.async'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\States\Async\DevicePropertiesManager::class)
+			->setArguments(['database' => $configuration->database]);
+
+		$builder->addDefinition(
 			$this->prefix('models.channelPropertiesManager'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Models\States\ChannelPropertiesManager::class)
+			->setArguments(['database' => $configuration->database]);
+
+		$builder->addDefinition(
+			$this->prefix('models.channelPropertiesManager.async'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\States\Async\ChannelPropertiesManager::class)
 			->setArguments(['database' => $configuration->database]);
 	}
 

@@ -20,6 +20,31 @@ final class RedisDbDevicesModuleExtensionTest extends BaseTestCase
 		self::assertNotNull($this->container->getByType(Models\States\ConnectorPropertiesManager::class, false));
 		self::assertNotNull($this->container->getByType(Models\States\DevicePropertiesRepository::class, false));
 		self::assertNotNull($this->container->getByType(Models\States\DevicePropertiesManager::class, false));
+
+		self::assertNotNull($this->container->getByType(
+			Models\States\Async\ChannelPropertiesRepository::class,
+			false,
+		));
+		self::assertNotNull($this->container->getByType(
+			Models\States\Async\ChannelPropertiesManager::class,
+			false,
+		));
+		self::assertNotNull($this->container->getByType(
+			Models\States\Async\ConnectorPropertiesRepository::class,
+			false,
+		));
+		self::assertNotNull($this->container->getByType(
+			Models\States\Async\ConnectorPropertiesManager::class,
+			false,
+		));
+		self::assertNotNull($this->container->getByType(
+			Models\States\Async\DevicePropertiesRepository::class,
+			false,
+		));
+		self::assertNotNull($this->container->getByType(
+			Models\States\Async\DevicePropertiesManager::class,
+			false,
+		));
 	}
 
 }
