@@ -177,7 +177,7 @@ final class Connector implements DevicesConnectors\Connector
 							);
 						} catch (Exceptions\Runtime $ex) {
 							$this->logger->error(
-								'Could report device initial state to NS Panel',
+								'Could not report device initial state to NS Panel',
 								[
 									'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 									'type' => 'connector',

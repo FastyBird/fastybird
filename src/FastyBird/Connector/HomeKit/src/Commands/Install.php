@@ -656,7 +656,7 @@ class Install extends Console\Command\Command
 				'An unhandled error occurred',
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
-					'type' => 'devices-cmd',
+					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
@@ -759,7 +759,7 @@ class Install extends Console\Command\Command
 				'An unhandled error occurred',
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
-					'type' => 'devices-cmd',
+					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
@@ -848,7 +848,7 @@ class Install extends Console\Command\Command
 				'An unhandled error occurred',
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
-					'type' => 'devices-cmd',
+					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
@@ -1034,7 +1034,7 @@ class Install extends Console\Command\Command
 				'An unhandled error occurred',
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
-					'type' => 'devices-cmd',
+					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
@@ -1214,7 +1214,7 @@ class Install extends Console\Command\Command
 				'An unhandled error occurred',
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
-					'type' => 'devices-cmd',
+					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
@@ -1309,7 +1309,7 @@ class Install extends Console\Command\Command
 				'An unhandled error occurred',
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
-					'type' => 'devices-cmd',
+					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
@@ -1663,7 +1663,7 @@ class Install extends Console\Command\Command
 				'An unhandled error occurred',
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
-					'type' => 'devices-cmd',
+					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
@@ -1742,7 +1742,7 @@ class Install extends Console\Command\Command
 				'An unhandled error occurred',
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
-					'type' => 'devices-cmd',
+					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
@@ -3418,7 +3418,7 @@ class Install extends Console\Command\Command
 				'Could not read service identifier from console answer',
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
-					'type' => 'devices-cmd',
+					'type' => 'install-cmd',
 				],
 			);
 
@@ -3438,7 +3438,7 @@ class Install extends Console\Command\Command
 				'Channel was not found',
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
-					'type' => 'devices-cmd',
+					'type' => 'install-cmd',
 				],
 			);
 
@@ -3476,7 +3476,7 @@ class Install extends Console\Command\Command
 				'Could not read characteristic identifier from console answer',
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
-					'type' => 'devices-cmd',
+					'type' => 'install-cmd',
 				],
 			);
 
@@ -3496,7 +3496,7 @@ class Install extends Console\Command\Command
 				'Property was not found',
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
-					'type' => 'devices-cmd',
+					'type' => 'install-cmd',
 				],
 			);
 

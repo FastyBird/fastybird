@@ -123,20 +123,23 @@ abstract class HttpApi
 	{
 		$deferred = new Promise\Deferred();
 
-		$this->logger->debug(sprintf(
-			'Request: method = %s url = %s',
-			$request->getMethod(),
-			strval($request->getUri()),
-		), [
-			'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
-			'type' => 'http-api',
-			'request' => [
-				'method' => $request->getMethod(),
-				'path' => strval($request->getUri()),
-				'headers' => $request->getHeaders(),
-				'body' => $request->getContent(),
+		$this->logger->debug(
+			sprintf(
+				'Request: method = %s url = %s',
+				$request->getMethod(),
+				strval($request->getUri()),
+			),
+			[
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
+				'type' => 'http-api',
+				'request' => [
+					'method' => $request->getMethod(),
+					'path' => strval($request->getUri()),
+					'headers' => $request->getHeaders(),
+					'body' => $request->getContent(),
+				],
 			],
-		]);
+		);
 
 		if ($async) {
 			if ($authorization === self::AUTHORIZATION_BASIC) {
@@ -170,20 +173,23 @@ abstract class HttpApi
 								return;
 							}
 
-							$this->logger->debug('Received response', [
-								'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
-								'type' => 'http-api',
-								'request' => [
-									'method' => $request->getMethod(),
-									'url' => strval($request->getUri()),
-									'headers' => $request->getHeaders(),
-									'body' => $request->getContent(),
+							$this->logger->debug(
+								'Received response',
+								[
+									'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
+									'type' => 'http-api',
+									'request' => [
+										'method' => $request->getMethod(),
+										'url' => strval($request->getUri()),
+										'headers' => $request->getHeaders(),
+										'body' => $request->getContent(),
+									],
+									'response' => [
+										'code' => $response->getStatusCode(),
+										'body' => $responseBody,
+									],
 								],
-								'response' => [
-									'code' => $response->getStatusCode(),
-									'body' => $responseBody,
-								],
-							]);
+							);
 
 							$deferred->resolve($response);
 						},
@@ -300,20 +306,23 @@ abstract class HttpApi
 				);
 			}
 
-			$this->logger->debug('Received response', [
-				'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
-				'type' => 'http-api',
-				'request' => [
-					'method' => $request->getMethod(),
-					'url' => strval($request->getUri()),
-					'headers' => $request->getHeaders(),
-					'body' => $request->getContent(),
+			$this->logger->debug(
+				'Received response',
+				[
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
+					'type' => 'http-api',
+					'request' => [
+						'method' => $request->getMethod(),
+						'url' => strval($request->getUri()),
+						'headers' => $request->getHeaders(),
+						'body' => $request->getContent(),
+					],
+					'response' => [
+						'code' => $response->getStatusCode(),
+						'body' => $responseBody,
+					],
 				],
-				'response' => [
-					'code' => $response->getStatusCode(),
-					'body' => $responseBody,
-				],
-			]);
+			);
 
 			return $response;
 		} catch (GuzzleHttp\Exception\GuzzleException | InvalidArgumentException $ex) {

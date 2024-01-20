@@ -168,33 +168,42 @@ class Database
 				}
 			} catch (Throwable $ex) {
 				// Log caught exception
-				$this->logger->error('An unhandled error occurred during flushing entity manager', [
-					'source' => MetadataTypes\ModuleSource::NOT_SPECIFIED,
-					'type' => 'helper',
-					'exception' => Logger::buildException($ex),
-				]);
+				$this->logger->error(
+					'An unhandled error occurred during flushing entity manager',
+					[
+						'source' => MetadataTypes\ModuleSource::NOT_SPECIFIED,
+						'type' => 'helper',
+						'exception' => Logger::buildException($ex),
+					],
+				);
 			}
 
 			try {
 				$manager->getConnection()->close();
 			} catch (Throwable $ex) {
 				// Log caught exception
-				$this->logger->error('An unhandled error occurred during closing entity manager', [
-					'source' => MetadataTypes\ModuleSource::NOT_SPECIFIED,
-					'type' => 'helper',
-					'exception' => Logger::buildException($ex),
-				]);
+				$this->logger->error(
+					'An unhandled error occurred during closing entity manager',
+					[
+						'source' => MetadataTypes\ModuleSource::NOT_SPECIFIED,
+						'type' => 'helper',
+						'exception' => Logger::buildException($ex),
+					],
+				);
 			}
 
 			try {
 				$manager->clear();
 			} catch (Throwable $ex) {
 				// Log caught exception
-				$this->logger->error('An unhandled error occurred during clearing entity manager', [
-					'source' => MetadataTypes\ModuleSource::NOT_SPECIFIED,
-					'type' => 'helper',
-					'exception' => Logger::buildException($ex),
-				]);
+				$this->logger->error(
+					'An unhandled error occurred during clearing entity manager',
+					[
+						'source' => MetadataTypes\ModuleSource::NOT_SPECIFIED,
+						'type' => 'helper',
+						'exception' => Logger::buildException($ex),
+					],
+				);
 			}
 
 			if (!$manager->isOpen()) {

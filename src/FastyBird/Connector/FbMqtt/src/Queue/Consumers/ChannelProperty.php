@@ -92,8 +92,14 @@ final class ChannelProperty implements Queue\Consumer
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
 					'type' => 'channel-property-message-consumer',
+					'connector' => [
+						'id' => $entity->getConnector()->toString(),
+					],
 					'device' => [
 						'identifier' => $entity->getDevice(),
+					],
+					'channel' => [
+						'identifier' => $entity->getChannel(),
 					],
 				],
 			);
@@ -114,8 +120,11 @@ final class ChannelProperty implements Queue\Consumer
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
 					'type' => 'channel-property-message-consumer',
+					'connector' => [
+						'id' => $entity->getConnector()->toString(),
+					],
 					'device' => [
-						'identifier' => $entity->getDevice(),
+						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
 						'identifier' => $entity->getChannel(),
@@ -138,11 +147,14 @@ final class ChannelProperty implements Queue\Consumer
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
 					'type' => 'channel-property-message-consumer',
+					'connector' => [
+						'id' => $entity->getConnector()->toString(),
+					],
 					'device' => [
-						'identifier' => $entity->getDevice(),
+						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
-						'identifier' => $entity->getChannel(),
+						'id' => $channel->getId()->toString(),
 					],
 					'property' => [
 						'identifier' => $entity->getProperty(),
@@ -192,8 +204,17 @@ final class ChannelProperty implements Queue\Consumer
 			[
 				'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
 				'type' => 'channel-property-message-consumer',
+				'connector' => [
+					'id' => $entity->getConnector()->toString(),
+				],
 				'device' => [
-					'identifier' => $entity->getDevice(),
+					'id' => $device->getId()->toString(),
+				],
+				'channel' => [
+					'id' => $channel->getId()->toString(),
+				],
+				'property' => [
+					'id' => $property->getId()->toString(),
 				],
 				'data' => $entity->toArray(),
 			],

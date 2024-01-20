@@ -126,7 +126,7 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 					'type' => 'write-third-party-device-state-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $connector->getId()->toString(),
 					],
 					'device' => [
 						'id' => $entity->getDevice()->toString(),
@@ -164,10 +164,10 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 					'type' => 'write-third-party-device-state-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $connector->getId()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
 						'id' => $entity->getChannel()->toString(),
@@ -199,10 +199,10 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 					'type' => 'write-third-party-device-state-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $connector->getId()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
 						'id' => $entity->getChannel()->toString(),
@@ -227,10 +227,10 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 					'type' => 'write-third-party-device-state-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $connector->getId()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
 						'id' => $entity->getChannel()->toString(),
@@ -251,13 +251,13 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 					'type' => 'write-third-party-device-state-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $connector->getId()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
-						'id' => $entity->getChannel()->toString(),
+						'id' => $channel->getId()->toString(),
 					],
 					'data' => $entity->toArray(),
 				],
@@ -276,7 +276,7 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 				->then(static function (): void {
 					// Everything is ok, nothing to do
 				})
-				->catch(function (Throwable $ex) use ($entity, $connector, $gateway, $channel): void {
+				->catch(function (Throwable $ex) use ($entity, $connector, $gateway, $device, $channel): void {
 					$findPropertiesQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
 					$findPropertiesQuery->forChannel($channel);
 					$findPropertiesQuery->settable(true);
@@ -336,13 +336,13 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 								'type' => 'write-third-party-device-state-message-consumer',
 								'exception' => ApplicationHelpers\Logger::buildException($ex),
 								'connector' => [
-									'id' => $entity->getConnector()->toString(),
+									'id' => $connector->getId()->toString(),
 								],
 								'device' => [
-									'id' => $entity->getDevice()->toString(),
+									'id' => $device->getId()->toString(),
 								],
 								'channel' => [
-									'id' => $entity->getChannel()->toString(),
+									'id' => $channel->getId()->toString(),
 								],
 								'data' => $entity->toArray(),
 							],
@@ -358,13 +358,13 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 					'type' => 'write-third-party-device-state-message-consumer',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $connector->getId()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
-						'id' => $entity->getChannel()->toString(),
+						'id' => $channel->getId()->toString(),
 					],
 					'data' => $entity->toArray(),
 				],
@@ -377,13 +377,13 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 				'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 				'type' => 'write-third-party-device-state-message-consumer',
 				'connector' => [
-					'id' => $entity->getConnector()->toString(),
+					'id' => $connector->getId()->toString(),
 				],
 				'device' => [
-					'id' => $entity->getDevice()->toString(),
+					'id' => $device->getId()->toString(),
 				],
 				'channel' => [
-					'id' => $entity->getChannel()->toString(),
+					'id' => $channel->getId()->toString(),
 				],
 				'data' => $entity->toArray(),
 			],

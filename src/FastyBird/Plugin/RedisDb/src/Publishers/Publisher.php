@@ -74,7 +74,7 @@ final class Publisher implements ExchangePublisher\Publisher
 						'source' => MetadataTypes\PluginSource::REDISDB,
 						'type' => 'messages-publisher',
 						'message' => [
-							'routingKey' => $routingKey->getValue(),
+							'routing_key' => $routingKey->getValue(),
 							'source' => $source->getValue(),
 							'data' => $entity?->toArray(),
 						],
@@ -87,7 +87,7 @@ final class Publisher implements ExchangePublisher\Publisher
 						'source' => MetadataTypes\PluginSource::REDISDB,
 						'type' => 'messages-publisher',
 						'message' => [
-							'routingKey' => $routingKey->getValue(),
+							'routing_key' => $routingKey->getValue(),
 							'source' => $source->getValue(),
 							'data' => $entity?->toArray(),
 						],
@@ -102,7 +102,7 @@ final class Publisher implements ExchangePublisher\Publisher
 					'type' => 'messages-publisher',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'message' => [
-						'routingKey' => $routingKey->getValue(),
+						'routing_key' => $routingKey->getValue(),
 						'source' => $source->getValue(),
 						'data' => $entity?->toArray(),
 					],

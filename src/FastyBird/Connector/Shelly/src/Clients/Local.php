@@ -670,7 +670,7 @@ final class Local implements Client
 									'id' => $this->connector->getId()->toString(),
 								],
 								'device' => [
-									'identifier' => $device->getIdentifier(),
+									'id' => $device->getId()->toString(),
 								],
 							],
 						);

@@ -35,6 +35,7 @@ use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
 use RuntimeException;
 use Throwable;
+use function array_merge;
 use function assert;
 use function strval;
 
@@ -97,20 +98,33 @@ final class WriteV1PropertyState implements Queue\Consumer
 		if ($connector === null) {
 			$this->logger->error(
 				'Connector could not be loaded',
-				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
-					'type' => 'write-v1-property-state-message-consumer',
-					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+				array_merge(
+					[
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
+						'type' => 'write-v1-property-state-message-consumer',
+						'connector' => [
+							'id' => $entity->getConnector()->toString(),
+						],
+						'device' => [
+							'id' => $entity->getDevice()->toString(),
+						],
+						'data' => $entity->toArray(),
 					],
-					'device' => [
-						'id' => $entity->getDevice()->toString(),
-					],
-					'property' => [
-						'id' => $entity->getProperty()->toString(),
-					],
-					'data' => $entity->toArray(),
-				],
+					$entity instanceof Entities\Messages\WriteDevicePropertyState
+						? [
+							'property' => [
+								'id' => $entity->getProperty()->toString(),
+							],
+						]
+						: [
+							'channel' => [
+								'id' => $entity->getChannel()->toString(),
+							],
+							'property' => [
+								'id' => $entity->getProperty()->toString(),
+							],
+						],
+				),
 			);
 
 			return true;
@@ -132,20 +146,33 @@ final class WriteV1PropertyState implements Queue\Consumer
 		if ($device === null) {
 			$this->logger->error(
 				'Device could not be loaded',
-				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
-					'type' => 'write-v1-property-state-message-consumer',
-					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+				array_merge(
+					[
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
+						'type' => 'write-v1-property-state-message-consumer',
+						'connector' => [
+							'id' => $connector->getId()->toString(),
+						],
+						'device' => [
+							'id' => $entity->getDevice()->toString(),
+						],
+						'data' => $entity->toArray(),
 					],
-					'device' => [
-						'id' => $entity->getDevice()->toString(),
-					],
-					'property' => [
-						'id' => $entity->getProperty()->toString(),
-					],
-					'data' => $entity->toArray(),
-				],
+					$entity instanceof Entities\Messages\WriteDevicePropertyState
+						? [
+							'property' => [
+								'id' => $entity->getProperty()->toString(),
+							],
+						]
+						: [
+							'channel' => [
+								'id' => $entity->getChannel()->toString(),
+							],
+							'property' => [
+								'id' => $entity->getProperty()->toString(),
+							],
+						],
+				),
 			);
 
 			return true;
@@ -168,10 +195,13 @@ final class WriteV1PropertyState implements Queue\Consumer
 						'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
 						'type' => 'write-v1-property-state-message-consumer',
 						'connector' => [
-							'id' => $entity->getConnector()->toString(),
+							'id' => $connector->getId()->toString(),
 						],
 						'device' => [
-							'id' => $entity->getDevice()->toString(),
+							'id' => $device->getId()->toString(),
+						],
+						'channel' => [
+							'id' => $entity->getChannel()->toString(),
 						],
 						'property' => [
 							'id' => $entity->getProperty()->toString(),
@@ -199,10 +229,13 @@ final class WriteV1PropertyState implements Queue\Consumer
 						'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
 						'type' => 'write-v1-property-state-message-consumer',
 						'connector' => [
-							'id' => $entity->getConnector()->toString(),
+							'id' => $connector->getId()->toString(),
 						],
 						'device' => [
-							'id' => $entity->getDevice()->toString(),
+							'id' => $device->getId()->toString(),
+						],
+						'channel' => [
+							'id' => $channel->getId()->toString(),
 						],
 						'property' => [
 							'id' => $entity->getProperty()->toString(),
@@ -230,10 +263,10 @@ final class WriteV1PropertyState implements Queue\Consumer
 						'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
 						'type' => 'write-v1-property-state-message-consumer',
 						'connector' => [
-							'id' => $entity->getConnector()->toString(),
+							'id' => $connector->getId()->toString(),
 						],
 						'device' => [
-							'id' => $entity->getDevice()->toString(),
+							'id' => $device->getId()->toString(),
 						],
 						'property' => [
 							'id' => $entity->getProperty()->toString(),
@@ -249,20 +282,33 @@ final class WriteV1PropertyState implements Queue\Consumer
 		if (!$property->isSettable()) {
 			$this->logger->warning(
 				'Property is not writable',
-				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
-					'type' => 'write-v1-property-state-message-consumer',
-					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+				array_merge(
+					[
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
+						'type' => 'write-v1-property-state-message-consumer',
+						'connector' => [
+							'id' => $connector->getId()->toString(),
+						],
+						'device' => [
+							'id' => $entity->getDevice()->toString(),
+						],
+						'data' => $entity->toArray(),
 					],
-					'device' => [
-						'id' => $entity->getDevice()->toString(),
-					],
-					'property' => [
-						'id' => $entity->getProperty()->toString(),
-					],
-					'data' => $entity->toArray(),
-				],
+					$entity instanceof Entities\Messages\WriteDevicePropertyState
+						? [
+							'property' => [
+								'id' => $property->getId()->toString(),
+							],
+						]
+						: [
+							'channel' => [
+								'id' => $channel?->getId()->toString(),
+							],
+							'property' => [
+								'id' => $property->getId()->toString(),
+							],
+						],
+				),
 			);
 
 			return true;
@@ -320,26 +366,39 @@ final class WriteV1PropertyState implements Queue\Consumer
 				$topic,
 				strval($expectedValue),
 			)
-			->then(function () use ($entity): void {
+			->then(function () use ($entity, $connector, $channel, $property): void {
 				$this->logger->debug(
 					'Channel state was successfully sent to device',
-					[
-						'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
-						'type' => 'write-v1-property-state-message-consumer',
-						'connector' => [
-							'id' => $entity->getConnector()->toString(),
+					array_merge(
+						[
+							'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
+							'type' => 'write-v1-property-state-message-consumer',
+							'connector' => [
+								'id' => $connector->getId()->toString(),
+							],
+							'device' => [
+								'id' => $entity->getDevice()->toString(),
+							],
+							'data' => $entity->toArray(),
 						],
-						'device' => [
-							'id' => $entity->getDevice()->toString(),
-						],
-						'property' => [
-							'id' => $entity->getProperty()->toString(),
-						],
-						'data' => $entity->toArray(),
-					],
+						$entity instanceof Entities\Messages\WriteDevicePropertyState
+							? [
+								'property' => [
+									'id' => $property->getId()->toString(),
+								],
+							]
+							: [
+								'channel' => [
+									'id' => $channel?->getId()->toString(),
+								],
+								'property' => [
+									'id' => $property->getId()->toString(),
+								],
+							],
+					),
 				);
 			})
-			->catch(function (Throwable $ex) use ($property, $entity): void {
+			->catch(function (Throwable $ex) use ($entity, $connector, $channel, $property): void {
 				if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
 					$this->channelPropertiesStatesManager->setPendingState($property, false);
 				} else {
@@ -348,40 +407,66 @@ final class WriteV1PropertyState implements Queue\Consumer
 
 				$this->logger->error(
 					'Could write state to device',
-					[
-						'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
-						'type' => 'write-v1-property-state-message-consumer',
-						'exception' => ApplicationHelpers\Logger::buildException($ex),
-						'connector' => [
-							'id' => $entity->getConnector()->toString(),
+					array_merge(
+						[
+							'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
+							'type' => 'write-v1-property-state-message-consumer',
+							'exception' => ApplicationHelpers\Logger::buildException($ex),
+							'connector' => [
+								'id' => $connector->getId()->toString(),
+							],
+							'device' => [
+								'id' => $entity->getDevice()->toString(),
+							],
+							'data' => $entity->toArray(),
 						],
-						'device' => [
-							'id' => $entity->getDevice()->toString(),
-						],
-						'property' => [
-							'id' => $entity->getProperty()->toString(),
-						],
-						'data' => $entity->toArray(),
-					],
+						$entity instanceof Entities\Messages\WriteDevicePropertyState
+							? [
+								'property' => [
+									'id' => $property->getId()->toString(),
+								],
+							]
+							: [
+								'channel' => [
+									'id' => $channel?->getId()->toString(),
+								],
+								'property' => [
+									'id' => $property->getId()->toString(),
+								],
+							],
+					),
 				);
 			});
 
 		$this->logger->debug(
 			'Consumed write device state message',
-			[
-				'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
-				'type' => 'write-v1-property-state-message-consumer',
-				'connector' => [
-					'id' => $entity->getConnector()->toString(),
+			array_merge(
+				[
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
+					'type' => 'write-v1-property-state-message-consumer',
+					'connector' => [
+						'id' => $connector->getId()->toString(),
+					],
+					'device' => [
+						'id' => $entity->getDevice()->toString(),
+					],
+					'data' => $entity->toArray(),
 				],
-				'device' => [
-					'id' => $entity->getDevice()->toString(),
-				],
-				'property' => [
-					'id' => $entity->getProperty()->toString(),
-				],
-				'data' => $entity->toArray(),
-			],
+				$entity instanceof Entities\Messages\WriteDevicePropertyState
+					? [
+						'property' => [
+							'id' => $property->getId()->toString(),
+						],
+					]
+					: [
+						'channel' => [
+							'id' => $channel?->getId()->toString(),
+						],
+						'property' => [
+							'id' => $property->getId()->toString(),
+						],
+					],
+			),
 		);
 
 		return true;

@@ -114,7 +114,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 						'id' => $entity->getConnector()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
 						'id' => $entity->getChannel()->toString(),
@@ -148,10 +148,10 @@ final class StoreChannelPropertyState implements Queue\Consumer
 						'id' => $entity->getConnector()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
-						'id' => $entity->getChannel()->toString(),
+						'id' => $channel->getId()->toString(),
 					],
 					'property' => [
 						'id' => $entity->getProperty()->toString(),
@@ -179,13 +179,13 @@ final class StoreChannelPropertyState implements Queue\Consumer
 					'id' => $entity->getConnector()->toString(),
 				],
 				'device' => [
-					'id' => $entity->getDevice()->toString(),
+					'id' => $device->getId()->toString(),
 				],
 				'channel' => [
-					'id' => $entity->getChannel()->toString(),
+					'id' => $channel->getId()->toString(),
 				],
 				'property' => [
-					'id' => $entity->getProperty()->toString(),
+					'id' => $property->getId()->toString(),
 				],
 				'data' => $entity->toArray(),
 			],

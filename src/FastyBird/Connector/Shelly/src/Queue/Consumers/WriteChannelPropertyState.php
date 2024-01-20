@@ -133,7 +133,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
 					'type' => 'write-channel-property-state-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $connector->getId()->toString(),
 					],
 					'device' => [
 						'id' => $entity->getDevice()->toString(),
@@ -165,10 +165,10 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
 					'type' => 'write-channel-property-state-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $connector->getId()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
 						'id' => $entity->getChannel()->toString(),
@@ -199,13 +199,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
 					'type' => 'write-channel-property-state-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $connector->getId()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
-						'id' => $entity->getChannel()->toString(),
+						'id' => $channel->getId()->toString(),
 					],
 					'property' => [
 						'id' => $entity->getProperty()->toString(),
@@ -224,16 +224,16 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
 					'type' => 'write-channel-property-state-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $connector->getId()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
-						'id' => $entity->getChannel()->toString(),
+						'id' => $channel->getId()->toString(),
 					],
 					'property' => [
-						'id' => $entity->getProperty()->toString(),
+						'id' => $property->getId()->toString(),
 					],
 					'data' => $entity->toArray(),
 				],
@@ -295,16 +295,16 @@ final class WriteChannelPropertyState implements Queue\Consumer
 							'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
 							'type' => 'write-channel-property-state-message-consumer',
 							'connector' => [
-								'id' => $entity->getConnector()->toString(),
+								'id' => $connector->getId()->toString(),
 							],
 							'device' => [
-								'id' => $entity->getDevice()->toString(),
+								'id' => $device->getId()->toString(),
 							],
 							'channel' => [
-								'id' => $entity->getChannel()->toString(),
+								'id' => $channel->getId()->toString(),
 							],
 							'property' => [
-								'id' => $entity->getProperty()->toString(),
+								'id' => $property->getId()->toString(),
 							],
 							'data' => $entity->toArray(),
 						],
@@ -365,16 +365,16 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					'type' => 'write-channel-property-state-message-consumer',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $connector->getId()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
-						'id' => $entity->getChannel()->toString(),
+						'id' => $channel->getId()->toString(),
 					],
 					'property' => [
-						'id' => $entity->getProperty()->toString(),
+						'id' => $property->getId()->toString(),
 					],
 					'data' => $entity->toArray(),
 				],
@@ -384,29 +384,29 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		}
 
 		$result->then(
-			function () use ($entity): void {
+			function () use ($entity, $connector, $device, $channel, $property): void {
 				$this->logger->debug(
 					'Channel state was successfully sent to device',
 					[
 						'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
 						'type' => 'write-channel-property-state-message-consumer',
 						'connector' => [
-							'id' => $entity->getConnector()->toString(),
+							'id' => $connector->getId()->toString(),
 						],
 						'device' => [
-							'id' => $entity->getDevice()->toString(),
+							'id' => $device->getId()->toString(),
 						],
 						'channel' => [
-							'id' => $entity->getChannel()->toString(),
+							'id' => $channel->getId()->toString(),
 						],
 						'property' => [
-							'id' => $entity->getProperty()->toString(),
+							'id' => $property->getId()->toString(),
 						],
 						'data' => $entity->toArray(),
 					],
 				);
 			},
-			function (Throwable $ex) use ($device, $property, $entity): void {
+			function (Throwable $ex) use ($connector, $device, $channel, $property, $entity): void {
 				$this->channelPropertiesStatesManager->setPendingState($property, false);
 
 				$extra = [];
@@ -502,16 +502,16 @@ final class WriteChannelPropertyState implements Queue\Consumer
 							'type' => 'write-channel-property-state-message-consumer',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 							'connector' => [
-								'id' => $entity->getConnector()->toString(),
+								'id' => $connector->getId()->toString(),
 							],
 							'device' => [
-								'id' => $entity->getDevice()->toString(),
+								'id' => $device->getId()->toString(),
 							],
 							'channel' => [
-								'id' => $entity->getChannel()->toString(),
+								'id' => $channel->getId()->toString(),
 							],
 							'property' => [
-								'id' => $entity->getProperty()->toString(),
+								'id' => $property->getId()->toString(),
 							],
 							'data' => $entity->toArray(),
 						],
@@ -527,16 +527,16 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
 				'type' => 'write-channel-property-state-message-consumer',
 				'connector' => [
-					'id' => $entity->getConnector()->toString(),
+					'id' => $connector->getId()->toString(),
 				],
 				'device' => [
-					'id' => $entity->getDevice()->toString(),
+					'id' => $device->getId()->toString(),
 				],
 				'channel' => [
-					'id' => $entity->getChannel()->toString(),
+					'id' => $channel->getId()->toString(),
 				],
 				'property' => [
-					'id' => $entity->getProperty()->toString(),
+					'id' => $property->getId()->toString(),
 				],
 				'data' => $entity->toArray(),
 			],

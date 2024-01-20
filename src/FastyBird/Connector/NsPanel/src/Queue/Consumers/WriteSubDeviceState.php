@@ -125,7 +125,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 					'type' => 'write-sub-device-state-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $connector->getId()->toString(),
 					],
 					'device' => [
 						'id' => $entity->getDevice()->toString(),
@@ -163,10 +163,10 @@ final class WriteSubDeviceState implements Queue\Consumer
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 					'type' => 'write-sub-device-state-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $connector->getId()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
 						'id' => $entity->getChannel()->toString(),
@@ -191,10 +191,10 @@ final class WriteSubDeviceState implements Queue\Consumer
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 					'type' => 'write-sub-device-state-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $connector->getId()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
 						'id' => $entity->getChannel()->toString(),
@@ -213,13 +213,13 @@ final class WriteSubDeviceState implements Queue\Consumer
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 					'type' => 'write-sub-device-state-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $connector->getId()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
-						'id' => $entity->getChannel()->toString(),
+						'id' => $channel->getId()->toString(),
 					],
 					'data' => $entity->toArray(),
 				],
@@ -237,13 +237,13 @@ final class WriteSubDeviceState implements Queue\Consumer
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 					'type' => 'write-sub-device-state-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $connector->getId()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
-						'id' => $entity->getChannel()->toString(),
+						'id' => $channel->getId()->toString(),
 					],
 					'data' => $entity->toArray(),
 				],
@@ -277,7 +277,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 						}
 					}
 				})
-				->catch(function (Throwable $ex) use ($entity, $connector, $gateway, $channel): void {
+				->catch(function (Throwable $ex) use ($entity, $connector, $gateway, $device, $channel): void {
 					$findPropertiesQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
 					$findPropertiesQuery->forChannel($channel);
 					$findPropertiesQuery->settable(true);
@@ -337,13 +337,13 @@ final class WriteSubDeviceState implements Queue\Consumer
 								'type' => 'write-sub-device-state-message-consumer',
 								'exception' => ApplicationHelpers\Logger::buildException($ex),
 								'connector' => [
-									'id' => $entity->getConnector()->toString(),
+									'id' => $connector->getId()->toString(),
 								],
 								'device' => [
-									'id' => $entity->getDevice()->toString(),
+									'id' => $device->getId()->toString(),
 								],
 								'channel' => [
-									'id' => $entity->getChannel()->toString(),
+									'id' => $channel->getId()->toString(),
 								],
 								'data' => $entity->toArray(),
 							],
@@ -359,13 +359,13 @@ final class WriteSubDeviceState implements Queue\Consumer
 					'type' => 'write-sub-device-state-message-consumer',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $connector->getId()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
-						'id' => $entity->getChannel()->toString(),
+						'id' => $channel->getId()->toString(),
 					],
 					'data' => $entity->toArray(),
 				],
@@ -378,13 +378,13 @@ final class WriteSubDeviceState implements Queue\Consumer
 				'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 				'type' => 'write-sub-device-state-message-consumer',
 				'connector' => [
-					'id' => $entity->getConnector()->toString(),
+					'id' => $connector->getId()->toString(),
 				],
 				'device' => [
-					'id' => $entity->getDevice()->toString(),
+					'id' => $device->getId()->toString(),
 				],
 				'channel' => [
-					'id' => $entity->getChannel()->toString(),
+					'id' => $channel->getId()->toString(),
 				],
 				'data' => $entity->toArray(),
 			],

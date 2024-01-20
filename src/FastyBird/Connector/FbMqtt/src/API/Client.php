@@ -783,7 +783,7 @@ final class Client implements Evenement\EventEmitterInterface
 								'message' => [
 									'topic' => $result->getTopic(),
 									'payload' => $result->getPayload(),
-									'isRetained' => $result->isRetained(),
+									'is_retained' => $result->isRetained(),
 									'qos' => $result->getQosLevel(),
 								],
 								'credentials' => [

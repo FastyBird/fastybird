@@ -110,7 +110,7 @@ final class StoreThirdPartyDevice implements Queue\Consumer
 					'id' => $entity->getGateway()->toString(),
 				],
 				'device' => [
-					'identifier' => $entity->getIdentifier(),
+					'id' => $device->getId()->toString(),
 				],
 				'data' => $entity->toArray(),
 			],

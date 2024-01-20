@@ -899,23 +899,26 @@ final class LanApi
 	{
 		$deferred = new Promise\Deferred();
 
-		$this->logger->debug(sprintf(
-			'Request: method = %s url = %s',
-			$request->getMethod(),
-			$request->getUri(),
-		), [
-			'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
-			'type' => 'lan-api',
-			'request' => [
-				'method' => $request->getMethod(),
-				'url' => strval($request->getUri()),
-				'headers' => $request->getHeaders(),
-				'body' => $request->getContent(),
+		$this->logger->debug(
+			sprintf(
+				'Request: method = %s url = %s',
+				$request->getMethod(),
+				$request->getUri(),
+			),
+			[
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
+				'type' => 'lan-api',
+				'request' => [
+					'method' => $request->getMethod(),
+					'url' => strval($request->getUri()),
+					'headers' => $request->getHeaders(),
+					'body' => $request->getContent(),
+				],
+				'connector' => [
+					'identifier' => $this->identifier,
+				],
 			],
-			'connector' => [
-				'identifier' => $this->identifier,
-			],
-		]);
+		);
 
 		if ($async) {
 			try {
@@ -942,23 +945,26 @@ final class LanApi
 								return;
 							}
 
-							$this->logger->debug('Received response', [
-								'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
-								'type' => 'lan-api',
-								'request' => [
-									'method' => $request->getMethod(),
-									'url' => strval($request->getUri()),
-									'headers' => $request->getHeaders(),
-									'body' => $request->getContent(),
+							$this->logger->debug(
+								'Received response',
+								[
+									'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
+									'type' => 'lan-api',
+									'request' => [
+										'method' => $request->getMethod(),
+										'url' => strval($request->getUri()),
+										'headers' => $request->getHeaders(),
+										'body' => $request->getContent(),
+									],
+									'response' => [
+										'code' => $response->getStatusCode(),
+										'body' => $responseBody,
+									],
+									'connector' => [
+										'identifier' => $this->identifier,
+									],
 								],
-								'response' => [
-									'code' => $response->getStatusCode(),
-									'body' => $responseBody,
-								],
-								'connector' => [
-									'identifier' => $this->identifier,
-								],
-							]);
+							);
 
 							$deferred->resolve($response);
 						},
@@ -1000,23 +1006,26 @@ final class LanApi
 				);
 			}
 
-			$this->logger->debug('Received response', [
-				'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
-				'type' => 'lan-api',
-				'request' => [
-					'method' => $request->getMethod(),
-					'url' => strval($request->getUri()),
-					'headers' => $request->getHeaders(),
-					'body' => $request->getContent(),
+			$this->logger->debug(
+				'Received response',
+				[
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
+					'type' => 'lan-api',
+					'request' => [
+						'method' => $request->getMethod(),
+						'url' => strval($request->getUri()),
+						'headers' => $request->getHeaders(),
+						'body' => $request->getContent(),
+					],
+					'response' => [
+						'code' => $response->getStatusCode(),
+						'body' => $responseBody,
+					],
+					'connector' => [
+						'identifier' => $this->identifier,
+					],
 				],
-				'response' => [
-					'code' => $response->getStatusCode(),
-					'body' => $responseBody,
-				],
-				'connector' => [
-					'identifier' => $this->identifier,
-				],
-			]);
+			);
 
 			return $response;
 		} catch (GuzzleHttp\Exception\GuzzleException | InvalidArgumentException $ex) {

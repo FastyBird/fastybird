@@ -77,7 +77,7 @@ final class Consumers
 
 		if ($this->consumers->count() === 0) {
 			$this->logger->error(
-				'No consumer is registered, messages could not be consumed',
+				'No consumer is registered, message could not be consumed',
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
 					'type' => 'consumers',

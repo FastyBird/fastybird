@@ -78,7 +78,7 @@ class StatesRepository
 						'Data stored in database are noc compatible with state entity',
 						[
 							'source' => MetadataTypes\PluginSource::REDISDB,
-							'type' => 'state-async-repository',
+							'type' => 'states-async-repository',
 							'record' => [
 								'id' => $id->toString(),
 								'data' => $raw,
@@ -119,10 +119,10 @@ class StatesRepository
 			})
 			->catch(function (Throwable $ex) use ($id, $deferred): void {
 				$this->logger->error(
-					'Content could not be loaded',
+					'State could not be loaded',
 					[
 						'source' => MetadataTypes\PluginSource::REDISDB,
-						'type' => 'state-async-repository',
+						'type' => 'states-async-repository',
 						'record' => [
 							'id' => $id->toString(),
 						],
@@ -132,7 +132,7 @@ class StatesRepository
 
 				$deferred->reject(
 					new Exceptions\InvalidState(
-						'Content could not be loaded from database: ' . $ex->getMessage(),
+						'State could not be loaded from database: ' . $ex->getMessage(),
 						0,
 						$ex,
 					),

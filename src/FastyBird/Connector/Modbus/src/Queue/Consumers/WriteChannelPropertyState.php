@@ -180,7 +180,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						'id' => $entity->getConnector()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
 						'id' => $entity->getChannel()->toString(),
@@ -214,10 +214,10 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						'id' => $entity->getConnector()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
-						'id' => $entity->getChannel()->toString(),
+						'id' => $channel->getId()->toString(),
 					],
 					'property' => [
 						'id' => $entity->getProperty()->toString(),
@@ -241,13 +241,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						'id' => $entity->getConnector()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
-						'id' => $entity->getChannel()->toString(),
+						'id' => $channel->getId()->toString(),
 					],
 					'property' => [
-						'id' => $entity->getProperty()->toString(),
+						'id' => $property->getId()->toString(),
 					],
 					'data' => $entity->toArray(),
 				],
@@ -288,13 +288,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						'id' => $entity->getConnector()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
-						'id' => $entity->getChannel()->toString(),
+						'id' => $channel->getId()->toString(),
 					],
 					'property' => [
-						'id' => $entity->getProperty()->toString(),
+						'id' => $property->getId()->toString(),
 					],
 					'data' => $entity->toArray(),
 				],
@@ -346,13 +346,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 							'id' => $entity->getConnector()->toString(),
 						],
 						'device' => [
-							'id' => $entity->getDevice()->toString(),
+							'id' => $device->getId()->toString(),
 						],
 						'channel' => [
-							'id' => $entity->getChannel()->toString(),
+							'id' => $channel->getId()->toString(),
 						],
 						'property' => [
-							'id' => $entity->getProperty()->toString(),
+							'id' => $property->getId()->toString(),
 						],
 						'data' => $entity->toArray(),
 					],
@@ -375,13 +375,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 							'id' => $entity->getConnector()->toString(),
 						],
 						'device' => [
-							'id' => $entity->getDevice()->toString(),
+							'id' => $device->getId()->toString(),
 						],
 						'channel' => [
-							'id' => $entity->getChannel()->toString(),
+							'id' => $channel->getId()->toString(),
 						],
 						'property' => [
-							'id' => $entity->getProperty()->toString(),
+							'id' => $property->getId()->toString(),
 						],
 						'data' => $entity->toArray(),
 					],
@@ -419,13 +419,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 							'id' => $entity->getConnector()->toString(),
 						],
 						'device' => [
-							'id' => $entity->getDevice()->toString(),
+							'id' => $device->getId()->toString(),
 						],
 						'channel' => [
-							'id' => $entity->getChannel()->toString(),
+							'id' => $channel->getId()->toString(),
 						],
 						'property' => [
-							'id' => $entity->getProperty()->toString(),
+							'id' => $property->getId()->toString(),
 						],
 						'data' => $entity->toArray(),
 					],
@@ -467,13 +467,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 									'id' => $entity->getConnector()->toString(),
 								],
 								'device' => [
-									'id' => $entity->getDevice()->toString(),
+									'id' => $device->getId()->toString(),
 								],
 								'channel' => [
-									'id' => $entity->getChannel()->toString(),
+									'id' => $channel->getId()->toString(),
 								],
 								'property' => [
-									'id' => $entity->getProperty()->toString(),
+									'id' => $property->getId()->toString(),
 								],
 								'data' => $entity->toArray(),
 							],
@@ -542,13 +542,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 									'id' => $entity->getConnector()->toString(),
 								],
 								'device' => [
-									'id' => $entity->getDevice()->toString(),
+									'id' => $device->getId()->toString(),
 								],
 								'channel' => [
-									'id' => $entity->getChannel()->toString(),
+									'id' => $channel->getId()->toString(),
 								],
 								'property' => [
-									'id' => $entity->getProperty()->toString(),
+									'id' => $property->getId()->toString(),
 								],
 								'data' => $entity->toArray(),
 							],
@@ -569,13 +569,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 									'id' => $entity->getConnector()->toString(),
 								],
 								'device' => [
-									'id' => $entity->getDevice()->toString(),
+									'id' => $device->getId()->toString(),
 								],
 								'channel' => [
-									'id' => $entity->getChannel()->toString(),
+									'id' => $channel->getId()->toString(),
 								],
 								'property' => [
-									'id' => $entity->getProperty()->toString(),
+									'id' => $property->getId()->toString(),
 								],
 								'data' => $entity->toArray(),
 							],
@@ -613,13 +613,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 								'id' => $entity->getConnector()->toString(),
 							],
 							'device' => [
-								'id' => $entity->getDevice()->toString(),
+								'id' => $device->getId()->toString(),
 							],
 							'channel' => [
-								'id' => $entity->getChannel()->toString(),
+								'id' => $channel->getId()->toString(),
 							],
 							'property' => [
-								'id' => $entity->getProperty()->toString(),
+								'id' => $property->getId()->toString(),
 							],
 							'data' => $entity->toArray(),
 						],
@@ -640,13 +640,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 							'id' => $entity->getConnector()->toString(),
 						],
 						'device' => [
-							'id' => $entity->getDevice()->toString(),
+							'id' => $device->getId()->toString(),
 						],
 						'channel' => [
-							'id' => $entity->getChannel()->toString(),
+							'id' => $channel->getId()->toString(),
 						],
 						'property' => [
-							'id' => $entity->getProperty()->toString(),
+							'id' => $property->getId()->toString(),
 						],
 						'data' => $entity->toArray(),
 					],
@@ -680,13 +680,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 							'id' => $entity->getConnector()->toString(),
 						],
 						'device' => [
-							'id' => $entity->getDevice()->toString(),
+							'id' => $device->getId()->toString(),
 						],
 						'channel' => [
-							'id' => $entity->getChannel()->toString(),
+							'id' => $channel->getId()->toString(),
 						],
 						'property' => [
-							'id' => $entity->getProperty()->toString(),
+							'id' => $property->getId()->toString(),
 						],
 						'data' => $entity->toArray(),
 					],
@@ -715,13 +715,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 							'id' => $entity->getConnector()->toString(),
 						],
 						'device' => [
-							'id' => $entity->getDevice()->toString(),
+							'id' => $device->getId()->toString(),
 						],
 						'channel' => [
-							'id' => $entity->getChannel()->toString(),
+							'id' => $channel->getId()->toString(),
 						],
 						'property' => [
-							'id' => $entity->getProperty()->toString(),
+							'id' => $property->getId()->toString(),
 						],
 						'data' => $entity->toArray(),
 					],
@@ -760,13 +760,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 							'id' => $entity->getConnector()->toString(),
 						],
 						'device' => [
-							'id' => $entity->getDevice()->toString(),
+							'id' => $device->getId()->toString(),
 						],
 						'channel' => [
-							'id' => $entity->getChannel()->toString(),
+							'id' => $channel->getId()->toString(),
 						],
 						'property' => [
-							'id' => $entity->getProperty()->toString(),
+							'id' => $property->getId()->toString(),
 						],
 						'data' => $entity->toArray(),
 					],
@@ -800,13 +800,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 								'id' => $entity->getConnector()->toString(),
 							],
 							'device' => [
-								'id' => $entity->getDevice()->toString(),
+								'id' => $device->getId()->toString(),
 							],
 							'channel' => [
-								'id' => $entity->getChannel()->toString(),
+								'id' => $channel->getId()->toString(),
 							],
 							'property' => [
-								'id' => $entity->getProperty()->toString(),
+								'id' => $property->getId()->toString(),
 							],
 							'data' => $entity->toArray(),
 						],
@@ -875,13 +875,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 								'id' => $entity->getConnector()->toString(),
 							],
 							'device' => [
-								'id' => $entity->getDevice()->toString(),
+								'id' => $device->getId()->toString(),
 							],
 							'channel' => [
-								'id' => $entity->getChannel()->toString(),
+								'id' => $channel->getId()->toString(),
 							],
 							'property' => [
-								'id' => $entity->getProperty()->toString(),
+								'id' => $property->getId()->toString(),
 							],
 							'data' => $entity->toArray(),
 						],
@@ -902,13 +902,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 								'id' => $entity->getConnector()->toString(),
 							],
 							'device' => [
-								'id' => $entity->getDevice()->toString(),
+								'id' => $device->getId()->toString(),
 							],
 							'channel' => [
-								'id' => $entity->getChannel()->toString(),
+								'id' => $channel->getId()->toString(),
 							],
 							'property' => [
-								'id' => $entity->getProperty()->toString(),
+								'id' => $property->getId()->toString(),
 							],
 							'data' => $entity->toArray(),
 						],
@@ -940,13 +940,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 							'id' => $entity->getConnector()->toString(),
 						],
 						'device' => [
-							'id' => $entity->getDevice()->toString(),
+							'id' => $device->getId()->toString(),
 						],
 						'channel' => [
-							'id' => $entity->getChannel()->toString(),
+							'id' => $channel->getId()->toString(),
 						],
 						'property' => [
-							'id' => $entity->getProperty()->toString(),
+							'id' => $property->getId()->toString(),
 						],
 						'data' => $entity->toArray(),
 					],
@@ -968,7 +968,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						);
 					}
 				},
-				function (Throwable $ex) use ($entity, $property): void {
+				function (Throwable $ex) use ($entity, $device, $channel, $property): void {
 					$this->resetExpected($property);
 
 					$this->logger->error(
@@ -981,13 +981,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 								'id' => $entity->getConnector()->toString(),
 							],
 							'device' => [
-								'id' => $entity->getDevice()->toString(),
+								'id' => $device->getId()->toString(),
 							],
 							'channel' => [
-								'id' => $entity->getChannel()->toString(),
+								'id' => $channel->getId()->toString(),
 							],
 							'property' => [
-								'id' => $entity->getProperty()->toString(),
+								'id' => $property->getId()->toString(),
 							],
 							'data' => $entity->toArray(),
 						],
@@ -1007,13 +1007,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						'id' => $entity->getConnector()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
-						'id' => $entity->getChannel()->toString(),
+						'id' => $channel->getId()->toString(),
 					],
 					'property' => [
-						'id' => $entity->getProperty()->toString(),
+						'id' => $property->getId()->toString(),
 					],
 					'mode' => $mode->getValue(),
 					'data' => $entity->toArray(),
@@ -1032,13 +1032,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					'id' => $entity->getConnector()->toString(),
 				],
 				'device' => [
-					'id' => $entity->getDevice()->toString(),
+					'id' => $device->getId()->toString(),
 				],
 				'channel' => [
-					'id' => $entity->getChannel()->toString(),
+					'id' => $channel->getId()->toString(),
 				],
 				'property' => [
-					'id' => $entity->getProperty()->toString(),
+					'id' => $property->getId()->toString(),
 				],
 				'data' => $entity->toArray(),
 			],

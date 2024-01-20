@@ -87,7 +87,7 @@ class StatesManager
 			$state = $this->stateFactory->create($this->entity, $raw);
 		} catch (Throwable $ex) {
 			$this->logger->error(
-				'Record could not be created',
+				'State could not be created',
 				[
 					'source' => MetadataTypes\PluginSource::REDISDB,
 					'type' => 'states-manager',
@@ -132,7 +132,7 @@ class StatesManager
 			$updatedState = $this->stateFactory->create($this->entity, $raw);
 		} catch (Throwable $ex) {
 			$this->logger->error(
-				'Record could not be updated',
+				'State could not be updated',
 				[
 					'source' => MetadataTypes\PluginSource::REDISDB,
 					'type' => 'states-manager',

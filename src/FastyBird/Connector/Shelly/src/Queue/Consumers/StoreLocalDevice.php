@@ -111,6 +111,9 @@ final class StoreLocalDevice implements Queue\Consumer
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
 					'type' => 'store-local-device-message-consumer',
+					'connector' => [
+						'id' => $connector->getId()->toString(),
+					],
 					'device' => [
 						'id' => $device->getId()->toString(),
 						'identifier' => $entity->getIdentifier(),
@@ -232,6 +235,9 @@ final class StoreLocalDevice implements Queue\Consumer
 			[
 				'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
 				'type' => 'store-local-device-message-consumer',
+				'connector' => [
+					'id' => $entity->getConnector()->toString(),
+				],
 				'device' => [
 					'id' => $device->getId()->toString(),
 				],

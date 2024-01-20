@@ -116,7 +116,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'write-device-property-state-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $connector->getId()->toString(),
 					],
 					'device' => [
 						'id' => $entity->getDevice()->toString(),
@@ -140,10 +140,10 @@ final class WriteDevicePropertyState implements Queue\Consumer
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'write-device-property-state-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $connector->getId()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'property' => [
 						'id' => $entity->getProperty()->toString(),
@@ -167,10 +167,10 @@ final class WriteDevicePropertyState implements Queue\Consumer
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 					'type' => 'write-device-property-state-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $connector->getId()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'property' => [
 						'id' => $entity->getProperty()->toString(),
@@ -209,16 +209,16 @@ final class WriteDevicePropertyState implements Queue\Consumer
 									'State value could not be converted from mapped parent',
 									[
 										'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
-										'type' => 'exchange-writer',
+										'type' => 'write-device-property-state-message-consumer',
 										'exception' => ApplicationHelpers\Logger::buildException($ex),
 										'connector' => [
-											'id' => $entity->getConnector()->toString(),
+											'id' => $connector->getId()->toString(),
 										],
 										'device' => [
-											'id' => $entity->getDevice()->toString(),
+											'id' => $device->getId()->toString(),
 										],
 										'property' => [
-											'id' => $entity->getProperty()->toString(),
+											'id' => $property->getId()->toString(),
 										],
 										'hap' => $accessory->toHap(),
 									],
@@ -278,13 +278,13 @@ final class WriteDevicePropertyState implements Queue\Consumer
 				'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 				'type' => 'write-device-property-state-message-consumer',
 				'connector' => [
-					'id' => $entity->getConnector()->toString(),
+					'id' => $connector->getId()->toString(),
 				],
 				'device' => [
-					'id' => $entity->getDevice()->toString(),
+					'id' => $device->getId()->toString(),
 				],
 				'property' => [
-					'id' => $entity->getProperty()->toString(),
+					'id' => $property->getId()->toString(),
 				],
 				'data' => $entity->toArray(),
 			],

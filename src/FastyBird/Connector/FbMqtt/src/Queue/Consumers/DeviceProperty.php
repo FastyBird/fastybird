@@ -91,6 +91,9 @@ final class DeviceProperty implements Queue\Consumer
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
 					'type' => 'device-property-message-consumer',
+					'connector' => [
+						'id' => $entity->getConnector()->toString(),
+					],
 					'device' => [
 						'identifier' => $entity->getDevice(),
 					],
@@ -112,8 +115,11 @@ final class DeviceProperty implements Queue\Consumer
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
 					'type' => 'device-property-message-consumer',
+					'connector' => [
+						'id' => $entity->getConnector()->toString(),
+					],
 					'device' => [
-						'identifier' => $entity->getDevice(),
+						'id' => $device->getId()->toString(),
 					],
 					'property' => [
 						'identifier' => $entity->getProperty(),
@@ -165,8 +171,11 @@ final class DeviceProperty implements Queue\Consumer
 			[
 				'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
 				'type' => 'device-property-message-consumer',
+				'connector' => [
+					'id' => $entity->getConnector()->toString(),
+				],
 				'device' => [
-					'identifier' => $entity->getDevice(),
+					'id' => $device->getId()->toString(),
 				],
 				'data' => $entity->toArray(),
 			],

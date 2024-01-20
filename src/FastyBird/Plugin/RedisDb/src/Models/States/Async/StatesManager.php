@@ -115,7 +115,7 @@ class StatesManager
 			})
 			->catch(function (Throwable $ex) use ($id, $deferred): void {
 				$this->logger->error(
-					'Record could not be created',
+					'State could not be created',
 					[
 						'source' => MetadataTypes\PluginSource::REDISDB,
 						'type' => 'states-async-manager',
@@ -179,7 +179,7 @@ class StatesManager
 					$deferred->resolve(false);
 				} else {
 					$this->logger->error(
-						'Record could not be updated',
+						'State could not be updated',
 						[
 							'source' => MetadataTypes\PluginSource::REDISDB,
 							'type' => 'states-async-manager',

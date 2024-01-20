@@ -81,7 +81,7 @@ final class Publisher implements ExchangePublisher\Async\Publisher
 							'source' => MetadataTypes\PluginSource::REDISDB,
 							'type' => 'messages-async-publisher',
 							'message' => [
-								'routingKey' => $routingKey->getValue(),
+								'routing_key' => $routingKey->getValue(),
 								'source' => $source->getValue(),
 								'data' => $entity?->toArray(),
 							],
@@ -98,7 +98,7 @@ final class Publisher implements ExchangePublisher\Async\Publisher
 							'type' => 'messages-async-publisher',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 							'message' => [
-								'routingKey' => $routingKey->getValue(),
+								'routing_key' => $routingKey->getValue(),
 								'source' => $source->getValue(),
 								'data' => $entity?->toArray(),
 							],
@@ -121,7 +121,7 @@ final class Publisher implements ExchangePublisher\Async\Publisher
 					'type' => 'messages-async-publisher',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'message' => [
-						'routingKey' => $routingKey->getValue(),
+						'routing_key' => $routingKey->getValue(),
 						'source' => $source->getValue(),
 						'data' => $entity?->toArray(),
 					],

@@ -68,18 +68,24 @@ final class Handler extends Evenement\EventEmitter
 
 			} else {
 				// Log error action reason
-				$this->logger->warning('Received message is not in valid format', [
-					'source' => MetadataTypes\PluginSource::REDISDB,
-					'type' => 'messages-handler',
-				]);
+				$this->logger->warning(
+					'Received message is not in valid format',
+					[
+						'source' => MetadataTypes\PluginSource::REDISDB,
+						'type' => 'messages-handler',
+					],
+				);
 			}
 		} catch (Nette\Utils\JsonException $ex) {
 			// Log error action reason
-			$this->logger->warning('Received message is not valid json', [
-				'source' => MetadataTypes\PluginSource::REDISDB,
-				'type' => 'messages-handler',
-				'exception' => ApplicationHelpers\Logger::buildException($ex),
-			]);
+			$this->logger->warning(
+				'Received message is not valid json',
+				[
+					'source' => MetadataTypes\PluginSource::REDISDB,
+					'type' => 'messages-handler',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+				],
+			);
 		}
 	}
 
@@ -104,12 +110,15 @@ final class Handler extends Evenement\EventEmitter
 			$entity = $this->entityFactory->create($data, $routingKey);
 
 		} catch (Throwable $ex) {
-			$this->logger->error('Message could not be transformed into entity', [
-				'source' => MetadataTypes\PluginSource::REDISDB,
-				'type' => 'messages-handler',
-				'exception' => ApplicationHelpers\Logger::buildException($ex),
-				'data' => $data,
-			]);
+			$this->logger->error(
+				'Message could not be transformed into entity',
+				[
+					'source' => MetadataTypes\PluginSource::REDISDB,
+					'type' => 'messages-handler',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'data' => $data,
+				],
+			);
 
 			return;
 		}

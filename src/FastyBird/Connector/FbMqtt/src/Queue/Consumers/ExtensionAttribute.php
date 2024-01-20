@@ -76,6 +76,9 @@ final class ExtensionAttribute implements Queue\Consumer
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
 					'type' => 'extension-attribute-message-consumer',
+					'connector' => [
+						'id' => $entity->getConnector()->toString(),
+					],
 					'device' => [
 						'identifier' => $entity->getDevice(),
 					],
@@ -148,8 +151,11 @@ final class ExtensionAttribute implements Queue\Consumer
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
 					'type' => 'extension-attribute-message-consumer',
+					'connector' => [
+						'id' => $entity->getConnector()->toString(),
+					],
 					'device' => [
-						'identifier' => $entity->getDevice(),
+						'id' => $device->getId()->toString(),
 					],
 					'property' => [
 						'identifier' => $entity->getParameter(),
@@ -173,8 +179,14 @@ final class ExtensionAttribute implements Queue\Consumer
 			[
 				'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
 				'type' => 'extension-attribute-message-consumer',
+				'connector' => [
+					'id' => $entity->getConnector()->toString(),
+				],
 				'device' => [
-					'identifier' => $entity->getDevice(),
+					'id' => $device->getId()->toString(),
+				],
+				'property' => [
+					'id' => $property->getId()->toString(),
 				],
 				'data' => $entity->toArray(),
 			],

@@ -150,7 +150,7 @@ final class StoreSubDevice implements Queue\Consumer
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
 					'type' => 'store-sub-device-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $connector->getId()->toString(),
 					],
 					'gateway' => [
 						'id' => $entity->getGateway()->toString(),
@@ -236,7 +236,7 @@ final class StoreSubDevice implements Queue\Consumer
 								'id' => $entity->getGateway()->toString(),
 							],
 							'device' => [
-								'identifier' => $entity->getIdentifier(),
+								'id' => $device->getId()->toString(),
 							],
 							'channel' => [
 								'id' => $channel->getId()->toString(),
@@ -284,7 +284,7 @@ final class StoreSubDevice implements Queue\Consumer
 										'id' => $entity->getGateway()->toString(),
 									],
 									'device' => [
-										'identifier' => $entity->getIdentifier(),
+										'id' => $device->getId()->toString(),
 									],
 									'channel' => [
 										'id' => $channel->getId()->toString(),
@@ -309,7 +309,7 @@ final class StoreSubDevice implements Queue\Consumer
 					'id' => $entity->getGateway()->toString(),
 				],
 				'device' => [
-					'identifier' => $entity->getIdentifier(),
+					'id' => $device->getId()->toString(),
 				],
 				'data' => $entity->toArray(),
 			],

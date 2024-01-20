@@ -131,7 +131,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 						'id' => $entity->getConnector()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'property' => [
 						'id' => $entity->getProperty()->toString(),
@@ -208,7 +208,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 						);
 					}
 				} catch (DevicesExceptions\InvalidState | Utils\JsonException | MetadataExceptions\InvalidValue $ex) {
-					$this->logger->warning(
+					$this->logger->error(
 						'State value could not be converted to mapped parent',
 						[
 							'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
@@ -218,10 +218,10 @@ final class StoreDevicePropertyState implements Queue\Consumer
 								'id' => $entity->getConnector()->toString(),
 							],
 							'device' => [
-								'id' => $entity->getDevice()->toString(),
+								'id' => $device->getId()->toString(),
 							],
 							'property' => [
-								'id' => $entity->getProperty()->toString(),
+								'id' => $property->getId()->toString(),
 							],
 							'data' => $entity->toArray(),
 						],
@@ -230,15 +230,15 @@ final class StoreDevicePropertyState implements Queue\Consumer
 					return true;
 				}
 			} elseif ($parent instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty) {
-				$this->databaseHelper->transaction(function () use ($entity, $parent): void {
-					$property = $this->devicesPropertiesRepository->find(
+				$this->databaseHelper->transaction(function () use ($entity, $parent, $device, $property): void {
+					$toUpdate = $this->devicesPropertiesRepository->find(
 						$parent->getId(),
 						DevicesEntities\Devices\Properties\Variable::class,
 					);
 
-					if ($property !== null) {
+					if ($toUpdate !== null) {
 						$this->devicesPropertiesManager->update(
-							$property,
+							$toUpdate,
 							Utils\ArrayHash::from([
 								'value' => $entity->getValue(),
 							]),
@@ -253,10 +253,10 @@ final class StoreDevicePropertyState implements Queue\Consumer
 									'id' => $entity->getConnector()->toString(),
 								],
 								'device' => [
-									'id' => $entity->getDevice()->toString(),
+									'id' => $device->getId()->toString(),
 								],
 								'property' => [
-									'id' => $entity->getProperty()->toString(),
+									'id' => $property->getId()->toString(),
 								],
 								'data' => $entity->toArray(),
 							],
@@ -271,8 +271,14 @@ final class StoreDevicePropertyState implements Queue\Consumer
 			[
 				'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 				'type' => 'store-device-property-state-message-consumer',
+				'connector' => [
+					'id' => $entity->getConnector()->toString(),
+				],
 				'device' => [
 					'id' => $device->getId()->toString(),
+				],
+				'property' => [
+					'id' => $property->getId()->toString(),
 				],
 				'data' => $entity->toArray(),
 			],
