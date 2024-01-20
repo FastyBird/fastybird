@@ -558,13 +558,13 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 			}
 		}));
 
-		$this->eventLoop->addSignal(SIGTERM, async(function (): void {
+		$this->eventLoop->addSignal(SIGTERM, function (): void {
 			$this->terminate();
-		}));
+		});
 
-		$this->eventLoop->addSignal(SIGINT, async(function (): void {
+		$this->eventLoop->addSignal(SIGINT, function (): void {
 			$this->terminate();
-		}));
+		});
 
 		$this->databaseRefreshTimer = $this->eventLoop->addPeriodicTimer(
 			self::DATABASE_REFRESH_INTERVAL,
