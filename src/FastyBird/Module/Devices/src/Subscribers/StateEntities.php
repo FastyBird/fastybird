@@ -16,6 +16,7 @@
 namespace FastyBird\Module\Devices\Subscribers;
 
 use Exception;
+use FastyBird\Library\Application\Events as ApplicationEvents;
 use FastyBird\Library\Exchange\Documents as ExchangeEntities;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
@@ -45,6 +46,8 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 
 	use Nette\SmartObject;
 
+	private bool $useAsync = false;
+
 	public function __construct(
 		private readonly Models\Configuration\Devices\Properties\Repository $devicePropertiesConfigurationRepository,
 		private readonly Models\Configuration\Channels\Properties\Repository $channelPropertiesConfigurationRepository,
@@ -53,6 +56,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 		private readonly Models\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly ExchangeEntities\DocumentFactory $entityFactory,
 		private readonly ExchangePublisher\Publisher $publisher,
+		private readonly ExchangePublisher\Async\Publisher $asyncPublisher,
 	)
 	{
 	}
@@ -69,6 +73,9 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 			Events\ChannelPropertyStateEntityCreated::class => 'stateCreated',
 			Events\ChannelPropertyStateEntityUpdated::class => 'stateUpdated',
 			Events\ChannelPropertyStateEntityDeleted::class => 'stateDeleted',
+
+			ApplicationEvents\EventLoopStarted::class => 'enableAsync',
+			ApplicationEvents\EventLoopStopped::class => 'disableAsync',
 		];
 	}
 
@@ -134,6 +141,16 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 		foreach ($this->findChildren($event->getProperty()) as $child) {
 			$this->publishEntity($child);
 		}
+	}
+
+	public function enableAsync(): void
+	{
+		$this->useAsync = true;
+	}
+
+	public function disableAsync(): void
+	{
+		$this->useAsync = false;
 	}
 
 	/**
@@ -212,7 +229,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 			);
 		}
 
-		$this->publisher->publish(
+		$this->getPublisher()->publish(
 			MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 			$routingKey,
 			$this->entityFactory->create(
@@ -255,6 +272,11 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 		}
 
 		return [];
+	}
+
+	private function getPublisher(): ExchangePublisher\Publisher|ExchangePublisher\Async\Publisher
+	{
+		return $this->useAsync ? $this->asyncPublisher : $this->publisher;
 	}
 
 }
