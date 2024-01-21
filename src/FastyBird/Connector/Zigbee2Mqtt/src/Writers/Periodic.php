@@ -219,7 +219,7 @@ abstract class Periodic
 			) {
 				$this->queue->append(
 					$this->entityHelper->create(
-						Entities\Messages\WriteSubDeviceState::class,
+						Entities\Messages\WriteSubDeviceChannelPropertyState::class,
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),

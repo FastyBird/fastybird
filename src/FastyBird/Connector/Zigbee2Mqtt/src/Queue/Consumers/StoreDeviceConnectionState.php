@@ -157,8 +157,11 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 				'connector' => [
 					'id' => $entity->getConnector()->toString(),
 				],
+				'bridge' => [
+					'id' => $bridge->getId()->toString(),
+				],
 				'device' => [
-					'identifier' => $entity->getDevice(),
+					'id' => $device->getId()->toString(),
 				],
 				'data' => $entity->toArray(),
 			],

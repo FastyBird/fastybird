@@ -84,11 +84,11 @@ final class StoreBridgeEvent implements Queue\Consumer
 			sprintf('Bridge published event: %s', $entity->getType()),
 			[
 				'source' => MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT,
-				'type' => 'bridge-log',
+				'type' => 'bridge-event',
 				'connector' => [
 					'id' => $entity->getConnector()->toString(),
 				],
-				'device' => [
+				'bridge' => [
 					'id' => $bridge->getId()->toString(),
 				],
 				'data' => [
@@ -105,6 +105,9 @@ final class StoreBridgeEvent implements Queue\Consumer
 				'type' => 'store-bridge-event-message-consumer',
 				'connector' => [
 					'id' => $entity->getConnector()->toString(),
+				],
+				'bridge' => [
+					'id' => $bridge->getId()->toString(),
 				],
 				'data' => $entity->toArray(),
 			],

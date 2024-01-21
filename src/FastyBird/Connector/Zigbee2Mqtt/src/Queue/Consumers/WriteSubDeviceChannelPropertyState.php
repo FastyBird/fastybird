@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * WriteSubDeviceState.php
+ * WriteSubDeviceChannelPropertyState.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -49,7 +49,7 @@ use function sprintf;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class WriteSubDeviceState implements Queue\Consumer
+final class WriteSubDeviceChannelPropertyState implements Queue\Consumer
 {
 
 	use Nette\SmartObject;
@@ -85,7 +85,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 	 */
 	public function consume(Entities\Messages\Entity $entity): bool
 	{
-		if (!$entity instanceof Entities\Messages\WriteSubDeviceState) {
+		if (!$entity instanceof Entities\Messages\WriteSubDeviceChannelPropertyState) {
 			return false;
 		}
 
@@ -100,7 +100,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 				'Connector could not be loaded',
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT,
-					'type' => 'write-sub-device-state-message-consumer',
+					'type' => 'write-sub-device-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
 					],
@@ -109,6 +109,9 @@ final class WriteSubDeviceState implements Queue\Consumer
 					],
 					'channel' => [
 						'id' => $entity->getChannel()->toString(),
+					],
+					'property' => [
+						'id' => $entity->getProperty()->toString(),
 					],
 					'data' => $entity->toArray(),
 				],
@@ -129,15 +132,18 @@ final class WriteSubDeviceState implements Queue\Consumer
 				'Device could not be loaded',
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT,
-					'type' => 'write-sub-device-state-message-consumer',
+					'type' => 'write-sub-device-channel-property-state-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $connector->getId()->toString(),
 					],
 					'device' => [
 						'id' => $entity->getDevice()->toString(),
 					],
 					'channel' => [
 						'id' => $entity->getChannel()->toString(),
+					],
+					'property' => [
+						'id' => $entity->getProperty()->toString(),
 					],
 					'data' => $entity->toArray(),
 				],
@@ -160,15 +166,21 @@ final class WriteSubDeviceState implements Queue\Consumer
 				'Channel could not be loaded',
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT,
-					'type' => 'write-sub-device-state-message-consumer',
+					'type' => 'write-sub-device-channel-property-state-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $connector->getId()->toString(),
+					],
+					'bridge' => [
+						'id' => $bridge->getId()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
 						'id' => $entity->getChannel()->toString(),
+					],
+					'property' => [
+						'id' => $entity->getProperty()->toString(),
 					],
 					'data' => $entity->toArray(),
 				],
@@ -188,15 +200,18 @@ final class WriteSubDeviceState implements Queue\Consumer
 				'Channel property could not be loaded',
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
-					'type' => 'write-sub-device-state-message-consumer',
+					'type' => 'write-sub-device-channel-property-state-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $connector->getId()->toString(),
+					],
+					'bridge' => [
+						'id' => $bridge->getId()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
-						'id' => $entity->getChannel()->toString(),
+						'id' => $channel->getId()->toString(),
 					],
 					'property' => [
 						'id' => $entity->getProperty()->toString(),
@@ -209,22 +224,25 @@ final class WriteSubDeviceState implements Queue\Consumer
 		}
 
 		if (!$propertyToUpdate->isSettable()) {
-			$this->logger->error(
+			$this->logger->warning(
 				'Channel property is not writable',
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
-					'type' => 'write-sub-device-state-message-consumer',
+					'type' => 'write-sub-device-channel-property-state-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $connector->getId()->toString(),
+					],
+					'bridge' => [
+						'id' => $bridge->getId()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
-						'id' => $entity->getChannel()->toString(),
+						'id' => $channel->getId()->toString(),
 					],
 					'property' => [
-						'id' => $entity->getProperty()->toString(),
+						'id' => $propertyToUpdate->getId()->toString(),
 					],
 					'data' => $entity->toArray(),
 				],
@@ -330,15 +348,21 @@ final class WriteSubDeviceState implements Queue\Consumer
 				'Channel identifier has invalid value',
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT,
-					'type' => 'write-sub-device-state-message-consumer',
+					'type' => 'write-sub-device-channel-property-state-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $connector->getId()->toString(),
+					],
+					'bridge' => [
+						'id' => $bridge->getId()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
-						'id' => $entity->getChannel()->toString(),
+						'id' => $channel->getId()->toString(),
+					],
+					'property' => [
+						'id' => $entity->getProperty()->toString(),
 					],
 					'data' => $entity->toArray(),
 				],
@@ -359,20 +383,23 @@ final class WriteSubDeviceState implements Queue\Consumer
 					),
 					Utils\Json::encode($payload),
 				)
-				->then(function () use ($entity): void {
+				->then(function () use ($connector, $bridge, $device, $channel, $entity): void {
 					$this->logger->debug(
 						'Channel state was successfully sent to device',
 						[
 							'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
-							'type' => 'write-sub-device-state-message-consumer',
+							'type' => 'write-sub-device-channel-property-state-message-consumer',
 							'connector' => [
-								'id' => $entity->getConnector()->toString(),
+								'id' => $connector->getId()->toString(),
+							],
+							'bridge' => [
+								'id' => $bridge->getId()->toString(),
 							],
 							'device' => [
-								'id' => $entity->getDevice()->toString(),
+								'id' => $device->getId()->toString(),
 							],
 							'channel' => [
-								'id' => $entity->getChannel()->toString(),
+								'id' => $channel->getId()->toString(),
 							],
 							'property' => [
 								'id' => $entity->getProperty()->toString(),
@@ -381,7 +408,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 						],
 					);
 				})
-				->catch(function (Throwable $ex) use ($entity, $connector, $bridge, $channel): void {
+				->catch(function (Throwable $ex) use ($connector, $bridge, $device, $channel, $entity): void {
 					$findPropertiesQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
 					$findPropertiesQuery->forChannel($channel);
 					$findPropertiesQuery->settable(true);
@@ -411,16 +438,22 @@ final class WriteSubDeviceState implements Queue\Consumer
 						'Could write state to sub-device',
 						[
 							'source' => MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT,
-							'type' => 'write-sub-device-state-message-consumer',
+							'type' => 'write-sub-device-channel-property-state-message-consumer',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 							'connector' => [
-								'id' => $entity->getConnector()->toString(),
+								'id' => $connector->getId()->toString(),
+							],
+							'bridge' => [
+								'id' => $bridge->getId()->toString(),
 							],
 							'device' => [
-								'id' => $entity->getDevice()->toString(),
+								'id' => $device->getId()->toString(),
 							],
 							'channel' => [
-								'id' => $entity->getChannel()->toString(),
+								'id' => $channel->getId()->toString(),
+							],
+							'property' => [
+								'id' => $entity->getProperty()->toString(),
 							],
 							'data' => $entity->toArray(),
 						],
@@ -435,16 +468,22 @@ final class WriteSubDeviceState implements Queue\Consumer
 				'An unhandled error occurred',
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT,
-					'type' => 'write-sub-device-state-message-consumer',
+					'type' => 'write-sub-device-channel-property-state-message-consumer',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $connector->getId()->toString(),
+					],
+					'bridge' => [
+						'id' => $bridge->getId()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
-						'id' => $entity->getChannel()->toString(),
+						'id' => $channel->getId()->toString(),
+					],
+					'property' => [
+						'id' => $entity->getProperty()->toString(),
 					],
 					'data' => $entity->toArray(),
 				],
@@ -455,15 +494,21 @@ final class WriteSubDeviceState implements Queue\Consumer
 			'Consumed write sub-device state message',
 			[
 				'source' => MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT,
-				'type' => 'write-sub-device-state-message-consumer',
+				'type' => 'write-sub-device-channel-property-state-message-consumer',
 				'connector' => [
-					'id' => $entity->getConnector()->toString(),
+					'id' => $connector->getId()->toString(),
+				],
+				'bridge' => [
+					'id' => $bridge->getId()->toString(),
 				],
 				'device' => [
-					'id' => $entity->getDevice()->toString(),
+					'id' => $device->getId()->toString(),
 				],
 				'channel' => [
-					'id' => $entity->getChannel()->toString(),
+					'id' => $channel->getId()->toString(),
+				],
+				'property' => [
+					'id' => $entity->getProperty()->toString(),
 				],
 				'data' => $entity->toArray(),
 			],

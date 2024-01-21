@@ -171,6 +171,9 @@ final class StoreParametersStates implements Consumer
 			[
 				'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 				'type' => 'status-parameters-states-message-consumer',
+				'connector' => [
+					'id' => $entity->getConnector()->toString(),
+				],
 				'device' => [
 					'id' => $device->getId()->toString(),
 				],

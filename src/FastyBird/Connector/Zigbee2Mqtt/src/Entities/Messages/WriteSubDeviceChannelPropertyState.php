@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * WriteSubDeviceState.php
+ * WriteSubDeviceChannelPropertyState.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -26,7 +26,7 @@ use Ramsey\Uuid;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class WriteSubDeviceState implements Entity
+final class WriteSubDeviceChannelPropertyState implements Entity
 {
 
 	public function __construct(

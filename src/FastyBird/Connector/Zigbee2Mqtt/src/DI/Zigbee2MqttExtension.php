@@ -231,10 +231,10 @@ class Zigbee2MqttExtension extends DI\CompilerExtension implements Translation\D
 			]);
 
 		$builder->addDefinition(
-			$this->prefix('queue.consumers.write.subDeviceState'),
+			$this->prefix('queue.consumers.write.subDeviceChannelPropertyState'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Queue\Consumers\WriteSubDeviceState::class)
+			->setType(Queue\Consumers\WriteSubDeviceChannelPropertyState::class)
 			->setArguments([
 				'logger' => $logger,
 			]);

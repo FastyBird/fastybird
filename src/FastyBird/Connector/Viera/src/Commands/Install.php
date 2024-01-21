@@ -2455,7 +2455,7 @@ class Install extends Console\Command\Command
 						'Creating api client failed',
 						[
 							'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
-							'type' => 'discovery-cmd',
+							'type' => 'install-cmd',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 						],
 					);
@@ -2477,7 +2477,7 @@ class Install extends Console\Command\Command
 						'Checking screen status failed',
 						[
 							'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
-							'type' => 'discovery-cmd',
+							'type' => 'install-cmd',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 						],
 					);

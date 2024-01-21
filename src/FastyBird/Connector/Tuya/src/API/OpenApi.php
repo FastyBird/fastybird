@@ -1087,23 +1087,26 @@ final class OpenApi
 			}
 		}
 
-		$this->logger->debug(sprintf(
-			'Request: method = %s url = %s',
-			$request->getMethod(),
-			strval($request->getUri()),
-		), [
-			'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
-			'type' => 'openapi-api',
-			'request' => [
-				'method' => $request->getMethod(),
-				'path' => strval($request->getUri()),
-				'headers' => $request->getHeaders(),
-				'body' => $request->getContent(),
+		$this->logger->debug(
+			sprintf(
+				'Request: method = %s url = %s',
+				$request->getMethod(),
+				strval($request->getUri()),
+			),
+			[
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
+				'type' => 'openapi-api',
+				'request' => [
+					'method' => $request->getMethod(),
+					'path' => strval($request->getUri()),
+					'headers' => $request->getHeaders(),
+					'body' => $request->getContent(),
+				],
+				'connector' => [
+					'identifier' => $this->identifier,
+				],
 			],
-			'connector' => [
-				'identifier' => $this->identifier,
-			],
-		]);
+		);
 
 		if ($async) {
 			try {
@@ -1130,23 +1133,26 @@ final class OpenApi
 								return;
 							}
 
-							$this->logger->debug('Received response', [
-								'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
-								'type' => 'openapi-api',
-								'request' => [
-									'method' => $request->getMethod(),
-									'url' => strval($request->getUri()),
-									'headers' => $request->getHeaders(),
-									'body' => $request->getContent(),
+							$this->logger->debug(
+								'Received response',
+								[
+									'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
+									'type' => 'openapi-api',
+									'request' => [
+										'method' => $request->getMethod(),
+										'url' => strval($request->getUri()),
+										'headers' => $request->getHeaders(),
+										'body' => $request->getContent(),
+									],
+									'response' => [
+										'code' => $response->getStatusCode(),
+										'body' => $responseBody,
+									],
+									'connector' => [
+										'identifier' => $this->identifier,
+									],
 								],
-								'response' => [
-									'code' => $response->getStatusCode(),
-									'body' => $responseBody,
-								],
-								'connector' => [
-									'identifier' => $this->identifier,
-								],
-							]);
+							);
 
 							$this->checkResponse($request, $response);
 
@@ -1190,23 +1196,26 @@ final class OpenApi
 				);
 			}
 
-			$this->logger->debug('Received response', [
-				'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
-				'type' => 'openapi-api',
-				'request' => [
-					'method' => $request->getMethod(),
-					'url' => strval($request->getUri()),
-					'headers' => $request->getHeaders(),
-					'body' => $request->getContent(),
+			$this->logger->debug(
+				'Received response',
+				[
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
+					'type' => 'openapi-api',
+					'request' => [
+						'method' => $request->getMethod(),
+						'url' => strval($request->getUri()),
+						'headers' => $request->getHeaders(),
+						'body' => $request->getContent(),
+					],
+					'response' => [
+						'code' => $response->getStatusCode(),
+						'body' => $responseBody,
+					],
+					'connector' => [
+						'identifier' => $this->identifier,
+					],
 				],
-				'response' => [
-					'code' => $response->getStatusCode(),
-					'body' => $responseBody,
-				],
-				'connector' => [
-					'identifier' => $this->identifier,
-				],
-			]);
+			);
 
 			$this->checkResponse($request, $response);
 
@@ -1409,22 +1418,25 @@ final class OpenApi
 		);
 
 		try {
-			$this->logger->debug(sprintf(
-				'Request: method = %s url = %s',
-				$request->getMethod(),
-				strval($request->getUri()),
-			), [
-				'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
-				'type' => 'openapi-api',
-				'request' => [
-					'method' => $request->getMethod(),
-					'path' => strval($request->getUri()),
-					'headers' => $request->getHeaders(),
+			$this->logger->debug(
+				sprintf(
+					'Request: method = %s url = %s',
+					$request->getMethod(),
+					strval($request->getUri()),
+				),
+				[
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
+					'type' => 'openapi-api',
+					'request' => [
+						'method' => $request->getMethod(),
+						'path' => strval($request->getUri()),
+						'headers' => $request->getHeaders(),
+					],
+					'connector' => [
+						'identifier' => $this->identifier,
+					],
 				],
-				'connector' => [
-					'identifier' => $this->identifier,
-				],
-			]);
+			);
 
 			$response = $this->httpClientFactory->create(false)->send($request);
 
@@ -1440,22 +1452,25 @@ final class OpenApi
 				);
 			}
 
-			$this->logger->debug('Received response', [
-				'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
-				'type' => 'openapi-api',
-				'request' => [
-					'method' => $request->getMethod(),
-					'path' => strval($request->getUri()),
-					'headers' => $request->getHeaders(),
+			$this->logger->debug(
+				'Received response',
+				[
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
+					'type' => 'openapi-api',
+					'request' => [
+						'method' => $request->getMethod(),
+						'path' => strval($request->getUri()),
+						'headers' => $request->getHeaders(),
+					],
+					'response' => [
+						'code' => $response->getStatusCode(),
+						'body' => $responseBody,
+					],
+					'connector' => [
+						'identifier' => $this->identifier,
+					],
 				],
-				'response' => [
-					'code' => $response->getStatusCode(),
-					'body' => $responseBody,
-				],
-				'connector' => [
-					'identifier' => $this->identifier,
-				],
-			]);
+			);
 
 			try {
 				$decodedResponse = Utils\Json::decode($responseBody, Utils\Json::FORCE_ARRAY);

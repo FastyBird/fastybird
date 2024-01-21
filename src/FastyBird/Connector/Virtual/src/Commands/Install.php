@@ -200,7 +200,7 @@ class Install extends Console\Command\Command
 				'An unhandled error occurred',
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
-					'type' => 'initialize-cmd',
+					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
@@ -299,7 +299,7 @@ class Install extends Console\Command\Command
 				'An unhandled error occurred',
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
-					'type' => 'initialize-cmd',
+					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
@@ -391,7 +391,7 @@ class Install extends Console\Command\Command
 				'An unhandled error occurred',
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
-					'type' => 'initialize-cmd',
+					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);

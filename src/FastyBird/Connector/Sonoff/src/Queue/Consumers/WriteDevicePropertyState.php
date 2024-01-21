@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * WritePropertyState.php
+ * WriteDevicePropertyState.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -37,10 +37,7 @@ use Nette;
 use React\Promise;
 use RuntimeException;
 use Throwable;
-use function array_key_exists;
 use function array_merge;
-use function intval;
-use function preg_match;
 use function strval;
 
 /**
@@ -51,7 +48,7 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class WritePropertyState implements Queue\Consumer
+final class WriteDevicePropertyState implements Queue\Consumer
 {
 
 	use Nette\SmartObject;
@@ -68,10 +65,7 @@ final class WritePropertyState implements Queue\Consumer
 		private readonly DevicesModels\Configuration\Connectors\Repository $connectorsConfigurationRepository,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		private readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
-		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
-		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
 		private readonly DevicesModels\States\DevicePropertiesManager $devicePropertiesStatesManager,
-		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 	)
 	{
@@ -89,10 +83,7 @@ final class WritePropertyState implements Queue\Consumer
 	 */
 	public function consume(Entities\Messages\Entity $entity): bool
 	{
-		if (
-			!$entity instanceof Entities\Messages\WriteDevicePropertyState
-			&& !$entity instanceof Entities\Messages\WriteChannelPropertyState
-		) {
+		if (!$entity instanceof Entities\Messages\WriteDevicePropertyState) {
 			return false;
 		}
 
@@ -153,104 +144,18 @@ final class WritePropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$channel = null;
+		$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceDynamicProperties();
+		$findDevicePropertyQuery->forDevice($device);
+		$findDevicePropertyQuery->byId($entity->getProperty());
 
-		if ($entity instanceof Entities\Messages\WriteChannelPropertyState) {
-			$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
-			$findChannelQuery->forDevice($device);
-			$findChannelQuery->byId($entity->getChannel());
-			$findChannelQuery->byType(Entities\SonoffChannel::TYPE);
+		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
+			$findDevicePropertyQuery,
+			MetadataDocuments\DevicesModule\DeviceDynamicProperty::class,
+		);
 
-			$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
-
-			if ($channel === null) {
-				$this->logger->error(
-					'Channel could not be loaded',
-					[
-						'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
-						'type' => 'write-property-state-message-consumer',
-						'connector' => [
-							'id' => $entity->getConnector()->toString(),
-						],
-						'device' => [
-							'id' => $entity->getDevice()->toString(),
-						],
-						'property' => [
-							'id' => $entity->getProperty()->toString(),
-						],
-						'data' => $entity->toArray(),
-					],
-				);
-
-				return true;
-			}
-
-			$findChannelPropertyQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
-			$findChannelPropertyQuery->forChannel($channel);
-			$findChannelPropertyQuery->byId($entity->getProperty());
-
-			$property = $this->channelsPropertiesConfigurationRepository->findOneBy(
-				$findChannelPropertyQuery,
-				MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
-			);
-
-			if ($property === null) {
-				$this->logger->error(
-					'Channel property could not be loaded',
-					[
-						'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
-						'type' => 'write-property-state-message-consumer',
-						'connector' => [
-							'id' => $entity->getConnector()->toString(),
-						],
-						'device' => [
-							'id' => $entity->getDevice()->toString(),
-						],
-						'property' => [
-							'id' => $entity->getProperty()->toString(),
-						],
-						'data' => $entity->toArray(),
-					],
-				);
-
-				return true;
-			}
-		} else {
-			$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceDynamicProperties();
-			$findDevicePropertyQuery->forDevice($device);
-			$findDevicePropertyQuery->byId($entity->getProperty());
-
-			$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
-				$findDevicePropertyQuery,
-				MetadataDocuments\DevicesModule\DeviceDynamicProperty::class,
-			);
-
-			if ($property === null) {
-				$this->logger->error(
-					'Device property could not be loaded',
-					[
-						'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
-						'type' => 'write-property-state-message-consumer',
-						'connector' => [
-							'id' => $entity->getConnector()->toString(),
-						],
-						'device' => [
-							'id' => $entity->getDevice()->toString(),
-						],
-						'property' => [
-							'id' => $entity->getProperty()->toString(),
-						],
-						'data' => $entity->toArray(),
-					],
-				);
-
-				return true;
-			}
-		}
-
-		if (!$property->isSettable()) {
-			$this->logger->warning(
-				'Property is not writable',
+		if ($property === null) {
+			$this->logger->error(
+				'Device property could not be loaded',
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 					'type' => 'write-property-state-message-consumer',
@@ -270,9 +175,29 @@ final class WritePropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$state = $property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-			? $this->channelPropertiesStatesManager->get($property)
-			: $this->devicePropertiesStatesManager->get($property);
+		if (!$property->isSettable()) {
+			$this->logger->warning(
+				'Property is not writable',
+				[
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
+					'type' => 'write-property-state-message-consumer',
+					'connector' => [
+						'id' => $entity->getConnector()->toString(),
+					],
+					'device' => [
+						'id' => $device->getId()->toString(),
+					],
+					'property' => [
+						'id' => $property->getId()->toString(),
+					],
+					'data' => $entity->toArray(),
+				],
+			);
+
+			return true;
+		}
+
+		$state = $this->devicePropertiesStatesManager->get($property);
 
 		if ($state === null) {
 			return true;
@@ -281,11 +206,7 @@ final class WritePropertyState implements Queue\Consumer
 		$expectedValue = MetadataUtilities\Value::flattenValue($state->getExpectedValue());
 
 		if ($expectedValue === null) {
-			if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-				$this->channelPropertiesStatesManager->setPendingState($property, false);
-			} else {
-				$this->devicePropertiesStatesManager->setPendingState($property, false);
-			}
+			$this->devicePropertiesStatesManager->setPendingState($property, false);
 
 			return true;
 		}
@@ -303,36 +224,10 @@ final class WritePropertyState implements Queue\Consumer
 			return true;
 		}
 
-		if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-			$this->channelPropertiesStatesManager->setPendingState($property, true);
-		} else {
-			$this->devicePropertiesStatesManager->setPendingState($property, true);
-		}
+		$this->devicePropertiesStatesManager->setPendingState($property, true);
 
 		$group = $outlet = null;
-		$parameter = $property->getIdentifier();
-
-		if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-			$parameter = Helpers\Transformer::devicePropertyToParameter($parameter);
-		}
-
-		if ($channel !== null) {
-			if (preg_match(Sonoff\Constants::CHANNEL_GROUP, $channel->getIdentifier(), $matches) === 1) {
-				if (array_key_exists('outlet', $matches)) {
-					$outlet = intval($matches['outlet']);
-				}
-
-				if ($outlet !== null) {
-					if ($parameter === Types\Parameter::SWITCH) {
-						$group = Types\ChannelGroup::SWITCHES;
-					} elseif ($parameter === Types\Parameter::STARTUP) {
-						$group = Types\ChannelGroup::CONFIGURE;
-					} elseif ($parameter === Types\Parameter::PULSE || $parameter === Types\Parameter::PULSE_WIDTH) {
-						$group = Types\ChannelGroup::PULSES;
-					}
-				}
-			}
-		}
+		$parameter = Helpers\Transformer::devicePropertyToParameter($property->getIdentifier());
 
 		try {
 			if ($this->connectorHelper->getClientMode($connector)->equalsValue(Types\ClientMode::AUTO)) {
@@ -422,11 +317,7 @@ final class WritePropertyState implements Queue\Consumer
 					$outlet,
 				);
 			} else {
-				if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-					$this->channelPropertiesStatesManager->setPendingState($property, false);
-				} else {
-					$this->devicePropertiesStatesManager->setPendingState($property, false);
-				}
+				$this->devicePropertiesStatesManager->setPendingState($property, false);
 
 				return true;
 			}
@@ -442,11 +333,7 @@ final class WritePropertyState implements Queue\Consumer
 				),
 			);
 
-			if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-				$this->channelPropertiesStatesManager->setPendingState($property, false);
-			} else {
-				$this->devicePropertiesStatesManager->setPendingState($property, false);
-			}
+			$this->devicePropertiesStatesManager->setPendingState($property, false);
 
 			$this->logger->error(
 				'Device is not properly configured',
@@ -458,10 +345,10 @@ final class WritePropertyState implements Queue\Consumer
 						'id' => $entity->getConnector()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'property' => [
-						'id' => $entity->getProperty()->toString(),
+						'id' => $property->getId()->toString(),
 					],
 					'data' => $entity->toArray(),
 				],
@@ -480,11 +367,7 @@ final class WritePropertyState implements Queue\Consumer
 				),
 			);
 
-			if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-				$this->channelPropertiesStatesManager->setPendingState($property, false);
-			} else {
-				$this->devicePropertiesStatesManager->setPendingState($property, false);
-			}
+			$this->devicePropertiesStatesManager->setPendingState($property, false);
 
 			$extra = [];
 
@@ -512,10 +395,10 @@ final class WritePropertyState implements Queue\Consumer
 							'id' => $entity->getConnector()->toString(),
 						],
 						'device' => [
-							'id' => $entity->getDevice()->toString(),
+							'id' => $device->getId()->toString(),
 						],
 						'property' => [
-							'id' => $entity->getProperty()->toString(),
+							'id' => $property->getId()->toString(),
 						],
 						'data' => $entity->toArray(),
 					],
@@ -527,7 +410,7 @@ final class WritePropertyState implements Queue\Consumer
 		}
 
 		$result->then(
-			function () use ($entity): void {
+			function () use ($device, $property, $entity): void {
 				$this->logger->debug(
 					'Channel state was successfully sent to device',
 					[
@@ -537,21 +420,17 @@ final class WritePropertyState implements Queue\Consumer
 							'id' => $entity->getConnector()->toString(),
 						],
 						'device' => [
-							'id' => $entity->getDevice()->toString(),
+							'id' => $device->getId()->toString(),
 						],
 						'property' => [
-							'id' => $entity->getProperty()->toString(),
+							'id' => $property->getId()->toString(),
 						],
 						'data' => $entity->toArray(),
 					],
 				);
 			},
 			function (Throwable $ex) use ($connector, $device, $property, $entity): void {
-				if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-					$this->channelPropertiesStatesManager->setPendingState($property, false);
-				} else {
-					$this->devicePropertiesStatesManager->setPendingState($property, false);
-				}
+				$this->devicePropertiesStatesManager->setPendingState($property, false);
 
 				$extra = [];
 
@@ -602,10 +481,10 @@ final class WritePropertyState implements Queue\Consumer
 								'id' => $entity->getConnector()->toString(),
 							],
 							'device' => [
-								'id' => $entity->getDevice()->toString(),
+								'id' => $device->getId()->toString(),
 							],
 							'property' => [
-								'id' => $entity->getProperty()->toString(),
+								'id' => $property->getId()->toString(),
 							],
 							'data' => $entity->toArray(),
 						],
@@ -624,10 +503,10 @@ final class WritePropertyState implements Queue\Consumer
 					'id' => $entity->getConnector()->toString(),
 				],
 				'device' => [
-					'id' => $entity->getDevice()->toString(),
+					'id' => $device->getId()->toString(),
 				],
 				'property' => [
-					'id' => $entity->getProperty()->toString(),
+					'id' => $property->getId()->toString(),
 				],
 				'data' => $entity->toArray(),
 			],

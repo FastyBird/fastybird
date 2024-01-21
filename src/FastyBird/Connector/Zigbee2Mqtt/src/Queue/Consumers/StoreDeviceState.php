@@ -126,7 +126,7 @@ final class StoreDeviceState implements Queue\Consumer
 			return true;
 		}
 
-		$this->processStates($device, $entity->getStates());
+		$this->processStates($bridge, $device, $entity->getStates());
 
 		$this->logger->debug(
 			'Consumed device state message',
@@ -135,6 +135,12 @@ final class StoreDeviceState implements Queue\Consumer
 				'type' => 'store-device-state-message-consumer',
 				'connector' => [
 					'id' => $entity->getConnector()->toString(),
+				],
+				'bridge' => [
+					'id' => $bridge->getId()->toString(),
+				],
+				'device' => [
+					'id' => $device->getId()->toString(),
 				],
 				'data' => $entity->toArray(),
 			],
@@ -155,6 +161,7 @@ final class StoreDeviceState implements Queue\Consumer
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	private function processStates(
+		MetadataDocuments\DevicesModule\Device $bridge,
 		MetadataDocuments\DevicesModule\Device $device,
 		array $states,
 		array $identifiers = [],
@@ -182,6 +189,9 @@ final class StoreDeviceState implements Queue\Consumer
 							'type' => 'store-device-state-message-consumer',
 							'connector' => [
 								'id' => $device->getConnector()->toString(),
+							],
+							'bridge' => [
+								'id' => $bridge->getId()->toString(),
 							],
 							'device' => [
 								'id' => $device->getId()->toString(),
@@ -211,6 +221,9 @@ final class StoreDeviceState implements Queue\Consumer
 							'connector' => [
 								'id' => $device->getConnector()->toString(),
 							],
+							'bridge' => [
+								'id' => $bridge->getId()->toString(),
+							],
 							'device' => [
 								'id' => $device->getId()->toString(),
 							],
@@ -230,6 +243,7 @@ final class StoreDeviceState implements Queue\Consumer
 
 			} else {
 				$this->processStates(
+					$bridge,
 					$device,
 					$state->getStates(),
 					array_merge($identifiers, [$state->getIdentifier()]),

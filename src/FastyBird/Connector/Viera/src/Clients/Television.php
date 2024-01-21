@@ -257,17 +257,20 @@ final class Television implements Client
 					);
 
 				} catch (Exceptions\TelevisionApiCall $ex) {
-					$this->logger->error('Calling device api failed', [
-						'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
-						'type' => 'television-client',
-						'exception' => ApplicationHelpers\Logger::buildException($ex),
-						'connector' => [
-							'id' => $this->connector->getId()->toString(),
+					$this->logger->error(
+						'Calling device api failed',
+						[
+							'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
+							'type' => 'television-client',
+							'exception' => ApplicationHelpers\Logger::buildException($ex),
+							'connector' => [
+								'id' => $this->connector->getId()->toString(),
+							],
+							'device' => [
+								'id' => $device->getId()->toString(),
+							],
 						],
-						'device' => [
-							'id' => $device->getId()->toString(),
-						],
-					]);
+					);
 
 					return false;
 				} catch (Exceptions\TelevisionApiError $ex) {
@@ -282,17 +285,20 @@ final class Television implements Client
 						),
 					);
 
-					$this->logger->error('Connection to device could not be created', [
-						'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
-						'type' => 'television-client',
-						'exception' => ApplicationHelpers\Logger::buildException($ex),
-						'connector' => [
-							'id' => $this->connector->getId()->toString(),
+					$this->logger->error(
+						'Connection to device could not be created',
+						[
+							'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
+							'type' => 'television-client',
+							'exception' => ApplicationHelpers\Logger::buildException($ex),
+							'connector' => [
+								'id' => $this->connector->getId()->toString(),
+							],
+							'device' => [
+								'id' => $device->getId()->toString(),
+							],
 						],
-						'device' => [
-							'id' => $device->getId()->toString(),
-						],
-					]);
+					);
 
 					return false;
 				} catch (Exceptions\InvalidState $ex) {
@@ -313,17 +319,20 @@ final class Television implements Client
 						// Just ignore
 					}
 
-					$this->logger->error('Device is in invalid state and could not be handled', [
-						'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
-						'type' => 'television-client',
-						'exception' => ApplicationHelpers\Logger::buildException($ex),
-						'connector' => [
-							'id' => $this->connector->getId()->toString(),
+					$this->logger->error(
+						'Device is in invalid state and could not be handled',
+						[
+							'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
+							'type' => 'television-client',
+							'exception' => ApplicationHelpers\Logger::buildException($ex),
+							'connector' => [
+								'id' => $this->connector->getId()->toString(),
+							],
+							'device' => [
+								'id' => $device->getId()->toString(),
+							],
 						],
-						'device' => [
-							'id' => $device->getId()->toString(),
-						],
-					]);
+					);
 
 					return false;
 				}
@@ -404,31 +413,37 @@ final class Television implements Client
 					),
 				);
 
-				$this->logger->error('Preparing api request failed', [
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
-					'type' => 'television-client',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
-					'connector' => [
-						'id' => $this->connector->getId()->toString(),
+				$this->logger->error(
+					'Preparing api request failed',
+					[
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
+						'type' => 'television-client',
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
+						'connector' => [
+							'id' => $this->connector->getId()->toString(),
+						],
+						'device' => [
+							'id' => $device->getId()->toString(),
+						],
 					],
-					'device' => [
-						'id' => $device->getId()->toString(),
-					],
-				]);
+				);
 
 				continue;
 			} catch (Exceptions\TelevisionApiCall $ex) {
-				$this->logger->error('Calling device api failed', [
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
-					'type' => 'television-client',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
-					'connector' => [
-						'id' => $this->connector->getId()->toString(),
+				$this->logger->error(
+					'Calling device api failed',
+					[
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
+						'type' => 'television-client',
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
+						'connector' => [
+							'id' => $this->connector->getId()->toString(),
+						],
+						'device' => [
+							'id' => $device->getId()->toString(),
+						],
 					],
-					'device' => [
-						'id' => $device->getId()->toString(),
-					],
-				]);
+				);
 
 				continue;
 			} catch (Exceptions\InvalidState $ex) {
@@ -449,17 +464,20 @@ final class Television implements Client
 					// Just ignore
 				}
 
-				$this->logger->error('Device is in invalid state and could not be handled', [
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
-					'type' => 'television-client',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
-					'connector' => [
-						'id' => $this->connector->getId()->toString(),
+				$this->logger->error(
+					'Device is in invalid state and could not be handled',
+					[
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
+						'type' => 'television-client',
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
+						'connector' => [
+							'id' => $this->connector->getId()->toString(),
+						],
+						'device' => [
+							'id' => $device->getId()->toString(),
+						],
 					],
-					'device' => [
-						'id' => $device->getId()->toString(),
-					],
-				]);
+				);
 
 				return false;
 			}

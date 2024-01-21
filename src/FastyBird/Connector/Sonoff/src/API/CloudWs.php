@@ -758,20 +758,23 @@ final class CloudWs implements Evenement\EventEmitterInterface
 	{
 		$deferred = new Promise\Deferred();
 
-		$this->logger->debug(sprintf(
-			'Request: method = %s url = %s',
-			$request->getMethod(),
-			$request->getUri(),
-		), [
-			'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
-			'type' => 'cloud-ws-api',
-			'request' => [
-				'method' => $request->getMethod(),
-				'url' => strval($request->getUri()),
-				'headers' => $request->getHeaders(),
-				'body' => $request->getContent(),
+		$this->logger->debug(
+			sprintf(
+				'Request: method = %s url = %s',
+				$request->getMethod(),
+				$request->getUri(),
+			),
+			[
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
+				'type' => 'cloud-ws-api',
+				'request' => [
+					'method' => $request->getMethod(),
+					'url' => strval($request->getUri()),
+					'headers' => $request->getHeaders(),
+					'body' => $request->getContent(),
+				],
 			],
-		]);
+		);
 
 		if ($async) {
 			try {
@@ -796,20 +799,23 @@ final class CloudWs implements Evenement\EventEmitterInterface
 								return;
 							}
 
-							$this->logger->debug('Received response', [
-								'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
-								'type' => 'cloud-ws-api',
-								'request' => [
-									'method' => $request->getMethod(),
-									'url' => strval($request->getUri()),
-									'headers' => $request->getHeaders(),
-									'body' => $request->getContent(),
+							$this->logger->debug(
+								'Received response',
+								[
+									'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
+									'type' => 'cloud-ws-api',
+									'request' => [
+										'method' => $request->getMethod(),
+										'url' => strval($request->getUri()),
+										'headers' => $request->getHeaders(),
+										'body' => $request->getContent(),
+									],
+									'response' => [
+										'code' => $response->getStatusCode(),
+										'body' => $responseBody,
+									],
 								],
-								'response' => [
-									'code' => $response->getStatusCode(),
-									'body' => $responseBody,
-								],
-							]);
+							);
 
 							$deferred->resolve($response);
 						},
@@ -847,20 +853,23 @@ final class CloudWs implements Evenement\EventEmitterInterface
 				);
 			}
 
-			$this->logger->debug('Received response', [
-				'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
-				'type' => 'cloud-ws-api',
-				'request' => [
-					'method' => $request->getMethod(),
-					'url' => strval($request->getUri()),
-					'headers' => $request->getHeaders(),
-					'body' => $request->getContent(),
+			$this->logger->debug(
+				'Received response',
+				[
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
+					'type' => 'cloud-ws-api',
+					'request' => [
+						'method' => $request->getMethod(),
+						'url' => strval($request->getUri()),
+						'headers' => $request->getHeaders(),
+						'body' => $request->getContent(),
+					],
+					'response' => [
+						'code' => $response->getStatusCode(),
+						'body' => $responseBody,
+					],
 				],
-				'response' => [
-					'code' => $response->getStatusCode(),
-					'body' => $responseBody,
-				],
-			]);
+			);
 
 			return $response;
 		} catch (GuzzleHttp\Exception\GuzzleException | InvalidArgumentException $ex) {

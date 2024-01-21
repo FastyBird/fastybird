@@ -48,7 +48,8 @@ final class SonoffExtensionTest extends Tests\Cases\Unit\BaseTestCase
 		self::assertNotNull($container->getByType(Queue\Consumers\StoreDevice::class, false));
 		self::assertNotNull($container->getByType(Queue\Consumers\StoreDeviceConnectionState::class, false));
 		self::assertNotNull($container->getByType(Queue\Consumers\StoreParametersStates::class, false));
-		self::assertNotNull($container->getByType(Queue\Consumers\WritePropertyState::class, false));
+		self::assertNotNull($container->getByType(Queue\Consumers\WriteDevicePropertyState::class, false));
+		self::assertNotNull($container->getByType(Queue\Consumers\WriteChannelPropertyState::class, false));
 		self::assertNotNull($container->getByType(Queue\Consumers::class, false));
 		self::assertNotNull($container->getByType(Queue\Queue::class, false));
 

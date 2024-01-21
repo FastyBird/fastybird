@@ -110,6 +110,9 @@ final class StoreDevice implements Queue\Consumer
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 					'type' => 'store-device-message-consumer',
+					'connector' => [
+						'id' => $entity->getConnector()->toString(),
+					],
 					'device' => [
 						'id' => $device->getId()->toString(),
 						'identifier' => $entity->getIdentifier(),
@@ -212,6 +215,9 @@ final class StoreDevice implements Queue\Consumer
 					[
 						'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 						'type' => 'store-device-message-consumer',
+						'connector' => [
+							'id' => $entity->getConnector()->toString(),
+						],
 						'device' => [
 							'id' => $device->getId()->toString(),
 						],
@@ -333,6 +339,9 @@ final class StoreDevice implements Queue\Consumer
 			[
 				'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 				'type' => 'store-device-message-consumer',
+				'connector' => [
+					'id' => $entity->getConnector()->toString(),
+				],
 				'device' => [
 					'id' => $device->getId()->toString(),
 				],

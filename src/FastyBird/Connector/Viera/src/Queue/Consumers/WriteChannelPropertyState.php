@@ -133,7 +133,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 					'type' => 'write-channel-property-state-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $connector->getId()->toString(),
 					],
 					'device' => [
 						'id' => $entity->getDevice()->toString(),
@@ -169,10 +169,10 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 					'type' => 'write-channel-property-state-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $connector->getId()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
 						'id' => $entity->getChannel()->toString(),
@@ -201,10 +201,10 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 					'type' => 'write-channel-property-state-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $connector->getId()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
 						'id' => $entity->getChannel()->toString(),
@@ -235,13 +235,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 					'type' => 'write-channel-property-state-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $connector->getId()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
-						'id' => $entity->getChannel()->toString(),
+						'id' => $channel->getId()->toString(),
 					],
 					'property' => [
 						'id' => $entity->getProperty()->toString(),
@@ -260,16 +260,16 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 					'type' => 'write-channel-property-state-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $connector->getId()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
-						'id' => $entity->getChannel()->toString(),
+						'id' => $channel->getId()->toString(),
 					],
 					'property' => [
-						'id' => $entity->getProperty()->toString(),
+						'id' => $property->getId()->toString(),
 					],
 					'data' => $entity->toArray(),
 				],
@@ -362,16 +362,16 @@ final class WriteChannelPropertyState implements Queue\Consumer
 								'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 								'type' => 'write-channel-property-state-message-consumer',
 								'connector' => [
-									'id' => $entity->getConnector()->toString(),
+									'id' => $connector->getId()->toString(),
 								],
 								'device' => [
-									'id' => $entity->getDevice()->toString(),
+									'id' => $device->getId()->toString(),
 								],
 								'channel' => [
-									'id' => $entity->getChannel()->toString(),
+									'id' => $channel->getId()->toString(),
 								],
 								'property' => [
-									'id' => $entity->getProperty()->toString(),
+									'id' => $property->getId()->toString(),
 								],
 								'data' => $entity->toArray(),
 							],
@@ -403,16 +403,16 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					'type' => 'write-channel-property-state-message-consumer',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $connector->getId()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
-						'id' => $entity->getChannel()->toString(),
+						'id' => $channel->getId()->toString(),
 					],
 					'property' => [
-						'id' => $entity->getProperty()->toString(),
+						'id' => $property->getId()->toString(),
 					],
 					'data' => $entity->toArray(),
 				],
@@ -440,16 +440,16 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					'type' => 'write-channel-property-state-message-consumer',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $connector->getId()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
-						'id' => $entity->getChannel()->toString(),
+						'id' => $channel->getId()->toString(),
 					],
 					'property' => [
-						'id' => $entity->getProperty()->toString(),
+						'id' => $property->getId()->toString(),
 					],
 					'data' => $entity->toArray(),
 				],
@@ -477,16 +477,16 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					'type' => 'write-channel-property-state-message-consumer',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $connector->getId()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
-						'id' => $entity->getChannel()->toString(),
+						'id' => $channel->getId()->toString(),
 					],
 					'property' => [
-						'id' => $entity->getProperty()->toString(),
+						'id' => $property->getId()->toString(),
 					],
 					'request' => [
 						'method' => $ex->getRequest()?->getMethod(),
@@ -504,23 +504,23 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		}
 
 		$result->then(
-			function () use ($entity, $connector, $device, $property, $expectedValue): void {
+			function () use ($entity, $connector, $device, $channel, $property, $expectedValue): void {
 				$this->logger->debug(
 					'Channel state was successfully sent to device',
 					[
 						'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 						'type' => 'write-channel-property-state-message-consumer',
 						'connector' => [
-							'id' => $entity->getConnector()->toString(),
+							'id' => $connector->getId()->toString(),
 						],
 						'device' => [
-							'id' => $entity->getDevice()->toString(),
+							'id' => $device->getId()->toString(),
 						],
 						'channel' => [
-							'id' => $entity->getChannel()->toString(),
+							'id' => $channel->getId()->toString(),
 						],
 						'property' => [
-							'id' => $entity->getProperty()->toString(),
+							'id' => $property->getId()->toString(),
 						],
 						'data' => $entity->toArray(),
 					],
@@ -680,16 +680,16 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
 				'type' => 'write-channel-property-state-message-consumer',
 				'connector' => [
-					'id' => $entity->getConnector()->toString(),
+					'id' => $connector->getId()->toString(),
 				],
 				'device' => [
-					'id' => $entity->getDevice()->toString(),
+					'id' => $device->getId()->toString(),
 				],
 				'channel' => [
-					'id' => $entity->getChannel()->toString(),
+					'id' => $channel->getId()->toString(),
 				],
 				'property' => [
-					'id' => $entity->getProperty()->toString(),
+					'id' => $property->getId()->toString(),
 				],
 				'data' => $entity->toArray(),
 			],

@@ -180,10 +180,19 @@ class FbMqttExtension extends DI\CompilerExtension implements Translation\DI\Tra
 			]);
 
 		$builder->addDefinition(
-			$this->prefix('queue.consumers.store.writeV1PropertyState'),
+			$this->prefix('queue.consumers.store.writeV1DevicePropertyState'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Queue\Consumers\WriteV1PropertyState::class)
+			->setType(Queue\Consumers\WriteV1DevicePropertyState::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
+
+		$builder->addDefinition(
+			$this->prefix('queue.consumers.store.writeV1ChannelPropertyState'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Queue\Consumers\WriteV1ChannelPropertyState::class)
 			->setArguments([
 				'logger' => $logger,
 			]);

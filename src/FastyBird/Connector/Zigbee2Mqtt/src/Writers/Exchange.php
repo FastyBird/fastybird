@@ -135,7 +135,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 
 			$this->queue->append(
 				$this->entityHelper->create(
-					Entities\Messages\WriteSubDeviceState::class,
+					Entities\Messages\WriteSubDeviceChannelPropertyState::class,
 					[
 						'connector' => $this->connector->getId(),
 						'device' => $device->getId(),

@@ -110,6 +110,9 @@ final class StoreDevice implements Consumer
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 					'type' => 'store-device-message-consumer',
+					'connector' => [
+						'id' => $connector->getId()->toString(),
+					],
 					'device' => [
 						'id' => $device->getId()->toString(),
 						'identifier' => $entity->getId(),
@@ -241,6 +244,9 @@ final class StoreDevice implements Consumer
 						[
 							'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 							'type' => 'store-device-message-consumer',
+							'connector' => [
+								'id' => $entity->getConnector()->toString(),
+							],
 							'device' => [
 								'id' => $device->getId()->toString(),
 							],
@@ -271,6 +277,9 @@ final class StoreDevice implements Consumer
 						[
 							'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 							'type' => 'store-device-message-consumer',
+							'connector' => [
+								'id' => $entity->getConnector()->toString(),
+							],
 							'device' => [
 								'id' => $device->getId()->toString(),
 							],
@@ -305,6 +314,9 @@ final class StoreDevice implements Consumer
 							[
 								'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 								'type' => 'store-device-message-consumer',
+								'connector' => [
+									'id' => $entity->getConnector()->toString(),
+								],
 								'device' => [
 									'id' => $device->getId()->toString(),
 								],
@@ -340,6 +352,9 @@ final class StoreDevice implements Consumer
 			[
 				'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 				'type' => 'store-device-message-consumer',
+				'connector' => [
+					'id' => $entity->getConnector()->toString(),
+				],
 				'device' => [
 					'id' => $device->getId()->toString(),
 				],

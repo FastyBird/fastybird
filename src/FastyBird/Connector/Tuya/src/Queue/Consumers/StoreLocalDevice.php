@@ -139,6 +139,9 @@ final class StoreLocalDevice implements Queue\Consumer
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 					'type' => 'store-local-device-message-consumer',
+					'connector' => [
+						'id' => $entity->getConnector()->toString(),
+					],
 					'device' => [
 						'id' => $device->getId()->toString(),
 						'identifier' => $entity->getId(),
@@ -282,6 +285,9 @@ final class StoreLocalDevice implements Queue\Consumer
 						[
 							'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 							'type' => 'store-local-device-message-consumer',
+							'connector' => [
+								'id' => $entity->getConnector()->toString(),
+							],
 							'device' => [
 								'id' => $device->getId()->toString(),
 							],
@@ -319,6 +325,9 @@ final class StoreLocalDevice implements Queue\Consumer
 			[
 				'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 				'type' => 'store-local-device-message-consumer',
+				'connector' => [
+					'id' => $entity->getConnector()->toString(),
+				],
 				'device' => [
 					'id' => $device->getId()->toString(),
 				],

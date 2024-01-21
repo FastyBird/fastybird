@@ -6,23 +6,23 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:TuyaConnector!
+ * @package        FastyBird:SonoffConnector!
  * @subpackage     Queue
  * @since          1.0.0
  *
  * @date           17.08.23
  */
 
-namespace FastyBird\Connector\Tuya\Queue\Consumers;
+namespace FastyBird\Connector\Sonoff\Queue\Consumers;
 
 use DateTimeInterface;
-use FastyBird\Connector\Tuya;
-use FastyBird\Connector\Tuya\API;
-use FastyBird\Connector\Tuya\Entities;
-use FastyBird\Connector\Tuya\Exceptions;
-use FastyBird\Connector\Tuya\Helpers;
-use FastyBird\Connector\Tuya\Queue;
-use FastyBird\Connector\Tuya\Types;
+use FastyBird\Connector\Sonoff;
+use FastyBird\Connector\Sonoff\API;
+use FastyBird\Connector\Sonoff\Entities;
+use FastyBird\Connector\Sonoff\Exceptions;
+use FastyBird\Connector\Sonoff\Helpers;
+use FastyBird\Connector\Sonoff\Queue;
+use FastyBird\Connector\Sonoff\Types;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
@@ -34,15 +34,19 @@ use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
+use React\Promise;
 use RuntimeException;
 use Throwable;
+use function array_key_exists;
 use function array_merge;
+use function intval;
+use function preg_match;
 use function strval;
 
 /**
  * Write state to device message consumer
  *
- * @package        FastyBird:TuyaConnector!
+ * @package        FastyBird:SonoffConnector!
  * @subpackage     Queue
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
@@ -60,7 +64,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		private readonly Helpers\Entity $entityHelper,
 		private readonly Helpers\Connector $connectorHelper,
 		private readonly Helpers\Device $deviceHelper,
-		private readonly Tuya\Logger $logger,
+		private readonly Sonoff\Logger $logger,
 		private readonly DevicesModels\Configuration\Connectors\Repository $connectorsConfigurationRepository,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
@@ -89,7 +93,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 
 		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
 		$findConnectorQuery->byId($entity->getConnector());
-		$findConnectorQuery->byType(Entities\TuyaConnector::TYPE);
+		$findConnectorQuery->byType(Entities\SonoffConnector::TYPE);
 
 		$connector = $this->connectorsConfigurationRepository->findOneBy($findConnectorQuery);
 
@@ -97,7 +101,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Connector could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 					'type' => 'write-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -121,7 +125,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDeviceQuery->forConnector($connector);
 		$findDeviceQuery->byId($entity->getDevice());
-		$findDeviceQuery->byType(Entities\TuyaDevice::TYPE);
+		$findDeviceQuery->byType(Entities\SonoffDevice::TYPE);
 
 		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
@@ -129,10 +133,10 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Device could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 					'type' => 'write-channel-property-state-message-consumer',
 					'connector' => [
-						'id' => $connector->getId()->toString(),
+						'id' => $entity->getConnector()->toString(),
 					],
 					'device' => [
 						'id' => $entity->getDevice()->toString(),
@@ -153,7 +157,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 		$findChannelQuery->forDevice($device);
 		$findChannelQuery->byId($entity->getChannel());
-		$findChannelQuery->byType(Entities\TuyaChannel::TYPE);
+		$findChannelQuery->byType(Entities\SonoffChannel::TYPE);
 
 		$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 
@@ -161,10 +165,10 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Channel could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 					'type' => 'write-channel-property-state-message-consumer',
 					'connector' => [
-						'id' => $connector->getId()->toString(),
+						'id' => $entity->getConnector()->toString(),
 					],
 					'device' => [
 						'id' => $device->getId()->toString(),
@@ -195,10 +199,10 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Channel property could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 					'type' => 'write-channel-property-state-message-consumer',
 					'connector' => [
-						'id' => $connector->getId()->toString(),
+						'id' => $entity->getConnector()->toString(),
 					],
 					'device' => [
 						'id' => $device->getId()->toString(),
@@ -218,12 +222,12 @@ final class WriteChannelPropertyState implements Queue\Consumer
 
 		if (!$property->isSettable()) {
 			$this->logger->warning(
-				'Channel property is not writable',
+				'Property is not writable',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 					'type' => 'write-channel-property-state-message-consumer',
 					'connector' => [
-						'id' => $connector->getId()->toString(),
+						'id' => $entity->getConnector()->toString(),
 					],
 					'device' => [
 						'id' => $device->getId()->toString(),
@@ -270,26 +274,111 @@ final class WriteChannelPropertyState implements Queue\Consumer
 
 		$this->channelPropertiesStatesManager->setPendingState($property, true);
 
+		$group = $outlet = null;
+		$parameter = $property->getIdentifier();
+
+		if (preg_match(Sonoff\Constants::CHANNEL_GROUP, $channel->getIdentifier(), $matches) === 1) {
+			if (array_key_exists('outlet', $matches)) {
+				$outlet = intval($matches['outlet']);
+			}
+
+			if ($outlet !== null) {
+				if ($parameter === Types\Parameter::SWITCH) {
+					$group = Types\ChannelGroup::SWITCHES;
+				} elseif ($parameter === Types\Parameter::STARTUP) {
+					$group = Types\ChannelGroup::CONFIGURE;
+				} elseif ($parameter === Types\Parameter::PULSE || $parameter === Types\Parameter::PULSE_WIDTH) {
+					$group = Types\ChannelGroup::PULSES;
+				}
+			}
+		}
+
 		try {
-			if ($this->connectorHelper->getClientMode($connector)->equalsValue(Types\ClientMode::CLOUD)) {
+			if ($this->connectorHelper->getClientMode($connector)->equalsValue(Types\ClientMode::AUTO)) {
+				$deferred = new Promise\Deferred();
+
+				if ($this->deviceHelper->getIpAddress($device) !== null) {
+					$client = $this->connectionManager->getLanConnection();
+
+					$client->setDeviceState(
+						$device->getIdentifier(),
+						$this->deviceHelper->getIpAddress($device),
+						$this->deviceHelper->getPort($device),
+						$parameter,
+						$expectedValue,
+						$group,
+						$outlet,
+					)
+						->then(static function () use ($deferred): void {
+							$deferred->resolve(true);
+						})
+						->catch(
+							function () use ($deferred, $connector, $device, $parameter, $expectedValue, $group, $outlet): void {
+								$client = $this->connectionManager->getCloudApiConnection($connector);
+
+								$client->setThingState(
+									$device->getIdentifier(),
+									$parameter,
+									$expectedValue,
+									$group,
+									$outlet,
+								)
+									->then(static function () use ($deferred): void {
+										$deferred->resolve(true);
+									})
+									->catch(static function (Throwable $ex) use ($deferred): void {
+										$deferred->reject($ex);
+									});
+							},
+						);
+				} else {
+					$client = $this->connectionManager->getCloudApiConnection($connector);
+
+					$client->setThingState(
+						$device->getIdentifier(),
+						$parameter,
+						$expectedValue,
+						$group,
+						$outlet,
+					)
+						->then(static function () use ($deferred): void {
+							$deferred->resolve(true);
+						})
+						->catch(static function (Throwable $ex) use ($deferred): void {
+							$deferred->reject($ex);
+						});
+				}
+
+				$result = $deferred->promise();
+			} elseif ($this->connectorHelper->getClientMode($connector)->equalsValue(Types\ClientMode::CLOUD)) {
 				$client = $this->connectionManager->getCloudApiConnection($connector);
 
 				if (!$client->isConnected()) {
 					$client->connect();
 				}
 
+				$result = $client->setThingState(
+					$device->getIdentifier(),
+					$parameter,
+					$expectedValue,
+					$group,
+					$outlet,
+				);
+			} elseif ($this->connectorHelper->getClientMode($connector)->equalsValue(Types\ClientMode::LAN)) {
+				if ($this->deviceHelper->getIpAddress($device) === null) {
+					throw new Exceptions\InvalidState('Device IP address is not configured');
+				}
+
+				$client = $this->connectionManager->getLanConnection();
+
 				$result = $client->setDeviceState(
 					$device->getIdentifier(),
-					$property->getIdentifier(),
+					$this->deviceHelper->getIpAddress($device),
+					$this->deviceHelper->getPort($device),
+					$parameter,
 					$expectedValue,
-				);
-			} elseif ($this->connectorHelper->getClientMode($connector)->equalsValue(Types\ClientMode::LOCAL)) {
-				$client = $this->connectionManager->getLocalConnection($device);
-
-				$result = $client->writeState(
-					$property->getIdentifier(),
-					$expectedValue,
-					$this->deviceHelper->getGateway($device) !== null ? $device->getIdentifier() : null,
+					$group,
+					$outlet,
 				);
 			} else {
 				$this->channelPropertiesStatesManager->setPendingState($property, false);
@@ -301,8 +390,8 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				$this->entityHelper->create(
 					Entities\Messages\StoreDeviceConnectionState::class,
 					[
-						'connector' => $connector->getId(),
-						'device' => $device->getId(),
+						'connector' => $connector->getId()->toString(),
+						'device' => $device->getId()->toString(),
 						'state' => MetadataTypes\ConnectionState::ALERT,
 					],
 				),
@@ -313,11 +402,11 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Device is not properly configured',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 					'type' => 'write-channel-property-state-message-consumer',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
-						'id' => $connector->getId()->toString(),
+						'id' => $entity->getConnector()->toString(),
 					],
 					'device' => [
 						'id' => $device->getId()->toString(),
@@ -333,50 +422,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			);
 
 			return true;
-		} catch (Exceptions\OpenApiError | Exceptions\LocalApiError $ex) {
+		} catch (Exceptions\CloudApiCall | Exceptions\LanApiCall $ex) {
 			$this->queue->append(
 				$this->entityHelper->create(
 					Entities\Messages\StoreDeviceConnectionState::class,
 					[
-						'connector' => $connector->getId(),
-						'device' => $device->getId(),
-						'state' => MetadataTypes\ConnectionState::ALERT,
-					],
-				),
-			);
-
-			$this->channelPropertiesStatesManager->setPendingState($property, false);
-
-			$this->logger->error(
-				'Preparing api request failed',
-				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
-					'type' => 'write-channel-property-state-message-consumer',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
-					'connector' => [
-						'id' => $connector->getId()->toString(),
-					],
-					'device' => [
-						'id' => $device->getId()->toString(),
-					],
-					'channel' => [
-						'id' => $channel->getId()->toString(),
-					],
-					'property' => [
-						'id' => $property->getId()->toString(),
-					],
-					'data' => $entity->toArray(),
-				],
-			);
-
-			return true;
-		} catch (Exceptions\OpenApiCall | Exceptions\LocalApiCall $ex) {
-			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\StoreDeviceConnectionState::class,
-					[
-						'connector' => $connector->getId(),
-						'device' => $device->getId(),
+						'connector' => $connector->getId()->toString(),
+						'device' => $device->getId()->toString(),
 						'state' => MetadataTypes\ConnectionState::DISCONNECTED,
 					],
 				),
@@ -386,7 +438,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 
 			$extra = [];
 
-			if ($ex instanceof Exceptions\OpenApiCall) {
+			if ($ex instanceof Exceptions\CloudApiCall) {
 				$extra = [
 					'request' => [
 						'method' => $ex->getRequest()?->getMethod(),
@@ -403,11 +455,11 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				'Calling device api failed',
 				array_merge(
 					[
-						'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 						'type' => 'write-channel-property-state-message-consumer',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'connector' => [
-							'id' => $connector->getId()->toString(),
+							'id' => $entity->getConnector()->toString(),
 						],
 						'device' => [
 							'id' => $device->getId()->toString(),
@@ -428,14 +480,14 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		}
 
 		$result->then(
-			function () use ($connector, $device, $channel, $property, $entity): void {
+			function () use ($device, $channel, $property, $entity): void {
 				$this->logger->debug(
 					'Channel state was successfully sent to device',
 					[
-						'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 						'type' => 'write-channel-property-state-message-consumer',
 						'connector' => [
-							'id' => $connector->getId()->toString(),
+							'id' => $entity->getConnector()->toString(),
 						],
 						'device' => [
 							'id' => $device->getId()->toString(),
@@ -455,7 +507,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 
 				$extra = [];
 
-				if ($ex instanceof Exceptions\OpenApiCall) {
+				if ($ex instanceof Exceptions\CloudApiCall || $ex instanceof Exceptions\LanApiCall) {
 					$extra = [
 						'request' => [
 							'method' => $ex->getRequest()?->getMethod(),
@@ -466,40 +518,26 @@ final class WriteChannelPropertyState implements Queue\Consumer
 							'body' => $ex->getResponse()?->getBody()->getContents(),
 						],
 					];
-				}
 
-				if ($ex instanceof Exceptions\OpenApiCall || $ex instanceof Exceptions\LocalApiCall) {
 					$this->queue->append(
 						$this->entityHelper->create(
 							Entities\Messages\StoreDeviceConnectionState::class,
 							[
-								'connector' => $connector->getId(),
+								'connector' => $connector->getId()->toString(),
 								'identifier' => $device->getIdentifier(),
 								'state' => MetadataTypes\ConnectionState::DISCONNECTED,
 							],
 						),
 					);
 
-				} elseif ($ex instanceof Exceptions\OpenApiError || $ex instanceof Exceptions\LocalApiError) {
+				} elseif ($ex instanceof Exceptions\CloudApiError || $ex instanceof Exceptions\LanApiError) {
 					$this->queue->append(
 						$this->entityHelper->create(
 							Entities\Messages\StoreDeviceConnectionState::class,
 							[
-								'connector' => $connector->getId(),
+								'connector' => $connector->getId()->toString(),
 								'identifier' => $device->getIdentifier(),
 								'state' => MetadataTypes\ConnectionState::ALERT,
-							],
-						),
-					);
-
-				} else {
-					$this->queue->append(
-						$this->entityHelper->create(
-							Entities\Messages\StoreDeviceConnectionState::class,
-							[
-								'connector' => $connector->getId(),
-								'identifier' => $device->getIdentifier(),
-								'state' => MetadataTypes\ConnectionState::LOST,
 							],
 						),
 					);
@@ -509,11 +547,11 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					'Could write state to device',
 					array_merge(
 						[
-							'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
+							'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 							'type' => 'write-channel-property-state-message-consumer',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 							'connector' => [
-								'id' => $connector->getId()->toString(),
+								'id' => $entity->getConnector()->toString(),
 							],
 							'device' => [
 								'id' => $device->getId()->toString(),
@@ -535,10 +573,10 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed write device state message',
 			[
-				'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
 				'type' => 'write-channel-property-state-message-consumer',
 				'connector' => [
-					'id' => $connector->getId()->toString(),
+					'id' => $entity->getConnector()->toString(),
 				],
 				'device' => [
 					'id' => $device->getId()->toString(),

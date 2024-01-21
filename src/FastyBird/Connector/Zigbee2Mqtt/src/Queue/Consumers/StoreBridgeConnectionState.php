@@ -202,6 +202,9 @@ final class StoreBridgeConnectionState implements Queue\Consumer
 				'connector' => [
 					'id' => $entity->getConnector()->toString(),
 				],
+				'bridge' => [
+					'id' => $bridge->getId()->toString(),
+				],
 				'data' => $entity->toArray(),
 			],
 		);

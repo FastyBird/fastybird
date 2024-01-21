@@ -1406,14 +1406,17 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 				});
 
 				$connection->on('error', function (Throwable $ex): void {
-					$this->logger->error('Something went wrong with subscription socket', [
-						'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
-						'type' => 'television-api',
-						'exception' => ApplicationHelpers\Logger::buildException($ex),
-						'device' => [
-							'identifier' => $this->identifier,
+					$this->logger->error(
+						'Something went wrong with subscription socket',
+						[
+							'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
+							'type' => 'television-api',
+							'exception' => ApplicationHelpers\Logger::buildException($ex),
+							'device' => [
+								'identifier' => $this->identifier,
+							],
 						],
-					]);
+					);
 
 					$this->emit('event-error', [$ex]);
 				});
@@ -1429,14 +1432,17 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 		try {
 			$client = $this->httpClientFactory->create(false);
 		} catch (InvalidArgumentException $ex) {
-			$this->logger->error('Could not get http client', [
-				'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
-				'type' => 'television-api',
-				'exception' => ApplicationHelpers\Logger::buildException($ex),
-				'device' => [
-					'identifier' => $this->identifier,
+			$this->logger->error(
+				'Could not get http client',
+				[
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
+					'type' => 'television-api',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'device' => [
+						'identifier' => $this->identifier,
+					],
 				],
-			]);
+			);
 
 			return false;
 		}
@@ -1444,13 +1450,16 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 		$localIpAddress = Helpers\Network::getLocalAddress();
 
 		if ($localIpAddress === null) {
-			$this->logger->error('Could not get connector local address', [
-				'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
-				'type' => 'television-api',
-				'device' => [
-					'identifier' => $this->identifier,
+			$this->logger->error(
+				'Could not get connector local address',
+				[
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
+					'type' => 'television-api',
+					'device' => [
+						'identifier' => $this->identifier,
+					],
 				],
-			]);
+			);
 
 			return false;
 		}
@@ -1501,14 +1510,17 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 		try {
 			$client = $this->httpClientFactory->create(false);
 		} catch (InvalidArgumentException $ex) {
-			$this->logger->error('Could not get http client', [
-				'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
-				'type' => 'television-api',
-				'exception' => ApplicationHelpers\Logger::buildException($ex),
-				'device' => [
-					'identifier' => $this->identifier,
+			$this->logger->error(
+				'Could not get http client',
+				[
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
+					'type' => 'television-api',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'device' => [
+						'identifier' => $this->identifier,
+					],
 				],
-			]);
+			);
 
 			$this->eventsServer?->close();
 
@@ -2047,23 +2059,26 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 	{
 		$deferred = new Promise\Deferred();
 
-		$this->logger->debug(sprintf(
-			'Request: method = %s url = %s',
-			$request->getMethod(),
-			$request->getUri(),
-		), [
-			'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
-			'type' => 'television-api',
-			'request' => [
-				'method' => $request->getMethod(),
-				'url' => strval($request->getUri()),
-				'headers' => $request->getHeaders(),
-				'body' => $request->getContent(),
+		$this->logger->debug(
+			sprintf(
+				'Request: method = %s url = %s',
+				$request->getMethod(),
+				$request->getUri(),
+			),
+			[
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
+				'type' => 'television-api',
+				'request' => [
+					'method' => $request->getMethod(),
+					'url' => strval($request->getUri()),
+					'headers' => $request->getHeaders(),
+					'body' => $request->getContent(),
+				],
+				'device' => [
+					'identifier' => $this->identifier,
+				],
 			],
-			'device' => [
-				'identifier' => $this->identifier,
-			],
-		]);
+		);
 
 		if ($async) {
 			try {
@@ -2090,23 +2105,26 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 								return;
 							}
 
-							$this->logger->debug('Received response', [
-								'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
-								'type' => 'television-api',
-								'request' => [
-									'method' => $request->getMethod(),
-									'url' => strval($request->getUri()),
-									'headers' => $request->getHeaders(),
-									'body' => $request->getContent(),
+							$this->logger->debug(
+								'Received response',
+								[
+									'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
+									'type' => 'television-api',
+									'request' => [
+										'method' => $request->getMethod(),
+										'url' => strval($request->getUri()),
+										'headers' => $request->getHeaders(),
+										'body' => $request->getContent(),
+									],
+									'response' => [
+										'code' => $response->getStatusCode(),
+										'body' => $responseBody,
+									],
+									'device' => [
+										'identifier' => $this->identifier,
+									],
 								],
-								'response' => [
-									'code' => $response->getStatusCode(),
-									'body' => $responseBody,
-								],
-								'device' => [
-									'identifier' => $this->identifier,
-								],
-							]);
+							);
 
 							$deferred->resolve($response);
 						},
@@ -2148,23 +2166,26 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 				);
 			}
 
-			$this->logger->debug('Received response', [
-				'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
-				'type' => 'television-api',
-				'request' => [
-					'method' => $request->getMethod(),
-					'url' => strval($request->getUri()),
-					'headers' => $request->getHeaders(),
-					'body' => $request->getContent(),
+			$this->logger->debug(
+				'Received response',
+				[
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
+					'type' => 'television-api',
+					'request' => [
+						'method' => $request->getMethod(),
+						'url' => strval($request->getUri()),
+						'headers' => $request->getHeaders(),
+						'body' => $request->getContent(),
+					],
+					'response' => [
+						'code' => $response->getStatusCode(),
+						'body' => $responseBody,
+					],
+					'device' => [
+						'identifier' => $this->identifier,
+					],
 				],
-				'response' => [
-					'code' => $response->getStatusCode(),
-					'body' => $responseBody,
-				],
-				'device' => [
-					'identifier' => $this->identifier,
-				],
-			]);
+			);
 
 			return $response;
 		} catch (GuzzleHttp\Exception\GuzzleException | InvalidArgumentException $ex) {
@@ -2190,23 +2211,26 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 	{
 		$deferred = new Promise\Deferred();
 
-		$this->logger->debug(sprintf(
-			'Request: method = %s url = %s',
-			$request->getMethod(),
-			$request->getUri(),
-		), [
-			'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
-			'type' => 'television-api',
-			'request' => [
-				'method' => $request->getMethod(),
-				'url' => strval($request->getUri()),
-				'headers' => $request->getHeaders(),
-				'body' => $request->getContent(),
+		$this->logger->debug(
+			sprintf(
+				'Request: method = %s url = %s',
+				$request->getMethod(),
+				$request->getUri(),
+			),
+			[
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
+				'type' => 'television-api',
+				'request' => [
+					'method' => $request->getMethod(),
+					'url' => strval($request->getUri()),
+					'headers' => $request->getHeaders(),
+					'body' => $request->getContent(),
+				],
+				'device' => [
+					'identifier' => $this->identifier,
+				],
 			],
-			'device' => [
-				'identifier' => $this->identifier,
-			],
-		]);
+		);
 
 		if ($async) {
 			try {
@@ -2233,23 +2257,26 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 								return;
 							}
 
-							$this->logger->debug('Received response', [
-								'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
-								'type' => 'television-api',
-								'request' => [
-									'method' => $request->getMethod(),
-									'url' => strval($request->getUri()),
-									'headers' => $request->getHeaders(),
-									'body' => $request->getContent(),
+							$this->logger->debug(
+								'Received response',
+								[
+									'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
+									'type' => 'television-api',
+									'request' => [
+										'method' => $request->getMethod(),
+										'url' => strval($request->getUri()),
+										'headers' => $request->getHeaders(),
+										'body' => $request->getContent(),
+									],
+									'response' => [
+										'code' => $response->getStatusCode(),
+										'body' => $responseBody,
+									],
+									'device' => [
+										'identifier' => $this->identifier,
+									],
 								],
-								'response' => [
-									'code' => $response->getStatusCode(),
-									'body' => $responseBody,
-								],
-								'device' => [
-									'identifier' => $this->identifier,
-								],
-							]);
+							);
 
 							$deferred->resolve($response);
 						},
@@ -2291,23 +2318,26 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 				);
 			}
 
-			$this->logger->debug('Received response', [
-				'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
-				'type' => 'television-api',
-				'request' => [
-					'method' => $request->getMethod(),
-					'url' => strval($request->getUri()),
-					'headers' => $request->getHeaders(),
-					'body' => $request->getContent(),
+			$this->logger->debug(
+				'Received response',
+				[
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
+					'type' => 'television-api',
+					'request' => [
+						'method' => $request->getMethod(),
+						'url' => strval($request->getUri()),
+						'headers' => $request->getHeaders(),
+						'body' => $request->getContent(),
+					],
+					'response' => [
+						'code' => $response->getStatusCode(),
+						'body' => $responseBody,
+					],
+					'device' => [
+						'identifier' => $this->identifier,
+					],
 				],
-				'response' => [
-					'code' => $response->getStatusCode(),
-					'body' => $responseBody,
-				],
-				'device' => [
-					'identifier' => $this->identifier,
-				],
-			]);
+			);
 
 			return $response;
 		} catch (GuzzleHttp\Exception\GuzzleException | InvalidArgumentException $ex) {

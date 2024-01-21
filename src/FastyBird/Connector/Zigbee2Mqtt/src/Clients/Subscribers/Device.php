@@ -154,6 +154,9 @@ class Device
 									'source' => MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT,
 									'type' => 'device-messages-subscriber',
 									'payload' => $message->getPayload(),
+									'connector' => [
+										'id' => $this->connector->getId()->toString(),
+									],
 								],
 							);
 						}

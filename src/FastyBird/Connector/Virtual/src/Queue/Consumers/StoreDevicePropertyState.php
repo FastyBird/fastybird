@@ -134,7 +134,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 						'id' => $entity->getConnector()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'property' => array_merge(
 						is_string($entity->getProperty()) ? ['identifier' => $entity->getProperty()] : [],
@@ -222,12 +222,11 @@ final class StoreDevicePropertyState implements Queue\Consumer
 								'id' => $entity->getConnector()->toString(),
 							],
 							'device' => [
-								'id' => $entity->getDevice()->toString(),
+								'id' => $device->getId()->toString(),
 							],
-							'property' => array_merge(
-								is_string($entity->getProperty()) ? ['identifier' => $entity->getProperty()] : [],
-								!is_string($entity->getProperty()) ? ['id' => $entity->getProperty()->toString()] : [],
-							),
+							'property' => [
+								'id' => $property->getId()->toString(),
+							],
 							'data' => $entity->toArray(),
 						],
 					);
@@ -235,15 +234,15 @@ final class StoreDevicePropertyState implements Queue\Consumer
 					return true;
 				}
 			} elseif ($parent instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty) {
-				$this->databaseHelper->transaction(function () use ($entity, $parent): void {
-					$property = $this->devicesPropertiesRepository->find(
+				$this->databaseHelper->transaction(function () use ($entity, $device, $property, $parent): void {
+					$toUpdate = $this->devicesPropertiesRepository->find(
 						$parent->getId(),
 						DevicesEntities\Devices\Properties\Variable::class,
 					);
 
-					if ($property !== null) {
+					if ($toUpdate !== null) {
 						$this->devicesPropertiesManager->update(
-							$property,
+							$toUpdate,
 							Utils\ArrayHash::from([
 								'value' => $entity->getValue(),
 							]),
@@ -253,19 +252,16 @@ final class StoreDevicePropertyState implements Queue\Consumer
 							'Mapped variable property could not be updated',
 							[
 								'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
-								'type' => 'characteristics-controller',
+								'type' => 'store-device-property-state-message-consumer',
 								'connector' => [
 									'id' => $entity->getConnector()->toString(),
 								],
 								'device' => [
-									'id' => $entity->getDevice()->toString(),
+									'id' => $device->getId()->toString(),
 								],
-								'property' => array_merge(
-									is_string($entity->getProperty()) ? ['identifier' => $entity->getProperty()] : [],
-									!is_string(
-										$entity->getProperty(),
-									) ? ['id' => $entity->getProperty()->toString()] : [],
-								),
+								'property' => [
+									'id' => $property->getId()->toString(),
+								],
 								'data' => $entity->toArray(),
 							],
 						);
@@ -283,12 +279,11 @@ final class StoreDevicePropertyState implements Queue\Consumer
 					'id' => $entity->getConnector()->toString(),
 				],
 				'device' => [
-					'id' => $entity->getDevice()->toString(),
+					'id' => $device->getId()->toString(),
 				],
-				'property' => array_merge(
-					is_string($entity->getProperty()) ? ['identifier' => $entity->getProperty()] : [],
-					!is_string($entity->getProperty()) ? ['id' => $entity->getProperty()->toString()] : [],
-				),
+				'property' => [
+					'id' => $property->getId()->toString(),
+				],
 				'data' => $entity->toArray(),
 			],
 		);

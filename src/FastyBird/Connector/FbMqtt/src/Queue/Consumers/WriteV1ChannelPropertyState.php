@@ -1,32 +1,33 @@
 <?php declare(strict_types = 1);
 
 /**
- * WriteChannelPropertyState.php
+ * WriteV1ChannelPropertyState.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:VirtualConnector!
+ * @package        FastyBird:FbMqttConnector!
  * @subpackage     Queue
  * @since          1.0.0
  *
- * @date           18.10.23
+ * @date           03.12.23
  */
 
-namespace FastyBird\Connector\Virtual\Queue\Consumers;
+namespace FastyBird\Connector\FbMqtt\Queue\Consumers;
 
 use DateTimeInterface;
-use FastyBird\Connector\Virtual;
-use FastyBird\Connector\Virtual\Drivers;
-use FastyBird\Connector\Virtual\Entities;
-use FastyBird\Connector\Virtual\Exceptions;
-use FastyBird\Connector\Virtual\Helpers;
-use FastyBird\Connector\Virtual\Queue;
+use FastyBird\Connector\FbMqtt;
+use FastyBird\Connector\FbMqtt\API;
+use FastyBird\Connector\FbMqtt\Entities;
+use FastyBird\Connector\FbMqtt\Exceptions;
+use FastyBird\Connector\FbMqtt\Helpers;
+use FastyBird\Connector\FbMqtt\Queue;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -34,16 +35,17 @@ use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
 use RuntimeException;
 use Throwable;
+use function strval;
 
 /**
- * Write state to device message consumer
+ * Write V1 protocol state to device message consumer
  *
- * @package        FastyBird:VirtualConnector!
+ * @package        FastyBird:FbMqttConnector!
  * @subpackage     Queue
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class WriteChannelPropertyState implements Queue\Consumer
+final class WriteV1ChannelPropertyState implements Queue\Consumer
 {
 
 	use Nette\SmartObject;
@@ -51,10 +53,9 @@ final class WriteChannelPropertyState implements Queue\Consumer
 	private const WRITE_PENDING_DELAY = 2_000.0;
 
 	public function __construct(
-		private readonly Queue\Queue $queue,
-		private readonly Drivers\DriversManager $driversManager,
-		private readonly Helpers\Entity $entityHelper,
-		private readonly Virtual\Logger $logger,
+		private readonly API\ConnectionManager $connectionManager,
+		private readonly Helpers\Connector $connectorHelper,
+		private readonly FbMqtt\Logger $logger,
 		private readonly DevicesModels\Configuration\Connectors\Repository $connectorsConfigurationRepository,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
@@ -83,6 +84,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 
 		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
 		$findConnectorQuery->byId($entity->getConnector());
+		$findConnectorQuery->byType(Entities\FbMqttConnector::TYPE);
 
 		$connector = $this->connectorsConfigurationRepository->findOneBy($findConnectorQuery);
 
@@ -90,8 +92,8 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Connector could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
-					'type' => 'write-channel-property-state-message-consumer',
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
+					'type' => 'write-v1-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
 					],
@@ -111,9 +113,16 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
+		if (!$this->connectorHelper->getProtocolVersion($connector)->equalsValue(
+			FbMqtt\Types\ProtocolVersion::VERSION_1,
+		)) {
+			return false;
+		}
+
 		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDeviceQuery->forConnector($connector);
 		$findDeviceQuery->byId($entity->getDevice());
+		$findDeviceQuery->byType(Entities\FbMqttDevice::TYPE);
 
 		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
@@ -121,8 +130,8 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Device could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
-					'type' => 'write-channel-property-state-message-consumer',
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
+					'type' => 'write-v1-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $connector->getId()->toString(),
 					],
@@ -145,6 +154,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 		$findChannelQuery->forDevice($device);
 		$findChannelQuery->byId($entity->getChannel());
+		$findChannelQuery->byType(Entities\FbMqttChannel::TYPE);
 
 		$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 
@@ -152,8 +162,8 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Channel could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
-					'type' => 'write-channel-property-state-message-consumer',
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
+					'type' => 'write-v1-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $connector->getId()->toString(),
 					],
@@ -173,21 +183,21 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$findChannelPropertyQuery = new DevicesQueries\Configuration\FindChannelProperties();
+		$findChannelPropertyQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
 		$findChannelPropertyQuery->forChannel($channel);
 		$findChannelPropertyQuery->byId($entity->getProperty());
 
-		$property = $this->channelsPropertiesConfigurationRepository->findOneBy($findChannelPropertyQuery);
+		$property = $this->channelsPropertiesConfigurationRepository->findOneBy(
+			$findChannelPropertyQuery,
+			MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
+		);
 
-		if (
-			!$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-			&& !$property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
-		) {
+		if ($property === null) {
 			$this->logger->error(
 				'Channel property could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
-					'type' => 'write-channel-property-state-message-consumer',
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
+					'type' => 'write-v1-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $connector->getId()->toString(),
 					],
@@ -207,15 +217,12 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		if (
-			$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-			&& !$property->isSettable()
-		) {
-			$this->logger->error(
-				'Channel property is not writable',
+		if (!$property->isSettable()) {
+			$this->logger->warning(
+				'Property is not writable',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
-					'type' => 'write-channel-property-state-message-consumer',
+					'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
+					'type' => 'write-v1-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $connector->getId()->toString(),
 					],
@@ -235,25 +242,17 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$state = $property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-			? $this->channelPropertiesStatesManager->get($property)
-			: $this->channelPropertiesStatesManager->read($property);
+		$state = $this->channelPropertiesStatesManager->get($property);
 
 		if ($state === null) {
 			return true;
 		}
 
-		if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-			$valueToWrite = $state->getExpectedValue();
-		} else {
-			$valueToWrite = $state->getExpectedValue() ?? ($state->isValid() ? $state->getActualValue() : null);
-		}
+		$expectedValue = MetadataUtilities\Value::flattenValue($state->getExpectedValue());
 
-		if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-			$this->channelPropertiesStatesManager->setPendingState($property, $valueToWrite !== null);
-		}
+		if ($expectedValue === null) {
+			$this->channelPropertiesStatesManager->setPendingState($property, false);
 
-		if ($valueToWrite === null) {
 			return true;
 		}
 
@@ -270,64 +269,22 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-			$this->channelPropertiesStatesManager->setPendingState($property, true);
-		}
+		$this->channelPropertiesStatesManager->setPendingState($property, true);
 
-		try {
-			$driver = $this->driversManager->getDriver($device);
+		$topic = API\V1Builder::buildChannelPropertyTopic($device, $channel, $property);
 
-			$result = $property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
-				? $driver->notifyState($property, $valueToWrite)
-				: $driver->writeState($property, $valueToWrite);
-		} catch (Exceptions\InvalidState $ex) {
-			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\StoreDeviceConnectionState::class,
-					[
-						'connector' => $connector->getId()->toString(),
-						'device' => $device->getId()->toString(),
-						'state' => MetadataTypes\ConnectionState::ALERT,
-					],
-				),
-			);
-
-			if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-				$this->channelPropertiesStatesManager->setPendingState($property, false);
-			}
-
-			$this->logger->error(
-				'Device is not properly configured',
-				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
-					'type' => 'write-channel-property-state-message-consumer',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
-					'connector' => [
-						'id' => $connector->getId()->toString(),
-					],
-					'device' => [
-						'id' => $device->getId()->toString(),
-					],
-					'channel' => [
-						'id' => $channel->getId()->toString(),
-					],
-					'property' => [
-						'id' => $property->getId()->toString(),
-					],
-					'data' => $entity->toArray(),
-				],
-			);
-
-			return true;
-		}
-
-		$result->then(
-			function () use ($connector, $device, $channel, $property, $entity): void {
+		$this->connectionManager
+			->getConnection($connector)
+			->publish(
+				$topic,
+				strval($expectedValue),
+			)
+			->then(function () use ($connector, $device, $channel, $property, $entity): void {
 				$this->logger->debug(
 					'Channel state was successfully sent to device',
 					[
-						'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
-						'type' => 'write-channel-property-state-message-consumer',
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
+						'type' => 'write-v1-channel-property-state-message-consumer',
 						'connector' => [
 							'id' => $connector->getId()->toString(),
 						],
@@ -343,28 +300,15 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						'data' => $entity->toArray(),
 					],
 				);
-			},
-			function (Throwable $ex) use ($connector, $device, $channel, $property, $entity): void {
-				if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-					$this->channelPropertiesStatesManager->setPendingState($property, false);
-				}
-
-				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\StoreDeviceConnectionState::class,
-						[
-							'connector' => $connector->getId()->toString(),
-							'identifier' => $device->getIdentifier(),
-							'state' => MetadataTypes\ConnectionState::ALERT,
-						],
-					),
-				);
+			})
+			->catch(function (Throwable $ex) use ($connector, $device, $channel, $property, $entity): void {
+				$this->channelPropertiesStatesManager->setPendingState($property, false);
 
 				$this->logger->error(
 					'Could write state to device',
 					[
-						'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
-						'type' => 'write-channel-property-state-message-consumer',
+						'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
+						'type' => 'write-v1-channel-property-state-message-consumer',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'connector' => [
 							'id' => $connector->getId()->toString(),
@@ -381,14 +325,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						'data' => $entity->toArray(),
 					],
 				);
-			},
-		);
+			});
 
 		$this->logger->debug(
 			'Consumed write device state message',
 			[
-				'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
-				'type' => 'write-channel-property-state-message-consumer',
+				'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
+				'type' => 'write-v1-channel-property-state-message-consumer',
 				'connector' => [
 					'id' => $connector->getId()->toString(),
 				],

@@ -41,7 +41,8 @@ final class FbMqttExtensionTest extends Tests\Cases\Unit\BaseTestCase
 		self::assertNotNull($container->getByType(Queue\Consumers\DeviceAttribute::class, false));
 		self::assertNotNull($container->getByType(Queue\Consumers\DeviceProperty::class, false));
 		self::assertNotNull($container->getByType(Queue\Consumers\ExtensionAttribute::class, false));
-		self::assertNotNull($container->getByType(Queue\Consumers\WriteV1PropertyState::class, false));
+		self::assertNotNull($container->getByType(Queue\Consumers\WriteV1DevicePropertyState::class, false));
+		self::assertNotNull($container->getByType(Queue\Consumers\WriteV1ChannelPropertyState::class, false));
 		self::assertNotNull($container->getByType(Queue\Consumers::class, false));
 		self::assertNotNull($container->getByType(Queue\Queue::class, false));
 

@@ -122,7 +122,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 						'id' => $entity->getConnector()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'channel' => array_merge(
 						is_string($entity->getChannel()) ? ['identifier' => $entity->getChannel()] : [],
@@ -161,12 +161,11 @@ final class StoreChannelPropertyState implements Queue\Consumer
 						'id' => $entity->getConnector()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
-					'channel' => array_merge(
-						is_string($entity->getChannel()) ? ['identifier' => $entity->getChannel()] : [],
-						!is_string($entity->getChannel()) ? ['id' => $entity->getChannel()->toString()] : [],
-					),
+					'channel' => [
+						'id' => $channel->getId()->toString(),
+					],
 					'property' => [
 						'identifier' => $entity->getProperty(),
 					],
@@ -204,14 +203,13 @@ final class StoreChannelPropertyState implements Queue\Consumer
 					'id' => $entity->getConnector()->toString(),
 				],
 				'device' => [
-					'id' => $entity->getDevice()->toString(),
+					'id' => $device->getId()->toString(),
 				],
-				'channel' => array_merge(
-					is_string($entity->getChannel()) ? ['identifier' => $entity->getChannel()] : [],
-					!is_string($entity->getChannel()) ? ['id' => $entity->getChannel()->toString()] : [],
-				),
+				'channel' => [
+					'id' => $channel->getId()->toString(),
+				],
 				'property' => [
-					'identifier' => $entity->getProperty(),
+					'id' => $property->getId()->toString(),
 				],
 				'data' => $entity->toArray(),
 			],

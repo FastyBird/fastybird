@@ -134,7 +134,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 						'id' => $entity->getConnector()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
 						'id' => $entity->getChannel()->toString(),
@@ -170,10 +170,10 @@ final class StoreChannelPropertyState implements Queue\Consumer
 						'id' => $entity->getConnector()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
-						'id' => $entity->getChannel()->toString(),
+						'id' => $channel->getId()->toString(),
 					],
 					'property' => array_merge(
 						is_string($entity->getProperty()) ? ['identifier' => $entity->getProperty()] : [],
@@ -262,15 +262,14 @@ final class StoreChannelPropertyState implements Queue\Consumer
 								'id' => $entity->getConnector()->toString(),
 							],
 							'device' => [
-								'id' => $entity->getDevice()->toString(),
+								'id' => $device->getId()->toString(),
 							],
 							'channel' => [
-								'id' => $entity->getChannel()->toString(),
+								'id' => $channel->getId()->toString(),
 							],
-							'property' => array_merge(
-								is_string($entity->getProperty()) ? ['identifier' => $entity->getProperty()] : [],
-								!is_string($entity->getProperty()) ? ['id' => $entity->getProperty()->toString()] : [],
-							),
+							'property' => [
+								'id' => $property->getId()->toString(),
+							],
 							'data' => $entity->toArray(),
 						],
 					);
@@ -278,45 +277,44 @@ final class StoreChannelPropertyState implements Queue\Consumer
 					return true;
 				}
 			} elseif ($parent instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
-				$this->databaseHelper->transaction(function () use ($entity, $parent): void {
-					$property = $this->channelsPropertiesRepository->find(
-						$parent->getId(),
-						DevicesEntities\Channels\Properties\Variable::class,
-					);
+				$this->databaseHelper->transaction(
+					function () use ($entity, $device, $channel, $property, $parent): void {
+						$toUpdate = $this->channelsPropertiesRepository->find(
+							$parent->getId(),
+							DevicesEntities\Channels\Properties\Variable::class,
+						);
 
-					if ($property !== null) {
-						$this->channelsPropertiesManager->update(
-							$property,
-							Utils\ArrayHash::from([
-								'value' => $entity->getValue(),
-							]),
-						);
-					} else {
-						$this->logger->error(
-							'Mapped variable property could not be updated',
-							[
-								'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
-								'type' => 'characteristics-controller',
-								'connector' => [
-									'id' => $entity->getConnector()->toString(),
+						if ($toUpdate !== null) {
+							$this->channelsPropertiesManager->update(
+								$toUpdate,
+								Utils\ArrayHash::from([
+									'value' => $entity->getValue(),
+								]),
+							);
+						} else {
+							$this->logger->error(
+								'Mapped variable property could not be updated',
+								[
+									'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
+									'type' => 'store-channel-property-state-message-consumer',
+									'connector' => [
+										'id' => $entity->getConnector()->toString(),
+									],
+									'device' => [
+										'id' => $device->getId()->toString(),
+									],
+									'channel' => [
+										'id' => $channel->getId()->toString(),
+									],
+									'property' => [
+										'id' => $property->getId()->toString(),
+									],
+									'data' => $entity->toArray(),
 								],
-								'device' => [
-									'id' => $entity->getDevice()->toString(),
-								],
-								'channel' => [
-									'id' => $entity->getChannel()->toString(),
-								],
-								'property' => array_merge(
-									is_string($entity->getProperty()) ? ['identifier' => $entity->getProperty()] : [],
-									!is_string(
-										$entity->getProperty(),
-									) ? ['id' => $entity->getProperty()->toString()] : [],
-								),
-								'data' => $entity->toArray(),
-							],
-						);
-					}
-				});
+							);
+						}
+					},
+				);
 			}
 		}
 
@@ -329,15 +327,14 @@ final class StoreChannelPropertyState implements Queue\Consumer
 					'id' => $entity->getConnector()->toString(),
 				],
 				'device' => [
-					'id' => $entity->getDevice()->toString(),
+					'id' => $device->getId()->toString(),
 				],
 				'channel' => [
-					'id' => $entity->getChannel()->toString(),
+					'id' => $channel->getId()->toString(),
 				],
-				'property' => array_merge(
-					is_string($entity->getProperty()) ? ['identifier' => $entity->getProperty()] : [],
-					!is_string($entity->getProperty()) ? ['id' => $entity->getProperty()->toString()] : [],
-				),
+				'property' => [
+					'id' => $property->getId()->toString(),
+				],
 				'data' => $entity->toArray(),
 			],
 		);

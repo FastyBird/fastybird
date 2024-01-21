@@ -90,7 +90,7 @@ final class StoreBridgeLog implements Queue\Consumer
 				'connector' => [
 					'id' => $entity->getConnector()->toString(),
 				],
-				'device' => [
+				'bridge' => [
 					'id' => $bridge->getId()->toString(),
 				],
 			],
@@ -103,6 +103,9 @@ final class StoreBridgeLog implements Queue\Consumer
 				'type' => 'store-bridge-log-message-consumer',
 				'connector' => [
 					'id' => $entity->getConnector()->toString(),
+				],
+				'bridge' => [
+					'id' => $bridge->getId()->toString(),
 				],
 				'data' => $entity->toArray(),
 			],

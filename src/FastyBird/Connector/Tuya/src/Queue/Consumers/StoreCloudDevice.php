@@ -109,6 +109,9 @@ final class StoreCloudDevice implements Queue\Consumer
 				[
 					'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 					'type' => 'store-cloud-device-message-consumer',
+					'connector' => [
+						'id' => $entity->getConnector()->toString(),
+					],
 					'device' => [
 						'id' => $device->getId()->toString(),
 						'identifier' => $entity->getId(),
@@ -217,6 +220,9 @@ final class StoreCloudDevice implements Queue\Consumer
 					[
 						'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 						'type' => 'store-cloud-device-message-consumer',
+						'connector' => [
+							'id' => $entity->getConnector()->toString(),
+						],
 						'device' => [
 							'id' => $device->getId()->toString(),
 						],
@@ -253,6 +259,9 @@ final class StoreCloudDevice implements Queue\Consumer
 			[
 				'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
 				'type' => 'store-cloud-device-message-consumer',
+				'connector' => [
+					'id' => $entity->getConnector()->toString(),
+				],
 				'device' => [
 					'id' => $device->getId()->toString(),
 				],

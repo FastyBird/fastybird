@@ -222,10 +222,19 @@ class SonoffExtension extends DI\CompilerExtension implements Translation\DI\Tra
 			]);
 
 		$builder->addDefinition(
-			$this->prefix('queue.consumers.write.writePropertyState'),
+			$this->prefix('queue.consumers.write.writeDevicePropertyState'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Queue\Consumers\WritePropertyState::class)
+			->setType(Queue\Consumers\WriteDevicePropertyState::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
+
+		$builder->addDefinition(
+			$this->prefix('queue.consumers.write.writeChannelPropertyState'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Queue\Consumers\WriteChannelPropertyState::class)
 			->setArguments([
 				'logger' => $logger,
 			]);
