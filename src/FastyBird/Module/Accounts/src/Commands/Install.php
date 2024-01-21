@@ -99,11 +99,14 @@ class Install extends Console\Command\Command
 			return Console\Command\Command::SUCCESS;
 		} catch (Throwable $ex) {
 			// Log caught exception
-			$this->logger->error('An unhandled error occurred', [
-				'source' => MetadataTypes\ModuleSource::ACCOUNTS,
-				'type' => 'initialize-cmd',
-				'exception' => ApplicationHelpers\Logger::buildException($ex),
-			]);
+			$this->logger->error(
+				'An unhandled error occurred',
+				[
+					'source' => MetadataTypes\ModuleSource::ACCOUNTS,
+					'type' => 'initialize-cmd',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+				],
+			);
 
 			if ($input->getOption('quiet') === false) {
 				$io->error($this->translator->translate('//accounts-module.cmd.install.messages.error'));

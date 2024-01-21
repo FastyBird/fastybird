@@ -15,8 +15,10 @@
 
 namespace FastyBird\Connector\HomeKit\Connector;
 
+use Evenement;
 use FastyBird\Connector\HomeKit;
 use FastyBird\Connector\HomeKit\Entities;
+use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Queue;
 use FastyBird\Connector\HomeKit\Servers;
 use FastyBird\Connector\HomeKit\Writers;
@@ -25,6 +27,7 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Connectors as DevicesConnectors;
 use Nette;
 use React\EventLoop;
+use React\Promise;
 use function assert;
 use function React\Async\async;
 
@@ -40,6 +43,7 @@ final class Connector implements DevicesConnectors\Connector
 {
 
 	use Nette\SmartObject;
+	use Evenement\EventEmitterTrait;
 
 	private const QUEUE_PROCESSING_INTERVAL = 0.01;
 
@@ -109,19 +113,13 @@ final class Connector implements DevicesConnectors\Connector
 		);
 	}
 
-	public function discover(): void
+	/**
+	 * @return Promise\PromiseInterface<bool>
+	 */
+	public function discover(): Promise\PromiseInterface
 	{
-		assert($this->connector->getType() === Entities\HomeKitConnector::TYPE);
-
-		$this->logger->error(
-			'Devices discovery is not allowed for HomeKit connector type',
-			[
-				'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
-				'type' => 'connector',
-				'connector' => [
-					'id' => $this->connector->getId()->toString(),
-				],
-			],
+		return Promise\reject(
+			new Exceptions\InvalidState('Devices discovery is not allowed for HomeKit connector type'),
 		);
 	}
 

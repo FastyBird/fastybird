@@ -178,11 +178,14 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				]));
 			}
 		} catch (Throwable $ex) {
-			$this->logger->error('State could not be sent to subscriber', [
-				'source' => MetadataTypes\ModuleSource::DEVICES,
-				'type' => 'subscriber',
-				'exception' => ApplicationHelpers\Logger::buildException($ex),
-			]);
+			$this->logger->error(
+				'State could not be sent to subscriber',
+				[
+					'source' => MetadataTypes\ModuleSource::DEVICES,
+					'type' => 'exchange-controller',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+				],
+			);
 		}
 	}
 
@@ -270,27 +273,36 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 		try {
 			return $this->jsonValidator->validate(Utils\Json::encode($data), $schema);
 		} catch (Utils\JsonException $ex) {
-			$this->logger->error('Received message could not be validated', [
-				'source' => MetadataTypes\ModuleSource::DEVICES,
-				'type' => 'exchange-controller',
-				'exception' => ApplicationHelpers\Logger::buildException($ex),
-			]);
+			$this->logger->error(
+				'Received message could not be validated',
+				[
+					'source' => MetadataTypes\ModuleSource::DEVICES,
+					'type' => 'exchange-controller',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+				],
+			);
 
 			throw new Exceptions\InvalidArgument('Provided data are not valid json format', 0, $ex);
 		} catch (MetadataExceptions\InvalidData $ex) {
-			$this->logger->debug('Received message is not valid', [
-				'source' => MetadataTypes\ModuleSource::DEVICES,
-				'type' => 'exchange-controller',
-				'exception' => ApplicationHelpers\Logger::buildException($ex),
-			]);
+			$this->logger->debug(
+				'Received message is not valid',
+				[
+					'source' => MetadataTypes\ModuleSource::DEVICES,
+					'type' => 'exchange-controller',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+				],
+			);
 
 			throw new Exceptions\InvalidArgument('Provided data are not in valid structure', 0, $ex);
 		} catch (Throwable $ex) {
-			$this->logger->error('Received message is not valid', [
-				'source' => MetadataTypes\ModuleSource::DEVICES,
-				'type' => 'exchange-controller',
-				'exception' => ApplicationHelpers\Logger::buildException($ex),
-			]);
+			$this->logger->error(
+				'Received message is not valid',
+				[
+					'source' => MetadataTypes\ModuleSource::DEVICES,
+					'type' => 'exchange-controller',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+				],
+			);
 
 			throw new Exceptions\InvalidArgument('Provided data could not be validated', 0, $ex);
 		}

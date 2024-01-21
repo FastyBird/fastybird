@@ -15,6 +15,7 @@
 
 namespace FastyBird\Connector\Modbus\Connector;
 
+use Evenement;
 use FastyBird\Connector\Modbus;
 use FastyBird\Connector\Modbus\Clients;
 use FastyBird\Connector\Modbus\Entities;
@@ -26,11 +27,12 @@ use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Connectors as DevicesConnectors;
+use FastyBird\Module\Devices\Constants as DevicesConstants;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Nette;
-use Psr\EventDispatcher as PsrEventDispatcher;
 use React\EventLoop;
+use React\Promise;
 use ReflectionClass;
 use function array_key_exists;
 use function assert;
@@ -48,6 +50,7 @@ final class Connector implements DevicesConnectors\Connector
 {
 
 	use Nette\SmartObject;
+	use Evenement\EventEmitterTrait;
 
 	private const QUEUE_PROCESSING_INTERVAL = 0.01;
 
@@ -69,7 +72,6 @@ final class Connector implements DevicesConnectors\Connector
 		private readonly Queue\Consumers $consumers,
 		private readonly Modbus\Logger $logger,
 		private readonly EventLoop\LoopInterface $eventLoop,
-		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
 	}
@@ -111,11 +113,14 @@ final class Connector implements DevicesConnectors\Connector
 		}
 
 		if ($this->client === null) {
-			$this->dispatcher?->dispatch(
-				new DevicesEvents\TerminateConnector(
-					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_MODBUS),
-					'Connector client is not configured',
-				),
+			$this->emit(
+				DevicesConstants::EVENT_TERMINATE,
+				[
+					new DevicesEvents\TerminateConnector(
+						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT),
+						'Connector client is not configured',
+					),
+				],
 			);
 
 			return;
@@ -145,19 +150,13 @@ final class Connector implements DevicesConnectors\Connector
 		);
 	}
 
-	public function discover(): void
+	/**
+	 * @return Promise\PromiseInterface<bool>
+	 */
+	public function discover(): Promise\PromiseInterface
 	{
-		assert($this->connector->getType() === Entities\ModbusConnector::TYPE);
-
-		$this->logger->error(
-			'Devices discovery is not allowed for Modbus connector type',
-			[
-				'source' => MetadataTypes\ConnectorSource::CONNECTOR_MODBUS,
-				'type' => 'connector',
-				'connector' => [
-					'id' => $this->connector->getId()->toString(),
-				],
-			],
+		return Promise\reject(
+			new Exceptions\InvalidState('Devices discovery is not allowed for Modbus connector type'),
 		);
 	}
 

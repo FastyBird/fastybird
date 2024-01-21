@@ -15,6 +15,7 @@
 
 namespace FastyBird\Connector\Zigbee2Mqtt\Connector;
 
+use Evenement;
 use FastyBird\Connector\Zigbee2Mqtt;
 use FastyBird\Connector\Zigbee2Mqtt\Clients;
 use FastyBird\Connector\Zigbee2Mqtt\Entities;
@@ -27,12 +28,13 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Connectors as DevicesConnectors;
+use FastyBird\Module\Devices\Constants as DevicesConstants;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use InvalidArgumentException;
 use Nette;
-use Psr\EventDispatcher as PsrEventDispatcher;
 use React\EventLoop;
+use React\Promise;
 use ReflectionClass;
 use function array_key_exists;
 use function assert;
@@ -50,6 +52,7 @@ final class Connector implements DevicesConnectors\Connector
 {
 
 	use Nette\SmartObject;
+	use Evenement\EventEmitterTrait;
 
 	private const QUEUE_PROCESSING_INTERVAL = 0.01;
 
@@ -73,7 +76,6 @@ final class Connector implements DevicesConnectors\Connector
 		private readonly Queue\Consumers $consumers,
 		private readonly Zigbee2Mqtt\Logger $logger,
 		private readonly EventLoop\LoopInterface $eventLoop,
-		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
 	}
@@ -120,11 +122,14 @@ final class Connector implements DevicesConnectors\Connector
 		}
 
 		if (!$client instanceof Clients\Mqtt) {
-			$this->dispatcher?->dispatch(
-				new DevicesEvents\TerminateConnector(
-					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT),
-					'Connector client is not configured',
-				),
+			$this->emit(
+				DevicesConstants::EVENT_TERMINATE,
+				[
+					new DevicesEvents\TerminateConnector(
+						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT),
+						'Connector client is not configured',
+					),
+				],
 			);
 
 			return;
@@ -155,13 +160,15 @@ final class Connector implements DevicesConnectors\Connector
 	}
 
 	/**
+	 * @return Promise\PromiseInterface<bool>
+	 *
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws InvalidArgumentException
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
-	public function discover(): void
+	public function discover(): Promise\PromiseInterface
 	{
 		assert($this->connector->getType() === Entities\Zigbee2MqttConnector::TYPE);
 
@@ -179,11 +186,14 @@ final class Connector implements DevicesConnectors\Connector
 		$client = $this->discoveryClientFactory->create($this->connector);
 
 		$client->on('finished', function (): void {
-			$this->dispatcher?->dispatch(
-				new DevicesEvents\TerminateConnector(
-					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT),
-					'Devices discovery finished',
-				),
+			$this->emit(
+				DevicesConstants::EVENT_TERMINATE,
+				[
+					new DevicesEvents\TerminateConnector(
+						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT),
+						'Devices discovery finished',
+					),
+				],
 			);
 		});
 
@@ -208,6 +218,8 @@ final class Connector implements DevicesConnectors\Connector
 		);
 
 		$client->discover();
+
+		return Promise\resolve(true);
 	}
 
 	/**

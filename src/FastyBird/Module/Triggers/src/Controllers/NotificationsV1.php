@@ -19,6 +19,7 @@ use Doctrine;
 use Exception;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Triggers\Controllers;
 use FastyBird\Module\Triggers\Entities;
 use FastyBird\Module\Triggers\Exceptions;
@@ -213,11 +214,14 @@ final class NotificationsV1 extends BaseV1
 				);
 			} catch (Throwable $ex) {
 				// Log caught exception
-				$this->logger->error('An unhandled error occurred', [
-					'source' => 'triggers-module-notifications-controller',
-					'type' => 'create',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
-				]);
+				$this->logger->error(
+					'An unhandled error occurred',
+					[
+						'source' => MetadataTypes\ModuleSource::TRIGGERS,
+						'type' => 'notifications-controller',
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
+					],
+				);
 
 				throw new JsonApiExceptions\JsonApiError(
 					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
@@ -294,11 +298,14 @@ final class NotificationsV1 extends BaseV1
 				throw $ex;
 			} catch (Throwable $ex) {
 				// Log caught exception
-				$this->logger->error('An unhandled error occurred', [
-					'source' => 'triggers-module-notifications-controller',
-					'type' => 'update',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
-				]);
+				$this->logger->error(
+					'An unhandled error occurred',
+					[
+						'source' => MetadataTypes\ModuleSource::TRIGGERS,
+						'type' => 'notifications-controller',
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
+					],
+				);
 
 				throw new JsonApiExceptions\JsonApiError(
 					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
@@ -361,11 +368,14 @@ final class NotificationsV1 extends BaseV1
 
 		} catch (Throwable $ex) {
 			// Log caught exception
-			$this->logger->error('An unhandled error occurred', [
-				'source' => 'triggers-module-notifications-controller',
-				'type' => 'delete',
-				'exception' => ApplicationHelpers\Logger::buildException($ex),
-			]);
+			$this->logger->error(
+				'An unhandled error occurred',
+				[
+					'source' => MetadataTypes\ModuleSource::TRIGGERS,
+					'type' => 'notifications-controller',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+				],
+			);
 
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,

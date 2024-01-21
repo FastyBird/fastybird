@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * TerminateConnector.php
+ * RestartConnector.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,7 +10,7 @@
  * @subpackage     Events
  * @since          1.0.0
  *
- * @date           22.06.22
+ * @date           21.01.24
  */
 
 namespace FastyBird\Module\Devices\Events;
@@ -20,14 +20,14 @@ use Symfony\Contracts\EventDispatcher;
 use Throwable;
 
 /**
- * Event fired when connector should be terminated
+ * Event fired when connector should be restarted
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Events
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class TerminateConnector extends EventDispatcher\Event
+class RestartConnector extends EventDispatcher\Event
 {
 
 	public function __construct(

@@ -39,6 +39,7 @@ use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
 use Nette;
 use Nette\Localization;
@@ -1271,7 +1272,7 @@ class Install extends Console\Command\Command
 
 		$result = $serviceCmd->run(new Input\ArrayInput([
 			'--connector' => $connector->getId()->toString(),
-			'--mode' => DevicesCommands\Connector::MODE_DISCOVER,
+			'--mode' => DevicesTypes\ConnectorMode::DISCOVER,
 			'--no-interaction' => true,
 			'--quiet' => true,
 		]), $this->output);

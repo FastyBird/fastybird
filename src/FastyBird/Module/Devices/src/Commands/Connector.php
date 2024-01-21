@@ -17,16 +17,13 @@ namespace FastyBird\Module\Devices\Commands;
 
 use BadMethodCallException;
 use DateTimeInterface;
-use Doctrine\DBAL;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Exchange\Exchange as ExchangeExchange;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Connectors;
 use FastyBird\Module\Devices\Consumers;
@@ -34,19 +31,18 @@ use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
-use FastyBird\Module\Devices\Utilities;
+use FastyBird\Module\Devices\Types;
 use Nette\Localization;
 use Nette\Utils;
 use Psr\EventDispatcher as PsrEventDispatcher;
 use Ramsey\Uuid;
 use React\EventLoop;
-use SplObjectStorage;
 use Symfony\Component\Console;
 use Symfony\Component\Console\Input;
 use Symfony\Component\Console\Output;
 use Symfony\Component\Console\Style;
-use Symfony\Component\EventDispatcher;
 use Throwable;
+use function array_key_exists;
 use function array_search;
 use function array_values;
 use function assert;
@@ -54,6 +50,8 @@ use function count;
 use function intval;
 use function is_string;
 use function React\Async\async;
+use function sprintf;
+use function usort;
 use const SIGINT;
 use const SIGTERM;
 
@@ -65,14 +63,10 @@ use const SIGTERM;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Connector extends Console\Command\Command implements EventDispatcher\EventSubscriberInterface
+class Connector extends Console\Command\Command
 {
 
 	public const NAME = 'fb:devices-module:connector';
-
-	public const MODE_EXECUTE = 'execute';
-
-	public const MODE_DISCOVER = 'discover';
 
 	private const SHUTDOWN_WAITING_DELAY = 3;
 
@@ -82,16 +76,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 
 	private bool $isTerminating = false;
 
-	private MetadataDocuments\DevicesModule\Connector|null $connector = null;
-
-	private Connectors\Connector|null $service = null;
-
 	private Console\Helper\ProgressBar|null $progressBar = null;
-
-	private string $mode = self::MODE_EXECUTE;
-
-	/** @var SplObjectStorage<Connectors\ConnectorFactory, string> */
-	private SplObjectStorage $factories;
 
 	private EventLoop\TimerInterface|null $databaseRefreshTimer = null;
 
@@ -105,18 +90,9 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 	 * @param array<ExchangeExchange\Factory> $exchangeFactories
 	 */
 	public function __construct(
+		private readonly Connectors\ContainerFactory $serviceFactory,
 		private readonly Models\Configuration\Connectors\Repository $connectorsConfigurationRepository,
-		private readonly Models\Configuration\Connectors\Properties\Repository $connectorsPropertiesConfigurationRepository,
 		private readonly Models\Configuration\Connectors\Controls\Repository $connectorsControlsConfigurationRepository,
-		private readonly Models\Configuration\Devices\Repository $devicesConfigurationRepository,
-		private readonly Models\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
-		private readonly Models\Configuration\Channels\Repository $channelsConfigurationRepository,
-		private readonly Models\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
-		private readonly Models\States\ConnectorPropertiesManager $connectorPropertiesStatesManager,
-		private readonly Models\States\DevicePropertiesManager $devicePropertiesStatesManager,
-		private readonly Models\States\ChannelPropertiesManager $channelPropertiesStatesManager,
-		private readonly Utilities\ConnectorConnection $connectorConnectionManager,
-		private readonly Utilities\DeviceConnection $deviceConnectionManager,
 		private readonly Devices\Logger $logger,
 		private readonly ApplicationHelpers\Database $database,
 		private readonly EventLoop\LoopInterface $eventLoop,
@@ -128,21 +104,7 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 		string|null $name = null,
 	)
 	{
-		$this->factories = new SplObjectStorage();
-
 		parent::__construct($name);
-	}
-
-	public static function getSubscribedEvents(): array
-	{
-		return [
-			Events\TerminateConnector::class => 'terminateConnector',
-		];
-	}
-
-	public function attach(Connectors\ConnectorFactory $factory, string $type): void
-	{
-		$this->factories->attach($factory, $type);
 	}
 
 	/**
@@ -166,50 +128,10 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 						'm',
 						Input\InputOption::VALUE_OPTIONAL,
 						'Connector mode',
-						self::MODE_EXECUTE,
+						Types\ConnectorMode::EXECUTE,
 					),
 				]),
 			);
-	}
-
-	public function terminateConnector(Events\TerminateConnector $event): void
-	{
-		if ($event->getException() !== null) {
-			$this->logger->warning('Triggering connector termination due to some error', [
-				'source' => MetadataTypes\ModuleSource::DEVICES,
-				'type' => 'command',
-				'reason' => [
-					'source' => $event->getSource()->getValue(),
-					'message' => $event->getReason(),
-				],
-				'exception' => ApplicationHelpers\Logger::buildException($event->getException()),
-			]);
-		} else {
-			$this->logger->info('Triggering connector termination', [
-				'source' => MetadataTypes\ModuleSource::DEVICES,
-				'type' => 'command',
-				'reason' => [
-					'source' => $event->getSource()->getValue(),
-					'message' => $event->getReason(),
-				],
-			]);
-		}
-
-		if ($this->service !== null && $this->connector !== null) {
-			try {
-				$this->terminate();
-
-				return;
-			} catch (Exceptions\Terminate $ex) {
-				$this->logger->error('Connector could not be safely terminated', [
-					'source' => MetadataTypes\ModuleSource::DEVICES,
-					'type' => 'command',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
-				]);
-			}
-		}
-
-		$this->eventLoop->stop();
 	}
 
 	/**
@@ -238,15 +160,17 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 			}
 		}
 
+		$mode = Types\ConnectorMode::get(Types\ConnectorMode::EXECUTE);
+
 		if (
 			$input->hasOption('mode')
 			&& is_string($input->getOption('mode'))
-			&& Utils\Strings::lower($input->getOption('mode')) === self::MODE_DISCOVER
+			&& Types\ConnectorMode::isValidValue(Utils\Strings::lower($input->getOption('mode')))
 		) {
-			$this->mode = self::MODE_DISCOVER;
+			$mode = Types\ConnectorMode::get(Utils\Strings::lower($input->getOption('mode')));
 		}
 
-		if ($this->mode === self::MODE_DISCOVER) {
+		if ($mode->equalsValue(Types\ConnectorMode::DISCOVER)) {
 			$this->progressBar = new Console\Helper\ProgressBar(
 				$output,
 				intval(self::DISCOVERY_MAX_PROCESSING_INTERVAL),
@@ -258,7 +182,9 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 		try {
 			$this->isTerminating = false;
 
-			$this->executeConnector($io, $input);
+			if ($this->prepare($io, $input, $mode) === Console\Command\Command::FAILURE) {
+				return Console\Command\Command::FAILURE;
+			}
 
 			$this->executedAt = $this->dateTimeFactory->getNow();
 
@@ -269,17 +195,23 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 			return Console\Command\Command::SUCCESS;
 		} catch (Exceptions\Terminate $ex) {
 			if ($ex->getPrevious() !== null) {
-				$this->logger->error('An error occurred. Stopping connector', [
-					'source' => MetadataTypes\ModuleSource::DEVICES,
-					'type' => 'command',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
-				]);
+				$this->logger->error(
+					'An error occurred. Stopping connector',
+					[
+						'source' => MetadataTypes\ModuleSource::DEVICES,
+						'type' => 'connector-cmd',
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
+					],
+				);
 			} else {
-				$this->logger->debug('Stopping connector', [
-					'source' => MetadataTypes\ModuleSource::DEVICES,
-					'type' => 'command',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
-				]);
+				$this->logger->debug(
+					'Stopping connector',
+					[
+						'source' => MetadataTypes\ModuleSource::DEVICES,
+						'type' => 'connector-cmd',
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
+					],
+				);
 			}
 
 			$this->eventLoop->stop();
@@ -287,11 +219,14 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 			return Console\Command\Command::SUCCESS;
 		} catch (Throwable $ex) {
 			// Log caught exception
-			$this->logger->error('An unhandled error occurred', [
-				'source' => MetadataTypes\ModuleSource::DEVICES,
-				'type' => 'command',
-				'exception' => ApplicationHelpers\Logger::buildException($ex),
-			]);
+			$this->logger->error(
+				'An unhandled error occurred',
+				[
+					'source' => MetadataTypes\ModuleSource::DEVICES,
+					'type' => 'connector-cmd',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+				],
+			);
 
 			if ($input->getOption('quiet') === false) {
 				$io->error($this->translator->translate('//devices-module.cmd.connector.messages.error'));
@@ -306,175 +241,120 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 	 * @throws BadMethodCallException
 	 * @throws Exceptions\InvalidState
 	 * @throws ExchangeExceptions\InvalidArgument
-	 * @throws Exceptions\Terminate
 	 */
-	private function executeConnector(
+	private function prepare(
 		Style\SymfonyStyle $io,
 		Input\InputInterface $input,
-	): void
+		Types\ConnectorMode $mode,
+	): int
 	{
 		if ($input->getOption('quiet') === false) {
 			$io->section($this->translator->translate('//devices-module.cmd.connector.info.preparing'));
 		}
 
-		if (
-			$input->hasOption('connector')
-			&& is_string($input->getOption('connector'))
-			&& $input->getOption('connector') !== ''
-		) {
-			$connectorId = $input->getOption('connector');
+		$connector = $this->whichConnector($io, $input, $mode);
 
-			$findConnectorQuery = new Queries\Configuration\FindConnectors();
-
-			if (Uuid\Uuid::isValid($connectorId)) {
-				$findConnectorQuery->byId(Uuid\Uuid::fromString($connectorId));
-			} else {
-				$findConnectorQuery->byIdentifier($connectorId);
-			}
-
-			$this->connector = $this->connectorsConfigurationRepository->findOneBy($findConnectorQuery);
-
-			if ($this->connector === null) {
-				if ($input->getOption('quiet') === false) {
-					$io->warning(
-						$this->translator->translate('//devices-module.cmd.connector.messages.connectorNotFound'),
-					);
-				}
-
-				return;
-			}
-		} else {
-			$connectors = [];
-
-			$findConnectorsQuery = new Queries\Configuration\FindConnectors();
-
-			foreach ($this->connectorsConfigurationRepository->findAllBy($findConnectorsQuery) as $connector) {
-				if ($this->mode === self::MODE_DISCOVER) {
-					$findConnectorControlQuery = new Queries\Configuration\FindConnectorControls();
-					$findConnectorControlQuery->forConnector($connector);
-					$findConnectorControlQuery->byName(MetadataTypes\ControlName::DISCOVER);
-
-					$control = $this->connectorsControlsConfigurationRepository->findOneBy($findConnectorControlQuery);
-
-					if ($control === null) {
-						continue;
-					}
-				}
-
-				$connectors[$connector->getIdentifier()] = $connector->getIdentifier() .
-					($connector->getName() !== null ? ' [' . $connector->getName() . ']' : '');
-			}
-
-			if (count($connectors) === 0) {
-				if ($input->getOption('quiet') === false) {
-					if ($this->mode === self::MODE_DISCOVER) {
-						$io->warning(
-							$this->translator->translate(
-								'//devices-module.cmd.connector.messages.noDiscoverableConnectors',
-							),
-						);
-					} else {
-						$io->warning(
-							$this->translator->translate('//devices-module.cmd.connector.messages.noConnectors'),
-						);
-					}
-				}
-
-				return;
-			}
-
-			$question = new Console\Question\ChoiceQuestion(
-				$this->translator->translate('//devices-module.cmd.connector.questions.selectConnector'),
-				array_values($connectors),
-			);
-
-			$question->setErrorMessage(
-				$this->translator->translate('//devices-module.cmd.base.messages.answerNotValid'),
-			);
-
-			$connectorIdentifierKey = array_search($io->askQuestion($question), $connectors, true);
-
-			if ($connectorIdentifierKey === false) {
-				if ($input->getOption('quiet') === false) {
-					$io->error(
-						$this->translator->translate('//devices-module.cmd.connector.messages.loadConnectorError'),
-					);
-				}
-
-				$this->logger->error('Connector identifier was not able to get from answer', [
-					'source' => MetadataTypes\ModuleSource::DEVICES,
-					'type' => 'command',
-				]);
-
-				return;
-			}
-
-			$findConnectorQuery = new Queries\Configuration\FindConnectors();
-			$findConnectorQuery->byIdentifier($connectorIdentifierKey);
-
-			$this->connector = $this->connectorsConfigurationRepository->findOneBy($findConnectorQuery);
-
-			if ($this->connector === null) {
-				if ($input->getOption('quiet') === false) {
-					$io->error(
-						$this->translator->translate('//devices-module.cmd.connector.messages.loadConnectorError'),
-					);
-				}
-
-				$this->logger->error('Connector was not found', [
-					'source' => MetadataTypes\ModuleSource::DEVICES,
-					'type' => 'command',
-				]);
-
-				return;
-			}
-		}
-
-		if (!$this->connector->isEnabled()) {
+		if ($connector === null) {
 			if ($input->getOption('quiet') === false) {
-				$io->warning($this->translator->translate('//devices-module.cmd.connector.messages.connectorDisabled'));
-			}
-
-			return;
-		}
-
-		if ($this->mode === self::MODE_DISCOVER) {
-			$findConnectorControlQuery = new Queries\Configuration\FindConnectorControls();
-			$findConnectorControlQuery->forConnector($this->connector);
-			$findConnectorControlQuery->byName(MetadataTypes\ControlName::DISCOVER);
-
-			$control = $this->connectorsControlsConfigurationRepository->findOneBy($findConnectorControlQuery);
-
-			if ($control === null) {
-				if ($input->getOption('quiet') === false) {
+				if ($mode->equalsValue(Types\ConnectorMode::DISCOVER)) {
 					$io->warning(
-						$this->translator->translate('//devices-module.cmd.connector.messages.notSupportedConnector'),
+						$this->translator->translate(
+							'//devices-module.cmd.connector.messages.noDiscoverableConnectors',
+						),
+					);
+				} else {
+					$io->warning(
+						$this->translator->translate(
+							'//devices-module.cmd.connector.messages.noConnectors',
+						),
 					);
 				}
-
-				return;
 			}
+
+			return Console\Command\Command::SUCCESS;
+		} elseif ($connector === false) {
+			return Console\Command\Command::FAILURE;
 		}
 
 		if ($input->getOption('quiet') === false) {
 			$io->section($this->translator->translate('//devices-module.cmd.connector.info.initialization'));
 		}
 
-		$this->dispatcher?->dispatch(new Events\ConnectorStartup($this->connector));
+		$this->dispatcher?->dispatch(new Events\ConnectorStartup($connector));
 
 		$this->consumer->enable(Consumers\Configuration::class);
 
-		foreach ($this->factories as $factory) {
-			if ($this->connector->getType() === $this->factories[$factory]) {
-				$this->service = $factory->create($this->connector);
-			}
-		}
+		$service = $this->serviceFactory->create($connector);
 
-		if ($this->service === null) {
-			throw new Exceptions\Terminate('Connector service could not created');
-		}
+		$service->on(
+			Devices\Constants::EVENT_TERMINATE,
+			function (Events\TerminateConnector $event) use ($connector, $service, $mode): void {
+				if ($event->getException() !== null) {
+					$this->logger->warning(
+						'Triggering connector termination due to some error',
+						[
+							'source' => MetadataTypes\ModuleSource::DEVICES,
+							'type' => 'connector-cmd',
+							'exception' => ApplicationHelpers\Logger::buildException($event->getException()),
+							'reason' => [
+								'source' => $event->getSource()->getValue(),
+								'message' => $event->getReason(),
+							],
+						],
+					);
+				} elseif ($event !== null ) {
+					$this->logger->info(
+						'Triggering connector termination',
+						[
+							'source' => MetadataTypes\ModuleSource::DEVICES,
+							'type' => 'connector-cmd',
+							'reason' => [
+								'source' => $event->getSource()->getValue(),
+								'message' => $event->getReason(),
+							],
+						],
+					);
+				}
 
-		if ($this->mode === self::MODE_DISCOVER) {
+				$this->terminate($connector, $service, $mode);
+			},
+		);
+
+		$service->on(
+			Devices\Constants::EVENT_RESTART,
+			function (Events\RestartConnector $event) use ($connector, $service, $mode): void {
+				if ($event->getException() !== null) {
+					$this->logger->warning(
+						'Triggering connector termination due to some error',
+						[
+							'source' => MetadataTypes\ModuleSource::DEVICES,
+							'type' => 'connector-cmd',
+							'exception' => ApplicationHelpers\Logger::buildException($event->getException()),
+							'reason' => [
+								'source' => $event->getSource()->getValue(),
+								'message' => $event->getReason(),
+							],
+						],
+					);
+				} elseif ($event !== null ) {
+					$this->logger->info(
+						'Triggering connector termination',
+						[
+							'source' => MetadataTypes\ModuleSource::DEVICES,
+							'type' => 'connector-cmd',
+							'reason' => [
+								'source' => $event->getSource()->getValue(),
+								'message' => $event->getReason(),
+							],
+						],
+					);
+				}
+
+				$this->terminate($connector, $service, $mode);
+			},
+		);
+
+		if ($mode->equalsValue(Types\ConnectorMode::DISCOVER)) {
 			$this->progressBarTimer = $this->eventLoop->addPeriodicTimer(
 				0.1,
 				async(function (): void {
@@ -489,68 +369,40 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 			);
 		}
 
-		$this->eventLoop->futureTick(async(function (): void {
-			assert($this->connector instanceof MetadataDocuments\DevicesModule\Connector);
+		$this->eventLoop->futureTick(async(function () use ($connector, $service, $mode): void {
+			if ($mode->equalsValue(Types\ConnectorMode::DISCOVER)) {
+				$this->dispatcher?->dispatch(new Events\BeforeConnectorDiscoveryStart($connector));
 
-			if ($this->mode === self::MODE_DISCOVER) {
-				$this->dispatcher?->dispatch(new Events\BeforeConnectorDiscoveryStart($this->connector));
-
-				$this->logger->info('Starting connector...', [
+				$this->logger->debug('Starting connector...', [
 					'source' => MetadataTypes\ModuleSource::DEVICES,
-					'type' => 'command',
+					'type' => 'connector-cmd',
 				]);
 
 				try {
-					assert($this->service instanceof Connectors\Connector);
-
-					$this->progressBar?->start();
-
 					// Start connector service
-					$this->service->discover();
-
-					$this->discoveryTimer = $this->eventLoop->addTimer(
-						self::DISCOVERY_MAX_PROCESSING_INTERVAL,
-						function (): void {
-							$this->terminate();
-						},
-					);
-
+					$service->discover();
 				} catch (Throwable $ex) {
 					throw new Exceptions\Terminate('Connector discovery can\'t be started', $ex->getCode(), $ex);
 				}
 
-				$this->dispatcher?->dispatch(new Events\AfterConnectorDiscoveryStart($this->connector));
+				$this->dispatcher?->dispatch(new Events\AfterConnectorDiscoveryStart($connector));
 
 			} else {
-				$this->dispatcher?->dispatch(new Events\BeforeConnectorExecutionStart($this->connector));
+				$this->dispatcher?->dispatch(new Events\BeforeConnectorExecutionStart($connector));
 
-				$this->logger->info('Starting connector...', [
+				$this->logger->debug('Starting connector...', [
 					'source' => MetadataTypes\ModuleSource::DEVICES,
-					'type' => 'command',
+					'type' => 'connector-cmd',
 				]);
 
 				try {
-					$this->resetConnector(
-						$this->connector,
-						MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::UNKNOWN),
-					);
-
-					assert($this->service instanceof Connectors\Connector);
-
 					// Start connector service
-					$this->service->execute();
-
-					assert($this->connector instanceof MetadataDocuments\DevicesModule\Connector);
-
-					$this->connectorConnectionManager->setState(
-						$this->connector,
-						MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::RUNNING),
-					);
+					$service->execute();
 				} catch (Throwable $ex) {
-					throw new Exceptions\Terminate('Connector can\'t be started', $ex->getCode(), $ex);
+					throw new Exceptions\Terminate('Connector execution can\'t be started', $ex->getCode(), $ex);
 				}
 
-				$this->dispatcher?->dispatch(new Events\AfterConnectorExecutionStart($this->connector));
+				$this->dispatcher?->dispatch(new Events\AfterConnectorExecutionStart($connector));
 			}
 
 			foreach ($this->exchangeFactories as $exchangeFactory) {
@@ -558,13 +410,22 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 			}
 		}));
 
-		$this->eventLoop->addSignal(SIGTERM, function (): void {
-			$this->terminate();
+		$this->eventLoop->addSignal(SIGTERM, function () use ($connector, $service, $mode): void {
+			$this->terminate($connector, $service, $mode);
 		});
 
-		$this->eventLoop->addSignal(SIGINT, function (): void {
-			$this->terminate();
+		$this->eventLoop->addSignal(SIGINT, function () use ($connector, $service, $mode): void {
+			$this->terminate($connector, $service, $mode);
 		});
+
+		if ($mode->equalsValue(Types\ConnectorMode::DISCOVER)) {
+			$this->discoveryTimer = $this->eventLoop->addTimer(
+				self::DISCOVERY_MAX_PROCESSING_INTERVAL,
+				function () use ($connector, $service, $mode): void {
+					$this->terminate($connector, $service, $mode);
+				},
+			);
+		}
 
 		$this->databaseRefreshTimer = $this->eventLoop->addPeriodicTimer(
 			self::DATABASE_REFRESH_INTERVAL,
@@ -583,64 +444,52 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 				}));
 			}),
 		);
+
+		$this->progressBar?->start();
+
+		return Console\Command\Command::SUCCESS;
 	}
 
 	/**
 	 * @throws Exceptions\Terminate
 	 */
-	private function terminate(): void
+	private function terminate(
+		MetadataDocuments\DevicesModule\Connector $connector,
+		Connectors\Connector $service,
+		Types\ConnectorMode $mode,
+	): void
 	{
-		if ($this->service === null || $this->connector === null) {
-			$this->eventLoop->stop();
-
-			return;
-		}
-
 		if ($this->isTerminating) {
 			return;
 		}
 
 		$this->isTerminating = true;
 
-		$service = $this->service;
-		$connector = $this->connector;
-
-		$this->logger->info('Stopping connector...', [
-			'source' => MetadataTypes\ModuleSource::DEVICES,
-			'type' => 'command',
-		]);
+		$this->logger->debug(
+			'Stopping connector...',
+			[
+				'source' => MetadataTypes\ModuleSource::DEVICES,
+				'type' => 'connector-cmd',
+			],
+		);
 
 		if ($this->discoveryTimer !== null) {
 			$this->eventLoop->cancelTimer($this->discoveryTimer);
 		}
 
 		try {
-			$this->dispatcher?->dispatch(new Events\BeforeConnectorTerminate($this->service));
+			$this->dispatcher?->dispatch(new Events\BeforeConnectorTerminate($service));
 
-			$this->service->terminate();
-
-			if ($this->mode === self::MODE_EXECUTE) {
-				$this->resetConnector(
-					$this->connector,
-					MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::DISCONNECTED),
-				);
-			}
+			$service->terminate();
 
 			// Wait until connector is fully terminated
 			$this->eventLoop->addTimer(
 				self::SHUTDOWN_WAITING_DELAY,
-				async(function () use ($connector, $service): void {
-					if ($this->mode === self::MODE_DISCOVER) {
-						$this->dispatcher?->dispatch(new Events\AfterConnectorDiscoveryTerminate($service));
+				async(function () use ($connector, $service, $mode): void {
+					if ($mode->equalsValue(Types\ConnectorMode::DISCOVER)) {
+						$this->dispatcher?->dispatch(new Events\AfterConnectorDiscoveryTerminate($service, $connector));
 					} else {
-						$this->dispatcher?->dispatch(new Events\AfterConnectorExecutionTerminate($service));
-					}
-
-					if ($this->mode === self::MODE_EXECUTE) {
-						$this->connectorConnectionManager->setState(
-							$connector,
-							MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STOPPED),
-						);
+						$this->dispatcher?->dispatch(new Events\AfterConnectorExecutionTerminate($service, $connector));
 					}
 
 					if ($this->databaseRefreshTimer !== null) {
@@ -656,11 +505,14 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 			);
 
 		} catch (Throwable $ex) {
-			$this->logger->error('Connector could not be stopped. An unexpected error occurred', [
-				'source' => MetadataTypes\ModuleSource::DEVICES,
-				'type' => 'command',
-				'exception' => ApplicationHelpers\Logger::buildException($ex),
-			]);
+			$this->logger->error(
+				'Connector could not be stopped. An unexpected error occurred',
+				[
+					'source' => MetadataTypes\ModuleSource::DEVICES,
+					'type' => 'connector-cmd',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+				],
+			);
 
 			throw new Exceptions\Terminate(
 				'Error during connector termination process',
@@ -671,94 +523,160 @@ class Connector extends Console\Command\Command implements EventDispatcher\Event
 	}
 
 	/**
-	 * @throws DBAL\Exception
-	 * @throws Exceptions\InvalidArgument
+	 * @throws Console\Exception\InvalidArgumentException
 	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\Runtime
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws ToolsExceptions\InvalidArgument
 	 */
-	private function resetConnector(
-		MetadataDocuments\DevicesModule\Connector $connector,
-		MetadataTypes\ConnectionState $state,
-	): void
+	private function whichConnector(
+		Style\SymfonyStyle $io,
+		Input\InputInterface $input,
+		Types\ConnectorMode $mode,
+	): MetadataDocuments\DevicesModule\Connector|false|null
 	{
-		$findConnectorPropertiesQuery = new Queries\Configuration\FindConnectorDynamicProperties();
-		$findConnectorPropertiesQuery->forConnector($connector);
+		if (
+			$input->hasOption('connector')
+			&& is_string($input->getOption('connector'))
+			&& $input->getOption('connector') !== ''
+		) {
+			$connectorId = $input->getOption('connector');
 
-		$properties = $this->connectorsPropertiesConfigurationRepository->findAllBy(
-			$findConnectorPropertiesQuery,
-			MetadataDocuments\DevicesModule\ConnectorDynamicProperty::class,
-		);
+			$findConnectorQuery = new Queries\Configuration\FindConnectors();
 
-		foreach ($properties as $property) {
-			$this->connectorPropertiesStatesManager->setValidState($property, false);
-		}
+			if (Uuid\Uuid::isValid($connectorId)) {
+				$findConnectorQuery->byId(Uuid\Uuid::fromString($connectorId));
+			} else {
+				$findConnectorQuery->byIdentifier($connectorId);
+			}
 
-		$findDevicesQuery = new Queries\Configuration\FindDevices();
-		$findDevicesQuery->forConnector($connector);
+			$connector = $this->connectorsConfigurationRepository->findOneBy($findConnectorQuery);
 
-		foreach ($this->devicesConfigurationRepository->findAllBy($findDevicesQuery) as $device) {
-			$this->resetDevice($device, $state);
-		}
-	}
+			if ($connector === null) {
+				if ($input->getOption('quiet') === false) {
+					$io->warning(
+						$this->translator->translate(
+							'//devices-module.cmd.connector.messages.connectorNotFound',
+						),
+					);
+				}
 
-	/**
-	 * @throws DBAL\Exception
-	 * @throws Exceptions\InvalidArgument
-	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\Runtime
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws ToolsExceptions\InvalidArgument
-	 */
-	private function resetDevice(
-		MetadataDocuments\DevicesModule\Device $device,
-		MetadataTypes\ConnectionState $state,
-	): void
-	{
-		$this->deviceConnectionManager->setState($device, $state);
+				return false;
+			}
 
-		$findDevicePropertiesQuery = new Queries\Configuration\FindDeviceDynamicProperties();
-		$findDevicePropertiesQuery->forDevice($device);
+			if ($mode->equalsValue(Types\ConnectorMode::DISCOVER)) {
+				$findConnectorControlQuery = new Queries\Configuration\FindConnectorControls();
+				$findConnectorControlQuery->forConnector($connector);
+				$findConnectorControlQuery->byName(MetadataTypes\ControlName::DISCOVER);
 
-		$properties = $this->devicesPropertiesConfigurationRepository->findAllBy(
-			$findDevicePropertiesQuery,
-			MetadataDocuments\DevicesModule\DeviceDynamicProperty::class,
-		);
+				$control = $this->connectorsControlsConfigurationRepository->findOneBy($findConnectorControlQuery);
 
-		foreach ($properties as $property) {
-			$this->devicePropertiesStatesManager->setValidState($property, false);
-		}
+				if ($control === null) {
+					if ($input->getOption('quiet') === false) {
+						$io->warning(
+							$this->translator->translate(
+								'//devices-module.cmd.connector.messages.notSupportedConnector',
+							),
+						);
+					}
 
-		$findChannelsQuery = new Queries\Configuration\FindChannels();
-		$findChannelsQuery->forDevice($device);
+					return false;
+				}
+			}
+		} else {
+			$systemConnectors = [];
 
-		$channels = $this->channelsConfigurationRepository->findAllBy($findChannelsQuery);
+			$findConnectorsQuery = new Queries\Configuration\FindConnectors();
 
-		foreach ($channels as $channel) {
-			$findChannelPropertiesQuery = new Queries\Configuration\FindChannelDynamicProperties();
-			$findChannelPropertiesQuery->forChannel($channel);
+			foreach ($this->connectorsConfigurationRepository->findAllBy($findConnectorsQuery) as $connector) {
+				if ($mode->equalsValue(Types\ConnectorMode::DISCOVER)) {
+					$findConnectorControlQuery = new Queries\Configuration\FindConnectorControls();
+					$findConnectorControlQuery->forConnector($connector);
+					$findConnectorControlQuery->byName(MetadataTypes\ControlName::DISCOVER);
 
-			$properties = $this->channelsPropertiesConfigurationRepository->findAllBy(
-				$findChannelPropertiesQuery,
-				MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
+					$control = $this->connectorsControlsConfigurationRepository->findOneBy($findConnectorControlQuery);
+
+					if ($control === null) {
+						continue;
+					}
+				}
+
+				$systemConnectors[] = $connector;
+			}
+
+			if (count($systemConnectors) === 0) {
+				return null;
+			}
+
+			usort(
+				$systemConnectors,
+				static fn (MetadataDocuments\DevicesModule\Connector $a, MetadataDocuments\DevicesModule\Connector $b): int => (
+					($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
+				),
 			);
 
-			foreach ($properties as $property) {
-				$this->channelPropertiesStatesManager->setValidState($property, false);
+			$connectors = [];
+
+			foreach ($systemConnectors as $connector) {
+				$connectors[$connector->getIdentifier()] = $connector->getName() ?? $connector->getIdentifier();
 			}
+
+			$question = new Console\Question\ChoiceQuestion(
+				$this->translator->translate('//devices-module.cmd.connector.questions.selectConnector'),
+				array_values($connectors),
+				count($connectors) === 1 ? 0 : null,
+			);
+
+			$question->setErrorMessage(
+				$this->translator->translate('//devices-module.cmd.base.messages.answerNotValid'),
+			);
+			$question->setValidator(
+				function (string|int|null $answer) use ($connectors): MetadataDocuments\DevicesModule\Connector {
+					if ($answer === null) {
+						throw new Exceptions\Runtime(
+							sprintf(
+								$this->translator->translate('//devices-module.cmd.base.messages.answerNotValid'),
+								$answer,
+							),
+						);
+					}
+
+					if (array_key_exists($answer, array_values($connectors))) {
+						$answer = array_values($connectors)[$answer];
+					}
+
+					$identifier = array_search($answer, $connectors, true);
+
+					if ($identifier !== false) {
+						$findConnectorQuery = new Queries\Configuration\FindConnectors();
+						$findConnectorQuery->byIdentifier($identifier);
+
+						$connector = $this->connectorsConfigurationRepository->findOneBy($findConnectorQuery);
+
+						if ($connector !== null) {
+							return $connector;
+						}
+					}
+
+					throw new Exceptions\Runtime(
+						sprintf(
+							$this->translator->translate('//devices-module.cmd.base.messages.answerNotValid'),
+							$answer,
+						),
+					);
+				},
+			);
+
+			$connector = $io->askQuestion($question);
+			assert($connector instanceof MetadataDocuments\DevicesModule\Connector);
 		}
 
-		$findChildrenQuery = new Queries\Configuration\FindDevices();
-		$findChildrenQuery->forParent($device);
+		if (!$connector->isEnabled()) {
+			if ($input->getOption('quiet') === false) {
+				$io->warning($this->translator->translate('//devices-module.cmd.connector.messages.connectorDisabled'));
+			}
 
-		foreach ($this->devicesConfigurationRepository->findAllBy($findChildrenQuery) as $child) {
-			$this->resetDevice($child, $state);
+			return false;
 		}
+
+		return $connector;
 	}
 
 }

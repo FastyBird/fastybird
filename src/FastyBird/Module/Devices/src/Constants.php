@@ -154,4 +154,8 @@ final class Constants
 
 	public const EVENT_ENTITY_DELETED = 'entity_deleted';
 
+	public const EVENT_TERMINATE = 'terminate';
+
+	public const EVENT_RESTART = 'restart';
+
 }

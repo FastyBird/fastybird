@@ -15,6 +15,9 @@
 
 namespace FastyBird\Module\Devices\Connectors;
 
+use Evenement;
+use React\Promise;
+
 /**
  * Devices connector interface
  *
@@ -23,12 +26,15 @@ namespace FastyBird\Module\Devices\Connectors;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-interface Connector
+interface Connector extends Evenement\EventEmitterInterface
 {
 
 	public function execute(): void;
 
-	public function discover(): void;
+	/**
+	 * @return Promise\PromiseInterface<bool>
+	 */
+	public function discover(): Promise\PromiseInterface;
 
 	public function terminate(): void;
 

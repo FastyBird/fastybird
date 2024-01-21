@@ -2,8 +2,10 @@
 
 namespace FastyBird\Addon\ThermostatDevice\Tests\Fixtures\Dummy;
 
+use FastyBird\Addon\ThermostatDevice\Exceptions;
 use FastyBird\Module\Devices\Connectors as DevicesConnectors;
 use Ramsey\Uuid;
+use React\Promise;
 
 class DummyConnector implements DevicesConnectors\Connector
 {
@@ -18,9 +20,12 @@ class DummyConnector implements DevicesConnectors\Connector
 		// NOT IMPLEMENTED
 	}
 
-	public function discover(): void
+	/**
+	 * @return Promise\PromiseInterface<bool>
+	 */
+	public function discover(): Promise\PromiseInterface
 	{
-		// NOT IMPLEMENTED
+		return Promise\reject(new Exceptions\InvalidState('Not implemented'));
 	}
 
 	public function terminate(): void

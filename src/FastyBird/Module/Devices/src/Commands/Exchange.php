@@ -105,6 +105,14 @@ final class Exchange extends Console\Command\Command
 		}
 
 		try {
+			$this->logger->info(
+				'Starting devices exchange...',
+				[
+					'source' => MetadataTypes\ModuleSource::DEVICES,
+					'type' => 'exchange-cmd',
+				],
+			);
+
 			$this->dispatcher?->dispatch(new Events\ExchangeStartup());
 
 			foreach ($this->exchangeFactories as $exchangeFactory) {
@@ -125,11 +133,14 @@ final class Exchange extends Console\Command\Command
 
 		} catch (Throwable $ex) {
 			// Log caught exception
-			$this->logger->error('An unhandled error occurred', [
-				'source' => MetadataTypes\ModuleSource::DEVICES,
-				'type' => 'exchange-cmd',
-				'exception' => ApplicationHelpers\Logger::buildException($ex),
-			]);
+			$this->logger->error(
+				'An unhandled error occurred',
+				[
+					'source' => MetadataTypes\ModuleSource::DEVICES,
+					'type' => 'exchange-cmd',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+				],
+			);
 
 			if ($input->getOption('quiet') === false) {
 				$io->error($this->translator->translate('//devices-module.cmd.exchange.messages.error'));
@@ -143,10 +154,13 @@ final class Exchange extends Console\Command\Command
 
 	private function terminate(): void
 	{
-		$this->logger->info('Stopping exchange...', [
-			'source' => MetadataTypes\ModuleSource::DEVICES,
-			'type' => 'exchange-cmd',
-		]);
+		$this->logger->info(
+			'Stopping devices exchange...',
+			[
+				'source' => MetadataTypes\ModuleSource::DEVICES,
+				'type' => 'exchange-cmd',
+			],
+		);
 
 		$this->eventLoop->stop();
 	}

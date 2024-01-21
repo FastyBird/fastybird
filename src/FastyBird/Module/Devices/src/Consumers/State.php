@@ -106,23 +106,26 @@ final class State implements ExchangeConsumers\Consumer
 						]),
 					);
 
-					$this->logger->info('Requested write value to connector property', [
-						'source' => MetadataTypes\ModuleSource::DEVICES,
-						'type' => 'state-consumer',
-						'connector' => [
-							'id' => $entity->getConnector()->toString(),
+					$this->logger->info(
+						'Requested write value to connector property',
+						[
+							'source' => MetadataTypes\ModuleSource::DEVICES,
+							'type' => 'state-consumer',
+							'connector' => [
+								'id' => $entity->getConnector()->toString(),
+							],
+							'property' => [
+								'id' => $property->getId()->toString(),
+								'identifier' => $property->getIdentifier(),
+							],
+							'expected_value' => $entity->getExpectedValue(),
+							'message' => [
+								'routing_key' => $routingKey->getValue(),
+								'source' => $source->getValue(),
+								'data' => $entity->toArray(),
+							],
 						],
-						'property' => [
-							'id' => $property->getId()->toString(),
-							'identifier' => $property->getIdentifier(),
-						],
-						'expected_value' => $entity->getExpectedValue(),
-						'message' => [
-							'routing_key' => $routingKey->getValue(),
-							'source' => $source->getValue(),
-							'data' => $entity->toArray(),
-						],
-					]);
+					);
 				} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::GET)) {
 					$findConnectorPropertyQuery = new Queries\Configuration\FindConnectorDynamicProperties();
 					$findConnectorPropertyQuery->byId($entity->getProperty());
@@ -177,23 +180,26 @@ final class State implements ExchangeConsumers\Consumer
 						]),
 					);
 
-					$this->logger->info('Requested write value to device property', [
-						'source' => MetadataTypes\ModuleSource::DEVICES,
-						'type' => 'state-consumer',
-						'device' => [
-							'id' => $entity->getDevice()->toString(),
+					$this->logger->info(
+						'Requested write value to device property',
+						[
+							'source' => MetadataTypes\ModuleSource::DEVICES,
+							'type' => 'state-consumer',
+							'device' => [
+								'id' => $entity->getDevice()->toString(),
+							],
+							'property' => [
+								'id' => $property->getId()->toString(),
+								'identifier' => $property->getIdentifier(),
+							],
+							'expected_value' => $entity->getExpectedValue(),
+							'message' => [
+								'routing_key' => $routingKey->getValue(),
+								'source' => $source->getValue(),
+								'data' => $entity->toArray(),
+							],
 						],
-						'property' => [
-							'id' => $property->getId()->toString(),
-							'identifier' => $property->getIdentifier(),
-						],
-						'expected_value' => $entity->getExpectedValue(),
-						'message' => [
-							'routing_key' => $routingKey->getValue(),
-							'source' => $source->getValue(),
-							'data' => $entity->toArray(),
-						],
-					]);
+					);
 				} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::GET)) {
 					$findConnectorPropertyQuery = new Queries\Configuration\FindDeviceProperties();
 					$findConnectorPropertyQuery->byId($entity->getProperty());
@@ -248,23 +254,26 @@ final class State implements ExchangeConsumers\Consumer
 						]),
 					);
 
-					$this->logger->info('Requested write value to channel property', [
-						'source' => MetadataTypes\ModuleSource::DEVICES,
-						'type' => 'state-consumer',
-						'channel' => [
-							'id' => $entity->getChannel()->toString(),
+					$this->logger->info(
+						'Requested write value to channel property',
+						[
+							'source' => MetadataTypes\ModuleSource::DEVICES,
+							'type' => 'state-consumer',
+							'channel' => [
+								'id' => $entity->getChannel()->toString(),
+							],
+							'property' => [
+								'id' => $property->getId()->toString(),
+								'identifier' => $property->getIdentifier(),
+							],
+							'expected_value' => $entity->getExpectedValue(),
+							'message' => [
+								'routing_key' => $routingKey->getValue(),
+								'source' => $source->getValue(),
+								'data' => $entity->toArray(),
+							],
 						],
-						'property' => [
-							'id' => $property->getId()->toString(),
-							'identifier' => $property->getIdentifier(),
-						],
-						'expected_value' => $entity->getExpectedValue(),
-						'message' => [
-							'routing_key' => $routingKey->getValue(),
-							'source' => $source->getValue(),
-							'data' => $entity->toArray(),
-						],
-					]);
+					);
 				} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::GET)) {
 					$findConnectorPropertyQuery = new Queries\Configuration\FindChannelProperties();
 					$findConnectorPropertyQuery->byId($entity->getProperty());

@@ -436,6 +436,9 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		$builder->addDefinition($this->prefix('subscribers.states'), new DI\Definitions\ServiceDefinition())
 			->setType(Subscribers\StateEntities::class);
 
+		$builder->addDefinition($this->prefix('subscribers.connector'), new DI\Definitions\ServiceDefinition())
+			->setType(Subscribers\Connector::class);
+
 		/**
 		 * API CONTROLLERS
 		 */
@@ -796,6 +799,15 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 				])
 				->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATE, false);
 		}
+
+		/**
+		 * CONNECTOR
+		 */
+
+		$builder->addFactoryDefinition($this->prefix('connector'))
+			->setImplement(Connectors\ContainerFactory::class)
+			->getResultDefinition()
+			->setType(Connectors\Container::class);
 	}
 
 	/**
@@ -848,20 +860,26 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		 * Connectors
 		 */
 
-		$connectorCommand = $builder->getDefinitionByType(Commands\Connector::class);
+		$connectorProxyServiceFactoryName = $builder->getByType(Connectors\ContainerFactory::class);
 
-		if ($connectorCommand instanceof DI\Definitions\ServiceDefinition) {
-			$connectorsExecutorsFactoriesServices = $builder->findByType(Connectors\ConnectorFactory::class);
+		if ($connectorProxyServiceFactoryName !== null) {
+			$connectorProxyServiceFactory = $builder->getDefinition($connectorProxyServiceFactoryName);
+			assert($connectorProxyServiceFactory instanceof DI\Definitions\FactoryDefinition);
 
-			foreach ($connectorsExecutorsFactoriesServices as $connectorExecutorFactoryService) {
-				if (is_string($connectorExecutorFactoryService->getTag(self::CONNECTOR_TYPE_TAG))) {
-					$connectorCommand->addSetup('?->attach(?, ?)', [
-						$connectorCommand,
-						$connectorExecutorFactoryService,
-						$connectorExecutorFactoryService->getTag(self::CONNECTOR_TYPE_TAG),
-					]);
+			$connectorsServicesFactories = $builder->findByType(Connectors\ConnectorFactory::class);
+
+			$factories = [];
+
+			foreach ($connectorsServicesFactories as $connectorServiceFactory) {
+				if (
+					$connectorServiceFactory->getType() !== Connectors\ConnectorFactory::class
+					&& is_string($connectorServiceFactory->getTag(self::CONNECTOR_TYPE_TAG))
+				) {
+					$factories[$connectorServiceFactory->getTag(self::CONNECTOR_TYPE_TAG)] = $connectorServiceFactory;
 				}
 			}
+
+			$connectorProxyServiceFactory->getResultDefinition()->setArgument('factories', $factories);
 		}
 
 		/**

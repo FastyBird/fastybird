@@ -15,9 +15,11 @@
 
 namespace FastyBird\Connector\Virtual\Connector;
 
+use Evenement;
 use FastyBird\Connector\Virtual;
 use FastyBird\Connector\Virtual\Devices;
 use FastyBird\Connector\Virtual\Entities;
+use FastyBird\Connector\Virtual\Exceptions;
 use FastyBird\Connector\Virtual\Queue;
 use FastyBird\Connector\Virtual\Writers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
@@ -26,6 +28,7 @@ use FastyBird\Module\Devices\Connectors as DevicesConnectors;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Nette;
 use React\EventLoop;
+use React\Promise;
 use function assert;
 use function React\Async\async;
 
@@ -41,6 +44,7 @@ final class Connector implements DevicesConnectors\Connector
 {
 
 	use Nette\SmartObject;
+	use Evenement\EventEmitterTrait;
 
 	private const QUEUE_PROCESSING_INTERVAL = 0.01;
 
@@ -106,19 +110,13 @@ final class Connector implements DevicesConnectors\Connector
 		);
 	}
 
-	public function discover(): void
+	/**
+	 * @return Promise\PromiseInterface<bool>
+	 */
+	public function discover(): Promise\PromiseInterface
 	{
-		assert($this->connector->getType() === Entities\VirtualConnector::TYPE);
-
-		$this->logger->error(
-			'Devices discovery is not allowed for Virtual connector type',
-			[
-				'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
-				'type' => 'connector',
-				'connector' => [
-					'id' => $this->connector->getId()->toString(),
-				],
-			],
+		return Promise\reject(
+			new Exceptions\InvalidState('Devices discovery is not allowed for Virtual connector type'),
 		);
 	}
 
