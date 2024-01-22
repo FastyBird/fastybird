@@ -26,6 +26,7 @@ use Psr\Log;
 use Ramsey\Uuid;
 use React\Promise;
 use Throwable;
+use function React\Async\async;
 use function React\Async\await;
 
 /**
@@ -62,7 +63,7 @@ class StatesRepository
 		$deferred = new Promise\Deferred();
 
 		$this->getRaw($id, $database)
-			->then(function (string|null $raw) use ($id, $deferred): void {
+			->then(async(function (string|null $raw) use ($id, $deferred): void {
 				if ($raw === null) {
 					$deferred->resolve(null);
 
@@ -97,7 +98,7 @@ class StatesRepository
 						),
 					);
 				}
-			})
+			}))
 			->catch(static function (Throwable $ex) use ($deferred): void {
 				$deferred->reject($ex);
 			});

@@ -40,6 +40,7 @@ use function is_object;
 use function is_string;
 use function method_exists;
 use function property_exists;
+use function React\Async\async;
 use function React\Async\await;
 use function serialize;
 use function sprintf;
@@ -83,7 +84,7 @@ class StatesManager
 		$deferred = new Promise\Deferred();
 
 		$this->createKey($id, $values, $this->entity::getCreateFields(), $database)
-			->then(function (string $raw) use ($id, $deferred): void {
+			->then(async(function (string $raw) use ($id, $deferred): void {
 				try {
 					$state = $this->stateFactory->create($this->entity, $raw);
 
@@ -112,7 +113,7 @@ class StatesManager
 						),
 					);
 				}
-			})
+			}))
 			->catch(function (Throwable $ex) use ($id, $deferred): void {
 				$this->logger->error(
 					'State could not be created',
@@ -144,7 +145,7 @@ class StatesManager
 		$deferred = new Promise\Deferred();
 
 		$this->updateKey($id, $values, $this->entity::getUpdateFields(), $database)
-			->then(function (string $raw) use ($id, $deferred): void {
+			->then(async(function (string $raw) use ($id, $deferred): void {
 				try {
 					$state = $this->stateFactory->create($this->entity, $raw);
 
@@ -173,7 +174,7 @@ class StatesManager
 						),
 					);
 				}
-			})
+			}))
 			->catch(function (Throwable $ex) use ($id, $deferred): void {
 				if ($ex instanceof Exceptions\NotUpdated) {
 					$deferred->resolve(false);
@@ -323,88 +324,84 @@ class StatesManager
 		$this->client->select($database);
 
 		try {
-			$raw = await($this->client->get($id->toString()));
-
-			if (!is_string($raw)) {
-				return Promise\reject(new Exceptions\InvalidState('Stored record could not be loaded from database'));
-			}
-
-			$data = Utils\Json::decode($raw);
-			assert($data instanceof stdClass);
-
-			$isUpdated = false;
-
-			foreach ($fields as $field) {
-				if (property_exists($values, $field)) {
-					$value = $values->offsetGet($field);
-
-					if ($value instanceof DateTimeInterface) {
-						$value = $value->format(DateTimeInterface::ATOM);
-
-					} elseif ($value instanceof Utils\ArrayHash) {
-						$value = (array) $value;
-
-					} elseif ($value instanceof Consistence\Enum\Enum) {
-						$value = $value->getValue();
-
-					} elseif (is_object($value)) {
-						$value = method_exists($value, '__toString') ? $value->__toString() : serialize($value);
-					}
-
-					if (
-						!in_array($field, array_keys(get_object_vars($data)), true)
-						|| $data->{$field} !== $value
-					) {
-						$data->{$field} = $value;
-
-						$isUpdated = true;
-					}
-				} else {
-					if ($field === States\State::UPDATED_AT_FIELD) {
-						$data->{$field} = $this->dateTimeFactory->getNow()->format(
-							DateTimeInterface::ATOM,
+			$this->client->get($id->toString())
+				->then(async(function (string|null $raw) use ($id, $fields, $values, $deferred): void {
+					if (!is_string($raw)) {
+						$deferred->reject(
+							new Exceptions\InvalidState('Stored record could not be loaded from database'),
 						);
+
+						return;
 					}
-				}
-			}
 
-			// Save data only if is updated
-			if (!$isUpdated) {
-				return Promise\reject(new Exceptions\NotUpdated('Stored state is same as update'));
-			}
+					$data = Utils\Json::decode($raw);
+					assert($data instanceof stdClass);
 
-			$data = Utils\Json::encode($data);
+					$isUpdated = false;
+
+					foreach ($fields as $field) {
+						if (property_exists($values, $field)) {
+							$value = $values->offsetGet($field);
+
+							if ($value instanceof DateTimeInterface) {
+								$value = $value->format(DateTimeInterface::ATOM);
+
+							} elseif ($value instanceof Utils\ArrayHash) {
+								$value = (array) $value;
+
+							} elseif ($value instanceof Consistence\Enum\Enum) {
+								$value = $value->getValue();
+
+							} elseif (is_object($value)) {
+								$value = method_exists($value, '__toString') ? $value->__toString() : serialize($value);
+							}
+
+							if (
+								!in_array($field, array_keys(get_object_vars($data)), true)
+								|| $data->{$field} !== $value
+							) {
+								$data->{$field} = $value;
+
+								$isUpdated = true;
+							}
+						} else {
+							if ($field === States\State::UPDATED_AT_FIELD) {
+								$data->{$field} = $this->dateTimeFactory->getNow()->format(
+									DateTimeInterface::ATOM,
+								);
+							}
+						}
+					}
+
+					// Save data only if is updated
+					if (!$isUpdated) {
+						$deferred->reject(new Exceptions\NotUpdated('Stored state is same as update'));
+
+						return;
+					}
+
+					$data = Utils\Json::encode($data);
+
+					await($this->client->set($id->toString(), $data));
+
+					$raw = await($this->client->get($id->toString()));
+
+					if ($raw === null) {
+						$deferred->reject(
+							new Exceptions\NotUpdated('Updated state could not be loaded from database'),
+						);
+
+						return;
+					}
+
+					$deferred->resolve($raw);
+				}))
+				->catch(static function (Throwable $ex) use ($deferred): void {
+					$deferred->reject($ex);
+				});
 		} catch (Throwable $ex) {
 			return Promise\reject(new Exceptions\InvalidState('State could not be updated', $ex->getCode(), $ex));
 		}
-
-		$this->client->set($id->toString(), $data)
-			->then(function () use ($deferred, $id): void {
-				$this->client->get($id->toString())
-					->then(static function (string|null $raw) use ($deferred): void {
-						if ($raw === null) {
-							$deferred->reject(
-								new Exceptions\NotUpdated('Updated state could not be loaded from database'),
-							);
-
-							return;
-						}
-
-						$deferred->resolve($raw);
-					})
-					->catch(static function (Throwable $ex) use ($deferred): void {
-						$deferred->reject(
-							new Exceptions\InvalidState(
-								'Updated state could not be loaded from database',
-								$ex->getCode(),
-								$ex,
-							),
-						);
-					});
-			})
-			->catch(static function (Throwable $ex) use ($deferred): void {
-				$deferred->reject(new Exceptions\InvalidState('State could not be updated', $ex->getCode(), $ex));
-			});
 
 		return $deferred->promise();
 	}
