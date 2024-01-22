@@ -17,10 +17,11 @@ namespace FastyBird\Module\Devices\Models\Entities\Connectors;
 
 use Doctrine\ORM;
 use Doctrine\Persistence;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Queries;
-use FastyBird\Module\Devices\Utilities;
 use IPub\DoctrineOrmQuery;
 use Nette;
 use Ramsey\Uuid;
@@ -44,7 +45,7 @@ final class ConnectorsRepository
 	private array $repository = [];
 
 	public function __construct(
-		private readonly Utilities\Database $database,
+		private readonly ApplicationHelpers\Database $database,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 	)
 	{
@@ -57,7 +58,7 @@ final class ConnectorsRepository
 	 *
 	 * @return T|null
 	 *
-	 * @throws Exceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 */
 	public function find(
 		Uuid\UuidInterface $id,
@@ -77,7 +78,7 @@ final class ConnectorsRepository
 	 *
 	 * @return T|null
 	 *
-	 * @throws Exceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 */
 	public function findOneBy(
 		Queries\Entities\FindConnectors $queryObject,
@@ -96,7 +97,7 @@ final class ConnectorsRepository
 	 *
 	 * @return array<T>
 	 *
-	 * @throws Exceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 */
 	public function findAll(string $type = Entities\Connectors\Connector::class): array
 	{
@@ -138,6 +139,7 @@ final class ConnectorsRepository
 	 *
 	 * @return DoctrineOrmQuery\ResultSet<T>
 	 *
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 */
 	public function getResultSet(

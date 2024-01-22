@@ -2,6 +2,7 @@
 
 namespace FastyBird\Addon\ThermostatDevice\Tests\Fixtures\Dummy;
 
+use Evenement;
 use FastyBird\Addon\ThermostatDevice\Exceptions;
 use FastyBird\Module\Devices\Connectors as DevicesConnectors;
 use Ramsey\Uuid;
@@ -9,6 +10,8 @@ use React\Promise;
 
 class DummyConnector implements DevicesConnectors\Connector
 {
+
+	use Evenement\EventEmitterTrait;
 
 	public function getId(): Uuid\UuidInterface
 	{

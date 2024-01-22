@@ -17,10 +17,11 @@ namespace FastyBird\Module\Devices\Models\Entities\Devices\Controls;
 
 use Doctrine\ORM;
 use Doctrine\Persistence;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Queries;
-use FastyBird\Module\Devices\Utilities;
 use IPub\DoctrineOrmQuery;
 use Nette;
 use Ramsey\Uuid;
@@ -44,14 +45,14 @@ final class ControlsRepository
 	private ORM\EntityRepository|null $repository = null;
 
 	public function __construct(
-		private readonly Utilities\Database $database,
+		private readonly ApplicationHelpers\Database $database,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 	)
 	{
 	}
 
 	/**
-	 * @throws Exceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 */
 	public function find(
 		Uuid\UuidInterface $id,
@@ -63,7 +64,7 @@ final class ControlsRepository
 	}
 
 	/**
-	 * @throws Exceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 */
 	public function findOneBy(Queries\Entities\FindDeviceControls $queryObject): Entities\Devices\Controls\Control|null
 	{
@@ -75,7 +76,7 @@ final class ControlsRepository
 	/**
 	 * @return array<Entities\Devices\Controls\Control>
 	 *
-	 * @throws Exceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 */
 	public function findAll(): array
 	{
@@ -104,6 +105,7 @@ final class ControlsRepository
 	/**
 	 * @return DoctrineOrmQuery\ResultSet<Entities\Devices\Controls\Control>
 	 *
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 */
 	public function getResultSet(

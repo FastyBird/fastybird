@@ -731,9 +731,6 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		 * HELPERS
 		 */
 
-		$builder->addDefinition($this->prefix('utilities.database'), new DI\Definitions\ServiceDefinition())
-			->setType(Utilities\Database::class);
-
 		$builder->addDefinition($this->prefix('utilities.devices.connection'), new DI\Definitions\ServiceDefinition())
 			->setType(Utilities\DeviceConnection::class);
 

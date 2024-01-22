@@ -2397,7 +2397,7 @@ class Install extends Console\Command\Command
 	/**
 	 * @param array<Entities\VieraDevice> $encryptedDevices
 	 *
-	 * @throws DevicesExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState

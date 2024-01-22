@@ -27,7 +27,6 @@ use FastyBird\Module\Triggers\Models;
 use FastyBird\Module\Triggers\Router;
 use FastyBird\Module\Triggers\Schemas;
 use FastyBird\Module\Triggers\Subscribers;
-use FastyBird\Module\Triggers\Utilities;
 use IPub\DoctrineCrud;
 use IPub\SlimRouter\Routing as SlimRouterRouting;
 use Nette;
@@ -192,12 +191,6 @@ class TriggersExtension extends DI\CompilerExtension implements Translation\DI\T
 
 		$builder->addDefinition($this->prefix('states.managers.conditions'), new DI\Definitions\ServiceDefinition())
 			->setType(Models\States\ConditionsManager::class);
-
-		$builder->addDefinition(
-			$this->prefix('utilities.database'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Utilities\Database::class);
 
 		$builder->addDefinition($this->prefix('commands.initialize'), new DI\Definitions\ServiceDefinition())
 			->setType(Commands\Install::class);

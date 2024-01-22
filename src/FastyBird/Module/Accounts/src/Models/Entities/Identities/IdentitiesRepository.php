@@ -17,11 +17,12 @@ namespace FastyBird\Module\Accounts\Models\Entities\Identities;
 
 use Doctrine\ORM;
 use Doctrine\Persistence;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Accounts\Entities;
 use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\Module\Accounts\Queries;
-use FastyBird\Module\Accounts\Utilities;
 use IPub\DoctrineOrmQuery;
 use Nette;
 use Throwable;
@@ -44,15 +45,15 @@ final class IdentitiesRepository
 	private ORM\EntityRepository|null $repository = null;
 
 	public function __construct(
-		private readonly Utilities\Database $database,
+		private readonly ApplicationHelpers\Database $database,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 	)
 	{
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
-	 * @throws Exceptions\InvalidState
 	 */
 	public function findOneForAccount(
 		Entities\Accounts\Account $account,
@@ -66,8 +67,8 @@ final class IdentitiesRepository
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
-	 * @throws Exceptions\InvalidState
 	 */
 	public function findOneByUid(string $uid): Entities\Identities\Identity|null
 	{
@@ -79,7 +80,7 @@ final class IdentitiesRepository
 	}
 
 	/**
-	 * @throws Exceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 */
 	public function findOneBy(
 		Queries\Entities\FindIdentities $queryObject,
@@ -110,6 +111,7 @@ final class IdentitiesRepository
 	/**
 	 * @return DoctrineOrmQuery\ResultSet<Entities\Identities\Identity>
 	 *
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 */
 	public function getResultSet(

@@ -16,8 +16,8 @@
 namespace FastyBird\Module\Devices\Controllers\Finders;
 
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Devices\Entities;
-use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models\Entities\Connectors\ConnectorsRepository;
 use Fig\Http\Message\StatusCodeInterface;
 use Nette\Localization;
@@ -31,7 +31,7 @@ trait TConnector
 {
 
 	/**
-	 * @throws Exceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws JsonApiExceptions\JsonApi
 	 */
 	protected function findConnector(string $id): Entities\Connectors\Connector

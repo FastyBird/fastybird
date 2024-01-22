@@ -15,6 +15,7 @@
 
 namespace FastyBird\Module\Accounts\Security;
 
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Accounts\Entities;
 use FastyBird\Module\Accounts\Exceptions;
@@ -56,6 +57,7 @@ final class Authenticator implements SimpleAuthSecurity\IAuthenticator
 	 *
 	 * @return Entities\Identities\Identity
 	 *
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\AccountNotFound
 	 * @throws Exceptions\AuthenticationFailed
 	 * @throws Exceptions\InvalidArgument

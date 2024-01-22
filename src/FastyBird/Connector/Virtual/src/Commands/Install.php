@@ -115,7 +115,6 @@ class Install extends Console\Command\Command
 	/**
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DBAL\Exception
-	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 */
 	private function createConnector(Style\SymfonyStyle $io): void

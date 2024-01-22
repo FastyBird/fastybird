@@ -15,6 +15,7 @@
 
 namespace FastyBird\Module\Devices\Controllers;
 
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Exchange\Documents as ExchangeEntities;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
@@ -193,6 +194,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	 * @param array<string, mixed> $args
 	 * @param WebSocketsWAMP\Entities\Topics\ITopic<mixed> $topic
 	 *
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws ExchangeExceptions\InvalidArgument
@@ -309,6 +311,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws ExchangeExceptions\InvalidArgument
@@ -376,6 +379,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws ExchangeExceptions\InvalidArgument
@@ -446,6 +450,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws ExchangeExceptions\InvalidArgument

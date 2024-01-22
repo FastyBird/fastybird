@@ -2307,9 +2307,9 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
@@ -3392,7 +3392,7 @@ class Install extends Console\Command\Command
 	/**
 	 * @param array<string, string> $channels
 	 *
-	 * @throws DevicesExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 */
 	private function askWhichService(
 		Style\SymfonyStyle $io,
@@ -3451,7 +3451,7 @@ class Install extends Console\Command\Command
 	/**
 	 * @param array<string, string> $properties
 	 *
-	 * @throws DevicesExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 */
 	private function askWhichCharacteristic(
 		Style\SymfonyStyle $io,

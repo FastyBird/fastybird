@@ -14,7 +14,6 @@ use FastyBird\Module\Triggers\Router;
 use FastyBird\Module\Triggers\Schemas;
 use FastyBird\Module\Triggers\Subscribers;
 use FastyBird\Module\Triggers\Tests\Cases\Unit\DbTestCase;
-use FastyBird\Module\Triggers\Utilities;
 use Nette;
 use RuntimeException;
 
@@ -88,8 +87,6 @@ final class TriggersModuleExtensionTests extends DbTestCase
 
 		self::assertNotNull($this->getContainer()->getByType(Subscribers\ModuleEntities::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Subscribers\NotificationEntity::class, false));
-
-		self::assertNotNull($this->getContainer()->getByType(Utilities\Database::class, false));
 	}
 
 }
