@@ -53,7 +53,7 @@ final class Publisher implements ExchangePublisher\Publisher
 		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|MetadataTypes\AutomatorSource $source,
 		MetadataTypes\RoutingKey $routingKey,
 		MetadataDocuments\Document|null $entity,
-	): void
+	): bool
 	{
 		try {
 			$result = $this->client->publish(
@@ -80,6 +80,8 @@ final class Publisher implements ExchangePublisher\Publisher
 						],
 					],
 				);
+
+				return true;
 			} else {
 				$this->logger->error(
 					'Received message could not be pushed into data exchange',
@@ -93,6 +95,8 @@ final class Publisher implements ExchangePublisher\Publisher
 						],
 					],
 				);
+
+				return false;
 			}
 		} catch (Nette\Utils\JsonException $ex) {
 			$this->logger->error(
@@ -109,7 +113,7 @@ final class Publisher implements ExchangePublisher\Publisher
 				],
 			);
 
-			return;
+			return false;
 		}
 	}
 

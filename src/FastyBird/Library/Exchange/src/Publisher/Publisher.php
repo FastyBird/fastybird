@@ -33,6 +33,6 @@ interface Publisher
 		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|MetadataTypes\AutomatorSource $source,
 		MetadataTypes\RoutingKey $routingKey,
 		MetadataDocuments\Document|null $entity,
-	): void;
+	): bool;
 
 }

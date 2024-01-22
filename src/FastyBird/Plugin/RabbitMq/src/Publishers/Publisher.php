@@ -69,7 +69,7 @@ final class Publisher implements ExchangePublisher\Publisher
 		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|MetadataTypes\AutomatorSource $source,
 		MetadataTypes\RoutingKey $routingKey,
 		MetadataDocuments\Document|null $entity,
-	): void
+	): bool
 	{
 		try {
 			// Compose message
@@ -90,7 +90,7 @@ final class Publisher implements ExchangePublisher\Publisher
 				],
 			);
 
-			return;
+			return false;
 		}
 
 		$result = $this->getChannel()->publish(
@@ -170,6 +170,8 @@ final class Publisher implements ExchangePublisher\Publisher
 					},
 				);
 		}
+
+		return true;
 	}
 
 	private function getChannel(): Channels\Channel|Bunny\Channel

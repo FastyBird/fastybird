@@ -30,8 +30,11 @@ use FastyBird\Module\Devices\States;
 use IPub\Phone\Exceptions as PhoneExceptions;
 use Nette;
 use Nette\Utils;
+use React\Promise;
 use Symfony\Component\EventDispatcher;
 use function array_merge;
+use function assert;
+use function React\Async\async;
 use function React\Async\await;
 
 /**
@@ -141,10 +144,10 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 		Events\ConnectorPropertyStateEntityDeleted|Events\DevicePropertyStateEntityDeleted|Events\ChannelPropertyStateEntityDeleted $event,
 	): void
 	{
-		$this->publishEntity($event->getProperty());
+		$this->publishEntity($this->useAsync, $event->getProperty());
 
 		foreach ($this->findChildren($event->getProperty()) as $child) {
-			$this->publishEntity($child);
+			$this->publishEntity($this->useAsync, $child);
 		}
 	}
 
@@ -178,39 +181,80 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 		if (
 			$property instanceof MetadataDocuments\DevicesModule\ConnectorDynamicProperty
 		) {
-			$state = $this->useAsync
-				? await($this->asyncConnectorPropertiesStatesManager->read($property))
-				: $this->connectorPropertiesStatesManager->read($property);
+			if ($this->useAsync) {
+				$this->asyncConnectorPropertiesStatesManager->read($property)
+					->then(async(function (States\ConnectorProperty|null $state) use ($property): void {
+						await($this->publishEntity(true, $property, $state));
+					}));
+			} else {
+				$state = $this->connectorPropertiesStatesManager->read($property);
+
+				$this->publishEntity(false, $property, $state);
+			}
 		} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-			$state = $this->useAsync
-				? await($this->asyncDevicePropertiesStatesManager->read($property))
-				: $this->devicePropertiesStatesManager->read($property);
+			if ($this->useAsync) {
+				$this->asyncDevicePropertiesStatesManager->read($property)
+					->then(async(function (States\DeviceProperty|null $state) use ($property): void {
+						await($this->publishEntity(true, $property, $state));
+
+						foreach ($this->findChildren($property) as $child) {
+							assert($child instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty);
+
+							$this->asyncDevicePropertiesStatesManager->read($child)
+								->then(
+									function (
+										States\DeviceProperty|States\ChannelProperty|null $state,
+									) use ($child): void {
+										$this->publishEntity(true, $child, $state);
+									},
+								);
+						}
+					}));
+			} else {
+				$state = $this->devicePropertiesStatesManager->read($property);
+
+				$this->publishEntity(false, $property, $state);
+			}
 		} else {
-			$state = $this->useAsync
-				? await($this->asyncChannelPropertiesStatesManager->read($property))
-				: $this->channelPropertiesStatesManager->read($property);
+			if ($this->useAsync) {
+				$this->asyncChannelPropertiesStatesManager->read($property)
+					->then(async(function (States\ChannelProperty|null $state) use ($property): void {
+						await($this->publishEntity(true, $property, $state));
+
+						foreach ($this->findChildren($property) as $child) {
+							assert($child instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty);
+
+							$this->asyncChannelPropertiesStatesManager->read($child)
+								->then(
+									function (
+										States\DeviceProperty|States\ChannelProperty|null $state,
+									) use ($child): void {
+										$this->publishEntity(true, $child, $state);
+									},
+								);
+						}
+					}));
+			} else {
+				$state = $this->channelPropertiesStatesManager->read($property);
+
+				$this->publishEntity(false, $property, $state);
+			}
 		}
 
-		$this->publishEntity($property, $state);
-
-		foreach ($this->findChildren($property) as $child) {
-			if ($this->useAsync) {
-				$state = await(
-					$child instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
-						? $this->asyncDevicePropertiesStatesManager->read($child)
-						: $this->asyncChannelPropertiesStatesManager->read($child),
-				);
-			} else {
+		if (!$this->useAsync) {
+			foreach ($this->findChildren($property) as $child) {
 				$state = $child instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
 					? $this->devicePropertiesStatesManager->read($child)
 					: $this->channelPropertiesStatesManager->read($child);
-			}
 
-			$this->publishEntity($child, $state);
+				$this->publishEntity($this->useAsync, $child, $state);
+			}
 		}
 	}
 
 	/**
+	 * @return ($async is true ? Promise\PromiseInterface<bool> : bool)
+	 *
 	 * @throws Exception
 	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
@@ -223,9 +267,10 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
 	private function publishEntity(
+		bool $async,
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
 		States\ConnectorProperty|States\ChannelProperty|States\DeviceProperty|null $state = null,
-	): void
+	): Promise\PromiseInterface|bool
 	{
 		if ($property instanceof MetadataDocuments\DevicesModule\ConnectorDynamicProperty) {
 			$routingKey = MetadataTypes\RoutingKey::get(
@@ -246,7 +291,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 			);
 		}
 
-		$this->getPublisher()->publish(
+		return $this->getPublisher($async)->publish(
 			MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 			$routingKey,
 			$this->entityFactory->create(
@@ -291,9 +336,9 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 		return [];
 	}
 
-	private function getPublisher(): ExchangePublisher\Publisher|ExchangePublisher\Async\Publisher
+	private function getPublisher(bool $async): ExchangePublisher\Publisher|ExchangePublisher\Async\Publisher
 	{
-		return $this->useAsync ? $this->asyncPublisher : $this->publisher;
+		return $async ? $this->asyncPublisher : $this->publisher;
 	}
 
 }

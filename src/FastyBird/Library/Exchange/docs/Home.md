@@ -67,7 +67,7 @@ class ModuleDataPublisher implements Publisher
 {
 
     /**
-    * @return PromiseInterface<true>
+    * @return PromiseInterface<bool>
      */
     public function publish(
         MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource $source,

@@ -53,7 +53,7 @@ final class Publisher implements ExchangePublisher\Async\Publisher
 	}
 
 	/**
-	 * @return Promise\PromiseInterface<true>
+	 * @return Promise\PromiseInterface<bool>
 	 */
 	public function publish(
 		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|MetadataTypes\AutomatorSource $source,

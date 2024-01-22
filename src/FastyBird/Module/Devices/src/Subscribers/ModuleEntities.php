@@ -36,7 +36,6 @@ use ReflectionClass;
 use function array_merge;
 use function count;
 use function is_a;
-use function React\Async\await;
 use function str_starts_with;
 
 /**
@@ -190,7 +189,7 @@ final class ModuleEntities implements Common\EventSubscriber
 
 			if ($property !== null) {
 				if ($this->useAsync) {
-					await($this->asyncConnectorPropertiesStatesManager->delete($property));
+					$this->asyncConnectorPropertiesStatesManager->delete($property);
 				} else {
 					$this->connectorPropertiesStatesManager->delete($property);
 				}
@@ -206,7 +205,7 @@ final class ModuleEntities implements Common\EventSubscriber
 
 			if ($property !== null) {
 				if ($this->useAsync) {
-					await($this->asyncDevicePropertiesStatesManager->delete($property));
+					$this->asyncDevicePropertiesStatesManager->delete($property);
 				} else {
 					$this->devicePropertiesStatesManager->delete($property);
 				}
@@ -222,7 +221,7 @@ final class ModuleEntities implements Common\EventSubscriber
 
 			if ($property !== null) {
 				if ($this->useAsync) {
-					await($this->asyncChannelPropertiesStatesManager->delete($property));
+					$this->asyncChannelPropertiesStatesManager->delete($property);
 				} else {
 					$this->channelPropertiesStatesManager->delete($property);
 				}
