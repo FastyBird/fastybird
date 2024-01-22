@@ -97,9 +97,24 @@ final class DevicesModuleExtensionTests extends DbTestCase
 		self::assertNotNull($this->getContainer()->getByType(Models\States\Channels\Manager::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Models\States\Channels\Async\Manager::class, false));
 
-		self::assertNotNull($this->getContainer()->getByType(Models\States\ConnectorPropertiesManager::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Models\States\DevicePropertiesManager::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Models\States\ChannelPropertiesManager::class, false));
+		self::assertNotNull(
+			$this->getContainer()->getByType(Models\States\ConnectorPropertiesManager::class, false),
+		);
+		self::assertNotNull(
+			$this->getContainer()->getByType(Models\States\Async\ConnectorPropertiesManager::class, false),
+		);
+		self::assertNotNull(
+			$this->getContainer()->getByType(Models\States\DevicePropertiesManager::class, false),
+		);
+		self::assertNotNull(
+			$this->getContainer()->getByType(Models\States\Async\DevicePropertiesManager::class, false),
+		);
+		self::assertNotNull(
+			$this->getContainer()->getByType(Models\States\ChannelPropertiesManager::class, false),
+		);
+		self::assertNotNull(
+			$this->getContainer()->getByType(Models\States\Async\ChannelPropertiesManager::class, false),
+		);
 
 		self::assertNotNull(
 			$this->getContainer()->getByType(Models\Configuration\Connectors\Repository::class, false),

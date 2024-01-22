@@ -36,6 +36,7 @@ use ReflectionClass;
 use function array_merge;
 use function count;
 use function is_a;
+use function React\Async\await;
 use function str_starts_with;
 
 /**
@@ -66,8 +67,11 @@ final class ModuleEntities implements Common\EventSubscriber
 		private readonly Models\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
 		private readonly Models\Configuration\Builder $configurationBuilder,
 		private readonly Models\States\ConnectorPropertiesManager $connectorPropertiesStatesManager,
+		private readonly Models\States\Async\ConnectorPropertiesManager $asyncConnectorPropertiesStatesManager,
 		private readonly Models\States\DevicePropertiesManager $devicePropertiesStatesManager,
+		private readonly Models\States\Async\DevicePropertiesManager $asyncDevicePropertiesStatesManager,
 		private readonly Models\States\ChannelPropertiesManager $channelPropertiesStatesManager,
+		private readonly Models\States\Async\ChannelPropertiesManager $asyncChannelPropertiesStatesManager,
 		private readonly ExchangeEntities\DocumentFactory $entityFactory,
 		private readonly ExchangePublisher\Publisher $publisher,
 		private readonly ExchangePublisher\Async\Publisher $asyncPublisher,
@@ -185,7 +189,11 @@ final class ModuleEntities implements Common\EventSubscriber
 			);
 
 			if ($property !== null) {
-				$this->connectorPropertiesStatesManager->delete($property);
+				if ($this->useAsync) {
+					await($this->asyncConnectorPropertiesStatesManager->delete($property));
+				} else {
+					$this->connectorPropertiesStatesManager->delete($property);
+				}
 			}
 		} elseif ($entity instanceof Entities\Devices\Properties\Dynamic) {
 			$findProperty = new Devices\Queries\Configuration\FindDeviceDynamicProperties();
@@ -197,7 +205,11 @@ final class ModuleEntities implements Common\EventSubscriber
 			);
 
 			if ($property !== null) {
-				$this->devicePropertiesStatesManager->delete($property);
+				if ($this->useAsync) {
+					await($this->asyncDevicePropertiesStatesManager->delete($property));
+				} else {
+					$this->devicePropertiesStatesManager->delete($property);
+				}
 			}
 		} elseif ($entity instanceof Entities\Channels\Properties\Dynamic) {
 			$findProperty = new Devices\Queries\Configuration\FindChannelDynamicProperties();
@@ -209,7 +221,11 @@ final class ModuleEntities implements Common\EventSubscriber
 			);
 
 			if ($property !== null) {
-				$this->channelPropertiesStatesManager->delete($property);
+				if ($this->useAsync) {
+					await($this->asyncChannelPropertiesStatesManager->delete($property));
+				} else {
+					$this->channelPropertiesStatesManager->delete($property);
+				}
 			}
 		}
 	}
@@ -296,59 +312,137 @@ final class ModuleEntities implements Common\EventSubscriber
 
 		if ($publishRoutingKey !== null) {
 			if ($entity instanceof Entities\Devices\Properties\Dynamic) {
-				$state = $action === self::ACTION_UPDATED ? $this->devicePropertiesStatesManager->read(
-					$entity,
-				) : null;
+				if ($this->useAsync && $action === self::ACTION_UPDATED) {
+					$this->asyncDevicePropertiesStatesManager->read($entity)
+						->then(
+							function (
+								Devices\States\DeviceProperty|null $state,
+							) use (
+								$publishRoutingKey,
+								$entity,
+							): void {
+								$this->getPublisher()->publish(
+									MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+									$publishRoutingKey,
+									$this->entityFactory->create(
+										Utils\Json::encode(
+											array_merge(
+												$entity->toArray(),
+												$state?->toArray() ?? [],
+											),
+										),
+										$publishRoutingKey,
+									),
+								);
+							},
+						);
+				} else {
+					$state = $action === self::ACTION_UPDATED ? $this->devicePropertiesStatesManager->read(
+						$entity,
+					) : null;
 
-				$this->getPublisher()->publish(
-					MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
-					$publishRoutingKey,
-					$this->entityFactory->create(
-						Utils\Json::encode(
-							array_merge(
-								$entity->toArray(),
-								$state?->toArray() ?? [],
-							),
-						),
+					$this->getPublisher()->publish(
+						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 						$publishRoutingKey,
-					),
-				);
+						$this->entityFactory->create(
+							Utils\Json::encode(
+								array_merge(
+									$entity->toArray(),
+									$state?->toArray() ?? [],
+								),
+							),
+							$publishRoutingKey,
+						),
+					);
+				}
 			} elseif ($entity instanceof Entities\Channels\Properties\Dynamic) {
-				$state = $action === self::ACTION_UPDATED
-					? $this->channelPropertiesStatesManager->read($entity)
-					: null;
+				if ($this->useAsync && $action === self::ACTION_UPDATED) {
+					$this->asyncChannelPropertiesStatesManager->read($entity)
+						->then(
+							function (
+								Devices\States\ChannelProperty|null $state,
+							) use (
+								$publishRoutingKey,
+								$entity,
+							): void {
+								$this->getPublisher()->publish(
+									MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+									$publishRoutingKey,
+									$this->entityFactory->create(
+										Utils\Json::encode(
+											array_merge(
+												$entity->toArray(),
+												$state?->toArray() ?? [],
+											),
+										),
+										$publishRoutingKey,
+									),
+								);
+							},
+						);
+				} else {
+					$state = $action === self::ACTION_UPDATED
+						? $this->channelPropertiesStatesManager->read($entity)
+						: null;
 
-				$this->getPublisher()->publish(
-					MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
-					$publishRoutingKey,
-					$this->entityFactory->create(
-						Utils\Json::encode(
-							array_merge(
-								$entity->toArray(),
-								$state?->toArray() ?? [],
-							),
-						),
+					$this->getPublisher()->publish(
+						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 						$publishRoutingKey,
-					),
-				);
+						$this->entityFactory->create(
+							Utils\Json::encode(
+								array_merge(
+									$entity->toArray(),
+									$state?->toArray() ?? [],
+								),
+							),
+							$publishRoutingKey,
+						),
+					);
+				}
 			} elseif ($entity instanceof Entities\Connectors\Properties\Dynamic) {
-				$state = $action === self::ACTION_UPDATED
-					? $this->connectorPropertiesStatesManager->read($entity)
-					: null;
+				if ($this->useAsync && $action === self::ACTION_UPDATED) {
+					$this->asyncConnectorPropertiesStatesManager->read($entity)
+						->then(
+							function (
+								Devices\States\ConnectorProperty|null $state,
+							) use (
+								$publishRoutingKey,
+								$entity,
+							): void {
+								$this->getPublisher()->publish(
+									MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+									$publishRoutingKey,
+									$this->entityFactory->create(
+										Utils\Json::encode(
+											array_merge(
+												$entity->toArray(),
+												$state?->toArray() ?? [],
+											),
+										),
+										$publishRoutingKey,
+									),
+								);
+							},
+						);
+				} else {
+					$state = $action === self::ACTION_UPDATED
+						? $this->connectorPropertiesStatesManager->read($entity)
+						: null;
 
-				$this->getPublisher()->publish(
-					MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
-					$publishRoutingKey,
-					$this->entityFactory->create(
-						Utils\Json::encode(
-							array_merge(
-								$entity->toArray(),
-								$state?->toArray() ?? [],
-							),
-						),
+					$this->getPublisher()->publish(
+						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 						$publishRoutingKey,
-					),
-				);
+						$this->entityFactory->create(
+							Utils\Json::encode(
+								array_merge(
+									$entity->toArray(),
+									$state?->toArray() ?? [],
+								),
+							),
+							$publishRoutingKey,
+						),
+					);
+				}
 			} else {
 				$this->getPublisher()->publish(
 					MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),

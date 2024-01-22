@@ -399,6 +399,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		)
 			->setType(Models\States\Channels\Async\Manager::class);
 
+		// MANAGERS - CONNECTORS
 		$builder->addDefinition(
 			$this->prefix('models.states.connectors.states'),
 			new DI\Definitions\ServiceDefinition(),
@@ -409,6 +410,16 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			]);
 
 		$builder->addDefinition(
+			$this->prefix('models.states.connectors.states.async'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\States\Async\ConnectorPropertiesManager::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
+
+		// MANAGERS - DEVICES
+		$builder->addDefinition(
 			$this->prefix('models.states.devices.states'),
 			new DI\Definitions\ServiceDefinition(),
 		)
@@ -418,10 +429,29 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			]);
 
 		$builder->addDefinition(
+			$this->prefix('models.states.devices.states.async'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\States\Async\DevicePropertiesManager::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
+
+		// MANAGERS - CHANNELS
+		$builder->addDefinition(
 			$this->prefix('models.states.channels.states'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Models\States\ChannelPropertiesManager::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
+
+		$builder->addDefinition(
+			$this->prefix('models.states.channels.states.async'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\States\Async\ChannelPropertiesManager::class)
 			->setArguments([
 				'logger' => $logger,
 			]);

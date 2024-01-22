@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * StateEntities.php
+ * Connector.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,7 +10,7 @@
  * @subpackage     Subscribers
  * @since          1.0.0
  *
- * @date           22.10.22
+ * @date           20.01.24
  */
 
 namespace FastyBird\Module\Devices\Subscribers;

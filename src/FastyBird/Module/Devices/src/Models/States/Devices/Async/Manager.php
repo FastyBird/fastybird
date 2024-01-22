@@ -82,7 +82,7 @@ final class Manager
 	}
 
 	/**
-	 * @return Promise\PromiseInterface<States\DeviceProperty|false>
+	 * @return Promise\PromiseInterface<States\DeviceProperty>
 	 *
 	 * @interal
 	 */

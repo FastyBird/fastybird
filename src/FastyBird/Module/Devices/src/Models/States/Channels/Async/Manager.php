@@ -82,7 +82,7 @@ final class Manager
 	}
 
 	/**
-	 * @return Promise\PromiseInterface<States\ChannelProperty|false>
+	 * @return Promise\PromiseInterface<States\ChannelProperty>
 	 *
 	 * @interal
 	 */

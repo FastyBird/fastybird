@@ -17,7 +17,6 @@ namespace FastyBird\Module\Devices\Consumers;
 
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
 use FastyBird\Library\Exchange\Documents as ExchangeEntities;
-use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -56,9 +55,9 @@ final class State implements ExchangeConsumers\Consumer
 		private readonly Models\Configuration\Connectors\Properties\Repository $connectorPropertiesConfigurationRepository,
 		private readonly Models\Configuration\Devices\Properties\Repository $devicePropertiesConfigurationRepository,
 		private readonly Models\Configuration\Channels\Properties\Repository $channelPropertiesConfigurationRepository,
-		private readonly Models\States\ConnectorPropertiesManager $connectorPropertiesStatesManager,
-		private readonly Models\States\DevicePropertiesManager $devicePropertiesStatesManager,
-		private readonly Models\States\ChannelPropertiesManager $channelPropertiesStatesManager,
+		private readonly Models\States\Async\ConnectorPropertiesManager $connectorPropertiesStatesManager,
+		private readonly Models\States\Async\DevicePropertiesManager $devicePropertiesStatesManager,
+		private readonly Models\States\Async\ChannelPropertiesManager $channelPropertiesStatesManager,
 	)
 	{
 	}
@@ -66,13 +65,9 @@ final class State implements ExchangeConsumers\Consumer
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws ExchangeExceptions\InvalidArgument
-	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
-	 * @throws Utils\JsonException
 	 */
 	public function consume(
 		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource $source,
@@ -104,28 +99,29 @@ final class State implements ExchangeConsumers\Consumer
 						Utils\ArrayHash::from([
 							States\Property::EXPECTED_VALUE_FIELD => $entity->getExpectedValue(),
 						]),
-					);
-
-					$this->logger->info(
-						'Requested write value to connector property',
-						[
-							'source' => MetadataTypes\ModuleSource::DEVICES,
-							'type' => 'state-consumer',
-							'connector' => [
-								'id' => $entity->getConnector()->toString(),
-							],
-							'property' => [
-								'id' => $property->getId()->toString(),
-								'identifier' => $property->getIdentifier(),
-							],
-							'expected_value' => $entity->getExpectedValue(),
-							'message' => [
-								'routing_key' => $routingKey->getValue(),
-								'source' => $source->getValue(),
-								'data' => $entity->toArray(),
-							],
-						],
-					);
+					)
+						->then(function () use ($entity, $property, $source, $routingKey): void {
+							$this->logger->info(
+								'Requested write value to connector property',
+								[
+									'source' => MetadataTypes\ModuleSource::DEVICES,
+									'type' => 'state-consumer',
+									'connector' => [
+										'id' => $entity->getConnector()->toString(),
+									],
+									'property' => [
+										'id' => $property->getId()->toString(),
+										'identifier' => $property->getIdentifier(),
+									],
+									'expected_value' => $entity->getExpectedValue(),
+									'message' => [
+										'routing_key' => $routingKey->getValue(),
+										'source' => $source->getValue(),
+										'data' => $entity->toArray(),
+									],
+								],
+							);
+						});
 				} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::GET)) {
 					$findConnectorPropertyQuery = new Queries\Configuration\FindConnectorDynamicProperties();
 					$findConnectorPropertyQuery->byId($entity->getProperty());
@@ -139,25 +135,26 @@ final class State implements ExchangeConsumers\Consumer
 						return;
 					}
 
-					$state = $this->connectorPropertiesStatesManager->read($property);
+					$this->connectorPropertiesStatesManager->read($property)
+						->then(function (States\ConnectorProperty|null $state) use ($property): void {
+							$publishRoutingKey = MetadataTypes\RoutingKey::get(
+								MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_DOCUMENT_REPORTED,
+							);
 
-					$publishRoutingKey = MetadataTypes\RoutingKey::get(
-						MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_DOCUMENT_REPORTED,
-					);
-
-					$this->publisher->publish(
-						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
-						$publishRoutingKey,
-						$this->entityFactory->create(
-							Utils\Json::encode(
-								array_merge(
-									$property->toArray(),
-									$state?->toArray() ?? [],
+							$this->publisher->publish(
+								MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+								$publishRoutingKey,
+								$this->entityFactory->create(
+									Utils\Json::encode(
+										array_merge(
+											$property->toArray(),
+											$state?->toArray() ?? [],
+										),
+									),
+									$publishRoutingKey,
 								),
-							),
-							$publishRoutingKey,
-						),
-					);
+							);
+						});
 				}
 			} elseif ($entity instanceof MetadataDocuments\Actions\ActionDeviceProperty) {
 				if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::SET)) {
@@ -178,28 +175,29 @@ final class State implements ExchangeConsumers\Consumer
 						Utils\ArrayHash::from([
 							States\Property::EXPECTED_VALUE_FIELD => $entity->getExpectedValue(),
 						]),
-					);
-
-					$this->logger->info(
-						'Requested write value to device property',
-						[
-							'source' => MetadataTypes\ModuleSource::DEVICES,
-							'type' => 'state-consumer',
-							'device' => [
-								'id' => $entity->getDevice()->toString(),
-							],
-							'property' => [
-								'id' => $property->getId()->toString(),
-								'identifier' => $property->getIdentifier(),
-							],
-							'expected_value' => $entity->getExpectedValue(),
-							'message' => [
-								'routing_key' => $routingKey->getValue(),
-								'source' => $source->getValue(),
-								'data' => $entity->toArray(),
-							],
-						],
-					);
+					)
+						->then(function () use ($entity, $property, $source, $routingKey): void {
+							$this->logger->info(
+								'Requested write value to device property',
+								[
+									'source' => MetadataTypes\ModuleSource::DEVICES,
+									'type' => 'state-consumer',
+									'device' => [
+										'id' => $entity->getDevice()->toString(),
+									],
+									'property' => [
+										'id' => $property->getId()->toString(),
+										'identifier' => $property->getIdentifier(),
+									],
+									'expected_value' => $entity->getExpectedValue(),
+									'message' => [
+										'routing_key' => $routingKey->getValue(),
+										'source' => $source->getValue(),
+										'data' => $entity->toArray(),
+									],
+								],
+							);
+						});
 				} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::GET)) {
 					$findConnectorPropertyQuery = new Queries\Configuration\FindDeviceProperties();
 					$findConnectorPropertyQuery->byId($entity->getProperty());
@@ -213,25 +211,26 @@ final class State implements ExchangeConsumers\Consumer
 						return;
 					}
 
-					$state = $this->devicePropertiesStatesManager->read($property);
+					$this->devicePropertiesStatesManager->read($property)
+						->then(function (States\DeviceProperty|null $state) use ($property): void {
+							$publishRoutingKey = MetadataTypes\RoutingKey::get(
+								MetadataTypes\RoutingKey::DEVICE_PROPERTY_DOCUMENT_REPORTED,
+							);
 
-					$publishRoutingKey = MetadataTypes\RoutingKey::get(
-						MetadataTypes\RoutingKey::DEVICE_PROPERTY_DOCUMENT_REPORTED,
-					);
-
-					$this->publisher->publish(
-						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
-						$publishRoutingKey,
-						$this->entityFactory->create(
-							Utils\Json::encode(
-								array_merge(
-									$property->toArray(),
-									$state?->toArray() ?? [],
+							$this->publisher->publish(
+								MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+								$publishRoutingKey,
+								$this->entityFactory->create(
+									Utils\Json::encode(
+										array_merge(
+											$property->toArray(),
+											$state?->toArray() ?? [],
+										),
+									),
+									$publishRoutingKey,
 								),
-							),
-							$publishRoutingKey,
-						),
-					);
+							);
+						});
 				}
 			} elseif ($entity instanceof MetadataDocuments\Actions\ActionChannelProperty) {
 				if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::SET)) {
@@ -252,28 +251,29 @@ final class State implements ExchangeConsumers\Consumer
 						Utils\ArrayHash::from([
 							States\Property::EXPECTED_VALUE_FIELD => $entity->getExpectedValue(),
 						]),
-					);
-
-					$this->logger->info(
-						'Requested write value to channel property',
-						[
-							'source' => MetadataTypes\ModuleSource::DEVICES,
-							'type' => 'state-consumer',
-							'channel' => [
-								'id' => $entity->getChannel()->toString(),
-							],
-							'property' => [
-								'id' => $property->getId()->toString(),
-								'identifier' => $property->getIdentifier(),
-							],
-							'expected_value' => $entity->getExpectedValue(),
-							'message' => [
-								'routing_key' => $routingKey->getValue(),
-								'source' => $source->getValue(),
-								'data' => $entity->toArray(),
-							],
-						],
-					);
+					)
+						->then(function () use ($entity, $property, $source, $routingKey): void {
+							$this->logger->info(
+								'Requested write value to channel property',
+								[
+									'source' => MetadataTypes\ModuleSource::DEVICES,
+									'type' => 'state-consumer',
+									'channel' => [
+										'id' => $entity->getChannel()->toString(),
+									],
+									'property' => [
+										'id' => $property->getId()->toString(),
+										'identifier' => $property->getIdentifier(),
+									],
+									'expected_value' => $entity->getExpectedValue(),
+									'message' => [
+										'routing_key' => $routingKey->getValue(),
+										'source' => $source->getValue(),
+										'data' => $entity->toArray(),
+									],
+								],
+							);
+						});
 				} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::GET)) {
 					$findConnectorPropertyQuery = new Queries\Configuration\FindChannelProperties();
 					$findConnectorPropertyQuery->byId($entity->getProperty());
@@ -287,25 +287,26 @@ final class State implements ExchangeConsumers\Consumer
 						return;
 					}
 
-					$state = $this->channelPropertiesStatesManager->read($property);
+					$this->channelPropertiesStatesManager->read($property)
+						->then(function (States\ChannelProperty|null $state) use ($property): void {
+							$publishRoutingKey = MetadataTypes\RoutingKey::get(
+								MetadataTypes\RoutingKey::CHANNEL_PROPERTY_DOCUMENT_REPORTED,
+							);
 
-					$publishRoutingKey = MetadataTypes\RoutingKey::get(
-						MetadataTypes\RoutingKey::CHANNEL_PROPERTY_DOCUMENT_REPORTED,
-					);
-
-					$this->publisher->publish(
-						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
-						$publishRoutingKey,
-						$this->entityFactory->create(
-							Utils\Json::encode(
-								array_merge(
-									$property->toArray(),
-									$state?->toArray() ?? [],
+							$this->publisher->publish(
+								MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+								$publishRoutingKey,
+								$this->entityFactory->create(
+									Utils\Json::encode(
+										array_merge(
+											$property->toArray(),
+											$state?->toArray() ?? [],
+										),
+									),
+									$publishRoutingKey,
 								),
-							),
-							$publishRoutingKey,
-						),
-					);
+							);
+						});
 				}
 			}
 		}

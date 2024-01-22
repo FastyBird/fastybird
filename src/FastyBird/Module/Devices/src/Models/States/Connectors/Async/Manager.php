@@ -82,7 +82,7 @@ final class Manager
 	}
 
 	/**
-	 * @return Promise\PromiseInterface<States\ConnectorProperty|false>
+	 * @return Promise\PromiseInterface<States\ConnectorProperty>
 	 *
 	 * @interal
 	 */

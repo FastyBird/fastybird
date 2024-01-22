@@ -32,6 +32,7 @@ use Nette;
 use Nette\Utils;
 use Symfony\Component\EventDispatcher;
 use function array_merge;
+use function React\Async\await;
 
 /**
  * Devices state entities events
@@ -52,8 +53,11 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 		private readonly Models\Configuration\Devices\Properties\Repository $devicePropertiesConfigurationRepository,
 		private readonly Models\Configuration\Channels\Properties\Repository $channelPropertiesConfigurationRepository,
 		private readonly Models\States\ConnectorPropertiesManager $connectorPropertiesStatesManager,
+		private readonly Models\States\Async\ConnectorPropertiesManager $asyncConnectorPropertiesStatesManager,
 		private readonly Models\States\DevicePropertiesManager $devicePropertiesStatesManager,
+		private readonly Models\States\Async\DevicePropertiesManager $asyncDevicePropertiesStatesManager,
 		private readonly Models\States\ChannelPropertiesManager $channelPropertiesStatesManager,
+		private readonly Models\States\Async\ChannelPropertiesManager $asyncChannelPropertiesStatesManager,
 		private readonly ExchangeEntities\DocumentFactory $entityFactory,
 		private readonly ExchangePublisher\Publisher $publisher,
 		private readonly ExchangePublisher\Async\Publisher $asyncPublisher,
@@ -174,21 +178,33 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 		if (
 			$property instanceof MetadataDocuments\DevicesModule\ConnectorDynamicProperty
 		) {
-			$state = $this->connectorPropertiesStatesManager->read($property);
-
+			$state = $this->useAsync
+				? await($this->asyncConnectorPropertiesStatesManager->read($property))
+				: $this->connectorPropertiesStatesManager->read($property);
 		} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-			$state = $this->devicePropertiesStatesManager->read($property);
-
+			$state = $this->useAsync
+				? await($this->asyncDevicePropertiesStatesManager->read($property))
+				: $this->devicePropertiesStatesManager->read($property);
 		} else {
-			$state = $this->channelPropertiesStatesManager->read($property);
+			$state = $this->useAsync
+				? await($this->asyncChannelPropertiesStatesManager->read($property))
+				: $this->channelPropertiesStatesManager->read($property);
 		}
 
 		$this->publishEntity($property, $state);
 
 		foreach ($this->findChildren($property) as $child) {
-			$state = $child instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
-				? $this->devicePropertiesStatesManager->read($child)
-				: $this->channelPropertiesStatesManager->read($child);
+			if ($this->useAsync) {
+				$state = await(
+					$child instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
+						? $this->asyncDevicePropertiesStatesManager->read($child)
+						: $this->asyncChannelPropertiesStatesManager->read($child),
+				);
+			} else {
+				$state = $child instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
+					? $this->devicePropertiesStatesManager->read($child)
+					: $this->channelPropertiesStatesManager->read($child);
+			}
 
 			$this->publishEntity($child, $state);
 		}
