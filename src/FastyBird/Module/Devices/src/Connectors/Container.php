@@ -68,11 +68,13 @@ class Container implements Connector, EventDispatcher\EventSubscriberInterface
 	}
 
 	/**
+	 * @return Promise\PromiseInterface<bool>
+	 *
 	 * @throws Exceptions\InvalidState
 	 */
-	public function execute(): void
+	public function execute(): Promise\PromiseInterface
 	{
-		$this->getService($this->connector)->execute();
+		return $this->getService($this->connector)->execute();
 	}
 
 	/**

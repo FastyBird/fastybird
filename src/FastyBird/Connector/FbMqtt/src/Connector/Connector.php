@@ -27,8 +27,6 @@ use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Connectors as DevicesConnectors;
-use FastyBird\Module\Devices\Constants as DevicesConstants;
-use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use InvalidArgumentException;
 use Nette;
@@ -78,13 +76,15 @@ final class Connector implements DevicesConnectors\Connector
 	}
 
 	/**
+	 * @return Promise\PromiseInterface<bool>
+	 *
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws InvalidArgumentException
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function execute(): void
+	public function execute(): Promise\PromiseInterface
 	{
 		assert($this->connector->getType() === Entities\FbMqttConnector::TYPE);
 
@@ -115,17 +115,7 @@ final class Connector implements DevicesConnectors\Connector
 		}
 
 		if ($this->client === null) {
-			$this->emit(
-				DevicesConstants::EVENT_TERMINATE,
-				[
-					new DevicesEvents\TerminateConnector(
-						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT),
-						'Connector protocol version is not configured',
-					),
-				],
-			);
-
-			return;
+			return Promise\reject(new Exceptions\InvalidState('Connector protocol version is not configured'));
 		}
 
 		$this->client->connect();
@@ -150,6 +140,8 @@ final class Connector implements DevicesConnectors\Connector
 				],
 			],
 		);
+
+		return Promise\resolve(true);
 	}
 
 	/**

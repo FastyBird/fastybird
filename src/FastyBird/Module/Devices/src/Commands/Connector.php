@@ -50,6 +50,7 @@ use function count;
 use function intval;
 use function is_string;
 use function React\Async\async;
+use function React\Async\await;
 use function sprintf;
 use function usort;
 use const SIGINT;
@@ -378,14 +379,25 @@ class Connector extends Console\Command\Command
 					'type' => 'connector-cmd',
 				]);
 
-				try {
-					// Start connector service
-					$service->discover();
-				} catch (Throwable $ex) {
-					throw new Exceptions\Terminate('Connector discovery can\'t be started', $ex->getCode(), $ex);
-				}
+				$this->eventLoop->futureTick(async(function () use ($connector, $service, $mode): void {
+					try {
+						// Start connector service
+						await($service->discover());
 
-				$this->dispatcher?->dispatch(new Events\AfterConnectorDiscoveryStart($connector));
+						$this->dispatcher?->dispatch(new Events\AfterConnectorDiscoveryStart($connector));
+					} catch (Throwable $ex) {
+						$this->logger->error(
+							'Connector discovery can\'t be started',
+							[
+								'source' => MetadataTypes\ModuleSource::DEVICES,
+								'type' => 'connector-cmd',
+								'exception' => ApplicationHelpers\Logger::buildException($ex),
+							],
+						);
+
+						$this->terminate($connector, $service, $mode);
+					}
+				}));
 
 			} else {
 				$this->dispatcher?->dispatch(new Events\BeforeConnectorExecutionStart($connector));
@@ -395,14 +407,25 @@ class Connector extends Console\Command\Command
 					'type' => 'connector-cmd',
 				]);
 
-				try {
-					// Start connector service
-					$service->execute();
-				} catch (Throwable $ex) {
-					throw new Exceptions\Terminate('Connector execution can\'t be started', $ex->getCode(), $ex);
-				}
+				$this->eventLoop->futureTick(async(function () use ($connector, $service, $mode): void {
+					try {
+						// Start connector service
+						await($service->execute());
 
-				$this->dispatcher?->dispatch(new Events\AfterConnectorExecutionStart($connector));
+						$this->dispatcher?->dispatch(new Events\AfterConnectorExecutionStart($connector));
+					} catch (Throwable $ex) {
+						$this->logger->error(
+							'Connector execution can\'t be started',
+							[
+								'source' => MetadataTypes\ModuleSource::DEVICES,
+								'type' => 'connector-cmd',
+								'exception' => ApplicationHelpers\Logger::buildException($ex),
+							],
+						);
+
+						$this->terminate($connector, $service, $mode);
+					}
+				}));
 			}
 
 			foreach ($this->exchangeFactories as $exchangeFactory) {

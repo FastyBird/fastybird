@@ -18,9 +18,12 @@ class DummyConnector implements Connectors\Connector
 		return Uuid\Uuid::fromString('7a3dd94c-7294-46fd-8c61-1b375c313d4d');
 	}
 
-	public function execute(): void
+	/**
+	 * @return Promise\PromiseInterface<bool>
+	 */
+	public function execute(): Promise\PromiseInterface
 	{
-		// NOT IMPLEMENTED
+		return Promise\reject(new Exceptions\InvalidState('Not implemented'));
 	}
 
 	/**

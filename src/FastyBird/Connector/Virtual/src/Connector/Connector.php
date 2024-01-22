@@ -67,9 +67,11 @@ final class Connector implements DevicesConnectors\Connector
 	}
 
 	/**
+	 * @return Promise\PromiseInterface<bool>
+	 *
 	 * @throws DevicesExceptions\InvalidState
 	 */
-	public function execute(): void
+	public function execute(): Promise\PromiseInterface
 	{
 		assert($this->connector->getType() === Entities\VirtualConnector::TYPE);
 
@@ -108,6 +110,8 @@ final class Connector implements DevicesConnectors\Connector
 				],
 			],
 		);
+
+		return Promise\resolve(true);
 	}
 
 	/**

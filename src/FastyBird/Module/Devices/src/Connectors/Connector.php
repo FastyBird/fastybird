@@ -29,7 +29,10 @@ use React\Promise;
 interface Connector extends Evenement\EventEmitterInterface
 {
 
-	public function execute(): void;
+	/**
+	 * @return Promise\PromiseInterface<bool>
+	 */
+	public function execute(): Promise\PromiseInterface;
 
 	/**
 	 * @return Promise\PromiseInterface<bool>

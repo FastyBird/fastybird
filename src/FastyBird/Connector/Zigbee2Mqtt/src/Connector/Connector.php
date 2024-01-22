@@ -81,13 +81,15 @@ final class Connector implements DevicesConnectors\Connector
 	}
 
 	/**
+	 * @return Promise\PromiseInterface<bool>
+	 *
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws InvalidArgumentException
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function execute(): void
+	public function execute(): Promise\PromiseInterface
 	{
 		assert($this->connector->getType() === Entities\Zigbee2MqttConnector::TYPE);
 
@@ -122,17 +124,7 @@ final class Connector implements DevicesConnectors\Connector
 		}
 
 		if (!$client instanceof Clients\Mqtt) {
-			$this->emit(
-				DevicesConstants::EVENT_TERMINATE,
-				[
-					new DevicesEvents\TerminateConnector(
-						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT),
-						'Connector client is not configured',
-					),
-				],
-			);
-
-			return;
+			return Promise\reject(new Exceptions\InvalidState('Connector client is not configured'));
 		}
 
 		$client->connect();
@@ -157,6 +149,8 @@ final class Connector implements DevicesConnectors\Connector
 				],
 			],
 		);
+
+		return Promise\resolve(true);
 	}
 
 	/**

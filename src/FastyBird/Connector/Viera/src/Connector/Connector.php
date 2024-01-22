@@ -67,7 +67,10 @@ final class Connector implements DevicesConnectors\Connector
 	{
 	}
 
-	public function execute(): void
+	/**
+	 * @return Promise\PromiseInterface<bool>
+	 */
+	public function execute(): Promise\PromiseInterface
 	{
 		assert($this->connector->getType() === Entities\VieraConnector::TYPE);
 
@@ -105,6 +108,8 @@ final class Connector implements DevicesConnectors\Connector
 				],
 			],
 		);
+
+		return Promise\resolve(true);
 	}
 
 	/**

@@ -90,12 +90,14 @@ final class Connector implements DevicesConnectors\Connector
 	}
 
 	/**
+	 * @return Promise\PromiseInterface<bool>
+	 *
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function execute(): void
+	public function execute(): Promise\PromiseInterface
 	{
 		assert($this->connector->getType() === Entities\NsPanelConnector::TYPE);
 
@@ -214,6 +216,8 @@ final class Connector implements DevicesConnectors\Connector
 				],
 			],
 		);
+
+		return Promise\resolve(true);
 	}
 
 	/**
