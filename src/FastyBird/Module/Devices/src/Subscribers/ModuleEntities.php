@@ -34,6 +34,7 @@ use Nette;
 use Nette\Utils;
 use ReflectionClass;
 use function array_merge;
+use function assert;
 use function count;
 use function is_a;
 use function str_starts_with;
@@ -312,7 +313,10 @@ final class ModuleEntities implements Common\EventSubscriber
 		if ($publishRoutingKey !== null) {
 			if ($entity instanceof Entities\Devices\Properties\Dynamic) {
 				if ($this->useAsync && $action === self::ACTION_UPDATED) {
-					$this->asyncDevicePropertiesStatesManager->read($entity)
+					$configuration = $this->devicesPropertiesConfigurationRepository->find($entity->getId());
+					assert($configuration instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty);
+
+					$this->asyncDevicePropertiesStatesManager->read($configuration)
 						->then(
 							function (
 								Devices\States\DeviceProperty|null $state,
@@ -356,7 +360,10 @@ final class ModuleEntities implements Common\EventSubscriber
 				}
 			} elseif ($entity instanceof Entities\Channels\Properties\Dynamic) {
 				if ($this->useAsync && $action === self::ACTION_UPDATED) {
-					$this->asyncChannelPropertiesStatesManager->read($entity)
+					$configuration = $this->channelsPropertiesConfigurationRepository->find($entity->getId());
+					assert($configuration instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty);
+
+					$this->asyncChannelPropertiesStatesManager->read($configuration)
 						->then(
 							function (
 								Devices\States\ChannelProperty|null $state,
@@ -400,7 +407,10 @@ final class ModuleEntities implements Common\EventSubscriber
 				}
 			} elseif ($entity instanceof Entities\Connectors\Properties\Dynamic) {
 				if ($this->useAsync && $action === self::ACTION_UPDATED) {
-					$this->asyncConnectorPropertiesStatesManager->read($entity)
+					$configuration = $this->connectorsPropertiesConfigurationRepository->find($entity->getId());
+					assert($configuration instanceof MetadataDocuments\DevicesModule\ConnectorDynamicProperty);
+
+					$this->asyncConnectorPropertiesStatesManager->read($configuration)
 						->then(
 							function (
 								Devices\States\ConnectorProperty|null $state,

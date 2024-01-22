@@ -22,9 +22,7 @@ use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
-use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices;
-use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\States;
@@ -34,9 +32,9 @@ use Nette\Utils;
 use Orisai\ObjectMapper;
 use React\Promise;
 use Throwable;
-use function assert;
 use function boolval;
 use function is_array;
+use function React\Async\async;
 use function React\Async\await;
 use function strval;
 
@@ -74,7 +72,7 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 	 */
 	public function read(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped $property,
+		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
 	): Promise\PromiseInterface
 	{
 		return $this->loadValue($property, true);
@@ -87,7 +85,7 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 	 */
 	public function get(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped $property,
+		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
 	): Promise\PromiseInterface
 	{
 		return $this->loadValue($property, false);
@@ -96,15 +94,11 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 	/**
 	 * @return Promise\PromiseInterface<bool>
 	 *
-	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function write(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped $property,
+		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
 		Utils\ArrayHash $data,
 	): Promise\PromiseInterface
 	{
@@ -114,15 +108,11 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 	/**
 	 * @return Promise\PromiseInterface<bool>
 	 *
-	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function set(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped $property,
+		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
 		Utils\ArrayHash $data,
 	): Promise\PromiseInterface
 	{
@@ -130,18 +120,14 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 	}
 
 	/**
-	 * @param MetadataDocuments\DevicesModule\ChannelDynamicProperty|array<MetadataDocuments\DevicesModule\ChannelDynamicProperty>|Entities\Channels\Properties\Dynamic|array<Entities\Channels\Properties\Dynamic> $property
+	 * @param MetadataDocuments\DevicesModule\ChannelDynamicProperty|array<MetadataDocuments\DevicesModule\ChannelDynamicProperty> $property
 	 *
 	 * @return Promise\PromiseInterface<bool>
 	 *
-	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function setValidState(
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty|Entities\Channels\Properties\Dynamic|array $property,
+		MetadataDocuments\DevicesModule\ChannelDynamicProperty|array $property,
 		bool $state,
 	): Promise\PromiseInterface
 	{
@@ -173,18 +159,14 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 	}
 
 	/**
-	 * @param MetadataDocuments\DevicesModule\ChannelDynamicProperty|array<MetadataDocuments\DevicesModule\ChannelDynamicProperty>|Entities\Channels\Properties\Dynamic|array<Entities\Channels\Properties\Dynamic> $property
+	 * @param MetadataDocuments\DevicesModule\ChannelDynamicProperty|array<MetadataDocuments\DevicesModule\ChannelDynamicProperty> $property
 	 *
 	 * @return Promise\PromiseInterface<bool>
 	 *
-	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function setPendingState(
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty|Entities\Channels\Properties\Dynamic|array $property,
+		MetadataDocuments\DevicesModule\ChannelDynamicProperty|array $property,
 		bool $pending,
 	): Promise\PromiseInterface
 	{
@@ -293,18 +275,10 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 	 */
 	private function loadValue(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped $property,
+		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
 		bool $forReading,
 	): Promise\PromiseInterface
 	{
-		if ($property instanceof Entities\Channels\Properties\Property) {
-			$property = $this->channelPropertiesConfigurationRepository->find($property->getId());
-			assert(
-				$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-				|| $property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty,
-			);
-		}
-
 		$mappedProperty = null;
 
 		if ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
@@ -319,44 +293,53 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 			$property = $parent;
 		}
 
-		try {
-			$state = await($this->channelPropertyStateRepository->find($property->getId()));
+		$deferred = new Promise\Deferred();
 
-			if ($state === null) {
-				return Promise\resolve(null);
-			}
+		$this->channelPropertyStateRepository->find($property->getId())
+			->then(
+				function (
+					States\ChannelProperty|null $state,
+				) use (
+					$deferred,
+					$property,
+					$mappedProperty,
+					$forReading,
+				): void {
+					if ($state === null) {
+						$deferred->resolve(null);
 
-			$updateValues = [];
+						return;
+					}
 
-			if ($mappedProperty !== null) {
-				$updateValues['id'] = $mappedProperty->getId();
-			}
+					$updateValues = [];
 
-			if ($state->getActualValue() !== null) {
-				try {
-					$updateValues[States\Property::ACTUAL_VALUE_FIELD] = $this->convertReadValue(
-						$state->getActualValue(),
-						$property,
-						$mappedProperty,
-						$forReading,
-					);
-				} catch (MetadataExceptions\InvalidValue $ex) {
 					if ($mappedProperty !== null) {
-						$updateValues[States\Property::ACTUAL_VALUE_FIELD] = null;
-						$updateValues[States\Property::VALID_FIELD] = false;
+						$updateValues['id'] = $mappedProperty->getId();
+					}
 
-						$this->logger->error(
-							'Property stored actual value could not be converted to mapped property',
-							[
-								'source' => MetadataTypes\ModuleSource::DEVICES,
-								'type' => 'async-channel-properties-states',
-								'exception' => ApplicationHelpers\Logger::buildException($ex),
-							],
-						);
-
-					} else {
+					if ($state->getActualValue() !== null) {
 						try {
-							await(
+							$updateValues[States\Property::ACTUAL_VALUE_FIELD] = $this->convertReadValue(
+								$state->getActualValue(),
+								$property,
+								$mappedProperty,
+								$forReading,
+							);
+						} catch (MetadataExceptions\InvalidValue $ex) {
+							if ($mappedProperty !== null) {
+								$updateValues[States\Property::ACTUAL_VALUE_FIELD] = null;
+								$updateValues[States\Property::VALID_FIELD] = false;
+
+								$this->logger->error(
+									'Property stored actual value could not be converted to mapped property',
+									[
+										'source' => MetadataTypes\ModuleSource::DEVICES,
+										'type' => 'async-channel-properties-states',
+										'exception' => ApplicationHelpers\Logger::buildException($ex),
+									],
+								);
+
+							} else {
 								$this->channelPropertiesStatesManager->update(
 									$property,
 									$state,
@@ -364,151 +347,154 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 										States\Property::ACTUAL_VALUE_FIELD => null,
 										States\Property::VALID_FIELD => false,
 									]),
-								),
-							);
+								)
+									->then(async(function () use ($deferred, $property, $forReading): void {
+										$deferred->resolve(await($this->loadValue($property, $forReading)));
+									}))
+									->catch(static function (Throwable $ex) use ($deferred): void {
+										$deferred->reject($ex);
+									})
+									->finally(function () use ($ex): void {
+										$this->logger->error(
+											'Property stored actual value was not valid',
+											[
+												'source' => MetadataTypes\ModuleSource::DEVICES,
+												'type' => 'async-channel-properties-states',
+												'exception' => ApplicationHelpers\Logger::buildException($ex),
+											],
+										);
+									});
 
-							$this->logger->error(
-								'Property stored actual value was not valid',
-								[
-									'source' => MetadataTypes\ModuleSource::DEVICES,
-									'type' => 'async-channel-properties-states',
-									'exception' => ApplicationHelpers\Logger::buildException($ex),
-								],
-							);
-
-							return $this->loadValue($property, $forReading);
-						} catch (Throwable $ex) {
-							return Promise\reject($ex);
+								return;
+							}
 						}
 					}
-				}
-			}
 
-			if ($state->getExpectedValue() !== null) {
-				try {
-					$expectedValue = $this->convertReadValue(
-						$state->getExpectedValue(),
-						$property,
-						$mappedProperty,
-						$forReading,
+					if ($state->getExpectedValue() !== null) {
+						try {
+							$expectedValue = $this->convertReadValue(
+								$state->getExpectedValue(),
+								$property,
+								$mappedProperty,
+								$forReading,
+							);
+
+							if ($expectedValue !== null && !$property->isSettable()) {
+								$this->channelPropertiesStatesManager->update(
+									$property,
+									$state,
+									Utils\ArrayHash::from([
+										States\Property::EXPECTED_VALUE_FIELD => null,
+										States\Property::PENDING_FIELD => false,
+									]),
+								)
+									->then(async(
+										function () use ($deferred, $property, $mappedProperty, $forReading): void {
+											$deferred->resolve(await(
+												$this->loadValue($mappedProperty ?? $property, $forReading),
+											));
+										},
+									))
+									->catch(static function (Throwable $ex) use ($deferred): void {
+										$deferred->reject($ex);
+									})
+									->finally(function (): void {
+										$this->logger->warning(
+											'Property is not settable but has stored expected value',
+											[
+												'source' => MetadataTypes\ModuleSource::DEVICES,
+												'type' => 'async-channel-properties-states',
+											],
+										);
+									});
+
+								return;
+							}
+
+							$updateValues[States\Property::EXPECTED_VALUE_FIELD] = $expectedValue;
+						} catch (MetadataExceptions\InvalidValue $ex) {
+							if ($mappedProperty !== null) {
+								$updateValues[States\Property::EXPECTED_VALUE_FIELD] = null;
+								$updateValues[States\Property::PENDING_FIELD] = false;
+
+								$this->logger->error(
+									'Property stored actual value could not be converted to mapped property',
+									[
+										'source' => MetadataTypes\ModuleSource::DEVICES,
+										'type' => 'async-channel-properties-states',
+										'exception' => ApplicationHelpers\Logger::buildException($ex),
+									],
+								);
+
+							} else {
+								$this->channelPropertiesStatesManager->update(
+									$property,
+									$state,
+									Utils\ArrayHash::from([
+										States\Property::EXPECTED_VALUE_FIELD => null,
+										States\Property::PENDING_FIELD => false,
+									]),
+								)
+									->then(async(function () use ($deferred, $property, $forReading): void {
+										$deferred->resolve(await($this->loadValue($property, $forReading)));
+									}))
+									->catch(static function (Throwable $ex) use ($deferred): void {
+										$deferred->reject($ex);
+									})
+									->finally(function () use ($ex): void {
+										$this->logger->error(
+											'Property stored expected value was not valid',
+											[
+												'source' => MetadataTypes\ModuleSource::DEVICES,
+												'type' => 'async-channel-properties-states',
+												'exception' => ApplicationHelpers\Logger::buildException($ex),
+											],
+										);
+									});
+
+								return;
+							}
+						}
+					}
+
+					if ($updateValues === []) {
+						$deferred->resolve($state);
+
+						return;
+					}
+
+					$deferred->resolve($this->updateState($state, $state::class, $updateValues));
+				},
+			)
+			->catch(function (Throwable $ex) use ($deferred): void {
+				if ($ex instanceof Exceptions\NotImplemented) {
+					$this->logger->warning(
+						'Channels states repository is not configured. State could not be fetched',
+						[
+							'source' => MetadataTypes\ModuleSource::DEVICES,
+							'type' => 'async-channel-properties-states',
+						],
 					);
-
-					if ($expectedValue !== null && !$property->isSettable()) {
-						try {
-							await(
-								$this->channelPropertiesStatesManager->update(
-									$property,
-									$state,
-									Utils\ArrayHash::from([
-										States\Property::EXPECTED_VALUE_FIELD => null,
-										States\Property::PENDING_FIELD => false,
-									]),
-								),
-							);
-
-							$this->logger->warning(
-								'Property is not settable but has stored expected value',
-								[
-									'source' => MetadataTypes\ModuleSource::DEVICES,
-									'type' => 'async-channel-properties-states',
-								],
-							);
-
-							return $this->loadValue($mappedProperty ?? $property, $forReading);
-						} catch (Throwable $ex) {
-							return Promise\reject($ex);
-						}
-					}
-
-					$updateValues[States\Property::EXPECTED_VALUE_FIELD] = $expectedValue;
-				} catch (MetadataExceptions\InvalidValue $ex) {
-					if ($mappedProperty !== null) {
-						$updateValues[States\Property::EXPECTED_VALUE_FIELD] = null;
-						$updateValues[States\Property::PENDING_FIELD] = false;
-
-						$this->logger->error(
-							'Property stored actual value could not be converted to mapped property',
-							[
-								'source' => MetadataTypes\ModuleSource::DEVICES,
-								'type' => 'async-channel-properties-states',
-								'exception' => ApplicationHelpers\Logger::buildException($ex),
-							],
-						);
-
-					} else {
-						try {
-							await(
-								$this->channelPropertiesStatesManager->update(
-									$property,
-									$state,
-									Utils\ArrayHash::from([
-										States\Property::EXPECTED_VALUE_FIELD => null,
-										States\Property::PENDING_FIELD => false,
-									]),
-								),
-							);
-
-							$this->logger->error(
-								'Property stored expected value was not valid',
-								[
-									'source' => MetadataTypes\ModuleSource::DEVICES,
-									'type' => 'async-channel-properties-states',
-									'exception' => ApplicationHelpers\Logger::buildException($ex),
-								],
-							);
-
-							return $this->loadValue($property, $forReading);
-						} catch (Throwable $ex) {
-							return Promise\reject($ex);
-						}
-					}
 				}
-			}
 
-			if ($updateValues === []) {
-				return Promise\resolve($state);
-			}
+				$deferred->reject($ex);
+			});
 
-			return Promise\resolve($this->updateState($state, $state::class, $updateValues));
-		} catch (Exceptions\NotImplemented) {
-			$this->logger->warning(
-				'Channels states repository is not configured. State could not be fetched',
-				[
-					'source' => MetadataTypes\ModuleSource::DEVICES,
-					'type' => 'async-channel-properties-states',
-				],
-			);
-		} catch (Throwable $ex) {
-			return Promise\reject($ex);
-		}
-
-		return Promise\resolve(null);
+		return $deferred->promise();
 	}
 
 	/**
 	 * @return Promise\PromiseInterface<bool>
 	 *
-	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	private function saveValue(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped $property,
+		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
 		Utils\ArrayHash $data,
 		bool $forWriting,
 	): Promise\PromiseInterface
 	{
-		if ($property instanceof Entities\Channels\Properties\Property) {
-			$property = $this->channelPropertiesConfigurationRepository->find($property->getId());
-			assert(
-				$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-				|| $property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty,
-			);
-		}
-
 		$mappedProperty = null;
 
 		if ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
@@ -523,201 +509,219 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 			$property = $parent;
 		}
 
-		try {
-			$state = await($this->channelPropertyStateRepository->find($property->getId()));
-		} catch (Exceptions\NotImplemented) {
-			$state = null;
-		} catch (Throwable $ex) {
-			return Promise\reject($ex);
-		}
+		$deferred = new Promise\Deferred();
 
-		/**
-		 * IMPORTANT: ACTUAL VALUE field is meant to be used only by connectors for saving device actual value
-		 */
-		if ($data->offsetExists(States\Property::ACTUAL_VALUE_FIELD)) {
-			if ($mappedProperty !== null) {
-				throw new Exceptions\InvalidArgument(
-					'Setting property actual value is not allowed for mapped properties',
-				);
-			}
+		$this->channelPropertyStateRepository->find($property->getId())
+			->then(async(
+				function (
+					States\ChannelProperty|null $state,
+				) use (
+					$deferred,
+					$data,
+					$property,
+					$mappedProperty,
+					$forWriting,
+				): void {
+					/**
+					 * IMPORTANT: ACTUAL VALUE field is meant to be used only by connectors for saving device actual value
+					 */
+					if ($data->offsetExists(States\Property::ACTUAL_VALUE_FIELD)) {
+						if ($mappedProperty !== null) {
+							$deferred->reject(new Exceptions\InvalidArgument(
+								'Setting property actual value is not allowed for mapped properties',
+							));
 
-			if ($forWriting === true) {
-				throw new Exceptions\InvalidArgument(
-					'Setting property actual value could be done only by "setValue" method',
-				);
-			}
+							return;
+						}
 
-			try {
-				if (
-					$property->getInvalid() !== null
-					&& strval(
-						MetadataUtilities\Value::flattenValue(
-							/** @phpstan-ignore-next-line */
-							$data->offsetGet(States\Property::ACTUAL_VALUE_FIELD),
-						),
-					) === strval(
-						MetadataUtilities\Value::flattenValue($property->getInvalid()),
-					)
-				) {
-					$data->offsetSet(States\Property::ACTUAL_VALUE_FIELD, null);
-					$data->offsetSet(States\Property::VALID_FIELD, false);
+						if ($forWriting === true) {
+							$deferred->reject(new Exceptions\InvalidArgument(
+								'Setting property actual value could be done only by "setValue" method',
+							));
 
-				} else {
-					$actualValue = $this->convertWriteActualValue(
-						/** @phpstan-ignore-next-line */
-						$data->offsetGet(States\Property::ACTUAL_VALUE_FIELD),
-						$property,
-					);
+							return;
+						}
 
-					$data->offsetSet(
-						States\Property::ACTUAL_VALUE_FIELD,
-						MetadataUtilities\Value::flattenValue($actualValue),
-					);
+						try {
+							if (
+								$property->getInvalid() !== null
+								&& strval(
+									MetadataUtilities\Value::flattenValue(
+									/** @phpstan-ignore-next-line */
+										$data->offsetGet(States\Property::ACTUAL_VALUE_FIELD),
+									),
+								) === strval(
+									MetadataUtilities\Value::flattenValue($property->getInvalid()),
+								)
+							) {
+								$data->offsetSet(States\Property::ACTUAL_VALUE_FIELD, null);
+								$data->offsetSet(States\Property::VALID_FIELD, false);
 
-					if ($data->offsetExists(States\Property::VALID_FIELD)) {
-						$data->offsetSet(
-							States\Property::VALID_FIELD,
-							boolval($data->offsetGet(States\Property::VALID_FIELD)),
-						);
-					} else {
-						$data->offsetSet(States\Property::VALID_FIELD, true);
+							} else {
+								$actualValue = $this->convertWriteActualValue(
+								/** @phpstan-ignore-next-line */
+									$data->offsetGet(States\Property::ACTUAL_VALUE_FIELD),
+									$property,
+								);
+
+								$data->offsetSet(
+									States\Property::ACTUAL_VALUE_FIELD,
+									MetadataUtilities\Value::flattenValue($actualValue),
+								);
+
+								if ($data->offsetExists(States\Property::VALID_FIELD)) {
+									$data->offsetSet(
+										States\Property::VALID_FIELD,
+										boolval($data->offsetGet(States\Property::VALID_FIELD)),
+									);
+								} else {
+									$data->offsetSet(States\Property::VALID_FIELD, true);
+								}
+							}
+						} catch (MetadataExceptions\InvalidValue $ex) {
+							$data->offsetUnset(States\Property::ACTUAL_VALUE_FIELD);
+							$data->offsetSet(States\Property::VALID_FIELD, false);
+
+							$this->logger->error(
+								'Provided property actual value is not valid',
+								[
+									'source' => MetadataTypes\ModuleSource::DEVICES,
+									'type' => 'async-channel-properties-states',
+									'exception' => ApplicationHelpers\Logger::buildException($ex),
+								],
+							);
+						}
 					}
-				}
-			} catch (MetadataExceptions\InvalidValue $ex) {
-				$data->offsetUnset(States\Property::ACTUAL_VALUE_FIELD);
-				$data->offsetSet(States\Property::VALID_FIELD, false);
 
-				$this->logger->error(
-					'Provided property actual value is not valid',
-					[
-						'source' => MetadataTypes\ModuleSource::DEVICES,
-						'type' => 'async-channel-properties-states',
-						'exception' => ApplicationHelpers\Logger::buildException($ex),
-					],
-				);
-			}
-		}
+					/**
+					 * IMPORTANT: EXPECTED VALUE field is meant to be used mainly by user interface for saving value which should
+					 * be then written into device
+					 */
+					if ($data->offsetExists(States\Property::EXPECTED_VALUE_FIELD)) {
+						if (
+							$data->offsetGet(States\Property::EXPECTED_VALUE_FIELD) !== null
+							&& $data->offsetGet(States\Property::EXPECTED_VALUE_FIELD) !== ''
+						) {
+							try {
+								$expectedValue = $this->convertWriteExpectedValue(
+								/** @phpstan-ignore-next-line */
+									$data->offsetGet(States\Property::EXPECTED_VALUE_FIELD),
+									$property,
+									$mappedProperty,
+									$forWriting,
+								);
 
-		/**
-		 * IMPORTANT: EXPECTED VALUE field is meant to be used mainly by user interface for saving value which should
-		 * be then written into device
-		 */
-		if ($data->offsetExists(States\Property::EXPECTED_VALUE_FIELD)) {
-			if (
-				$data->offsetGet(States\Property::EXPECTED_VALUE_FIELD) !== null
-				&& $data->offsetGet(States\Property::EXPECTED_VALUE_FIELD) !== ''
-			) {
-				try {
-					$expectedValue = $this->convertWriteExpectedValue(
-						/** @phpstan-ignore-next-line */
-						$data->offsetGet(States\Property::EXPECTED_VALUE_FIELD),
-						$property,
-						$mappedProperty,
-						$forWriting,
-					);
+								if (
+									$expectedValue !== null
+									&& (
+										!$property->isSettable()
+										|| (
+											$mappedProperty !== null
+											&& !$mappedProperty->isSettable()
+										)
+									)
+								) {
+									$deferred->reject(new Exceptions\InvalidArgument(
+										'Property is not settable, expected value could not written',
+									));
+
+									return;
+								}
+
+								$data->offsetSet(
+									States\Property::EXPECTED_VALUE_FIELD,
+									MetadataUtilities\Value::flattenValue($expectedValue),
+								);
+								$data->offsetSet(
+									States\Property::PENDING_FIELD,
+									$expectedValue !== null,
+								);
+							} catch (MetadataExceptions\InvalidValue $ex) {
+								$data->offsetSet(States\Property::EXPECTED_VALUE_FIELD, null);
+								$data->offsetSet(States\Property::PENDING_FIELD, false);
+
+								$this->logger->error(
+									'Provided property expected value was not valid',
+									[
+										'source' => MetadataTypes\ModuleSource::DEVICES,
+										'type' => 'async-channel-properties-states',
+										'exception' => ApplicationHelpers\Logger::buildException($ex),
+									],
+								);
+							}
+						} else {
+							$data->offsetSet(States\Property::EXPECTED_VALUE_FIELD, null);
+							$data->offsetSet(States\Property::PENDING_FIELD, false);
+						}
+					}
+
+					if ($data->count() === 0) {
+						$deferred->resolve(true);
+
+						return;
+					}
 
 					if (
-						$expectedValue !== null
+						$state !== null
 						&& (
-							!$property->isSettable()
-							|| (
-								$mappedProperty !== null
-								&& !$mappedProperty->isSettable()
+							(
+								$data->offsetExists(States\Property::EXPECTED_VALUE_FIELD)
+								&& MetadataUtilities\Value::flattenValue($state->getActualValue()) === $data->offsetGet(
+									States\Property::EXPECTED_VALUE_FIELD,
+								)
+							) || (
+								$data->offsetExists(States\Property::ACTUAL_VALUE_FIELD)
+								&& MetadataUtilities\Value::flattenValue(
+									$state->getExpectedValue(),
+								) === $data->offsetGet(
+									States\Property::ACTUAL_VALUE_FIELD,
+								)
 							)
 						)
 					) {
-						throw new Exceptions\InvalidArgument(
-							'Property is not settable, expected value could not written',
-						);
+						$data->offsetSet(States\Property::EXPECTED_VALUE_FIELD, null);
+						$data->offsetSet(States\Property::PENDING_FIELD, false);
 					}
 
-					$data->offsetSet(
-						States\Property::EXPECTED_VALUE_FIELD,
-						MetadataUtilities\Value::flattenValue($expectedValue),
-					);
-					$data->offsetSet(
-						States\Property::PENDING_FIELD,
-						$expectedValue !== null,
-					);
-				} catch (MetadataExceptions\InvalidValue $ex) {
-					$data->offsetSet(States\Property::EXPECTED_VALUE_FIELD, null);
-					$data->offsetSet(States\Property::PENDING_FIELD, false);
+					try {
+						$result = await($state === null ? $this->channelPropertiesStatesManager->create(
+							$property,
+							$data,
+						) : $this->channelPropertiesStatesManager->update(
+							$property,
+							$state,
+							$data,
+						));
 
-					$this->logger->error(
-						'Provided property expected value was not valid',
-						[
-							'source' => MetadataTypes\ModuleSource::DEVICES,
-							'type' => 'async-channel-properties-states',
-							'exception' => ApplicationHelpers\Logger::buildException($ex),
-						],
-					);
-				}
-			} else {
-				$data->offsetSet(States\Property::EXPECTED_VALUE_FIELD, null);
-				$data->offsetSet(States\Property::PENDING_FIELD, false);
-			}
-		}
+						$this->logger->debug(
+							$state === null ? 'Channel property state was created' : 'Channel property state was updated',
+							[
+								'source' => MetadataTypes\ModuleSource::DEVICES,
+								'type' => 'async-channel-properties-states',
+								'property' => [
+									'id' => $property->getId()->toString(),
+									'state' => $result->toArray(),
+								],
+							],
+						);
 
-		if ($data->count() === 0) {
-			return Promise\resolve(true);
-		}
+						$deferred->resolve(true);
+					} catch (Throwable $ex) {
+						if ($ex instanceof Exceptions\NotImplemented) {
+							$this->logger->warning(
+								'Channels states manager is not configured. State could not be saved',
+								[
+									'source' => MetadataTypes\ModuleSource::DEVICES,
+									'type' => 'async-channel-properties-states',
+								],
+							);
+						}
 
-		if (
-			$state !== null
-			&& (
-				(
-					$data->offsetExists(States\Property::EXPECTED_VALUE_FIELD)
-					&& MetadataUtilities\Value::flattenValue($state->getActualValue()) === $data->offsetGet(
-						States\Property::EXPECTED_VALUE_FIELD,
-					)
-				) || (
-					$data->offsetExists(States\Property::ACTUAL_VALUE_FIELD)
-					&& MetadataUtilities\Value::flattenValue($state->getExpectedValue()) === $data->offsetGet(
-						States\Property::ACTUAL_VALUE_FIELD,
-					)
-				)
-			)
-		) {
-			$data->offsetSet(States\Property::EXPECTED_VALUE_FIELD, null);
-			$data->offsetSet(States\Property::PENDING_FIELD, false);
-		}
-
-		$deferred = new Promise\Deferred();
-
-		$result = $state === null ? $this->channelPropertiesStatesManager->create(
-			$property,
-			$data,
-		) : $this->channelPropertiesStatesManager->update(
-			$property,
-			$state,
-			$data,
-		);
-
-		$result
-			->then(function (States\ChannelProperty $result) use ($state, $property): void {
-				$this->logger->debug(
-					$state === null ? 'Channel property state was created' : 'Channel property state was updated',
-					[
-						'source' => MetadataTypes\ModuleSource::DEVICES,
-						'type' => 'async-channel-properties-states',
-						'property' => [
-							'id' => $property->getId()->toString(),
-							'state' => $result->toArray(),
-						],
-					],
-				);
-			})
-			->catch(function (Throwable $ex) use ($deferred): void {
-				if ($ex instanceof Exceptions\NotImplemented) {
-					$this->logger->warning(
-						'Channels states manager is not configured. State could not be saved',
-						[
-							'source' => MetadataTypes\ModuleSource::DEVICES,
-							'type' => 'async-channel-properties-states',
-						],
-					);
-				}
-
+						$deferred->reject($ex);
+					}
+				},
+			))
+			->catch(static function (Throwable $ex) use ($deferred): void {
 				$deferred->reject($ex);
 			});
 
