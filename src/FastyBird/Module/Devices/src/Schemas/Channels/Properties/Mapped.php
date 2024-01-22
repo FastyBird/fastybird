@@ -17,6 +17,7 @@ namespace FastyBird\Module\Devices\Schemas\Channels\Properties;
 
 use DateTimeInterface;
 use Exception;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
@@ -31,6 +32,7 @@ use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use IPub\SlimRouter\Routing;
 use Neomerx\JsonApi;
 use function array_merge;
+use function assert;
 use function is_bool;
 
 /**
@@ -53,11 +55,12 @@ final class Mapped extends Property
 
 	public function __construct(
 		Routing\IRouter $router,
-		Models\Entities\Channels\Properties\PropertiesRepository $propertiesRepository,
+		Models\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
+		private readonly Models\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
 		private readonly Models\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 	)
 	{
-		parent::__construct($router, $propertiesRepository);
+		parent::__construct($router, $channelsPropertiesRepository);
 	}
 
 	public function getEntityClass(): string
@@ -89,7 +92,10 @@ final class Mapped extends Property
 		JsonApi\Contracts\Schema\ContextInterface $context,
 	): iterable
 	{
-		$state = $this->channelPropertiesStatesManager->read($resource);
+		$configuration = $this->channelsPropertiesConfigurationRepository->find($resource->getId());
+		assert($configuration instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty);
+
+		$state = $this->channelPropertiesStatesManager->read($configuration);
 
 		return $resource->getParent() instanceof Entities\Channels\Properties\Dynamic ? array_merge(
 			(array) parent::getAttributes($resource, $context),

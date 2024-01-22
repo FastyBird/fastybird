@@ -113,6 +113,9 @@ final class DeviceConnection
 			);
 		}
 
+		$property = $this->devicesPropertiesConfigurationRepository->find($property->getId());
+		assert($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty);
+
 		$this->propertiesStatesManager->set(
 			$property,
 			Utils\ArrayHash::from([

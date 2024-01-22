@@ -17,6 +17,7 @@ namespace FastyBird\Module\Devices\Schemas\Devices\Properties;
 
 use DateTimeInterface;
 use Exception;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
@@ -31,6 +32,7 @@ use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use IPub\SlimRouter\Routing;
 use Neomerx\JsonApi;
 use function array_merge;
+use function assert;
 use function is_bool;
 
 /**
@@ -53,11 +55,12 @@ final class Mapped extends Property
 
 	public function __construct(
 		Routing\IRouter $router,
-		Models\Entities\Devices\Properties\PropertiesRepository $propertiesRepository,
+		Models\Entities\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
+		private readonly Models\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
 		private readonly Models\States\DevicePropertiesManager $devicePropertiesStatesManager,
 	)
 	{
-		parent::__construct($router, $propertiesRepository);
+		parent::__construct($router, $devicesPropertiesRepository);
 	}
 
 	public function getEntityClass(): string
@@ -89,7 +92,10 @@ final class Mapped extends Property
 		JsonApi\Contracts\Schema\ContextInterface $context,
 	): iterable
 	{
-		$state = $this->devicePropertiesStatesManager->read($resource);
+		$configuration = $this->devicesPropertiesConfigurationRepository->find($resource->getId());
+		assert($configuration instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty);
+
+		$state = $this->devicePropertiesStatesManager->read($configuration);
 
 		return $resource->getParent() instanceof Entities\Devices\Properties\Dynamic ? array_merge(
 			(array) parent::getAttributes($resource, $context),

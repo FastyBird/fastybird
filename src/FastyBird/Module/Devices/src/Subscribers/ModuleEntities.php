@@ -340,9 +340,12 @@ final class ModuleEntities implements Common\EventSubscriber
 							},
 						);
 				} else {
-					$state = $action === self::ACTION_UPDATED ? $this->devicePropertiesStatesManager->read(
-						$entity,
-					) : null;
+					$configuration = $this->devicesPropertiesConfigurationRepository->find($entity->getId());
+					assert($configuration instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty);
+
+					$state = $action === self::ACTION_UPDATED
+						? $this->devicePropertiesStatesManager->read($configuration)
+						: null;
 
 					$this->getPublisher()->publish(
 						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
@@ -387,8 +390,11 @@ final class ModuleEntities implements Common\EventSubscriber
 							},
 						);
 				} else {
+					$configuration = $this->channelsPropertiesConfigurationRepository->find($entity->getId());
+					assert($configuration instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty);
+
 					$state = $action === self::ACTION_UPDATED
-						? $this->channelPropertiesStatesManager->read($entity)
+						? $this->channelPropertiesStatesManager->read($configuration)
 						: null;
 
 					$this->getPublisher()->publish(
@@ -434,8 +440,11 @@ final class ModuleEntities implements Common\EventSubscriber
 							},
 						);
 				} else {
+					$configuration = $this->connectorsPropertiesConfigurationRepository->find($entity->getId());
+					assert($configuration instanceof MetadataDocuments\DevicesModule\ConnectorDynamicProperty);
+
 					$state = $action === self::ACTION_UPDATED
-						? $this->connectorPropertiesStatesManager->read($entity)
+						? $this->connectorPropertiesStatesManager->read($configuration)
 						: null;
 
 					$this->getPublisher()->publish(

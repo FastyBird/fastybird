@@ -24,7 +24,6 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices;
-use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\States;
@@ -32,7 +31,6 @@ use FastyBird\Module\Devices\Utilities;
 use Nette;
 use Nette\Utils;
 use Orisai\ObjectMapper;
-use function assert;
 use function boolval;
 use function is_array;
 use function strval;
@@ -74,7 +72,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 	 */
 	public function read(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped $property,
+		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
 	): States\ChannelProperty|null
 	{
 		return $this->loadValue($property, true);
@@ -90,7 +88,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 	 */
 	public function get(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped $property,
+		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
 	): States\ChannelProperty|null
 	{
 		return $this->loadValue($property, false);
@@ -105,7 +103,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 	 */
 	public function write(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped $property,
+		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
 		Utils\ArrayHash $data,
 	): void
 	{
@@ -121,7 +119,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 	 */
 	public function set(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped $property,
+		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
 		Utils\ArrayHash $data,
 	): void
 	{
@@ -129,7 +127,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 	}
 
 	/**
-	 * @param MetadataDocuments\DevicesModule\ChannelDynamicProperty|array<MetadataDocuments\DevicesModule\ChannelDynamicProperty>|Entities\Channels\Properties\Dynamic|array<Entities\Channels\Properties\Dynamic> $property
+	 * @param MetadataDocuments\DevicesModule\ChannelDynamicProperty|array<MetadataDocuments\DevicesModule\ChannelDynamicProperty> $property
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
@@ -138,7 +136,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function setValidState(
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty|Entities\Channels\Properties\Dynamic|array $property,
+		MetadataDocuments\DevicesModule\ChannelDynamicProperty|array $property,
 		bool $state,
 	): void
 	{
@@ -156,7 +154,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 	}
 
 	/**
-	 * @param MetadataDocuments\DevicesModule\ChannelDynamicProperty|array<MetadataDocuments\DevicesModule\ChannelDynamicProperty>|Entities\Channels\Properties\Dynamic|array<Entities\Channels\Properties\Dynamic> $property
+	 * @param MetadataDocuments\DevicesModule\ChannelDynamicProperty|array<MetadataDocuments\DevicesModule\ChannelDynamicProperty> $property
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
@@ -165,7 +163,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function setPendingState(
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty|Entities\Channels\Properties\Dynamic|array $property,
+		MetadataDocuments\DevicesModule\ChannelDynamicProperty|array $property,
 		bool $pending,
 	): void
 	{
@@ -268,18 +266,10 @@ final class ChannelPropertiesManager extends PropertiesManager
 	 */
 	private function loadValue(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped $property,
+		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
 		bool $forReading,
 	): States\ChannelProperty|null
 	{
-		if ($property instanceof Entities\Channels\Properties\Property) {
-			$property = $this->channelPropertiesConfigurationRepository->find($property->getId());
-			assert(
-				$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-				|| $property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty,
-			);
-		}
-
 		$mappedProperty = null;
 
 		if ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
@@ -437,19 +427,11 @@ final class ChannelPropertiesManager extends PropertiesManager
 	 */
 	private function saveValue(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty|Entities\Channels\Properties\Dynamic|Entities\Channels\Properties\Mapped $property,
+		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
 		Utils\ArrayHash $data,
 		bool $forWriting,
 	): void
 	{
-		if ($property instanceof Entities\Channels\Properties\Property) {
-			$property = $this->channelPropertiesConfigurationRepository->find($property->getId());
-			assert(
-				$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-				|| $property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty,
-			);
-		}
-
 		$mappedProperty = null;
 
 		if ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {

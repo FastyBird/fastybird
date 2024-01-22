@@ -153,6 +153,9 @@ final class StoreChannelPropertyState implements Queue\Consumer
 							},
 						);
 
+						$property = $this->channelsPropertiesConfigurationRepository->find($property->getId());
+						assert($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty);
+
 					} else {
 						throw $ex;
 					}

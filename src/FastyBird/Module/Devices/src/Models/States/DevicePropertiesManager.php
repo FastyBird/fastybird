@@ -24,7 +24,6 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices;
-use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\States;
@@ -32,7 +31,6 @@ use FastyBird\Module\Devices\Utilities;
 use Nette;
 use Nette\Utils;
 use Orisai\ObjectMapper;
-use function assert;
 use function is_array;
 use function strval;
 
@@ -73,7 +71,7 @@ final class DevicePropertiesManager extends PropertiesManager
 	 */
 	public function read(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
+		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty $property,
 	): States\DeviceProperty|null
 	{
 		return $this->loadValue($property, true);
@@ -89,7 +87,7 @@ final class DevicePropertiesManager extends PropertiesManager
 	 */
 	public function get(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
+		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty $property,
 	): States\DeviceProperty|null
 	{
 		return $this->loadValue($property, false);
@@ -104,7 +102,7 @@ final class DevicePropertiesManager extends PropertiesManager
 	 */
 	public function write(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
+		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty $property,
 		Utils\ArrayHash $data,
 	): void
 	{
@@ -120,7 +118,7 @@ final class DevicePropertiesManager extends PropertiesManager
 	 */
 	public function set(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
+		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty $property,
 		Utils\ArrayHash $data,
 	): void
 	{
@@ -128,7 +126,7 @@ final class DevicePropertiesManager extends PropertiesManager
 	}
 
 	/**
-	 * @param MetadataDocuments\DevicesModule\DeviceDynamicProperty|array<MetadataDocuments\DevicesModule\DeviceDynamicProperty>|Entities\Devices\Properties\Dynamic|array<Entities\Devices\Properties\Dynamic> $property
+	 * @param MetadataDocuments\DevicesModule\DeviceDynamicProperty|array<MetadataDocuments\DevicesModule\DeviceDynamicProperty> $property
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
@@ -137,7 +135,7 @@ final class DevicePropertiesManager extends PropertiesManager
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function setValidState(
-		MetadataDocuments\DevicesModule\DeviceDynamicProperty|Entities\Devices\Properties\Dynamic|array $property,
+		MetadataDocuments\DevicesModule\DeviceDynamicProperty|array $property,
 		bool $state,
 	): void
 	{
@@ -155,7 +153,7 @@ final class DevicePropertiesManager extends PropertiesManager
 	}
 
 	/**
-	 * @param MetadataDocuments\DevicesModule\DeviceDynamicProperty|array<MetadataDocuments\DevicesModule\DeviceDynamicProperty>|Entities\Devices\Properties\Dynamic|array<Entities\Devices\Properties\Dynamic> $property
+	 * @param MetadataDocuments\DevicesModule\DeviceDynamicProperty|array<MetadataDocuments\DevicesModule\DeviceDynamicProperty> $property
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
@@ -164,7 +162,7 @@ final class DevicePropertiesManager extends PropertiesManager
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function setPendingState(
-		MetadataDocuments\DevicesModule\DeviceDynamicProperty|Entities\Devices\Properties\Dynamic|array $property,
+		MetadataDocuments\DevicesModule\DeviceDynamicProperty|array $property,
 		bool $pending,
 	): void
 	{
@@ -265,18 +263,10 @@ final class DevicePropertiesManager extends PropertiesManager
 	 */
 	private function loadValue(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
+		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty $property,
 		bool $forReading,
 	): States\DeviceProperty|null
 	{
-		if ($property instanceof Entities\Devices\Properties\Property) {
-			$property = $this->devicePropertiesConfigurationRepository->find($property->getId());
-			assert(
-				$property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
-				|| $property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty,
-			);
-		}
-
 		$mappedProperty = null;
 
 		if ($property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
@@ -434,19 +424,11 @@ final class DevicePropertiesManager extends PropertiesManager
 	 */
 	private function saveValue(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty|Entities\Devices\Properties\Dynamic|Entities\Devices\Properties\Mapped $property,
+		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty $property,
 		Utils\ArrayHash $data,
 		bool $forWriting,
 	): void
 	{
-		if ($property instanceof Entities\Devices\Properties\Property) {
-			$property = $this->devicePropertiesConfigurationRepository->find($property->getId());
-			assert(
-				$property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
-				|| $property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty,
-			);
-		}
-
 		$mappedProperty = null;
 
 		if ($property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {

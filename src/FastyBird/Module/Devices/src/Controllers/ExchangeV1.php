@@ -15,7 +15,6 @@
 
 namespace FastyBird\Module\Devices\Controllers;
 
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Exchange\Documents as ExchangeEntities;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
@@ -27,7 +26,6 @@ use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices;
-use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
@@ -52,9 +50,9 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 {
 
 	public function __construct(
-		private readonly Models\Entities\Connectors\Properties\PropertiesRepository $connectorPropertiesRepository,
-		private readonly Models\Entities\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
-		private readonly Models\Entities\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
+		private readonly Models\Configuration\Connectors\Properties\Repository $connectorPropertiesConfigurationRepository,
+		private readonly Models\Configuration\Devices\Properties\Repository $devicePropertiesConfigurationRepository,
+		private readonly Models\Configuration\Channels\Properties\Repository $channelPropertiesConfigurationRepository,
 		private readonly Models\States\ConnectorPropertiesManager $connectorPropertiesStatesManager,
 		private readonly Models\States\DevicePropertiesManager $devicePropertiesStatesManager,
 		private readonly Models\States\ChannelPropertiesManager $channelPropertiesStatesManager,
@@ -86,16 +84,18 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 		);
 
 		try {
-			$findDevicesProperties = new Queries\Entities\FindDeviceProperties();
+			$findDevicesProperties = new Queries\Configuration\FindDeviceProperties();
 
-			$devicesProperties = $this->devicePropertiesRepository->getResultSet($findDevicesProperties);
+			$devicesProperties = $this->devicePropertiesConfigurationRepository->findAllBy(
+				$findDevicesProperties,
+			);
 
 			foreach ($devicesProperties as $deviceProperty) {
 				$dynamicData = [];
 
 				if (
-					$deviceProperty instanceof Entities\Devices\Properties\Dynamic
-					|| $deviceProperty instanceof Entities\Devices\Properties\Mapped
+					$deviceProperty instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
+					|| $deviceProperty instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
 				) {
 					$state = $this->devicePropertiesStatesManager->read($deviceProperty);
 
@@ -118,16 +118,18 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				]));
 			}
 
-			$findChannelsProperties = new Queries\Entities\FindChannelProperties();
+			$findChannelsProperties = new Queries\Configuration\FindChannelProperties();
 
-			$channelsProperties = $this->channelPropertiesRepository->getResultSet($findChannelsProperties);
+			$channelsProperties = $this->channelPropertiesConfigurationRepository->findAllBy(
+				$findChannelsProperties,
+			);
 
 			foreach ($channelsProperties as $channelProperty) {
 				$dynamicData = [];
 
 				if (
-					$channelProperty instanceof Entities\Channels\Properties\Dynamic
-					|| $channelProperty instanceof Entities\Channels\Properties\Mapped
+					$channelProperty instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+					|| $channelProperty instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
 				) {
 					$state = $this->channelPropertiesStatesManager->read($channelProperty);
 
@@ -150,14 +152,16 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				]));
 			}
 
-			$findConnectorsProperties = new Queries\Entities\FindConnectorProperties();
+			$findConnectorsProperties = new Queries\Configuration\FindConnectorProperties();
 
-			$connectorsProperties = $this->connectorPropertiesRepository->getResultSet($findConnectorsProperties);
+			$connectorsProperties = $this->connectorPropertiesConfigurationRepository->findAllBy(
+				$findConnectorsProperties,
+			);
 
 			foreach ($connectorsProperties as $connectorProperty) {
 				$dynamicData = [];
 
-				if ($connectorProperty instanceof Entities\Connectors\Properties\Dynamic) {
+				if ($connectorProperty instanceof MetadataDocuments\DevicesModule\ConnectorDynamicProperty) {
 					$state = $this->connectorPropertiesStatesManager->read($connectorProperty);
 
 					if ($state instanceof States\ConnectorProperty) {
@@ -194,7 +198,6 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	 * @param array<string, mixed> $args
 	 * @param WebSocketsWAMP\Entities\Topics\ITopic<mixed> $topic
 	 *
-	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws ExchangeExceptions\InvalidArgument
@@ -311,7 +314,6 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	}
 
 	/**
-	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws ExchangeExceptions\InvalidArgument
@@ -329,9 +331,9 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	): void
 	{
 		if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::SET)) {
-			$property = $this->connectorPropertiesRepository->find($entity->getProperty());
+			$property = $this->connectorPropertiesConfigurationRepository->find($entity->getProperty());
 
-			if (!$property instanceof Entities\Connectors\Properties\Dynamic) {
+			if (!$property instanceof MetadataDocuments\DevicesModule\ConnectorDynamicProperty) {
 				return;
 			}
 
@@ -342,13 +344,13 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				]),
 			);
 		} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::GET)) {
-			$property = $this->connectorPropertiesRepository->find($entity->getProperty());
+			$property = $this->connectorPropertiesConfigurationRepository->find($entity->getProperty());
 
 			if ($property === null) {
 				return;
 			}
 
-			$state = $property instanceof Entities\Connectors\Properties\Dynamic
+			$state = $property instanceof MetadataDocuments\DevicesModule\ConnectorDynamicProperty
 				? $this->connectorPropertiesStatesManager->read($property)
 				: null;
 
@@ -379,7 +381,6 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	}
 
 	/**
-	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws ExchangeExceptions\InvalidArgument
@@ -397,11 +398,11 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	): void
 	{
 		if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::SET)) {
-			$property = $this->devicePropertiesRepository->find($entity->getProperty());
+			$property = $this->devicePropertiesConfigurationRepository->find($entity->getProperty());
 
 			if (
-				!$property instanceof Entities\Devices\Properties\Dynamic
-				&& !$property instanceof Entities\Devices\Properties\Mapped
+				!$property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
+				&& !$property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
 			) {
 				return;
 			}
@@ -413,14 +414,14 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				]),
 			);
 		} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::GET)) {
-			$property = $this->devicePropertiesRepository->find($entity->getProperty());
+			$property = $this->devicePropertiesConfigurationRepository->find($entity->getProperty());
 
 			if ($property === null) {
 				return;
 			}
 
-			$state = $property instanceof Entities\Devices\Properties\Dynamic
-			|| $property instanceof Entities\Devices\Properties\Mapped
+			$state = $property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
+			|| $property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
 				? $this->devicePropertiesStatesManager->read($property) : null;
 
 			$publishRoutingKey = MetadataTypes\RoutingKey::get(
@@ -450,7 +451,6 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	}
 
 	/**
-	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws ExchangeExceptions\InvalidArgument
@@ -468,11 +468,11 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	): void
 	{
 		if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::SET)) {
-			$property = $this->channelPropertiesRepository->find($entity->getProperty());
+			$property = $this->channelPropertiesConfigurationRepository->find($entity->getProperty());
 
 			if (
-				!$property instanceof Entities\Channels\Properties\Dynamic
-				&& !$property instanceof Entities\Channels\Properties\Mapped
+				!$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+				&& !$property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
 			) {
 				return;
 			}
@@ -484,14 +484,14 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				]),
 			);
 		} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::GET)) {
-			$property = $this->channelPropertiesRepository->find($entity->getProperty());
+			$property = $this->channelPropertiesConfigurationRepository->find($entity->getProperty());
 
 			if ($property === null) {
 				return;
 			}
 
-			$state = $property instanceof Entities\Channels\Properties\Dynamic
-			|| $property instanceof Entities\Channels\Properties\Mapped
+			$state = $property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+			|| $property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
 				? $this->channelPropertiesStatesManager->read($property) : null;
 
 			$publishRoutingKey = MetadataTypes\RoutingKey::get(

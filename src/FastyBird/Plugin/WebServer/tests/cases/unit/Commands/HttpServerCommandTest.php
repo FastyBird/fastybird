@@ -38,7 +38,7 @@ final class HttpServerCommandTest extends TestCase
 				self::callback(static function (...$args): bool {
 					$valid = [
 						[
-							'Launching HTTP Server',
+							'Starting HTTP Server',
 						],
 						[
 							'Listening on "http://127.0.0.1:8001"',

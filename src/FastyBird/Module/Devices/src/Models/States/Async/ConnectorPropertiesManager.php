@@ -22,9 +22,7 @@ use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
-use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices;
-use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\States;
@@ -33,9 +31,9 @@ use Nette\Utils;
 use Orisai\ObjectMapper;
 use React\Promise;
 use Throwable;
-use function assert;
 use function boolval;
 use function is_array;
+use function React\Async\async;
 use function React\Async\await;
 use function strval;
 
@@ -55,7 +53,6 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 	use Nette\SmartObject;
 
 	public function __construct(
-		private readonly Models\Configuration\Connectors\Properties\Repository $connectorPropertiesConfigurationRepository,
 		private readonly Models\States\Connectors\Async\Repository $connectorPropertyStateRepository,
 		private readonly Models\States\Connectors\Async\Manager $connectorPropertiesStatesManager,
 		private readonly Devices\Logger $logger,
@@ -68,12 +65,9 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 
 	/**
 	 * @return Promise\PromiseInterface<States\ConnectorProperty|null>
-	 *
-	 * @throws Exceptions\InvalidState
 	 */
 	public function read(
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
+		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
 	): Promise\PromiseInterface
 	{
 		return $this->loadValue($property, true);
@@ -81,12 +75,9 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 
 	/**
 	 * @return Promise\PromiseInterface<States\ConnectorProperty|null>
-	 *
-	 * @throws Exceptions\InvalidState
 	 */
 	public function get(
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
+		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
 	): Promise\PromiseInterface
 	{
 		return $this->loadValue($property, false);
@@ -94,16 +85,9 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 
 	/**
 	 * @return Promise\PromiseInterface<bool>
-	 *
-	 * @throws Exceptions\InvalidArgument
-	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function write(
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
+		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
 		Utils\ArrayHash $data,
 	): Promise\PromiseInterface
 	{
@@ -112,16 +96,9 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 
 	/**
 	 * @return Promise\PromiseInterface<bool>
-	 *
-	 * @throws Exceptions\InvalidArgument
-	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function set(
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
+		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
 		Utils\ArrayHash $data,
 	): Promise\PromiseInterface
 	{
@@ -129,18 +106,12 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 	}
 
 	/**
-	 * @param MetadataDocuments\DevicesModule\ConnectorDynamicProperty|array<MetadataDocuments\DevicesModule\ConnectorDynamicProperty>|Entities\Connectors\Properties\Dynamic|array<Entities\Connectors\Properties\Dynamic> $property
+	 * @param MetadataDocuments\DevicesModule\ConnectorDynamicProperty|array<MetadataDocuments\DevicesModule\ConnectorDynamicProperty> $property
 	 *
 	 * @return Promise\PromiseInterface<bool>
-	 *
-	 * @throws Exceptions\InvalidArgument
-	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function setValidState(
-		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic|array $property,
+		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|array $property,
 		bool $state,
 	): Promise\PromiseInterface
 	{
@@ -172,18 +143,12 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 	}
 
 	/**
-	 * @param MetadataDocuments\DevicesModule\ConnectorDynamicProperty|array<MetadataDocuments\DevicesModule\ConnectorDynamicProperty>|Entities\Connectors\Properties\Dynamic|array<Entities\Connectors\Properties\Dynamic> $property
+	 * @param MetadataDocuments\DevicesModule\ConnectorDynamicProperty|array<MetadataDocuments\DevicesModule\ConnectorDynamicProperty> $property
 	 *
 	 * @return Promise\PromiseInterface<bool>
-	 *
-	 * @throws Exceptions\InvalidArgument
-	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function setPendingState(
-		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic|array $property,
+		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|array $property,
 		bool $pending,
 	): Promise\PromiseInterface
 	{
@@ -257,40 +222,40 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 
 	/**
 	 * @return Promise\PromiseInterface<States\ConnectorProperty|null>
-	 *
-	 * @throws Exceptions\InvalidState
 	 */
 	private function loadValue(
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
+		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
 		bool $forReading,
 	): Promise\PromiseInterface
 	{
-		if ($property instanceof Entities\Connectors\Properties\Property) {
-			$property = $this->connectorPropertiesConfigurationRepository->find($property->getId());
-			assert($property instanceof MetadataDocuments\DevicesModule\ConnectorDynamicProperty);
-		}
+		$deferred = new Promise\Deferred();
 
-		try {
-			$state = await($this->connectorPropertyStateRepository->find($property->getId()));
+		$this->connectorPropertyStateRepository->find($property->getId())
+			->then(
+				function (
+					States\ConnectorProperty|null $state,
+				) use (
+					$deferred,
+					$property,
+					$forReading,
+				): void {
+					if ($state === null) {
+						$deferred->resolve(null);
 
-			if ($state === null) {
-				return Promise\resolve(null);
-			}
+						return;
+					}
 
-			$updateValues = [];
+					$updateValues = [];
 
-			if ($state->getActualValue() !== null) {
-				try {
-					$updateValues[States\Property::ACTUAL_VALUE_FIELD] = $this->convertReadValue(
-						$state->getActualValue(),
-						$property,
-						null,
-						$forReading,
-					);
-				} catch (MetadataExceptions\InvalidValue $ex) {
-					try {
-						await(
+					if ($state->getActualValue() !== null) {
+						try {
+							$updateValues[States\Property::ACTUAL_VALUE_FIELD] = $this->convertReadValue(
+								$state->getActualValue(),
+								$property,
+								null,
+								$forReading,
+							);
+						} catch (MetadataExceptions\InvalidValue $ex) {
 							$this->connectorPropertiesStatesManager->update(
 								$property,
 								$state,
@@ -298,37 +263,38 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 									States\Property::ACTUAL_VALUE_FIELD => null,
 									States\Property::VALID_FIELD => false,
 								]),
-							),
-						);
+							)
+								->then(async(function () use ($deferred, $property, $forReading): void {
+									$deferred->resolve(await($this->loadValue($property, $forReading)));
+								}))
+								->catch(static function (Throwable $ex) use ($deferred): void {
+									$deferred->reject($ex);
+								})
+								->finally(function () use ($ex): void {
+									$this->logger->error(
+										'Property stored actual value was not valid',
+										[
+											'source' => MetadataTypes\ModuleSource::DEVICES,
+											'type' => 'async-connector-properties-states',
+											'exception' => ApplicationHelpers\Logger::buildException($ex),
+										],
+									);
+								});
 
-						$this->logger->error(
-							'Property stored actual value was not valid',
-							[
-								'source' => MetadataTypes\ModuleSource::DEVICES,
-								'type' => 'async-connector-properties-states',
-								'exception' => ApplicationHelpers\Logger::buildException($ex),
-							],
-						);
-
-						return $this->loadValue($property, $forReading);
-					} catch (Throwable $ex) {
-						return Promise\reject($ex);
+							return;
+						}
 					}
-				}
-			}
 
-			if ($state->getExpectedValue() !== null) {
-				try {
-					$expectedValue = $this->convertReadValue(
-						$state->getExpectedValue(),
-						$property,
-						null,
-						$forReading,
-					);
-
-					if ($expectedValue !== null && !$property->isSettable()) {
+					if ($state->getExpectedValue() !== null) {
 						try {
-							await(
+							$expectedValue = $this->convertReadValue(
+								$state->getExpectedValue(),
+								$property,
+								null,
+								$forReading,
+							);
+
+							if ($expectedValue !== null && !$property->isSettable()) {
 								$this->connectorPropertiesStatesManager->update(
 									$property,
 									$state,
@@ -336,27 +302,32 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 										States\Property::EXPECTED_VALUE_FIELD => null,
 										States\Property::PENDING_FIELD => false,
 									]),
-								),
-							);
+								)
+									->then(async(
+										function () use ($deferred, $property, $forReading): void {
+											$deferred->resolve(await(
+												$this->loadValue($property, $forReading),
+											));
+										},
+									))
+									->catch(static function (Throwable $ex) use ($deferred): void {
+										$deferred->reject($ex);
+									})
+									->finally(function (): void {
+										$this->logger->warning(
+											'Property is not settable but has stored expected value',
+											[
+												'source' => MetadataTypes\ModuleSource::DEVICES,
+												'type' => 'async-connector-properties-states',
+											],
+										);
+									});
 
-							$this->logger->warning(
-								'Property is not settable but has stored expected value',
-								[
-									'source' => MetadataTypes\ModuleSource::DEVICES,
-									'type' => 'async-connector-properties-states',
-								],
-							);
+								return;
+							}
 
-							return $this->loadValue($property, $forReading);
-						} catch (Throwable $ex) {
-							return Promise\reject($ex);
-						}
-					}
-
-					$updateValues[States\Property::EXPECTED_VALUE_FIELD] = $expectedValue;
-				} catch (MetadataExceptions\InvalidValue $ex) {
-					try {
-						await(
+							$updateValues[States\Property::EXPECTED_VALUE_FIELD] = $expectedValue;
+						} catch (MetadataExceptions\InvalidValue $ex) {
 							$this->connectorPropertiesStatesManager->update(
 								$property,
 								$state,
@@ -364,246 +335,258 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 									States\Property::EXPECTED_VALUE_FIELD => null,
 									States\Property::PENDING_FIELD => false,
 								]),
-							),
-						);
+							)
+								->then(async(function () use ($deferred, $property, $forReading): void {
+									$deferred->resolve(await($this->loadValue($property, $forReading)));
+								}))
+								->catch(static function (Throwable $ex) use ($deferred): void {
+									$deferred->reject($ex);
+								})
+								->finally(function () use ($ex): void {
+									$this->logger->error(
+										'Property stored expected value was not valid',
+										[
+											'source' => MetadataTypes\ModuleSource::DEVICES,
+											'type' => 'async-connector-properties-states',
+											'exception' => ApplicationHelpers\Logger::buildException($ex),
+										],
+									);
+								});
 
-						$this->logger->error(
-							'Property stored expected value was not valid',
-							[
-								'source' => MetadataTypes\ModuleSource::DEVICES,
-								'type' => 'async-connector-properties-states',
-								'exception' => ApplicationHelpers\Logger::buildException($ex),
-							],
-						);
-
-						return $this->loadValue($property, $forReading);
-					} catch (Throwable $ex) {
-						return Promise\reject($ex);
+							return;
+						}
 					}
+
+					if ($updateValues === []) {
+						$deferred->resolve($state);
+
+						return;
+					}
+
+					$deferred->resolve($this->updateState($state, $state::class, $updateValues));
+				},
+			)
+			->catch(function (Throwable $ex) use ($deferred): void {
+				if ($ex instanceof Exceptions\NotImplemented) {
+					$this->logger->warning(
+						'Connectors states repository is not configured. State could not be fetched',
+						[
+							'source' => MetadataTypes\ModuleSource::DEVICES,
+							'type' => 'async-connector-properties-states',
+						],
+					);
 				}
-			}
 
-			if ($updateValues === []) {
-				return Promise\resolve($state);
-			}
+				$deferred->reject($ex);
+			});
 
-			return Promise\resolve($this->updateState($state, $state::class, $updateValues));
-		} catch (Exceptions\NotImplemented) {
-			$this->logger->warning(
-				'Connectors states repository is not configured. State could not be fetched',
-				[
-					'source' => MetadataTypes\ModuleSource::DEVICES,
-					'type' => 'async-connector-properties-states',
-				],
-			);
-		} catch (Throwable $ex) {
-			return Promise\reject($ex);
-		}
-
-		return Promise\resolve(null);
+		return $deferred->promise();
 	}
 
 	/**
 	 * @return Promise\PromiseInterface<bool>
-	 *
-	 * @throws Exceptions\InvalidArgument
-	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	private function saveValue(
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|Entities\Connectors\Properties\Dynamic $property,
+		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
 		Utils\ArrayHash $data,
 		bool $forWriting,
 	): Promise\PromiseInterface
 	{
-		if ($property instanceof Entities\Connectors\Properties\Property) {
-			$property = $this->connectorPropertiesConfigurationRepository->find($property->getId());
-			assert($property instanceof MetadataDocuments\DevicesModule\ConnectorDynamicProperty);
-		}
-
-		try {
-			$state = await($this->connectorPropertyStateRepository->find($property->getId()));
-		} catch (Exceptions\NotImplemented) {
-			$state = null;
-		} catch (Throwable $ex) {
-			return Promise\reject($ex);
-		}
-
-		/**
-		 * IMPORTANT: ACTUAL VALUE field is meant to be used only by connectors for saving device actual value
-		 */
-		if ($data->offsetExists(States\Property::ACTUAL_VALUE_FIELD)) {
-			if ($forWriting === true) {
-				throw new Exceptions\InvalidArgument(
-					'Setting property actual value could be done only by "setValue" method',
-				);
-			}
-
-			try {
-				if (
-					$property->getInvalid() !== null
-					&& strval(
-						MetadataUtilities\Value::flattenValue(
-							/** @phpstan-ignore-next-line */
-							$data->offsetGet(States\Property::ACTUAL_VALUE_FIELD),
-						),
-					) === strval(
-						MetadataUtilities\Value::flattenValue($property->getInvalid()),
-					)
-				) {
-					$data->offsetSet(States\Property::ACTUAL_VALUE_FIELD, null);
-					$data->offsetSet(States\Property::VALID_FIELD, false);
-
-				} else {
-					$actualValue = $this->convertWriteActualValue(
-						/** @phpstan-ignore-next-line */
-						$data->offsetGet(States\Property::ACTUAL_VALUE_FIELD),
-						$property,
-					);
-
-					$data->offsetSet(
-						States\Property::ACTUAL_VALUE_FIELD,
-						MetadataUtilities\Value::flattenValue($actualValue),
-					);
-
-					if ($data->offsetExists(States\Property::VALID_FIELD)) {
-						$data->offsetSet(
-							States\Property::VALID_FIELD,
-							boolval($data->offsetGet(States\Property::VALID_FIELD)),
-						);
-					} else {
-						$data->offsetSet(States\Property::VALID_FIELD, true);
-					}
-				}
-			} catch (MetadataExceptions\InvalidValue $ex) {
-				$data->offsetUnset(States\Property::ACTUAL_VALUE_FIELD);
-				$data->offsetSet(States\Property::VALID_FIELD, false);
-
-				$this->logger->error(
-					'Provided property actual value is not valid',
-					[
-						'source' => MetadataTypes\ModuleSource::DEVICES,
-						'type' => 'async-connector-properties-states',
-						'exception' => ApplicationHelpers\Logger::buildException($ex),
-					],
-				);
-			}
-		}
-
-		/**
-		 * IMPORTANT: EXPECTED VALUE field is meant to be used mainly by user interface for saving value which should
-		 * be then written into device
-		 */
-		if ($data->offsetExists(States\Property::EXPECTED_VALUE_FIELD)) {
-			if (
-				$data->offsetGet(States\Property::EXPECTED_VALUE_FIELD) !== null
-				&& $data->offsetGet(States\Property::EXPECTED_VALUE_FIELD) !== ''
-			) {
-				try {
-					$expectedValue = $this->convertWriteExpectedValue(
-						/** @phpstan-ignore-next-line */
-						$data->offsetGet(States\Property::EXPECTED_VALUE_FIELD),
-						$property,
-						null,
-						$forWriting,
-					);
-
-					if ($expectedValue !== null && (!$property->isSettable())) {
-						throw new Exceptions\InvalidArgument(
-							'Property is not settable, expected value could not written',
-						);
-					}
-
-					$data->offsetSet(
-						States\Property::EXPECTED_VALUE_FIELD,
-						MetadataUtilities\Value::flattenValue($expectedValue),
-					);
-					$data->offsetSet(
-						States\Property::PENDING_FIELD,
-						$expectedValue !== null,
-					);
-				} catch (MetadataExceptions\InvalidValue $ex) {
-					$data->offsetSet(States\Property::EXPECTED_VALUE_FIELD, null);
-					$data->offsetSet(States\Property::PENDING_FIELD, false);
-
-					$this->logger->error(
-						'Provided property expected value was not valid',
-						[
-							'source' => MetadataTypes\ModuleSource::DEVICES,
-							'type' => 'async-connector-properties-states',
-							'exception' => ApplicationHelpers\Logger::buildException($ex),
-						],
-					);
-				}
-			} else {
-				$data->offsetSet(States\Property::EXPECTED_VALUE_FIELD, null);
-				$data->offsetSet(States\Property::PENDING_FIELD, false);
-			}
-		}
-
-		if ($data->count() === 0) {
-			return Promise\resolve(true);
-		}
-
-		if (
-			$state !== null
-			&& (
-				(
-					$data->offsetExists(States\Property::EXPECTED_VALUE_FIELD)
-					&& MetadataUtilities\Value::flattenValue($state->getActualValue()) === $data->offsetGet(
-						States\Property::EXPECTED_VALUE_FIELD,
-					)
-				) || (
-					$data->offsetExists(States\Property::ACTUAL_VALUE_FIELD)
-					&& MetadataUtilities\Value::flattenValue($state->getExpectedValue()) === $data->offsetGet(
-						States\Property::ACTUAL_VALUE_FIELD,
-					)
-				)
-			)
-		) {
-			$data->offsetSet(States\Property::EXPECTED_VALUE_FIELD, null);
-			$data->offsetSet(States\Property::PENDING_FIELD, false);
-		}
-
 		$deferred = new Promise\Deferred();
 
-		$result = $state === null ? $this->connectorPropertiesStatesManager->create(
-			$property,
-			$data,
-		) : $this->connectorPropertiesStatesManager->update(
-			$property,
-			$state,
-			$data,
-		);
+		$this->connectorPropertyStateRepository->find($property->getId())
+			->then(async(
+				function (
+					States\ConnectorProperty|null $state,
+				) use (
+					$deferred,
+					$data,
+					$property,
+					$forWriting,
+				): void {
+					/**
+					 * IMPORTANT: ACTUAL VALUE field is meant to be used only by connectors for saving device actual value
+					 */
+					if ($data->offsetExists(States\Property::ACTUAL_VALUE_FIELD)) {
+						if ($forWriting === true) {
+							$deferred->reject(new Exceptions\InvalidArgument(
+								'Setting property actual value could be done only by "setValue" method',
+							));
 
-		$result
-			->then(function (States\ConnectorProperty $result) use ($state, $property): void {
-				$this->logger->debug(
-					$state === null ? 'Connector property state was created' : 'Connector property state was updated',
-					[
-						'source' => MetadataTypes\ModuleSource::DEVICES,
-						'type' => 'async-connector-properties-states',
-						'property' => [
-							'id' => $property->getId()->toString(),
-							'state' => $result->toArray(),
-						],
-					],
-				);
-			})
-			->catch(function (Throwable $ex) use ($deferred): void {
-				if ($ex instanceof Exceptions\NotImplemented) {
-					$this->logger->warning(
-						'Connectors states manager is not configured. State could not be saved',
-						[
-							'source' => MetadataTypes\ModuleSource::DEVICES,
-							'type' => 'async-connector-properties-states',
-						],
-					);
-				}
+							return;
+						}
 
+						try {
+							if (
+								$property->getInvalid() !== null
+								&& strval(
+									MetadataUtilities\Value::flattenValue(
+									/** @phpstan-ignore-next-line */
+										$data->offsetGet(States\Property::ACTUAL_VALUE_FIELD),
+									),
+								) === strval(
+									MetadataUtilities\Value::flattenValue($property->getInvalid()),
+								)
+							) {
+								$data->offsetSet(States\Property::ACTUAL_VALUE_FIELD, null);
+								$data->offsetSet(States\Property::VALID_FIELD, false);
+
+							} else {
+								$actualValue = $this->convertWriteActualValue(
+								/** @phpstan-ignore-next-line */
+									$data->offsetGet(States\Property::ACTUAL_VALUE_FIELD),
+									$property,
+								);
+
+								$data->offsetSet(
+									States\Property::ACTUAL_VALUE_FIELD,
+									MetadataUtilities\Value::flattenValue($actualValue),
+								);
+
+								if ($data->offsetExists(States\Property::VALID_FIELD)) {
+									$data->offsetSet(
+										States\Property::VALID_FIELD,
+										boolval($data->offsetGet(States\Property::VALID_FIELD)),
+									);
+								} else {
+									$data->offsetSet(States\Property::VALID_FIELD, true);
+								}
+							}
+						} catch (MetadataExceptions\InvalidValue $ex) {
+							$data->offsetUnset(States\Property::ACTUAL_VALUE_FIELD);
+							$data->offsetSet(States\Property::VALID_FIELD, false);
+
+							$this->logger->error(
+								'Provided property actual value is not valid',
+								[
+									'source' => MetadataTypes\ModuleSource::DEVICES,
+									'type' => 'async-connector-properties-states',
+									'exception' => ApplicationHelpers\Logger::buildException($ex),
+								],
+							);
+						}
+					}
+
+					/**
+					 * IMPORTANT: EXPECTED VALUE field is meant to be used mainly by user interface for saving value which should
+					 * be then written into device
+					 */
+					if ($data->offsetExists(States\Property::EXPECTED_VALUE_FIELD)) {
+						if (
+							$data->offsetGet(States\Property::EXPECTED_VALUE_FIELD) !== null
+							&& $data->offsetGet(States\Property::EXPECTED_VALUE_FIELD) !== ''
+						) {
+							try {
+								$expectedValue = $this->convertWriteExpectedValue(
+								/** @phpstan-ignore-next-line */
+									$data->offsetGet(States\Property::EXPECTED_VALUE_FIELD),
+									$property,
+									null,
+									$forWriting,
+								);
+
+								if ($expectedValue !== null && !$property->isSettable()) {
+									$deferred->reject(new Exceptions\InvalidArgument(
+										'Property is not settable, expected value could not written',
+									));
+
+									return;
+								}
+
+								$data->offsetSet(
+									States\Property::EXPECTED_VALUE_FIELD,
+									MetadataUtilities\Value::flattenValue($expectedValue),
+								);
+								$data->offsetSet(
+									States\Property::PENDING_FIELD,
+									$expectedValue !== null,
+								);
+							} catch (MetadataExceptions\InvalidValue $ex) {
+								$data->offsetSet(States\Property::EXPECTED_VALUE_FIELD, null);
+								$data->offsetSet(States\Property::PENDING_FIELD, false);
+
+								$this->logger->error(
+									'Provided property expected value was not valid',
+									[
+										'source' => MetadataTypes\ModuleSource::DEVICES,
+										'type' => 'async-connector-properties-states',
+										'exception' => ApplicationHelpers\Logger::buildException($ex),
+									],
+								);
+							}
+						} else {
+							$data->offsetSet(States\Property::EXPECTED_VALUE_FIELD, null);
+							$data->offsetSet(States\Property::PENDING_FIELD, false);
+						}
+					}
+
+					if ($data->count() === 0) {
+						$deferred->resolve(true);
+
+						return;
+					}
+
+					if (
+						$state !== null
+						&& (
+							(
+								$data->offsetExists(States\Property::EXPECTED_VALUE_FIELD)
+								&& MetadataUtilities\Value::flattenValue($state->getActualValue()) === $data->offsetGet(
+									States\Property::EXPECTED_VALUE_FIELD,
+								)
+							) || (
+								$data->offsetExists(States\Property::ACTUAL_VALUE_FIELD)
+								&& MetadataUtilities\Value::flattenValue(
+									$state->getExpectedValue(),
+								) === $data->offsetGet(
+									States\Property::ACTUAL_VALUE_FIELD,
+								)
+							)
+						)
+					) {
+						$data->offsetSet(States\Property::EXPECTED_VALUE_FIELD, null);
+						$data->offsetSet(States\Property::PENDING_FIELD, false);
+					}
+
+					try {
+						$result = await($state === null ? $this->connectorPropertiesStatesManager->create(
+							$property,
+							$data,
+						) : $this->connectorPropertiesStatesManager->update(
+							$property,
+							$state,
+							$data,
+						));
+
+						$this->logger->debug(
+							$state === null ? 'Connector property state was created' : 'Connector property state was updated',
+							[
+								'source' => MetadataTypes\ModuleSource::DEVICES,
+								'type' => 'async-connector-properties-states',
+								'property' => [
+									'id' => $property->getId()->toString(),
+									'state' => $result->toArray(),
+								],
+							],
+						);
+
+						$deferred->resolve(true);
+					} catch (Throwable $ex) {
+						if ($ex instanceof Exceptions\NotImplemented) {
+							$this->logger->warning(
+								'Connectors states manager is not configured. State could not be saved',
+								[
+									'source' => MetadataTypes\ModuleSource::DEVICES,
+									'type' => 'async-connector-properties-states',
+								],
+							);
+						}
+
+						$deferred->reject($ex);
+					}
+				},
+			))
+			->catch(static function (Throwable $ex) use ($deferred): void {
 				$deferred->reject($ex);
 			});
 

@@ -79,7 +79,7 @@ class HttpServer extends Console\Command\Command
 	): int
 	{
 		$this->logger->info(
-			'Launching HTTP Server',
+			'Starting HTTP Server',
 			[
 				'source' => MetadataTypes\PluginSource::WEB_SERVER,
 				'type' => 'server-command',

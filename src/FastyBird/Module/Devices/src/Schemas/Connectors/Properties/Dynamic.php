@@ -16,6 +16,7 @@
 namespace FastyBird\Module\Devices\Schemas\Connectors\Properties;
 
 use DateTimeInterface;
+use FastyBird\Library\Metadata\Documents\DevicesModule\ConnectorDynamicProperty;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
@@ -27,6 +28,7 @@ use FastyBird\Module\Devices\Schemas;
 use IPub\SlimRouter\Routing;
 use Neomerx\JsonApi;
 use function array_merge;
+use function assert;
 use function is_bool;
 
 /**
@@ -49,6 +51,7 @@ final class Dynamic extends Property
 
 	public function __construct(
 		Routing\IRouter $router,
+		private readonly Models\Configuration\Connectors\Properties\Repository $connectorsPropertiesConfigurationRepository,
 		private readonly Models\States\ConnectorPropertiesManager $connectorPropertiesStatesManager,
 	)
 	{
@@ -84,7 +87,10 @@ final class Dynamic extends Property
 		JsonApi\Contracts\Schema\ContextInterface $context,
 	): iterable
 	{
-		$state = $this->connectorPropertiesStatesManager->read($resource);
+		$configuration = $this->connectorsPropertiesConfigurationRepository->find($resource->getId());
+		assert($configuration instanceof ConnectorDynamicProperty);
+
+		$state = $this->connectorPropertiesStatesManager->read($configuration);
 
 		return array_merge((array) parent::getAttributes($resource, $context), [
 			'settable' => $resource->isSettable(),

@@ -109,6 +109,9 @@ final class ConnectorConnection
 			);
 		}
 
+		$property = $this->connectorsPropertiesConfigurationRepository->find($property->getId());
+		assert($property instanceof MetadataDocuments\DevicesModule\ConnectorDynamicProperty);
+
 		$this->propertiesStatesManager->set(
 			$property,
 			Utils\ArrayHash::from([

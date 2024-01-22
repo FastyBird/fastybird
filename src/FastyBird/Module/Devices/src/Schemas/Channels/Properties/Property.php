@@ -55,7 +55,7 @@ abstract class Property extends JsonApiSchemas\JsonApi
 
 	public function __construct(
 		protected readonly Routing\IRouter $router,
-		protected readonly Models\Entities\Channels\Properties\PropertiesRepository $propertiesRepository,
+		protected readonly Models\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 	)
 	{
 	}
@@ -175,7 +175,7 @@ abstract class Property extends JsonApiSchemas\JsonApi
 		$findQuery = new Queries\Entities\FindChannelProperties();
 		$findQuery->forParent($property);
 
-		return $this->propertiesRepository->findAllBy($findQuery);
+		return $this->channelsPropertiesRepository->findAllBy($findQuery);
 	}
 
 }
