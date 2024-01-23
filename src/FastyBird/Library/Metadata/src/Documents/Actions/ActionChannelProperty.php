@@ -16,7 +16,6 @@
 namespace FastyBird\Library\Metadata\Documents\Actions;
 
 use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
-use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Documents;
 use FastyBird\Library\Metadata\Exceptions;
 use FastyBird\Library\Metadata\Types;
@@ -44,23 +43,15 @@ final class ActionChannelProperty implements Documents\Document
 		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $property,
 		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\BoolValue(),
-			new ObjectMapper\Rules\FloatValue(),
-			new ObjectMapper\Rules\IntValue(),
-			new ObjectMapper\Rules\StringValue(notEmpty: true),
-			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+			new ObjectMapper\Rules\MappedObjectValue(class: PropertyValues::class),
+			new ObjectMapper\Rules\NullValue(),
 		])]
-		#[ObjectMapper\Modifiers\FieldName('actual_value')]
-		private readonly bool|float|int|string|null $actualValue = Metadata\Constants::VALUE_NOT_SET,
+		private readonly PropertyValues|null $set = null,
 		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\BoolValue(),
-			new ObjectMapper\Rules\FloatValue(),
-			new ObjectMapper\Rules\IntValue(),
-			new ObjectMapper\Rules\StringValue(notEmpty: true),
-			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+			new ObjectMapper\Rules\MappedObjectValue(class: PropertyValues::class),
+			new ObjectMapper\Rules\NullValue(),
 		])]
-		#[ObjectMapper\Modifiers\FieldName('expected_value')]
-		private readonly bool|float|int|string|null $expectedValue = Metadata\Constants::VALUE_NOT_SET,
+		private readonly PropertyValues|null $write = null,
 	)
 	{
 	}
@@ -83,29 +74,29 @@ final class ActionChannelProperty implements Documents\Document
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public function getActualValue(): float|bool|int|string|null
+	public function getSet(): PropertyValues|null
 	{
 		if (!$this->getAction()->equalsValue(Types\PropertyAction::SET)) {
 			throw new Exceptions\InvalidState(
-				sprintf('Actual value is available only for action: %s', Types\PropertyAction::SET),
+				sprintf('Write values are available only for action: %s', Types\PropertyAction::SET),
 			);
 		}
 
-		return $this->actualValue;
+		return $this->set;
 	}
 
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public function getExpectedValue(): float|bool|int|string|null
+	public function getWrite(): PropertyValues|null
 	{
 		if (!$this->getAction()->equalsValue(Types\PropertyAction::SET)) {
 			throw new Exceptions\InvalidState(
-				sprintf('Expected value is available only for action: %s', Types\PropertyAction::SET),
+				sprintf('Write values are available only for action: %s', Types\PropertyAction::SET),
 			);
 		}
 
-		return $this->expectedValue;
+		return $this->write;
 	}
 
 	/**
@@ -120,15 +111,15 @@ final class ActionChannelProperty implements Documents\Document
 		];
 
 		if ($this->getAction()->equalsValue(Types\PropertyAction::SET)) {
-			if ($this->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+			if ($this->getSet() !== null) {
 				$data = array_merge($data, [
-					'actual_value' => $this->getActualValue(),
+					'set' => $this->getSet()->toArray(),
 				]);
 			}
 
-			if ($this->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
+			if ($this->getWrite() !== null) {
 				$data = array_merge($data, [
-					'expected_value' => $this->getExpectedValue(),
+					'write' => $this->getWrite()->toArray(),
 				]);
 			}
 		}

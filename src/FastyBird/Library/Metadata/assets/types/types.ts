@@ -11,7 +11,6 @@ export enum ModuleSource {
 	MODULE_DEVICES = 'com.fastybird.devices-module',
 	MODULE_TRIGGERS = 'com.fastybird.triggers-module',
 	MODULE_UI = 'com.fastybird.ui-module',
-	MODULE_WEB_UI = 'com.fastybird.web-ui-module',
 }
 
 export enum PluginSource {
@@ -21,6 +20,7 @@ export enum PluginSource {
 	REDISDB_PLUGIN = 'com.fastybird.redisdb-plugin',
 	WS_EXCHANGE_PLUGIN = 'com.fastybird.ws-server-plugin',
 	WEB_SERVER_PLUGIN = 'com.fastybird.web-server-plugin',
+	API_KEY_PLUGIN = 'com.fastybird.api-key-plugin',
 }
 
 export enum ConnectorSource {
@@ -32,9 +32,11 @@ export enum ConnectorSource {
 	SONOFF_CONNECTOR = 'com.fastybird.sonoff-connector',
 	MODBUS_CONNECTOR = 'com.fastybird.modbus-connector',
 	HOMEKIT_CONNECTOR = 'com.fastybird.homekit-connector',
-	ITEAD_CONNECTOR = 'com.fastybird.itead-connector',
 	VIRTUAL_CONNECTOR = 'com.fastybird.virtual-connector',
 	TERMINAL_CONNECTOR = 'com.fastybird.terminal-connector',
+	VIERA_CONNECTOR = 'com.fastybird.viera-connector',
+	NS_PANEL_CONNECTOR = 'com.fastybird.ns-panel-connector',
+	ZIGBEE2MQTT_CONNECTOR = 'com.fastybird.zigbee2mqtt-connector',
 }
 
 export enum AutomatorSource {
@@ -154,20 +156,44 @@ export interface TriggerControlAction {
 	expected_value?: null | string | number | boolean;
 }
 
+export interface ConnectorPropertyAction {
+	action: PropertyAction;
+	connector: string;
+	property: string;
+	set?: {
+		expected_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload;
+		actual_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload;
+	};
+	write?: {
+		expected_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload;
+		actual_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload;
+	};
+}
+
 export interface DevicePropertyAction {
 	action: PropertyAction;
 	device: string;
 	property: string;
-	expected_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload;
-	actual_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload;
-	pending?: boolean;
+	set?: {
+		expected_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload;
+		actual_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload;
+	};
+	write?: {
+		expected_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload;
+		actual_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload;
+	};
 }
 
 export interface ChannelPropertyAction {
 	action: PropertyAction;
 	channel: string;
 	property: string;
-	expected_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload;
-	actual_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload;
-	pending?: boolean;
+	set?: {
+		expected_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload;
+		actual_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload;
+	};
+	write?: {
+		expected_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload;
+		actual_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload;
+	};
 }

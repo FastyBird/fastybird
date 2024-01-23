@@ -39,7 +39,9 @@ final class PublisherTest extends TestCase
 					'action' => MetadataTypes\PropertyAction::SET,
 					'channel' => '06a64596-ca03-478b-ad1e-4f53731e66a5',
 					'property' => '60d754c2-4590-4eff-af1e-5c45f4234c7b',
-					'expected_value' => 10,
+					'write' => [
+						'expected_value' => 10,
+					],
 				],
 			]))
 			->willReturn(true);
@@ -70,8 +72,11 @@ final class PublisherTest extends TestCase
 				MetadataTypes\PropertyAction::get(MetadataTypes\PropertyAction::SET),
 				Uuid\Uuid::fromString('06a64596-ca03-478b-ad1e-4f53731e66a5'),
 				Uuid\Uuid::fromString('60d754c2-4590-4eff-af1e-5c45f4234c7b'),
-				Metadata\Constants::VALUE_NOT_SET,
-				10,
+				null,
+				new MetadataDocuments\Actions\PropertyValues(
+					Metadata\Constants::VALUE_NOT_SET,
+					10,
+				),
 			),
 		);
 	}

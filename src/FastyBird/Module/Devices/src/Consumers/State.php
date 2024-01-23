@@ -91,32 +91,43 @@ final class State implements ExchangeConsumers\Consumer
 						return;
 					}
 
-					if ($entity->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
-						$data = [
-							States\Property::ACTUAL_VALUE_FIELD => $entity->getActualValue(),
-						];
+					$result = null;
+					$data = [];
 
-						if ($entity->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
-							$data[States\Property::EXPECTED_VALUE_FIELD] = $entity->getExpectedValue();
+					if ($entity->getSet() !== null) {
+						if ($entity->getSet()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+							$data[States\Property::ACTUAL_VALUE_FIELD] = $entity->getSet()->getActualValue();
 						}
 
-						$result = $this->connectorPropertiesStatesManager->set(
-							$property,
-							Utils\ArrayHash::from($data),
-						);
-					} elseif ($entity->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
-						$result = $this->connectorPropertiesStatesManager->write(
-							$property,
-							Utils\ArrayHash::from([
-								States\Property::EXPECTED_VALUE_FIELD => $entity->getExpectedValue(),
-							]),
-						);
-					} else {
-						return;
+						if ($entity->getSet()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+							$data[States\Property::EXPECTED_VALUE_FIELD] = $entity->getSet()->getExpectedValue();
+						}
+
+						if ($data !== []) {
+							$result = $this->connectorPropertiesStatesManager->set(
+								$property,
+								Utils\ArrayHash::from($data),
+							);
+						}
+					} elseif ($entity->getWrite() !== null) {
+						if ($entity->getWrite()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+							$data[States\Property::ACTUAL_VALUE_FIELD] = $entity->getWrite()->getActualValue();
+						}
+
+						if ($entity->getWrite()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+							$data[States\Property::EXPECTED_VALUE_FIELD] = $entity->getWrite()->getExpectedValue();
+						}
+
+						if ($data !== []) {
+							$result = $this->connectorPropertiesStatesManager->write(
+								$property,
+								Utils\ArrayHash::from($data),
+							);
+						}
 					}
 
 					$result
-						->then(function () use ($entity, $property, $source, $routingKey): void {
+						?->then(function () use ($entity, $property, $source, $routingKey, $data): void {
 							$this->logger->info(
 								'Requested write value to connector property',
 								[
@@ -129,7 +140,7 @@ final class State implements ExchangeConsumers\Consumer
 										'id' => $property->getId()->toString(),
 										'identifier' => $property->getIdentifier(),
 									],
-									'expected_value' => $entity->getExpectedValue(),
+									'data' => $data,
 									'message' => [
 										'routing_key' => $routingKey->getValue(),
 										'source' => $source->getValue(),
@@ -186,32 +197,43 @@ final class State implements ExchangeConsumers\Consumer
 						return;
 					}
 
-					if ($entity->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
-						$data = [
-							States\Property::ACTUAL_VALUE_FIELD => $entity->getActualValue(),
-						];
+					$result = null;
+					$data = [];
 
-						if ($entity->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
-							$data[States\Property::EXPECTED_VALUE_FIELD] = $entity->getExpectedValue();
+					if ($entity->getSet() !== null) {
+						if ($entity->getSet()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+							$data[States\Property::ACTUAL_VALUE_FIELD] = $entity->getSet()->getActualValue();
 						}
 
-						$result = $this->devicePropertiesStatesManager->set(
-							$property,
-							Utils\ArrayHash::from($data),
-						);
-					} elseif ($entity->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
-						$result = $this->devicePropertiesStatesManager->write(
-							$property,
-							Utils\ArrayHash::from([
-								States\Property::EXPECTED_VALUE_FIELD => $entity->getExpectedValue(),
-							]),
-						);
-					} else {
-						return;
+						if ($entity->getSet()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+							$data[States\Property::EXPECTED_VALUE_FIELD] = $entity->getSet()->getExpectedValue();
+						}
+
+						if ($data !== []) {
+							$result = $this->devicePropertiesStatesManager->set(
+								$property,
+								Utils\ArrayHash::from($data),
+							);
+						}
+					} elseif ($entity->getWrite() !== null) {
+						if ($entity->getWrite()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+							$data[States\Property::ACTUAL_VALUE_FIELD] = $entity->getWrite()->getActualValue();
+						}
+
+						if ($entity->getWrite()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+							$data[States\Property::EXPECTED_VALUE_FIELD] = $entity->getWrite()->getExpectedValue();
+						}
+
+						if ($data !== []) {
+							$result = $this->devicePropertiesStatesManager->write(
+								$property,
+								Utils\ArrayHash::from($data),
+							);
+						}
 					}
 
 					$result
-						->then(function () use ($entity, $property, $source, $routingKey): void {
+						?->then(function () use ($entity, $property, $source, $routingKey, $data): void {
 							$this->logger->info(
 								'Requested write value to device property',
 								[
@@ -224,7 +246,7 @@ final class State implements ExchangeConsumers\Consumer
 										'id' => $property->getId()->toString(),
 										'identifier' => $property->getIdentifier(),
 									],
-									'expected_value' => $entity->getExpectedValue(),
+									'data' => $data,
 									'message' => [
 										'routing_key' => $routingKey->getValue(),
 										'source' => $source->getValue(),
@@ -281,32 +303,43 @@ final class State implements ExchangeConsumers\Consumer
 						return;
 					}
 
-					if ($entity->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
-						$data = [
-							States\Property::ACTUAL_VALUE_FIELD => $entity->getActualValue(),
-						];
+					$result = null;
+					$data = [];
 
-						if ($entity->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
-							$data[States\Property::EXPECTED_VALUE_FIELD] = $entity->getExpectedValue();
+					if ($entity->getSet() !== null) {
+						if ($entity->getSet()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+							$data[States\Property::ACTUAL_VALUE_FIELD] = $entity->getSet()->getActualValue();
 						}
 
-						$result = $this->channelPropertiesStatesManager->set(
-							$property,
-							Utils\ArrayHash::from($data),
-						);
-					} elseif ($entity->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
-						$result = $this->channelPropertiesStatesManager->write(
-							$property,
-							Utils\ArrayHash::from([
-								States\Property::EXPECTED_VALUE_FIELD => $entity->getExpectedValue(),
-							]),
-						);
-					} else {
-						return;
+						if ($entity->getSet()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+							$data[States\Property::EXPECTED_VALUE_FIELD] = $entity->getSet()->getExpectedValue();
+						}
+
+						if ($data !== []) {
+							$result = $this->channelPropertiesStatesManager->set(
+								$property,
+								Utils\ArrayHash::from($data),
+							);
+						}
+					} elseif ($entity->getWrite() !== null) {
+						if ($entity->getWrite()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+							$data[States\Property::ACTUAL_VALUE_FIELD] = $entity->getWrite()->getActualValue();
+						}
+
+						if ($entity->getWrite()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+							$data[States\Property::EXPECTED_VALUE_FIELD] = $entity->getWrite()->getExpectedValue();
+						}
+
+						if ($data !== []) {
+							$result = $this->channelPropertiesStatesManager->write(
+								$property,
+								Utils\ArrayHash::from($data),
+							);
+						}
 					}
 
 					$result
-						->then(function () use ($entity, $property, $source, $routingKey): void {
+						?->then(function () use ($entity, $property, $source, $routingKey, $data): void {
 							$this->logger->info(
 								'Requested write value to channel property',
 								[
@@ -319,7 +352,7 @@ final class State implements ExchangeConsumers\Consumer
 										'id' => $property->getId()->toString(),
 										'identifier' => $property->getIdentifier(),
 									],
-									'expected_value' => $entity->getExpectedValue(),
+									'data' => $data,
 									'message' => [
 										'routing_key' => $routingKey->getValue(),
 										'source' => $source->getValue(),

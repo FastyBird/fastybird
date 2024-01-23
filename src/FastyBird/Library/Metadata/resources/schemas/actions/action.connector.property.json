@@ -44,39 +44,90 @@
     },
     "then": {
       "properties": {
-        "actual_value": {
-          "oneOf": [
-            {
-              "type": "string"
+        "set": {
+          "type": "object",
+          "properties": {
+            "actual_value": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                }
+              ],
+              "description": "Property actual value to be set into property"
             },
-            {
-              "type": "number"
-            },
-            {
-              "type": "boolean"
+            "expected_value": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                }
+              ],
+              "description": "Property expected value to be set into property"
             }
-          ],
-          "description": "Property actual value to be written into property"
+          }
         },
-        "expected_value": {
-          "oneOf": [
-            {
-              "type": "string"
+        "write": {
+          "type": "object",
+          "properties": {
+            "actual_value": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                }
+              ],
+              "description": "Property actual value to be written into property"
             },
-            {
-              "type": "number"
-            },
-            {
-              "type": "boolean"
+            "expected_value": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                }
+              ],
+              "description": "Property expected value to be written into property"
             }
-          ],
-          "description": "Property expected value to be written into property"
+          }
         }
       },
-      "required": [
-        "action",
-        "connector",
-        "property"
+      "oneOf": [
+        {
+          "required": [
+            "action",
+            "connector",
+            "property",
+            "set"
+          ]
+        },
+        {
+          "required": [
+            "action",
+            "connector",
+            "property",
+            "write"
+          ]
+        }
       ]
     }
   }

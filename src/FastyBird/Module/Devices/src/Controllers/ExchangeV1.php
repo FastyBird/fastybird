@@ -337,12 +337,35 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				return;
 			}
 
-			$this->connectorPropertiesStatesManager->write(
-				$property,
-				Utils\ArrayHash::from([
-					States\Property::EXPECTED_VALUE_FIELD => $entity->getExpectedValue(),
-				]),
-			);
+			if ($entity->getSet() !== null) {
+				$data = [];
+
+				if ($entity->getSet()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+					$data[States\Property::ACTUAL_VALUE_FIELD] = $entity->getSet()->getActualValue();
+				}
+
+				if ($entity->getSet()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+					$data[States\Property::EXPECTED_VALUE_FIELD] = $entity->getSet()->getExpectedValue();
+				}
+
+				if ($data !== []) {
+					$this->connectorPropertiesStatesManager->set($property, Utils\ArrayHash::from($data));
+				}
+			} elseif ($entity->getWrite() !== null) {
+				$data = [];
+
+				if ($entity->getWrite()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+					$data[States\Property::ACTUAL_VALUE_FIELD] = $entity->getWrite()->getActualValue();
+				}
+
+				if ($entity->getWrite()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+					$data[States\Property::EXPECTED_VALUE_FIELD] = $entity->getWrite()->getExpectedValue();
+				}
+
+				if ($data !== []) {
+					$this->connectorPropertiesStatesManager->write($property, Utils\ArrayHash::from($data));
+				}
+			}
 		} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::GET)) {
 			$property = $this->connectorPropertiesConfigurationRepository->find($entity->getProperty());
 
@@ -407,12 +430,35 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				return;
 			}
 
-			$this->devicePropertiesStatesManager->write(
-				$property,
-				Utils\ArrayHash::from([
-					States\Property::EXPECTED_VALUE_FIELD => $entity->getExpectedValue(),
-				]),
-			);
+			if ($entity->getSet() !== null) {
+				$data = [];
+
+				if ($entity->getSet()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+					$data[States\Property::ACTUAL_VALUE_FIELD] = $entity->getSet()->getActualValue();
+				}
+
+				if ($entity->getSet()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+					$data[States\Property::EXPECTED_VALUE_FIELD] = $entity->getSet()->getExpectedValue();
+				}
+
+				if ($data !== []) {
+					$this->devicePropertiesStatesManager->set($property, Utils\ArrayHash::from($data));
+				}
+			} elseif ($entity->getWrite() !== null) {
+				$data = [];
+
+				if ($entity->getWrite()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+					$data[States\Property::ACTUAL_VALUE_FIELD] = $entity->getWrite()->getActualValue();
+				}
+
+				if ($entity->getWrite()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+					$data[States\Property::EXPECTED_VALUE_FIELD] = $entity->getWrite()->getExpectedValue();
+				}
+
+				if ($data !== []) {
+					$this->devicePropertiesStatesManager->write($property, Utils\ArrayHash::from($data));
+				}
+			}
 		} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::GET)) {
 			$property = $this->devicePropertiesConfigurationRepository->find($entity->getProperty());
 
@@ -477,12 +523,35 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				return;
 			}
 
-			$this->channelPropertiesStatesManager->write(
-				$property,
-				Utils\ArrayHash::from([
-					States\Property::EXPECTED_VALUE_FIELD => $entity->getExpectedValue(),
-				]),
-			);
+			if ($entity->getSet() !== null) {
+				$data = [];
+
+				if ($entity->getSet()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+					$data[States\Property::ACTUAL_VALUE_FIELD] = $entity->getSet()->getActualValue();
+				}
+
+				if ($entity->getSet()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+					$data[States\Property::EXPECTED_VALUE_FIELD] = $entity->getSet()->getExpectedValue();
+				}
+
+				if ($data !== []) {
+					$this->channelPropertiesStatesManager->set($property, Utils\ArrayHash::from($data));
+				}
+			} elseif ($entity->getWrite() !== null) {
+				$data = [];
+
+				if ($entity->getWrite()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+					$data[States\Property::ACTUAL_VALUE_FIELD] = $entity->getWrite()->getActualValue();
+				}
+
+				if ($entity->getWrite()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+					$data[States\Property::EXPECTED_VALUE_FIELD] = $entity->getWrite()->getExpectedValue();
+				}
+
+				if ($data !== []) {
+					$this->channelPropertiesStatesManager->write($property, Utils\ArrayHash::from($data));
+				}
+			}
 		} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::GET)) {
 			$property = $this->channelPropertiesConfigurationRepository->find($entity->getProperty());
 
