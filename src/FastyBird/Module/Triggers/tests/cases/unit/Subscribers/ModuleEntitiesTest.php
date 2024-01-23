@@ -5,7 +5,7 @@ namespace FastyBird\Module\Triggers\Tests\Cases\Unit\Subscribers;
 use Doctrine\ORM;
 use Doctrine\Persistence;
 use Exception;
-use FastyBird\Library\Exchange\Documents as ExchangeEntities;
+use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
@@ -36,7 +36,7 @@ final class ModuleEntitiesTest extends TestCase
 			->method('findOne')
 			->willThrowException(new Exceptions\NotImplemented());
 
-		$entityFactory = $this->createMock(ExchangeEntities\DocumentFactory::class);
+		$entityFactory = $this->createMock(ExchangeDocuments\DocumentFactory::class);
 
 		$subscriber = new Subscribers\ModuleEntities(
 			$actionStateRepository,
@@ -116,7 +116,7 @@ final class ModuleEntitiesTest extends TestCase
 				'is_triggered' => false,
 			]);
 
-		$entityFactory = $this->createMock(ExchangeEntities\DocumentFactory::class);
+		$entityFactory = $this->createMock(ExchangeDocuments\DocumentFactory::class);
 		$entityFactory
 			->method('create')
 			->willReturn($entityItem);
@@ -207,7 +207,7 @@ final class ModuleEntitiesTest extends TestCase
 				'is_triggered' => false,
 			]);
 
-		$entityFactory = $this->createMock(ExchangeEntities\DocumentFactory::class);
+		$entityFactory = $this->createMock(ExchangeDocuments\DocumentFactory::class);
 		$entityFactory
 			->method('create')
 			->willReturn($entityItem);
@@ -316,7 +316,7 @@ final class ModuleEntitiesTest extends TestCase
 				'is_triggered' => false,
 			]);
 
-		$entityFactory = $this->createMock(ExchangeEntities\DocumentFactory::class);
+		$entityFactory = $this->createMock(ExchangeDocuments\DocumentFactory::class);
 		$entityFactory
 			->method('create')
 			->willReturn($entityItem);

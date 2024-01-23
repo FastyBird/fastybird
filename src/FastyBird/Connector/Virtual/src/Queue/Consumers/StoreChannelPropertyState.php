@@ -21,7 +21,7 @@ use FastyBird\Connector\Virtual\Entities;
 use FastyBird\Connector\Virtual\Queue;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Exchange\Documents as ExchangeEntities;
+use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
@@ -62,7 +62,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager,
 		private readonly ApplicationHelpers\Database $databaseHelper,
 		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
-		private readonly ExchangeEntities\DocumentFactory $entityFactory,
+		private readonly ExchangeDocuments\DocumentFactory $documentFactory,
 		private readonly ExchangePublisher\Publisher $publisher,
 	)
 	{
@@ -228,7 +228,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 							MetadataTypes\RoutingKey::get(
 								MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION,
 							),
-							$this->entityFactory->create(
+							$this->documentFactory->create(
 								Utils\Json::encode([
 									'action' => MetadataTypes\PropertyAction::SET,
 									'device' => $device->getId()->toString(),

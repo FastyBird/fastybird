@@ -19,7 +19,7 @@ use Doctrine\Common;
 use Doctrine\ORM;
 use Doctrine\Persistence;
 use FastyBird\Library\Application\Events as ApplicationEvents;
-use FastyBird\Library\Exchange\Documents as ExchangeEntities;
+use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
@@ -72,7 +72,7 @@ final class ModuleEntities implements Common\EventSubscriber
 		private readonly Models\States\Async\DevicePropertiesManager $asyncDevicePropertiesStatesManager,
 		private readonly Models\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly Models\States\Async\ChannelPropertiesManager $asyncChannelPropertiesStatesManager,
-		private readonly ExchangeEntities\DocumentFactory $entityFactory,
+		private readonly ExchangeDocuments\DocumentFactory $documentFactory,
 		private readonly ExchangePublisher\Publisher $publisher,
 		private readonly ExchangePublisher\Async\Publisher $asyncPublisher,
 	)
@@ -299,7 +299,7 @@ final class ModuleEntities implements Common\EventSubscriber
 									$this->getPublisher()->publish(
 										MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 										$publishRoutingKey,
-										$this->entityFactory->create(
+										$this->documentFactory->create(
 											Utils\Json::encode(
 												array_merge(
 													$entity->toArray(),
@@ -315,7 +315,7 @@ final class ModuleEntities implements Common\EventSubscriber
 						$this->getPublisher()->publish(
 							MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 							$publishRoutingKey,
-							$this->entityFactory->create(
+							$this->documentFactory->create(
 								Utils\Json::encode($entity->toArray()),
 								$publishRoutingKey,
 							),
@@ -339,7 +339,7 @@ final class ModuleEntities implements Common\EventSubscriber
 					$this->getPublisher()->publish(
 						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 						$publishRoutingKey,
-						$this->entityFactory->create(
+						$this->documentFactory->create(
 							Utils\Json::encode(
 								array_merge(
 									$entity->toArray(),
@@ -370,7 +370,7 @@ final class ModuleEntities implements Common\EventSubscriber
 									$this->getPublisher()->publish(
 										MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 										$publishRoutingKey,
-										$this->entityFactory->create(
+										$this->documentFactory->create(
 											Utils\Json::encode(
 												array_merge(
 													$entity->toArray(),
@@ -386,7 +386,7 @@ final class ModuleEntities implements Common\EventSubscriber
 						$this->getPublisher()->publish(
 							MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 							$publishRoutingKey,
-							$this->entityFactory->create(
+							$this->documentFactory->create(
 								Utils\Json::encode($entity->toArray()),
 								$publishRoutingKey,
 							),
@@ -410,7 +410,7 @@ final class ModuleEntities implements Common\EventSubscriber
 					$this->getPublisher()->publish(
 						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 						$publishRoutingKey,
-						$this->entityFactory->create(
+						$this->documentFactory->create(
 							Utils\Json::encode(
 								array_merge(
 									$entity->toArray(),
@@ -441,7 +441,7 @@ final class ModuleEntities implements Common\EventSubscriber
 									$this->getPublisher()->publish(
 										MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 										$publishRoutingKey,
-										$this->entityFactory->create(
+										$this->documentFactory->create(
 											Utils\Json::encode(
 												array_merge(
 													$entity->toArray(),
@@ -457,7 +457,7 @@ final class ModuleEntities implements Common\EventSubscriber
 						$this->getPublisher()->publish(
 							MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 							$publishRoutingKey,
-							$this->entityFactory->create(
+							$this->documentFactory->create(
 								Utils\Json::encode($entity->toArray()),
 								$publishRoutingKey,
 							),
@@ -481,7 +481,7 @@ final class ModuleEntities implements Common\EventSubscriber
 					$this->getPublisher()->publish(
 						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 						$publishRoutingKey,
-						$this->entityFactory->create(
+						$this->documentFactory->create(
 							Utils\Json::encode(
 								array_merge(
 									$entity->toArray(),
@@ -496,7 +496,7 @@ final class ModuleEntities implements Common\EventSubscriber
 				$this->getPublisher()->publish(
 					MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 					$publishRoutingKey,
-					$this->entityFactory->create(
+					$this->documentFactory->create(
 						Utils\Json::encode(
 							$entity->toArray(),
 						),

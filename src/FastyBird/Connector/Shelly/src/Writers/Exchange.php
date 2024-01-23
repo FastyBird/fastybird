@@ -141,6 +141,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 						'device' => $device->getId(),
 						'channel' => $entity->getChannel(),
 						'property' => $entity->getId(),
+						'state' => $entity->toArray(),
 					],
 				),
 			);

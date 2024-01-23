@@ -22,6 +22,9 @@ use FastyBird\Connector\Shelly\Queue;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
+use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
+use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
+use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -34,6 +37,7 @@ use FastyBird\Module\Devices\States as DevicesStates;
 use Nette;
 use Nette\Utils;
 use function assert;
+use function React\Async\await;
 
 /**
  * Store device state message consumer
@@ -50,6 +54,7 @@ final class StoreDeviceState implements Queue\Consumer
 	use DeviceProperty;
 
 	public function __construct(
+		private readonly bool $useExchange,
 		protected readonly Shelly\Logger $logger,
 		protected readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
 		protected readonly DevicesModels\Entities\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
@@ -61,8 +66,10 @@ final class StoreDeviceState implements Queue\Consumer
 		private readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
-		private readonly DevicesModels\States\DevicePropertiesManager $devicePropertiesStatesManager,
-		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
+		private readonly DevicesModels\States\Async\DevicePropertiesManager $devicePropertiesStatesManager,
+		private readonly DevicesModels\States\Async\ChannelPropertiesManager $channelPropertiesStatesManager,
+		private readonly ExchangeDocuments\DocumentFactory $documentFactory,
+		private readonly ExchangePublisher\Async\Publisher $publisher,
 	)
 	{
 	}
@@ -73,9 +80,13 @@ final class StoreDeviceState implements Queue\Consumer
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws ExchangeExceptions\InvalidArgument
+	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws Utils\JsonException
 	 */
 	public function consume(Entities\Messages\Entity $entity): bool
 	{
@@ -120,13 +131,34 @@ final class StoreDeviceState implements Queue\Consumer
 
 				if ($property !== null) {
 					if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-						$this->devicePropertiesStatesManager->set(
-							$property,
-							Utils\ArrayHash::from([
-								DevicesStates\Property::ACTUAL_VALUE_FIELD => $state->getValue(),
-							]),
-						);
-
+						if ($this->useExchange) {
+							await($this->publisher->publish(
+								MetadataTypes\ConnectorSource::get(
+									MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
+								),
+								MetadataTypes\RoutingKey::get(
+									MetadataTypes\RoutingKey::DEVICE_PROPERTY_ACTION,
+								),
+								$this->documentFactory->create(
+									Utils\Json::encode([
+										'action' => MetadataTypes\PropertyAction::SET,
+										'device' => $device->getId()->toString(),
+										'property' => $property->getId()->toString(),
+										'actual_value' => $state->getValue(),
+									]),
+									MetadataTypes\RoutingKey::get(
+										MetadataTypes\RoutingKey::DEVICE_PROPERTY_ACTION,
+									),
+								),
+							));
+						} else {
+							await($this->devicePropertiesStatesManager->set(
+								$property,
+								Utils\ArrayHash::from([
+									DevicesStates\Property::ACTUAL_VALUE_FIELD => $state->getValue(),
+								]),
+							));
+						}
 					} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty) {
 						$this->databaseHelper->transaction(
 							function () use ($property, $state): void {
@@ -170,13 +202,35 @@ final class StoreDeviceState implements Queue\Consumer
 
 						if ($property !== null) {
 							if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-								$this->channelPropertiesStatesManager->set(
-									$property,
-									Utils\ArrayHash::from([
-										DevicesStates\Property::ACTUAL_VALUE_FIELD => $state->getValue(),
-									]),
-								);
-
+								if ($this->useExchange) {
+									await($this->publisher->publish(
+										MetadataTypes\ConnectorSource::get(
+											MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
+										),
+										MetadataTypes\RoutingKey::get(
+											MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION,
+										),
+										$this->documentFactory->create(
+											Utils\Json::encode([
+												'action' => MetadataTypes\PropertyAction::SET,
+												'device' => $device->getId()->toString(),
+												'channel' => $channel->getId()->toString(),
+												'property' => $property->getId()->toString(),
+												'actual_value' => $state->getValue(),
+											]),
+											MetadataTypes\RoutingKey::get(
+												MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION,
+											),
+										),
+									));
+								} else {
+									await($this->channelPropertiesStatesManager->set(
+										$property,
+										Utils\ArrayHash::from([
+											DevicesStates\Property::ACTUAL_VALUE_FIELD => $state->getValue(),
+										]),
+									));
+								}
 							} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
 								$this->databaseHelper->transaction(
 									function () use ($property, $state): void {
@@ -233,12 +287,35 @@ final class StoreDeviceState implements Queue\Consumer
 						);
 
 						if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-							$this->channelPropertiesStatesManager->set(
-								$property,
-								Utils\ArrayHash::from([
-									DevicesStates\Property::ACTUAL_VALUE_FIELD => $sensor->getValue(),
-								]),
-							);
+							if ($this->useExchange) {
+								await($this->publisher->publish(
+									MetadataTypes\ConnectorSource::get(
+										MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
+									),
+									MetadataTypes\RoutingKey::get(
+										MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION,
+									),
+									$this->documentFactory->create(
+										Utils\Json::encode([
+											'action' => MetadataTypes\PropertyAction::SET,
+											'device' => $device->getId()->toString(),
+											'channel' => $channel->getId()->toString(),
+											'property' => $property->getId()->toString(),
+											'actual_value' => $sensor->getValue(),
+										]),
+										MetadataTypes\RoutingKey::get(
+											MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION,
+										),
+									),
+								));
+							} else {
+								await($this->channelPropertiesStatesManager->set(
+									$property,
+									Utils\ArrayHash::from([
+										DevicesStates\Property::ACTUAL_VALUE_FIELD => $sensor->getValue(),
+									]),
+								));
+							}
 						} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
 							$this->databaseHelper->transaction(
 								function () use ($property, $sensor): void {

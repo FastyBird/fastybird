@@ -17,7 +17,7 @@ namespace FastyBird\Module\Devices\Subscribers;
 
 use Exception;
 use FastyBird\Library\Application\Events as ApplicationEvents;
-use FastyBird\Library\Exchange\Documents as ExchangeEntities;
+use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -62,7 +62,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 		private readonly Models\States\Async\DevicePropertiesManager $asyncDevicePropertiesStatesManager,
 		private readonly Models\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly Models\States\Async\ChannelPropertiesManager $asyncChannelPropertiesStatesManager,
-		private readonly ExchangeEntities\DocumentFactory $entityFactory,
+		private readonly ExchangeDocuments\DocumentFactory $documentFactory,
 		private readonly ExchangePublisher\Publisher $publisher,
 		private readonly ExchangePublisher\Async\Publisher $asyncPublisher,
 	)
@@ -325,7 +325,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 		return $this->getPublisher($async)->publish(
 			MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 			$routingKey,
-			$this->entityFactory->create(
+			$this->documentFactory->create(
 				Utils\Json::encode(
 					array_merge(
 						$property->toArray(),

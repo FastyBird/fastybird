@@ -19,7 +19,7 @@ use Doctrine\Common;
 use Doctrine\ORM;
 use Doctrine\Persistence;
 use Exception;
-use FastyBird\Library\Exchange\Documents as ExchangeEntities;
+use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -62,7 +62,7 @@ final class ModuleEntities implements Common\EventSubscriber
 	public function __construct(
 		private readonly Models\States\ActionsRepository $actionStateRepository,
 		private readonly Models\States\ConditionsRepository $conditionStateRepository,
-		private readonly ExchangeEntities\DocumentFactory $entityFactory,
+		private readonly ExchangeDocuments\DocumentFactory $documentFactory,
 		private readonly ORM\EntityManagerInterface $entityManager,
 		private readonly ExchangePublisher\Publisher $publisher,
 	)
@@ -267,7 +267,7 @@ final class ModuleEntities implements Common\EventSubscriber
 					$this->publisher->publish(
 						$entity->getSource(),
 						$publishRoutingKey,
-						$this->entityFactory->create(Utils\Json::encode($entity->toArray()), $publishRoutingKey),
+						$this->documentFactory->create(Utils\Json::encode($entity->toArray()), $publishRoutingKey),
 					);
 
 					return;
@@ -276,7 +276,7 @@ final class ModuleEntities implements Common\EventSubscriber
 				$this->publisher->publish(
 					$entity->getSource(),
 					$publishRoutingKey,
-					$this->entityFactory->create(Utils\Json::encode(array_merge($state !== null ? [
+					$this->documentFactory->create(Utils\Json::encode(array_merge($state !== null ? [
 						'is_triggered' => $state->isTriggered(),
 					] : [], $entity->toArray())), $publishRoutingKey),
 				);
@@ -289,7 +289,7 @@ final class ModuleEntities implements Common\EventSubscriber
 					$this->publisher->publish(
 						$entity->getSource(),
 						$publishRoutingKey,
-						$this->entityFactory->create(Utils\Json::encode($entity->toArray()), $publishRoutingKey),
+						$this->documentFactory->create(Utils\Json::encode($entity->toArray()), $publishRoutingKey),
 					);
 
 					return;
@@ -298,7 +298,7 @@ final class ModuleEntities implements Common\EventSubscriber
 				$this->publisher->publish(
 					$entity->getSource(),
 					$publishRoutingKey,
-					$this->entityFactory->create(Utils\Json::encode(array_merge($state !== null ? [
+					$this->documentFactory->create(Utils\Json::encode(array_merge($state !== null ? [
 						'is_fulfilled' => $state->isFulfilled(),
 					] : [], $entity->toArray())), $publishRoutingKey),
 				);
@@ -344,7 +344,7 @@ final class ModuleEntities implements Common\EventSubscriber
 					$this->publisher->publish(
 						$entity->getSource(),
 						$publishRoutingKey,
-						$this->entityFactory->create(Utils\Json::encode(array_merge([
+						$this->documentFactory->create(Utils\Json::encode(array_merge([
 							'is_triggered' => $isTriggered,
 							'is_fulfilled' => $isFulfilled,
 						], $entity->toArray())), $publishRoutingKey),
@@ -354,7 +354,7 @@ final class ModuleEntities implements Common\EventSubscriber
 					$this->publisher->publish(
 						$entity->getSource(),
 						$publishRoutingKey,
-						$this->entityFactory->create(Utils\Json::encode(array_merge([
+						$this->documentFactory->create(Utils\Json::encode(array_merge([
 							'is_triggered' => $isTriggered,
 						], $entity->toArray())), $publishRoutingKey),
 					);
@@ -363,7 +363,7 @@ final class ModuleEntities implements Common\EventSubscriber
 				$this->publisher->publish(
 					$entity->getSource(),
 					$publishRoutingKey,
-					$this->entityFactory->create(Utils\Json::encode($entity->toArray()), $publishRoutingKey),
+					$this->documentFactory->create(Utils\Json::encode($entity->toArray()), $publishRoutingKey),
 				);
 			}
 		}

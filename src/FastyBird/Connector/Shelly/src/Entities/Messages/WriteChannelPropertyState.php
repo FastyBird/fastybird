@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Shelly\Entities\Messages;
 
 use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
+use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 
 /**
@@ -38,6 +39,8 @@ final class WriteChannelPropertyState implements Entity
 		private readonly Uuid\UuidInterface $channel,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $property,
+		#[ObjectMapper\Rules\MappedObjectValue(class: State::class)]
+		private readonly State $state,
 	)
 	{
 	}
@@ -62,6 +65,11 @@ final class WriteChannelPropertyState implements Entity
 		return $this->property;
 	}
 
+	public function getState(): State
+	{
+		return $this->state;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -72,6 +80,7 @@ final class WriteChannelPropertyState implements Entity
 			'device' => $this->getDevice()->toString(),
 			'channel' => $this->getChannel()->toString(),
 			'property' => $this->getProperty()->toString(),
+			'state' => $this->getState()->toArray(),
 		];
 	}
 

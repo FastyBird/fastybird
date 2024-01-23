@@ -6,7 +6,7 @@ use Doctrine\ORM;
 use Doctrine\Persistence;
 use Exception;
 use FastyBird\Library\Application\Events as ApplicationEvents;
-use FastyBird\Library\Exchange\Documents as ExchangeEntities;
+use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
@@ -50,7 +50,7 @@ final class ModuleEntitiesTest extends TestCase
 
 		$asyncChannelPropertiesStates = $this->createMock(Models\States\Async\ChannelPropertiesManager::class);
 
-		$entityFactory = $this->createMock(ExchangeEntities\DocumentFactory::class);
+		$entityFactory = $this->createMock(ExchangeDocuments\DocumentFactory::class);
 
 		$connectorsPropertiesConfigurationRepository = $this->createMock(
 			Models\Configuration\Connectors\Properties\Repository::class,
@@ -178,7 +178,7 @@ final class ModuleEntitiesTest extends TestCase
 				'children' => [],
 			]);
 
-		$entityFactory = $this->createMock(ExchangeEntities\DocumentFactory::class);
+		$entityFactory = $this->createMock(ExchangeDocuments\DocumentFactory::class);
 		$entityFactory
 			->method('create')
 			->willReturn($entityItem);
@@ -315,7 +315,7 @@ final class ModuleEntitiesTest extends TestCase
 				'children' => [],
 			]);
 
-		$entityFactory = $this->createMock(ExchangeEntities\DocumentFactory::class);
+		$entityFactory = $this->createMock(ExchangeDocuments\DocumentFactory::class);
 		$entityFactory
 			->method('create')
 			->willReturn($entityItem);
@@ -460,7 +460,7 @@ final class ModuleEntitiesTest extends TestCase
 				'children' => [],
 			]);
 
-		$entityFactory = $this->createMock(ExchangeEntities\DocumentFactory::class);
+		$entityFactory = $this->createMock(ExchangeDocuments\DocumentFactory::class);
 		$entityFactory
 			->method('create')
 			->willReturn($entityItem);

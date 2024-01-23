@@ -16,7 +16,7 @@
 namespace FastyBird\Module\Devices\Consumers;
 
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
-use FastyBird\Library\Exchange\Documents as ExchangeEntities;
+use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
@@ -51,7 +51,7 @@ final class State implements ExchangeConsumers\Consumer
 	public function __construct(
 		private readonly Devices\Logger $logger,
 		private readonly ExchangePublisher\Async\Publisher $publisher,
-		private readonly ExchangeEntities\DocumentFactory $entityFactory,
+		private readonly ExchangeDocuments\DocumentFactory $documentFactory,
 		private readonly Models\Configuration\Connectors\Properties\Repository $connectorPropertiesConfigurationRepository,
 		private readonly Models\Configuration\Devices\Properties\Repository $devicePropertiesConfigurationRepository,
 		private readonly Models\Configuration\Channels\Properties\Repository $channelPropertiesConfigurationRepository,
@@ -160,7 +160,7 @@ final class State implements ExchangeConsumers\Consumer
 							$this->publisher->publish(
 								MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 								$publishRoutingKey,
-								$this->entityFactory->create(
+								$this->documentFactory->create(
 									Utils\Json::encode(
 										array_merge(
 											$property->toArray(),
@@ -255,7 +255,7 @@ final class State implements ExchangeConsumers\Consumer
 							$this->publisher->publish(
 								MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 								$publishRoutingKey,
-								$this->entityFactory->create(
+								$this->documentFactory->create(
 									Utils\Json::encode(
 										array_merge(
 											$property->toArray(),
@@ -350,7 +350,7 @@ final class State implements ExchangeConsumers\Consumer
 							$this->publisher->publish(
 								MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 								$publishRoutingKey,
-								$this->entityFactory->create(
+								$this->documentFactory->create(
 									Utils\Json::encode(
 										array_merge(
 											$property->toArray(),

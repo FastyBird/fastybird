@@ -44,7 +44,7 @@ final class Repository extends Models\Configuration\Repository
 	public function __construct(
 		Models\Configuration\Builder $builder,
 		Cache\CacheFactory $cacheFactory,
-		private readonly MetadataDocuments\DocumentFactory $entityFactory,
+		private readonly MetadataDocuments\DocumentFactory $documentFactory,
 	)
 	{
 		parent::__construct($builder, $cacheFactory);
@@ -125,7 +125,7 @@ final class Repository extends Models\Configuration\Repository
 						] as $class
 					) {
 						try {
-							$document = $this->entityFactory->create($class, $result[0]);
+							$document = $this->documentFactory->create($class, $result[0]);
 							assert($document instanceof $type);
 
 							return $document;
@@ -205,7 +205,7 @@ final class Repository extends Models\Configuration\Repository
 									] as $class
 								) {
 									try {
-										return $this->entityFactory->create($class, $item);
+										return $this->documentFactory->create($class, $item);
 									} catch (Throwable) {
 										// Just ignore it
 									}

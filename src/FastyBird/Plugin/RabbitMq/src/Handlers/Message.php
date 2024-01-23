@@ -19,7 +19,7 @@ use Bunny;
 use Evenement;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumer;
-use FastyBird\Library\Exchange\Documents as ExchangeEntities;
+use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\RabbitMq\Events;
 use FastyBird\Plugin\RabbitMq\Exceptions;
@@ -52,7 +52,7 @@ final class Message extends Evenement\EventEmitter
 
 	public function __construct(
 		private readonly Utilities\IdentifierGenerator $identifier,
-		private readonly ExchangeEntities\DocumentFactory $entityFactory,
+		private readonly ExchangeDocuments\DocumentFactory $documentFactory,
 		private readonly ExchangeConsumer\Container $consumer,
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
@@ -115,7 +115,7 @@ final class Message extends Evenement\EventEmitter
 		}
 
 		try {
-			$entity = $this->entityFactory->create($data, $routingKey);
+			$entity = $this->documentFactory->create($data, $routingKey);
 
 		} catch (Throwable $ex) {
 			$this->logger->error('Message could not be transformed into entity', [

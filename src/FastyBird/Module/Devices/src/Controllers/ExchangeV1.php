@@ -16,7 +16,7 @@
 namespace FastyBird\Module\Devices\Controllers;
 
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Exchange\Documents as ExchangeEntities;
+use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
@@ -59,7 +59,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 		private readonly Devices\Logger $logger,
 		private readonly MetadataLoaders\SchemaLoader $schemaLoader,
 		private readonly MetadataSchemas\Validator $jsonValidator,
-		private readonly ExchangeEntities\DocumentFactory $entityFactory,
+		private readonly ExchangeDocuments\DocumentFactory $documentFactory,
 	)
 	{
 		parent::__construct();
@@ -245,7 +245,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				$data = isset($args['data']) && is_array($args['data']) ? $args['data'] : null;
 				$data = $data !== null ? $this->parseData($data, $schema) : null;
 
-				$entity = $this->entityFactory->create(
+				$entity = $this->documentFactory->create(
 					Utils\Json::encode($data),
 					MetadataTypes\RoutingKey::get($args['routing_key']),
 				);
@@ -358,7 +358,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_DOCUMENT_REPORTED,
 			);
 
-			$responseEntity = $this->entityFactory->create(
+			$responseEntity = $this->documentFactory->create(
 				Utils\Json::encode(
 					array_merge(
 						$property->toArray(),
@@ -428,7 +428,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				MetadataTypes\RoutingKey::DEVICE_PROPERTY_DOCUMENT_REPORTED,
 			);
 
-			$responseEntity = $this->entityFactory->create(
+			$responseEntity = $this->documentFactory->create(
 				Utils\Json::encode(
 					array_merge(
 						$property->toArray(),
@@ -498,7 +498,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				MetadataTypes\RoutingKey::CHANNEL_PROPERTY_DOCUMENT_REPORTED,
 			);
 
-			$responseEntity = $this->entityFactory->create(
+			$responseEntity = $this->documentFactory->create(
 				Utils\Json::encode(
 					array_merge(
 						$property->toArray(),

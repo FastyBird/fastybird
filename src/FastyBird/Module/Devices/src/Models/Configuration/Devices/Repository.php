@@ -42,7 +42,7 @@ final class Repository extends Models\Configuration\Repository
 	public function __construct(
 		Models\Configuration\Builder $builder,
 		Cache\CacheFactory $cacheFactory,
-		private readonly MetadataDocuments\DocumentFactory $entityFactory,
+		private readonly MetadataDocuments\DocumentFactory $documentFactory,
 	)
 	{
 		parent::__construct($builder, $cacheFactory);
@@ -103,7 +103,7 @@ final class Repository extends Models\Configuration\Repository
 						return false;
 					}
 
-					return $this->entityFactory->create($type, $result[0]);
+					return $this->documentFactory->create($type, $result[0]);
 				},
 			);
 		} catch (Throwable $ex) {
@@ -151,7 +151,7 @@ final class Repository extends Models\Configuration\Repository
 					}
 
 					return array_map(
-						fn (stdClass $item): MetadataDocuments\DevicesModule\Device => $this->entityFactory->create(
+						fn (stdClass $item): MetadataDocuments\DevicesModule\Device => $this->documentFactory->create(
 							$type,
 							$item,
 						),

@@ -15,7 +15,7 @@
 
 namespace FastyBird\Module\Triggers\Models\States;
 
-use FastyBird\Library\Exchange\Documents as ExchangeEntities;
+use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -42,7 +42,7 @@ final class ActionsManager
 	use Nette\SmartObject;
 
 	public function __construct(
-		protected readonly ExchangeEntities\DocumentFactory $entityFactory,
+		protected readonly ExchangeDocuments\DocumentFactory $documentFactory,
 		protected readonly IActionsManager|null $manager = null,
 		protected readonly ExchangePublisher\Publisher|null $publisher = null,
 	)
@@ -147,7 +147,7 @@ final class ActionsManager
 		$this->publisher->publish(
 			$action->getSource(),
 			MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::TRIGGER_ACTION_DOCUMENT_UPDATED),
-			$this->entityFactory->create(Utils\Json::encode(array_merge($action->toArray(), [
+			$this->documentFactory->create(Utils\Json::encode(array_merge($action->toArray(), [
 				'is_triggered' => !($state === null) && $state->isTriggered(),
 			])), MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::TRIGGER_ACTION_DOCUMENT_UPDATED)),
 		);

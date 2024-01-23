@@ -87,6 +87,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 					'device' => $device->getId(),
 					'channel' => $channel->getId(),
 					'property' => $property->getId(),
+					'state' => $event->getState()->toArray(),
 				],
 			),
 		);
