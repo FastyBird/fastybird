@@ -30,6 +30,7 @@ use FastyBird\Module\Devices\Utilities;
 use Nette;
 use Nette\Utils;
 use Orisai\ObjectMapper;
+use Ramsey\Uuid;
 use React\Promise;
 use Throwable;
 use function boolval;
@@ -208,12 +209,10 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 	/**
 	 * @return Promise\PromiseInterface<bool>
 	 */
-	public function delete(
-		MetadataDocuments\DevicesModule\DeviceDynamicProperty $property,
-	): Promise\PromiseInterface
+	public function delete(Uuid\UuidInterface $id): Promise\PromiseInterface
 	{
 		try {
-			return $this->devicePropertiesStatesManager->delete($property);
+			return $this->devicePropertiesStatesManager->delete($id);
 		} catch (Exceptions\NotImplemented) {
 			$this->logger->warning(
 				'Devices states manager is not configured. State could not be fetched',

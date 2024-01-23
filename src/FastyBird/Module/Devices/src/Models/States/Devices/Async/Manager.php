@@ -24,6 +24,7 @@ use FastyBird\Module\Devices\States;
 use Nette;
 use Nette\Utils;
 use Psr\EventDispatcher as PsrEventDispatcher;
+use Ramsey\Uuid;
 use React\Promise;
 use Throwable;
 
@@ -146,13 +147,11 @@ final class Manager
 	 *
 	 * @interal
 	 */
-	public function delete(
-		MetadataDocuments\DevicesModule\DeviceDynamicProperty $property,
-	): Promise\PromiseInterface
+	public function delete(Uuid\UuidInterface $id): Promise\PromiseInterface
 	{
 		if ($this->manager === null) {
 			try {
-				return Promise\resolve($this->fallback->delete($property));
+				return Promise\resolve($this->fallback->delete($id));
 			} catch (Exceptions\NotImplemented $ex) {
 				return Promise\reject($ex);
 			}
@@ -160,9 +159,9 @@ final class Manager
 
 		$deferred = new Promise\Deferred();
 
-		$this->manager->delete($property->getId())
-			->then(function (bool $result) use ($deferred, $property): void {
-				$this->dispatcher?->dispatch(new Events\DevicePropertyStateEntityDeleted($property));
+		$this->manager->delete($id)
+			->then(function (bool $result) use ($deferred, $id): void {
+				$this->dispatcher?->dispatch(new Events\DevicePropertyStateEntityDeleted($id));
 
 				$deferred->resolve($result);
 			})

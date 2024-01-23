@@ -40,6 +40,7 @@ use function end;
 use function explode;
 use function preg_match;
 use function strval;
+use function var_dump;
 
 /**
  * Device channel properties API controller
@@ -349,6 +350,7 @@ final class ChannelPropertiesV1 extends BaseV1
 			$this->getOrmConnection()->commit();
 
 		} catch (Throwable $ex) {
+			var_dump($ex->getMessage());
 			// Log caught exception
 			$this->logger->error(
 				'An unhandled error occurred',

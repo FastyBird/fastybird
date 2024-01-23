@@ -53,6 +53,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	private bool $useAsync = false;
 
 	public function __construct(
+		private readonly Models\Configuration\Connectors\Properties\Repository $connectorPropertiesConfigurationRepository,
 		private readonly Models\Configuration\Devices\Properties\Repository $devicePropertiesConfigurationRepository,
 		private readonly Models\Configuration\Channels\Properties\Repository $channelPropertiesConfigurationRepository,
 		private readonly Models\States\ConnectorPropertiesManager $connectorPropertiesStatesManager,
@@ -144,9 +145,39 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 		Events\ConnectorPropertyStateEntityDeleted|Events\DevicePropertyStateEntityDeleted|Events\ChannelPropertyStateEntityDeleted $event,
 	): void
 	{
-		$this->publishEntity($this->useAsync, $event->getProperty());
+		if ($event instanceof Events\ConnectorPropertyStateEntityDeleted) {
+			$findPropertyQuery = new Queries\Configuration\FindConnectorDynamicProperties();
+			$findPropertyQuery->byId($event->getProperty());
 
-		foreach ($this->findChildren($event->getProperty()) as $child) {
+			$property = $this->connectorPropertiesConfigurationRepository->findOneBy(
+				$findPropertyQuery,
+				MetadataDocuments\DevicesModule\ConnectorDynamicProperty::class,
+			);
+		} elseif ($event instanceof Events\DevicePropertyStateEntityDeleted) {
+			$findPropertyQuery = new Queries\Configuration\FindDeviceDynamicProperties();
+			$findPropertyQuery->byId($event->getProperty());
+
+			$property = $this->devicePropertiesConfigurationRepository->findOneBy(
+				$findPropertyQuery,
+				MetadataDocuments\DevicesModule\DeviceDynamicProperty::class,
+			);
+		} else {
+			$findPropertyQuery = new Queries\Configuration\FindChannelDynamicProperties();
+			$findPropertyQuery->byId($event->getProperty());
+
+			$property = $this->channelPropertiesConfigurationRepository->findOneBy(
+				$findPropertyQuery,
+				MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
+			);
+		}
+
+		if ($property === null) {
+			return;
+		}
+
+		$this->publishEntity($this->useAsync, $property);
+
+		foreach ($this->findChildren($property) as $child) {
 			$this->publishEntity($this->useAsync, $child);
 		}
 	}

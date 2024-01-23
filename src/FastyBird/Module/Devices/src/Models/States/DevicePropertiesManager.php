@@ -31,6 +31,7 @@ use FastyBird\Module\Devices\Utilities;
 use Nette;
 use Nette\Utils;
 use Orisai\ObjectMapper;
+use Ramsey\Uuid;
 use function is_array;
 use function strval;
 
@@ -195,12 +196,10 @@ final class DevicePropertiesManager extends PropertiesManager
 		}
 	}
 
-	public function delete(
-		MetadataDocuments\DevicesModule\DeviceDynamicProperty $property,
-	): void
+	public function delete(Uuid\UuidInterface $id): void
 	{
 		try {
-			$this->devicePropertiesStatesManager->delete($property);
+			$this->devicePropertiesStatesManager->delete($id);
 		} catch (Exceptions\NotImplemented) {
 			$this->logger->warning(
 				'Devices states manager is not configured. State could not be saved',

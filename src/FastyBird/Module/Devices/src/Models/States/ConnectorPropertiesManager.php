@@ -30,6 +30,7 @@ use FastyBird\Module\Devices\States;
 use Nette;
 use Nette\Utils;
 use Orisai\ObjectMapper;
+use Ramsey\Uuid;
 use function is_array;
 use function strval;
 
@@ -189,12 +190,10 @@ final class ConnectorPropertiesManager extends PropertiesManager
 		}
 	}
 
-	public function delete(
-		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
-	): bool
+	public function delete(Uuid\UuidInterface $id): bool
 	{
 		try {
-			return $this->connectorPropertiesStatesManager->delete($property);
+			return $this->connectorPropertiesStatesManager->delete($id);
 		} catch (Exceptions\NotImplemented) {
 			$this->logger->warning(
 				'Connectors states manager is not configured. State could not be saved',

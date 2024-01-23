@@ -18,6 +18,7 @@ namespace FastyBird\Module\Devices\Consumers;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
 use FastyBird\Library\Exchange\Documents as ExchangeEntities;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
+use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -90,12 +91,31 @@ final class State implements ExchangeConsumers\Consumer
 						return;
 					}
 
-					$this->connectorPropertiesStatesManager->write(
-						$property,
-						Utils\ArrayHash::from([
-							States\Property::EXPECTED_VALUE_FIELD => $entity->getExpectedValue(),
-						]),
-					)
+					if ($entity->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+						$data = [
+							States\Property::ACTUAL_VALUE_FIELD => $entity->getActualValue(),
+						];
+
+						if ($entity->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
+							$data[States\Property::EXPECTED_VALUE_FIELD] = $entity->getExpectedValue();
+						}
+
+						$result = $this->connectorPropertiesStatesManager->set(
+							$property,
+							Utils\ArrayHash::from($data),
+						);
+					} elseif ($entity->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
+						$result = $this->connectorPropertiesStatesManager->write(
+							$property,
+							Utils\ArrayHash::from([
+								States\Property::EXPECTED_VALUE_FIELD => $entity->getExpectedValue(),
+							]),
+						);
+					} else {
+						return;
+					}
+
+					$result
 						->then(function () use ($entity, $property, $source, $routingKey): void {
 							$this->logger->info(
 								'Requested write value to connector property',
@@ -166,12 +186,31 @@ final class State implements ExchangeConsumers\Consumer
 						return;
 					}
 
-					$this->devicePropertiesStatesManager->write(
-						$property,
-						Utils\ArrayHash::from([
-							States\Property::EXPECTED_VALUE_FIELD => $entity->getExpectedValue(),
-						]),
-					)
+					if ($entity->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+						$data = [
+							States\Property::ACTUAL_VALUE_FIELD => $entity->getActualValue(),
+						];
+
+						if ($entity->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
+							$data[States\Property::EXPECTED_VALUE_FIELD] = $entity->getExpectedValue();
+						}
+
+						$result = $this->devicePropertiesStatesManager->set(
+							$property,
+							Utils\ArrayHash::from($data),
+						);
+					} elseif ($entity->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
+						$result = $this->devicePropertiesStatesManager->write(
+							$property,
+							Utils\ArrayHash::from([
+								States\Property::EXPECTED_VALUE_FIELD => $entity->getExpectedValue(),
+							]),
+						);
+					} else {
+						return;
+					}
+
+					$result
 						->then(function () use ($entity, $property, $source, $routingKey): void {
 							$this->logger->info(
 								'Requested write value to device property',
@@ -242,12 +281,31 @@ final class State implements ExchangeConsumers\Consumer
 						return;
 					}
 
-					$this->channelPropertiesStatesManager->write(
-						$property,
-						Utils\ArrayHash::from([
-							States\Property::EXPECTED_VALUE_FIELD => $entity->getExpectedValue(),
-						]),
-					)
+					if ($entity->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+						$data = [
+							States\Property::ACTUAL_VALUE_FIELD => $entity->getActualValue(),
+						];
+
+						if ($entity->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
+							$data[States\Property::EXPECTED_VALUE_FIELD] = $entity->getExpectedValue();
+						}
+
+						$result = $this->channelPropertiesStatesManager->set(
+							$property,
+							Utils\ArrayHash::from($data),
+						);
+					} elseif ($entity->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
+						$result = $this->channelPropertiesStatesManager->write(
+							$property,
+							Utils\ArrayHash::from([
+								States\Property::EXPECTED_VALUE_FIELD => $entity->getExpectedValue(),
+							]),
+						);
+					} else {
+						return;
+					}
+
+					$result
 						->then(function () use ($entity, $property, $source, $routingKey): void {
 							$this->logger->info(
 								'Requested write value to channel property',

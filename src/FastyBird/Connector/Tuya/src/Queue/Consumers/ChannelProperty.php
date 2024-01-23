@@ -19,7 +19,6 @@ use Doctrine\DBAL;
 use FastyBird\Connector\Tuya;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -55,7 +54,6 @@ trait ChannelProperty
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws ApplicationExceptions\Runtime
 	 * @throws DBAL\Exception
-	 * @throws DevicesExceptions\InvalidState
 	 */
 	private function setChannelProperty(
 		string $type,
@@ -183,20 +181,10 @@ trait ChannelProperty
 			if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
 				// Some Tuya devices has invalid values configured
 				// E.g. wi-fi dimmable device has allowed values "incandescent" and "halogen" but it also provide "led" value
-				$findPropertyQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
-				$findPropertyQuery->byId($property->getId());
-
-				$propertyConfiguration = $this->channelsPropertiesConfigurationRepository->findOneBy(
-					$findPropertyQuery,
-					MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
-				);
-
-				if ($propertyConfiguration !== null) {
-					try {
-						$this->channelPropertiesStatesManager->delete($propertyConfiguration);
-					} catch (DevicesExceptions\NotImplemented) {
-						// Just ignore it
-					}
+				try {
+					$this->channelPropertiesStatesManager->delete($property->getId());
+				} catch (DevicesExceptions\NotImplemented) {
+					// Just ignore it
 				}
 			}
 

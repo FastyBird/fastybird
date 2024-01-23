@@ -32,6 +32,8 @@ final class Constants
 
 	public const EXCHANGE_CHANNEL_NAME = 'fb_exchange';
 
+	public const VALUE_NOT_SET = 'N/A';
+
 	/**
 	 * Routing
 	 */

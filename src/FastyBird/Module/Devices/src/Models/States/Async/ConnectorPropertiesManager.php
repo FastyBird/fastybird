@@ -29,6 +29,7 @@ use FastyBird\Module\Devices\States;
 use Nette;
 use Nette\Utils;
 use Orisai\ObjectMapper;
+use Ramsey\Uuid;
 use React\Promise;
 use Throwable;
 use function boolval;
@@ -190,12 +191,10 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 	/**
 	 * @return Promise\PromiseInterface<bool>
 	 */
-	public function delete(
-		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
-	): Promise\PromiseInterface
+	public function delete(Uuid\UuidInterface $id): Promise\PromiseInterface
 	{
 		try {
-			return $this->connectorPropertiesStatesManager->delete($property);
+			return $this->connectorPropertiesStatesManager->delete($id);
 		} catch (Exceptions\NotImplemented) {
 			$this->logger->warning(
 				'Connectors states manager is not configured. State could not be fetched',

@@ -9,7 +9,7 @@ use FastyBird\Plugin\RedisDb\Tests\Fixtures;
 use Nette\Utils;
 use Orisai\ObjectMapper;
 use PHPUnit\Framework\TestCase;
-use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid;
 use stdClass;
 use Throwable;
 
@@ -116,13 +116,13 @@ final class FactoryTest extends TestCase
 			'one' => [
 				States\State::class,
 				[
-					'id' => Uuid::uuid4()->toString(),
+					'id' => Uuid\Uuid::uuid4()->toString(),
 				],
 			],
 			'two' => [
 				States\State::class,
 				[
-					'id' => Uuid::uuid4()->toString(),
+					'id' => Uuid\Uuid::uuid4()->toString(),
 				],
 			],
 		];

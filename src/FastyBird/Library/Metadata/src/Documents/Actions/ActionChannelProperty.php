@@ -16,6 +16,7 @@
 namespace FastyBird\Library\Metadata\Documents\Actions;
 
 use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
+use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Documents;
 use FastyBird\Library\Metadata\Exceptions;
 use FastyBird\Library\Metadata\Types;
@@ -49,8 +50,17 @@ final class ActionChannelProperty implements Documents\Document
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
+		#[ObjectMapper\Modifiers\FieldName('actual_value')]
+		private readonly bool|float|int|string|null $actualValue = Metadata\Constants::VALUE_NOT_SET,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
 		#[ObjectMapper\Modifiers\FieldName('expected_value')]
-		private readonly bool|float|int|string|null $expectedValue = null,
+		private readonly bool|float|int|string|null $expectedValue = Metadata\Constants::VALUE_NOT_SET,
 	)
 	{
 	}
@@ -68,6 +78,20 @@ final class ActionChannelProperty implements Documents\Document
 	public function getProperty(): Uuid\UuidInterface
 	{
 		return $this->property;
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
+	public function getActualValue(): float|bool|int|string|null
+	{
+		if (!$this->getAction()->equalsValue(Types\PropertyAction::SET)) {
+			throw new Exceptions\InvalidState(
+				sprintf('Actual value is available only for action: %s', Types\PropertyAction::SET),
+			);
+		}
+
+		return $this->actualValue;
 	}
 
 	/**
@@ -96,9 +120,17 @@ final class ActionChannelProperty implements Documents\Document
 		];
 
 		if ($this->getAction()->equalsValue(Types\PropertyAction::SET)) {
-			$data = array_merge($data, [
-				'expected_value' => $this->getExpectedValue(),
-			]);
+			if ($this->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+				$data = array_merge($data, [
+					'actual_value' => $this->getActualValue(),
+				]);
+			}
+
+			if ($this->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
+				$data = array_merge($data, [
+					'expected_value' => $this->getExpectedValue(),
+				]);
+			}
 		}
 
 		return $data;

@@ -10,7 +10,7 @@ use FastyBird\Plugin\RedisDb\Clients as RedisDbClient;
 use FastyBird\Plugin\RedisDb\Exceptions as RedisDbExceptions;
 use Nette;
 use Nette\Utils;
-use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid;
 
 final class ChannelPropertiesRepositoryTest extends BaseTestCase
 {
@@ -23,7 +23,7 @@ final class ChannelPropertiesRepositoryTest extends BaseTestCase
 	 */
 	public function testFindOne(): void
 	{
-		$id = Uuid::uuid4();
+		$id = Uuid\Uuid::uuid4();
 
 		$redisDbClient = $this->createMock(RedisDbClient\Client::class);
 
@@ -64,7 +64,7 @@ final class ChannelPropertiesRepositoryTest extends BaseTestCase
 	 */
 	public function testFindOneById(): void
 	{
-		$id = Uuid::uuid4();
+		$id = Uuid\Uuid::uuid4();
 
 		$redisDbClient = $this->createMock(RedisDbClient\Client::class);
 

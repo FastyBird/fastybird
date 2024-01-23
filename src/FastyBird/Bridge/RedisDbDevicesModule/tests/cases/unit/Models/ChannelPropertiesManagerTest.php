@@ -10,7 +10,7 @@ use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Plugin\RedisDb\Clients as RedisDbClient;
 use Nette\Utils;
-use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid;
 
 final class ChannelPropertiesManagerTest extends BaseTestCase
 {
@@ -22,7 +22,7 @@ final class ChannelPropertiesManagerTest extends BaseTestCase
 	 */
 	public function testCreate(): void
 	{
-		$id = Uuid::uuid4();
+		$id = Uuid\Uuid::uuid4();
 
 		$redisDbClient = $this->createMock(RedisDbClient\Client::class);
 
@@ -88,7 +88,7 @@ final class ChannelPropertiesManagerTest extends BaseTestCase
 	 */
 	public function testUpdate(): void
 	{
-		$id = Uuid::uuid4();
+		$id = Uuid\Uuid::uuid4();
 		self::$getCalled = 0;
 
 		$redisDbClient = $this->createMock(RedisDbClient\Client::class);

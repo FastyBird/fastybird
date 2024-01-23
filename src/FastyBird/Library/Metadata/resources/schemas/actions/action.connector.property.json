@@ -44,6 +44,20 @@
     },
     "then": {
       "properties": {
+        "actual_value": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            }
+          ],
+          "description": "Property actual value to be written into property"
+        },
         "expected_value": {
           "oneOf": [
             {
@@ -56,14 +70,13 @@
               "type": "boolean"
             }
           ],
-          "description": "Property value to be written into property"
+          "description": "Property expected value to be written into property"
         }
       },
       "required": [
         "action",
         "connector",
-        "property",
-        "expected_value"
+        "property"
       ]
     }
   }

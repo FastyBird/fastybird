@@ -24,6 +24,7 @@ use FastyBird\Module\Devices\States;
 use Nette;
 use Nette\Utils;
 use Psr\EventDispatcher as PsrEventDispatcher;
+use Ramsey\Uuid;
 
 /**
  * Channel property states manager
@@ -115,17 +116,15 @@ final class Manager
 	 *
 	 * @interal
 	 */
-	public function delete(
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty $property,
-	): bool
+	public function delete(Uuid\UuidInterface $id): bool
 	{
 		if ($this->manager === null) {
 			throw new Exceptions\NotImplemented('Channel properties state manager is not registered');
 		}
 
-		$result = $this->manager->delete($property->getId());
+		$result = $this->manager->delete($id);
 
-		$this->dispatcher?->dispatch(new Events\ChannelPropertyStateEntityDeleted($property));
+		$this->dispatcher?->dispatch(new Events\ChannelPropertyStateEntityDeleted($id));
 
 		return $result;
 	}

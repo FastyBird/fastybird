@@ -10,7 +10,7 @@ use InvalidArgumentException;
 use Orisai\ObjectMapper;
 use PHPOnCouch;
 use PHPUnit\Framework\TestCase;
-use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid;
 use Throwable;
 use function array_keys;
 
@@ -124,13 +124,13 @@ final class FactoryTest extends TestCase
 			'one' => [
 				States\State::class,
 				[
-					'id' => Uuid::uuid4()->toString(),
+					'id' => Uuid\Uuid::uuid4()->toString(),
 				],
 			],
 			'two' => [
 				States\State::class,
 				[
-					'id' => Uuid::uuid4()->toString(),
+					'id' => Uuid\Uuid::uuid4()->toString(),
 				],
 			],
 		];

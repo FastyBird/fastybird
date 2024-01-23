@@ -15,7 +15,7 @@
 
 namespace FastyBird\Module\Devices\Events;
 
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use Ramsey\Uuid;
 use Symfony\Contracts\EventDispatcher;
 
 /**
@@ -29,15 +29,13 @@ use Symfony\Contracts\EventDispatcher;
 class ChannelPropertyStateEntityDeleted extends EventDispatcher\Event
 {
 
-	public function __construct(
-		private readonly MetadataDocuments\DevicesModule\ChannelDynamicProperty $property,
-	)
+	public function __construct(private readonly Uuid\UuidInterface $id)
 	{
 	}
 
-	public function getProperty(): MetadataDocuments\DevicesModule\ChannelDynamicProperty
+	public function getProperty(): Uuid\UuidInterface
 	{
-		return $this->property;
+		return $this->id;
 	}
 
 }
