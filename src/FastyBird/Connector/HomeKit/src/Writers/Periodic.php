@@ -33,6 +33,7 @@ use function array_key_exists;
 use function assert;
 use function in_array;
 use function React\Async\async;
+use function React\Async\await;
 
 /**
  * Periodic properties writer
@@ -74,8 +75,8 @@ abstract class Periodic
 		protected readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		protected readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
 		private readonly Protocol\Driver $accessoryDriver,
-		private readonly DevicesModels\States\DevicePropertiesManager $devicePropertiesStatesManager,
-		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
+		private readonly DevicesModels\States\Async\DevicePropertiesManager $devicePropertiesStatesManager,
+		private readonly DevicesModels\States\Async\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
 	)
@@ -130,9 +131,9 @@ abstract class Periodic
 
 		$this->eventLoop->addTimer(
 			self::HANDLER_START_DELAY,
-			function (): void {
+			async(function (): void {
 				$this->registerLoopHandler();
-			},
+			}),
 		);
 	}
 
@@ -209,7 +210,7 @@ abstract class Periodic
 			$characteristicValue = null;
 
 			if ($property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
-				$state = $this->devicePropertiesStatesManager->read($property);
+				$state = await($this->devicePropertiesStatesManager->read($property));
 
 				if ($state === null) {
 					continue;
@@ -218,7 +219,7 @@ abstract class Periodic
 				$characteristicValue = $state->getExpectedValue() ?? ($state->isValid() ? $state->getActualValue() : null);
 
 			} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
-				$state = $this->channelPropertiesStatesManager->read($property);
+				$state = await($this->channelPropertiesStatesManager->read($property));
 
 				if ($state === null) {
 					continue;
@@ -227,7 +228,7 @@ abstract class Periodic
 				$characteristicValue = $state->getExpectedValue() ?? ($state->isValid() ? $state->getActualValue() : null);
 
 			} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-				$state = $this->devicePropertiesStatesManager->get($property);
+				$state = await($this->devicePropertiesStatesManager->get($property));
 
 				if ($state === null) {
 					continue;
@@ -236,7 +237,7 @@ abstract class Periodic
 				$characteristicValue = $state->getExpectedValue();
 
 			} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-				$state = $this->channelPropertiesStatesManager->get($property);
+				$state = await($this->channelPropertiesStatesManager->get($property));
 
 				if ($state === null) {
 					continue;

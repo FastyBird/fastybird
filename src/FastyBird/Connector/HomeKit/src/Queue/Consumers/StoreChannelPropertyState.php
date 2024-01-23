@@ -59,7 +59,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager,
-		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
+		private readonly DevicesModels\States\Async\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly ApplicationHelpers\Database $databaseHelper,
 		private readonly ExchangeEntities\DocumentFactory $entityFactory,
 		private readonly ExchangePublisher\Async\Publisher $publisher,
@@ -200,12 +200,12 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			);
 
 		} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-			$this->channelPropertiesStatesManager->set(
+			await($this->channelPropertiesStatesManager->set(
 				$property,
 				Utils\ArrayHash::from([
 					DevicesStates\Property::ACTUAL_VALUE_FIELD => $entity->getValue(),
 				]),
-			);
+			));
 		} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
 			$findChannelPropertyQuery = new DevicesQueries\Configuration\FindChannelProperties();
 			$findChannelPropertyQuery->byId($property->getParent());
@@ -239,12 +239,12 @@ final class StoreChannelPropertyState implements Queue\Consumer
 							),
 						));
 					} else {
-						$this->channelPropertiesStatesManager->write(
+						await($this->channelPropertiesStatesManager->write(
 							$property,
 							Utils\ArrayHash::from([
 								DevicesStates\Property::EXPECTED_VALUE_FIELD => $entity->getValue(),
 							]),
-						);
+						));
 					}
 				} catch (DevicesExceptions\InvalidState | Utils\JsonException | MetadataExceptions\InvalidValue $ex) {
 					$this->logger->error(

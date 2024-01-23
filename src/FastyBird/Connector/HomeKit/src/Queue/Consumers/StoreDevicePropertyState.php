@@ -58,7 +58,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 		private readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
 		private readonly DevicesModels\Entities\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
 		private readonly DevicesModels\Entities\Devices\Properties\PropertiesManager $devicesPropertiesManager,
-		private readonly DevicesModels\States\DevicePropertiesManager $devicePropertiesStatesManager,
+		private readonly DevicesModels\States\Async\DevicePropertiesManager $devicePropertiesStatesManager,
 		private readonly ApplicationHelpers\Database $databaseHelper,
 		private readonly ExchangeEntities\DocumentFactory $entityFactory,
 		private readonly ExchangePublisher\Async\Publisher $publisher,
@@ -161,12 +161,12 @@ final class StoreDevicePropertyState implements Queue\Consumer
 			);
 
 		} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-			$this->devicePropertiesStatesManager->set(
+			await($this->devicePropertiesStatesManager->set(
 				$property,
 				Utils\ArrayHash::from([
 					DevicesStates\Property::ACTUAL_VALUE_FIELD => $entity->getValue(),
 				]),
-			);
+			));
 		} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
 			$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceProperties();
 			$findDevicePropertyQuery->byId($property->getParent());
@@ -199,12 +199,12 @@ final class StoreDevicePropertyState implements Queue\Consumer
 							),
 						));
 					} else {
-						$this->devicePropertiesStatesManager->write(
+						await($this->devicePropertiesStatesManager->write(
 							$property,
 							Utils\ArrayHash::from([
 								DevicesStates\Property::EXPECTED_VALUE_FIELD => $entity->getValue(),
 							]),
-						);
+						));
 					}
 				} catch (DevicesExceptions\InvalidState | Utils\JsonException | MetadataExceptions\InvalidValue $ex) {
 					$this->logger->error(

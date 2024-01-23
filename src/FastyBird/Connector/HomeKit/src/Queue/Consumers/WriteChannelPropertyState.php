@@ -31,7 +31,9 @@ use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
 use RuntimeException;
+use Throwable;
 use function intval;
+use function React\Async\await;
 
 /**
  * Write state to device message consumer
@@ -54,7 +56,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
-		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
+		private readonly DevicesModels\States\Async\ChannelPropertiesManager $channelPropertiesStatesManager,
 	)
 	{
 	}
@@ -68,6 +70,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws RuntimeException
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws Throwable
 	 */
 	public function consume(Entities\Messages\Entity $entity): bool
 	{
@@ -238,7 +241,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 
 						if ($parent instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
 							try {
-								$state = $this->channelPropertiesStatesManager->read($property);
+								$state = await($this->channelPropertiesStatesManager->read($property));
 
 								if ($state === null) {
 									continue;
