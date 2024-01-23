@@ -123,7 +123,9 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 								'property' => $property->getId()->toString(),
 							],
 							[
-								'write' => (array) $data,
+								'write' => array_map(function (bool|int|float|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\CoverPayload|MetadataTypes\SwitchPayload|null $item): bool|int|float|string|null {
+									return MetadataUtilities\Value::flattenValue($item);
+								}, (array) $data),
 							],
 						)),
 						MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION),
@@ -166,7 +168,9 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 								'property' => $property->getId()->toString(),
 							],
 							[
-								'set' => (array) $data,
+								'set' => array_map(function (bool|int|float|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\CoverPayload|MetadataTypes\SwitchPayload|null $item): bool|int|float|string|null {
+									return MetadataUtilities\Value::flattenValue($item);
+								}, (array) $data),
 							],
 						)),
 						MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION),
