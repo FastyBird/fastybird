@@ -173,7 +173,6 @@ class NsPanelExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		)
 			->setType(Queue\Consumers\StoreDeviceState::class)
 			->setArguments([
-				'useExchange' => $configuration->writer === Writers\Exchange::NAME,
 				'logger' => $logger,
 			]);
 

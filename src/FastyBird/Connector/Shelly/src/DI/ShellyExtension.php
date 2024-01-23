@@ -214,7 +214,6 @@ class ShellyExtension extends DI\CompilerExtension implements Translation\DI\Tra
 		)
 			->setType(Queue\Consumers\StoreDeviceState::class)
 			->setArguments([
-				'useExchange' => $configuration->writer === Writers\Exchange::NAME,
 				'logger' => $logger,
 			]);
 

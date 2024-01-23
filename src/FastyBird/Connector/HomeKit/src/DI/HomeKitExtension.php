@@ -163,7 +163,6 @@ class HomeKitExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		)
 			->setType(Queue\Consumers\StoreDevicePropertyState::class)
 			->setArguments([
-				'useExchange' => $configuration->writer === Writers\Exchange::NAME,
 				'logger' => $logger,
 			]);
 
@@ -173,7 +172,6 @@ class HomeKitExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		)
 			->setType(Queue\Consumers\StoreChannelPropertyState::class)
 			->setArguments([
-				'useExchange' => $configuration->writer === Writers\Exchange::NAME,
 				'logger' => $logger,
 			]);
 

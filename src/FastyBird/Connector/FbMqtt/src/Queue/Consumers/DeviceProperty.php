@@ -151,6 +151,7 @@ final class DeviceProperty implements Queue\Consumer
 					Utils\ArrayHash::from([
 						DevicesStates\Property::ACTUAL_VALUE_FIELD => $entity->getValue(),
 					]),
+					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT),
 				);
 			}
 		} else {

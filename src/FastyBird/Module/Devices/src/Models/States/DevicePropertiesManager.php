@@ -18,6 +18,8 @@ namespace FastyBird\Module\Devices\Models\States;
 use DateTimeInterface;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
+use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
+use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -32,6 +34,8 @@ use Nette;
 use Nette\Utils;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
+use Throwable;
+use function array_merge;
 use function is_array;
 use function strval;
 
@@ -51,11 +55,14 @@ final class DevicePropertiesManager extends PropertiesManager
 	use Nette\SmartObject;
 
 	public function __construct(
+		private readonly bool $useExchange,
 		private readonly Models\Configuration\Devices\Properties\Repository $devicePropertiesConfigurationRepository,
 		private readonly Models\States\Devices\Repository $devicePropertyStateRepository,
 		private readonly Models\States\Devices\Manager $devicePropertiesStatesManager,
 		private readonly Devices\Logger $logger,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
+		private readonly ExchangePublisher\Publisher $publisher,
+		private readonly ExchangeDocuments\DocumentFactory $documentFactory,
 		ObjectMapper\Processing\Processor $stateMapper,
 	)
 	{
@@ -105,9 +112,38 @@ final class DevicePropertiesManager extends PropertiesManager
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty $property,
 		Utils\ArrayHash $data,
+		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source = null,
 	): void
 	{
-		$this->saveValue($property, $data, true);
+		if ($this->useExchange) {
+			try {
+				$this->publisher->publish(
+					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::DEVICE_PROPERTY_ACTION),
+					$this->documentFactory->create(
+						Utils\Json::encode(array_merge(
+							[
+								'action' => MetadataTypes\PropertyAction::SET,
+								'device' => $property->getDevice()->toString(),
+								'property' => $property->getId()->toString(),
+							],
+							[
+								'write' => (array) $data,
+							],
+						)),
+						MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::DEVICE_PROPERTY_ACTION),
+					),
+				);
+			} catch (Throwable $ex) {
+				throw new Exceptions\InvalidState(
+					'Requested value could not be published for write action',
+					$ex->getCode(),
+					$ex,
+				);
+			}
+		} else {
+			$this->saveValue($property, $data, true);
+		}
 	}
 
 	/**
@@ -121,9 +157,38 @@ final class DevicePropertiesManager extends PropertiesManager
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty $property,
 		Utils\ArrayHash $data,
+		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source = null,
 	): void
 	{
-		$this->saveValue($property, $data, false);
+		if ($this->useExchange) {
+			try {
+				$this->publisher->publish(
+					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::DEVICE_PROPERTY_ACTION),
+					$this->documentFactory->create(
+						Utils\Json::encode(array_merge(
+							[
+								'action' => MetadataTypes\PropertyAction::SET,
+								'device' => $property->getDevice()->toString(),
+								'property' => $property->getId()->toString(),
+							],
+							[
+								'set' => (array) $data,
+							],
+						)),
+						MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::DEVICE_PROPERTY_ACTION),
+					),
+				);
+			} catch (Throwable $ex) {
+				throw new Exceptions\InvalidState(
+					'Requested value could not be published for set action',
+					$ex->getCode(),
+					$ex,
+				);
+			}
+		} else {
+			$this->saveValue($property, $data, false);
+		}
 	}
 
 	/**

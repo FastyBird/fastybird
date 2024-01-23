@@ -105,6 +105,7 @@ final class StoreParametersStates implements Consumer
 						Utils\ArrayHash::from([
 							DevicesStates\Property::ACTUAL_VALUE_FIELD => $parameter->getValue(),
 						]),
+						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_SONOFF),
 					);
 				} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty) {
 					$this->databaseHelper->transaction(
@@ -145,6 +146,7 @@ final class StoreParametersStates implements Consumer
 							Utils\ArrayHash::from([
 								DevicesStates\Property::ACTUAL_VALUE_FIELD => $parameter->getValue(),
 							]),
+							MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_SONOFF),
 						);
 					} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
 						$this->databaseHelper->transaction(

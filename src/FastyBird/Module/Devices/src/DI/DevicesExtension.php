@@ -80,6 +80,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 	{
 		return Schema\Expect::structure([
 			'apiPrefix' => Schema\Expect::bool(true),
+			'exchange' => Schema\Expect::bool(true),
 		]);
 	}
 
@@ -406,6 +407,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		)
 			->setType(Models\States\ConnectorPropertiesManager::class)
 			->setArguments([
+				'useExchange' => $configuration->exchange,
 				'logger' => $logger,
 			]);
 
@@ -415,6 +417,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		)
 			->setType(Models\States\Async\ConnectorPropertiesManager::class)
 			->setArguments([
+				'useExchange' => $configuration->exchange,
 				'logger' => $logger,
 			]);
 
@@ -425,6 +428,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		)
 			->setType(Models\States\DevicePropertiesManager::class)
 			->setArguments([
+				'useExchange' => $configuration->exchange,
 				'logger' => $logger,
 			]);
 
@@ -434,6 +438,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		)
 			->setType(Models\States\Async\DevicePropertiesManager::class)
 			->setArguments([
+				'useExchange' => $configuration->exchange,
 				'logger' => $logger,
 			]);
 
@@ -444,6 +449,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		)
 			->setType(Models\States\ChannelPropertiesManager::class)
 			->setArguments([
+				'useExchange' => $configuration->exchange,
 				'logger' => $logger,
 			]);
 
@@ -453,6 +459,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		)
 			->setType(Models\States\Async\ChannelPropertiesManager::class)
 			->setArguments([
+				'useExchange' => $configuration->exchange,
 				'logger' => $logger,
 			]);
 

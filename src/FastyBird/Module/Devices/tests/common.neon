@@ -55,6 +55,9 @@ decorator:
         setup:
             - addPaths([%appDir%/fixtures/dummy])
 
+fbDevicesModule:
+    exchange: false
+
 contributteTranslation:
     locales:
         default: en_US

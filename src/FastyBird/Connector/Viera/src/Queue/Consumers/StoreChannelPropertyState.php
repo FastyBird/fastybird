@@ -183,6 +183,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 					DevicesStates\Property::ACTUAL_VALUE_FIELD => null,
 					DevicesStates\Property::VALID_FIELD => true,
 				]),
+				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_VIERA),
 			);
 			$this->channelPropertiesStatesManager->setPendingState($property, false);
 		} else {
@@ -191,6 +192,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 				Utils\ArrayHash::from([
 					DevicesStates\Property::ACTUAL_VALUE_FIELD => $entity->getValue(),
 				]),
+				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_VIERA),
 			);
 		}
 

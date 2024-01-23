@@ -18,6 +18,8 @@ namespace FastyBird\Module\Devices\Models\States\Async;
 use DateTimeInterface;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
+use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
+use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -32,6 +34,7 @@ use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use React\Promise;
 use Throwable;
+use function array_merge;
 use function boolval;
 use function is_array;
 use function React\Async\async;
@@ -54,10 +57,13 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 	use Nette\SmartObject;
 
 	public function __construct(
+		private readonly bool $useExchange,
 		private readonly Models\States\Connectors\Async\Repository $connectorPropertyStateRepository,
 		private readonly Models\States\Connectors\Async\Manager $connectorPropertiesStatesManager,
 		private readonly Devices\Logger $logger,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
+		private readonly ExchangePublisher\Async\Publisher $publisher,
+		private readonly ExchangeDocuments\DocumentFactory $documentFactory,
 		ObjectMapper\Processing\Processor $stateMapper,
 	)
 	{
@@ -90,9 +96,38 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 	public function write(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
 		Utils\ArrayHash $data,
+		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source = null,
 	): Promise\PromiseInterface
 	{
-		return $this->saveValue($property, $data, true);
+		if ($this->useExchange) {
+			try {
+				return $this->publisher->publish(
+					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_ACTION),
+					$this->documentFactory->create(
+						Utils\Json::encode(array_merge(
+							[
+								'action' => MetadataTypes\PropertyAction::SET,
+								'connector' => $property->getConnector()->toString(),
+								'property' => $property->getId()->toString(),
+							],
+							[
+								'write' => (array) $data,
+							],
+						)),
+						MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_ACTION),
+					),
+				);
+			} catch (Throwable $ex) {
+				return Promise\reject(new Exceptions\InvalidState(
+					'Requested value could not be published for write action',
+					$ex->getCode(),
+					$ex,
+				));
+			}
+		} else {
+			return $this->saveValue($property, $data, true);
+		}
 	}
 
 	/**
@@ -101,9 +136,38 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 	public function set(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
 		Utils\ArrayHash $data,
+		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source = null,
 	): Promise\PromiseInterface
 	{
-		return $this->saveValue($property, $data, false);
+		if ($this->useExchange) {
+			try {
+				return $this->publisher->publish(
+					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_ACTION),
+					$this->documentFactory->create(
+						Utils\Json::encode(array_merge(
+							[
+								'action' => MetadataTypes\PropertyAction::SET,
+								'connector' => $property->getConnector()->toString(),
+								'property' => $property->getId()->toString(),
+							],
+							[
+								'set' => (array) $data,
+							],
+						)),
+						MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_ACTION),
+					),
+				);
+			} catch (Throwable $ex) {
+				return Promise\reject(new Exceptions\InvalidState(
+					'Requested value could not be published for set action',
+					$ex->getCode(),
+					$ex,
+				));
+			}
+		} else {
+			return $this->saveValue($property, $data, false);
+		}
 	}
 
 	/**

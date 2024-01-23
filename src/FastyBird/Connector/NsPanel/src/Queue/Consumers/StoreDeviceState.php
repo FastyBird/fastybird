@@ -22,9 +22,6 @@ use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
-use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
-use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -53,7 +50,6 @@ final class StoreDeviceState implements Queue\Consumer
 	use Nette\SmartObject;
 
 	public function __construct(
-		private readonly bool $useExchange,
 		private readonly NsPanel\Logger $logger,
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager,
@@ -62,8 +58,6 @@ final class StoreDeviceState implements Queue\Consumer
 		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
 		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly ApplicationHelpers\Database $databaseHelper,
-		private readonly ExchangeDocuments\DocumentFactory $documentFactory,
-		private readonly ExchangePublisher\Publisher $publisher,
 	)
 	{
 	}
@@ -74,11 +68,8 @@ final class StoreDeviceState implements Queue\Consumer
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws ExchangeExceptions\InvalidArgument
-	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function consume(Entities\Messages\Entity $entity): bool
@@ -181,6 +172,7 @@ final class StoreDeviceState implements Queue\Consumer
 				Utils\ArrayHash::from([
 					DevicesStates\Property::ACTUAL_VALUE_FIELD => $item->getValue(),
 				]),
+				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL),
 			);
 		}
 	}
@@ -193,11 +185,8 @@ final class StoreDeviceState implements Queue\Consumer
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws ExchangeExceptions\InvalidArgument
-	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	private function processThirdPartyDevice(
@@ -243,11 +232,8 @@ final class StoreDeviceState implements Queue\Consumer
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws ExchangeExceptions\InvalidArgument
-	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	private function writeThirdPartyProperty(
@@ -281,62 +267,17 @@ final class StoreDeviceState implements Queue\Consumer
 				Utils\ArrayHash::from([
 					DevicesStates\Property::ACTUAL_VALUE_FIELD => $value,
 				]),
+				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL),
 			);
 
 		} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
-			try {
-				if ($this->useExchange) {
-					$this->publisher->publish(
-						MetadataTypes\ConnectorSource::get(
-							MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
-						),
-						MetadataTypes\RoutingKey::get(
-							MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION,
-						),
-						$this->documentFactory->create(
-							Utils\Json::encode([
-								'action' => MetadataTypes\PropertyAction::SET,
-								'device' => $device->getId()->toString(),
-								'channel' => $channel->getId()->toString(),
-								'property' => $property->getId()->toString(),
-								'expected_value' => $this->channelPropertiesStatesManager->normalizePublishValue(
-									$property,
-									$value,
-								),
-							]),
-							MetadataTypes\RoutingKey::get(
-								MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION,
-							),
-						),
-					);
-				} else {
-					$this->channelPropertiesStatesManager->write(
-						$property,
-						Utils\ArrayHash::from([
-							DevicesStates\Property::EXPECTED_VALUE_FIELD => $value,
-						]),
-					);
-				}
-			} catch (DevicesExceptions\InvalidState | Utils\JsonException | MetadataExceptions\InvalidValue $ex) {
-				$this->logger->warning(
-					'State value could not be converted to mapped parent',
-					[
-						'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
-						'type' => 'store-device-state-message-consumer',
-						'exception' => ApplicationHelpers\Logger::buildException($ex),
-						'connector' => [
-							'id' => $device->getConnector()->toString(),
-						],
-						'device' => [
-							'id' => $device->getId()->toString(),
-						],
-						'property' => [
-							'id' => $property->getId()->toString(),
-						],
-						'value' => $value,
-					],
-				);
-			}
+			$this->channelPropertiesStatesManager->write(
+				$property,
+				Utils\ArrayHash::from([
+					DevicesStates\Property::EXPECTED_VALUE_FIELD => $value,
+				]),
+				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL),
+			);
 		}
 	}
 

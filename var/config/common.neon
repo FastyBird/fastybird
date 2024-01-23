@@ -134,6 +134,7 @@ fbWebServerPlugin:
 #########
 fbAccountsModule:
     apiPrefix: %api.prefixed.modules%
+    exchange: %modules.exchange%
 
 fbDevicesModule:
     apiPrefix: %api.prefixed.modules%

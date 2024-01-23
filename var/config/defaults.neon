@@ -43,5 +43,8 @@ parameters:
         prefixed:
             modules: true
 
+    modules:
+        exchange: true
+
     connectors:
         writers: exchange # Allowed values: exchange|event

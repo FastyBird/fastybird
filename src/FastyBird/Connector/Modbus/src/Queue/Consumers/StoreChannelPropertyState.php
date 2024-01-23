@@ -168,6 +168,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			Utils\ArrayHash::from([
 				DevicesStates\Property::ACTUAL_VALUE_FIELD => $entity->getValue(),
 			]),
+			MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_MODBUS),
 		);
 
 		$this->logger->debug(

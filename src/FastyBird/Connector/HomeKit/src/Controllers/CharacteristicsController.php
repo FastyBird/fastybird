@@ -29,6 +29,7 @@ use FastyBird\DateTimeFactory;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -631,8 +632,8 @@ final class CharacteristicsController extends BaseController
 							'name' => $characteristic->getName(),
 						],
 						'value' => [
-							'expected' => $valueToWrite,
-							'transformed' => $value,
+							'expected' => MetadataUtilities\Value::flattenValue($valueToWrite),
+							'transformed' => MetadataUtilities\Value::flattenValue($value),
 						],
 						'device' => [
 							'id' => $characteristic->getService()->getChannel()?->getDevice()->toString(),

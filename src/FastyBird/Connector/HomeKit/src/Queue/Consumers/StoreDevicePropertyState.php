@@ -19,10 +19,8 @@ use Doctrine\DBAL;
 use FastyBird\Connector\HomeKit;
 use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Queue;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
-use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
-use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -34,7 +32,6 @@ use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\States as DevicesStates;
 use Nette;
 use Nette\Utils;
-use Throwable;
 use function assert;
 use function React\Async\await;
 
@@ -52,7 +49,6 @@ final class StoreDevicePropertyState implements Queue\Consumer
 	use Nette\SmartObject;
 
 	public function __construct(
-		private readonly bool $useExchange,
 		private readonly HomeKit\Logger $logger,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		private readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
@@ -60,24 +56,20 @@ final class StoreDevicePropertyState implements Queue\Consumer
 		private readonly DevicesModels\Entities\Devices\Properties\PropertiesManager $devicesPropertiesManager,
 		private readonly DevicesModels\States\Async\DevicePropertiesManager $devicePropertiesStatesManager,
 		private readonly ApplicationHelpers\Database $databaseHelper,
-		private readonly ExchangeDocuments\DocumentFactory $documentFactory,
-		private readonly ExchangePublisher\Async\Publisher $publisher,
 	)
 	{
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\Runtime
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Runtime
-	 * @throws ExchangeExceptions\InvalidArgument
-	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
-	 * @throws Throwable
 	 */
 	public function consume(Entities\Messages\Entity $entity): bool
 	{
@@ -166,6 +158,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 				Utils\ArrayHash::from([
 					DevicesStates\Property::ACTUAL_VALUE_FIELD => $entity->getValue(),
 				]),
+				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT),
 			));
 		} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
 			$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceProperties();
@@ -174,60 +167,13 @@ final class StoreDevicePropertyState implements Queue\Consumer
 			$parent = $this->devicesPropertiesConfigurationRepository->findOneBy($findDevicePropertyQuery);
 
 			if ($parent instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-				try {
-					if ($this->useExchange) {
-						await($this->publisher->publish(
-							MetadataTypes\ConnectorSource::get(
-								MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
-							),
-							MetadataTypes\RoutingKey::get(
-								MetadataTypes\RoutingKey::DEVICE_PROPERTY_ACTION,
-							),
-							$this->documentFactory->create(
-								Utils\Json::encode([
-									'action' => MetadataTypes\PropertyAction::SET,
-									'device' => $device->getId()->toString(),
-									'property' => $property->getId()->toString(),
-									'expected_value' => $this->devicePropertiesStatesManager->normalizePublishValue(
-										$property,
-										$entity->getValue(),
-									),
-								]),
-								MetadataTypes\RoutingKey::get(
-									MetadataTypes\RoutingKey::DEVICE_PROPERTY_ACTION,
-								),
-							),
-						));
-					} else {
-						await($this->devicePropertiesStatesManager->write(
-							$property,
-							Utils\ArrayHash::from([
-								DevicesStates\Property::EXPECTED_VALUE_FIELD => $entity->getValue(),
-							]),
-						));
-					}
-				} catch (DevicesExceptions\InvalidState | Utils\JsonException | MetadataExceptions\InvalidValue $ex) {
-					$this->logger->error(
-						'State value could not be converted to mapped parent',
-						[
-							'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
-							'type' => 'store-device-property-state-message-consumer',
-							'exception' => ApplicationHelpers\Logger::buildException($ex),
-							'connector' => [
-								'id' => $entity->getConnector()->toString(),
-							],
-							'device' => [
-								'id' => $device->getId()->toString(),
-							],
-							'property' => [
-								'id' => $property->getId()->toString(),
-							],
-							'data' => $entity->toArray(),
-						],
-					);
-
-					return true;
-				}
+				await($this->devicePropertiesStatesManager->write(
+					$property,
+					Utils\ArrayHash::from([
+						DevicesStates\Property::EXPECTED_VALUE_FIELD => $entity->getValue(),
+					]),
+					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT),
+				));
 			} elseif ($parent instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty) {
 				$this->databaseHelper->transaction(function () use ($entity, $parent, $device, $property): void {
 					$toUpdate = $this->devicesPropertiesRepository->find(

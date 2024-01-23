@@ -24,13 +24,11 @@ use FastyBird\Connector\HomeKit\Queue;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
 use RuntimeException;
-use Throwable;
 use function intval;
 
 /**
@@ -58,15 +56,12 @@ final class WriteDevicePropertyState implements Queue\Consumer
 	}
 
 	/**
-	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws RuntimeException
-	 * @throws ToolsExceptions\InvalidArgument
-	 * @throws Throwable
 	 */
 	public function consume(Entities\Messages\Entity $entity): bool
 	{
