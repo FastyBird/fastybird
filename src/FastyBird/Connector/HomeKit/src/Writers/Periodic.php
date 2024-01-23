@@ -209,6 +209,8 @@ abstract class Periodic
 
 			$characteristicValue = null;
 
+			$state = null;
+
 			if ($property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
 				$state = await($this->devicePropertiesStatesManager->read($property));
 
@@ -297,6 +299,7 @@ abstract class Periodic
 											'connector' => $device->getConnector(),
 											'device' => $device->getId(),
 											'property' => $property->getId(),
+											'state' => $state?->toArray(),
 										],
 									),
 								);
@@ -313,6 +316,7 @@ abstract class Periodic
 											'device' => $device->getId(),
 											'channel' => $property->getChannel(),
 											'property' => $property->getId(),
+											'state' => $state?->toArray(),
 										],
 									),
 								);

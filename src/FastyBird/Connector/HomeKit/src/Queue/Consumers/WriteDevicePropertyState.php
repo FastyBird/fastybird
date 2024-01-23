@@ -55,7 +55,6 @@ final class WriteDevicePropertyState implements Queue\Consumer
 		private readonly DevicesModels\Configuration\Connectors\Repository $connectorsConfigurationRepository,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		private readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
-		private readonly DevicesModels\States\Async\DevicePropertiesManager $devicePropertiesStatesManager,
 	)
 	{
 	}
@@ -195,25 +194,18 @@ final class WriteDevicePropertyState implements Queue\Consumer
 						$parent = $this->devicesPropertiesConfigurationRepository->find($property->getParent());
 
 						if ($parent instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-							try {
-								$state = await($this->devicePropertiesStatesManager->read($property));
-
-								if ($state === null) {
-									return true;
+							if ($entity->getState() !== null) {
+								if ($entity->getState()->getExpectedValue() !== null) {
+									$characteristic->setActualValue($entity->getState()->getExpectedValue());
+								} elseif ($entity->getState()->getActualValue() !== null && $entity->getState()->isValid()) {
+									$characteristic->setActualValue($entity->getState()->getActualValue());
 								}
-
-								if ($state->getExpectedValue() !== null) {
-									$characteristic->setActualValue($state->getExpectedValue());
-								} elseif ($state->getActualValue() !== null && $state->isValid()) {
-									$characteristic->setActualValue($state->getActualValue());
-								}
-							} catch (Exceptions\InvalidState $ex) {
+							} else {
 								$this->logger->warning(
-									'State value could not be converted from mapped parent',
+									'State entity is missing in event entity',
 									[
 										'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
 										'type' => 'write-device-property-state-message-consumer',
-										'exception' => ApplicationHelpers\Logger::buildException($ex),
 										'connector' => [
 											'id' => $connector->getId()->toString(),
 										],

@@ -161,6 +161,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
 							'property' => $entity->getId(),
+							'state' => $entity->toArray(),
 						],
 					),
 				);
@@ -195,6 +196,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 							'device' => $device->getId(),
 							'channel' => $channel->getId(),
 							'property' => $entity->getId(),
+							'state' => $entity->toArray(),
 						],
 					),
 				);

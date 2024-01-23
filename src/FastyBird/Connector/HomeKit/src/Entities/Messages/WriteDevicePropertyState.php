@@ -16,6 +16,8 @@
 namespace FastyBird\Connector\HomeKit\Entities\Messages;
 
 use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
+use FastyBird\Module\Devices\States as DevicesStates;
+use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 
 /**
@@ -36,6 +38,11 @@ final class WriteDevicePropertyState implements Entity
 		private readonly Uuid\UuidInterface $device,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $property,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\MappedObjectValue(class: DevicesStates\DeviceProperty::class),
+			new ObjectMapper\Rules\NullValue(),
+		])]
+		private readonly DevicesStates\DeviceProperty|null $state,
 	)
 	{
 	}
@@ -55,6 +62,11 @@ final class WriteDevicePropertyState implements Entity
 		return $this->property;
 	}
 
+	public function getState(): DevicesStates\DeviceProperty|null
+	{
+		return $this->state;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -64,6 +76,7 @@ final class WriteDevicePropertyState implements Entity
 			'connector' => $this->getConnector()->toString(),
 			'device' => $this->getDevice()->toString(),
 			'property' => $this->getProperty()->toString(),
+			'state' => $this->getState()?->toArray(),
 		];
 	}
 

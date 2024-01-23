@@ -97,6 +97,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
 							'property' => $property->getId(),
+							'state' => $event->getState()->toArray(),
 						],
 					),
 				);
@@ -159,6 +160,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 							'device' => $device->getId(),
 							'channel' => $property->getChannel(),
 							'property' => $property->getId(),
+							'state' => $event->getState()->toArray(),
 						],
 					),
 				);
