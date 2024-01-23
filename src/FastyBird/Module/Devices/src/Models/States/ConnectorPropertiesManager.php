@@ -201,14 +201,14 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	{
 		if (is_array($property)) {
 			foreach ($property as $item) {
-				$this->set($item, Utils\ArrayHash::from([
+				$this->saveValue($item, Utils\ArrayHash::from([
 					States\Property::VALID_FIELD => $state,
-				]));
+				]), false);
 			}
 		} else {
-			$this->set($property, Utils\ArrayHash::from([
+			$this->saveValue($property, Utils\ArrayHash::from([
 				States\Property::VALID_FIELD => $state,
-			]));
+			]), false);
 		}
 	}
 
@@ -229,28 +229,28 @@ final class ConnectorPropertiesManager extends PropertiesManager
 		if (is_array($property)) {
 			foreach ($property as $item) {
 				if ($pending === false) {
-					$this->set($item, Utils\ArrayHash::from([
+					$this->saveValue($item, Utils\ArrayHash::from([
 						States\Property::EXPECTED_VALUE_FIELD => null,
 						States\Property::PENDING_FIELD => false,
-					]));
+					]), false);
 				} else {
-					$this->set($item, Utils\ArrayHash::from([
+					$this->saveValue($item, Utils\ArrayHash::from([
 						States\Property::PENDING_FIELD => $this->dateTimeFactory->getNow()->format(
 							DateTimeInterface::ATOM,
 						),
-					]));
+					]), false);
 				}
 			}
 		} else {
 			if ($pending === false) {
-				$this->set($property, Utils\ArrayHash::from([
+				$this->saveValue($property, Utils\ArrayHash::from([
 					States\Property::EXPECTED_VALUE_FIELD => null,
 					States\Property::PENDING_FIELD => false,
-				]));
+				]), false);
 			} else {
-				$this->set($property, Utils\ArrayHash::from([
+				$this->saveValue($property, Utils\ArrayHash::from([
 					States\Property::PENDING_FIELD => $this->dateTimeFactory->getNow()->format(DateTimeInterface::ATOM),
-				]));
+				]), false);
 			}
 		}
 	}
@@ -402,8 +402,10 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
+	 *
+	 * @interal
 	 */
-	private function saveValue(
+	public function saveValue(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
 		Utils\ArrayHash $data,
 		bool $forWriting,

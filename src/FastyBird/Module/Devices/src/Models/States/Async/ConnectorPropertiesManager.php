@@ -186,9 +186,9 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 			$promises = [];
 
 			foreach ($property as $item) {
-				$promises[] = $this->set($item, Utils\ArrayHash::from([
+				$promises[] = $this->saveValue($item, Utils\ArrayHash::from([
 					States\Property::VALID_FIELD => $state,
-				]));
+				]), false);
 			}
 
 			Promise\all($promises)
@@ -202,9 +202,9 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 			return $deferred->promise();
 		}
 
-		return $this->set($property, Utils\ArrayHash::from([
+		return $this->saveValue($property, Utils\ArrayHash::from([
 			States\Property::VALID_FIELD => $state,
-		]));
+		]), false);
 	}
 
 	/**
@@ -223,14 +223,14 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 			$promises = [];
 
 			foreach ($property as $item) {
-				$promises[] = $pending === false ? $this->set($item, Utils\ArrayHash::from([
+				$promises[] = $pending === false ? $this->saveValue($item, Utils\ArrayHash::from([
 					States\Property::EXPECTED_VALUE_FIELD => null,
 					States\Property::PENDING_FIELD => false,
-				])) : $this->set($item, Utils\ArrayHash::from([
+				]), false) : $this->saveValue($item, Utils\ArrayHash::from([
 					States\Property::PENDING_FIELD => $this->dateTimeFactory->getNow()->format(
 						DateTimeInterface::ATOM,
 					),
-				]));
+				]), false);
 			}
 
 			Promise\all($promises)
@@ -244,12 +244,12 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 			return $deferred->promise();
 		}
 
-		return $pending === false ? $this->set($property, Utils\ArrayHash::from([
+		return $pending === false ? $this->saveValue($property, Utils\ArrayHash::from([
 			States\Property::EXPECTED_VALUE_FIELD => null,
 			States\Property::PENDING_FIELD => false,
-		])) : $this->set($property, Utils\ArrayHash::from([
+		]), false) : $this->saveValue($property, Utils\ArrayHash::from([
 			States\Property::PENDING_FIELD => $this->dateTimeFactory->getNow()->format(DateTimeInterface::ATOM),
-		]));
+		]), false);
 	}
 
 	/**
@@ -448,8 +448,10 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 
 	/**
 	 * @return Promise\PromiseInterface<bool>
+	 *
+	 * @interal
 	 */
-	private function saveValue(
+	public function saveValue(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
 		Utils\ArrayHash $data,
 		bool $forWriting,

@@ -104,9 +104,10 @@ final class State implements ExchangeConsumers\Consumer
 						}
 
 						if ($data !== []) {
-							$result = $this->connectorPropertiesStatesManager->set(
+							$result = $this->connectorPropertiesStatesManager->saveValue(
 								$property,
 								Utils\ArrayHash::from($data),
+								false,
 							);
 						}
 					} elseif ($entity->getWrite() !== null) {
@@ -119,9 +120,10 @@ final class State implements ExchangeConsumers\Consumer
 						}
 
 						if ($data !== []) {
-							$result = $this->connectorPropertiesStatesManager->write(
+							$result = $this->connectorPropertiesStatesManager->saveValue(
 								$property,
 								Utils\ArrayHash::from($data),
+								true,
 							);
 						}
 					}
@@ -210,9 +212,10 @@ final class State implements ExchangeConsumers\Consumer
 						}
 
 						if ($data !== []) {
-							$result = $this->devicePropertiesStatesManager->set(
+							$result = $this->devicePropertiesStatesManager->saveValue(
 								$property,
 								Utils\ArrayHash::from($data),
+								false,
 							);
 						}
 					} elseif ($entity->getWrite() !== null) {
@@ -225,9 +228,10 @@ final class State implements ExchangeConsumers\Consumer
 						}
 
 						if ($data !== []) {
-							$result = $this->devicePropertiesStatesManager->write(
+							$result = $this->devicePropertiesStatesManager->saveValue(
 								$property,
 								Utils\ArrayHash::from($data),
+								true,
 							);
 						}
 					}
@@ -316,9 +320,10 @@ final class State implements ExchangeConsumers\Consumer
 						}
 
 						if ($data !== []) {
-							$result = $this->channelPropertiesStatesManager->set(
+							$result = $this->channelPropertiesStatesManager->saveValue(
 								$property,
 								Utils\ArrayHash::from($data),
+								false,
 							);
 						}
 					} elseif ($entity->getWrite() !== null) {
@@ -331,9 +336,10 @@ final class State implements ExchangeConsumers\Consumer
 						}
 
 						if ($data !== []) {
-							$result = $this->channelPropertiesStatesManager->write(
+							$result = $this->channelPropertiesStatesManager->saveValue(
 								$property,
 								Utils\ArrayHash::from($data),
+								true,
 							);
 						}
 					}
