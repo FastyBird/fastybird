@@ -99,7 +99,7 @@ final class State implements ExchangeConsumers\Consumer
 							$data[States\Property::ACTUAL_VALUE_FIELD] = $entity->getSet()->getActualValue();
 						}
 
-						if ($entity->getSet()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+						if ($entity->getSet()->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
 							$data[States\Property::EXPECTED_VALUE_FIELD] = $entity->getSet()->getExpectedValue();
 						}
 
@@ -114,7 +114,7 @@ final class State implements ExchangeConsumers\Consumer
 							$data[States\Property::ACTUAL_VALUE_FIELD] = $entity->getWrite()->getActualValue();
 						}
 
-						if ($entity->getWrite()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+						if ($entity->getWrite()->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
 							$data[States\Property::EXPECTED_VALUE_FIELD] = $entity->getWrite()->getExpectedValue();
 						}
 
@@ -128,7 +128,7 @@ final class State implements ExchangeConsumers\Consumer
 
 					$result
 						?->then(function () use ($entity, $property, $source, $routingKey, $data): void {
-							$this->logger->info(
+							$this->logger->debug(
 								'Requested write value to connector property',
 								[
 									'source' => MetadataTypes\ModuleSource::DEVICES,
@@ -205,7 +205,7 @@ final class State implements ExchangeConsumers\Consumer
 							$data[States\Property::ACTUAL_VALUE_FIELD] = $entity->getSet()->getActualValue();
 						}
 
-						if ($entity->getSet()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+						if ($entity->getSet()->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
 							$data[States\Property::EXPECTED_VALUE_FIELD] = $entity->getSet()->getExpectedValue();
 						}
 
@@ -220,7 +220,7 @@ final class State implements ExchangeConsumers\Consumer
 							$data[States\Property::ACTUAL_VALUE_FIELD] = $entity->getWrite()->getActualValue();
 						}
 
-						if ($entity->getWrite()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+						if ($entity->getWrite()->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
 							$data[States\Property::EXPECTED_VALUE_FIELD] = $entity->getWrite()->getExpectedValue();
 						}
 
@@ -234,7 +234,7 @@ final class State implements ExchangeConsumers\Consumer
 
 					$result
 						?->then(function () use ($entity, $property, $source, $routingKey, $data): void {
-							$this->logger->info(
+							$this->logger->debug(
 								'Requested write value to device property',
 								[
 									'source' => MetadataTypes\ModuleSource::DEVICES,
@@ -311,7 +311,7 @@ final class State implements ExchangeConsumers\Consumer
 							$data[States\Property::ACTUAL_VALUE_FIELD] = $entity->getSet()->getActualValue();
 						}
 
-						if ($entity->getSet()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+						if ($entity->getSet()->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
 							$data[States\Property::EXPECTED_VALUE_FIELD] = $entity->getSet()->getExpectedValue();
 						}
 
@@ -326,7 +326,7 @@ final class State implements ExchangeConsumers\Consumer
 							$data[States\Property::ACTUAL_VALUE_FIELD] = $entity->getWrite()->getActualValue();
 						}
 
-						if ($entity->getWrite()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+						if ($entity->getWrite()->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
 							$data[States\Property::EXPECTED_VALUE_FIELD] = $entity->getWrite()->getExpectedValue();
 						}
 
@@ -340,7 +340,7 @@ final class State implements ExchangeConsumers\Consumer
 
 					$result
 						?->then(function () use ($entity, $property, $source, $routingKey, $data): void {
-							$this->logger->info(
+							$this->logger->debug(
 								'Requested write value to channel property',
 								[
 									'source' => MetadataTypes\ModuleSource::DEVICES,
