@@ -57,6 +57,10 @@
                 },
                 {
                   "type": "boolean"
+                },
+                {
+                  "type": "string",
+                  "format": "date-time"
                 }
               ],
               "description": "Property actual value to be set into property"
@@ -71,11 +75,33 @@
                 },
                 {
                   "type": "boolean"
+                },
+                {
+                  "type": "string",
+                  "format": "date-time"
                 }
               ],
               "description": "Property expected value to be set into property"
             }
-          }
+          },
+          "oneOf": [
+            {
+              "required": [
+                "actual_value"
+              ]
+            },
+            {
+              "required": [
+                "expected_value"
+              ]
+            },
+            {
+              "required": [
+                "actual_value",
+                "expected_value"
+              ]
+            }
+          ]
         },
         "write": {
           "type": "object",
@@ -90,6 +116,10 @@
                 },
                 {
                   "type": "boolean"
+                },
+                {
+                  "type": "string",
+                  "format": "date-time"
                 }
               ],
               "description": "Property actual value to be written into property"
@@ -104,11 +134,33 @@
                 },
                 {
                   "type": "boolean"
+                },
+                {
+                  "type": "string",
+                  "format": "date-time"
                 }
               ],
               "description": "Property expected value to be written into property"
             }
-          }
+          },
+          "oneOf": [
+            {
+              "required": [
+                "actual_value"
+              ]
+            },
+            {
+              "required": [
+                "expected_value"
+              ]
+            },
+            {
+              "required": [
+                "actual_value",
+                "expected_value"
+              ]
+            }
+          ]
         }
       },
       "oneOf": [

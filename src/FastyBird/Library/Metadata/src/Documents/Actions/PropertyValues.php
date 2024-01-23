@@ -15,8 +15,12 @@
 
 namespace FastyBird\Library\Metadata\Documents\Actions;
 
+use DateTimeInterface;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Documents;
+use FastyBird\Library\Metadata\Types;
+use FastyBird\Library\Metadata\Utilities;
 use Orisai\ObjectMapper;
 use function array_merge;
 
@@ -34,32 +38,42 @@ final class PropertyValues implements Documents\Document
 	public function __construct(
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\BoolValue(),
-			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\ButtonPayload::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\SwitchPayload::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\CoverPayload::class),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('actual_value')]
-		private readonly bool|float|int|string|null $actualValue = Metadata\Constants::VALUE_NOT_SET,
+		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+		private readonly bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null $actualValue = Metadata\Constants::VALUE_NOT_SET,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\BoolValue(),
-			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\ButtonPayload::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\SwitchPayload::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\CoverPayload::class),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('expected_value')]
-		private readonly bool|float|int|string|null $expectedValue = Metadata\Constants::VALUE_NOT_SET,
+		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+		private readonly bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null $expectedValue = Metadata\Constants::VALUE_NOT_SET,
 	)
 	{
 	}
 
-	public function getActualValue(): float|bool|int|string|null
+	public function getActualValue(): bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
 	{
 		return $this->actualValue;
 	}
 
-	public function getExpectedValue(): float|bool|int|string|null
+	public function getExpectedValue(): bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
 	{
 		return $this->expectedValue;
 	}
@@ -70,13 +84,13 @@ final class PropertyValues implements Documents\Document
 
 		if ($this->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
 			$data = array_merge($data, [
-				'actual_value' => $this->getActualValue(),
+				'actual_value' => Utilities\Value::flattenValue($this->getActualValue()),
 			]);
 		}
 
 		if ($this->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
 			$data = array_merge($data, [
-				'expected_value' => $this->getExpectedValue(),
+				'expected_value' => Utilities\Value::flattenValue($this->getExpectedValue()),
 			]);
 		}
 
