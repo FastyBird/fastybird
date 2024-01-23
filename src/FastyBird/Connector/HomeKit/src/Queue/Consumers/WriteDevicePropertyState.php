@@ -21,7 +21,6 @@ use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Protocol;
 use FastyBird\Connector\HomeKit\Queue;
-use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -33,7 +32,6 @@ use Nette;
 use RuntimeException;
 use Throwable;
 use function intval;
-use function React\Async\await;
 
 /**
  * Write state to device message consumer
@@ -197,7 +195,10 @@ final class WriteDevicePropertyState implements Queue\Consumer
 							if ($entity->getState() !== null) {
 								if ($entity->getState()->getExpectedValue() !== null) {
 									$characteristic->setActualValue($entity->getState()->getExpectedValue());
-								} elseif ($entity->getState()->getActualValue() !== null && $entity->getState()->isValid()) {
+								} elseif (
+									$entity->getState()->getActualValue() !== null
+									&& $entity->getState()->isValid()
+								) {
 									$characteristic->setActualValue($entity->getState()->getActualValue());
 								}
 							} else {

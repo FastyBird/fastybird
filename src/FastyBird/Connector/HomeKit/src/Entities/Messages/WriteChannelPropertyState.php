@@ -16,7 +16,6 @@
 namespace FastyBird\Connector\HomeKit\Entities\Messages;
 
 use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
-use FastyBird\Module\Devices\States as DevicesStates;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 
@@ -41,10 +40,10 @@ final class WriteChannelPropertyState implements Entity
 		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $property,
 		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\MappedObjectValue(class: DevicesStates\ChannelProperty::class),
+			new ObjectMapper\Rules\MappedObjectValue(class: State::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		private readonly DevicesStates\ChannelProperty|null $state,
+		private readonly State|null $state,
 	)
 	{
 	}
@@ -69,7 +68,7 @@ final class WriteChannelPropertyState implements Entity
 		return $this->property;
 	}
 
-	public function getState(): DevicesStates\ChannelProperty|null
+	public function getState(): State|null
 	{
 		return $this->state;
 	}
