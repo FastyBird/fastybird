@@ -51,7 +51,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 		DevicesEvents\ChannelPropertyStateEntityCreated|DevicesEvents\ChannelPropertyStateEntityUpdated $event,
 	): void
 	{
-		$state = $event->getState();
+		$state = $event->getGet();
 
 		if ($state->getExpectedValue() === null || $state->getPending() !== true) {
 			return;
@@ -84,8 +84,9 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 				[
 					'connector' => $this->connector->getId(),
 					'device' => $device->getId(),
-					'channel' => $event->getProperty()->getChannel(),
+					'channel' => $channel->getId(),
 					'property' => $event->getProperty()->getId(),
+					'state' => $event->getGet()->toArray(),
 				],
 			),
 		);

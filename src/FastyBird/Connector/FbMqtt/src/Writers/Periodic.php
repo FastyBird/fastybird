@@ -269,6 +269,7 @@ abstract class Periodic
 						'connector' => $device->getConnector(),
 						'device' => $device->getId(),
 						'property' => $property->getId(),
+						'state' => $state->toArray(),
 					],
 				),
 			);
@@ -322,6 +323,7 @@ abstract class Periodic
 						'device' => $device->getId(),
 						'channel' => $property->getChannel(),
 						'property' => $property->getId(),
+						'state' => $state->toArray(),
 					],
 				),
 			);

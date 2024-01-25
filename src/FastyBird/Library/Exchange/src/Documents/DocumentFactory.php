@@ -142,6 +142,13 @@ final class DocumentFactory
 				throw new Exceptions\InvalidArgument('Provided data and routing key is for unsupported property type');
 			}
 		} elseif (
+			$routingKey->equalsValue(MetadataTypes\RoutingKey::DEVICE_PROPERTY_STATE_DOCUMENT_REPORTED)
+			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::DEVICE_PROPERTY_STATE_DOCUMENT_CREATED)
+			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::DEVICE_PROPERTY_STATE_DOCUMENT_UPDATED)
+			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::DEVICE_PROPERTY_STATE_DOCUMENT_DELETED)
+		) {
+			return $this->documentFactory->create(MetadataDocuments\DevicesModule\DevicePropertyState::class, $data);
+		} elseif (
 			$routingKey->equalsValue(MetadataTypes\RoutingKey::DEVICE_CONTROL_DOCUMENT_REPORTED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::DEVICE_CONTROL_DOCUMENT_CREATED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::DEVICE_CONTROL_DOCUMENT_UPDATED)
@@ -193,6 +200,13 @@ final class DocumentFactory
 				throw new Exceptions\InvalidArgument('Provided data and routing key is for unsupported property type');
 			}
 		} elseif (
+			$routingKey->equalsValue(MetadataTypes\RoutingKey::CHANNEL_PROPERTY_STATE_DOCUMENT_REPORTED)
+			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::CHANNEL_PROPERTY_STATE_DOCUMENT_CREATED)
+			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::CHANNEL_PROPERTY_STATE_DOCUMENT_UPDATED)
+			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::CHANNEL_PROPERTY_STATE_DOCUMENT_DELETED)
+		) {
+			return $this->documentFactory->create(MetadataDocuments\DevicesModule\ChannelPropertyState::class, $data);
+		} elseif (
 			$routingKey->equalsValue(MetadataTypes\RoutingKey::CHANNEL_CONTROL_DOCUMENT_REPORTED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::CHANNEL_CONTROL_DOCUMENT_CREATED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::CHANNEL_CONTROL_DOCUMENT_UPDATED)
@@ -238,6 +252,13 @@ final class DocumentFactory
 			} else {
 				throw new Exceptions\InvalidArgument('Provided data and routing key is for unsupported property type');
 			}
+		} elseif (
+			$routingKey->equalsValue(MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_STATE_DOCUMENT_REPORTED)
+			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_STATE_DOCUMENT_CREATED)
+			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_STATE_DOCUMENT_UPDATED)
+			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_STATE_DOCUMENT_DELETED)
+		) {
+			return $this->documentFactory->create(MetadataDocuments\DevicesModule\ConnectorPropertyState::class, $data);
 		} elseif (
 			$routingKey->equalsValue(MetadataTypes\RoutingKey::CONNECTOR_CONTROL_DOCUMENT_REPORTED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::CONNECTOR_CONTROL_DOCUMENT_CREATED)

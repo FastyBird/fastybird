@@ -166,20 +166,26 @@ final class State implements ExchangeConsumers\Consumer
 
 					$this->connectorPropertiesStatesManager->read($property)
 						->then(function (States\ConnectorProperty|null $state) use ($property): void {
+							if ($state === null) {
+								return;
+							}
+
 							$publishRoutingKey = MetadataTypes\RoutingKey::get(
-								MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_DOCUMENT_REPORTED,
+								MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_STATE_DOCUMENT_REPORTED,
 							);
 
 							$this->publisher->publish(
 								MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 								$publishRoutingKey,
 								$this->documentFactory->create(
-									Utils\Json::encode(
-										array_merge(
-											$property->toArray(),
-											$state?->toArray() ?? [],
-										),
-									),
+									Utils\Json::encode(array_merge(
+										[
+											'id' => $property->getId()->toString(),
+											'connector' => $property->getConnector()->toString(),
+											'read' => $state->toArray(),
+										],
+										$state->toArray(),
+									)),
 									$publishRoutingKey,
 								),
 							);
@@ -274,20 +280,26 @@ final class State implements ExchangeConsumers\Consumer
 
 					$this->devicePropertiesStatesManager->read($property)
 						->then(function (States\DeviceProperty|null $state) use ($property): void {
+							if ($state === null) {
+								return;
+							}
+
 							$publishRoutingKey = MetadataTypes\RoutingKey::get(
-								MetadataTypes\RoutingKey::DEVICE_PROPERTY_DOCUMENT_REPORTED,
+								MetadataTypes\RoutingKey::DEVICE_PROPERTY_STATE_DOCUMENT_REPORTED,
 							);
 
 							$this->publisher->publish(
 								MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 								$publishRoutingKey,
 								$this->documentFactory->create(
-									Utils\Json::encode(
-										array_merge(
-											$property->toArray(),
-											$state?->toArray() ?? [],
-										),
-									),
+									Utils\Json::encode(array_merge(
+										[
+											'id' => $property->getId()->toString(),
+											'device' => $property->getDevice()->toString(),
+											'read' => $state->toArray(),
+										],
+										$state->toArray(),
+									)),
 									$publishRoutingKey,
 								),
 							);
@@ -382,20 +394,26 @@ final class State implements ExchangeConsumers\Consumer
 
 					$this->channelPropertiesStatesManager->read($property)
 						->then(function (States\ChannelProperty|null $state) use ($property): void {
+							if ($state === null) {
+								return;
+							}
+
 							$publishRoutingKey = MetadataTypes\RoutingKey::get(
-								MetadataTypes\RoutingKey::CHANNEL_PROPERTY_DOCUMENT_REPORTED,
+								MetadataTypes\RoutingKey::CHANNEL_PROPERTY_STATE_DOCUMENT_REPORTED,
 							);
 
 							$this->publisher->publish(
 								MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 								$publishRoutingKey,
 								$this->documentFactory->create(
-									Utils\Json::encode(
-										array_merge(
-											$property->toArray(),
-											$state?->toArray() ?? [],
-										),
-									),
+									Utils\Json::encode(array_merge(
+										[
+											'id' => $property->getId()->toString(),
+											'channel' => $property->getChannel()->toString(),
+											'read' => $state->toArray(),
+										],
+										$state->toArray(),
+									)),
 									$publishRoutingKey,
 								),
 							);

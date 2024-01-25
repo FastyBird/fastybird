@@ -124,25 +124,121 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 	): void
 	{
 		if (
-			$entity instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
-			|| $entity instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty
-			|| $entity instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
+			$entity instanceof MetadataDocuments\DevicesModule\DevicePropertyState
+			|| $entity instanceof MetadataDocuments\DevicesModule\ChannelPropertyState
+		) {
+			if ($entity instanceof MetadataDocuments\DevicesModule\DevicePropertyState) {
+				$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+				$findDeviceQuery->forConnector($this->connector);
+				$findDeviceQuery->byId($entity->getDevice());
+				$findDeviceQuery->byType(Entities\HomeKitDevice::TYPE);
+
+				$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+
+				if ($device === null) {
+					return;
+				}
+
+				$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceProperties();
+				$findPropertyQuery->byId($entity->getId());
+				$findPropertyQuery->forDevice($device);
+
+				$property = $this->devicesPropertiesConfigurationRepository->findOneBy($findPropertyQuery);
+
+				if ($property === null) {
+					return;
+				}
+
+				if ($property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
+					$this->queue->append(
+						$this->entityHelper->create(
+							Entities\Messages\WriteDevicePropertyState::class,
+							[
+								'connector' => $device->getConnector(),
+								'device' => $device->getId(),
+								'property' => $entity->getId(),
+								'state' => $entity->getRead()->toArray(),
+							],
+						),
+					);
+				} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
+					$this->queue->append(
+						$this->entityHelper->create(
+							Entities\Messages\WriteDevicePropertyState::class,
+							[
+								'connector' => $device->getConnector(),
+								'device' => $device->getId(),
+								'property' => $entity->getId(),
+								'state' => $entity->getGet()?->toArray(),
+							],
+						),
+					);
+				}
+			} else {
+				$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
+				$findChannelQuery->byId($entity->getChannel());
+				$findChannelQuery->byType(Entities\HomeKitChannel::TYPE);
+
+				$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
+
+				if ($channel === null) {
+					return;
+				}
+
+				$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+				$findDeviceQuery->forConnector($this->connector);
+				$findDeviceQuery->byId($channel->getDevice());
+				$findDeviceQuery->byType(Entities\HomeKitDevice::TYPE);
+
+				$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+
+				if ($device === null) {
+					return;
+				}
+
+				$findPropertyQuery = new DevicesQueries\Configuration\FindChannelProperties();
+				$findPropertyQuery->byId($entity->getId());
+				$findPropertyQuery->forChannel($channel);
+
+				$property = $this->channelsPropertiesConfigurationRepository->findOneBy($findPropertyQuery);
+
+				if ($property === null) {
+					return;
+				}
+
+				if ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
+					$this->queue->append(
+						$this->entityHelper->create(
+							Entities\Messages\WriteChannelPropertyState::class,
+							[
+								'connector' => $device->getConnector(),
+								'device' => $device->getId(),
+								'channel' => $channel->getId(),
+								'property' => $entity->getId(),
+								'state' => $entity->getRead()->toArray(),
+							],
+						),
+					);
+				} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+					$this->queue->append(
+						$this->entityHelper->create(
+							Entities\Messages\WriteChannelPropertyState::class,
+							[
+								'connector' => $device->getConnector(),
+								'device' => $device->getId(),
+								'channel' => $channel->getId(),
+								'property' => $entity->getId(),
+								'state' => $entity->getGet()?->toArray(),
+							],
+						),
+					);
+				}
+			}
+		} elseif (
+			$entity instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty
 			|| $entity instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty
 		) {
-			if (
-				(
-					$entity instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
-					|| $entity instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
-				)
-				&& $entity->isValid() === false
-			) {
-				return;
-			}
-
-			if (
-				$entity instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
-				|| $entity instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty
-			) {
+			if ($entity instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty) {
 				$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
 				$findDeviceQuery->forConnector($this->connector);
 				$findDeviceQuery->byId($entity->getDevice());
@@ -161,7 +257,6 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
 							'property' => $entity->getId(),
-							'state' => $entity->toArray(),
 						],
 					),
 				);
@@ -196,7 +291,6 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 							'device' => $device->getId(),
 							'channel' => $channel->getId(),
 							'property' => $entity->getId(),
-							'state' => $entity->toArray(),
 						],
 					),
 				);

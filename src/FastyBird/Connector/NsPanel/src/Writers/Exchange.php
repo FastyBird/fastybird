@@ -109,20 +109,72 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 		MetadataDocuments\Document|null $entity,
 	): void
 	{
-		if (
-			$entity instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-			|| $entity instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
-			|| $entity instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty
-		) {
-			if (
-				$entity instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
-				&& $entity->isValid() === false
-			) {
+		if ($entity instanceof MetadataDocuments\DevicesModule\ChannelPropertyState) {
+			$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
+			$findChannelQuery->byId($entity->getChannel());
+			$findChannelQuery->byType(Entities\NsPanelChannel::TYPE);
+
+			$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
+
+			if ($channel === null) {
 				return;
 			}
 
+			$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+			$findDeviceQuery->forConnector($this->connector);
+			$findDeviceQuery->byId($channel->getDevice());
+
+			$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+
+			if ($device === null) {
+				return;
+			}
+
+			if ($device->getType() === Entities\Devices\SubDevice::TYPE) {
+				$this->queue->append(
+					$this->entityHelper->create(
+						Entities\Messages\WriteSubDeviceState::class,
+						[
+							'connector' => $device->getConnector(),
+							'device' => $device->getId(),
+							'channel' => $channel->getId(),
+							'state' => $entity->getGet()?->toArray(),
+						],
+					),
+				);
+
+			} elseif ($device->getType() === Entities\Devices\ThirdPartyDevice::TYPE) {
+				if ($this->thirdPartyDeviceHelper->getGatewayIdentifier($device) === null) {
+					$this->queue->append(
+						$this->entityHelper->create(
+							Entities\Messages\StoreDeviceConnectionState::class,
+							[
+								'connector' => $device->getConnector(),
+								'identifier' => $device->getIdentifier(),
+								'state' => MetadataTypes\ConnectionState::ALERT,
+							],
+						),
+					);
+
+					return;
+				}
+
+				$this->queue->append(
+					$this->entityHelper->create(
+						Entities\Messages\WriteThirdPartyDeviceState::class,
+						[
+							'connector' => $device->getConnector(),
+							'device' => $device->getId(),
+							'channel' => $channel->getId(),
+							'state' => $entity->getRead()->toArray(),
+						],
+					),
+				);
+			}
+		} elseif ($entity instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
 			$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 			$findChannelQuery->byId($entity->getChannel());
+			$findChannelQuery->byType(Entities\NsPanelChannel::TYPE);
 
 			$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 

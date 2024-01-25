@@ -65,10 +65,9 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 		DevicesEvents\ChannelPropertyStateEntityCreated|DevicesEvents\ChannelPropertyStateEntityUpdated $event,
 	): void
 	{
-		$property = $event->getProperty();
-
 		$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
-		$findChannelQuery->byId($property->getChannel());
+		$findChannelQuery->byId($event->getProperty()->getChannel());
+		$findChannelQuery->byType(Entities\NsPanelChannel::TYPE);
 
 		$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 
@@ -94,6 +93,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 						'connector' => $device->getConnector(),
 						'device' => $device->getId(),
 						'channel' => $channel->getId(),
+						'state' => $event->getGet()->toArray(),
 					],
 				),
 			);
@@ -121,6 +121,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 						'connector' => $device->getConnector(),
 						'device' => $device->getId(),
 						'channel' => $channel->getId(),
+						'state' => $event->getRead()->toArray(),
 					],
 				),
 			);

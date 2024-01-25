@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\FbMqtt\Entities\Messages;
 
 use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
+use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 
 /**
@@ -38,6 +39,11 @@ final class WriteChannelPropertyState implements Entity
 		private readonly Uuid\UuidInterface $channel,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $property,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\MappedObjectValue(class: State::class),
+			new ObjectMapper\Rules\NullValue(),
+		])]
+		private readonly State|null $state,
 	)
 	{
 	}
@@ -62,6 +68,11 @@ final class WriteChannelPropertyState implements Entity
 		return $this->property;
 	}
 
+	public function getState(): State|null
+	{
+		return $this->state;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -72,6 +83,7 @@ final class WriteChannelPropertyState implements Entity
 			'device' => $this->getDevice()->toString(),
 			'channel' => $this->getChannel()->toString(),
 			'property' => $this->getProperty()->toString(),
+			'state' => $this->getState()?->toArray(),
 		];
 	}
 

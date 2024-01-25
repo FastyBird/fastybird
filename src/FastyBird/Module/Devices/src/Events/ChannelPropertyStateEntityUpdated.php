@@ -31,26 +31,26 @@ class ChannelPropertyStateEntityUpdated extends EventDispatcher\Event
 {
 
 	public function __construct(
-		private readonly MetadataDocuments\DevicesModule\ChannelDynamicProperty $property,
-		private readonly States\ChannelProperty $previousState,
-		private readonly States\ChannelProperty $state,
+		private readonly MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
+		private readonly States\ChannelProperty $read,
+		private readonly States\ChannelProperty $get,
 	)
 	{
 	}
 
-	public function getProperty(): MetadataDocuments\DevicesModule\ChannelDynamicProperty
+	public function getProperty(): MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty
 	{
 		return $this->property;
 	}
 
-	public function getPreviousState(): States\ChannelProperty
+	public function getRead(): States\ChannelProperty
 	{
-		return $this->previousState;
+		return $this->read;
 	}
 
-	public function getState(): States\ChannelProperty
+	public function getGet(): States\ChannelProperty
 	{
-		return $this->state;
+		return $this->get;
 	}
 
 }

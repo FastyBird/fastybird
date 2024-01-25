@@ -25,18 +25,22 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices;
+use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\States;
 use Nette;
 use Nette\Utils;
 use Orisai\ObjectMapper;
+use Psr\EventDispatcher as PsrEventDispatcher;
 use Ramsey\Uuid;
 use React\Promise;
 use Throwable;
+use function array_map;
 use function array_merge;
 use function boolval;
 use function is_array;
+use function is_bool;
 use function React\Async\async;
 use function React\Async\await;
 use function strval;
@@ -60,14 +64,15 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 		private readonly bool $useExchange,
 		private readonly Models\States\Connectors\Async\Repository $connectorPropertyStateRepository,
 		private readonly Models\States\Connectors\Async\Manager $connectorPropertiesStatesManager,
-		private readonly Devices\Logger $logger,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly ExchangePublisher\Async\Publisher $publisher,
 		private readonly ExchangeDocuments\DocumentFactory $documentFactory,
+		Devices\Logger $logger,
 		ObjectMapper\Processing\Processor $stateMapper,
+		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
-		parent::__construct($stateMapper);
+		parent::__construct($logger, $stateMapper);
 	}
 
 	/**
@@ -112,9 +117,13 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 								'property' => $property->getId()->toString(),
 							],
 							[
-								'write' => array_map(function (bool|int|float|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\CoverPayload|MetadataTypes\SwitchPayload|null $item): bool|int|float|string|null {
-									return MetadataUtilities\Value::flattenValue($item);
-								}, (array) $data),
+								'write' => array_map(
+									// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+									static fn (bool|int|float|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\CoverPayload|MetadataTypes\SwitchPayload|null $item): bool|int|float|string|null => MetadataUtilities\Value::flattenValue(
+										$item,
+									),
+									(array) $data,
+								),
 							],
 						)),
 						MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_ACTION),
@@ -154,9 +163,13 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 								'property' => $property->getId()->toString(),
 							],
 							[
-								'set' => array_map(function (bool|int|float|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\CoverPayload|MetadataTypes\SwitchPayload|null $item): bool|int|float|string|null {
-									return MetadataUtilities\Value::flattenValue($item);
-								}, (array) $data),
+								'set' => array_map(
+									// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+									static fn (bool|int|float|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\CoverPayload|MetadataTypes\SwitchPayload|null $item): bool|int|float|string|null => MetadataUtilities\Value::flattenValue(
+										$item,
+									),
+									(array) $data,
+								),
 							],
 						)),
 						MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_ACTION),
@@ -262,7 +275,19 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 	public function delete(Uuid\UuidInterface $id): Promise\PromiseInterface
 	{
 		try {
-			return $this->connectorPropertiesStatesManager->delete($id);
+			$deferred = new Promise\Deferred();
+
+			$this->connectorPropertiesStatesManager->delete($id)
+				->then(function (bool $result) use ($deferred, $id): void {
+					$this->dispatcher?->dispatch(new Events\ConnectorPropertyStateEntityDeleted($id));
+
+					$deferred->resolve($result);
+				})
+				->catch(static function (Throwable $ex) use ($deferred): void {
+					$deferred->reject($ex);
+				});
+
+			return $deferred->promise();
 		} catch (Exceptions\NotImplemented) {
 			$this->logger->warning(
 				'Connectors states manager is not configured. State could not be fetched',
@@ -276,21 +301,12 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 		return Promise\resolve(false);
 	}
 
-	public function normalizePublishValue(
-		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
-		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
-	): bool|float|int|string|null
-	{
-		return MetadataUtilities\Value::transformDataType(
-			MetadataUtilities\Value::flattenValue($value),
-			$property->getDataType(),
-		);
-	}
-
 	/**
 	 * @return Promise\PromiseInterface<States\ConnectorProperty|null>
+	 *
+	 * @interal
 	 */
-	private function loadValue(
+	public function loadValue(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
 		bool $forReading,
 	): Promise\PromiseInterface
@@ -312,125 +328,86 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 						return;
 					}
 
-					$updateValues = [];
-
-					if ($state->getActualValue() !== null) {
-						try {
-							$updateValues[States\Property::ACTUAL_VALUE_FIELD] = $this->convertReadValue(
-								$state->getActualValue(),
-								$property,
-								null,
-								$forReading,
-							);
-						} catch (MetadataExceptions\InvalidValue $ex) {
-							$this->connectorPropertiesStatesManager->update(
-								$property,
-								$state,
-								Utils\ArrayHash::from([
-									States\Property::ACTUAL_VALUE_FIELD => null,
-									States\Property::VALID_FIELD => false,
-								]),
-							)
-								->then(async(function () use ($deferred, $property, $forReading): void {
-									$deferred->resolve(await($this->loadValue($property, $forReading)));
-								}))
-								->catch(static function (Throwable $ex) use ($deferred): void {
-									$deferred->reject($ex);
-								})
-								->finally(function () use ($ex): void {
-									$this->logger->error(
-										'Property stored actual value was not valid',
-										[
-											'source' => MetadataTypes\ModuleSource::DEVICES,
-											'type' => 'async-connector-properties-states',
-											'exception' => ApplicationHelpers\Logger::buildException($ex),
-										],
-									);
-								});
-
-							return;
-						}
-					}
-
-					if ($state->getExpectedValue() !== null) {
-						try {
-							$expectedValue = $this->convertReadValue(
-								$state->getExpectedValue(),
-								$property,
-								null,
-								$forReading,
-							);
-
-							if ($expectedValue !== null && !$property->isSettable()) {
-								$this->connectorPropertiesStatesManager->update(
-									$property,
-									$state,
-									Utils\ArrayHash::from([
-										States\Property::EXPECTED_VALUE_FIELD => null,
-										States\Property::PENDING_FIELD => false,
-									]),
-								)
-									->then(async(
-										function () use ($deferred, $property, $forReading): void {
-											$deferred->resolve(await(
-												$this->loadValue($property, $forReading),
-											));
-										},
-									))
+					try {
+						$deferred->resolve($this->convertStoredState(
+							$property,
+							null,
+							$state,
+							$forReading,
+						));
+					} catch (Exceptions\InvalidActualValue $ex) {
+						$this->connectorPropertiesStatesManager->update($property, $state, Utils\ArrayHash::from([
+							States\Property::ACTUAL_VALUE_FIELD => null,
+							States\Property::VALID_FIELD => false,
+						]))
+							->then(function () use ($property, $forReading, $deferred): void {
+								$this->loadValue($property, $forReading)
+									->then(static function ($state) use ($deferred): void {
+										$deferred->resolve($state);
+									})
 									->catch(static function (Throwable $ex) use ($deferred): void {
 										$deferred->reject($ex);
-									})
-									->finally(function (): void {
-										$this->logger->warning(
-											'Property is not settable but has stored expected value',
-											[
-												'source' => MetadataTypes\ModuleSource::DEVICES,
-												'type' => 'async-connector-properties-states',
-											],
-										);
 									});
-
-								return;
-							}
-
-							$updateValues[States\Property::EXPECTED_VALUE_FIELD] = $expectedValue;
-						} catch (MetadataExceptions\InvalidValue $ex) {
-							$this->connectorPropertiesStatesManager->update(
-								$property,
-								$state,
-								Utils\ArrayHash::from([
-									States\Property::EXPECTED_VALUE_FIELD => null,
-									States\Property::PENDING_FIELD => false,
-								]),
-							)
-								->then(async(function () use ($deferred, $property, $forReading): void {
-									$deferred->resolve(await($this->loadValue($property, $forReading)));
-								}))
-								->catch(static function (Throwable $ex) use ($deferred): void {
-									$deferred->reject($ex);
-								})
-								->finally(function () use ($ex): void {
-									$this->logger->error(
-										'Property stored expected value was not valid',
+							})
+							->catch(function (Throwable $ex) use ($deferred): void {
+								if ($ex instanceof Exceptions\NotImplemented) {
+									$this->logger->warning(
+										'Connectors states manager is not configured. State could not be fetched',
 										[
 											'source' => MetadataTypes\ModuleSource::DEVICES,
-											'type' => 'async-connector-properties-states',
-											'exception' => ApplicationHelpers\Logger::buildException($ex),
+											'type' => 'connector-properties-states',
 										],
 									);
-								});
+								}
 
-							return;
-						}
+								$deferred->reject($ex);
+							});
+
+						$this->logger->error(
+							'Property stored actual value was not valid',
+							[
+								'source' => MetadataTypes\ModuleSource::DEVICES,
+								'type' => 'connector-properties-states',
+								'exception' => ApplicationHelpers\Logger::buildException($ex),
+							],
+						);
+					} catch (Exceptions\InvalidExpectedValue $ex) {
+						$this->connectorPropertiesStatesManager->update($property, $state, Utils\ArrayHash::from([
+							States\Property::EXPECTED_VALUE_FIELD => null,
+							States\Property::PENDING_FIELD => false,
+						]))
+							->then(function () use ($property, $forReading, $deferred): void {
+								$this->loadValue($property, $forReading)
+									->then(static function ($state) use ($deferred): void {
+										$deferred->resolve($state);
+									})
+									->catch(static function (Throwable $ex) use ($deferred): void {
+										$deferred->reject($ex);
+									});
+							})
+							->catch(function (Throwable $ex) use ($deferred): void {
+								if ($ex instanceof Exceptions\NotImplemented) {
+									$this->logger->warning(
+										'Connectors states manager is not configured. State could not be fetched',
+										[
+											'source' => MetadataTypes\ModuleSource::DEVICES,
+											'type' => 'connector-properties-states',
+										],
+									);
+								}
+
+								$deferred->reject($ex);
+							});
+
+						$this->logger->error(
+							'Property stored expected value was not valid',
+							[
+								'source' => MetadataTypes\ModuleSource::DEVICES,
+								'type' => 'connector-properties-states',
+								'exception' => ApplicationHelpers\Logger::buildException($ex),
+							],
+						);
 					}
-
-					if ($updateValues === []) {
-						$deferred->resolve($state);
-
-						return;
-					}
-
-					$deferred->resolve($this->updateState($state, $state::class, $updateValues));
 				},
 			)
 			->catch(function (Throwable $ex) use ($deferred): void {
@@ -618,14 +595,38 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 					}
 
 					try {
-						$result = await($state === null ? $this->connectorPropertiesStatesManager->create(
-							$property,
-							$data,
-						) : $this->connectorPropertiesStatesManager->update(
-							$property,
-							$state,
-							$data,
-						));
+						if ($state === null) {
+							$result = await($this->connectorPropertiesStatesManager->create(
+								$property,
+								$data,
+							));
+
+						} else {
+							$result = await($this->connectorPropertiesStatesManager->update(
+								$property,
+								$state,
+								$data,
+							));
+
+							if (is_bool($result)) {
+								$deferred->resolve(false);
+
+								return;
+							}
+						}
+
+						$readValue = $this->convertStoredState($property, null, $result, true);
+						$getValue = $this->convertStoredState($property, null, $result, false);
+
+						if ($state === null) {
+							$this->dispatcher?->dispatch(
+								new Events\ConnectorPropertyStateEntityCreated($property, $readValue, $getValue),
+							);
+						} else {
+							$this->dispatcher?->dispatch(
+								new Events\ConnectorPropertyStateEntityUpdated($property, $readValue, $getValue),
+							);
+						}
 
 						$this->logger->debug(
 							$state === null ? 'Connector property state was created' : 'Connector property state was updated',

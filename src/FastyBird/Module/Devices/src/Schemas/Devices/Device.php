@@ -118,7 +118,7 @@ class Device extends JsonApiSchemas\JsonApi
 			$this->router->urlFor(
 				Devices\Constants::ROUTE_NAME_DEVICE,
 				[
-					Router\ApiRoutes::URL_ITEM_ID => $resource->getPlainId(),
+					Router\ApiRoutes::URL_ITEM_ID => $resource->getId()->toString(),
 				],
 			),
 			false,
@@ -193,7 +193,7 @@ class Device extends JsonApiSchemas\JsonApi
 				$this->router->urlFor(
 					Devices\Constants::ROUTE_NAME_DEVICE_PROPERTIES,
 					[
-						Router\ApiRoutes::URL_DEVICE_ID => $resource->getPlainId(),
+						Router\ApiRoutes::URL_DEVICE_ID => $resource->getId()->toString(),
 					],
 				),
 				true,
@@ -207,7 +207,7 @@ class Device extends JsonApiSchemas\JsonApi
 				$this->router->urlFor(
 					Devices\Constants::ROUTE_NAME_DEVICE_CONTROLS,
 					[
-						Router\ApiRoutes::URL_DEVICE_ID => $resource->getPlainId(),
+						Router\ApiRoutes::URL_DEVICE_ID => $resource->getId()->toString(),
 					],
 				),
 				true,
@@ -221,7 +221,7 @@ class Device extends JsonApiSchemas\JsonApi
 				$this->router->urlFor(
 					Devices\Constants::ROUTE_NAME_CHANNELS,
 					[
-						Router\ApiRoutes::URL_DEVICE_ID => $resource->getPlainId(),
+						Router\ApiRoutes::URL_DEVICE_ID => $resource->getId()->toString(),
 					],
 				),
 				true,
@@ -235,7 +235,7 @@ class Device extends JsonApiSchemas\JsonApi
 				$this->router->urlFor(
 					Devices\Constants::ROUTE_NAME_DEVICE_PARENTS,
 					[
-						Router\ApiRoutes::URL_DEVICE_ID => $resource->getPlainId(),
+						Router\ApiRoutes::URL_DEVICE_ID => $resource->getId()->toString(),
 					],
 				),
 				true,
@@ -249,7 +249,7 @@ class Device extends JsonApiSchemas\JsonApi
 				$this->router->urlFor(
 					Devices\Constants::ROUTE_NAME_DEVICE_CHILDREN,
 					[
-						Router\ApiRoutes::URL_DEVICE_ID => $resource->getPlainId(),
+						Router\ApiRoutes::URL_DEVICE_ID => $resource->getId()->toString(),
 					],
 				),
 				true,
@@ -263,7 +263,7 @@ class Device extends JsonApiSchemas\JsonApi
 				$this->router->urlFor(
 					Devices\Constants::ROUTE_NAME_CONNECTOR,
 					[
-						Router\ApiRoutes::URL_ITEM_ID => $resource->getConnector()->getPlainId(),
+						Router\ApiRoutes::URL_ITEM_ID => $resource->getConnector()->getId()->toString(),
 					],
 				),
 				false,
@@ -296,7 +296,7 @@ class Device extends JsonApiSchemas\JsonApi
 				$this->router->urlFor(
 					Devices\Constants::ROUTE_NAME_DEVICE_RELATIONSHIP,
 					[
-						Router\ApiRoutes::URL_ITEM_ID => $resource->getPlainId(),
+						Router\ApiRoutes::URL_ITEM_ID => $resource->getId()->toString(),
 						Router\ApiRoutes::RELATION_ENTITY => $name,
 
 					],

@@ -17,13 +17,11 @@ namespace FastyBird\Module\Devices\Models\States\Connectors\Async;
 
 use DateTimeInterface;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\States;
 use Nette;
 use Nette\Utils;
-use Psr\EventDispatcher as PsrEventDispatcher;
 use Ramsey\Uuid;
 use React\Promise;
 use Throwable;
@@ -44,7 +42,6 @@ final class Manager
 	public function __construct(
 		private readonly Models\States\Connectors\Manager $fallback,
 		private readonly IManager|null $manager = null,
-		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
 	}
@@ -67,23 +64,11 @@ final class Manager
 			}
 		}
 
-		$deferred = new Promise\Deferred();
-
-		$this->manager->create($property->getId(), $values)
-			->then(function (States\ConnectorProperty $result) use ($deferred, $property): void {
-				$this->dispatcher?->dispatch(new Events\ConnectorPropertyStateEntityCreated($property, $result));
-
-				$deferred->resolve($result);
-			})
-			->catch(static function (Throwable $ex) use ($deferred): void {
-				$deferred->reject($ex);
-			});
-
-		return $deferred->promise();
+		return $this->manager->create($property->getId(), $values);
 	}
 
 	/**
-	 * @return Promise\PromiseInterface<States\ConnectorProperty>
+	 * @return Promise\PromiseInterface<States\ConnectorProperty|bool>
 	 *
 	 * @interal
 	 */
@@ -104,9 +89,9 @@ final class Manager
 		$deferred = new Promise\Deferred();
 
 		$this->manager->update($property->getId(), $values)
-			->then(function (States\ConnectorProperty|false $result) use ($deferred, $property, $state): void {
+			->then(static function (States\ConnectorProperty|false $result) use ($deferred, $state): void {
 				if ($result === false) {
-					$deferred->resolve($state);
+					$deferred->resolve(false);
 
 					return;
 				}
@@ -128,12 +113,12 @@ final class Manager
 						States\Property::VALID_FIELD => $result->isValid(),
 					]
 				) {
-					$this->dispatcher?->dispatch(
-						new Events\ConnectorPropertyStateEntityUpdated($property, $state, $result),
-					);
+					$deferred->resolve($result);
+
+					return;
 				}
 
-				$deferred->resolve($result);
+				$deferred->resolve(false);
 			})
 			->catch(static function (Throwable $ex) use ($deferred): void {
 				$deferred->reject($ex);
@@ -157,19 +142,7 @@ final class Manager
 			}
 		}
 
-		$deferred = new Promise\Deferred();
-
-		$this->manager->delete($id)
-			->then(function (bool $result) use ($deferred, $id): void {
-				$this->dispatcher?->dispatch(new Events\ConnectorPropertyStateEntityDeleted($id));
-
-				$deferred->resolve($result);
-			})
-			->catch(static function (Throwable $ex) use ($deferred): void {
-				$deferred->reject($ex);
-			});
-
-		return $deferred->promise();
+		return $this->manager->delete($id);
 	}
 
 }

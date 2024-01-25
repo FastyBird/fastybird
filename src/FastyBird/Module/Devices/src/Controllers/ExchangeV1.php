@@ -377,17 +377,23 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				? $this->connectorPropertiesStatesManager->read($property)
 				: null;
 
+			if ($state === null) {
+				return;
+			}
+
 			$publishRoutingKey = MetadataTypes\RoutingKey::get(
-				MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_DOCUMENT_REPORTED,
+				MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_STATE_DOCUMENT_REPORTED,
 			);
 
 			$responseEntity = $this->documentFactory->create(
-				Utils\Json::encode(
-					array_merge(
-						$property->toArray(),
-						$state?->toArray() ?? [],
-					),
-				),
+				Utils\Json::encode(array_merge(
+					[
+						'id' => $property->getId()->toString(),
+						'connector' => $property->getConnector()->toString(),
+						'read' => $state->toArray(),
+					],
+					$state->toArray(),
+				)),
 				$publishRoutingKey,
 			);
 
@@ -395,7 +401,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				WebSocketsWAMP\Application\Application::MSG_EVENT,
 				$topic->getId(),
 				Utils\Json::encode([
-					'routing_key' => MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_DOCUMENT_REPORTED,
+					'routing_key' => MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_STATE_DOCUMENT_REPORTED,
 					'source' => MetadataTypes\ModuleSource::DEVICES,
 					'data' => $responseEntity->toArray(),
 				]),
@@ -470,17 +476,23 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 			|| $property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
 				? $this->devicePropertiesStatesManager->read($property) : null;
 
+			if ($state === null) {
+				return;
+			}
+
 			$publishRoutingKey = MetadataTypes\RoutingKey::get(
-				MetadataTypes\RoutingKey::DEVICE_PROPERTY_DOCUMENT_REPORTED,
+				MetadataTypes\RoutingKey::DEVICE_PROPERTY_STATE_DOCUMENT_REPORTED,
 			);
 
 			$responseEntity = $this->documentFactory->create(
-				Utils\Json::encode(
-					array_merge(
-						$property->toArray(),
-						$state?->toArray() ?? [],
-					),
-				),
+				Utils\Json::encode(array_merge(
+					[
+						'id' => $property->getId()->toString(),
+						'device' => $property->getDevice()->toString(),
+						'read' => $state->toArray(),
+					],
+					$state->toArray(),
+				)),
 				$publishRoutingKey,
 			);
 
@@ -488,7 +500,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				WebSocketsWAMP\Application\Application::MSG_EVENT,
 				$topic->getId(),
 				Utils\Json::encode([
-					'routing_key' => MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_DOCUMENT_REPORTED,
+					'routing_key' => MetadataTypes\RoutingKey::DEVICE_PROPERTY_STATE_DOCUMENT_REPORTED,
 					'source' => MetadataTypes\ModuleSource::DEVICES,
 					'data' => $responseEntity->toArray(),
 				]),
@@ -563,17 +575,23 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 			|| $property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
 				? $this->channelPropertiesStatesManager->read($property) : null;
 
+			if ($state === null) {
+				return;
+			}
+
 			$publishRoutingKey = MetadataTypes\RoutingKey::get(
-				MetadataTypes\RoutingKey::CHANNEL_PROPERTY_DOCUMENT_REPORTED,
+				MetadataTypes\RoutingKey::CHANNEL_PROPERTY_STATE_DOCUMENT_REPORTED,
 			);
 
 			$responseEntity = $this->documentFactory->create(
-				Utils\Json::encode(
-					array_merge(
-						$property->toArray(),
-						$state?->toArray() ?? [],
-					),
-				),
+				Utils\Json::encode(array_merge(
+					[
+						'id' => $property->getId()->toString(),
+						'channel' => $property->getChannel()->toString(),
+						'read' => $state->toArray(),
+					],
+					$state->toArray(),
+				)),
 				$publishRoutingKey,
 			);
 
@@ -581,7 +599,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				WebSocketsWAMP\Application\Application::MSG_EVENT,
 				$topic->getId(),
 				Utils\Json::encode([
-					'routing_key' => MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_DOCUMENT_REPORTED,
+					'routing_key' => MetadataTypes\RoutingKey::CHANNEL_PROPERTY_STATE_DOCUMENT_REPORTED,
 					'source' => MetadataTypes\ModuleSource::DEVICES,
 					'data' => $responseEntity->toArray(),
 				]),

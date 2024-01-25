@@ -119,8 +119,8 @@ final class Variable extends Property
 				$this->router->urlFor(
 					Devices\Constants::ROUTE_NAME_DEVICE_PROPERTY_CHILDREN,
 					[
-						Router\ApiRoutes::URL_DEVICE_ID => $resource->getDevice()->getPlainId(),
-						Router\ApiRoutes::URL_PROPERTY_ID => $resource->getPlainId(),
+						Router\ApiRoutes::URL_DEVICE_ID => $resource->getDevice()->getId()->toString(),
+						Router\ApiRoutes::URL_PROPERTY_ID => $resource->getId()->toString(),
 					],
 				),
 				true,
@@ -149,8 +149,8 @@ final class Variable extends Property
 				$this->router->urlFor(
 					Devices\Constants::ROUTE_NAME_DEVICE_PROPERTY_RELATIONSHIP,
 					[
-						Router\ApiRoutes::URL_DEVICE_ID => $resource->getDevice()->getPlainId(),
-						Router\ApiRoutes::URL_ITEM_ID => $resource->getPlainId(),
+						Router\ApiRoutes::URL_DEVICE_ID => $resource->getDevice()->getId()->toString(),
+						Router\ApiRoutes::URL_ITEM_ID => $resource->getId()->toString(),
 						Router\ApiRoutes::RELATION_ENTITY => $name,
 
 					],

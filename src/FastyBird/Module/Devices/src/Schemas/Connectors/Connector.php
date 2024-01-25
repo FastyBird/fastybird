@@ -105,7 +105,7 @@ class Connector extends JsonApiSchemas\JsonApi
 			$this->router->urlFor(
 				Devices\Constants::ROUTE_NAME_CONNECTOR,
 				[
-					Router\ApiRoutes::URL_ITEM_ID => $resource->getPlainId(),
+					Router\ApiRoutes::URL_ITEM_ID => $resource->getId()->toString(),
 				],
 			),
 			false,
@@ -159,7 +159,7 @@ class Connector extends JsonApiSchemas\JsonApi
 				$this->router->urlFor(
 					Devices\Constants::ROUTE_NAME_CONNECTOR_PROPERTIES,
 					[
-						Router\ApiRoutes::URL_CONNECTOR_ID => $resource->getPlainId(),
+						Router\ApiRoutes::URL_CONNECTOR_ID => $resource->getId()->toString(),
 					],
 				),
 				true,
@@ -173,7 +173,7 @@ class Connector extends JsonApiSchemas\JsonApi
 				$this->router->urlFor(
 					Devices\Constants::ROUTE_NAME_CONNECTOR_CONTROLS,
 					[
-						Router\ApiRoutes::URL_CONNECTOR_ID => $resource->getPlainId(),
+						Router\ApiRoutes::URL_CONNECTOR_ID => $resource->getId()->toString(),
 					],
 				),
 				true,
@@ -205,7 +205,7 @@ class Connector extends JsonApiSchemas\JsonApi
 				$this->router->urlFor(
 					Devices\Constants::ROUTE_NAME_CONNECTOR_RELATIONSHIP,
 					[
-						Router\ApiRoutes::URL_ITEM_ID => $resource->getPlainId(),
+						Router\ApiRoutes::URL_ITEM_ID => $resource->getId()->toString(),
 						Router\ApiRoutes::RELATION_ENTITY => $name,
 
 					],

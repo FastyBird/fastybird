@@ -17,13 +17,11 @@ namespace FastyBird\Module\Devices\Models\States\Devices;
 
 use DateTimeInterface;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\States;
 use Nette;
 use Nette\Utils;
-use Psr\EventDispatcher as PsrEventDispatcher;
 use Ramsey\Uuid;
 
 /**
@@ -39,10 +37,7 @@ final class Manager
 
 	use Nette\SmartObject;
 
-	public function __construct(
-		private readonly IManager|null $manager = null,
-		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
-	)
+	public function __construct(private readonly IManager|null $manager = null)
 	{
 	}
 
@@ -60,11 +55,7 @@ final class Manager
 			throw new Exceptions\NotImplemented('Device properties state manager is not registered');
 		}
 
-		$result = $this->manager->create($property->getId(), $values);
-
-		$this->dispatcher?->dispatch(new Events\DevicePropertyStateEntityCreated($property, $result));
-
-		return $result;
+		return $this->manager->create($property->getId(), $values);
 	}
 
 	/**
@@ -76,7 +67,7 @@ final class Manager
 		MetadataDocuments\DevicesModule\DeviceDynamicProperty $property,
 		States\DeviceProperty $state,
 		Utils\ArrayHash $values,
-	): States\DeviceProperty
+	): States\DeviceProperty|false
 	{
 		if ($this->manager === null) {
 			throw new Exceptions\NotImplemented('Device properties state manager is not registered');
@@ -85,7 +76,7 @@ final class Manager
 		$result = $this->manager->update($property->getId(), $values);
 
 		if ($result === false) {
-			return $state;
+			return false;
 		}
 
 		if (
@@ -105,10 +96,10 @@ final class Manager
 				States\Property::VALID_FIELD => $result->isValid(),
 			]
 		) {
-			$this->dispatcher?->dispatch(new Events\DevicePropertyStateEntityUpdated($property, $state, $result));
+			return $result;
 		}
 
-		return $result;
+		return false;
 	}
 
 	/**
@@ -122,11 +113,7 @@ final class Manager
 			throw new Exceptions\NotImplemented('Device properties state manager is not registered');
 		}
 
-		$result = $this->manager->delete($id);
-
-		$this->dispatcher?->dispatch(new Events\DevicePropertyStateEntityDeleted($id));
-
-		return $result;
+		return $this->manager->delete($id);
 	}
 
 }

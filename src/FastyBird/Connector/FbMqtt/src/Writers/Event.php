@@ -54,7 +54,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 		DevicesEvents\DevicePropertyStateEntityCreated|DevicesEvents\DevicePropertyStateEntityUpdated|DevicesEvents\ChannelPropertyStateEntityCreated|DevicesEvents\ChannelPropertyStateEntityUpdated $event,
 	): void
 	{
-		$state = $event->getState();
+		$state = $event->getGet();
 
 		if ($state->getExpectedValue() === null || $state->getPending() !== true) {
 			return;
@@ -74,6 +74,18 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 			if ($device === null) {
 				return;
 			}
+
+			$this->queue->append(
+				$this->entityHelper->create(
+					Entities\Messages\WriteDevicePropertyState::class,
+					[
+						'connector' => $this->connector->getId(),
+						'device' => $device->getId(),
+						'property' => $event->getProperty()->getId(),
+						'state' => $event->getGet()->toArray(),
+					],
+				),
+			);
 		} else {
 			$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 			$findChannelQuery->byId($event->getProperty()->getChannel());
@@ -95,32 +107,16 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 			if ($device === null) {
 				return;
 			}
-		}
 
-		if (
-			$event instanceof DevicesEvents\DevicePropertyStateEntityCreated
-			|| $event instanceof DevicesEvents\DevicePropertyStateEntityUpdated
-		) {
-			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\WriteDevicePropertyState::class,
-					[
-						'connector' => $this->connector->getId(),
-						'device' => $device->getId(),
-						'property' => $event->getProperty()->getId(),
-					],
-				),
-			);
-
-		} else {
 			$this->queue->append(
 				$this->entityHelper->create(
 					Entities\Messages\WriteChannelPropertyState::class,
 					[
 						'connector' => $this->connector->getId(),
 						'device' => $device->getId(),
-						'channel' => $event->getProperty()->getChannel(),
+						'channel' => $channel->getId(),
 						'property' => $event->getProperty()->getId(),
+						'state' => $event->getGet()->toArray(),
 					],
 				),
 			);

@@ -26,15 +26,18 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices;
+use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
+use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\States;
-use FastyBird\Module\Devices\Utilities;
 use Nette;
 use Nette\Utils;
 use Orisai\ObjectMapper;
+use Psr\EventDispatcher as PsrEventDispatcher;
 use Ramsey\Uuid;
 use Throwable;
+use function array_map;
 use function array_merge;
 use function boolval;
 use function is_array;
@@ -60,14 +63,15 @@ final class ChannelPropertiesManager extends PropertiesManager
 		private readonly Models\Configuration\Channels\Properties\Repository $channelPropertiesConfigurationRepository,
 		private readonly Channels\Repository $channelPropertyStateRepository,
 		private readonly Channels\Manager $channelPropertiesStatesManager,
-		private readonly Devices\Logger $logger,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly ExchangePublisher\Publisher $publisher,
 		private readonly ExchangeDocuments\DocumentFactory $documentFactory,
+		Devices\Logger $logger,
 		ObjectMapper\Processing\Processor $stateMapper,
+		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
-		parent::__construct($stateMapper);
+		parent::__construct($logger, $stateMapper);
 	}
 
 	/**
@@ -129,9 +133,13 @@ final class ChannelPropertiesManager extends PropertiesManager
 								'property' => $property->getId()->toString(),
 							],
 							[
-								'write' => array_map(function (bool|int|float|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\CoverPayload|MetadataTypes\SwitchPayload|null $item): bool|int|float|string|null {
-									return MetadataUtilities\Value::flattenValue($item);
-								}, (array) $data),
+								'write' => array_map(
+									// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+									static fn (bool|int|float|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\CoverPayload|MetadataTypes\SwitchPayload|null $item): bool|int|float|string|null => MetadataUtilities\Value::flattenValue(
+										$item,
+									),
+									(array) $data,
+								),
 							],
 						)),
 						MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION),
@@ -176,9 +184,13 @@ final class ChannelPropertiesManager extends PropertiesManager
 								'property' => $property->getId()->toString(),
 							],
 							[
-								'set' => array_map(function (bool|int|float|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\CoverPayload|MetadataTypes\SwitchPayload|null $item): bool|int|float|string|null {
-									return MetadataUtilities\Value::flattenValue($item);
-								}, (array) $data),
+								'set' => array_map(
+									// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+									static fn (bool|int|float|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\CoverPayload|MetadataTypes\SwitchPayload|null $item): bool|int|float|string|null => MetadataUtilities\Value::flattenValue(
+										$item,
+									),
+									(array) $data,
+								),
 							],
 						)),
 						MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION),
@@ -266,10 +278,23 @@ final class ChannelPropertiesManager extends PropertiesManager
 		}
 	}
 
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
 	public function delete(Uuid\UuidInterface $id): bool
 	{
 		try {
-			return $this->channelPropertiesStatesManager->delete($id);
+			$result = $this->channelPropertiesStatesManager->delete($id);
+
+			if ($result) {
+				$this->dispatcher?->dispatch(new Events\ChannelPropertyStateEntityDeleted($id));
+
+				foreach ($this->findChildren($id) as $child) {
+					$this->dispatcher?->dispatch(new Events\ChannelPropertyStateEntityDeleted($child->getId()));
+				}
+			}
+
+			return $result;
 		} catch (Exceptions\NotImplemented) {
 			$this->logger->warning(
 				'Channels states manager is not configured. State could not be fetched',
@@ -284,55 +309,16 @@ final class ChannelPropertiesManager extends PropertiesManager
 	}
 
 	/**
-	 * @throws Exceptions\InvalidState
-	 */
-	public function normalizePublishValue(
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
-		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
-	): bool|float|int|string|null
-	{
-		$mappedProperty = null;
-
-		if ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
-			$parent = $this->channelPropertiesConfigurationRepository->find($property->getParent());
-
-			if (!$parent instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-				throw new Exceptions\InvalidState('Mapped property parent could not be loaded');
-			}
-
-			$mappedProperty = $property;
-
-			$property = $parent;
-		}
-
-		if ($mappedProperty !== null) {
-			if (
-				!Utilities\Value::compareDataTypes(
-					$mappedProperty->getDataType(),
-					$property->getDataType(),
-				)
-			) {
-				throw new Exceptions\InvalidState(
-					'Mapped property data type is not compatible with dynamic property data type',
-				);
-			}
-		}
-
-		return MetadataUtilities\Value::transformDataType(
-			MetadataUtilities\Value::flattenValue($value),
-			$mappedProperty?->getDataType() ?? $property->getDataType(),
-		);
-	}
-
-	/**
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 *
+	 * @interal
 	 */
-	private function loadValue(
+	public function loadValue(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
 		bool $forReading,
@@ -355,124 +341,6 @@ final class ChannelPropertiesManager extends PropertiesManager
 		try {
 			$state = $this->channelPropertyStateRepository->find($property->getId());
 
-			if ($state === null) {
-				return null;
-			}
-
-			$updateValues = [];
-
-			if ($mappedProperty !== null) {
-				$updateValues['id'] = $mappedProperty->getId();
-			}
-
-			if ($state->getActualValue() !== null) {
-				try {
-					$updateValues[States\Property::ACTUAL_VALUE_FIELD] = $this->convertReadValue(
-						$state->getActualValue(),
-						$property,
-						$mappedProperty,
-						$forReading,
-					);
-				} catch (MetadataExceptions\InvalidValue $ex) {
-					if ($mappedProperty !== null) {
-						$updateValues[States\Property::ACTUAL_VALUE_FIELD] = null;
-						$updateValues[States\Property::VALID_FIELD] = false;
-
-						$this->logger->error(
-							'Property stored actual value could not be converted to mapped property',
-							[
-								'source' => MetadataTypes\ModuleSource::DEVICES,
-								'type' => 'channel-properties-states',
-								'exception' => ApplicationHelpers\Logger::buildException($ex),
-							],
-						);
-
-					} else {
-						$this->channelPropertiesStatesManager->update($property, $state, Utils\ArrayHash::from([
-							States\Property::ACTUAL_VALUE_FIELD => null,
-							States\Property::VALID_FIELD => false,
-						]));
-
-						$this->logger->error(
-							'Property stored actual value was not valid',
-							[
-								'source' => MetadataTypes\ModuleSource::DEVICES,
-								'type' => 'channel-properties-states',
-								'exception' => ApplicationHelpers\Logger::buildException($ex),
-							],
-						);
-
-						return $this->loadValue($property, $forReading);
-					}
-				}
-			}
-
-			if ($state->getExpectedValue() !== null) {
-				try {
-					$expectedValue = $this->convertReadValue(
-						$state->getExpectedValue(),
-						$property,
-						$mappedProperty,
-						$forReading,
-					);
-
-					if ($expectedValue !== null && !$property->isSettable()) {
-						$this->channelPropertiesStatesManager->update($property, $state, Utils\ArrayHash::from([
-							States\Property::EXPECTED_VALUE_FIELD => null,
-							States\Property::PENDING_FIELD => false,
-						]));
-
-						$this->logger->warning(
-							'Property is not settable but has stored expected value',
-							[
-								'source' => MetadataTypes\ModuleSource::DEVICES,
-								'type' => 'channel-properties-states',
-							],
-						);
-
-						return $this->loadValue($mappedProperty ?? $property, $forReading);
-					}
-
-					$updateValues[States\Property::EXPECTED_VALUE_FIELD] = $expectedValue;
-				} catch (MetadataExceptions\InvalidValue $ex) {
-					if ($mappedProperty !== null) {
-						$updateValues[States\Property::EXPECTED_VALUE_FIELD] = null;
-						$updateValues[States\Property::PENDING_FIELD] = false;
-
-						$this->logger->error(
-							'Property stored actual value could not be converted to mapped property',
-							[
-								'source' => MetadataTypes\ModuleSource::DEVICES,
-								'type' => 'channel-properties-states',
-								'exception' => ApplicationHelpers\Logger::buildException($ex),
-							],
-						);
-
-					} else {
-						$this->channelPropertiesStatesManager->update($property, $state, Utils\ArrayHash::from([
-							States\Property::EXPECTED_VALUE_FIELD => null,
-							States\Property::PENDING_FIELD => false,
-						]));
-
-						$this->logger->error(
-							'Property stored expected value was not valid',
-							[
-								'source' => MetadataTypes\ModuleSource::DEVICES,
-								'type' => 'channel-properties-states',
-								'exception' => ApplicationHelpers\Logger::buildException($ex),
-							],
-						);
-
-						return $this->loadValue($property, $forReading);
-					}
-				}
-			}
-
-			if ($updateValues === []) {
-				return $state;
-			}
-
-			return $this->updateState($state, $state::class, $updateValues);
 		} catch (Exceptions\NotImplemented) {
 			$this->logger->warning(
 				'Channels states repository is not configured. State could not be fetched',
@@ -481,9 +349,78 @@ final class ChannelPropertiesManager extends PropertiesManager
 					'type' => 'channel-properties-states',
 				],
 			);
+
+			return null;
 		}
 
-		return null;
+		try {
+			if ($state === null) {
+				return null;
+			}
+
+			return $this->convertStoredState(
+				$property,
+				$mappedProperty,
+				$state,
+				$forReading,
+			);
+		} catch (Exceptions\InvalidActualValue $ex) {
+			try {
+				$this->channelPropertiesStatesManager->update($property, $state, Utils\ArrayHash::from([
+					States\Property::ACTUAL_VALUE_FIELD => null,
+					States\Property::VALID_FIELD => false,
+				]));
+
+				$this->logger->error(
+					'Property stored actual value was not valid',
+					[
+						'source' => MetadataTypes\ModuleSource::DEVICES,
+						'type' => 'channel-properties-states',
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
+					],
+				);
+
+				return $this->loadValue($property, $forReading);
+			} catch (Exceptions\NotImplemented) {
+				$this->logger->warning(
+					'Channels states manager is not configured. State could not be fetched',
+					[
+						'source' => MetadataTypes\ModuleSource::DEVICES,
+						'type' => 'channel-properties-states',
+					],
+				);
+
+				return null;
+			}
+		} catch (Exceptions\InvalidExpectedValue $ex) {
+			try {
+				$this->channelPropertiesStatesManager->update($property, $state, Utils\ArrayHash::from([
+					States\Property::EXPECTED_VALUE_FIELD => null,
+					States\Property::PENDING_FIELD => false,
+				]));
+
+				$this->logger->error(
+					'Property stored expected value was not valid',
+					[
+						'source' => MetadataTypes\ModuleSource::DEVICES,
+						'type' => 'channel-properties-states',
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
+					],
+				);
+
+				return $this->loadValue($property, $forReading);
+			} catch (Exceptions\NotImplemented) {
+				$this->logger->warning(
+					'Channels states manager is not configured. State could not be fetched',
+					[
+						'source' => MetadataTypes\ModuleSource::DEVICES,
+						'type' => 'channel-properties-states',
+					],
+				);
+
+				return null;
+			}
+		}
 	}
 
 	/**
@@ -674,14 +611,51 @@ final class ChannelPropertiesManager extends PropertiesManager
 		}
 
 		try {
-			$result = $state === null ? $this->channelPropertiesStatesManager->create(
-				$property,
-				$data,
-			) : $this->channelPropertiesStatesManager->update(
-				$property,
-				$state,
-				$data,
-			);
+			if ($state === null) {
+				$result = $this->channelPropertiesStatesManager->create(
+					$property,
+					$data,
+				);
+
+			} else {
+				$result = $this->channelPropertiesStatesManager->update(
+					$property,
+					$state,
+					$data,
+				);
+
+				if ($result === false) {
+					return;
+				}
+			}
+
+			$readValue = $this->convertStoredState($property, $mappedProperty, $result, true);
+			$getValue = $this->convertStoredState($property, $mappedProperty, $result, false);
+
+			if ($state === null) {
+				$this->dispatcher?->dispatch(
+					new Events\ChannelPropertyStateEntityCreated($property, $readValue, $getValue),
+				);
+			} else {
+				$this->dispatcher?->dispatch(
+					new Events\ChannelPropertyStateEntityUpdated($property, $readValue, $getValue),
+				);
+			}
+
+			foreach ($this->findChildren($property->getId()) as $child) {
+				$readValue = $this->convertStoredState($property, $child, $result, true);
+				$getValue = $this->convertStoredState($property, $child, $result, false);
+
+				if ($state === null) {
+					$this->dispatcher?->dispatch(
+						new Events\ChannelPropertyStateEntityCreated($child, $readValue, $getValue),
+					);
+				} else {
+					$this->dispatcher?->dispatch(
+						new Events\ChannelPropertyStateEntityUpdated($child, $readValue, $getValue),
+					);
+				}
+			}
 
 			$this->logger->debug(
 				$state === null ? 'Channel property state was created' : 'Channel property state was updated',
@@ -703,6 +677,22 @@ final class ChannelPropertiesManager extends PropertiesManager
 				],
 			);
 		}
+	}
+
+	/**
+	 * @return array<MetadataDocuments\DevicesModule\ChannelMappedProperty>
+	 *
+	 * @throws Exceptions\InvalidState
+	 */
+	private function findChildren(Uuid\UuidInterface $id): array
+	{
+		$findPropertiesQuery = new Queries\Configuration\FindChannelMappedProperties();
+		$findPropertiesQuery->byParentId($id);
+
+		return $this->channelPropertiesConfigurationRepository->findAllBy(
+			$findPropertiesQuery,
+			MetadataDocuments\DevicesModule\ChannelMappedProperty::class,
+		);
 	}
 
 }

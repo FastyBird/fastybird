@@ -24,6 +24,7 @@ use FastyBird\JsonApi\Hydrators as JsonApiHydrators;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Router;
+use FastyBird\Module\Devices\States;
 use Fig\Http\Message\RequestMethodInterface;
 use Fig\Http\Message\StatusCodeInterface;
 use IPub\DoctrineCrud;
@@ -203,14 +204,14 @@ abstract class BaseV1
 	}
 
 	/**
-	 * @param DoctrineCrud\Entities\IEntity|ResultSet<DoctrineCrud\Entities\IEntity>|array<DoctrineCrud\Entities\IEntity> $data
+	 * @param DoctrineCrud\Entities\IEntity|States\Property|ResultSet<DoctrineCrud\Entities\IEntity>|array<DoctrineCrud\Entities\IEntity> $data
 	 *
 	 * @throws Exception
 	 */
 	protected function buildResponse(
 		Message\ServerRequestInterface $request,
 		ResponseInterface $response,
-		ResultSet|DoctrineCrud\Entities\IEntity|array $data,
+		ResultSet|DoctrineCrud\Entities\IEntity|States\Property|array $data,
 	): ResponseInterface
 	{
 		$totalCount = null;

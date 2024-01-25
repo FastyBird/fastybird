@@ -227,6 +227,7 @@ abstract class Periodic
 							'device' => $device->getId(),
 							'channel' => $property->getChannel(),
 							'property' => $property->getId(),
+							'state' => $state->toArray(),
 						],
 					),
 				);

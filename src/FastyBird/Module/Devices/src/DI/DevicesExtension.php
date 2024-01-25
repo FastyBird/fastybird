@@ -498,6 +498,14 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->addTag('nette.inject');
 
 		$builder->addDefinition(
+			$this->prefix('controllers.connectorPropertyState'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Controllers\ConnectorPropertyStateV1::class)
+			->addSetup('setLogger', [$logger])
+			->addTag('nette.inject');
+
+		$builder->addDefinition(
 			$this->prefix('controllers.connectorsControls'),
 			new DI\Definitions\ServiceDefinition(),
 		)
@@ -547,6 +555,14 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->addTag('nette.inject');
 
 		$builder->addDefinition(
+			$this->prefix('controllers.devicePropertyState'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Controllers\DevicePropertyStateV1::class)
+			->addSetup('setLogger', [$logger])
+			->addTag('nette.inject');
+
+		$builder->addDefinition(
 			$this->prefix('controllers.deviceControls'),
 			new DI\Definitions\ServiceDefinition(),
 		)
@@ -576,6 +592,14 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Controllers\ChannelPropertyChildrenV1::class)
+			->addSetup('setLogger', [$logger])
+			->addTag('nette.inject');
+
+		$builder->addDefinition(
+			$this->prefix('controllers.channelPropertyState'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Controllers\ChannelPropertyStateV1::class)
 			->addSetup('setLogger', [$logger])
 			->addTag('nette.inject');
 
@@ -624,6 +648,12 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setType(Schemas\Connectors\Properties\Variable::class);
 
 		$builder->addDefinition(
+			$this->prefix('schemas.connector.property.state'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Schemas\Connectors\Properties\States\State::class);
+
+		$builder->addDefinition(
 			$this->prefix('schemas.connector.controls'),
 			new DI\Definitions\ServiceDefinition(),
 		)
@@ -655,6 +685,12 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setType(Schemas\Devices\Properties\Mapped::class);
 
 		$builder->addDefinition(
+			$this->prefix('schemas.device.property.state'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Schemas\Devices\Properties\States\State::class);
+
+		$builder->addDefinition(
 			$this->prefix('schemas.device.control'),
 			new DI\Definitions\ServiceDefinition(),
 		)
@@ -678,6 +714,12 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Schemas\Channels\Properties\Variable::class);
+
+		$builder->addDefinition(
+			$this->prefix('schemas.channel.property.state'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Schemas\Channels\Properties\States\State::class);
 
 		$builder->addDefinition(
 			$this->prefix('schemas.channel.property.mapped'),

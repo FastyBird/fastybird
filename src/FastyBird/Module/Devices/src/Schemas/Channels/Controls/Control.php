@@ -94,9 +94,9 @@ final class Control extends JsonApiSchemas\JsonApi
 			$this->router->urlFor(
 				Devices\Constants::ROUTE_NAME_CHANNEL_CONTROL,
 				[
-					Router\ApiRoutes::URL_DEVICE_ID => $resource->getChannel()->getDevice()->getPlainId(),
-					Router\ApiRoutes::URL_CHANNEL_ID => $resource->getChannel()->getPlainId(),
-					Router\ApiRoutes::URL_ITEM_ID => $resource->getPlainId(),
+					Router\ApiRoutes::URL_DEVICE_ID => $resource->getChannel()->getDevice()->getId()->toString(),
+					Router\ApiRoutes::URL_CHANNEL_ID => $resource->getChannel()->getId()->toString(),
+					Router\ApiRoutes::URL_ITEM_ID => $resource->getId()->toString(),
 				],
 			),
 			false,
@@ -140,8 +140,8 @@ final class Control extends JsonApiSchemas\JsonApi
 				$this->router->urlFor(
 					Devices\Constants::ROUTE_NAME_CHANNEL,
 					[
-						Router\ApiRoutes::URL_DEVICE_ID => $resource->getChannel()->getDevice()->getPlainId(),
-						Router\ApiRoutes::URL_ITEM_ID => $resource->getChannel()->getPlainId(),
+						Router\ApiRoutes::URL_DEVICE_ID => $resource->getChannel()->getDevice()->getId()->toString(),
+						Router\ApiRoutes::URL_ITEM_ID => $resource->getChannel()->getId()->toString(),
 					],
 				),
 				false,

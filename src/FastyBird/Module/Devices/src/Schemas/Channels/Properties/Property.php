@@ -53,6 +53,8 @@ abstract class Property extends JsonApiSchemas\JsonApi
 
 	public const RELATIONSHIPS_CHILDREN = 'children';
 
+	public const RELATIONSHIPS_STATE = 'state';
+
 	public function __construct(
 		protected readonly Routing\IRouter $router,
 		protected readonly Models\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
@@ -107,9 +109,9 @@ abstract class Property extends JsonApiSchemas\JsonApi
 			$this->router->urlFor(
 				Devices\Constants::ROUTE_NAME_CHANNEL_PROPERTY,
 				[
-					Router\ApiRoutes::URL_DEVICE_ID => $resource->getChannel()->getDevice()->getPlainId(),
-					Router\ApiRoutes::URL_CHANNEL_ID => $resource->getChannel()->getPlainId(),
-					Router\ApiRoutes::URL_ITEM_ID => $resource->getPlainId(),
+					Router\ApiRoutes::URL_DEVICE_ID => $resource->getChannel()->getDevice()->getId()->toString(),
+					Router\ApiRoutes::URL_CHANNEL_ID => $resource->getChannel()->getId()->toString(),
+					Router\ApiRoutes::URL_ITEM_ID => $resource->getId()->toString(),
 				],
 			),
 			false,
@@ -153,8 +155,8 @@ abstract class Property extends JsonApiSchemas\JsonApi
 				$this->router->urlFor(
 					Devices\Constants::ROUTE_NAME_CHANNEL,
 					[
-						Router\ApiRoutes::URL_DEVICE_ID => $resource->getChannel()->getDevice()->getPlainId(),
-						Router\ApiRoutes::URL_ITEM_ID => $resource->getChannel()->getPlainId(),
+						Router\ApiRoutes::URL_DEVICE_ID => $resource->getChannel()->getDevice()->getId()->toString(),
+						Router\ApiRoutes::URL_ITEM_ID => $resource->getChannel()->getId()->toString(),
 					],
 				),
 				false,

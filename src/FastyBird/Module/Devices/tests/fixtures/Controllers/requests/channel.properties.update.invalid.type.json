@@ -10,10 +10,7 @@
       "data_type": "bool",
       "unit": null,
       "format": null,
-      "invalid": null,
-      "actual_value": null,
-      "expected_value": null,
-      "pending": false
+      "invalid": null
     }
   }
 }

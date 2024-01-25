@@ -39,8 +39,11 @@ final class WriteChannelPropertyState implements Entity
 		private readonly Uuid\UuidInterface $channel,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $property,
-		#[ObjectMapper\Rules\MappedObjectValue(class: State::class)]
-		private readonly State $state,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\MappedObjectValue(class: State::class),
+			new ObjectMapper\Rules\NullValue(),
+		])]
+		private readonly State|null $state,
 	)
 	{
 	}
@@ -65,7 +68,7 @@ final class WriteChannelPropertyState implements Entity
 		return $this->property;
 	}
 
-	public function getState(): State
+	public function getState(): State|null
 	{
 		return $this->state;
 	}
@@ -80,7 +83,7 @@ final class WriteChannelPropertyState implements Entity
 			'device' => $this->getDevice()->toString(),
 			'channel' => $this->getChannel()->toString(),
 			'property' => $this->getProperty()->toString(),
-			'state' => $this->getState()->toArray(),
+			'state' => $this->getState()?->toArray(),
 		];
 	}
 

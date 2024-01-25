@@ -22,10 +22,8 @@ use FastyBird\Library\Application\Events as ApplicationEvents;
 use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
@@ -33,8 +31,6 @@ use FastyBird\Module\Devices\Models;
 use Nette;
 use Nette\Utils;
 use ReflectionClass;
-use function array_merge;
-use function assert;
 use function count;
 use function is_a;
 use function str_starts_with;
@@ -62,9 +58,6 @@ final class ModuleEntities implements Common\EventSubscriber
 
 	public function __construct(
 		private readonly ORM\EntityManagerInterface $entityManager,
-		private readonly Models\Configuration\Connectors\Properties\Repository $connectorsPropertiesConfigurationRepository,
-		private readonly Models\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
-		private readonly Models\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
 		private readonly Models\Configuration\Builder $configurationBuilder,
 		private readonly Models\States\ConnectorPropertiesManager $connectorPropertiesStatesManager,
 		private readonly Models\States\Async\ConnectorPropertiesManager $asyncConnectorPropertiesStatesManager,
@@ -96,15 +89,11 @@ final class ModuleEntities implements Common\EventSubscriber
 	/**
 	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
 	 *
-	 * @throws Exceptions\InvalidArgument
-	 * @throws Exceptions\InvalidState
 	 * @throws ExchangeExceptions\InvalidArgument
 	 * @throws ExchangeExceptions\InvalidState
 	 * @throws Utils\JsonException
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
-	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function postPersist(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
@@ -124,15 +113,11 @@ final class ModuleEntities implements Common\EventSubscriber
 	/**
 	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
 	 *
-	 * @throws Exceptions\InvalidArgument
-	 * @throws Exceptions\InvalidState
 	 * @throws ExchangeExceptions\InvalidArgument
 	 * @throws ExchangeExceptions\InvalidState
 	 * @throws Utils\JsonException
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
-	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function postUpdate(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
@@ -165,6 +150,8 @@ final class ModuleEntities implements Common\EventSubscriber
 
 	/**
 	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
+	 *
+	 * @throws Exceptions\InvalidState
 	 */
 	public function preRemove(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
@@ -201,15 +188,11 @@ final class ModuleEntities implements Common\EventSubscriber
 	/**
 	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
 	 *
-	 * @throws Exceptions\InvalidArgument
-	 * @throws Exceptions\InvalidState
 	 * @throws ExchangeExceptions\InvalidArgument
 	 * @throws ExchangeExceptions\InvalidState
 	 * @throws Utils\JsonException
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
-	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function postRemove(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
@@ -237,15 +220,11 @@ final class ModuleEntities implements Common\EventSubscriber
 	}
 
 	/**
-	 * @throws Exceptions\InvalidArgument
-	 * @throws Exceptions\InvalidState
 	 * @throws ExchangeExceptions\InvalidArgument
 	 * @throws ExchangeExceptions\InvalidState
 	 * @throws Utils\JsonException
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
-	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	private function publishEntity(Entities\Entity $entity, string $action): void
 	{
@@ -279,231 +258,14 @@ final class ModuleEntities implements Common\EventSubscriber
 		}
 
 		if ($publishRoutingKey !== null) {
-			if ($entity instanceof Entities\Devices\Properties\Dynamic) {
-				if ($this->useAsync && $action === self::ACTION_UPDATED) {
-					$configuration = $this->devicesPropertiesConfigurationRepository->find($entity->getId());
-					assert(
-						$configuration instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
-						|| $configuration === null,
-					);
-
-					if ($configuration !== null) {
-						$this->asyncDevicePropertiesStatesManager->read($configuration)
-							->then(
-								function (
-									Devices\States\DeviceProperty|null $state,
-								) use (
-									$publishRoutingKey,
-									$entity,
-								): void {
-									$this->getPublisher()->publish(
-										MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
-										$publishRoutingKey,
-										$this->documentFactory->create(
-											Utils\Json::encode(
-												array_merge(
-													$entity->toArray(),
-													$state?->toArray() ?? [],
-												),
-											),
-											$publishRoutingKey,
-										),
-									);
-								},
-							);
-					} else {
-						$this->getPublisher()->publish(
-							MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
-							$publishRoutingKey,
-							$this->documentFactory->create(
-								Utils\Json::encode($entity->toArray()),
-								$publishRoutingKey,
-							),
-						);
-					}
-				} else {
-					$configuration = $this->devicesPropertiesConfigurationRepository->find($entity->getId());
-					assert(
-						$configuration instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
-						|| $configuration === null,
-					);
-
-					$state = $configuration !== null
-						? (
-							$action === self::ACTION_UPDATED
-								? $this->devicePropertiesStatesManager->read($configuration)
-								: null
-						)
-						: null;
-
-					$this->getPublisher()->publish(
-						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
-						$publishRoutingKey,
-						$this->documentFactory->create(
-							Utils\Json::encode(
-								array_merge(
-									$entity->toArray(),
-									$state?->toArray() ?? [],
-								),
-							),
-							$publishRoutingKey,
-						),
-					);
-				}
-			} elseif ($entity instanceof Entities\Channels\Properties\Dynamic) {
-				if ($this->useAsync && $action === self::ACTION_UPDATED) {
-					$configuration = $this->channelsPropertiesConfigurationRepository->find($entity->getId());
-					assert(
-						$configuration instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-						|| $configuration === null,
-					);
-
-					if ($configuration !== null) {
-						$this->asyncChannelPropertiesStatesManager->read($configuration)
-							->then(
-								function (
-									Devices\States\ChannelProperty|null $state,
-								) use (
-									$publishRoutingKey,
-									$entity,
-								): void {
-									$this->getPublisher()->publish(
-										MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
-										$publishRoutingKey,
-										$this->documentFactory->create(
-											Utils\Json::encode(
-												array_merge(
-													$entity->toArray(),
-													$state?->toArray() ?? [],
-												),
-											),
-											$publishRoutingKey,
-										),
-									);
-								},
-							);
-					} else {
-						$this->getPublisher()->publish(
-							MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
-							$publishRoutingKey,
-							$this->documentFactory->create(
-								Utils\Json::encode($entity->toArray()),
-								$publishRoutingKey,
-							),
-						);
-					}
-				} else {
-					$configuration = $this->channelsPropertiesConfigurationRepository->find($entity->getId());
-					assert(
-						$configuration instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-						|| $configuration === null,
-					);
-
-					$state = $configuration !== null
-						? (
-							$action === self::ACTION_UPDATED
-								? $this->channelPropertiesStatesManager->read($configuration)
-								: null
-						)
-						: null;
-
-					$this->getPublisher()->publish(
-						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
-						$publishRoutingKey,
-						$this->documentFactory->create(
-							Utils\Json::encode(
-								array_merge(
-									$entity->toArray(),
-									$state?->toArray() ?? [],
-								),
-							),
-							$publishRoutingKey,
-						),
-					);
-				}
-			} elseif ($entity instanceof Entities\Connectors\Properties\Dynamic) {
-				if ($this->useAsync && $action === self::ACTION_UPDATED) {
-					$configuration = $this->connectorsPropertiesConfigurationRepository->find($entity->getId());
-					assert(
-						$configuration instanceof MetadataDocuments\DevicesModule\ConnectorDynamicProperty
-						|| $configuration === null,
-					);
-
-					if ($configuration !== null) {
-						$this->asyncConnectorPropertiesStatesManager->read($configuration)
-							->then(
-								function (
-									Devices\States\ConnectorProperty|null $state,
-								) use (
-									$publishRoutingKey,
-									$entity,
-								): void {
-									$this->getPublisher()->publish(
-										MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
-										$publishRoutingKey,
-										$this->documentFactory->create(
-											Utils\Json::encode(
-												array_merge(
-													$entity->toArray(),
-													$state?->toArray() ?? [],
-												),
-											),
-											$publishRoutingKey,
-										),
-									);
-								},
-							);
-					} else {
-						$this->getPublisher()->publish(
-							MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
-							$publishRoutingKey,
-							$this->documentFactory->create(
-								Utils\Json::encode($entity->toArray()),
-								$publishRoutingKey,
-							),
-						);
-					}
-				} else {
-					$configuration = $this->connectorsPropertiesConfigurationRepository->find($entity->getId());
-					assert(
-						$configuration instanceof MetadataDocuments\DevicesModule\ConnectorDynamicProperty
-						|| $configuration === null,
-					);
-
-					$state = $configuration !== null
-						? (
-							$action === self::ACTION_UPDATED
-								? $this->connectorPropertiesStatesManager->read($configuration)
-								: null
-						)
-						: null;
-
-					$this->getPublisher()->publish(
-						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
-						$publishRoutingKey,
-						$this->documentFactory->create(
-							Utils\Json::encode(
-								array_merge(
-									$entity->toArray(),
-									$state?->toArray() ?? [],
-								),
-							),
-							$publishRoutingKey,
-						),
-					);
-				}
-			} else {
-				$this->getPublisher()->publish(
-					MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+			$this->getPublisher()->publish(
+				MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+				$publishRoutingKey,
+				$this->documentFactory->create(
+					Utils\Json::encode($entity->toArray()),
 					$publishRoutingKey,
-					$this->documentFactory->create(
-						Utils\Json::encode(
-							$entity->toArray(),
-						),
-						$publishRoutingKey,
-					),
-				);
-			}
+				),
+			);
 		}
 	}
 

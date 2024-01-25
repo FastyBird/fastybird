@@ -53,6 +53,8 @@ abstract class Property extends JsonApiSchemas\JsonApi
 
 	public const RELATIONSHIPS_CHILDREN = 'children';
 
+	public const RELATIONSHIPS_STATE = 'state';
+
 	public function __construct(
 		protected readonly Routing\IRouter $router,
 		protected readonly Models\Entities\Devices\Properties\PropertiesRepository $propertiesRepository,
@@ -107,8 +109,8 @@ abstract class Property extends JsonApiSchemas\JsonApi
 			$this->router->urlFor(
 				Devices\Constants::ROUTE_NAME_DEVICE_PROPERTY,
 				[
-					Router\ApiRoutes::URL_DEVICE_ID => $resource->getDevice()->getPlainId(),
-					Router\ApiRoutes::URL_ITEM_ID => $resource->getPlainId(),
+					Router\ApiRoutes::URL_DEVICE_ID => $resource->getDevice()->getId()->toString(),
+					Router\ApiRoutes::URL_ITEM_ID => $resource->getId()->toString(),
 				],
 			),
 			false,
@@ -152,7 +154,7 @@ abstract class Property extends JsonApiSchemas\JsonApi
 				$this->router->urlFor(
 					Devices\Constants::ROUTE_NAME_DEVICE,
 					[
-						Router\ApiRoutes::URL_ITEM_ID => $resource->getDevice()->getPlainId(),
+						Router\ApiRoutes::URL_ITEM_ID => $resource->getDevice()->getId()->toString(),
 					],
 				),
 				false,

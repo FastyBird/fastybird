@@ -48,10 +48,6 @@
   "step": null,
   "value_transformer": null,
   "channel" : "247fd6b5-8466-4323-81de-cec3e315015a",
-  "actual_value" : "switch_on",
-  "expected_value" : null,
-  "pending" : false,
-  "valid" : true,
   "parent" : "f42a8b4c-d5c8-4242-8ff0-6e5f867dcfb1",
   "created_at" : null,
   "updated_at" : null

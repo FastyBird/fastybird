@@ -251,7 +251,7 @@ final class WriteSubDeviceChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$state = $this->channelPropertiesStatesManager->get($propertyToUpdate);
+		$state = $entity->getState();
 
 		if ($state === null) {
 			return true;

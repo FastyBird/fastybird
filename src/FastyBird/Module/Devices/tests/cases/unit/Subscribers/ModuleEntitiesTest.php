@@ -52,25 +52,10 @@ final class ModuleEntitiesTest extends TestCase
 
 		$entityFactory = $this->createMock(ExchangeDocuments\DocumentFactory::class);
 
-		$connectorsPropertiesConfigurationRepository = $this->createMock(
-			Models\Configuration\Connectors\Properties\Repository::class,
-		);
-
-		$devicesPropertiesConfigurationRepository = $this->createMock(
-			Models\Configuration\Devices\Properties\Repository::class,
-		);
-
-		$channelsPropertiesConfigurationRepository = $this->createMock(
-			Models\Configuration\Channels\Properties\Repository::class,
-		);
-
 		$configurationBuilder = $this->createMock(Models\Configuration\Builder::class);
 
 		$subscriber = new Subscribers\ModuleEntities(
 			$entityManager,
-			$connectorsPropertiesConfigurationRepository,
-			$devicesPropertiesConfigurationRepository,
-			$channelsPropertiesConfigurationRepository,
 			$configurationBuilder,
 			$connectorPropertiesStates,
 			$asyncConnectorPropertiesStates,
@@ -183,25 +168,10 @@ final class ModuleEntitiesTest extends TestCase
 			->method('create')
 			->willReturn($entityItem);
 
-		$connectorsPropertiesConfigurationRepository = $this->createMock(
-			Models\Configuration\Connectors\Properties\Repository::class,
-		);
-
-		$devicesPropertiesConfigurationRepository = $this->createMock(
-			Models\Configuration\Devices\Properties\Repository::class,
-		);
-
-		$channelsPropertiesConfigurationRepository = $this->createMock(
-			Models\Configuration\Channels\Properties\Repository::class,
-		);
-
 		$configurationBuilder = $this->createMock(Models\Configuration\Builder::class);
 
 		$subscriber = new Subscribers\ModuleEntities(
 			$entityManager,
-			$connectorsPropertiesConfigurationRepository,
-			$devicesPropertiesConfigurationRepository,
-			$channelsPropertiesConfigurationRepository,
 			$configurationBuilder,
 			$connectorPropertiesStates,
 			$asyncConnectorPropertiesStates,
@@ -320,25 +290,10 @@ final class ModuleEntitiesTest extends TestCase
 			->method('create')
 			->willReturn($entityItem);
 
-		$connectorsPropertiesConfigurationRepository = $this->createMock(
-			Models\Configuration\Connectors\Properties\Repository::class,
-		);
-
-		$devicesPropertiesConfigurationRepository = $this->createMock(
-			Models\Configuration\Devices\Properties\Repository::class,
-		);
-
-		$channelsPropertiesConfigurationRepository = $this->createMock(
-			Models\Configuration\Channels\Properties\Repository::class,
-		);
-
 		$configurationBuilder = $this->createMock(Models\Configuration\Builder::class);
 
 		$subscriber = new Subscribers\ModuleEntities(
 			$entityManager,
-			$connectorsPropertiesConfigurationRepository,
-			$devicesPropertiesConfigurationRepository,
-			$channelsPropertiesConfigurationRepository,
 			$configurationBuilder,
 			$connectorPropertiesStates,
 			$asyncConnectorPropertiesStates,
@@ -465,25 +420,10 @@ final class ModuleEntitiesTest extends TestCase
 			->method('create')
 			->willReturn($entityItem);
 
-		$connectorsPropertiesConfigurationRepository = $this->createMock(
-			Models\Configuration\Connectors\Properties\Repository::class,
-		);
-
-		$devicesPropertiesConfigurationRepository = $this->createMock(
-			Models\Configuration\Devices\Properties\Repository::class,
-		);
-
-		$channelsPropertiesConfigurationRepository = $this->createMock(
-			Models\Configuration\Channels\Properties\Repository::class,
-		);
-
 		$configurationBuilder = $this->createMock(Models\Configuration\Builder::class);
 
 		$subscriber = new Subscribers\ModuleEntities(
 			$entityManager,
-			$connectorsPropertiesConfigurationRepository,
-			$devicesPropertiesConfigurationRepository,
-			$channelsPropertiesConfigurationRepository,
 			$configurationBuilder,
 			$connectorPropertiesStates,
 			$asyncConnectorPropertiesStates,

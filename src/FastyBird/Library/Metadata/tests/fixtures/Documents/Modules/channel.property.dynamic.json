@@ -20,10 +20,6 @@
   "step": null,
   "value_transformer": null,
   "channel": "247fd6b5-8466-4323-81de-cec3e315015a",
-  "actual_value" : 50,
-  "expected_value" : null,
-  "pending" : false,
-  "valid" : true,
   "created_at" : null,
   "updated_at" : null
 }

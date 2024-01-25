@@ -45,7 +45,9 @@ abstract class Property extends JsonApiSchemas\JsonApi
 	 */
 	public const RELATIONSHIPS_CONNECTOR = 'connector';
 
-	public function __construct(private readonly Routing\IRouter $router)
+	public const RELATIONSHIPS_STATE = 'state';
+
+	public function __construct(protected readonly Routing\IRouter $router)
 	{
 	}
 
@@ -98,8 +100,8 @@ abstract class Property extends JsonApiSchemas\JsonApi
 			$this->router->urlFor(
 				Devices\Constants::ROUTE_NAME_CONNECTOR_PROPERTY,
 				[
-					Router\ApiRoutes::URL_CONNECTOR_ID => $resource->getConnector()->getPlainId(),
-					Router\ApiRoutes::URL_ITEM_ID => $resource->getPlainId(),
+					Router\ApiRoutes::URL_CONNECTOR_ID => $resource->getConnector()->getId()->toString(),
+					Router\ApiRoutes::URL_ITEM_ID => $resource->getId()->toString(),
 				],
 			),
 			false,
@@ -143,7 +145,7 @@ abstract class Property extends JsonApiSchemas\JsonApi
 				$this->router->urlFor(
 					Devices\Constants::ROUTE_NAME_CONNECTOR,
 					[
-						Router\ApiRoutes::URL_ITEM_ID => $resource->getConnector()->getPlainId(),
+						Router\ApiRoutes::URL_ITEM_ID => $resource->getConnector()->getId()->toString(),
 					],
 				),
 				false,

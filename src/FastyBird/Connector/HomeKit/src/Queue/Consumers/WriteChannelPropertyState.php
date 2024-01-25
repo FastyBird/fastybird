@@ -194,10 +194,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 
 		$property = $this->channelsPropertiesConfigurationRepository->find($entity->getProperty());
 
-		if (
-			!$property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty
-			&& !$property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
-		) {
+		if ($property === null) {
 			$this->logger->error(
 				'Channel property could not be loaded',
 				[
@@ -267,6 +264,35 @@ final class WriteChannelPropertyState implements Queue\Consumer
 							}
 						} elseif ($parent instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
 							$characteristic->setActualValue($parent->getValue());
+						}
+					} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+						if ($entity->getState() !== null) {
+							if ($entity->getState()->getExpectedValue() !== null) {
+								$characteristic->setActualValue($entity->getState()->getExpectedValue());
+							}
+						} else {
+							$this->logger->warning(
+								'State entity is missing in event entity',
+								[
+									'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
+									'type' => 'write-channel-property-state-message-consumer',
+									'connector' => [
+										'id' => $connector->getId()->toString(),
+									],
+									'device' => [
+										'id' => $device->getId()->toString(),
+									],
+									'channel' => [
+										'id' => $channel->getId()->toString(),
+									],
+									'property' => [
+										'id' => $property->getId()->toString(),
+									],
+									'hap' => $accessory->toHap(),
+								],
+							);
+
+							continue;
 						}
 					} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
 						$characteristic->setActualValue($property->getValue());

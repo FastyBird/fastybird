@@ -99,7 +99,7 @@ final class Constants
 	public const BRIDGE_REDISDB_TRIGGERS_MODULE = 'com.fastybird.redisdb-triggers-module-bridge';
 
 	/**
-	 * Modules prefixes
+	 * MODULE PREFIXES
 	 */
 
 	public const MODULE_ACCOUNTS_PREFIX = 'accounts-module';
@@ -115,7 +115,7 @@ final class Constants
 	 */
 
 	/**
-	 * Global
+	 * GLOBAL
 	 */
 
 	public const MESSAGE_BUS_PREFIX_KEY = 'fb.exchange';
@@ -157,7 +157,7 @@ final class Constants
 	 */
 
 	/**
-	 * Accounts module
+	 * ACCOUNTS MODULE
 	 */
 
 	// Accounts
@@ -213,10 +213,10 @@ final class Constants
 	. self::MESSAGE_BUS_DOCUMENT_DELETED_KEY . '.role';
 
 	/**
-	 * Devices module
+	 * DEVICES MODULE
 	 */
 
-	// Devices
+	// DEVICES
 	public const MESSAGE_BUS_DEVICE_DOCUMENT_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
 	. self::MESSAGE_BUS_DOCUMENT_REPORTED_KEY . '.device';
 
@@ -229,7 +229,7 @@ final class Constants
 	public const MESSAGE_BUS_DEVICE_DOCUMENT_DELETED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
 	. self::MESSAGE_BUS_DOCUMENT_DELETED_KEY . '.device';
 
-	// Devices properties
+	// DEVICES PROPERTIES
 	public const MESSAGE_BUS_DEVICE_PROPERTY_DOCUMENT_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
 	. self::MESSAGE_BUS_DOCUMENT_REPORTED_KEY . '.device.property';
 
@@ -242,7 +242,20 @@ final class Constants
 	public const MESSAGE_BUS_DEVICE_PROPERTY_DOCUMENT_DELETED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
 	. self::MESSAGE_BUS_DOCUMENT_DELETED_KEY . '.device.property';
 
-	// Devices control
+	// DEVICES PROPERTIES STATES
+	public const MESSAGE_BUS_DEVICE_PROPERTY_STATE_DOCUMENT_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_REPORTED_KEY . '.device.property.state';
+
+	public const MESSAGE_BUS_DEVICE_PROPERTY_STATE_DOCUMENT_CREATED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_CREATED_KEY . '.device.property.state';
+
+	public const MESSAGE_BUS_DEVICE_PROPERTY_STATE_DOCUMENT_UPDATED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_UPDATED_KEY . '.device.property.state';
+
+	public const MESSAGE_BUS_DEVICE_PROPERTY_STATE_DOCUMENT_DELETED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_DELETED_KEY . '.device.property.state';
+
+	// DEVICES CONTROLS
 	public const MESSAGE_BUS_DEVICE_CONTROL_DOCUMENT_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
 	. self::MESSAGE_BUS_DOCUMENT_REPORTED_KEY . '.device.control';
 
@@ -255,7 +268,7 @@ final class Constants
 	public const MESSAGE_BUS_DEVICE_CONTROL_DOCUMENT_DELETED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
 	. self::MESSAGE_BUS_DOCUMENT_DELETED_KEY . '.device.control';
 
-	// Channels
+	// CHANNELS
 	public const MESSAGE_BUS_CHANNEL_DOCUMENT_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
 	. self::MESSAGE_BUS_DOCUMENT_REPORTED_KEY . '.channel';
 
@@ -268,7 +281,7 @@ final class Constants
 	public const MESSAGE_BUS_CHANNEL_DOCUMENT_DELETED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
 	. self::MESSAGE_BUS_DOCUMENT_DELETED_KEY . '.channel';
 
-	// Channels properties
+	// CHANNELS PROPERTIES
 	public const MESSAGE_BUS_CHANNEL_PROPERTY_DOCUMENT_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
 	. self::MESSAGE_BUS_DOCUMENT_REPORTED_KEY . '.channel.property';
 
@@ -281,7 +294,20 @@ final class Constants
 	public const MESSAGE_BUS_CHANNEL_PROPERTY_DOCUMENT_DELETED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
 	. self::MESSAGE_BUS_DOCUMENT_DELETED_KEY . '.channel.property';
 
-	// Channels control
+	// CHANNELS PROPERTIES STATES
+	public const MESSAGE_BUS_CHANNEL_PROPERTY_STATE_DOCUMENT_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_REPORTED_KEY . '.channel.property.state';
+
+	public const MESSAGE_BUS_CHANNEL_PROPERTY_STATE_DOCUMENT_CREATED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_CREATED_KEY . '.channel.property.state';
+
+	public const MESSAGE_BUS_CHANNEL_PROPERTY_STATE_DOCUMENT_UPDATED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_UPDATED_KEY . '.channel.property.state';
+
+	public const MESSAGE_BUS_CHANNEL_PROPERTY_STATE_DOCUMENT_DELETED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_DELETED_KEY . '.channel.property.state';
+
+	// CHANNELS CONTROLS
 	public const MESSAGE_BUS_CHANNEL_CONTROL_DOCUMENT_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
 	. self::MESSAGE_BUS_DOCUMENT_REPORTED_KEY . '.channel.control';
 
@@ -294,7 +320,7 @@ final class Constants
 	public const MESSAGE_BUS_CHANNEL_CONTROL_DOCUMENT_DELETED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
 	. self::MESSAGE_BUS_DOCUMENT_DELETED_KEY . '.channel.control';
 
-	// Connectors
+	// CONNECTORS
 	public const MESSAGE_BUS_CONNECTOR_DOCUMENT_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
 	. self::MESSAGE_BUS_DOCUMENT_REPORTED_KEY . '.connector';
 
@@ -307,7 +333,7 @@ final class Constants
 	public const MESSAGE_BUS_CONNECTOR_DOCUMENT_DELETED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
 	. self::MESSAGE_BUS_DOCUMENT_DELETED_KEY . '.connector';
 
-	// Connectors properties
+	// CONNECTORS PROPERTIES
 	public const MESSAGE_BUS_CONNECTOR_PROPERTY_DOCUMENT_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
 	. self::MESSAGE_BUS_DOCUMENT_REPORTED_KEY . '.connector.property';
 
@@ -320,7 +346,20 @@ final class Constants
 	public const MESSAGE_BUS_CONNECTOR_PROPERTY_DOCUMENT_DELETED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
 	. self::MESSAGE_BUS_DOCUMENT_DELETED_KEY . '.connector.property';
 
-	// Connectors control
+	// CONNECTORS PROPERTIES STATES
+	public const MESSAGE_BUS_CONNECTOR_PROPERTY_STATE_DOCUMENT_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_REPORTED_KEY . '.connector.property.state';
+
+	public const MESSAGE_BUS_CONNECTOR_PROPERTY_STATE_DOCUMENT_CREATED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_CREATED_KEY . '.connector.property.state';
+
+	public const MESSAGE_BUS_CONNECTOR_PROPERTY_STATE_DOCUMENT_UPDATED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_UPDATED_KEY . '.connector.property.state';
+
+	public const MESSAGE_BUS_CONNECTOR_PROPERTY_STATE_DOCUMENT_DELETED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
+	. self::MESSAGE_BUS_DOCUMENT_DELETED_KEY . '.connector.property.state';
+
+	// CONNECTORS CONTROLS
 	public const MESSAGE_BUS_CONNECTOR_CONTROL_DOCUMENT_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
 	. self::MESSAGE_BUS_DOCUMENT_REPORTED_KEY . '.connector.control';
 
@@ -334,10 +373,10 @@ final class Constants
 	. self::MESSAGE_BUS_DOCUMENT_DELETED_KEY . '.connector.control';
 
 	/**
-	 * Triggers module
+	 * TRIGGERS MODULE
 	 */
 
-	// Triggers
+	// TRIGGERS
 	public const MESSAGE_BUS_TRIGGER_DOCUMENT_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
 	. self::MESSAGE_BUS_DOCUMENT_REPORTED_KEY . '.trigger';
 
@@ -350,7 +389,7 @@ final class Constants
 	public const MESSAGE_BUS_TRIGGER_DOCUMENT_DELETED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
 	. self::MESSAGE_BUS_DOCUMENT_DELETED_KEY . '.trigger';
 
-	// Triggers control
+	// TRIGGERS CONTROLS
 	public const MESSAGE_BUS_TRIGGER_CONTROL_DOCUMENT_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
 	. self::MESSAGE_BUS_DOCUMENT_REPORTED_KEY . '.trigger.control';
 
@@ -363,7 +402,7 @@ final class Constants
 	public const MESSAGE_BUS_TRIGGER_CONTROL_DOCUMENT_DELETED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
 	. self::MESSAGE_BUS_DOCUMENT_DELETED_KEY . '.trigger.control';
 
-	// Triggers actions
+	// TRIGGERS ACTIONS
 	public const MESSAGE_BUS_TRIGGER_ACTION_DOCUMENT_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
 	. self::MESSAGE_BUS_DOCUMENT_REPORTED_KEY . '.trigger.action';
 
@@ -376,7 +415,7 @@ final class Constants
 	public const MESSAGE_BUS_TRIGGER_ACTION_DOCUMENT_DELETED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
 	. self::MESSAGE_BUS_DOCUMENT_DELETED_KEY . '.trigger.action';
 
-	// Triggers notifications
+	// TRIGGERS NOTIFICATIONS
 	public const MESSAGE_BUS_TRIGGER_NOTIFICATION_DOCUMENT_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
 	. self::MESSAGE_BUS_DOCUMENT_REPORTED_KEY . '.trigger.notification';
 
@@ -389,7 +428,7 @@ final class Constants
 	public const MESSAGE_BUS_TRIGGER_NOTIFICATION_DOCUMENT_DELETED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
 	. self::MESSAGE_BUS_DOCUMENT_DELETED_KEY . '.trigger.notification';
 
-	// Triggers conditions
+	// TRIGGERS CONDITIONS
 	public const MESSAGE_BUS_TRIGGER_CONDITION_DOCUMENT_REPORTED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
 	. self::MESSAGE_BUS_DOCUMENT_REPORTED_KEY . '.trigger.condition';
 
@@ -402,8 +441,8 @@ final class Constants
 	public const MESSAGE_BUS_TRIGGER_CONDITION_DOCUMENT_DELETED_ROUTING_KEY = self::MESSAGE_BUS_DOCUMENT_PREFIX_KEY . '.'
 	. self::MESSAGE_BUS_DOCUMENT_DELETED_KEY . '.trigger.condition';
 
-	/*
-	 * JSON schemas mapping
+	/**
+	 * JSON SCHEMAS MAPPING
 	 */
 
 	public const JSON_SCHEMAS_MAPPING = [
@@ -476,6 +515,15 @@ final class Constants
 		self::MESSAGE_BUS_DEVICE_PROPERTY_DOCUMENT_DELETED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
 			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.device.property.json',
 
+		self::MESSAGE_BUS_DEVICE_PROPERTY_STATE_DOCUMENT_REPORTED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.device.property.state.json',
+		self::MESSAGE_BUS_DEVICE_PROPERTY_STATE_DOCUMENT_CREATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.device.property.state.json',
+		self::MESSAGE_BUS_DEVICE_PROPERTY_STATE_DOCUMENT_UPDATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.device.property.state.json',
+		self::MESSAGE_BUS_DEVICE_PROPERTY_STATE_DOCUMENT_DELETED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.device.property.state.json',
+
 		self::MESSAGE_BUS_DEVICE_CONTROL_DOCUMENT_REPORTED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
 			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.device.control.json',
 		self::MESSAGE_BUS_DEVICE_CONTROL_DOCUMENT_CREATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
@@ -503,6 +551,15 @@ final class Constants
 		self::MESSAGE_BUS_CHANNEL_PROPERTY_DOCUMENT_DELETED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
 			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.channel.property.json',
 
+		self::MESSAGE_BUS_CHANNEL_PROPERTY_STATE_DOCUMENT_REPORTED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.channel.property.state.json',
+		self::MESSAGE_BUS_CHANNEL_PROPERTY_STATE_DOCUMENT_CREATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.channel.property.state.json',
+		self::MESSAGE_BUS_CHANNEL_PROPERTY_STATE_DOCUMENT_UPDATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.channel.property.state.json',
+		self::MESSAGE_BUS_CHANNEL_PROPERTY_STATE_DOCUMENT_DELETED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.channel.property.state.json',
+
 		self::MESSAGE_BUS_CHANNEL_CONTROL_DOCUMENT_REPORTED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
 			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.channel.control.json',
 		self::MESSAGE_BUS_CHANNEL_CONTROL_DOCUMENT_CREATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
@@ -529,6 +586,15 @@ final class Constants
 			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.connector.property.json',
 		self::MESSAGE_BUS_CONNECTOR_PROPERTY_DOCUMENT_DELETED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
 			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.connector.property.json',
+
+		self::MESSAGE_BUS_CONNECTOR_PROPERTY_STATE_DOCUMENT_REPORTED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.connector.property.state.json',
+		self::MESSAGE_BUS_CONNECTOR_PROPERTY_STATE_DOCUMENT_CREATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.connector.property.state.json',
+		self::MESSAGE_BUS_CONNECTOR_PROPERTY_STATE_DOCUMENT_UPDATED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.connector.property.state.json',
+		self::MESSAGE_BUS_CONNECTOR_PROPERTY_STATE_DOCUMENT_DELETED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
+			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.connector.property.state.json',
 
 		self::MESSAGE_BUS_CONNECTOR_CONTROL_DOCUMENT_REPORTED_ROUTING_KEY => self::RESOURCES_FOLDER . DS
 			. 'schemas' . DS . 'modules' . DS . 'devices-module' . DS . 'document.connector.control.json',
@@ -586,7 +652,7 @@ final class Constants
 	];
 
 	/**
-	 * Value format
+	 * VALUE FORMAT
 	 */
 
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
@@ -597,7 +663,7 @@ final class Constants
 	public const VALUE_FORMAT_COMBINED_ENUM = '/^(?:(?:(?:i8|u8|i16|u16|i32|u32|f|b|s|btn|sw){1}\|)?(?:[a-zA-Z0-9°]-?_?\.?)*)(?:\:(?:(?:i8|u8|i16|u16|i32|u32|f|b|s|btn|sw){1}\|)?(?:[a-zA-Z0-9°]-?_?\.?)*){2}(?:,(?:(?:(?:i8|u8|i16|u16|i32|u32|f|b|s|btn|sw){1}\|)?(?:[a-zA-Z0-9°]-?_?\.?)*)(?:\:(?:(?:i8|u8|i16|u16|i32|u32|f|b|s|btn|sw){1}\|)?(?:[a-zA-Z0-9°]-?_?\.?)*){2})*$/u';
 
 	/**
-	 * Value transformer
+	 * VALUE TRANSFORMERS
 	 */
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 	public const VALUE_EQUATION_TRANSFORMER = '/^equation:(?:(?:x=)(?<equation_x>(?:(?:[\d.y]?)*(?:[\+\-\^\*\:\/\(\)])*(?:\s)*)*)){1}(?:\|(?:(?:y=)(?<equation_y>(?:(?:[\d.x]?)*(?:[\+\-\^\*\:\/\(\)])*(?:\s)*)*))){0,1}$/';

@@ -59,14 +59,6 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 			$event instanceof DevicesEvents\DevicePropertyStateEntityCreated
 			|| $event instanceof DevicesEvents\DevicePropertyStateEntityUpdated
 		) {
-			$findPropertiesQuery = new DevicesQueries\Configuration\FindDeviceMappedProperties();
-			$findPropertiesQuery->forParent($event->getProperty());
-
-			$properties = $this->devicesPropertiesConfigurationRepository->findAllBy(
-				$findPropertiesQuery,
-				MetadataDocuments\DevicesModule\DeviceMappedProperty::class,
-			);
-
 			$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
 			$findDeviceQuery->forConnector($this->connector);
 			$findDeviceQuery->byId($event->getProperty()->getDevice());
@@ -74,93 +66,80 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 
 			$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
-			if ($device !== null) {
-				$properties[] = $event->getProperty();
+			if ($device === null) {
+				return;
 			}
 
-			foreach ($properties as $property) {
-				$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
-				$findDeviceQuery->forConnector($this->connector);
-				$findDeviceQuery->byId($property->getDevice());
-				$findDeviceQuery->byType(Entities\HomeKitDevice::TYPE);
-
-				$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
-
-				if ($device === null) {
-					return;
-				}
-
+			if ($event->getProperty() instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
 				$this->queue->append(
 					$this->entityHelper->create(
 						Entities\Messages\WriteDevicePropertyState::class,
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
-							'property' => $property->getId(),
-							'state' => $event->getState()->toArray(),
+							'property' => $event->getProperty()->getId(),
+							'state' => $event->getRead()->toArray(),
+						],
+					),
+				);
+			} elseif ($event->getProperty() instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
+				$this->queue->append(
+					$this->entityHelper->create(
+						Entities\Messages\WriteDevicePropertyState::class,
+						[
+							'connector' => $device->getConnector(),
+							'device' => $device->getId(),
+							'property' => $event->getProperty()->getId(),
+							'state' => $event->getGet()->toArray(),
 						],
 					),
 				);
 			}
 		} else {
-			$findPropertiesQuery = new DevicesQueries\Configuration\FindChannelMappedProperties();
-			$findPropertiesQuery->forParent($event->getProperty());
-
-			$properties = $this->channelsPropertiesConfigurationRepository->findAllBy(
-				$findPropertiesQuery,
-				MetadataDocuments\DevicesModule\ChannelMappedProperty::class,
-			);
-
 			$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 			$findChannelQuery->byId($event->getProperty()->getChannel());
 			$findChannelQuery->byType(Entities\HomeKitChannel::TYPE);
 
 			$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 
-			if ($channel !== null) {
-				$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
-				$findDeviceQuery->forConnector($this->connector);
-				$findDeviceQuery->byId($channel->getDevice());
-				$findDeviceQuery->byType(Entities\HomeKitDevice::TYPE);
-
-				$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
-
-				if ($device === null) {
-					$properties[] = $event->getProperty();
-				}
+			if ($channel === null) {
+				return;
 			}
 
-			foreach ($properties as $property) {
-				$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
-				$findChannelQuery->byId($property->getChannel());
-				$findChannelQuery->byType(Entities\HomeKitChannel::TYPE);
+			$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+			$findDeviceQuery->forConnector($this->connector);
+			$findDeviceQuery->byId($channel->getDevice());
+			$findDeviceQuery->byType(Entities\HomeKitDevice::TYPE);
 
-				$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
+			$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
-				if ($channel === null) {
-					return;
-				}
+			if ($device === null) {
+				return;
+			}
 
-				$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
-				$findDeviceQuery->forConnector($this->connector);
-				$findDeviceQuery->byId($property->getChannel());
-				$findDeviceQuery->byType(Entities\HomeKitDevice::TYPE);
-
-				$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
-
-				if ($device === null) {
-					return;
-				}
-
+			if ($event->getProperty() instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
 				$this->queue->append(
 					$this->entityHelper->create(
 						Entities\Messages\WriteChannelPropertyState::class,
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
-							'channel' => $property->getChannel(),
-							'property' => $property->getId(),
-							'state' => $event->getState()->toArray(),
+							'channel' => $channel->getId(),
+							'property' => $event->getProperty()->getId(),
+							'state' => $event->getRead()->toArray(),
+						],
+					),
+				);
+			} elseif ($event->getProperty() instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+				$this->queue->append(
+					$this->entityHelper->create(
+						Entities\Messages\WriteChannelPropertyState::class,
+						[
+							'connector' => $device->getConnector(),
+							'device' => $device->getId(),
+							'channel' => $channel->getId(),
+							'property' => $event->getProperty()->getId(),
+							'state' => $event->getGet()->toArray(),
 						],
 					),
 				);

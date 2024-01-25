@@ -16,6 +16,7 @@
 namespace FastyBird\Module\Devices\Models\States;
 
 use DateTimeInterface;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Documents\DevicesModule\ConnectorDynamicProperty as TParent;
 use FastyBird\Library\Metadata\Documents\DevicesModule\DeviceMappedProperty as TChild;
@@ -24,6 +25,7 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Library\Tools\Transformers as ToolsTransformers;
+use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\States;
 use FastyBird\Module\Devices\States\ConnectorProperty as TState;
@@ -37,9 +39,9 @@ use function is_string;
 /**
  * Useful dynamic property state helpers
  *
- * @template TParent of MetadataDocuments\DevicesModule\ConnectorDynamicProperty | MetadataDocuments\DevicesModule\DeviceDynamicProperty | MetadataDocuments\DevicesModule\ChannelDynamicProperty
- * @template TChild of MetadataDocuments\DevicesModule\DeviceMappedProperty | MetadataDocuments\DevicesModule\ChannelMappedProperty | null
- * @template TState of States\ConnectorProperty | States\DeviceProperty | States\ChannelProperty
+ * @template TParent of (MetadataDocuments\DevicesModule\ConnectorDynamicProperty | MetadataDocuments\DevicesModule\DeviceDynamicProperty | MetadataDocuments\DevicesModule\ChannelDynamicProperty)
+ * @template TChild of (MetadataDocuments\DevicesModule\DeviceMappedProperty | MetadataDocuments\DevicesModule\ChannelMappedProperty | null)
+ * @template TState of States\Property
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Models
@@ -50,9 +52,102 @@ abstract class PropertiesManager
 {
 
 	public function __construct(
+		protected readonly Devices\Logger $logger,
 		private readonly ObjectMapper\Processing\Processor $stateMapper,
 	)
 	{
+	}
+
+	/**
+	 * @param TParent $property
+	 * @param TChild $mappedProperty
+	 * @param TState $state
+	 *
+	 * @return TState
+	 *
+	 * @throws Exceptions\InvalidActualValue
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidExpectedValue
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 */
+	protected function convertStoredState($property, $mappedProperty, $state, bool $forReading)
+	{
+		$updateValues = [];
+
+		if ($state->getActualValue() !== null) {
+			try {
+				$updateValues[States\Property::ACTUAL_VALUE_FIELD] = $this->convertReadValue(
+					$state->getActualValue(),
+					$property,
+					$mappedProperty,
+					$forReading,
+				);
+			} catch (MetadataExceptions\InvalidValue $ex) {
+				if ($mappedProperty !== null) {
+					$updateValues[States\Property::ACTUAL_VALUE_FIELD] = null;
+					$updateValues[States\Property::VALID_FIELD] = false;
+
+					$this->logger->error(
+						'Property stored actual value could not be converted to mapped property',
+						[
+							'source' => MetadataTypes\ModuleSource::DEVICES,
+							'type' => 'channel-properties-states',
+							'exception' => ApplicationHelpers\Logger::buildException($ex),
+						],
+					);
+
+				} else {
+					throw new Exceptions\InvalidActualValue('Property stored actual value was not valid');
+				}
+			}
+		}
+
+		if ($state->getExpectedValue() !== null) {
+			try {
+				$expectedValue = $this->convertReadValue(
+					$state->getExpectedValue(),
+					$property,
+					$mappedProperty,
+					$forReading,
+				);
+
+				if ($expectedValue !== null && !$property->isSettable()) {
+					throw new Exceptions\InvalidExpectedValue('Property is not settable but has stored expected value');
+				}
+
+				$updateValues[States\Property::EXPECTED_VALUE_FIELD] = $expectedValue;
+			} catch (MetadataExceptions\InvalidValue $ex) {
+				if ($mappedProperty !== null) {
+					$updateValues[States\Property::EXPECTED_VALUE_FIELD] = null;
+					$updateValues[States\Property::PENDING_FIELD] = false;
+
+					$this->logger->error(
+						'Property stored actual value could not be converted to mapped property',
+						[
+							'source' => MetadataTypes\ModuleSource::DEVICES,
+							'type' => 'properties-states',
+							'exception' => ApplicationHelpers\Logger::buildException($ex),
+						],
+					);
+
+				} else {
+					throw new Exceptions\InvalidExpectedValue('Property stored expected value was not valid');
+				}
+			}
+		}
+
+		if ($mappedProperty !== null) {
+			$updateValues['id'] = $mappedProperty->getId();
+		}
+
+		if ($updateValues === []) {
+			return $state;
+		}
+
+		return $this->updateState($state, $state::class, $updateValues);
 	}
 
 	/**

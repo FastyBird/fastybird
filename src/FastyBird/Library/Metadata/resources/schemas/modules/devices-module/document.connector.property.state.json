@@ -1,0 +1,177 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Document unique uuid v4 identifier"
+    },
+    "connector": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Connector unique uuid v4 identifier"
+    },
+    "created_at": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "format": "date-time"
+        }
+      ],
+      "description": "Item creation date",
+      "default": null
+    },
+    "updated_at": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "format": "date-time"
+        }
+      ],
+      "description": "Item creation date",
+      "default": null
+    }
+  },
+  "read": {
+    "type": "object",
+    "properties": {
+      "actual_value": {
+        "oneOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "number"
+          },
+          {
+            "type": "boolean"
+          },
+          {
+            "type": "null"
+          },
+          {
+            "type": "string",
+            "format": "date-time"
+          }
+        ]
+      },
+      "expected_value": {
+        "oneOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "number"
+          },
+          {
+            "type": "boolean"
+          },
+          {
+            "type": "null"
+          },
+          {
+            "type": "string",
+            "format": "date-time"
+          }
+        ]
+      },
+      "pending": {
+        "oneOf": [
+          {
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "type": "boolean"
+          }
+        ]
+      },
+      "valid": {
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "actual_value",
+      "expected_value",
+      "pending",
+      "valid"
+    ]
+  },
+  "get": {
+    "type": "object",
+    "properties": {
+      "actual_value": {
+        "oneOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "number"
+          },
+          {
+            "type": "boolean"
+          },
+          {
+            "type": "null"
+          },
+          {
+            "type": "string",
+            "format": "date-time"
+          }
+        ]
+      },
+      "expected_value": {
+        "oneOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "number"
+          },
+          {
+            "type": "boolean"
+          },
+          {
+            "type": "null"
+          },
+          {
+            "type": "string",
+            "format": "date-time"
+          }
+        ]
+      },
+      "pending": {
+        "oneOf": [
+          {
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "type": "boolean"
+          }
+        ]
+      },
+      "valid": {
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "actual_value",
+      "expected_value",
+      "pending",
+      "valid"
+    ]
+  },
+  "required": [
+    "id",
+    "connector",
+    "read"
+  ]
+}

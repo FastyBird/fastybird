@@ -56,7 +56,7 @@ abstract class Periodic implements Writer
 	/** @var array<string, MetadataDocuments\DevicesModule\Device>  */
 	private array $devices = [];
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-	/** @var array<string, array<string, MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty|MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty>>  */
+	/** @var array<string, array<string, MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\ChannelDynamicProperty>>  */
 	private array $properties = [];
 
 	/** @var array<string> */
@@ -109,10 +109,7 @@ abstract class Periodic implements Writer
 			$properties = $this->devicesPropertiesConfigurationRepository->findAllBy($findDevicePropertiesQuery);
 
 			foreach ($properties as $property) {
-				if (
-					$property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
-					|| $property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
-				) {
+				if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
 					$this->properties[$device->getId()->toString()][$property->getId()->toString()] = $property;
 				}
 			}
@@ -131,10 +128,7 @@ abstract class Periodic implements Writer
 				$properties = $this->channelsPropertiesConfigurationRepository->findAllBy($findChannelPropertiesQuery);
 
 				foreach ($properties as $property) {
-					if (
-						$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-						|| $property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
-					) {
+					if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
 						$this->properties[$device->getId()->toString()][$property->getId()->toString()] = $property;
 					}
 				}
@@ -213,34 +207,23 @@ abstract class Periodic implements Writer
 
 			$this->processedProperties[$property->getId()->toString()] = $now;
 
-			if (
-				$property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
-				|| $property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
-			) {
-				$state = $property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
-					? $this->devicePropertiesStatesManager->get($property)
-					: $this->devicePropertiesStatesManager->read($property);
+			if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
+				$state = $this->devicePropertiesStatesManager->get($property);
 
 				if ($state === null) {
 					continue;
 				}
 
-				$propertyValue = $property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
-					? $state->getExpectedValue()
-					: $state->getExpectedValue() ?? ($state->isValid() ? $state->getActualValue() : null);
+				$propertyValue = $state->getExpectedValue();
 
 			} else {
-				$state = $property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-					? $this->channelPropertiesStatesManager->get($property)
-					: $this->channelPropertiesStatesManager->read($property);
+				$state = $this->channelPropertiesStatesManager->get($property);
 
 				if ($state === null) {
 					continue;
 				}
 
-				$propertyValue = $property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-					? $state->getExpectedValue()
-					: $state->getExpectedValue() ?? ($state->isValid() ? $state->getActualValue() : null);
+				$propertyValue = $state->getExpectedValue();
 			}
 
 			if ($propertyValue === null) {
@@ -256,10 +239,7 @@ abstract class Periodic implements Writer
 					&& (float) $now->format('Uv') - (float) $pending->format('Uv') > self::HANDLER_PENDING_DELAY
 				)
 			) {
-				if (
-					$property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
-					|| $property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
-				) {
+				if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
 					$this->queue->append(
 						$this->entityHelper->create(
 							Entities\Messages\WriteDevicePropertyState::class,
@@ -267,6 +247,7 @@ abstract class Periodic implements Writer
 								'connector' => $device->getConnector(),
 								'device' => $device->getId(),
 								'property' => $property->getId(),
+								'state' => $state->toArray(),
 							],
 						),
 					);
@@ -279,6 +260,7 @@ abstract class Periodic implements Writer
 								'device' => $device->getId(),
 								'channel' => $property->getChannel(),
 								'property' => $property->getId(),
+								'state' => $state->toArray(),
 							],
 						),
 					);

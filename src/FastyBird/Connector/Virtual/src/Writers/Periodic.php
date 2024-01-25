@@ -264,6 +264,7 @@ abstract class Periodic implements Writer
 								'connector' => $device->getConnector(),
 								'device' => $device->getId(),
 								'property' => $property->getId(),
+								'state' => $state->toArray(),
 							],
 						),
 					);
@@ -276,6 +277,7 @@ abstract class Periodic implements Writer
 								'device' => $device->getId(),
 								'channel' => $property->getChannel(),
 								'property' => $property->getId(),
+								'state' => $state->toArray(),
 							],
 						),
 					);

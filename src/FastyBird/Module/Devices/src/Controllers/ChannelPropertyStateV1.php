@@ -1,0 +1,110 @@
+<?php declare(strict_types = 1);
+
+/**
+ * ChannelPropertyStateV1.php
+ *
+ * @license        More in LICENSE.md
+ * @copyright      https://www.fastybird.com
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
+ * @package        FastyBird:DevicesModule!
+ * @subpackage     Controllers
+ * @since          1.0.0
+ *
+ * @date           24.01.24
+ */
+
+namespace FastyBird\Module\Devices\Controllers;
+
+use Exception;
+use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Module\Devices\Controllers;
+use FastyBird\Module\Devices\Exceptions;
+use FastyBird\Module\Devices\Models;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\Router;
+use Fig\Http\Message\StatusCodeInterface;
+use Psr\Http\Message;
+use Ramsey\Uuid;
+use function strval;
+
+/**
+ * Channel property state API controller
+ *
+ * @package        FastyBird:DevicesModule!
+ * @subpackage     Controllers
+ *
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
+ *
+ * @Secured
+ * @Secured\User(loggedIn)
+ */
+final class ChannelPropertyStateV1 extends BaseV1
+{
+
+	use Controllers\Finders\TDevice;
+	use Controllers\Finders\TChannel;
+
+	public function __construct(
+		protected readonly Models\Entities\Channels\ChannelsRepository $channelsRepository,
+		private readonly Models\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
+		private readonly Models\States\ChannelPropertiesManager $channelPropertiesStatesManager,
+	)
+	{
+	}
+
+	/**
+	 * @throws Exception
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws JsonApiExceptions\JsonApi
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
+	 */
+	public function read(
+		Message\ServerRequestInterface $request,
+		Message\ResponseInterface $response,
+	): Message\ResponseInterface
+	{
+		// At first, try to load device
+		$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
+		// & channel
+		$channel = $this->findChannel(strval($request->getAttribute(Router\ApiRoutes::URL_CHANNEL_ID)), $device);
+		// & property
+		$findPropertyQuery = new DevicesQueries\Configuration\FindChannelProperties();
+		$findPropertyQuery->byChannelId($channel->getId());
+		$findPropertyQuery->byId(
+			Uuid\Uuid::fromString(strval($request->getAttribute(Router\ApiRoutes::URL_PROPERTY_ID))),
+		);
+
+		$property = $this->channelsPropertiesConfigurationRepository->findOneBy($findPropertyQuery);
+
+		if (
+			!$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+			&& !$property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
+		) {
+			throw new JsonApiExceptions\JsonApiError(
+				StatusCodeInterface::STATUS_NOT_FOUND,
+				$this->translator->translate('//channels-module.base.messages.notFound.heading'),
+				$this->translator->translate('//channels-module.base.messages.notFound.message'),
+			);
+		}
+
+		$state = $this->channelPropertiesStatesManager->read($property);
+
+		if ($state === null) {
+			throw new JsonApiExceptions\JsonApiError(
+				StatusCodeInterface::STATUS_BAD_REQUEST,
+				$this->translator->translate('//channels-module.base.messages.notFound.heading'),
+				$this->translator->translate('//channels-module.base.messages.notFound.message'),
+			);
+		}
+
+		return $this->buildResponse($request, $response, $state);
+	}
+
+}

@@ -119,9 +119,9 @@ final class Variable extends Property
 				$this->router->urlFor(
 					Devices\Constants::ROUTE_NAME_CHANNEL_PROPERTY_CHILDREN,
 					[
-						Router\ApiRoutes::URL_DEVICE_ID => $resource->getChannel()->getDevice()->getPlainId(),
-						Router\ApiRoutes::URL_CHANNEL_ID => $resource->getChannel()->getPlainId(),
-						Router\ApiRoutes::URL_PROPERTY_ID => $resource->getPlainId(),
+						Router\ApiRoutes::URL_DEVICE_ID => $resource->getChannel()->getDevice()->getId()->toString(),
+						Router\ApiRoutes::URL_CHANNEL_ID => $resource->getChannel()->getId()->toString(),
+						Router\ApiRoutes::URL_PROPERTY_ID => $resource->getId()->toString(),
 					],
 				),
 				true,
@@ -150,9 +150,9 @@ final class Variable extends Property
 				$this->router->urlFor(
 					Devices\Constants::ROUTE_NAME_CHANNEL_PROPERTY_RELATIONSHIP,
 					[
-						Router\ApiRoutes::URL_DEVICE_ID => $resource->getChannel()->getDevice()->getPlainId(),
-						Router\ApiRoutes::URL_CHANNEL_ID => $resource->getChannel()->getPlainId(),
-						Router\ApiRoutes::URL_ITEM_ID => $resource->getPlainId(),
+						Router\ApiRoutes::URL_DEVICE_ID => $resource->getChannel()->getDevice()->getId()->toString(),
+						Router\ApiRoutes::URL_CHANNEL_ID => $resource->getChannel()->getId()->toString(),
+						Router\ApiRoutes::URL_ITEM_ID => $resource->getId()->toString(),
 						Router\ApiRoutes::RELATION_ENTITY => $name,
 
 					],

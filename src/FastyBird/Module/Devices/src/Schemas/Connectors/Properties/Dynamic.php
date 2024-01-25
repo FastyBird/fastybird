@@ -15,21 +15,23 @@
 
 namespace FastyBird\Module\Devices\Schemas\Connectors\Properties;
 
-use DateTimeInterface;
-use FastyBird\Library\Metadata\Documents\DevicesModule\ConnectorDynamicProperty;
+use Exception;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
+use FastyBird\Module\Devices\Router;
 use FastyBird\Module\Devices\Schemas;
+use FastyBird\Module\Devices\States;
+use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use IPub\SlimRouter\Routing;
 use Neomerx\JsonApi;
 use function array_merge;
 use function assert;
-use function is_bool;
 
 /**
  * Connector property entity schema
@@ -73,6 +75,34 @@ final class Dynamic extends Property
 	 *
 	 * @return iterable<string, (string|bool|int|float|array<string>|array<int, (int|float|array<int, (string|int|float|null)>|null)>|array<int, array<int, (string|array<int, (string|int|float|bool)>|null)>>|null)>
 	 *
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 *
+	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
+	 */
+	public function getAttributes(
+		$resource,
+		JsonApi\Contracts\Schema\ContextInterface $context,
+	): iterable
+	{
+		return array_merge((array) parent::getAttributes($resource, $context), [
+			'settable' => $resource->isSettable(),
+			'queryable' => $resource->isQueryable(),
+		]);
+	}
+
+	/**
+	 * @param T $resource
+	 *
+	 * @return iterable<string, mixed>
+	 *
+	 * @throws Exception
+	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 *
+	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws Exception
+	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
@@ -82,30 +112,91 @@ final class Dynamic extends Property
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
-	public function getAttributes(
+	public function getRelationships(
 		$resource,
 		JsonApi\Contracts\Schema\ContextInterface $context,
 	): iterable
 	{
-		$configuration = $this->connectorsPropertiesConfigurationRepository->find($resource->getId());
-		assert($configuration instanceof ConnectorDynamicProperty);
-
-		$state = $this->connectorPropertiesStatesManager->read($configuration);
-
-		return array_merge((array) parent::getAttributes($resource, $context), [
-			'settable' => $resource->isSettable(),
-			'queryable' => $resource->isQueryable(),
-			'actual_value' => MetadataUtilities\Value::flattenValue($state?->getActualValue()),
-			'expected_value' => MetadataUtilities\Value::flattenValue($state?->getExpectedValue()),
-			'pending' => $state !== null
-				? (
-					is_bool($state->getPending())
-						? $state->getPending()
-						: $state->getPending()->format(DateTimeInterface::ATOM)
-				)
-				: false,
-			'is_valid' => $state !== null && $state->isValid(),
+		return array_merge((array) parent::getRelationships($resource, $context), [
+			self::RELATIONSHIPS_STATE => [
+				self::RELATIONSHIP_DATA => $this->getState($resource),
+				self::RELATIONSHIP_LINKS_SELF => true,
+				self::RELATIONSHIP_LINKS_RELATED => true,
+			],
 		]);
+	}
+
+	/**
+	 * @param T $resource
+	 *
+	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
+	 */
+	public function getRelationshipRelatedLink(
+		$resource,
+		string $name,
+	): JsonApi\Contracts\Schema\LinkInterface
+	{
+		if ($name === self::RELATIONSHIPS_STATE) {
+			return new JsonApi\Schema\Link(
+				false,
+				$this->router->urlFor(
+					Devices\Constants::ROUTE_NAME_CONNECTOR_PROPERTY_STATE,
+					[
+						Router\ApiRoutes::URL_CONNECTOR_ID => $resource->getConnector()->getId()->toString(),
+						Router\ApiRoutes::URL_PROPERTY_ID => $resource->getId()->toString(),
+					],
+				),
+				false,
+			);
+		}
+
+		return parent::getRelationshipRelatedLink($resource, $name);
+	}
+
+	/**
+	 * @param T $resource
+	 *
+	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
+	 */
+	public function getRelationshipSelfLink(
+		$resource,
+		string $name,
+	): JsonApi\Contracts\Schema\LinkInterface
+	{
+		if ($name === self::RELATIONSHIPS_STATE) {
+			return new JsonApi\Schema\Link(
+				false,
+				$this->router->urlFor(
+					Devices\Constants::ROUTE_NAME_CONNECTOR_PROPERTY_RELATIONSHIP,
+					[
+						Router\ApiRoutes::URL_CONNECTOR_ID => $resource->getConnector()->getId()->toString(),
+						Router\ApiRoutes::URL_ITEM_ID => $resource->getId()->toString(),
+						Router\ApiRoutes::RELATION_ENTITY => $name,
+
+					],
+				),
+				false,
+			);
+		}
+
+		return parent::getRelationshipSelfLink($resource, $name);
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
+	 */
+	protected function getState(Entities\Connectors\Properties\Dynamic $property): States\ConnectorProperty|null
+	{
+		$configuration = $this->connectorsPropertiesConfigurationRepository->find($property->getId());
+		assert($configuration instanceof MetadataDocuments\DevicesModule\ConnectorDynamicProperty);
+
+		return $this->connectorPropertiesStatesManager->read($configuration);
 	}
 
 }

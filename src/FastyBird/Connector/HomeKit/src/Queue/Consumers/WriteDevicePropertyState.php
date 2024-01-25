@@ -152,10 +152,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 
 		$property = $this->devicesPropertiesConfigurationRepository->find($entity->getProperty());
 
-		if (
-			!$property instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty
-			&& !$property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
-		) {
+		if ($property === null) {
 			$this->logger->error(
 				'Device property could not be loaded',
 				[
@@ -219,6 +216,32 @@ final class WriteDevicePropertyState implements Queue\Consumer
 							}
 						} elseif ($parent instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty) {
 							$characteristic->setActualValue($parent->getValue());
+						}
+					} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
+						if ($entity->getState() !== null) {
+							if ($entity->getState()->getExpectedValue() !== null) {
+								$characteristic->setActualValue($entity->getState()->getExpectedValue());
+							}
+						} else {
+							$this->logger->warning(
+								'State entity is missing in event entity',
+								[
+									'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
+									'type' => 'write-device-property-state-message-consumer',
+									'connector' => [
+										'id' => $connector->getId()->toString(),
+									],
+									'device' => [
+										'id' => $device->getId()->toString(),
+									],
+									'property' => [
+										'id' => $property->getId()->toString(),
+									],
+									'hap' => $accessory->toHap(),
+								],
+							);
+
+							continue;
 						}
 					} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty) {
 						$characteristic->setActualValue($property->getValue());

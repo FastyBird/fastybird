@@ -235,9 +235,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$state = $property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-			? $this->channelPropertiesStatesManager->get($property)
-			: $this->channelPropertiesStatesManager->read($property);
+		$state = $entity->getState();
 
 		if ($state === null) {
 			return true;

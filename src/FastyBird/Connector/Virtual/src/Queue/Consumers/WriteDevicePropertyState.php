@@ -191,9 +191,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$state = $property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
-			? $this->devicePropertiesStatesManager->get($property)
-			: $this->devicePropertiesStatesManager->read($property);
+		$state = $entity->getState();
 
 		if ($state === null) {
 			return true;

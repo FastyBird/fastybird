@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\NsPanel\Entities\Messages;
 
 use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
+use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 
 /**
@@ -36,6 +37,11 @@ abstract class WriteDeviceState implements Entity
 		private readonly Uuid\UuidInterface $device,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $channel,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\MappedObjectValue(class: State::class),
+			new ObjectMapper\Rules\NullValue(),
+		])]
+		private readonly State|null $state,
 	)
 	{
 	}
@@ -55,6 +61,11 @@ abstract class WriteDeviceState implements Entity
 		return $this->channel;
 	}
 
+	public function getState(): State|null
+	{
+		return $this->state;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -64,6 +75,7 @@ abstract class WriteDeviceState implements Entity
 			'connector' => $this->getConnector()->toString(),
 			'device' => $this->getDevice()->toString(),
 			'channel' => $this->getChannel()->toString(),
+			'state' => $this->getState()?->toArray(),
 		];
 	}
 

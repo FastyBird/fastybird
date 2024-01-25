@@ -197,7 +197,7 @@ final class WriteV1DevicePropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$state = $this->devicePropertiesStatesManager->get($property);
+		$state = $entity->getState();
 
 		if ($state === null) {
 			return true;

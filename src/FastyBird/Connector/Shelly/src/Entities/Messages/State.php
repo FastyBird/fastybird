@@ -1,12 +1,12 @@
 <?php declare(strict_types = 1);
 
 /**
- * Property.php
+ * State.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:RedisDbDevicesModuleBridge!
+ * @package        FastyBird:ShellyConnector!
  * @subpackage     States
  * @since          1.0.0
  *
@@ -16,7 +16,6 @@
 namespace FastyBird\Connector\Shelly\Entities\Messages;
 
 use DateTimeInterface;
-use FastyBird\Connector\HomeKit\Entities\Messages\Entity;
 use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
@@ -28,7 +27,7 @@ use function is_bool;
 /**
  * Property state
  *
- * @package        FastyBird:RedisDbDevicesModuleBridge!
+ * @package        FastyBird:ShellyConnector!
  * @subpackage     States
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

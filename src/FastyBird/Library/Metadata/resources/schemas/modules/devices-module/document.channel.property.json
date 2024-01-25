@@ -301,52 +301,6 @@
       "queryable": {
         "type": "boolean",
         "default": false
-      },
-      "actual_value": {
-        "oneOf": [
-          {
-            "type": "string"
-          },
-          {
-            "type": "number"
-          },
-          {
-            "type": "boolean"
-          },
-          {
-            "type": "null"
-          }
-        ]
-      },
-      "expected_value": {
-        "oneOf": [
-          {
-            "type": "string"
-          },
-          {
-            "type": "number"
-          },
-          {
-            "type": "boolean"
-          },
-          {
-            "type": "null"
-          }
-        ]
-      },
-      "pending": {
-        "oneOf": [
-          {
-            "type": "string",
-            "format": "date-time"
-          },
-          {
-            "type": "boolean"
-          }
-        ]
-      },
-      "valid": {
-        "type": "boolean"
       }
     },
     "required": [
@@ -453,52 +407,6 @@
         "queryable": {
           "type": "boolean",
           "default": false
-        },
-        "actual_value": {
-          "oneOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "number"
-            },
-            {
-              "type": "boolean"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "expected_value": {
-          "oneOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "number"
-            },
-            {
-              "type": "boolean"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "pending": {
-          "oneOf": [
-            {
-              "type": "string",
-              "format": "date-time"
-            },
-            {
-              "type": "boolean"
-            }
-          ]
-        },
-        "valid": {
-          "type": "boolean"
         },
         "value": {
           "oneOf": [

@@ -51,16 +51,14 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 		DevicesEvents\ChannelPropertyStateEntityCreated|DevicesEvents\ChannelPropertyStateEntityUpdated $event,
 	): void
 	{
-		$property = $event->getProperty();
-
-		$state = $event->getState();
+		$state = $event->getGet();
 
 		if ($state->getExpectedValue() === null || $state->getPending() !== true) {
 			return;
 		}
 
 		$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
-		$findChannelQuery->byId($property->getChannel());
+		$findChannelQuery->byId($event->getProperty()->getChannel());
 		$findChannelQuery->byType(Entities\VieraChannel::TYPE);
 
 		$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
@@ -87,7 +85,8 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 					'connector' => $this->connector->getId(),
 					'device' => $device->getId(),
 					'channel' => $channel->getId(),
-					'property' => $property->getId(),
+					'property' => $event->getProperty()->getId(),
+					'state' => $event->getGet()->toArray(),
 				],
 			),
 		);

@@ -23,7 +23,6 @@ use FastyBird\DateTimeFactory;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -102,8 +101,6 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function consume(
 		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|MetadataTypes\AutomatorSource $source,
@@ -111,8 +108,11 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 		MetadataDocuments\Document|null $entity,
 	): void
 	{
-		if ($entity instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-			if ($entity->getExpectedValue() === null) {
+		if ($entity instanceof MetadataDocuments\DevicesModule\DevicePropertyState) {
+			if (
+				$entity->getGet()?->getExpectedValue() === null
+				|| $entity->getGet()->getPending() !== true
+			) {
 				return;
 			}
 
@@ -134,12 +134,16 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 						'connector' => $this->connector->getId(),
 						'device' => $device->getId(),
 						'property' => $entity->getId(),
+						'state' => $entity->getGet()->toArray(),
 					],
 				),
 			);
 
-		} elseif ($entity instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-			if ($entity->getExpectedValue() === null) {
+		} elseif ($entity instanceof MetadataDocuments\DevicesModule\ChannelPropertyState) {
+			if (
+				$entity->getGet()?->getExpectedValue() === null
+				|| $entity->getGet()->getPending() !== true
+			) {
 				return;
 			}
 
@@ -172,6 +176,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 						'device' => $device->getId(),
 						'channel' => $channel->getId(),
 						'property' => $entity->getId(),
+						'state' => $entity->getGet()->toArray(),
 					],
 				),
 			);

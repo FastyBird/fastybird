@@ -25,19 +25,23 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices;
+use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
+use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\States;
-use FastyBird\Module\Devices\Utilities;
 use Nette;
 use Nette\Utils;
 use Orisai\ObjectMapper;
+use Psr\EventDispatcher as PsrEventDispatcher;
 use Ramsey\Uuid;
 use React\Promise;
 use Throwable;
+use function array_map;
 use function array_merge;
 use function boolval;
 use function is_array;
+use function is_bool;
 use function React\Async\async;
 use function React\Async\await;
 use function strval;
@@ -62,14 +66,15 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 		private readonly Models\Configuration\Devices\Properties\Repository $devicePropertiesConfigurationRepository,
 		private readonly Models\States\Devices\Async\Repository $devicePropertyStateRepository,
 		private readonly Models\States\Devices\Async\Manager $devicePropertiesStatesManager,
-		private readonly Devices\Logger $logger,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly ExchangePublisher\Async\Publisher $publisher,
 		private readonly ExchangeDocuments\DocumentFactory $documentFactory,
+		Devices\Logger $logger,
 		ObjectMapper\Processing\Processor $stateMapper,
+		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
-		parent::__construct($stateMapper);
+		parent::__construct($logger, $stateMapper);
 	}
 
 	/**
@@ -123,9 +128,13 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 								'property' => $property->getId()->toString(),
 							],
 							[
-								'write' => array_map(function (bool|int|float|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\CoverPayload|MetadataTypes\SwitchPayload|null $item): bool|int|float|string|null {
-									return MetadataUtilities\Value::flattenValue($item);
-								}, (array) $data),
+								'write' => array_map(
+									// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+									static fn (bool|int|float|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\CoverPayload|MetadataTypes\SwitchPayload|null $item): bool|int|float|string|null => MetadataUtilities\Value::flattenValue(
+										$item,
+									),
+									(array) $data,
+								),
 							],
 						)),
 						MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::DEVICE_PROPERTY_ACTION),
@@ -168,9 +177,13 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 								'property' => $property->getId()->toString(),
 							],
 							[
-								'set' => array_map(function (bool|int|float|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\CoverPayload|MetadataTypes\SwitchPayload|null $item): bool|int|float|string|null {
-									return MetadataUtilities\Value::flattenValue($item);
-								}, (array) $data),
+								'set' => array_map(
+									// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+									static fn (bool|int|float|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\CoverPayload|MetadataTypes\SwitchPayload|null $item): bool|int|float|string|null => MetadataUtilities\Value::flattenValue(
+										$item,
+									),
+									(array) $data,
+								),
 							],
 						)),
 						MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::DEVICE_PROPERTY_ACTION),
@@ -280,7 +293,23 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 	public function delete(Uuid\UuidInterface $id): Promise\PromiseInterface
 	{
 		try {
-			return $this->devicePropertiesStatesManager->delete($id);
+			$deferred = new Promise\Deferred();
+
+			$this->devicePropertiesStatesManager->delete($id)
+				->then(function (bool $result) use ($deferred, $id): void {
+					$this->dispatcher?->dispatch(new Events\DevicePropertyStateEntityDeleted($id));
+
+					foreach ($this->findChildren($id) as $child) {
+						$this->dispatcher?->dispatch(new Events\DevicePropertyStateEntityDeleted($child->getId()));
+					}
+
+					$deferred->resolve($result);
+				})
+				->catch(static function (Throwable $ex) use ($deferred): void {
+					$deferred->reject($ex);
+				});
+
+			return $deferred->promise();
 		} catch (Exceptions\NotImplemented) {
 			$this->logger->warning(
 				'Devices states manager is not configured. State could not be fetched',
@@ -295,52 +324,13 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 	}
 
 	/**
-	 * @throws Exceptions\InvalidState
-	 */
-	public function normalizePublishValue(
-		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty $property,
-		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
-	): bool|float|int|string|null
-	{
-		$mappedProperty = null;
-
-		if ($property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
-			$parent = $this->devicePropertiesConfigurationRepository->find($property->getParent());
-
-			if (!$parent instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-				throw new Exceptions\InvalidState('Mapped property parent could not be loaded');
-			}
-
-			$mappedProperty = $property;
-
-			$property = $parent;
-		}
-
-		if ($mappedProperty !== null) {
-			if (
-				!Utilities\Value::compareDataTypes(
-					$mappedProperty->getDataType(),
-					$property->getDataType(),
-				)
-			) {
-				throw new Exceptions\InvalidState(
-					'Mapped property data type is not compatible with dynamic property data type',
-				);
-			}
-		}
-
-		return MetadataUtilities\Value::transformDataType(
-			MetadataUtilities\Value::flattenValue($value),
-			$mappedProperty?->getDataType() ?? $property->getDataType(),
-		);
-	}
-
-	/**
 	 * @return Promise\PromiseInterface<States\DeviceProperty|null>
 	 *
 	 * @throws Exceptions\InvalidState
+	 *
+	 * @interal
 	 */
-	private function loadValue(
+	public function loadValue(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty $property,
 		bool $forReading,
@@ -378,159 +368,86 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 						return;
 					}
 
-					$updateValues = [];
-
-					if ($mappedProperty !== null) {
-						$updateValues['id'] = $mappedProperty->getId();
-					}
-
-					if ($state->getActualValue() !== null) {
-						try {
-							$updateValues[States\Property::ACTUAL_VALUE_FIELD] = $this->convertReadValue(
-								$state->getActualValue(),
-								$property,
-								$mappedProperty,
-								$forReading,
-							);
-						} catch (MetadataExceptions\InvalidValue $ex) {
-							if ($mappedProperty !== null) {
-								$updateValues[States\Property::ACTUAL_VALUE_FIELD] = null;
-								$updateValues[States\Property::VALID_FIELD] = false;
-
-								$this->logger->error(
-									'Property stored actual value could not be converted to mapped property',
-									[
-										'source' => MetadataTypes\ModuleSource::DEVICES,
-										'type' => 'async-device-properties-states',
-										'exception' => ApplicationHelpers\Logger::buildException($ex),
-									],
-								);
-
-							} else {
-								$this->devicePropertiesStatesManager->update(
-									$property,
-									$state,
-									Utils\ArrayHash::from([
-										States\Property::ACTUAL_VALUE_FIELD => null,
-										States\Property::VALID_FIELD => false,
-									]),
-								)
-									->then(async(function () use ($deferred, $property, $forReading): void {
-										$deferred->resolve(await($this->loadValue($property, $forReading)));
-									}))
+					try {
+						$deferred->resolve($this->convertStoredState(
+							$property,
+							$mappedProperty,
+							$state,
+							$forReading,
+						));
+					} catch (Exceptions\InvalidActualValue $ex) {
+						$this->devicePropertiesStatesManager->update($property, $state, Utils\ArrayHash::from([
+							States\Property::ACTUAL_VALUE_FIELD => null,
+							States\Property::VALID_FIELD => false,
+						]))
+							->then(function () use ($property, $forReading, $deferred): void {
+								$this->loadValue($property, $forReading)
+									->then(static function ($state) use ($deferred): void {
+										$deferred->resolve($state);
+									})
 									->catch(static function (Throwable $ex) use ($deferred): void {
 										$deferred->reject($ex);
-									})
-									->finally(function () use ($ex): void {
-										$this->logger->error(
-											'Property stored actual value was not valid',
-											[
-												'source' => MetadataTypes\ModuleSource::DEVICES,
-												'type' => 'async-device-properties-states',
-												'exception' => ApplicationHelpers\Logger::buildException($ex),
-											],
-										);
 									});
+							})
+							->catch(function (Throwable $ex) use ($deferred): void {
+								if ($ex instanceof Exceptions\NotImplemented) {
+									$this->logger->warning(
+										'Devices states manager is not configured. State could not be fetched',
+										[
+											'source' => MetadataTypes\ModuleSource::DEVICES,
+											'type' => 'device-properties-states',
+										],
+									);
+								}
 
-								return;
-							}
-						}
-					}
+								$deferred->reject($ex);
+							});
 
-					if ($state->getExpectedValue() !== null) {
-						try {
-							$expectedValue = $this->convertReadValue(
-								$state->getExpectedValue(),
-								$property,
-								$mappedProperty,
-								$forReading,
-							);
-
-							if ($expectedValue !== null && !$property->isSettable()) {
-								$this->devicePropertiesStatesManager->update(
-									$property,
-									$state,
-									Utils\ArrayHash::from([
-										States\Property::EXPECTED_VALUE_FIELD => null,
-										States\Property::PENDING_FIELD => false,
-									]),
-								)
-									->then(async(
-										function () use ($deferred, $property, $mappedProperty, $forReading): void {
-											$deferred->resolve(await(
-												$this->loadValue($mappedProperty ?? $property, $forReading),
-											));
-										},
-									))
+						$this->logger->error(
+							'Property stored actual value was not valid',
+							[
+								'source' => MetadataTypes\ModuleSource::DEVICES,
+								'type' => 'device-properties-states',
+								'exception' => ApplicationHelpers\Logger::buildException($ex),
+							],
+						);
+					} catch (Exceptions\InvalidExpectedValue $ex) {
+						$this->devicePropertiesStatesManager->update($property, $state, Utils\ArrayHash::from([
+							States\Property::EXPECTED_VALUE_FIELD => null,
+							States\Property::PENDING_FIELD => false,
+						]))
+							->then(function () use ($property, $forReading, $deferred): void {
+								$this->loadValue($property, $forReading)
+									->then(static function ($state) use ($deferred): void {
+										$deferred->resolve($state);
+									})
 									->catch(static function (Throwable $ex) use ($deferred): void {
 										$deferred->reject($ex);
-									})
-									->finally(function (): void {
-										$this->logger->warning(
-											'Property is not settable but has stored expected value',
-											[
-												'source' => MetadataTypes\ModuleSource::DEVICES,
-												'type' => 'async-device-properties-states',
-											],
-										);
 									});
+							})
+							->catch(function (Throwable $ex) use ($deferred): void {
+								if ($ex instanceof Exceptions\NotImplemented) {
+									$this->logger->warning(
+										'Devices states manager is not configured. State could not be fetched',
+										[
+											'source' => MetadataTypes\ModuleSource::DEVICES,
+											'type' => 'device-properties-states',
+										],
+									);
+								}
 
-								return;
-							}
+								$deferred->reject($ex);
+							});
 
-							$updateValues[States\Property::EXPECTED_VALUE_FIELD] = $expectedValue;
-						} catch (MetadataExceptions\InvalidValue $ex) {
-							if ($mappedProperty !== null) {
-								$updateValues[States\Property::EXPECTED_VALUE_FIELD] = null;
-								$updateValues[States\Property::PENDING_FIELD] = false;
-
-								$this->logger->error(
-									'Property stored actual value could not be converted to mapped property',
-									[
-										'source' => MetadataTypes\ModuleSource::DEVICES,
-										'type' => 'async-device-properties-states',
-										'exception' => ApplicationHelpers\Logger::buildException($ex),
-									],
-								);
-
-							} else {
-								$this->devicePropertiesStatesManager->update(
-									$property,
-									$state,
-									Utils\ArrayHash::from([
-										States\Property::EXPECTED_VALUE_FIELD => null,
-										States\Property::PENDING_FIELD => false,
-									]),
-								)
-									->then(async(function () use ($deferred, $property, $forReading): void {
-										$deferred->resolve(await($this->loadValue($property, $forReading)));
-									}))
-									->catch(static function (Throwable $ex) use ($deferred): void {
-										$deferred->reject($ex);
-									})
-									->finally(function () use ($ex): void {
-										$this->logger->error(
-											'Property stored expected value was not valid',
-											[
-												'source' => MetadataTypes\ModuleSource::DEVICES,
-												'type' => 'async-device-properties-states',
-												'exception' => ApplicationHelpers\Logger::buildException($ex),
-											],
-										);
-									});
-
-								return;
-							}
-						}
+						$this->logger->error(
+							'Property stored expected value was not valid',
+							[
+								'source' => MetadataTypes\ModuleSource::DEVICES,
+								'type' => 'device-properties-states',
+								'exception' => ApplicationHelpers\Logger::buildException($ex),
+							],
+						);
 					}
-
-					if ($updateValues === []) {
-						$deferred->resolve($state);
-
-						return;
-					}
-
-					$deferred->resolve($this->updateState($state, $state::class, $updateValues));
 				},
 			)
 			->catch(function (Throwable $ex) use ($deferred): void {
@@ -753,14 +670,53 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 					}
 
 					try {
-						$result = await($state === null ? $this->devicePropertiesStatesManager->create(
-							$property,
-							$data,
-						) : $this->devicePropertiesStatesManager->update(
-							$property,
-							$state,
-							$data,
-						));
+						if ($state === null) {
+							$result = await($this->devicePropertiesStatesManager->create(
+								$property,
+								$data,
+							));
+
+						} else {
+							$result = await($this->devicePropertiesStatesManager->update(
+								$property,
+								$state,
+								$data,
+							));
+
+							if (is_bool($result)) {
+								$deferred->resolve(false);
+
+								return;
+							}
+						}
+
+						$readValue = $this->convertStoredState($property, $mappedProperty, $result, true);
+						$getValue = $this->convertStoredState($property, $mappedProperty, $result, false);
+
+						if ($state === null) {
+							$this->dispatcher?->dispatch(
+								new Events\DevicePropertyStateEntityCreated($property, $readValue, $getValue),
+							);
+						} else {
+							$this->dispatcher?->dispatch(
+								new Events\DevicePropertyStateEntityUpdated($property, $readValue, $getValue),
+							);
+						}
+
+						foreach ($this->findChildren($property->getId()) as $child) {
+							$readValue = $this->convertStoredState($property, $child, $result, true);
+							$getValue = $this->convertStoredState($property, $child, $result, false);
+
+							if ($state === null) {
+								$this->dispatcher?->dispatch(
+									new Events\DevicePropertyStateEntityCreated($child, $readValue, $getValue),
+								);
+							} else {
+								$this->dispatcher?->dispatch(
+									new Events\DevicePropertyStateEntityUpdated($child, $readValue, $getValue),
+								);
+							}
+						}
 
 						$this->logger->debug(
 							$state === null ? 'Device property state was created' : 'Device property state was updated',
@@ -795,6 +751,22 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 			});
 
 		return $deferred->promise();
+	}
+
+	/**
+	 * @return array<MetadataDocuments\DevicesModule\DeviceMappedProperty>
+	 *
+	 * @throws Exceptions\InvalidState
+	 */
+	private function findChildren(Uuid\UuidInterface $id): array
+	{
+		$findPropertiesQuery = new Queries\Configuration\FindDeviceMappedProperties();
+		$findPropertiesQuery->byParentId($id);
+
+		return $this->devicePropertiesConfigurationRepository->findAllBy(
+			$findPropertiesQuery,
+			MetadataDocuments\DevicesModule\DeviceMappedProperty::class,
+		);
 	}
 
 }

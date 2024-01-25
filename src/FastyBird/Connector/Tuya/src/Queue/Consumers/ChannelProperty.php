@@ -54,6 +54,7 @@ trait ChannelProperty
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws ApplicationExceptions\Runtime
 	 * @throws DBAL\Exception
+	 * @throws DevicesExceptions\InvalidState
 	 */
 	private function setChannelProperty(
 		string $type,
@@ -181,11 +182,7 @@ trait ChannelProperty
 			if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
 				// Some Tuya devices has invalid values configured
 				// E.g. wi-fi dimmable device has allowed values "incandescent" and "halogen" but it also provide "led" value
-				try {
-					$this->channelPropertiesStatesManager->delete($property->getId());
-				} catch (DevicesExceptions\NotImplemented) {
-					// Just ignore it
-				}
+				$this->channelPropertiesStatesManager->delete($property->getId());
 			}
 
 			$property = $this->databaseHelper->transaction(

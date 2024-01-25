@@ -1,12 +1,12 @@
 <?php declare(strict_types = 1);
 
 /**
- * Property.php
+ * State.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:RedisDbDevicesModuleBridge!
+ * @package        FastyBird:HomeKitConnector!
  * @subpackage     States
  * @since          1.0.0
  *
@@ -27,7 +27,7 @@ use function is_bool;
 /**
  * Property state
  *
- * @package        FastyBird:RedisDbDevicesModuleBridge!
+ * @package        FastyBird:HomeKitConnector!
  * @subpackage     States
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

@@ -256,7 +256,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$state = $this->channelPropertiesStatesManager->get($property);
+		$state = $entity->getState();
 
 		if ($state === null) {
 			return true;
@@ -445,17 +445,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 									: $valueToWrite->getValue() === 1,
 						);
 
-						$state = $this->channelPropertiesStatesManager->get($property);
-
-						if ($state?->getExpectedValue() !== null) {
-							$this->channelPropertiesStatesManager->set(
-								$property,
-								Utils\ArrayHash::from([
-									DevicesStates\Property::ACTUAL_VALUE_FIELD => $state->getExpectedValue(),
-								]),
-								MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_MODBUS),
-							);
-						}
+						$this->channelPropertiesStatesManager->set(
+							$property,
+							Utils\ArrayHash::from([
+								DevicesStates\Property::ACTUAL_VALUE_FIELD => $state->getExpectedValue(),
+							]),
+							MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_MODBUS),
+						);
 					} else {
 						$this->resetExpected($property);
 
@@ -589,17 +585,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						->getRtuClient($connector)
 						->writeSingleHolding($station, $address, $bytes);
 
-					$state = $this->channelPropertiesStatesManager->get($property);
-
-					if ($state?->getExpectedValue() !== null) {
-						$this->channelPropertiesStatesManager->set(
-							$property,
-							Utils\ArrayHash::from([
-								DevicesStates\Property::ACTUAL_VALUE_FIELD => $state->getExpectedValue(),
-							]),
-							MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_MODBUS),
-						);
-					}
+					$this->channelPropertiesStatesManager->set(
+						$property,
+						Utils\ArrayHash::from([
+							DevicesStates\Property::ACTUAL_VALUE_FIELD => $state->getExpectedValue(),
+						]),
+						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_MODBUS),
+					);
 				} else {
 					$this->resetExpected($property);
 
@@ -958,18 +950,14 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			}
 
 			$promise->then(
-				function () use ($property): void {
-					$state = $this->channelPropertiesStatesManager->get($property);
-
-					if ($state?->getExpectedValue() !== null) {
-						$this->channelPropertiesStatesManager->set(
-							$property,
-							Utils\ArrayHash::from([
-								DevicesStates\Property::ACTUAL_VALUE_FIELD => $state->getExpectedValue(),
-							]),
-							MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_MODBUS),
-						);
-					}
+				function () use ($property, $state): void {
+					$this->channelPropertiesStatesManager->set(
+						$property,
+						Utils\ArrayHash::from([
+							DevicesStates\Property::ACTUAL_VALUE_FIELD => $state->getExpectedValue(),
+						]),
+						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_MODBUS),
+					);
 				},
 				function (Throwable $ex) use ($entity, $device, $channel, $property): void {
 					$this->resetExpected($property);

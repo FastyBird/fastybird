@@ -278,7 +278,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$state = $this->channelPropertiesStatesManager->get($property);
+		$state = $entity->getState();
 
 		if ($state === null) {
 			return true;

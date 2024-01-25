@@ -32,8 +32,8 @@ class ConnectorPropertyStateEntityUpdated extends EventDispatcher\Event
 
 	public function __construct(
 		private readonly MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
-		private readonly States\ConnectorProperty $previousState,
-		private readonly States\ConnectorProperty $state,
+		private readonly States\ConnectorProperty $read,
+		private readonly States\ConnectorProperty $get,
 	)
 	{
 	}
@@ -43,14 +43,14 @@ class ConnectorPropertyStateEntityUpdated extends EventDispatcher\Event
 		return $this->property;
 	}
 
-	public function getPreviousState(): States\ConnectorProperty
+	public function getRead(): States\ConnectorProperty
 	{
-		return $this->previousState;
+		return $this->read;
 	}
 
-	public function getState(): States\ConnectorProperty
+	public function getGet(): States\ConnectorProperty
 	{
-		return $this->state;
+		return $this->get;
 	}
 
 }

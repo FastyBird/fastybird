@@ -31,26 +31,26 @@ class DevicePropertyStateEntityUpdated extends EventDispatcher\Event
 {
 
 	public function __construct(
-		private readonly MetadataDocuments\DevicesModule\DeviceDynamicProperty $property,
-		private readonly States\DeviceProperty $previousState,
-		private readonly States\DeviceProperty $state,
+		private readonly MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty $property,
+		private readonly States\DeviceProperty $read,
+		private readonly States\DeviceProperty $get,
 	)
 	{
 	}
 
-	public function getProperty(): MetadataDocuments\DevicesModule\DeviceDynamicProperty
+	public function getProperty(): MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty
 	{
 		return $this->property;
 	}
 
-	public function getPreviousState(): States\DeviceProperty
+	public function getRead(): States\DeviceProperty
 	{
-		return $this->previousState;
+		return $this->read;
 	}
 
-	public function getState(): States\DeviceProperty
+	public function getGet(): States\DeviceProperty
 	{
-		return $this->state;
+		return $this->get;
 	}
 
 }
