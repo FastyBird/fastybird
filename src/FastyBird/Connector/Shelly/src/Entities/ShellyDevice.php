@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Shelly\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
+use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -34,8 +35,6 @@ class ShellyDevice extends DevicesEntities\Devices\Device
 {
 
 	public const TYPE = 'shelly-connector';
-
-	public const STATE_READING_DELAY = 5_000.0;
 
 	public function getType(): string
 	{
@@ -257,7 +256,7 @@ class ShellyDevice extends DevicesEntities\Devices\Device
 			return floatval($property->getValue());
 		}
 
-		return self::STATE_READING_DELAY;
+		return Shelly\Constants::STATE_READING_DELAY;
 	}
 
 	/**

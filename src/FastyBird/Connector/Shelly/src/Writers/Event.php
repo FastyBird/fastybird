@@ -40,6 +40,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 		return [
 			DevicesEvents\ChannelPropertyStateEntityCreated::class => 'stateChanged',
 			DevicesEvents\ChannelPropertyStateEntityUpdated::class => 'stateChanged',
+			DevicesEvents\ChannelPropertyStateEntityReported::class => 'stateChanged',
 		];
 	}
 
@@ -48,7 +49,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 	 * @throws Exceptions\Runtime
 	 */
 	public function stateChanged(
-		DevicesEvents\ChannelPropertyStateEntityCreated|DevicesEvents\ChannelPropertyStateEntityUpdated $event,
+		DevicesEvents\ChannelPropertyStateEntityCreated|DevicesEvents\ChannelPropertyStateEntityUpdated|DevicesEvents\ChannelPropertyStateEntityReported $event,
 	): void
 	{
 		$state = $event->getGet();

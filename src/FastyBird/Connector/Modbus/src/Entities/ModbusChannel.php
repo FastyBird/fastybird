@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Modbus\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
+use FastyBird\Connector\Modbus;
 use FastyBird\Connector\Modbus\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -31,8 +32,6 @@ class ModbusChannel extends DevicesEntities\Channels\Channel
 {
 
 	public const TYPE = 'modbus-connector';
-
-	public const READING_DELAY = 120.0;
 
 	public function getType(): string
 	{
@@ -119,7 +118,7 @@ class ModbusChannel extends DevicesEntities\Channels\Channel
 			return $property->getValue();
 		}
 
-		return self::READING_DELAY;
+		return Modbus\Constants::READING_DELAY;
 	}
 
 }

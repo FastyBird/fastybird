@@ -2910,7 +2910,7 @@ class Install extends Console\Command\Command
 	{
 		$question = new Console\Question\Question(
 			$this->translator->translate('//modbus-connector.cmd.install.questions.provide.register.readingDelay'),
-			$channel?->getReadingDelay() ?? Entities\ModbusChannel::READING_DELAY,
+			$channel?->getReadingDelay() ?? Modbus\Constants::READING_DELAY,
 		);
 
 		$name = strval($io->askQuestion($question));

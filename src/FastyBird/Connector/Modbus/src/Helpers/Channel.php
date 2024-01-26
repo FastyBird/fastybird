@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\Modbus\Helpers;
 
 use DateTimeInterface;
-use FastyBird\Connector\Modbus\Entities;
+use FastyBird\Connector\Modbus;
 use FastyBird\Connector\Modbus\Types;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -119,7 +119,7 @@ final class Channel
 		);
 
 		if ($property?->getValue() === null) {
-			return Entities\ModbusChannel::READING_DELAY;
+			return Modbus\Constants::READING_DELAY;
 		}
 
 		$value = $property->getValue();

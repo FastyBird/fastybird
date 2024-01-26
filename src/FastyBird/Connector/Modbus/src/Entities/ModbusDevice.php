@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Modbus\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
+use FastyBird\Connector\Modbus;
 use FastyBird\Connector\Modbus\Exceptions;
 use FastyBird\Connector\Modbus\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -31,8 +32,6 @@ class ModbusDevice extends DevicesEntities\Devices\Device
 {
 
 	public const TYPE = 'modbus-connector';
-
-	public const DEFAULT_TCP_PORT = 502;
 
 	public function getType(): string
 	{
@@ -166,7 +165,7 @@ class ModbusDevice extends DevicesEntities\Devices\Device
 			return $property->getValue();
 		}
 
-		return self::DEFAULT_TCP_PORT;
+		return Modbus\Constants::DEFAULT_TCP_PORT;
 	}
 
 	/**

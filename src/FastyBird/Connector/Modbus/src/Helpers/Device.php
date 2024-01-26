@@ -15,6 +15,7 @@
 
 namespace FastyBird\Connector\Modbus\Helpers;
 
+use FastyBird\Connector\Modbus;
 use FastyBird\Connector\Modbus\Entities;
 use FastyBird\Connector\Modbus\Types;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
@@ -144,7 +145,7 @@ final class Device
 		);
 
 		if ($property?->getValue() === null) {
-			return Entities\ModbusDevice::DEFAULT_TCP_PORT;
+			return Modbus\Constants::DEFAULT_TCP_PORT;
 		}
 
 		$value = $property->getValue();

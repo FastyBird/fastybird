@@ -17,12 +17,12 @@ namespace FastyBird\Connector\Shelly\Writers;
 
 use DateTimeInterface;
 use FastyBird\Connector\Shelly\Entities;
-use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Queue;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -51,8 +51,6 @@ abstract class Periodic
 	private const HANDLER_DEBOUNCE_INTERVAL = 2_500.0;
 
 	private const HANDLER_PROCESSING_INTERVAL = 0.01;
-
-	private const HANDLER_PENDING_DELAY = 2_000.0;
 
 	/** @var array<string, MetadataDocuments\DevicesModule\Device>  */
 	private array $devices = [];
@@ -143,10 +141,8 @@ abstract class Periodic
 	/**
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	private function handleCommunication(): void
@@ -171,10 +167,8 @@ abstract class Periodic
 	/**
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	private function writeProperty(MetadataDocuments\DevicesModule\Device $device): bool
@@ -199,38 +193,12 @@ abstract class Periodic
 
 			$this->processedProperties[$property->getId()->toString()] = $now;
 
-			$state = $this->channelPropertiesStatesManager->get($property);
+			$result = $this->channelPropertiesStatesManager->request(
+				$property,
+				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_SHELLY),
+			);
 
-			if ($state === null) {
-				continue;
-			}
-
-			if ($state->getExpectedValue() === null) {
-				continue;
-			}
-
-			$pending = $state->getPending();
-
-			if (
-				$pending === true
-				|| (
-					$pending instanceof DateTimeInterface
-					&& (float) $now->format('Uv') - (float) $pending->format('Uv') > self::HANDLER_PENDING_DELAY
-				)
-			) {
-				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\WriteChannelPropertyState::class,
-						[
-							'connector' => $device->getConnector(),
-							'device' => $device->getId(),
-							'channel' => $property->getChannel(),
-							'property' => $property->getId(),
-							'state' => $state->toArray(),
-						],
-					),
-				);
-
+			if ($result === true) {
 				return true;
 			}
 		}

@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\Shelly\Helpers;
 
-use FastyBird\Connector\Shelly\Entities;
+use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
@@ -288,7 +288,7 @@ final class Device
 		);
 
 		if ($property?->getValue() === null) {
-			return Entities\ShellyDevice::STATE_READING_DELAY;
+			return Shelly\Constants::STATE_READING_DELAY;
 		}
 
 		$value = $property->getValue();

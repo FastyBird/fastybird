@@ -57,10 +57,6 @@ final class Gen1Coap implements Evenement\EventEmitterInterface
 	use Nette\SmartObject;
 	use Evenement\EventEmitterTrait;
 
-	private const COAP_ADDRESS = '224.0.1.187';
-
-	private const COAP_PORT = 5_683;
-
 	private const STATE_MESSAGE_CODE = 30;
 
 	private const STATE_MESSAGE_SCHEMA_FILENAME = 'gen1_coap_state.json';
@@ -85,7 +81,10 @@ final class Gen1Coap implements Evenement\EventEmitterInterface
 	 */
 	public function connect(): void
 	{
-		$this->server = $this->multicastFactory->create(self::COAP_ADDRESS, self::COAP_PORT);
+		$this->server = $this->multicastFactory->create(
+			Shelly\Constants::COAP_ADDRESS,
+			Shelly\Constants::COAP_PORT,
+		);
 
 		$this->server->on('message', function ($message, $remote): void {
 			$this->handlePacket($message, $remote);
