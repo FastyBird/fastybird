@@ -75,6 +75,89 @@ final class ChannelPropertiesManager extends PropertiesManager
 	}
 
 	/**
+	 * @throws Exceptions\InvalidActualValue
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidExpectedValue
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 */
+	public function request(
+		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
+		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source = null,
+	): bool
+	{
+		if ($this->useExchange) {
+			try {
+				$this->publisher->publish(
+					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION),
+					$this->documentFactory->create(
+						Utils\Json::encode([
+							'action' => MetadataTypes\PropertyAction::GET,
+							'channel' => $property->getChannel()->toString(),
+							'property' => $property->getId()->toString(),
+						]),
+						MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION),
+					),
+				);
+			} catch (Throwable $ex) {
+				throw new Exceptions\InvalidState(
+					'Requested action could not be published for write action',
+					$ex->getCode(),
+					$ex,
+				);
+			}
+		} else {
+			$mappedProperty = null;
+
+			if ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
+				$parent = $this->channelPropertiesConfigurationRepository->find($property->getParent());
+
+				if (!$parent instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+					throw new Exceptions\InvalidState('Mapped property parent could not be loaded');
+				}
+
+				$mappedProperty = $property;
+
+				$property = $parent;
+			}
+
+			try {
+				$state = $this->channelPropertyStateRepository->find($property->getId());
+
+			} catch (Exceptions\NotImplemented) {
+				$this->logger->warning(
+					'Channels states repository is not configured. State could not be fetched',
+					[
+						'source' => MetadataTypes\ModuleSource::DEVICES,
+						'type' => 'channel-properties-states',
+					],
+				);
+
+				return false;
+			}
+
+			if ($state === null) {
+				return false;
+			}
+
+			$readValue = $this->convertStoredState($property, $mappedProperty, $state, true);
+			$getValue = $this->convertStoredState($property, $mappedProperty, $state, false);
+
+			$this->dispatcher?->dispatch(new Events\ChannelPropertyStateEntityReported(
+				$property,
+				$readValue,
+				$getValue,
+			));
+		}
+
+		return true;
+	}
+
+	/**
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument

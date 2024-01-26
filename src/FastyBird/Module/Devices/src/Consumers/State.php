@@ -28,8 +28,9 @@ use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\States;
 use Nette\Utils;
-use function array_merge;
 use function in_array;
+use function React\Async\async;
+use function React\Async\await;
 
 /**
  * States messages subscriber
@@ -165,10 +166,12 @@ final class State implements ExchangeConsumers\Consumer
 					}
 
 					$this->connectorPropertiesStatesManager->read($property)
-						->then(function (States\ConnectorProperty|null $state) use ($property): void {
-							if ($state === null) {
+						->then(async(function (States\ConnectorProperty|null $readState) use ($property): void {
+							if ($readState === null) {
 								return;
 							}
+
+							$getState = await($this->connectorPropertiesStatesManager->get($property));
 
 							$publishRoutingKey = MetadataTypes\RoutingKey::get(
 								MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_STATE_DOCUMENT_REPORTED,
@@ -178,18 +181,18 @@ final class State implements ExchangeConsumers\Consumer
 								MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 								$publishRoutingKey,
 								$this->documentFactory->create(
-									Utils\Json::encode(array_merge(
-										[
-											'id' => $property->getId()->toString(),
-											'connector' => $property->getConnector()->toString(),
-											'read' => $state->toArray(),
-										],
-										$state->toArray(),
-									)),
+									Utils\Json::encode([
+										'id' => $property->getId()->toString(),
+										'connector' => $property->getConnector()->toString(),
+										'read' => $readState->toArray(),
+										'get' => $getState?->toArray(),
+										'created_at' => $readState->getCreatedAt(),
+										'updated_at' => $readState->getUpdatedAt(),
+									]),
 									$publishRoutingKey,
 								),
 							);
-						});
+						}));
 				}
 			} elseif ($entity instanceof MetadataDocuments\Actions\ActionDeviceProperty) {
 				if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::SET)) {
@@ -279,10 +282,12 @@ final class State implements ExchangeConsumers\Consumer
 					}
 
 					$this->devicePropertiesStatesManager->read($property)
-						->then(function (States\DeviceProperty|null $state) use ($property): void {
-							if ($state === null) {
+						->then(async(function (States\DeviceProperty|null $readState) use ($property): void {
+							if ($readState === null) {
 								return;
 							}
+
+							$getState = await($this->devicePropertiesStatesManager->get($property));
 
 							$publishRoutingKey = MetadataTypes\RoutingKey::get(
 								MetadataTypes\RoutingKey::DEVICE_PROPERTY_STATE_DOCUMENT_REPORTED,
@@ -292,18 +297,18 @@ final class State implements ExchangeConsumers\Consumer
 								MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 								$publishRoutingKey,
 								$this->documentFactory->create(
-									Utils\Json::encode(array_merge(
-										[
-											'id' => $property->getId()->toString(),
-											'device' => $property->getDevice()->toString(),
-											'read' => $state->toArray(),
-										],
-										$state->toArray(),
-									)),
+									Utils\Json::encode([
+										'id' => $property->getId()->toString(),
+										'device' => $property->getDevice()->toString(),
+										'read' => $readState->toArray(),
+										'get' => $getState?->toArray(),
+										'created_at' => $readState->getCreatedAt(),
+										'updated_at' => $readState->getUpdatedAt(),
+									]),
 									$publishRoutingKey,
 								),
 							);
-						});
+						}));
 				}
 			} elseif ($entity instanceof MetadataDocuments\Actions\ActionChannelProperty) {
 				if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::SET)) {
@@ -393,10 +398,12 @@ final class State implements ExchangeConsumers\Consumer
 					}
 
 					$this->channelPropertiesStatesManager->read($property)
-						->then(function (States\ChannelProperty|null $state) use ($property): void {
-							if ($state === null) {
+						->then(async(function (States\ChannelProperty|null $readState) use ($property): void {
+							if ($readState === null) {
 								return;
 							}
+
+							$getState = await($this->channelPropertiesStatesManager->get($property));
 
 							$publishRoutingKey = MetadataTypes\RoutingKey::get(
 								MetadataTypes\RoutingKey::CHANNEL_PROPERTY_STATE_DOCUMENT_REPORTED,
@@ -406,18 +413,18 @@ final class State implements ExchangeConsumers\Consumer
 								MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 								$publishRoutingKey,
 								$this->documentFactory->create(
-									Utils\Json::encode(array_merge(
-										[
-											'id' => $property->getId()->toString(),
-											'channel' => $property->getChannel()->toString(),
-											'read' => $state->toArray(),
-										],
-										$state->toArray(),
-									)),
+									Utils\Json::encode([
+										'id' => $property->getId()->toString(),
+										'channel' => $property->getChannel()->toString(),
+										'read' => $readState->toArray(),
+										'get' => $getState?->toArray(),
+										'created_at' => $readState->getCreatedAt(),
+										'updated_at' => $readState->getUpdatedAt(),
+									]),
 									$publishRoutingKey,
 								),
 							);
-						});
+						}));
 				}
 			}
 		}

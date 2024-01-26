@@ -171,6 +171,8 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 							'id' => $property->getId()->toString(),
 							'read' => $readState->toArray(),
 							'get' => $getState?->toArray(),
+							'created_at' => $readState->getCreatedAt(),
+							'updated_at' => $readState->getUpdatedAt(),
 						],
 						$property instanceof MetadataDocuments\DevicesModule\ConnectorProperty
 							? ['connector' => $property->getConnector()->toString()]

@@ -72,6 +72,74 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	}
 
 	/**
+	 * @throws Exceptions\InvalidActualValue
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidExpectedValue
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 */
+	public function request(
+		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
+		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source = null,
+	): bool
+	{
+		if ($this->useExchange) {
+			try {
+				$this->publisher->publish(
+					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION),
+					$this->documentFactory->create(
+						Utils\Json::encode([
+							'action' => MetadataTypes\PropertyAction::GET,
+							'connector' => $property->getConnector()->toString(),
+							'property' => $property->getId()->toString(),
+						]),
+						MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION),
+					),
+				);
+			} catch (Throwable $ex) {
+				throw new Exceptions\InvalidState(
+					'Requested action could not be published for write action',
+					$ex->getCode(),
+					$ex,
+				);
+			}
+		} else {
+			try {
+				$state = $this->connectorPropertyStateRepository->find($property->getId());
+
+			} catch (Exceptions\NotImplemented) {
+				$this->logger->warning(
+					'Connectors states repository is not configured. State could not be fetched',
+					[
+						'source' => MetadataTypes\ModuleSource::DEVICES,
+						'type' => 'connector-properties-states',
+					],
+				);
+
+				return false;
+			}
+
+			if ($state === null) {
+				return false;
+			}
+
+			$readValue = $this->convertStoredState($property, null, $state, true);
+			$getValue = $this->convertStoredState($property, null, $state, false);
+
+			$this->dispatcher?->dispatch(new Events\ConnectorPropertyStateEntityReported(
+				$property,
+				$readValue,
+				$getValue,
+			));
+		}
+
+		return true;
+	}
+
+	/**
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument

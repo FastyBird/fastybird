@@ -386,14 +386,13 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 			);
 
 			$responseEntity = $this->documentFactory->create(
-				Utils\Json::encode(array_merge(
-					[
-						'id' => $property->getId()->toString(),
-						'connector' => $property->getConnector()->toString(),
-						'read' => $state->toArray(),
-					],
-					$state->toArray(),
-				)),
+				Utils\Json::encode([
+					'id' => $property->getId()->toString(),
+					'connector' => $property->getConnector()->toString(),
+					'read' => $state->toArray(),
+					'created_at' => $state->getCreatedAt(),
+					'updated_at' => $state->getUpdatedAt(),
+				]),
 				$publishRoutingKey,
 			);
 
@@ -485,14 +484,13 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 			);
 
 			$responseEntity = $this->documentFactory->create(
-				Utils\Json::encode(array_merge(
-					[
-						'id' => $property->getId()->toString(),
-						'device' => $property->getDevice()->toString(),
-						'read' => $state->toArray(),
-					],
-					$state->toArray(),
-				)),
+				Utils\Json::encode([
+					'id' => $property->getId()->toString(),
+					'device' => $property->getDevice()->toString(),
+					'read' => $state->toArray(),
+					'created_at' => $state->getCreatedAt(),
+					'updated_at' => $state->getUpdatedAt(),
+				]),
 				$publishRoutingKey,
 			);
 
@@ -584,14 +582,13 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 			);
 
 			$responseEntity = $this->documentFactory->create(
-				Utils\Json::encode(array_merge(
-					[
-						'id' => $property->getId()->toString(),
-						'channel' => $property->getChannel()->toString(),
-						'read' => $state->toArray(),
-					],
-					$state->toArray(),
-				)),
+				Utils\Json::encode([
+					'id' => $property->getId()->toString(),
+					'channel' => $property->getChannel()->toString(),
+					'read' => $state->toArray(),
+					'created_at' => $state->getCreatedAt(),
+					'updated_at' => $state->getUpdatedAt(),
+				]),
 				$publishRoutingKey,
 			);
 

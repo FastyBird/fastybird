@@ -76,6 +76,73 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 	}
 
 	/**
+	 * @return Promise\PromiseInterface<bool>
+	 */
+	public function request(
+		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
+		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source = null,
+	): Promise\PromiseInterface
+	{
+		if ($this->useExchange) {
+			try {
+				return $this->publisher->publish(
+					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION),
+					$this->documentFactory->create(
+						Utils\Json::encode([
+							'action' => MetadataTypes\PropertyAction::GET,
+							'connector' => $property->getConnector()->toString(),
+							'property' => $property->getId()->toString(),
+						]),
+						MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION),
+					),
+				);
+			} catch (Throwable $ex) {
+				return Promise\reject(new Exceptions\InvalidState(
+					'Requested action could not be published for write action',
+					$ex->getCode(),
+					$ex,
+				));
+			}
+		} else {
+			$deferred = new Promise\Deferred();
+
+			$this->connectorPropertyStateRepository->find($property->getId())
+				->then(function (States\ConnectorProperty|null $state) use ($deferred, $property): void {
+					if ($state === null) {
+						$deferred->resolve(false);
+
+						return;
+					}
+
+					$readValue = $this->convertStoredState($property, null, $state, true);
+					$getValue = $this->convertStoredState($property, null, $state, false);
+
+					$this->dispatcher?->dispatch(new Events\ConnectorPropertyStateEntityReported(
+						$property,
+						$readValue,
+						$getValue,
+					));
+				})
+				->catch(function (Throwable $ex) use ($deferred): void {
+					if ($ex instanceof Exceptions\NotImplemented) {
+						$this->logger->warning(
+							'Connectors states repository is not configured. State could not be fetched',
+							[
+								'source' => MetadataTypes\ModuleSource::DEVICES,
+								'type' => 'connector-properties-states',
+							],
+						);
+					}
+
+					$deferred->reject($ex);
+				});
+
+			return $deferred->promise();
+		}
+	}
+
+	/**
 	 * @return Promise\PromiseInterface<States\ConnectorProperty|null>
 	 */
 	public function read(

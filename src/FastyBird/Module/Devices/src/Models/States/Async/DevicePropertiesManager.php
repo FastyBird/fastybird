@@ -78,6 +78,92 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 	}
 
 	/**
+	 * @return Promise\PromiseInterface<bool>
+	 *
+	 * @throws Exceptions\InvalidActualValue
+	 * @throws Exceptions\InvalidExpectedValue
+	 * @throws Exceptions\InvalidState
+	 */
+	public function request(
+		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty $property,
+		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source = null,
+	): Promise\PromiseInterface
+	{
+		if ($this->useExchange) {
+			try {
+				return $this->publisher->publish(
+					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION),
+					$this->documentFactory->create(
+						Utils\Json::encode([
+							'action' => MetadataTypes\PropertyAction::GET,
+							'device' => $property->getDevice()->toString(),
+							'property' => $property->getId()->toString(),
+						]),
+						MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION),
+					),
+				);
+			} catch (Throwable $ex) {
+				return Promise\reject(new Exceptions\InvalidState(
+					'Requested action could not be published for write action',
+					$ex->getCode(),
+					$ex,
+				));
+			}
+		} else {
+			$mappedProperty = null;
+
+			if ($property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
+				$parent = $this->devicePropertiesConfigurationRepository->find($property->getParent());
+
+				if (!$parent instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
+					throw new Exceptions\InvalidState('Mapped property parent could not be loaded');
+				}
+
+				$mappedProperty = $property;
+
+				$property = $parent;
+			}
+
+			$deferred = new Promise\Deferred();
+
+			$this->devicePropertyStateRepository->find($property->getId())
+				->then(function (States\DeviceProperty|null $state) use ($deferred, $property, $mappedProperty): void {
+					if ($state === null) {
+						$deferred->resolve(false);
+
+						return;
+					}
+
+					$readValue = $this->convertStoredState($property, $mappedProperty, $state, true);
+					$getValue = $this->convertStoredState($property, $mappedProperty, $state, false);
+
+					$this->dispatcher?->dispatch(new Events\DevicePropertyStateEntityReported(
+						$property,
+						$readValue,
+						$getValue,
+					));
+				})
+				->catch(function (Throwable $ex) use ($deferred): void {
+					if ($ex instanceof Exceptions\NotImplemented) {
+						$this->logger->warning(
+							'Devices states repository is not configured. State could not be fetched',
+							[
+								'source' => MetadataTypes\ModuleSource::DEVICES,
+								'type' => 'device-properties-states',
+							],
+						);
+					}
+
+					$deferred->reject($ex);
+				});
+
+			return $deferred->promise();
+		}
+	}
+
+	/**
 	 * @return Promise\PromiseInterface<States\DeviceProperty|null>
 	 *
 	 * @throws Exceptions\InvalidState

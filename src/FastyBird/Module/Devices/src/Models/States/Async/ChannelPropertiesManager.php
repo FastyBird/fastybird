@@ -78,6 +78,94 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 	}
 
 	/**
+	 * @return Promise\PromiseInterface<bool>
+	 *
+	 * @throws Exceptions\InvalidActualValue
+	 * @throws Exceptions\InvalidExpectedValue
+	 * @throws Exceptions\InvalidState
+	 */
+	public function request(
+		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
+		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source = null,
+	): Promise\PromiseInterface
+	{
+		if ($this->useExchange) {
+			try {
+				return $this->publisher->publish(
+					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION),
+					$this->documentFactory->create(
+						Utils\Json::encode([
+							'action' => MetadataTypes\PropertyAction::GET,
+							'channel' => $property->getChannel()->toString(),
+							'property' => $property->getId()->toString(),
+						]),
+						MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION),
+					),
+				);
+			} catch (Throwable $ex) {
+				return Promise\reject(new Exceptions\InvalidState(
+					'Requested action could not be published for write action',
+					$ex->getCode(),
+					$ex,
+				));
+			}
+		} else {
+			$mappedProperty = null;
+
+			if ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
+				$parent = $this->channelPropertiesConfigurationRepository->find($property->getParent());
+
+				if (!$parent instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+					throw new Exceptions\InvalidState('Mapped property parent could not be loaded');
+				}
+
+				$mappedProperty = $property;
+
+				$property = $parent;
+			}
+
+			$deferred = new Promise\Deferred();
+
+			$this->channelPropertyStateRepository->find($property->getId())
+				->then(
+					function (States\ChannelProperty|null $state) use ($deferred, $property, $mappedProperty): void {
+						if ($state === null) {
+							$deferred->resolve(false);
+
+							return;
+						}
+
+						$readValue = $this->convertStoredState($property, $mappedProperty, $state, true);
+						$getValue = $this->convertStoredState($property, $mappedProperty, $state, false);
+
+						$this->dispatcher?->dispatch(new Events\ChannelPropertyStateEntityReported(
+							$property,
+							$readValue,
+							$getValue,
+						));
+					},
+				)
+				->catch(function (Throwable $ex) use ($deferred): void {
+					if ($ex instanceof Exceptions\NotImplemented) {
+						$this->logger->warning(
+							'Channels states repository is not configured. State could not be fetched',
+							[
+								'source' => MetadataTypes\ModuleSource::DEVICES,
+								'type' => 'channel-properties-states',
+							],
+						);
+					}
+
+					$deferred->reject($ex);
+				});
+
+			return $deferred->promise();
+		}
+	}
+
+	/**
 	 * @return Promise\PromiseInterface<States\ChannelProperty|null>
 	 *
 	 * @throws Exceptions\InvalidState
