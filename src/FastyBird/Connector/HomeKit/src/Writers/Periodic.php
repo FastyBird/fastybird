@@ -24,7 +24,6 @@ use FastyBird\Connector\HomeKit\Queue;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -210,34 +209,44 @@ abstract class Periodic
 
 			$characteristicValue = null;
 
-			if (
-				$property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
-				|| $property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
-			) {
-				$result = await($this->devicePropertiesStatesManager->request(
-					$property,
-					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT),
-				));
+			$state = null;
 
-				if ($result) {
-					return true;
+			if ($property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
+				$state = await($this->devicePropertiesStatesManager->read($property));
+
+				if ($state === null) {
+					continue;
 				}
 
-				continue;
-			} elseif (
-				$property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
-				|| $property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-			) {
-				$result = await($this->channelPropertiesStatesManager->request(
-					$property,
-					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT),
-				));
+				$characteristicValue = $state->getExpectedValue() ?? ($state->isValid() ? $state->getActualValue() : null);
 
-				if ($result) {
-					return true;
+			} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
+				$state = await($this->channelPropertiesStatesManager->read($property));
+
+				if ($state === null) {
+					continue;
 				}
 
-				continue;
+				$characteristicValue = $state->getExpectedValue() ?? ($state->isValid() ? $state->getActualValue() : null);
+
+			} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
+				$state = await($this->devicePropertiesStatesManager->get($property));
+
+				if ($state === null) {
+					continue;
+				}
+
+				$characteristicValue = $state->getExpectedValue();
+
+			} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+				$state = await($this->channelPropertiesStatesManager->get($property));
+
+				if ($state === null) {
+					continue;
+				}
+
+				$characteristicValue = $state->getExpectedValue();
+
 			} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty) {
 				$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
 				$findDevicePropertyQuery->byId($property->getId());
@@ -290,6 +299,7 @@ abstract class Periodic
 											'connector' => $device->getConnector(),
 											'device' => $device->getId(),
 											'property' => $property->getId(),
+											'state' => $state?->toArray(),
 										],
 									),
 								);
@@ -306,6 +316,7 @@ abstract class Periodic
 											'device' => $device->getId(),
 											'channel' => $property->getChannel(),
 											'property' => $property->getId(),
+											'state' => $state?->toArray(),
 										],
 									),
 								);

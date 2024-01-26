@@ -23,7 +23,6 @@ use FastyBird\Connector\FbMqtt\Queue;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -53,6 +52,8 @@ abstract class Periodic
 	private const HANDLER_DEBOUNCE_INTERVAL = 2_500.0;
 
 	private const HANDLER_PROCESSING_INTERVAL = 0.01;
+
+	private const HANDLER_PENDING_DELAY = 2_000.0;
 
 	/** @var array<string, MetadataDocuments\DevicesModule\Device>  */
 	private array $devices = [];
@@ -215,24 +216,121 @@ abstract class Periodic
 			$this->processedProperties[$property->getId()->toString()] = $now;
 
 			if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-				$result = await($this->devicePropertiesStatesManager->request(
-					$property,
-					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT),
-				));
-
-				if ($result) {
+				if ($this->writeDeviceProperty($device, $property)) {
 					return true;
 				}
 			} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-				$result = await($this->channelPropertiesStatesManager->request(
-					$property,
-					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT),
-				));
-
-				if ($result) {
+				if ($this->writeChannelProperty($device, $property)) {
 					return true;
 				}
 			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidArgument
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\Runtime
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
+	 */
+	private function writeDeviceProperty(
+		MetadataDocuments\DevicesModule\Device $device,
+		MetadataDocuments\DevicesModule\DeviceDynamicProperty $property,
+	): bool
+	{
+		$now = $this->dateTimeFactory->getNow();
+
+		$state = await($this->devicePropertiesStatesManager->get($property));
+
+		if ($state === null) {
+			return false;
+		}
+
+		if ($state->getExpectedValue() === null) {
+			return false;
+		}
+
+		$pending = $state->getPending();
+
+		if (
+			$pending === true
+			|| (
+				$pending instanceof DateTimeInterface
+				&& (float) $now->format('Uv') - (float) $pending->format('Uv') > self::HANDLER_PENDING_DELAY
+			)
+		) {
+			$this->queue->append(
+				$this->entityHelper->create(
+					Entities\Messages\WriteDevicePropertyState::class,
+					[
+						'connector' => $device->getConnector(),
+						'device' => $device->getId(),
+						'property' => $property->getId(),
+						'state' => $state->toArray(),
+					],
+				),
+			);
+
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * @throws DevicesExceptions\InvalidArgument
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\Runtime
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
+	 */
+	private function writeChannelProperty(
+		MetadataDocuments\DevicesModule\Device $device,
+		MetadataDocuments\DevicesModule\ChannelDynamicProperty $property,
+	): bool
+	{
+		$now = $this->dateTimeFactory->getNow();
+
+		$state = await($this->channelPropertiesStatesManager->get($property));
+
+		if ($state === null) {
+			return false;
+		}
+
+		if ($state->getExpectedValue() === null) {
+			return false;
+		}
+
+		$pending = $state->getPending();
+
+		if (
+			$pending === true
+			|| (
+				$pending instanceof DateTimeInterface
+				&& (float) $now->format('Uv') - (float) $pending->format('Uv') > self::HANDLER_PENDING_DELAY
+			)
+		) {
+			$this->queue->append(
+				$this->entityHelper->create(
+					Entities\Messages\WriteChannelPropertyState::class,
+					[
+						'connector' => $device->getConnector(),
+						'device' => $device->getId(),
+						'channel' => $property->getChannel(),
+						'property' => $property->getId(),
+						'state' => $state->toArray(),
+					],
+				),
+			);
+
+			return true;
 		}
 
 		return false;
