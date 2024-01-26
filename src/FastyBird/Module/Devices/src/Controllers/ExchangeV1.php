@@ -15,6 +15,7 @@
 
 namespace FastyBird\Module\Devices\Controllers;
 
+use DateTimeInterface;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
@@ -390,8 +391,8 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 					'id' => $property->getId()->toString(),
 					'connector' => $property->getConnector()->toString(),
 					'read' => $state->toArray(),
-					'created_at' => $state->getCreatedAt(),
-					'updated_at' => $state->getUpdatedAt(),
+					'created_at' => $state->getCreatedAt()?->format(DateTimeInterface::ATOM),
+					'updated_at' => $state->getUpdatedAt()?->format(DateTimeInterface::ATOM),
 				]),
 				$publishRoutingKey,
 			);
@@ -488,8 +489,8 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 					'id' => $property->getId()->toString(),
 					'device' => $property->getDevice()->toString(),
 					'read' => $state->toArray(),
-					'created_at' => $state->getCreatedAt(),
-					'updated_at' => $state->getUpdatedAt(),
+					'created_at' => $state->getCreatedAt()?->format(DateTimeInterface::ATOM),
+					'updated_at' => $state->getUpdatedAt()?->format(DateTimeInterface::ATOM),
 				]),
 				$publishRoutingKey,
 			);
@@ -586,8 +587,8 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 					'id' => $property->getId()->toString(),
 					'channel' => $property->getChannel()->toString(),
 					'read' => $state->toArray(),
-					'created_at' => $state->getCreatedAt(),
-					'updated_at' => $state->getUpdatedAt(),
+					'created_at' => $state->getCreatedAt()?->format(DateTimeInterface::ATOM),
+					'updated_at' => $state->getUpdatedAt()?->format(DateTimeInterface::ATOM),
 				]),
 				$publishRoutingKey,
 			);

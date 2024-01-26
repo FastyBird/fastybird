@@ -15,6 +15,7 @@
 
 namespace FastyBird\Module\Devices\Subscribers;
 
+use DateTimeInterface;
 use Exception;
 use FastyBird\Library\Application\Events as ApplicationEvents;
 use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
@@ -171,8 +172,8 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 							'id' => $property->getId()->toString(),
 							'read' => $readState->toArray(),
 							'get' => $getState?->toArray(),
-							'created_at' => $readState->getCreatedAt(),
-							'updated_at' => $readState->getUpdatedAt(),
+							'created_at' => $readState->getCreatedAt()?->format(DateTimeInterface::ATOM),
+							'updated_at' => $readState->getUpdatedAt()?->format(DateTimeInterface::ATOM),
 						],
 						$property instanceof MetadataDocuments\DevicesModule\ConnectorProperty
 							? ['connector' => $property->getConnector()->toString()]

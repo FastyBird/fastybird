@@ -15,6 +15,7 @@
 
 namespace FastyBird\Module\Devices\Consumers;
 
+use DateTimeInterface;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
 use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
@@ -186,8 +187,8 @@ final class State implements ExchangeConsumers\Consumer
 										'connector' => $property->getConnector()->toString(),
 										'read' => $readState->toArray(),
 										'get' => $getState?->toArray(),
-										'created_at' => $readState->getCreatedAt(),
-										'updated_at' => $readState->getUpdatedAt(),
+										'created_at' => $readState->getCreatedAt()?->format(DateTimeInterface::ATOM),
+										'updated_at' => $readState->getUpdatedAt()?->format(DateTimeInterface::ATOM),
 									]),
 									$publishRoutingKey,
 								),
@@ -302,8 +303,8 @@ final class State implements ExchangeConsumers\Consumer
 										'device' => $property->getDevice()->toString(),
 										'read' => $readState->toArray(),
 										'get' => $getState?->toArray(),
-										'created_at' => $readState->getCreatedAt(),
-										'updated_at' => $readState->getUpdatedAt(),
+										'created_at' => $readState->getCreatedAt()?->format(DateTimeInterface::ATOM),
+										'updated_at' => $readState->getUpdatedAt()?->format(DateTimeInterface::ATOM),
 									]),
 									$publishRoutingKey,
 								),
@@ -418,8 +419,8 @@ final class State implements ExchangeConsumers\Consumer
 										'channel' => $property->getChannel()->toString(),
 										'read' => $readState->toArray(),
 										'get' => $getState?->toArray(),
-										'created_at' => $readState->getCreatedAt(),
-										'updated_at' => $readState->getUpdatedAt(),
+										'created_at' => $readState->getCreatedAt()?->format(DateTimeInterface::ATOM),
+										'updated_at' => $readState->getUpdatedAt()?->format(DateTimeInterface::ATOM),
 									]),
 									$publishRoutingKey,
 								),

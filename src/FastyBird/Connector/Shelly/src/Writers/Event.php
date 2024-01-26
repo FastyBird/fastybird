@@ -49,6 +49,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 	 * @throws Exceptions\Runtime
 	 */
 	public function stateChanged(
+		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		DevicesEvents\ChannelPropertyStateEntityCreated|DevicesEvents\ChannelPropertyStateEntityUpdated|DevicesEvents\ChannelPropertyStateEntityReported $event,
 	): void
 	{
