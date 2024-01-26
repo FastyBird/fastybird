@@ -42,6 +42,7 @@ use function assert;
 use function in_array;
 use function is_int;
 use function is_numeric;
+use function React\Async\async;
 
 /**
  * Modbus RTU devices client interface
@@ -136,9 +137,9 @@ class Rtu implements Client
 
 		$this->eventLoop->addTimer(
 			self::HANDLER_START_DELAY,
-			function (): void {
+			async(function (): void {
 				$this->registerLoopHandler();
-			},
+			}),
 		);
 	}
 
@@ -645,13 +646,13 @@ class Rtu implements Client
 	{
 		$this->handlerTimer = $this->eventLoop->addTimer(
 			self::HANDLER_PROCESSING_INTERVAL,
-			function (): void {
+			async(function (): void {
 				if ($this->closed) {
 					return;
 				}
 
 				$this->handleCommunication();
-			},
+			}),
 		);
 	}
 

@@ -39,6 +39,7 @@ use React\Promise;
 use RuntimeException;
 use Throwable;
 use function in_array;
+use function React\Async\async;
 
 /**
  * Lan client
@@ -92,9 +93,9 @@ final class Lan extends ClientProcess implements Client
 
 			$this->eventLoop->addTimer(
 				self::HANDLER_START_DELAY,
-				function (): void {
+				async(function (): void {
 					$this->registerLoopHandler();
-				},
+				}),
 			);
 
 			$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();

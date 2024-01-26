@@ -41,6 +41,7 @@ use function array_key_exists;
 use function in_array;
 use function is_string;
 use function preg_match;
+use function React\Async\async;
 use function strval;
 
 /**
@@ -115,9 +116,9 @@ final class Gateway implements Client
 
 		$this->eventLoop->addTimer(
 			self::HANDLER_START_DELAY,
-			function (): void {
+			async(function (): void {
 				$this->registerLoopHandler();
-			},
+			}),
 		);
 	}
 
@@ -602,9 +603,9 @@ final class Gateway implements Client
 	{
 		$this->handlerTimer = $this->eventLoop->addTimer(
 			self::HANDLER_PROCESSING_INTERVAL,
-			function (): void {
+			async(function (): void {
 				$this->handleCommunication();
-			},
+			}),
 		);
 	}
 

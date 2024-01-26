@@ -31,6 +31,7 @@ use Nette;
 use React\EventLoop;
 use function array_key_exists;
 use function in_array;
+use function React\Async\async;
 
 /**
  * Periodic properties writer
@@ -126,9 +127,9 @@ abstract class Periodic
 
 		$this->eventLoop->addTimer(
 			self::HANDLER_START_DELAY,
-			function (): void {
+			async(function (): void {
 				$this->registerLoopHandler();
-			},
+			}),
 		);
 	}
 
@@ -245,9 +246,9 @@ abstract class Periodic
 	{
 		$this->handlerTimer = $this->eventLoop->addTimer(
 			self::HANDLER_PROCESSING_INTERVAL,
-			function (): void {
+			async(function (): void {
 				$this->handleCommunication();
-			},
+			}),
 		);
 	}
 

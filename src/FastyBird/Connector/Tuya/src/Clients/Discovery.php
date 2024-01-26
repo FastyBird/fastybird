@@ -185,7 +185,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					// Searching timeout
 					$this->handlerTimer[$protocolVersion] = $this->eventLoop->addTimer(
 						self::UDP_TIMEOUT,
-						function () use ($deferred, $protocolVersion): void {
+						async(function () use ($deferred, $protocolVersion): void {
 							if (array_key_exists($protocolVersion, $this->handlerTimer)) {
 								$this->eventLoop->cancelTimer($this->handlerTimer[$protocolVersion]);
 
@@ -193,7 +193,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 							}
 
 							$deferred->resolve(true);
-						},
+						}),
 					);
 				})
 				->catch(function (Throwable $ex) use ($deferred, $protocolVersion): void {

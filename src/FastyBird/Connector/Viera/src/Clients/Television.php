@@ -40,6 +40,7 @@ use function array_key_exists;
 use function assert;
 use function in_array;
 use function is_string;
+use function React\Async\async;
 
 /**
  * Television client
@@ -156,9 +157,9 @@ final class Television implements Client
 
 		$this->eventLoop->addTimer(
 			self::HANDLER_START_DELAY,
-			function (): void {
+			async(function (): void {
 				$this->registerLoopHandler();
-			},
+			}),
 		);
 	}
 
@@ -632,9 +633,9 @@ final class Television implements Client
 	{
 		$this->handlerTimer = $this->eventLoop->addTimer(
 			self::HANDLER_PROCESSING_INTERVAL,
-			function (): void {
+			async(function (): void {
 				$this->handleCommunication();
-			},
+			}),
 		);
 	}
 

@@ -38,6 +38,7 @@ use React\EventLoop;
 use Throwable;
 use function array_key_exists;
 use function in_array;
+use function React\Async\async;
 
 /**
  * Devices service
@@ -104,9 +105,9 @@ class Devices
 
 		$this->eventLoop->addTimer(
 			self::HANDLER_START_DELAY,
-			function (): void {
+			async(function (): void {
 				$this->registerLoopHandler();
-			},
+			}),
 		);
 	}
 
@@ -321,9 +322,9 @@ class Devices
 	{
 		$this->handlerTimer = $this->eventLoop->addTimer(
 			self::HANDLER_PROCESSING_INTERVAL,
-			function (): void {
+			async(function (): void {
 				$this->handleDevices();
-			},
+			}),
 		);
 	}
 

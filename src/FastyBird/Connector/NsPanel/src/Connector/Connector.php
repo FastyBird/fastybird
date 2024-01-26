@@ -154,7 +154,7 @@ final class Connector implements DevicesConnectors\Connector
 			$mode->equalsValue(NsPanel\Types\ClientMode::BOTH)
 			|| $mode->equalsValue(NsPanel\Types\ClientMode::DEVICE)
 		) {
-			$this->eventLoop->addTimer(1, function (): void {
+			$this->eventLoop->addTimer(1, async(function (): void {
 				$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
 				$findDevicesQuery->forConnector($this->connector);
 				$findDevicesQuery->byType(Entities\Devices\ThirdPartyDevice::TYPE);
@@ -203,7 +203,7 @@ final class Connector implements DevicesConnectors\Connector
 						}
 					}
 				}
-			});
+			}));
 		}
 
 		$this->logger->info(

@@ -37,6 +37,7 @@ use React\EventLoop;
 use React\Promise;
 use RuntimeException;
 use Throwable;
+use function React\Async\async;
 
 /**
  * Cloud client
@@ -90,9 +91,9 @@ final class Cloud extends ClientProcess implements Client
 
 			$this->eventLoop->addTimer(
 				self::HANDLER_START_DELAY,
-				function (): void {
+				async(function (): void {
 					$this->registerLoopHandler();
-				},
+				}),
 			);
 
 			$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();

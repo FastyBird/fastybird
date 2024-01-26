@@ -62,6 +62,7 @@ use function preg_match_all;
 use function preg_replace;
 use function preg_split;
 use function property_exists;
+use function React\Async\async;
 use function simplexml_load_string;
 use function sprintf;
 use function str_contains;
@@ -965,14 +966,17 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 
 		$result = false;
 
-		$timeoutTimer = $this->eventLoop->addTimer($timeout, function () use ($deferred, $runLoop, &$result): void {
-			$deferred->resolve(false);
-			$result = false;
+		$timeoutTimer = $this->eventLoop->addTimer(
+			$timeout,
+			async(function () use ($deferred, $runLoop, &$result): void {
+				$deferred->resolve(false);
+				$result = false;
 
-			if ($runLoop) {
-				$this->eventLoop->stop();
-			}
-		});
+				if ($runLoop) {
+					$this->eventLoop->stop();
+				}
+			}),
+		);
 
 		try {
 			$this->socketClientFactory
@@ -1071,7 +1075,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 			}
 		}
 
-		$this->eventLoop->addTimer(1.5, function () use ($deferred, $runLoop, &$result, $doUnsubscribe): void {
+		$this->eventLoop->addTimer(1.5, async(function () use ($deferred, $runLoop, &$result, $doUnsubscribe): void {
 			if ($doUnsubscribe) {
 				$this->unsubscribeEvents();
 			}
@@ -1082,7 +1086,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 			if ($runLoop) {
 				$this->eventLoop->stop();
 			}
-		});
+		}));
 
 		if ($runLoop) {
 			$this->eventLoop->run();

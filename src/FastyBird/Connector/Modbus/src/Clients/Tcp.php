@@ -43,6 +43,7 @@ use function assert;
 use function in_array;
 use function is_int;
 use function is_string;
+use function React\Async\async;
 
 /**
  * Modbus TCP devices client interface
@@ -132,9 +133,9 @@ class Tcp implements Client
 
 		$this->eventLoop->addTimer(
 			self::HANDLER_START_DELAY,
-			function (): void {
+			async(function (): void {
 				$this->registerLoopHandler();
-			},
+			}),
 		);
 	}
 
@@ -662,13 +663,13 @@ class Tcp implements Client
 	{
 		$this->handlerTimer = $this->eventLoop->addTimer(
 			self::HANDLER_PROCESSING_INTERVAL,
-			function (): void {
+			async(function (): void {
 				if ($this->closed) {
 					return;
 				}
 
 				$this->handleCommunication();
-			},
+			}),
 		);
 	}
 
