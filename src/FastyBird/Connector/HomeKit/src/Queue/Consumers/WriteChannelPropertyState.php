@@ -232,11 +232,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 							if ($entity->getState() !== null) {
 								if ($entity->getState()->getExpectedValue() !== null) {
 									$characteristic->setActualValue($entity->getState()->getExpectedValue());
+									$characteristic->setValid($entity->getState()->isValid());
 								} elseif (
 									$entity->getState()->getActualValue() !== null
 									&& $entity->getState()->isValid()
 								) {
 									$characteristic->setActualValue($entity->getState()->getActualValue());
+									$characteristic->setValid($entity->getState()->isValid());
 								}
 							} else {
 								$this->logger->warning(
@@ -264,11 +266,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 							}
 						} elseif ($parent instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
 							$characteristic->setActualValue($parent->getValue());
+							$characteristic->setValid(true);
 						}
 					} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
 						if ($entity->getState() !== null) {
 							if ($entity->getState()->getExpectedValue() !== null) {
 								$characteristic->setActualValue($entity->getState()->getExpectedValue());
+								$characteristic->setValid(true);
 							}
 						} else {
 							$this->logger->warning(
@@ -296,6 +300,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						}
 					} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
 						$characteristic->setActualValue($property->getValue());
+						$characteristic->setValid(true);
 					}
 
 					if (!$characteristic->isVirtual()) {

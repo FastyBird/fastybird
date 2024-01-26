@@ -69,6 +69,8 @@ class Characteristic
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 	private bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $actualValue = null;
 
+	private bool $valid = true;
+
 	/**
 	 * @param array<string> $permissions
 	 * @param array<int>|null $validValues
@@ -184,6 +186,16 @@ class Characteristic
 		$this->setValue($value);
 
 		$this->service->recalculateValues($this, false);
+	}
+
+	public function setValid(bool $state): void
+	{
+		$this->valid = $state;
+	}
+
+	public function isValid(): bool
+	{
+		return $this->valid;
 	}
 
 	public function isAlwaysNull(): bool

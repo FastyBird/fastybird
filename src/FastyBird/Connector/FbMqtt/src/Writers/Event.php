@@ -40,8 +40,10 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 		return [
 			DevicesEvents\DevicePropertyStateEntityCreated::class => 'stateChanged',
 			DevicesEvents\DevicePropertyStateEntityUpdated::class => 'stateChanged',
+			DevicesEvents\DevicePropertyStateEntityReported::class => 'stateChanged',
 			DevicesEvents\ChannelPropertyStateEntityCreated::class => 'stateChanged',
 			DevicesEvents\ChannelPropertyStateEntityUpdated::class => 'stateChanged',
+			DevicesEvents\ChannelPropertyStateEntityReported::class => 'stateChanged',
 		];
 	}
 

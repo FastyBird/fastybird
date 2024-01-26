@@ -30,9 +30,6 @@ use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
-use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
-use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
-use FastyBird\Module\Devices\Models as DevicesModels;
 use Fig\Http\Message\StatusCodeInterface;
 use InvalidArgumentException;
 use IPub\SlimRouter;
@@ -68,7 +65,6 @@ final class CharacteristicsController extends BaseController
 		private readonly Queue\Queue $queue,
 		private readonly Protocol\Driver $accessoryDriver,
 		private readonly Clients\Subscriber $subscriber,
-		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
@@ -76,13 +72,10 @@ final class CharacteristicsController extends BaseController
 	}
 
 	/**
-	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\HapRequestError
 	 * @throws Exceptions\InvalidState
 	 * @throws InvalidArgumentException
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws Utils\JsonException
 	 */
 	public function index(
@@ -425,12 +418,8 @@ final class CharacteristicsController extends BaseController
 	/**
 	 * @return array<string, (bool|int|array<int>|float|string|array<string>|null)>
 	 *
-	 * @throws DevicesExceptions\InvalidArgument
-	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	private function readCharacteristic(
 		Uuid\UuidInterface $connectorId,
@@ -456,16 +445,10 @@ final class CharacteristicsController extends BaseController
 			return $representation;
 		}
 
-		$property = $characteristic->getProperty();
+		if (!$characteristic->isValid()) {
+			$representation[Types\Representation::STATUS] = Types\ServerStatus::OPERATION_TIMED_OUT;
 
-		if ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
-			$state = $this->channelPropertiesStatesManager->read($property);
-
-			if ($state === null || !$state->isValid()) {
-				$representation[Types\Representation::STATUS] = Types\ServerStatus::OPERATION_TIMED_OUT;
-
-				return $representation;
-			}
+			return $representation;
 		}
 
 		$value = Protocol\Transformer::toClient(

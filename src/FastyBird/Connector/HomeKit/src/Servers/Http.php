@@ -262,12 +262,14 @@ final class Http implements Server
 
 					if ($property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
 						$characteristic->setActualValue($property->getValue());
+						$characteristic->setValid(true);
 					} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
 						try {
 							$state = $this->channelPropertiesStatesManager->get($property);
 
 							if ($state !== null) {
 								$characteristic->setActualValue($state->getExpectedValue() ?? $state->getActualValue());
+								$characteristic->setValid(true);
 							}
 						} catch (Exceptions\InvalidState $ex) {
 							$this->logger->warning(
@@ -307,6 +309,7 @@ final class Http implements Server
 									$characteristic->setActualValue(
 										$state->getExpectedValue() ?? ($state->isValid() ? $state->getActualValue() : null),
 									);
+									$characteristic->setValid($state->isValid());
 								}
 							} catch (Exceptions\InvalidState $ex) {
 								$this->logger->warning(
@@ -334,6 +337,7 @@ final class Http implements Server
 							}
 						} elseif ($parent instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
 							$characteristic->setActualValue($parent->getValue());
+							$characteristic->setValid(true);
 						}
 					}
 				}
