@@ -89,14 +89,14 @@ final class ConnectorPropertiesManager extends PropertiesManager
 			try {
 				$this->publisher->publish(
 					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
-					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION),
+					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_ACTION),
 					$this->documentFactory->create(
 						Utils\Json::encode([
 							'action' => MetadataTypes\PropertyAction::GET,
 							'connector' => $property->getConnector()->toString(),
 							'property' => $property->getId()->toString(),
 						]),
-						MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION),
+						MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_ACTION),
 					),
 				);
 			} catch (Throwable $ex) {
