@@ -690,8 +690,8 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 							}
 						}
 
-						$readValue = $this->convertStoredState($property, $mappedProperty, $result, true);
-						$getValue = $this->convertStoredState($property, $mappedProperty, $result, false);
+						$readValue = $this->convertStoredState($property, null, $result, true);
+						$getValue = $this->convertStoredState($property, null, $result, false);
 
 						if ($state === null) {
 							$this->dispatcher?->dispatch(
