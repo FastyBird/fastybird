@@ -60,4 +60,20 @@ final class Constants
 
 	public const VALUE_NOT_SET = 'value_not_set';
 
+	/**
+	 * Server
+	 */
+
+	public const DEFAULT_SERVER_ADDRESS = '127.0.0.1';
+
+	public const DEFAULT_SERVER_PORT = 1_883;
+
+	public const DEFAULT_SERVER_SECURED_PORT = 8_883;
+
+	/**
+	 * Misc
+	 */
+
+	public const WRITE_DEBOUNCE_DELAY = 2_000.0;
+
 }

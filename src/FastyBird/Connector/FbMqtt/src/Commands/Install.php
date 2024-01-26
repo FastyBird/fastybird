@@ -1207,7 +1207,7 @@ class Install extends Console\Command\Command
 	{
 		$question = new Console\Question\Question(
 			$this->translator->translate('//fb-mqtt-connector.cmd.install.questions.provide.connector.address'),
-			$connector?->getServerAddress() ?? Entities\FbMqttConnector::DEFAULT_SERVER_ADDRESS,
+			$connector?->getServerAddress() ?? FbMqtt\Constants::DEFAULT_SERVER_ADDRESS,
 		);
 		$question->setValidator(function (string|null $answer): string {
 			if ($answer === '' || $answer === null) {
@@ -1236,7 +1236,7 @@ class Install extends Console\Command\Command
 	{
 		$question = new Console\Question\Question(
 			$this->translator->translate('//fb-mqtt-connector.cmd.install.questions.provide.connector.port'),
-			$connector?->getServerPort() ?? Entities\FbMqttConnector::DEFAULT_SERVER_PORT,
+			$connector?->getServerPort() ?? FbMqtt\Constants::DEFAULT_SERVER_PORT,
 		);
 		$question->setValidator(function (string|null $answer): string {
 			if ($answer === '' || $answer === null) {
@@ -1265,7 +1265,7 @@ class Install extends Console\Command\Command
 	{
 		$question = new Console\Question\Question(
 			$this->translator->translate('//fb-mqtt-connector.cmd.install.questions.provide.connector.securedPort'),
-			$connector?->getServerSecuredPort() ?? Entities\FbMqttConnector::DEFAULT_SERVER_SECURED_PORT,
+			$connector?->getServerSecuredPort() ?? FbMqtt\Constants::DEFAULT_SERVER_SECURED_PORT,
 		);
 		$question->setValidator(function (string|null $answer): string {
 			if ($answer === '' || $answer === null) {

@@ -50,8 +50,6 @@ final class WriteV1DevicePropertyState implements Queue\Consumer
 
 	use Nette\SmartObject;
 
-	private const WRITE_PENDING_DELAY = 2_000.0;
-
 	public function __construct(
 		private readonly API\ConnectionManager $connectionManager,
 		private readonly Helpers\Connector $connectorHelper,
@@ -218,7 +216,7 @@ final class WriteV1DevicePropertyState implements Queue\Consumer
 			$pending === false
 			|| (
 				$pending instanceof DateTimeInterface
-				&& (float) $now->format('Uv') - (float) $pending->format('Uv') <= self::WRITE_PENDING_DELAY
+				&& (float) $now->format('Uv') - (float) $pending->format('Uv') <= FbMqtt\Constants::WRITE_DEBOUNCE_DELAY
 			)
 		) {
 			return true;

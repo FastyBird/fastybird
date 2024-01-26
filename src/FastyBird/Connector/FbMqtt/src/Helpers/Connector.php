@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\FbMqtt\Helpers;
 
-use FastyBird\Connector\FbMqtt\Entities;
+use FastyBird\Connector\FbMqtt;
 use FastyBird\Connector\FbMqtt\Exceptions;
 use FastyBird\Connector\FbMqtt\Types;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
@@ -87,7 +87,7 @@ final class Connector
 		);
 
 		if ($property?->getValue() === null) {
-			return Entities\FbMqttConnector::DEFAULT_SERVER_ADDRESS;
+			return FbMqtt\Constants::DEFAULT_SERVER_ADDRESS;
 		}
 
 		$value = $property->getValue();
@@ -113,7 +113,7 @@ final class Connector
 		);
 
 		if ($property?->getValue() === null) {
-			return Entities\FbMqttConnector::DEFAULT_SERVER_PORT;
+			return FbMqtt\Constants::DEFAULT_SERVER_PORT;
 		}
 
 		$value = $property->getValue();
@@ -139,7 +139,7 @@ final class Connector
 		);
 
 		if ($property?->getValue() === null) {
-			return Entities\FbMqttConnector::DEFAULT_SERVER_PORT;
+			return FbMqtt\Constants::DEFAULT_SERVER_PORT;
 		}
 
 		$value = $property->getValue();
