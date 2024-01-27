@@ -91,7 +91,7 @@ final class DevicePropertyStateV1 extends BaseV1
 			);
 		}
 
-		$state = $this->devicePropertiesStatesManager->read($property);
+		$state = $this->devicePropertiesStatesManager->readState($property);
 
 		if ($state === null) {
 			throw new JsonApiExceptions\JsonApiError(

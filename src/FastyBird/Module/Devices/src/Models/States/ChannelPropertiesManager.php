@@ -18,7 +18,6 @@ namespace FastyBird\Module\Devices\Models\States;
 use DateTimeInterface;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -64,8 +63,8 @@ final class ChannelPropertiesManager extends PropertiesManager
 		private readonly Channels\Repository $channelPropertyStateRepository,
 		private readonly Channels\Manager $channelPropertiesStatesManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
+		private readonly MetadataDocuments\DocumentFactory $documentFactory,
 		private readonly ExchangePublisher\Publisher $publisher,
-		private readonly ExchangeDocuments\DocumentFactory $documentFactory,
 		Devices\Logger $logger,
 		ObjectMapper\Processing\Processor $stateMapper,
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
@@ -95,12 +94,12 @@ final class ChannelPropertiesManager extends PropertiesManager
 					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION),
 					$this->documentFactory->create(
-						Utils\ArrayHash::from([
+						MetadataDocuments\Actions\ActionChannelProperty::class,
+						[
 							'action' => MetadataTypes\PropertyAction::GET,
 							'channel' => $property->getChannel()->toString(),
 							'property' => $property->getId()->toString(),
-						]),
-						MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION),
+						],
 					),
 				);
 			} catch (Throwable $ex) {
@@ -164,6 +163,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function publish(
@@ -172,60 +172,14 @@ final class ChannelPropertiesManager extends PropertiesManager
 		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source = null,
 	): bool
 	{
-		$mappedProperty = null;
-
-		if ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
-			$parent = $this->channelPropertiesConfigurationRepository->find($property->getParent());
-
-			if (!$parent instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-				throw new Exceptions\InvalidState('Mapped property parent could not be loaded');
-			}
-
-			$mappedProperty = $property;
-
-			$property = $parent;
-		}
-
-		try {
-			$state = $this->channelPropertyStateRepository->find($property->getId());
-
-		} catch (Exceptions\NotImplemented) {
-			$this->logger->warning(
-				'Channels states repository is not configured. State could not be fetched',
-				[
-					'source' => MetadataTypes\ModuleSource::DEVICES,
-					'type' => 'channel-properties-states',
-				],
-			);
-
-			return false;
-		}
-
-		if ($state === null) {
-			return false;
-		}
-
-		$readValue = $this->convertStoredState($property, $mappedProperty, $state, true);
-		$getValue = $this->convertStoredState($property, $mappedProperty, $state, false);
-
 		if ($this->useExchange) {
+			$state = $this->readState($property);
+
 			try {
 				$this->publisher->publish(
 					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CHANNEL_PROPERTY_STATE_DOCUMENT_REPORTED),
-					$this->documentFactory->create(
-						Utils\ArrayHash::from([
-							'id' => $property->getId()->toString(),
-							'channel' => $property->getChannel()->toString(),
-							'read' => $readValue->toArray(),
-							'get' => $getValue->toArray(),
-							'created_at' => $readValue->getCreatedAt()?->format(DateTimeInterface::ATOM),
-							'updated_at' => $readValue->getUpdatedAt()?->format(DateTimeInterface::ATOM),
-						]),
-						MetadataTypes\RoutingKey::get(
-							MetadataTypes\RoutingKey::CHANNEL_PROPERTY_STATE_DOCUMENT_REPORTED,
-						),
-					),
+					$state,
 				);
 			} catch (Throwable $ex) {
 				throw new Exceptions\InvalidState(
@@ -235,6 +189,42 @@ final class ChannelPropertiesManager extends PropertiesManager
 				);
 			}
 		} else {
+			$mappedProperty = null;
+
+			if ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
+				$parent = $this->channelPropertiesConfigurationRepository->find($property->getParent());
+
+				if (!$parent instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+					throw new Exceptions\InvalidState('Mapped property parent could not be loaded');
+				}
+
+				$mappedProperty = $property;
+
+				$property = $parent;
+			}
+
+			try {
+				$state = $this->channelPropertyStateRepository->find($property->getId());
+
+			} catch (Exceptions\NotImplemented) {
+				$this->logger->warning(
+					'Channels states repository is not configured. State could not be fetched',
+					[
+						'source' => MetadataTypes\ModuleSource::DEVICES,
+						'type' => 'channel-properties-states',
+					],
+				);
+
+				return false;
+			}
+
+			if ($state === null) {
+				return false;
+			}
+
+			$readValue = $this->convertStoredState($property, $mappedProperty, $state, true);
+			$getValue = $this->convertStoredState($property, $mappedProperty, $state, false);
+
 			$this->dispatcher?->dispatch(new Events\ChannelPropertyStateEntityReported(
 				$property,
 				$readValue,
@@ -256,9 +246,9 @@ final class ChannelPropertiesManager extends PropertiesManager
 	public function read(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
-	): States\ChannelProperty|null
+	): MetadataDocuments\DevicesModule\PropertyValues|null
 	{
-		return $this->loadValue($property, true);
+		return $this->readState($property)?->getRead();
 	}
 
 	/**
@@ -272,9 +262,9 @@ final class ChannelPropertiesManager extends PropertiesManager
 	public function get(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
-	): States\ChannelProperty|null
+	): MetadataDocuments\DevicesModule\PropertyValues|null
 	{
-		return $this->loadValue($property, false);
+		return $this->readState($property)?->getGet();
 	}
 
 	/**
@@ -297,7 +287,8 @@ final class ChannelPropertiesManager extends PropertiesManager
 					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION),
 					$this->documentFactory->create(
-						Utils\ArrayHash::from(array_merge(
+						MetadataDocuments\Actions\ActionChannelProperty::class,
+						array_merge(
 							[
 								'action' => MetadataTypes\PropertyAction::SET,
 								'channel' => $property->getChannel()->toString(),
@@ -312,8 +303,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 									(array) $data,
 								),
 							],
-						)),
-						MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION),
+						),
 					),
 				);
 			} catch (Throwable $ex) {
@@ -324,7 +314,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 				);
 			}
 		} else {
-			$this->saveValue($property, $data, true);
+			$this->writeState($property, $data, true);
 		}
 	}
 
@@ -348,7 +338,8 @@ final class ChannelPropertiesManager extends PropertiesManager
 					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION),
 					$this->documentFactory->create(
-						Utils\ArrayHash::from(array_merge(
+						MetadataDocuments\TriggersModule\ChannelPropertyAction::class,
+						array_merge(
 							[
 								'action' => MetadataTypes\PropertyAction::SET,
 								'channel' => $property->getChannel()->toString(),
@@ -363,8 +354,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 									(array) $data,
 								),
 							],
-						)),
-						MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION),
+						),
 					),
 				);
 			} catch (Throwable $ex) {
@@ -375,7 +365,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 				);
 			}
 		} else {
-			$this->saveValue($property, $data, false);
+			$this->writeState($property, $data, false);
 		}
 	}
 
@@ -391,6 +381,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 	public function setValidState(
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|array $property,
 		bool $state,
+		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source = null,
 	): void
 	{
 		if (is_array($property)) {
@@ -400,6 +391,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 					Utils\ArrayHash::from([
 						States\Property::VALID_FIELD => $state,
 					]),
+					$source,
 				);
 			}
 		} else {
@@ -408,6 +400,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 				Utils\ArrayHash::from([
 					States\Property::VALID_FIELD => $state,
 				]),
+				$source,
 			);
 		}
 	}
@@ -424,6 +417,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 	public function setPendingState(
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|array $property,
 		bool $pending,
+		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source = null,
 	): void
 	{
 		if (is_array($property)) {
@@ -435,6 +429,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 							States\Property::EXPECTED_VALUE_FIELD => null,
 							States\Property::PENDING_FIELD => false,
 						]),
+						$source,
 					);
 				} else {
 					$this->set(
@@ -444,6 +439,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 								DateTimeInterface::ATOM,
 							),
 						]),
+						$source,
 					);
 				}
 			}
@@ -455,6 +451,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 						States\Property::EXPECTED_VALUE_FIELD => null,
 						States\Property::PENDING_FIELD => false,
 					]),
+					$source,
 				);
 			} else {
 				$this->set(
@@ -464,6 +461,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 							DateTimeInterface::ATOM,
 						),
 					]),
+					$source,
 				);
 			}
 		}
@@ -509,11 +507,10 @@ final class ChannelPropertiesManager extends PropertiesManager
 	 *
 	 * @interal
 	 */
-	public function loadValue(
+	public function readState(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
-		bool $forReading,
-	): States\ChannelProperty|null
+	): MetadataDocuments\DevicesModule\ChannelPropertyState|null
 	{
 		$mappedProperty = null;
 
@@ -549,11 +546,19 @@ final class ChannelPropertiesManager extends PropertiesManager
 				return null;
 			}
 
-			return $this->convertStoredState(
-				$property,
-				$mappedProperty,
-				$state,
-				$forReading,
+			$readValue = $this->convertStoredState($property, $mappedProperty, $state, true);
+			$getValue = $this->convertStoredState($property, $mappedProperty, $state, false);
+
+			return $this->documentFactory->create(
+				MetadataDocuments\DevicesModule\ChannelPropertyState::class,
+				[
+					'id' => $property->getId()->toString(),
+					'channel' => $property->getChannel()->toString(),
+					'read' => $readValue->toArray(),
+					'get' => $getValue->toArray(),
+					'created_at' => $readValue->getCreatedAt()?->format(DateTimeInterface::ATOM),
+					'updated_at' => $readValue->getUpdatedAt()?->format(DateTimeInterface::ATOM),
+				],
 			);
 		} catch (Exceptions\InvalidActualValue $ex) {
 			try {
@@ -571,7 +576,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 					],
 				);
 
-				return $this->loadValue($property, $forReading);
+				return $this->readState($property);
 			} catch (Exceptions\NotImplemented) {
 				$this->logger->warning(
 					'Channels states manager is not configured. State could not be fetched',
@@ -599,7 +604,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 					],
 				);
 
-				return $this->loadValue($property, $forReading);
+				return $this->readState($property);
 			} catch (Exceptions\NotImplemented) {
 				$this->logger->warning(
 					'Channels states manager is not configured. State could not be fetched',
@@ -623,7 +628,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 	 *
 	 * @interal
 	 */
-	public function saveValue(
+	public function writeState(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
 		Utils\ArrayHash $data,

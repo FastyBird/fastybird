@@ -18,7 +18,6 @@ namespace FastyBird\Module\Devices\Models\States;
 use DateTimeInterface;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -63,8 +62,8 @@ final class DevicePropertiesManager extends PropertiesManager
 		private readonly Models\States\Devices\Repository $devicePropertyStateRepository,
 		private readonly Models\States\Devices\Manager $devicePropertiesStatesManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
+		private readonly MetadataDocuments\DocumentFactory $documentFactory,
 		private readonly ExchangePublisher\Publisher $publisher,
-		private readonly ExchangeDocuments\DocumentFactory $documentFactory,
 		Devices\Logger $logger,
 		ObjectMapper\Processing\Processor $stateMapper,
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
@@ -94,12 +93,12 @@ final class DevicePropertiesManager extends PropertiesManager
 					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::DEVICE_PROPERTY_ACTION),
 					$this->documentFactory->create(
-						Utils\ArrayHash::from([
+						MetadataDocuments\Actions\ActionDeviceProperty::class,
+						[
 							'action' => MetadataTypes\PropertyAction::GET,
 							'device' => $property->getDevice()->toString(),
 							'property' => $property->getId()->toString(),
-						]),
-						MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::DEVICE_PROPERTY_ACTION),
+						],
 					),
 				);
 			} catch (Throwable $ex) {
@@ -163,6 +162,7 @@ final class DevicePropertiesManager extends PropertiesManager
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function publish(
@@ -171,60 +171,14 @@ final class DevicePropertiesManager extends PropertiesManager
 		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source = null,
 	): bool
 	{
-		$mappedProperty = null;
-
-		if ($property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
-			$parent = $this->devicePropertiesConfigurationRepository->find($property->getParent());
-
-			if (!$parent instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-				throw new Exceptions\InvalidState('Mapped property parent could not be loaded');
-			}
-
-			$mappedProperty = $property;
-
-			$property = $parent;
-		}
-
-		try {
-			$state = $this->devicePropertyStateRepository->find($property->getId());
-
-		} catch (Exceptions\NotImplemented) {
-			$this->logger->warning(
-				'Devices states repository is not configured. State could not be fetched',
-				[
-					'source' => MetadataTypes\ModuleSource::DEVICES,
-					'type' => 'device-properties-states',
-				],
-			);
-
-			return false;
-		}
-
-		if ($state === null) {
-			return false;
-		}
-
-		$readValue = $this->convertStoredState($property, $mappedProperty, $state, true);
-		$getValue = $this->convertStoredState($property, $mappedProperty, $state, false);
-
 		if ($this->useExchange) {
+			$state = $this->readState($property);
+
 			try {
 				$this->publisher->publish(
 					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::DEVICE_PROPERTY_STATE_DOCUMENT_REPORTED),
-					$this->documentFactory->create(
-						Utils\ArrayHash::from([
-							'id' => $property->getId()->toString(),
-							'device' => $property->getDevice()->toString(),
-							'read' => $readValue->toArray(),
-							'get' => $getValue->toArray(),
-							'created_at' => $readValue->getCreatedAt()?->format(DateTimeInterface::ATOM),
-							'updated_at' => $readValue->getUpdatedAt()?->format(DateTimeInterface::ATOM),
-						]),
-						MetadataTypes\RoutingKey::get(
-							MetadataTypes\RoutingKey::DEVICE_PROPERTY_STATE_DOCUMENT_REPORTED,
-						),
-					),
+					$state,
 				);
 			} catch (Throwable $ex) {
 				throw new Exceptions\InvalidState(
@@ -234,6 +188,42 @@ final class DevicePropertiesManager extends PropertiesManager
 				);
 			}
 		} else {
+			$mappedProperty = null;
+
+			if ($property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
+				$parent = $this->devicePropertiesConfigurationRepository->find($property->getParent());
+
+				if (!$parent instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
+					throw new Exceptions\InvalidState('Mapped property parent could not be loaded');
+				}
+
+				$mappedProperty = $property;
+
+				$property = $parent;
+			}
+
+			try {
+				$state = $this->devicePropertyStateRepository->find($property->getId());
+
+			} catch (Exceptions\NotImplemented) {
+				$this->logger->warning(
+					'Devices states repository is not configured. State could not be fetched',
+					[
+						'source' => MetadataTypes\ModuleSource::DEVICES,
+						'type' => 'device-properties-states',
+					],
+				);
+
+				return false;
+			}
+
+			if ($state === null) {
+				return false;
+			}
+
+			$readValue = $this->convertStoredState($property, $mappedProperty, $state, true);
+			$getValue = $this->convertStoredState($property, $mappedProperty, $state, false);
+
 			$this->dispatcher?->dispatch(new Events\DevicePropertyStateEntityReported(
 				$property,
 				$readValue,
@@ -255,9 +245,9 @@ final class DevicePropertiesManager extends PropertiesManager
 	public function read(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty $property,
-	): States\DeviceProperty|null
+	): MetadataDocuments\DevicesModule\PropertyValues|null
 	{
-		return $this->loadValue($property, true);
+		return $this->readState($property)?->getRead();
 	}
 
 	/**
@@ -271,9 +261,9 @@ final class DevicePropertiesManager extends PropertiesManager
 	public function get(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty $property,
-	): States\DeviceProperty|null
+	): MetadataDocuments\DevicesModule\PropertyValues|null
 	{
-		return $this->loadValue($property, false);
+		return $this->readState($property)?->getGet();
 	}
 
 	/**
@@ -296,7 +286,8 @@ final class DevicePropertiesManager extends PropertiesManager
 					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::DEVICE_PROPERTY_ACTION),
 					$this->documentFactory->create(
-						Utils\ArrayHash::from(array_merge(
+						MetadataDocuments\Actions\ActionDeviceProperty::class,
+						array_merge(
 							[
 								'action' => MetadataTypes\PropertyAction::SET,
 								'device' => $property->getDevice()->toString(),
@@ -311,8 +302,7 @@ final class DevicePropertiesManager extends PropertiesManager
 									(array) $data,
 								),
 							],
-						)),
-						MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::DEVICE_PROPERTY_ACTION),
+						),
 					),
 				);
 			} catch (Throwable $ex) {
@@ -323,7 +313,7 @@ final class DevicePropertiesManager extends PropertiesManager
 				);
 			}
 		} else {
-			$this->saveValue($property, $data, true);
+			$this->writeState($property, $data, true);
 		}
 	}
 
@@ -347,7 +337,8 @@ final class DevicePropertiesManager extends PropertiesManager
 					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::DEVICE_PROPERTY_ACTION),
 					$this->documentFactory->create(
-						Utils\ArrayHash::from(array_merge(
+						MetadataDocuments\Actions\ActionDeviceProperty::class,
+						array_merge(
 							[
 								'action' => MetadataTypes\PropertyAction::SET,
 								'device' => $property->getDevice()->toString(),
@@ -362,8 +353,7 @@ final class DevicePropertiesManager extends PropertiesManager
 									(array) $data,
 								),
 							],
-						)),
-						MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::DEVICE_PROPERTY_ACTION),
+						),
 					),
 				);
 			} catch (Throwable $ex) {
@@ -374,7 +364,7 @@ final class DevicePropertiesManager extends PropertiesManager
 				);
 			}
 		} else {
-			$this->saveValue($property, $data, false);
+			$this->writeState($property, $data, false);
 		}
 	}
 
@@ -390,6 +380,7 @@ final class DevicePropertiesManager extends PropertiesManager
 	public function setValidState(
 		MetadataDocuments\DevicesModule\DeviceDynamicProperty|array $property,
 		bool $state,
+		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source = null,
 	): void
 	{
 		if (is_array($property)) {
@@ -399,6 +390,7 @@ final class DevicePropertiesManager extends PropertiesManager
 					Utils\ArrayHash::from([
 						States\Property::VALID_FIELD => $state,
 					]),
+					$source,
 				);
 			}
 		} else {
@@ -407,6 +399,7 @@ final class DevicePropertiesManager extends PropertiesManager
 				Utils\ArrayHash::from([
 					States\Property::VALID_FIELD => $state,
 				]),
+				$source,
 			);
 		}
 	}
@@ -423,6 +416,7 @@ final class DevicePropertiesManager extends PropertiesManager
 	public function setPendingState(
 		MetadataDocuments\DevicesModule\DeviceDynamicProperty|array $property,
 		bool $pending,
+		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source = null,
 	): void
 	{
 		if (is_array($property)) {
@@ -434,6 +428,7 @@ final class DevicePropertiesManager extends PropertiesManager
 							States\Property::EXPECTED_VALUE_FIELD => null,
 							States\Property::PENDING_FIELD => false,
 						]),
+						$source,
 					);
 				} else {
 					$this->set(
@@ -443,6 +438,7 @@ final class DevicePropertiesManager extends PropertiesManager
 								DateTimeInterface::ATOM,
 							),
 						]),
+						$source,
 					);
 				}
 			}
@@ -454,6 +450,7 @@ final class DevicePropertiesManager extends PropertiesManager
 						States\Property::EXPECTED_VALUE_FIELD => null,
 						States\Property::PENDING_FIELD => false,
 					]),
+					$source,
 				);
 			} else {
 				$this->set(
@@ -463,6 +460,7 @@ final class DevicePropertiesManager extends PropertiesManager
 							DateTimeInterface::ATOM,
 						),
 					]),
+					$source,
 				);
 			}
 		}
@@ -508,11 +506,10 @@ final class DevicePropertiesManager extends PropertiesManager
 	 *
 	 * @interal
 	 */
-	public function loadValue(
+	public function readState(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty $property,
-		bool $forReading,
-	): States\DeviceProperty|null
+	): MetadataDocuments\DevicesModule\DevicePropertyState|null
 	{
 		$mappedProperty = null;
 
@@ -548,11 +545,19 @@ final class DevicePropertiesManager extends PropertiesManager
 				return null;
 			}
 
-			return $this->convertStoredState(
-				$property,
-				$mappedProperty,
-				$state,
-				$forReading,
+			$readValue = $this->convertStoredState($property, $mappedProperty, $state, true);
+			$getValue = $this->convertStoredState($property, $mappedProperty, $state, false);
+
+			return $this->documentFactory->create(
+				MetadataDocuments\DevicesModule\DevicePropertyState::class,
+				[
+					'id' => $property->getId()->toString(),
+					'device' => $property->getDevice()->toString(),
+					'read' => $readValue->toArray(),
+					'get' => $getValue->toArray(),
+					'created_at' => $readValue->getCreatedAt()?->format(DateTimeInterface::ATOM),
+					'updated_at' => $readValue->getUpdatedAt()?->format(DateTimeInterface::ATOM),
+				],
 			);
 		} catch (Exceptions\InvalidActualValue $ex) {
 			try {
@@ -570,7 +575,7 @@ final class DevicePropertiesManager extends PropertiesManager
 					],
 				);
 
-				return $this->loadValue($property, $forReading);
+				return $this->readState($property);
 			} catch (Exceptions\NotImplemented) {
 				$this->logger->warning(
 					'Devices states manager is not configured. State could not be fetched',
@@ -598,7 +603,7 @@ final class DevicePropertiesManager extends PropertiesManager
 					],
 				);
 
-				return $this->loadValue($property, $forReading);
+				return $this->readState($property);
 			} catch (Exceptions\NotImplemented) {
 				$this->logger->warning(
 					'Devices states manager is not configured. State could not be fetched',
@@ -622,7 +627,7 @@ final class DevicePropertiesManager extends PropertiesManager
 	 *
 	 * @interal
 	 */
-	public function saveValue(
+	public function writeState(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty $property,
 		Utils\ArrayHash $data,

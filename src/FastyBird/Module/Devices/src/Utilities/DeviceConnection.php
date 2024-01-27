@@ -149,13 +149,13 @@ final class DeviceConnection
 		);
 
 		if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-			$state = $this->propertiesStatesManager->read($property);
+			$state = $this->propertiesStatesManager->readState($property);
 
 			if (
-				$state?->getActualValue() !== null
-				&& MetadataTypes\ConnectionState::isValidValue($state->getActualValue())
+				$state?->getRead()->getActualValue() !== null
+				&& MetadataTypes\ConnectionState::isValidValue($state->getRead()->getActualValue())
 			) {
-				return MetadataTypes\ConnectionState::get($state->getActualValue());
+				return MetadataTypes\ConnectionState::get($state->getRead()->getActualValue());
 			}
 		}
 
@@ -184,12 +184,12 @@ final class DeviceConnection
 		);
 
 		if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-			$state = $this->propertiesStatesManager->read($property);
+			$state = $this->propertiesStatesManager->readState($property);
 
 			if (
-				$state?->getActualValue() !== null
-				&& MetadataTypes\ConnectionState::isValidValue($state->getActualValue())
-				&& $state->getActualValue() === MetadataTypes\ConnectionState::LOST
+				$state?->getRead()->getActualValue() !== null
+				&& MetadataTypes\ConnectionState::isValidValue($state->getRead()->getActualValue())
+				&& $state->getRead()->getActualValue() === MetadataTypes\ConnectionState::LOST
 			) {
 				return $state->getUpdatedAt();
 			}

@@ -71,7 +71,7 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 
 		$state = $channelPropertiesStatesManager->read($property);
 
-		self::assertInstanceOf(Fixtures\Dummy\ChannelPropertyState::class, $state);
+		self::assertInstanceOf(MetadataDocuments\DevicesModule\PropertyValues::class, $state);
 		self::assertSame($actual, $state->getActualValue(), 'actual value check');
 		self::assertSame($expected, $state->getExpectedValue(), 'expected value check');
 	}
@@ -127,7 +127,7 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 
 		$state = $channelPropertiesStatesManager->get($property);
 
-		self::assertInstanceOf(Fixtures\Dummy\ChannelPropertyState::class, $state);
+		self::assertInstanceOf(MetadataDocuments\DevicesModule\PropertyValues::class, $state);
 		self::assertSame($actual, $state->getActualValue(), 'actual value check');
 		self::assertSame($expected, $state->getExpectedValue(), 'expected value check');
 	}

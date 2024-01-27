@@ -145,17 +145,53 @@ final class ConnectorConnection
 		);
 
 		if ($property instanceof MetadataDocuments\DevicesModule\ConnectorDynamicProperty) {
-			$state = $this->propertiesStatesManager->read($property);
+			$state = $this->propertiesStatesManager->readState($property);
 
 			if (
-				$state?->getActualValue() !== null
-				&& MetadataTypes\ConnectionState::isValidValue($state->getActualValue())
+				$state?->getRead()->getActualValue() !== null
+				&& MetadataTypes\ConnectionState::isValidValue($state->getRead()->getActualValue())
 			) {
-				return MetadataTypes\ConnectionState::get($state->getActualValue());
+				return MetadataTypes\ConnectionState::get($state->getRead()->getActualValue());
 			}
 		}
 
 		return MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::UNKNOWN);
+	}
+
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
+	 */
+	public function isRunning(
+		Entities\Devices\Device|MetadataDocuments\DevicesModule\Connector $connector,
+	): bool
+	{
+		$findDevicePropertyQuery = new Queries\Configuration\FindConnectorProperties();
+		$findDevicePropertyQuery->byConnectorId($connector->getId());
+		$findDevicePropertyQuery->byIdentifier(MetadataTypes\ConnectorPropertyIdentifier::STATE);
+
+		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
+			$findDevicePropertyQuery,
+			MetadataDocuments\DevicesModule\ConnectorDynamicProperty::class,
+		);
+
+		if ($property instanceof MetadataDocuments\DevicesModule\ConnectorDynamicProperty) {
+			$state = $this->propertiesStatesManager->readState($property);
+
+			if (
+				$state?->getRead()->getActualValue() !== null
+				&& MetadataTypes\ConnectionState::isValidValue($state->getRead()->getActualValue())
+				&& $state->getRead()->getActualValue() === MetadataTypes\ConnectionState::RUNNING
+			) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 }

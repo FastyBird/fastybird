@@ -18,7 +18,6 @@ namespace FastyBird\Module\Devices\Models\States;
 use DateTimeInterface;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -61,8 +60,8 @@ final class ConnectorPropertiesManager extends PropertiesManager
 		private readonly Connectors\Repository $connectorPropertyStateRepository,
 		private readonly Connectors\Manager $connectorPropertiesStatesManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
+		private readonly MetadataDocuments\DocumentFactory $documentFactory,
 		private readonly ExchangePublisher\Publisher $publisher,
-		private readonly ExchangeDocuments\DocumentFactory $documentFactory,
 		Devices\Logger $logger,
 		ObjectMapper\Processing\Processor $stateMapper,
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
@@ -91,12 +90,12 @@ final class ConnectorPropertiesManager extends PropertiesManager
 					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_ACTION),
 					$this->documentFactory->create(
-						Utils\ArrayHash::from([
+						MetadataDocuments\Actions\ActionConnectorProperty::class,
+						[
 							'action' => MetadataTypes\PropertyAction::GET,
 							'connector' => $property->getConnector()->toString(),
 							'property' => $property->getId()->toString(),
-						]),
-						MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_ACTION),
+						],
 					),
 				);
 			} catch (Throwable $ex) {
@@ -146,6 +145,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function publish(
@@ -153,46 +153,14 @@ final class ConnectorPropertiesManager extends PropertiesManager
 		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source = null,
 	): bool
 	{
-		try {
-			$state = $this->connectorPropertyStateRepository->find($property->getId());
-
-		} catch (Exceptions\NotImplemented) {
-			$this->logger->warning(
-				'Connectors states repository is not configured. State could not be fetched',
-				[
-					'source' => MetadataTypes\ModuleSource::DEVICES,
-					'type' => 'connector-properties-states',
-				],
-			);
-
-			return false;
-		}
-
-		if ($state === null) {
-			return false;
-		}
-
-		$readValue = $this->convertStoredState($property, null, $state, true);
-		$getValue = $this->convertStoredState($property, null, $state, false);
-
 		if ($this->useExchange) {
+			$state = $this->readState($property);
+
 			try {
 				$this->publisher->publish(
 					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_STATE_DOCUMENT_REPORTED),
-					$this->documentFactory->create(
-						Utils\ArrayHash::from([
-							'id' => $property->getId()->toString(),
-							'connector' => $property->getConnector()->toString(),
-							'read' => $readValue->toArray(),
-							'get' => $getValue->toArray(),
-							'created_at' => $readValue->getCreatedAt()?->format(DateTimeInterface::ATOM),
-							'updated_at' => $readValue->getUpdatedAt()?->format(DateTimeInterface::ATOM),
-						]),
-						MetadataTypes\RoutingKey::get(
-							MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_STATE_DOCUMENT_REPORTED,
-						),
-					),
+					$state,
 				);
 			} catch (Throwable $ex) {
 				throw new Exceptions\InvalidState(
@@ -202,6 +170,28 @@ final class ConnectorPropertiesManager extends PropertiesManager
 				);
 			}
 		} else {
+			try {
+				$state = $this->connectorPropertyStateRepository->find($property->getId());
+
+			} catch (Exceptions\NotImplemented) {
+				$this->logger->warning(
+					'Connectors states repository is not configured. State could not be fetched',
+					[
+						'source' => MetadataTypes\ModuleSource::DEVICES,
+						'type' => 'connector-properties-states',
+					],
+				);
+
+				return false;
+			}
+
+			if ($state === null) {
+				return false;
+			}
+
+			$readValue = $this->convertStoredState($property, null, $state, true);
+			$getValue = $this->convertStoredState($property, null, $state, false);
+
 			$this->dispatcher?->dispatch(new Events\ConnectorPropertyStateEntityReported(
 				$property,
 				$readValue,
@@ -222,9 +212,9 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	 */
 	public function read(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
-	): States\ConnectorProperty|null
+	): MetadataDocuments\DevicesModule\PropertyValues|null
 	{
-		return $this->loadValue($property, true);
+		return $this->readState($property)?->getRead();
 	}
 
 	/**
@@ -237,9 +227,9 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	 */
 	public function get(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
-	): States\ConnectorProperty|null
+	): MetadataDocuments\DevicesModule\PropertyValues|null
 	{
-		return $this->loadValue($property, false);
+		return $this->readState($property)?->getGet();
 	}
 
 	/**
@@ -261,7 +251,8 @@ final class ConnectorPropertiesManager extends PropertiesManager
 					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_ACTION),
 					$this->documentFactory->create(
-						Utils\ArrayHash::from(array_merge(
+						MetadataDocuments\Actions\ActionConnectorProperty::class,
+						array_merge(
 							[
 								'action' => MetadataTypes\PropertyAction::SET,
 								'connector' => $property->getConnector()->toString(),
@@ -276,8 +267,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 									(array) $data,
 								),
 							],
-						)),
-						MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_ACTION),
+						),
 					),
 				);
 			} catch (Throwable $ex) {
@@ -288,7 +278,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 				);
 			}
 		} else {
-			$this->saveValue($property, $data, true);
+			$this->writeState($property, $data, true);
 		}
 	}
 
@@ -311,7 +301,8 @@ final class ConnectorPropertiesManager extends PropertiesManager
 					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_ACTION),
 					$this->documentFactory->create(
-						Utils\ArrayHash::from(array_merge(
+						MetadataDocuments\Actions\ActionConnectorProperty::class,
+						array_merge(
 							[
 								'action' => MetadataTypes\PropertyAction::SET,
 								'connector' => $property->getConnector()->toString(),
@@ -326,8 +317,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 									(array) $data,
 								),
 							],
-						)),
-						MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_ACTION),
+						),
 					),
 				);
 			} catch (Throwable $ex) {
@@ -338,7 +328,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 				);
 			}
 		} else {
-			$this->saveValue($property, $data, false);
+			$this->writeState($property, $data, false);
 		}
 	}
 
@@ -354,6 +344,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	public function setValidState(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|array $property,
 		bool $state,
+		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source = null,
 	): void
 	{
 		if (is_array($property)) {
@@ -363,6 +354,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 					Utils\ArrayHash::from([
 						States\Property::VALID_FIELD => $state,
 					]),
+					$source,
 				);
 			}
 		} else {
@@ -371,6 +363,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 				Utils\ArrayHash::from([
 					States\Property::VALID_FIELD => $state,
 				]),
+				$source,
 			);
 		}
 	}
@@ -387,6 +380,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	public function setPendingState(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|array $property,
 		bool $pending,
+		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source = null,
 	): void
 	{
 		if (is_array($property)) {
@@ -398,6 +392,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 							States\Property::EXPECTED_VALUE_FIELD => null,
 							States\Property::PENDING_FIELD => false,
 						]),
+						$source,
 					);
 				} else {
 					$this->set(
@@ -407,6 +402,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 								DateTimeInterface::ATOM,
 							),
 						]),
+						$source,
 					);
 				}
 			}
@@ -418,6 +414,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 						States\Property::EXPECTED_VALUE_FIELD => null,
 						States\Property::PENDING_FIELD => false,
 					]),
+					$source,
 				);
 			} else {
 				$this->set(
@@ -427,6 +424,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 							DateTimeInterface::ATOM,
 						),
 					]),
+					$source,
 				);
 			}
 		}
@@ -465,10 +463,9 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	 *
 	 * @interal
 	 */
-	public function loadValue(
+	public function readState(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
-		bool $forReading,
-	): States\ConnectorProperty|null
+	): MetadataDocuments\DevicesModule\ConnectorPropertyState|null
 	{
 		try {
 			$state = $this->connectorPropertyStateRepository->find($property->getId());
@@ -490,11 +487,19 @@ final class ConnectorPropertiesManager extends PropertiesManager
 				return null;
 			}
 
-			return $this->convertStoredState(
-				$property,
-				null,
-				$state,
-				$forReading,
+			$readValue = $this->convertStoredState($property, null, $state, true);
+			$getValue = $this->convertStoredState($property, null, $state, false);
+
+			return $this->documentFactory->create(
+				MetadataDocuments\DevicesModule\ConnectorPropertyState::class,
+				[
+					'id' => $property->getId()->toString(),
+					'connector' => $property->getConnector()->toString(),
+					'read' => $readValue->toArray(),
+					'get' => $getValue->toArray(),
+					'created_at' => $readValue->getCreatedAt()?->format(DateTimeInterface::ATOM),
+					'updated_at' => $readValue->getUpdatedAt()?->format(DateTimeInterface::ATOM),
+				],
 			);
 		} catch (Exceptions\InvalidActualValue $ex) {
 			try {
@@ -512,7 +517,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 					],
 				);
 
-				return $this->loadValue($property, $forReading);
+				return $this->readState($property);
 			} catch (Exceptions\NotImplemented) {
 				$this->logger->warning(
 					'connectors states manager is not configured. State could not be fetched',
@@ -540,7 +545,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 					],
 				);
 
-				return $this->loadValue($property, $forReading);
+				return $this->readState($property);
 			} catch (Exceptions\NotImplemented) {
 				$this->logger->warning(
 					'connectors states manager is not configured. State could not be fetched',
@@ -564,7 +569,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	 *
 	 * @interal
 	 */
-	public function saveValue(
+	public function writeState(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
 		Utils\ArrayHash $data,
 		bool $forWriting,

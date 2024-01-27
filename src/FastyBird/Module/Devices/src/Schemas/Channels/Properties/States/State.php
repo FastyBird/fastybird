@@ -18,6 +18,7 @@ namespace FastyBird\Module\Devices\Schemas\Channels\Properties\States;
 use DateTimeInterface;
 use FastyBird\JsonApi\Schemas as JsonApiSchemas;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices;
@@ -64,7 +65,7 @@ final class State extends JsonApiSchemas\JsonApi
 
 	public function getEntityClass(): string
 	{
-		return States\ChannelProperty::class;
+		return MetadataDocuments\DevicesModule\ChannelPropertyState::class;
 	}
 
 	public function getType(): string

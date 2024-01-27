@@ -94,7 +94,7 @@ final class ChannelPropertyStateV1 extends BaseV1
 			);
 		}
 
-		$state = $this->channelPropertiesStatesManager->read($property);
+		$state = $this->channelPropertiesStatesManager->readState($property);
 
 		if ($state === null) {
 			throw new JsonApiExceptions\JsonApiError(

@@ -26,7 +26,6 @@ use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Router;
 use FastyBird\Module\Devices\Schemas;
-use FastyBird\Module\Devices\States;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use IPub\SlimRouter\Routing;
 use Neomerx\JsonApi;
@@ -191,12 +190,14 @@ final class Dynamic extends Property
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
-	protected function getState(Entities\Connectors\Properties\Dynamic $property): States\ConnectorProperty|null
+	protected function getState(
+		Entities\Connectors\Properties\Dynamic $property,
+	): MetadataDocuments\DevicesModule\ConnectorPropertyState|null
 	{
 		$configuration = $this->connectorsPropertiesConfigurationRepository->find($property->getId());
 		assert($configuration instanceof MetadataDocuments\DevicesModule\ConnectorDynamicProperty);
 
-		return $this->connectorPropertiesStatesManager->read($configuration);
+		return $this->connectorPropertiesStatesManager->readState($configuration);
 	}
 
 }

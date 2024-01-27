@@ -89,7 +89,7 @@ final class ConnectorPropertyStateV1 extends BaseV1
 			);
 		}
 
-		$state = $this->connectorPropertiesStatesManager->read($property);
+		$state = $this->connectorPropertiesStatesManager->readState($property);
 
 		if ($state === null) {
 			throw new JsonApiExceptions\JsonApiError(

@@ -15,7 +15,6 @@
 
 namespace FastyBird\Module\Devices\Controllers;
 
-use DateTimeInterface;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
@@ -36,7 +35,6 @@ use IPub\WebSocketsWAMP;
 use Nette\Utils;
 use Throwable;
 use function array_key_exists;
-use function array_merge;
 use function is_array;
 
 /**
@@ -92,31 +90,24 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 			);
 
 			foreach ($devicesProperties as $deviceProperty) {
-				$dynamicData = [];
-
 				if (
 					$deviceProperty instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
 					|| $deviceProperty instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
 				) {
-					$state = $this->devicePropertiesStatesManager->read($deviceProperty);
+					$state = $this->devicePropertiesStatesManager->readState($deviceProperty);
 
-					if ($state instanceof States\DeviceProperty) {
-						$dynamicData = $state->toArray();
+					if ($state !== null) {
+						$client->send(Utils\Json::encode([
+							WebSocketsWAMP\Application\Application::MSG_EVENT,
+							$topic->getId(),
+							Utils\Json::encode([
+								'routing_key' => MetadataTypes\RoutingKey::DEVICE_PROPERTY_DOCUMENT_REPORTED,
+								'source' => MetadataTypes\ModuleSource::DEVICES,
+								'data' => $state->toArray(),
+							]),
+						]));
 					}
 				}
-
-				$client->send(Utils\Json::encode([
-					WebSocketsWAMP\Application\Application::MSG_EVENT,
-					$topic->getId(),
-					Utils\Json::encode([
-						'routing_key' => MetadataTypes\RoutingKey::DEVICE_PROPERTY_DOCUMENT_REPORTED,
-						'source' => MetadataTypes\ModuleSource::DEVICES,
-						'data' => array_merge(
-							$deviceProperty->toArray(),
-							$dynamicData,
-						),
-					]),
-				]));
 			}
 
 			$findChannelsProperties = new Queries\Configuration\FindChannelProperties();
@@ -126,31 +117,24 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 			);
 
 			foreach ($channelsProperties as $channelProperty) {
-				$dynamicData = [];
-
 				if (
 					$channelProperty instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
 					|| $channelProperty instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
 				) {
-					$state = $this->channelPropertiesStatesManager->read($channelProperty);
+					$state = $this->channelPropertiesStatesManager->readState($channelProperty);
 
-					if ($state instanceof States\ChannelProperty) {
-						$dynamicData = $state->toArray();
+					if ($state !== null) {
+						$client->send(Utils\Json::encode([
+							WebSocketsWAMP\Application\Application::MSG_EVENT,
+							$topic->getId(),
+							Utils\Json::encode([
+								'routing_key' => MetadataTypes\RoutingKey::CHANNEL_PROPERTY_STATE_DOCUMENT_REPORTED,
+								'source' => MetadataTypes\ModuleSource::DEVICES,
+								'data' => $state->toArray(),
+							]),
+						]));
 					}
 				}
-
-				$client->send(Utils\Json::encode([
-					WebSocketsWAMP\Application\Application::MSG_EVENT,
-					$topic->getId(),
-					Utils\Json::encode([
-						'routing_key' => MetadataTypes\RoutingKey::CHANNEL_PROPERTY_DOCUMENT_REPORTED,
-						'source' => MetadataTypes\ModuleSource::DEVICES,
-						'data' => array_merge(
-							$channelProperty->toArray(),
-							$dynamicData,
-						),
-					]),
-				]));
 			}
 
 			$findConnectorsProperties = new Queries\Configuration\FindConnectorProperties();
@@ -160,28 +144,21 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 			);
 
 			foreach ($connectorsProperties as $connectorProperty) {
-				$dynamicData = [];
-
 				if ($connectorProperty instanceof MetadataDocuments\DevicesModule\ConnectorDynamicProperty) {
-					$state = $this->connectorPropertiesStatesManager->read($connectorProperty);
+					$state = $this->connectorPropertiesStatesManager->readState($connectorProperty);
 
-					if ($state instanceof States\ConnectorProperty) {
-						$dynamicData = $state->toArray();
+					if ($state !== null) {
+						$client->send(Utils\Json::encode([
+							WebSocketsWAMP\Application\Application::MSG_EVENT,
+							$topic->getId(),
+							Utils\Json::encode([
+								'routing_key' => MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_DOCUMENT_REPORTED,
+								'source' => MetadataTypes\ModuleSource::DEVICES,
+								'data' => $state->toArray(),
+							]),
+						]));
 					}
 				}
-
-				$client->send(Utils\Json::encode([
-					WebSocketsWAMP\Application\Application::MSG_EVENT,
-					$topic->getId(),
-					Utils\Json::encode([
-						'routing_key' => MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_DOCUMENT_REPORTED,
-						'source' => MetadataTypes\ModuleSource::DEVICES,
-						'data' => array_merge(
-							$connectorProperty->toArray(),
-							$dynamicData,
-						),
-					]),
-				]));
 			}
 		} catch (Throwable $ex) {
 			$this->logger->error(
@@ -319,8 +296,6 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws ExchangeExceptions\InvalidArgument
-	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
@@ -377,27 +352,12 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 			}
 
 			$state = $property instanceof MetadataDocuments\DevicesModule\ConnectorDynamicProperty
-				? $this->connectorPropertiesStatesManager->read($property)
+				? $this->connectorPropertiesStatesManager->readState($property)
 				: null;
 
 			if ($state === null) {
 				return;
 			}
-
-			$publishRoutingKey = MetadataTypes\RoutingKey::get(
-				MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_STATE_DOCUMENT_REPORTED,
-			);
-
-			$responseEntity = $this->documentFactory->create(
-				Utils\ArrayHash::from([
-					'id' => $property->getId()->toString(),
-					'connector' => $property->getConnector()->toString(),
-					'read' => $state->toArray(),
-					'created_at' => $state->getCreatedAt()?->format(DateTimeInterface::ATOM),
-					'updated_at' => $state->getUpdatedAt()?->format(DateTimeInterface::ATOM),
-				]),
-				$publishRoutingKey,
-			);
 
 			$client->send(Utils\Json::encode([
 				WebSocketsWAMP\Application\Application::MSG_EVENT,
@@ -405,7 +365,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				Utils\Json::encode([
 					'routing_key' => MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_STATE_DOCUMENT_REPORTED,
 					'source' => MetadataTypes\ModuleSource::DEVICES,
-					'data' => $responseEntity->toArray(),
+					'data' => $state->toArray(),
 				]),
 			]));
 		}
@@ -414,8 +374,6 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws ExchangeExceptions\InvalidArgument
-	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
@@ -476,26 +434,11 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 
 			$state = $property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
 			|| $property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
-				? $this->devicePropertiesStatesManager->read($property) : null;
+				? $this->devicePropertiesStatesManager->readState($property) : null;
 
 			if ($state === null) {
 				return;
 			}
-
-			$publishRoutingKey = MetadataTypes\RoutingKey::get(
-				MetadataTypes\RoutingKey::DEVICE_PROPERTY_STATE_DOCUMENT_REPORTED,
-			);
-
-			$responseEntity = $this->documentFactory->create(
-				Utils\ArrayHash::from([
-					'id' => $property->getId()->toString(),
-					'device' => $property->getDevice()->toString(),
-					'read' => $state->toArray(),
-					'created_at' => $state->getCreatedAt()?->format(DateTimeInterface::ATOM),
-					'updated_at' => $state->getUpdatedAt()?->format(DateTimeInterface::ATOM),
-				]),
-				$publishRoutingKey,
-			);
 
 			$client->send(Utils\Json::encode([
 				WebSocketsWAMP\Application\Application::MSG_EVENT,
@@ -503,7 +446,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				Utils\Json::encode([
 					'routing_key' => MetadataTypes\RoutingKey::DEVICE_PROPERTY_STATE_DOCUMENT_REPORTED,
 					'source' => MetadataTypes\ModuleSource::DEVICES,
-					'data' => $responseEntity->toArray(),
+					'data' => $state->toArray(),
 				]),
 			]));
 		}
@@ -512,8 +455,6 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws ExchangeExceptions\InvalidArgument
-	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
@@ -574,26 +515,11 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 
 			$state = $property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
 			|| $property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
-				? $this->channelPropertiesStatesManager->read($property) : null;
+				? $this->channelPropertiesStatesManager->readState($property) : null;
 
 			if ($state === null) {
 				return;
 			}
-
-			$publishRoutingKey = MetadataTypes\RoutingKey::get(
-				MetadataTypes\RoutingKey::CHANNEL_PROPERTY_STATE_DOCUMENT_REPORTED,
-			);
-
-			$responseEntity = $this->documentFactory->create(
-				Utils\ArrayHash::from([
-					'id' => $property->getId()->toString(),
-					'channel' => $property->getChannel()->toString(),
-					'read' => $state->toArray(),
-					'created_at' => $state->getCreatedAt()?->format(DateTimeInterface::ATOM),
-					'updated_at' => $state->getUpdatedAt()?->format(DateTimeInterface::ATOM),
-				]),
-				$publishRoutingKey,
-			);
 
 			$client->send(Utils\Json::encode([
 				WebSocketsWAMP\Application\Application::MSG_EVENT,
@@ -601,7 +527,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				Utils\Json::encode([
 					'routing_key' => MetadataTypes\RoutingKey::CHANNEL_PROPERTY_STATE_DOCUMENT_REPORTED,
 					'source' => MetadataTypes\ModuleSource::DEVICES,
-					'data' => $responseEntity->toArray(),
+					'data' => $state->toArray(),
 				]),
 			]));
 		}

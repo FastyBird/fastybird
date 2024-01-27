@@ -23,7 +23,6 @@ use FastyBird\Connector\Zigbee2Mqtt\Clients;
 use FastyBird\Connector\Zigbee2Mqtt\Entities;
 use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
 use FastyBird\Connector\Zigbee2Mqtt\Helpers;
-use FastyBird\Connector\Zigbee2Mqtt\Types;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -32,6 +31,7 @@ use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use InvalidArgumentException;
 use Nette;
 use Nette\Utils;
@@ -73,9 +73,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 		private readonly Helpers\Connector $connectorHelper,
 		private readonly Helpers\Devices\Bridge $bridgeHelper,
 		private readonly Zigbee2Mqtt\Logger $logger,
-		private readonly DevicesModels\Configuration\Connectors\Properties\Repository $connectorsPropertiesConfigurationRepository,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
-		private readonly DevicesModels\States\ConnectorPropertiesManager $connectorPropertiesStatesManager,
+		private readonly DevicesUtilities\ConnectorConnection $connectorConnectionManager,
 		private readonly EventLoop\LoopInterface $eventLoop,
 	)
 	{
@@ -266,18 +265,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 	 */
 	private function isRunning(): bool
 	{
-		$findConnectorProperty = new DevicesQueries\Configuration\FindConnectorDynamicProperties();
-		$findConnectorProperty->byConnectorId($this->connector->getId());
-		$findConnectorProperty->byIdentifier(Types\ConnectorPropertyIdentifier::STATE);
-
-		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
-			$findConnectorProperty,
-			MetadataDocuments\DevicesModule\ConnectorDynamicProperty::class,
-		);
-
-		$state = $property !== null ? $this->connectorPropertiesStatesManager->read($property) : null;
-
-		return $state?->getActualValue() === MetadataTypes\ConnectionState::RUNNING;
+		return $this->connectorConnectionManager->isRunning($this->connector);
 	}
 
 	/**

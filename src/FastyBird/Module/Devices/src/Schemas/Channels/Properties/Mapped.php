@@ -27,7 +27,6 @@ use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Router;
 use FastyBird\Module\Devices\Schemas;
-use FastyBird\Module\Devices\States;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use IPub\SlimRouter\Routing;
 use Neomerx\JsonApi;
@@ -219,12 +218,14 @@ final class Mapped extends Property
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
-	protected function getState(Entities\Channels\Properties\Mapped $property): States\ChannelProperty|null
+	protected function getState(
+		Entities\Channels\Properties\Mapped $property,
+	): MetadataDocuments\DevicesModule\ChannelPropertyState|null
 	{
 		$configuration = $this->channelsPropertiesConfigurationRepository->find($property->getId());
 		assert($configuration instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty);
 
-		return $this->channelPropertiesStatesManager->read($configuration);
+		return $this->channelPropertiesStatesManager->readState($configuration);
 	}
 
 }
