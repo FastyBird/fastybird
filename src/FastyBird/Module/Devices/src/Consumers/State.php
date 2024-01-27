@@ -15,10 +15,8 @@
 
 namespace FastyBird\Module\Devices\Consumers;
 
-use DateTimeInterface;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
-use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata;
@@ -61,7 +59,6 @@ final class State implements ExchangeConsumers\Consumer
 		private readonly Models\States\Async\DevicePropertiesManager $devicePropertiesStatesManager,
 		private readonly Models\States\Async\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly ExchangePublisher\Async\Publisher $publisher,
-		private readonly ExchangeDocuments\DocumentFactory $documentFactory,
 	)
 	{
 	}
@@ -112,7 +109,7 @@ final class State implements ExchangeConsumers\Consumer
 						}
 
 						if ($data !== []) {
-							$result = $this->connectorPropertiesStatesManager->saveValue(
+							$result = $this->connectorPropertiesStatesManager->writeState(
 								$property,
 								Utils\ArrayHash::from($data),
 								false,
@@ -128,7 +125,7 @@ final class State implements ExchangeConsumers\Consumer
 						}
 
 						if ($data !== []) {
-							$result = $this->connectorPropertiesStatesManager->saveValue(
+							$result = $this->connectorPropertiesStatesManager->writeState(
 								$property,
 								Utils\ArrayHash::from($data),
 								true,
@@ -172,10 +169,9 @@ final class State implements ExchangeConsumers\Consumer
 						return;
 					}
 
-					$readValue = await($this->connectorPropertiesStatesManager->read($property));
-					$getValue = await($this->connectorPropertiesStatesManager->get($property));
+					$state = await($this->connectorPropertiesStatesManager->readState($property));
 
-					if ($readValue === null) {
+					if ($state === null) {
 						return;
 					}
 
@@ -184,19 +180,7 @@ final class State implements ExchangeConsumers\Consumer
 						MetadataTypes\RoutingKey::get(
 							MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_STATE_DOCUMENT_REPORTED,
 						),
-						$this->documentFactory->create(
-							Utils\ArrayHash::from([
-								'id' => $property->getId()->toString(),
-								'connector' => $property->getConnector()->toString(),
-								'read' => $readValue->toArray(),
-								'get' => $getValue?->toArray(),
-								'created_at' => $readValue->getCreatedAt()?->format(DateTimeInterface::ATOM),
-								'updated_at' => $readValue->getUpdatedAt()?->format(DateTimeInterface::ATOM),
-							]),
-							MetadataTypes\RoutingKey::get(
-								MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_STATE_DOCUMENT_REPORTED,
-							),
-						),
+						$state,
 					)
 						->then(function () use ($entity, $property, $source, $routingKey): void {
 							$this->logger->debug(
@@ -257,7 +241,7 @@ final class State implements ExchangeConsumers\Consumer
 						}
 
 						if ($data !== []) {
-							$result = $this->devicePropertiesStatesManager->saveValue(
+							$result = $this->devicePropertiesStatesManager->writeState(
 								$property,
 								Utils\ArrayHash::from($data),
 								false,
@@ -273,7 +257,7 @@ final class State implements ExchangeConsumers\Consumer
 						}
 
 						if ($data !== []) {
-							$result = $this->devicePropertiesStatesManager->saveValue(
+							$result = $this->devicePropertiesStatesManager->writeState(
 								$property,
 								Utils\ArrayHash::from($data),
 								true,
@@ -317,10 +301,9 @@ final class State implements ExchangeConsumers\Consumer
 						return;
 					}
 
-					$readValue = await($this->devicePropertiesStatesManager->read($property));
-					$getValue = await($this->devicePropertiesStatesManager->get($property));
+					$state = await($this->devicePropertiesStatesManager->readState($property));
 
-					if ($readValue === null) {
+					if ($state === null) {
 						return;
 					}
 
@@ -329,19 +312,7 @@ final class State implements ExchangeConsumers\Consumer
 						MetadataTypes\RoutingKey::get(
 							MetadataTypes\RoutingKey::DEVICE_PROPERTY_STATE_DOCUMENT_REPORTED,
 						),
-						$this->documentFactory->create(
-							Utils\ArrayHash::from([
-								'id' => $property->getId()->toString(),
-								'device' => $property->getDevice()->toString(),
-								'read' => $readValue->toArray(),
-								'get' => $getValue?->toArray(),
-								'created_at' => $readValue->getCreatedAt()?->format(DateTimeInterface::ATOM),
-								'updated_at' => $readValue->getUpdatedAt()?->format(DateTimeInterface::ATOM),
-							]),
-							MetadataTypes\RoutingKey::get(
-								MetadataTypes\RoutingKey::DEVICE_PROPERTY_STATE_DOCUMENT_REPORTED,
-							),
-						),
+						$state,
 					)
 						->then(function () use ($entity, $property, $source, $routingKey): void {
 							$this->logger->debug(
@@ -402,7 +373,7 @@ final class State implements ExchangeConsumers\Consumer
 						}
 
 						if ($data !== []) {
-							$result = $this->channelPropertiesStatesManager->saveValue(
+							$result = $this->channelPropertiesStatesManager->writeState(
 								$property,
 								Utils\ArrayHash::from($data),
 								false,
@@ -418,7 +389,7 @@ final class State implements ExchangeConsumers\Consumer
 						}
 
 						if ($data !== []) {
-							$result = $this->channelPropertiesStatesManager->saveValue(
+							$result = $this->channelPropertiesStatesManager->writeState(
 								$property,
 								Utils\ArrayHash::from($data),
 								true,
@@ -462,10 +433,9 @@ final class State implements ExchangeConsumers\Consumer
 						return;
 					}
 
-					$readValue = await($this->channelPropertiesStatesManager->read($property));
-					$getValue = await($this->channelPropertiesStatesManager->get($property));
+					$state = await($this->channelPropertiesStatesManager->readState($property));
 
-					if ($readValue === null) {
+					if ($state === null) {
 						return;
 					}
 
@@ -474,19 +444,7 @@ final class State implements ExchangeConsumers\Consumer
 						MetadataTypes\RoutingKey::get(
 							MetadataTypes\RoutingKey::CHANNEL_PROPERTY_STATE_DOCUMENT_REPORTED,
 						),
-						$this->documentFactory->create(
-							Utils\ArrayHash::from([
-								'id' => $property->getId()->toString(),
-								'channel' => $property->getChannel()->toString(),
-								'read' => $readValue->toArray(),
-								'get' => $getValue?->toArray(),
-								'created_at' => $readValue->getCreatedAt()?->format(DateTimeInterface::ATOM),
-								'updated_at' => $readValue->getUpdatedAt()?->format(DateTimeInterface::ATOM),
-							]),
-							MetadataTypes\RoutingKey::get(
-								MetadataTypes\RoutingKey::CHANNEL_PROPERTY_STATE_DOCUMENT_REPORTED,
-							),
-						),
+						$state,
 					)
 						->then(function () use ($entity, $property, $source, $routingKey): void {
 							$this->logger->debug(

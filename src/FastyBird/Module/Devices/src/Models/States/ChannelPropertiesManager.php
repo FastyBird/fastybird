@@ -73,6 +73,11 @@ final class ChannelPropertiesManager extends PropertiesManager
 		parent::__construct($logger, $stateMapper);
 	}
 
+	public function exchangeEnabled(): bool
+	{
+		return $this->useExchange;
+	}
+
 	/**
 	 * @throws Exceptions\InvalidActualValue
 	 * @throws Exceptions\InvalidArgument
@@ -174,6 +179,10 @@ final class ChannelPropertiesManager extends PropertiesManager
 	{
 		if ($this->useExchange) {
 			$state = $this->readState($property);
+
+			if ($state === null) {
+				return false;
+			}
 
 			try {
 				$this->publisher->publish(

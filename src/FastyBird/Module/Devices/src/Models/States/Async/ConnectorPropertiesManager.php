@@ -18,7 +18,6 @@ namespace FastyBird\Module\Devices\Models\States\Async;
 use DateTimeInterface;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -65,14 +64,19 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 		private readonly Models\States\Connectors\Async\Repository $connectorPropertyStateRepository,
 		private readonly Models\States\Connectors\Async\Manager $connectorPropertiesStatesManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
+		private readonly MetadataDocuments\DocumentFactory $documentFactory,
 		private readonly ExchangePublisher\Async\Publisher $publisher,
-		private readonly ExchangeDocuments\DocumentFactory $documentFactory,
 		Devices\Logger $logger,
 		ObjectMapper\Processing\Processor $stateMapper,
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
 		parent::__construct($logger, $stateMapper);
+	}
+
+	public function exchangeEnabled(): bool
+	{
+		return $this->useExchange;
 	}
 
 	/**
@@ -89,12 +93,12 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_ACTION),
 					$this->documentFactory->create(
-						Utils\ArrayHash::from([
+						MetadataDocuments\Actions\ActionConnectorProperty::class,
+						[
 							'action' => MetadataTypes\PropertyAction::GET,
 							'connector' => $property->getConnector()->toString(),
 							'property' => $property->getId()->toString(),
-						]),
-						MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_ACTION),
+						],
 					),
 				);
 			} catch (Throwable $ex) {
@@ -108,22 +112,24 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 			$deferred = new Promise\Deferred();
 
 			$this->connectorPropertyStateRepository->find($property->getId())
-				->then(function (States\ConnectorProperty|null $state) use ($deferred, $property): void {
-					if ($state === null) {
-						$deferred->resolve(false);
+				->then(
+					function (States\ConnectorProperty|null $state) use ($deferred, $property): void {
+						if ($state === null) {
+							$deferred->resolve(false);
 
-						return;
-					}
+							return;
+						}
 
-					$readValue = $this->convertStoredState($property, null, $state, true);
-					$getValue = $this->convertStoredState($property, null, $state, false);
+						$readValue = $this->convertStoredState($property, null, $state, true);
+						$getValue = $this->convertStoredState($property, null, $state, false);
 
-					$this->dispatcher?->dispatch(new Events\ConnectorPropertyStateEntityReported(
-						$property,
-						$readValue,
-						$getValue,
-					));
-				})
+						$this->dispatcher?->dispatch(new Events\ConnectorPropertyStateEntityReported(
+							$property,
+							$readValue,
+							$getValue,
+						));
+					},
+				)
 				->catch(function (Throwable $ex) use ($deferred): void {
 					if ($ex instanceof Exceptions\NotImplemented) {
 						$this->logger->warning(
@@ -152,37 +158,27 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 	{
 		$deferred = new Promise\Deferred();
 
-		$this->connectorPropertyStateRepository->find($property->getId())
-			->then(
-				function (States\ConnectorProperty|null $state) use ($deferred, $source, $property): void {
-					if ($state === null) {
-						$deferred->resolve(false);
+		if ($this->useExchange) {
+			$this->readState($property)
+				->then(
+					function (
+						MetadataDocuments\DevicesModule\ConnectorPropertyState|null $state,
+					) use (
+						$deferred,
+						$source,
+					): void {
+						if ($state === null) {
+							$deferred->resolve(false);
 
-						return;
-					}
+							return;
+						}
 
-					$readValue = $this->convertStoredState($property, null, $state, true);
-					$getValue = $this->convertStoredState($property, null, $state, false);
-
-					if ($this->useExchange) {
 						$this->publisher->publish(
 							$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 							MetadataTypes\RoutingKey::get(
 								MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_STATE_DOCUMENT_REPORTED,
 							),
-							$this->documentFactory->create(
-								Utils\ArrayHash::from([
-									'id' => $property->getId()->toString(),
-									'connector' => $property->getConnector()->toString(),
-									'read' => $readValue->toArray(),
-									'get' => $getValue->toArray(),
-									'created_at' => $readValue->getCreatedAt()?->format(DateTimeInterface::ATOM),
-									'updated_at' => $readValue->getUpdatedAt()?->format(DateTimeInterface::ATOM),
-								]),
-								MetadataTypes\RoutingKey::get(
-									MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_STATE_DOCUMENT_REPORTED,
-								),
-							),
+							$state,
 						)
 							->then(static function (bool $result) use ($deferred): void {
 								$deferred->resolve($result);
@@ -190,7 +186,24 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 							->catch(static function (Throwable $ex) use ($deferred): void {
 								$deferred->reject($ex);
 							});
-					} else {
+					},
+				)
+				->catch(static function (Throwable $ex): void {
+				});
+
+		} else {
+			$this->connectorPropertyStateRepository->find($property->getId())
+				->then(
+					function (States\ConnectorProperty|null $state) use ($deferred, $property): void {
+						if ($state === null) {
+							$deferred->resolve(false);
+
+							return;
+						}
+
+						$readValue = $this->convertStoredState($property, null, $state, true);
+						$getValue = $this->convertStoredState($property, null, $state, false);
+
 						$this->dispatcher?->dispatch(new Events\ConnectorPropertyStateEntityReported(
 							$property,
 							$readValue,
@@ -198,20 +211,42 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 						));
 
 						$deferred->resolve(true);
+					},
+				)
+				->catch(function (Throwable $ex) use ($deferred): void {
+					if ($ex instanceof Exceptions\NotImplemented) {
+						$this->logger->warning(
+							'Connectors states repository is not configured. State could not be fetched',
+							[
+								'source' => MetadataTypes\ModuleSource::DEVICES,
+								'type' => 'async-connector-properties-states',
+							],
+						);
 					}
+
+					$deferred->reject($ex);
+				});
+		}
+
+		return $deferred->promise();
+	}
+
+	/**
+	 * @return Promise\PromiseInterface<MetadataDocuments\DevicesModule\PropertyValues|null>
+	 */
+	public function read(
+		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
+	): Promise\PromiseInterface
+	{
+		$deferred = new Promise\Deferred();
+
+		$this->readState($property)
+			->then(
+				static function (MetadataDocuments\DevicesModule\ConnectorPropertyState|null $state) use ($deferred): void {
+					$deferred->resolve($state?->getRead());
 				},
 			)
-			->catch(function (Throwable $ex) use ($deferred): void {
-				if ($ex instanceof Exceptions\NotImplemented) {
-					$this->logger->warning(
-						'Connectors states repository is not configured. State could not be fetched',
-						[
-							'source' => MetadataTypes\ModuleSource::DEVICES,
-							'type' => 'async-connector-properties-states',
-						],
-					);
-				}
-
+			->catch(static function (Throwable $ex) use ($deferred): void {
 				$deferred->reject($ex);
 			});
 
@@ -219,23 +254,25 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 	}
 
 	/**
-	 * @return Promise\PromiseInterface<States\ConnectorProperty|null>
-	 */
-	public function read(
-		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
-	): Promise\PromiseInterface
-	{
-		return $this->loadValue($property, true);
-	}
-
-	/**
-	 * @return Promise\PromiseInterface<States\ConnectorProperty|null>
+	 * @return Promise\PromiseInterface<MetadataDocuments\DevicesModule\PropertyValues|null>
 	 */
 	public function get(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
 	): Promise\PromiseInterface
 	{
-		return $this->loadValue($property, false);
+		$deferred = new Promise\Deferred();
+
+		$this->readState($property)
+			->then(
+				static function (MetadataDocuments\DevicesModule\ConnectorPropertyState|null $state) use ($deferred): void {
+					$deferred->resolve($state?->getGet());
+				},
+			)
+			->catch(static function (Throwable $ex) use ($deferred): void {
+				$deferred->reject($ex);
+			});
+
+		return $deferred->promise();
 	}
 
 	/**
@@ -253,7 +290,8 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_ACTION),
 					$this->documentFactory->create(
-						Utils\ArrayHash::from(array_merge(
+						MetadataDocuments\Actions\ActionConnectorProperty::class,
+						array_merge(
 							[
 								'action' => MetadataTypes\PropertyAction::SET,
 								'connector' => $property->getConnector()->toString(),
@@ -261,15 +299,14 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 							],
 							[
 								'write' => array_map(
-									// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+								// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 									static fn (bool|int|float|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\CoverPayload|MetadataTypes\SwitchPayload|null $item): bool|int|float|string|null => MetadataUtilities\Value::flattenValue(
 										$item,
 									),
 									(array) $data,
 								),
 							],
-						)),
-						MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_ACTION),
+						),
 					),
 				);
 			} catch (Throwable $ex) {
@@ -280,7 +317,7 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 				));
 			}
 		} else {
-			return $this->saveValue($property, $data, true);
+			return $this->writeState($property, $data, true);
 		}
 	}
 
@@ -299,7 +336,8 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_ACTION),
 					$this->documentFactory->create(
-						Utils\ArrayHash::from(array_merge(
+						MetadataDocuments\Actions\ActionConnectorProperty::class,
+						array_merge(
 							[
 								'action' => MetadataTypes\PropertyAction::SET,
 								'connector' => $property->getConnector()->toString(),
@@ -307,15 +345,14 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 							],
 							[
 								'set' => array_map(
-									// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+								// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 									static fn (bool|int|float|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\CoverPayload|MetadataTypes\SwitchPayload|null $item): bool|int|float|string|null => MetadataUtilities\Value::flattenValue(
 										$item,
 									),
 									(array) $data,
 								),
 							],
-						)),
-						MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_ACTION),
+						),
 					),
 				);
 			} catch (Throwable $ex) {
@@ -326,7 +363,7 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 				));
 			}
 		} else {
-			return $this->saveValue($property, $data, false);
+			return $this->writeState($property, $data, false);
 		}
 	}
 
@@ -338,6 +375,7 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 	public function setValidState(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|array $property,
 		bool $state,
+		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source = null,
 	): Promise\PromiseInterface
 	{
 		if (is_array($property)) {
@@ -351,6 +389,7 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 					Utils\ArrayHash::from([
 						States\Property::VALID_FIELD => $state,
 					]),
+					$source,
 				);
 			}
 
@@ -365,9 +404,13 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 			return $deferred->promise();
 		}
 
-		return $this->saveValue($property, Utils\ArrayHash::from([
-			States\Property::VALID_FIELD => $state,
-		]), false);
+		return $this->set(
+			$property,
+			Utils\ArrayHash::from([
+				States\Property::VALID_FIELD => $state,
+			]),
+			$source,
+		);
 	}
 
 	/**
@@ -378,6 +421,7 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 	public function setPendingState(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|array $property,
 		bool $pending,
+		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source = null,
 	): Promise\PromiseInterface
 	{
 		if (is_array($property)) {
@@ -386,14 +430,22 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 			$promises = [];
 
 			foreach ($property as $item) {
-				$promises[] = $pending === false ? $this->set($item, Utils\ArrayHash::from([
-					States\Property::EXPECTED_VALUE_FIELD => null,
-					States\Property::PENDING_FIELD => false,
-				])) : $this->set($item, Utils\ArrayHash::from([
-					States\Property::PENDING_FIELD => $this->dateTimeFactory->getNow()->format(
-						DateTimeInterface::ATOM,
-					),
-				]));
+				$promises[] = $pending === false ? $this->set(
+					$item,
+					Utils\ArrayHash::from([
+						States\Property::EXPECTED_VALUE_FIELD => null,
+						States\Property::PENDING_FIELD => false,
+					]),
+					$source,
+				) : $this->set(
+					$item,
+					Utils\ArrayHash::from([
+						States\Property::PENDING_FIELD => $this->dateTimeFactory->getNow()->format(
+							DateTimeInterface::ATOM,
+						),
+					]),
+					$source,
+				);
 			}
 
 			Promise\all($promises)
@@ -407,12 +459,20 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 			return $deferred->promise();
 		}
 
-		return $pending === false ? $this->set($property, Utils\ArrayHash::from([
-			States\Property::EXPECTED_VALUE_FIELD => null,
-			States\Property::PENDING_FIELD => false,
-		])) : $this->set($property, Utils\ArrayHash::from([
-			States\Property::PENDING_FIELD => $this->dateTimeFactory->getNow()->format(DateTimeInterface::ATOM),
-		]));
+		return $pending === false ? $this->set(
+			$property,
+			Utils\ArrayHash::from([
+				States\Property::EXPECTED_VALUE_FIELD => null,
+				States\Property::PENDING_FIELD => false,
+			]),
+			$source,
+		) : $this->set(
+			$property,
+			Utils\ArrayHash::from([
+				States\Property::PENDING_FIELD => $this->dateTimeFactory->getNow()->format(DateTimeInterface::ATOM),
+			]),
+			$source,
+		);
 	}
 
 	/**
@@ -448,13 +508,12 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 	}
 
 	/**
-	 * @return Promise\PromiseInterface<States\ConnectorProperty|null>
+	 * @return Promise\PromiseInterface<MetadataDocuments\DevicesModule\ConnectorPropertyState|null>
 	 *
 	 * @interal
 	 */
-	public function loadValue(
+	public function readState(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
-		bool $forReading,
 	): Promise\PromiseInterface
 	{
 		$deferred = new Promise\Deferred();
@@ -466,7 +525,6 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 				) use (
 					$deferred,
 					$property,
-					$forReading,
 				): void {
 					if ($state === null) {
 						$deferred->resolve(null);
@@ -475,19 +533,27 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 					}
 
 					try {
-						$deferred->resolve($this->convertStoredState(
-							$property,
-							null,
-							$state,
-							$forReading,
+						$readValue = $this->convertStoredState($property, null, $state, true);
+						$getValue = $this->convertStoredState($property, null, $state, false);
+
+						$deferred->resolve($this->documentFactory->create(
+							MetadataDocuments\DevicesModule\ConnectorPropertyState::class,
+							[
+								'id' => $property->getId()->toString(),
+								'connector' => $property->getConnector()->toString(),
+								'read' => $readValue->toArray(),
+								'get' => $getValue->toArray(),
+								'created_at' => $readValue->getCreatedAt()?->format(DateTimeInterface::ATOM),
+								'updated_at' => $readValue->getUpdatedAt()?->format(DateTimeInterface::ATOM),
+							],
 						));
 					} catch (Exceptions\InvalidActualValue $ex) {
 						$this->connectorPropertiesStatesManager->update($property, $state, Utils\ArrayHash::from([
 							States\Property::ACTUAL_VALUE_FIELD => null,
 							States\Property::VALID_FIELD => false,
 						]))
-							->then(function () use ($property, $forReading, $deferred): void {
-								$this->loadValue($property, $forReading)
+							->then(function () use ($property, $deferred): void {
+								$this->readState($property)
 									->then(static function ($state) use ($deferred): void {
 										$deferred->resolve($state);
 									})
@@ -522,8 +588,8 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 							States\Property::EXPECTED_VALUE_FIELD => null,
 							States\Property::PENDING_FIELD => false,
 						]))
-							->then(function () use ($property, $forReading, $deferred): void {
-								$this->loadValue($property, $forReading)
+							->then(function () use ($property, $deferred): void {
+								$this->readState($property)
 									->then(static function ($state) use ($deferred): void {
 										$deferred->resolve($state);
 									})
@@ -578,7 +644,7 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 	 *
 	 * @interal
 	 */
-	public function saveValue(
+	public function writeState(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
 		Utils\ArrayHash $data,
 		bool $forWriting,
@@ -670,14 +736,17 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 						) {
 							try {
 								$expectedValue = $this->convertWriteExpectedValue(
-								/** @phpstan-ignore-next-line */
+									/** @phpstan-ignore-next-line */
 									$data->offsetGet(States\Property::EXPECTED_VALUE_FIELD),
 									$property,
 									null,
 									$forWriting,
 								);
 
-								if ($expectedValue !== null && !$property->isSettable()) {
+								if (
+									$expectedValue !== null
+									&& !$property->isSettable()
+								) {
 									$deferred->reject(new Exceptions\InvalidArgument(
 										'Property is not settable, expected value could not written',
 									));
