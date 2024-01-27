@@ -24,7 +24,6 @@ use FastyBird\Connector\HomeKit\Queue;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Library\Metadata\Types\ConnectorSource;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -214,10 +213,6 @@ abstract class Periodic
 
 			if ($property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
 				$state = await($this->devicePropertiesStatesManager->read($property));
-				$this->devicePropertiesStatesManager->request(
-					$property,
-					ConnectorSource::get(ConnectorSource::CONNECTOR_HOMEKIT),
-				);
 
 				if ($state === null) {
 					continue;
@@ -227,10 +222,6 @@ abstract class Periodic
 
 			} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
 				$state = await($this->channelPropertiesStatesManager->read($property));
-				$this->channelPropertiesStatesManager->request(
-					$property,
-					ConnectorSource::get(ConnectorSource::CONNECTOR_HOMEKIT),
-				);
 
 				if ($state === null) {
 					continue;
@@ -240,10 +231,6 @@ abstract class Periodic
 
 			} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
 				$state = await($this->devicePropertiesStatesManager->get($property));
-				$this->devicePropertiesStatesManager->request(
-					$property,
-					ConnectorSource::get(ConnectorSource::CONNECTOR_HOMEKIT),
-				);
 
 				if ($state === null) {
 					continue;
@@ -253,10 +240,6 @@ abstract class Periodic
 
 			} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
 				$state = await($this->channelPropertiesStatesManager->get($property));
-				$this->channelPropertiesStatesManager->request(
-					$property,
-					ConnectorSource::get(ConnectorSource::CONNECTOR_HOMEKIT),
-				);
 
 				if ($state === null) {
 					continue;
