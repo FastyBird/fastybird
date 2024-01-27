@@ -35,6 +35,7 @@ use Nette\Utils;
 use function array_merge;
 use function assert;
 use function is_string;
+use function React\Async\await;
 
 /**
  * Store device property state message consumer
@@ -56,7 +57,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 		private readonly DevicesModels\Entities\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
 		private readonly DevicesModels\Entities\Devices\Properties\PropertiesManager $devicesPropertiesManager,
 		private readonly ApplicationHelpers\Database $databaseHelper,
-		private readonly DevicesModels\States\DevicePropertiesManager $devicePropertiesStatesManager,
+		private readonly DevicesModels\States\Async\DevicePropertiesManager $devicePropertiesStatesManager,
 	)
 	{
 	}
@@ -158,13 +159,13 @@ final class StoreDevicePropertyState implements Queue\Consumer
 			);
 
 		} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-			$this->devicePropertiesStatesManager->set(
+			await($this->devicePropertiesStatesManager->set(
 				$property,
 				Utils\ArrayHash::from([
 					DevicesStates\Property::ACTUAL_VALUE_FIELD => $entity->getValue(),
 				]),
 				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL),
-			);
+			));
 		} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
 			$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceProperties();
 			$findDevicePropertyQuery->byId($property->getParent());
@@ -172,13 +173,13 @@ final class StoreDevicePropertyState implements Queue\Consumer
 			$parent = $this->devicesPropertiesConfigurationRepository->findOneBy($findDevicePropertyQuery);
 
 			if ($parent instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-				$this->devicePropertiesStatesManager->write(
+				await($this->devicePropertiesStatesManager->write(
 					$property,
 					Utils\ArrayHash::from([
 						DevicesStates\Property::EXPECTED_VALUE_FIELD => $entity->getValue(),
 					]),
 					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL),
-				);
+				));
 			} elseif ($parent instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty) {
 				$this->databaseHelper->transaction(function () use ($entity, $device, $property, $parent): void {
 					$toUpdate = $this->devicesPropertiesRepository->find(

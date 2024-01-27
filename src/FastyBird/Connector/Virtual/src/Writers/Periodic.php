@@ -32,6 +32,7 @@ use React\EventLoop;
 use function array_key_exists;
 use function in_array;
 use function React\Async\async;
+use function React\Async\await;
 
 /**
  * Periodic properties writer
@@ -76,8 +77,8 @@ abstract class Periodic implements Writer
 		protected readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		protected readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
 		protected readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
-		private readonly DevicesModels\States\DevicePropertiesManager $devicePropertiesStatesManager,
-		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
+		private readonly DevicesModels\States\Async\DevicePropertiesManager $devicePropertiesStatesManager,
+		private readonly DevicesModels\States\Async\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
 	)
@@ -217,8 +218,8 @@ abstract class Periodic implements Writer
 				|| $property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
 			) {
 				$state = $property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
-					? $this->devicePropertiesStatesManager->get($property)
-					: $this->devicePropertiesStatesManager->read($property);
+					? await($this->devicePropertiesStatesManager->get($property))
+					: await($this->devicePropertiesStatesManager->read($property));
 
 				if ($state === null) {
 					return false;
@@ -229,8 +230,8 @@ abstract class Periodic implements Writer
 					: $state->getExpectedValue() ?? ($state->isValid() ? $state->getActualValue() : null);
 			} else {
 				$state = $property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-					? $this->channelPropertiesStatesManager->get($property)
-					: $this->channelPropertiesStatesManager->read($property);
+					? await($this->channelPropertiesStatesManager->get($property))
+					: await($this->channelPropertiesStatesManager->read($property));
 
 				if ($state === null) {
 					return false;

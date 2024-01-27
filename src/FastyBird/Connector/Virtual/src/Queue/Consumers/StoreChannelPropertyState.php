@@ -35,6 +35,7 @@ use Nette\Utils;
 use function array_merge;
 use function assert;
 use function is_string;
+use function React\Async\await;
 
 /**
  * Store channel property state message consumer
@@ -57,7 +58,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager,
 		private readonly ApplicationHelpers\Database $databaseHelper,
-		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
+		private readonly DevicesModels\States\Async\ChannelPropertiesManager $channelPropertiesStatesManager,
 	)
 	{
 	}
@@ -197,13 +198,13 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			);
 
 		} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-			$this->channelPropertiesStatesManager->set(
+			await($this->channelPropertiesStatesManager->set(
 				$property,
 				Utils\ArrayHash::from([
 					DevicesStates\Property::ACTUAL_VALUE_FIELD => $entity->getValue(),
 				]),
 				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL),
-			);
+			));
 		} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
 			$findChannelPropertyQuery = new DevicesQueries\Configuration\FindChannelProperties();
 			$findChannelPropertyQuery->byId($property->getParent());
@@ -211,13 +212,13 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			$parent = $this->channelsPropertiesConfigurationRepository->findOneBy($findChannelPropertyQuery);
 
 			if ($parent instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-				$this->channelPropertiesStatesManager->write(
+				await($this->channelPropertiesStatesManager->write(
 					$property,
 					Utils\ArrayHash::from([
 						DevicesStates\Property::EXPECTED_VALUE_FIELD => $entity->getValue(),
 					]),
 					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL),
-				);
+				));
 			} elseif ($parent instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
 				$this->databaseHelper->transaction(
 					function () use ($entity, $device, $channel, $property, $parent): void {
