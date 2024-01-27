@@ -259,6 +259,8 @@ final class WriteSubDeviceChannelPropertyState implements Queue\Consumer
 		}
 
 		if ($state->getExpectedValue() === null) {
+			$this->channelPropertiesStatesManager->setPendingState($propertyToUpdate, false);
+
 			return true;
 		}
 

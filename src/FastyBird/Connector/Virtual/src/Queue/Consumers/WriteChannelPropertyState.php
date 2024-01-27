@@ -243,11 +243,11 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$valueToWrite = $state->getExpectedValue() ?? ($state->isValid() ? $state->getActualValue() : null);
 		}
 
-		if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-			$this->channelPropertiesStatesManager->setPendingState($property, $valueToWrite !== null);
-		}
-
 		if ($valueToWrite === null) {
+			if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+				$this->channelPropertiesStatesManager->setPendingState($property, false);
+			}
+
 			return true;
 		}
 

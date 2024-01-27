@@ -199,11 +199,11 @@ final class WriteDevicePropertyState implements Queue\Consumer
 			$valueToWrite = $state->getExpectedValue() ?? ($state->isValid() ? $state->getActualValue() : null);
 		}
 
-		if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-			$this->devicePropertiesStatesManager->setPendingState($property, $valueToWrite !== null);
-		}
-
 		if ($valueToWrite === null) {
+			if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
+				$this->devicePropertiesStatesManager->setPendingState($property, false);
+			}
+
 			return true;
 		}
 
