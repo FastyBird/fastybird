@@ -307,7 +307,7 @@ abstract class PropertiesManager
 	 * @throws MetadataExceptions\InvalidValue
 	 */
 	protected function convertWriteActualValue(
-		bool|float|int|string|null $value,
+		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
 		$property,
 	): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
 	{
@@ -350,7 +350,7 @@ abstract class PropertiesManager
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	protected function convertWriteExpectedValue(
-		bool|float|int|string|null $value,
+		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
 		$property,
 		$mappedProperty,
 		bool $forWriting,
