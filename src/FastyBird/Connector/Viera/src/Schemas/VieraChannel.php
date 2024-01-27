@@ -34,7 +34,7 @@ final class VieraChannel extends DevicesSchemas\Channels\Channel
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::CONNECTOR_VIERA . '/channel/' . Entities\VieraChannel::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::VIERA . '/channel/' . Entities\VieraChannel::TYPE;
 
 	public function getEntityClass(): string
 	{

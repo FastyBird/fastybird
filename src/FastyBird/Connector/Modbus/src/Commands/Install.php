@@ -284,7 +284,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_MODBUS,
+					'source' => MetadataTypes\ConnectorSource::MODBUS,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -580,7 +580,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_MODBUS,
+					'source' => MetadataTypes\ConnectorSource::MODBUS,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -669,7 +669,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_MODBUS,
+					'source' => MetadataTypes\ConnectorSource::MODBUS,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -911,7 +911,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_MODBUS,
+					'source' => MetadataTypes\ConnectorSource::MODBUS,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -1143,7 +1143,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_MODBUS,
+					'source' => MetadataTypes\ConnectorSource::MODBUS,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -1232,7 +1232,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_MODBUS,
+					'source' => MetadataTypes\ConnectorSource::MODBUS,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -1450,7 +1450,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_MODBUS,
+					'source' => MetadataTypes\ConnectorSource::MODBUS,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -1652,7 +1652,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_MODBUS,
+					'source' => MetadataTypes\ConnectorSource::MODBUS,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -1727,7 +1727,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_MODBUS,
+					'source' => MetadataTypes\ConnectorSource::MODBUS,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],

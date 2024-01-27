@@ -109,7 +109,7 @@ final class StoreDevice implements Consumer
 			$this->logger->info(
 				'Device was created',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
+					'source' => MetadataTypes\ConnectorSource::SONOFF,
 					'type' => 'store-device-message-consumer',
 					'connector' => [
 						'id' => $connector->getId()->toString(),
@@ -243,7 +243,7 @@ final class StoreDevice implements Consumer
 					$this->logger->debug(
 						'Device dynamic property was created',
 						[
-							'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
+							'source' => MetadataTypes\ConnectorSource::SONOFF,
 							'type' => 'store-device-message-consumer',
 							'connector' => [
 								'id' => $entity->getConnector()->toString(),
@@ -276,7 +276,7 @@ final class StoreDevice implements Consumer
 					$this->logger->debug(
 						'Device dynamic property was updated',
 						[
-							'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
+							'source' => MetadataTypes\ConnectorSource::SONOFF,
 							'type' => 'store-device-message-consumer',
 							'connector' => [
 								'id' => $entity->getConnector()->toString(),
@@ -313,7 +313,7 @@ final class StoreDevice implements Consumer
 						$this->logger->debug(
 							'Device channel was created',
 							[
-								'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
+								'source' => MetadataTypes\ConnectorSource::SONOFF,
 								'type' => 'store-device-message-consumer',
 								'connector' => [
 									'id' => $entity->getConnector()->toString(),
@@ -351,7 +351,7 @@ final class StoreDevice implements Consumer
 		$this->logger->debug(
 			'Consumed store device message',
 			[
-				'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
+				'source' => MetadataTypes\ConnectorSource::SONOFF,
 				'type' => 'store-device-message-consumer',
 				'connector' => [
 					'id' => $entity->getConnector()->toString(),

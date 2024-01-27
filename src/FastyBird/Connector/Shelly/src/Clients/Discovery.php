@@ -147,7 +147,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$this->logger->error(
 				'Invalid mDNS question response received',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
+					'source' => MetadataTypes\ConnectorSource::SHELLY,
 					'type' => 'discovery-client',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
@@ -167,7 +167,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$this->logger->warning(
 					'Invalid mDNS question response received',
 					[
-						'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
+						'source' => MetadataTypes\ConnectorSource::SHELLY,
 						'type' => 'discovery-client',
 						'connector' => [
 							'id' => $this->connector->getId()->toString(),
@@ -182,7 +182,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$this->logger->warning(
 					'The server set the truncated bit although we issued a TCP request',
 					[
-						'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
+						'source' => MetadataTypes\ConnectorSource::SHELLY,
 						'type' => 'discovery-client',
 						'connector' => [
 							'id' => $this->connector->getId()->toString(),
@@ -271,7 +271,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					$this->logger->error(
 						'Could not map mDNS result to entity: ' . $errorPrinter->printError($ex),
 						[
-							'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
+							'source' => MetadataTypes\ConnectorSource::SHELLY,
 							'type' => 'discovery-client',
 							'connector' => [
 								'id' => $this->connector->getId()->toString(),
@@ -394,7 +394,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					$this->logger->error(
 						'Could not load device basic information',
 						[
-							'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
+							'source' => MetadataTypes\ConnectorSource::SHELLY,
 							'type' => 'discovery-client',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 							'connector' => [
@@ -434,7 +434,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					$this->logger->error(
 						'Device is password protected and could not be accessed',
 						[
-							'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
+							'source' => MetadataTypes\ConnectorSource::SHELLY,
 							'type' => 'discovery-client',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 							'connector' => [
@@ -452,7 +452,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					$this->logger->error(
 						'Could not load device description or configuration',
 						[
-							'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
+							'source' => MetadataTypes\ConnectorSource::SHELLY,
 							'type' => 'discovery-client',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 							'connector' => [
@@ -658,7 +658,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$this->logger->error(
 					'Could not create discovered device',
 					[
-						'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
+						'source' => MetadataTypes\ConnectorSource::SHELLY,
 						'type' => 'discovery-client',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'connector' => [

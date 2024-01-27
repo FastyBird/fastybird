@@ -96,7 +96,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Starting Shelly connector service',
 			[
-				'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
+				'source' => MetadataTypes\ConnectorSource::SHELLY,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -157,7 +157,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Shelly connector service has been started',
 			[
-				'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
+				'source' => MetadataTypes\ConnectorSource::SHELLY,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -183,7 +183,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Starting Shelly connector discovery',
 			[
-				'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
+				'source' => MetadataTypes\ConnectorSource::SHELLY,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -198,7 +198,7 @@ final class Connector implements DevicesConnectors\Connector
 				DevicesConstants::EVENT_TERMINATE,
 				[
 					new DevicesEvents\TerminateConnector(
-						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT),
+						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::FB_MQTT),
 						'Devices discovery finished',
 					),
 				],
@@ -215,7 +215,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Shelly connector discovery has been started',
 			[
-				'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
+				'source' => MetadataTypes\ConnectorSource::SHELLY,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -243,7 +243,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Shelly connector has been terminated',
 			[
-				'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
+				'source' => MetadataTypes\ConnectorSource::SHELLY,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),

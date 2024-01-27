@@ -30,15 +30,15 @@ use function strval;
 class DevicePropertyIdentifier extends Consistence\Enum\Enum
 {
 
-	public const IP_ADDRESS = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS;
+	public const IP_ADDRESS = MetadataTypes\DevicePropertyIdentifier::IP_ADDRESS;
 
-	public const STATE = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_STATE;
+	public const STATE = MetadataTypes\DevicePropertyIdentifier::STATE;
 
-	public const MODEL = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL;
+	public const MODEL = MetadataTypes\DevicePropertyIdentifier::HARDWARE_MODEL;
 
-	public const MAC_ADDRESS = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS;
+	public const MAC_ADDRESS = MetadataTypes\DevicePropertyIdentifier::HARDWARE_MAC_ADDRESS;
 
-	public const FIRMWARE_VERSION = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_VERSION;
+	public const FIRMWARE_VERSION = MetadataTypes\DevicePropertyIdentifier::FIRMWARE_VERSION;
 
 	public const DOMAIN = 'domain';
 

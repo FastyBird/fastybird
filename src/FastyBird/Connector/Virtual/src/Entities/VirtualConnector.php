@@ -39,7 +39,7 @@ class VirtualConnector extends DevicesEntities\Connectors\Connector
 
 	public function getSource(): MetadataTypes\ConnectorSource
 	{
-		return MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL);
+		return MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL);
 	}
 
 }

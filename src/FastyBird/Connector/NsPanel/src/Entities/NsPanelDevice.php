@@ -28,7 +28,7 @@ abstract class NsPanelDevice extends DevicesEntities\Devices\Device
 
 	public function getSource(): MetadataTypes\ConnectorSource
 	{
-		return MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL);
+		return MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::NS_PANEL);
 	}
 
 	public function getConnector(): NsPanelConnector

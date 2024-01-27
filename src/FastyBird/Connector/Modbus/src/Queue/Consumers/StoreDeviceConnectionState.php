@@ -84,7 +84,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 			$this->logger->error(
 				'Device could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_MODBUS,
+					'source' => MetadataTypes\ConnectorSource::MODBUS,
 					'type' => 'store-device-connection-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -156,7 +156,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed device connection state message',
 			[
-				'source' => MetadataTypes\ConnectorSource::CONNECTOR_MODBUS,
+				'source' => MetadataTypes\ConnectorSource::MODBUS,
 				'type' => 'store-device-connection-state-message-consumer',
 				'connector' => [
 					'id' => $entity->getConnector()->toString(),

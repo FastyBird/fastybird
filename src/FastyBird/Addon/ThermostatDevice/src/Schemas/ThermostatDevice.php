@@ -35,7 +35,7 @@ final class ThermostatDevice extends VirtualSchemas\VirtualDevice
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL . '/device/' . Entities\ThermostatDevice::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::VIRTUAL . '/device/' . Entities\ThermostatDevice::TYPE;
 
 	public function getEntityClass(): string
 	{

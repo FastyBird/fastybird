@@ -171,7 +171,7 @@ final class CloudWs implements Evenement\EventEmitterInterface
 							$this->logger->debug(
 								'Connected to Sonoff sockets server',
 								[
-									'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
+									'source' => MetadataTypes\ConnectorSource::SONOFF,
 									'type' => 'cloud-ws-api',
 								],
 							);
@@ -231,7 +231,7 @@ final class CloudWs implements Evenement\EventEmitterInterface
 					$this->logger->debug(
 						'Connection to Sonoff sockets server was closed',
 						[
-							'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
+							'source' => MetadataTypes\ConnectorSource::SONOFF,
 							'type' => 'cloud-ws-api',
 							'connection' => [
 								'code' => $code,
@@ -459,7 +459,7 @@ final class CloudWs implements Evenement\EventEmitterInterface
 			$this->logger->debug(
 				'Received message from Sonoff sockets server not be parsed',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
+					'source' => MetadataTypes\ConnectorSource::SONOFF,
 					'type' => 'cloud-ws-api',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -765,7 +765,7 @@ final class CloudWs implements Evenement\EventEmitterInterface
 				$request->getUri(),
 			),
 			[
-				'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
+				'source' => MetadataTypes\ConnectorSource::SONOFF,
 				'type' => 'cloud-ws-api',
 				'request' => [
 					'method' => $request->getMethod(),
@@ -802,7 +802,7 @@ final class CloudWs implements Evenement\EventEmitterInterface
 							$this->logger->debug(
 								'Received response',
 								[
-									'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
+									'source' => MetadataTypes\ConnectorSource::SONOFF,
 									'type' => 'cloud-ws-api',
 									'request' => [
 										'method' => $request->getMethod(),
@@ -856,7 +856,7 @@ final class CloudWs implements Evenement\EventEmitterInterface
 			$this->logger->debug(
 				'Received response',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
+					'source' => MetadataTypes\ConnectorSource::SONOFF,
 					'type' => 'cloud-ws-api',
 					'request' => [
 						'method' => $request->getMethod(),

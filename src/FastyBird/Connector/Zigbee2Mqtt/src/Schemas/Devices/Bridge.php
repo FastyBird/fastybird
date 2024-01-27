@@ -35,7 +35,7 @@ final class Bridge extends Schemas\Zigbee2MqttDevice
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT . '/device/' . Entities\Devices\Bridge::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::ZIGBEE2MQTT . '/device/' . Entities\Devices\Bridge::TYPE;
 
 	public function getEntityClass(): string
 	{

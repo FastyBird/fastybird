@@ -30,19 +30,19 @@ use function strval;
 class DevicePropertyIdentifier extends Consistence\Enum\Enum
 {
 
-	public const STATE = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_STATE;
+	public const STATE = MetadataTypes\DevicePropertyIdentifier::STATE;
 
-	public const IP_ADDRESS = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS;
+	public const IP_ADDRESS = MetadataTypes\DevicePropertyIdentifier::IP_ADDRESS;
 
-	public const DOMAIN = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_DOMAIN;
+	public const DOMAIN = MetadataTypes\DevicePropertyIdentifier::DOMAIN;
 
-	public const MANUFACTURER = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MANUFACTURER;
+	public const MANUFACTURER = MetadataTypes\DevicePropertyIdentifier::HARDWARE_MANUFACTURER;
 
-	public const MODEL = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL;
+	public const MODEL = MetadataTypes\DevicePropertyIdentifier::HARDWARE_MODEL;
 
-	public const MAC_ADDRESS = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS;
+	public const MAC_ADDRESS = MetadataTypes\DevicePropertyIdentifier::HARDWARE_MAC_ADDRESS;
 
-	public const FIRMWARE_VERSION = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_VERSION;
+	public const FIRMWARE_VERSION = MetadataTypes\DevicePropertyIdentifier::FIRMWARE_VERSION;
 
 	public const ACCESS_TOKEN = 'access_token';
 
@@ -50,7 +50,7 @@ class DevicePropertyIdentifier extends Consistence\Enum\Enum
 
 	public const GATEWAY_IDENTIFIER = 'gateway_identifier';
 
-	public const STATE_READING_DELAY = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_STATE_READING_DELAY;
+	public const STATE_READING_DELAY = MetadataTypes\DevicePropertyIdentifier::STATE_READING_DELAY;
 
 	public function getValue(): string
 	{

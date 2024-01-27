@@ -154,7 +154,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed device connection state message',
 			[
-				'source' => MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT,
+				'source' => MetadataTypes\ConnectorSource::ZIGBEE2MQTT,
 				'type' => 'store-device-connection-state-message-consumer',
 				'connector' => [
 					'id' => $entity->getConnector()->toString(),

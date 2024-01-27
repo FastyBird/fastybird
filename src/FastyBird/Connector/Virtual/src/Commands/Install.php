@@ -198,7 +198,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
+					'source' => MetadataTypes\ConnectorSource::VIRTUAL,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -297,7 +297,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
+					'source' => MetadataTypes\ConnectorSource::VIRTUAL,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -389,7 +389,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
+					'source' => MetadataTypes\ConnectorSource::VIRTUAL,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -524,7 +524,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
+					'source' => MetadataTypes\ConnectorSource::VIRTUAL,
 					'type' => 'devices-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],

@@ -39,7 +39,7 @@ class ThermostatChannel extends VirtualEntities\VirtualChannel
 
 	public function getSource(): MetadataTypes\ConnectorSource
 	{
-		return MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL);
+		return MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL);
 	}
 
 }

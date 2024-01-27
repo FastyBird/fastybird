@@ -154,7 +154,7 @@ final class DeviceAttribute implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed device attribute message',
 			[
-				'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
+				'source' => MetadataTypes\ConnectorSource::FB_MQTT,
 				'type' => 'device-attribute-message-consumer',
 				'connector' => [
 					'id' => $entity->getConnector()->toString(),

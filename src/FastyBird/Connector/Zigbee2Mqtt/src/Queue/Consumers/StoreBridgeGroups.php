@@ -47,7 +47,7 @@ final class StoreBridgeGroups implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed bridge groups list message',
 			[
-				'source' => MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT,
+				'source' => MetadataTypes\ConnectorSource::ZIGBEE2MQTT,
 				'type' => 'store-bridge-groups-message-consumer',
 				'connector' => [
 					'id' => $entity->getConnector()->toString(),

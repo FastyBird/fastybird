@@ -72,7 +72,7 @@ final class DeviceConnection
 	{
 		$findDevicePropertyQuery = new Queries\Configuration\FindDeviceDynamicProperties();
 		$findDevicePropertyQuery->byDeviceId($device->getId());
-		$findDevicePropertyQuery->byIdentifier(MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_STATE);
+		$findDevicePropertyQuery->byIdentifier(MetadataTypes\DevicePropertyIdentifier::STATE);
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findDevicePropertyQuery,
@@ -141,7 +141,7 @@ final class DeviceConnection
 	{
 		$findDevicePropertyQuery = new Queries\Configuration\FindDeviceDynamicProperties();
 		$findDevicePropertyQuery->byDeviceId($device->getId());
-		$findDevicePropertyQuery->byIdentifier(MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_STATE);
+		$findDevicePropertyQuery->byIdentifier(MetadataTypes\DevicePropertyIdentifier::STATE);
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findDevicePropertyQuery,
@@ -176,7 +176,7 @@ final class DeviceConnection
 	{
 		$findDevicePropertyQuery = new Queries\Configuration\FindDeviceDynamicProperties();
 		$findDevicePropertyQuery->byDeviceId($device->getId());
-		$findDevicePropertyQuery->byIdentifier(MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_STATE);
+		$findDevicePropertyQuery->byIdentifier(MetadataTypes\DevicePropertyIdentifier::STATE);
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findDevicePropertyQuery,

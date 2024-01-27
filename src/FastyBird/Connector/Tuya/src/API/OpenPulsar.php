@@ -139,7 +139,7 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 				$this->logger->debug(
 					'Connected to Tuya sockets server',
 					[
-						'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
+						'source' => MetadataTypes\ConnectorSource::TUYA,
 						'type' => 'openpulsar-api',
 						'connector' => [
 							'identifier' => $this->identifier,
@@ -165,7 +165,7 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 					$this->logger->debug(
 						'Connection to Tuya WS server was closed',
 						[
-							'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
+							'source' => MetadataTypes\ConnectorSource::TUYA,
 							'type' => 'openpulsar-api',
 							'connection' => [
 								'code' => $code,
@@ -303,7 +303,7 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 		$this->logger->debug(
 			'Received message origin payload',
 			[
-				'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
+				'source' => MetadataTypes\ConnectorSource::TUYA,
 				'type' => 'openpulsar-api',
 				'data' => [
 					'payload' => $payload,
@@ -354,7 +354,7 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 		$this->logger->debug(
 			'Received message decrypted',
 			[
-				'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
+				'source' => MetadataTypes\ConnectorSource::TUYA,
 				'type' => 'openpulsar-api',
 				'data' => $decryptedData,
 				'connector' => [

@@ -70,7 +70,7 @@ final class Http implements Server
 			$this->logger->debug(
 				'Creating connector web server',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::NS_PANEL,
 					'type' => 'http-server',
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
@@ -91,7 +91,7 @@ final class Http implements Server
 			$this->logger->error(
 				'Connector web server could not be created',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::NS_PANEL,
 					'type' => 'http-server',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
@@ -125,7 +125,7 @@ final class Http implements Server
 			$this->logger->error(
 				'An error occurred during server handling',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::NS_PANEL,
 					'type' => 'http-server',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
@@ -147,7 +147,7 @@ final class Http implements Server
 		$this->logger->debug(
 			'Closing connector web server',
 			[
-				'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
+				'source' => MetadataTypes\ConnectorSource::NS_PANEL,
 				'type' => 'http-server',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),

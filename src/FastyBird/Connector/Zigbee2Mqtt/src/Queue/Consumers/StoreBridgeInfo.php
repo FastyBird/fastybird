@@ -138,7 +138,7 @@ final class StoreBridgeInfo implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed bridge info message',
 			[
-				'source' => MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT,
+				'source' => MetadataTypes\ConnectorSource::ZIGBEE2MQTT,
 				'type' => 'store-bridge-info-message-consumer',
 				'connector' => [
 					'id' => $entity->getConnector()->toString(),

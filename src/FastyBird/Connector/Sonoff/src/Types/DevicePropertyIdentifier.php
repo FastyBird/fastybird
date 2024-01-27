@@ -33,23 +33,23 @@ class DevicePropertyIdentifier extends Consistence\Enum\Enum
 	/**
 	 * Define device states
 	 */
-	public const IP_ADDRESS = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS;
+	public const IP_ADDRESS = MetadataTypes\DevicePropertyIdentifier::IP_ADDRESS;
 
-	public const ADDRESS = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_ADDRESS;
+	public const ADDRESS = MetadataTypes\DevicePropertyIdentifier::ADDRESS;
 
-	public const STATE = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_STATE;
+	public const STATE = MetadataTypes\DevicePropertyIdentifier::STATE;
 
-	public const HARDWARE_MODEL = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL;
+	public const HARDWARE_MODEL = MetadataTypes\DevicePropertyIdentifier::HARDWARE_MODEL;
 
-	public const HARDWARE_MAC_ADDRESS = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS;
+	public const HARDWARE_MAC_ADDRESS = MetadataTypes\DevicePropertyIdentifier::HARDWARE_MAC_ADDRESS;
 
-	public const FIRMWARE_VERSION = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_VERSION;
+	public const FIRMWARE_VERSION = MetadataTypes\DevicePropertyIdentifier::FIRMWARE_VERSION;
 
-	public const RSSI = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_RSSI;
+	public const RSSI = MetadataTypes\DevicePropertyIdentifier::RSSI;
 
-	public const SSID = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_SSID;
+	public const SSID = MetadataTypes\DevicePropertyIdentifier::SSID;
 
-	public const STATUS_LED = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_STATUS_LED;
+	public const STATUS_LED = MetadataTypes\DevicePropertyIdentifier::STATUS_LED;
 
 	public const API_KEY = 'api_key';
 

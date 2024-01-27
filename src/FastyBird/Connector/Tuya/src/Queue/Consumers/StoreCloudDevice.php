@@ -108,7 +108,7 @@ final class StoreCloudDevice implements Queue\Consumer
 			$this->logger->debug(
 				'Device was created',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
+					'source' => MetadataTypes\ConnectorSource::TUYA,
 					'type' => 'store-cloud-device-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -219,7 +219,7 @@ final class StoreCloudDevice implements Queue\Consumer
 				$this->logger->debug(
 					'Device channel was created',
 					[
-						'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
+						'source' => MetadataTypes\ConnectorSource::TUYA,
 						'type' => 'store-cloud-device-message-consumer',
 						'connector' => [
 							'id' => $entity->getConnector()->toString(),
@@ -258,7 +258,7 @@ final class StoreCloudDevice implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed store device message',
 			[
-				'source' => MetadataTypes\ConnectorSource::CONNECTOR_TUYA,
+				'source' => MetadataTypes\ConnectorSource::TUYA,
 				'type' => 'store-cloud-device-message-consumer',
 				'connector' => [
 					'id' => $entity->getConnector()->toString(),

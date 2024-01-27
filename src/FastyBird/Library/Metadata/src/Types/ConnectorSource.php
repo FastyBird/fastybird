@@ -35,29 +35,29 @@ class ConnectorSource extends Consistence\Enum\Enum
 	 */
 	public const NOT_SPECIFIED = Metadata\Constants::NOT_SPECIFIED_SOURCE;
 
-	public const CONNECTOR_FB_BUS = Metadata\Constants::CONNECTOR_FB_BUS_SOURCE;
+	public const FB_BUS = Metadata\Constants::CONNECTOR_FB_BUS_SOURCE;
 
-	public const CONNECTOR_FB_MQTT = Metadata\Constants::CONNECTOR_FB_MQTT_SOURCE;
+	public const FB_MQTT = Metadata\Constants::CONNECTOR_FB_MQTT_SOURCE;
 
-	public const CONNECTOR_SHELLY = Metadata\Constants::CONNECTOR_SHELLY_SOURCE;
+	public const SHELLY = Metadata\Constants::CONNECTOR_SHELLY_SOURCE;
 
-	public const CONNECTOR_TUYA = Metadata\Constants::CONNECTOR_TUYA_SOURCE;
+	public const TUYA = Metadata\Constants::CONNECTOR_TUYA_SOURCE;
 
-	public const CONNECTOR_SONOFF = Metadata\Constants::CONNECTOR_SONOFF_SOURCE;
+	public const SONOFF = Metadata\Constants::CONNECTOR_SONOFF_SOURCE;
 
-	public const CONNECTOR_MODBUS = Metadata\Constants::CONNECTOR_MODBUS_SOURCE;
+	public const MODBUS = Metadata\Constants::CONNECTOR_MODBUS_SOURCE;
 
-	public const CONNECTOR_HOMEKIT = Metadata\Constants::CONNECTOR_HOMEKIT_SOURCE;
+	public const HOMEKIT = Metadata\Constants::CONNECTOR_HOMEKIT_SOURCE;
 
-	public const CONNECTOR_VIRTUAL = Metadata\Constants::CONNECTOR_VIRTUAL_SOURCE;
+	public const VIRTUAL = Metadata\Constants::CONNECTOR_VIRTUAL_SOURCE;
 
-	public const CONNECTOR_TERMINAL = Metadata\Constants::CONNECTOR_TERMINAL_SOURCE;
+	public const TERMINAL = Metadata\Constants::CONNECTOR_TERMINAL_SOURCE;
 
-	public const CONNECTOR_VIERA = Metadata\Constants::CONNECTOR_VIERA_SOURCE;
+	public const VIERA = Metadata\Constants::CONNECTOR_VIERA_SOURCE;
 
-	public const CONNECTOR_NS_PANEL = Metadata\Constants::CONNECTOR_NS_PANEL_SOURCE;
+	public const NS_PANEL = Metadata\Constants::CONNECTOR_NS_PANEL_SOURCE;
 
-	public const CONNECTOR_ZIGBEE2MQTT = Metadata\Constants::CONNECTOR_ZIGBEE2MQTT_SOURCE;
+	public const ZIGBEE2MQTT = Metadata\Constants::CONNECTOR_ZIGBEE2MQTT_SOURCE;
 
 	public function getValue(): string
 	{

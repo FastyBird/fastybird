@@ -45,7 +45,7 @@ class FbMqttConnector extends DevicesEntities\Connectors\Connector
 
 	public function getSource(): MetadataTypes\ConnectorSource
 	{
-		return MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT);
+		return MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::FB_MQTT);
 	}
 
 	/**

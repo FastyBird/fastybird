@@ -45,7 +45,7 @@ class NsPanelChannel extends DevicesEntities\Channels\Channel
 
 	public function getSource(): MetadataTypes\ConnectorSource
 	{
-		return MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL);
+		return MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::NS_PANEL);
 	}
 
 	/**

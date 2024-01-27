@@ -119,7 +119,7 @@ final class FbMqttV1 implements Client
 					$this->logger->info(
 						sprintf('Subscribed to: %s', $subscription->getFilter()),
 						[
-							'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
+							'source' => MetadataTypes\ConnectorSource::FB_MQTT,
 							'type' => 'fb-mqtt-v1-client',
 							'connector' => [
 								'id' => $this->connector->getId()->toString(),
@@ -131,7 +131,7 @@ final class FbMqttV1 implements Client
 					$this->logger->error(
 						$ex->getMessage(),
 						[
-							'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
+							'source' => MetadataTypes\ConnectorSource::FB_MQTT,
 							'type' => 'fb-mqtt-v1-client',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 							'connector' => [
@@ -155,7 +155,7 @@ final class FbMqttV1 implements Client
 						$this->logger->info(
 							sprintf('Subscribed to: %s', $subscription->getFilter()),
 							[
-								'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
+								'source' => MetadataTypes\ConnectorSource::FB_MQTT,
 								'type' => 'fb-mqtt-v1-client',
 								'connector' => [
 									'id' => $this->connector->getId()->toString(),
@@ -167,7 +167,7 @@ final class FbMqttV1 implements Client
 						$this->logger->error(
 							$ex->getMessage(),
 							[
-								'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
+								'source' => MetadataTypes\ConnectorSource::FB_MQTT,
 								'type' => 'fb-mqtt-v1-client',
 								'exception' => ApplicationHelpers\Logger::buildException($ex),
 								'connector' => [
@@ -208,7 +208,7 @@ final class FbMqttV1 implements Client
 						$this->logger->notice(
 							$payload,
 							[
-								'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
+								'source' => MetadataTypes\ConnectorSource::FB_MQTT,
 								'type' => 'fb-mqtt-v1-client',
 								'connector' => [
 									'id' => $this->connector->getId()->toString(),
@@ -259,7 +259,7 @@ final class FbMqttV1 implements Client
 						$this->logger->error(
 							$payload,
 							[
-								'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
+								'source' => MetadataTypes\ConnectorSource::FB_MQTT,
 								'type' => 'fb-mqtt-v1-client',
 								'connector' => [
 									'id' => $this->connector->getId()->toString(),
@@ -274,7 +274,7 @@ final class FbMqttV1 implements Client
 						$this->logger->info(
 							$payload,
 							[
-								'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
+								'source' => MetadataTypes\ConnectorSource::FB_MQTT,
 								'type' => 'fb-mqtt-v1-client',
 								'connector' => [
 									'id' => $this->connector->getId()->toString(),
@@ -287,7 +287,7 @@ final class FbMqttV1 implements Client
 						$this->logger->debug(
 							$param3 . ': ' . $payload,
 							[
-								'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
+								'source' => MetadataTypes\ConnectorSource::FB_MQTT,
 								'type' => 'fb-mqtt-v1-client',
 								'connector' => [
 									'id' => $this->connector->getId()->toString(),
@@ -328,7 +328,7 @@ final class FbMqttV1 implements Client
 				$this->logger->debug(
 					'Received message could not be successfully parsed to entity',
 					[
-						'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
+						'source' => MetadataTypes\ConnectorSource::FB_MQTT,
 						'type' => 'fb-mqtt-v1-client',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'connector' => [

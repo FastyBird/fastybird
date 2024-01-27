@@ -267,7 +267,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::NS_PANEL,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -424,7 +424,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::NS_PANEL,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -515,7 +515,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::NS_PANEL,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -784,7 +784,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::NS_PANEL,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -1052,7 +1052,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::NS_PANEL,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -1144,7 +1144,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::NS_PANEL,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -1446,7 +1446,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::NS_PANEL,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -1533,7 +1533,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::NS_PANEL,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -1611,7 +1611,7 @@ class Install extends Console\Command\Command
 				$this->logger->error(
 					'Calling NS Panel api failed',
 					[
-						'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
+						'source' => MetadataTypes\ConnectorSource::NS_PANEL,
 						'type' => 'install-cmd',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 					],
@@ -1647,7 +1647,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::NS_PANEL,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -1871,7 +1871,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::NS_PANEL,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -2006,7 +2006,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::NS_PANEL,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -2121,7 +2121,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::NS_PANEL,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -2505,7 +2505,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::NS_PANEL,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -2585,7 +2585,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::NS_PANEL,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -4522,7 +4522,7 @@ class Install extends Console\Command\Command
 						$this->logger->error(
 							'Could not get NS Panel basic information',
 							[
-								'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
+								'source' => MetadataTypes\ConnectorSource::NS_PANEL,
 								'type' => 'install-cmd',
 								'exception' => ApplicationHelpers\Logger::buildException($ex),
 								'request' => [

@@ -95,7 +95,7 @@ final class ChannelProperty implements Queue\Consumer
 			$this->logger->warning(
 				sprintf('Device "%s" is not registered', $entity->getDevice()),
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
+					'source' => MetadataTypes\ConnectorSource::FB_MQTT,
 					'type' => 'channel-property-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -123,7 +123,7 @@ final class ChannelProperty implements Queue\Consumer
 			$this->logger->warning(
 				sprintf('Device channel "%s" is not registered', $entity->getChannel()),
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
+					'source' => MetadataTypes\ConnectorSource::FB_MQTT,
 					'type' => 'channel-property-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -150,7 +150,7 @@ final class ChannelProperty implements Queue\Consumer
 			$this->logger->warning(
 				sprintf('Property "%s" is not registered', $entity->getProperty()),
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
+					'source' => MetadataTypes\ConnectorSource::FB_MQTT,
 					'type' => 'channel-property-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -189,7 +189,7 @@ final class ChannelProperty implements Queue\Consumer
 					Utils\ArrayHash::from([
 						DevicesStates\Property::ACTUAL_VALUE_FIELD => $entity->getValue(),
 					]),
-					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT),
+					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::FB_MQTT),
 				));
 			}
 		} else {
@@ -208,7 +208,7 @@ final class ChannelProperty implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed channel property message',
 			[
-				'source' => MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT,
+				'source' => MetadataTypes\ConnectorSource::FB_MQTT,
 				'type' => 'channel-property-message-consumer',
 				'connector' => [
 					'id' => $entity->getConnector()->toString(),

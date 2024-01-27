@@ -132,7 +132,7 @@ final class StoreDeviceState implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed device state message',
 			[
-				'source' => MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT,
+				'source' => MetadataTypes\ConnectorSource::ZIGBEE2MQTT,
 				'type' => 'store-device-state-message-consumer',
 				'connector' => [
 					'id' => $entity->getConnector()->toString(),
@@ -186,7 +186,7 @@ final class StoreDeviceState implements Queue\Consumer
 					$this->logger->debug(
 						'Channel for storing device state could not be loaded',
 						[
-							'source' => MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT,
+							'source' => MetadataTypes\ConnectorSource::ZIGBEE2MQTT,
 							'type' => 'store-device-state-message-consumer',
 							'connector' => [
 								'id' => $device->getConnector()->toString(),
@@ -217,7 +217,7 @@ final class StoreDeviceState implements Queue\Consumer
 					$this->logger->warning(
 						'Channel property for storing device state could not be loaded',
 						[
-							'source' => MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT,
+							'source' => MetadataTypes\ConnectorSource::ZIGBEE2MQTT,
 							'type' => 'store-device-state-message-consumer',
 							'connector' => [
 								'id' => $device->getConnector()->toString(),
@@ -240,7 +240,7 @@ final class StoreDeviceState implements Queue\Consumer
 					Utils\ArrayHash::from([
 						DevicesStates\Property::ACTUAL_VALUE_FIELD => $state->getValue(),
 					]),
-					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT),
+					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::ZIGBEE2MQTT),
 				));
 
 			} else {

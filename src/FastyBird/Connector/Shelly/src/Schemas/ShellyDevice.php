@@ -34,7 +34,7 @@ final class ShellyDevice extends DevicesSchemas\Devices\Device
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::CONNECTOR_SHELLY . '/device/' . Entities\ShellyDevice::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::SHELLY . '/device/' . Entities\ShellyDevice::TYPE;
 
 	public function getEntityClass(): string
 	{

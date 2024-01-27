@@ -49,7 +49,7 @@ class SonoffDevice extends DevicesEntities\Devices\Device
 
 	public function getSource(): MetadataTypes\ConnectorSource
 	{
-		return MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_SONOFF);
+		return MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SONOFF);
 	}
 
 	/**

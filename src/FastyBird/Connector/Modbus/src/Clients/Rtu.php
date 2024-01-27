@@ -260,7 +260,7 @@ class Rtu implements Client
 				$this->logger->warning(
 					'Channel address is missing',
 					[
-						'source' => MetadataTypes\ConnectorSource::CONNECTOR_MODBUS,
+						'source' => MetadataTypes\ConnectorSource::MODBUS,
 						'type' => 'rtu-client',
 						'connector' => [
 							'id' => $this->connector->getId()->toString(),
@@ -467,7 +467,7 @@ class Rtu implements Client
 				$this->logger->error(
 					'Could not handle register reading',
 					[
-						'source' => MetadataTypes\ConnectorSource::CONNECTOR_MODBUS,
+						'source' => MetadataTypes\ConnectorSource::MODBUS,
 						'type' => 'rtu-client',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'connector' => [
@@ -565,7 +565,7 @@ class Rtu implements Client
 				$this->logger->warning(
 					'Maximum channel property read attempts reached. Device is lost',
 					[
-						'source' => MetadataTypes\ConnectorSource::CONNECTOR_MODBUS,
+						'source' => MetadataTypes\ConnectorSource::MODBUS,
 						'type' => 'rtu-client',
 						'connector' => [
 							'id' => $this->connector->getId()->toString(),
@@ -622,7 +622,7 @@ class Rtu implements Client
 		$this->logger->warning(
 			'Channel property data type is not supported for now',
 			[
-				'source' => MetadataTypes\ConnectorSource::CONNECTOR_MODBUS,
+				'source' => MetadataTypes\ConnectorSource::MODBUS,
 				'type' => 'rtu-client',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),

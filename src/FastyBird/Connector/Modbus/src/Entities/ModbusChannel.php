@@ -45,7 +45,7 @@ class ModbusChannel extends DevicesEntities\Channels\Channel
 
 	public function getSource(): MetadataTypes\ConnectorSource
 	{
-		return MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_MODBUS);
+		return MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::MODBUS);
 	}
 
 	/**

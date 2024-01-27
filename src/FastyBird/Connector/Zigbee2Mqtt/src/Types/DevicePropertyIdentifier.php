@@ -30,19 +30,19 @@ use function strval;
 class DevicePropertyIdentifier extends Consistence\Enum\Enum
 {
 
-	public const STATE = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_STATE;
+	public const STATE = MetadataTypes\DevicePropertyIdentifier::STATE;
 
 	public const BASE_TOPIC = 'base_topic';
 
-	public const MODEL = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL;
+	public const MODEL = MetadataTypes\DevicePropertyIdentifier::HARDWARE_MODEL;
 
-	public const MANUFACTURER = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MANUFACTURER;
+	public const MANUFACTURER = MetadataTypes\DevicePropertyIdentifier::HARDWARE_MANUFACTURER;
 
-	public const VERSION = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_VERSION;
+	public const VERSION = MetadataTypes\DevicePropertyIdentifier::FIRMWARE_VERSION;
 
 	public const COMMIT = 'commit';
 
-	public const IEEE_ADDRESS = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_ADDRESS;
+	public const IEEE_ADDRESS = MetadataTypes\DevicePropertyIdentifier::ADDRESS;
 
 	public const TYPE = 'type';
 

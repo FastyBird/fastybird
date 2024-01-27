@@ -92,7 +92,7 @@ trait ChannelProperty
 			$this->logger->warning(
 				'Stored channel property was not of valid type',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
+					'source' => MetadataTypes\ConnectorSource::VIERA,
 					'type' => 'message-consumer',
 					'channel' => [
 						'id' => $channelId->toString(),
@@ -114,7 +114,7 @@ trait ChannelProperty
 				$this->logger->error(
 					'Channel was not found, property could not be configured',
 					[
-						'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
+						'source' => MetadataTypes\ConnectorSource::VIERA,
 						'type' => 'message-consumer',
 						'channel' => [
 							'id' => $channelId->toString(),
@@ -154,7 +154,7 @@ trait ChannelProperty
 			$this->logger->debug(
 				'Channel property was created',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
+					'source' => MetadataTypes\ConnectorSource::VIERA,
 					'type' => 'message-consumer',
 					'channel' => [
 						'id' => $channelId->toString(),
@@ -190,7 +190,7 @@ trait ChannelProperty
 			$this->logger->debug(
 				'Channel property was updated',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
+					'source' => MetadataTypes\ConnectorSource::VIERA,
 					'type' => 'message-consumer',
 					'channel' => [
 						'id' => $channelId->toString(),

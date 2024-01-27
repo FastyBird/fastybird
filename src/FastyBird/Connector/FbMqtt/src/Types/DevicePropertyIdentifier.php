@@ -33,35 +33,35 @@ class DevicePropertyIdentifier extends Consistence\Enum\Enum
 	/**
 	 * Define device states
 	 */
-	public const STATE = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_STATE;
+	public const STATE = MetadataTypes\DevicePropertyIdentifier::STATE;
 
-	public const IP_ADDRESS = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS;
+	public const IP_ADDRESS = MetadataTypes\DevicePropertyIdentifier::IP_ADDRESS;
 
-	public const STATUS_LED = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_STATUS_LED;
+	public const STATUS_LED = MetadataTypes\DevicePropertyIdentifier::STATUS_LED;
 
-	public const UPTIME = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_UPTIME;
+	public const UPTIME = MetadataTypes\DevicePropertyIdentifier::UPTIME;
 
-	public const FREE_HEAP = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_FREE_HEAP;
+	public const FREE_HEAP = MetadataTypes\DevicePropertyIdentifier::FREE_HEAP;
 
-	public const CPU_LOAD = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_CPU_LOAD;
+	public const CPU_LOAD = MetadataTypes\DevicePropertyIdentifier::CPU_LOAD;
 
-	public const VCC = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_VCC;
+	public const VCC = MetadataTypes\DevicePropertyIdentifier::VCC;
 
-	public const RSSI = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_RSSI;
+	public const RSSI = MetadataTypes\DevicePropertyIdentifier::RSSI;
 
-	public const HARDWARE_MAC_ADDRESS = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS;
+	public const HARDWARE_MAC_ADDRESS = MetadataTypes\DevicePropertyIdentifier::HARDWARE_MAC_ADDRESS;
 
-	public const HARDWARE_MANUFACTURER = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MANUFACTURER;
+	public const HARDWARE_MANUFACTURER = MetadataTypes\DevicePropertyIdentifier::HARDWARE_MANUFACTURER;
 
-	public const HARDWARE_MODEL = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL;
+	public const HARDWARE_MODEL = MetadataTypes\DevicePropertyIdentifier::HARDWARE_MODEL;
 
-	public const HARDWARE_VERSION = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_VERSION;
+	public const HARDWARE_VERSION = MetadataTypes\DevicePropertyIdentifier::HARDWARE_VERSION;
 
-	public const FIRMWARE_MANUFACTURER = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_MANUFACTURER;
+	public const FIRMWARE_MANUFACTURER = MetadataTypes\DevicePropertyIdentifier::FIRMWARE_MANUFACTURER;
 
-	public const FIRMWARE_NAME = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_NAME;
+	public const FIRMWARE_NAME = MetadataTypes\DevicePropertyIdentifier::FIRMWARE_NAME;
 
-	public const FIRMWARE_VERSION = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_VERSION;
+	public const FIRMWARE_VERSION = MetadataTypes\DevicePropertyIdentifier::FIRMWARE_VERSION;
 
 	public function getValue(): string
 	{

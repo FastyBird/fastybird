@@ -217,7 +217,7 @@ final class SecureConnection extends Evenement\EventEmitter implements Socket\Co
 			$this->logger->error(
 				'Data decryption failed',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
+					'source' => MetadataTypes\ConnectorSource::HOMEKIT,
 					'type' => 'secure-connection',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
@@ -268,7 +268,7 @@ final class SecureConnection extends Evenement\EventEmitter implements Socket\Co
 			$this->logger->error(
 				'Data encryption failed',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT,
+					'source' => MetadataTypes\ConnectorSource::HOMEKIT,
 					'type' => 'secure-connection',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [

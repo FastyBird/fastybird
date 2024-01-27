@@ -95,7 +95,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 		$this->logger->debug(
 			'Starting devices discovery',
 			[
-				'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
+				'source' => MetadataTypes\ConnectorSource::VIERA,
 				'type' => 'discovery-client',
 			],
 		);
@@ -107,7 +107,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$this->logger->error(
 				'Could not create discovery server',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
+					'source' => MetadataTypes\ConnectorSource::VIERA,
 					'type' => 'discovery-client',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -205,7 +205,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$this->logger->error(
 					'Checking TV status failed',
 					[
-						'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
+						'source' => MetadataTypes\ConnectorSource::VIERA,
 						'type' => 'discovery-client',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'device' => [
@@ -223,7 +223,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$this->logger->error(
 					sprintf('The provided IP: %s:%d address is unreachable.', $host, $port),
 					[
-						'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
+						'source' => MetadataTypes\ConnectorSource::VIERA,
 						'type' => 'discovery-client',
 						'device' => [
 							'id' => $id,
@@ -255,7 +255,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$this->logger->error(
 				'Preparing api request failed',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
+					'source' => MetadataTypes\ConnectorSource::VIERA,
 					'type' => 'discovery-client',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -266,7 +266,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$this->logger->error(
 				'Calling device api failed',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
+					'source' => MetadataTypes\ConnectorSource::VIERA,
 					'type' => 'discovery-client',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'request' => [
@@ -285,7 +285,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$this->logger->error(
 				'Unhandled error occur',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIERA,
+					'source' => MetadataTypes\ConnectorSource::VIERA,
 					'type' => 'discovery-client',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],

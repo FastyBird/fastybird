@@ -34,7 +34,7 @@ final class HomeKitChannel extends DevicesSchemas\Channels\Channel
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT . '/channel/' . Entities\HomeKitChannel::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::HOMEKIT . '/channel/' . Entities\HomeKitChannel::TYPE;
 
 	public function getEntityClass(): string
 	{

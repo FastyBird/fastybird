@@ -253,7 +253,7 @@ class Tcp implements Client
 				$this->logger->warning(
 					'Channel address is missing',
 					[
-						'source' => MetadataTypes\ConnectorSource::CONNECTOR_MODBUS,
+						'source' => MetadataTypes\ConnectorSource::MODBUS,
 						'type' => 'tcp-client',
 						'connector' => [
 							'id' => $this->connector->getId()->toString(),
@@ -499,7 +499,7 @@ class Tcp implements Client
 						$this->logger->error(
 							'Could not handle register reading',
 							[
-								'source' => MetadataTypes\ConnectorSource::CONNECTOR_MODBUS,
+								'source' => MetadataTypes\ConnectorSource::MODBUS,
 								'type' => 'tcp-client',
 								'exception' => ApplicationHelpers\Logger::buildException($ex),
 								'connector' => [
@@ -544,7 +544,7 @@ class Tcp implements Client
 						$this->logger->warning(
 							'Device is lost',
 							[
-								'source' => MetadataTypes\ConnectorSource::CONNECTOR_MODBUS,
+								'source' => MetadataTypes\ConnectorSource::MODBUS,
 								'type' => 'tcp-client',
 								'exception' => ApplicationHelpers\Logger::buildException($ex),
 								'connector' => [
@@ -639,7 +639,7 @@ class Tcp implements Client
 		$this->logger->warning(
 			'Channel property data type is not supported for now',
 			[
-				'source' => MetadataTypes\ConnectorSource::CONNECTOR_MODBUS,
+				'source' => MetadataTypes\ConnectorSource::MODBUS,
 				'type' => 'tcp-client',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),

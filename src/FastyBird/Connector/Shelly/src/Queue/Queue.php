@@ -49,7 +49,7 @@ final class Queue
 		$this->logger->debug(
 			'Appended new message into messages queue',
 			[
-				'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
+				'source' => MetadataTypes\ConnectorSource::SHELLY,
 				'type' => 'queue',
 				'message' => $entity->toArray(),
 			],

@@ -260,7 +260,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
+					'source' => MetadataTypes\ConnectorSource::SONOFF,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -481,7 +481,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
+					'source' => MetadataTypes\ConnectorSource::SONOFF,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -554,7 +554,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
+					'source' => MetadataTypes\ConnectorSource::SONOFF,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -683,7 +683,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
+					'source' => MetadataTypes\ConnectorSource::SONOFF,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -756,7 +756,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
+					'source' => MetadataTypes\ConnectorSource::SONOFF,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],

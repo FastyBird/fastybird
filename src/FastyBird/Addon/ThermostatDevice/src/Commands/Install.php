@@ -908,7 +908,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
+					'source' => MetadataTypes\ConnectorSource::VIRTUAL,
 					'type' => 'thermostat-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -1509,7 +1509,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
+					'source' => MetadataTypes\ConnectorSource::VIRTUAL,
 					'type' => 'thermostat-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -1646,7 +1646,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
+					'source' => MetadataTypes\ConnectorSource::VIRTUAL,
 					'type' => 'initialize-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -1831,7 +1831,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
+					'source' => MetadataTypes\ConnectorSource::VIRTUAL,
 					'type' => 'thermostat-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -1920,7 +1920,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
+					'source' => MetadataTypes\ConnectorSource::VIRTUAL,
 					'type' => 'thermostat-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -2052,7 +2052,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::NS_PANEL,
 					'type' => 'thermostat-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -2124,7 +2124,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'Invalid sensor type selected',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::NS_PANEL,
 					'type' => 'thermostat-cmd',
 				],
 			);
@@ -2193,7 +2193,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
+					'source' => MetadataTypes\ConnectorSource::VIRTUAL,
 					'type' => 'thermostat-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -2288,7 +2288,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
+					'source' => MetadataTypes\ConnectorSource::VIRTUAL,
 					'type' => 'thermostat-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -2434,7 +2434,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\ConnectorSource::NS_PANEL,
 					'type' => 'thermostat-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -2626,7 +2626,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL,
+					'source' => MetadataTypes\ConnectorSource::VIRTUAL,
 					'type' => 'thermostat-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],

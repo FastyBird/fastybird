@@ -137,7 +137,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed device connection state message',
 			[
-				'source' => MetadataTypes\ConnectorSource::CONNECTOR_SHELLY,
+				'source' => MetadataTypes\ConnectorSource::SHELLY,
 				'type' => 'store-device-connection-state-message-consumer',
 				'connector' => [
 					'id' => $entity->getConnector()->toString(),

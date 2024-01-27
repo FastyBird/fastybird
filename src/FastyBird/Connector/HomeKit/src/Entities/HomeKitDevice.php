@@ -43,7 +43,7 @@ class HomeKitDevice extends DevicesEntities\Devices\Device
 
 	public function getSource(): MetadataTypes\ConnectorSource
 	{
-		return MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_HOMEKIT);
+		return MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::HOMEKIT);
 	}
 
 	/**

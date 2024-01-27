@@ -92,7 +92,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Connector could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
+					'source' => MetadataTypes\ConnectorSource::SONOFF,
 					'type' => 'write-property-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -121,7 +121,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Device could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
+					'source' => MetadataTypes\ConnectorSource::SONOFF,
 					'type' => 'write-property-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -152,7 +152,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Device property could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
+					'source' => MetadataTypes\ConnectorSource::SONOFF,
 					'type' => 'write-property-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -174,7 +174,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 			$this->logger->warning(
 				'Property is not writable',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
+					'source' => MetadataTypes\ConnectorSource::SONOFF,
 					'type' => 'write-property-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -333,7 +333,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Device is not properly configured',
 				[
-					'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
+					'source' => MetadataTypes\ConnectorSource::SONOFF,
 					'type' => 'write-property-state-message-consumer',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
@@ -383,7 +383,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 				'Calling device api failed',
 				array_merge(
 					[
-						'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
+						'source' => MetadataTypes\ConnectorSource::SONOFF,
 						'type' => 'write-property-state-message-consumer',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'connector' => [
@@ -409,7 +409,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 				$this->logger->debug(
 					'Channel state was successfully sent to device',
 					[
-						'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
+						'source' => MetadataTypes\ConnectorSource::SONOFF,
 						'type' => 'write-property-state-message-consumer',
 						'connector' => [
 							'id' => $entity->getConnector()->toString(),
@@ -469,7 +469,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 					'Could write state to device',
 					array_merge(
 						[
-							'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
+							'source' => MetadataTypes\ConnectorSource::SONOFF,
 							'type' => 'write-property-state-message-consumer',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 							'connector' => [
@@ -492,7 +492,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed write device state message',
 			[
-				'source' => MetadataTypes\ConnectorSource::CONNECTOR_SONOFF,
+				'source' => MetadataTypes\ConnectorSource::SONOFF,
 				'type' => 'write-property-state-message-consumer',
 				'connector' => [
 					'id' => $entity->getConnector()->toString(),

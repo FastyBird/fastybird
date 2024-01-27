@@ -35,7 +35,7 @@ final class Sensors extends Schemas\ThermostatChannel
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::CONNECTOR_VIRTUAL . '/channel/' . Entities\Channels\Sensors::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::VIRTUAL . '/channel/' . Entities\Channels\Sensors::TYPE;
 
 	public function getEntityClass(): string
 	{

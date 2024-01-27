@@ -50,7 +50,7 @@ class VieraDevice extends DevicesEntities\Devices\Device
 
 	public function getSource(): MetadataTypes\ConnectorSource
 	{
-		return MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_VIERA);
+		return MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIERA);
 	}
 
 	/**
