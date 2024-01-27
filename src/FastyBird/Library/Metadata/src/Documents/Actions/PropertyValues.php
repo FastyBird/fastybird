@@ -37,29 +37,29 @@ final class PropertyValues implements Documents\Document
 
 	public function __construct(
 		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\ButtonPayload::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\SwitchPayload::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\CoverPayload::class),
 			new ObjectMapper\Rules\BoolValue(),
 			new ObjectMapper\Rules\IntValue(),
 			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
-			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
-			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\ButtonPayload::class),
-			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\SwitchPayload::class),
-			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\CoverPayload::class),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('actual_value')]
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		private readonly bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null $actualValue = Metadata\Constants::VALUE_NOT_SET,
 		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\ButtonPayload::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\SwitchPayload::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\CoverPayload::class),
 			new ObjectMapper\Rules\BoolValue(),
 			new ObjectMapper\Rules\IntValue(),
 			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
-			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
-			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\ButtonPayload::class),
-			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\SwitchPayload::class),
-			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\CoverPayload::class),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('expected_value')]
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong

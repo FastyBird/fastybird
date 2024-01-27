@@ -14,7 +14,6 @@ use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
-use FastyBird\Module\Devices\States as DevicesStates;
 use Nette\DI;
 use React\EventLoop;
 use RuntimeException;
@@ -77,13 +76,12 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 			->willReturnCallback(
 				static function (
 					MetadataDocuments\DevicesModule\ChannelProperty $property,
-				) use ($readInitialStates): DevicesStates\ChannelProperty|null {
+				) use ($readInitialStates): MetadataDocuments\DevicesModule\PropertyValues|null {
 					if (array_key_exists($property->getId()->toString(), $readInitialStates)) {
-						$state = new Tests\Fixtures\Dummy\DummyChannelPropertyState($property->getId());
-						$state->setActualValue($readInitialStates[$property->getId()->toString()]);
-						$state->setValid(true);
-
-						return $state;
+						return new MetadataDocuments\DevicesModule\PropertyValues(
+							$readInitialStates[$property->getId()->toString()],
+							null,
+						);
 					}
 
 					return null;
@@ -94,13 +92,12 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 			->willReturnCallback(
 				static function (
 					MetadataDocuments\DevicesModule\ChannelProperty $property,
-				) use ($readInitialStates): DevicesStates\ChannelProperty|null {
+				) use ($readInitialStates): MetadataDocuments\DevicesModule\PropertyValues|null {
 					if (array_key_exists($property->getId()->toString(), $readInitialStates)) {
-						$state = new Tests\Fixtures\Dummy\DummyChannelPropertyState($property->getId());
-						$state->setActualValue($readInitialStates[$property->getId()->toString()]);
-						$state->setValid(true);
-
-						return $state;
+						return new MetadataDocuments\DevicesModule\PropertyValues(
+							$readInitialStates[$property->getId()->toString()],
+							null,
+						);
 					}
 
 					return null;
