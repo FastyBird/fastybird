@@ -39,6 +39,7 @@ use stdClass;
 use Throwable;
 use function array_key_exists;
 use function preg_match;
+use function React\Async\await;
 use function sprintf;
 
 /**
@@ -58,7 +59,7 @@ final class WriteSubDeviceChannelPropertyState implements Queue\Consumer
 
 	public function __construct(
 		protected readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
-		protected readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
+		protected readonly DevicesModels\States\Async\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly Queue\Queue $queue,
 		private readonly API\ConnectionManager $connectionManager,
 		private readonly Helpers\Entity $entityHelper,
@@ -294,7 +295,7 @@ final class WriteSubDeviceChannelPropertyState implements Queue\Consumer
 			$writeData = new stdClass();
 
 			foreach ($properties as $property) {
-				$state = $this->channelPropertiesStatesManager->get($property);
+				$state = await($this->channelPropertiesStatesManager->get($property));
 
 				if ($state?->getExpectedValue() !== null) {
 					$writeData->{$property->getIdentifier()} = MetadataUtilities\Value::flattenValue(
@@ -324,7 +325,7 @@ final class WriteSubDeviceChannelPropertyState implements Queue\Consumer
 			$writeData = new stdClass();
 
 			foreach ($properties as $property) {
-				$state = $this->channelPropertiesStatesManager->get($property);
+				$state = await($this->channelPropertiesStatesManager->get($property));
 
 				if ($state?->getExpectedValue() !== null) {
 					$writeData->{$property->getIdentifier()} = MetadataUtilities\Value::flattenValue(

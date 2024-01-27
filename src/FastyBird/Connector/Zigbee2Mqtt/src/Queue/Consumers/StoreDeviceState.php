@@ -31,6 +31,7 @@ use Nette\Utils;
 use function array_merge;
 use function implode;
 use function preg_match;
+use function React\Async\await;
 use function sprintf;
 
 /**
@@ -52,7 +53,7 @@ final class StoreDeviceState implements Queue\Consumer
 		private readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
-		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
+		private readonly DevicesModels\States\Async\ChannelPropertiesManager $channelPropertiesStatesManager,
 	)
 	{
 	}
@@ -234,13 +235,13 @@ final class StoreDeviceState implements Queue\Consumer
 					continue;
 				}
 
-				$this->channelPropertiesStatesManager->set(
+				await($this->channelPropertiesStatesManager->set(
 					$property,
 					Utils\ArrayHash::from([
 						DevicesStates\Property::ACTUAL_VALUE_FIELD => $state->getValue(),
 					]),
 					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_ZIGBEE2MQTT),
-				);
+				));
 
 			} else {
 				$this->processStates(
