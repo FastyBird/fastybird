@@ -33,6 +33,7 @@ use FastyBird\Module\Devices\States as DevicesStates;
 use Nette;
 use Nette\Utils;
 use function assert;
+use function React\Async\await;
 
 /**
  * Device state message consumer
@@ -57,8 +58,8 @@ final class StoreParametersStates implements Consumer
 		private readonly DevicesModels\Entities\Devices\Properties\PropertiesManager $devicesPropertiesManager,
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager,
-		private readonly DevicesModels\States\DevicePropertiesManager $devicePropertiesStatesManager,
-		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
+		private readonly DevicesModels\States\Async\DevicePropertiesManager $devicePropertiesStatesManager,
+		private readonly DevicesModels\States\Async\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly ApplicationHelpers\Database $databaseHelper,
 	)
 	{
@@ -100,13 +101,13 @@ final class StoreParametersStates implements Consumer
 				$property = $this->devicesPropertiesConfigurationRepository->findOneBy($findDevicePropertyQuery);
 
 				if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-					$this->devicePropertiesStatesManager->set(
+					await($this->devicePropertiesStatesManager->set(
 						$property,
 						Utils\ArrayHash::from([
 							DevicesStates\Property::ACTUAL_VALUE_FIELD => $parameter->getValue(),
 						]),
 						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_SONOFF),
-					);
+					));
 				} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty) {
 					$this->databaseHelper->transaction(
 						function () use ($property, $parameter): void {
@@ -141,13 +142,13 @@ final class StoreParametersStates implements Consumer
 					$property = $this->channelsPropertiesConfigurationRepository->findOneBy($findChannelPropertyQuery);
 
 					if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-						$this->channelPropertiesStatesManager->set(
+						await($this->channelPropertiesStatesManager->set(
 							$property,
 							Utils\ArrayHash::from([
 								DevicesStates\Property::ACTUAL_VALUE_FIELD => $parameter->getValue(),
 							]),
 							MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_SONOFF),
-						);
+						));
 					} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
 						$this->databaseHelper->transaction(
 							function () use ($property, $parameter): void {

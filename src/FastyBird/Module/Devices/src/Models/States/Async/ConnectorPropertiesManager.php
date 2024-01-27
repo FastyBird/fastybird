@@ -89,7 +89,7 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_ACTION),
 					$this->documentFactory->create(
-						Utils\Json::encode([
+						Utils\ArrayHash::from([
 							'action' => MetadataTypes\PropertyAction::GET,
 							'connector' => $property->getConnector()->toString(),
 							'property' => $property->getId()->toString(),
@@ -130,7 +130,7 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 							'Connectors states repository is not configured. State could not be fetched',
 							[
 								'source' => MetadataTypes\ModuleSource::DEVICES,
-								'type' => 'connector-properties-states',
+								'type' => 'async-connector-properties-states',
 							],
 						);
 					}
@@ -140,6 +140,82 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 
 			return $deferred->promise();
 		}
+	}
+
+	/**
+	 * @return Promise\PromiseInterface<bool>
+	 */
+	public function publish(
+		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
+		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source = null,
+	): Promise\PromiseInterface
+	{
+		$deferred = new Promise\Deferred();
+
+		$this->connectorPropertyStateRepository->find($property->getId())
+			->then(
+				function (States\ConnectorProperty|null $state) use ($deferred, $source, $property): void {
+					if ($state === null) {
+						$deferred->resolve(false);
+
+						return;
+					}
+
+					$readValue = $this->convertStoredState($property, null, $state, true);
+					$getValue = $this->convertStoredState($property, null, $state, false);
+
+					if ($this->useExchange) {
+						$this->publisher->publish(
+							$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+							MetadataTypes\RoutingKey::get(
+								MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_STATE_DOCUMENT_REPORTED,
+							),
+							$this->documentFactory->create(
+								Utils\ArrayHash::from([
+									'id' => $property->getId()->toString(),
+									'connector' => $property->getConnector()->toString(),
+									'read' => $readValue->toArray(),
+									'get' => $getValue->toArray(),
+									'created_at' => $readValue->getCreatedAt()?->format(DateTimeInterface::ATOM),
+									'updated_at' => $readValue->getUpdatedAt()?->format(DateTimeInterface::ATOM),
+								]),
+								MetadataTypes\RoutingKey::get(
+									MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_STATE_DOCUMENT_REPORTED,
+								),
+							),
+						)
+							->then(static function (bool $result) use ($deferred): void {
+								$deferred->resolve($result);
+							})
+							->catch(static function (Throwable $ex) use ($deferred): void {
+								$deferred->reject($ex);
+							});
+					} else {
+						$this->dispatcher?->dispatch(new Events\ConnectorPropertyStateEntityReported(
+							$property,
+							$readValue,
+							$getValue,
+						));
+
+						$deferred->resolve(true);
+					}
+				},
+			)
+			->catch(function (Throwable $ex) use ($deferred): void {
+				if ($ex instanceof Exceptions\NotImplemented) {
+					$this->logger->warning(
+						'Connectors states repository is not configured. State could not be fetched',
+						[
+							'source' => MetadataTypes\ModuleSource::DEVICES,
+							'type' => 'async-connector-properties-states',
+						],
+					);
+				}
+
+				$deferred->reject($ex);
+			});
+
+		return $deferred->promise();
 	}
 
 	/**
@@ -177,7 +253,7 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_ACTION),
 					$this->documentFactory->create(
-						Utils\Json::encode(array_merge(
+						Utils\ArrayHash::from(array_merge(
 							[
 								'action' => MetadataTypes\PropertyAction::SET,
 								'connector' => $property->getConnector()->toString(),
@@ -223,7 +299,7 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_ACTION),
 					$this->documentFactory->create(
-						Utils\Json::encode(array_merge(
+						Utils\ArrayHash::from(array_merge(
 							[
 								'action' => MetadataTypes\PropertyAction::SET,
 								'connector' => $property->getConnector()->toString(),
@@ -422,7 +498,7 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 										'Connectors states manager is not configured. State could not be fetched',
 										[
 											'source' => MetadataTypes\ModuleSource::DEVICES,
-											'type' => 'connector-properties-states',
+											'type' => 'async-connector-properties-states',
 										],
 									);
 								}
@@ -434,7 +510,7 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 							'Property stored actual value was not valid',
 							[
 								'source' => MetadataTypes\ModuleSource::DEVICES,
-								'type' => 'connector-properties-states',
+								'type' => 'async-connector-properties-states',
 								'exception' => ApplicationHelpers\Logger::buildException($ex),
 							],
 						);
@@ -458,7 +534,7 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 										'Connectors states manager is not configured. State could not be fetched',
 										[
 											'source' => MetadataTypes\ModuleSource::DEVICES,
-											'type' => 'connector-properties-states',
+											'type' => 'async-connector-properties-states',
 										],
 									);
 								}
@@ -470,7 +546,7 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 							'Property stored expected value was not valid',
 							[
 								'source' => MetadataTypes\ModuleSource::DEVICES,
-								'type' => 'connector-properties-states',
+								'type' => 'async-connector-properties-states',
 								'exception' => ApplicationHelpers\Logger::buildException($ex),
 							],
 						);

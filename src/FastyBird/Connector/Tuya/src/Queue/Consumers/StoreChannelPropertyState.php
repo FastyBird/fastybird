@@ -34,9 +34,11 @@ use FastyBird\Module\Devices\States as DevicesStates;
 use Nette;
 use Nette\Utils;
 use Ramsey\Uuid;
+use Throwable;
 use function array_key_exists;
 use function array_merge;
 use function assert;
+use function React\Async\await;
 use function strval;
 
 /**
@@ -62,7 +64,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager,
-		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
+		private readonly DevicesModels\States\Async\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly ApplicationHelpers\Database $databaseHelper,
 	)
 	{
@@ -77,6 +79,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws Throwable
 	 */
 	public function consume(Entities\Messages\Entity $entity): bool
 	{
@@ -119,13 +122,13 @@ final class StoreChannelPropertyState implements Queue\Consumer
 
 			if ($property !== null) {
 				try {
-					$this->channelPropertiesStatesManager->set(
+					await($this->channelPropertiesStatesManager->set(
 						$property,
 						Utils\ArrayHash::from([
 							DevicesStates\Property::ACTUAL_VALUE_FIELD => $dataPoint->getValue(),
 						]),
 						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_TUYA),
-					);
+					));
 				} catch (MetadataExceptions\InvalidArgument $ex) {
 					$format = $property->getFormat();
 
@@ -161,13 +164,13 @@ final class StoreChannelPropertyState implements Queue\Consumer
 						throw $ex;
 					}
 
-					$this->channelPropertiesStatesManager->set(
+					await($this->channelPropertiesStatesManager->set(
 						$property,
 						Utils\ArrayHash::from([
 							DevicesStates\Property::ACTUAL_VALUE_FIELD => $dataPoint->getValue(),
 						]),
 						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_TUYA),
-					);
+					));
 				}
 			}
 		}

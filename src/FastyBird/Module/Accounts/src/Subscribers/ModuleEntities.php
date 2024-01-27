@@ -83,7 +83,6 @@ final class ModuleEntities implements Common\EventSubscriber
 	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\MalformedInput
-	 * @throws Utils\JsonException
 	 */
 	public function postPersist(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
@@ -105,7 +104,6 @@ final class ModuleEntities implements Common\EventSubscriber
 	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\MalformedInput
-	 * @throws Utils\JsonException
 	 */
 	public function postUpdate(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
@@ -139,7 +137,6 @@ final class ModuleEntities implements Common\EventSubscriber
 	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\MalformedInput
-	 * @throws Utils\JsonException
 	 */
 	public function onFlush(): void
 	{
@@ -176,7 +173,6 @@ final class ModuleEntities implements Common\EventSubscriber
 	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\MalformedInput
-	 * @throws Utils\JsonException
 	 */
 	private function publishEntity(Entities\Entity $entity, string $action): void
 	{
@@ -213,7 +209,7 @@ final class ModuleEntities implements Common\EventSubscriber
 			$this->publisher->publish(
 				$entity->getSource(),
 				$publishRoutingKey,
-				$this->documentFactory->create(Utils\Json::encode($entity->toArray()), $publishRoutingKey),
+				$this->documentFactory->create(Utils\ArrayHash::from($entity->toArray()), $publishRoutingKey),
 			);
 		}
 	}

@@ -55,7 +55,6 @@ final class ConditionsManager
 	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\MalformedInput
-	 * @throws Utils\JsonException
 	 */
 	public function create(
 		Entities\Conditions\Condition $condition,
@@ -79,7 +78,6 @@ final class ConditionsManager
 	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\MalformedInput
-	 * @throws Utils\JsonException
 	 */
 	public function update(
 		Entities\Conditions\Condition $condition,
@@ -108,7 +106,6 @@ final class ConditionsManager
 	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\MalformedInput
-	 * @throws Utils\JsonException
 	 */
 	public function delete(
 		Entities\Conditions\Condition $condition,
@@ -133,7 +130,6 @@ final class ConditionsManager
 	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\MalformedInput
-	 * @throws Utils\JsonException
 	 */
 	private function publishEntity(
 		Entities\Conditions\Condition $condition,
@@ -147,7 +143,7 @@ final class ConditionsManager
 		$this->publisher->publish(
 			$condition->getSource(),
 			MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::TRIGGER_CONDITION_DOCUMENT_UPDATED),
-			$this->documentFactory->create(Utils\Json::encode(array_merge($condition->toArray(), [
+			$this->documentFactory->create(Utils\ArrayHash::from(array_merge($condition->toArray(), [
 				'is_fulfilled' => !($state === null) && $state->isFulfilled(),
 			])), MetadataTypes\RoutingKey::get(
 				MetadataTypes\RoutingKey::TRIGGER_CONDITION_DOCUMENT_UPDATED,

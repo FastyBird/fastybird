@@ -53,9 +53,10 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 		DevicesEvents\ChannelPropertyStateEntityCreated|DevicesEvents\ChannelPropertyStateEntityUpdated|DevicesEvents\ChannelPropertyStateEntityReported $event,
 	): void
 	{
-		$state = $event->getGet();
-
-		if ($state->getExpectedValue() === null || $state->getPending() !== true) {
+		if (
+			$event->getGet()->getExpectedValue() === null
+			|| $event->getGet()->getPending() !== true
+		) {
 			return;
 		}
 

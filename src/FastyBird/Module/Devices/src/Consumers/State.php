@@ -15,10 +15,7 @@
 
 namespace FastyBird\Module\Devices\Consumers;
 
-use DateTimeInterface;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
-use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
-use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -30,8 +27,6 @@ use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\States;
 use Nette\Utils;
 use function in_array;
-use function React\Async\async;
-use function React\Async\await;
 
 /**
  * States messages subscriber
@@ -52,8 +47,6 @@ final class State implements ExchangeConsumers\Consumer
 
 	public function __construct(
 		private readonly Devices\Logger $logger,
-		private readonly ExchangePublisher\Async\Publisher $publisher,
-		private readonly ExchangeDocuments\DocumentFactory $documentFactory,
 		private readonly Models\Configuration\Connectors\Properties\Repository $connectorPropertiesConfigurationRepository,
 		private readonly Models\Configuration\Devices\Properties\Repository $devicePropertiesConfigurationRepository,
 		private readonly Models\Configuration\Channels\Properties\Repository $channelPropertiesConfigurationRepository,
@@ -166,34 +159,7 @@ final class State implements ExchangeConsumers\Consumer
 						return;
 					}
 
-					$this->connectorPropertiesStatesManager->read($property)
-						->then(async(function (States\ConnectorProperty|null $readState) use ($property): void {
-							if ($readState === null) {
-								return;
-							}
-
-							$getState = await($this->connectorPropertiesStatesManager->get($property));
-
-							$publishRoutingKey = MetadataTypes\RoutingKey::get(
-								MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_STATE_DOCUMENT_REPORTED,
-							);
-
-							$this->publisher->publish(
-								MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
-								$publishRoutingKey,
-								$this->documentFactory->create(
-									Utils\Json::encode([
-										'id' => $property->getId()->toString(),
-										'connector' => $property->getConnector()->toString(),
-										'read' => $readState->toArray(),
-										'get' => $getState?->toArray(),
-										'created_at' => $readState->getCreatedAt()?->format(DateTimeInterface::ATOM),
-										'updated_at' => $readState->getUpdatedAt()?->format(DateTimeInterface::ATOM),
-									]),
-									$publishRoutingKey,
-								),
-							);
-						}));
+					$this->connectorPropertiesStatesManager->publish($property);
 				}
 			} elseif ($entity instanceof MetadataDocuments\Actions\ActionDeviceProperty) {
 				if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::SET)) {
@@ -282,34 +248,7 @@ final class State implements ExchangeConsumers\Consumer
 						return;
 					}
 
-					$this->devicePropertiesStatesManager->read($property)
-						->then(async(function (States\DeviceProperty|null $readState) use ($property): void {
-							if ($readState === null) {
-								return;
-							}
-
-							$getState = await($this->devicePropertiesStatesManager->get($property));
-
-							$publishRoutingKey = MetadataTypes\RoutingKey::get(
-								MetadataTypes\RoutingKey::DEVICE_PROPERTY_STATE_DOCUMENT_REPORTED,
-							);
-
-							$this->publisher->publish(
-								MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
-								$publishRoutingKey,
-								$this->documentFactory->create(
-									Utils\Json::encode([
-										'id' => $property->getId()->toString(),
-										'device' => $property->getDevice()->toString(),
-										'read' => $readState->toArray(),
-										'get' => $getState?->toArray(),
-										'created_at' => $readState->getCreatedAt()?->format(DateTimeInterface::ATOM),
-										'updated_at' => $readState->getUpdatedAt()?->format(DateTimeInterface::ATOM),
-									]),
-									$publishRoutingKey,
-								),
-							);
-						}));
+					$this->devicePropertiesStatesManager->publish($property);
 				}
 			} elseif ($entity instanceof MetadataDocuments\Actions\ActionChannelProperty) {
 				if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::SET)) {
@@ -398,34 +337,7 @@ final class State implements ExchangeConsumers\Consumer
 						return;
 					}
 
-					$this->channelPropertiesStatesManager->read($property)
-						->then(async(function (States\ChannelProperty|null $readState) use ($property): void {
-							if ($readState === null) {
-								return;
-							}
-
-							$getState = await($this->channelPropertiesStatesManager->get($property));
-
-							$publishRoutingKey = MetadataTypes\RoutingKey::get(
-								MetadataTypes\RoutingKey::CHANNEL_PROPERTY_STATE_DOCUMENT_REPORTED,
-							);
-
-							$this->publisher->publish(
-								MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
-								$publishRoutingKey,
-								$this->documentFactory->create(
-									Utils\Json::encode([
-										'id' => $property->getId()->toString(),
-										'channel' => $property->getChannel()->toString(),
-										'read' => $readState->toArray(),
-										'get' => $getState?->toArray(),
-										'created_at' => $readState->getCreatedAt()?->format(DateTimeInterface::ATOM),
-										'updated_at' => $readState->getUpdatedAt()?->format(DateTimeInterface::ATOM),
-									]),
-									$publishRoutingKey,
-								),
-							);
-						}));
+					$this->channelPropertiesStatesManager->publish($property);
 				}
 			}
 		}

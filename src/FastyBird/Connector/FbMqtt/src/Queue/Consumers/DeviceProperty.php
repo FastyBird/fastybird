@@ -33,8 +33,10 @@ use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\States as DevicesStates;
 use Nette;
 use Nette\Utils;
+use Throwable;
 use function assert;
 use function count;
+use function React\Async\await;
 use function sprintf;
 
 /**
@@ -57,7 +59,7 @@ final class DeviceProperty implements Queue\Consumer
 		private readonly DevicesModels\Entities\Devices\Properties\PropertiesManager $devicesPropertiesManager,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		private readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
-		private readonly DevicesModels\States\DevicePropertiesManager $devicePropertiesStatesManager,
+		private readonly DevicesModels\States\Async\DevicePropertiesManager $devicePropertiesStatesManager,
 		private readonly ApplicationHelpers\Database $databaseHelper,
 	)
 	{
@@ -73,6 +75,7 @@ final class DeviceProperty implements Queue\Consumer
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws Throwable
 	 */
 	public function consume(Entities\Messages\Entity $entity): bool
 	{
@@ -146,13 +149,13 @@ final class DeviceProperty implements Queue\Consumer
 					);
 				});
 			} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-				$this->devicePropertiesStatesManager->set(
+				await($this->devicePropertiesStatesManager->set(
 					$property,
 					Utils\ArrayHash::from([
 						DevicesStates\Property::ACTUAL_VALUE_FIELD => $entity->getValue(),
 					]),
 					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_FB_MQTT),
-				);
+				));
 			}
 		} else {
 			if (count($entity->getAttributes()) > 0) {

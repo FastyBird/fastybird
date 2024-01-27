@@ -31,6 +31,7 @@ use Nette\Utils;
 use Ramsey\Uuid;
 use function array_merge;
 use function is_string;
+use function React\Async\await;
 
 /**
  * Store channel property state message consumer
@@ -50,7 +51,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
-		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
+		private readonly DevicesModels\States\Async\ChannelPropertiesManager $channelPropertiesStatesManager,
 	)
 	{
 	}
@@ -177,23 +178,23 @@ final class StoreChannelPropertyState implements Queue\Consumer
 		}
 
 		if ($property->getDataType()->equalsValue(MetadataTypes\DataType::BUTTON)) {
-			$this->channelPropertiesStatesManager->set(
+			await($this->channelPropertiesStatesManager->set(
 				$property,
 				Utils\ArrayHash::from([
 					DevicesStates\Property::ACTUAL_VALUE_FIELD => null,
 					DevicesStates\Property::VALID_FIELD => true,
 				]),
 				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_VIERA),
-			);
+			));
 			$this->channelPropertiesStatesManager->setPendingState($property, false);
 		} else {
-			$this->channelPropertiesStatesManager->set(
+			await($this->channelPropertiesStatesManager->set(
 				$property,
 				Utils\ArrayHash::from([
 					DevicesStates\Property::ACTUAL_VALUE_FIELD => $entity->getValue(),
 				]),
 				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_VIERA),
-			);
+			));
 		}
 
 		$this->logger->debug(

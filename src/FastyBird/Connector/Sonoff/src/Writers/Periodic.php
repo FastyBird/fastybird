@@ -32,6 +32,7 @@ use React\EventLoop;
 use function array_key_exists;
 use function in_array;
 use function React\Async\async;
+use function React\Async\await;
 
 /**
  * Periodic properties writer
@@ -76,8 +77,8 @@ abstract class Periodic implements Writer
 		protected readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		protected readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
 		protected readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
-		private readonly DevicesModels\States\DevicePropertiesManager $devicePropertiesStatesManager,
-		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
+		private readonly DevicesModels\States\Async\DevicePropertiesManager $devicePropertiesStatesManager,
+		private readonly DevicesModels\States\Async\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
 	)
@@ -209,7 +210,7 @@ abstract class Periodic implements Writer
 			$this->processedProperties[$property->getId()->toString()] = $now;
 
 			if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-				$state = $this->devicePropertiesStatesManager->get($property);
+				$state = await($this->devicePropertiesStatesManager->get($property));
 
 				if ($state === null) {
 					continue;
@@ -218,7 +219,7 @@ abstract class Periodic implements Writer
 				$propertyValue = $state->getExpectedValue();
 
 			} else {
-				$state = $this->channelPropertiesStatesManager->get($property);
+				$state = await($this->channelPropertiesStatesManager->get($property));
 
 				if ($state === null) {
 					continue;

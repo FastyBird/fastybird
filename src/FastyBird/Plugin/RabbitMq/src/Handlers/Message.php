@@ -25,9 +25,11 @@ use FastyBird\Plugin\RabbitMq\Events;
 use FastyBird\Plugin\RabbitMq\Exceptions;
 use FastyBird\Plugin\RabbitMq\Utilities;
 use Nette;
+use Nette\Utils;
 use Psr\EventDispatcher as PsrEventDispatcher;
 use Psr\Log;
 use Throwable;
+use function assert;
 use function is_array;
 use function strval;
 
@@ -115,6 +117,10 @@ final class Message extends Evenement\EventEmitter
 		}
 
 		try {
+			$data = Utils\Json::decode($data, Utils\Json::FORCE_ARRAY);
+			assert(is_array($data));
+			$data = Utils\ArrayHash::from($data);
+
 			$entity = $this->documentFactory->create($data, $routingKey);
 
 		} catch (Throwable $ex) {

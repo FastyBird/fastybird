@@ -22,9 +22,11 @@ use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\RedisDb\Utilities;
 use Nette;
+use Nette\Utils;
 use Psr\Log;
 use Throwable;
 use function array_key_exists;
+use function assert;
 use function is_array;
 use function strval;
 
@@ -107,6 +109,10 @@ final class Handler extends Evenement\EventEmitter
 		}
 
 		try {
+			$data = Utils\Json::decode($data, Utils\Json::FORCE_ARRAY);
+			assert(is_array($data));
+			$data = Utils\ArrayHash::from($data);
+
 			$entity = $this->documentFactory->create($data, $routingKey);
 
 		} catch (Throwable $ex) {

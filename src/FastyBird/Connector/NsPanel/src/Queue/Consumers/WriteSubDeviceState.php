@@ -32,6 +32,8 @@ use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
 use Throwable;
 use function array_merge;
+use function React\Async\async;
+use function React\Async\await;
 use function strval;
 
 /**
@@ -53,7 +55,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 	public function __construct(
 		protected readonly Helpers\Channel $channelHelper,
 		protected readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
-		protected readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
+		protected readonly DevicesModels\States\Async\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly Queue\Queue $queue,
 		private readonly API\LanApiFactory $lanApiApiFactory,
 		private readonly Helpers\Entity $entityHelper,
@@ -259,7 +261,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 				$ipAddress,
 				$accessToken,
 			)
-				->then(function () use ($channel): void {
+				->then(async(function () use ($channel): void {
 					$findPropertiesQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
 					$findPropertiesQuery->forChannel($channel);
 					$findPropertiesQuery->settable(true);
@@ -270,13 +272,13 @@ final class WriteSubDeviceState implements Queue\Consumer
 					);
 
 					foreach ($properties as $property) {
-						$state = $this->channelPropertiesStatesManager->get($property);
+						$state = await($this->channelPropertiesStatesManager->get($property));
 
 						if ($state?->getExpectedValue() !== null) {
 							$this->channelPropertiesStatesManager->setValidState($property, true);
 						}
 					}
-				})
+				}))
 				->catch(function (Throwable $ex) use ($entity, $connector, $gateway, $device, $channel): void {
 					$findPropertiesQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
 					$findPropertiesQuery->forChannel($channel);

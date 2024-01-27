@@ -21,7 +21,6 @@ use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
-use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette\Utils;
@@ -40,7 +39,7 @@ use function array_merge;
  * @property-read DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository
  * @property-read DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager
  * @property-read DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository
- * @property-read DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager
+ * @property-read DevicesModels\States\Async\ChannelPropertiesManager $channelPropertiesStatesManager
  * @property-read ApplicationHelpers\Database $databaseHelper
  * @property-read Tuya\Logger $logger
  */
@@ -54,7 +53,6 @@ trait ChannelProperty
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws ApplicationExceptions\Runtime
 	 * @throws DBAL\Exception
-	 * @throws DevicesExceptions\InvalidState
 	 */
 	private function setChannelProperty(
 		string $type,

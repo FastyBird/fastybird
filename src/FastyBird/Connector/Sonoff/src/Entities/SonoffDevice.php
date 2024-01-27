@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Sonoff\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
+use FastyBird\Connector\Sonoff;
 use FastyBird\Connector\Sonoff\API;
 use FastyBird\Connector\Sonoff\Exceptions;
 use FastyBird\Connector\Sonoff\Types;
@@ -35,10 +36,6 @@ class SonoffDevice extends DevicesEntities\Devices\Device
 {
 
 	public const TYPE = 'sonoff-connector';
-
-	public const STATE_READING_DELAY = 5_000.0;
-
-	public const HEARTBEAT_DELAY = 2_500.0;
 
 	public function getType(): string
 	{
@@ -213,7 +210,7 @@ class SonoffDevice extends DevicesEntities\Devices\Device
 			return floatval($property->getValue());
 		}
 
-		return self::STATE_READING_DELAY;
+		return Sonoff\Constants::STATE_READING_DELAY;
 	}
 
 	/**

@@ -91,7 +91,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_ACTION),
 					$this->documentFactory->create(
-						Utils\Json::encode([
+						Utils\ArrayHash::from([
 							'action' => MetadataTypes\PropertyAction::GET,
 							'connector' => $property->getConnector()->toString(),
 							'property' => $property->getId()->toString(),
@@ -129,6 +129,79 @@ final class ConnectorPropertiesManager extends PropertiesManager
 			$readValue = $this->convertStoredState($property, null, $state, true);
 			$getValue = $this->convertStoredState($property, null, $state, false);
 
+			$this->dispatcher?->dispatch(new Events\ConnectorPropertyStateEntityReported(
+				$property,
+				$readValue,
+				$getValue,
+			));
+		}
+
+		return true;
+	}
+
+	/**
+	 * @throws Exceptions\InvalidActualValue
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidExpectedValue
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 */
+	public function publish(
+		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
+		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source = null,
+	): bool
+	{
+		try {
+			$state = $this->connectorPropertyStateRepository->find($property->getId());
+
+		} catch (Exceptions\NotImplemented) {
+			$this->logger->warning(
+				'Connectors states repository is not configured. State could not be fetched',
+				[
+					'source' => MetadataTypes\ModuleSource::DEVICES,
+					'type' => 'connector-properties-states',
+				],
+			);
+
+			return false;
+		}
+
+		if ($state === null) {
+			return false;
+		}
+
+		$readValue = $this->convertStoredState($property, null, $state, true);
+		$getValue = $this->convertStoredState($property, null, $state, false);
+
+		if ($this->useExchange) {
+			try {
+				$this->publisher->publish(
+					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_STATE_DOCUMENT_REPORTED),
+					$this->documentFactory->create(
+						Utils\ArrayHash::from([
+							'id' => $property->getId()->toString(),
+							'connector' => $property->getConnector()->toString(),
+							'read' => $readValue->toArray(),
+							'get' => $getValue->toArray(),
+							'created_at' => $readValue->getCreatedAt()?->format(DateTimeInterface::ATOM),
+							'updated_at' => $readValue->getUpdatedAt()?->format(DateTimeInterface::ATOM),
+						]),
+						MetadataTypes\RoutingKey::get(
+							MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_STATE_DOCUMENT_REPORTED,
+						),
+					),
+				);
+			} catch (Throwable $ex) {
+				throw new Exceptions\InvalidState(
+					'Requested action could not be published for write action',
+					$ex->getCode(),
+					$ex,
+				);
+			}
+		} else {
 			$this->dispatcher?->dispatch(new Events\ConnectorPropertyStateEntityReported(
 				$property,
 				$readValue,
@@ -188,7 +261,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_ACTION),
 					$this->documentFactory->create(
-						Utils\Json::encode(array_merge(
+						Utils\ArrayHash::from(array_merge(
 							[
 								'action' => MetadataTypes\PropertyAction::SET,
 								'connector' => $property->getConnector()->toString(),
@@ -238,7 +311,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_ACTION),
 					$this->documentFactory->create(
-						Utils\Json::encode(array_merge(
+						Utils\ArrayHash::from(array_merge(
 							[
 								'action' => MetadataTypes\PropertyAction::SET,
 								'connector' => $property->getConnector()->toString(),

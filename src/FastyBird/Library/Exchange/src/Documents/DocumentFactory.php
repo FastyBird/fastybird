@@ -18,10 +18,8 @@ namespace FastyBird\Library\Exchange\Documents;
 use FastyBird\Library\Exchange\Exceptions;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Library\Metadata\Loaders as MetadataLoaders;
-use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use Throwable;
+use Nette\Utils;
 
 /**
  * Exchange document factory
@@ -36,8 +34,6 @@ final class DocumentFactory
 
 	public function __construct(
 		private readonly MetadataDocuments\DocumentFactory $documentFactory,
-		private readonly MetadataLoaders\SchemaLoader $schemaLoader,
-		private readonly MetadataSchemas\Validator $validator,
 	)
 	{
 	}
@@ -48,7 +44,7 @@ final class DocumentFactory
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\MalformedInput
 	 */
-	public function create(string $data, MetadataTypes\RoutingKey $routingKey): MetadataDocuments\Document
+	public function create(Utils\ArrayHash $data, MetadataTypes\RoutingKey $routingKey): MetadataDocuments\Document
 	{
 		// ACTIONS
 		if ($routingKey->equalsValue(MetadataTypes\RoutingKey::CONNECTOR_CONTROL_ACTION)) {
@@ -110,18 +106,11 @@ final class DocumentFactory
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::DEVICE_PROPERTY_DOCUMENT_UPDATED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::DEVICE_PROPERTY_DOCUMENT_DELETED)
 		) {
-			try {
-				$schema = $this->schemaLoader->loadByNamespace(
-					'schemas/modules/devices-module',
-					'document.device.property.json',
-				);
-
-				$parsedData = $this->validator->validate($data, $schema);
-
-				$type = MetadataTypes\PropertyType::get($parsedData->offsetGet('type'));
-			} catch (Throwable $ex) {
-				throw new Exceptions\InvalidArgument('Provided data could not be validated', $ex->getCode(), $ex);
+			if (!$data->offsetExists('type') || !MetadataTypes\PropertyType::isValidValue($data->offsetGet('type'))) {
+				throw new Exceptions\InvalidArgument('Provided data could not be validated');
 			}
+
+			$type = MetadataTypes\PropertyType::get($data->offsetGet('type'));
 
 			if ($type->equalsValue(MetadataTypes\PropertyType::DYNAMIC)) {
 				return $this->documentFactory->create(
@@ -168,18 +157,11 @@ final class DocumentFactory
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::CHANNEL_PROPERTY_DOCUMENT_UPDATED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::CHANNEL_PROPERTY_DOCUMENT_DELETED)
 		) {
-			try {
-				$schema = $this->schemaLoader->loadByNamespace(
-					'schemas/modules/devices-module',
-					'document.channel.property.json',
-				);
-
-				$parsedData = $this->validator->validate($data, $schema);
-
-				$type = MetadataTypes\PropertyType::get($parsedData->offsetGet('type'));
-			} catch (Throwable $ex) {
-				throw new Exceptions\InvalidArgument('Provided data could not be validated', $ex->getCode(), $ex);
+			if (!$data->offsetExists('type') || !MetadataTypes\PropertyType::isValidValue($data->offsetGet('type'))) {
+				throw new Exceptions\InvalidArgument('Provided data could not be validated');
 			}
+
+			$type = MetadataTypes\PropertyType::get($data->offsetGet('type'));
 
 			if ($type->equalsValue(MetadataTypes\PropertyType::DYNAMIC)) {
 				return $this->documentFactory->create(
@@ -226,18 +208,11 @@ final class DocumentFactory
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_DOCUMENT_UPDATED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_DOCUMENT_DELETED)
 		) {
-			try {
-				$schema = $this->schemaLoader->loadByNamespace(
-					'schemas/modules/devices-module',
-					'document.connector.property.json',
-				);
-
-				$parsedData = $this->validator->validate($data, $schema);
-
-				$type = MetadataTypes\PropertyType::get($parsedData->offsetGet('type'));
-			} catch (Throwable $ex) {
-				throw new Exceptions\InvalidArgument('Provided data could not be validated', $ex->getCode(), $ex);
+			if (!$data->offsetExists('type') || !MetadataTypes\PropertyType::isValidValue($data->offsetGet('type'))) {
+				throw new Exceptions\InvalidArgument('Provided data could not be validated');
 			}
+
+			$type = MetadataTypes\PropertyType::get($data->offsetGet('type'));
 
 			if ($type->equalsValue(MetadataTypes\PropertyType::DYNAMIC)) {
 				return $this->documentFactory->create(
@@ -274,18 +249,11 @@ final class DocumentFactory
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::TRIGGER_DOCUMENT_UPDATED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::TRIGGER_DOCUMENT_DELETED)
 		) {
-			try {
-				$schema = $this->schemaLoader->loadByNamespace(
-					'schemas/modules/triggers-module',
-					'document.trigger.json',
-				);
-
-				$parsedData = $this->validator->validate($data, $schema);
-
-				$type = MetadataTypes\TriggerType::get($parsedData->offsetGet('type'));
-			} catch (Throwable $ex) {
-				throw new Exceptions\InvalidArgument('Provided data could not be validated', $ex->getCode(), $ex);
+			if (!$data->offsetExists('type') || !MetadataTypes\TriggerType::isValidValue($data->offsetGet('type'))) {
+				throw new Exceptions\InvalidArgument('Provided data could not be validated');
 			}
+
+			$type = MetadataTypes\TriggerType::get($data->offsetGet('type'));
 
 			if ($type->equalsValue(MetadataTypes\TriggerType::MANUAL)) {
 				return $this->documentFactory->create(MetadataDocuments\TriggersModule\ManualTrigger::class, $data);
@@ -307,18 +275,14 @@ final class DocumentFactory
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::TRIGGER_ACTION_DOCUMENT_UPDATED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::TRIGGER_ACTION_DOCUMENT_DELETED)
 		) {
-			try {
-				$schema = $this->schemaLoader->loadByNamespace(
-					'schemas/modules/triggers-module',
-					'document.action.json',
-				);
-
-				$parsedData = $this->validator->validate($data, $schema);
-
-				$type = MetadataTypes\TriggerActionType::get($parsedData->offsetGet('type'));
-			} catch (Throwable $ex) {
-				throw new Exceptions\InvalidArgument('Provided data could not be validated', $ex->getCode(), $ex);
+			if (
+				!$data->offsetExists('type')
+				|| !MetadataTypes\TriggerActionType::isValidValue($data->offsetGet('type'))
+			) {
+				throw new Exceptions\InvalidArgument('Provided data could not be validated');
 			}
+
+			$type = MetadataTypes\TriggerActionType::get($data->offsetGet('type'));
 
 			if ($type->equalsValue(MetadataTypes\TriggerActionType::DUMMY)) {
 				return $this->documentFactory->create(MetadataDocuments\TriggersModule\DummyAction::class, $data);
@@ -341,18 +305,14 @@ final class DocumentFactory
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::TRIGGER_NOTIFICATION_DOCUMENT_UPDATED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::TRIGGER_NOTIFICATION_DOCUMENT_DELETED)
 		) {
-			try {
-				$schema = $this->schemaLoader->loadByNamespace(
-					'schemas/modules/triggers-module',
-					'document.notification.json',
-				);
-
-				$parsedData = $this->validator->validate($data, $schema);
-
-				$type = MetadataTypes\TriggerNotificationType::get($parsedData->offsetGet('type'));
-			} catch (Throwable $ex) {
-				throw new Exceptions\InvalidArgument('Provided data could not be validated', $ex->getCode(), $ex);
+			if (
+				!$data->offsetExists('type')
+				|| !MetadataTypes\TriggerNotificationType::isValidValue($data->offsetGet('type'))
+			) {
+				throw new Exceptions\InvalidArgument('Provided data could not be validated');
 			}
+
+			$type = MetadataTypes\TriggerNotificationType::get($data->offsetGet('type'));
 
 			if ($type->equalsValue(MetadataTypes\TriggerNotificationType::EMAIL)) {
 				return $this->documentFactory->create(MetadataDocuments\TriggersModule\EmailNotification::class, $data);
@@ -369,18 +329,14 @@ final class DocumentFactory
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::TRIGGER_CONDITION_DOCUMENT_UPDATED)
 			|| $routingKey->equalsValue(MetadataTypes\RoutingKey::TRIGGER_CONDITION_DOCUMENT_DELETED)
 		) {
-			try {
-				$schema = $this->schemaLoader->loadByNamespace(
-					'schemas/modules/triggers-module',
-					'document.condition.json',
-				);
-
-				$parsedData = $this->validator->validate($data, $schema);
-
-				$type = MetadataTypes\TriggerConditionType::get($parsedData->offsetGet('type'));
-			} catch (Throwable $ex) {
-				throw new Exceptions\InvalidArgument('Provided data could not be validated', $ex->getCode(), $ex);
+			if (
+				!$data->offsetExists('type')
+				|| !MetadataTypes\TriggerConditionType::isValidValue($data->offsetGet('type'))
+			) {
+				throw new Exceptions\InvalidArgument('Provided data could not be validated');
 			}
+
+			$type = MetadataTypes\TriggerConditionType::get($data->offsetGet('type'));
 
 			if ($type->equalsValue(MetadataTypes\TriggerConditionType::DUMMY)) {
 				return $this->documentFactory->create(MetadataDocuments\TriggersModule\DummyCondition::class, $data);

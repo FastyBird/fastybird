@@ -246,17 +246,19 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				$data = isset($args['data']) && is_array($args['data']) ? $args['data'] : null;
 				$data = $data !== null ? $this->parseData($data, $schema) : null;
 
-				$entity = $this->documentFactory->create(
-					Utils\Json::encode($data),
-					MetadataTypes\RoutingKey::get($args['routing_key']),
-				);
+				if ($data !== null) {
+					$entity = $this->documentFactory->create(
+						$data,
+						MetadataTypes\RoutingKey::get($args['routing_key']),
+					);
 
-				if ($entity instanceof MetadataDocuments\Actions\ActionConnectorProperty) {
-					$this->handleConnectorAction($client, $topic, $entity);
-				} elseif ($entity instanceof MetadataDocuments\Actions\ActionDeviceProperty) {
-					$this->handleDeviceAction($client, $topic, $entity);
-				} elseif ($entity instanceof MetadataDocuments\Actions\ActionChannelProperty) {
-					$this->handleChannelAction($client, $topic, $entity);
+					if ($entity instanceof MetadataDocuments\Actions\ActionConnectorProperty) {
+						$this->handleConnectorAction($client, $topic, $entity);
+					} elseif ($entity instanceof MetadataDocuments\Actions\ActionDeviceProperty) {
+						$this->handleDeviceAction($client, $topic, $entity);
+					} elseif ($entity instanceof MetadataDocuments\Actions\ActionChannelProperty) {
+						$this->handleChannelAction($client, $topic, $entity);
+					}
 				}
 
 				break;
@@ -387,7 +389,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 			);
 
 			$responseEntity = $this->documentFactory->create(
-				Utils\Json::encode([
+				Utils\ArrayHash::from([
 					'id' => $property->getId()->toString(),
 					'connector' => $property->getConnector()->toString(),
 					'read' => $state->toArray(),
@@ -485,7 +487,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 			);
 
 			$responseEntity = $this->documentFactory->create(
-				Utils\Json::encode([
+				Utils\ArrayHash::from([
 					'id' => $property->getId()->toString(),
 					'device' => $property->getDevice()->toString(),
 					'read' => $state->toArray(),
@@ -583,7 +585,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 			);
 
 			$responseEntity = $this->documentFactory->create(
-				Utils\Json::encode([
+				Utils\ArrayHash::from([
 					'id' => $property->getId()->toString(),
 					'channel' => $property->getChannel()->toString(),
 					'read' => $state->toArray(),

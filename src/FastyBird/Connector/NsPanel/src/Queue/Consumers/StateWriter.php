@@ -31,6 +31,7 @@ use function intval;
 use function is_bool;
 use function is_float;
 use function is_int;
+use function React\Async\await;
 use function strval;
 
 /**
@@ -43,7 +44,7 @@ use function strval;
  *
  * @property-read Helpers\Channel $channelHelper
  * @property-read DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository
- * @property-read DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager
+ * @property-read DevicesModels\States\Async\ChannelPropertiesManager $channelPropertiesStatesManager
  */
 trait StateWriter
 {
@@ -499,11 +500,11 @@ trait StateWriter
 	): string|int|float|bool|null
 	{
 		if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-			$state = $this->channelPropertiesStatesManager->get($property);
+			$state = await($this->channelPropertiesStatesManager->get($property));
 
 			$value = $state?->getExpectedValue();
 		} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
-			$state = $this->channelPropertiesStatesManager->read($property);
+			$state = await($this->channelPropertiesStatesManager->read($property));
 
 			$value = $state?->getExpectedValue() ?? ($state?->isValid() === true ? $state->getActualValue() : null);
 		} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {

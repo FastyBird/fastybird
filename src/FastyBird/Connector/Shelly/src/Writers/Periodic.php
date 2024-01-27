@@ -32,6 +32,7 @@ use React\EventLoop;
 use function array_key_exists;
 use function in_array;
 use function React\Async\async;
+use function React\Async\await;
 
 /**
  * Periodic properties writer
@@ -75,7 +76,7 @@ abstract class Periodic
 		protected readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		protected readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
-		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
+		private readonly DevicesModels\States\Async\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
 	)
@@ -199,7 +200,7 @@ abstract class Periodic
 
 			$this->processedProperties[$property->getId()->toString()] = $now;
 
-			$state = $this->channelPropertiesStatesManager->get($property);
+			$state = await($this->channelPropertiesStatesManager->get($property));
 
 			if ($state === null) {
 				continue;

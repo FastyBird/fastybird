@@ -95,7 +95,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION),
 					$this->documentFactory->create(
-						Utils\Json::encode([
+						Utils\ArrayHash::from([
 							'action' => MetadataTypes\PropertyAction::GET,
 							'channel' => $property->getChannel()->toString(),
 							'property' => $property->getId()->toString(),
@@ -158,6 +158,94 @@ final class ChannelPropertiesManager extends PropertiesManager
 	}
 
 	/**
+	 * @throws Exceptions\InvalidActualValue
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidExpectedValue
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 */
+	public function publish(
+		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
+		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source = null,
+	): bool
+	{
+		$mappedProperty = null;
+
+		if ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
+			$parent = $this->channelPropertiesConfigurationRepository->find($property->getParent());
+
+			if (!$parent instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+				throw new Exceptions\InvalidState('Mapped property parent could not be loaded');
+			}
+
+			$mappedProperty = $property;
+
+			$property = $parent;
+		}
+
+		try {
+			$state = $this->channelPropertyStateRepository->find($property->getId());
+
+		} catch (Exceptions\NotImplemented) {
+			$this->logger->warning(
+				'Channels states repository is not configured. State could not be fetched',
+				[
+					'source' => MetadataTypes\ModuleSource::DEVICES,
+					'type' => 'channel-properties-states',
+				],
+			);
+
+			return false;
+		}
+
+		if ($state === null) {
+			return false;
+		}
+
+		$readValue = $this->convertStoredState($property, $mappedProperty, $state, true);
+		$getValue = $this->convertStoredState($property, $mappedProperty, $state, false);
+
+		if ($this->useExchange) {
+			try {
+				$this->publisher->publish(
+					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CHANNEL_PROPERTY_STATE_DOCUMENT_REPORTED),
+					$this->documentFactory->create(
+						Utils\ArrayHash::from([
+							'id' => $property->getId()->toString(),
+							'channel' => $property->getChannel()->toString(),
+							'read' => $readValue->toArray(),
+							'get' => $getValue->toArray(),
+							'created_at' => $readValue->getCreatedAt()?->format(DateTimeInterface::ATOM),
+							'updated_at' => $readValue->getUpdatedAt()?->format(DateTimeInterface::ATOM),
+						]),
+						MetadataTypes\RoutingKey::get(
+							MetadataTypes\RoutingKey::CHANNEL_PROPERTY_STATE_DOCUMENT_REPORTED,
+						),
+					),
+				);
+			} catch (Throwable $ex) {
+				throw new Exceptions\InvalidState(
+					'Requested action could not be published for write action',
+					$ex->getCode(),
+					$ex,
+				);
+			}
+		} else {
+			$this->dispatcher?->dispatch(new Events\ChannelPropertyStateEntityReported(
+				$property,
+				$readValue,
+				$getValue,
+			));
+		}
+
+		return true;
+	}
+
+	/**
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
@@ -209,7 +297,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION),
 					$this->documentFactory->create(
-						Utils\Json::encode(array_merge(
+						Utils\ArrayHash::from(array_merge(
 							[
 								'action' => MetadataTypes\PropertyAction::SET,
 								'channel' => $property->getChannel()->toString(),
@@ -260,7 +348,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION),
 					$this->documentFactory->create(
-						Utils\Json::encode(array_merge(
+						Utils\ArrayHash::from(array_merge(
 							[
 								'action' => MetadataTypes\PropertyAction::SET,
 								'channel' => $property->getChannel()->toString(),

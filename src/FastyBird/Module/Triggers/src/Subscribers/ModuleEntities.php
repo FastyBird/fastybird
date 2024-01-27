@@ -267,7 +267,7 @@ final class ModuleEntities implements Common\EventSubscriber
 					$this->publisher->publish(
 						$entity->getSource(),
 						$publishRoutingKey,
-						$this->documentFactory->create(Utils\Json::encode($entity->toArray()), $publishRoutingKey),
+						$this->documentFactory->create(Utils\ArrayHash::from($entity->toArray()), $publishRoutingKey),
 					);
 
 					return;
@@ -276,7 +276,7 @@ final class ModuleEntities implements Common\EventSubscriber
 				$this->publisher->publish(
 					$entity->getSource(),
 					$publishRoutingKey,
-					$this->documentFactory->create(Utils\Json::encode(array_merge($state !== null ? [
+					$this->documentFactory->create(Utils\ArrayHash::from(array_merge($state !== null ? [
 						'is_triggered' => $state->isTriggered(),
 					] : [], $entity->toArray())), $publishRoutingKey),
 				);
@@ -289,7 +289,7 @@ final class ModuleEntities implements Common\EventSubscriber
 					$this->publisher->publish(
 						$entity->getSource(),
 						$publishRoutingKey,
-						$this->documentFactory->create(Utils\Json::encode($entity->toArray()), $publishRoutingKey),
+						$this->documentFactory->create(Utils\ArrayHash::from($entity->toArray()), $publishRoutingKey),
 					);
 
 					return;
@@ -298,7 +298,7 @@ final class ModuleEntities implements Common\EventSubscriber
 				$this->publisher->publish(
 					$entity->getSource(),
 					$publishRoutingKey,
-					$this->documentFactory->create(Utils\Json::encode(array_merge($state !== null ? [
+					$this->documentFactory->create(Utils\ArrayHash::from(array_merge($state !== null ? [
 						'is_fulfilled' => $state->isFulfilled(),
 					] : [], $entity->toArray())), $publishRoutingKey),
 				);
@@ -344,7 +344,7 @@ final class ModuleEntities implements Common\EventSubscriber
 					$this->publisher->publish(
 						$entity->getSource(),
 						$publishRoutingKey,
-						$this->documentFactory->create(Utils\Json::encode(array_merge([
+						$this->documentFactory->create(Utils\ArrayHash::from(array_merge([
 							'is_triggered' => $isTriggered,
 							'is_fulfilled' => $isFulfilled,
 						], $entity->toArray())), $publishRoutingKey),
@@ -354,7 +354,7 @@ final class ModuleEntities implements Common\EventSubscriber
 					$this->publisher->publish(
 						$entity->getSource(),
 						$publishRoutingKey,
-						$this->documentFactory->create(Utils\Json::encode(array_merge([
+						$this->documentFactory->create(Utils\ArrayHash::from(array_merge([
 							'is_triggered' => $isTriggered,
 						], $entity->toArray())), $publishRoutingKey),
 					);
@@ -363,7 +363,7 @@ final class ModuleEntities implements Common\EventSubscriber
 				$this->publisher->publish(
 					$entity->getSource(),
 					$publishRoutingKey,
-					$this->documentFactory->create(Utils\Json::encode($entity->toArray()), $publishRoutingKey),
+					$this->documentFactory->create(Utils\ArrayHash::from($entity->toArray()), $publishRoutingKey),
 				);
 			}
 		}

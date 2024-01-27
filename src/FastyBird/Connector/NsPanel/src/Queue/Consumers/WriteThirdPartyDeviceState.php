@@ -53,7 +53,7 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 	public function __construct(
 		protected readonly Helpers\Channel $channelHelper,
 		protected readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
-		protected readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
+		protected readonly DevicesModels\States\Async\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly Queue\Queue $queue,
 		private readonly API\LanApiFactory $lanApiApiFactory,
 		private readonly Helpers\Entity $entityHelper,

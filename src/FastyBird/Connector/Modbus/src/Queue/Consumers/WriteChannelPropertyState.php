@@ -30,7 +30,6 @@ use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
-use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -45,6 +44,8 @@ use function intval;
 use function is_bool;
 use function is_int;
 use function is_numeric;
+use function React\Async\async;
+use function React\Async\await;
 use function sprintf;
 use function strval;
 
@@ -74,14 +75,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
-		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
+		private readonly DevicesModels\States\Async\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 	)
 	{
 	}
 
 	/**
-	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exception
 	 * @throws Exceptions\InvalidArgument
@@ -90,7 +90,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws RuntimeException
-	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws Throwable
 	 */
 	public function consume(Entities\Messages\Entity $entity): bool
 	{
@@ -443,13 +443,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 									: $valueToWrite->getValue() === 1,
 						);
 
-						$this->channelPropertiesStatesManager->set(
+						await($this->channelPropertiesStatesManager->set(
 							$property,
 							Utils\ArrayHash::from([
 								DevicesStates\Property::ACTUAL_VALUE_FIELD => $state->getExpectedValue(),
 							]),
 							MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_MODBUS),
-						);
+						));
 					} else {
 						$this->resetExpected($property);
 
@@ -583,13 +583,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						->getRtuClient($connector)
 						->writeSingleHolding($station, $address, $bytes);
 
-					$this->channelPropertiesStatesManager->set(
+					await($this->channelPropertiesStatesManager->set(
 						$property,
 						Utils\ArrayHash::from([
 							DevicesStates\Property::ACTUAL_VALUE_FIELD => $state->getExpectedValue(),
 						]),
 						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_MODBUS),
-					);
+					));
 				} else {
 					$this->resetExpected($property);
 
@@ -948,15 +948,15 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			}
 
 			$promise->then(
-				function () use ($property, $state): void {
-					$this->channelPropertiesStatesManager->set(
+				async(function () use ($property, $state): void {
+					await($this->channelPropertiesStatesManager->set(
 						$property,
 						Utils\ArrayHash::from([
 							DevicesStates\Property::ACTUAL_VALUE_FIELD => $state->getExpectedValue(),
 						]),
 						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::CONNECTOR_MODBUS),
-					);
-				},
+					));
+				}),
 				function (Throwable $ex) use ($entity, $device, $channel, $property): void {
 					$this->resetExpected($property);
 
@@ -1037,11 +1037,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 	}
 
 	/**
-	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	private function resetExpected(MetadataDocuments\DevicesModule\ChannelDynamicProperty $property): void
 	{

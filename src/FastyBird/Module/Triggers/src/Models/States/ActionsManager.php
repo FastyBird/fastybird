@@ -55,7 +55,6 @@ final class ActionsManager
 	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\MalformedInput
-	 * @throws Utils\JsonException
 	 */
 	public function create(
 		Entities\Actions\Action $action,
@@ -79,7 +78,6 @@ final class ActionsManager
 	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\MalformedInput
-	 * @throws Utils\JsonException
 	 */
 	public function update(
 		Entities\Actions\Action $action,
@@ -108,7 +106,6 @@ final class ActionsManager
 	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\MalformedInput
-	 * @throws Utils\JsonException
 	 */
 	public function delete(
 		Entities\Actions\Action $action,
@@ -133,7 +130,6 @@ final class ActionsManager
 	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\MalformedInput
-	 * @throws Utils\JsonException
 	 */
 	private function publishEntity(
 		Entities\Actions\Action $action,
@@ -147,7 +143,7 @@ final class ActionsManager
 		$this->publisher->publish(
 			$action->getSource(),
 			MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::TRIGGER_ACTION_DOCUMENT_UPDATED),
-			$this->documentFactory->create(Utils\Json::encode(array_merge($action->toArray(), [
+			$this->documentFactory->create(Utils\ArrayHash::from(array_merge($action->toArray(), [
 				'is_triggered' => !($state === null) && $state->isTriggered(),
 			])), MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::TRIGGER_ACTION_DOCUMENT_UPDATED)),
 		);

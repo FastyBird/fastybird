@@ -166,7 +166,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 			MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 			$routingKey,
 			$this->documentFactory->create(
-				Utils\Json::encode(
+				Utils\ArrayHash::from(
 					array_merge(
 						[
 							'id' => $property->getId()->toString(),

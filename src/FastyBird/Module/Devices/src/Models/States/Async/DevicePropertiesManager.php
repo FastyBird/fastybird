@@ -96,7 +96,7 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::DEVICE_PROPERTY_ACTION),
 					$this->documentFactory->create(
-						Utils\Json::encode([
+						Utils\ArrayHash::from([
 							'action' => MetadataTypes\PropertyAction::GET,
 							'device' => $property->getDevice()->toString(),
 							'property' => $property->getId()->toString(),
@@ -151,7 +151,7 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 							'Devices states repository is not configured. State could not be fetched',
 							[
 								'source' => MetadataTypes\ModuleSource::DEVICES,
-								'type' => 'device-properties-states',
+								'type' => 'async-device-properties-states',
 							],
 						);
 					}
@@ -161,6 +161,101 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 
 			return $deferred->promise();
 		}
+	}
+
+	/**
+	 * @return Promise\PromiseInterface<bool>
+	 *
+	 * @throws Exceptions\InvalidActualValue
+	 * @throws Exceptions\InvalidExpectedValue
+	 * @throws Exceptions\InvalidState
+	 */
+	public function publish(
+		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty $property,
+		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source = null,
+	): Promise\PromiseInterface
+	{
+		$mappedProperty = null;
+
+		if ($property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
+			$parent = $this->devicePropertiesConfigurationRepository->find($property->getParent());
+
+			if (!$parent instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
+				throw new Exceptions\InvalidState('Mapped property parent could not be loaded');
+			}
+
+			$mappedProperty = $property;
+
+			$property = $parent;
+		}
+
+		$deferred = new Promise\Deferred();
+
+		$this->devicePropertyStateRepository->find($property->getId())
+			->then(
+				function (States\DeviceProperty|null $state) use ($deferred, $source, $property, $mappedProperty): void {
+					if ($state === null) {
+						$deferred->resolve(false);
+
+						return;
+					}
+
+					$readValue = $this->convertStoredState($property, $mappedProperty, $state, true);
+					$getValue = $this->convertStoredState($property, $mappedProperty, $state, false);
+
+					if ($this->useExchange) {
+						$this->publisher->publish(
+							$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+							MetadataTypes\RoutingKey::get(
+								MetadataTypes\RoutingKey::DEVICE_PROPERTY_STATE_DOCUMENT_REPORTED,
+							),
+							$this->documentFactory->create(
+								Utils\ArrayHash::from([
+									'id' => $property->getId()->toString(),
+									'device' => $property->getDevice()->toString(),
+									'read' => $readValue->toArray(),
+									'get' => $getValue->toArray(),
+									'created_at' => $readValue->getCreatedAt()?->format(DateTimeInterface::ATOM),
+									'updated_at' => $readValue->getUpdatedAt()?->format(DateTimeInterface::ATOM),
+								]),
+								MetadataTypes\RoutingKey::get(
+									MetadataTypes\RoutingKey::DEVICE_PROPERTY_STATE_DOCUMENT_REPORTED,
+								),
+							),
+						)
+							->then(static function (bool $result) use ($deferred): void {
+								$deferred->resolve($result);
+							})
+							->catch(static function (Throwable $ex) use ($deferred): void {
+								$deferred->reject($ex);
+							});
+					} else {
+						$this->dispatcher?->dispatch(new Events\DevicePropertyStateEntityReported(
+							$property,
+							$readValue,
+							$getValue,
+						));
+
+						$deferred->resolve(true);
+					}
+				},
+			)
+			->catch(function (Throwable $ex) use ($deferred): void {
+				if ($ex instanceof Exceptions\NotImplemented) {
+					$this->logger->warning(
+						'Devices states repository is not configured. State could not be fetched',
+						[
+							'source' => MetadataTypes\ModuleSource::DEVICES,
+							'type' => 'async-device-properties-states',
+						],
+					);
+				}
+
+				$deferred->reject($ex);
+			});
+
+		return $deferred->promise();
 	}
 
 	/**
@@ -207,7 +302,7 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::DEVICE_PROPERTY_ACTION),
 					$this->documentFactory->create(
-						Utils\Json::encode(array_merge(
+						Utils\ArrayHash::from(array_merge(
 							[
 								'action' => MetadataTypes\PropertyAction::SET,
 								'device' => $property->getDevice()->toString(),
@@ -256,7 +351,7 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::DEVICE_PROPERTY_ACTION),
 					$this->documentFactory->create(
-						Utils\Json::encode(array_merge(
+						Utils\ArrayHash::from(array_merge(
 							[
 								'action' => MetadataTypes\PropertyAction::SET,
 								'device' => $property->getDevice()->toString(),
@@ -481,7 +576,7 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 										'Devices states manager is not configured. State could not be fetched',
 										[
 											'source' => MetadataTypes\ModuleSource::DEVICES,
-											'type' => 'device-properties-states',
+											'type' => 'async-device-properties-states',
 										],
 									);
 								}
@@ -493,7 +588,7 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 							'Property stored actual value was not valid',
 							[
 								'source' => MetadataTypes\ModuleSource::DEVICES,
-								'type' => 'device-properties-states',
+								'type' => 'async-device-properties-states',
 								'exception' => ApplicationHelpers\Logger::buildException($ex),
 							],
 						);
@@ -517,7 +612,7 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 										'Devices states manager is not configured. State could not be fetched',
 										[
 											'source' => MetadataTypes\ModuleSource::DEVICES,
-											'type' => 'device-properties-states',
+											'type' => 'async-device-properties-states',
 										],
 									);
 								}
@@ -529,7 +624,7 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 							'Property stored expected value was not valid',
 							[
 								'source' => MetadataTypes\ModuleSource::DEVICES,
-								'type' => 'device-properties-states',
+								'type' => 'async-device-properties-states',
 								'exception' => ApplicationHelpers\Logger::buildException($ex),
 							],
 						);

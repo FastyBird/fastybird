@@ -91,7 +91,6 @@ final class ModuleEntities implements Common\EventSubscriber
 	 *
 	 * @throws ExchangeExceptions\InvalidArgument
 	 * @throws ExchangeExceptions\InvalidState
-	 * @throws Utils\JsonException
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\MalformedInput
 	 */
@@ -115,7 +114,6 @@ final class ModuleEntities implements Common\EventSubscriber
 	 *
 	 * @throws ExchangeExceptions\InvalidArgument
 	 * @throws ExchangeExceptions\InvalidState
-	 * @throws Utils\JsonException
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\MalformedInput
 	 */
@@ -190,7 +188,6 @@ final class ModuleEntities implements Common\EventSubscriber
 	 *
 	 * @throws ExchangeExceptions\InvalidArgument
 	 * @throws ExchangeExceptions\InvalidState
-	 * @throws Utils\JsonException
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\MalformedInput
 	 */
@@ -222,7 +219,6 @@ final class ModuleEntities implements Common\EventSubscriber
 	/**
 	 * @throws ExchangeExceptions\InvalidArgument
 	 * @throws ExchangeExceptions\InvalidState
-	 * @throws Utils\JsonException
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\MalformedInput
 	 */
@@ -262,7 +258,7 @@ final class ModuleEntities implements Common\EventSubscriber
 				MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 				$publishRoutingKey,
 				$this->documentFactory->create(
-					Utils\Json::encode($entity->toArray()),
+					Utils\ArrayHash::from($entity->toArray()),
 					$publishRoutingKey,
 				),
 			);

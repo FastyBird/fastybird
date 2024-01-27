@@ -94,7 +94,7 @@ final class DevicePropertiesManager extends PropertiesManager
 					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::DEVICE_PROPERTY_ACTION),
 					$this->documentFactory->create(
-						Utils\Json::encode([
+						Utils\ArrayHash::from([
 							'action' => MetadataTypes\PropertyAction::GET,
 							'device' => $property->getDevice()->toString(),
 							'property' => $property->getId()->toString(),
@@ -157,6 +157,94 @@ final class DevicePropertiesManager extends PropertiesManager
 	}
 
 	/**
+	 * @throws Exceptions\InvalidActualValue
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidExpectedValue
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 */
+	public function publish(
+		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty $property,
+		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source = null,
+	): bool
+	{
+		$mappedProperty = null;
+
+		if ($property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
+			$parent = $this->devicePropertiesConfigurationRepository->find($property->getParent());
+
+			if (!$parent instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
+				throw new Exceptions\InvalidState('Mapped property parent could not be loaded');
+			}
+
+			$mappedProperty = $property;
+
+			$property = $parent;
+		}
+
+		try {
+			$state = $this->devicePropertyStateRepository->find($property->getId());
+
+		} catch (Exceptions\NotImplemented) {
+			$this->logger->warning(
+				'Devices states repository is not configured. State could not be fetched',
+				[
+					'source' => MetadataTypes\ModuleSource::DEVICES,
+					'type' => 'device-properties-states',
+				],
+			);
+
+			return false;
+		}
+
+		if ($state === null) {
+			return false;
+		}
+
+		$readValue = $this->convertStoredState($property, $mappedProperty, $state, true);
+		$getValue = $this->convertStoredState($property, $mappedProperty, $state, false);
+
+		if ($this->useExchange) {
+			try {
+				$this->publisher->publish(
+					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::DEVICE_PROPERTY_STATE_DOCUMENT_REPORTED),
+					$this->documentFactory->create(
+						Utils\ArrayHash::from([
+							'id' => $property->getId()->toString(),
+							'device' => $property->getDevice()->toString(),
+							'read' => $readValue->toArray(),
+							'get' => $getValue->toArray(),
+							'created_at' => $readValue->getCreatedAt()?->format(DateTimeInterface::ATOM),
+							'updated_at' => $readValue->getUpdatedAt()?->format(DateTimeInterface::ATOM),
+						]),
+						MetadataTypes\RoutingKey::get(
+							MetadataTypes\RoutingKey::DEVICE_PROPERTY_STATE_DOCUMENT_REPORTED,
+						),
+					),
+				);
+			} catch (Throwable $ex) {
+				throw new Exceptions\InvalidState(
+					'Requested action could not be published for write action',
+					$ex->getCode(),
+					$ex,
+				);
+			}
+		} else {
+			$this->dispatcher?->dispatch(new Events\DevicePropertyStateEntityReported(
+				$property,
+				$readValue,
+				$getValue,
+			));
+		}
+
+		return true;
+	}
+
+	/**
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
@@ -208,7 +296,7 @@ final class DevicePropertiesManager extends PropertiesManager
 					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::DEVICE_PROPERTY_ACTION),
 					$this->documentFactory->create(
-						Utils\Json::encode(array_merge(
+						Utils\ArrayHash::from(array_merge(
 							[
 								'action' => MetadataTypes\PropertyAction::SET,
 								'device' => $property->getDevice()->toString(),
@@ -259,7 +347,7 @@ final class DevicePropertiesManager extends PropertiesManager
 					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::DEVICE_PROPERTY_ACTION),
 					$this->documentFactory->create(
-						Utils\Json::encode(array_merge(
+						Utils\ArrayHash::from(array_merge(
 							[
 								'action' => MetadataTypes\PropertyAction::SET,
 								'device' => $property->getDevice()->toString(),

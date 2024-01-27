@@ -15,8 +15,8 @@
 
 namespace FastyBird\Connector\Sonoff\Helpers;
 
+use FastyBird\Connector\Sonoff;
 use FastyBird\Connector\Sonoff\API;
-use FastyBird\Connector\Sonoff\Entities;
 use FastyBird\Connector\Sonoff\Exceptions;
 use FastyBird\Connector\Sonoff\Types;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
@@ -246,7 +246,7 @@ final class Device
 		);
 
 		if ($property?->getValue() === null) {
-			return Entities\SonoffDevice::STATE_READING_DELAY;
+			return Sonoff\Constants::STATE_READING_DELAY;
 		}
 
 		$value = $property->getValue();
@@ -272,7 +272,7 @@ final class Device
 		);
 
 		if ($property?->getValue() === null) {
-			return Entities\SonoffDevice::HEARTBEAT_DELAY;
+			return Sonoff\Constants::HEARTBEAT_DELAY;
 		}
 
 		$value = $property->getValue();

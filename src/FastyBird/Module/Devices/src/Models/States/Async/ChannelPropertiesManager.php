@@ -96,7 +96,7 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION),
 					$this->documentFactory->create(
-						Utils\Json::encode([
+						Utils\ArrayHash::from([
 							'action' => MetadataTypes\PropertyAction::GET,
 							'channel' => $property->getChannel()->toString(),
 							'property' => $property->getId()->toString(),
@@ -153,7 +153,7 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 							'Channels states repository is not configured. State could not be fetched',
 							[
 								'source' => MetadataTypes\ModuleSource::DEVICES,
-								'type' => 'channel-properties-states',
+								'type' => 'async-channel-properties-states',
 							],
 						);
 					}
@@ -163,6 +163,101 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 
 			return $deferred->promise();
 		}
+	}
+
+	/**
+	 * @return Promise\PromiseInterface<bool>
+	 *
+	 * @throws Exceptions\InvalidActualValue
+	 * @throws Exceptions\InvalidExpectedValue
+	 * @throws Exceptions\InvalidState
+	 */
+	public function publish(
+		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
+		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source = null,
+	): Promise\PromiseInterface
+	{
+		$mappedProperty = null;
+
+		if ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
+			$parent = $this->channelPropertiesConfigurationRepository->find($property->getParent());
+
+			if (!$parent instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+				throw new Exceptions\InvalidState('Mapped property parent could not be loaded');
+			}
+
+			$mappedProperty = $property;
+
+			$property = $parent;
+		}
+
+		$deferred = new Promise\Deferred();
+
+		$this->channelPropertyStateRepository->find($property->getId())
+			->then(
+				function (States\ChannelProperty|null $state) use ($deferred, $source, $property, $mappedProperty): void {
+					if ($state === null) {
+						$deferred->resolve(false);
+
+						return;
+					}
+
+					$readValue = $this->convertStoredState($property, $mappedProperty, $state, true);
+					$getValue = $this->convertStoredState($property, $mappedProperty, $state, false);
+
+					if ($this->useExchange) {
+						$this->publisher->publish(
+							$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+							MetadataTypes\RoutingKey::get(
+								MetadataTypes\RoutingKey::CHANNEL_PROPERTY_STATE_DOCUMENT_REPORTED,
+							),
+							$this->documentFactory->create(
+								Utils\ArrayHash::from([
+									'id' => $property->getId()->toString(),
+									'channel' => $property->getChannel()->toString(),
+									'read' => $readValue->toArray(),
+									'get' => $getValue->toArray(),
+									'created_at' => $readValue->getCreatedAt()?->format(DateTimeInterface::ATOM),
+									'updated_at' => $readValue->getUpdatedAt()?->format(DateTimeInterface::ATOM),
+								]),
+								MetadataTypes\RoutingKey::get(
+									MetadataTypes\RoutingKey::CHANNEL_PROPERTY_STATE_DOCUMENT_REPORTED,
+								),
+							),
+						)
+							->then(static function (bool $result) use ($deferred): void {
+								$deferred->resolve($result);
+							})
+							->catch(static function (Throwable $ex) use ($deferred): void {
+								$deferred->reject($ex);
+							});
+					} else {
+						$this->dispatcher?->dispatch(new Events\ChannelPropertyStateEntityReported(
+							$property,
+							$readValue,
+							$getValue,
+						));
+
+						$deferred->resolve(true);
+					}
+				},
+			)
+			->catch(function (Throwable $ex) use ($deferred): void {
+				if ($ex instanceof Exceptions\NotImplemented) {
+					$this->logger->warning(
+						'Channels states repository is not configured. State could not be fetched',
+						[
+							'source' => MetadataTypes\ModuleSource::DEVICES,
+							'type' => 'async-channel-properties-states',
+						],
+					);
+				}
+
+				$deferred->reject($ex);
+			});
+
+		return $deferred->promise();
 	}
 
 	/**
@@ -209,7 +304,7 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION),
 					$this->documentFactory->create(
-						Utils\Json::encode(array_merge(
+						Utils\ArrayHash::from(array_merge(
 							[
 								'action' => MetadataTypes\PropertyAction::SET,
 								'channel' => $property->getChannel()->toString(),
@@ -258,7 +353,7 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION),
 					$this->documentFactory->create(
-						Utils\Json::encode(array_merge(
+						Utils\ArrayHash::from(array_merge(
 							[
 								'action' => MetadataTypes\PropertyAction::SET,
 								'channel' => $property->getChannel()->toString(),
@@ -483,7 +578,7 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 										'Channels states manager is not configured. State could not be fetched',
 										[
 											'source' => MetadataTypes\ModuleSource::DEVICES,
-											'type' => 'channel-properties-states',
+											'type' => 'async-channel-properties-states',
 										],
 									);
 								}
@@ -495,7 +590,7 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 							'Property stored actual value was not valid',
 							[
 								'source' => MetadataTypes\ModuleSource::DEVICES,
-								'type' => 'channel-properties-states',
+								'type' => 'async-channel-properties-states',
 								'exception' => ApplicationHelpers\Logger::buildException($ex),
 							],
 						);
@@ -519,7 +614,7 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 										'Channels states manager is not configured. State could not be fetched',
 										[
 											'source' => MetadataTypes\ModuleSource::DEVICES,
-											'type' => 'channel-properties-states',
+											'type' => 'async-channel-properties-states',
 										],
 									);
 								}
@@ -531,7 +626,7 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 							'Property stored expected value was not valid',
 							[
 								'source' => MetadataTypes\ModuleSource::DEVICES,
-								'type' => 'channel-properties-states',
+								'type' => 'async-channel-properties-states',
 								'exception' => ApplicationHelpers\Logger::buildException($ex),
 							],
 						);
