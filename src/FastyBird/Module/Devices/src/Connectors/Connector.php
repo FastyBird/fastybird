@@ -32,7 +32,7 @@ interface Connector extends Evenement\EventEmitterInterface
 	/**
 	 * @return Promise\PromiseInterface<bool>
 	 */
-	public function execute(): Promise\PromiseInterface;
+	public function execute(bool $standalone = true): Promise\PromiseInterface;
 
 	/**
 	 * @return Promise\PromiseInterface<bool>

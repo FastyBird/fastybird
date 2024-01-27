@@ -72,7 +72,7 @@ class Container implements Connector, EventDispatcher\EventSubscriberInterface
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
-	public function execute(): Promise\PromiseInterface
+	public function execute(bool $standalone = true): Promise\PromiseInterface
 	{
 		return $this->getService($this->connector)->execute();
 	}

@@ -25,6 +25,7 @@ use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Connector\NsPanel\Servers;
 use FastyBird\Connector\NsPanel\Writers;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
+use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -69,6 +70,7 @@ final class Connector implements DevicesConnectors\Connector
 
 	/**
 	 * @param array<Clients\ClientFactory> $clientsFactories
+	 * @param array<Writers\WriterFactory> $writersFactories
 	 */
 	public function __construct(
 		private readonly MetadataDocuments\DevicesModule\Connector $connector,
@@ -80,7 +82,7 @@ final class Connector implements DevicesConnectors\Connector
 		private readonly Queue\Queue $queue,
 		private readonly Queue\Consumers $consumers,
 		private readonly Servers\ServerFactory $serverFactory,
-		private readonly Writers\WriterFactory $writerFactory,
+		private readonly array $writersFactories,
 		private readonly NsPanel\Logger $logger,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
@@ -94,10 +96,11 @@ final class Connector implements DevicesConnectors\Connector
 	 *
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
+	 * @throws ExchangeExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function execute(): Promise\PromiseInterface
+	public function execute(bool $standalone = true): Promise\PromiseInterface
 	{
 		assert($this->connector->getType() === Entities\NsPanelConnector::TYPE);
 
@@ -140,8 +143,20 @@ final class Connector implements DevicesConnectors\Connector
 			$this->server->connect();
 		}
 
-		$this->writer = $this->writerFactory->create($this->connector);
-		$this->writer->connect();
+		foreach ($this->writersFactories as $writerFactory) {
+			if (
+				(
+					$standalone
+					&& $writerFactory instanceof Writers\ExchangeFactory
+				) || (
+					!$standalone
+					&& $writerFactory instanceof Writers\EventFactory
+				)
+			) {
+				$this->writer = $writerFactory->create($this->connector);
+				$this->writer->connect();
+			}
+		}
 
 		$this->consumersTimer = $this->eventLoop->addPeriodicTimer(
 			self::QUEUE_PROCESSING_INTERVAL,

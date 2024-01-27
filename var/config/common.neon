@@ -142,38 +142,6 @@ fbDevicesModule:
 fbTriggersModule:
     apiPrefix: %api.prefixed.modules%
 
-# Connectors
-############
-fbFbMqttConnector:
-    writer: %connectors.writers%
-
-fbHomeKitConnector:
-    writer: %connectors.writers%
-
-fbModbusConnector:
-    writer: %connectors.writers%
-
-fbNsPanelConnector:
-    writer: %connectors.writers%
-
-fbShellyConnector:
-    writer: %connectors.writers%
-
-fbSonoffConnector:
-    writer: %connectors.writers%
-
-fbTuyaConnector:
-    writer: %connectors.writers%
-
-fbVieraConnector:
-    writer: %connectors.writers%
-
-fbVirtualConnector:
-    writer: %connectors.writers%
-
-fbZigbee2MqttConnector:
-    writer: %connectors.writers%
-
 # Application
 #############
 

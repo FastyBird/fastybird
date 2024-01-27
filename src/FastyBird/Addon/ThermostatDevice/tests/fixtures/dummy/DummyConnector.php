@@ -21,7 +21,7 @@ class DummyConnector implements DevicesConnectors\Connector
 	/**
 	 * @return Promise\PromiseInterface<bool>
 	 */
-	public function execute(): Promise\PromiseInterface
+	public function execute(bool $standalone = true): Promise\PromiseInterface
 	{
 		return Promise\reject(new Exceptions\InvalidState('Not implemented'));
 	}
