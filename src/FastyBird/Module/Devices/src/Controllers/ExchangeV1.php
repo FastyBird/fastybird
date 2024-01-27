@@ -16,8 +16,6 @@
 namespace FastyBird\Module\Devices\Controllers;
 
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
-use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -58,7 +56,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 		private readonly Devices\Logger $logger,
 		private readonly MetadataLoaders\SchemaLoader $schemaLoader,
 		private readonly MetadataSchemas\Validator $jsonValidator,
-		private readonly ExchangeDocuments\DocumentFactory $documentFactory,
+		private readonly MetadataDocuments\DocumentFactory $documentFactory,
 	)
 	{
 		parent::__construct();
@@ -178,8 +176,6 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws ExchangeExceptions\InvalidArgument
-	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -224,17 +220,27 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				$data = $data !== null ? $this->parseData($data, $schema) : null;
 
 				if ($data !== null) {
-					$entity = $this->documentFactory->create(
-						$data,
-						MetadataTypes\RoutingKey::get($args['routing_key']),
-					);
+					if ($args['routing_key'] === MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_ACTION) {
+						$document = $this->documentFactory->create(
+							MetadataDocuments\Actions\ActionConnectorProperty::class,
+							$data,
+						);
 
-					if ($entity instanceof MetadataDocuments\Actions\ActionConnectorProperty) {
-						$this->handleConnectorAction($client, $topic, $entity);
-					} elseif ($entity instanceof MetadataDocuments\Actions\ActionDeviceProperty) {
-						$this->handleDeviceAction($client, $topic, $entity);
-					} elseif ($entity instanceof MetadataDocuments\Actions\ActionChannelProperty) {
-						$this->handleChannelAction($client, $topic, $entity);
+						$this->handleConnectorAction($client, $topic, $document);
+					} elseif ($args['routing_key'] === MetadataTypes\RoutingKey::DEVICE_PROPERTY_ACTION) {
+						$document = $this->documentFactory->create(
+							MetadataDocuments\Actions\ActionDeviceProperty::class,
+							$data,
+						);
+
+						$this->handleDeviceAction($client, $topic, $document);
+					} elseif ($args['routing_key'] === MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION) {
+						$document = $this->documentFactory->create(
+							MetadataDocuments\Actions\ActionChannelProperty::class,
+							$data,
+						);
+
+						$this->handleChannelAction($client, $topic, $document);
 					}
 				}
 

@@ -18,7 +18,6 @@ namespace FastyBird\Module\Devices\Subscribers;
 use DateTimeInterface;
 use Exception;
 use FastyBird\Library\Application\Events as ApplicationEvents;
-use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -31,7 +30,6 @@ use Nette;
 use Nette\Utils;
 use React\Promise;
 use Symfony\Component\EventDispatcher;
-use function array_merge;
 
 /**
  * Devices state entities events
@@ -49,7 +47,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	private bool $useAsync = false;
 
 	public function __construct(
-		private readonly ExchangeDocuments\DocumentFactory $documentFactory,
+		private readonly MetadataDocuments\DocumentFactory $documentFactory,
 		private readonly ExchangePublisher\Publisher $publisher,
 		private readonly ExchangePublisher\Async\Publisher $asyncPublisher,
 	)
@@ -148,6 +146,18 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 				MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_STATE_DOCUMENT_REPORTED,
 			);
 
+			$document = $this->documentFactory->create(
+				MetadataDocuments\DevicesModule\ConnectorPropertyState::class,
+				[
+					'id' => $property->getId()->toString(),
+					'connector' => $property->getConnector()->toString(),
+					'read' => $readState->toArray(),
+					'get' => $getState?->toArray(),
+					'created_at' => $readState->getCreatedAt()?->format(DateTimeInterface::ATOM),
+					'updated_at' => $readState->getUpdatedAt()?->format(DateTimeInterface::ATOM),
+				],
+			);
+
 		} elseif (
 			$property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
 			|| $property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
@@ -156,36 +166,40 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 				MetadataTypes\RoutingKey::DEVICE_PROPERTY_STATE_DOCUMENT_REPORTED,
 			);
 
+			$document = $this->documentFactory->create(
+				MetadataDocuments\DevicesModule\DevicePropertyState::class,
+				[
+					'id' => $property->getId()->toString(),
+					'device' => $property->getDevice()->toString(),
+					'read' => $readState->toArray(),
+					'get' => $getState?->toArray(),
+					'created_at' => $readState->getCreatedAt()?->format(DateTimeInterface::ATOM),
+					'updated_at' => $readState->getUpdatedAt()?->format(DateTimeInterface::ATOM),
+				],
+			);
+
 		} else {
 			$routingKey = MetadataTypes\RoutingKey::get(
 				MetadataTypes\RoutingKey::CHANNEL_PROPERTY_STATE_DOCUMENT_REPORTED,
+			);
+
+			$document = $this->documentFactory->create(
+				MetadataDocuments\DevicesModule\ChannelPropertyState::class,
+				[
+					'id' => $property->getId()->toString(),
+					'channel' => $property->getChannel()->toString(),
+					'read' => $readState->toArray(),
+					'get' => $getState?->toArray(),
+					'created_at' => $readState->getCreatedAt()?->format(DateTimeInterface::ATOM),
+					'updated_at' => $readState->getUpdatedAt()?->format(DateTimeInterface::ATOM),
+				],
 			);
 		}
 
 		return $this->getPublisher($async)->publish(
 			MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 			$routingKey,
-			$this->documentFactory->create(
-				Utils\ArrayHash::from(
-					array_merge(
-						[
-							'id' => $property->getId()->toString(),
-							'read' => $readState->toArray(),
-							'get' => $getState?->toArray(),
-							'created_at' => $readState->getCreatedAt()?->format(DateTimeInterface::ATOM),
-							'updated_at' => $readState->getUpdatedAt()?->format(DateTimeInterface::ATOM),
-						],
-						$property instanceof MetadataDocuments\DevicesModule\ConnectorProperty
-							? ['connector' => $property->getConnector()->toString()]
-							: (
-								$property instanceof MetadataDocuments\DevicesModule\DeviceProperty
-								? ['device' => $property->getDevice()->toString()]
-								: ['channel' => $property->getChannel()->toString()]
-							),
-					),
-				),
-				$routingKey,
-			),
+			$document,
 		);
 	}
 
