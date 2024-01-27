@@ -15,7 +15,12 @@
 
 namespace FastyBird\Module\Devices\Consumers;
 
+use DateTimeInterface;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
+use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
+use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
+use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -26,7 +31,9 @@ use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\States;
 use Nette\Utils;
+use Throwable;
 use function in_array;
+use function React\Async\await;
 
 /**
  * States messages subscriber
@@ -53,13 +60,19 @@ final class State implements ExchangeConsumers\Consumer
 		private readonly Models\States\Async\ConnectorPropertiesManager $connectorPropertiesStatesManager,
 		private readonly Models\States\Async\DevicePropertiesManager $devicePropertiesStatesManager,
 		private readonly Models\States\Async\ChannelPropertiesManager $channelPropertiesStatesManager,
+		private readonly ExchangePublisher\Async\Publisher $publisher,
+		private readonly ExchangeDocuments\DocumentFactory $documentFactory,
 	)
 	{
 	}
 
 	/**
 	 * @throws Exceptions\InvalidState
+	 * @throws ExchangeExceptions\InvalidArgument
+	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function consume(
 		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource $source,
@@ -159,7 +172,63 @@ final class State implements ExchangeConsumers\Consumer
 						return;
 					}
 
-					$this->connectorPropertiesStatesManager->publish($property);
+					$readValue = await($this->connectorPropertiesStatesManager->read($property));
+					$getValue = await($this->connectorPropertiesStatesManager->get($property));
+
+					if ($readValue === null) {
+						return;
+					}
+
+					$this->publisher->publish(
+						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+						MetadataTypes\RoutingKey::get(
+							MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_STATE_DOCUMENT_REPORTED,
+						),
+						$this->documentFactory->create(
+							Utils\ArrayHash::from([
+								'id' => $property->getId()->toString(),
+								'connector' => $property->getConnector()->toString(),
+								'read' => $readValue->toArray(),
+								'get' => $getValue?->toArray(),
+								'created_at' => $readValue->getCreatedAt()?->format(DateTimeInterface::ATOM),
+								'updated_at' => $readValue->getUpdatedAt()?->format(DateTimeInterface::ATOM),
+							]),
+							MetadataTypes\RoutingKey::get(
+								MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_STATE_DOCUMENT_REPORTED,
+							),
+						),
+					)
+						->then(function () use ($entity, $property, $source, $routingKey): void {
+							$this->logger->debug(
+								'Requested write value to channel property',
+								[
+									'source' => MetadataTypes\ModuleSource::DEVICES,
+									'type' => 'state-consumer',
+									'connector' => [
+										'id' => $entity->getConnector()->toString(),
+									],
+									'property' => [
+										'id' => $property->getId()->toString(),
+										'identifier' => $property->getIdentifier(),
+									],
+									'message' => [
+										'routing_key' => $routingKey->getValue(),
+										'source' => $source->getValue(),
+										'data' => $entity->toArray(),
+									],
+								],
+							);
+						})
+						->catch(function (Throwable $ex): void {
+							$this->logger->error(
+								'Requested action could not be published for write action',
+								[
+									'source' => MetadataTypes\ModuleSource::DEVICES,
+									'type' => 'channel-properties-states',
+									'exception' => ApplicationHelpers\Logger::buildException($ex),
+								],
+							);
+						});
 				}
 			} elseif ($entity instanceof MetadataDocuments\Actions\ActionDeviceProperty) {
 				if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::SET)) {
@@ -248,7 +317,63 @@ final class State implements ExchangeConsumers\Consumer
 						return;
 					}
 
-					$this->devicePropertiesStatesManager->publish($property);
+					$readValue = await($this->devicePropertiesStatesManager->read($property));
+					$getValue = await($this->devicePropertiesStatesManager->get($property));
+
+					if ($readValue === null) {
+						return;
+					}
+
+					$this->publisher->publish(
+						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+						MetadataTypes\RoutingKey::get(
+							MetadataTypes\RoutingKey::DEVICE_PROPERTY_STATE_DOCUMENT_REPORTED,
+						),
+						$this->documentFactory->create(
+							Utils\ArrayHash::from([
+								'id' => $property->getId()->toString(),
+								'device' => $property->getDevice()->toString(),
+								'read' => $readValue->toArray(),
+								'get' => $getValue?->toArray(),
+								'created_at' => $readValue->getCreatedAt()?->format(DateTimeInterface::ATOM),
+								'updated_at' => $readValue->getUpdatedAt()?->format(DateTimeInterface::ATOM),
+							]),
+							MetadataTypes\RoutingKey::get(
+								MetadataTypes\RoutingKey::DEVICE_PROPERTY_STATE_DOCUMENT_REPORTED,
+							),
+						),
+					)
+						->then(function () use ($entity, $property, $source, $routingKey): void {
+							$this->logger->debug(
+								'Requested write value to channel property',
+								[
+									'source' => MetadataTypes\ModuleSource::DEVICES,
+									'type' => 'state-consumer',
+									'device' => [
+										'id' => $entity->getDevice()->toString(),
+									],
+									'property' => [
+										'id' => $property->getId()->toString(),
+										'identifier' => $property->getIdentifier(),
+									],
+									'message' => [
+										'routing_key' => $routingKey->getValue(),
+										'source' => $source->getValue(),
+										'data' => $entity->toArray(),
+									],
+								],
+							);
+						})
+						->catch(function (Throwable $ex): void {
+							$this->logger->error(
+								'Requested action could not be published for write action',
+								[
+									'source' => MetadataTypes\ModuleSource::DEVICES,
+									'type' => 'channel-properties-states',
+									'exception' => ApplicationHelpers\Logger::buildException($ex),
+								],
+							);
+						});
 				}
 			} elseif ($entity instanceof MetadataDocuments\Actions\ActionChannelProperty) {
 				if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::SET)) {
@@ -337,7 +462,63 @@ final class State implements ExchangeConsumers\Consumer
 						return;
 					}
 
-					$this->channelPropertiesStatesManager->publish($property);
+					$readValue = await($this->channelPropertiesStatesManager->read($property));
+					$getValue = await($this->channelPropertiesStatesManager->get($property));
+
+					if ($readValue === null) {
+						return;
+					}
+
+					$this->publisher->publish(
+						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+						MetadataTypes\RoutingKey::get(
+							MetadataTypes\RoutingKey::CHANNEL_PROPERTY_STATE_DOCUMENT_REPORTED,
+						),
+						$this->documentFactory->create(
+							Utils\ArrayHash::from([
+								'id' => $property->getId()->toString(),
+								'channel' => $property->getChannel()->toString(),
+								'read' => $readValue->toArray(),
+								'get' => $getValue?->toArray(),
+								'created_at' => $readValue->getCreatedAt()?->format(DateTimeInterface::ATOM),
+								'updated_at' => $readValue->getUpdatedAt()?->format(DateTimeInterface::ATOM),
+							]),
+							MetadataTypes\RoutingKey::get(
+								MetadataTypes\RoutingKey::CHANNEL_PROPERTY_STATE_DOCUMENT_REPORTED,
+							),
+						),
+					)
+						->then(function () use ($entity, $property, $source, $routingKey): void {
+							$this->logger->debug(
+								'Requested write value to channel property',
+								[
+									'source' => MetadataTypes\ModuleSource::DEVICES,
+									'type' => 'state-consumer',
+									'channel' => [
+										'id' => $entity->getChannel()->toString(),
+									],
+									'property' => [
+										'id' => $property->getId()->toString(),
+										'identifier' => $property->getIdentifier(),
+									],
+									'message' => [
+										'routing_key' => $routingKey->getValue(),
+										'source' => $source->getValue(),
+										'data' => $entity->toArray(),
+									],
+								],
+							);
+						})
+						->catch(function (Throwable $ex): void {
+							$this->logger->error(
+								'Requested action could not be published for write action',
+								[
+									'source' => MetadataTypes\ModuleSource::DEVICES,
+									'type' => 'channel-properties-states',
+									'exception' => ApplicationHelpers\Logger::buildException($ex),
+								],
+							);
+						});
 				}
 			}
 		}

@@ -358,14 +358,20 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	{
 		if (is_array($property)) {
 			foreach ($property as $item) {
-				$this->saveValue($item, Utils\ArrayHash::from([
-					States\Property::VALID_FIELD => $state,
-				]), false);
+				$this->set(
+					$item,
+					Utils\ArrayHash::from([
+						States\Property::VALID_FIELD => $state,
+					]),
+				);
 			}
 		} else {
-			$this->saveValue($property, Utils\ArrayHash::from([
-				States\Property::VALID_FIELD => $state,
-			]), false);
+			$this->set(
+				$property,
+				Utils\ArrayHash::from([
+					States\Property::VALID_FIELD => $state,
+				]),
+			);
 		}
 	}
 
@@ -386,28 +392,42 @@ final class ConnectorPropertiesManager extends PropertiesManager
 		if (is_array($property)) {
 			foreach ($property as $item) {
 				if ($pending === false) {
-					$this->saveValue($item, Utils\ArrayHash::from([
-						States\Property::EXPECTED_VALUE_FIELD => null,
-						States\Property::PENDING_FIELD => false,
-					]), false);
+					$this->set(
+						$item,
+						Utils\ArrayHash::from([
+							States\Property::EXPECTED_VALUE_FIELD => null,
+							States\Property::PENDING_FIELD => false,
+						]),
+					);
 				} else {
-					$this->saveValue($item, Utils\ArrayHash::from([
-						States\Property::PENDING_FIELD => $this->dateTimeFactory->getNow()->format(
-							DateTimeInterface::ATOM,
-						),
-					]), false);
+					$this->set(
+						$item,
+						Utils\ArrayHash::from([
+							States\Property::PENDING_FIELD => $this->dateTimeFactory->getNow()->format(
+								DateTimeInterface::ATOM,
+							),
+						]),
+					);
 				}
 			}
 		} else {
 			if ($pending === false) {
-				$this->saveValue($property, Utils\ArrayHash::from([
-					States\Property::EXPECTED_VALUE_FIELD => null,
-					States\Property::PENDING_FIELD => false,
-				]), false);
+				$this->set(
+					$property,
+					Utils\ArrayHash::from([
+						States\Property::EXPECTED_VALUE_FIELD => null,
+						States\Property::PENDING_FIELD => false,
+					]),
+				);
 			} else {
-				$this->saveValue($property, Utils\ArrayHash::from([
-					States\Property::PENDING_FIELD => $this->dateTimeFactory->getNow()->format(DateTimeInterface::ATOM),
-				]), false);
+				$this->set(
+					$property,
+					Utils\ArrayHash::from([
+						States\Property::PENDING_FIELD => $this->dateTimeFactory->getNow()->format(
+							DateTimeInterface::ATOM,
+						),
+					]),
+				);
 			}
 		}
 	}

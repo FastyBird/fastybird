@@ -346,9 +346,12 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 			$promises = [];
 
 			foreach ($property as $item) {
-				$promises[] = $this->saveValue($item, Utils\ArrayHash::from([
-					States\Property::VALID_FIELD => $state,
-				]), false);
+				$promises[] = $this->set(
+					$item,
+					Utils\ArrayHash::from([
+						States\Property::VALID_FIELD => $state,
+					]),
+				);
 			}
 
 			Promise\all($promises)
@@ -383,14 +386,14 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 			$promises = [];
 
 			foreach ($property as $item) {
-				$promises[] = $pending === false ? $this->saveValue($item, Utils\ArrayHash::from([
+				$promises[] = $pending === false ? $this->set($item, Utils\ArrayHash::from([
 					States\Property::EXPECTED_VALUE_FIELD => null,
 					States\Property::PENDING_FIELD => false,
-				]), false) : $this->saveValue($item, Utils\ArrayHash::from([
+				])) : $this->set($item, Utils\ArrayHash::from([
 					States\Property::PENDING_FIELD => $this->dateTimeFactory->getNow()->format(
 						DateTimeInterface::ATOM,
 					),
-				]), false);
+				]));
 			}
 
 			Promise\all($promises)
@@ -404,12 +407,12 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 			return $deferred->promise();
 		}
 
-		return $pending === false ? $this->saveValue($property, Utils\ArrayHash::from([
+		return $pending === false ? $this->set($property, Utils\ArrayHash::from([
 			States\Property::EXPECTED_VALUE_FIELD => null,
 			States\Property::PENDING_FIELD => false,
-		]), false) : $this->saveValue($property, Utils\ArrayHash::from([
+		])) : $this->set($property, Utils\ArrayHash::from([
 			States\Property::PENDING_FIELD => $this->dateTimeFactory->getNow()->format(DateTimeInterface::ATOM),
-		]), false);
+		]));
 	}
 
 	/**
