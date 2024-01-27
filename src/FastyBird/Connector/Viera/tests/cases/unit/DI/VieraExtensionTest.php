@@ -30,7 +30,7 @@ final class VieraExtensionTest extends Tests\Cases\Unit\BaseTestCase
 	{
 		$container = $this->createContainer();
 
-		self::assertNotNull($container->getByType(Writers\WriterFactory::class, false));
+		self::assertCount(2, $container->findByType(Writers\WriterFactory::class));
 
 		self::assertNotNull($container->getByType(Clients\TelevisionFactory::class, false));
 		self::assertNotNull($container->getByType(Clients\DiscoveryFactory::class, false));

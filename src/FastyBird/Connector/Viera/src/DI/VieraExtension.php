@@ -276,6 +276,7 @@ class VieraExtension extends DI\CompilerExtension implements Translation\DI\Tran
 			->getResultDefinition()
 			->setType(Connector\Connector::class)
 			->setArguments([
+				'writersFactories' => $builder->findByType(Writers\WriterFactory::class),
 				'logger' => $logger,
 			]);
 	}

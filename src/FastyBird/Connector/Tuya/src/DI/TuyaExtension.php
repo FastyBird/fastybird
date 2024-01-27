@@ -316,6 +316,7 @@ class TuyaExtension extends DI\CompilerExtension implements Translation\DI\Trans
 			->setType(Connector\Connector::class)
 			->setArguments([
 				'clientsFactories' => $builder->findByType(Clients\ClientFactory::class),
+				'writersFactories' => $builder->findByType(Writers\WriterFactory::class),
 				'logger' => $logger,
 			]);
 	}

@@ -30,7 +30,7 @@ final class SonoffExtensionTest extends Tests\Cases\Unit\BaseTestCase
 	{
 		$container = $this->createContainer();
 
-		self::assertNotNull($container->getByType(Writers\WriterFactory::class, false));
+		self::assertCount(2, $container->findByType(Writers\WriterFactory::class));
 
 		self::assertNotNull($container->getByType(Clients\LanFactory::class, false));
 		self::assertNotNull($container->getByType(Clients\CloudFactory::class, false));

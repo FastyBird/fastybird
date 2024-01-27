@@ -371,6 +371,7 @@ class NsPanelExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setType(Connector\Connector::class)
 			->setArguments([
 				'clientsFactories' => $builder->findByType(Clients\ClientFactory::class),
+				'writersFactories' => $builder->findByType(Writers\WriterFactory::class),
 				'logger' => $logger,
 			]);
 	}

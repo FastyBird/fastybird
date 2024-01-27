@@ -44,4 +44,4 @@ parameters:
             modules: true
 
     modules:
-        exchange: true
+        exchange: false

@@ -354,6 +354,7 @@ class HomeKitExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->getResultDefinition()
 			->setType(Connector\Connector::class)
 			->setArguments([
+				'writersFactories' => $builder->findByType(Writers\WriterFactory::class),
 				'serversFactories' => $builder->findByType(Servers\ServerFactory::class),
 				'logger' => $logger,
 			]);
