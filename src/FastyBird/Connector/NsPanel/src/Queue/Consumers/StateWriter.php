@@ -500,13 +500,13 @@ trait StateWriter
 	): string|int|float|bool|null
 	{
 		if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-			$state = await($this->channelPropertiesStatesManager->get($property));
+			$state = await($this->channelPropertiesStatesManager->readState($property));
 
-			$value = $state?->getExpectedValue();
+			$value = $state?->getGet()->getExpectedValue();
 		} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
-			$state = await($this->channelPropertiesStatesManager->read($property));
+			$state = await($this->channelPropertiesStatesManager->readState($property));
 
-			$value = $state?->getExpectedValue() ?? ($state?->isValid() === true ? $state->getActualValue() : null);
+			$value = $state?->getRead()->getExpectedValue() ?? ($state?->isValid() === true ? $state->getRead()->getActualValue() : null);
 		} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
 			$value = $property->getValue();
 		} else {

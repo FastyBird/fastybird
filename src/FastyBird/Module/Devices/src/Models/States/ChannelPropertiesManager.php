@@ -255,25 +255,9 @@ final class ChannelPropertiesManager extends PropertiesManager
 	public function read(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
-	): MetadataDocuments\DevicesModule\PropertyValues|null
+	): bool|MetadataDocuments\DevicesModule\ChannelPropertyState|null
 	{
-		return $this->readState($property)?->getRead();
-	}
-
-	/**
-	 * @throws Exceptions\InvalidArgument
-	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws ToolsExceptions\InvalidArgument
-	 */
-	public function get(
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
-	): MetadataDocuments\DevicesModule\PropertyValues|null
-	{
-		return $this->readState($property)?->getGet();
+		return $this->useExchange ? $this->request($property) : $this->readState($property);
 	}
 
 	/**
@@ -565,6 +549,10 @@ final class ChannelPropertiesManager extends PropertiesManager
 					'channel' => $property->getChannel()->toString(),
 					'read' => $readValue->toArray(),
 					'get' => $getValue->toArray(),
+					'valid' => $state->isValid(),
+					'pending' => $state->getPending() instanceof DateTimeInterface
+						? $state->getPending()->format(DateTimeInterface::ATOM)
+						: $state->getPending(),
 					'created_at' => $readValue->getCreatedAt()?->format(DateTimeInterface::ATOM),
 					'updated_at' => $readValue->getUpdatedAt()?->format(DateTimeInterface::ATOM),
 				],

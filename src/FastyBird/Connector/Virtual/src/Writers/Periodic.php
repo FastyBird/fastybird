@@ -30,7 +30,9 @@ use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
 use React\EventLoop;
 use function array_key_exists;
+use function array_merge;
 use function in_array;
+use function is_bool;
 use function React\Async\async;
 use function React\Async\await;
 
@@ -217,29 +219,43 @@ abstract class Periodic implements Writer
 				$property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
 				|| $property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
 			) {
-				$state = $property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
-					? await($this->devicePropertiesStatesManager->get($property))
-					: await($this->devicePropertiesStatesManager->read($property));
+				$state = await($this->devicePropertiesStatesManager->read($property));
 
-				if ($state === null) {
-					return false;
+				if (is_bool($state)) {
+					// Property state was requested
+					if ($state === true) {
+						return true;
+					}
+
+					// Requesting property state failed
+					continue;
+				} elseif (!$state instanceof MetadataDocuments\DevicesModule\DevicePropertyState) {
+					// Property state is not set
+					continue;
 				}
 
 				$propertyValue = $property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
-					? $state->getExpectedValue()
-					: $state->getExpectedValue() ?? ($state->isValid() ? $state->getActualValue() : null);
+					? $state->getGet()->getExpectedValue()
+					: $state->getRead()->getExpectedValue() ?? ($state->isValid() ? $state->getRead()->getActualValue() : null);
 			} else {
-				$state = $property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-					? await($this->channelPropertiesStatesManager->get($property))
-					: await($this->channelPropertiesStatesManager->read($property));
+				$state = await($this->channelPropertiesStatesManager->read($property));
 
-				if ($state === null) {
-					return false;
+				if (is_bool($state)) {
+					// Property state was requested
+					if ($state === true) {
+						return true;
+					}
+
+					// Requesting property state failed
+					continue;
+				} elseif (!$state instanceof MetadataDocuments\DevicesModule\ChannelPropertyState) {
+					// Property state is not set
+					continue;
 				}
 
 				$propertyValue = $property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-					? $state->getExpectedValue()
-					: $state->getExpectedValue() ?? ($state->isValid() ? $state->getActualValue() : null);
+					? $state->getGet()->getExpectedValue()
+					: $state->getRead()->getExpectedValue() ?? ($state->isValid() ? $state->getRead()->getActualValue() : null);
 			}
 
 			if ($propertyValue === null) {
@@ -255,10 +271,7 @@ abstract class Periodic implements Writer
 					&& (float) $now->format('Uv') - (float) $pending->format('Uv') > self::HANDLER_PENDING_DELAY
 				)
 			) {
-				if (
-					$property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
-					|| $property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
-				) {
+				if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
 					$this->queue->append(
 						$this->entityHelper->create(
 							Entities\Messages\WriteDevicePropertyState::class,
@@ -266,7 +279,59 @@ abstract class Periodic implements Writer
 								'connector' => $device->getConnector(),
 								'device' => $device->getId(),
 								'property' => $property->getId(),
-								'state' => $state->toArray(),
+								'state' => array_merge(
+									$state->getGet()->toArray(),
+									[
+										'id' => $state->getId(),
+										'valid' => $state->isValid(),
+										'pending' => $state->getPending() instanceof DateTimeInterface
+											? $state->getPending()->format(DateTimeInterface::ATOM)
+											: $state->getPending(),
+									],
+								),
+							],
+						),
+					);
+				} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
+					$this->queue->append(
+						$this->entityHelper->create(
+							Entities\Messages\WriteDevicePropertyState::class,
+							[
+								'connector' => $device->getConnector(),
+								'device' => $device->getId(),
+								'property' => $property->getId(),
+								'state' => array_merge(
+									$state->getRead()->toArray(),
+									[
+										'id' => $state->getId(),
+										'valid' => $state->isValid(),
+										'pending' => $state->getPending() instanceof DateTimeInterface
+											? $state->getPending()->format(DateTimeInterface::ATOM)
+											: $state->getPending(),
+									],
+								),
+							],
+						),
+					);
+				} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+					$this->queue->append(
+						$this->entityHelper->create(
+							Entities\Messages\WriteChannelPropertyState::class,
+							[
+								'connector' => $device->getConnector(),
+								'device' => $device->getId(),
+								'channel' => $property->getChannel(),
+								'property' => $property->getId(),
+								'state' => array_merge(
+									$state->getGet()->toArray(),
+									[
+										'id' => $state->getId(),
+										'valid' => $state->isValid(),
+										'pending' => $state->getPending() instanceof DateTimeInterface
+											? $state->getPending()->format(DateTimeInterface::ATOM)
+											: $state->getPending(),
+									],
+								),
 							],
 						),
 					);
@@ -279,7 +344,16 @@ abstract class Periodic implements Writer
 								'device' => $device->getId(),
 								'channel' => $property->getChannel(),
 								'property' => $property->getId(),
-								'state' => $state->toArray(),
+								'state' => array_merge(
+									$state->getRead()->toArray(),
+									[
+										'id' => $state->getId(),
+										'valid' => $state->isValid(),
+										'pending' => $state->getPending() instanceof DateTimeInterface
+											? $state->getPending()->format(DateTimeInterface::ATOM)
+											: $state->getPending(),
+									],
+								),
 							],
 						),
 					);

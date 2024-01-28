@@ -297,11 +297,11 @@ final class WriteSubDeviceChannelPropertyState implements Queue\Consumer
 			$writeData = new stdClass();
 
 			foreach ($properties as $property) {
-				$state = await($this->channelPropertiesStatesManager->get($property));
+				$state = await($this->channelPropertiesStatesManager->readState($property));
 
-				if ($state?->getExpectedValue() !== null) {
+				if ($state?->getGet()->getExpectedValue() !== null) {
 					$writeData->{$property->getIdentifier()} = MetadataUtilities\Value::flattenValue(
-						$state->getExpectedValue(),
+						$state->getGet()->getExpectedValue(),
 					);
 				}
 			}
@@ -327,11 +327,11 @@ final class WriteSubDeviceChannelPropertyState implements Queue\Consumer
 			$writeData = new stdClass();
 
 			foreach ($properties as $property) {
-				$state = await($this->channelPropertiesStatesManager->get($property));
+				$state = await($this->channelPropertiesStatesManager->readState($property));
 
-				if ($state?->getExpectedValue() !== null) {
+				if ($state?->getGet()->getExpectedValue() !== null) {
 					$writeData->{$property->getIdentifier()} = MetadataUtilities\Value::flattenValue(
-						$state->getExpectedValue(),
+						$state->getGet()->getExpectedValue(),
 					);
 				}
 			}

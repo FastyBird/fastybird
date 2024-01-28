@@ -31,21 +31,21 @@ final class ModuleEntitiesTest extends TestCase
 
 		$connectorPropertiesStates = $this->createMock(Models\States\ConnectorPropertiesManager::class);
 		$connectorPropertiesStates
-			->method('get')
+			->method('read')
 			->willReturn(null);
 
 		$asyncConnectorPropertiesStates = $this->createMock(Models\States\Async\ConnectorPropertiesManager::class);
 
 		$devicePropertiesStates = $this->createMock(Models\States\DevicePropertiesManager::class);
 		$devicePropertiesStates
-			->method('get')
+			->method('read')
 			->willReturn(null);
 
 		$asyncDevicePropertiesStates = $this->createMock(Models\States\Async\DevicePropertiesManager::class);
 
 		$channelPropertiesStates = $this->createMock(Models\States\ChannelPropertiesManager::class);
 		$channelPropertiesStates
-			->method('get')
+			->method('read')
 			->willReturn(null);
 
 		$asyncChannelPropertiesStates = $this->createMock(Models\States\Async\ChannelPropertiesManager::class);
@@ -130,21 +130,21 @@ final class ModuleEntitiesTest extends TestCase
 
 		$connectorPropertiesStates = $this->createMock(Models\States\ConnectorPropertiesManager::class);
 		$connectorPropertiesStates
-			->method('get')
+			->method('read')
 			->willReturn(null);
 
 		$asyncConnectorPropertiesStates = $this->createMock(Models\States\Async\ConnectorPropertiesManager::class);
 
 		$devicePropertiesStates = $this->createMock(Models\States\DevicePropertiesManager::class);
 		$devicePropertiesStates
-			->method('get')
+			->method('read')
 			->willReturn(null);
 
 		$asyncDevicePropertiesStates = $this->createMock(Models\States\Async\DevicePropertiesManager::class);
 
 		$channelPropertiesStates = $this->createMock(Models\States\ChannelPropertiesManager::class);
 		$channelPropertiesStates
-			->method('get')
+			->method('read')
 			->willReturn(null);
 
 		$asyncChannelPropertiesStates = $this->createMock(Models\States\Async\ChannelPropertiesManager::class);
@@ -252,21 +252,21 @@ final class ModuleEntitiesTest extends TestCase
 
 		$connectorPropertiesStates = $this->createMock(Models\States\ConnectorPropertiesManager::class);
 		$connectorPropertiesStates
-			->method('get')
+			->method('read')
 			->willReturn(null);
 
 		$asyncConnectorPropertiesStates = $this->createMock(Models\States\Async\ConnectorPropertiesManager::class);
 
 		$devicePropertiesStates = $this->createMock(Models\States\DevicePropertiesManager::class);
 		$devicePropertiesStates
-			->method('get')
+			->method('read')
 			->willReturn(null);
 
 		$asyncDevicePropertiesStates = $this->createMock(Models\States\Async\DevicePropertiesManager::class);
 
 		$channelPropertiesStates = $this->createMock(Models\States\ChannelPropertiesManager::class);
 		$channelPropertiesStates
-			->method('get')
+			->method('read')
 			->willReturn(null);
 
 		$asyncChannelPropertiesStates = $this->createMock(Models\States\Async\ChannelPropertiesManager::class);
@@ -382,21 +382,21 @@ final class ModuleEntitiesTest extends TestCase
 
 		$connectorPropertiesStates = $this->createMock(Models\States\ConnectorPropertiesManager::class);
 		$connectorPropertiesStates
-			->method('get')
+			->method('read')
 			->willReturn(null);
 
 		$asyncConnectorPropertiesStates = $this->createMock(Models\States\Async\ConnectorPropertiesManager::class);
 
 		$devicePropertiesStates = $this->createMock(Models\States\DevicePropertiesManager::class);
 		$devicePropertiesStates
-			->method('get')
+			->method('read')
 			->willReturn(null);
 
 		$asyncDevicePropertiesStates = $this->createMock(Models\States\Async\DevicePropertiesManager::class);
 
 		$channelPropertiesStates = $this->createMock(Models\States\ChannelPropertiesManager::class);
 		$channelPropertiesStates
-			->method('get')
+			->method('read')
 			->willReturn(null);
 
 		$asyncChannelPropertiesStates = $this->createMock(Models\States\Async\ChannelPropertiesManager::class);

@@ -153,6 +153,10 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 					'connector' => $property->getConnector()->toString(),
 					'read' => $readState->toArray(),
 					'get' => $getState?->toArray(),
+					'valid' => $readState->isValid(),
+					'pending' => $readState->getPending() instanceof DateTimeInterface
+						? $readState->getPending()->format(DateTimeInterface::ATOM)
+						: $readState->getPending(),
 					'created_at' => $readState->getCreatedAt()?->format(DateTimeInterface::ATOM),
 					'updated_at' => $readState->getUpdatedAt()?->format(DateTimeInterface::ATOM),
 				],
@@ -173,6 +177,10 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 					'device' => $property->getDevice()->toString(),
 					'read' => $readState->toArray(),
 					'get' => $getState?->toArray(),
+					'valid' => $readState->isValid(),
+					'pending' => $readState->getPending() instanceof DateTimeInterface
+						? $readState->getPending()->format(DateTimeInterface::ATOM)
+						: $readState->getPending(),
 					'created_at' => $readState->getCreatedAt()?->format(DateTimeInterface::ATOM),
 					'updated_at' => $readState->getUpdatedAt()?->format(DateTimeInterface::ATOM),
 				],
@@ -190,6 +198,10 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 					'channel' => $property->getChannel()->toString(),
 					'read' => $readState->toArray(),
 					'get' => $getState?->toArray(),
+					'valid' => $readState->isValid(),
+					'pending' => $readState->getPending() instanceof DateTimeInterface
+						? $readState->getPending()->format(DateTimeInterface::ATOM)
+						: $readState->getPending(),
 					'created_at' => $readState->getCreatedAt()?->format(DateTimeInterface::ATOM),
 					'updated_at' => $readState->getUpdatedAt()?->format(DateTimeInterface::ATOM),
 				],

@@ -76,27 +76,21 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 			->willReturnCallback(
 				static function (
 					MetadataDocuments\DevicesModule\ChannelProperty $property,
-				) use ($readInitialStates): MetadataDocuments\DevicesModule\PropertyValues|null {
+				) use ($readInitialStates): MetadataDocuments\DevicesModule\ChannelPropertyState|null {
 					if (array_key_exists($property->getId()->toString(), $readInitialStates)) {
-						return new MetadataDocuments\DevicesModule\PropertyValues(
-							$readInitialStates[$property->getId()->toString()],
-							null,
-						);
-					}
-
-					return null;
-				},
-			);
-		$channelPropertiesStatesManager
-			->method('get')
-			->willReturnCallback(
-				static function (
-					MetadataDocuments\DevicesModule\ChannelProperty $property,
-				) use ($readInitialStates): MetadataDocuments\DevicesModule\PropertyValues|null {
-					if (array_key_exists($property->getId()->toString(), $readInitialStates)) {
-						return new MetadataDocuments\DevicesModule\PropertyValues(
-							$readInitialStates[$property->getId()->toString()],
-							null,
+						return new MetadataDocuments\DevicesModule\ChannelPropertyState(
+							$property->getId(),
+							$property->getChannel(),
+							new MetadataDocuments\DevicesModule\PropertyValues(
+								$readInitialStates[$property->getId()->toString()],
+								null,
+							),
+							new MetadataDocuments\DevicesModule\PropertyValues(
+								$readInitialStates[$property->getId()->toString()],
+								null,
+							),
+							false,
+							true,
 						);
 					}
 

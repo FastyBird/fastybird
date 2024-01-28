@@ -21,7 +21,6 @@ use FastyBird\Library\Metadata\Documents;
 use FastyBird\Library\Metadata\Types;
 use FastyBird\Library\Metadata\Utilities;
 use Orisai\ObjectMapper;
-use function is_bool;
 
 /**
  * Property value document
@@ -61,13 +60,6 @@ final class PropertyValues implements Documents\Document
 		])]
 		#[ObjectMapper\Modifiers\FieldName('expected_value')]
 		private readonly bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null $expectedValue,
-		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\BoolValue(),
-			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
-		])]
-		private readonly bool|DateTimeInterface $pending = false,
-		#[ObjectMapper\Rules\BoolValue()]
-		private readonly bool $valid = false,
 	)
 	{
 	}
@@ -82,30 +74,11 @@ final class PropertyValues implements Documents\Document
 		return $this->expectedValue;
 	}
 
-	public function getPending(): bool|DateTimeInterface
-	{
-		return $this->pending;
-	}
-
-	public function isPending(): bool
-	{
-		return is_bool($this->pending) ? $this->pending : true;
-	}
-
-	public function isValid(): bool
-	{
-		return $this->valid;
-	}
-
 	public function toArray(): array
 	{
 		return [
 			'actual_value' => Utilities\Value::flattenValue($this->getActualValue()),
 			'expected_value' => Utilities\Value::flattenValue($this->getExpectedValue()),
-			'pending' => $this->getPending() instanceof DateTimeInterface
-				? $this->getPending()->format(DateTimeInterface::ATOM)
-				: $this->getPending(),
-			'valid' => $this->isValid(),
 		];
 	}
 

@@ -272,9 +272,9 @@ final class WriteSubDeviceState implements Queue\Consumer
 					);
 
 					foreach ($properties as $property) {
-						$state = await($this->channelPropertiesStatesManager->get($property));
+						$state = await($this->channelPropertiesStatesManager->readState($property));
 
-						if ($state?->getExpectedValue() !== null) {
+						if ($state?->getGet()->getExpectedValue() !== null) {
 							$this->channelPropertiesStatesManager->setValidState($property, true);
 						}
 					}

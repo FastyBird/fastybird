@@ -232,47 +232,13 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 	}
 
 	/**
-	 * @return Promise\PromiseInterface<MetadataDocuments\DevicesModule\PropertyValues|null>
+	 * @return Promise\PromiseInterface<bool|MetadataDocuments\DevicesModule\ConnectorPropertyState|null>
 	 */
 	public function read(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
 	): Promise\PromiseInterface
 	{
-		$deferred = new Promise\Deferred();
-
-		$this->readState($property)
-			->then(
-				static function (MetadataDocuments\DevicesModule\ConnectorPropertyState|null $state) use ($deferred): void {
-					$deferred->resolve($state?->getRead());
-				},
-			)
-			->catch(static function (Throwable $ex) use ($deferred): void {
-				$deferred->reject($ex);
-			});
-
-		return $deferred->promise();
-	}
-
-	/**
-	 * @return Promise\PromiseInterface<MetadataDocuments\DevicesModule\PropertyValues|null>
-	 */
-	public function get(
-		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
-	): Promise\PromiseInterface
-	{
-		$deferred = new Promise\Deferred();
-
-		$this->readState($property)
-			->then(
-				static function (MetadataDocuments\DevicesModule\ConnectorPropertyState|null $state) use ($deferred): void {
-					$deferred->resolve($state?->getGet());
-				},
-			)
-			->catch(static function (Throwable $ex) use ($deferred): void {
-				$deferred->reject($ex);
-			});
-
-		return $deferred->promise();
+		return $this->useExchange ? $this->request($property) : $this->readState($property);
 	}
 
 	/**
@@ -543,6 +509,10 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 								'connector' => $property->getConnector()->toString(),
 								'read' => $readValue->toArray(),
 								'get' => $getValue->toArray(),
+								'valid' => $state->isValid(),
+								'pending' => $state->getPending() instanceof DateTimeInterface
+									? $state->getPending()->format(DateTimeInterface::ATOM)
+									: $state->getPending(),
 								'created_at' => $readValue->getCreatedAt()?->format(DateTimeInterface::ATOM),
 								'updated_at' => $readValue->getUpdatedAt()?->format(DateTimeInterface::ATOM),
 							],

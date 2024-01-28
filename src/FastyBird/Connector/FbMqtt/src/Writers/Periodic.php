@@ -30,7 +30,9 @@ use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
 use React\EventLoop;
 use function array_key_exists;
+use function array_merge;
 use function in_array;
+use function is_bool;
 use function React\Async\async;
 use function React\Async\await;
 
@@ -245,13 +247,16 @@ abstract class Periodic
 	{
 		$now = $this->dateTimeFactory->getNow();
 
-		$state = await($this->devicePropertiesStatesManager->get($property));
+		$state = await($this->devicePropertiesStatesManager->read($property));
 
-		if ($state === null) {
+		if (is_bool($state)) {
+			return $state;
+		} elseif (!$state instanceof MetadataDocuments\DevicesModule\DevicePropertyState) {
+			// Property state is not set
 			return false;
 		}
 
-		if ($state->getExpectedValue() === null) {
+		if ($state->getGet()->getExpectedValue() === null) {
 			return false;
 		}
 
@@ -271,7 +276,16 @@ abstract class Periodic
 						'connector' => $device->getConnector(),
 						'device' => $device->getId(),
 						'property' => $property->getId(),
-						'state' => $state->toArray(),
+						'state' => array_merge(
+							$state->getGet()->toArray(),
+							[
+								'id' => $state->getId(),
+								'valid' => $state->isValid(),
+								'pending' => $state->getPending() instanceof DateTimeInterface
+									? $state->getPending()->format(DateTimeInterface::ATOM)
+									: $state->getPending(),
+							],
+						),
 					],
 				),
 			);
@@ -298,13 +312,16 @@ abstract class Periodic
 	{
 		$now = $this->dateTimeFactory->getNow();
 
-		$state = await($this->channelPropertiesStatesManager->get($property));
+		$state = await($this->channelPropertiesStatesManager->read($property));
 
-		if ($state === null) {
+		if (is_bool($state)) {
+			return $state;
+		} elseif (!$state instanceof MetadataDocuments\DevicesModule\ChannelPropertyState) {
+			// Property state is not set
 			return false;
 		}
 
-		if ($state->getExpectedValue() === null) {
+		if ($state->getGet()->getExpectedValue() === null) {
 			return false;
 		}
 
@@ -325,7 +342,16 @@ abstract class Periodic
 						'device' => $device->getId(),
 						'channel' => $property->getChannel(),
 						'property' => $property->getId(),
-						'state' => $state->toArray(),
+						'state' => array_merge(
+							$state->getGet()->toArray(),
+							[
+								'id' => $state->getId(),
+								'valid' => $state->isValid(),
+								'pending' => $state->getPending() instanceof DateTimeInterface
+									? $state->getPending()->format(DateTimeInterface::ATOM)
+									: $state->getPending(),
+							],
+						),
 					],
 				),
 			);

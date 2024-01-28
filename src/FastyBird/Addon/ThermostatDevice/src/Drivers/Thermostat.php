@@ -126,11 +126,15 @@ class Thermostat implements VirtualDrivers\Driver
 		}
 
 		foreach ($this->deviceHelper->getActors($this->device) as $actor) {
-			$state = $actor instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-				? $this->channelPropertiesStatesManager->get($actor)
-				: $this->channelPropertiesStatesManager->read($actor);
+			$state = $this->channelPropertiesStatesManager->read($actor);
 
-			$actualValue = $state?->getActualValue();
+			if (!$state instanceof MetadataDocuments\DevicesModule\ChannelPropertyState) {
+				continue;
+			}
+
+			$actualValue = $actor instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+				? $state->getGet()->getActualValue()
+				: $state->getRead()->getExpectedValue() ?? $state->getRead()->getActualValue();
 
 			if (Utils\Strings::startsWith($actor->getIdentifier(), Types\ChannelPropertyIdentifier::HEATER_ACTOR)) {
 				$this->heaters[$actor->getId()->toString()] = is_bool($actualValue)
@@ -147,11 +151,15 @@ class Thermostat implements VirtualDrivers\Driver
 		}
 
 		foreach ($this->deviceHelper->getSensors($this->device) as $sensor) {
-			$state = $sensor instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-				? $this->channelPropertiesStatesManager->get($sensor)
-				: $this->channelPropertiesStatesManager->read($sensor);
+			$state = $this->channelPropertiesStatesManager->read($sensor);
 
-			$actualValue = $state?->getActualValue();
+			if (!$state instanceof MetadataDocuments\DevicesModule\ChannelPropertyState) {
+				continue;
+			}
+
+			$actualValue = $sensor instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+				? $state->getGet()->getActualValue()
+				: $state->getRead()->getExpectedValue() ?? $state->getRead()->getActualValue();
 
 			if (Utils\Strings::startsWith($sensor->getIdentifier(), Types\ChannelPropertyIdentifier::FLOOR_SENSOR)) {
 				$this->actualFloorTemperature[$sensor->getId()->toString()] = is_numeric($actualValue)
@@ -168,11 +176,15 @@ class Thermostat implements VirtualDrivers\Driver
 		}
 
 		foreach ($this->deviceHelper->getOpenings($this->device) as $opening) {
-			$state = $opening instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-				? $this->channelPropertiesStatesManager->get($opening)
-				: $this->channelPropertiesStatesManager->read($opening);
+			$state = $this->channelPropertiesStatesManager->read($opening);
 
-			$actualValue = $state?->getActualValue();
+			if (!$state instanceof MetadataDocuments\DevicesModule\ChannelPropertyState) {
+				continue;
+			}
+
+			$actualValue = $opening instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+				? $state->getGet()->getActualValue()
+				: $state->getRead()->getExpectedValue() ?? $state->getRead()->getActualValue();
 
 			if (Utils\Strings::startsWith($opening->getIdentifier(), Types\ChannelPropertyIdentifier::OPENING_SENSOR)) {
 				$this->openingsState[$opening->getId()->toString()] = is_bool($actualValue) ? $actualValue : null;
@@ -183,31 +195,41 @@ class Thermostat implements VirtualDrivers\Driver
 			$property = $this->deviceHelper->getTargetTemp($this->device, Types\Preset::get($mode));
 
 			if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-				$state = $this->channelPropertiesStatesManager->get($property);
+				$state = $this->channelPropertiesStatesManager->read($property);
 
-				if (is_numeric($state?->getActualValue())) {
-					$this->targetTemperature[$mode] = floatval($state->getActualValue());
+				if (!$state instanceof MetadataDocuments\DevicesModule\ChannelPropertyState) {
+					continue;
+				}
+
+				if (is_numeric($state->getGet()->getActualValue())) {
+					$this->targetTemperature[$mode] = floatval($state->getGet()->getActualValue());
 				}
 			}
 		}
 
 		if ($this->deviceHelper->getHvacMode($this->device) !== null) {
-			$state = $this->channelPropertiesStatesManager->get(
+			$state = $this->channelPropertiesStatesManager->read(
 				$this->deviceHelper->getHvacMode($this->device),
 			);
 
-			if ($state !== null && Types\HvacMode::isValidValue($state->getActualValue())) {
-				$this->hvacMode = Types\HvacMode::get($state->getActualValue());
+			if (
+				$state instanceof MetadataDocuments\DevicesModule\ChannelPropertyState
+				&& Types\HvacMode::isValidValue($state->getGet()->getActualValue())
+			) {
+				$this->hvacMode = Types\HvacMode::get($state->getGet()->getActualValue());
 			}
 		}
 
 		if ($this->deviceHelper->getPresetMode($this->device) !== null) {
-			$state = $this->channelPropertiesStatesManager->get(
+			$state = $this->channelPropertiesStatesManager->read(
 				$this->deviceHelper->getPresetMode($this->device),
 			);
 
-			if ($state !== null && Types\Preset::isValidValue($state->getActualValue())) {
-				$this->presetMode = Types\Preset::get($state->getActualValue());
+			if (
+				$state instanceof MetadataDocuments\DevicesModule\ChannelPropertyState
+				&& Types\Preset::isValidValue($state->getGet()->getActualValue())
+			) {
+				$this->presetMode = Types\Preset::get($state->getGet()->getActualValue());
 			}
 		}
 

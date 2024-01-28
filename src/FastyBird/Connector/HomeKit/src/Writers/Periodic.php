@@ -30,8 +30,10 @@ use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use React\EventLoop;
 use function array_key_exists;
+use function array_merge;
 use function assert;
 use function in_array;
+use function is_bool;
 use function React\Async\async;
 use function React\Async\await;
 
@@ -214,39 +216,63 @@ abstract class Periodic
 			if ($property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
 				$state = await($this->devicePropertiesStatesManager->read($property));
 
-				if ($state === null) {
+				if (is_bool($state)) {
+					// Property state was requested
+					if ($state === true) {
+						return true;
+					}
+
+					// Requesting property state failed
 					continue;
+				} elseif ($state instanceof MetadataDocuments\DevicesModule\DevicePropertyState) {
+					// Property state is set
+					$characteristicValue = $state->getRead()->getExpectedValue() ?? ($state->isValid() ? $state->getRead()->getActualValue() : null);
 				}
-
-				$characteristicValue = $state->getExpectedValue() ?? ($state->isValid() ? $state->getActualValue() : null);
-
 			} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
 				$state = await($this->channelPropertiesStatesManager->read($property));
 
-				if ($state === null) {
+				if (is_bool($state)) {
+					// Property state was requested
+					if ($state === true) {
+						return true;
+					}
+
+					// Requesting property state failed
 					continue;
+				} elseif ($state instanceof MetadataDocuments\DevicesModule\ChannelPropertyState) {
+					// Property state is set
+					$characteristicValue = $state->getRead()->getExpectedValue() ?? ($state->isValid() ? $state->getRead()->getActualValue() : null);
 				}
-
-				$characteristicValue = $state->getExpectedValue() ?? ($state->isValid() ? $state->getActualValue() : null);
-
 			} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-				$state = await($this->devicePropertiesStatesManager->get($property));
+				$state = await($this->devicePropertiesStatesManager->read($property));
 
-				if ($state === null) {
+				if (is_bool($state)) {
+					// Property state was requested
+					if ($state === true) {
+						return true;
+					}
+
+					// Requesting property state failed
 					continue;
+				} elseif ($state instanceof MetadataDocuments\DevicesModule\DevicePropertyState) {
+					// Property state is set
+					$characteristicValue = $state->getGet()->getExpectedValue() ?? ($state->isValid() ? $state->getGet()->getActualValue() : null);
 				}
-
-				$characteristicValue = $state->getExpectedValue();
-
 			} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-				$state = await($this->channelPropertiesStatesManager->get($property));
+				$state = await($this->channelPropertiesStatesManager->read($property));
 
-				if ($state === null) {
+				if (is_bool($state)) {
+					// Property state was requested
+					if ($state === true) {
+						return true;
+					}
+
+					// Requesting property state failed
 					continue;
+				} elseif ($state instanceof MetadataDocuments\DevicesModule\ChannelPropertyState) {
+					// Property state is set
+					$characteristicValue = $state->getGet()->getExpectedValue() ?? ($state->isValid() ? $state->getGet()->getActualValue() : null);
 				}
-
-				$characteristicValue = $state->getExpectedValue();
-
 			} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty) {
 				$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
 				$findDevicePropertyQuery->byId($property->getId());
@@ -287,10 +313,20 @@ abstract class Periodic
 								return true;
 							}
 
-							if (
-								$property instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty
-								|| $property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
-								|| $property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
+							if ($property instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty) {
+								$this->queue->append(
+									$this->entityHelper->create(
+										Entities\Messages\WriteDevicePropertyState::class,
+										[
+											'connector' => $device->getConnector(),
+											'device' => $device->getId(),
+											'property' => $property->getId(),
+										],
+									),
+								);
+							} elseif (
+								$property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
+								&& $state !== null
 							) {
 								$this->queue->append(
 									$this->entityHelper->create(
@@ -299,14 +335,58 @@ abstract class Periodic
 											'connector' => $device->getConnector(),
 											'device' => $device->getId(),
 											'property' => $property->getId(),
-											'state' => $state?->toArray(),
+											'state' => array_merge(
+												$state->getGet()->toArray(),
+												[
+													'id' => $state->getId(),
+													'valid' => $state->isValid(),
+													'pending' => $state->getPending() instanceof DateTimeInterface
+														? $state->getPending()->format(DateTimeInterface::ATOM)
+														: $state->getPending(),
+												],
+											),
 										],
 									),
 								);
 							} elseif (
-								$property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty
-								|| $property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
-								|| $property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+								$property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
+								&& $state !== null
+							) {
+								$this->queue->append(
+									$this->entityHelper->create(
+										Entities\Messages\WriteDevicePropertyState::class,
+										[
+											'connector' => $device->getConnector(),
+											'device' => $device->getId(),
+											'property' => $property->getId(),
+											'state' => array_merge(
+												$state->getRead()->toArray(),
+												[
+													'id' => $state->getId(),
+													'valid' => $state->isValid(),
+													'pending' => $state->getPending() instanceof DateTimeInterface
+														? $state->getPending()->format(DateTimeInterface::ATOM)
+														: $state->getPending(),
+												],
+											),
+										],
+									),
+								);
+							} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
+								$this->queue->append(
+									$this->entityHelper->create(
+										Entities\Messages\WriteChannelPropertyState::class,
+										[
+											'connector' => $device->getConnector(),
+											'device' => $device->getId(),
+											'channel' => $property->getChannel(),
+											'property' => $property->getId(),
+										],
+									),
+								);
+							} elseif (
+								$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+								&& $state !== null
 							) {
 								$this->queue->append(
 									$this->entityHelper->create(
@@ -316,7 +396,41 @@ abstract class Periodic
 											'device' => $device->getId(),
 											'channel' => $property->getChannel(),
 											'property' => $property->getId(),
-											'state' => $state?->toArray(),
+											'state' => array_merge(
+												$state->getGet()->toArray(),
+												[
+													'id' => $state->getId(),
+													'valid' => $state->isValid(),
+													'pending' => $state->getPending() instanceof DateTimeInterface
+														? $state->getPending()->format(DateTimeInterface::ATOM)
+														: $state->getPending(),
+												],
+											),
+										],
+									),
+								);
+							} elseif (
+								$property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
+								&& $state !== null
+							) {
+								$this->queue->append(
+									$this->entityHelper->create(
+										Entities\Messages\WriteChannelPropertyState::class,
+										[
+											'connector' => $device->getConnector(),
+											'device' => $device->getId(),
+											'channel' => $property->getChannel(),
+											'property' => $property->getId(),
+											'state' => array_merge(
+												$state->getRead()->toArray(),
+												[
+													'id' => $state->getId(),
+													'valid' => $state->isValid(),
+													'pending' => $state->getPending() instanceof DateTimeInterface
+														? $state->getPending()->format(DateTimeInterface::ATOM)
+														: $state->getPending(),
+												],
+											),
 										],
 									),
 								);

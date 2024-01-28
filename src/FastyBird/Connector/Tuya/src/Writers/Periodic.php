@@ -30,7 +30,9 @@ use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
 use React\EventLoop;
 use function array_key_exists;
+use function array_merge;
 use function in_array;
+use function is_bool;
 use function React\Async\async;
 use function React\Async\await;
 
@@ -200,13 +202,22 @@ abstract class Periodic implements Writer
 
 			$this->processedProperties[$property->getId()->toString()] = $now;
 
-			$state = await($this->channelPropertiesStatesManager->get($property));
+			$state = await($this->channelPropertiesStatesManager->read($property));
 
-			if ($state === null) {
+			if (is_bool($state)) {
+				// Property state was requested
+				if ($state === true) {
+					return true;
+				}
+
+				// Requesting property state failed
+				continue;
+			} elseif (!$state instanceof MetadataDocuments\DevicesModule\ChannelPropertyState) {
+				// Property state is not set
 				continue;
 			}
 
-			if ($state->getExpectedValue() === null) {
+			if ($state->getGet()->getExpectedValue() === null) {
 				continue;
 			}
 
@@ -227,7 +238,16 @@ abstract class Periodic implements Writer
 							'device' => $device->getId(),
 							'channel' => $property->getChannel(),
 							'property' => $property->getId(),
-							'state' => $state->toArray(),
+							'state' => array_merge(
+								$state->getGet()->toArray(),
+								[
+									'id' => $state->getId(),
+									'valid' => $state->isValid(),
+									'pending' => $state->getPending() instanceof DateTimeInterface
+										? $state->getPending()->format(DateTimeInterface::ATOM)
+										: $state->getPending(),
+								],
+							),
 						],
 					),
 				);

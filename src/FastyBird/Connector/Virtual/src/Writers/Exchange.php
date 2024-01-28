@@ -28,6 +28,7 @@ use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use React\EventLoop;
+use function array_merge;
 
 /**
  * Exchange based properties writer
@@ -109,13 +110,6 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 	): void
 	{
 		if ($entity instanceof MetadataDocuments\DevicesModule\DevicePropertyState) {
-			if (
-				$entity->getGet()?->getExpectedValue() === null
-				|| $entity->getGet()->getPending() !== true
-			) {
-				return;
-			}
-
 			$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
 			$findDeviceQuery->forConnector($this->connector);
 			$findDeviceQuery->byId($entity->getDevice());
@@ -144,7 +138,14 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
 							'property' => $entity->getId(),
-							'state' => $entity->getRead()->toArray(),
+							'state' => array_merge(
+								$entity->getRead()->toArray(),
+								[
+									'id' => $entity->getId(),
+									'valid' => $entity->isValid(),
+									'pending' => $entity->getPending(),
+								],
+							),
 						],
 					),
 				);
@@ -156,19 +157,19 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
 							'property' => $entity->getId(),
-							'state' => $entity->getGet()->toArray(),
+							'state' => array_merge(
+								$entity->getGet()->toArray(),
+								[
+									'id' => $entity->getId(),
+									'valid' => $entity->isValid(),
+									'pending' => $entity->getPending(),
+								],
+							),
 						],
 					),
 				);
 			}
 		} elseif ($entity instanceof MetadataDocuments\DevicesModule\ChannelPropertyState) {
-			if (
-				$entity->getGet()?->getExpectedValue() === null
-				|| $entity->getGet()->getPending() !== true
-			) {
-				return;
-			}
-
 			$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 			$findChannelQuery->byId($entity->getChannel());
 
@@ -207,7 +208,14 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 							'device' => $device->getId(),
 							'channel' => $channel->getId(),
 							'property' => $entity->getId(),
-							'state' => $entity->getRead()->toArray(),
+							'state' => array_merge(
+								$entity->getRead()->toArray(),
+								[
+									'id' => $entity->getId(),
+									'valid' => $entity->isValid(),
+									'pending' => $entity->getPending(),
+								],
+							),
 						],
 					),
 				);
@@ -220,7 +228,14 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 							'device' => $device->getId(),
 							'channel' => $channel->getId(),
 							'property' => $entity->getId(),
-							'state' => $entity->getGet()->toArray(),
+							'state' => array_merge(
+								$entity->getGet()->toArray(),
+								[
+									'id' => $entity->getId(),
+									'valid' => $entity->isValid(),
+									'pending' => $entity->getPending(),
+								],
+							),
 						],
 					),
 				);

@@ -31,7 +31,9 @@ use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
 use React\EventLoop;
 use function array_key_exists;
+use function array_merge;
 use function in_array;
+use function is_bool;
 use function React\Async\async;
 use function React\Async\await;
 
@@ -131,6 +133,7 @@ abstract class Periodic implements Writer
 							$device->getType() === Entities\Devices\ThirdPartyDevice::TYPE
 							&& (
 								$property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
+								|| $property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
 								|| $property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty
 							)
 						)
@@ -209,13 +212,7 @@ abstract class Periodic implements Writer
 				if ($this->writeSubDeviceChannelProperty($device, $property)) {
 					return true;
 				}
-			} elseif (
-				$device->getType() === Entities\Devices\ThirdPartyDevice::TYPE
-				&& (
-					$property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
-					|| $property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty
-				)
-			) {
+			} elseif ($device->getType() === Entities\Devices\ThirdPartyDevice::TYPE) {
 				if ($this->writeThirdPartyDeviceChannelProperty($device, $property)) {
 					return true;
 				}
@@ -254,13 +251,16 @@ abstract class Periodic implements Writer
 
 		$this->processedProperties[$property->getId()->toString()] = $now;
 
-		$state = await($this->channelPropertiesStatesManager->get($property));
+		$state = await($this->channelPropertiesStatesManager->read($property));
 
-		if ($state === null) {
+		if (is_bool($state)) {
+			return $state;
+		} elseif (!$state instanceof MetadataDocuments\DevicesModule\ChannelPropertyState) {
+			// Property state is not set
 			return false;
 		}
 
-		if ($state->getExpectedValue() === null) {
+		if ($state->getGet()->getExpectedValue() === null) {
 			return false;
 		}
 
@@ -282,6 +282,16 @@ abstract class Periodic implements Writer
 						'connector' => $device->getConnector(),
 						'device' => $device->getId(),
 						'channel' => $property->getChannel(),
+						'state' => array_merge(
+							$state->getGet()->toArray(),
+							[
+								'id' => $state->getId(),
+								'valid' => $state->isValid(),
+								'pending' => $state->getPending() instanceof DateTimeInterface
+									? $state->getPending()->format(DateTimeInterface::ATOM)
+									: $state->getPending(),
+							],
+						),
 					],
 				),
 			);
@@ -301,7 +311,7 @@ abstract class Periodic implements Writer
 	 */
 	private function writeThirdPartyDeviceChannelProperty(
 		MetadataDocuments\DevicesModule\Device $device,
-		MetadataDocuments\DevicesModule\ChannelMappedProperty|MetadataDocuments\DevicesModule\ChannelVariableProperty $property,
+		MetadataDocuments\DevicesModule\ChannelProperty $property,
 	): bool
 	{
 		$now = $this->dateTimeFactory->getNow();
@@ -338,33 +348,92 @@ abstract class Periodic implements Writer
 
 		$this->processedProperties[$property->getId()->toString()] = $now;
 
-		$state = null;
-
 		if ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
 			$state = await($this->channelPropertiesStatesManager->read($property));
 
-			if ($state === null) {
+			if (is_bool($state)) {
+				return $state;
+			} elseif (!$state instanceof MetadataDocuments\DevicesModule\ChannelPropertyState) {
+				// Property state is not set
 				return false;
 			}
 
-			$propertyValue = $state->getExpectedValue() ?? ($state->isValid() ? $state->getActualValue() : null);
+			$propertyValue = $state->getRead()->getExpectedValue() ?? ($state->isValid() ? $state->getRead()->getActualValue() : null);
 
 			if ($propertyValue === null) {
 				return false;
 			}
-		}
 
-		$this->queue->append(
-			$this->entityHelper->create(
-				Entities\Messages\WriteThirdPartyDeviceState::class,
-				[
-					'connector' => $device->getConnector(),
-					'device' => $device->getId(),
-					'channel' => $property->getChannel(),
-					'state' => $state?->toArray(),
-				],
-			),
-		);
+			$this->queue->append(
+				$this->entityHelper->create(
+					Entities\Messages\WriteThirdPartyDeviceState::class,
+					[
+						'connector' => $device->getConnector(),
+						'device' => $device->getId(),
+						'channel' => $property->getChannel(),
+						'state' => array_merge(
+							$state->getRead()->toArray(),
+							[
+								'id' => $state->getId(),
+								'valid' => $state->isValid(),
+								'pending' => $state->getPending() instanceof DateTimeInterface
+									? $state->getPending()->format(DateTimeInterface::ATOM)
+									: $state->getPending(),
+							],
+						),
+					],
+				),
+			);
+
+		} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+			$state = await($this->channelPropertiesStatesManager->read($property));
+
+			if (is_bool($state)) {
+				return $state;
+			} elseif (!$state instanceof MetadataDocuments\DevicesModule\ChannelPropertyState) {
+				// Property state is not set
+				return false;
+			}
+
+			$propertyValue = $state->getGet()->getExpectedValue() ?? ($state->isValid() ? $state->getGet()->getActualValue() : null);
+
+			if ($propertyValue === null) {
+				return false;
+			}
+
+			$this->queue->append(
+				$this->entityHelper->create(
+					Entities\Messages\WriteThirdPartyDeviceState::class,
+					[
+						'connector' => $device->getConnector(),
+						'device' => $device->getId(),
+						'channel' => $property->getChannel(),
+						'state' => array_merge(
+							$state->getGet()->toArray(),
+							[
+								'id' => $state->getId(),
+								'valid' => $state->isValid(),
+								'pending' => $state->getPending() instanceof DateTimeInterface
+									? $state->getPending()->format(DateTimeInterface::ATOM)
+									: $state->getPending(),
+							],
+						),
+					],
+				),
+			);
+
+		} else {
+			$this->queue->append(
+				$this->entityHelper->create(
+					Entities\Messages\WriteThirdPartyDeviceState::class,
+					[
+						'connector' => $device->getConnector(),
+						'device' => $device->getId(),
+						'channel' => $property->getChannel(),
+					],
+				),
+			);
+		}
 
 		return false;
 	}

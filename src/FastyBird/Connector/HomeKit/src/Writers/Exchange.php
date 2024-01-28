@@ -15,6 +15,7 @@
 
 namespace FastyBird\Connector\HomeKit\Writers;
 
+use DateTimeInterface;
 use Exception;
 use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Exceptions;
@@ -34,6 +35,7 @@ use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Psr\EventDispatcher as PsrEventDispatcher;
 use React\EventLoop;
+use function array_merge;
 
 /**
  * Exchange based properties writer
@@ -157,7 +159,16 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 								'connector' => $device->getConnector(),
 								'device' => $device->getId(),
 								'property' => $entity->getId(),
-								'state' => $entity->getRead()->toArray(),
+								'state' => array_merge(
+									$entity->getRead()->toArray(),
+									[
+										'id' => $entity->getId(),
+										'valid' => $entity->isValid(),
+										'pending' => $entity->getPending() instanceof DateTimeInterface
+											? $entity->getPending()->format(DateTimeInterface::ATOM)
+											: $entity->getPending(),
+									],
+								),
 							],
 						),
 					);
@@ -169,7 +180,16 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 								'connector' => $device->getConnector(),
 								'device' => $device->getId(),
 								'property' => $entity->getId(),
-								'state' => $entity->getGet()?->toArray(),
+								'state' => array_merge(
+									$entity->getGet()->toArray(),
+									[
+										'id' => $entity->getId(),
+										'valid' => $entity->isValid(),
+										'pending' => $entity->getPending() instanceof DateTimeInterface
+											? $entity->getPending()->format(DateTimeInterface::ATOM)
+											: $entity->getPending(),
+									],
+								),
 							],
 						),
 					);
@@ -215,7 +235,16 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 								'device' => $device->getId(),
 								'channel' => $channel->getId(),
 								'property' => $entity->getId(),
-								'state' => $entity->getRead()->toArray(),
+								'state' => array_merge(
+									$entity->getRead()->toArray(),
+									[
+										'id' => $entity->getId(),
+										'valid' => $entity->isValid(),
+										'pending' => $entity->getPending() instanceof DateTimeInterface
+											? $entity->getPending()->format(DateTimeInterface::ATOM)
+											: $entity->getPending(),
+									],
+								),
 							],
 						),
 					);
@@ -228,7 +257,16 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 								'device' => $device->getId(),
 								'channel' => $channel->getId(),
 								'property' => $entity->getId(),
-								'state' => $entity->getGet()?->toArray(),
+								'state' => array_merge(
+									$entity->getGet()->toArray(),
+									[
+										'id' => $entity->getId(),
+										'valid' => $entity->isValid(),
+										'pending' => $entity->getPending() instanceof DateTimeInterface
+											? $entity->getPending()->format(DateTimeInterface::ATOM)
+											: $entity->getPending(),
+									],
+								),
 							],
 						),
 					);

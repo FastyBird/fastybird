@@ -71,9 +71,9 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 
 		$state = $channelPropertiesStatesManager->read($property);
 
-		self::assertInstanceOf(MetadataDocuments\DevicesModule\PropertyValues::class, $state);
-		self::assertSame($actual, $state->getActualValue(), 'actual value check');
-		self::assertSame($expected, $state->getExpectedValue(), 'expected value check');
+		self::assertInstanceOf(MetadataDocuments\DevicesModule\ChannelPropertyState::class, $state);
+		self::assertSame($actual, $state->getRead()->getActualValue(), 'actual value check');
+		self::assertSame($expected, $state->getRead()->getExpectedValue(), 'expected value check');
 	}
 
 	/**
@@ -125,11 +125,11 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 			Models\States\ChannelPropertiesManager::class,
 		);
 
-		$state = $channelPropertiesStatesManager->get($property);
+		$state = $channelPropertiesStatesManager->read($property);
 
-		self::assertInstanceOf(MetadataDocuments\DevicesModule\PropertyValues::class, $state);
-		self::assertSame($actual, $state->getActualValue(), 'actual value check');
-		self::assertSame($expected, $state->getExpectedValue(), 'expected value check');
+		self::assertInstanceOf(MetadataDocuments\DevicesModule\ChannelPropertyState::class, $state);
+		self::assertSame($actual, $state->getGet()->getActualValue(), 'actual value check');
+		self::assertSame($expected, $state->getGet()->getExpectedValue(), 'expected value check');
 	}
 
 	/**

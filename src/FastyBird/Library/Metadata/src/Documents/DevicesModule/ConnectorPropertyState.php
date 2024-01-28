@@ -20,6 +20,7 @@ use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Metadata\Documents;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
+use function is_bool;
 
 /**
  * Connector property state document
@@ -42,11 +43,15 @@ final class ConnectorPropertyState implements Documents\Document
 		private readonly Uuid\UuidInterface $connector,
 		#[ObjectMapper\Rules\MappedObjectValue(class: PropertyValues::class)]
 		private readonly PropertyValues $read,
+		#[ObjectMapper\Rules\MappedObjectValue(class: PropertyValues::class)]
+		private readonly PropertyValues $get,
 		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\MappedObjectValue(class: PropertyValues::class),
-			new ObjectMapper\Rules\NullValue(),
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
 		])]
-		private readonly PropertyValues|null $get = null,
+		private readonly bool|DateTimeInterface $pending = false,
+		#[ObjectMapper\Rules\BoolValue()]
+		private readonly bool $valid = false,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
 			new ObjectMapper\Rules\NullValue(),
@@ -78,9 +83,24 @@ final class ConnectorPropertyState implements Documents\Document
 		return $this->read;
 	}
 
-	public function getGet(): PropertyValues|null
+	public function getGet(): PropertyValues
 	{
 		return $this->get;
+	}
+
+	public function getPending(): bool|DateTimeInterface
+	{
+		return $this->pending;
+	}
+
+	public function isPending(): bool
+	{
+		return is_bool($this->pending) ? $this->pending : true;
+	}
+
+	public function isValid(): bool
+	{
+		return $this->valid;
 	}
 
 	public function toArray(): array
@@ -89,7 +109,11 @@ final class ConnectorPropertyState implements Documents\Document
 			'id' => $this->getId()->toString(),
 			'connector' => $this->getConnector()->toString(),
 			'read' => $this->getRead()->toArray(),
-			'get' => $this->getGet()?->toArray(),
+			'get' => $this->getGet()->toArray(),
+			'pending' => $this->getPending() instanceof DateTimeInterface
+				? $this->getPending()->format(DateTimeInterface::ATOM)
+				: $this->getPending(),
+			'valid' => $this->isValid(),
 
 			'created_at' => $this->getCreatedAt()?->format(DateTimeInterface::ATOM),
 			'updated_at' => $this->getUpdatedAt()?->format(DateTimeInterface::ATOM),

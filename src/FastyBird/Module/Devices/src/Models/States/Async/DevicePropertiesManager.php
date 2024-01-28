@@ -272,7 +272,7 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 	}
 
 	/**
-	 * @return Promise\PromiseInterface<MetadataDocuments\DevicesModule\PropertyValues|null>
+	 * @return Promise\PromiseInterface<bool|MetadataDocuments\DevicesModule\DevicePropertyState|null>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
@@ -281,44 +281,7 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty $property,
 	): Promise\PromiseInterface
 	{
-		$deferred = new Promise\Deferred();
-
-		$this->readState($property)
-			->then(
-				static function (MetadataDocuments\DevicesModule\DevicePropertyState|null $state) use ($deferred): void {
-					$deferred->resolve($state?->getRead());
-				},
-			)
-			->catch(static function (Throwable $ex) use ($deferred): void {
-				$deferred->reject($ex);
-			});
-
-		return $deferred->promise();
-	}
-
-	/**
-	 * @return Promise\PromiseInterface<MetadataDocuments\DevicesModule\PropertyValues|null>
-	 *
-	 * @throws Exceptions\InvalidState
-	 */
-	public function get(
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty $property,
-	): Promise\PromiseInterface
-	{
-		$deferred = new Promise\Deferred();
-
-		$this->readState($property)
-			->then(
-				static function (MetadataDocuments\DevicesModule\DevicePropertyState|null $state) use ($deferred): void {
-					$deferred->resolve($state?->getGet());
-				},
-			)
-			->catch(static function (Throwable $ex) use ($deferred): void {
-				$deferred->reject($ex);
-			});
-
-		return $deferred->promise();
+		return $this->useExchange ? $this->request($property) : $this->readState($property);
 	}
 
 	/**
@@ -621,6 +584,10 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 								'device' => $property->getDevice()->toString(),
 								'read' => $readValue->toArray(),
 								'get' => $getValue->toArray(),
+								'valid' => $state->isValid(),
+								'pending' => $state->getPending() instanceof DateTimeInterface
+									? $state->getPending()->format(DateTimeInterface::ATOM)
+									: $state->getPending(),
 								'created_at' => $readValue->getCreatedAt()?->format(DateTimeInterface::ATOM),
 								'updated_at' => $readValue->getUpdatedAt()?->format(DateTimeInterface::ATOM),
 							],
