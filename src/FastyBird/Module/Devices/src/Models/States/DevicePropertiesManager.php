@@ -83,7 +83,7 @@ final class DevicePropertiesManager extends PropertiesManager
 	public function read(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty $property,
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
+		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
 	): bool|MetadataDocuments\DevicesModule\DevicePropertyState|null
 	{
 		if ($this->useExchange) {
@@ -123,7 +123,7 @@ final class DevicePropertiesManager extends PropertiesManager
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty $property,
 		Utils\ArrayHash $data,
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
+		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
 	): void
 	{
 		if ($this->useExchange) {
@@ -159,7 +159,7 @@ final class DevicePropertiesManager extends PropertiesManager
 				);
 			}
 		} else {
-			$this->writeState($property, $data, true);
+			$this->writeState($property, $data, true, $source);
 		}
 	}
 
@@ -174,7 +174,7 @@ final class DevicePropertiesManager extends PropertiesManager
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty $property,
 		Utils\ArrayHash $data,
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
+		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
 	): void
 	{
 		if ($this->useExchange) {
@@ -210,7 +210,7 @@ final class DevicePropertiesManager extends PropertiesManager
 				);
 			}
 		} else {
-			$this->writeState($property, $data, false);
+			$this->writeState($property, $data, false, $source);
 		}
 	}
 
@@ -226,7 +226,7 @@ final class DevicePropertiesManager extends PropertiesManager
 	public function setValidState(
 		MetadataDocuments\DevicesModule\DeviceDynamicProperty|array $property,
 		bool $state,
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
+		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
 	): void
 	{
 		if (is_array($property)) {
@@ -262,7 +262,7 @@ final class DevicePropertiesManager extends PropertiesManager
 	public function setPendingState(
 		MetadataDocuments\DevicesModule\DeviceDynamicProperty|array $property,
 		bool $pending,
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
+		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
 	): void
 	{
 		if (is_array($property)) {
@@ -321,10 +321,16 @@ final class DevicePropertiesManager extends PropertiesManager
 			$result = $this->devicePropertiesStatesManager->delete($id);
 
 			if ($result) {
-				$this->dispatcher?->dispatch(new Events\DevicePropertyStateEntityDeleted($id));
+				$this->dispatcher?->dispatch(new Events\DevicePropertyStateEntityDeleted(
+					$id,
+					MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+				));
 
 				foreach ($this->findChildren($id) as $child) {
-					$this->dispatcher?->dispatch(new Events\DevicePropertyStateEntityDeleted($child->getId()));
+					$this->dispatcher?->dispatch(new Events\DevicePropertyStateEntityDeleted(
+						$child->getId(),
+						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+					));
 				}
 			}
 
@@ -482,6 +488,7 @@ final class DevicePropertiesManager extends PropertiesManager
 		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty $property,
 		Utils\ArrayHash $data,
 		bool $forWriting,
+		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
 	): void
 	{
 		$mappedProperty = null;
@@ -656,11 +663,21 @@ final class DevicePropertiesManager extends PropertiesManager
 
 			if ($state === null) {
 				$this->dispatcher?->dispatch(
-					new Events\DevicePropertyStateEntityCreated($property, $readValue, $getValue),
+					new Events\DevicePropertyStateEntityCreated(
+						$property,
+						$readValue,
+						$getValue,
+						$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+					),
 				);
 			} else {
 				$this->dispatcher?->dispatch(
-					new Events\DevicePropertyStateEntityUpdated($property, $readValue, $getValue),
+					new Events\DevicePropertyStateEntityUpdated(
+						$property,
+						$readValue,
+						$getValue,
+						$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+					),
 				);
 			}
 
@@ -670,11 +687,21 @@ final class DevicePropertiesManager extends PropertiesManager
 
 				if ($state === null) {
 					$this->dispatcher?->dispatch(
-						new Events\DevicePropertyStateEntityCreated($child, $readValue, $getValue),
+						new Events\DevicePropertyStateEntityCreated(
+							$child,
+							$readValue,
+							$getValue,
+							$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+						),
 					);
 				} else {
 					$this->dispatcher?->dispatch(
-						new Events\DevicePropertyStateEntityUpdated($child, $readValue, $getValue),
+						new Events\DevicePropertyStateEntityUpdated(
+							$child,
+							$readValue,
+							$getValue,
+							$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+						),
 					);
 				}
 			}

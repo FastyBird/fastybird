@@ -80,7 +80,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	 */
 	public function read(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
+		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
 	): bool|MetadataDocuments\DevicesModule\ConnectorPropertyState|null
 	{
 		if ($this->useExchange) {
@@ -119,7 +119,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	public function write(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
 		Utils\ArrayHash $data,
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
+		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
 	): void
 	{
 		if ($this->useExchange) {
@@ -155,7 +155,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 				);
 			}
 		} else {
-			$this->writeState($property, $data, true);
+			$this->writeState($property, $data, true, $source);
 		}
 	}
 
@@ -169,7 +169,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	public function set(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
 		Utils\ArrayHash $data,
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
+		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
 	): void
 	{
 		if ($this->useExchange) {
@@ -205,7 +205,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 				);
 			}
 		} else {
-			$this->writeState($property, $data, false);
+			$this->writeState($property, $data, false, $source);
 		}
 	}
 
@@ -221,7 +221,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	public function setValidState(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|array $property,
 		bool $state,
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
+		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
 	): void
 	{
 		if (is_array($property)) {
@@ -257,7 +257,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	public function setPendingState(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|array $property,
 		bool $pending,
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
+		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
 	): void
 	{
 		if (is_array($property)) {
@@ -313,7 +313,10 @@ final class ConnectorPropertiesManager extends PropertiesManager
 			$result = $this->connectorPropertiesStatesManager->delete($id);
 
 			if ($result) {
-				$this->dispatcher?->dispatch(new Events\ConnectorPropertyStateEntityDeleted($id));
+				$this->dispatcher?->dispatch(new Events\ConnectorPropertyStateEntityDeleted(
+					$id,
+					MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+				));
 			}
 
 			return $result;
@@ -454,6 +457,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
 		Utils\ArrayHash $data,
 		bool $forWriting,
+		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
 	): void
 	{
 		try {
@@ -601,11 +605,21 @@ final class ConnectorPropertiesManager extends PropertiesManager
 
 			if ($state === null) {
 				$this->dispatcher?->dispatch(
-					new Events\ConnectorPropertyStateEntityCreated($property, $readValue, $getValue),
+					new Events\ConnectorPropertyStateEntityCreated(
+						$property,
+						$readValue,
+						$getValue,
+						$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+					),
 				);
 			} else {
 				$this->dispatcher?->dispatch(
-					new Events\ConnectorPropertyStateEntityUpdated($property, $readValue, $getValue),
+					new Events\ConnectorPropertyStateEntityUpdated(
+						$property,
+						$readValue,
+						$getValue,
+						$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+					),
 				);
 			}
 

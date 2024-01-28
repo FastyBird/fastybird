@@ -87,7 +87,13 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 		Events\ConnectorPropertyStateEntityCreated|Events\DevicePropertyStateEntityCreated|Events\ChannelPropertyStateEntityCreated $event,
 	): void
 	{
-		$this->publishEntity($this->useAsync, $event->getProperty(), $event->getRead(), $event->getGet());
+		$this->publishEntity(
+			$this->useAsync,
+			$event->getSource(),
+			$event->getProperty(),
+			$event->getRead(),
+			$event->getGet(),
+		);
 	}
 
 	/**
@@ -107,7 +113,13 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 		Events\ConnectorPropertyStateEntityUpdated|Events\DevicePropertyStateEntityUpdated|Events\ChannelPropertyStateEntityUpdated $event,
 	): void
 	{
-		$this->publishEntity($this->useAsync, $event->getProperty(), $event->getRead(), $event->getGet());
+		$this->publishEntity(
+			$this->useAsync,
+			$event->getSource(),
+			$event->getProperty(),
+			$event->getRead(),
+			$event->getGet(),
+		);
 	}
 
 	public function enableAsync(): void
@@ -136,6 +148,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	 */
 	private function publishEntity(
 		bool $async,
+		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource $source,
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
 		States\ConnectorProperty|States\ChannelProperty|States\DeviceProperty $readState,
 		States\ConnectorProperty|States\ChannelProperty|States\DeviceProperty|null $getState = null,
@@ -209,7 +222,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 		}
 
 		return $this->getPublisher($async)->publish(
-			MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+			$source,
 			$routingKey,
 			$document,
 		);

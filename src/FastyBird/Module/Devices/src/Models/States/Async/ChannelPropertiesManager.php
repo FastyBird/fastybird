@@ -84,7 +84,7 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 	public function read(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
+		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
 	): Promise\PromiseInterface
 	{
 		if ($this->useExchange) {
@@ -122,7 +122,7 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
 		Utils\ArrayHash $data,
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
+		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
 	): Promise\PromiseInterface
 	{
 		if ($this->useExchange) {
@@ -158,7 +158,7 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 				));
 			}
 		} else {
-			return $this->writeState($property, $data, true);
+			return $this->writeState($property, $data, true, $source);
 		}
 	}
 
@@ -171,7 +171,7 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
 		Utils\ArrayHash $data,
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
+		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
 	): Promise\PromiseInterface
 	{
 		if ($this->useExchange) {
@@ -207,7 +207,7 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 				));
 			}
 		} else {
-			return $this->writeState($property, $data, false);
+			return $this->writeState($property, $data, false, $source);
 		}
 	}
 
@@ -221,7 +221,7 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 	public function setValidState(
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|array $property,
 		bool $state,
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
+		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
 	): Promise\PromiseInterface
 	{
 		if (is_array($property)) {
@@ -269,7 +269,7 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 	public function setPendingState(
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|array $property,
 		bool $pending,
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
+		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
 	): Promise\PromiseInterface
 	{
 		if (is_array($property)) {
@@ -333,10 +333,16 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 
 			$this->channelPropertiesStatesManager->delete($id)
 				->then(function (bool $result) use ($deferred, $id): void {
-					$this->dispatcher?->dispatch(new Events\ChannelPropertyStateEntityDeleted($id));
+					$this->dispatcher?->dispatch(new Events\ChannelPropertyStateEntityDeleted(
+						$id,
+						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+					));
 
 					foreach ($this->findChildren($id) as $child) {
-						$this->dispatcher?->dispatch(new Events\ChannelPropertyStateEntityDeleted($child->getId()));
+						$this->dispatcher?->dispatch(new Events\ChannelPropertyStateEntityDeleted(
+							$child->getId(),
+							MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+						));
 					}
 
 					$deferred->resolve($result);
@@ -525,6 +531,7 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
 		Utils\ArrayHash $data,
 		bool $forWriting,
+		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
 	): Promise\PromiseInterface
 	{
 		$mappedProperty = null;
@@ -553,6 +560,7 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 					$property,
 					$mappedProperty,
 					$forWriting,
+					$source,
 				): void {
 					/**
 					 * IMPORTANT: ACTUAL VALUE field is meant to be used only by connectors for saving device actual value
@@ -741,11 +749,21 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 
 						if ($state === null) {
 							$this->dispatcher?->dispatch(
-								new Events\ChannelPropertyStateEntityCreated($property, $readValue, $getValue),
+								new Events\ChannelPropertyStateEntityCreated(
+									$property,
+									$readValue,
+									$getValue,
+									$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+								),
 							);
 						} else {
 							$this->dispatcher?->dispatch(
-								new Events\ChannelPropertyStateEntityUpdated($property, $readValue, $getValue),
+								new Events\ChannelPropertyStateEntityUpdated(
+									$property,
+									$readValue,
+									$getValue,
+									$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+								),
 							);
 						}
 
@@ -755,11 +773,21 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 
 							if ($state === null) {
 								$this->dispatcher?->dispatch(
-									new Events\ChannelPropertyStateEntityCreated($child, $readValue, $getValue),
+									new Events\ChannelPropertyStateEntityCreated(
+										$child,
+										$readValue,
+										$getValue,
+										$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+									),
 								);
 							} else {
 								$this->dispatcher?->dispatch(
-									new Events\ChannelPropertyStateEntityUpdated($child, $readValue, $getValue),
+									new Events\ChannelPropertyStateEntityUpdated(
+										$child,
+										$readValue,
+										$getValue,
+										$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+									),
 								);
 							}
 						}

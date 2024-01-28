@@ -84,7 +84,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 	public function read(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
+		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
 	): bool|MetadataDocuments\DevicesModule\ChannelPropertyState|null
 	{
 		if ($this->useExchange) {
@@ -124,7 +124,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
 		Utils\ArrayHash $data,
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
+		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
 	): void
 	{
 		if ($this->useExchange) {
@@ -160,7 +160,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 				);
 			}
 		} else {
-			$this->writeState($property, $data, true);
+			$this->writeState($property, $data, true, $source);
 		}
 	}
 
@@ -175,7 +175,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
 		Utils\ArrayHash $data,
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
+		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
 	): void
 	{
 		if ($this->useExchange) {
@@ -211,7 +211,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 				);
 			}
 		} else {
-			$this->writeState($property, $data, false);
+			$this->writeState($property, $data, false, $source);
 		}
 	}
 
@@ -227,7 +227,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 	public function setValidState(
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|array $property,
 		bool $state,
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
+		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
 	): void
 	{
 		if (is_array($property)) {
@@ -263,7 +263,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 	public function setPendingState(
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|array $property,
 		bool $pending,
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
+		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
 	): void
 	{
 		if (is_array($property)) {
@@ -322,10 +322,16 @@ final class ChannelPropertiesManager extends PropertiesManager
 			$result = $this->channelPropertiesStatesManager->delete($id);
 
 			if ($result) {
-				$this->dispatcher?->dispatch(new Events\ChannelPropertyStateEntityDeleted($id));
+				$this->dispatcher?->dispatch(new Events\ChannelPropertyStateEntityDeleted(
+					$id,
+					MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+				));
 
 				foreach ($this->findChildren($id) as $child) {
-					$this->dispatcher?->dispatch(new Events\ChannelPropertyStateEntityDeleted($child->getId()));
+					$this->dispatcher?->dispatch(new Events\ChannelPropertyStateEntityDeleted(
+						$child->getId(),
+						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+					));
 				}
 			}
 
@@ -483,6 +489,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
 		Utils\ArrayHash $data,
 		bool $forWriting,
+		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
 	): void
 	{
 		$mappedProperty = null;
@@ -680,11 +687,21 @@ final class ChannelPropertiesManager extends PropertiesManager
 
 			if ($state === null) {
 				$this->dispatcher?->dispatch(
-					new Events\ChannelPropertyStateEntityCreated($property, $readValue, $getValue),
+					new Events\ChannelPropertyStateEntityCreated(
+						$property,
+						$readValue,
+						$getValue,
+						$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+					),
 				);
 			} else {
 				$this->dispatcher?->dispatch(
-					new Events\ChannelPropertyStateEntityUpdated($property, $readValue, $getValue),
+					new Events\ChannelPropertyStateEntityUpdated(
+						$property,
+						$readValue,
+						$getValue,
+						$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+					),
 				);
 			}
 
@@ -694,11 +711,21 @@ final class ChannelPropertiesManager extends PropertiesManager
 
 				if ($state === null) {
 					$this->dispatcher?->dispatch(
-						new Events\ChannelPropertyStateEntityCreated($child, $readValue, $getValue),
+						new Events\ChannelPropertyStateEntityCreated(
+							$child,
+							$readValue,
+							$getValue,
+							$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+						),
 					);
 				} else {
 					$this->dispatcher?->dispatch(
-						new Events\ChannelPropertyStateEntityUpdated($child, $readValue, $getValue),
+						new Events\ChannelPropertyStateEntityUpdated(
+							$child,
+							$readValue,
+							$getValue,
+							$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+						),
 					);
 				}
 			}

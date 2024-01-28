@@ -79,7 +79,7 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 	 */
 	public function read(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
+		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
 	): Promise\PromiseInterface
 	{
 		if ($this->useExchange) {
@@ -114,7 +114,7 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 	public function write(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
 		Utils\ArrayHash $data,
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
+		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
 	): Promise\PromiseInterface
 	{
 		if ($this->useExchange) {
@@ -150,7 +150,7 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 				));
 			}
 		} else {
-			return $this->writeState($property, $data, true);
+			return $this->writeState($property, $data, true, $source);
 		}
 	}
 
@@ -160,7 +160,7 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 	public function set(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
 		Utils\ArrayHash $data,
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
+		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
 	): Promise\PromiseInterface
 	{
 		if ($this->useExchange) {
@@ -196,7 +196,7 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 				));
 			}
 		} else {
-			return $this->writeState($property, $data, false);
+			return $this->writeState($property, $data, false, $source);
 		}
 	}
 
@@ -208,7 +208,7 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 	public function setValidState(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|array $property,
 		bool $state,
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
+		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
 	): Promise\PromiseInterface
 	{
 		if (is_array($property)) {
@@ -254,7 +254,7 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 	public function setPendingState(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|array $property,
 		bool $pending,
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
+		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
 	): Promise\PromiseInterface
 	{
 		if (is_array($property)) {
@@ -318,7 +318,10 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 
 			$this->connectorPropertiesStatesManager->delete($id)
 				->then(function (bool $result) use ($deferred, $id): void {
-					$this->dispatcher?->dispatch(new Events\ConnectorPropertyStateEntityDeleted($id));
+					$this->dispatcher?->dispatch(new Events\ConnectorPropertyStateEntityDeleted(
+						$id,
+						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+					));
 
 					$deferred->resolve($result);
 				})
@@ -485,6 +488,7 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
 		Utils\ArrayHash $data,
 		bool $forWriting,
+		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
 	): Promise\PromiseInterface
 	{
 		$deferred = new Promise\Deferred();
@@ -498,6 +502,7 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 					$data,
 					$property,
 					$forWriting,
+					$source,
 				): void {
 					/**
 					 * IMPORTANT: ACTUAL VALUE field is meant to be used only by connectors for saving device actual value
@@ -672,11 +677,21 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 
 						if ($state === null) {
 							$this->dispatcher?->dispatch(
-								new Events\ConnectorPropertyStateEntityCreated($property, $readValue, $getValue),
+								new Events\ConnectorPropertyStateEntityCreated(
+									$property,
+									$readValue,
+									$getValue,
+									$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+								),
 							);
 						} else {
 							$this->dispatcher?->dispatch(
-								new Events\ConnectorPropertyStateEntityUpdated($property, $readValue, $getValue),
+								new Events\ConnectorPropertyStateEntityUpdated(
+									$property,
+									$readValue,
+									$getValue,
+									$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+								),
 							);
 						}
 

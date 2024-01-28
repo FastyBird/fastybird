@@ -40,10 +40,8 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 		return [
 			DevicesEvents\DevicePropertyStateEntityCreated::class => 'stateChanged',
 			DevicesEvents\DevicePropertyStateEntityUpdated::class => 'stateChanged',
-			DevicesEvents\DevicePropertyStateEntityReported::class => 'stateChanged',
 			DevicesEvents\ChannelPropertyStateEntityCreated::class => 'stateChanged',
 			DevicesEvents\ChannelPropertyStateEntityUpdated::class => 'stateChanged',
-			DevicesEvents\ChannelPropertyStateEntityReported::class => 'stateChanged',
 		];
 	}
 
@@ -53,7 +51,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 	 */
 	public function stateChanged(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		DevicesEvents\DevicePropertyStateEntityCreated|DevicesEvents\DevicePropertyStateEntityUpdated|DevicesEvents\DevicePropertyStateEntityReported|DevicesEvents\ChannelPropertyStateEntityCreated|DevicesEvents\ChannelPropertyStateEntityUpdated|DevicesEvents\ChannelPropertyStateEntityReported $event,
+		DevicesEvents\DevicePropertyStateEntityCreated|DevicesEvents\DevicePropertyStateEntityUpdated|DevicesEvents\ChannelPropertyStateEntityCreated|DevicesEvents\ChannelPropertyStateEntityUpdated $event,
 	): void
 	{
 		if (
@@ -66,7 +64,6 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 		if (
 			$event instanceof DevicesEvents\DevicePropertyStateEntityCreated
 			|| $event instanceof DevicesEvents\DevicePropertyStateEntityUpdated
-			|| $event instanceof DevicesEvents\DevicePropertyStateEntityReported
 		) {
 			$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
 			$findDeviceQuery->forConnector($this->connector);
