@@ -201,7 +201,11 @@ final class WriteDevicePropertyState implements Queue\Consumer
 		$expectedValue = MetadataUtilities\Value::flattenValue($state->getExpectedValue());
 
 		if ($expectedValue === null) {
-			$this->devicePropertiesStatesManager->setPendingState($property, false);
+			$this->devicePropertiesStatesManager->setPendingState(
+				$property,
+				false,
+				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SONOFF),
+			);
 
 			return true;
 		}
@@ -219,7 +223,11 @@ final class WriteDevicePropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$this->devicePropertiesStatesManager->setPendingState($property, true);
+		$this->devicePropertiesStatesManager->setPendingState(
+			$property,
+			true,
+			MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SONOFF),
+		);
 
 		$group = $outlet = null;
 		$parameter = Helpers\Transformer::devicePropertyToParameter($property->getIdentifier());
@@ -312,7 +320,11 @@ final class WriteDevicePropertyState implements Queue\Consumer
 					$outlet,
 				);
 			} else {
-				$this->devicePropertiesStatesManager->setPendingState($property, false);
+				$this->devicePropertiesStatesManager->setPendingState(
+					$property,
+					false,
+					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SONOFF),
+				);
 
 				return true;
 			}
@@ -328,7 +340,11 @@ final class WriteDevicePropertyState implements Queue\Consumer
 				),
 			);
 
-			$this->devicePropertiesStatesManager->setPendingState($property, false);
+			$this->devicePropertiesStatesManager->setPendingState(
+				$property,
+				false,
+				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SONOFF),
+			);
 
 			$this->logger->error(
 				'Device is not properly configured',
@@ -362,7 +378,11 @@ final class WriteDevicePropertyState implements Queue\Consumer
 				),
 			);
 
-			$this->devicePropertiesStatesManager->setPendingState($property, false);
+			$this->devicePropertiesStatesManager->setPendingState(
+				$property,
+				false,
+				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SONOFF),
+			);
 
 			$extra = [];
 
@@ -425,7 +445,11 @@ final class WriteDevicePropertyState implements Queue\Consumer
 				);
 			},
 			function (Throwable $ex) use ($connector, $device, $property, $entity): void {
-				$this->devicePropertiesStatesManager->setPendingState($property, false);
+				$this->devicePropertiesStatesManager->setPendingState(
+					$property,
+					false,
+					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SONOFF),
+				);
 
 				$extra = [];
 

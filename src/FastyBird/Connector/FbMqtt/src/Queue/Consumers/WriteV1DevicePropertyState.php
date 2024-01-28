@@ -201,7 +201,11 @@ final class WriteV1DevicePropertyState implements Queue\Consumer
 		$expectedValue = MetadataUtilities\Value::flattenValue($state->getExpectedValue());
 
 		if ($expectedValue === null) {
-			$this->devicePropertiesStatesManager->setPendingState($property, false);
+			$this->devicePropertiesStatesManager->setPendingState(
+				$property,
+				false,
+				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::FB_MQTT),
+			);
 
 			return true;
 		}
@@ -219,7 +223,11 @@ final class WriteV1DevicePropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$this->devicePropertiesStatesManager->setPendingState($property, true);
+		$this->devicePropertiesStatesManager->setPendingState(
+			$property,
+			true,
+			MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::FB_MQTT),
+		);
 
 		$topic = API\V1Builder::buildDevicePropertyTopic($device, $property);
 
@@ -249,7 +257,11 @@ final class WriteV1DevicePropertyState implements Queue\Consumer
 				);
 			})
 			->catch(function (Throwable $ex) use ($connector, $device, $property, $entity): void {
-				$this->devicePropertiesStatesManager->setPendingState($property, false);
+				$this->devicePropertiesStatesManager->setPendingState(
+					$property,
+					false,
+					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::FB_MQTT),
+				);
 
 				$this->logger->error(
 					'Could write state to device',

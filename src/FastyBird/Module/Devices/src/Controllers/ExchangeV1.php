@@ -333,7 +333,11 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				}
 
 				if ($data !== []) {
-					$this->connectorPropertiesStatesManager->set($property, Utils\ArrayHash::from($data));
+					$this->connectorPropertiesStatesManager->set(
+						$property,
+						Utils\ArrayHash::from($data),
+						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+					);
 				}
 			} elseif ($entity->getWrite() !== null) {
 				$data = [];
@@ -347,7 +351,11 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				}
 
 				if ($data !== []) {
-					$this->connectorPropertiesStatesManager->write($property, Utils\ArrayHash::from($data));
+					$this->connectorPropertiesStatesManager->write(
+						$property,
+						Utils\ArrayHash::from($data),
+						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+					);
 				}
 			}
 		} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::GET)) {
@@ -414,7 +422,11 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				}
 
 				if ($data !== []) {
-					$this->devicePropertiesStatesManager->set($property, Utils\ArrayHash::from($data));
+					$this->devicePropertiesStatesManager->set(
+						$property,
+						Utils\ArrayHash::from($data),
+						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+					);
 				}
 			} elseif ($entity->getWrite() !== null) {
 				$data = [];
@@ -428,7 +440,11 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				}
 
 				if ($data !== []) {
-					$this->devicePropertiesStatesManager->write($property, Utils\ArrayHash::from($data));
+					$this->devicePropertiesStatesManager->write(
+						$property,
+						Utils\ArrayHash::from($data),
+						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+					);
 				}
 			}
 		} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::GET)) {
@@ -495,7 +511,11 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				}
 
 				if ($data !== []) {
-					$this->channelPropertiesStatesManager->set($property, Utils\ArrayHash::from($data));
+					$this->channelPropertiesStatesManager->set(
+						$property,
+						Utils\ArrayHash::from($data),
+						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+					);
 				}
 			} elseif ($entity->getWrite() !== null) {
 				$data = [];
@@ -509,7 +529,11 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				}
 
 				if ($data !== []) {
-					$this->channelPropertiesStatesManager->write($property, Utils\ArrayHash::from($data));
+					$this->channelPropertiesStatesManager->write(
+						$property,
+						Utils\ArrayHash::from($data),
+						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+					);
 				}
 			}
 		} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::GET)) {

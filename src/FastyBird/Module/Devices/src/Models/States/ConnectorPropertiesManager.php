@@ -70,28 +70,22 @@ final class ConnectorPropertiesManager extends PropertiesManager
 		parent::__construct($logger, $stateMapper);
 	}
 
-	public function exchangeEnabled(): bool
-	{
-		return $this->useExchange;
-	}
-
 	/**
-	 * @throws Exceptions\InvalidActualValue
 	 * @throws Exceptions\InvalidArgument
-	 * @throws Exceptions\InvalidExpectedValue
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
-	public function request(
+	public function read(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source = null,
-	): bool
+		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
+	): bool|MetadataDocuments\DevicesModule\ConnectorPropertyState|null
 	{
 		if ($this->useExchange) {
 			try {
-				$this->publisher->publish(
+				return $this->publisher->publish(
 					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
 					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_ACTION),
 					$this->documentFactory->create(
@@ -111,119 +105,8 @@ final class ConnectorPropertiesManager extends PropertiesManager
 				);
 			}
 		} else {
-			try {
-				$state = $this->connectorPropertyStateRepository->find($property->getId());
-
-			} catch (Exceptions\NotImplemented) {
-				$this->logger->warning(
-					'Connectors states repository is not configured. State could not be fetched',
-					[
-						'source' => MetadataTypes\ModuleSource::DEVICES,
-						'type' => 'connector-properties-states',
-					],
-				);
-
-				return false;
-			}
-
-			if ($state === null) {
-				return false;
-			}
-
-			$readValue = $this->convertStoredState($property, null, $state, true);
-			$getValue = $this->convertStoredState($property, null, $state, false);
-
-			$this->dispatcher?->dispatch(new Events\ConnectorPropertyStateEntityReported(
-				$property,
-				$readValue,
-				$getValue,
-			));
+			return $this->readState($property);
 		}
-
-		return true;
-	}
-
-	/**
-	 * @throws Exceptions\InvalidActualValue
-	 * @throws Exceptions\InvalidArgument
-	 * @throws Exceptions\InvalidExpectedValue
-	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws ToolsExceptions\InvalidArgument
-	 */
-	public function publish(
-		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source = null,
-	): bool
-	{
-		if ($this->useExchange) {
-			$state = $this->readState($property);
-
-			if ($state === null) {
-				return false;
-			}
-
-			try {
-				$this->publisher->publish(
-					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
-					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_STATE_DOCUMENT_REPORTED),
-					$state,
-				);
-			} catch (Throwable $ex) {
-				throw new Exceptions\InvalidState(
-					'Requested action could not be published for write action',
-					$ex->getCode(),
-					$ex,
-				);
-			}
-		} else {
-			try {
-				$state = $this->connectorPropertyStateRepository->find($property->getId());
-
-			} catch (Exceptions\NotImplemented) {
-				$this->logger->warning(
-					'Connectors states repository is not configured. State could not be fetched',
-					[
-						'source' => MetadataTypes\ModuleSource::DEVICES,
-						'type' => 'connector-properties-states',
-					],
-				);
-
-				return false;
-			}
-
-			if ($state === null) {
-				return false;
-			}
-
-			$readValue = $this->convertStoredState($property, null, $state, true);
-			$getValue = $this->convertStoredState($property, null, $state, false);
-
-			$this->dispatcher?->dispatch(new Events\ConnectorPropertyStateEntityReported(
-				$property,
-				$readValue,
-				$getValue,
-			));
-		}
-
-		return true;
-	}
-
-	/**
-	 * @throws Exceptions\InvalidArgument
-	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws ToolsExceptions\InvalidArgument
-	 */
-	public function read(
-		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
-	): bool|MetadataDocuments\DevicesModule\ConnectorPropertyState|null
-	{
-		return $this->useExchange ? $this->request($property) : $this->readState($property);
 	}
 
 	/**
@@ -236,7 +119,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	public function write(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
 		Utils\ArrayHash $data,
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source = null,
+		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
 	): void
 	{
 		if ($this->useExchange) {
@@ -286,7 +169,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	public function set(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
 		Utils\ArrayHash $data,
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source = null,
+		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
 	): void
 	{
 		if ($this->useExchange) {
@@ -338,7 +221,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	public function setValidState(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|array $property,
 		bool $state,
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source = null,
+		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
 	): void
 	{
 		if (is_array($property)) {
@@ -374,7 +257,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	public function setPendingState(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|array $property,
 		bool $pending,
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source = null,
+		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
 	): void
 	{
 		if (is_array($property)) {

@@ -265,7 +265,10 @@ final class Http implements Server
 						$characteristic->setValid(true);
 					} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
 						try {
-							$state = $this->channelPropertiesStatesManager->read($property);
+							$state = $this->channelPropertiesStatesManager->read(
+								$property,
+								MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::HOMEKIT),
+							);
 
 							if ($state instanceof MetadataDocuments\DevicesModule\ChannelPropertyState) {
 								$characteristic->setActualValue(
@@ -305,7 +308,10 @@ final class Http implements Server
 
 						if ($parent instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
 							try {
-								$state = $this->channelPropertiesStatesManager->read($property);
+								$state = $this->channelPropertiesStatesManager->read(
+									$property,
+									MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::HOMEKIT),
+								);
 
 								if ($state instanceof MetadataDocuments\DevicesModule\ChannelPropertyState) {
 									$characteristic->setActualValue(

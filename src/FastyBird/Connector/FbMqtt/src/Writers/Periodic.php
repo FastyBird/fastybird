@@ -23,6 +23,7 @@ use FastyBird\Connector\FbMqtt\Queue;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -247,7 +248,12 @@ abstract class Periodic
 	{
 		$now = $this->dateTimeFactory->getNow();
 
-		$state = await($this->devicePropertiesStatesManager->read($property));
+		$state = await(
+			$this->devicePropertiesStatesManager->read(
+				$property,
+				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::FB_MQTT),
+			),
+		);
 
 		if (is_bool($state)) {
 			return $state;
@@ -312,7 +318,12 @@ abstract class Periodic
 	{
 		$now = $this->dateTimeFactory->getNow();
 
-		$state = await($this->channelPropertiesStatesManager->read($property));
+		$state = await(
+			$this->channelPropertiesStatesManager->read(
+				$property,
+				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::FB_MQTT),
+			),
+		);
 
 		if (is_bool($state)) {
 			return $state;

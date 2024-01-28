@@ -23,6 +23,7 @@ use FastyBird\Connector\Virtual\Queue;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -219,7 +220,12 @@ abstract class Periodic implements Writer
 				$property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
 				|| $property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
 			) {
-				$state = await($this->devicePropertiesStatesManager->read($property));
+				$state = await(
+					$this->devicePropertiesStatesManager->read(
+						$property,
+						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
+					),
+				);
 
 				if (is_bool($state)) {
 					// Property state was requested
@@ -238,7 +244,12 @@ abstract class Periodic implements Writer
 					? $state->getGet()->getExpectedValue()
 					: $state->getRead()->getExpectedValue() ?? ($state->isValid() ? $state->getRead()->getActualValue() : null);
 			} else {
-				$state = await($this->channelPropertiesStatesManager->read($property));
+				$state = await(
+					$this->channelPropertiesStatesManager->read(
+						$property,
+						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
+					),
+				);
 
 				if (is_bool($state)) {
 					// Property state was requested

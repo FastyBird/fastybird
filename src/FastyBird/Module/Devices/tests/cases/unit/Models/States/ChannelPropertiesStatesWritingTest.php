@@ -129,7 +129,11 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 			Models\States\ChannelPropertiesManager::class,
 		);
 
-		$channelPropertiesStatesManager->write($property, $data);
+		$channelPropertiesStatesManager->write(
+			$property,
+			$data,
+			MetadataTypes\ConnectorSource::get(MetadataTypes\ModuleSource::DEVICES),
+		);
 	}
 
 	/**
@@ -241,7 +245,11 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 			Models\States\ChannelPropertiesManager::class,
 		);
 
-		$channelPropertiesStatesManager->set($property, $data);
+		$channelPropertiesStatesManager->set(
+			$property,
+			$data,
+			MetadataTypes\ConnectorSource::get(MetadataTypes\ModuleSource::DEVICES),
+		);
 	}
 
 	/**

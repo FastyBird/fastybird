@@ -940,6 +940,7 @@ class Install extends Console\Command\Command
 				DevicesStates\Property::ACTUAL_VALUE_FIELD => Types\HvacMode::OFF,
 				DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
 			]),
+			MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
 		);
 
 		$targetTempConfiguration = $this->channelsPropertiesConfigurationRepository->find(
@@ -954,6 +955,7 @@ class Install extends Console\Command\Command
 				DevicesStates\Property::ACTUAL_VALUE_FIELD => $targetTemp,
 				DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
 			]),
+			MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
 		);
 
 		$presetModeConfiguration = $this->channelsPropertiesConfigurationRepository->find(
@@ -968,6 +970,7 @@ class Install extends Console\Command\Command
 				DevicesStates\Property::ACTUAL_VALUE_FIELD => Types\Preset::MANUAL,
 				DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
 			]),
+			MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
 		);
 
 		foreach ($setPresets as $data) {
@@ -983,6 +986,7 @@ class Install extends Console\Command\Command
 					DevicesStates\Property::ACTUAL_VALUE_FIELD => $data['value'],
 					DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
 				]),
+				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
 			);
 		}
 	}
@@ -1541,6 +1545,7 @@ class Install extends Console\Command\Command
 				DevicesStates\Property::ACTUAL_VALUE_FIELD => Types\HvacMode::OFF,
 				DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
 			]),
+			MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
 		);
 
 		assert($targetTempProperty instanceof DevicesEntities\Channels\Properties\Dynamic);
@@ -1557,6 +1562,7 @@ class Install extends Console\Command\Command
 				DevicesStates\Property::ACTUAL_VALUE_FIELD => $targetTemp,
 				DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
 			]),
+			MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
 		);
 
 		assert($presetModeProperty instanceof DevicesEntities\Channels\Properties\Dynamic);
@@ -1573,6 +1579,7 @@ class Install extends Console\Command\Command
 				DevicesStates\Property::ACTUAL_VALUE_FIELD => Types\Preset::MANUAL,
 				DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
 			]),
+			MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
 		);
 
 		foreach ($setPresets as $data) {
@@ -1588,6 +1595,7 @@ class Install extends Console\Command\Command
 					DevicesStates\Property::ACTUAL_VALUE_FIELD => $data['value'],
 					DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
 				]),
+				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
 			);
 		}
 	}
@@ -2658,6 +2666,7 @@ class Install extends Console\Command\Command
 				DevicesStates\Property::ACTUAL_VALUE_FIELD => $targetTemp,
 				DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
 			]),
+			MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
 		);
 	}
 
@@ -3305,7 +3314,10 @@ class Install extends Console\Command\Command
 			);
 			assert($propertyConfiguration !== null);
 
-			$state = $this->channelPropertiesStatesManager->read($propertyConfiguration);
+			$state = $this->channelPropertiesStatesManager->read(
+				$propertyConfiguration,
+				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
+			);
 
 			if ($state instanceof MetadataDocuments\DevicesModule\ChannelPropertyState) {
 				$targetTemp = $state->getGet()->getActualValue();

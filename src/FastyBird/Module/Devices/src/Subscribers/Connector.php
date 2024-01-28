@@ -150,7 +150,11 @@ final class Connector implements EventDispatcher\EventSubscriberInterface
 		);
 
 		foreach ($properties as $property) {
-			$this->connectorPropertiesStatesManager->setValidState($property, false);
+			$this->connectorPropertiesStatesManager->setValidState(
+				$property,
+				false,
+				MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+			);
 		}
 
 		$findDevicesQuery = new Queries\Configuration\FindDevices();
@@ -189,7 +193,11 @@ final class Connector implements EventDispatcher\EventSubscriberInterface
 		);
 
 		foreach ($properties as $property) {
-			$this->devicePropertiesStatesManager->setValidState($property, false);
+			$this->devicePropertiesStatesManager->setValidState(
+				$property,
+				false,
+				MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+			);
 		}
 
 		$findChannelsQuery = new Queries\Configuration\FindChannels();
@@ -207,7 +215,11 @@ final class Connector implements EventDispatcher\EventSubscriberInterface
 			);
 
 			foreach ($properties as $property) {
-				$this->channelPropertiesStatesManager->setValidState($property, false);
+				$this->channelPropertiesStatesManager->setValidState(
+					$property,
+					false,
+					MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+				);
 			}
 		}
 	}

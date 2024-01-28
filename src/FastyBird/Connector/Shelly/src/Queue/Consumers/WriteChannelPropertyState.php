@@ -245,7 +245,11 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		$expectedValue = MetadataUtilities\Value::flattenValue($state->getExpectedValue());
 
 		if ($expectedValue === null) {
-			$this->channelPropertiesStatesManager->setPendingState($property, false);
+			$this->channelPropertiesStatesManager->setPendingState(
+				$property,
+				false,
+				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SHELLY),
+			);
 
 			return true;
 		}
@@ -263,7 +267,11 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$this->channelPropertiesStatesManager->setPendingState($property, true);
+		$this->channelPropertiesStatesManager->setPendingState(
+			$property,
+			true,
+			MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SHELLY),
+		);
 
 		try {
 			if ($this->connectorHelper->getClientMode($connector)->equalsValue(Types\ClientMode::LOCAL)) {
@@ -281,7 +289,11 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						),
 					);
 
-					$this->channelPropertiesStatesManager->setPendingState($property, false);
+					$this->channelPropertiesStatesManager->setPendingState(
+						$property,
+						false,
+						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SHELLY),
+					);
 
 					$this->logger->error(
 						'Device is not properly configured. Address is missing',
@@ -329,12 +341,20 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						$expectedValue,
 					);
 				} else {
-					$this->channelPropertiesStatesManager->setPendingState($property, false);
+					$this->channelPropertiesStatesManager->setPendingState(
+						$property,
+						false,
+						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SHELLY),
+					);
 
 					return true;
 				}
 			} else {
-				$this->channelPropertiesStatesManager->setPendingState($property, false);
+				$this->channelPropertiesStatesManager->setPendingState(
+					$property,
+					false,
+					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SHELLY),
+				);
 
 				return true;
 			}
@@ -350,7 +370,11 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				),
 			);
 
-			$this->channelPropertiesStatesManager->setPendingState($property, false);
+			$this->channelPropertiesStatesManager->setPendingState(
+				$property,
+				false,
+				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SHELLY),
+			);
 
 			$this->logger->error(
 				'Channel state could not be written into device',
@@ -401,7 +425,11 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				);
 			},
 			function (Throwable $ex) use ($connector, $device, $channel, $property, $entity): void {
-				$this->channelPropertiesStatesManager->setPendingState($property, false);
+				$this->channelPropertiesStatesManager->setPendingState(
+					$property,
+					false,
+					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SHELLY),
+				);
 
 				$extra = [];
 

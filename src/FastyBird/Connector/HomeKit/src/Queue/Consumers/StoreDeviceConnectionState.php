@@ -29,7 +29,6 @@ use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
-use function React\Async\await;
 
 /**
  * Store device connection state message consumer
@@ -124,7 +123,11 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 				);
 
 				foreach ($properties as $property) {
-					await($this->devicePropertiesStatesManager->setValidState($property, false));
+					$this->devicePropertiesStatesManager->setValidState(
+						$property,
+						false,
+						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::HOMEKIT),
+					);
 				}
 
 				$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
@@ -143,7 +146,11 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 					);
 
 					foreach ($properties as $property) {
-						await($this->channelPropertiesStatesManager->setValidState($property, false));
+						$this->channelPropertiesStatesManager->setValidState(
+							$property,
+							false,
+							MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::HOMEKIT),
+						);
 					}
 				}
 			}

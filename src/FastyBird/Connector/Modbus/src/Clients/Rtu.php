@@ -253,8 +253,16 @@ class Rtu implements Client
 				);
 
 				foreach ($properties as $property) {
-					$this->channelPropertiesStatesManager->setValidState($property, false);
-					$this->channelPropertiesStatesManager->setPendingState($property, false);
+					$this->channelPropertiesStatesManager->setValidState(
+						$property,
+						false,
+						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::MODBUS),
+					);
+					$this->channelPropertiesStatesManager->setPendingState(
+						$property,
+						false,
+						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::MODBUS),
+					);
 				}
 
 				$this->logger->warning(
@@ -449,7 +457,11 @@ class Rtu implements Client
 						);
 
 						if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-							$this->channelPropertiesStatesManager->setValidState($property, false);
+							$this->channelPropertiesStatesManager->setValidState(
+								$property,
+								false,
+								MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::MODBUS),
+							);
 						}
 
 						// Increment failed attempts counter

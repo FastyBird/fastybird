@@ -251,7 +251,12 @@ abstract class Periodic implements Writer
 
 		$this->processedProperties[$property->getId()->toString()] = $now;
 
-		$state = await($this->channelPropertiesStatesManager->read($property));
+		$state = await(
+			$this->channelPropertiesStatesManager->read(
+				$property,
+				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::NS_PANEL),
+			),
+		);
 
 		if (is_bool($state)) {
 			return $state;
@@ -349,7 +354,12 @@ abstract class Periodic implements Writer
 		$this->processedProperties[$property->getId()->toString()] = $now;
 
 		if ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
-			$state = await($this->channelPropertiesStatesManager->read($property));
+			$state = await(
+				$this->channelPropertiesStatesManager->read(
+					$property,
+					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::NS_PANEL),
+				),
+			);
 
 			if (is_bool($state)) {
 				return $state;
@@ -386,7 +396,12 @@ abstract class Periodic implements Writer
 			);
 
 		} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-			$state = await($this->channelPropertiesStatesManager->read($property));
+			$state = await(
+				$this->channelPropertiesStatesManager->read(
+					$property,
+					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::NS_PANEL),
+				),
+			);
 
 			if (is_bool($state)) {
 				return $state;

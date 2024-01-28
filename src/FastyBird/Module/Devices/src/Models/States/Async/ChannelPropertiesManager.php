@@ -76,22 +76,15 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 		parent::__construct($logger, $stateMapper);
 	}
 
-	public function exchangeEnabled(): bool
-	{
-		return $this->useExchange;
-	}
-
 	/**
-	 * @return Promise\PromiseInterface<bool>
+	 * @return Promise\PromiseInterface<bool|MetadataDocuments\DevicesModule\ChannelPropertyState|null>
 	 *
-	 * @throws Exceptions\InvalidActualValue
-	 * @throws Exceptions\InvalidExpectedValue
 	 * @throws Exceptions\InvalidState
 	 */
-	public function request(
+	public function read(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source = null,
+		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
 	): Promise\PromiseInterface
 	{
 		if ($this->useExchange) {
@@ -116,172 +109,8 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 				));
 			}
 		} else {
-			$mappedProperty = null;
-
-			if ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
-				$parent = $this->channelPropertiesConfigurationRepository->find($property->getParent());
-
-				if (!$parent instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-					throw new Exceptions\InvalidState('Mapped property parent could not be loaded');
-				}
-
-				$mappedProperty = $property;
-
-				$property = $parent;
-			}
-
-			$deferred = new Promise\Deferred();
-
-			$this->channelPropertyStateRepository->find($property->getId())
-				->then(
-					function (States\ChannelProperty|null $state) use ($deferred, $property, $mappedProperty): void {
-						if ($state === null) {
-							$deferred->resolve(false);
-
-							return;
-						}
-
-						$readValue = $this->convertStoredState($property, $mappedProperty, $state, true);
-						$getValue = $this->convertStoredState($property, $mappedProperty, $state, false);
-
-						$this->dispatcher?->dispatch(new Events\ChannelPropertyStateEntityReported(
-							$property,
-							$readValue,
-							$getValue,
-						));
-					},
-				)
-				->catch(function (Throwable $ex) use ($deferred): void {
-					if ($ex instanceof Exceptions\NotImplemented) {
-						$this->logger->warning(
-							'Channels states repository is not configured. State could not be fetched',
-							[
-								'source' => MetadataTypes\ModuleSource::DEVICES,
-								'type' => 'async-channel-properties-states',
-							],
-						);
-					}
-
-					$deferred->reject($ex);
-				});
-
-			return $deferred->promise();
+			return $this->readState($property);
 		}
-	}
-
-	/**
-	 * @return Promise\PromiseInterface<bool>
-	 *
-	 * @throws Exceptions\InvalidActualValue
-	 * @throws Exceptions\InvalidExpectedValue
-	 * @throws Exceptions\InvalidState
-	 */
-	public function publish(
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source = null,
-	): Promise\PromiseInterface
-	{
-		$deferred = new Promise\Deferred();
-
-		if ($this->useExchange) {
-			$this->readState($property)
-				->then(
-					function (
-						MetadataDocuments\DevicesModule\ChannelPropertyState|null $state,
-					) use (
-						$deferred,
-						$source,
-					): void {
-						if ($state === null) {
-							$deferred->resolve(false);
-
-							return;
-						}
-
-						$this->publisher->publish(
-							$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
-							MetadataTypes\RoutingKey::get(
-								MetadataTypes\RoutingKey::CHANNEL_PROPERTY_STATE_DOCUMENT_REPORTED,
-							),
-							$state,
-						)
-							->then(static function (bool $result) use ($deferred): void {
-								$deferred->resolve($result);
-							})
-							->catch(static function (Throwable $ex) use ($deferred): void {
-								$deferred->reject($ex);
-							});
-					},
-				)
-				->catch(static function (Throwable $ex): void {
-				});
-
-		} else {
-			$mappedProperty = null;
-
-			if ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
-				$parent = $this->channelPropertiesConfigurationRepository->find($property->getParent());
-
-				if (!$parent instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-					throw new Exceptions\InvalidState('Mapped property parent could not be loaded');
-				}
-
-				$mappedProperty = $property;
-
-				$property = $parent;
-			}
-
-			$this->channelPropertyStateRepository->find($property->getId())
-				->then(
-					function (States\ChannelProperty|null $state) use ($deferred, $property, $mappedProperty): void {
-						if ($state === null) {
-							$deferred->resolve(false);
-
-							return;
-						}
-
-						$readValue = $this->convertStoredState($property, $mappedProperty, $state, true);
-						$getValue = $this->convertStoredState($property, $mappedProperty, $state, false);
-
-						$this->dispatcher?->dispatch(new Events\ChannelPropertyStateEntityReported(
-							$property,
-							$readValue,
-							$getValue,
-						));
-
-						$deferred->resolve(true);
-					},
-				)
-				->catch(function (Throwable $ex) use ($deferred): void {
-					if ($ex instanceof Exceptions\NotImplemented) {
-						$this->logger->warning(
-							'Channels states repository is not configured. State could not be fetched',
-							[
-								'source' => MetadataTypes\ModuleSource::DEVICES,
-								'type' => 'async-channel-properties-states',
-							],
-						);
-					}
-
-					$deferred->reject($ex);
-				});
-		}
-
-		return $deferred->promise();
-	}
-
-	/**
-	 * @return Promise\PromiseInterface<bool|MetadataDocuments\DevicesModule\ChannelPropertyState|null>
-	 *
-	 * @throws Exceptions\InvalidState
-	 */
-	public function read(
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
-	): Promise\PromiseInterface
-	{
-		return $this->useExchange ? $this->request($property) : $this->readState($property);
 	}
 
 	/**
@@ -293,7 +122,7 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
 		Utils\ArrayHash $data,
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source = null,
+		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
 	): Promise\PromiseInterface
 	{
 		if ($this->useExchange) {
@@ -342,7 +171,7 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
 		Utils\ArrayHash $data,
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source = null,
+		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
 	): Promise\PromiseInterface
 	{
 		if ($this->useExchange) {
@@ -392,7 +221,7 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 	public function setValidState(
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|array $property,
 		bool $state,
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source = null,
+		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
 	): Promise\PromiseInterface
 	{
 		if (is_array($property)) {
@@ -440,7 +269,7 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 	public function setPendingState(
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|array $property,
 		bool $pending,
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source = null,
+		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
 	): Promise\PromiseInterface
 	{
 		if (is_array($property)) {

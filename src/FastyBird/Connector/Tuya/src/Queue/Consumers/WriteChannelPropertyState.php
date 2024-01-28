@@ -247,7 +247,11 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		$expectedValue = MetadataUtilities\Value::flattenValue($state->getExpectedValue());
 
 		if ($expectedValue === null) {
-			$this->channelPropertiesStatesManager->setPendingState($property, false);
+			$this->channelPropertiesStatesManager->setPendingState(
+				$property,
+				false,
+				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::TUYA),
+			);
 
 			return true;
 		}
@@ -265,7 +269,11 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$this->channelPropertiesStatesManager->setPendingState($property, true);
+		$this->channelPropertiesStatesManager->setPendingState(
+			$property,
+			true,
+			MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::TUYA),
+		);
 
 		try {
 			if ($this->connectorHelper->getClientMode($connector)->equalsValue(Types\ClientMode::CLOUD)) {
@@ -289,7 +297,11 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					$this->deviceHelper->getGateway($device) !== null ? $device->getIdentifier() : null,
 				);
 			} else {
-				$this->channelPropertiesStatesManager->setPendingState($property, false);
+				$this->channelPropertiesStatesManager->setPendingState(
+					$property,
+					false,
+					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::TUYA),
+				);
 
 				return true;
 			}
@@ -305,7 +317,11 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				),
 			);
 
-			$this->channelPropertiesStatesManager->setPendingState($property, false);
+			$this->channelPropertiesStatesManager->setPendingState(
+				$property,
+				false,
+				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::TUYA),
+			);
 
 			$this->logger->error(
 				'Device is not properly configured',
@@ -342,7 +358,11 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				),
 			);
 
-			$this->channelPropertiesStatesManager->setPendingState($property, false);
+			$this->channelPropertiesStatesManager->setPendingState(
+				$property,
+				false,
+				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::TUYA),
+			);
 
 			$this->logger->error(
 				'Preparing api request failed',
@@ -379,7 +399,11 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				),
 			);
 
-			$this->channelPropertiesStatesManager->setPendingState($property, false);
+			$this->channelPropertiesStatesManager->setPendingState(
+				$property,
+				false,
+				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::TUYA),
+			);
 
 			$extra = [];
 
@@ -448,7 +472,11 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				);
 			},
 			function (Throwable $ex) use ($connector, $device, $channel, $property, $entity): void {
-				$this->channelPropertiesStatesManager->setPendingState($property, false);
+				$this->channelPropertiesStatesManager->setPendingState(
+					$property,
+					false,
+					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::TUYA),
+				);
 
 				$extra = [];
 

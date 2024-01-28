@@ -201,7 +201,11 @@ final class WriteDevicePropertyState implements Queue\Consumer
 
 		if ($valueToWrite === null) {
 			if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-				$this->devicePropertiesStatesManager->setPendingState($property, false);
+				$this->devicePropertiesStatesManager->setPendingState(
+					$property,
+					false,
+					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
+				);
 			}
 
 			return true;
@@ -221,7 +225,11 @@ final class WriteDevicePropertyState implements Queue\Consumer
 		}
 
 		if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-			$this->devicePropertiesStatesManager->setPendingState($property, true);
+			$this->devicePropertiesStatesManager->setPendingState(
+				$property,
+				true,
+				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
+			);
 		}
 
 		try {
@@ -243,7 +251,11 @@ final class WriteDevicePropertyState implements Queue\Consumer
 			);
 
 			if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-				$this->devicePropertiesStatesManager->setPendingState($property, false);
+				$this->devicePropertiesStatesManager->setPendingState(
+					$property,
+					false,
+					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
+				);
 			}
 
 			$this->logger->error(
@@ -290,7 +302,11 @@ final class WriteDevicePropertyState implements Queue\Consumer
 			},
 			function (Throwable $ex) use ($connector, $device, $property, $entity): void {
 				if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-					$this->devicePropertiesStatesManager->setPendingState($property, false);
+					$this->devicePropertiesStatesManager->setPendingState(
+						$property,
+						false,
+						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
+					);
 				}
 
 				$this->queue->append(

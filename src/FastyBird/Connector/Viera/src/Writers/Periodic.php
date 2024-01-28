@@ -23,6 +23,7 @@ use FastyBird\Connector\Viera\Queue;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -198,7 +199,12 @@ abstract class Periodic implements Writer
 
 			$this->processedProperties[$property->getId()->toString()] = $now;
 
-			$state = await($this->channelPropertiesStatesManager->read($property));
+			$state = await(
+				$this->channelPropertiesStatesManager->read(
+					$property,
+					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIERA),
+				),
+			);
 
 			if (is_bool($state)) {
 				// Property state was requested

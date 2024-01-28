@@ -275,7 +275,11 @@ final class WriteSubDeviceState implements Queue\Consumer
 						$state = await($this->channelPropertiesStatesManager->readState($property));
 
 						if ($state?->getGet()->getExpectedValue() !== null) {
-							$this->channelPropertiesStatesManager->setValidState($property, true);
+							$this->channelPropertiesStatesManager->setValidState(
+								$property,
+								false,
+								MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::NS_PANEL),
+							);
 						}
 					}
 				}))
@@ -290,7 +294,11 @@ final class WriteSubDeviceState implements Queue\Consumer
 					);
 
 					foreach ($properties as $property) {
-						$this->channelPropertiesStatesManager->setValidState($property, false);
+						$this->channelPropertiesStatesManager->setValidState(
+							$property,
+							false,
+							MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::NS_PANEL),
+						);
 					}
 
 					$extra = [];

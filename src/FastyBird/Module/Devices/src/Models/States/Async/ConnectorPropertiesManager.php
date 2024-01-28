@@ -74,17 +74,12 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 		parent::__construct($logger, $stateMapper);
 	}
 
-	public function exchangeEnabled(): bool
-	{
-		return $this->useExchange;
-	}
-
 	/**
-	 * @return Promise\PromiseInterface<bool>
+	 * @return Promise\PromiseInterface<bool|MetadataDocuments\DevicesModule\ConnectorPropertyState|null>
 	 */
-	public function request(
+	public function read(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source = null,
+		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
 	): Promise\PromiseInterface
 	{
 		if ($this->useExchange) {
@@ -109,136 +104,8 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 				));
 			}
 		} else {
-			$deferred = new Promise\Deferred();
-
-			$this->connectorPropertyStateRepository->find($property->getId())
-				->then(
-					function (States\ConnectorProperty|null $state) use ($deferred, $property): void {
-						if ($state === null) {
-							$deferred->resolve(false);
-
-							return;
-						}
-
-						$readValue = $this->convertStoredState($property, null, $state, true);
-						$getValue = $this->convertStoredState($property, null, $state, false);
-
-						$this->dispatcher?->dispatch(new Events\ConnectorPropertyStateEntityReported(
-							$property,
-							$readValue,
-							$getValue,
-						));
-					},
-				)
-				->catch(function (Throwable $ex) use ($deferred): void {
-					if ($ex instanceof Exceptions\NotImplemented) {
-						$this->logger->warning(
-							'Connectors states repository is not configured. State could not be fetched',
-							[
-								'source' => MetadataTypes\ModuleSource::DEVICES,
-								'type' => 'async-connector-properties-states',
-							],
-						);
-					}
-
-					$deferred->reject($ex);
-				});
-
-			return $deferred->promise();
+			return $this->readState($property);
 		}
-	}
-
-	/**
-	 * @return Promise\PromiseInterface<bool>
-	 */
-	public function publish(
-		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source = null,
-	): Promise\PromiseInterface
-	{
-		$deferred = new Promise\Deferred();
-
-		if ($this->useExchange) {
-			$this->readState($property)
-				->then(
-					function (
-						MetadataDocuments\DevicesModule\ConnectorPropertyState|null $state,
-					) use (
-						$deferred,
-						$source,
-					): void {
-						if ($state === null) {
-							$deferred->resolve(false);
-
-							return;
-						}
-
-						$this->publisher->publish(
-							$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
-							MetadataTypes\RoutingKey::get(
-								MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_STATE_DOCUMENT_REPORTED,
-							),
-							$state,
-						)
-							->then(static function (bool $result) use ($deferred): void {
-								$deferred->resolve($result);
-							})
-							->catch(static function (Throwable $ex) use ($deferred): void {
-								$deferred->reject($ex);
-							});
-					},
-				)
-				->catch(static function (Throwable $ex): void {
-				});
-
-		} else {
-			$this->connectorPropertyStateRepository->find($property->getId())
-				->then(
-					function (States\ConnectorProperty|null $state) use ($deferred, $property): void {
-						if ($state === null) {
-							$deferred->resolve(false);
-
-							return;
-						}
-
-						$readValue = $this->convertStoredState($property, null, $state, true);
-						$getValue = $this->convertStoredState($property, null, $state, false);
-
-						$this->dispatcher?->dispatch(new Events\ConnectorPropertyStateEntityReported(
-							$property,
-							$readValue,
-							$getValue,
-						));
-
-						$deferred->resolve(true);
-					},
-				)
-				->catch(function (Throwable $ex) use ($deferred): void {
-					if ($ex instanceof Exceptions\NotImplemented) {
-						$this->logger->warning(
-							'Connectors states repository is not configured. State could not be fetched',
-							[
-								'source' => MetadataTypes\ModuleSource::DEVICES,
-								'type' => 'async-connector-properties-states',
-							],
-						);
-					}
-
-					$deferred->reject($ex);
-				});
-		}
-
-		return $deferred->promise();
-	}
-
-	/**
-	 * @return Promise\PromiseInterface<bool|MetadataDocuments\DevicesModule\ConnectorPropertyState|null>
-	 */
-	public function read(
-		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
-	): Promise\PromiseInterface
-	{
-		return $this->useExchange ? $this->request($property) : $this->readState($property);
 	}
 
 	/**
@@ -247,7 +114,7 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 	public function write(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
 		Utils\ArrayHash $data,
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source = null,
+		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
 	): Promise\PromiseInterface
 	{
 		if ($this->useExchange) {
@@ -293,7 +160,7 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 	public function set(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
 		Utils\ArrayHash $data,
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source = null,
+		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
 	): Promise\PromiseInterface
 	{
 		if ($this->useExchange) {
@@ -341,7 +208,7 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 	public function setValidState(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|array $property,
 		bool $state,
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source = null,
+		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
 	): Promise\PromiseInterface
 	{
 		if (is_array($property)) {
@@ -387,7 +254,7 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 	public function setPendingState(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|array $property,
 		bool $pending,
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source = null,
+		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
 	): Promise\PromiseInterface
 	{
 		if (is_array($property)) {

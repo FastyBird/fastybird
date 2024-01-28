@@ -129,7 +129,11 @@ final class StoreBridgeConnectionState implements Queue\Consumer
 				);
 
 				foreach ($properties as $property) {
-					$this->devicePropertiesStatesManager->setValidState($property, false);
+					$this->devicePropertiesStatesManager->setValidState(
+						$property,
+						false,
+						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::ZIGBEE2MQTT),
+					);
 				}
 
 				$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
@@ -148,7 +152,11 @@ final class StoreBridgeConnectionState implements Queue\Consumer
 					);
 
 					foreach ($properties as $property) {
-						$this->channelPropertiesStatesManager->setValidState($property, false);
+						$this->channelPropertiesStatesManager->setValidState(
+							$property,
+							false,
+							MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::ZIGBEE2MQTT),
+						);
 					}
 				}
 
@@ -170,7 +178,11 @@ final class StoreBridgeConnectionState implements Queue\Consumer
 					);
 
 					foreach ($properties as $property) {
-						$this->devicePropertiesStatesManager->setValidState($property, false);
+						$this->devicePropertiesStatesManager->setValidState(
+							$property,
+							false,
+							MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::ZIGBEE2MQTT),
+						);
 					}
 
 					$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
@@ -189,7 +201,11 @@ final class StoreBridgeConnectionState implements Queue\Consumer
 						);
 
 						foreach ($properties as $property) {
-							$this->channelPropertiesStatesManager->setValidState($property, false);
+							$this->channelPropertiesStatesManager->setValidState(
+								$property,
+								false,
+								MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::ZIGBEE2MQTT),
+							);
 						}
 					}
 				}

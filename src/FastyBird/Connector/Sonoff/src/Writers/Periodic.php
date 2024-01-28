@@ -23,6 +23,7 @@ use FastyBird\Connector\Sonoff\Queue;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -212,7 +213,12 @@ abstract class Periodic implements Writer
 			$this->processedProperties[$property->getId()->toString()] = $now;
 
 			if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-				$state = await($this->devicePropertiesStatesManager->read($property));
+				$state = await(
+					$this->devicePropertiesStatesManager->read(
+						$property,
+						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SONOFF),
+					),
+				);
 
 				if (is_bool($state)) {
 					// Property state was requested
@@ -230,7 +236,12 @@ abstract class Periodic implements Writer
 				$propertyValue = $state->getGet()->getExpectedValue();
 
 			} else {
-				$state = await($this->channelPropertiesStatesManager->read($property));
+				$state = await(
+					$this->channelPropertiesStatesManager->read(
+						$property,
+						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SONOFF),
+					),
+				);
 
 				if (is_bool($state)) {
 					// Property state was requested

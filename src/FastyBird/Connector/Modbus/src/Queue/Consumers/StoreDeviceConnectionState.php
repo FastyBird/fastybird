@@ -128,7 +128,11 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 						continue;
 					}
 
-					$this->devicePropertiesStatesManager->setValidState($property, false);
+					$this->devicePropertiesStatesManager->setValidState(
+						$property,
+						false,
+						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::MODBUS),
+					);
 				}
 
 				$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
@@ -147,7 +151,11 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 					);
 
 					foreach ($properties as $property) {
-						$this->channelPropertiesStatesManager->setValidState($property, false);
+						$this->channelPropertiesStatesManager->setValidState(
+							$property,
+							false,
+							MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::MODBUS),
+						);
 					}
 				}
 			}

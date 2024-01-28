@@ -24,6 +24,7 @@ use FastyBird\Connector\HomeKit\Queue;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -214,7 +215,12 @@ abstract class Periodic
 			$state = null;
 
 			if ($property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
-				$state = await($this->devicePropertiesStatesManager->read($property));
+				$state = await(
+					$this->devicePropertiesStatesManager->read(
+						$property,
+						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::HOMEKIT),
+					),
+				);
 
 				if (is_bool($state)) {
 					// Property state was requested
@@ -229,7 +235,12 @@ abstract class Periodic
 					$characteristicValue = $state->getRead()->getExpectedValue() ?? ($state->isValid() ? $state->getRead()->getActualValue() : null);
 				}
 			} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
-				$state = await($this->channelPropertiesStatesManager->read($property));
+				$state = await(
+					$this->channelPropertiesStatesManager->read(
+						$property,
+						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::HOMEKIT),
+					),
+				);
 
 				if (is_bool($state)) {
 					// Property state was requested
@@ -244,7 +255,12 @@ abstract class Periodic
 					$characteristicValue = $state->getRead()->getExpectedValue() ?? ($state->isValid() ? $state->getRead()->getActualValue() : null);
 				}
 			} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-				$state = await($this->devicePropertiesStatesManager->read($property));
+				$state = await(
+					$this->devicePropertiesStatesManager->read(
+						$property,
+						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::HOMEKIT),
+					),
+				);
 
 				if (is_bool($state)) {
 					// Property state was requested
@@ -259,7 +275,12 @@ abstract class Periodic
 					$characteristicValue = $state->getGet()->getExpectedValue() ?? ($state->isValid() ? $state->getGet()->getActualValue() : null);
 				}
 			} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-				$state = await($this->channelPropertiesStatesManager->read($property));
+				$state = await(
+					$this->channelPropertiesStatesManager->read(
+						$property,
+						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::HOMEKIT),
+					),
+				);
 
 				if (is_bool($state)) {
 					// Property state was requested

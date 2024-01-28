@@ -186,7 +186,11 @@ final class StoreChannelPropertyState implements Queue\Consumer
 				]),
 				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIERA),
 			));
-			$this->channelPropertiesStatesManager->setPendingState($property, false);
+			$this->channelPropertiesStatesManager->setPendingState(
+				$property,
+				false,
+				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIERA),
+			);
 		} else {
 			await($this->channelPropertiesStatesManager->set(
 				$property,

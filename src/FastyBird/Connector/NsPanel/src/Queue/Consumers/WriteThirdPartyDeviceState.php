@@ -287,7 +287,11 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 					);
 
 					foreach ($properties as $property) {
-						$this->channelPropertiesStatesManager->setPendingState($property, false);
+						$this->channelPropertiesStatesManager->setPendingState(
+							$property,
+							false,
+							MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::NS_PANEL),
+						);
 					}
 
 					$extra = [];

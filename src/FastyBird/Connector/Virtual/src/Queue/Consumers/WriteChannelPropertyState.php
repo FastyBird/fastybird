@@ -245,7 +245,11 @@ final class WriteChannelPropertyState implements Queue\Consumer
 
 		if ($valueToWrite === null) {
 			if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-				$this->channelPropertiesStatesManager->setPendingState($property, false);
+				$this->channelPropertiesStatesManager->setPendingState(
+					$property,
+					false,
+					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
+				);
 			}
 
 			return true;
@@ -265,7 +269,11 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		}
 
 		if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-			$this->channelPropertiesStatesManager->setPendingState($property, true);
+			$this->channelPropertiesStatesManager->setPendingState(
+				$property,
+				true,
+				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
+			);
 		}
 
 		try {
@@ -287,7 +295,11 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			);
 
 			if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-				$this->channelPropertiesStatesManager->setPendingState($property, false);
+				$this->channelPropertiesStatesManager->setPendingState(
+					$property,
+					false,
+					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
+				);
 			}
 
 			$this->logger->error(
@@ -340,7 +352,11 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			},
 			function (Throwable $ex) use ($connector, $device, $channel, $property, $entity): void {
 				if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-					$this->channelPropertiesStatesManager->setPendingState($property, false);
+					$this->channelPropertiesStatesManager->setPendingState(
+						$property,
+						false,
+						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
+					);
 				}
 
 				$this->queue->append(

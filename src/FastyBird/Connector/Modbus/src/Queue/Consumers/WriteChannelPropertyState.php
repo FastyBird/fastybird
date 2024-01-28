@@ -314,7 +314,11 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$this->channelPropertiesStatesManager->setPendingState($property, true);
+		$this->channelPropertiesStatesManager->setPendingState(
+			$property,
+			true,
+			MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::MODBUS),
+		);
 
 		$mode = $this->connectorHelper->getClientMode($connector);
 
@@ -1041,7 +1045,11 @@ final class WriteChannelPropertyState implements Queue\Consumer
 	 */
 	private function resetExpected(MetadataDocuments\DevicesModule\ChannelDynamicProperty $property): void
 	{
-		$this->channelPropertiesStatesManager->setPendingState($property, false);
+		$this->channelPropertiesStatesManager->setPendingState(
+			$property,
+			false,
+			MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::MODBUS),
+		);
 	}
 
 }
