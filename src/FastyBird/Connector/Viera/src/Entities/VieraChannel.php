@@ -27,7 +27,7 @@ class VieraChannel extends DevicesEntities\Channels\Channel
 
 	public const TYPE = 'viera-connector';
 
-	public function getType(): string
+	public static function getType(): string
 	{
 		return self::TYPE;
 	}

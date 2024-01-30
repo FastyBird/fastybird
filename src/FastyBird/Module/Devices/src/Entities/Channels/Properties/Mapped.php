@@ -27,13 +27,14 @@ use Ramsey\Uuid;
 use function array_merge;
 use function assert;
 use function sprintf;
-use function strval;
 
 /**
  * @ORM\Entity
  */
 class Mapped extends Property
 {
+
+	public const TYPE = MetadataTypes\PropertyType::MAPPED;
 
 	public function __construct(
 		Entities\Channels\Channel $channel,
@@ -47,9 +48,9 @@ class Mapped extends Property
 		$this->parent = $parent;
 	}
 
-	public function getType(): MetadataTypes\PropertyType
+	public static function getType(): string
 	{
-		return MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::MAPPED);
+		return self::TYPE;
 	}
 
 	/**
@@ -72,7 +73,7 @@ class Mapped extends Property
 	public function getChildren(): array
 	{
 		throw new Exceptions\InvalidState(
-			sprintf('Reading children is not allowed for property type: %s', strval($this->getType()->getValue())),
+			sprintf('Reading children is not allowed for property type: %s', static::getType()),
 		);
 	}
 
@@ -82,7 +83,7 @@ class Mapped extends Property
 	public function setChildren(array $children): void
 	{
 		throw new Exceptions\InvalidState(
-			sprintf('Assigning children is not allowed for property type: %s', strval($this->getType()->getValue())),
+			sprintf('Assigning children is not allowed for property type: %s', static::getType()),
 		);
 	}
 
@@ -92,7 +93,7 @@ class Mapped extends Property
 	public function addChild(Property $child): void
 	{
 		throw new Exceptions\InvalidState(
-			sprintf('Adding child is not allowed for property type: %s', strval($this->getType()->getValue())),
+			sprintf('Adding child is not allowed for property type: %s', static::getType()),
 		);
 	}
 
@@ -102,7 +103,7 @@ class Mapped extends Property
 	public function removeChild(Property $child): void
 	{
 		throw new Exceptions\InvalidState(
-			sprintf('Removing child is not allowed for property type: %s', strval($this->getType()->getValue())),
+			sprintf('Removing child is not allowed for property type: %s', static::getType()),
 		);
 	}
 

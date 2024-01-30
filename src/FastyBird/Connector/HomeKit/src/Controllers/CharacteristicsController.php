@@ -747,7 +747,7 @@ final class CharacteristicsController extends BaseController
 		Uuid\UuidInterface $connectorId,
 		int $aid,
 		int $iid,
-	): Entities\Protocol\Characteristic|null
+	): Protocol\Characteristics\Characteristic|null
 	{
 		$bridge = $this->accessoryDriver->getBridge($connectorId);
 
@@ -768,7 +768,7 @@ final class CharacteristicsController extends BaseController
 			$characteristic = $accessory->getIidManager()->getObject($iid);
 		}
 
-		if (!$characteristic instanceof Entities\Protocol\Characteristic) {
+		if (!$characteristic instanceof Protocol\Characteristics\Characteristic) {
 			return null;
 		}
 

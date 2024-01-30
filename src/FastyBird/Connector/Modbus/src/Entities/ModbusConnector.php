@@ -33,7 +33,7 @@ class ModbusConnector extends DevicesEntities\Connectors\Connector
 
 	public const TYPE = 'modbus-connector';
 
-	public function getType(): string
+	public static function getType(): string
 	{
 		return self::TYPE;
 	}

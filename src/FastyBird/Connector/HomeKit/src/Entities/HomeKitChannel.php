@@ -31,11 +31,11 @@ use function ucwords;
 class HomeKitChannel extends DevicesEntities\Channels\Channel
 {
 
-	public const TYPE = 'homekit-connector';
+	public const TYPE = 'homekit-channel';
 
 	public const SERVICE_IDENTIFIER = '/^(?P<type>[a-z_]+)(?:_(?P<cnt>[0-9]+){1})$/';
 
-	public function getType(): string
+	public static function getType(): string
 	{
 		return self::TYPE;
 	}

@@ -7,15 +7,15 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:HomeKitConnector!
- * @subpackage     Entities
+ * @subpackage     Protocol
  * @since          1.0.0
  *
- * @date           12.04.23
+ * @date           30.01.24
  */
 
-namespace FastyBird\Connector\HomeKit\Entities\Protocol\Accessories;
+namespace FastyBird\Connector\HomeKit\Protocol\Services;
 
-use FastyBird\Connector\HomeKit\Entities;
+use FastyBird\Connector\HomeKit\Protocol;
 use FastyBird\Connector\HomeKit\Types;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Transformers as ToolsTransformers;
@@ -23,10 +23,10 @@ use function is_float;
 use function is_int;
 
 /**
- * HAP light bulb device accessory
+ * HAP light bulb service
  *
  * @package        FastyBird:HomeKitConnector!
- * @subpackage     Entities
+ * @subpackage     Protocol
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
@@ -34,44 +34,48 @@ final class LightBulb extends Generic
 {
 
 	public function recalculateValues(
-		Entities\Protocol\Service $service,
-		Entities\Protocol\Characteristic $characteristic,
+		Protocol\Characteristics\Characteristic $characteristic,
 		bool $fromDevice,
 	): void
 	{
+		parent::recalculateValues($characteristic, $fromDevice);
+
 		$updatePropertyType = MetadataTypes\PropertyType::get(
 			$fromDevice ? MetadataTypes\PropertyType::DYNAMIC : MetadataTypes\PropertyType::MAPPED,
 		);
 
-		if ($service->getName() === Types\ServiceType::LIGHTBULB) {
-			if (
-				$characteristic->getName() === Types\CharacteristicType::COLOR_RED
-				|| $characteristic->getName() === Types\CharacteristicType::COLOR_GREEN
-				|| $characteristic->getName() === Types\CharacteristicType::COLOR_BLUE
-				|| $characteristic->getName() === Types\CharacteristicType::COLOR_WHITE
-			) {
-				$this->calculateRgbToHsb($service, $updatePropertyType);
+		if (
+			$characteristic->getName() === Types\CharacteristicType::COLOR_RED
+			|| $characteristic->getName() === Types\CharacteristicType::COLOR_GREEN
+			|| $characteristic->getName() === Types\CharacteristicType::COLOR_BLUE
+			|| $characteristic->getName() === Types\CharacteristicType::COLOR_WHITE
+		) {
+			$this->calculateRgbToHsb($updatePropertyType);
 
-			} elseif (
-				$characteristic->getName() === Types\CharacteristicType::HUE
-				|| $characteristic->getName() === Types\CharacteristicType::SATURATION
-				|| $characteristic->getName() === Types\CharacteristicType::BRIGHTNESS
-			) {
-				$this->calculateHsbToRgb($service, $updatePropertyType);
-			}
+		} elseif (
+			$characteristic->getName() === Types\CharacteristicType::HUE
+			|| $characteristic->getName() === Types\CharacteristicType::SATURATION
+			|| $characteristic->getName() === Types\CharacteristicType::BRIGHTNESS
+		) {
+			$this->calculateHsbToRgb($updatePropertyType);
+			$this->calculateHsToTemperature($updatePropertyType);
+
+		} elseif (
+			$characteristic->getName() === Types\CharacteristicType::COLOR_TEMPERATURE
+		) {
+			$this->calculateTemperatureToHs($updatePropertyType);
 		}
 	}
 
 	private function calculateRgbToHsb(
-		Entities\Protocol\Service $service,
 		MetadataTypes\PropertyType $updatePropertyType,
 	): void
 	{
-		$redCharacteristic = $service->findCharacteristic(Types\CharacteristicType::COLOR_RED);
-		$greenCharacteristic = $service->findCharacteristic(Types\CharacteristicType::COLOR_GREEN);
-		$blueCharacteristic = $service->findCharacteristic(Types\CharacteristicType::COLOR_BLUE);
+		$redCharacteristic = $this->findCharacteristic(Types\CharacteristicType::COLOR_RED);
+		$greenCharacteristic = $this->findCharacteristic(Types\CharacteristicType::COLOR_GREEN);
+		$blueCharacteristic = $this->findCharacteristic(Types\CharacteristicType::COLOR_BLUE);
 		// Optional white channel
-		$whiteCharacteristic = $service->findCharacteristic(Types\CharacteristicType::COLOR_WHITE);
+		$whiteCharacteristic = $this->findCharacteristic(Types\CharacteristicType::COLOR_WHITE);
 
 		if (
 			is_int($redCharacteristic?->getValue())
@@ -91,37 +95,37 @@ final class LightBulb extends Generic
 			$hsb = new ToolsTransformers\HsbTransformer(0, 0, 0);
 		}
 
-		$hue = $service->findCharacteristic(Types\CharacteristicType::HUE);
+		$hue = $this->findCharacteristic(Types\CharacteristicType::HUE);
 
 		if (
 			$hue !== null
 			&& (
 				$hue->getProperty() === null
-				|| $hue->getProperty()->getType()->equals($updatePropertyType)
+				|| $hue->getProperty()->getType() === $updatePropertyType->getValue()
 			)
 		) {
 			$hue->setValue($hsb->getHue());
 		}
 
-		$saturation = $service->findCharacteristic(Types\CharacteristicType::SATURATION);
+		$saturation = $this->findCharacteristic(Types\CharacteristicType::SATURATION);
 
 		if (
 			$saturation !== null
 			&& (
 				$saturation->getProperty() === null
-				|| $saturation->getProperty()->getType()->equals($updatePropertyType)
+				|| $saturation->getProperty()->getType() === $updatePropertyType->getValue()
 			)
 		) {
 			$saturation->setValue($hsb->getSaturation());
 		}
 
-		$brightness = $service->findCharacteristic(Types\CharacteristicType::BRIGHTNESS);
+		$brightness = $this->findCharacteristic(Types\CharacteristicType::BRIGHTNESS);
 
 		if (
 			$brightness !== null
 			&& (
 				$brightness->getProperty() === null
-				|| $brightness->getProperty()->getType()->equals($updatePropertyType)
+				|| $brightness->getProperty()->getType() === $updatePropertyType->getValue()
 			)
 		) {
 			$brightness->setValue($hsb->getBrightness());
@@ -129,13 +133,12 @@ final class LightBulb extends Generic
 	}
 
 	private function calculateHsbToRgb(
-		Entities\Protocol\Service $service,
 		MetadataTypes\PropertyType $updatePropertyType,
 	): void
 	{
-		$hueCharacteristic = $service->findCharacteristic(Types\CharacteristicType::HUE);
-		$saturationCharacteristic = $service->findCharacteristic(Types\CharacteristicType::SATURATION);
-		$brightnessCharacteristic = $service->findCharacteristic(Types\CharacteristicType::BRIGHTNESS);
+		$hueCharacteristic = $this->findCharacteristic(Types\CharacteristicType::HUE);
+		$saturationCharacteristic = $this->findCharacteristic(Types\CharacteristicType::SATURATION);
+		$brightnessCharacteristic = $this->findCharacteristic(Types\CharacteristicType::BRIGHTNESS);
 
 		if (
 			(
@@ -153,9 +156,7 @@ final class LightBulb extends Generic
 			// If brightness is controlled with separate property, we will use 100% brightness for calculation
 			if (
 				$brightnessCharacteristic->getProperty() !== null
-				&& $brightnessCharacteristic->getProperty()->getType()->equalsValue(
-					MetadataTypes\PropertyType::MAPPED,
-				)
+				&& $brightnessCharacteristic->getProperty()->getType() === MetadataTypes\PropertyType::MAPPED
 			) {
 				$brightness = 100;
 			}
@@ -172,58 +173,72 @@ final class LightBulb extends Generic
 			$rgb = new ToolsTransformers\RgbTransformer(0, 0, 0);
 		}
 
-		if ($service->hasCharacteristic(Types\CharacteristicType::COLOR_WHITE)) {
+		if ($this->hasCharacteristic(Types\CharacteristicType::COLOR_WHITE)) {
 			$rgb = $rgb->toHsi()->toRgbw();
 		}
 
-		$red = $service->findCharacteristic(Types\CharacteristicType::COLOR_RED);
+		$red = $this->findCharacteristic(Types\CharacteristicType::COLOR_RED);
 
 		if (
 			$red !== null
 			&& (
 				$red->getProperty() === null
-				|| $red->getProperty()->getType()->equals($updatePropertyType)
+				|| $red->getProperty()->getType() === $updatePropertyType->getValue()
 			)
 		) {
 			$red->setValue($rgb->getRed());
 		}
 
-		$green = $service->findCharacteristic(Types\CharacteristicType::COLOR_GREEN);
+		$green = $this->findCharacteristic(Types\CharacteristicType::COLOR_GREEN);
 
 		if (
 			$green !== null
 			&& (
 				$green->getProperty() === null
-				|| $green->getProperty()->getType()->equals($updatePropertyType)
+				|| $green->getProperty()->getType() === $updatePropertyType->getValue()
 			)
 		) {
 			$green->setValue($rgb->getGreen());
 		}
 
-		$blue = $service->findCharacteristic(Types\CharacteristicType::COLOR_BLUE);
+		$blue = $this->findCharacteristic(Types\CharacteristicType::COLOR_BLUE);
 
 		if (
 			$blue !== null
 			&& (
 				$blue->getProperty() === null
-				|| $blue->getProperty()->getType()->equals($updatePropertyType)
+				|| $blue->getProperty()->getType() === $updatePropertyType->getValue()
 			)
 		) {
 			$blue->setValue($rgb->getBlue());
 		}
 
-		$white = $service->findCharacteristic(Types\CharacteristicType::COLOR_WHITE);
+		$white = $this->findCharacteristic(Types\CharacteristicType::COLOR_WHITE);
 
 		if (
 			$white !== null
 			&& (
 				$white->getProperty() === null
-				|| $white->getProperty()->getType()->equals($updatePropertyType)
+				|| $white->getProperty()->getType() === $updatePropertyType->getValue()
 			)
 			&& $rgb->getWhite() !== null
 		) {
 			$white->setValue($rgb->getWhite());
 		}
+	}
+
+	private function calculateHsToTemperature(
+		MetadataTypes\PropertyType $updatePropertyType,
+	): void
+	{
+		// TODO: Implement it
+	}
+
+	private function calculateTemperatureToHs(
+		MetadataTypes\PropertyType $updatePropertyType,
+	): void
+	{
+		// TODO: Implement it
 	}
 
 }

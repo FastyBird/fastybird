@@ -38,7 +38,7 @@ class VieraDevice extends DevicesEntities\Devices\Device
 
 	public const STATE_READING_DELAY = 5_000.0;
 
-	public function getType(): string
+	public static function getType(): string
 	{
 		return self::TYPE;
 	}

@@ -27,7 +27,7 @@ class Zigbee2MqttChannel extends DevicesEntities\Channels\Channel
 
 	public const TYPE = 'zigbee2mqtt-connector';
 
-	public function getType(): string
+	public static function getType(): string
 	{
 		return self::TYPE;
 	}

@@ -7,25 +7,23 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:HomeKitConnector!
- * @subpackage     Entities
+ * @subpackage     Protocol
  * @since          1.0.0
  *
  * @date           12.04.23
  */
 
-namespace FastyBird\Connector\HomeKit\Entities\Protocol\Services;
-
-use FastyBird\Connector\HomeKit\Entities;
+namespace FastyBird\Connector\HomeKit\Protocol\Services;
 
 /**
- * HAP accessory generic service
+ * HAP generic service
  *
  * @package        FastyBird:HomeKitConnector!
- * @subpackage     Entities
+ * @subpackage     Protocol
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Generic extends Entities\Protocol\Service
+class Generic extends Service
 {
 
 }

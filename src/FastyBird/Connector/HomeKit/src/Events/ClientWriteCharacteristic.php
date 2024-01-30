@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\HomeKit\Events;
 
-use FastyBird\Connector\HomeKit\Entities;
+use FastyBird\Connector\HomeKit\Protocol;
 use Symfony\Contracts\EventDispatcher;
 
 /**
@@ -30,13 +30,13 @@ class ClientWriteCharacteristic extends EventDispatcher\Event
 {
 
 	public function __construct(
-		private readonly Entities\Protocol\Characteristic $characteristic,
+		private readonly Protocol\Characteristics\Characteristic $characteristic,
 		private readonly bool|float|int|string|null $value,
 	)
 	{
 	}
 
-	public function getCharacteristic(): Entities\Protocol\Characteristic
+	public function getCharacteristic(): Protocol\Characteristics\Characteristic
 	{
 		return $this->characteristic;
 	}

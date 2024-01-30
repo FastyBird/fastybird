@@ -16,7 +16,6 @@
 namespace FastyBird\Library\Metadata\Documents\DevicesModule;
 
 use DateTimeInterface;
-use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Metadata\Exceptions;
 use FastyBird\Library\Metadata\Types;
 use Orisai\ObjectMapper;
@@ -41,11 +40,8 @@ final class ConnectorDynamicProperty extends ConnectorProperty
 	 */
 	public function __construct(
 		Uuid\UuidInterface $id,
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(
-			class: Types\PropertyType::class,
-			allowedValues: [Types\PropertyType::DYNAMIC],
-		)]
-		private readonly Types\PropertyType $type,
+		#[ObjectMapper\Rules\ArrayEnumValue(cases: [Types\PropertyType::DYNAMIC])]
+		private readonly string $type,
 		Uuid\UuidInterface $connector,
 		Types\PropertyCategory $category,
 		string $identifier,
@@ -86,7 +82,7 @@ final class ConnectorDynamicProperty extends ConnectorProperty
 		);
 	}
 
-	public function getType(): Types\PropertyType
+	public function getType(): string
 	{
 		return $this->type;
 	}
@@ -116,7 +112,7 @@ final class ConnectorDynamicProperty extends ConnectorProperty
 	public function toArray(): array
 	{
 		return array_merge(parent::toArray(), [
-			'type' => $this->getType()->getValue(),
+			'type' => $this->getType(),
 			'settable' => $this->isSettable(),
 			'queryable' => $this->isQueryable(),
 

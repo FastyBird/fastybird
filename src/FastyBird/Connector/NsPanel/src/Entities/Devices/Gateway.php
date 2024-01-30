@@ -36,7 +36,7 @@ class Gateway extends Entities\NsPanelDevice
 
 	public const HEARTBEAT_DELAY = 2_500.0;
 
-	public function getType(): string
+	public static function getType(): string
 	{
 		return self::TYPE;
 	}

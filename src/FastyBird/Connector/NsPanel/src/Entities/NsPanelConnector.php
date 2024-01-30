@@ -32,7 +32,7 @@ class NsPanelConnector extends DevicesEntities\Connectors\Connector
 
 	public const TYPE = 'ns-panel-connector';
 
-	public function getType(): string
+	public static function getType(): string
 	{
 		return self::TYPE;
 	}

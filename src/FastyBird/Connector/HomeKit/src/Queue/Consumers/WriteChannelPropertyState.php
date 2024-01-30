@@ -104,7 +104,6 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDeviceQuery->forConnector($connector);
 		$findDeviceQuery->byId($entity->getDevice());
-		$findDeviceQuery->byType(Entities\HomeKitDevice::TYPE);
 
 		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
@@ -135,7 +134,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 
 		$accessory = $this->accessoryDriver->findAccessory($device->getId());
 
-		if (!$accessory instanceof Entities\Protocol\Accessories\Generic) {
+		if (!$accessory instanceof Protocol\Accessories\Generic) {
 			$this->logger->warning(
 				'Accessory for received channel property message was not found in accessory driver',
 				[
@@ -163,7 +162,6 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 		$findChannelQuery->forDevice($device);
 		$findChannelQuery->byId($entity->getChannel());
-		$findChannelQuery->byType(Entities\HomeKitChannel::TYPE);
 
 		$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 

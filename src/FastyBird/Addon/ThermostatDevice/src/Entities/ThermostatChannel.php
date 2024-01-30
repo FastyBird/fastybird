@@ -27,7 +27,7 @@ class ThermostatChannel extends VirtualEntities\VirtualChannel
 
 	public const TYPE = 'thermostat-device-addon';
 
-	public function getType(): string
+	public static function getType(): string
 	{
 		return self::TYPE;
 	}

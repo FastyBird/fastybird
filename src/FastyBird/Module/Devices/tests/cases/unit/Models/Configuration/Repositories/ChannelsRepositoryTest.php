@@ -78,6 +78,15 @@ final class ChannelsRepositoryTest extends DbTestCase
 
 		self::assertIsObject($entity);
 		self::assertSame('channel-one', $entity->getIdentifier());
+
+		$findQuery = new Queries\Configuration\FindChannels();
+		$findQuery->byDeviceId(Uuid\Uuid::fromString('bf4cd870-2aac-45f0-a85e-e1cefd2d6d9a'));
+		$findQuery->byTypes(['generic', 'unknown']);
+
+		$entity = $repository->findOneBy($findQuery);
+
+		self::assertIsObject($entity);
+		self::assertSame('channel-one', $entity->getIdentifier());
 	}
 
 	/**

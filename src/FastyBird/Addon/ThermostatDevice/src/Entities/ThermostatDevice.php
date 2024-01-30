@@ -48,7 +48,7 @@ class ThermostatDevice extends VirtualEntities\VirtualDevice
 
 	public const HOT_TOLERANCE = 0.3;
 
-	public function getType(): string
+	public static function getType(): string
 	{
 		return self::TYPE;
 	}

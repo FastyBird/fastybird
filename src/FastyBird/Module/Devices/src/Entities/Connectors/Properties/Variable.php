@@ -25,9 +25,11 @@ use FastyBird\Module\Devices\Exceptions;
 class Variable extends Property
 {
 
-	public function getType(): MetadataTypes\PropertyType
+	public const TYPE = MetadataTypes\PropertyType::VARIABLE;
+
+	public static function getType(): string
 	{
-		return MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::VARIABLE);
+		return self::TYPE;
 	}
 
 	/**

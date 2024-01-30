@@ -27,7 +27,7 @@ class Zigbee2MqttDevice extends DevicesEntities\Devices\Device
 
 	public const TYPE = 'zigbee2mqtt-connector';
 
-	public function getType(): string
+	public static function getType(): string
 	{
 		return self::TYPE;
 	}

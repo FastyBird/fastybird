@@ -175,13 +175,13 @@ abstract class Property implements Entity,
 		$this->dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::UNKNOWN);
 
 		// Static property can not be set or read from device/channel property
-		if ($this->getType()->equalsValue(MetadataTypes\PropertyType::VARIABLE)) {
+		if (static::getType() === MetadataTypes\PropertyType::VARIABLE) {
 			$this->settable = false;
 			$this->queryable = false;
 		}
 	}
 
-	abstract public function getType(): MetadataTypes\PropertyType;
+	abstract public static function getType(): string;
 
 	public function getCategory(): MetadataTypes\PropertyCategory
 	{
@@ -661,7 +661,7 @@ abstract class Property implements Entity,
 	{
 		$data = [
 			'id' => $this->getId()->toString(),
-			'type' => $this->getType()->getValue(),
+			'type' => static::getType(),
 			'category' => $this->getCategory()->getValue(),
 			'identifier' => $this->getIdentifier(),
 			'name' => $this->getName(),
@@ -676,12 +676,12 @@ abstract class Property implements Entity,
 			'updated_at' => $this->getUpdatedAt()?->format(DateTimeInterface::ATOM),
 		];
 
-		if ($this->getType()->equalsValue(MetadataTypes\PropertyType::VARIABLE)) {
+		if (static::getType() === MetadataTypes\PropertyType::VARIABLE) {
 			return array_merge($data, [
 				'default' => MetadataUtilities\Value::flattenValue($this->getDefault()),
 				'value' => MetadataUtilities\Value::flattenValue($this->getValue()),
 			]);
-		} elseif ($this->getType()->equalsValue(MetadataTypes\PropertyType::DYNAMIC)) {
+		} elseif (static::getType() === MetadataTypes\PropertyType::DYNAMIC) {
 			return array_merge($data, [
 				'settable' => $this->isSettable(),
 				'queryable' => $this->isQueryable(),

@@ -13,7 +13,7 @@ class DummyDeviceEntity extends DevicesEntities\Devices\Device
 
 	public const DEVICE_TYPE = 'dummy';
 
-	public function getType(): string
+	public static function getType(): string
 	{
 		return 'dummy';
 	}

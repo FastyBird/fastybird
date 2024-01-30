@@ -183,7 +183,7 @@ abstract class DeviceProperty implements Documents\Document, Documents\Owner
 		return $this->id;
 	}
 
-	abstract public function getType(): Types\PropertyType;
+	abstract public function getType(): string;
 
 	public function getDevice(): Uuid\UuidInterface
 	{

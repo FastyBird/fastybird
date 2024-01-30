@@ -33,7 +33,7 @@ class ModbusChannel extends DevicesEntities\Channels\Channel
 
 	public const TYPE = 'modbus-connector';
 
-	public function getType(): string
+	public static function getType(): string
 	{
 		return self::TYPE;
 	}

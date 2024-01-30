@@ -38,7 +38,7 @@ class ServiceType extends Consistence\Enum\Enum
 
 	public const AIR_QUALITY_SENSOR = 'AirQualitySensor';
 
-	public const BATTERY_SERVICE = 'BatteryService';
+	public const BATTERY = 'BatteryService';
 
 	public const CAMERA_RTP_STREAM_MANAGEMENT = 'CameraRTPStreamManagement';
 
@@ -76,7 +76,7 @@ class ServiceType extends Consistence\Enum\Enum
 
 	public const LIGHT_SENSOR = 'LightSensor';
 
-	public const LIGHTBULB = 'Lightbulb';
+	public const LIGHT_BULB = 'Lightbulb';
 
 	public const LOCK_MANAGEMENT = 'LockManagement';
 
@@ -117,6 +117,8 @@ class ServiceType extends Consistence\Enum\Enum
 	public const WINDOW = 'Window';
 
 	public const WINDOW_COVERING = 'WindowCovering';
+
+	public const PROTOCOL_INFORMATION = 'HAPProtocolInformation';
 
 	public function getValue(): string
 	{

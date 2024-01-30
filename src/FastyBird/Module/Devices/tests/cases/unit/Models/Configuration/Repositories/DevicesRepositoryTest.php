@@ -126,6 +126,15 @@ final class DevicesRepositoryTest extends DbTestCase
 
 		self::assertIsObject($entity);
 		self::assertSame('first-device', $entity->getIdentifier());
+
+		$findQuery = new Queries\Configuration\FindDevices();
+		$findQuery->byConnectorId(Uuid\Uuid::fromString('17c59dfa-2edd-438e-8c49-faa4e38e5a5e'));
+		$findQuery->byTypes(['generic', 'unknown']);
+
+		$entity = $repository->findOneBy($findQuery);
+
+		self::assertIsObject($entity);
+		self::assertSame('first-device', $entity->getIdentifier());
 	}
 
 	/**

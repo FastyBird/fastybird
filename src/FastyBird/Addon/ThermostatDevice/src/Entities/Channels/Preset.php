@@ -31,7 +31,7 @@ class Preset extends Entities\ThermostatChannel
 
 	public const TYPE = 'thermostat-device-addon-preset';
 
-	public function getType(): string
+	public static function getType(): string
 	{
 		return self::TYPE;
 	}

@@ -1,25 +1,25 @@
 <?php declare(strict_types = 1);
 
 /**
- * LightBulb.php
+ * BatteryService.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:HomeKitConnector!
- * @subpackage     Entities
+ * @subpackage     Protocol
  * @since          1.0.0
  *
  * @date           12.04.23
  */
 
-namespace FastyBird\Connector\HomeKit\Entities\Protocol\Services;
+namespace FastyBird\Connector\HomeKit\Protocol\Services;
 
 /**
- * HAP accessory battery service
+ * HAP battery service
  *
  * @package        FastyBird:HomeKitConnector!
- * @subpackage     Entities
+ * @subpackage     Protocol
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */

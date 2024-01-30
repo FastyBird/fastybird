@@ -15,6 +15,7 @@
 
 namespace FastyBird\Connector\HomeKit\Servers;
 
+use Composer;
 use Doctrine\DBAL;
 use FastyBird\Connector\HomeKit;
 use FastyBird\Connector\HomeKit\Clients;
@@ -38,18 +39,32 @@ use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use Hashids;
 use Nette;
+use Nette\Utils;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Ramsey\Uuid;
 use React\EventLoop;
 use React\Http as ReactHttp;
 use React\Socket;
 use Throwable;
+use z4kn4fein\SemVer;
+use function array_intersect;
 use function array_map;
+use function array_values;
 use function assert;
+use function floatval;
 use function hex2bin;
 use function intval;
+use function is_array;
 use function is_string;
+use function preg_match;
+use function sprintf;
+use function str_replace;
+use function str_split;
+use function strval;
+use function ucwords;
 use function usort;
 
 /**
@@ -75,19 +90,30 @@ final class Http implements Server
 
 	private SecureServer|null $socket = null;
 
+	private Hashids\Hashids $hashIds;
+
+	/**
+	 * @param array<Protocol\Accessories\AccessoryFactory> $accessoryFactories
+	 * @param array<Protocol\Services\ServiceFactory> $serviceFactories
+	 * @param array<Protocol\Characteristics\CharacteristicFactory> $characteristicsFactories
+	 *
+	 * @throws Hashids\HashidsException
+	 */
 	public function __construct(
 		private readonly MetadataDocuments\DevicesModule\Connector $connector,
 		private readonly Middleware\Router $routerMiddleware,
 		private readonly SecureServerFactory $secureServerFactory,
 		private readonly Clients\Subscriber $subscriber,
 		private readonly Protocol\Driver $accessoriesDriver,
-		private readonly Entities\Protocol\AccessoryFactory $accessoryFactory,
-		private readonly Entities\Protocol\ServiceFactory $serviceFactory,
-		private readonly Entities\Protocol\CharacteristicsFactory $characteristicsFactory,
+		private readonly Protocol\Accessories\BridgeFactory $bridgeAccessoryFactory,
+		private readonly array $accessoryFactories,
+		private readonly array $serviceFactories,
+		private readonly array $characteristicsFactories,
 		private readonly Helpers\Entity $entityHelper,
 		private readonly Helpers\Connector $connectorHelper,
 		private readonly Helpers\Device $deviceHelper,
 		private readonly Helpers\Channel $channelHelper,
+		private readonly Helpers\Loader $loader,
 		private readonly Queue\Queue $queue,
 		private readonly HomeKit\Logger $logger,
 		private readonly ApplicationHelpers\Database $databaseHelper,
@@ -102,6 +128,7 @@ final class Http implements Server
 		private readonly EventLoop\LoopInterface $eventLoop,
 	)
 	{
+		$this->hashIds = new Hashids\Hashids();
 	}
 
 	/**
@@ -118,16 +145,17 @@ final class Http implements Server
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws Nette\IOException
+	 * @throws SemVer\SemverException
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function connect(): void
 	{
-		$bridge = $this->accessoryFactory->create(
+		$bridge = $this->buildAccessory(
 			$this->connector,
 			null,
 			Types\AccessoryCategory::get(Types\AccessoryCategory::BRIDGE),
 		);
-		assert($bridge instanceof Entities\Protocol\Accessories\Bridge);
+		assert($bridge instanceof Protocol\Accessories\Bridge);
 
 		$this->accessoriesDriver->reset();
 		$this->accessoriesDriver->addBridge($bridge);
@@ -136,7 +164,6 @@ final class Http implements Server
 
 		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDevicesQuery->forConnector($this->connector);
-		$findDevicesQuery->byType(Entities\HomeKitDevice::TYPE);
 
 		foreach ($this->devicesConfigurationRepository->findAllBy($findDevicesQuery) as $device) {
 			$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
@@ -154,19 +181,18 @@ final class Http implements Server
 				$aid = intval(MetadataUtilities\Value::flattenValue($aid));
 			}
 
-			$accessory = $this->accessoryFactory->create(
+			$accessory = $this->buildAccessory(
 				$device,
 				$aid,
 				$this->deviceHelper->getAccessoryCategory($device),
 			);
-			assert($accessory instanceof Entities\Protocol\Accessories\Generic);
+			assert($accessory instanceof Protocol\Accessories\Generic);
 
 			$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
 			$findChannelsQuery->forDevice($device);
-			$findChannelsQuery->byType(Entities\HomeKitChannel::TYPE);
 
 			foreach ($this->channelsConfigurationRepository->findAllBy($findChannelsQuery) as $channel) {
-				$service = $this->serviceFactory->create(
+				$service = $this->buildService(
 					$this->channelHelper->getServiceType($channel),
 					$accessory,
 					$channel,
@@ -180,7 +206,7 @@ final class Http implements Server
 				) as $property) {
 					$format = $property->getFormat();
 
-					$characteristic = $this->characteristicsFactory->create(
+					$characteristic = $this->buildCharacteristic(
 						$property->getIdentifier(),
 						$service,
 						$property,
@@ -207,7 +233,7 @@ final class Http implements Server
 
 		usort(
 			$bridgedAccessories,
-			static function (Entities\Protocol\Accessories\Generic $a, Entities\Protocol\Accessories\Generic $b) {
+			static function (Protocol\Accessories\Generic $a, Protocol\Accessories\Generic $b) {
 				if ($a->getAid() === null) {
 					return 1;
 				}
@@ -245,7 +271,7 @@ final class Http implements Server
 						);
 						assert($device instanceof Entities\HomeKitDevice);
 
-						$this->devicesPropertiesManager->create(Nette\Utils\ArrayHash::from([
+						$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 							'entity' => DevicesEntities\Devices\Properties\Variable::class,
 							'identifier' => Types\DevicePropertyIdentifier::AID,
 							'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
@@ -363,70 +389,54 @@ final class Http implements Server
 			);
 		}
 
-		try {
-			$this->logger->debug(
-				'Creating HAP web server',
-				[
-					'source' => MetadataTypes\ConnectorSource::HOMEKIT,
-					'type' => 'http-server',
-					'connector' => [
-						'id' => $this->connector->getId()->toString(),
-					],
-					'server' => [
-						'address' => self::LISTENING_ADDRESS,
-						'port' => $this->connectorHelper->getPort($this->connector),
-					],
-				],
-			);
-
-			$this->socket = $this->secureServerFactory->create(
-				$this->connector,
-				new Socket\SocketServer(
-					self::LISTENING_ADDRESS . ':' . $this->connectorHelper->getPort($this->connector),
-					[],
-					$this->eventLoop,
-				),
-			);
-		} catch (Throwable $ex) {
-			$this->logger->error(
-				'Socket server could not be created',
-				[
-					'source' => MetadataTypes\ConnectorSource::HOMEKIT,
-					'type' => 'http-server',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
-					'connector' => [
-						'id' => $this->connector->getId()->toString(),
-					],
-				],
-			);
-
-			throw new DevicesExceptions\Terminate(
-				'Socket server could not be created',
-				$ex->getCode(),
-				$ex,
-			);
-		}
-
-		$this->socket->on('connection', function (Socket\ConnectionInterface $connection): void {
-			$this->logger->debug(
-				'New client has connected to server',
-				[
-					'source' => MetadataTypes\ConnectorSource::HOMEKIT,
-					'type' => 'http-server',
-					'connector' => [
-						'id' => $this->connector->getId()->toString(),
-					],
-					'client' => [
-						'address' => $connection->getRemoteAddress(),
-					],
-				],
-			);
-
-			$this->subscriber->registerConnection($connection);
-
-			$connection->on('close', function () use ($connection): void {
+		$this->eventLoop->futureTick(function (): void {
+			try {
 				$this->logger->debug(
-					'Connected client has closed connection',
+					'Creating HAP web server',
+					[
+						'source' => MetadataTypes\ConnectorSource::HOMEKIT,
+						'type' => 'http-server',
+						'connector' => [
+							'id' => $this->connector->getId()->toString(),
+						],
+						'server' => [
+							'address' => self::LISTENING_ADDRESS,
+							'port' => $this->connectorHelper->getPort($this->connector),
+						],
+					],
+				);
+
+				$this->socket = $this->secureServerFactory->create(
+					$this->connector,
+					new Socket\SocketServer(
+						self::LISTENING_ADDRESS . ':' . $this->connectorHelper->getPort($this->connector),
+						[],
+						$this->eventLoop,
+					),
+				);
+			} catch (Throwable $ex) {
+				$this->logger->error(
+					'Socket server could not be created',
+					[
+						'source' => MetadataTypes\ConnectorSource::HOMEKIT,
+						'type' => 'http-server',
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
+						'connector' => [
+							'id' => $this->connector->getId()->toString(),
+						],
+					],
+				);
+
+				throw new DevicesExceptions\Terminate(
+					'Socket server could not be created',
+					$ex->getCode(),
+					$ex,
+				);
+			}
+
+			$this->socket->on('connection', function (Socket\ConnectionInterface $connection): void {
+				$this->logger->debug(
+					'New client has connected to server',
 					[
 						'source' => MetadataTypes\ConnectorSource::HOMEKIT,
 						'type' => 'http-server',
@@ -439,86 +449,104 @@ final class Http implements Server
 					],
 				);
 
-				$this->subscriber->unregisterConnection($connection);
+				$this->subscriber->registerConnection($connection);
+
+				$connection->on('close', function () use ($connection): void {
+					$this->logger->debug(
+						'Connected client has closed connection',
+						[
+							'source' => MetadataTypes\ConnectorSource::HOMEKIT,
+							'type' => 'http-server',
+							'connector' => [
+								'id' => $this->connector->getId()->toString(),
+							],
+							'client' => [
+								'address' => $connection->getRemoteAddress(),
+							],
+						],
+					);
+
+					$this->subscriber->unregisterConnection($connection);
+				});
 			});
-		});
 
-		$this->socket->on('error', function (Throwable $ex): void {
-			$this->logger->error(
-				'An error occurred during socket handling',
-				[
-					'source' => MetadataTypes\ConnectorSource::HOMEKIT,
-					'type' => 'http-server',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
-					'connector' => [
-						'id' => $this->connector->getId()->toString(),
+			$this->socket->on('error', function (Throwable $ex): void {
+				$this->logger->error(
+					'An error occurred during socket handling',
+					[
+						'source' => MetadataTypes\ConnectorSource::HOMEKIT,
+						'type' => 'http-server',
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
+						'connector' => [
+							'id' => $this->connector->getId()->toString(),
+						],
 					],
-				],
-			);
-
-			throw new DevicesExceptions\Terminate(
-				'HTTP server was terminated',
-				$ex->getCode(),
-				$ex,
-			);
-		});
-
-		$this->socket->on('close', function (): void {
-			$this->logger->info(
-				'Server was closed',
-				[
-					'source' => MetadataTypes\ConnectorSource::HOMEKIT,
-					'type' => 'http-server',
-					'connector' => [
-						'id' => $this->connector->getId()->toString(),
-					],
-				],
-			);
-		});
-
-		$server = new ReactHttp\HttpServer(
-			$this->eventLoop,
-			function (ServerRequestInterface $request, callable $next): ResponseInterface {
-				$request = $request->withAttribute(
-					self::REQUEST_ATTRIBUTE_CONNECTOR,
-					$this->connector->getId()->toString(),
 				);
 
-				return $next($request);
-			},
-			$this->routerMiddleware,
-		);
-		$server->listen($this->socket);
+				throw new DevicesExceptions\Terminate(
+					'HTTP server was terminated',
+					$ex->getCode(),
+					$ex,
+				);
+			});
 
-		$server->on('error', function (Throwable $ex): void {
-			$this->logger->error(
-				'An error occurred during server handling',
-				[
-					'source' => MetadataTypes\ConnectorSource::HOMEKIT,
-					'type' => 'http-server',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
-					'connector' => [
-						'id' => $this->connector->getId()->toString(),
+			$this->socket->on('close', function (): void {
+				$this->logger->info(
+					'Server was closed',
+					[
+						'source' => MetadataTypes\ConnectorSource::HOMEKIT,
+						'type' => 'http-server',
+						'connector' => [
+							'id' => $this->connector->getId()->toString(),
+						],
 					],
-				],
+				);
+			});
+
+			$server = new ReactHttp\HttpServer(
+				$this->eventLoop,
+				function (ServerRequestInterface $request, callable $next): ResponseInterface {
+					$request = $request->withAttribute(
+						self::REQUEST_ATTRIBUTE_CONNECTOR,
+						$this->connector->getId()->toString(),
+					);
+
+					return $next($request);
+				},
+				$this->routerMiddleware,
+			);
+			$server->listen($this->socket);
+
+			$server->on('error', function (Throwable $ex): void {
+				$this->logger->error(
+					'An error occurred during server handling',
+					[
+						'source' => MetadataTypes\ConnectorSource::HOMEKIT,
+						'type' => 'http-server',
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
+						'connector' => [
+							'id' => $this->connector->getId()->toString(),
+						],
+					],
+				);
+
+				throw new DevicesExceptions\Terminate(
+					'HTTP server was terminated',
+					$ex->getCode(),
+					$ex,
+				);
+			});
+
+			$this->connectorsPropertiesManager->on(
+				DevicesConstants::EVENT_ENTITY_CREATED,
+				[$this, 'setSharedKey'],
 			);
 
-			throw new DevicesExceptions\Terminate(
-				'HTTP server was terminated',
-				$ex->getCode(),
-				$ex,
+			$this->connectorsPropertiesManager->on(
+				DevicesConstants::EVENT_ENTITY_UPDATED,
+				[$this, 'setSharedKey'],
 			);
 		});
-
-		$this->connectorsPropertiesManager->on(
-			DevicesConstants::EVENT_ENTITY_CREATED,
-			[$this, 'setSharedKey'],
-		);
-
-		$this->connectorsPropertiesManager->on(
-			DevicesConstants::EVENT_ENTITY_UPDATED,
-			[$this, 'setSharedKey'],
-		);
 	}
 
 	public function disconnect(): void
@@ -579,6 +607,407 @@ final class Http implements Server
 				is_string($property->getValue()) ? (string) hex2bin($property->getValue()) : null,
 			);
 		}
+	}
+
+	/**
+	 * @throws DBAL\Exception
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\Runtime
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws Nette\IOException
+	 * @throws SemVer\SemverException
+	 */
+	private function buildAccessory(
+		MetadataDocuments\DevicesModule\Connector|MetadataDocuments\DevicesModule\Device $owner,
+		int|null $aid = null,
+		Types\AccessoryCategory|null $category = null,
+	): Protocol\Accessories\Accessory
+	{
+		$category ??= Types\AccessoryCategory::get(Types\AccessoryCategory::OTHER);
+
+		if ($category->equalsValue(Types\AccessoryCategory::BRIDGE)) {
+			if (!$owner instanceof MetadataDocuments\DevicesModule\Connector) {
+				throw new Exceptions\InvalidArgument('Bridge accessory owner have to be connector item instance');
+			}
+
+			$accessory = $this->bridgeAccessoryFactory->create($owner->getName() ?? $owner->getIdentifier(), $owner);
+		} else {
+			if (!$owner instanceof MetadataDocuments\DevicesModule\Device) {
+				throw new Exceptions\InvalidArgument('Device accessory owner have to be device item instance');
+			}
+
+			$accessory = null;
+
+			foreach ($this->accessoryFactories as $accessoryFactory) {
+				if ($owner->getType() === $accessoryFactory->getEntityClass()::getType()) {
+					$accessory = $accessoryFactory->create(
+						$owner->getName() ?? $owner->getIdentifier(),
+						$aid,
+						$category,
+						$owner,
+					);
+
+					break;
+				}
+			}
+
+			if ($accessory === null) {
+				throw new Exceptions\InvalidState('Accessory could not be created');
+			}
+		}
+
+		/**
+		 * ACCESSORY INFORMATION SERVICE
+		 */
+
+		$accessoryInformation = $this->buildService(
+			Types\ServiceType::get(Types\ServiceType::ACCESSORY_INFORMATION),
+			$accessory,
+		);
+
+		// NAME CHARACTERISTIC
+		$accessoryName = $this->buildCharacteristic(
+			Types\ChannelPropertyIdentifier::NAME,
+			$accessoryInformation,
+		);
+		$accessoryName->setValue($owner->getName() ?? $owner->getIdentifier());
+
+		$accessoryInformation->addCharacteristic($accessoryName);
+
+		// SERIAL NUMBER
+		$accessorySerialNumber = $this->buildCharacteristic(
+			Types\ChannelPropertyIdentifier::SERIAL_NUMBER,
+			$accessoryInformation,
+		);
+
+		if ($owner instanceof MetadataDocuments\DevicesModule\Device) {
+			$serialNumber = $this->deviceHelper->getSerialNumber($owner);
+
+			if ($serialNumber === null) {
+				$serialNumber = $this->hashIds->encode(
+					...array_map(
+						static fn (string $part): int => intval($part),
+						str_split($owner->getId()->getInteger()->toString(), 5),
+					),
+				);
+
+				$this->databaseHelper->transaction(
+					function () use ($owner, $serialNumber): void {
+						$device = $this->devicesRepository->find(
+							$owner->getId(),
+							Entities\HomeKitDevice::class,
+						);
+						assert($device instanceof Entities\HomeKitDevice);
+
+						$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
+							'entity' => DevicesEntities\Devices\Properties\Variable::class,
+							'identifier' => Types\DevicePropertyIdentifier::SERIAL_NUMBER,
+							'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+							'value' => $serialNumber,
+							'device' => $device,
+						]));
+					},
+				);
+			}
+		} else {
+			$accessorySerialNumber->setValue(
+				$this->hashIds->encode(
+					...array_map(
+						static fn (string $part): int => intval($part),
+						str_split($owner->getId()->getInteger()->toString(), 5),
+					),
+				),
+			);
+		}
+
+		$accessoryInformation->addCharacteristic($accessorySerialNumber);
+
+		// FIRMWARE REVISION
+		$accessoryFirmwareRevision = $this->buildCharacteristic(
+			Types\ChannelPropertyIdentifier::FIRMWARE_REVISION,
+			$accessoryInformation,
+		);
+
+		if ($owner instanceof MetadataDocuments\DevicesModule\Device) {
+			$firmwareVersion = $this->deviceHelper->getFirmwareVersion($owner);
+
+			if ($firmwareVersion === null) {
+				$firmwareVersion = SemVer\Version::parse('1.0.0');
+
+				$this->databaseHelper->transaction(
+					function () use ($owner, $firmwareVersion): void {
+						$device = $this->devicesRepository->find(
+							$owner->getId(),
+							Entities\HomeKitDevice::class,
+						);
+						assert($device instanceof Entities\HomeKitDevice);
+
+						$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
+							'entity' => DevicesEntities\Devices\Properties\Variable::class,
+							'identifier' => Types\DevicePropertyIdentifier::VERSION,
+							'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+							'value' => strval($firmwareVersion),
+							'device' => $device,
+						]));
+					},
+				);
+			}
+
+			$accessoryFirmwareRevision->setValue(strval($firmwareVersion));
+		} else {
+			$packageRevision = Composer\InstalledVersions::getVersion(HomeKit\Constants::PACKAGE_NAME);
+
+			$accessoryFirmwareRevision->setValue(
+				$packageRevision !== null && preg_match(
+					HomeKit\Constants::VERSION_REGEXP,
+					$packageRevision,
+				) === 1 ? $packageRevision : '0.0.0',
+			);
+		}
+
+		$accessoryInformation->addCharacteristic($accessoryFirmwareRevision);
+
+		// MANUFACTURER
+		$accessoryManufacturer = $this->buildCharacteristic(
+			Types\ChannelPropertyIdentifier::MANUFACTURER,
+			$accessoryInformation,
+		);
+		$accessoryManufacturer->setValue(HomeKit\Constants::DEFAULT_MANUFACTURER);
+
+		$accessoryInformation->addCharacteristic($accessoryManufacturer);
+
+		// MODEL NAME
+		$accessoryModel = $this->buildCharacteristic(
+			Types\ChannelPropertyIdentifier::MODEL,
+			$accessoryInformation,
+		);
+
+		if ($accessory instanceof Protocol\Accessories\Bridge) {
+			$accessoryModel->setValue(HomeKit\Constants::DEFAULT_BRIDGE_MODEL);
+		} else {
+			$accessoryModel->setValue(HomeKit\Constants::DEFAULT_DEVICE_MODEL);
+		}
+
+		$accessoryInformation->addCharacteristic($accessoryModel);
+
+		// IDENTIFY SUPPORT
+		$accessoryIdentify = $this->buildCharacteristic(
+			Types\ChannelPropertyIdentifier::IDENTIFY,
+			$accessoryInformation,
+		);
+		$accessoryIdentify->setValue(false);
+
+		$accessoryInformation->addCharacteristic($accessoryIdentify);
+
+		$accessory->addService($accessoryInformation);
+
+		if ($accessory instanceof Protocol\Accessories\Bridge) {
+			$accessoryProtocolInformation = new Protocol\Services\Service(
+				Uuid\Uuid::fromString(Protocol\Services\Service::HAP_PROTOCOL_INFORMATION_SERVICE_UUID),
+				Types\ServiceType::get(Types\ServiceType::PROTOCOL_INFORMATION),
+				$accessory,
+				null,
+				['Version'],
+			);
+
+			$accessoryProtocolVersion = $this->buildCharacteristic(
+				Types\ChannelPropertyIdentifier::VERSION,
+				$accessoryProtocolInformation,
+			);
+			$accessoryProtocolVersion->setValue(HomeKit\Constants::HAP_PROTOCOL_VERSION);
+
+			$accessoryProtocolInformation->addCharacteristic($accessoryProtocolVersion);
+
+			$accessory->addService($accessoryProtocolInformation);
+		}
+
+		return $accessory;
+	}
+
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws Nette\IOException
+	 */
+	private function buildService(
+		Types\ServiceType $type,
+		Protocol\Accessories\Accessory $accessory,
+		MetadataDocuments\DevicesModule\Channel|null $channel = null,
+	): Protocol\Services\Service
+	{
+		$metadata = $this->loader->loadServices();
+
+		if (!$metadata->offsetExists(strval($type->getValue()))) {
+			throw new Exceptions\InvalidArgument(sprintf(
+				'Definition for service: %s was not found',
+				strval($type->getValue()),
+			));
+		}
+
+		$serviceMetadata = $metadata->offsetGet(strval($type->getValue()));
+
+		if (
+			!$serviceMetadata instanceof Utils\ArrayHash
+			|| !$serviceMetadata->offsetExists('UUID')
+			|| !is_string($serviceMetadata->offsetGet('UUID'))
+			|| !$serviceMetadata->offsetExists('RequiredCharacteristics')
+			|| !$serviceMetadata->offsetGet('RequiredCharacteristics') instanceof Utils\ArrayHash
+		) {
+			throw new Exceptions\InvalidState('Service definition is missing required attributes');
+		}
+
+		foreach ($this->serviceFactories as $serviceFactory) {
+			if (
+				$channel?->getType() === $serviceFactory->getEntityClass()::getType()
+				|| (
+					$type->equalsValue(Types\ServiceType::ACCESSORY_INFORMATION)
+					&& $serviceFactory instanceof Protocol\Services\GenericFactory
+				)
+			) {
+				return $serviceFactory->create(
+					Helpers\Protocol::hapTypeToUuid(strval($serviceMetadata->offsetGet('UUID'))),
+					$type,
+					$accessory,
+					$channel,
+					(array) $serviceMetadata->offsetGet('RequiredCharacteristics'),
+					$serviceMetadata->offsetExists('OptionalCharacteristics') && $serviceMetadata->offsetGet(
+						'OptionalCharacteristics',
+					) instanceof Utils\ArrayHash ? (array) $serviceMetadata->offsetGet(
+						'OptionalCharacteristics',
+					) : [],
+					$serviceMetadata->offsetExists('VirtualCharacteristics') && $serviceMetadata->offsetGet(
+						'VirtualCharacteristics',
+					) instanceof Utils\ArrayHash ? (array) $serviceMetadata->offsetGet(
+						'VirtualCharacteristics',
+					) : [],
+				);
+			}
+		}
+
+		throw new Exceptions\InvalidState('Service could not be created');
+	}
+
+	/**
+	 * @param array<int>|null $validValues
+	 *
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws Nette\IOException
+	 */
+	public function buildCharacteristic(
+		string $name,
+		Protocol\Services\Service $service,
+		MetadataDocuments\DevicesModule\ChannelProperty|null $property = null,
+		array|null $validValues = [],
+		int|null $maxLength = null,
+		float|null $minValue = null,
+		float|null $maxValue = null,
+		float|null $minStep = null,
+		Types\CharacteristicUnit|null $unit = null,
+	): Protocol\Characteristics\Characteristic
+	{
+		$name = str_replace(' ', '', ucwords(str_replace('_', ' ', $name)));
+
+		$metadata = $this->loader->loadCharacteristics();
+
+		if (!$metadata->offsetExists($name)) {
+			throw new Exceptions\InvalidArgument(sprintf(
+				'Definition for characteristic: %s was not found',
+				$name,
+			));
+		}
+
+		$characteristicsMetadata = $metadata->offsetGet($name);
+
+		if (
+			!$characteristicsMetadata instanceof Utils\ArrayHash
+			|| !$characteristicsMetadata->offsetExists('UUID')
+			|| !is_string($characteristicsMetadata->offsetGet('UUID'))
+			|| !$characteristicsMetadata->offsetExists('Format')
+			|| !is_string($characteristicsMetadata->offsetGet('Format'))
+			|| !Types\DataType::isValidValue($characteristicsMetadata->offsetGet('Format'))
+			|| !$characteristicsMetadata->offsetExists('Permissions')
+			|| !$characteristicsMetadata->offsetGet('Permissions') instanceof Utils\ArrayHash
+		) {
+			throw new Exceptions\InvalidState('Characteristic definition is missing required attributes');
+		}
+
+		if (
+			$unit === null
+			&& $characteristicsMetadata->offsetExists('Unit')
+			&& Types\CharacteristicUnit::isValidValue($characteristicsMetadata->offsetGet('Unit'))
+		) {
+			$unit = Types\CharacteristicUnit::get($characteristicsMetadata->offsetGet('Unit'));
+		}
+
+		if ($minValue === null && $characteristicsMetadata->offsetExists('MinValue')) {
+			$minValue = floatval($characteristicsMetadata->offsetGet('MinValue'));
+		}
+
+		if ($maxValue === null && $characteristicsMetadata->offsetExists('MaxValue')) {
+			$maxValue = floatval($characteristicsMetadata->offsetGet('MaxValue'));
+		}
+
+		if ($minStep === null && $characteristicsMetadata->offsetExists('MinStep')) {
+			$minStep = floatval($characteristicsMetadata->offsetGet('MinStep'));
+		}
+
+		if ($maxLength === null && $characteristicsMetadata->offsetExists('MaximumLength')) {
+			$maxLength = intval($characteristicsMetadata->offsetGet('MaximumLength'));
+		}
+
+		if ($characteristicsMetadata->offsetExists('ValidValues')) {
+			$defaultValidValues = is_array($characteristicsMetadata->offsetGet('ValidValues'))
+				? array_values(
+					$characteristicsMetadata->offsetGet('ValidValues'),
+				)
+				: null;
+
+			$validValues = $validValues !== null && $defaultValidValues !== null
+				? array_values(
+					array_intersect($validValues, $defaultValidValues),
+				)
+				: $defaultValidValues;
+
+			if (is_array($validValues)) {
+				$validValues = array_map(static fn ($item): int => intval($item), $validValues);
+			}
+		} else {
+			$validValues = null;
+		}
+
+		foreach ($this->characteristicsFactories as $characteristicFactory) {
+			if (
+				(
+					$characteristicFactory->getEntityClass() !== null
+					&& $property?->getType() === $characteristicFactory->getEntityClass()::getType()
+				) || (
+					$service->getChannel() === null
+					&& $characteristicFactory instanceof Protocol\Characteristics\GenericFactory
+				)
+			) {
+				return $characteristicFactory->create(
+					Helpers\Protocol::hapTypeToUuid(strval($characteristicsMetadata->offsetGet('UUID'))),
+					$name,
+					Types\DataType::get($characteristicsMetadata->offsetGet('Format')),
+					(array) $characteristicsMetadata->offsetGet('Permissions'),
+					$service,
+					$property,
+					$validValues,
+					$maxLength,
+					$minValue,
+					$maxValue,
+					$minStep,
+					$unit,
+				);
+			}
+		}
+
+		throw new Exceptions\InvalidState('Characteristic could not be created');
 	}
 
 }

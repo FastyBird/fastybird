@@ -27,7 +27,7 @@ class FbMqttChannel extends DevicesEntities\Channels\Channel
 
 	public const TYPE = 'fb-mqtt-connector';
 
-	public function getType(): string
+	public static function getType(): string
 	{
 		return self::TYPE;
 	}

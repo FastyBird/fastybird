@@ -270,7 +270,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 			'write_01' => [
 				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
 					$property01,
-					MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::DYNAMIC),
+					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::GENERIC),
 					'test-property-01',
@@ -302,7 +302,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 			'write_02' => [
 				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
 					$property01,
-					MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::DYNAMIC),
+					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::GENERIC),
 					'test-property-02',
@@ -334,7 +334,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 			'write_03' => [
 				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
 					$property01,
-					MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::DYNAMIC),
+					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::GENERIC),
 					'test-property-03',
@@ -366,7 +366,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 			'write_04' => [
 				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
 					$property01,
-					MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::DYNAMIC),
+					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::GENERIC),
 					'test-property-04',
@@ -397,7 +397,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 			'write_05' => [
 				new MetadataDocuments\DevicesModule\ChannelMappedProperty(
 					$child01,
-					MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::MAPPED),
+					MetadataTypes\PropertyType::MAPPED,
 					$channel02,
 					$property01,
 					MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::GENERIC),
@@ -414,7 +414,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 				),
 				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
 					$property01,
-					MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::DYNAMIC),
+					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::GENERIC),
 					'test-property-05',
@@ -445,7 +445,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 			'write_06' => [
 				new MetadataDocuments\DevicesModule\ChannelMappedProperty(
 					$child01,
-					MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::MAPPED),
+					MetadataTypes\PropertyType::MAPPED,
 					$channel02,
 					$property01,
 					MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::GENERIC),
@@ -462,7 +462,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 				),
 				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
 					$property01,
-					MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::DYNAMIC),
+					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::GENERIC),
 					'test-property-06',
@@ -493,7 +493,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 			'write_07' => [
 				new MetadataDocuments\DevicesModule\ChannelMappedProperty(
 					$child01,
-					MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::MAPPED),
+					MetadataTypes\PropertyType::MAPPED,
 					$channel02,
 					$property01,
 					MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::GENERIC),
@@ -510,7 +510,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 				),
 				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
 					$property01,
-					MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::DYNAMIC),
+					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::GENERIC),
 					'test-property-07',
@@ -541,7 +541,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 			'write_08' => [
 				new MetadataDocuments\DevicesModule\ChannelMappedProperty(
 					$child01,
-					MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::MAPPED),
+					MetadataTypes\PropertyType::MAPPED,
 					$channel02,
 					$property01,
 					MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::GENERIC),
@@ -558,7 +558,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 				),
 				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
 					$property01,
-					MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::DYNAMIC),
+					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::GENERIC),
 					'test-property-08',
@@ -589,7 +589,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 			'write_09' => [
 				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
 					$property01,
-					MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::DYNAMIC),
+					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::GENERIC),
 					'test-property-09',
@@ -620,7 +620,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 			'write_10' => [
 				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
 					$property01,
-					MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::DYNAMIC),
+					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::GENERIC),
 					'test-property-10',
@@ -651,7 +651,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 			'write_11' => [
 				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
 					$property01,
-					MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::DYNAMIC),
+					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::GENERIC),
 					'test-property-11',
@@ -696,7 +696,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 			'set_01' => [
 				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
 					$property01,
-					MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::DYNAMIC),
+					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::GENERIC),
 					'test-property-01',
@@ -731,7 +731,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 			'set_02' => [
 				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
 					$property01,
-					MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::DYNAMIC),
+					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::GENERIC),
 					'test-property-02',
@@ -766,7 +766,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 			'set_03' => [
 				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
 					$property01,
-					MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::DYNAMIC),
+					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::GENERIC),
 					'test-property-03',
@@ -801,7 +801,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 			'set_04' => [
 				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
 					$property01,
-					MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::DYNAMIC),
+					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::GENERIC),
 					'test-property-04',
@@ -836,7 +836,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 			'set_05' => [
 				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
 					$property01,
-					MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::DYNAMIC),
+					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::GENERIC),
 					'test-property-05',
@@ -870,7 +870,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 			'set_06' => [
 				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
 					$property01,
-					MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::DYNAMIC),
+					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::GENERIC),
 					'test-property-06',
@@ -904,7 +904,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 			'set_07' => [
 				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
 					$property01,
-					MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::DYNAMIC),
+					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::GENERIC),
 					'test-property-07',
@@ -938,7 +938,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 			'set_08' => [
 				new MetadataDocuments\DevicesModule\ChannelMappedProperty(
 					$child01,
-					MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::MAPPED),
+					MetadataTypes\PropertyType::MAPPED,
 					$channel02,
 					$property01,
 					MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::GENERIC),
@@ -955,7 +955,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 				),
 				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
 					$property01,
-					MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::DYNAMIC),
+					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::GENERIC),
 					'test-property-08',
@@ -986,7 +986,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 			'set_09' => [
 				new MetadataDocuments\DevicesModule\ChannelMappedProperty(
 					$child01,
-					MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::MAPPED),
+					MetadataTypes\PropertyType::MAPPED,
 					$channel02,
 					$property01,
 					MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::GENERIC),
@@ -1003,7 +1003,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 				),
 				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
 					$property01,
-					MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::DYNAMIC),
+					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::GENERIC),
 					'test-property-09',
@@ -1034,7 +1034,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 			'set_10' => [
 				new MetadataDocuments\DevicesModule\ChannelMappedProperty(
 					$child01,
-					MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::MAPPED),
+					MetadataTypes\PropertyType::MAPPED,
 					$channel02,
 					$property01,
 					MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::GENERIC),
@@ -1051,7 +1051,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 				),
 				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
 					$property01,
-					MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::DYNAMIC),
+					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::GENERIC),
 					'test-property-10',
@@ -1082,7 +1082,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 			'set_11' => [
 				new MetadataDocuments\DevicesModule\ChannelMappedProperty(
 					$child01,
-					MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::MAPPED),
+					MetadataTypes\PropertyType::MAPPED,
 					$channel02,
 					$property01,
 					MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::GENERIC),
@@ -1099,7 +1099,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 				),
 				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
 					$property01,
-					MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::DYNAMIC),
+					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::GENERIC),
 					'test-property-11',
@@ -1132,7 +1132,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 			'set_12' => [
 				new MetadataDocuments\DevicesModule\ChannelMappedProperty(
 					$child01,
-					MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::MAPPED),
+					MetadataTypes\PropertyType::MAPPED,
 					$channel02,
 					$property01,
 					MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::GENERIC),
@@ -1149,7 +1149,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 				),
 				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
 					$property01,
-					MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::DYNAMIC),
+					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::GENERIC),
 					'test-property-12',
@@ -1179,7 +1179,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 			'set_13' => [
 				new MetadataDocuments\DevicesModule\ChannelMappedProperty(
 					$child01,
-					MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::MAPPED),
+					MetadataTypes\PropertyType::MAPPED,
 					$channel02,
 					$property01,
 					MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::GENERIC),
@@ -1196,7 +1196,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 				),
 				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
 					$property01,
-					MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::DYNAMIC),
+					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::GENERIC),
 					'test-property-13',
@@ -1226,7 +1226,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 			'set_14' => [
 				new MetadataDocuments\DevicesModule\ChannelMappedProperty(
 					$child01,
-					MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::MAPPED),
+					MetadataTypes\PropertyType::MAPPED,
 					$channel02,
 					$property01,
 					MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::GENERIC),
@@ -1243,7 +1243,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 				),
 				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
 					$property01,
-					MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::DYNAMIC),
+					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::GENERIC),
 					'test-property-14',
@@ -1273,7 +1273,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 			'set_15' => [
 				new MetadataDocuments\DevicesModule\ChannelMappedProperty(
 					$child01,
-					MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::MAPPED),
+					MetadataTypes\PropertyType::MAPPED,
 					$channel02,
 					$property01,
 					MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::GENERIC),
@@ -1290,7 +1290,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 				),
 				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
 					$property01,
-					MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::DYNAMIC),
+					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::GENERIC),
 					'test-property-15',
@@ -1317,7 +1317,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 			'set_16' => [
 				new MetadataDocuments\DevicesModule\ChannelMappedProperty(
 					$child01,
-					MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::MAPPED),
+					MetadataTypes\PropertyType::MAPPED,
 					$channel02,
 					$property01,
 					MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::GENERIC),
@@ -1357,7 +1357,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 				),
 				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
 					$property01,
-					MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::DYNAMIC),
+					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::GENERIC),
 					'test-property-16',

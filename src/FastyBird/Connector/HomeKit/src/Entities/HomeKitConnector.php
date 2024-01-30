@@ -45,7 +45,7 @@ class HomeKitConnector extends DevicesEntities\Connectors\Connector
 	 */
 	protected Common\Collections\Collection $clients;
 
-	public function getType(): string
+	public static function getType(): string
 	{
 		return self::TYPE;
 	}

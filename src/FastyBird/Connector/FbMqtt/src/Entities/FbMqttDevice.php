@@ -27,7 +27,7 @@ class FbMqttDevice extends DevicesEntities\Devices\Device
 
 	public const TYPE = 'fb-mqtt-connector';
 
-	public function getType(): string
+	public static function getType(): string
 	{
 		return self::TYPE;
 	}

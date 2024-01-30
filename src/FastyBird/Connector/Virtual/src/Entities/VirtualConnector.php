@@ -27,7 +27,7 @@ class VirtualConnector extends DevicesEntities\Connectors\Connector
 
 	public const TYPE = 'virtual-connector';
 
-	public function getType(): string
+	public static function getType(): string
 	{
 		return self::TYPE;
 	}

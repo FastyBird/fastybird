@@ -22,13 +22,14 @@ use FastyBird\Module\Devices\Schemas as DevicesSchemas;
 /**
  * HomeKit channel entity schema
  *
- * @extends DevicesSchemas\Channels\Channel<Entities\HomeKitChannel>
+ * @template T of Entities\HomeKitChannel
+ * @extends  DevicesSchemas\Channels\Channel<T>
  *
  * @package        FastyBird:HomeKitConnector!
  * @subpackage     Schemas
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class HomeKitChannel extends DevicesSchemas\Channels\Channel
+class HomeKitChannel extends DevicesSchemas\Channels\Channel
 {
 
 	/**

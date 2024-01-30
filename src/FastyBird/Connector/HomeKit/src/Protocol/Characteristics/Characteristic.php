@@ -7,18 +7,18 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:HomeKitConnector!
- * @subpackage     Entities
+ * @subpackage     Protocol
  * @since          1.0.0
  *
  * @date           13.09.22
  */
 
-namespace FastyBird\Connector\HomeKit\Entities\Protocol;
+namespace FastyBird\Connector\HomeKit\Protocol\Characteristics;
 
 use DateTimeInterface;
 use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Helpers;
-use FastyBird\Connector\HomeKit\Protocol\Transformer;
+use FastyBird\Connector\HomeKit\Protocol;
 use FastyBird\Connector\HomeKit\Types;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -40,7 +40,7 @@ use function strval;
  * like format, min and max values, valid values and others.
  *
  * @package        FastyBird:HomeKitConnector!
- * @subpackage     Entities
+ * @subpackage     Protocol
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
@@ -82,7 +82,7 @@ class Characteristic
 		private readonly string $name,
 		private readonly Types\DataType $dataType,
 		private readonly array $permissions,
-		private readonly Service $service,
+		private readonly Protocol\Services\Service $service,
 		private readonly MetadataDocuments\DevicesModule\ChannelProperty|null $property = null,
 		private readonly array|null $validValues = [],
 		private readonly int|null $maxLength = null,
@@ -148,7 +148,7 @@ class Characteristic
 		return $this->maxLength;
 	}
 
-	public function getService(): Service
+	public function getService(): Protocol\Services\Service
 	{
 		return $this->service;
 	}
@@ -281,7 +281,7 @@ class Characteristic
 		$hapRepresentation = array_merge($hapRepresentation, $this->getMeta());
 
 		if (in_array(Types\CharacteristicPermission::READ, $this->permissions, true)) {
-			$hapRepresentation[Types\Representation::VALUE] = Transformer::toClient(
+			$hapRepresentation[Types\Representation::VALUE] = Protocol\Transformer::toClient(
 				$this->property,
 				$this->dataType,
 				$this->validValues,

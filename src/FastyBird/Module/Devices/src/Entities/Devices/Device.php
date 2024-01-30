@@ -180,7 +180,7 @@ class Device implements Entities\Entity,
 		$this->properties = new Common\Collections\ArrayCollection();
 	}
 
-	public function getType(): string
+	public static function getType(): string
 	{
 		return self::TYPE;
 	}
@@ -404,7 +404,7 @@ class Device implements Entities\Entity,
 	{
 		return [
 			'id' => $this->getId()->toString(),
-			'type' => $this->getType(),
+			'type' => static::getType(),
 			'category' => $this->getCategory()->getValue(),
 			'identifier' => $this->getIdentifier(),
 			'name' => $this->getName(),

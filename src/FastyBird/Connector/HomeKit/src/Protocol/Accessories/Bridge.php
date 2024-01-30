@@ -7,16 +7,15 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:HomeKitConnector!
- * @subpackage     Entities
+ * @subpackage     Protocol
  * @since          1.0.0
  *
  * @date           13.09.22
  */
 
-namespace FastyBird\Connector\HomeKit\Entities\Protocol\Accessories;
+namespace FastyBird\Connector\HomeKit\Protocol\Accessories;
 
 use FastyBird\Connector\HomeKit;
-use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Types;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
@@ -27,14 +26,14 @@ use SplObjectStorage;
  * HAP bridge accessory
  *
  * @package        FastyBird:HomeKitConnector!
- * @subpackage     Entities
+ * @subpackage     Protocol
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Bridge extends Entities\Protocol\Accessory
+class Bridge extends Accessory
 {
 
-	/** @var SplObjectStorage<Generic, null> */
+	/** @var SplObjectStorage<Accessory, null> */
 	private SplObjectStorage $accessories;
 
 	public function __construct(
@@ -64,7 +63,7 @@ class Bridge extends Entities\Protocol\Accessory
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 */
-	public function addAccessory(Generic $accessory): void
+	public function addAccessory(Accessory $accessory): void
 	{
 		if ($accessory->getCategory()->equalsValue(Types\AccessoryCategory::BRIDGE)) {
 			throw new Exceptions\InvalidArgument('Bridges cannot be bridged');
@@ -114,7 +113,7 @@ class Bridge extends Entities\Protocol\Accessory
 	}
 
 	/**
-	 * @return array<Generic>
+	 * @return array<Accessory>
 	 */
 	public function getAccessories(): array
 	{
@@ -129,7 +128,7 @@ class Bridge extends Entities\Protocol\Accessory
 		return $accessories;
 	}
 
-	public function getAccessory(int $aid): Generic|null
+	public function getAccessory(int $aid): Accessory|null
 	{
 		$this->accessories->rewind();
 

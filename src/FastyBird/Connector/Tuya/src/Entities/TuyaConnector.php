@@ -31,7 +31,7 @@ class TuyaConnector extends DevicesEntities\Connectors\Connector
 
 	public const TYPE = 'tuya-connector';
 
-	public function getType(): string
+	public static function getType(): string
 	{
 		return self::TYPE;
 	}

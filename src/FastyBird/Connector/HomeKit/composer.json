@@ -61,7 +61,8 @@
     "react/promise": "^3",
     "symplify/vendor-patches": "^11.2",
     "simplito/elliptic-php": "^1.0",
-    "symfony/event-dispatcher": "^5.4"
+    "symfony/event-dispatcher": "^5.4",
+    "z4kn4fein/php-semver": "^2.0"
   },
   "require-dev": {
     "brianium/paratest": "^7.3",

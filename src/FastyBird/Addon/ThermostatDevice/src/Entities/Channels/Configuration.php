@@ -31,7 +31,7 @@ class Configuration extends Entities\ThermostatChannel
 
 	public const TYPE = 'thermostat-device-addon-configuration';
 
-	public function getType(): string
+	public static function getType(): string
 	{
 		return self::TYPE;
 	}

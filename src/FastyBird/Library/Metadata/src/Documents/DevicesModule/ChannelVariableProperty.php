@@ -42,11 +42,8 @@ final class ChannelVariableProperty extends ChannelProperty
 	 */
 	public function __construct(
 		Uuid\UuidInterface $id,
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(
-			class: Types\PropertyType::class,
-			allowedValues: [Types\PropertyType::VARIABLE],
-		)]
-		private readonly Types\PropertyType $type,
+		#[ObjectMapper\Rules\ArrayEnumValue(cases: [Types\PropertyType::VARIABLE])]
+		private readonly string $type,
 		Uuid\UuidInterface $channel,
 		Types\PropertyCategory $category,
 		string $identifier,
@@ -102,7 +99,7 @@ final class ChannelVariableProperty extends ChannelProperty
 		);
 	}
 
-	public function getType(): Types\PropertyType
+	public function getType(): string
 	{
 		return $this->type;
 	}
@@ -156,7 +153,7 @@ final class ChannelVariableProperty extends ChannelProperty
 	public function toArray(): array
 	{
 		return array_merge(parent::toArray(), [
-			'type' => $this->getType()->getValue(),
+			'type' => $this->getType(),
 			'value' => Utilities\Value::flattenValue($this->getValue()),
 			'default' => Utilities\Value::flattenValue($this->getDefault()),
 

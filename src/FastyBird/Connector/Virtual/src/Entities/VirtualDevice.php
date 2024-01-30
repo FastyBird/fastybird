@@ -33,7 +33,7 @@ class VirtualDevice extends DevicesEntities\Devices\Device
 
 	public const STATE_PROCESSING_DELAY = 120.0;
 
-	public function getType(): string
+	public static function getType(): string
 	{
 		return self::TYPE;
 	}

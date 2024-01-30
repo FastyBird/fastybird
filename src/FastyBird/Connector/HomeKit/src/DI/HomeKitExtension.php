@@ -40,6 +40,7 @@ use FastyBird\Module\Devices\DI as DevicesDI;
 use IPub\DoctrineCrud;
 use Nette\DI;
 use Nette\PhpGenerator;
+use function assert;
 use function ucfirst;
 use const DIRECTORY_SEPARATOR;
 
@@ -219,6 +220,12 @@ class HomeKitExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		$builder->addDefinition($this->prefix('schemas.channel.homekit'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\HomeKitChannel::class);
 
+		$builder->addDefinition($this->prefix('schemas.channel.lightBulb'), new DI\Definitions\ServiceDefinition())
+			->setType(Schemas\Channels\LightBulb::class);
+
+		$builder->addDefinition($this->prefix('schemas.channel.battery'), new DI\Definitions\ServiceDefinition())
+			->setType(Schemas\Channels\Battery::class);
+
 		/**
 		 * JSON-API HYDRATORS
 		 */
@@ -292,14 +299,35 @@ class HomeKitExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		 * ENTITIES
 		 */
 
-		$builder->addDefinition($this->prefix('entities.accessory.factory'))
-			->setType(Entities\Protocol\AccessoryFactory::class);
+		// ACCESSORIES
+		$builder->addDefinition($this->prefix('entities.accessory.factory.bridge'))
+			->setType(Protocol\Accessories\BridgeFactory::class);
 
-		$builder->addDefinition($this->prefix('entities.service.factory'))
-			->setType(Entities\Protocol\ServiceFactory::class);
+		$builder->addDefinition($this->prefix('entities.accessory.factory.generic'))
+			->setType(Protocol\Accessories\GenericFactory::class);
 
-		$builder->addDefinition($this->prefix('entities.characteristic.factory'))
-			->setType(Entities\Protocol\CharacteristicsFactory::class);
+		// SERVICES
+		$builder->addDefinition($this->prefix('entities.service.factory.generic'))
+			->setType(Protocol\Services\GenericFactory::class);
+
+		$builder->addDefinition($this->prefix('entities.service.factory.lightBulb'))
+			->setType(Protocol\Services\LightBulbFactory::class);
+
+		$builder->addDefinition($this->prefix('entities.service.factory.battery'))
+			->setType(Protocol\Services\BatteryFactory::class);
+
+		// CHARACTERISTICS
+		$builder->addDefinition($this->prefix('entities.characteristic.factory.generic'))
+			->setType(Protocol\Characteristics\GenericFactory::class);
+
+		$builder->addDefinition($this->prefix('entities.characteristic.factory.dynamicProperty'))
+			->setType(Protocol\Characteristics\DynamicPropertyFactory::class);
+
+		$builder->addDefinition($this->prefix('entities.characteristic.factory.mappedProperty'))
+			->setType(Protocol\Characteristics\MappedPropertyFactory::class);
+
+		$builder->addDefinition($this->prefix('entities.characteristic.factory.variableProperty'))
+			->setType(Protocol\Characteristics\VariablePropertyFactory::class);
 
 		/**
 		 * HOMEKIT
@@ -391,6 +419,30 @@ class HomeKitExtension extends DI\CompilerExtension implements Translation\DI\Tr
 				$ormAnnotationDriverService,
 				'FastyBird\Connector\HomeKit\Entities',
 			]);
+		}
+
+		/**
+		 * Protocol factories
+		 */
+
+		$httpServerServiceFactoryName = $builder->getByType(Servers\HttpFactory::class);
+
+		if ($httpServerServiceFactoryName !== null) {
+			$httpServerServiceFactory = $builder->getDefinition($httpServerServiceFactoryName);
+			assert($httpServerServiceFactory instanceof DI\Definitions\FactoryDefinition);
+
+			$accessoriesFactories = $builder->findByType(Protocol\Accessories\AccessoryFactory::class);
+			$servicesFactories = $builder->findByType(Protocol\Services\ServiceFactory::class);
+			$characteristicsFactories = $builder->findByType(
+				Protocol\Characteristics\CharacteristicFactory::class,
+			);
+
+			$httpServerServiceFactory->getResultDefinition()->setArgument('accessoryFactories', $accessoriesFactories);
+			$httpServerServiceFactory->getResultDefinition()->setArgument('serviceFactories', $servicesFactories);
+			$httpServerServiceFactory->getResultDefinition()->setArgument(
+				'characteristicsFactories',
+				$characteristicsFactories,
+			);
 		}
 	}
 

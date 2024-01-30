@@ -37,6 +37,14 @@ final class ConnectorsRepositoryTest extends DbTestCase
 
 		self::assertIsObject($entity);
 		self::assertSame('generic', $entity->getIdentifier());
+
+		$findQuery = new Queries\Configuration\FindConnectors();
+		$findQuery->byTypes(['generic', 'unknown']);
+
+		$entity = $repository->findOneBy($findQuery);
+
+		self::assertIsObject($entity);
+		self::assertSame('generic', $entity->getIdentifier());
 	}
 
 	/**

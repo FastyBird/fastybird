@@ -7,15 +7,14 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:HomeKitConnector!
- * @subpackage     Entities
+ * @subpackage     Protocol
  * @since          1.0.0
  *
  * @date           12.04.23
  */
 
-namespace FastyBird\Connector\HomeKit\Entities\Protocol\Accessories;
+namespace FastyBird\Connector\HomeKit\Protocol\Accessories;
 
-use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Types;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use Ramsey\Uuid;
@@ -24,11 +23,11 @@ use Ramsey\Uuid;
  * HAP generic device accessory
  *
  * @package        FastyBird:HomeKitConnector!
- * @subpackage     Entities
+ * @subpackage     Protocol
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Generic extends Entities\Protocol\Accessory
+class Generic extends Accessory
 {
 
 	public function __construct(

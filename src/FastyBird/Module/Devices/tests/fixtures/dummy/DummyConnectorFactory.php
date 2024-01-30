@@ -8,7 +8,7 @@ use FastyBird\Module\Devices\Connectors;
 class DummyConnectorFactory implements Connectors\ConnectorFactory
 {
 
-	public function getType(): string
+	public static function getType(): string
 	{
 		return 'dummy';
 	}

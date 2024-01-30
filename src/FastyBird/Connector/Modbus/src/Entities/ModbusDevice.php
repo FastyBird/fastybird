@@ -33,7 +33,7 @@ class ModbusDevice extends DevicesEntities\Devices\Device
 
 	public const TYPE = 'modbus-connector';
 
-	public function getType(): string
+	public static function getType(): string
 	{
 		return self::TYPE;
 	}

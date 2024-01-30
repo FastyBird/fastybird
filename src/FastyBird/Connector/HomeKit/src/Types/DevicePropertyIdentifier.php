@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\HomeKit\Types;
 
 use Consistence;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use function strval;
 
 /**
@@ -37,6 +38,10 @@ class DevicePropertyIdentifier extends Consistence\Enum\Enum
 	public const TYPE = 'type';
 
 	public const AID = 'aid';
+
+	public const VERSION = MetadataTypes\DevicePropertyIdentifier::FIRMWARE_VERSION;
+
+	public const SERIAL_NUMBER = MetadataTypes\DevicePropertyIdentifier::SERIAL_NUMBER;
 
 	public function getValue(): string
 	{

@@ -40,11 +40,8 @@ final class DeviceMappedProperty extends DeviceProperty
 	 */
 	public function __construct(
 		Uuid\UuidInterface $id,
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(
-			class: Types\PropertyType::class,
-			allowedValues: [Types\PropertyType::MAPPED],
-		)]
-		private readonly Types\PropertyType $type,
+		#[ObjectMapper\Rules\ArrayEnumValue(cases: [Types\PropertyType::MAPPED])]
+		private readonly string $type,
 		Uuid\UuidInterface $device,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $parent,
@@ -108,7 +105,7 @@ final class DeviceMappedProperty extends DeviceProperty
 		);
 	}
 
-	public function getType(): Types\PropertyType
+	public function getType(): string
 	{
 		return $this->type;
 	}
@@ -169,7 +166,7 @@ final class DeviceMappedProperty extends DeviceProperty
 	public function toArray(): array
 	{
 		return array_merge(parent::toArray(), [
-			'type' => $this->getType()->getValue(),
+			'type' => $this->getType(),
 			'settable' => $this->isSettable(),
 			'queryable' => $this->isQueryable(),
 			'value' => Utilities\Value::flattenValue($this->getValue()),

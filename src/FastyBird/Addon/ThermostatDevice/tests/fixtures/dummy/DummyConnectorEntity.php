@@ -13,7 +13,7 @@ class DummyConnectorEntity extends DevicesEntities\Connectors\Connector
 
 	public const CONNECTOR_TYPE = 'dummy';
 
-	public function getType(): string
+	public static function getType(): string
 	{
 		return 'dummy';
 	}

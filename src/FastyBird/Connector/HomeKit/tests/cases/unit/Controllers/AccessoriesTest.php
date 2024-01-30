@@ -3,14 +3,12 @@
 namespace FastyBird\Connector\HomeKit\Tests\Cases\Unit\Controllers;
 
 use Error;
-use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Middleware;
-use FastyBird\Connector\HomeKit\Protocol;
 use FastyBird\Connector\HomeKit\Servers;
 use FastyBird\Connector\HomeKit\Tests\Cases\Unit\DbTestCase;
 use FastyBird\Connector\HomeKit\Tests\Tools;
-use FastyBird\Connector\HomeKit\Types;
+use FastyBird\Library\Application\EventLoop\Wrapper;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -36,6 +34,8 @@ use function call_user_func;
 final class AccessoriesTest extends DbTestCase
 {
 
+	private Servers\Http|null $httpServer = null;
+
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
@@ -50,6 +50,10 @@ final class AccessoriesTest extends DbTestCase
 	{
 		parent::setUp();
 
+		$eventLoop = $this->createMock(Wrapper::class);
+
+		$this->mockContainerService(Wrapper::class, $eventLoop);
+
 		$repository = $this->getContainer()->getByType(DevicesModels\Configuration\Connectors\Repository::class);
 
 		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
@@ -58,19 +62,17 @@ final class AccessoriesTest extends DbTestCase
 		$connector = $repository->findOneBy($findConnectorQuery);
 		assert($connector instanceof MetadataDocuments\DevicesModule\Connector);
 
-		$accessoryFactory = $this->getContainer()->getByType(Entities\Protocol\AccessoryFactory::class);
+		$httpServerFactory = $this->getContainer()->getByType(Servers\HttpFactory::class);
 
-		$accessory = $accessoryFactory->create(
-			$connector,
-			null,
-			Types\AccessoryCategory::get(Types\AccessoryCategory::BRIDGE),
-		);
+		$this->httpServer = $httpServerFactory->create($connector);
+		$this->httpServer->connect();
+	}
 
-		$accessoryDriver = $this->getContainer()->getByType(Protocol\Driver::class);
+	protected function tearDown(): void
+	{
+		parent::tearDown();
 
-		assert($accessory instanceof Entities\Protocol\Accessories\Bridge);
-
-		$accessoryDriver->addBridge($accessory);
+		$this->httpServer?->disconnect();
 	}
 
 	/**

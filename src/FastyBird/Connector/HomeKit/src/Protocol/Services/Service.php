@@ -7,16 +7,17 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:HomeKitConnector!
- * @subpackage     Entities
+ * @subpackage     Protocol
  * @since          1.0.0
  *
  * @date           13.09.22
  */
 
-namespace FastyBird\Connector\HomeKit\Entities\Protocol;
+namespace FastyBird\Connector\HomeKit\Protocol\Services;
 
 use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Helpers;
+use FastyBird\Connector\HomeKit\Protocol;
 use FastyBird\Connector\HomeKit\Types;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use Nette;
@@ -30,13 +31,13 @@ use function in_array;
 use function sprintf;
 
 /**
- * Represents a HAP service
+ * Represents a HAP accessory service
  *
  * A HAP service contains multiple characteristics.
  * For example, a TemperatureSensor service has the characteristic CurrentTemperature.
  *
  * @package        FastyBird:HomeKitConnector!
- * @subpackage     Entities
+ * @subpackage     Protocol
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
@@ -49,9 +50,7 @@ class Service
 
 	private const VIRTUAL_SERVICE_UID = '00000000-0000-0000-0000-000000000000';
 
-	private bool $hidden = false;
-
-	/** @var SplObjectStorage<Characteristic, null> */
+	/** @var SplObjectStorage<Protocol\Characteristics\Characteristic, null> */
 	private SplObjectStorage $characteristics;
 
 	/**
@@ -61,16 +60,22 @@ class Service
 	 */
 	public function __construct(
 		private readonly Uuid\UuidInterface $typeId,
-		private readonly string $name,
-		private readonly Accessory $accessory,
+		private readonly Types\ServiceType $type,
+		private readonly Protocol\Accessories\Accessory $accessory,
 		private readonly MetadataDocuments\DevicesModule\Channel|null $channel = null,
 		private readonly array $requiredCharacteristics = [],
 		private readonly array $optionalCharacteristics = [],
 		private readonly array $virtualCharacteristics = [],
 		private bool $primary = false,
+		private bool $hidden = false,
 	)
 	{
 		$this->characteristics = new SplObjectStorage();
+	}
+
+	public function getType(): Types\ServiceType
+	{
+		return $this->type;
 	}
 
 	public function getTypeId(): Uuid\UuidInterface
@@ -80,10 +85,10 @@ class Service
 
 	public function getName(): string
 	{
-		return $this->name;
+		return $this->type->getValue();
 	}
 
-	public function getAccessory(): Accessory
+	public function getAccessory(): Protocol\Accessories\Accessory
 	{
 		return $this->accessory;
 	}
@@ -106,7 +111,7 @@ class Service
 	}
 
 	/**
-	 * @return array<Characteristic>
+	 * @return array<Protocol\Characteristics\Characteristic>
 	 */
 	public function getCharacteristics(): array
 	{
@@ -124,7 +129,7 @@ class Service
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 */
-	public function addCharacteristic(Characteristic $characteristic): void
+	public function addCharacteristic(Protocol\Characteristics\Characteristic $characteristic): void
 	{
 		if (
 			!in_array($characteristic->getName(), $this->requiredCharacteristics, true)
@@ -154,7 +159,7 @@ class Service
 		return false;
 	}
 
-	public function findCharacteristic(string $name): Characteristic|null
+	public function findCharacteristic(string $name): Protocol\Characteristics\Characteristic|null
 	{
 		$this->characteristics->rewind();
 
@@ -195,7 +200,10 @@ class Service
 	/**
 	 * @interal
 	 */
-	public function recalculateValues(Characteristic $characteristic, bool $fromDevice): void
+	public function recalculateValues(
+		Protocol\Characteristics\Characteristic $characteristic,
+		bool $fromDevice,
+	): void
 	{
 		$this->accessory->recalculateValues($this, $characteristic, $fromDevice);
 	}
@@ -212,10 +220,10 @@ class Service
 			Types\Representation::IID => $this->accessory->getIidManager()->getIid($this),
 			Types\Representation::TYPE => Helpers\Protocol::uuidToHapType($this->getTypeId()),
 			Types\Representation::CHARS => array_map(
-				static fn (Characteristic $characteristic): array => $characteristic->toHap(),
+				static fn (Protocol\Characteristics\Characteristic $characteristic): array => $characteristic->toHap(),
 				array_values(array_filter(
 					$this->getCharacteristics(),
-					static fn (Characteristic $characteristic): bool => !$characteristic->isVirtual()
+					static fn (Protocol\Characteristics\Characteristic $characteristic): bool => !$characteristic->isVirtual()
 				)),
 			),
 			Types\Representation::PRIMARY => $this->primary,

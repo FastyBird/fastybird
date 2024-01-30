@@ -27,7 +27,7 @@ class SonoffChannel extends DevicesEntities\Channels\Channel
 
 	public const TYPE = 'sonoff-connector';
 
-	public function getType(): string
+	public static function getType(): string
 	{
 		return self::TYPE;
 	}

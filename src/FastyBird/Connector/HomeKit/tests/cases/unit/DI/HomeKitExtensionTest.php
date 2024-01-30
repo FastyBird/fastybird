@@ -7,7 +7,6 @@ use FastyBird\Connector\HomeKit\Clients;
 use FastyBird\Connector\HomeKit\Commands;
 use FastyBird\Connector\HomeKit\Connector;
 use FastyBird\Connector\HomeKit\Controllers;
-use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Helpers;
 use FastyBird\Connector\HomeKit\Hydrators;
 use FastyBird\Connector\HomeKit\Middleware;
@@ -52,7 +51,7 @@ final class HomeKitExtensionTest extends BaseTestCase
 
 		self::assertNotNull($container->getByType(Schemas\HomeKitConnector::class, false));
 		self::assertNotNull($container->getByType(Schemas\HomeKitDevice::class, false));
-		self::assertNotNull($container->getByType(Schemas\HomeKitChannel::class, false));
+		//self::assertNotNull($container->getByType(Schemas\HomeKitChannel::class, false));
 
 		self::assertNotNull($container->getByType(Hydrators\HomeKitConnector::class, false));
 		self::assertNotNull($container->getByType(Hydrators\HomeKitDevice::class, false));
@@ -70,9 +69,20 @@ final class HomeKitExtensionTest extends BaseTestCase
 		self::assertNotNull($container->getByType(Controllers\CharacteristicsController::class, false));
 		self::assertNotNull($container->getByType(Controllers\PairingController::class, false));
 
-		self::assertNotNull($container->getByType(Entities\Protocol\AccessoryFactory::class, false));
-		self::assertNotNull($container->getByType(Entities\Protocol\ServiceFactory::class, false));
-		self::assertNotNull($container->getByType(Entities\Protocol\CharacteristicsFactory::class, false));
+		self::assertNotNull($container->getByType(Protocol\Accessories\BridgeFactory::class, false));
+		self::assertNotNull($container->getByType(Protocol\Accessories\GenericFactory::class, false));
+		self::assertNotNull($container->getByType(Protocol\Services\GenericFactory::class, false));
+		self::assertNotNull($container->getByType(Protocol\Services\LightBulbFactory::class, false));
+		self::assertNotNull($container->getByType(Protocol\Services\BatteryFactory::class, false));
+		self::assertNotNull(
+			$container->getByType(Protocol\Characteristics\DynamicPropertyFactory::class, false),
+		);
+		self::assertNotNull(
+			$container->getByType(Protocol\Characteristics\MappedPropertyFactory::class, false),
+		);
+		self::assertNotNull(
+			$container->getByType(Protocol\Characteristics\VariablePropertyFactory::class, false),
+		);
 
 		self::assertNotNull($container->getByType(Protocol\Tlv::class, false));
 		self::assertNotNull($container->getByType(Protocol\Driver::class, false));

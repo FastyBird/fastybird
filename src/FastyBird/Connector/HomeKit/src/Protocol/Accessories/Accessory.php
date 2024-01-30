@@ -7,15 +7,16 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:HomeKitConnector!
- * @subpackage     Entities
+ * @subpackage     Protocol
  * @since          1.0.0
  *
  * @date           13.09.22
  */
 
-namespace FastyBird\Connector\HomeKit\Entities\Protocol;
+namespace FastyBird\Connector\HomeKit\Protocol\Accessories;
 
 use FastyBird\Connector\HomeKit\Helpers;
+use FastyBird\Connector\HomeKit\Protocol;
 use FastyBird\Connector\HomeKit\Types;
 use Nette;
 use Ramsey\Uuid;
@@ -29,7 +30,7 @@ use function sprintf;
  * HAP accessory
  *
  * @package        FastyBird:HomeKitConnector!
- * @subpackage     Entities
+ * @subpackage     Protocol
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
@@ -38,7 +39,7 @@ abstract class Accessory
 
 	use Nette\SmartObject;
 
-	/** @var SplObjectStorage<Service, null> */
+	/** @var SplObjectStorage<Protocol\Services\Service, null> */
 	protected SplObjectStorage $services;
 
 	protected Helpers\IidManager $iidManager;
@@ -77,7 +78,7 @@ abstract class Accessory
 	}
 
 	/**
-	 * @return array<Service>
+	 * @return array<Protocol\Services\Service>
 	 */
 	public function getServices(): array
 	{
@@ -92,7 +93,7 @@ abstract class Accessory
 		return $services;
 	}
 
-	public function addService(Service $service): void
+	public function addService(Protocol\Services\Service $service): void
 	{
 		if (!$service->isVirtual()) {
 			$this->iidManager->assign($service);
@@ -107,7 +108,7 @@ abstract class Accessory
 		$this->services->attach($service);
 	}
 
-	public function findService(string $name): Service|null
+	public function findService(string $name): Protocol\Services\Service|null
 	{
 		$this->services->rewind();
 
@@ -123,7 +124,11 @@ abstract class Accessory
 	/**
 	 * @interal
 	 */
-	public function recalculateValues(Service $service, Characteristic $characteristic, bool $fromDevice): void
+	public function recalculateValues(
+		Protocol\Services\Service $service,
+		Protocol\Characteristics\Characteristic $characteristic,
+		bool $fromDevice,
+	): void
 	{
 		// Used only for specific accessories
 	}
@@ -144,10 +149,10 @@ abstract class Accessory
 		return [
 			Types\Representation::AID => $this->aid,
 			Types\Representation::SERVICES => array_map(
-				static fn (Service $service): array => $service->toHap(),
+				static fn (Protocol\Services\Service $service): array => $service->toHap(),
 				array_values(array_filter(
 					$this->getServices(),
-					static fn (Service $service): bool => !$service->isVirtual()
+					static fn (Protocol\Services\Service $service): bool => !$service->isVirtual()
 				)),
 			),
 		];

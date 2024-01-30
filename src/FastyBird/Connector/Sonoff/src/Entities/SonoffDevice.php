@@ -37,7 +37,7 @@ class SonoffDevice extends DevicesEntities\Devices\Device
 
 	public const TYPE = 'sonoff-connector';
 
-	public function getType(): string
+	public static function getType(): string
 	{
 		return self::TYPE;
 	}

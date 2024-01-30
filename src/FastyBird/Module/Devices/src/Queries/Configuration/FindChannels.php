@@ -20,6 +20,8 @@ use FastyBird\Module\Devices\Exceptions;
 use Flow\JSONPath;
 use Nette\Utils;
 use Ramsey\Uuid;
+use function count;
+use function implode;
 use function serialize;
 
 /**
@@ -46,6 +48,14 @@ class FindChannels extends QueryObject
 	public function byType(string $type): void
 	{
 		$this->filter[] = '.[?(@.type =~ /(?i).*^' . $type . '*$/)]';
+	}
+
+	/**
+	 * @param array<string> $types
+	 */
+	public function byTypes(array $types): void
+	{
+		$this->filter[] = '.[?(@.type in [' . (count($types) > 0 ? ('"' . implode('","', $types) . '"') : '') . '])]';
 	}
 
 	public function byIdentifier(string $identifier): void

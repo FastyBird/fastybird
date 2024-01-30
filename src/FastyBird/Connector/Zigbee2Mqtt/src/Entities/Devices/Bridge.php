@@ -40,7 +40,7 @@ class Bridge extends Entities\Zigbee2MqttDevice
 	 */
 	protected string $identifier;
 
-	public function getType(): string
+	public static function getType(): string
 	{
 		return self::TYPE;
 	}

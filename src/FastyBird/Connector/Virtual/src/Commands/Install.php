@@ -568,7 +568,7 @@ class Install extends Console\Command\Command
 			$table->addRow([
 				$index + 1,
 				$device->getName() ?? $device->getIdentifier(),
-				$device->getType(),
+				$device::getType(),
 			]);
 		}
 

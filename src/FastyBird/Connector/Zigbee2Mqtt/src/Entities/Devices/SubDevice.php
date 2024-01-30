@@ -51,7 +51,7 @@ class SubDevice extends Entities\Zigbee2MqttDevice
 		$this->setParents([$parent]);
 	}
 
-	public function getType(): string
+	public static function getType(): string
 	{
 		return self::TYPE;
 	}

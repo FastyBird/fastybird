@@ -20,7 +20,6 @@ use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions;
 use function sprintf;
-use function strval;
 
 /**
  * @ORM\Entity
@@ -28,9 +27,11 @@ use function strval;
 class Dynamic extends Property
 {
 
-	public function getType(): MetadataTypes\PropertyType
+	public const TYPE = MetadataTypes\PropertyType::DYNAMIC;
+
+	public static function getType(): string
 	{
-		return MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::DYNAMIC);
+		return self::TYPE;
 	}
 
 	/**
@@ -40,7 +41,7 @@ class Dynamic extends Property
 	public function getValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
 	{
 		throw new Exceptions\InvalidState(
-			sprintf('Reading value is not allowed for property type: %s', strval($this->getType()->getValue())),
+			sprintf('Reading value is not allowed for property type: %s', static::getType()),
 		);
 	}
 
@@ -54,7 +55,7 @@ class Dynamic extends Property
 		throw new Exceptions\InvalidState(
 			sprintf(
 				'Writing value is not allowed for property type: %s',
-				strval($this->getType()->getValue()),
+				static::getType(),
 			),
 		);
 	}
@@ -68,7 +69,7 @@ class Dynamic extends Property
 		throw new Exceptions\InvalidState(
 			sprintf(
 				'Reading default  value is not allowed for property type: %s',
-				strval($this->getType()->getValue()),
+				static::getType(),
 			),
 		);
 	}
@@ -83,7 +84,7 @@ class Dynamic extends Property
 		throw new Exceptions\InvalidState(
 			sprintf(
 				'Writing default value is not allowed for property type: %s',
-				strval($this->getType()->getValue()),
+				static::getType(),
 			),
 		);
 	}

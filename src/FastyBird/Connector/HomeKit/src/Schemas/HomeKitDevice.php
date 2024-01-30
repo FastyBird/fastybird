@@ -22,13 +22,14 @@ use FastyBird\Module\Devices\Schemas as DevicesSchemas;
 /**
  * HomeKit connector entity schema
  *
- * @extends DevicesSchemas\Devices\Device<Entities\HomeKitDevice>
+ * @template T of Entities\HomeKitDevice
+ * @extends  DevicesSchemas\Devices\Device<T>
  *
  * @package        FastyBird:HomeKitConnector!
  * @subpackage     Schemas
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class HomeKitDevice extends DevicesSchemas\Devices\Device
+class HomeKitDevice extends DevicesSchemas\Devices\Device
 {
 
 	/**

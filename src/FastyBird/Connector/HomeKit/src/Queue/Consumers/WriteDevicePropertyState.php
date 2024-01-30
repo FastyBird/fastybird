@@ -100,7 +100,6 @@ final class WriteDevicePropertyState implements Queue\Consumer
 		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDeviceQuery->forConnector($connector);
 		$findDeviceQuery->byId($entity->getDevice());
-		$findDeviceQuery->byType(Entities\HomeKitDevice::TYPE);
 
 		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
@@ -128,7 +127,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 
 		$accessory = $this->accessoryDriver->findAccessory($device->getId());
 
-		if (!$accessory instanceof Entities\Protocol\Accessories\Generic) {
+		if (!$accessory instanceof Protocol\Accessories\Generic) {
 			$this->logger->warning(
 				'Accessory for received device property message was not found in accessory driver',
 				[

@@ -27,7 +27,7 @@ class Actors extends Entities\ThermostatChannel
 
 	public const TYPE = 'thermostat-device-addon-actors';
 
-	public function getType(): string
+	public static function getType(): string
 	{
 		return self::TYPE;
 	}
