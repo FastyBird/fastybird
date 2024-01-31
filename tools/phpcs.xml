@@ -126,10 +126,10 @@
                 <element key="src/FastyBird/Plugin/WsServer/src" value="FastyBird\Plugin\WsServer"/>
                 <element key="src/FastyBird/Plugin/WsServer/tests/cases/unit" value="FastyBird\Plugin\WsServer\Tests\Cases\Unit"/>
 
-                <element key="src/FastyBird/Addon/ThermostatDevice/src" value="FastyBird\Addon\ThermostatDevice"/>
-                <element key="src/FastyBird/Addon/ThermostatDevice/tests/cases/unit" value="FastyBird\Addon\ThermostatDevice\Tests\Cases\Unit"/>
-                <element key="src/FastyBird/Addon/ThermostatDevice/tests/fixtures/dummy" value="FastyBird\Addon\ThermostatDevice\Tests\Fixtures\Dummy"/>
-                <element key="src/FastyBird/Addon/ThermostatDevice/tests/tools" value="FastyBird\Addon\ThermostatDevice\Tests\Tools"/>
+                <element key="src/FastyBird/Addon/VirtualThermostatDevice/src" value="FastyBird\Addon\VirtualThermostatDevice"/>
+                <element key="src/FastyBird/Addon/VirtualThermostatDevice/tests/cases/unit" value="FastyBird\Addon\VirtualThermostatDevice\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Addon/VirtualThermostatDevice/tests/fixtures/dummy" value="FastyBird\Addon\VirtualThermostatDevice\Tests\Fixtures\Dummy"/>
+                <element key="src/FastyBird/Addon/VirtualThermostatDevice/tests/tools" value="FastyBird\Addon\VirtualThermostatDevice\Tests\Tools"/>
             </property>
         </properties>
     </rule>

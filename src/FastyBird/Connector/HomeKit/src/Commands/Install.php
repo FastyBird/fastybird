@@ -1481,6 +1481,7 @@ class Install extends Console\Command\Command
 
 				if (
 					$dataType->equalsValue(MetadataTypes\DataType::BOOLEAN)
+					&& $connectProperty !== null
 					&& $connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::SWITCH)
 				) {
 					$dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::SWITCH);

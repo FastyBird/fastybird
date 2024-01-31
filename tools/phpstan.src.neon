@@ -34,7 +34,7 @@ includes:
     - ../src/FastyBird/Plugin/WebServer/tools/phpstan.config.src.neon
     - ../src/FastyBird/Plugin/WsServer/tools/phpstan.config.src.neon
 
-    - ../src/FastyBird/Addon/ThermostatDevice/tools/phpstan.config.src.neon
+    - ../src/FastyBird/Addon/VirtualThermostatDevice/tools/phpstan.config.src.neon
 
 parameters:
     level: max
