@@ -48,7 +48,7 @@ use function strval;
  *     }
  * )
  * @ORM\InheritanceType("SINGLE_TABLE")
- * @ORM\DiscriminatorColumn(name="device_type", type="string", length=40)
+ * @ORM\DiscriminatorColumn(name="device_type", type="string", length=100)
  * @ORM\DiscriminatorMap({
  *    "generic" = "FastyBird\Module\Devices\Entities\Devices\Device"
  * })

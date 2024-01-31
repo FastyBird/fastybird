@@ -25,7 +25,7 @@ use FastyBird\Module\Devices\Entities as DevicesEntities;
 class Sensors extends Entities\ThermostatChannel
 {
 
-	public const TYPE = 'virtual-thermostat-thermostat-device-addon-sensors';
+	public const TYPE = 'virtual-thermostat-device-addon-sensors';
 
 	public static function getType(): string
 	{

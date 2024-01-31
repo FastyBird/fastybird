@@ -35,7 +35,7 @@ use function assert;
  *     }
  * )
  * @ORM\InheritanceType("SINGLE_TABLE")
- * @ORM\DiscriminatorColumn(name="condition_type", type="string", length=40)
+ * @ORM\DiscriminatorColumn(name="condition_type", type="string", length=100)
  * @ORM\DiscriminatorMap({
  *    "condition" = "FastyBird\Module\Triggers\Entities\Conditions\Condition"
  * })

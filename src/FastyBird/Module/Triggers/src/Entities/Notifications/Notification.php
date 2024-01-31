@@ -35,7 +35,7 @@ use function assert;
  *     }
  * )
  * @ORM\InheritanceType("SINGLE_TABLE")
- * @ORM\DiscriminatorColumn(name="notification_type", type="string", length=40)
+ * @ORM\DiscriminatorColumn(name="notification_type", type="string", length=100)
  * @ORM\DiscriminatorMap({
  *    "sms"     = "FastyBird\Module\Triggers\Entities\Notifications\SmsNotification",
  *    "email"   = "FastyBird\Module\Triggers\Entities\Notifications\EmailNotification",

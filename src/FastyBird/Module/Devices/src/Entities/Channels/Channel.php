@@ -45,7 +45,7 @@ use function array_map;
  *     }
  * )
  * @ORM\InheritanceType("SINGLE_TABLE")
- * @ORM\DiscriminatorColumn(name="channel_type", type="string", length=40)
+ * @ORM\DiscriminatorColumn(name="channel_type", type="string", length=100)
  * @ORM\DiscriminatorMap({
  *    "generic" = "FastyBird\Module\Devices\Entities\Channels\Channel"
  * })

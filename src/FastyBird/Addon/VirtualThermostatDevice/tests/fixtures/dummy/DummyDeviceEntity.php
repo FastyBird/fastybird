@@ -11,16 +11,16 @@ use FastyBird\Module\Devices\Entities as DevicesEntities;
 class DummyDeviceEntity extends DevicesEntities\Devices\Device
 {
 
-	public const DEVICE_TYPE = 'dummy';
+	public const TYPE = 'dummy';
 
 	public static function getType(): string
 	{
-		return 'dummy';
+		return self::TYPE;
 	}
 
 	public function getDiscriminatorName(): string
 	{
-		return 'dummy';
+		return self::TYPE;
 	}
 
 }

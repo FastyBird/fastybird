@@ -36,7 +36,7 @@ use Ramsey\Uuid;
  *     }
  * )
  * @ORM\InheritanceType("SINGLE_TABLE")
- * @ORM\DiscriminatorColumn(name="trigger_type", type="string", length=40)
+ * @ORM\DiscriminatorColumn(name="trigger_type", type="string", length=100)
  * @ORM\DiscriminatorMap({
  *    "automatic"  = "FastyBird\Module\Triggers\Entities\Triggers\AutomaticTrigger",
  *    "manual"     = "FastyBird\Module\Triggers\Entities\Triggers\ManualTrigger"

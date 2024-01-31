@@ -48,7 +48,7 @@ use function array_map;
  *     }
  * )
  * @ORM\InheritanceType("SINGLE_TABLE")
- * @ORM\DiscriminatorColumn(name="connector_type", type="string", length=40)
+ * @ORM\DiscriminatorColumn(name="connector_type", type="string", length=100)
  * @ORM\DiscriminatorMap({
  *    "generic" = "FastyBird\Module\Devices\Entities\Connectors\Connector"
  * })

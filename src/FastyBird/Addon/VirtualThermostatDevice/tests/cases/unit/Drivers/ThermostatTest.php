@@ -140,7 +140,7 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 
 		$eventLoop = $this->getContainer()->getByType(EventLoop\LoopInterface::class);
 
-		$eventLoop->addTimer(1, static function () use ($eventLoop): void {
+		$eventLoop->addTimer(0.1, static function () use ($eventLoop): void {
 			$eventLoop->stop();
 		});
 

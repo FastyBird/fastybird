@@ -44,7 +44,7 @@ use function array_merge;
  *     }
  * )
  * @ORM\InheritanceType("SINGLE_TABLE")
- * @ORM\DiscriminatorColumn(name="property_type", type="string", length=40)
+ * @ORM\DiscriminatorColumn(name="property_type", type="string", length=100)
  * @ORM\DiscriminatorMap({
  *    "variable" = "FastyBird\Module\Devices\Entities\Channels\Properties\Variable",
  *    "dynamic"  = "FastyBird\Module\Devices\Entities\Channels\Properties\Dynamic",
