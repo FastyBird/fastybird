@@ -36,7 +36,6 @@ final class ConnectorDynamicProperty extends ConnectorProperty
 
 	/**
 	 * @param string|array<int, string>|array<int, int>|array<int, float>|array<int, bool|string|int|float|array<int, bool|string|int|float>|null>|array<int, array<int, string|array<int, string|int|float|bool>|null>>|null $format
-	 * @param array<int, Uuid\UuidInterface> $children
 	 */
 	public function __construct(
 		Uuid\UuidInterface $id,
@@ -57,7 +56,6 @@ final class ConnectorDynamicProperty extends ConnectorProperty
 		private readonly bool $settable = false,
 		#[ObjectMapper\Rules\BoolValue()]
 		private readonly bool $queryable = false,
-		private readonly array $children = [],
 		Uuid\UuidInterface|null $owner = null,
 		DateTimeInterface|null $createdAt = null,
 		DateTimeInterface|null $updatedAt = null,
@@ -87,14 +85,6 @@ final class ConnectorDynamicProperty extends ConnectorProperty
 		return $this->type;
 	}
 
-	/**
-	 * @return array<Uuid\UuidInterface>
-	 */
-	public function getChildren(): array
-	{
-		return $this->children;
-	}
-
 	public function isSettable(): bool
 	{
 		return $this->settable;
@@ -115,11 +105,6 @@ final class ConnectorDynamicProperty extends ConnectorProperty
 			'type' => $this->getType(),
 			'settable' => $this->isSettable(),
 			'queryable' => $this->isQueryable(),
-
-			'children' => array_map(
-				static fn (Uuid\UuidInterface $id): string => $id->toString(),
-				$this->getChildren(),
-			),
 		]);
 	}
 
