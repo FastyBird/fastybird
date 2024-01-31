@@ -388,54 +388,70 @@ final class Http implements Server
 			);
 		}
 
-		$this->eventLoop->futureTick(function (): void {
-			try {
-				$this->logger->debug(
-					'Creating HAP web server',
-					[
-						'source' => MetadataTypes\ConnectorSource::HOMEKIT,
-						'type' => 'http-server',
-						'connector' => [
-							'id' => $this->connector->getId()->toString(),
-						],
-						'server' => [
-							'address' => self::LISTENING_ADDRESS,
-							'port' => $this->connectorHelper->getPort($this->connector),
-						],
+		try {
+			$this->logger->debug(
+				'Creating HAP web server',
+				[
+					'source' => MetadataTypes\ConnectorSource::HOMEKIT,
+					'type' => 'http-server',
+					'connector' => [
+						'id' => $this->connector->getId()->toString(),
 					],
-				);
-
-				$this->socket = $this->secureServerFactory->create(
-					$this->connector,
-					new Socket\SocketServer(
-						self::LISTENING_ADDRESS . ':' . $this->connectorHelper->getPort($this->connector),
-						[],
-						$this->eventLoop,
-					),
-				);
-			} catch (Throwable $ex) {
-				$this->logger->error(
-					'Socket server could not be created',
-					[
-						'source' => MetadataTypes\ConnectorSource::HOMEKIT,
-						'type' => 'http-server',
-						'exception' => ApplicationHelpers\Logger::buildException($ex),
-						'connector' => [
-							'id' => $this->connector->getId()->toString(),
-						],
+					'server' => [
+						'address' => self::LISTENING_ADDRESS,
+						'port' => $this->connectorHelper->getPort($this->connector),
 					],
-				);
+				],
+			);
 
-				throw new DevicesExceptions\Terminate(
-					'Socket server could not be created',
-					$ex->getCode(),
-					$ex,
-				);
-			}
+			$this->socket = $this->secureServerFactory->create(
+				$this->connector,
+				new Socket\SocketServer(
+					self::LISTENING_ADDRESS . ':' . $this->connectorHelper->getPort($this->connector),
+					[],
+					$this->eventLoop,
+				),
+			);
+		} catch (Throwable $ex) {
+			$this->logger->error(
+				'Socket server could not be created',
+				[
+					'source' => MetadataTypes\ConnectorSource::HOMEKIT,
+					'type' => 'http-server',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'connector' => [
+						'id' => $this->connector->getId()->toString(),
+					],
+				],
+			);
 
-			$this->socket->on('connection', function (Socket\ConnectionInterface $connection): void {
+			throw new DevicesExceptions\Terminate(
+				'Socket server could not be created',
+				$ex->getCode(),
+				$ex,
+			);
+		}
+
+		$this->socket->on('connection', function (Socket\ConnectionInterface $connection): void {
+			$this->logger->debug(
+				'New client has connected to server',
+				[
+					'source' => MetadataTypes\ConnectorSource::HOMEKIT,
+					'type' => 'http-server',
+					'connector' => [
+						'id' => $this->connector->getId()->toString(),
+					],
+					'client' => [
+						'address' => $connection->getRemoteAddress(),
+					],
+				],
+			);
+
+			$this->subscriber->registerConnection($connection);
+
+			$connection->on('close', function () use ($connection): void {
 				$this->logger->debug(
-					'New client has connected to server',
+					'Connected client has closed connection',
 					[
 						'source' => MetadataTypes\ConnectorSource::HOMEKIT,
 						'type' => 'http-server',
@@ -448,104 +464,86 @@ final class Http implements Server
 					],
 				);
 
-				$this->subscriber->registerConnection($connection);
-
-				$connection->on('close', function () use ($connection): void {
-					$this->logger->debug(
-						'Connected client has closed connection',
-						[
-							'source' => MetadataTypes\ConnectorSource::HOMEKIT,
-							'type' => 'http-server',
-							'connector' => [
-								'id' => $this->connector->getId()->toString(),
-							],
-							'client' => [
-								'address' => $connection->getRemoteAddress(),
-							],
-						],
-					);
-
-					$this->subscriber->unregisterConnection($connection);
-				});
+				$this->subscriber->unregisterConnection($connection);
 			});
+		});
 
-			$this->socket->on('error', function (Throwable $ex): void {
-				$this->logger->error(
-					'An error occurred during socket handling',
-					[
-						'source' => MetadataTypes\ConnectorSource::HOMEKIT,
-						'type' => 'http-server',
-						'exception' => ApplicationHelpers\Logger::buildException($ex),
-						'connector' => [
-							'id' => $this->connector->getId()->toString(),
-						],
+		$this->socket->on('error', function (Throwable $ex): void {
+			$this->logger->error(
+				'An error occurred during socket handling',
+				[
+					'source' => MetadataTypes\ConnectorSource::HOMEKIT,
+					'type' => 'http-server',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'connector' => [
+						'id' => $this->connector->getId()->toString(),
 					],
-				);
-
-				throw new DevicesExceptions\Terminate(
-					'HTTP server was terminated',
-					$ex->getCode(),
-					$ex,
-				);
-			});
-
-			$this->socket->on('close', function (): void {
-				$this->logger->info(
-					'Server was closed',
-					[
-						'source' => MetadataTypes\ConnectorSource::HOMEKIT,
-						'type' => 'http-server',
-						'connector' => [
-							'id' => $this->connector->getId()->toString(),
-						],
-					],
-				);
-			});
-
-			$server = new ReactHttp\HttpServer(
-				$this->eventLoop,
-				function (ServerRequestInterface $request, callable $next): ResponseInterface {
-					$request = $request->withAttribute(
-						self::REQUEST_ATTRIBUTE_CONNECTOR,
-						$this->connector->getId()->toString(),
-					);
-
-					return $next($request);
-				},
-				$this->routerMiddleware,
-			);
-			$server->listen($this->socket);
-
-			$server->on('error', function (Throwable $ex): void {
-				$this->logger->error(
-					'An error occurred during server handling',
-					[
-						'source' => MetadataTypes\ConnectorSource::HOMEKIT,
-						'type' => 'http-server',
-						'exception' => ApplicationHelpers\Logger::buildException($ex),
-						'connector' => [
-							'id' => $this->connector->getId()->toString(),
-						],
-					],
-				);
-
-				throw new DevicesExceptions\Terminate(
-					'HTTP server was terminated',
-					$ex->getCode(),
-					$ex,
-				);
-			});
-
-			$this->connectorsPropertiesManager->on(
-				DevicesConstants::EVENT_ENTITY_CREATED,
-				[$this, 'setSharedKey'],
+				],
 			);
 
-			$this->connectorsPropertiesManager->on(
-				DevicesConstants::EVENT_ENTITY_UPDATED,
-				[$this, 'setSharedKey'],
+			throw new DevicesExceptions\Terminate(
+				'HTTP server was terminated',
+				$ex->getCode(),
+				$ex,
 			);
 		});
+
+		$this->socket->on('close', function (): void {
+			$this->logger->info(
+				'Server was closed',
+				[
+					'source' => MetadataTypes\ConnectorSource::HOMEKIT,
+					'type' => 'http-server',
+					'connector' => [
+						'id' => $this->connector->getId()->toString(),
+					],
+				],
+			);
+		});
+
+		$server = new ReactHttp\HttpServer(
+			$this->eventLoop,
+			function (ServerRequestInterface $request, callable $next): ResponseInterface {
+				$request = $request->withAttribute(
+					self::REQUEST_ATTRIBUTE_CONNECTOR,
+					$this->connector->getId()->toString(),
+				);
+
+				return $next($request);
+			},
+			$this->routerMiddleware,
+		);
+		$server->listen($this->socket);
+
+		$server->on('error', function (Throwable $ex): void {
+			$this->logger->error(
+				'An error occurred during server handling',
+				[
+					'source' => MetadataTypes\ConnectorSource::HOMEKIT,
+					'type' => 'http-server',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'connector' => [
+						'id' => $this->connector->getId()->toString(),
+					],
+				],
+			);
+
+			throw new DevicesExceptions\Terminate(
+				'HTTP server was terminated',
+				$ex->getCode(),
+				$ex,
+			);
+		});
+
+		$this->connectorsPropertiesManager->on(
+			DevicesConstants::EVENT_ENTITY_CREATED,
+			[$this, 'setSharedKey'],
+		);
+
+		$this->connectorsPropertiesManager->on(
+			DevicesConstants::EVENT_ENTITY_UPDATED,
+			[$this, 'setSharedKey'],
+		);
 	}
 
 	public function disconnect(): void
