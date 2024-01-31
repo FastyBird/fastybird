@@ -710,6 +710,8 @@ final class Http implements Server
 					},
 				);
 			}
+
+			$accessorySerialNumber->setValue($serialNumber);
 		} else {
 			$accessorySerialNumber->setValue(
 				$this->hashIds->encode(
