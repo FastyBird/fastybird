@@ -20,7 +20,6 @@ use FastyBird\Library\Metadata\Exceptions;
 use FastyBird\Library\Metadata\Types;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
-use function array_map;
 use function array_merge;
 
 /**
