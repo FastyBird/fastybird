@@ -1479,6 +1479,38 @@ class Install extends Console\Command\Command
 
 				$format = $this->askFormat($io, $characteristic, $connectProperty);
 
+				if (
+					$dataType->equalsValue(MetadataTypes\DataType::BOOLEAN)
+					&& $connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::SWITCH)
+				) {
+					$dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::SWITCH);
+
+					$format = [
+						[
+							MetadataTypes\SwitchPayload::ON,
+							[
+								MetadataTypes\DataTypeShort::BOOLEAN,
+								true,
+							],
+							[
+								MetadataTypes\DataTypeShort::BOOLEAN,
+								true,
+							],
+						],
+						[
+							MetadataTypes\SwitchPayload::OFF,
+							[
+								MetadataTypes\DataTypeShort::BOOLEAN,
+								false,
+							],
+							[
+								MetadataTypes\DataTypeShort::BOOLEAN,
+								false,
+							],
+						],
+					];
+				}
+
 				$this->channelsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Channels\Properties\Mapped::class,
 					'parent' => $connectProperty,
