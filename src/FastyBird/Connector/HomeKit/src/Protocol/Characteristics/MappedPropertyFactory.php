@@ -73,7 +73,10 @@ class MappedPropertyFactory implements CharacteristicFactory
 		);
 	}
 
-	public function getEntityClass(): string|null
+	/**
+	 * @return class-string<DevicesEntities\Channels\Properties\Mapped>
+	 */
+	public function getEntityClass(): string
 	{
 		return DevicesEntities\Channels\Properties\Mapped::class;
 	}

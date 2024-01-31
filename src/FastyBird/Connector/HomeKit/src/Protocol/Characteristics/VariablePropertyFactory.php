@@ -73,7 +73,10 @@ class VariablePropertyFactory implements CharacteristicFactory
 		);
 	}
 
-	public function getEntityClass(): string|null
+	/**
+	 * @return class-string<DevicesEntities\Channels\Properties\Variable>
+	 */
+	public function getEntityClass(): string
 	{
 		return DevicesEntities\Channels\Properties\Variable::class;
 	}

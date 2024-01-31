@@ -73,7 +73,10 @@ class DynamicPropertyFactory implements CharacteristicFactory
 		);
 	}
 
-	public function getEntityClass(): string|null
+	/**
+	 * @return class-string<DevicesEntities\Channels\Properties\Dynamic>
+	 */
+	public function getEntityClass(): string
 	{
 		return DevicesEntities\Channels\Properties\Dynamic::class;
 	}
