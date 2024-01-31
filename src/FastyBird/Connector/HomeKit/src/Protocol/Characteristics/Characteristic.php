@@ -69,6 +69,9 @@ class Characteristic
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 	private bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $actualValue = null;
 
+	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+	private bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $expectedValue = null;
+
 	private bool $valid = true;
 
 	/**
@@ -160,7 +163,7 @@ class Characteristic
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 	public function getValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
 	{
-		return $this->actualValue;
+		return $this->getExpectedValue() ?? $this->getActualValue();
 	}
 
 	public function setValue(
@@ -170,22 +173,38 @@ class Characteristic
 		$this->actualValue = $value;
 	}
 
+	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+	public function getActualValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
+	{
+		return $this->actualValue;
+	}
+
 	public function setActualValue(
 		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
 	): void
 	{
-		$this->setValue($value);
+		$this->actualValue = $value;
 
-		$this->service->recalculateValues($this, true);
+		$this->service->recalculateActualValues($this);
+
+		if ($this->actualValue === $this->expectedValue) {
+			$this->setExpectedValue(null);
+		}
+	}
+
+	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+	public function getExpectedValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
+	{
+		return $this->expectedValue;
 	}
 
 	public function setExpectedValue(
 		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
 	): void
 	{
-		$this->setValue($value);
+		$this->expectedValue = $value;
 
-		$this->service->recalculateValues($this, false);
+		$this->service->recalculateExpectedValues($this);
 	}
 
 	public function setValid(bool $state): void

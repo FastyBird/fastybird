@@ -33,16 +33,13 @@ use function is_int;
 final class LightBulb extends Generic
 {
 
-	public function recalculateValues(
+	public function recalculateActualValues(
 		Protocol\Characteristics\Characteristic $characteristic,
-		bool $fromDevice,
 	): void
 	{
-		parent::recalculateValues($characteristic, $fromDevice);
+		parent::recalculateActualValues($characteristic);
 
-		$updatePropertyType = MetadataTypes\PropertyType::get(
-			$fromDevice ? MetadataTypes\PropertyType::DYNAMIC : MetadataTypes\PropertyType::MAPPED,
-		);
+		$updatePropertyType = MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::MAPPED);
 
 		if (
 			$characteristic->getName() === Types\CharacteristicType::COLOR_RED
@@ -50,24 +47,43 @@ final class LightBulb extends Generic
 			|| $characteristic->getName() === Types\CharacteristicType::COLOR_BLUE
 			|| $characteristic->getName() === Types\CharacteristicType::COLOR_WHITE
 		) {
-			$this->calculateRgbToHsb($updatePropertyType);
+			$this->calculateActualValuesRgbToHsb($updatePropertyType);
 
 		} elseif (
 			$characteristic->getName() === Types\CharacteristicType::HUE
 			|| $characteristic->getName() === Types\CharacteristicType::SATURATION
 			|| $characteristic->getName() === Types\CharacteristicType::BRIGHTNESS
 		) {
-			$this->calculateHsbToRgb($updatePropertyType);
-			$this->calculateHsToMired($updatePropertyType);
-
-		} elseif (
-			$characteristic->getName() === Types\CharacteristicType::TEMPERATURE_MIRED
-		) {
-			$this->calculateMiredToHs($updatePropertyType);
+			$this->calculateActualValuesHsbToRgb($updatePropertyType);
 		}
 	}
 
-	private function calculateRgbToHsb(
+	public function recalculateExpectedValues(
+		Protocol\Characteristics\Characteristic $characteristic,
+	): void
+	{
+		parent::recalculateExpectedValues($characteristic);
+
+		$updatePropertyType = MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::DYNAMIC);
+
+		if (
+			$characteristic->getName() === Types\CharacteristicType::COLOR_RED
+			|| $characteristic->getName() === Types\CharacteristicType::COLOR_GREEN
+			|| $characteristic->getName() === Types\CharacteristicType::COLOR_BLUE
+			|| $characteristic->getName() === Types\CharacteristicType::COLOR_WHITE
+		) {
+			$this->calculateExpectedValuesRgbToHsb($updatePropertyType);
+
+		} elseif (
+			$characteristic->getName() === Types\CharacteristicType::HUE
+			|| $characteristic->getName() === Types\CharacteristicType::SATURATION
+			|| $characteristic->getName() === Types\CharacteristicType::BRIGHTNESS
+		) {
+			$this->calculateExpectedValuesHsbToRgb($updatePropertyType);
+		}
+	}
+
+	private function calculateActualValuesRgbToHsb(
 		MetadataTypes\PropertyType $updatePropertyType,
 	): void
 	{
@@ -78,15 +94,15 @@ final class LightBulb extends Generic
 		$whiteCharacteristic = $this->findCharacteristic(Types\CharacteristicType::COLOR_WHITE);
 
 		if (
-			is_int($redCharacteristic?->getValue())
-			&& is_int($greenCharacteristic?->getValue())
-			&& is_int($blueCharacteristic?->getValue())
+			is_int($redCharacteristic?->getActualValue())
+			&& is_int($greenCharacteristic?->getActualValue())
+			&& is_int($blueCharacteristic?->getActualValue())
 		) {
 			$rgb = new ToolsTransformers\RgbTransformer(
-				$redCharacteristic->getValue(),
-				$greenCharacteristic->getValue(),
-				$blueCharacteristic->getValue(),
-				is_int($whiteCharacteristic?->getValue()) ? $whiteCharacteristic->getValue() : null,
+				$redCharacteristic->getActualValue(),
+				$greenCharacteristic->getActualValue(),
+				$blueCharacteristic->getActualValue(),
+				is_int($whiteCharacteristic?->getActualValue()) ? $whiteCharacteristic->getActualValue() : null,
 			);
 
 			$hsb = $rgb->toHsb();
@@ -104,7 +120,7 @@ final class LightBulb extends Generic
 				|| $hue->getProperty()->getType() === $updatePropertyType->getValue()
 			)
 		) {
-			$hue->setValue($hsb->getHue());
+			$hue->setActualValue($hsb->getHue());
 		}
 
 		$saturation = $this->findCharacteristic(Types\CharacteristicType::SATURATION);
@@ -116,7 +132,7 @@ final class LightBulb extends Generic
 				|| $saturation->getProperty()->getType() === $updatePropertyType->getValue()
 			)
 		) {
-			$saturation->setValue($hsb->getSaturation());
+			$saturation->setActualValue($hsb->getSaturation());
 		}
 
 		$brightness = $this->findCharacteristic(Types\CharacteristicType::BRIGHTNESS);
@@ -128,11 +144,11 @@ final class LightBulb extends Generic
 				|| $brightness->getProperty()->getType() === $updatePropertyType->getValue()
 			)
 		) {
-			$brightness->setValue($hsb->getBrightness());
+			$brightness->setActualValue($hsb->getBrightness());
 		}
 	}
 
-	private function calculateHsbToRgb(
+	private function calculateActualValuesHsbToRgb(
 		MetadataTypes\PropertyType $updatePropertyType,
 	): void
 	{
@@ -142,16 +158,16 @@ final class LightBulb extends Generic
 
 		if (
 			(
-				is_int($hueCharacteristic?->getValue())
-				|| is_float($hueCharacteristic?->getValue())
+				is_int($hueCharacteristic?->getActualValue())
+				|| is_float($hueCharacteristic?->getActualValue())
 			)
 			&& (
-				is_int($saturationCharacteristic?->getValue())
-				|| is_float($saturationCharacteristic?->getValue())
+				is_int($saturationCharacteristic?->getActualValue())
+				|| is_float($saturationCharacteristic?->getActualValue())
 			)
-			&& is_int($brightnessCharacteristic?->getValue())
+			&& is_int($brightnessCharacteristic?->getActualValue())
 		) {
-			$brightness = $brightnessCharacteristic->getValue();
+			$brightness = $brightnessCharacteristic->getActualValue();
 
 			// If brightness is controlled with separate property, we will use 100% brightness for calculation
 			if (
@@ -162,8 +178,8 @@ final class LightBulb extends Generic
 			}
 
 			$hsb = new ToolsTransformers\HsbTransformer(
-				$hueCharacteristic->getValue(),
-				$saturationCharacteristic->getValue(),
+				$hueCharacteristic->getActualValue(),
+				$saturationCharacteristic->getActualValue(),
 				$brightness,
 			);
 
@@ -186,7 +202,7 @@ final class LightBulb extends Generic
 				|| $red->getProperty()->getType() === $updatePropertyType->getValue()
 			)
 		) {
-			$red->setValue($rgb->getRed());
+			$red->setActualValue($rgb->getRed());
 		}
 
 		$green = $this->findCharacteristic(Types\CharacteristicType::COLOR_GREEN);
@@ -198,7 +214,7 @@ final class LightBulb extends Generic
 				|| $green->getProperty()->getType() === $updatePropertyType->getValue()
 			)
 		) {
-			$green->setValue($rgb->getGreen());
+			$green->setActualValue($rgb->getGreen());
 		}
 
 		$blue = $this->findCharacteristic(Types\CharacteristicType::COLOR_BLUE);
@@ -210,7 +226,7 @@ final class LightBulb extends Generic
 				|| $blue->getProperty()->getType() === $updatePropertyType->getValue()
 			)
 		) {
-			$blue->setValue($rgb->getBlue());
+			$blue->setActualValue($rgb->getBlue());
 		}
 
 		$white = $this->findCharacteristic(Types\CharacteristicType::COLOR_WHITE);
@@ -223,27 +239,33 @@ final class LightBulb extends Generic
 			)
 			&& $rgb->getWhite() !== null
 		) {
-			$white->setValue($rgb->getWhite());
+			$white->setActualValue($rgb->getWhite());
 		}
 	}
 
-	private function calculateMiredToHs(
+	private function calculateExpectedValuesRgbToHsb(
 		MetadataTypes\PropertyType $updatePropertyType,
 	): void
 	{
-		$temperatureMiredCharacteristic = $this->findCharacteristic(Types\CharacteristicType::TEMPERATURE_MIRED);
-		$brightnessCharacteristic = $this->findCharacteristic(Types\CharacteristicType::BRIGHTNESS);
+		$redCharacteristic = $this->findCharacteristic(Types\CharacteristicType::COLOR_RED);
+		$greenCharacteristic = $this->findCharacteristic(Types\CharacteristicType::COLOR_GREEN);
+		$blueCharacteristic = $this->findCharacteristic(Types\CharacteristicType::COLOR_BLUE);
+		// Optional white channel
+		$whiteCharacteristic = $this->findCharacteristic(Types\CharacteristicType::COLOR_WHITE);
 
 		if (
-			is_int($temperatureMiredCharacteristic?->getValue())
-			&& is_int($brightnessCharacteristic?->getValue())
+			is_int($redCharacteristic?->getExpectedValue())
+			&& is_int($greenCharacteristic?->getExpectedValue())
+			&& is_int($blueCharacteristic?->getExpectedValue())
 		) {
-			$mired = new ToolsTransformers\MiredTransformer(
-				$temperatureMiredCharacteristic->getValue(),
-				$brightnessCharacteristic->getValue(),
+			$rgb = new ToolsTransformers\RgbTransformer(
+				$redCharacteristic->getExpectedValue(),
+				$greenCharacteristic->getExpectedValue(),
+				$blueCharacteristic->getExpectedValue(),
+				is_int($whiteCharacteristic?->getExpectedValue()) ? $whiteCharacteristic->getExpectedValue() : null,
 			);
 
-			$hsb = $mired->toHsb();
+			$hsb = $rgb->toHsb();
 
 		} else {
 			$hsb = new ToolsTransformers\HsbTransformer(0, 0, 0);
@@ -258,7 +280,7 @@ final class LightBulb extends Generic
 				|| $hue->getProperty()->getType() === $updatePropertyType->getValue()
 			)
 		) {
-			$hue->setValue($hsb->getHue());
+			$hue->setExpectedValue($hsb->getHue());
 		}
 
 		$saturation = $this->findCharacteristic(Types\CharacteristicType::SATURATION);
@@ -270,11 +292,23 @@ final class LightBulb extends Generic
 				|| $saturation->getProperty()->getType() === $updatePropertyType->getValue()
 			)
 		) {
-			$saturation->setValue($hsb->getSaturation());
+			$saturation->setExpectedValue($hsb->getSaturation());
+		}
+
+		$brightness = $this->findCharacteristic(Types\CharacteristicType::BRIGHTNESS);
+
+		if (
+			$brightness !== null
+			&& (
+				$brightness->getProperty() === null
+				|| $brightness->getProperty()->getType() === $updatePropertyType->getValue()
+			)
+		) {
+			$brightness->setExpectedValue($hsb->getBrightness());
 		}
 	}
 
-	private function calculateHsToMired(
+	private function calculateExpectedValuesHsbToRgb(
 		MetadataTypes\PropertyType $updatePropertyType,
 	): void
 	{
@@ -284,37 +318,88 @@ final class LightBulb extends Generic
 
 		if (
 			(
-				is_int($hueCharacteristic?->getValue())
-				|| is_float($hueCharacteristic?->getValue())
+				is_int($hueCharacteristic?->getExpectedValue())
+				|| is_float($hueCharacteristic?->getExpectedValue())
 			)
 			&& (
-				is_int($saturationCharacteristic?->getValue())
-				|| is_float($saturationCharacteristic?->getValue())
+				is_int($saturationCharacteristic?->getExpectedValue())
+				|| is_float($saturationCharacteristic?->getExpectedValue())
 			)
-			&& is_int($brightnessCharacteristic?->getValue())
+			&& is_int($brightnessCharacteristic?->getExpectedValue())
 		) {
+			$brightness = $brightnessCharacteristic->getExpectedValue();
+
+			// If brightness is controlled with separate property, we will use 100% brightness for calculation
+			if (
+				$brightnessCharacteristic->getProperty() !== null
+				&& $brightnessCharacteristic->getProperty()->getType() === MetadataTypes\PropertyType::MAPPED
+			) {
+				$brightness = 100;
+			}
+
 			$hsb = new ToolsTransformers\HsbTransformer(
-				$hueCharacteristic->getValue(),
-				$saturationCharacteristic->getValue(),
-				$brightnessCharacteristic->getValue(),
+				$hueCharacteristic->getExpectedValue(),
+				$saturationCharacteristic->getExpectedValue(),
+				$brightness,
 			);
 
-			$mired = $hsb->toMired();
+			$rgb = $hsb->toRgb();
 
 		} else {
-			$mired = new ToolsTransformers\MiredTransformer(500, 0);
+			$rgb = new ToolsTransformers\RgbTransformer(255, 255, 255);
 		}
 
-		$temperatureMired = $this->findCharacteristic(Types\CharacteristicType::TEMPERATURE_MIRED);
+		if ($this->hasCharacteristic(Types\CharacteristicType::COLOR_WHITE)) {
+			$rgb = $rgb->toHsi()->toRgbw();
+		}
+
+		$red = $this->findCharacteristic(Types\CharacteristicType::COLOR_RED);
 
 		if (
-			$temperatureMired !== null
+			$red !== null
 			&& (
-				$temperatureMired->getProperty() === null
-				|| $temperatureMired->getProperty()->getType() === $updatePropertyType->getValue()
+				$red->getProperty() === null
+				|| $red->getProperty()->getType() === $updatePropertyType->getValue()
 			)
 		) {
-			$temperatureMired->setValue($mired->getTemperature());
+			$red->setExpectedValue($rgb->getRed());
+		}
+
+		$green = $this->findCharacteristic(Types\CharacteristicType::COLOR_GREEN);
+
+		if (
+			$green !== null
+			&& (
+				$green->getProperty() === null
+				|| $green->getProperty()->getType() === $updatePropertyType->getValue()
+			)
+		) {
+			$green->setExpectedValue($rgb->getGreen());
+		}
+
+		$blue = $this->findCharacteristic(Types\CharacteristicType::COLOR_BLUE);
+
+		if (
+			$blue !== null
+			&& (
+				$blue->getProperty() === null
+				|| $blue->getProperty()->getType() === $updatePropertyType->getValue()
+			)
+		) {
+			$blue->setExpectedValue($rgb->getBlue());
+		}
+
+		$white = $this->findCharacteristic(Types\CharacteristicType::COLOR_WHITE);
+
+		if (
+			$white !== null
+			&& (
+				$white->getProperty() === null
+				|| $white->getProperty()->getType() === $updatePropertyType->getValue()
+			)
+			&& $rgb->getWhite() !== null
+		) {
+			$white->setExpectedValue($rgb->getWhite());
 		}
 	}
 

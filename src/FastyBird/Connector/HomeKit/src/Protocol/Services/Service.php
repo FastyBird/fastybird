@@ -200,12 +200,21 @@ class Service
 	/**
 	 * @interal
 	 */
-	public function recalculateValues(
+	public function recalculateActualValues(
 		Protocol\Characteristics\Characteristic $characteristic,
-		bool $fromDevice,
 	): void
 	{
-		$this->accessory->recalculateValues($this, $characteristic, $fromDevice);
+		$this->accessory->recalculateActualValues($this, $characteristic);
+	}
+
+	/**
+	 * @interal
+	 */
+	public function recalculateExpectedValues(
+		Protocol\Characteristics\Characteristic $characteristic,
+	): void
+	{
+		$this->accessory->recalculateExpectedValues($this, $characteristic);
 	}
 
 	/**
