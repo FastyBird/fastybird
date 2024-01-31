@@ -39,22 +39,20 @@ final class LightBulb extends Generic
 	{
 		parent::recalculateActualValues($characteristic);
 
-		$updatePropertyType = MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::MAPPED);
-
 		if (
 			$characteristic->getName() === Types\CharacteristicType::COLOR_RED
 			|| $characteristic->getName() === Types\CharacteristicType::COLOR_GREEN
 			|| $characteristic->getName() === Types\CharacteristicType::COLOR_BLUE
 			|| $characteristic->getName() === Types\CharacteristicType::COLOR_WHITE
 		) {
-			$this->calculateActualValuesRgbToHsb($updatePropertyType);
+			$this->calculateActualValuesRgbToHsb($characteristic);
 
 		} elseif (
 			$characteristic->getName() === Types\CharacteristicType::HUE
 			|| $characteristic->getName() === Types\CharacteristicType::SATURATION
 			|| $characteristic->getName() === Types\CharacteristicType::BRIGHTNESS
 		) {
-			$this->calculateActualValuesHsbToRgb($updatePropertyType);
+			$this->calculateActualValuesHsbToRgb($characteristic);
 		}
 	}
 
@@ -64,27 +62,25 @@ final class LightBulb extends Generic
 	{
 		parent::recalculateExpectedValues($characteristic);
 
-		$updatePropertyType = MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::DYNAMIC);
-
 		if (
 			$characteristic->getName() === Types\CharacteristicType::COLOR_RED
 			|| $characteristic->getName() === Types\CharacteristicType::COLOR_GREEN
 			|| $characteristic->getName() === Types\CharacteristicType::COLOR_BLUE
 			|| $characteristic->getName() === Types\CharacteristicType::COLOR_WHITE
 		) {
-			$this->calculateExpectedValuesRgbToHsb($updatePropertyType);
+			$this->calculateExpectedValuesRgbToHsb($characteristic);
 
 		} elseif (
 			$characteristic->getName() === Types\CharacteristicType::HUE
 			|| $characteristic->getName() === Types\CharacteristicType::SATURATION
 			|| $characteristic->getName() === Types\CharacteristicType::BRIGHTNESS
 		) {
-			$this->calculateExpectedValuesHsbToRgb($updatePropertyType);
+			$this->calculateExpectedValuesHsbToRgb($characteristic);
 		}
 	}
 
 	private function calculateActualValuesRgbToHsb(
-		MetadataTypes\PropertyType $updatePropertyType,
+		Protocol\Characteristics\Characteristic $characteristic,
 	): void
 	{
 		$redCharacteristic = $this->findCharacteristic(Types\CharacteristicType::COLOR_RED);
@@ -117,10 +113,10 @@ final class LightBulb extends Generic
 			$hue !== null
 			&& (
 				$hue->getProperty() === null
-				|| $hue->getProperty()->getType() === $updatePropertyType->getValue()
+				|| $hue->getProperty()->getType() === MetadataTypes\PropertyType::MAPPED
 			)
 		) {
-			$hue->setActualValue($hsb->getHue());
+			$hue->writeActualValue($hsb->getHue());
 		}
 
 		$saturation = $this->findCharacteristic(Types\CharacteristicType::SATURATION);
@@ -129,10 +125,10 @@ final class LightBulb extends Generic
 			$saturation !== null
 			&& (
 				$saturation->getProperty() === null
-				|| $saturation->getProperty()->getType() === $updatePropertyType->getValue()
+				|| $saturation->getProperty()->getType() === MetadataTypes\PropertyType::MAPPED
 			)
 		) {
-			$saturation->setActualValue($hsb->getSaturation());
+			$saturation->writeActualValue($hsb->getSaturation());
 		}
 
 		$brightness = $this->findCharacteristic(Types\CharacteristicType::BRIGHTNESS);
@@ -141,15 +137,15 @@ final class LightBulb extends Generic
 			$brightness !== null
 			&& (
 				$brightness->getProperty() === null
-				|| $brightness->getProperty()->getType() === $updatePropertyType->getValue()
+				|| $brightness->getProperty()->getType() === MetadataTypes\PropertyType::MAPPED
 			)
 		) {
-			$brightness->setActualValue($hsb->getBrightness());
+			$brightness->writeActualValue($hsb->getBrightness());
 		}
 	}
 
 	private function calculateActualValuesHsbToRgb(
-		MetadataTypes\PropertyType $updatePropertyType,
+		Protocol\Characteristics\Characteristic $characteristic,
 	): void
 	{
 		$hueCharacteristic = $this->findCharacteristic(Types\CharacteristicType::HUE);
@@ -199,10 +195,10 @@ final class LightBulb extends Generic
 			$red !== null
 			&& (
 				$red->getProperty() === null
-				|| $red->getProperty()->getType() === $updatePropertyType->getValue()
+				|| $red->getProperty()->getType() === MetadataTypes\PropertyType::MAPPED
 			)
 		) {
-			$red->setActualValue($rgb->getRed());
+			$red->writeActualValue($rgb->getRed());
 		}
 
 		$green = $this->findCharacteristic(Types\CharacteristicType::COLOR_GREEN);
@@ -211,10 +207,10 @@ final class LightBulb extends Generic
 			$green !== null
 			&& (
 				$green->getProperty() === null
-				|| $green->getProperty()->getType() === $updatePropertyType->getValue()
+				|| $green->getProperty()->getType() === MetadataTypes\PropertyType::MAPPED
 			)
 		) {
-			$green->setActualValue($rgb->getGreen());
+			$green->writeActualValue($rgb->getGreen());
 		}
 
 		$blue = $this->findCharacteristic(Types\CharacteristicType::COLOR_BLUE);
@@ -223,10 +219,10 @@ final class LightBulb extends Generic
 			$blue !== null
 			&& (
 				$blue->getProperty() === null
-				|| $blue->getProperty()->getType() === $updatePropertyType->getValue()
+				|| $blue->getProperty()->getType() === MetadataTypes\PropertyType::MAPPED
 			)
 		) {
-			$blue->setActualValue($rgb->getBlue());
+			$blue->writeActualValue($rgb->getBlue());
 		}
 
 		$white = $this->findCharacteristic(Types\CharacteristicType::COLOR_WHITE);
@@ -235,16 +231,16 @@ final class LightBulb extends Generic
 			$white !== null
 			&& (
 				$white->getProperty() === null
-				|| $white->getProperty()->getType() === $updatePropertyType->getValue()
+				|| $white->getProperty()->getType() === MetadataTypes\PropertyType::MAPPED
 			)
 			&& $rgb->getWhite() !== null
 		) {
-			$white->setActualValue($rgb->getWhite());
+			$white->writeActualValue($rgb->getWhite());
 		}
 	}
 
 	private function calculateExpectedValuesRgbToHsb(
-		MetadataTypes\PropertyType $updatePropertyType,
+		Protocol\Characteristics\Characteristic $characteristic,
 	): void
 	{
 		$redCharacteristic = $this->findCharacteristic(Types\CharacteristicType::COLOR_RED);
@@ -277,10 +273,10 @@ final class LightBulb extends Generic
 			$hue !== null
 			&& (
 				$hue->getProperty() === null
-				|| $hue->getProperty()->getType() === $updatePropertyType->getValue()
+				|| $hue->getProperty()->getType() === MetadataTypes\PropertyType::DYNAMIC
 			)
 		) {
-			$hue->setExpectedValue($hsb->getHue());
+			$hue->writeExpectedValue($hsb->getHue());
 		}
 
 		$saturation = $this->findCharacteristic(Types\CharacteristicType::SATURATION);
@@ -289,10 +285,10 @@ final class LightBulb extends Generic
 			$saturation !== null
 			&& (
 				$saturation->getProperty() === null
-				|| $saturation->getProperty()->getType() === $updatePropertyType->getValue()
+				|| $saturation->getProperty()->getType() === MetadataTypes\PropertyType::DYNAMIC
 			)
 		) {
-			$saturation->setExpectedValue($hsb->getSaturation());
+			$saturation->writeExpectedValue($hsb->getSaturation());
 		}
 
 		$brightness = $this->findCharacteristic(Types\CharacteristicType::BRIGHTNESS);
@@ -301,15 +297,15 @@ final class LightBulb extends Generic
 			$brightness !== null
 			&& (
 				$brightness->getProperty() === null
-				|| $brightness->getProperty()->getType() === $updatePropertyType->getValue()
+				|| $brightness->getProperty()->getType() === MetadataTypes\PropertyType::DYNAMIC
 			)
 		) {
-			$brightness->setExpectedValue($hsb->getBrightness());
+			$brightness->writeExpectedValue($hsb->getBrightness());
 		}
 	}
 
 	private function calculateExpectedValuesHsbToRgb(
-		MetadataTypes\PropertyType $updatePropertyType,
+		Protocol\Characteristics\Characteristic $characteristic,
 	): void
 	{
 		$hueCharacteristic = $this->findCharacteristic(Types\CharacteristicType::HUE);
@@ -359,10 +355,10 @@ final class LightBulb extends Generic
 			$red !== null
 			&& (
 				$red->getProperty() === null
-				|| $red->getProperty()->getType() === $updatePropertyType->getValue()
+				|| $red->getProperty()->getType() === MetadataTypes\PropertyType::DYNAMIC
 			)
 		) {
-			$red->setExpectedValue($rgb->getRed());
+			$red->writeExpectedValue($rgb->getRed());
 		}
 
 		$green = $this->findCharacteristic(Types\CharacteristicType::COLOR_GREEN);
@@ -371,10 +367,10 @@ final class LightBulb extends Generic
 			$green !== null
 			&& (
 				$green->getProperty() === null
-				|| $green->getProperty()->getType() === $updatePropertyType->getValue()
+				|| $green->getProperty()->getType() === MetadataTypes\PropertyType::DYNAMIC
 			)
 		) {
-			$green->setExpectedValue($rgb->getGreen());
+			$green->writeExpectedValue($rgb->getGreen());
 		}
 
 		$blue = $this->findCharacteristic(Types\CharacteristicType::COLOR_BLUE);
@@ -383,10 +379,10 @@ final class LightBulb extends Generic
 			$blue !== null
 			&& (
 				$blue->getProperty() === null
-				|| $blue->getProperty()->getType() === $updatePropertyType->getValue()
+				|| $blue->getProperty()->getType() === MetadataTypes\PropertyType::DYNAMIC
 			)
 		) {
-			$blue->setExpectedValue($rgb->getBlue());
+			$blue->writeExpectedValue($rgb->getBlue());
 		}
 
 		$white = $this->findCharacteristic(Types\CharacteristicType::COLOR_WHITE);
@@ -395,11 +391,11 @@ final class LightBulb extends Generic
 			$white !== null
 			&& (
 				$white->getProperty() === null
-				|| $white->getProperty()->getType() === $updatePropertyType->getValue()
+				|| $white->getProperty()->getType() === MetadataTypes\PropertyType::DYNAMIC
 			)
 			&& $rgb->getWhite() !== null
 		) {
-			$white->setExpectedValue($rgb->getWhite());
+			$white->writeExpectedValue($rgb->getWhite());
 		}
 	}
 

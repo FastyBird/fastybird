@@ -672,7 +672,7 @@ final class Http implements Server
 			Types\ChannelPropertyIdentifier::NAME,
 			$accessoryInformation,
 		);
-		$accessoryName->setValue($owner->getName() ?? $owner->getIdentifier());
+		$accessoryName->setActualValue($owner->getName() ?? $owner->getIdentifier());
 
 		$accessoryInformation->addCharacteristic($accessoryName);
 
@@ -712,9 +712,9 @@ final class Http implements Server
 				);
 			}
 
-			$accessorySerialNumber->setValue($serialNumber);
+			$accessorySerialNumber->setActualValue($serialNumber);
 		} else {
-			$accessorySerialNumber->setValue(
+			$accessorySerialNumber->setActualValue(
 				$this->hashIds->encode(
 					...array_map(
 						static fn (string $part): int => intval($part),
@@ -757,11 +757,11 @@ final class Http implements Server
 				);
 			}
 
-			$accessoryFirmwareRevision->setValue(strval($firmwareVersion));
+			$accessoryFirmwareRevision->setActualValue(strval($firmwareVersion));
 		} else {
 			$packageRevision = Composer\InstalledVersions::getVersion(HomeKit\Constants::PACKAGE_NAME);
 
-			$accessoryFirmwareRevision->setValue(
+			$accessoryFirmwareRevision->setActualValue(
 				$packageRevision !== null && preg_match(
 					HomeKit\Constants::VERSION_REGEXP,
 					$packageRevision,
@@ -776,7 +776,7 @@ final class Http implements Server
 			Types\ChannelPropertyIdentifier::MANUFACTURER,
 			$accessoryInformation,
 		);
-		$accessoryManufacturer->setValue(HomeKit\Constants::DEFAULT_MANUFACTURER);
+		$accessoryManufacturer->setActualValue(HomeKit\Constants::DEFAULT_MANUFACTURER);
 
 		$accessoryInformation->addCharacteristic($accessoryManufacturer);
 
@@ -787,9 +787,9 @@ final class Http implements Server
 		);
 
 		if ($accessory instanceof Protocol\Accessories\Bridge) {
-			$accessoryModel->setValue(HomeKit\Constants::DEFAULT_BRIDGE_MODEL);
+			$accessoryModel->setActualValue(HomeKit\Constants::DEFAULT_BRIDGE_MODEL);
 		} else {
-			$accessoryModel->setValue(HomeKit\Constants::DEFAULT_DEVICE_MODEL);
+			$accessoryModel->setActualValue(HomeKit\Constants::DEFAULT_DEVICE_MODEL);
 		}
 
 		$accessoryInformation->addCharacteristic($accessoryModel);
@@ -799,7 +799,7 @@ final class Http implements Server
 			Types\ChannelPropertyIdentifier::IDENTIFY,
 			$accessoryInformation,
 		);
-		$accessoryIdentify->setValue(false);
+		$accessoryIdentify->setActualValue(false);
 
 		$accessoryInformation->addCharacteristic($accessoryIdentify);
 
@@ -818,7 +818,7 @@ final class Http implements Server
 				Types\ChannelPropertyIdentifier::VERSION,
 				$accessoryProtocolInformation,
 			);
-			$accessoryProtocolVersion->setValue(HomeKit\Constants::HAP_PROTOCOL_VERSION);
+			$accessoryProtocolVersion->setActualValue(HomeKit\Constants::HAP_PROTOCOL_VERSION);
 
 			$accessoryProtocolInformation->addCharacteristic($accessoryProtocolVersion);
 
