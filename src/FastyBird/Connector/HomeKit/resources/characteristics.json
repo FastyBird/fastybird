@@ -1823,5 +1823,15 @@
     "MaxValue" : 255,
     "MinValue" : 0,
     "DataType": "uchar"
+  },
+  "TemperatureMired": {
+    "Format" : "uint8",
+    "Permissions" : [
+      "pw"
+    ],
+    "UUID" : "00000000-0000-0000-0000-000000000000",
+    "MaxValue" : 500,
+    "MinValue" : 50,
+    "DataType": "ushort"
   }
 }

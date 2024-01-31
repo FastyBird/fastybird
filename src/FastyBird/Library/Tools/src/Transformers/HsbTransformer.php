@@ -152,6 +152,30 @@ final class HsbTransformer implements Transformer
 		return new RgbTransformer($dR, $dG, $dB, $dW);
 	}
 
+	public function toMired(): MiredTransformer
+	{
+		$rgb = $this->toRgb();
+
+		// This is a basic example and may not provide accurate results for all scenarios
+		$temperature = 0;
+
+		// Calculate color temperature based on RGB values
+		$X = (-0.14282 * $rgb->getRed()) + (1.54924 * $rgb->getGreen()) + (-0.95641 * $rgb->getBlue());
+		$Y = (-0.32466 * $rgb->getRed()) + (1.57837 * $rgb->getGreen()) + (-0.73191 * $rgb->getBlue());
+		$Z = (-0.68202 * $rgb->getRed()) + (0.77073 * $rgb->getGreen()) + (0.56332 * $rgb->getBlue());
+
+		// Calculate xy values
+		$x = $X / ($X + $Y + $Z);
+		$y = $Y / ($X + $Y + $Z);
+
+		// Calculate correlated color temperature (CCT)
+		$n = ( $x - 0.3320 ) / ( 0.1858 - $y );
+
+		$temperature = 449.0 * pow($n, 3) + 3525.0 * pow($n, 2) + 6823.3 * $n + 5520.33;
+
+		return new MiredTransformer(intval(round(1_000_000 / $temperature)), $this->getBrightness());
+	}
+
 	public function toArray(): array
 	{
 		return [

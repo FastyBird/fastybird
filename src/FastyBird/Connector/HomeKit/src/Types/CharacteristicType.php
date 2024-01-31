@@ -52,6 +52,8 @@ class CharacteristicType extends Consistence\Enum\Enum
 
 	public const COLOR_WHITE = 'ColorWhite';
 
+	public const TEMPERATURE_MIRED = 'TemperatureMired';
+
 	public function getValue(): string
 	{
 		return strval(parent::getValue());

@@ -2,15 +2,18 @@
 
 namespace FastyBird\Connector\HomeKit\Tests\Cases\Unit\Controllers;
 
+use Doctrine\DBAL;
 use Error;
-use Exception;
+use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Middleware;
 use FastyBird\Connector\HomeKit\Servers;
 use FastyBird\Connector\HomeKit\Tests\Cases\Unit\DbTestCase;
 use FastyBird\Connector\HomeKit\Tests\Tools;
 use FastyBird\Library\Application\EventLoop\Wrapper;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -23,6 +26,7 @@ use Nette\Utils;
 use Ramsey\Uuid;
 use React\Http\Message\ServerRequest;
 use RuntimeException;
+use z4kn4fein\SemVer;
 use function assert;
 use function call_user_func;
 
@@ -36,18 +40,20 @@ final class CharacteristicsTest extends DbTestCase
 	private Servers\Http|null $httpServer = null;
 
 	/**
+	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws DBAL\Exception
+	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exception
-	 * @throws InvalidArgumentException
-	 * @throws MetadataExceptions\FileNotFound
-	 * @throws MetadataExceptions\Logic
+	 * @throws DevicesExceptions\Terminate
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws Nette\DI\MissingServiceException
+	 * @throws SemVer\SemverException
 	 * @throws RuntimeException
+	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws Error
-	 * @throws Utils\JsonException
 	 */
 	public function setUp(): void
 	{

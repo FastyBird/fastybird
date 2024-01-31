@@ -58,12 +58,12 @@ final class LightBulb extends Generic
 			|| $characteristic->getName() === Types\CharacteristicType::BRIGHTNESS
 		) {
 			$this->calculateHsbToRgb($updatePropertyType);
-			$this->calculateHsToTemperature($updatePropertyType);
+			$this->calculateHsToMired($updatePropertyType);
 
 		} elseif (
-			$characteristic->getName() === Types\CharacteristicType::COLOR_TEMPERATURE
+			$characteristic->getName() === Types\CharacteristicType::TEMPERATURE_MIRED
 		) {
-			$this->calculateTemperatureToHs($updatePropertyType);
+			$this->calculateMiredToHs($updatePropertyType);
 		}
 	}
 
@@ -170,7 +170,7 @@ final class LightBulb extends Generic
 			$rgb = $hsb->toRgb();
 
 		} else {
-			$rgb = new ToolsTransformers\RgbTransformer(0, 0, 0);
+			$rgb = new ToolsTransformers\RgbTransformer(255, 255, 255);
 		}
 
 		if ($this->hasCharacteristic(Types\CharacteristicType::COLOR_WHITE)) {
@@ -227,18 +227,95 @@ final class LightBulb extends Generic
 		}
 	}
 
-	private function calculateHsToTemperature(
+	private function calculateMiredToHs(
 		MetadataTypes\PropertyType $updatePropertyType,
 	): void
 	{
-		// TODO: Implement it
+		$temperatureMiredCharacteristic = $this->findCharacteristic(Types\CharacteristicType::TEMPERATURE_MIRED);
+		$brightnessCharacteristic = $this->findCharacteristic(Types\CharacteristicType::BRIGHTNESS);
+
+		if (
+			is_int($temperatureMiredCharacteristic?->getValue())
+			&& is_int($brightnessCharacteristic?->getValue())
+		) {
+			$mired = new ToolsTransformers\MiredTransformer(
+				$temperatureMiredCharacteristic->getValue(),
+				$brightnessCharacteristic->getValue(),
+			);
+
+			$hsb = $mired->toHsb();
+
+		} else {
+			$hsb = new ToolsTransformers\HsbTransformer(0, 0, 0);
+		}
+
+		$hue = $this->findCharacteristic(Types\CharacteristicType::HUE);
+
+		if (
+			$hue !== null
+			&& (
+				$hue->getProperty() === null
+				|| $hue->getProperty()->getType() === $updatePropertyType->getValue()
+			)
+		) {
+			$hue->setValue($hsb->getHue());
+		}
+
+		$saturation = $this->findCharacteristic(Types\CharacteristicType::SATURATION);
+
+		if (
+			$saturation !== null
+			&& (
+				$saturation->getProperty() === null
+				|| $saturation->getProperty()->getType() === $updatePropertyType->getValue()
+			)
+		) {
+			$saturation->setValue($hsb->getSaturation());
+		}
 	}
 
-	private function calculateTemperatureToHs(
+	private function calculateHsToMired(
 		MetadataTypes\PropertyType $updatePropertyType,
 	): void
 	{
-		// TODO: Implement it
+		$hueCharacteristic = $this->findCharacteristic(Types\CharacteristicType::HUE);
+		$saturationCharacteristic = $this->findCharacteristic(Types\CharacteristicType::SATURATION);
+		$brightnessCharacteristic = $this->findCharacteristic(Types\CharacteristicType::BRIGHTNESS);
+
+		if (
+			(
+				is_int($hueCharacteristic?->getValue())
+				|| is_float($hueCharacteristic?->getValue())
+			)
+			&& (
+				is_int($saturationCharacteristic?->getValue())
+				|| is_float($saturationCharacteristic?->getValue())
+			)
+			&& is_int($brightnessCharacteristic?->getValue())
+		) {
+			$hsb = new ToolsTransformers\HsbTransformer(
+				$hueCharacteristic->getValue(),
+				$saturationCharacteristic->getValue(),
+				$brightnessCharacteristic->getValue(),
+			);
+
+			$mired = $hsb->toMired();
+
+		} else {
+			$mired = new ToolsTransformers\MiredTransformer(500, 0);
+		}
+
+		$temperatureMired = $this->findCharacteristic(Types\CharacteristicType::TEMPERATURE_MIRED);
+
+		if (
+			$temperatureMired !== null
+			&& (
+				$temperatureMired->getProperty() === null
+				|| $temperatureMired->getProperty()->getType() === $updatePropertyType->getValue()
+			)
+		) {
+			$temperatureMired->setValue($mired->getTemperature());
+		}
 	}
 
 }
