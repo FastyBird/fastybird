@@ -80,6 +80,7 @@ cmd:
         data:
             name: "Name"
             model: "Model"
+            devicesCnt: "# Devices"
 
         messages:
             identifier:

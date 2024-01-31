@@ -79,7 +79,7 @@ use function usort;
 class Install extends Console\Command\Command
 {
 
-	public const NAME = 'fb:virtual-thermostat-device-addon:devices:install';
+	public const NAME = 'fb:virtual-thermostat-device-addon:install';
 
 	public function __construct(
 		private readonly VirtualThermostatDevice\Logger $logger,
