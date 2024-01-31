@@ -644,7 +644,7 @@ final class CharacteristicsController extends BaseController
 									'device' => $row->getService()->getChannel()?->getDevice(),
 									'channel' => $row->getService()->getChannel()?->getId(),
 									'property' => $row->getProperty()->getId(),
-									'value' => $row->getValue(),
+									'value' => $row->getExpectedValue(),
 								],
 							),
 						);
