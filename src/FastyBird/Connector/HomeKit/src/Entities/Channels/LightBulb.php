@@ -24,7 +24,7 @@ use FastyBird\Connector\HomeKit\Entities;
 class LightBulb extends Entities\HomeKitChannel
 {
 
-	public const TYPE = 'homekit-light-bulb';
+	public const TYPE = 'homekit-connector-light-bulb';
 
 	public static function getType(): string
 	{
