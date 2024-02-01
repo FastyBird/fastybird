@@ -117,6 +117,61 @@ class Database
 
 	/**
 	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\Runtime
+	 */
+	public function beginTransaction(): void
+	{
+		$connection = $this->getConnection();
+
+		if ($connection === null) {
+			throw new Exceptions\Runtime('Entity manager could not be loaded');
+		}
+
+		try {
+			$this->pingAndReconnect();
+
+			$connection->beginTransaction();
+		} catch (Throwable $ex) {
+			throw new Exceptions\InvalidState(
+				'An error occurred: ' . $ex->getMessage(),
+				is_int($ex->getCode()) ? $ex->getCode() : 0,
+				$ex,
+			);
+		}
+	}
+
+	/**
+	 * @throws DBAL\Exception
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\Runtime
+	 */
+	public function commitTransaction(): void
+	{
+		$connection = $this->getConnection();
+
+		if ($connection === null) {
+			throw new Exceptions\Runtime('Entity manager could not be loaded');
+		}
+
+		try {
+			// Commit all changes into database
+			$connection->commit();
+		} catch (Throwable $ex) {
+			// Revert all changes when error occur
+			if ($connection->isTransactionActive()) {
+				$connection->rollBack();
+			}
+
+			throw new Exceptions\InvalidState(
+				'An error occurred: ' . $ex->getMessage(),
+				is_int($ex->getCode()) ? $ex->getCode() : 0,
+				$ex,
+			);
+		}
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
 	 */
 	public function ping(): bool
 	{
