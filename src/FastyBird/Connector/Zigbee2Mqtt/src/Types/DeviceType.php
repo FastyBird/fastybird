@@ -35,6 +35,8 @@ class DeviceType extends Consistence\Enum\Enum
 
 	public const ROUTER = 'Router';
 
+	public const UNKNOWN = 'Unknown';
+
 	public function getValue(): string
 	{
 		return strval(parent::getValue());

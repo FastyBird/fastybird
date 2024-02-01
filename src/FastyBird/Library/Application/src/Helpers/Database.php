@@ -24,6 +24,7 @@ use Nette;
 use Psr\Log;
 use Throwable;
 use function gc_collect_cycles;
+use function is_int;
 
 /**
  * Database connection helpers
@@ -61,7 +62,11 @@ class Database
 
 			return $callback();
 		} catch (Throwable $ex) {
-			throw new Exceptions\InvalidState('An error occurred: ' . $ex->getMessage(), $ex->getCode(), $ex);
+			throw new Exceptions\InvalidState(
+				'An error occurred: ' . $ex->getMessage(),
+				is_int($ex->getCode()) ? $ex->getCode() : 0,
+				$ex,
+			);
 		}
 	}
 
@@ -102,7 +107,11 @@ class Database
 				$connection->rollBack();
 			}
 
-			throw new Exceptions\InvalidState('An error occurred: ' . $ex->getMessage(), $ex->getCode(), $ex);
+			throw new Exceptions\InvalidState(
+				'An error occurred: ' . $ex->getMessage(),
+				is_int($ex->getCode()) ? $ex->getCode() : 0,
+				$ex,
+			);
 		}
 	}
 
