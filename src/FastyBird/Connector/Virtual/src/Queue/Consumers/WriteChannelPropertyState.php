@@ -255,20 +255,20 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$now = $this->dateTimeFactory->getNow();
-		$pending = $state->getPending();
-
-		if (
-			$pending === false
-			|| (
-				$pending instanceof DateTimeInterface
-				&& (float) $now->format('Uv') - (float) $pending->format('Uv') <= self::WRITE_PENDING_DELAY
-			)
-		) {
-			return true;
-		}
-
 		if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+			$now = $this->dateTimeFactory->getNow();
+			$pending = $state->getPending();
+
+			if (
+				$pending === false
+				|| (
+					$pending instanceof DateTimeInterface
+					&& (float) $now->format('Uv') - (float) $pending->format('Uv') <= self::WRITE_PENDING_DELAY
+				)
+			) {
+				return true;
+			}
+
 			$this->channelPropertiesStatesManager->setPendingState(
 				$property,
 				true,

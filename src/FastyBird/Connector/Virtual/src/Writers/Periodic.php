@@ -106,19 +106,29 @@ abstract class Periodic implements Writer
 				$this->properties[$device->getId()->toString()] = [];
 			}
 
-			$findDevicePropertiesQuery = new DevicesQueries\Configuration\FindDeviceProperties();
+			$findDevicePropertiesQuery = new DevicesQueries\Configuration\FindDeviceDynamicProperties();
 			$findDevicePropertiesQuery->forDevice($device);
 			$findDevicePropertiesQuery->settable(true);
 
-			$properties = $this->devicesPropertiesConfigurationRepository->findAllBy($findDevicePropertiesQuery);
+			$properties = $this->devicesPropertiesConfigurationRepository->findAllBy(
+				$findDevicePropertiesQuery,
+				MetadataDocuments\DevicesModule\DeviceDynamicProperty::class,
+			);
 
 			foreach ($properties as $property) {
-				if (
-					$property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
-					|| $property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
-				) {
-					$this->properties[$device->getId()->toString()][$property->getId()->toString()] = $property;
-				}
+				$this->properties[$device->getId()->toString()][$property->getId()->toString()] = $property;
+			}
+
+			$findDevicePropertiesQuery = new DevicesQueries\Configuration\FindDeviceMappedProperties();
+			$findDevicePropertiesQuery->forDevice($device);
+
+			$properties = $this->devicesPropertiesConfigurationRepository->findAllBy(
+				$findDevicePropertiesQuery,
+				MetadataDocuments\DevicesModule\DeviceMappedProperty::class,
+			);
+
+			foreach ($properties as $property) {
+				$this->properties[$device->getId()->toString()][$property->getId()->toString()] = $property;
 			}
 
 			$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
@@ -127,19 +137,29 @@ abstract class Periodic implements Writer
 			$channels = $this->channelsConfigurationRepository->findAllBy($findChannelsQuery);
 
 			foreach ($channels as $channel) {
-				$findChannelPropertiesQuery = new DevicesQueries\Configuration\FindChannelProperties();
+				$findChannelPropertiesQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
 				$findChannelPropertiesQuery->forChannel($channel);
 				$findChannelPropertiesQuery->settable(true);
 
-				$properties = $this->channelsPropertiesConfigurationRepository->findAllBy($findChannelPropertiesQuery);
+				$properties = $this->channelsPropertiesConfigurationRepository->findAllBy(
+					$findChannelPropertiesQuery,
+					MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
+				);
 
 				foreach ($properties as $property) {
-					if (
-						$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-						|| $property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
-					) {
-						$this->properties[$device->getId()->toString()][$property->getId()->toString()] = $property;
-					}
+					$this->properties[$device->getId()->toString()][$property->getId()->toString()] = $property;
+				}
+
+				$findChannelPropertiesQuery = new DevicesQueries\Configuration\FindChannelMappedProperties();
+				$findChannelPropertiesQuery->forChannel($channel);
+
+				$properties = $this->channelsPropertiesConfigurationRepository->findAllBy(
+					$findChannelPropertiesQuery,
+					MetadataDocuments\DevicesModule\ChannelMappedProperty::class,
+				);
+
+				foreach ($properties as $property) {
+					$this->properties[$device->getId()->toString()][$property->getId()->toString()] = $property;
 				}
 			}
 		}
@@ -276,10 +296,15 @@ abstract class Periodic implements Writer
 			$pending = $state->getPending();
 
 			if (
-				$pending === true
-				|| (
-					$pending instanceof DateTimeInterface
-					&& (float) $now->format('Uv') - (float) $pending->format('Uv') > self::HANDLER_PENDING_DELAY
+				(
+					$property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
+					|| $property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+				) && (
+					$pending === true
+					|| (
+						$pending instanceof DateTimeInterface
+						&& (float) $now->format('Uv') - (float) $pending->format('Uv') > self::HANDLER_PENDING_DELAY
+					)
 				)
 			) {
 				if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
@@ -303,27 +328,6 @@ abstract class Periodic implements Writer
 							],
 						),
 					);
-				} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
-					$this->queue->append(
-						$this->entityHelper->create(
-							Entities\Messages\WriteDevicePropertyState::class,
-							[
-								'connector' => $device->getConnector(),
-								'device' => $device->getId(),
-								'property' => $property->getId(),
-								'state' => array_merge(
-									$state->getRead()->toArray(),
-									[
-										'id' => $state->getId(),
-										'valid' => $state->isValid(),
-										'pending' => $state->getPending() instanceof DateTimeInterface
-											? $state->getPending()->format(DateTimeInterface::ATOM)
-											: $state->getPending(),
-									],
-								),
-							],
-						),
-					);
 				} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
 					$this->queue->append(
 						$this->entityHelper->create(
@@ -335,6 +339,32 @@ abstract class Periodic implements Writer
 								'property' => $property->getId(),
 								'state' => array_merge(
 									$state->getGet()->toArray(),
+									[
+										'id' => $state->getId(),
+										'valid' => $state->isValid(),
+										'pending' => $state->getPending() instanceof DateTimeInterface
+											? $state->getPending()->format(DateTimeInterface::ATOM)
+											: $state->getPending(),
+									],
+								),
+							],
+						),
+					);
+				}
+			} elseif (
+				$property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
+				|| $property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
+			) {
+				if ($property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
+					$this->queue->append(
+						$this->entityHelper->create(
+							Entities\Messages\WriteDevicePropertyState::class,
+							[
+								'connector' => $device->getConnector(),
+								'device' => $device->getId(),
+								'property' => $property->getId(),
+								'state' => array_merge(
+									$state->getRead()->toArray(),
 									[
 										'id' => $state->getId(),
 										'valid' => $state->isValid(),

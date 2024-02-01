@@ -33,6 +33,7 @@ use FastyBird\Library\Application\Boot as ApplicationBoot;
 use FastyBird\Library\Exchange\DI as ExchangeDI;
 use FastyBird\Module\Devices\DI as DevicesDI;
 use Nette\DI;
+use function assert;
 use const DIRECTORY_SEPARATOR;
 
 /**
@@ -89,10 +90,7 @@ class VirtualExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		 */
 
 		$builder->addDefinition($this->prefix('drivers.manager'), new DI\Definitions\ServiceDefinition())
-			->setType(Drivers\DriversManager::class)
-			->setArguments([
-				'driversFactories' => $builder->findByType(Drivers\DriverFactory::class),
-			]);
+			->setType(Drivers\DriversManager::class);
 
 		/**
 		 * DEVICES
@@ -270,6 +268,21 @@ class VirtualExtension extends DI\CompilerExtension implements Translation\DI\Tr
 				$ormAnnotationDriverService,
 				'FastyBird\Connector\Virtual\Entities',
 			]);
+		}
+
+		/**
+		 * Devices
+		 */
+
+		$driversManagerServiceName = $builder->getByType(Drivers\DriversManager::class);
+
+		if ($driversManagerServiceName !== null) {
+			$driversManagerServiceFactory = $builder->getDefinition($driversManagerServiceName);
+			assert($driversManagerServiceFactory instanceof DI\Definitions\ServiceDefinition);
+
+			$driversFactories = $builder->findByType(Drivers\DriverFactory::class);
+
+			$driversManagerServiceFactory->setArgument('driversFactories', $driversFactories);
 		}
 	}
 

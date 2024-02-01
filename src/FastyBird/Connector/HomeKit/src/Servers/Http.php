@@ -894,6 +894,8 @@ final class Http implements Server
 	/**
 	 * @param array<int>|null $validValues
 	 *
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Nette\IOException
@@ -978,6 +980,34 @@ final class Http implements Server
 			}
 		} else {
 			$validValues = null;
+		}
+
+		if ($property !== null) {
+			if (
+				$property->getFormat() instanceof MetadataValueObjects\StringEnumFormat
+				|| $property->getFormat() instanceof MetadataValueObjects\CombinedEnumFormat
+			) {
+				$validValues = [];
+
+				if ($property->getFormat() instanceof MetadataValueObjects\StringEnumFormat) {
+					$validValues = array_map(
+						static fn (string $item): int => intval($item),
+						$property->getFormat()->toArray(),
+					);
+
+				} else {
+					foreach ($property->getFormat()->getItems() as $item) {
+						if ($item[1] instanceof MetadataValueObjects\CombinedEnumFormatItem) {
+							$validValues[] = intval(MetadataUtilities\Value::flattenValue($item[1]->getValue()));
+						}
+					}
+				}
+			} elseif ($property->getFormat() instanceof MetadataValueObjects\NumberRangeFormat) {
+				$minValue = $property->getFormat()->getMin() ?? $minValue;
+				$maxValue = $property->getFormat()->getMax() ?? $maxValue;
+			}
+
+			$minStep = $property->getStep() ?? $minStep;
 		}
 
 		foreach ($this->characteristicsFactories as $characteristicFactory) {
