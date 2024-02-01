@@ -68,8 +68,6 @@ class Characteristic
 
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 	private bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $actualValue = null;
-	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-	private bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $expectedValue = null;
 
 	private bool $valid = true;
 
@@ -162,69 +160,32 @@ class Characteristic
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 	public function getValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
 	{
-		return $this->getExpectedValue() ?? $this->getActualValue();
+		return $this->actualValue;
 	}
 
-	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-	public function getActualValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
+	public function setValue(
+		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
+	): void
 	{
-		return $this->actualValue;
+		$this->actualValue = $value;
 	}
 
 	public function setActualValue(
 		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
 	): void
 	{
-		$this->actualValue = $value;
+		$this->setValue($value);
 
-		$this->service->recalculateActualValues($this);
-
-		if ($this->actualValue === $this->expectedValue) {
-			$this->setExpectedValue(null);
-		}
-	}
-
-	public function writeActualValue(
-		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
-	): void
-	{
-		$this->actualValue = $value;
-
-		if ($this->actualValue === $this->expectedValue) {
-			$this->setExpectedValue(null);
-		}
-	}
-
-	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-	public function getExpectedValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
-	{
-		return $this->expectedValue;
+		$this->service->recalculateValues($this, true);
 	}
 
 	public function setExpectedValue(
 		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
 	): void
 	{
-		$this->expectedValue = $value;
+		$this->setValue($value);
 
-		$this->service->recalculateExpectedValues($this);
-	}
-
-	public function writeExpectedValue(
-		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
-	): void
-	{
-		$this->expectedValue = $value;
-	}
-
-	public function setValid(bool $state): void
-	{
-		$this->valid = $state;
-	}
-
-	public function isValid(): bool
-	{
-		return $this->valid;
+		$this->service->recalculateValues($this, false);
 	}
 
 	public function isAlwaysNull(): bool
@@ -240,6 +201,16 @@ class Characteristic
 	public function isVirtual(): bool
 	{
 		return $this->typeId->toString() === self::VIRTUAL_CHARACTERISTIC_UID;
+	}
+
+	public function setValid(bool $state): void
+	{
+		$this->valid = $state;
+	}
+
+	public function isValid(): bool
+	{
+		return $this->valid;
 	}
 
 	/**

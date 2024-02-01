@@ -124,20 +124,10 @@ abstract class Accessory
 	/**
 	 * @interal
 	 */
-	public function recalculateActualValues(
+	public function recalculateValues(
 		Protocol\Services\Service $service,
 		Protocol\Characteristics\Characteristic $characteristic,
-	): void
-	{
-		// Used only for specific accessories
-	}
-
-	/**
-	 * @interal
-	 */
-	public function recalculateExpectedValues(
-		Protocol\Services\Service $service,
-		Protocol\Characteristics\Characteristic $characteristic,
+		bool $fromDevice,
 	): void
 	{
 		// Used only for specific accessories

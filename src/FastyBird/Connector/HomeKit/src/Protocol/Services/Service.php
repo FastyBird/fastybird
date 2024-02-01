@@ -85,7 +85,7 @@ class Service
 
 	public function getName(): string
 	{
-		return $this->type->getValue();
+		return $this->getType()->getValue();
 	}
 
 	public function getAccessory(): Protocol\Accessories\Accessory
@@ -200,21 +200,9 @@ class Service
 	/**
 	 * @interal
 	 */
-	public function recalculateActualValues(
-		Protocol\Characteristics\Characteristic $characteristic,
-	): void
+	public function recalculateValues(Protocol\Characteristics\Characteristic $characteristic, bool $fromDevice): void
 	{
-		$this->accessory->recalculateActualValues($this, $characteristic);
-	}
-
-	/**
-	 * @interal
-	 */
-	public function recalculateExpectedValues(
-		Protocol\Characteristics\Characteristic $characteristic,
-	): void
-	{
-		$this->accessory->recalculateExpectedValues($this, $characteristic);
+		$this->accessory->recalculateValues($this, $characteristic, $fromDevice);
 	}
 
 	/**
