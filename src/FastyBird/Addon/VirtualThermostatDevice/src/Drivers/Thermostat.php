@@ -269,6 +269,7 @@ class Thermostat implements VirtualDrivers\Driver
 		$this->actualTemperature = [];
 		$this->actualFloorTemperature = [];
 
+		$this->connected = false;
 		$this->connectedAt = null;
 
 		return Promise\resolve(true);
@@ -336,10 +337,10 @@ class Thermostat implements VirtualDrivers\Driver
 			$this->actualTemperature,
 			static fn (float|null $temp): bool => $temp !== null,
 		);
-		$measuredFloorTemp = array_filter(
-			$this->actualFloorTemperature,
-			static fn (float|null $temp): bool => $temp !== null,
-		);
+
+		if ($measuredTemp === []) {
+			return Promise\reject(new Exceptions\InvalidState('Thermostat temperature sensors has invalid values'));
+		}
 
 		$minActualTemp = min($measuredTemp);
 		$maxActualTemp = max($measuredTemp);
@@ -352,14 +353,21 @@ class Thermostat implements VirtualDrivers\Driver
 					'device' => $this->device->getId(),
 					'channel' => $this->deviceHelper->getConfiguration($this->device)->getId(),
 					'property' => Types\ChannelPropertyIdentifier::ACTUAL_TEMPERATURE,
-					'value' => $measuredTemp !== []
-						? array_sum($measuredTemp) / count($measuredTemp)
-						: null,
+					'value' => array_sum($measuredTemp) / count($measuredTemp),
 				],
 			),
 		);
 
 		if ($this->deviceHelper->hasFloorSensors($this->device)) {
+			$measuredFloorTemp = array_filter(
+				$this->actualFloorTemperature,
+				static fn (float|null $temp): bool => $temp !== null,
+			);
+
+			if ($measuredFloorTemp === []) {
+				return Promise\reject(new Exceptions\InvalidState('Thermostat floor temperature sensors has invalid values'));
+			}
+
 			$this->queue->append(
 				$this->entityHelper->create(
 					VirtualEntities\Messages\StoreChannelPropertyState::class,
@@ -368,9 +376,7 @@ class Thermostat implements VirtualDrivers\Driver
 						'device' => $this->device->getId(),
 						'channel' => $this->deviceHelper->getConfiguration($this->device)->getId(),
 						'property' => Types\ChannelPropertyIdentifier::ACTUAL_FLOOR_TEMPERATURE,
-						'value' => $measuredFloorTemp !== []
-							? array_sum($measuredFloorTemp) / count($measuredFloorTemp)
-							: null,
+						'value' => array_sum($measuredFloorTemp) / count($measuredFloorTemp),
 					],
 				),
 			);
@@ -826,11 +832,14 @@ class Thermostat implements VirtualDrivers\Driver
 	private function isFloorOverHeating(): bool
 	{
 		if ($this->deviceHelper->hasFloorSensors($this->device)) {
-			$maxFloorActualTemp = max(
-				array_filter($this->actualFloorTemperature, static fn (float|null $temp): bool => $temp !== null),
-			);
+			$measuredFloorTemps = array_filter($this->actualFloorTemperature, static fn (float|null $temp): bool => $temp !== null);
 
-			if ($maxFloorActualTemp >= $this->deviceHelper->getMaximumFloorTemp($this->device)) {
+			$maxFloorActualTemp = $measuredFloorTemps !== [] ? max($measuredFloorTemps) : null;
+
+			if (
+				$maxFloorActualTemp === null
+				|| $maxFloorActualTemp >= $this->deviceHelper->getMaximumFloorTemp($this->device)
+			) {
 				return true;
 			}
 		}

@@ -284,7 +284,7 @@ class Devices
 					),
 				);
 			})
-			->catch(function (Throwable $ex) use ($device): void {
+			->catch(function (Throwable $ex) use ($device, $service): void {
 				$this->processedDevicesCommands[$device->getId()->toString()] = false;
 
 				$this->logger->warning(
@@ -308,10 +308,12 @@ class Devices
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
-							'state' => MetadataTypes\ConnectionState::DISCONNECTED,
+							'state' => MetadataTypes\ConnectionState::ALERT,
 						],
 					),
 				);
+
+				$service->disconnect();
 			});
 
 		return true;
