@@ -262,21 +262,23 @@ final class CharacteristicsController extends BaseController
 		$timedWriteError = false;
 
 		if ($pid !== null) {
+			$requestParams = $request->getServerParams();
+
 			if (
-				!array_key_exists(strval($request->getServerParams()['REMOTE_ADDR']), $this->preparedWrites)
-				|| !array_key_exists($pid, $this->preparedWrites[strval($request->getServerParams()['REMOTE_ADDR'])])
+				!array_key_exists(strval($requestParams['REMOTE_ADDR']), $this->preparedWrites)
+				|| !array_key_exists($pid, $this->preparedWrites[strval($requestParams['REMOTE_ADDR'])])
 				|| $this->preparedWrites[strval(
-					$request->getServerParams()['REMOTE_ADDR'],
+					$requestParams['REMOTE_ADDR'],
 				)][$pid] < $this->dateTimeFactory->getNow()->getTimestamp()
 			) {
 				$timedWriteError = true;
 			}
 
 			if (
-				array_key_exists(strval($request->getServerParams()['REMOTE_ADDR']), $this->preparedWrites)
-				&& array_key_exists($pid, $this->preparedWrites[strval($request->getServerParams()['REMOTE_ADDR'])])
+				array_key_exists(strval($requestParams['REMOTE_ADDR']), $this->preparedWrites)
+				&& array_key_exists($pid, $this->preparedWrites[strval($requestParams['REMOTE_ADDR'])])
 			) {
-				unset($this->preparedWrites[strval($request->getServerParams()['REMOTE_ADDR'])][$pid]);
+				unset($this->preparedWrites[strval($requestParams['REMOTE_ADDR'])][$pid]);
 			}
 		}
 
@@ -401,8 +403,7 @@ final class CharacteristicsController extends BaseController
 		}
 
 		$this->preparedWrites[$clientAddress][intval($body[Types\Representation::PID])]
-			= intval($this->dateTimeFactory->getNow()->getTimestamp())
-			+ (intval($body[Types\Representation::TTL]) / 1_000);
+			= $this->dateTimeFactory->getNow()->getTimestamp() + (intval($body[Types\Representation::TTL]) / 1_000);
 
 		$result = [
 			Types\Representation::STATUS => Types\ServerStatus::SUCCESS,
@@ -556,17 +557,6 @@ final class CharacteristicsController extends BaseController
 		}
 
 		if (
-			$pid !== null
-			&& !in_array(
-				Types\CharacteristicPermission::TIMED_WRITE,
-				$characteristic->getPermissions(),
-				true,
-			)
-		) {
-			return $representation;
-		}
-
-		if (
 			$pid === null
 			&& in_array(Types\CharacteristicPermission::TIMED_WRITE, $characteristic->getPermissions(), true)
 		) {
@@ -634,9 +624,13 @@ final class CharacteristicsController extends BaseController
 
 				foreach ($characteristic->getService()->getCharacteristics() as $row) {
 					if (
-						$row->getProperty() instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-						|| $row->getProperty() instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty
-						|| $row->getProperty() instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
+						(
+							$row->getProperty() instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+							&& $row->getProperty()->isSettable()
+						) || (
+							$row->getProperty() instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
+							&& $row->getProperty()->isSettable()
+						) || $row->getProperty() instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty
 					) {
 						$this->queue->append(
 							$this->entityHelper->create(
