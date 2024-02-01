@@ -365,7 +365,9 @@ class Thermostat implements VirtualDrivers\Driver
 			);
 
 			if ($measuredFloorTemp === []) {
-				return Promise\reject(new Exceptions\InvalidState('Thermostat floor temperature sensors has invalid values'));
+				return Promise\reject(
+					new Exceptions\InvalidState('Thermostat floor temperature sensors has invalid values'),
+				);
 			}
 
 			$this->queue->append(
@@ -832,7 +834,10 @@ class Thermostat implements VirtualDrivers\Driver
 	private function isFloorOverHeating(): bool
 	{
 		if ($this->deviceHelper->hasFloorSensors($this->device)) {
-			$measuredFloorTemps = array_filter($this->actualFloorTemperature, static fn (float|null $temp): bool => $temp !== null);
+			$measuredFloorTemps = array_filter(
+				$this->actualFloorTemperature,
+				static fn (float|null $temp): bool => $temp !== null,
+			);
 
 			$maxFloorActualTemp = $measuredFloorTemps !== [] ? max($measuredFloorTemps) : null;
 
