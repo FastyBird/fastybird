@@ -35,7 +35,7 @@ use function strval;
  *       "comment"="HomeKit connector clients"
  *     },
  *     uniqueConstraints={
- *       @ORM\UniqueConstraint(name="client_uid_unique", columns={"client_uid"})
+ *       @ORM\UniqueConstraint(name="client_uid_unique", columns={"client_uid", "connector_id"})
  *     }
  * )
  */

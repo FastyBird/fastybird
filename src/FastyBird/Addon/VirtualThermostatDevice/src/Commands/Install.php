@@ -16,7 +16,6 @@
 namespace FastyBird\Addon\VirtualThermostatDevice\Commands;
 
 use Doctrine\DBAL;
-use Doctrine\Persistence;
 use Exception;
 use FastyBird\Addon\VirtualThermostatDevice;
 use FastyBird\Addon\VirtualThermostatDevice\Entities;
@@ -96,7 +95,6 @@ class Install extends Console\Command\Command
 		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly ApplicationHelpers\Database $databaseHelper,
 		private readonly Localization\Translator $translator,
-		private readonly Persistence\ManagerRegistry $managerRegistry,
 		string|null $name = null,
 	)
 	{
@@ -217,7 +215,7 @@ class Install extends Console\Command\Command
 
 		try {
 			// Start transaction connection to the database
-			$this->getOrmConnection()->beginTransaction();
+			$this->databaseHelper->beginTransaction();
 
 			$device = $this->devicesManager->create(Utils\ArrayHash::from([
 				'entity' => Entities\ThermostatDevice::class,
@@ -896,8 +894,7 @@ class Install extends Console\Command\Command
 				}
 			}
 
-			// Commit all changes into database
-			$this->getOrmConnection()->commit();
+			$this->databaseHelper->commitTransaction();
 
 			$io->success(
 				$this->translator->translate(
@@ -924,11 +921,6 @@ class Install extends Console\Command\Command
 
 			return;
 		} finally {
-			// Revert all changes when error occur
-			if ($this->getOrmConnection()->isTransactionActive()) {
-				$this->getOrmConnection()->rollBack();
-			}
-
 			$this->databaseHelper->clear();
 		}
 
@@ -1159,7 +1151,7 @@ class Install extends Console\Command\Command
 
 		try {
 			// Start transaction connection to the database
-			$this->getOrmConnection()->beginTransaction();
+			$this->databaseHelper->beginTransaction();
 
 			$device = $this->devicesManager->update($device, Utils\ArrayHash::from([
 				'name' => $name,
@@ -1505,8 +1497,7 @@ class Install extends Console\Command\Command
 				}
 			}
 
-			// Commit all changes into database
-			$this->getOrmConnection()->commit();
+			$this->databaseHelper->commitTransaction();
 
 			$io->success(
 				$this->translator->translate(
@@ -1531,11 +1522,6 @@ class Install extends Console\Command\Command
 				),
 			);
 		} finally {
-			// Revert all changes when error occur
-			if ($this->getOrmConnection()->isTransactionActive()) {
-				$this->getOrmConnection()->rollBack();
-			}
-
 			$this->databaseHelper->clear();
 		}
 
@@ -1610,9 +1596,7 @@ class Install extends Console\Command\Command
 
 	/**
 	 * @throws ApplicationExceptions\InvalidState
-	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\Runtime
 	 */
 	private function deleteDevice(Style\SymfonyStyle $io): void
 	{
@@ -1644,12 +1628,11 @@ class Install extends Console\Command\Command
 
 		try {
 			// Start transaction connection to the database
-			$this->getOrmConnection()->beginTransaction();
+			$this->databaseHelper->beginTransaction();
 
 			$this->devicesManager->delete($device);
 
-			// Commit all changes into database
-			$this->getOrmConnection()->commit();
+			$this->databaseHelper->commitTransaction();
 
 			$io->success(
 				$this->translator->translate(
@@ -1674,11 +1657,6 @@ class Install extends Console\Command\Command
 				),
 			);
 		} finally {
-			// Revert all changes when error occur
-			if ($this->getOrmConnection()->isTransactionActive()) {
-				$this->getOrmConnection()->rollBack();
-			}
-
 			$this->databaseHelper->clear();
 		}
 	}
@@ -1813,7 +1791,7 @@ class Install extends Console\Command\Command
 
 		try {
 			// Start transaction connection to the database
-			$this->getOrmConnection()->beginTransaction();
+			$this->databaseHelper->beginTransaction();
 
 			$property = $this->channelsPropertiesManager->create(Utils\ArrayHash::from([
 				'parent' => $heater,
@@ -1835,8 +1813,7 @@ class Install extends Console\Command\Command
 			]));
 			assert($property instanceof DevicesEntities\Channels\Properties\Mapped);
 
-			// Commit all changes into database
-			$this->getOrmConnection()->commit();
+			$this->databaseHelper->commitTransaction();
 
 			$io->success(
 				$this->translator->translate(
@@ -1863,11 +1840,6 @@ class Install extends Console\Command\Command
 
 			return;
 		} finally {
-			// Revert all changes when error occur
-			if ($this->getOrmConnection()->isTransactionActive()) {
-				$this->getOrmConnection()->rollBack();
-			}
-
 			$this->databaseHelper->clear();
 		}
 	}
@@ -1920,7 +1892,7 @@ class Install extends Console\Command\Command
 
 		try {
 			// Start transaction connection to the database
-			$this->getOrmConnection()->beginTransaction();
+			$this->databaseHelper->beginTransaction();
 
 			$property = $this->channelsPropertiesManager->update($property, Utils\ArrayHash::from([
 				'name' => $name,
@@ -1928,8 +1900,7 @@ class Install extends Console\Command\Command
 			]));
 			assert($property instanceof DevicesEntities\Channels\Properties\Mapped);
 
-			// Commit all changes into database
-			$this->getOrmConnection()->commit();
+			$this->databaseHelper->commitTransaction();
 
 			$io->success(
 				$this->translator->translate(
@@ -1956,11 +1927,6 @@ class Install extends Console\Command\Command
 
 			return;
 		} finally {
-			// Revert all changes when error occur
-			if ($this->getOrmConnection()->isTransactionActive()) {
-				$this->getOrmConnection()->rollBack();
-			}
-
 			$this->databaseHelper->clear();
 		}
 	}
@@ -2024,9 +1990,7 @@ class Install extends Console\Command\Command
 
 	/**
 	 * @throws ApplicationExceptions\InvalidState
-	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\Runtime
 	 */
 	private function deleteActor(Style\SymfonyStyle $io, Entities\ThermostatDevice $device): void
 	{
@@ -2060,12 +2024,11 @@ class Install extends Console\Command\Command
 
 		try {
 			// Start transaction connection to the database
-			$this->getOrmConnection()->beginTransaction();
+			$this->databaseHelper->beginTransaction();
 
 			$this->channelsPropertiesManager->delete($property);
 
-			// Commit all changes into database
-			$this->getOrmConnection()->commit();
+			$this->databaseHelper->commitTransaction();
 
 			$io->success(
 				$this->translator->translate(
@@ -2090,11 +2053,6 @@ class Install extends Console\Command\Command
 				),
 			);
 		} finally {
-			// Revert all changes when error occur
-			if ($this->getOrmConnection()->isTransactionActive()) {
-				$this->getOrmConnection()->rollBack();
-			}
-
 			$this->databaseHelper->clear();
 		}
 	}
@@ -2187,7 +2145,7 @@ class Install extends Console\Command\Command
 
 		try {
 			// Start transaction connection to the database
-			$this->getOrmConnection()->beginTransaction();
+			$this->databaseHelper->beginTransaction();
 
 			$property = $this->channelsPropertiesManager->create(Utils\ArrayHash::from([
 				'parent' => $sensor,
@@ -2209,8 +2167,7 @@ class Install extends Console\Command\Command
 			]));
 			assert($property instanceof DevicesEntities\Channels\Properties\Mapped);
 
-			// Commit all changes into database
-			$this->getOrmConnection()->commit();
+			$this->databaseHelper->commitTransaction();
 
 			$io->success(
 				$this->translator->translate(
@@ -2237,11 +2194,6 @@ class Install extends Console\Command\Command
 
 			return;
 		} finally {
-			// Revert all changes when error occur
-			if ($this->getOrmConnection()->isTransactionActive()) {
-				$this->getOrmConnection()->rollBack();
-			}
-
 			$this->databaseHelper->clear();
 		}
 	}
@@ -2300,7 +2252,7 @@ class Install extends Console\Command\Command
 
 		try {
 			// Start transaction connection to the database
-			$this->getOrmConnection()->beginTransaction();
+			$this->databaseHelper->beginTransaction();
 
 			$property = $this->channelsPropertiesManager->update($property, Utils\ArrayHash::from([
 				'parent' => $parent,
@@ -2308,8 +2260,7 @@ class Install extends Console\Command\Command
 			]));
 			assert($property instanceof DevicesEntities\Channels\Properties\Mapped);
 
-			// Commit all changes into database
-			$this->getOrmConnection()->commit();
+			$this->databaseHelper->commitTransaction();
 
 			$io->success(
 				$this->translator->translate(
@@ -2336,11 +2287,6 @@ class Install extends Console\Command\Command
 
 			return;
 		} finally {
-			// Revert all changes when error occur
-			if ($this->getOrmConnection()->isTransactionActive()) {
-				$this->getOrmConnection()->rollBack();
-			}
-
 			$this->databaseHelper->clear();
 		}
 	}
@@ -2418,9 +2364,7 @@ class Install extends Console\Command\Command
 
 	/**
 	 * @throws ApplicationExceptions\InvalidState
-	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\Runtime
 	 */
 	private function deleteSensor(Style\SymfonyStyle $io, Entities\ThermostatDevice $device): void
 	{
@@ -2454,12 +2398,11 @@ class Install extends Console\Command\Command
 
 		try {
 			// Start transaction connection to the database
-			$this->getOrmConnection()->beginTransaction();
+			$this->databaseHelper->beginTransaction();
 
 			$this->channelsPropertiesManager->delete($property);
 
-			// Commit all changes into database
-			$this->getOrmConnection()->commit();
+			$this->databaseHelper->commitTransaction();
 
 			$io->success(
 				$this->translator->translate(
@@ -2484,22 +2427,15 @@ class Install extends Console\Command\Command
 				),
 			);
 		} finally {
-			// Revert all changes when error occur
-			if ($this->getOrmConnection()->isTransactionActive()) {
-				$this->getOrmConnection()->rollBack();
-			}
-
 			$this->databaseHelper->clear();
 		}
 	}
 
 	/**
 	 * @throws ApplicationExceptions\InvalidState
-	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
@@ -2587,7 +2523,7 @@ class Install extends Console\Command\Command
 
 		try {
 			// Start transaction connection to the database
-			$this->getOrmConnection()->beginTransaction();
+			$this->databaseHelper->beginTransaction();
 
 			if ($channel === null) {
 				$channel = $this->channelsManager->create(Utils\ArrayHash::from([
@@ -2654,8 +2590,7 @@ class Install extends Console\Command\Command
 				);
 			}
 
-			// Commit all changes into database
-			$this->getOrmConnection()->commit();
+			$this->databaseHelper->commitTransaction();
 
 			$io->success(
 				$this->translator->translate(
@@ -2680,11 +2615,6 @@ class Install extends Console\Command\Command
 				),
 			);
 		} finally {
-			// Revert all changes when error occur
-			if ($this->getOrmConnection()->isTransactionActive()) {
-				$this->getOrmConnection()->rollBack();
-			}
-
 			$this->databaseHelper->clear();
 		}
 
@@ -4814,20 +4744,6 @@ class Install extends Console\Command\Command
 		}
 
 		throw new Exceptions\InvalidState('Channel property identifier could not be created');
-	}
-
-	/**
-	 * @throws Exceptions\Runtime
-	 */
-	protected function getOrmConnection(): DBAL\Connection
-	{
-		$connection = $this->managerRegistry->getConnection();
-
-		if ($connection instanceof DBAL\Connection) {
-			return $connection;
-		}
-
-		throw new Exceptions\Runtime('Database connection could not be established');
 	}
 
 }

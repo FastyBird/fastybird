@@ -97,8 +97,14 @@ class Database
 
 			$result = $callback();
 
-			// Commit all changes into database
-			$connection->commit();
+			if ($connection->isRollbackOnly()) {
+				$connection->rollBack();
+
+				throw new Exceptions\InvalidState('Transaction was roll backed');
+			} else {
+				// Commit all changes into database
+				$connection->commit();
+			}
 
 			return $result;
 		} catch (Throwable $ex) {
@@ -154,8 +160,12 @@ class Database
 		}
 
 		try {
-			// Commit all changes into database
-			$connection->commit();
+			if ($connection->isRollbackOnly()) {
+				$connection->rollBack();
+			} else {
+				// Commit all changes into database
+				$connection->commit();
+			}
 		} catch (Throwable $ex) {
 			// Revert all changes when error occur
 			if ($connection->isTransactionActive()) {
