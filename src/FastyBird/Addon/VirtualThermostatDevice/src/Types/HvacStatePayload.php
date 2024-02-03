@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * HvacState.php
+ * HvacStatePayload.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -26,7 +26,7 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class HvacState extends Consistence\Enum\Enum
+class HvacStatePayload extends Consistence\Enum\Enum
 {
 
 	public const OFF = 'off';

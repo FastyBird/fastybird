@@ -392,7 +392,7 @@ class Thermostat implements VirtualDrivers\Driver
 				[
 					'connector' => $this->device->getConnector(),
 					'device' => $this->device->getId(),
-					'channel' => $this->deviceHelper->getConfiguration($this->device)->getId(),
+					'channel' => $this->deviceHelper->getState($this->device)->getId(),
 					'property' => Types\ChannelPropertyIdentifier::CURRENT_ROOM_TEMPERATURE,
 					'value' => array_sum($measuredTemp) / count($measuredTemp),
 				],
@@ -417,7 +417,7 @@ class Thermostat implements VirtualDrivers\Driver
 					[
 						'connector' => $this->device->getConnector(),
 						'device' => $this->device->getId(),
-						'channel' => $this->deviceHelper->getConfiguration($this->device)->getId(),
+						'channel' => $this->deviceHelper->getState($this->device)->getId(),
 						'property' => Types\ChannelPropertyIdentifier::CURRENT_FLOOR_TEMPERATURE,
 						'value' => array_sum($measuredFloorTemp) / count($measuredFloorTemp),
 					],
@@ -430,7 +430,7 @@ class Thermostat implements VirtualDrivers\Driver
 					[
 						'connector' => $this->device->getConnector(),
 						'device' => $this->device->getId(),
-						'channel' => $this->deviceHelper->getConfiguration($this->device)->getId(),
+						'channel' => $this->deviceHelper->getState($this->device)->getId(),
 						'property' => Types\ChannelPropertyIdentifier::FLOOR_OVERHEATING,
 						'value' => $this->isFloorOverHeating(),
 					],
@@ -450,7 +450,7 @@ class Thermostat implements VirtualDrivers\Driver
 					[
 						'connector' => $this->device->getConnector(),
 						'device' => $this->device->getId(),
-						'channel' => $this->deviceHelper->getConfiguration($this->device)->getId(),
+						'channel' => $this->deviceHelper->getState($this->device)->getId(),
 						'property' => Types\ChannelPropertyIdentifier::CURRENT_ROOM_HUMIDITY,
 						'value' => $measuredHum !== [] ? array_sum($measuredHum) / count($measuredHum) : null,
 					],
@@ -465,7 +465,7 @@ class Thermostat implements VirtualDrivers\Driver
 					[
 						'connector' => $this->device->getConnector(),
 						'device' => $this->device->getId(),
-						'channel' => $this->deviceHelper->getConfiguration($this->device)->getId(),
+						'channel' => $this->deviceHelper->getState($this->device)->getId(),
 						'property' => Types\ChannelPropertyIdentifier::CURRENT_OPENINGS_STATE,
 						'value' => $this->isOpeningsClosed(),
 					],
@@ -600,7 +600,7 @@ class Thermostat implements VirtualDrivers\Driver
 								[
 									'connector' => $this->device->getConnector(),
 									'device' => $this->device->getId(),
-									'channel' => $this->deviceHelper->getConfiguration($this->device)->getId(),
+									'channel' => $this->deviceHelper->getState($this->device)->getId(),
 									'property' => $property->getId(),
 									'value' => $expectedValue,
 								],
@@ -624,7 +624,7 @@ class Thermostat implements VirtualDrivers\Driver
 								[
 									'connector' => $this->device->getConnector(),
 									'device' => $this->device->getId(),
-									'channel' => $this->deviceHelper->getConfiguration($this->device)->getId(),
+									'channel' => $this->deviceHelper->getState($this->device)->getId(),
 									'property' => $property->getId(),
 									'value' => $expectedValue,
 								],
@@ -782,12 +782,12 @@ class Thermostat implements VirtualDrivers\Driver
 		$this->setHeaterState($heaters);
 		$this->setCoolerState($coolers);
 
-		$state = Types\HvacState::OFF;
+		$state = Types\HvacStatePayload::OFF;
 
 		if ($heaters && !$coolers) {
-			$state = Types\HvacState::HEATING;
+			$state = Types\HvacStatePayload::HEATING;
 		} elseif (!$heaters && $coolers) {
-			$state = Types\HvacState::COOLING;
+			$state = Types\HvacStatePayload::COOLING;
 		}
 
 		$this->queue->append(
@@ -796,7 +796,7 @@ class Thermostat implements VirtualDrivers\Driver
 				[
 					'connector' => $this->device->getConnector(),
 					'device' => $this->device->getId(),
-					'channel' => $this->deviceHelper->getConfiguration($this->device)->getId(),
+					'channel' => $this->deviceHelper->getState($this->device)->getId(),
 					'property' => Types\ChannelPropertyIdentifier::HVAC_STATE,
 					'value' => $state,
 				],

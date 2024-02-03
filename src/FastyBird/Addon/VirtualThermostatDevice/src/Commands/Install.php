@@ -291,11 +291,11 @@ class Install extends Console\Command\Command
 					'channel' => $stateChannel,
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
 					'format' => array_merge(
-						[Types\HvacState::OFF],
+						[Types\HvacStatePayload::OFF],
 						array_filter(
 							array_map(static fn (string $mode): string|null => match ($mode) {
-								Types\HvacMode::HEAT => Types\HvacState::HEATING,
-								Types\HvacMode::COOL => Types\HvacState::COOLING,
+								Types\HvacMode::HEAT => Types\HvacStatePayload::HEATING,
+								Types\HvacMode::COOL => Types\HvacStatePayload::COOLING,
 								default => null,
 							}, $modes),
 							static fn (string|null $state): bool => $state !== null,
@@ -1257,11 +1257,11 @@ class Install extends Console\Command\Command
 					'channel' => $stateChannel,
 					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
 					'format' => array_merge(
-						[Types\HvacState::OFF],
+						[Types\HvacStatePayload::OFF],
 						array_filter(
 							array_map(static fn (string $mode): string|null => match ($mode) {
-								Types\HvacMode::HEAT => Types\HvacState::HEATING,
-								Types\HvacMode::COOL => Types\HvacState::COOLING,
+								Types\HvacMode::HEAT => Types\HvacStatePayload::HEATING,
+								Types\HvacMode::COOL => Types\HvacStatePayload::COOLING,
 								default => null,
 							}, $modes),
 							static fn (string|null $state): bool => $state !== null,
