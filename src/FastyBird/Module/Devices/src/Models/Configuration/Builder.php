@@ -44,6 +44,8 @@ final class Builder
 
 	private Caching\Cache $cache;
 
+	private int $buildRetry = 0;
+
 	public function __construct(
 		private readonly Models\Entities\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly Models\Entities\Connectors\Properties\PropertiesRepository $connectorsPropertiesRepository,
@@ -91,11 +93,21 @@ final class Builder
 
 				$decoded = $this->dataSource->decode($data, 'json');
 			} catch (Throwable $ex) {
+				if ($this->buildRetry < 1) {
+					$this->buildRetry++;
+
+					$this->cache->clean();
+
+					return $this->load($force);
+				}
+
 				throw new Exceptions\InvalidState('Module configuration could not be read', $ex->getCode(), $ex);
 			}
 
 			$this->configuration = new JSONPath\JSONPath($decoded);
 		}
+
+		$this->buildRetry = 0;
 
 		return $this->configuration;
 	}
