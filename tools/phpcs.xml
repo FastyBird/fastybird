@@ -25,9 +25,9 @@
                 <element key="src/FastyBird/Automator/DevicesModule/tests/cases/unit" value="FastyBird\Automator\DevicesModule\Tests\Cases\Unit"/>
                 <element key="src/FastyBird/Automator/DevicesModule/tests/tools" value="FastyBird\Automator\DevicesModule\Tests\Tools"/>
 
-                <element key="src/FastyBird/Bridge/RedisDbDevicesModule/src" value="FastyBird\Bridge\RedisDbDevicesModule"/>
-                <element key="src/FastyBird/Bridge/RedisDbDevicesModule/tests/cases/unit" value="FastyBird\Bridge\RedisDbDevicesModule\Tests\Cases\Unit"/>
-                <element key="src/FastyBird/Bridge/RedisDbDevicesModule/tests/tools" value="FastyBird\Bridge\RedisDbDevicesModule\Tests\Tools"/>
+                <element key="src/FastyBird/Bridge/RedisDbPluginDevicesModule/src" value="FastyBird\Bridge\RedisDbPluginDevicesModule"/>
+                <element key="src/FastyBird/Bridge/RedisDbPluginDevicesModule/tests/cases/unit" value="FastyBird\Bridge\RedisDbPluginDevicesModule\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Bridge/RedisDbPluginDevicesModule/tests/tools" value="FastyBird\Bridge\RedisDbPluginDevicesModule\Tests\Tools"/>
 
                 <element key="src/FastyBird/Bridge/RedisDbTriggersModule/src" value="FastyBird\Bridge\RedisDbTriggersModule"/>
                 <element key="src/FastyBird/Bridge/RedisDbTriggersModule/tests/cases/unit" value="FastyBird\Bridge\RedisDbTriggersModule\Tests\Cases\Unit"/>
