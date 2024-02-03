@@ -364,7 +364,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						Entities\Messages\StoreDeviceConnectionState::class,
 						[
 							'connector' => $connector->getId(),
-							'identifier' => $device->getId(),
+							'device' => $device->getId(),
 							'state' => MetadataTypes\ConnectionState::ALERT,
 						],
 					),
