@@ -642,7 +642,7 @@ class Thermostat implements VirtualDrivers\Driver
 					$channel->getIdentifier(),
 					$matches,
 				) === 1
-				&& in_array('preset', $matches, true)
+				&& array_key_exists('preset', $matches)
 			) {
 				if (
 					Types\Preset::isValidValue($matches['preset'])
