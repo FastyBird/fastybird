@@ -29,27 +29,21 @@ use function strval;
 class ChannelPropertyIdentifier extends Consistence\Enum\Enum
 {
 
-	public const OPENING_SENSOR = 'opening_sensor';
-
+	// ACTORS & SENSORS
 	public const HEATER_ACTOR = 'heater_actor';
 
 	public const COOLER_ACTOR = 'cooler_actor';
 
-	public const TARGET_SENSOR = 'target_sensor';
+	public const ROOM_TEMPERATURE_SENSOR = 'room_temperature_sensor';
 
-	public const FLOOR_SENSOR = 'floor_sensor';
+	public const FLOOR_TEMPERATURE_SENSOR = 'floor_temperature_sensor';
 
+	public const ROOM_HUMIDITY_SENSOR = 'room_humidity_sensor';
+
+	public const OPENING_SENSOR = 'opening_sensor';
+
+	// CONFIGURATION
 	public const MAXIMUM_FLOOR_TEMPERATURE = 'max_floor_temperature';
-
-	public const ACTUAL_FLOOR_TEMPERATURE = 'actual_floor_temperature';
-
-	public const TARGET_TEMPERATURE = 'target_temperature';
-
-	public const ACTUAL_TEMPERATURE = 'actual_temperature';
-
-	public const COOLING_THRESHOLD_TEMPERATURE = 'cooling_threshold_temperature';
-
-	public const HEATING_THRESHOLD_TEMPERATURE = 'heating_threshold_temperature';
 
 	public const LOW_TARGET_TEMPERATURE_TOLERANCE = 'low_target_temperature_tolerance';
 
@@ -57,13 +51,31 @@ class ChannelPropertyIdentifier extends Consistence\Enum\Enum
 
 	public const MINIMUM_CYCLE_DURATION = 'min_cycle_duration';
 
+	public const UNIT = 'unit';
+
+	// PRESET
+	public const TARGET_TEMPERATURE = 'target_temperature';
+
+	public const COOLING_THRESHOLD_TEMPERATURE = 'cooling_threshold_temperature';
+
+	public const HEATING_THRESHOLD_TEMPERATURE = 'heating_threshold_temperature';
+
+	// STATE
+	public const CURRENT_FLOOR_TEMPERATURE = 'current_floor_temperature';
+
+	public const CURRENT_ROOM_TEMPERATURE = 'current_room_temperature';
+
+	public const CURRENT_ROOM_HUMIDITY = 'current_room_humidity';
+
+	public const CURRENT_OPENINGS_STATE = 'current_openings_state';
+
+	public const FLOOR_OVERHEATING = 'floor_overheating';
+
 	public const PRESET_MODE = 'preset_mode';
 
 	public const HVAC_MODE = 'hvac_mode';
 
 	public const HVAC_STATE = 'hvac_state';
-
-	public const UNIT = 'unit';
 
 	public function getValue(): string
 	{

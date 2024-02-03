@@ -89,13 +89,15 @@ cmd:
                 maximumFloorTemperature: "Provide maximum allowed floor temperature (%unit%)"
                 heatingThresholdTemperature: "Provide heating threshold temperature (%unit%)"
                 coolingThresholdTemperature: "Provide cooling threshold temperature (%unit%)"
-            useOpenings: "Do you want to configure openings sensors? Like windows, doors, etc."
-            useFloorSensor: "Do you want to configure floor temperature sensors?"
+            useOpeningSensors: "Do you want to configure openings sensors? Like windows, doors, etc."
+            useFloorTemperatureSensors: "Do you want to configure floor temperature sensors?"
+            useRoomHumiditySensors: "Do you want to configure humidity sensors?"
             addAnotherHeater: "Do you want to add another heater actor?"
             addAnotherCooler: "Do you want to add another cooler actor?"
-            addAnotherOpening: "Do you want to add another opnening sensor?"
-            addAnotherTemperatureSensor: "Do you want to add another temperature sensor?"
-            addAnotherFloorSensor: "Do you want to add another floor temperature sensor?"
+            addAnotherOpeningSensor: "Do you want to add another opnening sensor?"
+            addAnotherRoomTemperatureSensor: "Do you want to add another temperature sensor?"
+            addAnotherFloorTemperatureSensor: "Do you want to add another floor temperature sensor?"
+            addAnotherRoomHumiditySensor: "Do you want to add another humidity sensor?"
 
         answers:
             mode:
@@ -119,9 +121,10 @@ cmd:
                 heater: "Heater actor"
                 cooler: "Cooler actor"
             sensor:
-                targetTemperature: "Temperature sensor"
+                roomTemperature: "Room temperature sensor"
                 floorTemperature: "Floor temperature sensor"
-                sensor: "Openings sensor"
+                opening: "Opening sensor"
+                roomHumidity: "Room humidity sensor"
             device: "Device"
             channel: "Channel"
             property: "Property"
@@ -134,9 +137,10 @@ cmd:
             type: "Type"
             heater_actor: "Heater actor"
             cooler_actor: "Cooler actor"
-            target_sensor: "Temperature sensor"
-            floor_sensor: "Floor temperature sensor"
-            opening_sensor: "Openings sensors"
+            room_temperature_sensor: "Room temperature sensor"
+            floor_temperature_sensor: "Floor temperature sensor"
+            opening_sensor: "Opening sensor"
+            room_humidity_sensor: "Room humidity sensor"
 
         messages:
             identifier:
@@ -179,10 +183,11 @@ cmd:
             noHardwareDevices: "No devices registered in system"
             property:
                 notSupported: "Selected property is not supported"
-            configureHeaters: "Configure thermostat heater actor/s. This device/s will be controled by thermostat according to settings"
-            configureCoolers: "Configure thermostat cooler actor/s. This device/s will be controled by thermostat according to settings"
-            configureTemperatureSensor: "Configure thermostat temperature sensor/s. This device/s will report values to thermostat"
+            configureHeaterActors: "Configure thermostat heater actor/s. This device/s will be controled by thermostat according to settings"
+            configureCoolerActors: "Configure thermostat cooler actor/s. This device/s will be controled by thermostat according to settings"
+            configureRoomTemperatureSensor: "Configure thermostat temperature sensor/s. This device/s will report values to thermostat"
             preset:
+                manual: "Configure thermostat temperature for MANUAL preset"
                 away: "Configure thermostat temperature for AWAY preset"
                 eco: "Configure thermostat temperature for ECO preset"
                 home: "Configure thermostat temperature for HOME preset"

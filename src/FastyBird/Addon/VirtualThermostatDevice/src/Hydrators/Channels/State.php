@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Sensors.php
+ * State.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,7 +10,7 @@
  * @subpackage     Hydrators
  * @since          1.0.0
  *
- * @date           23.10.23
+ * @date           03.02.24
  */
 
 namespace FastyBird\Addon\VirtualThermostatDevice\Hydrators\Channels;
@@ -19,20 +19,20 @@ use FastyBird\Addon\VirtualThermostatDevice\Entities;
 use FastyBird\Addon\VirtualThermostatDevice\Hydrators;
 
 /**
- * Sensors channel entity hydrator
+ * State channel entity hydrator
  *
- * @extends Hydrators\ThermostatChannel<Entities\Channels\Sensors>
+ * @extends Hydrators\ThermostatChannel<Entities\Channels\State>
  *
  * @package        FastyBird:VirtualThermostatDeviceAddon!
  * @subpackage     Hydrators
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Sensors extends Hydrators\ThermostatChannel
+final class State extends Hydrators\ThermostatChannel
 {
 
 	public function getEntityName(): string
 	{
-		return Entities\Channels\Sensors::class;
+		return Entities\Channels\State::class;
 	}
 
 }

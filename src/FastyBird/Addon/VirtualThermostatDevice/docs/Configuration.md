@@ -261,19 +261,36 @@ average value, which will be employed in subsequent calculations.
 
 #### Thermostat modes configuration
 
-The target temperature for the thermostat in manual mode determines the desired temperature. In manual mode, the thermostat
-works to heat or cool down to this specific target temperature.
-
-```
- Provide target temperature value for manual mode (°C):
- > 20
-```
-
 When configuring a thermostat with floor sensors, you will be prompted to set the maximum floor temperature to prevent overheating.
 
 ```
  Provide maximum allowed floor temperature (°C) [28]:
  > 28
+```
+
+In the next steps, you will be guided to configure thermostat presets. This thermostat offers predefined presets,
+and you have the flexibility to choose any of them according to your preferences.
+
+```
+ Please select thermostat supported presets (multiple answers available) [Away, Eco, Home, Comfort, Sleep, Anti freeze]:
+  [0] Away
+  [1] Eco
+  [2] Home
+  [3] Comfort
+  [4] Sleep
+  [5] Anti freeze
+  [6] None
+ > 
+```
+
+Once presets are selected you will be asked to configure each preset individually.
+
+The target temperature for the thermostat in selected preset mode determines the desired temperature. In the selected mode,
+the thermostat works to heat or cool down to this specific target temperature.
+
+```
+ Provide target temperature value for manual mode (°C):
+ > 20
 ```
 
 When setting up the thermostat for **automatic mode**, it is necessary to configure both heating and cooling thresholds.
@@ -289,21 +306,6 @@ the thermostat activates cooling actors until the target temperature is reached,
 ```
  Provide cooling threshold temperature (°C):
  > 21
-```
-
-In the final steps, you will be guided to configure thermostat presets. This thermostat offers predefined presets,
-and you have the flexibility to choose any of them according to your preferences.
-
-```
- Please select thermostat supported presets (multiple answers available) [Away, Eco, Home, Comfort, Sleep, Anti freeze]:
-  [0] Away
-  [1] Eco
-  [2] Home
-  [3] Comfort
-  [4] Sleep
-  [5] Anti freeze
-  [6] None
- > 
 ```
 
 > [!TIP]

@@ -19,7 +19,7 @@ use FastyBird\Addon\VirtualThermostatDevice\Entities;
 use FastyBird\Addon\VirtualThermostatDevice\Hydrators;
 
 /**
- * Virtual thermostat preset channel entity hydrator
+ * Preset channel entity hydrator
  *
  * @extends Hydrators\ThermostatChannel<Entities\Channels\Preset>
  *

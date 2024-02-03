@@ -29,8 +29,6 @@ use function strval;
 class HvacState extends Consistence\Enum\Enum
 {
 
-	public const INACTIVE = 'inactive';
-
 	public const OFF = 'off';
 
 	public const COOLING = 'cooling';

@@ -20,7 +20,7 @@ use FastyBird\Addon\VirtualThermostatDevice\Schemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 
 /**
- * Virtual thermostat preset channel entity schema
+ * Preset channel entity schema
  *
  * @template T of Entities\Channels\Preset
  * @extends  Schemas\ThermostatChannel<T>

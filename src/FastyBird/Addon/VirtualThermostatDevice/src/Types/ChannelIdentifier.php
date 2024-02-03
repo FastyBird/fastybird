@@ -31,6 +31,10 @@ class ChannelIdentifier extends Consistence\Enum\Enum
 
 	public const CONFIGURATION = 'configuration';
 
+	public const STATE = 'state';
+
+	public const PRESET_MANUAL = 'preset_manual';
+
 	public const PRESET_AWAY = 'preset_away';
 
 	public const PRESET_ECO = 'preset_eco';

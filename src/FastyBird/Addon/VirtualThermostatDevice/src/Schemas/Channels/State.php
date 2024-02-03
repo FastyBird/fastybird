@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Configuration.php
+ * State.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,7 +10,7 @@
  * @subpackage     Schemas
  * @since          1.0.0
  *
- * @date           23.10.23
+ * @date           03.02.24
  */
 
 namespace FastyBird\Addon\VirtualThermostatDevice\Schemas\Channels;
@@ -20,26 +20,26 @@ use FastyBird\Addon\VirtualThermostatDevice\Schemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 
 /**
- * Configuration channel entity schema
+ * State channel entity schema
  *
- * @template T of Entities\Channels\Configuration
+ * @template T of Entities\Channels\State
  * @extends  Schemas\ThermostatChannel<T>
  *
  * @package        FastyBird:VirtualThermostatDeviceAddon!
  * @subpackage     Schemas
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Configuration extends Schemas\ThermostatChannel
+final class State extends Schemas\ThermostatChannel
 {
 
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::VIRTUAL . '/channel/' . Entities\Channels\Configuration::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::VIRTUAL . '/channel/' . Entities\Channels\State::TYPE;
 
 	public function getEntityClass(): string
 	{
-		return Entities\Channels\Configuration::class;
+		return Entities\Channels\State::class;
 	}
 
 	public function getType(): string
