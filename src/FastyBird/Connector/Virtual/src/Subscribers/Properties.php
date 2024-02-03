@@ -93,6 +93,7 @@ final class Properties implements Common\EventSubscriber
 				'format' => [
 					MetadataTypes\ConnectionState::CONNECTED,
 					MetadataTypes\ConnectionState::DISCONNECTED,
+					MetadataTypes\ConnectionState::STOPPED,
 					MetadataTypes\ConnectionState::ALERT,
 					MetadataTypes\ConnectionState::UNKNOWN,
 				],
@@ -109,6 +110,7 @@ final class Properties implements Common\EventSubscriber
 				'format' => [
 					MetadataTypes\ConnectionState::CONNECTED,
 					MetadataTypes\ConnectionState::DISCONNECTED,
+					MetadataTypes\ConnectionState::STOPPED,
 					MetadataTypes\ConnectionState::ALERT,
 					MetadataTypes\ConnectionState::UNKNOWN,
 				],

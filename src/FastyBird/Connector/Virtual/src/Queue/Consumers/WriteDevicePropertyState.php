@@ -243,8 +243,8 @@ final class WriteDevicePropertyState implements Queue\Consumer
 				$this->entityHelper->create(
 					Entities\Messages\StoreDeviceConnectionState::class,
 					[
-						'connector' => $connector->getId()->toString(),
-						'device' => $device->getId()->toString(),
+						'connector' => $connector->getId(),
+						'device' => $device->getId(),
 						'state' => MetadataTypes\ConnectionState::ALERT,
 					],
 				),
@@ -313,8 +313,8 @@ final class WriteDevicePropertyState implements Queue\Consumer
 					$this->entityHelper->create(
 						Entities\Messages\StoreDeviceConnectionState::class,
 						[
-							'connector' => $connector->getId()->toString(),
-							'identifier' => $device->getIdentifier(),
+							'connector' => $connector->getId(),
+							'identifier' => $device->getId(),
 							'state' => MetadataTypes\ConnectionState::ALERT,
 						],
 					),

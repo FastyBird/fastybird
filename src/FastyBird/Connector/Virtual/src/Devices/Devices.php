@@ -167,7 +167,10 @@ class Devices
 		if (!$service->isConnected()) {
 			$deviceState = $this->deviceConnectionManager->getState($device);
 
-			if ($deviceState->equalsValue(MetadataTypes\ConnectionState::ALERT)) {
+			if (
+				$deviceState->equalsValue(MetadataTypes\ConnectionState::ALERT)
+				|| $deviceState->equalsValue(MetadataTypes\ConnectionState::STOPPED)
+			) {
 				unset($this->devices[$device->getId()->toString()]);
 
 				return false;
