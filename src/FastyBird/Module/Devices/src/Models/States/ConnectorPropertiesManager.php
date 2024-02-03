@@ -561,24 +561,30 @@ final class ConnectorPropertiesManager extends PropertiesManager
 			return;
 		}
 
-		if (
-			$state !== null
-			&& (
-				(
-					$data->offsetExists(States\Property::EXPECTED_VALUE_FIELD)
-					&& MetadataUtilities\Value::flattenValue($state->getActualValue()) === $data->offsetGet(
-						States\Property::EXPECTED_VALUE_FIELD,
+		try {
+			if ($state !== null) {
+				$actualValue = MetadataUtilities\Value::flattenValue(
+					$this->convertWriteActualValue($state->getActualValue(), $property),
+				);
+				$expectedValue = MetadataUtilities\Value::flattenValue(
+					$this->convertWriteExpectedValue($state->getExpectedValue(), $property, null, false),
+				);
+
+				if (
+					(
+						$data->offsetExists(States\Property::EXPECTED_VALUE_FIELD)
+						&& $data->offsetGet(States\Property::EXPECTED_VALUE_FIELD) === $actualValue
+					) || (
+						$data->offsetExists(States\Property::ACTUAL_VALUE_FIELD)
+						&& $data->offsetGet(States\Property::ACTUAL_VALUE_FIELD) === $expectedValue
 					)
-				) || (
-					$data->offsetExists(States\Property::ACTUAL_VALUE_FIELD)
-					&& MetadataUtilities\Value::flattenValue($state->getExpectedValue()) === $data->offsetGet(
-						States\Property::ACTUAL_VALUE_FIELD,
-					)
-				)
-			)
-		) {
-			$data->offsetSet(States\Property::EXPECTED_VALUE_FIELD, null);
-			$data->offsetSet(States\Property::PENDING_FIELD, false);
+				) {
+					$data->offsetSet(States\Property::EXPECTED_VALUE_FIELD, null);
+					$data->offsetSet(States\Property::PENDING_FIELD, false);
+				}
+			}
+		} catch (MetadataExceptions\InvalidValue) {
+			// Could be ignored
 		}
 
 		try {
