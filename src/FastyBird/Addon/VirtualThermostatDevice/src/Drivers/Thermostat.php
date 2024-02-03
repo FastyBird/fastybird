@@ -723,38 +723,53 @@ class Thermostat implements VirtualDrivers\Driver
 
 					return Promise\resolve(true);
 				} elseif (
-					$this->hasFloorTemperatureSensors
-					&& Utils\Strings::startsWith(
+					Utils\Strings::startsWith(
 						$property->getIdentifier(),
 						Types\ChannelPropertyIdentifier::FLOOR_TEMPERATURE_SENSOR,
 					)
 					&& (is_numeric($actualValue) || $actualValue === null)
 				) {
-					$this->currentFloorTemperature[$property->getId()->toString()] = floatval($actualValue);
+					if ($this->hasFloorTemperatureSensors) {
+						$this->currentFloorTemperature[$property->getId()->toString()] = floatval($actualValue);
 
-					return Promise\resolve(true);
+						return Promise\resolve(true);
+					} else {
+						return Promise\reject(
+							new Exceptions\InvalidArgument('Thermostat does not support floor temperature sensors'),
+						);
+					}
 				} elseif (
-					$this->hasOpeningsSensors
-					&& Utils\Strings::startsWith(
+					Utils\Strings::startsWith(
 						$property->getIdentifier(),
 						Types\ChannelPropertyIdentifier::OPENING_SENSOR,
 					)
 					&& (is_bool($actualValue) || $actualValue === null)
 				) {
-					$this->openingsState[$property->getId()->toString()] = $actualValue;
+					if ($this->hasOpeningsSensors) {
+						$this->openingsState[$property->getId()->toString()] = $actualValue;
 
-					return Promise\resolve(true);
+						return Promise\resolve(true);
+					} else {
+						return Promise\reject(
+							new Exceptions\InvalidArgument('Thermostat does not support openings sensors'),
+						);
+					}
 				} elseif (
-					$this->hasHumiditySensors
-					&& Utils\Strings::startsWith(
+					Utils\Strings::startsWith(
 						$property->getIdentifier(),
 						Types\ChannelPropertyIdentifier::ROOM_HUMIDITY_SENSOR,
 					)
 					&& (is_numeric($actualValue) || $actualValue === null)
 				) {
-					$this->currentHumidity[$property->getId()->toString()] = intval($actualValue);
+					if ($this->hasHumiditySensors) {
+						$this->currentHumidity[$property->getId()->toString()] = intval($actualValue);
 
-					return Promise\resolve(true);
+						return Promise\resolve(true);
+					} else {
+						return Promise\reject(
+							new Exceptions\InvalidArgument('Thermostat does not support humidity sensors sensors'),
+						);
+					}
 				}
 			}
 		}

@@ -529,6 +529,14 @@ final class Device
 						$property->getIdentifier(),
 						Types\ChannelPropertyIdentifier::FLOOR_TEMPERATURE_SENSOR,
 					)
+					|| Utils\Strings::startsWith(
+						$property->getIdentifier(),
+						Types\ChannelPropertyIdentifier::OPENING_SENSOR,
+					)
+					|| Utils\Strings::startsWith(
+						$property->getIdentifier(),
+						Types\ChannelPropertyIdentifier::ROOM_HUMIDITY_SENSOR,
+					)
 				),
 		);
 	}
