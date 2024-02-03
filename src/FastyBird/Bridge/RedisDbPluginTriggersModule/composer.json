@@ -1,5 +1,5 @@
 {
-  "name": "fastybird/redisdb-triggers-module-bridge",
+  "name": "fastybird/redisdb-plugin-triggers-module-bridge",
   "type": "fastybird-bridge",
   "description": "FastyBird IoT Redis DB bridge for Triggers module",
   "keywords": [
@@ -26,7 +26,7 @@
   "support": {
     "email": "code@fastybird.com",
     "issues": "https://github.com/FastyBird/fastybird/issues",
-    "source": "https://github.com/FastyBird/redisdb-triggers-module-bridge"
+    "source": "https://github.com/FastyBird/redisdb-plugin-triggers-module-bridge"
   },
   "require": {
     "php": ">=8.1.0",
@@ -60,13 +60,13 @@
   },
   "autoload": {
     "psr-4": {
-      "FastyBird\\Bridge\\RedisDbTriggersModule\\": "src/"
+      "FastyBird\\Bridge\\RedisDbPluginTriggersModule\\": "src/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "FastyBird\\Bridge\\RedisDbTriggersModule\\Tests\\Cases\\Unit\\": "tests/cases/unit",
-      "FastyBird\\Bridge\\RedisDbTriggersModule\\Tests\\Tools\\": "tests/tools"
+      "FastyBird\\Bridge\\RedisDbPluginTriggersModule\\Tests\\Cases\\Unit\\": "tests/cases/unit",
+      "FastyBird\\Bridge\\RedisDbPluginTriggersModule\\Tests\\Tools\\": "tests/tools"
     }
   },
   "config": {

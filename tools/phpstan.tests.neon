@@ -5,7 +5,7 @@ includes:
     - ../src/FastyBird/Automator/DevicesModule/tools/phpstan.config.tests.neon
 
     - ../src/FastyBird/Bridge/RedisDbPluginDevicesModule/tools/phpstan.config.tests.neon
-    - ../src/FastyBird/Bridge/RedisDbTriggersModule/tools/phpstan.config.tests.neon
+    - ../src/FastyBird/Bridge/RedisDbPluginTriggersModule/tools/phpstan.config.tests.neon
 
     - ../src/FastyBird/Connector/FbMqtt/tools/phpstan.config.tests.neon
     - ../src/FastyBird/Connector/HomeKit/tools/phpstan.config.tests.neon

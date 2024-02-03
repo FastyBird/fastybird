@@ -1,10 +1,10 @@
 <?php declare(strict_types = 1);
 
-namespace FastyBird\Bridge\RedisDbTriggersModule\Tests\Cases\Unit;
+namespace FastyBird\Bridge\RedisDbPluginTriggersModule\Tests\Cases\Unit;
 
 use DateTimeImmutable;
 use Error;
-use FastyBird\Bridge\RedisDbTriggersModule;
+use FastyBird\Bridge\RedisDbPluginTriggersModule;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Application\Boot as ApplicationBoot;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
@@ -71,7 +71,7 @@ abstract class BaseTestCase extends TestCase
 
 		$config->setTimeZone('Europe/Prague');
 
-		RedisDbTriggersModule\DI\RedisDbTriggersModuleExtension::register($config);
+		RedisDbPluginTriggersModule\DI\RedisDbPluginTriggersModuleExtension::register($config);
 
 		return $config->createContainer();
 	}

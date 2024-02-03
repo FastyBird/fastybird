@@ -29,9 +29,9 @@
                 <element key="src/FastyBird/Bridge/RedisDbPluginDevicesModule/tests/cases/unit" value="FastyBird\Bridge\RedisDbPluginDevicesModule\Tests\Cases\Unit"/>
                 <element key="src/FastyBird/Bridge/RedisDbPluginDevicesModule/tests/tools" value="FastyBird\Bridge\RedisDbPluginDevicesModule\Tests\Tools"/>
 
-                <element key="src/FastyBird/Bridge/RedisDbTriggersModule/src" value="FastyBird\Bridge\RedisDbTriggersModule"/>
-                <element key="src/FastyBird/Bridge/RedisDbTriggersModule/tests/cases/unit" value="FastyBird\Bridge\RedisDbTriggersModule\Tests\Cases\Unit"/>
-                <element key="src/FastyBird/Bridge/RedisDbTriggersModule/tests/tools" value="FastyBird\Bridge\RedisDbTriggersModule\Tests\Tools"/>
+                <element key="src/FastyBird/Bridge/RedisDbPluginTriggersModule/src" value="FastyBird\Bridge\RedisDbPluginTriggersModule"/>
+                <element key="src/FastyBird/Bridge/RedisDbPluginTriggersModule/tests/cases/unit" value="FastyBird\Bridge\RedisDbPluginTriggersModule\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Bridge/RedisDbPluginTriggersModule/tests/tools" value="FastyBird\Bridge\RedisDbPluginTriggersModule\Tests\Tools"/>
 
                 <element key="src/FastyBird/Connector/FbMqtt/src" value="FastyBird\Connector\FbMqtt"/>
                 <element key="src/FastyBird/Connector/FbMqtt/tests/cases/unit" value="FastyBird\Connector\FbMqtt\Tests\Cases\Unit"/>

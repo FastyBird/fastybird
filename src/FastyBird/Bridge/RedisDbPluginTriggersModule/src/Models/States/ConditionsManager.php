@@ -1,21 +1,21 @@
 <?php declare(strict_types = 1);
 
 /**
- * ActionsManager.php
+ * ConditionsManager.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:RedisDbTriggersModule!
+ * @package        FastyBird:RedisDbPluginTriggersModule!
  * @subpackage     Models
  * @since          1.0.0
  *
  * @date           20.10.22
  */
 
-namespace FastyBird\Bridge\RedisDbTriggersModule\Models\States;
+namespace FastyBird\Bridge\RedisDbPluginTriggersModule\Models\States;
 
-use FastyBird\Bridge\RedisDbTriggersModule\States;
+use FastyBird\Bridge\RedisDbPluginTriggersModule\States;
 use FastyBird\Module\Triggers\Models as TriggersModels;
 use FastyBird\Plugin\RedisDb\Exceptions as RedisDbExceptions;
 use FastyBird\Plugin\RedisDb\Models as RedisDbModels;
@@ -24,23 +24,23 @@ use Nette\Utils;
 use Ramsey\Uuid;
 
 /**
- * Action states manager
+ * Condition states manager
  *
- * @package        FastyBird:RedisDbTriggersModule!
+ * @package        FastyBird:RedisDbPluginTriggersModule!
  * @subpackage     Models
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class ActionsManager implements TriggersModels\States\IActionsManager
+class ConditionsManager implements TriggersModels\States\IConditionsManager
 {
 
 	use Nette\SmartObject;
 
-	/** @var RedisDbModels\States\StatesManager<States\Action> */
+	/** @var RedisDbModels\States\StatesManager<States\Condition> */
 	private RedisDbModels\States\StatesManager $statesManager;
 
 	/**
-	 * @param RedisDbModels\States\StatesManagerFactory<States\Action> $statesManagerFactory
+	 * @param RedisDbModels\States\StatesManagerFactory<States\Condition> $statesManagerFactory
 	 *
 	 * @throws RedisDbExceptions\InvalidArgument
 	 */
@@ -49,14 +49,14 @@ class ActionsManager implements TriggersModels\States\IActionsManager
 		private readonly int $database = 0,
 	)
 	{
-		$this->statesManager = $statesManagerFactory->create(States\Action::class);
+		$this->statesManager = $statesManagerFactory->create(States\Condition::class);
 	}
 
 	/**
 	 * @throws RedisDbExceptions\InvalidArgument
 	 * @throws RedisDbExceptions\InvalidState
 	 */
-	public function create(Uuid\UuidInterface $id, Utils\ArrayHash $values): States\Action
+	public function create(Uuid\UuidInterface $id, Utils\ArrayHash $values): States\Condition
 	{
 		return $this->statesManager->create($id, $values, $this->database);
 	}
@@ -64,7 +64,7 @@ class ActionsManager implements TriggersModels\States\IActionsManager
 	/**
 	 * @throws RedisDbExceptions\InvalidState
 	 */
-	public function update(Uuid\UuidInterface $id, Utils\ArrayHash $values): States\Action|false
+	public function update(Uuid\UuidInterface $id, Utils\ArrayHash $values): States\Condition|false
 	{
 		return $this->statesManager->update($id, $values, $this->database);
 	}

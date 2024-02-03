@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace FastyBird\Bridge\RedisDbTriggersModule\Tests\Tools;
+namespace FastyBird\Bridge\RedisDbPluginTriggersModule\Tests\Tools;
 
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL;

@@ -1,21 +1,21 @@
 <?php declare(strict_types = 1);
 
 /**
- * ConditionsRepository.php
+ * ActionsRepository.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:RedisDbTriggersModuleBridge!
+ * @package        FastyBird:RedisDbPluginTriggersModuleBridge!
  * @subpackage     Models
  * @since          1.0.0
  *
  * @date           12.01.22
  */
 
-namespace FastyBird\Bridge\RedisDbTriggersModule\Models\States;
+namespace FastyBird\Bridge\RedisDbPluginTriggersModule\Models\States;
 
-use FastyBird\Bridge\RedisDbTriggersModule\States;
+use FastyBird\Bridge\RedisDbPluginTriggersModule\States;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Module\Triggers\Entities as TriggersEntities;
 use FastyBird\Module\Triggers\Models as TriggersModels;
@@ -25,23 +25,23 @@ use Nette;
 use Ramsey\Uuid;
 
 /**
- * Trigger condition state repository
+ * Trigger action state repository
  *
- * @package        FastyBird:RedisDbTriggersModuleBridge!
+ * @package        FastyBird:RedisDbPluginTriggersModuleBridge!
  * @subpackage     Models
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class ConditionsRepository implements TriggersModels\States\IConditionsRepository
+class ActionsRepository implements TriggersModels\States\IActionsRepository
 {
 
 	use Nette\SmartObject;
 
-	/** @var RedisDbModels\States\StatesRepository<States\Condition> */
+	/** @var RedisDbModels\States\StatesRepository<States\Action> */
 	private RedisDbModels\States\StatesRepository $stateRepository;
 
 	/**
-	 * @param RedisDbModels\States\StatesRepositoryFactory<States\Condition> $stateRepositoryFactory
+	 * @param RedisDbModels\States\StatesRepositoryFactory<States\Action> $stateRepositoryFactory
 	 *
 	 * @throws RedisDbExceptions\InvalidArgument
 	 */
@@ -50,23 +50,23 @@ class ConditionsRepository implements TriggersModels\States\IConditionsRepositor
 		private readonly int $database = 0,
 	)
 	{
-		$this->stateRepository = $stateRepositoryFactory->create(States\Condition::class);
+		$this->stateRepository = $stateRepositoryFactory->create(States\Action::class);
 	}
 
 	/**
 	 * @throws RedisDbExceptions\InvalidState
 	 */
 	public function findOne(
-		MetadataDocuments\TriggersModule\Condition|TriggersEntities\Conditions\Condition $condition,
-	): States\Condition|null
+		MetadataDocuments\TriggersModule\Action|TriggersEntities\Actions\Action $action,
+	): States\Action|null
 	{
-		return $this->stateRepository->find($condition->getId(), $this->database);
+		return $this->stateRepository->find($action->getId(), $this->database);
 	}
 
 	/**
 	 * @throws RedisDbExceptions\InvalidState
 	 */
-	public function findOneById(Uuid\UuidInterface $id): States\Condition|null
+	public function findOneById(Uuid\UuidInterface $id): States\Action|null
 	{
 		return $this->stateRepository->find($id, $this->database);
 	}

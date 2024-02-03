@@ -1,12 +1,12 @@
 <?php declare(strict_types = 1);
 
-namespace FastyBird\Bridge\RedisDbTriggersModule\Tests\Cases\Unit\DI;
+namespace FastyBird\Bridge\RedisDbPluginTriggersModule\Tests\Cases\Unit\DI;
 
-use FastyBird\Bridge\RedisDbTriggersModule\Models;
-use FastyBird\Bridge\RedisDbTriggersModule\Tests\Cases\Unit\BaseTestCase;
+use FastyBird\Bridge\RedisDbPluginTriggersModule\Models;
+use FastyBird\Bridge\RedisDbPluginTriggersModule\Tests\Cases\Unit\BaseTestCase;
 use Nette;
 
-final class RedisDbTriggersModuleExtensionTest extends BaseTestCase
+final class RedisDbPluginTriggersModuleExtensionTest extends BaseTestCase
 {
 
 	/**

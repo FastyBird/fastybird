@@ -1,21 +1,21 @@
 <?php declare(strict_types = 1);
 
 /**
- * RedisDbTriggersModuleExtension.php
+ * RedisDbPluginTriggersModuleExtension.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:RedisDbTriggersModuleBridge!
+ * @package        FastyBird:RedisDbPluginTriggersModuleBridge!
  * @subpackage     DI
  * @since          1.0.0
  *
  * @date           02.11.22
  */
 
-namespace FastyBird\Bridge\RedisDbTriggersModule\DI;
+namespace FastyBird\Bridge\RedisDbPluginTriggersModule\DI;
 
-use FastyBird\Bridge\RedisDbTriggersModule\Models;
+use FastyBird\Bridge\RedisDbPluginTriggersModule\Models;
 use FastyBird\Library\Application\Boot as ApplicationBoot;
 use Nette\DI;
 use Nette\Schema;
@@ -23,17 +23,17 @@ use stdClass;
 use function assert;
 
 /**
- * Redis DB devices module bridge extension
+ * Redis DB triggers module bridge extension
  *
- * @package        FastyBird:RedisDbTriggersModuleBridge!
+ * @package        FastyBird:RedisDbPluginTriggersModuleBridge!
  * @subpackage     DI
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class RedisDbTriggersModuleExtension extends DI\CompilerExtension
+class RedisDbPluginTriggersModuleExtension extends DI\CompilerExtension
 {
 
-	public const NAME = 'fbRedisDbTriggersModuleBridge';
+	public const NAME = 'fbRedisDbPluginTriggersModuleBridge';
 
 	public static function register(
 		ApplicationBoot\Configurator $config,

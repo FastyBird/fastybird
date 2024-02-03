@@ -37,7 +37,7 @@ class BridgeSource extends Consistence\Enum\Enum
 
 	public const REDISDB_PLUGIN_DEVICES_MODULE = Metadata\Constants::BRIDGE_REDISDB_PLUGIN_DEVICES_MODULE;
 
-	public const REDISDB_TRIGGERS_MODULE = Metadata\Constants::BRIDGE_REDISDB_TRIGGERS_MODULE;
+	public const REDISDB_PLUGIN_TRIGGERS_MODULE = Metadata\Constants::BRIDGE_REDISDB_PLUGIN_TRIGGERS_MODULE;
 
 	public function getValue(): string
 	{

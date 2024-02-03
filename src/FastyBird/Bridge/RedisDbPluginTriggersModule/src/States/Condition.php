@@ -6,14 +6,14 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:RedisDbTriggersModuleBridge!
+ * @package        FastyBird:RedisDbPluginTriggersModuleBridge!
  * @subpackage     States
  * @since          1.0.0
  *
  * @date           12.01.22
  */
 
-namespace FastyBird\Bridge\RedisDbTriggersModule\States;
+namespace FastyBird\Bridge\RedisDbPluginTriggersModule\States;
 
 use DateTimeInterface;
 use FastyBird\Module\Triggers\States as TriggersStates;
@@ -25,7 +25,7 @@ use function array_merge;
 /**
  * Trigger condition state
  *
- * @package        FastyBird:RedisDbTriggersModuleBridge!
+ * @package        FastyBird:RedisDbPluginTriggersModuleBridge!
  * @subpackage     States
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

@@ -96,7 +96,7 @@ final class Constants
 
 	public const BRIDGE_REDISDB_PLUGIN_DEVICES_MODULE = 'com.fastybird.redisdb-plugin-devices-module-bridge';
 
-	public const BRIDGE_REDISDB_TRIGGERS_MODULE = 'com.fastybird.redisdb-triggers-module-bridge';
+	public const BRIDGE_REDISDB_PLUGIN_TRIGGERS_MODULE = 'com.fastybird.redisdb-plugin-triggers-module-bridge';
 
 	/**
 	 * MODULE PREFIXES
