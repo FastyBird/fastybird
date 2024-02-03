@@ -467,7 +467,7 @@ class Thermostat implements VirtualDrivers\Driver
 						'device' => $this->device->getId(),
 						'channel' => $this->deviceHelper->getState($this->device)->getId(),
 						'property' => Types\ChannelPropertyIdentifier::CURRENT_OPENINGS_STATE,
-						'value' => $this->isOpeningsClosed(),
+						'value' => $this->isOpeningsClosed() ? Types\OpeningStatePayload::CLOSED : Types\OpeningStatePayload::OPENED,
 					],
 				),
 			);
