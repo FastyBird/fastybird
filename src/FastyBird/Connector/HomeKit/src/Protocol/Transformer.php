@@ -319,6 +319,10 @@ final class Transformer
 			|| $dataType->equalsValue(Types\DataType::UINT32)
 			|| $dataType->equalsValue(Types\DataType::UINT64)
 		) {
+			if (is_bool($transformedValue)) {
+				$transformedValue = $transformedValue ? 1 : 0;
+			}
+
 			if (!is_numeric($transformedValue) || strval($transformedValue) !== strval((int) $transformedValue)) {
 				$transformedValue = preg_replace(
 					'~\s~',

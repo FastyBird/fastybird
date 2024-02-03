@@ -1090,13 +1090,27 @@ final class PairingController extends BaseController
 		$serverSecret = $this->connectorHelper->getServerSecret($connector);
 
 		if ($serverSecret === null) {
-			$serverSecret = Helpers\Protocol::generateSignKey();
-
-			$this->setConfiguration(
-				$connector,
-				Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::SERVER_SECRET),
-				$serverSecret,
+			$this->logger->error(
+				'Server secret key is not configured',
+				[
+					'source' => MetadataTypes\ConnectorSource::HOMEKIT,
+					'type' => 'pairing-controller',
+					'connector' => [
+						'id' => $connector->getId()->toString(),
+					],
+					'pairing' => [
+						'type' => 'exchange',
+						'state' => Types\TlvState::M6,
+					],
+				],
 			);
+
+			return [
+				[
+					Types\TlvCode::STATE => Types\TlvState::M6,
+					Types\TlvCode::ERROR => Types\TlvError::UNKNOWN,
+				],
+			];
 		}
 
 		$serverSecret = hex2bin($serverSecret);
@@ -1226,13 +1240,27 @@ final class PairingController extends BaseController
 		$serverSecret = $this->connectorHelper->getServerSecret($connector);
 
 		if ($serverSecret === null) {
-			$serverSecret = Helpers\Protocol::generateSignKey();
-
-			$this->setConfiguration(
-				$connector,
-				Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::SERVER_SECRET),
-				$serverSecret,
+			$this->logger->error(
+				'Server secret key is not configured',
+				[
+					'source' => MetadataTypes\ConnectorSource::HOMEKIT,
+					'type' => 'pairing-controller',
+					'connector' => [
+						'id' => $connector->getId()->toString(),
+					],
+					'pairing' => [
+						'type' => 'verify-start',
+						'state' => Types\TlvState::M2,
+					],
+				],
 			);
+
+			return [
+				[
+					Types\TlvCode::STATE => Types\TlvState::M2,
+					Types\TlvCode::ERROR => Types\TlvError::UNKNOWN,
+				],
+			];
 		}
 
 		$serverSecret = hex2bin($serverSecret);
@@ -1395,9 +1423,6 @@ final class PairingController extends BaseController
 	 * @return array<int, array<int, (int|array<int>|string)>>
 	 *
 	 * @throws ApplicationExceptions\InvalidState
-	 * @throws ApplicationExceptions\Runtime
-	 * @throws DBAL\Exception
-	 * @throws Exceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -1426,7 +1451,7 @@ final class PairingController extends BaseController
 					],
 					'pairing' => [
 						'type' => 'verify-finish',
-						'state' => Types\TlvState::M2,
+						'state' => Types\TlvState::M4,
 					],
 				],
 			);
@@ -1461,7 +1486,7 @@ final class PairingController extends BaseController
 					],
 					'pairing' => [
 						'type' => 'verify-finish',
-						'state' => Types\TlvState::M2,
+						'state' => Types\TlvState::M4,
 					],
 				],
 			);
@@ -1485,7 +1510,7 @@ final class PairingController extends BaseController
 					],
 					'pairing' => [
 						'type' => 'verify-finish',
-						'state' => Types\TlvState::M2,
+						'state' => Types\TlvState::M4,
 					],
 				],
 			);
@@ -1516,7 +1541,7 @@ final class PairingController extends BaseController
 					],
 					'pairing' => [
 						'type' => 'verify-finish',
-						'state' => Types\TlvState::M2,
+						'state' => Types\TlvState::M4,
 					],
 				],
 			);
@@ -1544,9 +1569,12 @@ final class PairingController extends BaseController
 					'connector' => [
 						'id' => $connector->getId()->toString(),
 					],
+					'client' => [
+						'uid' => $tlvEntry[Types\TlvCode::IDENTIFIER],
+					],
 					'pairing' => [
 						'type' => 'verify-finish',
-						'state' => Types\TlvState::M2,
+						'state' => Types\TlvState::M4,
 					],
 				],
 			);
@@ -1562,13 +1590,27 @@ final class PairingController extends BaseController
 		$serverSecret = $this->connectorHelper->getServerSecret($connector);
 
 		if ($serverSecret === null) {
-			$serverSecret = Helpers\Protocol::generateSignKey();
-
-			$this->setConfiguration(
-				$connector,
-				Types\ConnectorPropertyIdentifier::get(Types\ConnectorPropertyIdentifier::SERVER_SECRET),
-				$serverSecret,
+			$this->logger->error(
+				'Server secret key is not configured',
+				[
+					'source' => MetadataTypes\ConnectorSource::HOMEKIT,
+					'type' => 'pairing-controller',
+					'connector' => [
+						'id' => $connector->getId()->toString(),
+					],
+					'pairing' => [
+						'type' => 'verify-finish',
+						'state' => Types\TlvState::M4,
+					],
+				],
 			);
+
+			return [
+				[
+					Types\TlvCode::STATE => Types\TlvState::M4,
+					Types\TlvCode::ERROR => Types\TlvError::UNKNOWN,
+				],
+			];
 		}
 
 		$serverSecret = hex2bin($serverSecret);
@@ -1595,7 +1637,7 @@ final class PairingController extends BaseController
 					],
 					'pairing' => [
 						'type' => 'verify-finish',
-						'state' => Types\TlvState::M2,
+						'state' => Types\TlvState::M4,
 					],
 				],
 			);
@@ -1618,7 +1660,7 @@ final class PairingController extends BaseController
 				],
 				'pairing' => [
 					'type' => 'verify-start',
-					'state' => Types\TlvState::M2,
+					'state' => Types\TlvState::M4,
 				],
 			],
 		);
@@ -1900,8 +1942,7 @@ final class PairingController extends BaseController
 
 		if ($property === null) {
 			if (
-				$type->equalsValue(Types\ConnectorPropertyIdentifier::SERVER_SECRET)
-				|| $type->equalsValue(Types\ConnectorPropertyIdentifier::CLIENT_PUBLIC_KEY)
+				$type->equalsValue(Types\ConnectorPropertyIdentifier::CLIENT_PUBLIC_KEY)
 				|| $type->equalsValue(Types\ConnectorPropertyIdentifier::SHARED_KEY)
 				|| $type->equalsValue(Types\ConnectorPropertyIdentifier::HASHING_KEY)
 			) {

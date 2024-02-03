@@ -1450,7 +1450,10 @@ class Install extends Console\Command\Command
 				|| !$characteristicMetadata->offsetExists('Format')
 				|| !is_string($characteristicMetadata->offsetGet('Format'))
 				|| !$characteristicMetadata->offsetExists('DataType')
-				|| !is_string($characteristicMetadata->offsetGet('DataType'))
+				|| (
+					!is_string($characteristicMetadata->offsetGet('DataType'))
+					&& !$characteristicMetadata->offsetGet('DataType') instanceof Utils\ArrayHash
+				)
 				|| !$characteristicMetadata->offsetExists('Permissions')
 				|| !$characteristicMetadata->offsetGet('Permissions') instanceof Utils\ArrayHash
 			) {
@@ -1459,7 +1462,20 @@ class Install extends Console\Command\Command
 
 			$permissions = (array) $characteristicMetadata->offsetGet('Permissions');
 
-			$dataType = MetadataTypes\DataType::get($characteristicMetadata->offsetGet('DataType'));
+			if ($characteristicMetadata->offsetGet('DataType') instanceof Utils\ArrayHash) {
+				$dataTypes = array_map(
+					static fn (string $type): MetadataTypes\DataType => MetadataTypes\DataType::get($type),
+					(array) $characteristicMetadata->offsetGet('DataType'),
+				);
+
+				if ($dataTypes === []) {
+					throw new Exceptions\InvalidState('Characteristic definition is missing required attributes');
+				}
+
+				$dataType = $dataTypes[0];
+			} else {
+				$dataType = MetadataTypes\DataType::get($characteristicMetadata->offsetGet('DataType'));
+			}
 
 			$format = $this->askFormat($io, $characteristic);
 
@@ -1480,7 +1496,22 @@ class Install extends Console\Command\Command
 				$format = $this->askFormat($io, $characteristic, $connectProperty);
 
 				if (
-					$dataType->equalsValue(MetadataTypes\DataType::BOOLEAN)
+					$connectProperty !== null
+					&& in_array($connectProperty->getDataType(), $dataTypes ?? [], true)
+				) {
+					$dataType = $connectProperty->getDataType();
+					$format = $connectProperty->getFormat();
+				}
+
+				if (
+					(
+						$dataType->equalsValue(MetadataTypes\DataType::BOOLEAN)
+						|| in_array(
+							MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN),
+							$dataTypes ?? [],
+							true,
+						)
+					)
 					&& $connectProperty !== null
 					&& $connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::SWITCH)
 				) {
@@ -1491,22 +1522,22 @@ class Install extends Console\Command\Command
 							MetadataTypes\SwitchPayload::ON,
 							[
 								MetadataTypes\DataTypeShort::BOOLEAN,
-								true,
+								'true',
 							],
 							[
 								MetadataTypes\DataTypeShort::BOOLEAN,
-								true,
+								'true',
 							],
 						],
 						[
 							MetadataTypes\SwitchPayload::OFF,
 							[
 								MetadataTypes\DataTypeShort::BOOLEAN,
-								false,
+								'false',
 							],
 							[
 								MetadataTypes\DataTypeShort::BOOLEAN,
-								false,
+								'false',
 							],
 						],
 					];
@@ -1595,7 +1626,10 @@ class Install extends Console\Command\Command
 			|| !$characteristicMetadata->offsetExists('UUID')
 			|| !is_string($characteristicMetadata->offsetGet('UUID'))
 			|| !$characteristicMetadata->offsetExists('Format')
-			|| !$characteristicMetadata->offsetExists('DataType')
+			|| (
+				!is_string($characteristicMetadata->offsetGet('DataType'))
+				&& !$characteristicMetadata->offsetGet('DataType') instanceof Utils\ArrayHash
+			)
 			|| !$characteristicMetadata->offsetExists('Permissions')
 			|| !$characteristicMetadata->offsetGet('Permissions') instanceof Utils\ArrayHash
 		) {
@@ -1608,7 +1642,20 @@ class Install extends Console\Command\Command
 
 			$permissions = (array) $characteristicMetadata->offsetGet('Permissions');
 
-			$dataType = MetadataTypes\DataType::get($characteristicMetadata->offsetGet('DataType'));
+			if ($characteristicMetadata->offsetGet('DataType') instanceof Utils\ArrayHash) {
+				$dataTypes = array_map(
+					static fn (string $type): MetadataTypes\DataType => MetadataTypes\DataType::get($type),
+					(array) $characteristicMetadata->offsetGet('DataType'),
+				);
+
+				if ($dataTypes === []) {
+					throw new Exceptions\InvalidState('Characteristic definition is missing required attributes');
+				}
+
+				$dataType = $dataTypes[0];
+			} else {
+				$dataType = MetadataTypes\DataType::get($characteristicMetadata->offsetGet('DataType'));
+			}
 
 			$format = $this->askFormat($io, $type);
 
@@ -1632,6 +1679,54 @@ class Install extends Console\Command\Command
 				);
 
 				$format = $this->askFormat($io, $type, $connectProperty);
+
+				if (
+					$connectProperty !== null
+					&& in_array($connectProperty->getDataType(), $dataTypes ?? [], true)
+				) {
+					$dataType = $connectProperty->getDataType();
+					$format = $connectProperty->getFormat();
+				}
+
+				if (
+					(
+						$dataType->equalsValue(MetadataTypes\DataType::BOOLEAN)
+						|| in_array(
+							MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN),
+							$dataTypes ?? [],
+							true,
+						)
+					)
+					&& $connectProperty !== null
+					&& $connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::SWITCH)
+				) {
+					$dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::SWITCH);
+
+					$format = [
+						[
+							MetadataTypes\SwitchPayload::ON,
+							[
+								MetadataTypes\DataTypeShort::BOOLEAN,
+								'true',
+							],
+							[
+								MetadataTypes\DataTypeShort::BOOLEAN,
+								'true',
+							],
+						],
+						[
+							MetadataTypes\SwitchPayload::OFF,
+							[
+								MetadataTypes\DataTypeShort::BOOLEAN,
+								'false',
+							],
+							[
+								MetadataTypes\DataTypeShort::BOOLEAN,
+								'false',
+							],
+						],
+					];
+				}
 
 				if (
 					$property instanceof DevicesEntities\Channels\Properties\Mapped
@@ -2863,12 +2958,26 @@ class Install extends Console\Command\Command
 			|| !$characteristicMetadata->offsetExists('Format')
 			|| !is_string($characteristicMetadata->offsetGet('Format'))
 			|| !$characteristicMetadata->offsetExists('DataType')
-			|| !is_string($characteristicMetadata->offsetGet('DataType'))
+			|| (
+				!is_string($characteristicMetadata->offsetGet('DataType'))
+				&& !$characteristicMetadata->offsetGet('DataType') instanceof Utils\ArrayHash
+			)
 		) {
 			throw new Exceptions\InvalidState('Characteristic definition is missing required attributes');
 		}
 
-		$dataType = MetadataTypes\DataType::get($characteristicMetadata->offsetGet('DataType'));
+		if ($characteristicMetadata->offsetGet('DataType') instanceof Utils\ArrayHash) {
+			$dataTypes = array_map(
+				static fn (string $type): MetadataTypes\DataType => MetadataTypes\DataType::get($type),
+				(array) $characteristicMetadata->offsetGet('DataType'),
+			);
+
+			if ($dataTypes === []) {
+				throw new Exceptions\InvalidState('Characteristic definition is missing required attributes');
+			}
+		} else {
+			$dataTypes = [MetadataTypes\DataType::get($characteristicMetadata->offsetGet('DataType'))];
+		}
 
 		$format = null;
 
@@ -2888,9 +2997,9 @@ class Install extends Console\Command\Command
 
 		if (
 			(
-				$dataType->equalsValue(MetadataTypes\DataType::ENUM)
-				|| $dataType->equalsValue(MetadataTypes\DataType::SWITCH)
-				|| $dataType->equalsValue(MetadataTypes\DataType::BUTTON)
+				in_array(MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM), $dataTypes, true)
+				|| in_array(MetadataTypes\DataType::get(MetadataTypes\DataType::SWITCH), $dataTypes, true)
+				|| in_array(MetadataTypes\DataType::get(MetadataTypes\DataType::BUTTON), $dataTypes, true)
 			)
 			&& $characteristicMetadata->offsetExists('ValidValues')
 			&& $characteristicMetadata->offsetGet('ValidValues') instanceof Utils\ArrayHash
@@ -3037,12 +3146,26 @@ class Install extends Console\Command\Command
 		if (
 			!$characteristicMetadata instanceof Utils\ArrayHash
 			|| !$characteristicMetadata->offsetExists('DataType')
-			|| !MetadataTypes\DataType::isValidValue($characteristicMetadata->offsetGet('DataType'))
+			|| (
+				!is_string($characteristicMetadata->offsetGet('DataType'))
+				&& !$characteristicMetadata->offsetGet('DataType') instanceof Utils\ArrayHash
+			)
 		) {
 			throw new Exceptions\InvalidState('Characteristic definition is missing required attributes');
 		}
 
-		$dataType = MetadataTypes\DataType::get($characteristicMetadata->offsetGet('DataType'));
+		if ($characteristicMetadata->offsetGet('DataType') instanceof Utils\ArrayHash) {
+			$dataTypes = array_map(
+				static fn (string $type): MetadataTypes\DataType => MetadataTypes\DataType::get($type),
+				(array) $characteristicMetadata->offsetGet('DataType'),
+			);
+
+			if ($dataTypes === []) {
+				throw new Exceptions\InvalidState('Characteristic definition is missing required attributes');
+			}
+		} else {
+			$dataTypes = [MetadataTypes\DataType::get($characteristicMetadata->offsetGet('DataType'))];
+		}
 
 		if (
 			$characteristicMetadata->offsetExists('ValidValues')
@@ -3098,7 +3221,10 @@ class Install extends Console\Command\Command
 			return $value;
 		}
 
-		if ($dataType->equalsValue(MetadataTypes\DataType::BOOLEAN)) {
+		if (
+			count($dataTypes) === 1
+			&& in_array(MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN), $dataTypes, true)
+		) {
 			$question = new Console\Question\ChoiceQuestion(
 				$this->translator->translate('//homekit-connector.cmd.install.questions.select.device.value'),
 				[
@@ -3150,7 +3276,7 @@ class Install extends Console\Command\Command
 			is_object($value) ? strval($value) : $value,
 		);
 		$question->setValidator(
-			function (string|int|null $answer) use ($dataType, $minValue, $maxValue, $step): string|int|float {
+			function (string|int|null $answer) use ($dataTypes, $minValue, $maxValue, $step): string|int|float {
 				if ($answer === null) {
 					throw new Exceptions\Runtime(
 						sprintf(
@@ -3160,11 +3286,17 @@ class Install extends Console\Command\Command
 					);
 				}
 
-				if ($dataType->equalsValue(MetadataTypes\DataType::STRING)) {
+				if (
+					count($dataTypes) === 1
+					&& in_array(MetadataTypes\DataType::get(MetadataTypes\DataType::STRING), $dataTypes, true)
+				) {
 					return strval($answer);
 				}
 
-				if ($dataType->equalsValue(MetadataTypes\DataType::FLOAT)) {
+				if (
+					count($dataTypes) === 1
+					&& in_array(MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT), $dataTypes, true)
+				) {
 					if ($minValue !== null && floatval($answer) < $minValue) {
 						throw new Exceptions\Runtime(
 							sprintf(
@@ -3201,12 +3333,15 @@ class Install extends Console\Command\Command
 				}
 
 				if (
-					$dataType->equalsValue(MetadataTypes\DataType::CHAR)
-					|| $dataType->equalsValue(MetadataTypes\DataType::UCHAR)
-					|| $dataType->equalsValue(MetadataTypes\DataType::SHORT)
-					|| $dataType->equalsValue(MetadataTypes\DataType::USHORT)
-					|| $dataType->equalsValue(MetadataTypes\DataType::INT)
-					|| $dataType->equalsValue(MetadataTypes\DataType::UINT)
+					count($dataTypes) === 1
+					&& (
+						in_array(MetadataTypes\DataType::get(MetadataTypes\DataType::CHAR), $dataTypes, true)
+						|| in_array(MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR), $dataTypes, true)
+						|| in_array(MetadataTypes\DataType::get(MetadataTypes\DataType::SHORT), $dataTypes, true)
+						|| in_array(MetadataTypes\DataType::get(MetadataTypes\DataType::USHORT), $dataTypes, true)
+						|| in_array(MetadataTypes\DataType::get(MetadataTypes\DataType::INT), $dataTypes, true)
+						|| in_array(MetadataTypes\DataType::get(MetadataTypes\DataType::UINT), $dataTypes, true)
+					)
 				) {
 					if ($minValue !== null && intval($answer) < $minValue) {
 						throw new Exceptions\Runtime(

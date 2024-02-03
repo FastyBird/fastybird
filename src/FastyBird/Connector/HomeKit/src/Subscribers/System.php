@@ -31,6 +31,7 @@ use Nette\Utils;
 use Ramsey\Uuid;
 use function array_merge;
 use function array_unique;
+use function in_array;
 use function intval;
 
 /**
@@ -48,6 +49,9 @@ final class System implements Common\EventSubscriber
 
 	/** @var array<string>  */
 	private array $doUpdate = [];
+
+	/** @var array<string>  */
+	private array $updated = [];
 
 	public function __construct(
 		private readonly DevicesModels\Entities\Connectors\Properties\PropertiesRepository $propertiesRepository,
@@ -106,6 +110,10 @@ final class System implements Common\EventSubscriber
 	public function postFlush(): void
 	{
 		foreach ($this->doUpdate as $connectorId) {
+			if (in_array($connectorId, $this->updated, true)) {
+				continue;
+			}
+
 			$findConnectorPropertyQuery = new DevicesQueries\Entities\FindConnectorProperties();
 			$findConnectorPropertyQuery->byConnectorId(Uuid\Uuid::fromString($connectorId));
 			$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::CONFIG_VERSION);
@@ -120,6 +128,8 @@ final class System implements Common\EventSubscriber
 					'value' => intval(MetadataUtilities\Value::flattenValue($property->getValue())) + 1,
 				]));
 			}
+
+			$this->updated[] = $connectorId;
 		}
 
 		$this->doUpdate = [];

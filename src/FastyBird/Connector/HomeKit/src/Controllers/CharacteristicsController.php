@@ -446,14 +446,6 @@ final class CharacteristicsController extends BaseController
 			return $representation;
 		}
 
-		/**
-		if (!$characteristic->isValid()) {
-			$representation[Types\Representation::STATUS] = Types\ServerStatus::OPERATION_TIMED_OUT;
-
-			return $representation;
-		}
-		 */
-
 		$value = Protocol\Transformer::toClient(
 			$characteristic->getProperty(),
 			$characteristic->getDataType(),
