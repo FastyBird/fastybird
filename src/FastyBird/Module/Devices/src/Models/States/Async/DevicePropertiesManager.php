@@ -704,7 +704,7 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 					try {
 						if ($state !== null) {
 							$actualValue = MetadataUtilities\Value::flattenValue(
-								$this->convertWriteActualValue($state->getActualValue(), $property),
+								$this->convertReadValue($state->getActualValue(), $property, null, false),
 							);
 							$expectedValue = MetadataUtilities\Value::flattenValue(
 								$this->convertWriteExpectedValue($state->getExpectedValue(), $property, null, false),

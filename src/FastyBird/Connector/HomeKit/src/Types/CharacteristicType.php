@@ -38,8 +38,6 @@ class CharacteristicType extends Consistence\Enum\Enum
 
 	public const SATURATION = 'Saturation';
 
-	public const COLOR_TEMPERATURE = 'ColorTemperature';
-
 	public const NAME = 'Name';
 
 	public const ON = 'On';
@@ -51,8 +49,6 @@ class CharacteristicType extends Consistence\Enum\Enum
 	public const COLOR_BLUE = 'ColorBlue';
 
 	public const COLOR_WHITE = 'ColorWhite';
-
-	public const TEMPERATURE_MIRED = 'TemperatureMired';
 
 	public function getValue(): string
 	{

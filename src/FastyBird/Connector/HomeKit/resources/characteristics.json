@@ -294,7 +294,7 @@
     ],
     "UUID" : "0000006B-0000-1000-8000-0026BB765291",
     "MaxValue" : 100000,
-    "MinValue" : 0.0001,
+    "MinValue" : 0,
     "Unit" : "lux",
     "DataType": "float"
   },
@@ -1823,15 +1823,5 @@
     "MaxValue" : 255,
     "MinValue" : 0,
     "DataType": "uchar"
-  },
-  "TemperatureMired": {
-    "Format" : "uint8",
-    "Permissions" : [
-      "pw"
-    ],
-    "UUID" : "00000000-0000-0000-0000-000000000000",
-    "MaxValue" : 500,
-    "MinValue" : 50,
-    "DataType": "ushort"
   }
 }

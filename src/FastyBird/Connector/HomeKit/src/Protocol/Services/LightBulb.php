@@ -42,22 +42,20 @@ final class LightBulb extends Generic
 			$fromDevice ? MetadataTypes\PropertyType::DYNAMIC : MetadataTypes\PropertyType::MAPPED,
 		);
 
-		if ($this->getName() === Types\ServiceType::LIGHT_BULB) {
-			if (
-				$characteristic->getName() === Types\CharacteristicType::COLOR_RED
-				|| $characteristic->getName() === Types\CharacteristicType::COLOR_GREEN
-				|| $characteristic->getName() === Types\CharacteristicType::COLOR_BLUE
-				|| $characteristic->getName() === Types\CharacteristicType::COLOR_WHITE
-			) {
-				$this->calculateRgbToHsb($updatePropertyType);
+		if (
+			$characteristic->getName() === Types\CharacteristicType::COLOR_RED
+			|| $characteristic->getName() === Types\CharacteristicType::COLOR_GREEN
+			|| $characteristic->getName() === Types\CharacteristicType::COLOR_BLUE
+			|| $characteristic->getName() === Types\CharacteristicType::COLOR_WHITE
+		) {
+			$this->calculateRgbToHsb($updatePropertyType);
 
-			} elseif (
-				$characteristic->getName() === Types\CharacteristicType::HUE
-				|| $characteristic->getName() === Types\CharacteristicType::SATURATION
-				|| $characteristic->getName() === Types\CharacteristicType::BRIGHTNESS
-			) {
-				$this->calculateHsbToRgb($updatePropertyType);
-			}
+		} elseif (
+			$characteristic->getName() === Types\CharacteristicType::HUE
+			|| $characteristic->getName() === Types\CharacteristicType::SATURATION
+			|| $characteristic->getName() === Types\CharacteristicType::BRIGHTNESS
+		) {
+			$this->calculateHsbToRgb($updatePropertyType);
 		}
 	}
 
