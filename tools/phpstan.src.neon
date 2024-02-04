@@ -6,6 +6,7 @@ includes:
 
     - ../src/FastyBird/Bridge/RedisDbPluginDevicesModule/tools/phpstan.config.src.neon
     - ../src/FastyBird/Bridge/RedisDbPluginTriggersModule/tools/phpstan.config.src.neon
+    - ../src/FastyBird/Bridge/VirtualThermostatAddonHomeKitConnector/tools/phpstan.config.src.neon
 
     - ../src/FastyBird/Connector/FbMqtt/tools/phpstan.config.src.neon
     - ../src/FastyBird/Connector/HomeKit/tools/phpstan.config.src.neon
@@ -34,7 +35,7 @@ includes:
     - ../src/FastyBird/Plugin/WebServer/tools/phpstan.config.src.neon
     - ../src/FastyBird/Plugin/WsServer/tools/phpstan.config.src.neon
 
-    - ../src/FastyBird/Addon/VirtualThermostatDevice/tools/phpstan.config.src.neon
+    - ../src/FastyBird/Addon/VirtualThermostat/tools/phpstan.config.src.neon
 
 parameters:
     level: max

@@ -116,7 +116,7 @@
   },
   {
     "organization": "FastyBird",
-    "name": "virtual-thermostat-device-addon",
-    "local-path": "src/FastyBird/Addon/VirtualThermostatDevice"
+    "name": "virtual-thermostat-addon",
+    "local-path": "src/FastyBird/Addon/VirtualThermostat"
   }
 ]

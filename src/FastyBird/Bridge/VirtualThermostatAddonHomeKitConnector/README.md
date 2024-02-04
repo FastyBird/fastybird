@@ -19,7 +19,7 @@
 ## What is Virtual thermostat & HomeKit connector bridge?
 
 Virtual thermostat & HomeKit connector bridge is extension for [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem
-which is creating bridge between [Virtual thermostat addon](https://github.com/FastyBird/virtual-thermostat-device-addon) and [HomeKit connector](https://github.com/FastyBird/homekit-connector).
+which is creating bridge between [Virtual thermostat addon](https://github.com/FastyBird/virtual-thermostat-addon) and [HomeKit connector](https://github.com/FastyBird/homekit-connector).
 
 ### Features:
 

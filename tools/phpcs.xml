@@ -33,6 +33,10 @@
                 <element key="src/FastyBird/Bridge/RedisDbPluginTriggersModule/tests/cases/unit" value="FastyBird\Bridge\RedisDbPluginTriggersModule\Tests\Cases\Unit"/>
                 <element key="src/FastyBird/Bridge/RedisDbPluginTriggersModule/tests/tools" value="FastyBird\Bridge\RedisDbPluginTriggersModule\Tests\Tools"/>
 
+                <element key="src/FastyBird/Bridge/VirtualThermostatAddonHomeKitConnector/src" value="FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector"/>
+                <element key="src/FastyBird/Bridge/VirtualThermostatAddonHomeKitConnector/tests/cases/unit" value="FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Bridge/VirtualThermostatAddonHomeKitConnector/tests/tools" value="FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Tests\Tools"/>
+
                 <element key="src/FastyBird/Connector/FbMqtt/src" value="FastyBird\Connector\FbMqtt"/>
                 <element key="src/FastyBird/Connector/FbMqtt/tests/cases/unit" value="FastyBird\Connector\FbMqtt\Tests\Cases\Unit"/>
                 <element key="src/FastyBird/Connector/FbMqtt/tests/tools" value="FastyBird\Connector\FbMqtt\Tests\Tools"/>
@@ -126,10 +130,10 @@
                 <element key="src/FastyBird/Plugin/WsServer/src" value="FastyBird\Plugin\WsServer"/>
                 <element key="src/FastyBird/Plugin/WsServer/tests/cases/unit" value="FastyBird\Plugin\WsServer\Tests\Cases\Unit"/>
 
-                <element key="src/FastyBird/Addon/VirtualThermostatDevice/src" value="FastyBird\Addon\VirtualThermostatDevice"/>
-                <element key="src/FastyBird/Addon/VirtualThermostatDevice/tests/cases/unit" value="FastyBird\Addon\VirtualThermostatDevice\Tests\Cases\Unit"/>
-                <element key="src/FastyBird/Addon/VirtualThermostatDevice/tests/fixtures/dummy" value="FastyBird\Addon\VirtualThermostatDevice\Tests\Fixtures\Dummy"/>
-                <element key="src/FastyBird/Addon/VirtualThermostatDevice/tests/tools" value="FastyBird\Addon\VirtualThermostatDevice\Tests\Tools"/>
+                <element key="src/FastyBird/Addon/VirtualThermostat/src" value="FastyBird\Addon\VirtualThermostat"/>
+                <element key="src/FastyBird/Addon/VirtualThermostat/tests/cases/unit" value="FastyBird\Addon\VirtualThermostat\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Addon/VirtualThermostat/tests/fixtures/dummy" value="FastyBird\Addon\VirtualThermostat\Tests\Fixtures\Dummy"/>
+                <element key="src/FastyBird/Addon/VirtualThermostat/tests/tools" value="FastyBird\Addon\VirtualThermostat\Tests\Tools"/>
             </property>
         </properties>
     </rule>

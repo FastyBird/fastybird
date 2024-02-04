@@ -17,9 +17,6 @@ namespace FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\DI;
 
 use FastyBird\Library\Application\Boot as ApplicationBoot;
 use Nette\DI;
-use Nette\Schema;
-use stdClass;
-use function assert;
 
 /**
  * Virtual thermostat HomeKit connector bridge extension
