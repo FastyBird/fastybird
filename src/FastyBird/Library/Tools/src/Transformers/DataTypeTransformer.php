@@ -32,14 +32,14 @@ final class DataTypeTransformer
 {
 
 	public function __construct(
-		private readonly bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
-		private readonly MetadataTypes\DataType $source,
-		private readonly MetadataTypes\DataType $destination,
+		private readonly bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $value,
+		private readonly MetadataTypes\DataType                                                      $source,
+		private readonly MetadataTypes\DataType                                                      $destination,
 	)
 	{
 	}
 
-	public function convert(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
+	public function convert(): bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null
 	{
 		if ($this->destination->equalsValue($this->source->getValue())) {
 			return $this->value;
@@ -80,48 +80,48 @@ final class DataTypeTransformer
 			if (
 				$this->source->equalsValue(MetadataTypes\DataType::SWITCH)
 				&& (
-					$this->value instanceof MetadataTypes\SwitchPayload
+					$this->value instanceof MetadataTypes\Payloads\Switcher
 					|| $this->value === null
 				)
 			) {
-				return $this->value?->equalsValue(MetadataTypes\SwitchPayload::ON) ?? false;
+				return $this->value?->equalsValue(MetadataTypes\Payloads\Switcher::ON) ?? false;
 			} elseif (
 				$this->source->equalsValue(MetadataTypes\DataType::BUTTON)
 				&& (
-					$this->value instanceof MetadataTypes\ButtonPayload
+					$this->value instanceof MetadataTypes\Payloads\Button
 					|| $this->value === null
 				)
 			) {
-				return $this->value?->equalsValue(MetadataTypes\ButtonPayload::PRESSED) ?? false;
+				return $this->value?->equalsValue(MetadataTypes\Payloads\Button::PRESSED) ?? false;
 			} elseif (
 				$this->source->equalsValue(MetadataTypes\DataType::COVER)
 				&& (
-					$this->value instanceof MetadataTypes\CoverPayload
+					$this->value instanceof MetadataTypes\Payloads\Cover
 					|| $this->value === null
 				)
 			) {
-				return $this->value?->equalsValue(MetadataTypes\CoverPayload::OPEN) ?? false;
+				return $this->value?->equalsValue(MetadataTypes\Payloads\Cover::OPEN) ?? false;
 			}
 		}
 
 		if ($this->source->equalsValue(MetadataTypes\DataType::BOOLEAN)) {
 			if ($this->destination->equalsValue(MetadataTypes\DataType::SWITCH)) {
-				return MetadataTypes\SwitchPayload::get(
+				return MetadataTypes\Payloads\Switcher::get(
 					boolval($this->value)
-						? MetadataTypes\SwitchPayload::ON
-						: MetadataTypes\SwitchPayload::OFF,
+						? MetadataTypes\Payloads\Switcher::ON
+						: MetadataTypes\Payloads\Switcher::OFF,
 				);
 			} elseif ($this->destination->equalsValue(MetadataTypes\DataType::BUTTON)) {
-				return MetadataTypes\ButtonPayload::get(
+				return MetadataTypes\Payloads\Button::get(
 					boolval($this->value)
-						? MetadataTypes\ButtonPayload::PRESSED
-						: MetadataTypes\ButtonPayload::RELEASED,
+						? MetadataTypes\Payloads\Button::PRESSED
+						: MetadataTypes\Payloads\Button::RELEASED,
 				);
 			} elseif ($this->destination->equalsValue(MetadataTypes\DataType::COVER)) {
-				return MetadataTypes\CoverPayload::get(
+				return MetadataTypes\Payloads\Cover::get(
 					boolval($this->value)
-						? MetadataTypes\CoverPayload::OPEN
-						: MetadataTypes\CoverPayload::CLOSE,
+						? MetadataTypes\Payloads\Cover::OPEN
+						: MetadataTypes\Payloads\Cover::CLOSE,
 				);
 			}
 		}

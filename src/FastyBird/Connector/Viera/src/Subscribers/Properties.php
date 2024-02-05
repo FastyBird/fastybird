@@ -239,7 +239,7 @@ final class Properties implements Common\EventSubscriber
 				'unit' => null,
 				'format' => [
 					[
-						MetadataTypes\ButtonPayload::CLICKED,
+						MetadataTypes\Payloads\Button::CLICKED,
 						$key->getValue(),
 						$key->getValue(),
 					],

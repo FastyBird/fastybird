@@ -8,6 +8,9 @@ use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Types\Payloads\Button;
+use FastyBird\Library\Metadata\Types\Payloads\Cover;
+use FastyBird\Library\Metadata\Types\Payloads\Switcher;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
@@ -37,8 +40,8 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|null $parent,
 		States\ChannelProperty $stored,
-		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $actual,
-		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $expected,
+		bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $actual,
+		bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $expected,
 	): void
 	{
 		$channelPropertiesConfigurationRepository = $this->createMock(
@@ -96,8 +99,8 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|null $parent,
 		States\ChannelProperty $stored,
-		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $actual,
-		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $expected,
+		bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $actual,
+		bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $expected,
 	): void
 	{
 		$channelPropertiesConfigurationRepository = $this->createMock(
@@ -139,7 +142,7 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 	}
 
 	/**
-	 * @return array<string, array<MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty|States\ChannelProperty|bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null>>
+	 * @return array<string, array<MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty|States\ChannelProperty|bool|float|int|string|DateTimeInterface|Button|Switcher|Cover|null>>
 	 */
 	public static function readStates(): array
 	{
@@ -533,12 +536,12 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					null,
 					[
 						[
-							MetadataTypes\SwitchPayload::ON,
+							MetadataTypes\Payloads\Switcher::ON,
 							'ON',
 							'true',
 						],
 						[
-							MetadataTypes\SwitchPayload::OFF,
+							MetadataTypes\Payloads\Switcher::OFF,
 							'OFF',
 							'false',
 						],
@@ -552,13 +555,13 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 				null,
 				new Fixtures\Dummy\ChannelPropertyState(
 					$property01,
-					MetadataTypes\SwitchPayload::ON,
-					MetadataTypes\SwitchPayload::OFF,
+					MetadataTypes\Payloads\Switcher::ON,
+					MetadataTypes\Payloads\Switcher::OFF,
 					false,
 					true,
 				),
-				MetadataTypes\SwitchPayload::get(MetadataTypes\SwitchPayload::ON),
-				MetadataTypes\SwitchPayload::get(MetadataTypes\SwitchPayload::OFF),
+				MetadataTypes\Payloads\Switcher::get(MetadataTypes\Payloads\Switcher::ON),
+				MetadataTypes\Payloads\Switcher::get(MetadataTypes\Payloads\Switcher::OFF),
 			],
 			/**
 			 * Mapped property - no scale, no transformer.
@@ -577,7 +580,7 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					null,
 					[
 						[
-							MetadataTypes\SwitchPayload::ON,
+							MetadataTypes\Payloads\Switcher::ON,
 							[
 								MetadataTypes\DataTypeShort::BOOLEAN,
 								'true',
@@ -588,7 +591,7 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 							],
 						],
 						[
-							MetadataTypes\SwitchPayload::OFF,
+							MetadataTypes\Payloads\Switcher::OFF,
 							[
 								MetadataTypes\DataTypeShort::BOOLEAN,
 								'false',
@@ -616,12 +619,12 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					null,
 					[
 						[
-							MetadataTypes\SwitchPayload::ON,
+							MetadataTypes\Payloads\Switcher::ON,
 							'ON',
 							'true',
 						],
 						[
-							MetadataTypes\SwitchPayload::OFF,
+							MetadataTypes\Payloads\Switcher::OFF,
 							'OFF',
 							'false',
 						],
@@ -634,19 +637,19 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 				),
 				new Fixtures\Dummy\ChannelPropertyState(
 					$property01,
-					MetadataTypes\SwitchPayload::ON,
-					MetadataTypes\SwitchPayload::OFF,
+					MetadataTypes\Payloads\Switcher::ON,
+					MetadataTypes\Payloads\Switcher::OFF,
 					false,
 					true,
 				),
-				MetadataTypes\SwitchPayload::get(MetadataTypes\SwitchPayload::ON),
-				MetadataTypes\SwitchPayload::get(MetadataTypes\SwitchPayload::OFF),
+				MetadataTypes\Payloads\Switcher::get(MetadataTypes\Payloads\Switcher::ON),
+				MetadataTypes\Payloads\Switcher::get(MetadataTypes\Payloads\Switcher::OFF),
 			],
 		];
 	}
 
 	/**
-	 * @return array<string, array<MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty|States\ChannelProperty|bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null>>
+	 * @return array<string, array<MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty|States\ChannelProperty|bool|float|int|string|DateTimeInterface|Button|Switcher|Cover|null>>
 	 */
 	public static function getStates(): array
 	{
@@ -1089,12 +1092,12 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					null,
 					[
 						[
-							MetadataTypes\SwitchPayload::ON,
+							MetadataTypes\Payloads\Switcher::ON,
 							'ON',
 							'true',
 						],
 						[
-							MetadataTypes\SwitchPayload::OFF,
+							MetadataTypes\Payloads\Switcher::OFF,
 							'OFF',
 							'false',
 						],
@@ -1108,8 +1111,8 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 				null,
 				new Fixtures\Dummy\ChannelPropertyState(
 					$property01,
-					MetadataTypes\SwitchPayload::ON,
-					MetadataTypes\SwitchPayload::OFF,
+					MetadataTypes\Payloads\Switcher::ON,
+					MetadataTypes\Payloads\Switcher::OFF,
 					false,
 					true,
 				),
@@ -1132,7 +1135,7 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					null,
 					[
 						[
-							MetadataTypes\SwitchPayload::ON,
+							MetadataTypes\Payloads\Switcher::ON,
 							'ON',
 							[
 								MetadataTypes\DataTypeShort::BOOLEAN,
@@ -1140,7 +1143,7 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 							],
 						],
 						[
-							MetadataTypes\SwitchPayload::OFF,
+							MetadataTypes\Payloads\Switcher::OFF,
 							'OFF',
 							[
 								MetadataTypes\DataTypeShort::BOOLEAN,
@@ -1157,8 +1160,8 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 				null,
 				new Fixtures\Dummy\ChannelPropertyState(
 					$property01,
-					MetadataTypes\SwitchPayload::ON,
-					MetadataTypes\SwitchPayload::OFF,
+					MetadataTypes\Payloads\Switcher::ON,
+					MetadataTypes\Payloads\Switcher::OFF,
 					false,
 					true,
 				),
@@ -1182,7 +1185,7 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					null,
 					[
 						[
-							MetadataTypes\SwitchPayload::ON,
+							MetadataTypes\Payloads\Switcher::ON,
 							[
 								MetadataTypes\DataTypeShort::BOOLEAN,
 								'true',
@@ -1193,7 +1196,7 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 							],
 						],
 						[
-							MetadataTypes\SwitchPayload::OFF,
+							MetadataTypes\Payloads\Switcher::OFF,
 							[
 								MetadataTypes\DataTypeShort::BOOLEAN,
 								'false',
@@ -1221,12 +1224,12 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					null,
 					[
 						[
-							MetadataTypes\SwitchPayload::ON,
+							MetadataTypes\Payloads\Switcher::ON,
 							'ON',
 							'true',
 						],
 						[
-							MetadataTypes\SwitchPayload::OFF,
+							MetadataTypes\Payloads\Switcher::OFF,
 							'OFF',
 							'false',
 						],
@@ -1239,8 +1242,8 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 				),
 				new Fixtures\Dummy\ChannelPropertyState(
 					$property01,
-					MetadataTypes\SwitchPayload::ON,
-					MetadataTypes\SwitchPayload::OFF,
+					MetadataTypes\Payloads\Switcher::ON,
+					MetadataTypes\Payloads\Switcher::OFF,
 					false,
 					true,
 				),

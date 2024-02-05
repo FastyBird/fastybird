@@ -44,10 +44,10 @@ interface Property extends ObjectMapper\MappedObject
 	public const UPDATED_AT = 'updated_at';
 
 	public function getId(): Uuid\UuidInterface;
-	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-	public function getActualValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null;
-	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-	public function getExpectedValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null;
+
+	public function getActualValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null;
+
+	public function getExpectedValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null;
 
 	public function getPending(): bool|DateTimeInterface;
 

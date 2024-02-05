@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ButtonPayload.php
+ * Button.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,10 +13,7 @@
  * @date           17.11.21
  */
 
-namespace FastyBird\Library\Metadata\Types;
-
-use Consistence;
-use function strval;
+namespace FastyBird\Library\Metadata\Types\Payloads;
 
 /**
  * Button supported payload types
@@ -26,7 +23,7 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class ButtonPayload extends Consistence\Enum\Enum
+class Button extends Payload
 {
 
 	/**
@@ -45,15 +42,5 @@ class ButtonPayload extends Consistence\Enum\Enum
 	public const LONG_CLICKED = 'btn_long_clicked';
 
 	public const EXTRA_LONG_CLICKED = 'btn_extra_long_clicked';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
 
 }

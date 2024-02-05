@@ -30,8 +30,8 @@ final class CombinedEnumFormatTest extends BaseTestCase
 		self::assertTrue($items[1][0] instanceof ValueObjects\CombinedEnumFormatItem);
 		self::assertTrue($items[1][0]->getDataType() instanceof Types\DataTypeShort);
 		self::assertSame(Types\DataTypeShort::SWITCH, $items[1][0]->getDataType()->getValue());
-		self::assertTrue($items[1][0]->getValue() instanceof Types\SwitchPayload);
-		self::assertSame(Types\SwitchPayload::ON, $items[1][0]->getValue()->getValue());
+		self::assertTrue($items[1][0]->getValue() instanceof Types\Payloads\Switcher);
+		self::assertSame(Types\Payloads\Switcher::ON, $items[1][0]->getValue()->getValue());
 		self::assertEquals('one::,sw|switch_on:1000:s|on,sw|switch_off:2000:s|off', strval($valueObject));
 
 		$valueObject = new ValueObjects\CombinedEnumFormat('sw|switch_on:1000:s|on,sw|switch_off:2000:s|off');

@@ -4157,13 +4157,13 @@ class Install extends Console\Command\Command
 					$valueDataType = is_array($value) ? strval($value[0]) : null;
 					$value = is_array($value) ? $value[1] : $value;
 
-					if (MetadataTypes\SwitchPayload::isValidValue($value)) {
+					if (MetadataTypes\Payloads\Switcher::isValidValue($value)) {
 						$valueDataType = MetadataTypes\DataTypeShort::SWITCH;
 
-					} elseif (MetadataTypes\ButtonPayload::isValidValue($value)) {
+					} elseif (MetadataTypes\Payloads\Button::isValidValue($value)) {
 						$valueDataType = MetadataTypes\DataTypeShort::BUTTON;
 
-					} elseif (MetadataTypes\CoverPayload::isValidValue($value)) {
+					} elseif (MetadataTypes\Payloads\Cover::isValidValue($value)) {
 						$valueDataType = MetadataTypes\DataTypeShort::COVER;
 					}
 
@@ -4189,7 +4189,7 @@ class Install extends Console\Command\Command
 	private function provideProtocolValue(
 		Style\SymfonyStyle $io,
 		Types\Protocol $protocol,
-		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value = null,
+		bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $value = null,
 	): string|int|bool|float
 	{
 		$metadata = $this->loader->loadProtocols();

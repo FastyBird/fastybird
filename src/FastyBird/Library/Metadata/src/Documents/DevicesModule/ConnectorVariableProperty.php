@@ -101,7 +101,7 @@ final class ConnectorVariableProperty extends ConnectorProperty
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 */
-	public function getValue(): bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
+	public function getValue(): bool|float|int|string|DateTimeInterface|Types\Payloads\Button|Types\Payloads\Switcher|Types\Payloads\Cover|null
 	{
 		try {
 			return Utilities\Value::normalizeValue(
@@ -118,7 +118,7 @@ final class ConnectorVariableProperty extends ConnectorProperty
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 */
-	public function getDefault(): bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
+	public function getDefault(): bool|float|int|string|DateTimeInterface|Types\Payloads\Button|Types\Payloads\Switcher|Types\Payloads\Cover|null
 	{
 		try {
 			return Utilities\Value::normalizeValue(

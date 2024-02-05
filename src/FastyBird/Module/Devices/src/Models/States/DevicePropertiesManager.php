@@ -140,7 +140,7 @@ final class DevicePropertiesManager extends PropertiesManager
 							[
 								'write' => array_map(
 									// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-									static fn (bool|int|float|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\CoverPayload|MetadataTypes\SwitchPayload|null $item): bool|int|float|string|null => MetadataUtilities\Value::flattenValue(
+									static fn (bool|int|float|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $item): bool|int|float|string|null => MetadataUtilities\Value::flattenValue(
 										$item,
 									),
 									(array) $data,
@@ -190,7 +190,7 @@ final class DevicePropertiesManager extends PropertiesManager
 							[
 								'set' => array_map(
 									// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-									static fn (bool|int|float|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\CoverPayload|MetadataTypes\SwitchPayload|null $item): bool|int|float|string|null => MetadataUtilities\Value::flattenValue(
+									static fn (bool|int|float|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $item): bool|int|float|string|null => MetadataUtilities\Value::flattenValue(
 										$item,
 									),
 									(array) $data,

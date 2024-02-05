@@ -86,7 +86,7 @@ abstract class ConnectorProperty implements Documents\Document, Documents\Owner
 						new ObjectMapper\Rules\ArrayOf(
 							item: new ObjectMapper\Rules\AnyOf([
 								new ObjectMapper\Rules\ArrayEnumValue(
-								// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+									// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 									cases: [Types\DataTypeShort::CHAR, Types\DataTypeShort::UCHAR, Types\DataTypeShort::SHORT, Types\DataTypeShort::USHORT, Types\DataTypeShort::INT, Types\DataTypeShort::UINT, Types\DataTypeShort::FLOAT, Types\DataTypeShort::BOOLEAN, Types\DataTypeShort::STRING, Types\DataTypeShort::BUTTON, Types\DataTypeShort::SWITCH, Types\DataTypeShort::COVER],
 								),
 								new ObjectMapper\Rules\StringValue(notEmpty: true),

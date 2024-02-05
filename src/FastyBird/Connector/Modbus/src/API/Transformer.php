@@ -63,7 +63,7 @@ final class Transformer
 		MetadataTypes\DataType $dataType,
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		MetadataValueObjects\StringEnumFormat|MetadataValueObjects\NumberRangeFormat|MetadataValueObjects\CombinedEnumFormat|null $format,
-		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
+		bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $value,
 	): ValueObjects\DeviceData|null
 	{
 		if ($value === null) {
@@ -163,13 +163,13 @@ final class Transformer
 			if (
 				(
 					$dataType->equalsValue(MetadataTypes\DataType::SWITCH)
-					&& $value instanceof MetadataTypes\SwitchPayload
+					&& $value instanceof MetadataTypes\Payloads\Switcher
 				) || (
 					$dataType->equalsValue(MetadataTypes\DataType::BUTTON)
-					&& $value instanceof MetadataTypes\ButtonPayload
+					&& $value instanceof MetadataTypes\Payloads\Button
 				) || (
 					$dataType->equalsValue(MetadataTypes\DataType::COVER)
-					&& $value instanceof MetadataTypes\CoverPayload
+					&& $value instanceof MetadataTypes\Payloads\Cover
 				)
 			) {
 				return new ValueObjects\DeviceData(

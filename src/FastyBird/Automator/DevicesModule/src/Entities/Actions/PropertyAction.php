@@ -53,18 +53,18 @@ abstract class PropertyAction extends TriggersEntities\Actions\Action
 		$this->value = $value;
 	}
 
-	public function getValue(): string|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload
+	public function getValue(): string|MetadataTypes\Payloads\Payload
 	{
-		if (MetadataTypes\ButtonPayload::isValidValue($this->value)) {
-			return MetadataTypes\ButtonPayload::get($this->value);
+		if (MetadataTypes\Payloads\Button::isValidValue($this->value)) {
+			return MetadataTypes\Payloads\Button::get($this->value);
 		}
 
-		if (MetadataTypes\SwitchPayload::isValidValue($this->value)) {
-			return MetadataTypes\SwitchPayload::get($this->value);
+		if (MetadataTypes\Payloads\Switcher::isValidValue($this->value)) {
+			return MetadataTypes\Payloads\Switcher::get($this->value);
 		}
 
-		if (MetadataTypes\CoverPayload::isValidValue($this->value)) {
-			return MetadataTypes\CoverPayload::get($this->value);
+		if (MetadataTypes\Payloads\Cover::isValidValue($this->value)) {
+			return MetadataTypes\Payloads\Cover::get($this->value);
 		}
 
 		return $this->value;

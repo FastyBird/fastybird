@@ -573,8 +573,7 @@ class Thermostat implements VirtualDrivers\Driver
 	 */
 	public function writeState(
 		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\ChannelDynamicProperty $property,
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $expectedValue,
+		bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $expectedValue,
 	): Promise\PromiseInterface
 	{
 		if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
@@ -686,7 +685,7 @@ class Thermostat implements VirtualDrivers\Driver
 	 */
 	public function notifyState(
 		MetadataDocuments\DevicesModule\DeviceMappedProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
-		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $actualValue,
+		bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $actualValue,
 	): Promise\PromiseInterface
 	{
 		if ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
@@ -865,7 +864,7 @@ class Thermostat implements VirtualDrivers\Driver
 			if ($actor->getDataType()->equalsValue(MetadataTypes\DataType::BOOLEAN)) {
 				$state = boolval($state);
 			} elseif ($actor->getDataType()->equalsValue(MetadataTypes\DataType::SWITCH)) {
-				$state = $state === true ? MetadataTypes\SwitchPayload::ON : MetadataTypes\SwitchPayload::OFF;
+				$state = $state === true ? MetadataTypes\Payloads\Switcher::ON : MetadataTypes\Payloads\Switcher::OFF;
 			}
 
 			$this->queue->append(
@@ -900,7 +899,7 @@ class Thermostat implements VirtualDrivers\Driver
 			if ($actor->getDataType()->equalsValue(MetadataTypes\DataType::BOOLEAN)) {
 				$state = boolval($state);
 			} elseif ($actor->getDataType()->equalsValue(MetadataTypes\DataType::SWITCH)) {
-				$state = $state === true ? MetadataTypes\SwitchPayload::ON : MetadataTypes\SwitchPayload::OFF;
+				$state = $state === true ? MetadataTypes\Payloads\Switcher::ON : MetadataTypes\Payloads\Switcher::OFF;
 			}
 
 			$this->queue->append(

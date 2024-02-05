@@ -160,8 +160,7 @@ class Mapped extends Property
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-	public function getDefault(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
+	public function getDefault(): bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null
 	{
 		if (!$this->getParent() instanceof Variable) {
 			throw new Exceptions\InvalidState('Reading default value is allowed only for variable parent properties');
@@ -189,7 +188,7 @@ class Mapped extends Property
 	 * @throws Exceptions\InvalidState
 	 */
 	public function setDefault(
-		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $default,
+		bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $default,
 	): void
 	{
 		if (!$this->getParent() instanceof Variable) {
@@ -204,8 +203,7 @@ class Mapped extends Property
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-	public function getValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
+	public function getValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null
 	{
 		if (!$this->getParent() instanceof Variable) {
 			throw new Exceptions\InvalidState('Reading value is allowed only for variable parent properties');
@@ -232,9 +230,7 @@ class Mapped extends Property
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public function setValue(
-		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
-	): void
+	public function setValue(bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $value): void
 	{
 		if (!$this->getParent() instanceof Variable) {
 			throw new Exceptions\InvalidState('Setting value is allowed only for variable parent properties');

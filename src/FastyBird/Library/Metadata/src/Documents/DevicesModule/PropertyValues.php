@@ -36,9 +36,9 @@ final class PropertyValues implements Documents\Document
 	public function __construct(
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
-			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\ButtonPayload::class),
-			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\SwitchPayload::class),
-			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\CoverPayload::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\Payloads\Button::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\Payloads\Switcher::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\Payloads\Cover::class),
 			new ObjectMapper\Rules\BoolValue(),
 			new ObjectMapper\Rules\IntValue(),
 			new ObjectMapper\Rules\FloatValue(),
@@ -46,12 +46,12 @@ final class PropertyValues implements Documents\Document
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('actual_value')]
-		private readonly bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null $actualValue,
+		private readonly bool|float|int|string|DateTimeInterface|Types\Payloads\Button|Types\Payloads\Switcher|Types\Payloads\Cover|null $actualValue,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
-			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\ButtonPayload::class),
-			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\SwitchPayload::class),
-			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\CoverPayload::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\Payloads\Button::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\Payloads\Switcher::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\Payloads\Cover::class),
 			new ObjectMapper\Rules\BoolValue(),
 			new ObjectMapper\Rules\IntValue(),
 			new ObjectMapper\Rules\FloatValue(),
@@ -59,17 +59,19 @@ final class PropertyValues implements Documents\Document
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('expected_value')]
-		private readonly bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null $expectedValue,
+		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+		private readonly bool|float|int|string|DateTimeInterface|Types\Payloads\Button|Types\Payloads\Switcher|Types\Payloads\Cover|null $expectedValue,
 	)
 	{
 	}
 
-	public function getActualValue(): bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
+	public function getActualValue(): bool|float|int|string|DateTimeInterface|Types\Payloads\Button|Types\Payloads\Switcher|Types\Payloads\Cover|null
 	{
 		return $this->actualValue;
 	}
 
-	public function getExpectedValue(): bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
+	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+	public function getExpectedValue(): bool|float|int|string|DateTimeInterface|Types\Payloads\Button|Types\Payloads\Switcher|Types\Payloads\Cover|null
 	{
 		return $this->expectedValue;
 	}

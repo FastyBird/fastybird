@@ -408,7 +408,7 @@ abstract class Property implements Entity,
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
+	public function getValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null
 	{
 		if ($this->value === null) {
 			return null;
@@ -437,9 +437,7 @@ abstract class Property implements Entity,
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function setValue(
-		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
-	): void
+	public function setValue(bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $value): void
 	{
 		try {
 			$value = MetadataUtilities\Value::flattenValue(
@@ -513,7 +511,7 @@ abstract class Property implements Entity,
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getDefault(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
+	public function getDefault(): bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null
 	{
 		if ($this->default === null) {
 			return null;
@@ -542,7 +540,7 @@ abstract class Property implements Entity,
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function setDefault(
-		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $default,
+		bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $default,
 	): void
 	{
 		try {

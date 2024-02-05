@@ -66,8 +66,7 @@ class Characteristic
 			'00000073-0000-1000-8000-0026BB765291', // PROGRAMMABLE SWITCH
 		];
 
-	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-	private bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $actualValue = null;
+	private bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $actualValue = null;
 
 	private bool $valid = true;
 
@@ -157,21 +156,19 @@ class Characteristic
 	{
 		return $this->property;
 	}
-	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-	public function getValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
+
+	public function getValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null
 	{
 		return $this->actualValue;
 	}
 
-	public function setValue(
-		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
-	): void
+	public function setValue(bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $value): void
 	{
 		$this->actualValue = $value;
 	}
 
 	public function setActualValue(
-		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
+		bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $value,
 	): void
 	{
 		$this->setValue($value);
@@ -180,7 +177,7 @@ class Characteristic
 	}
 
 	public function setExpectedValue(
-		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
+		bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $value,
 	): void
 	{
 		$this->setValue($value);

@@ -20,6 +20,9 @@ use DateTime;
 use DateTimeInterface;
 use FastyBird\Library\Metadata\Exceptions;
 use FastyBird\Library\Metadata\Types;
+use FastyBird\Library\Metadata\Types\Payloads\Button;
+use FastyBird\Library\Metadata\Types\Payloads\Cover;
+use FastyBird\Library\Metadata\Types\Payloads\Switcher;
 use FastyBird\Library\Metadata\ValueObjects;
 use Nette\Utils;
 use function array_filter;
@@ -62,10 +65,10 @@ final class Value
 	 * @throws Exceptions\InvalidValue
 	 */
 	public static function normalizeValue(
-		bool|int|float|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null $value,
+		bool|int|float|string|DateTimeInterface|Types\Payloads\Button|Types\Payloads\Switcher|Types\Payloads\Cover|null $value,
 		Types\DataType $dataType,
 		ValueObjects\StringEnumFormat|ValueObjects\NumberRangeFormat|ValueObjects\CombinedEnumFormat|null $format,
-	): bool|int|float|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
+	): bool|int|float|string|DateTimeInterface|Types\Payloads\Button|Types\Payloads\Switcher|Types\Payloads\Cover|null
 	{
 		if ($value === null) {
 			return null;
@@ -171,15 +174,15 @@ final class Value
 			|| $dataType->equalsValue(Types\DataType::COVER)
 			|| $dataType->equalsValue(Types\DataType::ENUM)
 		) {
-			/** @var class-string<Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload>|null $payloadClass */
+			/** @var class-string<Button|Switcher|Cover>|null $payloadClass */
 			$payloadClass = null;
 
 			if ($dataType->equalsValue(Types\DataType::BUTTON)) {
-				$payloadClass = Types\ButtonPayload::class;
+				$payloadClass = Types\Payloads\Button::class;
 			} elseif ($dataType->equalsValue(Types\DataType::SWITCH)) {
-				$payloadClass = Types\SwitchPayload::class;
+				$payloadClass = Types\Payloads\Switcher::class;
 			} elseif ($dataType->equalsValue(Types\DataType::COVER)) {
-				$payloadClass = Types\CoverPayload::class;
+				$payloadClass = Types\Payloads\Cover::class;
 			}
 
 			if ($format instanceof ValueObjects\StringEnumFormat) {
@@ -301,7 +304,7 @@ final class Value
 		bool|int|float|string|null $value,
 		Types\DataType $dataType,
 		ValueObjects\StringEnumFormat|ValueObjects\NumberRangeFormat|ValueObjects\CombinedEnumFormat|null $format,
-	): bool|int|float|string|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
+	): bool|int|float|string|Types\Payloads\Button|Types\Payloads\Switcher|Types\Payloads\Cover|null
 	{
 		if ($value === null) {
 			return null;
@@ -336,15 +339,15 @@ final class Value
 			|| $dataType->equalsValue(Types\DataType::COVER)
 			|| $dataType->equalsValue(Types\DataType::ENUM)
 		) {
-			/** @var class-string<Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload>|null $payloadClass */
+			/** @var class-string<Button|Switcher|Cover>|null $payloadClass */
 			$payloadClass = null;
 
 			if ($dataType->equalsValue(Types\DataType::BUTTON)) {
-				$payloadClass = Types\ButtonPayload::class;
+				$payloadClass = Types\Payloads\Button::class;
 			} elseif ($dataType->equalsValue(Types\DataType::SWITCH)) {
-				$payloadClass = Types\SwitchPayload::class;
+				$payloadClass = Types\Payloads\Switcher::class;
 			} elseif ($dataType->equalsValue(Types\DataType::COVER)) {
-				$payloadClass = Types\CoverPayload::class;
+				$payloadClass = Types\Payloads\Cover::class;
 			}
 
 			if ($format instanceof ValueObjects\StringEnumFormat) {
@@ -421,7 +424,7 @@ final class Value
 	 * @throws Exceptions\InvalidState
 	 */
 	public static function transformValueToDevice(
-		bool|int|float|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null $value,
+		bool|int|float|string|DateTimeInterface|Types\Payloads\Button|Types\Payloads\Switcher|Types\Payloads\Cover|null $value,
 		Types\DataType $dataType,
 		ValueObjects\StringEnumFormat|ValueObjects\NumberRangeFormat|ValueObjects\CombinedEnumFormat|null $format,
 	): bool|int|float|string|null
@@ -512,15 +515,15 @@ final class Value
 			|| $dataType->equalsValue(Types\DataType::COVER)
 			|| $dataType->equalsValue(Types\DataType::ENUM)
 		) {
-			/** @var class-string<Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload>|null $payloadClass */
+			/** @var class-string<Button|Switcher|Cover>|null $payloadClass */
 			$payloadClass = null;
 
 			if ($dataType->equalsValue(Types\DataType::BUTTON)) {
-				$payloadClass = Types\ButtonPayload::class;
+				$payloadClass = Types\Payloads\Button::class;
 			} elseif ($dataType->equalsValue(Types\DataType::SWITCH)) {
-				$payloadClass = Types\SwitchPayload::class;
+				$payloadClass = Types\Payloads\Switcher::class;
 			} elseif ($dataType->equalsValue(Types\DataType::COVER)) {
-				$payloadClass = Types\CoverPayload::class;
+				$payloadClass = Types\Payloads\Cover::class;
 			}
 
 			if ($format instanceof ValueObjects\StringEnumFormat) {
@@ -574,10 +577,10 @@ final class Value
 	}
 
 	public static function transformToScale(
-		bool|int|float|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null $value,
+		bool|int|float|string|DateTimeInterface|Types\Payloads\Button|Types\Payloads\Switcher|Types\Payloads\Cover|null $value,
 		Types\DataType $dataType,
 		int|null $scale = null,
-	): bool|int|float|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
+	): bool|int|float|string|DateTimeInterface|Types\Payloads\Button|Types\Payloads\Switcher|Types\Payloads\Cover|null
 	{
 		if ($value === null) {
 			return null;
@@ -617,10 +620,10 @@ final class Value
 	}
 
 	public static function transformFromScale(
-		bool|int|float|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null $value,
+		bool|int|float|string|DateTimeInterface|Types\Payloads\Button|Types\Payloads\Switcher|Types\Payloads\Cover|null $value,
 		Types\DataType $dataType,
 		int|null $scale = null,
-	): bool|int|float|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
+	): bool|int|float|string|DateTimeInterface|Types\Payloads\Button|Types\Payloads\Switcher|Types\Payloads\Cover|null
 	{
 		if ($value === null) {
 			return null;
@@ -708,9 +711,9 @@ final class Value
 	}
 
 	private static function normalizeEnumItemValue(
-		bool|int|float|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null $value,
+		bool|int|float|string|DateTimeInterface|Types\Payloads\Button|Types\Payloads\Switcher|Types\Payloads\Cover|null $value,
 		Types\DataTypeShort|null $dataType,
-	): bool|int|float|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null
+	): bool|int|float|string|DateTimeInterface|Types\Payloads\Button|Types\Payloads\Switcher|Types\Payloads\Cover|null
 	{
 		if ($dataType === null) {
 			return $value;
@@ -736,28 +739,28 @@ final class Value
 				true,
 			);
 		} elseif ($dataType->equalsValue(Types\DataTypeShort::BUTTON)) {
-			if ($value instanceof Types\ButtonPayload) {
+			if ($value instanceof Types\Payloads\Button) {
 				return $value;
 			}
 
-			return Types\ButtonPayload::isValidValue(self::flattenValue($value))
-				? Types\ButtonPayload::get(self::flattenValue($value))
+			return Types\Payloads\Button::isValidValue(self::flattenValue($value))
+				? Types\Payloads\Button::get(self::flattenValue($value))
 				: false;
 		} elseif ($dataType->equalsValue(Types\DataTypeShort::SWITCH)) {
-			if ($value instanceof Types\SwitchPayload) {
+			if ($value instanceof Types\Payloads\Switcher) {
 				return $value;
 			}
 
-			return Types\SwitchPayload::isValidValue(self::flattenValue($value))
-				? Types\SwitchPayload::get(self::flattenValue($value))
+			return Types\Payloads\Switcher::isValidValue(self::flattenValue($value))
+				? Types\Payloads\Switcher::get(self::flattenValue($value))
 				: false;
 		} elseif ($dataType->equalsValue(Types\DataTypeShort::COVER)) {
-			if ($value instanceof Types\CoverPayload) {
+			if ($value instanceof Types\Payloads\Cover) {
 				return $value;
 			}
 
-			return Types\CoverPayload::isValidValue(self::flattenValue($value))
-				? Types\CoverPayload::get(self::flattenValue($value))
+			return Types\Payloads\Cover::isValidValue(self::flattenValue($value))
+				? Types\Payloads\Cover::get(self::flattenValue($value))
 				: false;
 		} elseif ($dataType->equalsValue(Types\DataTypeShort::DATE)) {
 			if ($value instanceof DateTime) {
@@ -796,8 +799,8 @@ final class Value
 	}
 
 	private static function compareValues(
-		bool|int|float|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null $left,
-		bool|int|float|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null $right,
+		bool|int|float|string|DateTimeInterface|Types\Payloads\Button|Types\Payloads\Switcher|Types\Payloads\Cover|null $left,
+		bool|int|float|string|DateTimeInterface|Types\Payloads\Button|Types\Payloads\Switcher|Types\Payloads\Cover|null $right,
 	): bool
 	{
 		if ($left === $right) {

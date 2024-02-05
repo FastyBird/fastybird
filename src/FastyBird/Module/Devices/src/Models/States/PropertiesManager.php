@@ -195,11 +195,11 @@ abstract class PropertiesManager
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	protected function convertReadValue(
-		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
+		bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $value,
 		$property,
 		$mappedProperty,
 		bool $forReading,
-	): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
+	): bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null
 	{
 		/**
 		 * Transform value to property defined data type
@@ -307,9 +307,9 @@ abstract class PropertiesManager
 	 * @throws MetadataExceptions\InvalidValue
 	 */
 	protected function convertWriteActualValue(
-		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
+		bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $value,
 		$property,
-	): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
+	): bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null
 	{
 		/**
 		 * Convert value received from device to property defined data type
@@ -350,11 +350,11 @@ abstract class PropertiesManager
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	protected function convertWriteExpectedValue(
-		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
+		bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $value,
 		$property,
 		$mappedProperty,
 		bool $forWriting,
-	): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
+	): bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null
 	{
 		if ($mappedProperty !== null) {
 			if (

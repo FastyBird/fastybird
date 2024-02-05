@@ -136,7 +136,7 @@ final class Channel
 	public function getConfiguration(
 		MetadataDocuments\DevicesModule\Channel $channel,
 		Types\ChannelPropertyIdentifier $type,
-	): float|bool|int|string|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|DateTimeInterface|null
+	): float|bool|int|string|MetadataTypes\Payloads\Payload|DateTimeInterface|null
 	{
 		$findChannelPropertyQuery = new DevicesQueries\Configuration\FindChannelVariableProperties();
 		$findChannelPropertyQuery->forChannel($channel);

@@ -847,17 +847,17 @@ final class Gen1HttpApi extends HttpApi
 		) {
 			return [
 				[
-					[MetadataTypes\DataTypeShort::SWITCH, MetadataTypes\SwitchPayload::ON],
+					[MetadataTypes\DataTypeShort::SWITCH, MetadataTypes\Payloads\Switcher::ON],
 					[MetadataTypes\DataTypeShort::BOOLEAN, true],
 					[MetadataTypes\DataTypeShort::STRING, Types\RelayPayload::ON],
 				],
 				[
-					[MetadataTypes\DataTypeShort::SWITCH, MetadataTypes\SwitchPayload::OFF],
+					[MetadataTypes\DataTypeShort::SWITCH, MetadataTypes\Payloads\Switcher::OFF],
 					[MetadataTypes\DataTypeShort::BOOLEAN, false],
 					[MetadataTypes\DataTypeShort::STRING, Types\RelayPayload::OFF],
 				],
 				[
-					[MetadataTypes\DataTypeShort::SWITCH, MetadataTypes\SwitchPayload::TOGGLE],
+					[MetadataTypes\DataTypeShort::SWITCH, MetadataTypes\Payloads\Switcher::TOGGLE],
 					null,
 					[MetadataTypes\DataTypeShort::STRING, Types\RelayPayload::TOGGLE],
 				],
@@ -870,27 +870,27 @@ final class Gen1HttpApi extends HttpApi
 		) {
 			return [
 				[
-					[MetadataTypes\DataTypeShort::COVER, MetadataTypes\CoverPayload::OPEN],
+					[MetadataTypes\DataTypeShort::COVER, MetadataTypes\Payloads\Cover::OPEN],
 					[MetadataTypes\DataTypeShort::STRING, Types\RollerPayload::OPEN],
 					null,
 				],
 				[
-					[MetadataTypes\DataTypeShort::COVER, MetadataTypes\CoverPayload::OPENED],
+					[MetadataTypes\DataTypeShort::COVER, MetadataTypes\Payloads\Cover::OPENED],
 					null,
 					[MetadataTypes\DataTypeShort::STRING, Types\RollerPayload::OPEN],
 				],
 				[
-					[MetadataTypes\DataTypeShort::COVER, MetadataTypes\CoverPayload::CLOSE],
+					[MetadataTypes\DataTypeShort::COVER, MetadataTypes\Payloads\Cover::CLOSE],
 					[MetadataTypes\DataTypeShort::STRING, Types\RollerPayload::CLOSE],
 					null,
 				],
 				[
-					[MetadataTypes\DataTypeShort::COVER, MetadataTypes\CoverPayload::CLOSED],
+					[MetadataTypes\DataTypeShort::COVER, MetadataTypes\Payloads\Cover::CLOSED],
 					null,
 					[MetadataTypes\DataTypeShort::STRING, Types\RollerPayload::CLOSE],
 				],
 				[
-					[MetadataTypes\DataTypeShort::COVER, MetadataTypes\CoverPayload::STOP],
+					[MetadataTypes\DataTypeShort::COVER, MetadataTypes\Payloads\Cover::STOP],
 					[MetadataTypes\DataTypeShort::STRING, Types\RollerPayload::STOP],
 					null,
 				],
@@ -903,17 +903,17 @@ final class Gen1HttpApi extends HttpApi
 		) {
 			return [
 				[
-					[MetadataTypes\DataTypeShort::SWITCH, MetadataTypes\SwitchPayload::ON],
+					[MetadataTypes\DataTypeShort::SWITCH, MetadataTypes\Payloads\Switcher::ON],
 					[MetadataTypes\DataTypeShort::BOOLEAN, true],
 					[MetadataTypes\DataTypeShort::STRING, Types\LightSwitchPayload::ON],
 				],
 				[
-					[MetadataTypes\DataTypeShort::SWITCH, MetadataTypes\SwitchPayload::OFF],
+					[MetadataTypes\DataTypeShort::SWITCH, MetadataTypes\Payloads\Switcher::OFF],
 					[MetadataTypes\DataTypeShort::BOOLEAN, false],
 					[MetadataTypes\DataTypeShort::STRING, Types\LightSwitchPayload::OFF],
 				],
 				[
-					[MetadataTypes\DataTypeShort::SWITCH, MetadataTypes\SwitchPayload::TOGGLE],
+					[MetadataTypes\DataTypeShort::SWITCH, MetadataTypes\Payloads\Switcher::TOGGLE],
 					null,
 					[MetadataTypes\DataTypeShort::STRING, Types\LightSwitchPayload::TOGGLE],
 				],

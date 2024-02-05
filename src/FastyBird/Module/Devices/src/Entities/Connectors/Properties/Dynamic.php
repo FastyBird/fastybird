@@ -37,8 +37,7 @@ class Dynamic extends Property
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-	public function getValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
+	public function getValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null
 	{
 		throw new Exceptions\InvalidState(
 			sprintf('Reading value is not allowed for property type: %s', static::getType()),
@@ -48,9 +47,7 @@ class Dynamic extends Property
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public function setValue(
-		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
-	): void
+	public function setValue(bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $value): void
 	{
 		throw new Exceptions\InvalidState(
 			sprintf(
@@ -63,8 +60,7 @@ class Dynamic extends Property
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-	public function getDefault(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
+	public function getDefault(): bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null
 	{
 		throw new Exceptions\InvalidState(
 			sprintf(
@@ -78,7 +74,7 @@ class Dynamic extends Property
 	 * @throws Exceptions\InvalidState
 	 */
 	public function setDefault(
-		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $default,
+		bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $default,
 	): void
 	{
 		throw new Exceptions\InvalidState(

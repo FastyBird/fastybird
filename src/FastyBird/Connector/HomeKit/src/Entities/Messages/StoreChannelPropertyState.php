@@ -47,11 +47,11 @@ final class StoreChannelPropertyState implements Entity
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\BoolValue(),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
-			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\SwitchPayload::class),
-			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\ButtonPayload::class),
-			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\CoverPayload::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\Payloads\Switcher::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\Payloads\Button::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\Payloads\Cover::class),
 		])]
-		private readonly float|int|string|bool|MetadataTypes\SwitchPayload|MetadataTypes\ButtonPayload|MetadataTypes\CoverPayload|null $value,
+		private readonly float|int|string|bool|MetadataTypes\Payloads\Payload|null $value,
 	)
 	{
 	}
@@ -76,7 +76,7 @@ final class StoreChannelPropertyState implements Entity
 		return $this->property;
 	}
 
-	public function getValue(): float|int|string|bool|MetadataTypes\SwitchPayload|MetadataTypes\ButtonPayload|MetadataTypes\CoverPayload|null
+	public function getValue(): float|int|string|bool|MetadataTypes\Payloads\Payload|null
 	{
 		return $this->value;
 	}

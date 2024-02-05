@@ -21,7 +21,7 @@ final class ValueTest extends TestCase
 	 */
 	public function testNormalizeValue(
 		Types\DataType $dataType,
-		bool|float|int|string|DateTimeInterface|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload|null $value,
+		bool|float|int|string|DateTimeInterface|Types\Payloads\Button|Types\Payloads\Switcher|Types\Payloads\Cover|null $value,
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		ValueObjects\StringEnumFormat|ValueObjects\NumberRangeFormat|ValueObjects\CombinedEnumFormat|null $format = null,
 		float|int|string|null $invalid = null,

@@ -101,7 +101,7 @@ final class CombinedEnumFormatItem
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public function getValue(): float|bool|int|string|Types\ButtonPayload|Types\SwitchPayload|Types\CoverPayload
+	public function getValue(): float|bool|int|string|Types\Payloads\Button|Types\Payloads\Switcher|Types\Payloads\Cover
 	{
 		if ($this->dataType === null) {
 			return $this->value;
@@ -123,20 +123,20 @@ final class CombinedEnumFormatItem
 		} elseif ($this->dataType->equalsValue(Types\DataTypeShort::BOOLEAN)) {
 			return in_array(Utils\Strings::lower(strval($this->value)), ['true', 't', 'yes', 'y', '1', 'on'], true);
 		} elseif ($this->dataType->equalsValue(Types\DataTypeShort::BUTTON)) {
-			if (Types\ButtonPayload::isValidValue(Utils\Strings::lower(strval($this->value)))) {
-				return Types\ButtonPayload::get(Utils\Strings::lower(strval($this->value)));
+			if (Types\Payloads\Button::isValidValue(Utils\Strings::lower(strval($this->value)))) {
+				return Types\Payloads\Button::get(Utils\Strings::lower(strval($this->value)));
 			}
 
 			throw new Exceptions\InvalidState('Combined enum value is not valid');
 		} elseif ($this->dataType->equalsValue(Types\DataTypeShort::SWITCH)) {
-			if (Types\SwitchPayload::isValidValue(Utils\Strings::lower(strval($this->value)))) {
-				return Types\SwitchPayload::get(Utils\Strings::lower(strval($this->value)));
+			if (Types\Payloads\Switcher::isValidValue(Utils\Strings::lower(strval($this->value)))) {
+				return Types\Payloads\Switcher::get(Utils\Strings::lower(strval($this->value)));
 			}
 
 			throw new Exceptions\InvalidState('Combined enum value is not valid');
 		} elseif ($this->dataType->equalsValue(Types\DataTypeShort::COVER)) {
-			if (Types\CoverPayload::isValidValue(Utils\Strings::lower(strval($this->value)))) {
-				return Types\CoverPayload::get(Utils\Strings::lower(strval($this->value)));
+			if (Types\Payloads\Cover::isValidValue(Utils\Strings::lower(strval($this->value)))) {
+				return Types\Payloads\Cover::get(Utils\Strings::lower(strval($this->value)));
 			}
 
 			throw new Exceptions\InvalidState('Combined enum value is not valid');

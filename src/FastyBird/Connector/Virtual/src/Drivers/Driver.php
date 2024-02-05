@@ -57,8 +57,7 @@ interface Driver
 	 */
 	public function writeState(
 		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\ChannelDynamicProperty $property,
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $expectedValue,
+		bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $expectedValue,
 	): Promise\PromiseInterface;
 
 	/**
@@ -66,7 +65,7 @@ interface Driver
 	 */
 	public function notifyState(
 		MetadataDocuments\DevicesModule\DeviceMappedProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
-		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $actualValue,
+		bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $actualValue,
 	): Promise\PromiseInterface;
 
 }

@@ -82,18 +82,18 @@ abstract class PropertyCondition extends TriggersEntities\Conditions\Condition
 		$this->operator = $operator;
 	}
 
-	public function getOperand(): string|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload
+	public function getOperand(): string|MetadataTypes\Payloads\Payload
 	{
-		if (MetadataTypes\ButtonPayload::isValidValue($this->operand)) {
-			return MetadataTypes\ButtonPayload::get($this->operand);
+		if (MetadataTypes\Payloads\Button::isValidValue($this->operand)) {
+			return MetadataTypes\Payloads\Button::get($this->operand);
 		}
 
-		if (MetadataTypes\SwitchPayload::isValidValue($this->operand)) {
-			return MetadataTypes\SwitchPayload::get($this->operand);
+		if (MetadataTypes\Payloads\Switcher::isValidValue($this->operand)) {
+			return MetadataTypes\Payloads\Switcher::get($this->operand);
 		}
 
-		if (MetadataTypes\CoverPayload::isValidValue($this->operand)) {
-			return MetadataTypes\CoverPayload::get($this->operand);
+		if (MetadataTypes\Payloads\Cover::isValidValue($this->operand)) {
+			return MetadataTypes\Payloads\Cover::get($this->operand);
 		}
 
 		return $this->operand;
