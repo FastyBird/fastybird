@@ -95,6 +95,7 @@ final class Connector implements DevicesConnectors\Connector
 
 		foreach ($this->serversFactories as $serverFactory) {
 			$server = $serverFactory->create($this->connector);
+			$server->initialize();
 			$server->connect();
 
 			$this->servers[] = $server;

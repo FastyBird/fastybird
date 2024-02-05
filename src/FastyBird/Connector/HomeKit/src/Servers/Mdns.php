@@ -107,10 +107,13 @@ final class Mdns implements Server
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function connect(): void
+	public function initialize(): void
 	{
 		$this->createZone();
+	}
 
+	public function connect(): void
+	{
 		$this->logger->debug(
 			'Creating mDNS server',
 			[

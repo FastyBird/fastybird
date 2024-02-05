@@ -2917,12 +2917,12 @@ class Install extends Console\Command\Command
 			|| $characteristicMetadata->offsetExists('MaxValue')
 		) {
 			$format = new MetadataValueObjects\NumberRangeFormat([
-				$characteristicMetadata->offsetExists('MinValue') ? floatval(
-					$characteristicMetadata->offsetGet('MinValue'),
-				) : null,
-				$characteristicMetadata->offsetExists('MaxValue') ? floatval(
-					$characteristicMetadata->offsetGet('MaxValue'),
-				) : null,
+				$characteristicMetadata->offsetExists('MinValue')
+					? floatval($characteristicMetadata->offsetGet('MinValue'))
+					: null,
+				$characteristicMetadata->offsetExists('MaxValue')
+					? floatval($characteristicMetadata->offsetGet('MaxValue'))
+					: null,
 			]);
 		}
 

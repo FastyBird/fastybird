@@ -16,19 +16,20 @@
 namespace FastyBird\Addon\VirtualThermostat\Queries\Entities;
 
 use FastyBird\Addon\VirtualThermostat\Entities;
+use FastyBird\Connector\Virtual\Queries as VirtualQueries;
 
 /**
  * Find device actors channels entities query
  *
  * @template T of Entities\Channels\Actors
- * @extends  FindChannels<T>
+ * @extends  VirtualQueries\Entities\FindChannels<T>
  *
  * @package        FastyBird:VirtualThermostatAddon!
  * @subpackage     Queries
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class FindActorChannels extends FindChannels
+class FindActorChannels extends VirtualQueries\Entities\FindChannels
 {
 
 }

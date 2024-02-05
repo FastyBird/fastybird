@@ -286,8 +286,8 @@ class Channel implements Entities\Entity,
 		];
 	}
 
-	// @phpstan-ignore-next-line
-	public function getSource(): MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource
+	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+	public function getSource(): MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|MetadataTypes\AddonSource|MetadataTypes\BridgeSource
 	{
 		return MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES);
 	}

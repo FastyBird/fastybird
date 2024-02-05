@@ -39,9 +39,13 @@ class DevicePropertyIdentifier extends Consistence\Enum\Enum
 
 	public const AID = 'aid';
 
+	public const MANUFACTURER = MetadataTypes\DevicePropertyIdentifier::FIRMWARE_MANUFACTURER;
+
 	public const VERSION = MetadataTypes\DevicePropertyIdentifier::FIRMWARE_VERSION;
 
 	public const SERIAL_NUMBER = MetadataTypes\DevicePropertyIdentifier::SERIAL_NUMBER;
+
+	public const MODEL = MetadataTypes\DevicePropertyIdentifier::HARDWARE_MODEL;
 
 	public function getValue(): string
 	{

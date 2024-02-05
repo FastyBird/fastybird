@@ -54,7 +54,9 @@ class ChannelPropertyIdentifier extends Consistence\Enum\Enum
 	public const UNIT = 'unit';
 
 	// PRESET
-	public const TARGET_TEMPERATURE = 'target_temperature';
+	public const TARGET_ROOM_TEMPERATURE = 'target_room_temperature';
+
+	public const TARGET_ROOM_HUMIDITY = 'target_room_humidity';
 
 	public const COOLING_THRESHOLD_TEMPERATURE = 'cooling_threshold_temperature';
 

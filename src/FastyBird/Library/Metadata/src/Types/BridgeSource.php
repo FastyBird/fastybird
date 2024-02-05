@@ -39,6 +39,8 @@ class BridgeSource extends Consistence\Enum\Enum
 
 	public const REDISDB_PLUGIN_TRIGGERS_MODULE = Metadata\Constants::BRIDGE_REDISDB_PLUGIN_TRIGGERS_MODULE;
 
+	public const VIRTUAL_THERMOSTAT_ADDON_HOMEKIT_CONNECTOR = Metadata\Constants::BRIDGE_VIRTUAL_THERMOSTAT_ADDON_HOMEKIT_CONNECTOR;
+
 	public function getValue(): string
 	{
 		return strval(parent::getValue());

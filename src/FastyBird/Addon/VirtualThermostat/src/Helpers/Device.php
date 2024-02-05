@@ -190,7 +190,7 @@ final class Device
 
 		$findPropertyQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
 		$findPropertyQuery->forChannel($channel);
-		$findPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::TARGET_TEMPERATURE);
+		$findPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::TARGET_ROOM_TEMPERATURE);
 
 		return $this->channelsPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
@@ -322,7 +322,7 @@ final class Device
 		);
 
 		if ($property?->getValue() === null) {
-			return Entities\ThermostatDevice::MAXIMUM_FLOOR_TEMPERATURE;
+			return Entities\Devices\Thermostat::MAXIMUM_FLOOR_TEMPERATURE;
 		}
 
 		$value = $property->getValue();

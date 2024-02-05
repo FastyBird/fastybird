@@ -17,17 +17,18 @@ namespace FastyBird\Addon\VirtualThermostat\Hydrators\Channels;
 
 use FastyBird\Addon\VirtualThermostat\Entities;
 use FastyBird\Addon\VirtualThermostat\Hydrators;
+use FastyBird\Connector\Virtual\Hydrators as VirtualHydrators;
 
 /**
  * State channel entity hydrator
  *
- * @extends Hydrators\ThermostatChannel<Entities\Channels\State>
+ * @extends VirtualHydrators\VirtualChannel<Entities\Channels\State>
  *
  * @package        FastyBird:VirtualThermostatAddon!
  * @subpackage     Hydrators
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class State extends Hydrators\ThermostatChannel
+final class State extends VirtualHydrators\VirtualChannel
 {
 
 	public function getEntityName(): string

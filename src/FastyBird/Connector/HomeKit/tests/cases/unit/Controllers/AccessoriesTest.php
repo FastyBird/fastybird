@@ -44,7 +44,6 @@ final class AccessoriesTest extends DbTestCase
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws DevicesExceptions\Terminate
 	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -74,7 +73,7 @@ final class AccessoriesTest extends DbTestCase
 		$httpServerFactory = $this->getContainer()->getByType(Servers\HttpFactory::class);
 
 		$this->httpServer = $httpServerFactory->create($connector);
-		$this->httpServer->connect();
+		$this->httpServer->initialize();
 	}
 
 	protected function tearDown(): void

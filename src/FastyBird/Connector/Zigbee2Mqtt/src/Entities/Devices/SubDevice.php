@@ -21,6 +21,7 @@ use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
 use FastyBird\Connector\Zigbee2Mqtt\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
+use Nette\Utils;
 use Ramsey\Uuid;
 use function assert;
 use function count;
@@ -78,7 +79,7 @@ class SubDevice extends Entities\Zigbee2MqttDevice
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public function setParents(array $parents): void
+	public function setParents(array|Utils\ArrayHash $parents): void
 	{
 		if (count($parents) !== 1 || !$parents[0] instanceof Bridge) {
 			throw new Exceptions\InvalidState('Sub-device could have only one parent and it have to be gateway');

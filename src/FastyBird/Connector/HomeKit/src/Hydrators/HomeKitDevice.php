@@ -21,13 +21,14 @@ use FastyBird\Module\Devices\Hydrators as DevicesHydrators;
 /**
  * HomeKit device entity hydrator
  *
- * @extends DevicesHydrators\Devices\Device<Entities\HomeKitDevice>
+ * @template  T of Entities\HomeKitDevice
+ * @extends   DevicesHydrators\Devices\Device<T>
  *
  * @package        FastyBird:HomeKitConnector!
  * @subpackage     Hydrators
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class HomeKitDevice extends DevicesHydrators\Devices\Device
+class HomeKitDevice extends DevicesHydrators\Devices\Device
 {
 
 	public function getEntityName(): string

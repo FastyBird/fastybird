@@ -137,7 +137,6 @@ final class Http implements Server
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws DevicesExceptions\Terminate
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
@@ -148,7 +147,7 @@ final class Http implements Server
 	 * @throws SemVer\SemverException
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
-	public function connect(): void
+	public function initialize(): void
 	{
 		$bridge = $this->buildAccessory(
 			$this->connector,
@@ -388,7 +387,13 @@ final class Http implements Server
 				),
 			);
 		}
+	}
 
+	/**
+	 * @throws DevicesExceptions\Terminate
+	 */
+	public function connect(): void
+	{
 		try {
 			$this->logger->debug(
 				'Creating HAP web server',

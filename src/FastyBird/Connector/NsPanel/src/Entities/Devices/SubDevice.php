@@ -21,6 +21,7 @@ use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
+use Nette\Utils;
 use Ramsey\Uuid;
 use function count;
 use function is_string;
@@ -76,7 +77,7 @@ class SubDevice extends Entities\NsPanelDevice
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public function setParents(array $parents): void
+	public function setParents(array|Utils\ArrayHash $parents): void
 	{
 		if (count($parents) !== 1 || !$parents[0] instanceof Gateway) {
 			throw new Exceptions\InvalidState('Sub-device could have only one parent and it have to be gateway');

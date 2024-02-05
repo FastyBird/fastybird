@@ -35,6 +35,7 @@
 
                 <element key="src/FastyBird/Bridge/VirtualThermostatAddonHomeKitConnector/src" value="FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector"/>
                 <element key="src/FastyBird/Bridge/VirtualThermostatAddonHomeKitConnector/tests/cases/unit" value="FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Bridge/VirtualThermostatAddonHomeKitConnector/tests/fixtures/dummy" value="FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Tests\Fixtures\Dummy"/>
                 <element key="src/FastyBird/Bridge/VirtualThermostatAddonHomeKitConnector/tests/tools" value="FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Tests\Tools"/>
 
                 <element key="src/FastyBird/Connector/FbMqtt/src" value="FastyBird\Connector\FbMqtt"/>

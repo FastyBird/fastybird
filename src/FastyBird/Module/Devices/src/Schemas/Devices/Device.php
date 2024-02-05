@@ -28,7 +28,6 @@ use FastyBird\Module\Devices\Schemas;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use IPub\SlimRouter\Routing;
 use Neomerx\JsonApi;
-use function count;
 use function strval;
 
 /**
@@ -66,6 +65,8 @@ class Device extends JsonApiSchemas\JsonApi
 
 	public function __construct(
 		protected readonly Models\Entities\Devices\DevicesRepository $devicesRepository,
+		protected readonly Models\Entities\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
+		protected readonly Models\Entities\Devices\Controls\ControlsRepository $devicesControlsRepository,
 		protected readonly Models\Entities\Channels\ChannelsRepository $channelsRepository,
 		protected readonly Routing\IRouter $router,
 	)
@@ -142,12 +143,12 @@ class Device extends JsonApiSchemas\JsonApi
 	{
 		return [
 			self::RELATIONSHIPS_PROPERTIES => [
-				self::RELATIONSHIP_DATA => $resource->getProperties(),
+				self::RELATIONSHIP_DATA => $this->getProperties($resource),
 				self::RELATIONSHIP_LINKS_SELF => true,
 				self::RELATIONSHIP_LINKS_RELATED => true,
 			],
 			self::RELATIONSHIPS_CONTROLS => [
-				self::RELATIONSHIP_DATA => $resource->getControls(),
+				self::RELATIONSHIP_DATA => $this->getControls($resource),
 				self::RELATIONSHIP_LINKS_SELF => true,
 				self::RELATIONSHIP_LINKS_RELATED => true,
 			],
@@ -188,6 +189,9 @@ class Device extends JsonApiSchemas\JsonApi
 	): JsonApi\Contracts\Schema\LinkInterface
 	{
 		if ($name === self::RELATIONSHIPS_PROPERTIES) {
+			$findPropertiesQuery = new Queries\Entities\FindDeviceProperties();
+			$findPropertiesQuery->forDevice($resource);
+
 			return new JsonApi\Schema\Link(
 				false,
 				$this->router->urlFor(
@@ -198,10 +202,13 @@ class Device extends JsonApiSchemas\JsonApi
 				),
 				true,
 				[
-					'count' => count($resource->getProperties()),
+					'count' => $this->devicesPropertiesRepository->getResultSet($findPropertiesQuery)->count(),
 				],
 			);
 		} elseif ($name === self::RELATIONSHIPS_CONTROLS) {
+			$findControlsQuery = new Queries\Entities\FindDeviceControls();
+			$findControlsQuery->forDevice($resource);
+
 			return new JsonApi\Schema\Link(
 				false,
 				$this->router->urlFor(
@@ -212,10 +219,13 @@ class Device extends JsonApiSchemas\JsonApi
 				),
 				true,
 				[
-					'count' => count($resource->getControls()),
+					'count' => $this->devicesControlsRepository->getResultSet($findControlsQuery)->count(),
 				],
 			);
 		} elseif ($name === self::RELATIONSHIPS_CHANNELS) {
+			$findChannelsQuery = new Queries\Entities\FindChannels();
+			$findChannelsQuery->forDevice($resource);
+
 			return new JsonApi\Schema\Link(
 				false,
 				$this->router->urlFor(
@@ -226,10 +236,13 @@ class Device extends JsonApiSchemas\JsonApi
 				),
 				true,
 				[
-					'count' => count($resource->getChannels()),
+					'count' => $this->channelsRepository->getResultSet($findChannelsQuery)->count(),
 				],
 			);
 		} elseif ($name === self::RELATIONSHIPS_PARENTS) {
+			$findParentsQuery = new Queries\Entities\FindDevices();
+			$findParentsQuery->forChild($resource);
+
 			return new JsonApi\Schema\Link(
 				false,
 				$this->router->urlFor(
@@ -240,10 +253,13 @@ class Device extends JsonApiSchemas\JsonApi
 				),
 				true,
 				[
-					'count' => count($this->getParents($resource)),
+					'count' => $this->devicesRepository->getResultSet($findParentsQuery)->count(),
 				],
 			);
 		} elseif ($name === self::RELATIONSHIPS_CHILDREN) {
+			$findParentsQuery = new Queries\Entities\FindDevices();
+			$findParentsQuery->forParent($resource);
+
 			return new JsonApi\Schema\Link(
 				false,
 				$this->router->urlFor(
@@ -254,7 +270,7 @@ class Device extends JsonApiSchemas\JsonApi
 				),
 				true,
 				[
-					'count' => count($this->getChildren($resource)),
+					'count' => $this->devicesRepository->getResultSet($findParentsQuery)->count(),
 				],
 			);
 		} elseif ($name === self::RELATIONSHIPS_CONNECTOR) {
@@ -306,6 +322,34 @@ class Device extends JsonApiSchemas\JsonApi
 		}
 
 		return parent::getRelationshipSelfLink($resource, $name);
+	}
+
+	/**
+	 * @return array<Entities\Devices\Properties\Property>
+	 *
+	 * @throws Exception
+	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 */
+	private function getProperties(Entities\Devices\Device $device): array
+	{
+		$findQuery = new Queries\Entities\FindDeviceProperties();
+		$findQuery->forDevice($device);
+
+		return $this->devicesPropertiesRepository->findAllBy($findQuery);
+	}
+
+	/**
+	 * @return array<Entities\Devices\Controls\Control>
+	 *
+	 * @throws Exception
+	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 */
+	private function getControls(Entities\Devices\Device $device): array
+	{
+		$findQuery = new Queries\Entities\FindDeviceControls();
+		$findQuery->forDevice($device);
+
+		return $this->devicesControlsRepository->findAllBy($findQuery);
 	}
 
 	/**

@@ -18,12 +18,14 @@ namespace FastyBird\Library\Metadata\ValueObjects;
 use ArrayIterator;
 use IteratorAggregate;
 use Nette;
+use Nette\Utils;
 use Traversable;
 use function array_filter;
 use function array_map;
 use function array_values;
 use function explode;
 use function implode;
+use function in_array;
 use function is_string;
 use function strval;
 use function trim;
@@ -66,6 +68,15 @@ final class StringEnumFormat implements IteratorAggregate
 	public function getItems(): array
 	{
 		return $this->items;
+	}
+
+	public function hasItem(string $item): bool
+	{
+		return in_array(
+			Utils\Strings::lower($item),
+			array_map(static fn (string $item): string => Utils\Strings::lower($item), $this->items),
+			true,
+		);
 	}
 
 	/**

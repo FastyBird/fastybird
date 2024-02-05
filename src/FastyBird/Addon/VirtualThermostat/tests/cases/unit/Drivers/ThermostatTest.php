@@ -193,7 +193,7 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 						'device' => '552cea8a-0e81-41d9-be2f-839b079f315e',
 						'channel' => 'b453987e-bbf4-46fc-830f-6448b19d9665',
 						'property' => 'hvac_state',
-						'value' => Types\HvacStatePayload::OFF,
+						'value' => Types\HvacState::OFF,
 					],
 					[
 						'connector' => '2b1ce81f-9933-4d52-afd4-bec3583e6a06',
@@ -245,7 +245,7 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 						'device' => '552cea8a-0e81-41d9-be2f-839b079f315e',
 						'channel' => 'b453987e-bbf4-46fc-830f-6448b19d9665',
 						'property' => 'hvac_state',
-						'value' => Types\HvacStatePayload::HEATING,
+						'value' => Types\HvacState::HEATING,
 					],
 					[
 						'connector' => '2b1ce81f-9933-4d52-afd4-bec3583e6a06',
@@ -297,7 +297,7 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 						'device' => '552cea8a-0e81-41d9-be2f-839b079f315e',
 						'channel' => 'b453987e-bbf4-46fc-830f-6448b19d9665',
 						'property' => 'hvac_state',
-						'value' => Types\HvacStatePayload::HEATING,
+						'value' => Types\HvacState::HEATING,
 					],
 					[
 						'connector' => '2b1ce81f-9933-4d52-afd4-bec3583e6a06',
@@ -349,7 +349,7 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 						'device' => '552cea8a-0e81-41d9-be2f-839b079f315e',
 						'channel' => 'b453987e-bbf4-46fc-830f-6448b19d9665',
 						'property' => 'hvac_state',
-						'value' => Types\HvacStatePayload::OFF,
+						'value' => Types\HvacState::OFF,
 					],
 					[
 						'connector' => '2b1ce81f-9933-4d52-afd4-bec3583e6a06',
@@ -477,7 +477,7 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 						'device' => '552cea8a-0e81-41d9-be2f-839b079f315e',
 						'channel' => 'b453987e-bbf4-46fc-830f-6448b19d9665',
 						'property' => 'hvac_state',
-						'value' => Types\HvacStatePayload::OFF,
+						'value' => Types\HvacState::OFF,
 					],
 					[
 						'connector' => '2b1ce81f-9933-4d52-afd4-bec3583e6a06',

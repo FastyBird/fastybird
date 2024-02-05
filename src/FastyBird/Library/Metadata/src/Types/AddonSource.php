@@ -1,39 +1,41 @@
 <?php declare(strict_types = 1);
 
 /**
- * HvacStatePayload.php
+ * AddonSource.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:VirtualThermostatAddon!
+ * @package        FastyBird:MetadataLibrary!
  * @subpackage     Types
  * @since          1.0.0
  *
- * @date           22.10.23
+ * @date           05.02.24
  */
 
-namespace FastyBird\Addon\VirtualThermostat\Types;
+namespace FastyBird\Library\Metadata\Types;
 
 use Consistence;
+use FastyBird\Library\Metadata;
 use function strval;
 
 /**
- * HVAC state types
+ * Bridges sources types
  *
- * @package        FastyBird:VirtualThermostatAddon!
+ * @package        FastyBird:MetadataLibrary!
  * @subpackage     Types
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class HvacStatePayload extends Consistence\Enum\Enum
+class AddonSource extends Consistence\Enum\Enum
 {
 
-	public const OFF = 'off';
+	/**
+	 * Define types
+	 */
+	public const NOT_SPECIFIED = Metadata\Constants::NOT_SPECIFIED_SOURCE;
 
-	public const COOLING = 'cooling';
-
-	public const HEATING = 'heating';
+	public const VIRTUAL_THERMOSTAT = Metadata\Constants::ADDON_VIRTUAL_THERMOSTAT;
 
 	public function getValue(): string
 	{

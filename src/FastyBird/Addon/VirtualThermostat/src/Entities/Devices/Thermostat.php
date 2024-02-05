@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * VirtualThermostat.php
+ * Thermostat.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,16 +10,18 @@
  * @subpackage     Entities
  * @since          1.0.0
  *
- * @date           15.10.23
+ * @date           05.02.24
  */
 
-namespace FastyBird\Addon\VirtualThermostat\Entities;
+namespace FastyBird\Addon\VirtualThermostat\Entities\Devices;
 
 use Doctrine\ORM\Mapping as ORM;
+use FastyBird\Addon\VirtualThermostat\Entities;
 use FastyBird\Addon\VirtualThermostat\Exceptions;
 use FastyBird\Addon\VirtualThermostat\Types;
 use FastyBird\Connector\Virtual\Entities as VirtualEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use Nette\Utils;
@@ -31,7 +33,7 @@ use function sprintf;
 /**
  * @ORM\Entity
  */
-class ThermostatDevice extends VirtualEntities\VirtualDevice
+class Thermostat extends VirtualEntities\VirtualDevice
 {
 
 	public const TYPE = 'virtual-thermostat-addon';
@@ -58,14 +60,19 @@ class ThermostatDevice extends VirtualEntities\VirtualDevice
 		return self::TYPE;
 	}
 
+	public function getSource(): MetadataTypes\AddonSource
+	{
+		return MetadataTypes\AddonSource::get(MetadataTypes\AddonSource::VIRTUAL_THERMOSTAT);
+	}
+
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public function getConfiguration(): Channels\Configuration
+	public function getConfiguration(): Entities\Channels\Configuration
 	{
 		$channels = $this->channels
 			->filter(
-				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				static fn (DevicesEntities\Channels\Channel $channel): bool => $channel->getIdentifier() === Types\ChannelIdentifier::CONFIGURATION
 			);
 
@@ -74,7 +81,7 @@ class ThermostatDevice extends VirtualEntities\VirtualDevice
 		}
 
 		$channel = $channels->first();
-		assert($channel instanceof Channels\Configuration);
+		assert($channel instanceof Entities\Channels\Configuration);
 
 		return $channel;
 	}
@@ -82,11 +89,11 @@ class ThermostatDevice extends VirtualEntities\VirtualDevice
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public function getState(): Channels\State
+	public function getState(): Entities\Channels\State
 	{
 		$channels = $this->channels
 			->filter(
-				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				static fn (DevicesEntities\Channels\Channel $channel): bool => $channel->getIdentifier() === Types\ChannelIdentifier::STATE
 			);
 
@@ -95,7 +102,7 @@ class ThermostatDevice extends VirtualEntities\VirtualDevice
 		}
 
 		$channel = $channels->first();
-		assert($channel instanceof Channels\State);
+		assert($channel instanceof Entities\Channels\State);
 
 		return $channel;
 	}
@@ -103,7 +110,7 @@ class ThermostatDevice extends VirtualEntities\VirtualDevice
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public function getPreset(string $preset): Channels\Preset
+	public function getPreset(string $preset): Entities\Channels\Preset
 	{
 		$channels = $this->channels
 			->filter(
@@ -115,7 +122,7 @@ class ThermostatDevice extends VirtualEntities\VirtualDevice
 		}
 
 		$channel = $channels->first();
-		assert($channel instanceof Channels\Preset);
+		assert($channel instanceof Entities\Channels\Preset);
 
 		return $channel;
 	}
@@ -316,7 +323,7 @@ class ThermostatDevice extends VirtualEntities\VirtualDevice
 		}
 
 		$channel = $channels->first();
-		assert($channel instanceof Channels\Actors);
+		assert($channel instanceof Entities\Channels\Actors);
 
 		return array_filter(
 			$channel->getActors(),
@@ -364,7 +371,7 @@ class ThermostatDevice extends VirtualEntities\VirtualDevice
 		}
 
 		$channel = $channels->first();
-		assert($channel instanceof Channels\Sensors);
+		assert($channel instanceof Entities\Channels\Sensors);
 
 		return array_filter(
 			$channel->getSensors(),

@@ -50,6 +50,24 @@ class CharacteristicType extends Consistence\Enum\Enum
 
 	public const COLOR_WHITE = 'ColorWhite';
 
+	public const CURRENT_HEATING_COOLING_STATE = 'CurrentHeatingCoolingState';
+
+	public const TARGET_HEATING_COOLING_STATE = 'TargetHeatingCoolingState';
+
+	public const CURRENT_TEMPERATURE = 'CurrentTemperature';
+
+	public const TARGET_TEMPERATURE = 'TargetTemperature';
+
+	public const TEMPERATURE_DISPLAY_UNITS = 'TemperatureDisplayUnits';
+
+	public const CURRENT_RELATIVE_HUMIDITY = 'CurrentRelativeHumidity';
+
+	public const TARGET_RELATIVE_HUMIDITY = 'TargetRelativeHumidity';
+
+	public const COOLING_THRESHOLD_TEMPERATURE = 'CoolingThresholdTemperature';
+
+	public const HEATING_THRESHOLD_TEMPERATURE = 'HeatingThresholdTemperature';
+
 	public function getValue(): string
 	{
 		return strval(parent::getValue());

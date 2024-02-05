@@ -94,9 +94,13 @@ final class Constants
 
 	public const AUTOMATOR_DATE_TIME = 'com.fastybird.date-time-automator';
 
+	public const ADDON_VIRTUAL_THERMOSTAT = 'com.fastybird.virtual-thermostat-addon';
+
 	public const BRIDGE_REDISDB_PLUGIN_DEVICES_MODULE = 'com.fastybird.redisdb-plugin-devices-module-bridge';
 
 	public const BRIDGE_REDISDB_PLUGIN_TRIGGERS_MODULE = 'com.fastybird.redisdb-plugin-triggers-module-bridge';
+
+	public const BRIDGE_VIRTUAL_THERMOSTAT_ADDON_HOMEKIT_CONNECTOR = 'com.fastybird.virtual-thermostat-addon-homekit-connector-bridge';
 
 	/**
 	 * MODULE PREFIXES
@@ -109,6 +113,12 @@ final class Constants
 	public const MODULE_TRIGGERS_PREFIX = 'triggers-module';
 
 	public const MODULE_UI_PREFIX = 'ui-module';
+
+	/**
+	 * BRIDGE PREFIXES
+	 */
+
+	public const BRIDGE_VIRTUAL_THERMOSTAT_ADDON_HOMEKIT_CONNECTOR_PREFIX = 'virtual-thermostat-addon-homekit-connector-bridge';
 
 	/**
 	 * Message bus routing keys

@@ -16,7 +16,7 @@
 namespace FastyBird\Addon\VirtualThermostat;
 
 /**
- * Connector constants
+ * Addon constants
  *
  * @package        FastyBird:VirtualThermostatAddon!
  * @subpackage     common

@@ -15,58 +15,59 @@
 #########################
 
 extensions:
-    contributteConsole                  : Contributte\Console\DI\ConsoleExtension(%consoleMode%)
-    contributteTranslation              : Contributte\Translation\DI\TranslationExtension
-    contributteEvents                   : Contributte\EventDispatcher\DI\EventDispatcherExtension
-    nettrineAnnotations                 : Nettrine\Annotations\DI\AnnotationsExtension
-    nettrineCache                       : Nettrine\Cache\DI\CacheExtension
-    nettrineDbal                        : Nettrine\DBAL\DI\DbalExtension
-    nettrineDbalConsole                 : Nettrine\DBAL\DI\DbalConsoleExtension
-    nettrineOrm                         : Nettrine\ORM\DI\OrmExtension
-    nettrineOrmAnnotations              : Nettrine\ORM\DI\OrmAnnotationsExtension
-    nettrineOrmConsole                  : Nettrine\ORM\DI\OrmConsoleExtension
-    nettrineOrmCache                    : Nettrine\ORM\DI\OrmCacheExtension
-    nettrineFixtures                    : Nettrine\Fixtures\DI\FixturesExtension
-    ipubPhone                           : IPub\Phone\DI\PhoneExtension
-    ipubDoctrinePhone                   : IPub\DoctrinePhone\DI\DoctrinePhoneExtension
-    ipubDoctrineConsistence             : IPub\DoctrineConsistence\DI\DoctrineConsistenceExtension
-    ipubDoctrineCrud                    : IPub\DoctrineCrud\DI\DoctrineCrudExtension
-    ipubDoctrineTimestampable           : IPub\DoctrineTimestampable\DI\DoctrineTimestampableExtension
-    ipubDoctrineDynamicDiscriminatorMap : IPub\DoctrineDynamicDiscriminatorMap\DI\DoctrineDynamicDiscriminatorMapExtension
-    ipubWebsockets                      : IPub\WebSockets\DI\WebSocketsExtension
-    ipubWebsocketsWamp                  : IPub\WebSocketsWAMP\DI\WebSocketsWAMPExtension
+    contributteConsole                              : Contributte\Console\DI\ConsoleExtension(%consoleMode%)
+    contributteTranslation                          : Contributte\Translation\DI\TranslationExtension
+    contributteEvents                               : Contributte\EventDispatcher\DI\EventDispatcherExtension
+    nettrineAnnotations                             : Nettrine\Annotations\DI\AnnotationsExtension
+    nettrineCache                                   : Nettrine\Cache\DI\CacheExtension
+    nettrineDbal                                    : Nettrine\DBAL\DI\DbalExtension
+    nettrineDbalConsole                             : Nettrine\DBAL\DI\DbalConsoleExtension
+    nettrineOrm                                     : Nettrine\ORM\DI\OrmExtension
+    nettrineOrmAnnotations                          : Nettrine\ORM\DI\OrmAnnotationsExtension
+    nettrineOrmConsole                              : Nettrine\ORM\DI\OrmConsoleExtension
+    nettrineOrmCache                                : Nettrine\ORM\DI\OrmCacheExtension
+    nettrineFixtures                                : Nettrine\Fixtures\DI\FixturesExtension
+    ipubPhone                                       : IPub\Phone\DI\PhoneExtension
+    ipubDoctrinePhone                               : IPub\DoctrinePhone\DI\DoctrinePhoneExtension
+    ipubDoctrineConsistence                         : IPub\DoctrineConsistence\DI\DoctrineConsistenceExtension
+    ipubDoctrineCrud                                : IPub\DoctrineCrud\DI\DoctrineCrudExtension
+    ipubDoctrineTimestampable                       : IPub\DoctrineTimestampable\DI\DoctrineTimestampableExtension
+    ipubDoctrineDynamicDiscriminatorMap             : IPub\DoctrineDynamicDiscriminatorMap\DI\DoctrineDynamicDiscriminatorMapExtension
+    ipubWebsockets                                  : IPub\WebSockets\DI\WebSocketsExtension
+    ipubWebsocketsWamp                              : IPub\WebSocketsWAMP\DI\WebSocketsWAMPExtension
     # FastyBird libs
-    fbDateTimeFactory                   : FastyBird\DateTimeFactory\DI\DateTimeFactoryExtension
-    fbSimpleAuth                        : FastyBird\SimpleAuth\DI\SimpleAuthExtension
-    fbJsonApi                           : FastyBird\JsonApi\DI\JsonApiExtension
+    fbDateTimeFactory                               : FastyBird\DateTimeFactory\DI\DateTimeFactoryExtension
+    fbSimpleAuth                                    : FastyBird\SimpleAuth\DI\SimpleAuthExtension
+    fbJsonApi                                       : FastyBird\JsonApi\DI\JsonApiExtension
     # FastyBird app libs
-    fbApplicationLibrary                : FastyBird\Library\Application\DI\ApplicationExtension
-    fbMetadataLibrary                   : FastyBird\Library\Metadata\DI\MetadataExtension
-    fbExchangeLibrary                   : FastyBird\Library\Exchange\DI\ExchangeExtension
+    fbApplicationLibrary                            : FastyBird\Library\Application\DI\ApplicationExtension
+    fbMetadataLibrary                               : FastyBird\Library\Metadata\DI\MetadataExtension
+    fbExchangeLibrary                               : FastyBird\Library\Exchange\DI\ExchangeExtension
     # FastyBird plugins
-    fbRedisDbPlugin                     : FastyBird\Plugin\RedisDb\DI\RedisDbExtension
-    fbWebServerPlugin                   : FastyBird\Plugin\WebServer\DI\WebServerExtension
-    fbWsServerPlugin                    : FastyBird\Plugin\WsServer\DI\WsServerExtension
+    fbRedisDbPlugin                                 : FastyBird\Plugin\RedisDb\DI\RedisDbExtension
+    fbWebServerPlugin                               : FastyBird\Plugin\WebServer\DI\WebServerExtension
+    fbWsServerPlugin                                : FastyBird\Plugin\WsServer\DI\WsServerExtension
     # FastyBird modules
-    fbAccountsModule                    : FastyBird\Module\Accounts\DI\AccountsExtension
-    fbDevicesModule                     : FastyBird\Module\Devices\DI\DevicesExtension
-    fbTriggersModule                    : FastyBird\Module\Triggers\DI\TriggersExtension
+    fbAccountsModule                                : FastyBird\Module\Accounts\DI\AccountsExtension
+    fbDevicesModule                                 : FastyBird\Module\Devices\DI\DevicesExtension
+    fbTriggersModule                                : FastyBird\Module\Triggers\DI\TriggersExtension
     # FastyBird connectors
-    fbFbMqttConnector                   : FastyBird\Connector\FbMqtt\DI\FbMqttExtension
-    fbHomeKitConnector                  : FastyBird\Connector\HomeKit\DI\HomeKitExtension
-    fbModbusConnector                   : FastyBird\Connector\Modbus\DI\ModbusExtension
-    fbNsPanelConnector                  : FastyBird\Connector\NsPanel\DI\NsPanelExtension
-    fbShellyConnector                   : FastyBird\Connector\Shelly\DI\ShellyExtension
-    fbSonoffConnector                   : FastyBird\Connector\Sonoff\DI\SonoffExtension
-    fbTuyaConnector                     : FastyBird\Connector\Tuya\DI\TuyaExtension
-    fbVieraConnector                    : FastyBird\Connector\Viera\DI\VieraExtension
-    fbVirtualConnector                  : FastyBird\Connector\Virtual\DI\VirtualExtension
-    fbZigbee2MqttConnector              : FastyBird\Connector\Zigbee2Mqtt\DI\Zigbee2MqttExtension
+    fbFbMqttConnector                               : FastyBird\Connector\FbMqtt\DI\FbMqttExtension
+    fbHomeKitConnector                              : FastyBird\Connector\HomeKit\DI\HomeKitExtension
+    fbModbusConnector                               : FastyBird\Connector\Modbus\DI\ModbusExtension
+    fbNsPanelConnector                              : FastyBird\Connector\NsPanel\DI\NsPanelExtension
+    fbShellyConnector                               : FastyBird\Connector\Shelly\DI\ShellyExtension
+    fbSonoffConnector                               : FastyBird\Connector\Sonoff\DI\SonoffExtension
+    fbTuyaConnector                                 : FastyBird\Connector\Tuya\DI\TuyaExtension
+    fbVieraConnector                                : FastyBird\Connector\Viera\DI\VieraExtension
+    fbVirtualConnector                              : FastyBird\Connector\Virtual\DI\VirtualExtension
+    fbZigbee2MqttConnector                          : FastyBird\Connector\Zigbee2Mqtt\DI\Zigbee2MqttExtension
     # FastyBird bridges
-    fbRedisDbDevicesModuleBridge        : FastyBird\Bridge\RedisDbDevicesModule\DI\RedisDbDevicesModuleExtension
-    fbRedisDbTriggersModuleBridge       : FastyBird\Bridge\RedisDbTriggersModule\DI\RedisDbTriggersModuleExtension
+    fbRedisDbDevicesModuleBridge                    : FastyBird\Bridge\RedisDbDevicesModule\DI\RedisDbDevicesModuleExtension
+    fbRedisDbTriggersModuleBridge                   : FastyBird\Bridge\RedisDbTriggersModule\DI\RedisDbTriggersModuleExtension
+    fbVirtualThermostatAddonHomeKitConnectorBridge  : FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\DI\VirtualThermostatAddonHomeKitConnectorExtension
     # FastyBird addons
-    fbThermostatDeviceAddon             : FastyBird\Addon\ThermostatDevice\DI\ThermostatDeviceExtension
+    fbThermostatDeviceAddon                         : FastyBird\Addon\ThermostatDevice\DI\ThermostatDeviceExtension
 
 decorator:
     FastyBird\Plugin\WebServer\Router\Router:

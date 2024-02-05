@@ -81,7 +81,7 @@ class VirtualThermostatExtension extends DI\CompilerExtension implements Transla
 			$this->prefix('schemas.device.thermostat'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Schemas\ThermostatDevice::class);
+			->setType(Schemas\Devices\Thermostat::class);
 
 		$builder->addDefinition($this->prefix('schemas.channel.actors'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\Channels\Actors::class);
@@ -112,7 +112,7 @@ class VirtualThermostatExtension extends DI\CompilerExtension implements Transla
 			$this->prefix('hydrators.device.thermostat'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Hydrators\ThermostatDevice::class);
+			->setType(Hydrators\Devices\Thermostat::class);
 
 		$builder->addDefinition(
 			$this->prefix('hydrators.channel.actors'),
@@ -166,7 +166,7 @@ class VirtualThermostatExtension extends DI\CompilerExtension implements Transla
 		$builder = $this->getContainerBuilder();
 
 		/**
-		 * Doctrine entities
+		 * DOCTRINE ENTITIES
 		 */
 
 		$ormAnnotationDriverService = $builder->getDefinition('nettrineOrmAnnotations.annotationDriver');

@@ -1,0 +1,10 @@
+{
+  "data": {
+    "id": "cfb6e9cc-29a7-48d6-aecb-5f901d79eba2",
+    "type": "com.fastybird.virtual-thermostat-addon-homekit-connector-bridge/device/virtual-thermostat-addon-bridge",
+    "attributes": {
+      "identifier": "updated-device",
+      "name": "With name"
+    }
+  }
+}

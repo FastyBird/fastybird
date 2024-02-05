@@ -1,0 +1,123 @@
+{
+  "meta": {
+    "author": "FastyBird team",
+    "copyright": "FastyBird s.r.o"
+  },
+  "jsonapi": {
+    "version": "1.1"
+  },
+  "links": {
+    "self": "/api/virtual-thermostat-addon-homekit-connector-bridge/v1/bridges/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2"
+  },
+  "data": {
+    "type": "com.fastybird.virtual-thermostat-addon-homekit-connector-bridge/device/virtual-thermostat-addon-bridge",
+    "id": "cfb6e9cc-29a7-48d6-aecb-5f901d79eba2",
+    "attributes": {
+      "category": "generic",
+      "identifier": "thermostat-office",
+      "name": "With name",
+      "comment": null,
+      "owner": null,
+      "created_at": "2024-02-04T22:00:00+01:00",
+      "updated_at": "2020-04-01T12:00:00+00:00"
+    },
+    "relationships": {
+      "properties": {
+        "links": {
+          "self": "/api/virtual-thermostat-addon-homekit-connector-bridge/v1/bridges/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2/relationships/properties",
+          "related": {
+            "href": "/api/devices-module/v1/devices/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2/properties",
+            "meta": {
+              "count": 3
+            }
+          }
+        },
+        "data": [
+          {
+            "type": "com.fastybird.devices-module/property/device/variable",
+            "id": "1da711c4-ad89-4619-bccc-9eed96d9ea7f"
+          },
+          {
+            "type": "com.fastybird.devices-module/property/device/variable",
+            "id": "9302a614-5d3d-466b-b832-b6abd7e77ec6"
+          },
+          {
+            "type": "com.fastybird.devices-module/property/device/variable",
+            "id": "f4926d61-97f3-470c-b6a6-ab2fe4a139aa"
+          }
+        ]
+      },
+      "controls": {
+        "links": {
+          "self": "/api/virtual-thermostat-addon-homekit-connector-bridge/v1/bridges/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2/relationships/controls",
+          "related": {
+            "href": "/api/devices-module/v1/devices/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2/controls",
+            "meta": {
+              "count": 0
+            }
+          }
+        },
+        "data": []
+      },
+      "channels": {
+        "links": {
+          "self": "/api/virtual-thermostat-addon-homekit-connector-bridge/v1/bridges/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2/relationships/channels",
+          "related": {
+            "href": "/api/devices-module/v1/devices/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2/channels",
+            "meta": {
+              "count": 1
+            }
+          }
+        },
+        "data": [
+          {
+            "type": "com.fastybird.virtual-thermostat-addon-homekit-connector-bridge/channel/virtual-thermostat-addon-bridge",
+            "id": "af9c9d58-69c5-4d30-9bce-ca6e6ce4ed45"
+          }
+        ]
+      },
+      "connector": {
+        "links": {
+          "self": "/api/virtual-thermostat-addon-homekit-connector-bridge/v1/bridges/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2/relationships/connector",
+          "related": "/api/devices-module/v1/connectors/451ab010-f500-4eff-8289-9ed09e56a887"
+        },
+        "data": {
+          "type": "com.fastybird.homekit-connector/connector/homekit-connector",
+          "id": "451ab010-f500-4eff-8289-9ed09e56a887"
+        }
+      },
+      "parents": {
+        "links": {
+          "self": "/api/virtual-thermostat-addon-homekit-connector-bridge/v1/bridges/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2/relationships/parents",
+          "related": {
+            "href": "/api/devices-module/v1/devices/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2/parents",
+            "meta": {
+              "count": 1
+            }
+          }
+        },
+        "data": [
+          {
+            "type": "com.fastybird.virtual-thermostat-addon/device/virtual-thermostat-addon",
+            "id": "552cea8a-0e81-41d9-be2f-839b079f315e"
+          }
+        ]
+      },
+      "children": {
+        "links": {
+          "self": "/api/virtual-thermostat-addon-homekit-connector-bridge/v1/bridges/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2/relationships/children",
+          "related": {
+            "href": "/api/devices-module/v1/devices/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2/children",
+            "meta": {
+              "count": 0
+            }
+          }
+        },
+        "data": []
+      }
+    },
+    "links": {
+      "self": "/api/virtual-thermostat-addon-homekit-connector-bridge/v1/bridges/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2"
+    }
+  }
+}

@@ -16,9 +16,10 @@
 namespace FastyBird\Addon\VirtualThermostat\Entities\Channels;
 
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\Addon\VirtualThermostat\Entities;
 use FastyBird\Addon\VirtualThermostat\Types;
+use FastyBird\Connector\Virtual\Entities as VirtualEntities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use function floatval;
 use function is_numeric;
@@ -26,7 +27,7 @@ use function is_numeric;
 /**
  * @ORM\Entity
  */
-class Preset extends Entities\ThermostatChannel
+class Preset extends VirtualEntities\VirtualChannel
 {
 
 	public const TYPE = 'virtual-thermostat-addon-preset';
@@ -41,12 +42,17 @@ class Preset extends Entities\ThermostatChannel
 		return self::TYPE;
 	}
 
+	public function getSource(): MetadataTypes\AddonSource
+	{
+		return MetadataTypes\AddonSource::get(MetadataTypes\AddonSource::VIRTUAL_THERMOSTAT);
+	}
+
 	public function getTargetTemp(): DevicesEntities\Channels\Properties\Dynamic|null
 	{
 		$property = $this->properties
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Channels\Properties\Property $property): bool => $property->getIdentifier() === Types\ChannelPropertyIdentifier::TARGET_TEMPERATURE
+				static fn (DevicesEntities\Channels\Properties\Property $property): bool => $property->getIdentifier() === Types\ChannelPropertyIdentifier::TARGET_ROOM_TEMPERATURE
 			)
 			->first();
 

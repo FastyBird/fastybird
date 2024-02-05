@@ -37,7 +37,7 @@ class VirtualChannel extends DevicesEntities\Channels\Channel
 		return self::TYPE;
 	}
 
-	public function getSource(): MetadataTypes\ConnectorSource
+	public function getSource(): MetadataTypes\ConnectorSource|MetadataTypes\AddonSource
 	{
 		return MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL);
 	}

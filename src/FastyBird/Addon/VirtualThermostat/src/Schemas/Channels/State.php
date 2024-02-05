@@ -17,25 +17,26 @@ namespace FastyBird\Addon\VirtualThermostat\Schemas\Channels;
 
 use FastyBird\Addon\VirtualThermostat\Entities;
 use FastyBird\Addon\VirtualThermostat\Schemas;
+use FastyBird\Connector\Virtual\Schemas as VirtualSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 
 /**
  * State channel entity schema
  *
  * @template T of Entities\Channels\State
- * @extends  Schemas\ThermostatChannel<T>
+ * @extends  VirtualSchemas\VirtualChannel<T>
  *
  * @package        FastyBird:VirtualThermostatAddon!
  * @subpackage     Schemas
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class State extends Schemas\ThermostatChannel
+final class State extends VirtualSchemas\VirtualChannel
 {
 
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::VIRTUAL . '/channel/' . Entities\Channels\State::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\AddonSource::VIRTUAL_THERMOSTAT . '/channel/' . Entities\Channels\State::TYPE;
 
 	public function getEntityClass(): string
 	{

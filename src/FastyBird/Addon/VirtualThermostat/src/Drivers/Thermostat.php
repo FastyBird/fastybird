@@ -797,12 +797,12 @@ class Thermostat implements VirtualDrivers\Driver
 		$this->setHeaterState($heaters);
 		$this->setCoolerState($coolers);
 
-		$state = Types\HvacStatePayload::OFF;
+		$state = Types\HvacState::OFF;
 
 		if ($heaters && !$coolers) {
-			$state = Types\HvacStatePayload::HEATING;
+			$state = Types\HvacState::HEATING;
 		} elseif (!$heaters && $coolers) {
-			$state = Types\HvacStatePayload::COOLING;
+			$state = Types\HvacState::COOLING;
 		}
 
 		$this->queue->append(

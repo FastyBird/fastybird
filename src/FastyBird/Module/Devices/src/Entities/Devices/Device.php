@@ -244,9 +244,9 @@ class Device implements Entities\Entity,
 	}
 
 	/**
-	 * @param array<Device> $parents
+	 * @param array<Device>|Utils\ArrayHash<Device> $parents
 	 */
-	public function setParents(array $parents): void
+	public function setParents(array|Utils\ArrayHash $parents): void
 	{
 		$this->parents = new Common\Collections\ArrayCollection();
 
@@ -440,7 +440,8 @@ class Device implements Entities\Entity,
 		];
 	}
 
-	public function getSource(): MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource
+	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+	public function getSource(): MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|MetadataTypes\AddonSource|MetadataTypes\BridgeSource
 	{
 		return MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES);
 	}

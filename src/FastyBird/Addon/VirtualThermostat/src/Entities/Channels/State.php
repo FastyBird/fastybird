@@ -16,14 +16,15 @@
 namespace FastyBird\Addon\VirtualThermostat\Entities\Channels;
 
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\Addon\VirtualThermostat\Entities;
 use FastyBird\Addon\VirtualThermostat\Types;
+use FastyBird\Connector\Virtual\Entities as VirtualEntities;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 
 /**
  * @ORM\Entity
  */
-class State extends Entities\ThermostatChannel
+class State extends VirtualEntities\VirtualChannel
 {
 
 	public const TYPE = 'virtual-thermostat-addon-state';
@@ -31,6 +32,11 @@ class State extends Entities\ThermostatChannel
 	public static function getType(): string
 	{
 		return self::TYPE;
+	}
+
+	public function getSource(): MetadataTypes\AddonSource
+	{
+		return MetadataTypes\AddonSource::get(MetadataTypes\AddonSource::VIRTUAL_THERMOSTAT);
 	}
 
 	public function getDiscriminatorName(): string

@@ -10,5 +10,13 @@ parameters:
     ignoreErrors:
         - message: '#^Method FastyBird\\Module\\Devices\\Entities\\Devices\\Device::getSource\(\) never returns FastyBird\\Library\\Metadata\\Types\\ConnectorSource so it can be removed from the return type.#'
         - message: '#^Method FastyBird\\Module\\Devices\\Entities\\Devices\\Device::getSource\(\) never returns FastyBird\\Library\\Metadata\\Types\\PluginSource so it can be removed from the return type.#'
+        - message: '#^Method FastyBird\\Module\\Devices\\Entities\\Devices\\Device::getSource\(\) never returns FastyBird\\Library\\Metadata\\Types\\AddonSource so it can be removed from the return type.#'
+        - message: '#^Method FastyBird\\Module\\Devices\\Entities\\Devices\\Device::getSource\(\) never returns FastyBird\\Library\\Metadata\\Types\\BridgeSource so it can be removed from the return type.#'
+        - message: '#^Method FastyBird\\Module\\Devices\\Entities\\Channels\\Channel::getSource\(\) never returns FastyBird\\Library\\Metadata\\Types\\ConnectorSource so it can be removed from the return type.#'
+        - message: '#^Method FastyBird\\Module\\Devices\\Entities\\Channels\\Channel::getSource\(\) never returns FastyBird\\Library\\Metadata\\Types\\PluginSource so it can be removed from the return type.#'
+        - message: '#^Method FastyBird\\Module\\Devices\\Entities\\Channels\\Channel::getSource\(\) never returns FastyBird\\Library\\Metadata\\Types\\AddonSource so it can be removed from the return type.#'
+        - message: '#^Method FastyBird\\Module\\Devices\\Entities\\Channels\\Channel::getSource\(\) never returns FastyBird\\Library\\Metadata\\Types\\BridgeSource so it can be removed from the return type.#'
         - message: '#^Method FastyBird\\Module\\Devices\\Entities\\Connectors\\Connector::getSource\(\) never returns FastyBird\\Library\\Metadata\\Types\\ConnectorSource so it can be removed from the return type.#'
         - message: '#^Method FastyBird\\Module\\Devices\\Entities\\Connectors\\Connector::getSource\(\) never returns FastyBird\\Library\\Metadata\\Types\\PluginSource so it can be removed from the return type.#'
+        - message: '#^Method FastyBird\\Module\\Devices\\Entities\\Connectors\\Connector::getSource\(\) never returns FastyBird\\Library\\Metadata\\Types\\AddonSource so it can be removed from the return type.#'
+        - message: '#^Method FastyBird\\Module\\Devices\\Entities\\Connectors\\Connector::getSource\(\) never returns FastyBird\\Library\\Metadata\\Types\\BridgeSource so it can be removed from the return type.#'
