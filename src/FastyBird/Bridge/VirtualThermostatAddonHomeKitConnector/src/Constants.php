@@ -30,10 +30,8 @@ final class Constants
 
 	public const MANUFACTURER = 'FastyBird';
 
-	public const ROUTE_NAME_BRIDGES = 'devices';
+	public const ROUTE_NAME_BRIDGES = 'bridges';
 
-	public const ROUTE_NAME_BRIDGE = 'device';
-
-	public const ROUTE_NAME_BRIDGE_RELATIONSHIP = 'device.relationship';
+	public const ROUTE_NAME_BRIDGE = 'bridge';
 
 }

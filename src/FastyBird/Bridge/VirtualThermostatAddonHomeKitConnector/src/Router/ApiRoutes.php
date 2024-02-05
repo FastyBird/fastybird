@@ -90,12 +90,6 @@ class ApiRoutes
 				$group->patch('/{' . self::URL_ITEM_ID . '}', [$this->bridgesV1Controller, 'update']);
 
 				$group->delete('/{' . self::URL_ITEM_ID . '}', [$this->bridgesV1Controller, 'delete']);
-
-				$route = $group->get('/{' . self::URL_ITEM_ID . '}/relationships/{' . self::RELATION_ENTITY . '}', [
-					$this->bridgesV1Controller,
-					'readRelationship',
-				]);
-				$route->setName(VirtualThermostatAddonHomeKitConnector\Constants::ROUTE_NAME_BRIDGE_RELATIONSHIP);
 			});
 		});
 	}

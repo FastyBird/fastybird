@@ -7,7 +7,8 @@
     "version": "1.1"
   },
   "links": {
-    "self": "/api/virtual-thermostat-addon-homekit-connector-bridge/v1/bridges/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2/relationships/channels"
+    "self": "/api/devices-module/v1/devices/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2/relationships/channels",
+    "related": "/api/devices-module/v1/devices/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2/channels"
   },
   "data": [
     {

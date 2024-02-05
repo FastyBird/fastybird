@@ -29,7 +29,7 @@
       "relationships": {
         "properties": {
           "links": {
-            "self": "/api/virtual-thermostat-addon-homekit-connector-bridge/v1/bridges/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2/relationships/properties",
+            "self": "/api/devices-module/v1/devices/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2/relationships/properties",
             "related": {
               "href": "/api/devices-module/v1/devices/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2/properties",
               "meta": {
@@ -54,7 +54,7 @@
         },
         "controls": {
           "links": {
-            "self": "/api/virtual-thermostat-addon-homekit-connector-bridge/v1/bridges/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2/relationships/controls",
+            "self": "/api/devices-module/v1/devices/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2/relationships/controls",
             "related": {
               "href": "/api/devices-module/v1/devices/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2/controls",
               "meta": {
@@ -66,7 +66,7 @@
         },
         "channels": {
           "links": {
-            "self": "/api/virtual-thermostat-addon-homekit-connector-bridge/v1/bridges/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2/relationships/channels",
+            "self": "/api/devices-module/v1/devices/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2/relationships/channels",
             "related": {
               "href": "/api/devices-module/v1/devices/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2/channels",
               "meta": {
@@ -83,7 +83,7 @@
         },
         "connector": {
           "links": {
-            "self": "/api/virtual-thermostat-addon-homekit-connector-bridge/v1/bridges/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2/relationships/connector",
+            "self": "/api/devices-module/v1/devices/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2/relationships/connector",
             "related": "/api/devices-module/v1/connectors/451ab010-f500-4eff-8289-9ed09e56a887"
           },
           "data": {
@@ -93,7 +93,7 @@
         },
         "parents": {
           "links": {
-            "self": "/api/virtual-thermostat-addon-homekit-connector-bridge/v1/bridges/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2/relationships/parents",
+            "self": "/api/devices-module/v1/devices/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2/relationships/parents",
             "related": {
               "href": "/api/devices-module/v1/devices/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2/parents",
               "meta": {
@@ -110,7 +110,7 @@
         },
         "children": {
           "links": {
-            "self": "/api/virtual-thermostat-addon-homekit-connector-bridge/v1/bridges/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2/relationships/children",
+            "self": "/api/devices-module/v1/devices/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2/relationships/children",
             "related": {
               "href": "/api/devices-module/v1/devices/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2/children",
               "meta": {
@@ -122,7 +122,7 @@
         }
       },
       "links": {
-        "self": "/api/virtual-thermostat-addon-homekit-connector-bridge/v1/bridges/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2"
+        "self": "/api/devices-module/v1/devices/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2"
       }
     }
   ]

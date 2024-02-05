@@ -63,8 +63,6 @@ class BridgesV1 extends BaseV1
 		private readonly Builders\Builder $bridgeBuilder,
 		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\Entities\Devices\DevicesManager $devicesManager,
-		private readonly DevicesModels\Entities\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
-		private readonly DevicesModels\Entities\Devices\Controls\ControlsRepository $deviceControlsRepository,
 		private readonly DevicesModels\Entities\Channels\ChannelsRepository $channelsRepository,
 		private readonly DevicesModels\Entities\Channels\ChannelsManager $channelsManager,
 	)
@@ -454,69 +452,6 @@ class BridgesV1 extends BaseV1
 		}
 
 		return $response->withStatus(StatusCodeInterface::STATUS_NO_CONTENT);
-	}
-
-	/**
-	 * @throws Exception
-	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
-	 * @throws DoctrineOrmQueryExceptions\QueryException
-	 * @throws JsonApiExceptions\JsonApi
-	 */
-	public function readRelationship(
-		Message\ServerRequestInterface $request,
-		Message\ResponseInterface $response,
-	): Message\ResponseInterface
-	{
-		$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)));
-
-		$relationEntity = Utils\Strings::lower(strval($request->getAttribute(Router\ApiRoutes::RELATION_ENTITY)));
-
-		if ($relationEntity === Schemas\Devices\Thermostat::RELATIONSHIPS_CONNECTOR) {
-			return $this->buildResponse($request, $response, $device->getConnector());
-		} elseif ($relationEntity === Schemas\Devices\Thermostat::RELATIONSHIPS_PROPERTIES) {
-			$findDevicePropertiesQuery = new DevicesQueries\Entities\FindDeviceProperties();
-			$findDevicePropertiesQuery->forDevice($device);
-
-			return $this->buildResponse(
-				$request,
-				$response,
-				$this->devicePropertiesRepository->findAllBy($findDevicePropertiesQuery),
-			);
-		} elseif ($relationEntity === Schemas\Devices\Thermostat::RELATIONSHIPS_CONTROLS) {
-			$findDeviceControlsQuery = new DevicesQueries\Entities\FindDeviceControls();
-			$findDeviceControlsQuery->forDevice($device);
-
-			return $this->buildResponse(
-				$request,
-				$response,
-				$this->deviceControlsRepository->findAllBy($findDeviceControlsQuery),
-			);
-		} elseif ($relationEntity === Schemas\Devices\Thermostat::RELATIONSHIPS_PARENTS) {
-			$findParentsDevicesQuery = new DevicesQueries\Entities\FindDevices();
-			$findParentsDevicesQuery->forChild($device);
-
-			return $this->buildResponse(
-				$request,
-				$response,
-				$this->devicesRepository->findAllBy($findParentsDevicesQuery),
-			);
-		} elseif ($relationEntity === Schemas\Devices\Thermostat::RELATIONSHIPS_CHILDREN) {
-			$findChildrenDevicesQuery = new DevicesQueries\Entities\FindDevices();
-			$findChildrenDevicesQuery->forParent($device);
-
-			return $this->buildResponse(
-				$request,
-				$response,
-				$this->devicesRepository->findAllBy($findChildrenDevicesQuery),
-			);
-		} elseif ($relationEntity === Schemas\Devices\Thermostat::RELATIONSHIPS_CHANNELS) {
-			$findChannelsQuery = new DevicesQueries\Entities\FindChannels();
-			$findChannelsQuery->forDevice($device);
-
-			return $this->buildResponse($request, $response, $this->channelsRepository->findAllBy($findChannelsQuery));
-		}
-
-		return parent::readRelationship($request, $response);
 	}
 
 	/**

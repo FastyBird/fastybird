@@ -93,21 +93,21 @@ final class BridgesV1Test extends DbTestCase
 			],
 			'readRelationshipsProperties' => [
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				'/api/' . Metadata\Constants::BRIDGE_VIRTUAL_THERMOSTAT_ADDON_HOMEKIT_CONNECTOR_PREFIX . '/v1/bridges/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2/relationships/properties',
+				'/api/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2/relationships/properties',
 				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_OK,
 				__DIR__ . '/../../../fixtures/Controllers/responses/bridges.relationships.properties.json',
 			],
 			'readRelationshipsChannels' => [
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				'/api/' . Metadata\Constants::BRIDGE_VIRTUAL_THERMOSTAT_ADDON_HOMEKIT_CONNECTOR_PREFIX . '/v1/bridges/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2/relationships/channels',
+				'/api/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2/relationships/channels',
 				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_OK,
 				__DIR__ . '/../../../fixtures/Controllers/responses/bridges.relationships.channels.json',
 			],
 			'readRelationshipsChildren' => [
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				'/api/' . Metadata\Constants::BRIDGE_VIRTUAL_THERMOSTAT_ADDON_HOMEKIT_CONNECTOR_PREFIX . '/v1/bridges/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2/relationships/children',
+				'/api/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2/relationships/children',
 				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_OK,
 				__DIR__ . '/../../../fixtures/Controllers/responses/bridges.relationships.children.json',
@@ -124,14 +124,14 @@ final class BridgesV1Test extends DbTestCase
 			],
 			'readRelationshipsUnknown' => [
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				'/api/' . Metadata\Constants::BRIDGE_VIRTUAL_THERMOSTAT_ADDON_HOMEKIT_CONNECTOR_PREFIX . '/v1/bridges/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2/relationships/unknown',
+				'/api/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2/relationships/unknown',
 				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/relation.unknown.json',
 			],
 			'readRelationshipsUnknownEntity' => [
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				'/api/' . Metadata\Constants::BRIDGE_VIRTUAL_THERMOSTAT_ADDON_HOMEKIT_CONNECTOR_PREFIX . '/v1/bridges/69786d15-fd0c-4d9f-9378-33287c2009af/relationships/children',
+				'/api/' . Metadata\Constants::MODULE_DEVICES_PREFIX . '/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009af/relationships/children',
 				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/notFound.json',
