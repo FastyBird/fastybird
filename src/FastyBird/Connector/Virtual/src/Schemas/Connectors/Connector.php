@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * VirtualConnector.php
+ * Connector.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,7 +13,7 @@
  * @date           15.10.23
  */
 
-namespace FastyBird\Connector\Virtual\Schemas;
+namespace FastyBird\Connector\Virtual\Schemas\Connectors;
 
 use FastyBird\Connector\Virtual\Entities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -22,23 +22,23 @@ use FastyBird\Module\Devices\Schemas as DevicesSchemas;
 /**
  * Virtual connector entity schema
  *
- * @extends DevicesSchemas\Connectors\Connector<Entities\VirtualConnector>
+ * @extends DevicesSchemas\Connectors\Connector<Entities\Connectors\Connector>
  *
  * @package        FastyBird:VirtualConnector!
  * @subpackage     Schemas
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class VirtualConnector extends DevicesSchemas\Connectors\Connector
+final class Connector extends DevicesSchemas\Connectors\Connector
 {
 
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::VIRTUAL . '/connector/' . Entities\VirtualConnector::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Connector::VIRTUAL . '/connector/' . Entities\Connectors\Connector::TYPE;
 
 	public function getEntityClass(): string
 	{
-		return Entities\VirtualConnector::class;
+		return Entities\Connectors\Connector::class;
 	}
 
 	public function getType(): string

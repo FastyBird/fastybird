@@ -34,7 +34,7 @@ final class VieraConnector extends DevicesSchemas\Connectors\Connector
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::VIERA . '/connector/' . Entities\VieraConnector::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Connector::VIERA . '/connector/' . Entities\VieraConnector::TYPE;
 
 	public function getEntityClass(): string
 	{

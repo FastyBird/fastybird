@@ -73,7 +73,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 		$this->logger->debug(
 			'Client subscribed to topic',
 			[
-				'source' => MetadataTypes\ModuleSource::DEVICES,
+				'source' => MetadataTypes\Sources\Module::DEVICES,
 				'type' => 'exchange-controller',
 				'client' => $client->getId(),
 				'topic' => $topic->getId(),
@@ -100,7 +100,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 							$topic->getId(),
 							Utils\Json::encode([
 								'routing_key' => MetadataTypes\RoutingKey::DEVICE_PROPERTY_DOCUMENT_REPORTED,
-								'source' => MetadataTypes\ModuleSource::DEVICES,
+								'source' => MetadataTypes\Sources\Module::DEVICES,
 								'data' => $state->toArray(),
 							]),
 						]));
@@ -127,7 +127,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 							$topic->getId(),
 							Utils\Json::encode([
 								'routing_key' => MetadataTypes\RoutingKey::CHANNEL_PROPERTY_STATE_DOCUMENT_REPORTED,
-								'source' => MetadataTypes\ModuleSource::DEVICES,
+								'source' => MetadataTypes\Sources\Module::DEVICES,
 								'data' => $state->toArray(),
 							]),
 						]));
@@ -151,7 +151,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 							$topic->getId(),
 							Utils\Json::encode([
 								'routing_key' => MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_DOCUMENT_REPORTED,
-								'source' => MetadataTypes\ModuleSource::DEVICES,
+								'source' => MetadataTypes\Sources\Module::DEVICES,
 								'data' => $state->toArray(),
 							]),
 						]));
@@ -162,7 +162,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 			$this->logger->error(
 				'State could not be sent to subscriber',
 				[
-					'source' => MetadataTypes\ModuleSource::DEVICES,
+					'source' => MetadataTypes\Sources\Module::DEVICES,
 					'type' => 'exchange-controller',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -192,7 +192,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 		$this->logger->debug(
 			'Received RPC call from client',
 			[
-				'source' => MetadataTypes\ModuleSource::DEVICES,
+				'source' => MetadataTypes\Sources\Module::DEVICES,
 				'type' => 'exchange-controller',
 				'client' => $client->getId(),
 				'topic' => $topic->getId(),
@@ -267,7 +267,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 			$this->logger->error(
 				'Received message could not be validated',
 				[
-					'source' => MetadataTypes\ModuleSource::DEVICES,
+					'source' => MetadataTypes\Sources\Module::DEVICES,
 					'type' => 'exchange-controller',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -278,7 +278,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 			$this->logger->debug(
 				'Received message is not valid',
 				[
-					'source' => MetadataTypes\ModuleSource::DEVICES,
+					'source' => MetadataTypes\Sources\Module::DEVICES,
 					'type' => 'exchange-controller',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -289,7 +289,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 			$this->logger->error(
 				'Received message is not valid',
 				[
-					'source' => MetadataTypes\ModuleSource::DEVICES,
+					'source' => MetadataTypes\Sources\Module::DEVICES,
 					'type' => 'exchange-controller',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -336,7 +336,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 					$this->connectorPropertiesStatesManager->set(
 						$property,
 						Utils\ArrayHash::from($data),
-						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+						MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
 					);
 				}
 			} elseif ($entity->getWrite() !== null) {
@@ -354,7 +354,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 					$this->connectorPropertiesStatesManager->write(
 						$property,
 						Utils\ArrayHash::from($data),
-						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+						MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
 					);
 				}
 			}
@@ -378,7 +378,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				$topic->getId(),
 				Utils\Json::encode([
 					'routing_key' => MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_STATE_DOCUMENT_REPORTED,
-					'source' => MetadataTypes\ModuleSource::DEVICES,
+					'source' => MetadataTypes\Sources\Module::DEVICES,
 					'data' => $state->toArray(),
 				]),
 			]));
@@ -425,7 +425,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 					$this->devicePropertiesStatesManager->set(
 						$property,
 						Utils\ArrayHash::from($data),
-						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+						MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
 					);
 				}
 			} elseif ($entity->getWrite() !== null) {
@@ -443,7 +443,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 					$this->devicePropertiesStatesManager->write(
 						$property,
 						Utils\ArrayHash::from($data),
-						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+						MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
 					);
 				}
 			}
@@ -467,7 +467,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				$topic->getId(),
 				Utils\Json::encode([
 					'routing_key' => MetadataTypes\RoutingKey::DEVICE_PROPERTY_STATE_DOCUMENT_REPORTED,
-					'source' => MetadataTypes\ModuleSource::DEVICES,
+					'source' => MetadataTypes\Sources\Module::DEVICES,
 					'data' => $state->toArray(),
 				]),
 			]));
@@ -514,7 +514,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 					$this->channelPropertiesStatesManager->set(
 						$property,
 						Utils\ArrayHash::from($data),
-						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+						MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
 					);
 				}
 			} elseif ($entity->getWrite() !== null) {
@@ -532,7 +532,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 					$this->channelPropertiesStatesManager->write(
 						$property,
 						Utils\ArrayHash::from($data),
-						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+						MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
 					);
 				}
 			}
@@ -556,7 +556,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				$topic->getId(),
 				Utils\Json::encode([
 					'routing_key' => MetadataTypes\RoutingKey::CHANNEL_PROPERTY_STATE_DOCUMENT_REPORTED,
-					'source' => MetadataTypes\ModuleSource::DEVICES,
+					'source' => MetadataTypes\Sources\Module::DEVICES,
 					'data' => $state->toArray(),
 				]),
 			]));

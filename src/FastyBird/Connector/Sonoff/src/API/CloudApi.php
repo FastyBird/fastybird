@@ -1151,7 +1151,7 @@ final class CloudApi implements Evenement\EventEmitterInterface
 				$request->getUri(),
 			),
 			[
-				'source' => MetadataTypes\ConnectorSource::SONOFF,
+				'source' => MetadataTypes\Sources\Connector::SONOFF,
 				'type' => 'cloud-api',
 				'request' => [
 					'method' => $request->getMethod(),
@@ -1190,7 +1190,7 @@ final class CloudApi implements Evenement\EventEmitterInterface
 							$this->logger->debug(
 								'Received response',
 								[
-									'source' => MetadataTypes\ConnectorSource::SONOFF,
+									'source' => MetadataTypes\Sources\Connector::SONOFF,
 									'type' => 'cloud-api',
 									'request' => [
 										'method' => $request->getMethod(),
@@ -1278,7 +1278,7 @@ final class CloudApi implements Evenement\EventEmitterInterface
 			$this->logger->debug(
 				'Received response',
 				[
-					'source' => MetadataTypes\ConnectorSource::SONOFF,
+					'source' => MetadataTypes\Sources\Connector::SONOFF,
 					'type' => 'cloud-api',
 					'request' => [
 						'method' => $request->getMethod(),

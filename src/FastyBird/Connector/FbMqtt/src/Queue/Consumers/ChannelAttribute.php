@@ -82,7 +82,7 @@ final class ChannelAttribute implements Queue\Consumer
 			$this->logger->warning(
 				sprintf('Device "%s" is not registered', $entity->getDevice()),
 				[
-					'source' => MetadataTypes\ConnectorSource::FB_MQTT,
+					'source' => MetadataTypes\Sources\Connector::FB_MQTT,
 					'type' => 'channel-attribute-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -109,7 +109,7 @@ final class ChannelAttribute implements Queue\Consumer
 			$this->logger->warning(
 				sprintf('Device channel "%s" is not registered', $entity->getChannel()),
 				[
-					'source' => MetadataTypes\ConnectorSource::FB_MQTT,
+					'source' => MetadataTypes\Sources\Connector::FB_MQTT,
 					'type' => 'channel-attribute-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -149,7 +149,7 @@ final class ChannelAttribute implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed channel attribute message',
 			[
-				'source' => MetadataTypes\ConnectorSource::FB_MQTT,
+				'source' => MetadataTypes\Sources\Connector::FB_MQTT,
 				'type' => 'channel-attribute-message-consumer',
 				'connector' => [
 					'id' => $entity->getConnector()->toString(),

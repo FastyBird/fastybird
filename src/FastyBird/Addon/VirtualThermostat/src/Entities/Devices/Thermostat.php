@@ -33,7 +33,7 @@ use function sprintf;
 /**
  * @ORM\Entity
  */
-class Thermostat extends VirtualEntities\VirtualDevice
+class Thermostat extends VirtualEntities\Devices\Device
 {
 
 	public const TYPE = 'virtual-thermostat-addon';
@@ -60,9 +60,9 @@ class Thermostat extends VirtualEntities\VirtualDevice
 		return self::TYPE;
 	}
 
-	public function getSource(): MetadataTypes\AddonSource
+	public function getSource(): MetadataTypes\Sources\Addon
 	{
-		return MetadataTypes\AddonSource::get(MetadataTypes\AddonSource::VIRTUAL_THERMOSTAT);
+		return MetadataTypes\Sources\Addon::get(MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT);
 	}
 
 	/**

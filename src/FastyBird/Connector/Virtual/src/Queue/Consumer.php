@@ -15,8 +15,6 @@
 
 namespace FastyBird\Connector\Virtual\Queue;
 
-use FastyBird\Connector\Virtual\Entities;
-
 /**
  * Messages consumer interface
  *
@@ -28,6 +26,6 @@ use FastyBird\Connector\Virtual\Entities;
 interface Consumer
 {
 
-	public function consume(Entities\Messages\Entity $entity): bool;
+	public function consume(Messages\Message $entity): bool;
 
 }

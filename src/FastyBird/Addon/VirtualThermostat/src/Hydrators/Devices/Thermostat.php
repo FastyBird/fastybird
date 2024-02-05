@@ -18,17 +18,18 @@ namespace FastyBird\Addon\VirtualThermostat\Hydrators\Devices;
 use FastyBird\Addon\VirtualThermostat\Entities;
 use FastyBird\Addon\VirtualThermostat\Hydrators;
 use FastyBird\Connector\Virtual\Hydrators as VirtualHydrators;
+use FastyBird\Connector\Virtual\Hydrators\Devices\Device;
 
 /**
  * Virtual thermostat device entity hydrator
  *
- * @extends VirtualHydrators\VirtualDevice<Entities\Devices\Thermostat>
+ * @extends Device<Entities\Devices\Thermostat>
  *
  * @package        FastyBird:VirtualThermostatAddon!
  * @subpackage     Hydrators
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Thermostat extends VirtualHydrators\VirtualDevice
+final class Thermostat extends VirtualHydrators\Devices\Device
 {
 
 	public function getEntityName(): string

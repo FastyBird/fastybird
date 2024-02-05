@@ -109,7 +109,7 @@ final class StoreDevice implements Queue\Consumer
 			$this->logger->debug(
 				'Device was created',
 				[
-					'source' => MetadataTypes\ConnectorSource::VIERA,
+					'source' => MetadataTypes\Sources\Connector::VIERA,
 					'type' => 'store-device-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -214,7 +214,7 @@ final class StoreDevice implements Queue\Consumer
 				$this->logger->debug(
 					'Device channel was created',
 					[
-						'source' => MetadataTypes\ConnectorSource::VIERA,
+						'source' => MetadataTypes\Sources\Connector::VIERA,
 						'type' => 'store-device-message-consumer',
 						'connector' => [
 							'id' => $entity->getConnector()->toString(),
@@ -338,7 +338,7 @@ final class StoreDevice implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed store device message',
 			[
-				'source' => MetadataTypes\ConnectorSource::VIERA,
+				'source' => MetadataTypes\Sources\Connector::VIERA,
 				'type' => 'store-device-message-consumer',
 				'connector' => [
 					'id' => $entity->getConnector()->toString(),

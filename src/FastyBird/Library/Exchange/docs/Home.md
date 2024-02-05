@@ -26,16 +26,13 @@ implement `FastyBird\Library\Exchange\Publisher\Publisher` interface and registe
 ```php
 namespace Your\CoolApp\Publishers;
 
-use FastyBird\Library\Exchange\Publisher\Publisher;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
-use Nette\Utils;
+use FastyBird\Library\Exchange\Publisher\Publisher;use FastyBird\Library\Metadata\Documents as MetadataDocuments;use FastyBird\Library\Metadata\Types as MetadataTypes;
 
 class ModuleDataPublisher implements Publisher
 {
 
     public function publish(
-        MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource $source,
+        MetadataTypes\Sources\Module|MetadataTypes\Sources\Plugin|MetadataTypes\Sources\Connector $source,
         MetadataTypes\RoutingKey $routingKey,
         MetadataDocuments\Document|null $entity,
     ) : void {
@@ -56,12 +53,7 @@ that code processing remains unblocked. These publishers have to follow a Promis
 ```php
 namespace Your\CoolApp\Publishers;
 
-use FastyBird\Library\Exchange\Publisher\Async\Publisher;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
-use Nette\Utils;
-use React\Promise\Deferred;
-use React\Promise\PromiseInterface;
+use FastyBird\Library\Exchange\Publisher\Async\Publisher;use FastyBird\Library\Metadata\Documents as MetadataDocuments;use FastyBird\Library\Metadata\Types as MetadataTypes;use React\Promise\Deferred;use React\Promise\PromiseInterface;
 
 class ModuleDataPublisher implements Publisher
 {
@@ -70,7 +62,7 @@ class ModuleDataPublisher implements Publisher
     * @return PromiseInterface<bool>
      */
     public function publish(
-        MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource $source,
+        MetadataTypes\Sources\Module|MetadataTypes\Sources\Plugin|MetadataTypes\Sources\Connector $source,
         MetadataTypes\RoutingKey $routingKey,
         MetadataDocuments\Document|null $entity,
     ) : PromiseInterface {
@@ -130,15 +122,13 @@ implement `FastyBird\Library\Exchange\Consumer\Consumer` interface and register 
 ```php
 namespace Your\CoolApp\Publishers;
 
-use FastyBird\Library\Exchange\Consumers\Consumer;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Exchange\Consumers\Consumer;use FastyBird\Library\Metadata\Documents as MetadataDocuments;use FastyBird\Library\Metadata\Types as MetadataTypes;
 
 class DataConsumer implements Consumer
 {
 
     public function consume(
-        MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource $source,
+        MetadataTypes\Sources\Module|MetadataTypes\Sources\Plugin|MetadataTypes\Sources\Connector $source,
         MetadataTypes\RoutingKey $routingKey,
         MetadataDocuments\Document|null $entity,
     ) : void {

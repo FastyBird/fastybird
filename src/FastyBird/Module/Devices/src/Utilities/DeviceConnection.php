@@ -122,7 +122,7 @@ final class DeviceConnection
 				States\Property::ACTUAL_VALUE_FIELD => $state->getValue(),
 				States\Property::EXPECTED_VALUE_FIELD => null,
 			]),
-			MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+			MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
 		);
 
 		return false;

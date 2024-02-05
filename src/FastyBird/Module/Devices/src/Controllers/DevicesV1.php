@@ -183,7 +183,7 @@ class DevicesV1 extends BaseV1
 				$this->logger->error(
 					'An unhandled error occurred',
 					[
-						'source' => MetadataTypes\ModuleSource::DEVICES,
+						'source' => MetadataTypes\Sources\Module::DEVICES,
 						'type' => 'devices-controller',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 					],
@@ -279,7 +279,7 @@ class DevicesV1 extends BaseV1
 				$this->logger->error(
 					'An unhandled error occurred',
 					[
-						'source' => MetadataTypes\ModuleSource::DEVICES,
+						'source' => MetadataTypes\Sources\Module::DEVICES,
 						'type' => 'devices-controller',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 					],
@@ -353,7 +353,7 @@ class DevicesV1 extends BaseV1
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ModuleSource::DEVICES,
+					'source' => MetadataTypes\Sources\Module::DEVICES,
 					'type' => 'devices-controller',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],

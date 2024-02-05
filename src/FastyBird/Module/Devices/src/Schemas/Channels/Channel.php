@@ -43,7 +43,7 @@ class Channel extends JsonApiSchemas\JsonApi
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ModuleSource::DEVICES . '/channel/' . Entities\Channels\Channel::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Module::DEVICES . '/channel/' . Entities\Channels\Channel::TYPE;
 
 	/**
 	 * Define relationships names

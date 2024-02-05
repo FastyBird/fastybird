@@ -202,7 +202,7 @@ abstract class Periodic implements Writer
 			$state = await(
 				$this->channelPropertiesStatesManager->read(
 					$property,
-					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIERA),
+					MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::VIERA),
 				),
 			);
 

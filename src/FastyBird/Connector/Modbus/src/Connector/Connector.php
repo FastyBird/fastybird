@@ -92,7 +92,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Starting Modbus connector service',
 			[
-				'source' => MetadataTypes\ConnectorSource::MODBUS,
+				'source' => MetadataTypes\Sources\Connector::MODBUS,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -146,7 +146,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Modbus connector service has been started',
 			[
-				'source' => MetadataTypes\ConnectorSource::MODBUS,
+				'source' => MetadataTypes\Sources\Connector::MODBUS,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -182,7 +182,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Modbus connector has been terminated',
 			[
-				'source' => MetadataTypes\ConnectorSource::MODBUS,
+				'source' => MetadataTypes\Sources\Connector::MODBUS,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),

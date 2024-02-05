@@ -34,7 +34,7 @@ final class SonoffChannel extends DevicesSchemas\Channels\Channel
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::SONOFF . '/channel/' . Entities\SonoffChannel::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Connector::SONOFF . '/channel/' . Entities\SonoffChannel::TYPE;
 
 	public function getEntityClass(): string
 	{

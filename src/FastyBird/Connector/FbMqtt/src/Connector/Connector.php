@@ -94,7 +94,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Starting FB MQTT connector service',
 			[
-				'source' => MetadataTypes\ConnectorSource::FB_MQTT,
+				'source' => MetadataTypes\Sources\Connector::FB_MQTT,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -148,7 +148,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'FB MQTT connector service has been started',
 			[
-				'source' => MetadataTypes\ConnectorSource::FB_MQTT,
+				'source' => MetadataTypes\Sources\Connector::FB_MQTT,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -182,7 +182,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'FB MQTT connector has been terminated',
 			[
-				'source' => MetadataTypes\ConnectorSource::FB_MQTT,
+				'source' => MetadataTypes\Sources\Connector::FB_MQTT,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),

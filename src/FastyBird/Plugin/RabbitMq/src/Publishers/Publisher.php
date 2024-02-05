@@ -66,7 +66,7 @@ final class Publisher implements ExchangePublisher\Publisher
 	}
 
 	public function publish(
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|MetadataTypes\AutomatorSource $source,
+		MetadataTypes\Sources\Source $source,
 		MetadataTypes\RoutingKey $routingKey,
 		MetadataDocuments\Document|null $entity,
 	): bool
@@ -79,7 +79,7 @@ final class Publisher implements ExchangePublisher\Publisher
 			$this->logger->error(
 				'Data could not be converted to message',
 				[
-					'source' => MetadataTypes\PluginSource::RABBITMQ,
+					'source' => MetadataTypes\Sources\Plugin::RABBITMQ,
 					'type' => 'messages-publisher',
 					'message' => [
 						'routingKey' => $routingKey->getValue(),
@@ -109,7 +109,7 @@ final class Publisher implements ExchangePublisher\Publisher
 				$this->logger->debug(
 					'Received message was pushed into data exchange',
 					[
-						'source' => MetadataTypes\PluginSource::RABBITMQ,
+						'source' => MetadataTypes\Sources\Plugin::RABBITMQ,
 						'type' => 'messages-publisher',
 						'message' => [
 							'routingKey' => $routingKey->getValue(),
@@ -123,7 +123,7 @@ final class Publisher implements ExchangePublisher\Publisher
 				$this->logger->error(
 					'Received message could not be pushed into data exchange',
 					[
-						'source' => MetadataTypes\PluginSource::RABBITMQ,
+						'source' => MetadataTypes\Sources\Plugin::RABBITMQ,
 						'type' => 'messages-publisher',
 						'message' => [
 							'routingKey' => $routingKey->getValue(),
@@ -141,7 +141,7 @@ final class Publisher implements ExchangePublisher\Publisher
 						$this->logger->debug(
 							'Received message was pushed into data exchange',
 							[
-								'source' => MetadataTypes\PluginSource::RABBITMQ,
+								'source' => MetadataTypes\Sources\Plugin::RABBITMQ,
 								'type' => 'messages-publisher',
 								'message' => [
 									'routingKey' => $routingKey->getValue(),
@@ -156,7 +156,7 @@ final class Publisher implements ExchangePublisher\Publisher
 						$this->logger->error(
 							'Received message could not be pushed into data exchange',
 							[
-								'source' => MetadataTypes\PluginSource::RABBITMQ,
+								'source' => MetadataTypes\Sources\Plugin::RABBITMQ,
 								'type' => 'messages-publisher',
 								'message' => [
 									'routingKey' => $routingKey->getValue(),

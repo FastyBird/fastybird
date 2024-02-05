@@ -35,7 +35,7 @@ final class Battery extends Schemas\HomeKitChannel
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::HOMEKIT . '/channel/' . Entities\Channels\Battery::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Connector::HOMEKIT . '/channel/' . Entities\Channels\Battery::TYPE;
 
 	public function getEntityClass(): string
 	{

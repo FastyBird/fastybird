@@ -120,7 +120,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 	 * @throws Exception
 	 */
 	public function consume(
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|MetadataTypes\AutomatorSource $source,
+		MetadataTypes\Sources\Source $source,
 		MetadataTypes\RoutingKey $routingKey,
 		MetadataDocuments\Document|null $entity,
 	): void
@@ -338,7 +338,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 			) {
 				$this->dispatcher?->dispatch(
 					new DevicesEvents\TerminateConnector(
-						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::HOMEKIT),
+						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::HOMEKIT),
 						'Connector configuration changed, services have to be restarted',
 					),
 				);
@@ -347,7 +347,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 			if ($entity->getIdentifier() === Types\ConnectorPropertyIdentifier::SHARED_KEY) {
 				$this->dispatcher?->dispatch(
 					new DevicesEvents\TerminateConnector(
-						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::HOMEKIT),
+						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::HOMEKIT),
 						'Connector shared key changed, services have to be restarted',
 					),
 				);

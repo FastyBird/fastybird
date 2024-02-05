@@ -34,7 +34,7 @@ interface Publisher
 	 * @return Promise\PromiseInterface<bool>
 	 */
 	public function publish(
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|MetadataTypes\AutomatorSource $source,
+		MetadataTypes\Sources\Source $source,
 		MetadataTypes\RoutingKey $routingKey,
 		MetadataDocuments\Document|null $entity,
 	): Promise\PromiseInterface;

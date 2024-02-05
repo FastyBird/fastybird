@@ -208,7 +208,7 @@ abstract class Periodic
 			$state = await(
 				$this->channelPropertiesStatesManager->read(
 					$property,
-					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::MODBUS),
+					MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::MODBUS),
 				),
 			);
 

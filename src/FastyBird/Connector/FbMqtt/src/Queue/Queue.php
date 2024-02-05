@@ -49,7 +49,7 @@ final class Queue
 		$this->logger->debug(
 			'Appended new message into messages queue',
 			[
-				'source' => MetadataTypes\ConnectorSource::FB_MQTT,
+				'source' => MetadataTypes\Sources\Connector::FB_MQTT,
 				'type' => 'queue',
 				'message' => $entity->toArray(),
 			],

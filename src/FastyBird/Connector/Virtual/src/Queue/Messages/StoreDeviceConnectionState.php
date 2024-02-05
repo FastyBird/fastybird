@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * WriteDevicePropertyState.php
+ * StoreDeviceConnectionState.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,24 +10,25 @@
  * @subpackage     Entities
  * @since          1.0.0
  *
- * @date           21.11.23
+ * @date           17.10.23
  */
 
-namespace FastyBird\Connector\Virtual\Entities\Messages;
+namespace FastyBird\Connector\Virtual\Queue\Messages;
 
 use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 
 /**
- * Write updated device property state to device entity
+ * Device state message
  *
  * @package        FastyBird:VirtualConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class WriteDevicePropertyState implements Entity
+final class StoreDeviceConnectionState implements Message
 {
 
 	public function __construct(
@@ -35,13 +36,13 @@ final class WriteDevicePropertyState implements Entity
 		private readonly Uuid\UuidInterface $connector,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $device,
-		#[ApplicationObjectMapper\Rules\UuidValue()]
-		private readonly Uuid\UuidInterface $property,
+		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\ConnectionState::class)]
+		private readonly MetadataTypes\ConnectionState $state,
 		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\MappedObjectValue(class: State::class),
-			new ObjectMapper\Rules\NullValue(),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\Sources\Connector::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\Sources\Addon::class),
 		])]
-		private readonly State|null $state,
+		private readonly MetadataTypes\Sources\Source $source,
 	)
 	{
 	}
@@ -56,14 +57,14 @@ final class WriteDevicePropertyState implements Entity
 		return $this->device;
 	}
 
-	public function getProperty(): Uuid\UuidInterface
-	{
-		return $this->property;
-	}
-
-	public function getState(): State|null
+	public function getState(): MetadataTypes\ConnectionState
 	{
 		return $this->state;
+	}
+
+	public function getSource(): MetadataTypes\Sources\Source
+	{
+		return $this->source;
 	}
 
 	/**
@@ -74,8 +75,8 @@ final class WriteDevicePropertyState implements Entity
 		return [
 			'connector' => $this->getConnector()->toString(),
 			'device' => $this->getDevice()->toString(),
-			'property' => $this->getProperty()->toString(),
-			'state' => $this->getState()?->toArray(),
+			'state' => $this->getState()->getValue(),
+			'source' => $this->getSource()->getValue(),
 		];
 	}
 

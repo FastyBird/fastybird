@@ -188,7 +188,6 @@ final class Repository extends Models\Configuration\Repository
 
 					return array_filter(
 						array_map(
-						// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 							function (stdClass $item): MetadataDocuments\DevicesModule\ConnectorProperty|null {
 								foreach (
 									[

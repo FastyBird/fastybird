@@ -216,7 +216,7 @@ abstract class Periodic implements Writer
 				$state = await(
 					$this->devicePropertiesStatesManager->read(
 						$property,
-						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SONOFF),
+						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::SONOFF),
 					),
 				);
 
@@ -239,7 +239,7 @@ abstract class Periodic implements Writer
 				$state = await(
 					$this->channelPropertiesStatesManager->read(
 						$property,
-						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SONOFF),
+						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::SONOFF),
 					),
 				);
 

@@ -85,7 +85,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Starting HomeKit connector service',
 			[
-				'source' => MetadataTypes\ConnectorSource::HOMEKIT,
+				'source' => MetadataTypes\Sources\Connector::HOMEKIT,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -126,7 +126,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'HomeKit connector service has been started',
 			[
-				'source' => MetadataTypes\ConnectorSource::HOMEKIT,
+				'source' => MetadataTypes\Sources\Connector::HOMEKIT,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -164,7 +164,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'HomeKit connector has been terminated',
 			[
-				'source' => MetadataTypes\ConnectorSource::HOMEKIT,
+				'source' => MetadataTypes\Sources\Connector::HOMEKIT,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),

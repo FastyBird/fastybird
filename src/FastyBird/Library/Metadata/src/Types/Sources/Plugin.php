@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * AddonSource.php
+ * Plugin.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,24 +10,22 @@
  * @subpackage     Types
  * @since          1.0.0
  *
- * @date           05.02.24
+ * @date           08.01.22
  */
 
-namespace FastyBird\Library\Metadata\Types;
+namespace FastyBird\Library\Metadata\Types\Sources;
 
-use Consistence;
 use FastyBird\Library\Metadata;
-use function strval;
 
 /**
- * Bridges sources types
+ * Plugins sources types
  *
  * @package        FastyBird:MetadataLibrary!
  * @subpackage     Types
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class AddonSource extends Consistence\Enum\Enum
+class Plugin extends Source
 {
 
 	/**
@@ -35,16 +33,16 @@ class AddonSource extends Consistence\Enum\Enum
 	 */
 	public const NOT_SPECIFIED = Metadata\Constants::NOT_SPECIFIED_SOURCE;
 
-	public const VIRTUAL_THERMOSTAT = Metadata\Constants::ADDON_VIRTUAL_THERMOSTAT;
+	public const COUCHDB = Metadata\Constants::PLUGIN_COUCHDB_SOURCE;
 
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
+	public const RABBITMQ = Metadata\Constants::PLUGIN_RABBITMQ_SOURCE;
 
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	public const REDISDB = Metadata\Constants::PLUGIN_REDISDB_SOURCE;
+
+	public const WS_SERVER = Metadata\Constants::PLUGIN_WS_SERVER_SOURCE;
+
+	public const WEB_SERVER = Metadata\Constants::PLUGIN_WEB_SERVER_SOURCE;
+
+	public const API_KEY = Metadata\Constants::PLUGIN_API_KEY;
 
 }

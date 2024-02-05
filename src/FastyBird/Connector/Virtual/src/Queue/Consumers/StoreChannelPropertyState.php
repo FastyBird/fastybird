@@ -17,13 +17,11 @@ namespace FastyBird\Connector\Virtual\Queue\Consumers;
 
 use Doctrine\DBAL;
 use FastyBird\Connector\Virtual;
-use FastyBird\Connector\Virtual\Entities;
 use FastyBird\Connector\Virtual\Queue;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -73,9 +71,9 @@ final class StoreChannelPropertyState implements Queue\Consumer
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
-	public function consume(Entities\Messages\Entity $entity): bool
+	public function consume(Queue\Messages\Message $entity): bool
 	{
-		if (!$entity instanceof Entities\Messages\StoreChannelPropertyState) {
+		if (!$entity instanceof Queue\Messages\StoreChannelPropertyState) {
 			return false;
 		}
 
@@ -89,7 +87,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Device could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::VIRTUAL,
+					'source' => $entity->getSource()->getValue(),
 					'type' => 'store-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -121,7 +119,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Device channel could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::VIRTUAL,
+					'source' => $entity->getSource()->getValue(),
 					'type' => 'store-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -157,7 +155,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Device channel property could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::VIRTUAL,
+					'source' => $entity->getSource()->getValue(),
 					'type' => 'store-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -203,7 +201,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 				Utils\ArrayHash::from([
 					DevicesStates\Property::ACTUAL_VALUE_FIELD => $entity->getValue(),
 				]),
-				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
+				$entity->getSource(),
 			));
 		} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
 			$findChannelPropertyQuery = new DevicesQueries\Configuration\FindChannelProperties();
@@ -217,7 +215,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 					Utils\ArrayHash::from([
 						DevicesStates\Property::EXPECTED_VALUE_FIELD => $entity->getValue(),
 					]),
-					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
+					$entity->getSource(),
 				));
 			} elseif ($parent instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
 				$this->databaseHelper->transaction(
@@ -238,7 +236,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 							$this->logger->error(
 								'Mapped variable property could not be updated',
 								[
-									'source' => MetadataTypes\ConnectorSource::VIRTUAL,
+									'source' => $entity->getSource()->getValue(),
 									'type' => 'store-channel-property-state-message-consumer',
 									'connector' => [
 										'id' => $entity->getConnector()->toString(),
@@ -264,7 +262,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed store device state message',
 			[
-				'source' => MetadataTypes\ConnectorSource::VIRTUAL,
+				'source' => $entity->getSource()->getValue(),
 				'type' => 'store-channel-property-state-message-consumer',
 				'connector' => [
 					'id' => $entity->getConnector()->toString(),

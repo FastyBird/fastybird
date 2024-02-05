@@ -23,7 +23,7 @@ use FastyBird\Module\Devices\Entities as DevicesEntities;
 /**
  * @ORM\Entity
  */
-class Actors extends VirtualEntities\VirtualChannel
+class Actors extends VirtualEntities\Channels\Channel
 {
 
 	public const TYPE = 'virtual-thermostat-addon-actors';
@@ -38,9 +38,9 @@ class Actors extends VirtualEntities\VirtualChannel
 		return self::TYPE;
 	}
 
-	public function getSource(): MetadataTypes\AddonSource
+	public function getSource(): MetadataTypes\Sources\Addon
 	{
-		return MetadataTypes\AddonSource::get(MetadataTypes\AddonSource::VIRTUAL_THERMOSTAT);
+		return MetadataTypes\Sources\Addon::get(MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT);
 	}
 
 	/**

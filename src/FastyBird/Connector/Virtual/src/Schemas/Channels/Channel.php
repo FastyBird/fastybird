@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * VirtualDevice.php
+ * Channel.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,25 +10,25 @@
  * @subpackage     Schemas
  * @since          1.0.0
  *
- * @date           15.10.23
+ * @date           20.10.23
  */
 
-namespace FastyBird\Connector\Virtual\Schemas;
+namespace FastyBird\Connector\Virtual\Schemas\Channels;
 
 use FastyBird\Connector\Virtual\Entities;
 use FastyBird\Module\Devices\Schemas as DevicesSchemas;
 
 /**
- * Virtual device entity schema
+ * Virtual channel entity schema
  *
- * @template T of Entities\VirtualDevice
- * @extends  DevicesSchemas\Devices\Device<T>
+ * @template T of Entities\Channels\Channel
+ * @extends  DevicesSchemas\Channels\Channel<T>
  *
  * @package        FastyBird:VirtualConnector!
  * @subpackage     Schemas
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-abstract class VirtualDevice extends DevicesSchemas\Devices\Device
+abstract class Channel extends DevicesSchemas\Channels\Channel
 {
 
 }

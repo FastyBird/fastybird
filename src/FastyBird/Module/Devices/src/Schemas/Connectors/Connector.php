@@ -43,7 +43,7 @@ class Connector extends JsonApiSchemas\JsonApi
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ModuleSource::DEVICES . '/connector/' . Entities\Connectors\Connector::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Module::DEVICES . '/connector/' . Entities\Connectors\Connector::TYPE;
 
 	/**
 	 * Define relationships names

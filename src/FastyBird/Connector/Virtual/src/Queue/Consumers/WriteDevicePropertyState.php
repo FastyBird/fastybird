@@ -18,9 +18,7 @@ namespace FastyBird\Connector\Virtual\Queue\Consumers;
 use DateTimeInterface;
 use FastyBird\Connector\Virtual;
 use FastyBird\Connector\Virtual\Drivers;
-use FastyBird\Connector\Virtual\Entities;
 use FastyBird\Connector\Virtual\Exceptions;
-use FastyBird\Connector\Virtual\Helpers;
 use FastyBird\Connector\Virtual\Queue;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
@@ -52,7 +50,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 	public function __construct(
 		private readonly Queue\Queue $queue,
 		private readonly Drivers\DriversManager $driversManager,
-		private readonly Helpers\Entity $entityHelper,
+		private readonly Queue\MessageBuilder $messageBuilder,
 		private readonly Virtual\Logger $logger,
 		private readonly DevicesModels\Configuration\Connectors\Repository $connectorsConfigurationRepository,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
@@ -70,9 +68,9 @@ final class WriteDevicePropertyState implements Queue\Consumer
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws RuntimeException
 	 */
-	public function consume(Entities\Messages\Entity $entity): bool
+	public function consume(Queue\Messages\Message $entity): bool
 	{
-		if (!$entity instanceof Entities\Messages\WriteDevicePropertyState) {
+		if (!$entity instanceof Queue\Messages\WriteDevicePropertyState) {
 			return false;
 		}
 
@@ -85,7 +83,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Connector could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::VIRTUAL,
+					'source' => MetadataTypes\Sources\Connector::VIRTUAL,
 					'type' => 'write-device-property-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -113,7 +111,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Device could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::VIRTUAL,
+					'source' => MetadataTypes\Sources\Connector::VIRTUAL,
 					'type' => 'write-device-property-state-message-consumer',
 					'connector' => [
 						'id' => $connector->getId()->toString(),
@@ -144,7 +142,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Device property could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::VIRTUAL,
+					'source' => MetadataTypes\Sources\Connector::VIRTUAL,
 					'type' => 'write-device-property-state-message-consumer',
 					'connector' => [
 						'id' => $connector->getId()->toString(),
@@ -169,7 +167,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Device property is not writable',
 				[
-					'source' => MetadataTypes\ConnectorSource::VIRTUAL,
+					'source' => MetadataTypes\Sources\Connector::VIRTUAL,
 					'type' => 'write-device-property-state-message-consumer',
 					'connector' => [
 						'id' => $connector->getId()->toString(),
@@ -204,7 +202,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 				$this->devicePropertiesStatesManager->setPendingState(
 					$property,
 					false,
-					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
+					MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::VIRTUAL),
 				);
 			}
 
@@ -228,7 +226,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 			$this->devicePropertiesStatesManager->setPendingState(
 				$property,
 				true,
-				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
+				MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::VIRTUAL),
 			);
 		}
 
@@ -240,12 +238,13 @@ final class WriteDevicePropertyState implements Queue\Consumer
 				: $driver->writeState($property, $valueToWrite);
 		} catch (Exceptions\InvalidState $ex) {
 			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\StoreDeviceConnectionState::class,
+				$this->messageBuilder->create(
+					Queue\Messages\StoreDeviceConnectionState::class,
 					[
 						'connector' => $connector->getId(),
 						'device' => $device->getId(),
 						'state' => MetadataTypes\ConnectionState::ALERT,
+						'source' => MetadataTypes\Sources\Connector::VIRTUAL,
 					],
 				),
 			);
@@ -254,14 +253,14 @@ final class WriteDevicePropertyState implements Queue\Consumer
 				$this->devicePropertiesStatesManager->setPendingState(
 					$property,
 					false,
-					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
+					MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::VIRTUAL),
 				);
 			}
 
 			$this->logger->error(
 				'Device is not properly configured',
 				[
-					'source' => MetadataTypes\ConnectorSource::VIRTUAL,
+					'source' => MetadataTypes\Sources\Connector::VIRTUAL,
 					'type' => 'write-device-property-state-message-consumer',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
@@ -285,7 +284,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 				$this->logger->debug(
 					'Channel state was successfully sent to device',
 					[
-						'source' => MetadataTypes\ConnectorSource::VIRTUAL,
+						'source' => MetadataTypes\Sources\Connector::VIRTUAL,
 						'type' => 'write-device-property-state-message-consumer',
 						'connector' => [
 							'id' => $connector->getId()->toString(),
@@ -305,13 +304,13 @@ final class WriteDevicePropertyState implements Queue\Consumer
 					$this->devicePropertiesStatesManager->setPendingState(
 						$property,
 						false,
-						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
+						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::VIRTUAL),
 					);
 				}
 
 				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\StoreDeviceConnectionState::class,
+					$this->messageBuilder->create(
+						Queue\Messages\StoreDeviceConnectionState::class,
 						[
 							'connector' => $connector->getId(),
 							'device' => $device->getId(),
@@ -323,7 +322,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 				$this->logger->error(
 					'Could write state to device',
 					[
-						'source' => MetadataTypes\ConnectorSource::VIRTUAL,
+						'source' => MetadataTypes\Sources\Connector::VIRTUAL,
 						'type' => 'write-device-property-state-message-consumer',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'connector' => [
@@ -344,7 +343,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed write device state message',
 			[
-				'source' => MetadataTypes\ConnectorSource::VIRTUAL,
+				'source' => MetadataTypes\Sources\Connector::VIRTUAL,
 				'type' => 'write-device-property-state-message-consumer',
 				'connector' => [
 					'id' => $connector->getId()->toString(),

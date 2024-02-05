@@ -35,7 +35,7 @@ class DevicePropertyStateEntityCreated extends EventDispatcher\Event
 		private readonly MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty $property,
 		private readonly States\DeviceProperty $read,
 		private readonly States\DeviceProperty $get,
-		private readonly MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource $source,
+		private readonly MetadataTypes\Sources\Source $source,
 	)
 	{
 	}
@@ -55,7 +55,7 @@ class DevicePropertyStateEntityCreated extends EventDispatcher\Event
 		return $this->get;
 	}
 
-	public function getSource(): MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource
+	public function getSource(): MetadataTypes\Sources\Source
 	{
 		return $this->source;
 	}

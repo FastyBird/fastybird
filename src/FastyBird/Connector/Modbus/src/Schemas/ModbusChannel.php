@@ -34,7 +34,7 @@ final class ModbusChannel extends DevicesSchemas\Channels\Channel
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::MODBUS . '/channel/' . Entities\ModbusChannel::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Connector::MODBUS . '/channel/' . Entities\ModbusChannel::TYPE;
 
 	public function getEntityClass(): string
 	{

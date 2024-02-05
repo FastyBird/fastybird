@@ -61,7 +61,7 @@ final class Factory
 			$this->logger->error(
 				'An error occurred during handling request. Stopping HTTP server',
 				[
-					'source' => MetadataTypes\PluginSource::WEB_SERVER,
+					'source' => MetadataTypes\Sources\Plugin::WEB_SERVER,
 					'type' => 'factory',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -77,7 +77,7 @@ final class Factory
 				$this->logger->info(
 					sprintf('Listening on "%s"', str_replace('tls:', 'https:', $server->getAddress())),
 					[
-						'source' => MetadataTypes\PluginSource::WEB_SERVER,
+						'source' => MetadataTypes\Sources\Plugin::WEB_SERVER,
 						'type' => 'factory',
 					],
 				);
@@ -86,7 +86,7 @@ final class Factory
 				$this->logger->info(
 					sprintf('Listening on "%s"', str_replace('tcp:', 'http:', $server->getAddress())),
 					[
-						'source' => MetadataTypes\PluginSource::WEB_SERVER,
+						'source' => MetadataTypes\Sources\Plugin::WEB_SERVER,
 						'type' => 'factory',
 					],
 				);

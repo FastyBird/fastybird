@@ -106,7 +106,7 @@ final class StoreParametersStates implements Consumer
 						Utils\ArrayHash::from([
 							DevicesStates\Property::ACTUAL_VALUE_FIELD => $parameter->getValue(),
 						]),
-						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SONOFF),
+						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::SONOFF),
 					));
 				} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty) {
 					$this->databaseHelper->transaction(
@@ -147,7 +147,7 @@ final class StoreParametersStates implements Consumer
 							Utils\ArrayHash::from([
 								DevicesStates\Property::ACTUAL_VALUE_FIELD => $parameter->getValue(),
 							]),
-							MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SONOFF),
+							MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::SONOFF),
 						));
 					} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
 						$this->databaseHelper->transaction(
@@ -174,7 +174,7 @@ final class StoreParametersStates implements Consumer
 		$this->logger->debug(
 			'Consumed store device state message',
 			[
-				'source' => MetadataTypes\ConnectorSource::SONOFF,
+				'source' => MetadataTypes\Sources\Connector::SONOFF,
 				'type' => 'status-parameters-states-message-consumer',
 				'connector' => [
 					'id' => $entity->getConnector()->toString(),

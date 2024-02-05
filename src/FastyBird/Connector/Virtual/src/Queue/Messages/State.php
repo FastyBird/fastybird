@@ -13,7 +13,7 @@
  * @date           25.01.24
  */
 
-namespace FastyBird\Connector\Virtual\Entities\Messages;
+namespace FastyBird\Connector\Virtual\Queue\Messages;
 
 use DateTimeInterface;
 use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
@@ -32,7 +32,7 @@ use function is_bool;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class State implements Entity
+class State implements Message
 {
 
 	public function __construct(

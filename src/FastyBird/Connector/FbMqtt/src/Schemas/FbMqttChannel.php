@@ -34,7 +34,7 @@ final class FbMqttChannel extends DevicesSchemas\Channels\Channel
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::FB_MQTT . '/channel/' . Entities\FbMqttChannel::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Connector::FB_MQTT . '/channel/' . Entities\FbMqttChannel::TYPE;
 
 	public function getEntityClass(): string
 	{

@@ -91,7 +91,7 @@ trait DeviceProperty
 			$this->logger->warning(
 				'Stored device property was not of valid type',
 				[
-					'source' => MetadataTypes\ConnectorSource::SHELLY,
+					'source' => MetadataTypes\Sources\Connector::SHELLY,
 					'type' => 'message-consumer',
 					'device' => [
 						'id' => $deviceId->toString(),
@@ -116,7 +116,7 @@ trait DeviceProperty
 				$this->logger->error(
 					'Device was not found, property could not be configured',
 					[
-						'source' => MetadataTypes\ConnectorSource::SHELLY,
+						'source' => MetadataTypes\Sources\Connector::SHELLY,
 						'type' => 'message-consumer',
 						'device' => [
 							'id' => $deviceId->toString(),
@@ -147,7 +147,7 @@ trait DeviceProperty
 			$this->logger->debug(
 				'Device variable property was created',
 				[
-					'source' => MetadataTypes\ConnectorSource::SHELLY,
+					'source' => MetadataTypes\Sources\Connector::SHELLY,
 					'type' => 'message-consumer',
 					'device' => [
 						'id' => $deviceId->toString(),
@@ -174,7 +174,7 @@ trait DeviceProperty
 			$this->logger->debug(
 				'Device variable property was updated',
 				[
-					'source' => MetadataTypes\ConnectorSource::SHELLY,
+					'source' => MetadataTypes\Sources\Connector::SHELLY,
 					'type' => 'message-consumer',
 					'device' => [
 						'id' => $deviceId->toString(),

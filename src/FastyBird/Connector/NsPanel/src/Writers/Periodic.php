@@ -254,7 +254,7 @@ abstract class Periodic implements Writer
 		$state = await(
 			$this->channelPropertiesStatesManager->read(
 				$property,
-				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::NS_PANEL),
+				MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::NS_PANEL),
 			),
 		);
 
@@ -357,7 +357,7 @@ abstract class Periodic implements Writer
 			$state = await(
 				$this->channelPropertiesStatesManager->read(
 					$property,
-					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::NS_PANEL),
+					MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::NS_PANEL),
 				),
 			);
 
@@ -399,7 +399,7 @@ abstract class Periodic implements Writer
 			$state = await(
 				$this->channelPropertiesStatesManager->read(
 					$property,
-					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::NS_PANEL),
+					MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::NS_PANEL),
 				),
 			);
 

@@ -13,22 +13,23 @@
  * @date           04.09.22
  */
 
-namespace FastyBird\Connector\Virtual\Entities\Messages;
+namespace FastyBird\Connector\Virtual\Queue\Messages;
 
 use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function is_string;
 
 /**
- * Device status message entity
+ * Device status message
  *
  * @package        FastyBird:VirtualConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class StoreChannelPropertyState implements Entity
+final class StoreChannelPropertyState implements Message
 {
 
 	public function __construct(
@@ -51,6 +52,11 @@ final class StoreChannelPropertyState implements Entity
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		private readonly float|int|string|bool|null $value,
+		#[ObjectMapper\Rules\AnyOf([
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\Sources\Connector::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\Sources\Addon::class),
+		])]
+		private readonly MetadataTypes\Sources\Connector|MetadataTypes\Sources\Addon $source,
 	)
 	{
 	}
@@ -84,6 +90,11 @@ final class StoreChannelPropertyState implements Entity
 		return $this->value;
 	}
 
+	public function getSource(): MetadataTypes\Sources\Connector|MetadataTypes\Sources\Addon
+	{
+		return $this->source;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -95,6 +106,7 @@ final class StoreChannelPropertyState implements Entity
 			'channel' => $this->getChannel()->toString(),
 			'property' => is_string($this->getProperty()) ? $this->getProperty() : $this->getProperty()->toString(),
 			'value' => $this->getValue(),
+			'source' => $this->getSource()->getValue(),
 		];
 	}
 

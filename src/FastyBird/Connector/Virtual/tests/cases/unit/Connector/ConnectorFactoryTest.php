@@ -38,7 +38,7 @@ final class ConnectorFactoryTest extends DbTestCase
 		);
 		assert($connector instanceof MetadataDocuments\DevicesModule\Connector);
 
-		self::assertSame(Entities\VirtualConnector::TYPE, $connector->getType());
+		self::assertSame(Entities\Connectors\Connector::TYPE, $connector->getType());
 		self::assertSame('93e760e1-f011-4a33-a70d-c9629706ccf8', $connector->getId()->toString());
 
 		$connector = $factory->create($connector);

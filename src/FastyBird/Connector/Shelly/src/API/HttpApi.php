@@ -130,7 +130,7 @@ abstract class HttpApi
 				strval($request->getUri()),
 			),
 			[
-				'source' => MetadataTypes\ConnectorSource::SHELLY,
+				'source' => MetadataTypes\Sources\Connector::SHELLY,
 				'type' => 'http-api',
 				'request' => [
 					'method' => $request->getMethod(),
@@ -176,7 +176,7 @@ abstract class HttpApi
 							$this->logger->debug(
 								'Received response',
 								[
-									'source' => MetadataTypes\ConnectorSource::SHELLY,
+									'source' => MetadataTypes\Sources\Connector::SHELLY,
 									'type' => 'http-api',
 									'request' => [
 										'method' => $request->getMethod(),
@@ -309,7 +309,7 @@ abstract class HttpApi
 			$this->logger->debug(
 				'Received response',
 				[
-					'source' => MetadataTypes\ConnectorSource::SHELLY,
+					'source' => MetadataTypes\Sources\Connector::SHELLY,
 					'type' => 'http-api',
 					'request' => [
 						'method' => $request->getMethod(),

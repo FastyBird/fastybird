@@ -61,7 +61,7 @@ final class Builder
 	)
 	{
 		$this->cache = $this->cacheFactory->create(
-			MetadataTypes\ModuleSource::DEVICES . '_configuration',
+			MetadataTypes\Sources\Module::DEVICES . '_configuration',
 		);
 	}
 

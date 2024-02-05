@@ -45,12 +45,12 @@ final class Sockets implements ExchangeConsumer\Consumer
 	}
 
 	public function consume(
-		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource $source,
+		MetadataTypes\Sources\Source $source,
 		MetadataTypes\RoutingKey $routingKey,
 		MetadataDocuments\Document|null $entity,
 	): void
 	{
-		if ($source->equalsValue(MetadataTypes\ModuleSource::DEVICES)) {
+		if ($source->equalsValue(MetadataTypes\Sources\Module::DEVICES)) {
 			return;
 		}
 
@@ -66,7 +66,7 @@ final class Sockets implements ExchangeConsumer\Consumer
 			$this->logger->debug(
 				'Successfully published message',
 				[
-					'source' => MetadataTypes\ModuleSource::DEVICES,
+					'source' => MetadataTypes\Sources\Module::DEVICES,
 					'type' => 'sockets-consumer',
 					'message' => [
 						'routing_key' => $routingKey->getValue(),
@@ -80,7 +80,7 @@ final class Sockets implements ExchangeConsumer\Consumer
 			$this->logger->error(
 				'Message could not be published to exchange',
 				[
-					'source' => MetadataTypes\ModuleSource::DEVICES,
+					'source' => MetadataTypes\Sources\Module::DEVICES,
 					'type' => 'sockets-consumer',
 					'message' => [
 						'routing_key' => $routingKey->getValue(),
@@ -94,7 +94,7 @@ final class Sockets implements ExchangeConsumer\Consumer
 		$this->logger->debug(
 			'Received message from exchange was pushed to WS clients',
 			[
-				'source' => MetadataTypes\ModuleSource::DEVICES,
+				'source' => MetadataTypes\Sources\Module::DEVICES,
 				'type' => 'sockets-consumer',
 				'message' => [
 					'routing_key' => $routingKey->getValue(),
@@ -119,7 +119,7 @@ final class Sockets implements ExchangeConsumer\Consumer
 				$this->logger->debug(
 					'Broadcasting message to topic',
 					[
-						'source' => MetadataTypes\ModuleSource::DEVICES,
+						'source' => MetadataTypes\Sources\Module::DEVICES,
 						'type' => 'sockets-consumer',
 						'link' => $link,
 					],
@@ -133,7 +133,7 @@ final class Sockets implements ExchangeConsumer\Consumer
 			$this->logger->error(
 				'Data could not be converted to message',
 				[
-					'source' => MetadataTypes\ModuleSource::DEVICES,
+					'source' => MetadataTypes\Sources\Module::DEVICES,
 					'type' => 'sockets-consumer',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -143,7 +143,7 @@ final class Sockets implements ExchangeConsumer\Consumer
 			$this->logger->error(
 				'Data could not be broadcasts to clients',
 				[
-					'source' => MetadataTypes\ModuleSource::DEVICES,
+					'source' => MetadataTypes\Sources\Module::DEVICES,
 					'type' => 'sockets-consumer',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],

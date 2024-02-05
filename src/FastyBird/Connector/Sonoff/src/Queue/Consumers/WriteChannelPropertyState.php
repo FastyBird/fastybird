@@ -96,7 +96,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Connector could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::SONOFF,
+					'source' => MetadataTypes\Sources\Connector::SONOFF,
 					'type' => 'write-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -128,7 +128,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Device could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::SONOFF,
+					'source' => MetadataTypes\Sources\Connector::SONOFF,
 					'type' => 'write-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -160,7 +160,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Channel could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::SONOFF,
+					'source' => MetadataTypes\Sources\Connector::SONOFF,
 					'type' => 'write-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -194,7 +194,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Channel property could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::SONOFF,
+					'source' => MetadataTypes\Sources\Connector::SONOFF,
 					'type' => 'write-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -219,7 +219,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$this->logger->warning(
 				'Property is not writable',
 				[
-					'source' => MetadataTypes\ConnectorSource::SONOFF,
+					'source' => MetadataTypes\Sources\Connector::SONOFF,
 					'type' => 'write-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -252,7 +252,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$this->channelPropertiesStatesManager->setPendingState(
 				$property,
 				false,
-				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SONOFF),
+				MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::SONOFF),
 			);
 
 			return true;
@@ -274,7 +274,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		$this->channelPropertiesStatesManager->setPendingState(
 			$property,
 			true,
-			MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SONOFF),
+			MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::SONOFF),
 		);
 
 		$group = $outlet = null;
@@ -387,7 +387,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				$this->channelPropertiesStatesManager->setPendingState(
 					$property,
 					false,
-					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SONOFF),
+					MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::SONOFF),
 				);
 
 				return true;
@@ -407,13 +407,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$this->channelPropertiesStatesManager->setPendingState(
 				$property,
 				false,
-				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SONOFF),
+				MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::SONOFF),
 			);
 
 			$this->logger->error(
 				'Device is not properly configured',
 				[
-					'source' => MetadataTypes\ConnectorSource::SONOFF,
+					'source' => MetadataTypes\Sources\Connector::SONOFF,
 					'type' => 'write-channel-property-state-message-consumer',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
@@ -448,7 +448,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$this->channelPropertiesStatesManager->setPendingState(
 				$property,
 				false,
-				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SONOFF),
+				MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::SONOFF),
 			);
 
 			$extra = [];
@@ -470,7 +470,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				'Calling device api failed',
 				array_merge(
 					[
-						'source' => MetadataTypes\ConnectorSource::SONOFF,
+						'source' => MetadataTypes\Sources\Connector::SONOFF,
 						'type' => 'write-channel-property-state-message-consumer',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'connector' => [
@@ -499,7 +499,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				$this->logger->debug(
 					'Channel state was successfully sent to device',
 					[
-						'source' => MetadataTypes\ConnectorSource::SONOFF,
+						'source' => MetadataTypes\Sources\Connector::SONOFF,
 						'type' => 'write-channel-property-state-message-consumer',
 						'connector' => [
 							'id' => $entity->getConnector()->toString(),
@@ -521,7 +521,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				$this->channelPropertiesStatesManager->setPendingState(
 					$property,
 					false,
-					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SONOFF),
+					MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::SONOFF),
 				);
 
 				$extra = [];
@@ -566,7 +566,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					'Could write state to device',
 					array_merge(
 						[
-							'source' => MetadataTypes\ConnectorSource::SONOFF,
+							'source' => MetadataTypes\Sources\Connector::SONOFF,
 							'type' => 'write-channel-property-state-message-consumer',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 							'connector' => [
@@ -592,7 +592,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed write device state message',
 			[
-				'source' => MetadataTypes\ConnectorSource::SONOFF,
+				'source' => MetadataTypes\Sources\Connector::SONOFF,
 				'type' => 'write-channel-property-state-message-consumer',
 				'connector' => [
 					'id' => $entity->getConnector()->toString(),

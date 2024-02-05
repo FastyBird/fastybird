@@ -17,7 +17,6 @@ namespace FastyBird\Connector\Virtual\Queue\Consumers;
 
 use Doctrine\DBAL;
 use FastyBird\Connector\Virtual;
-use FastyBird\Connector\Virtual\Entities;
 use FastyBird\Connector\Virtual\Queue;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
@@ -67,9 +66,9 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
-	public function consume(Entities\Messages\Entity $entity): bool
+	public function consume(Queue\Messages\Message $entity): bool
 	{
-		if (!$entity instanceof Entities\Messages\StoreDeviceConnectionState) {
+		if (!$entity instanceof Queue\Messages\StoreDeviceConnectionState) {
 			return false;
 		}
 
@@ -83,7 +82,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 			$this->logger->error(
 				'Device could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::VIRTUAL,
+					'source' => $entity->getSource()->getValue(),
 					'type' => 'store-device-connection-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -125,7 +124,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 					$this->devicePropertiesStatesManager->setValidState(
 						$property,
 						false,
-						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
+						$entity->getSource(),
 					);
 				}
 
@@ -147,7 +146,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 						$this->channelPropertiesStatesManager->setValidState(
 							$property,
 							false,
-							MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
+							$entity->getSource(),
 						);
 					}
 				}
@@ -157,7 +156,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed device connection state message',
 			[
-				'source' => MetadataTypes\ConnectorSource::VIRTUAL,
+				'source' => $entity->getSource()->getValue(),
 				'type' => 'store-device-connection-state-message-consumer',
 				'connector' => [
 					'id' => $entity->getConnector()->toString(),

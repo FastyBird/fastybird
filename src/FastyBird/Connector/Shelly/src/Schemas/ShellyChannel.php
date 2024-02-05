@@ -34,7 +34,7 @@ final class ShellyChannel extends DevicesSchemas\Channels\Channel
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::SHELLY . '/channel/' . Entities\ShellyChannel::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Connector::SHELLY . '/channel/' . Entities\ShellyChannel::TYPE;
 
 	public function getEntityClass(): string
 	{

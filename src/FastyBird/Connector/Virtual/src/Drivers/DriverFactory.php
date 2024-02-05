@@ -29,7 +29,7 @@ use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 interface DriverFactory
 {
 
-	public const DEVICE_TYPE = Entities\VirtualDevice::TYPE;
+	public const DEVICE_TYPE = Entities\Devices\Device::TYPE;
 
 	public function create(MetadataDocuments\DevicesModule\Device $device): Driver;
 

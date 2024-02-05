@@ -77,7 +77,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Device could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::MODBUS,
+					'source' => MetadataTypes\Sources\Connector::MODBUS,
 					'type' => 'store-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -109,7 +109,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Channel could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::MODBUS,
+					'source' => MetadataTypes\Sources\Connector::MODBUS,
 					'type' => 'store-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -143,7 +143,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Channel property could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::MODBUS,
+					'source' => MetadataTypes\Sources\Connector::MODBUS,
 					'type' => 'store-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -169,13 +169,13 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			Utils\ArrayHash::from([
 				DevicesStates\Property::ACTUAL_VALUE_FIELD => $entity->getValue(),
 			]),
-			MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::MODBUS),
+			MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::MODBUS),
 		));
 
 		$this->logger->debug(
 			'Consumed store device state message',
 			[
-				'source' => MetadataTypes\ConnectorSource::MODBUS,
+				'source' => MetadataTypes\Sources\Connector::MODBUS,
 				'type' => 'store-channel-property-state-message-consumer',
 				'connector' => [
 					'id' => $entity->getConnector()->toString(),

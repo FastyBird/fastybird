@@ -84,7 +84,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 			$this->logger->error(
 				'Device could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::SONOFF,
+					'source' => MetadataTypes\Sources\Connector::SONOFF,
 					'type' => 'store-device-connection-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -126,7 +126,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 					$this->devicePropertiesStatesManager->setValidState(
 						$property,
 						false,
-						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SONOFF),
+						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::SONOFF),
 					);
 				}
 
@@ -149,7 +149,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 						$this->channelPropertiesStatesManager->setValidState(
 							$property,
 							false,
-							MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SONOFF),
+							MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::SONOFF),
 						);
 					}
 				}
@@ -178,7 +178,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 						$this->devicePropertiesStatesManager->setValidState(
 							$property,
 							false,
-							MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SONOFF),
+							MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::SONOFF),
 						);
 					}
 
@@ -201,7 +201,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 							$this->channelPropertiesStatesManager->setValidState(
 								$property,
 								false,
-								MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SONOFF),
+								MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::SONOFF),
 							);
 						}
 					}
@@ -212,7 +212,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed device connection state message',
 			[
-				'source' => MetadataTypes\ConnectorSource::SONOFF,
+				'source' => MetadataTypes\Sources\Connector::SONOFF,
 				'type' => 'store-device-connection-state-message-consumer',
 				'connector' => [
 					'id' => $entity->getConnector()->toString(),

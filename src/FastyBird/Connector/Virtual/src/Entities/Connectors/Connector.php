@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * VirtualChannel.php
+ * Connector.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,10 +10,10 @@
  * @subpackage     Entities
  * @since          1.0.0
  *
- * @date           20.10.23
+ * @date           15.10.23
  */
 
-namespace FastyBird\Connector\Virtual\Entities;
+namespace FastyBird\Connector\Virtual\Entities\Connectors;
 
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -22,7 +22,7 @@ use FastyBird\Module\Devices\Entities as DevicesEntities;
 /**
  * @ORM\Entity
  */
-class VirtualChannel extends DevicesEntities\Channels\Channel
+class Connector extends DevicesEntities\Connectors\Connector
 {
 
 	public const TYPE = 'virtual-connector';
@@ -37,9 +37,9 @@ class VirtualChannel extends DevicesEntities\Channels\Channel
 		return self::TYPE;
 	}
 
-	public function getSource(): MetadataTypes\ConnectorSource|MetadataTypes\AddonSource
+	public function getSource(): MetadataTypes\Sources\Connector
 	{
-		return MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL);
+		return MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::VIRTUAL);
 	}
 
 }

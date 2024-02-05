@@ -81,15 +81,14 @@ final class DevicePropertiesManager extends PropertiesManager
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function read(
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty $property,
-		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
+		MetadataTypes\Sources\Source|null $source,
 	): bool|MetadataDocuments\DevicesModule\DevicePropertyState|null
 	{
 		if ($this->useExchange) {
 			try {
 				return $this->publisher->publish(
-					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+					$source ?? MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
 					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::DEVICE_PROPERTY_ACTION),
 					$this->documentFactory->create(
 						MetadataDocuments\Actions\ActionDeviceProperty::class,
@@ -120,16 +119,15 @@ final class DevicePropertiesManager extends PropertiesManager
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function write(
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty $property,
 		Utils\ArrayHash $data,
-		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
+		MetadataTypes\Sources\Source|null $source,
 	): void
 	{
 		if ($this->useExchange) {
 			try {
 				$this->publisher->publish(
-					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+					$source ?? MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
 					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::DEVICE_PROPERTY_ACTION),
 					$this->documentFactory->create(
 						MetadataDocuments\Actions\ActionDeviceProperty::class,
@@ -171,16 +169,15 @@ final class DevicePropertiesManager extends PropertiesManager
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function set(
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty $property,
 		Utils\ArrayHash $data,
-		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
+		MetadataTypes\Sources\Source|null $source,
 	): void
 	{
 		if ($this->useExchange) {
 			try {
 				$this->publisher->publish(
-					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+					$source ?? MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
 					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::DEVICE_PROPERTY_ACTION),
 					$this->documentFactory->create(
 						MetadataDocuments\Actions\ActionDeviceProperty::class,
@@ -226,7 +223,7 @@ final class DevicePropertiesManager extends PropertiesManager
 	public function setValidState(
 		MetadataDocuments\DevicesModule\DeviceDynamicProperty|array $property,
 		bool $state,
-		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
+		MetadataTypes\Sources\Source|null $source,
 	): void
 	{
 		if (is_array($property)) {
@@ -262,7 +259,7 @@ final class DevicePropertiesManager extends PropertiesManager
 	public function setPendingState(
 		MetadataDocuments\DevicesModule\DeviceDynamicProperty|array $property,
 		bool $pending,
-		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
+		MetadataTypes\Sources\Source|null $source,
 	): void
 	{
 		if (is_array($property)) {
@@ -323,13 +320,13 @@ final class DevicePropertiesManager extends PropertiesManager
 			if ($result) {
 				$this->dispatcher?->dispatch(new Events\DevicePropertyStateEntityDeleted(
 					$id,
-					MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+					MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
 				));
 
 				foreach ($this->findChildren($id) as $child) {
 					$this->dispatcher?->dispatch(new Events\DevicePropertyStateEntityDeleted(
 						$child->getId(),
-						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+						MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
 					));
 				}
 			}
@@ -339,7 +336,7 @@ final class DevicePropertiesManager extends PropertiesManager
 			$this->logger->warning(
 				'Devices states manager is not configured. State could not be saved',
 				[
-					'source' => MetadataTypes\ModuleSource::DEVICES,
+					'source' => MetadataTypes\Sources\Module::DEVICES,
 					'type' => 'device-properties-states',
 				],
 			);
@@ -359,7 +356,6 @@ final class DevicePropertiesManager extends PropertiesManager
 	 * @interal
 	 */
 	public function readState(
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty $property,
 	): MetadataDocuments\DevicesModule\DevicePropertyState|null
 	{
@@ -384,7 +380,7 @@ final class DevicePropertiesManager extends PropertiesManager
 			$this->logger->warning(
 				'Devices states repository is not configured. State could not be fetched',
 				[
-					'source' => MetadataTypes\ModuleSource::DEVICES,
+					'source' => MetadataTypes\Sources\Module::DEVICES,
 					'type' => 'device-properties-states',
 				],
 			);
@@ -425,7 +421,7 @@ final class DevicePropertiesManager extends PropertiesManager
 				$this->logger->error(
 					'Property stored actual value was not valid',
 					[
-						'source' => MetadataTypes\ModuleSource::DEVICES,
+						'source' => MetadataTypes\Sources\Module::DEVICES,
 						'type' => 'device-properties-states',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 					],
@@ -436,7 +432,7 @@ final class DevicePropertiesManager extends PropertiesManager
 				$this->logger->warning(
 					'Devices states manager is not configured. State could not be fetched',
 					[
-						'source' => MetadataTypes\ModuleSource::DEVICES,
+						'source' => MetadataTypes\Sources\Module::DEVICES,
 						'type' => 'device-properties-states',
 					],
 				);
@@ -453,7 +449,7 @@ final class DevicePropertiesManager extends PropertiesManager
 				$this->logger->error(
 					'Property stored expected value was not valid',
 					[
-						'source' => MetadataTypes\ModuleSource::DEVICES,
+						'source' => MetadataTypes\Sources\Module::DEVICES,
 						'type' => 'device-properties-states',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 					],
@@ -464,7 +460,7 @@ final class DevicePropertiesManager extends PropertiesManager
 				$this->logger->warning(
 					'Devices states manager is not configured. State could not be fetched',
 					[
-						'source' => MetadataTypes\ModuleSource::DEVICES,
+						'source' => MetadataTypes\Sources\Module::DEVICES,
 						'type' => 'device-properties-states',
 					],
 				);
@@ -484,11 +480,10 @@ final class DevicePropertiesManager extends PropertiesManager
 	 * @interal
 	 */
 	public function writeState(
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty $property,
 		Utils\ArrayHash $data,
 		bool $forWriting,
-		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
+		MetadataTypes\Sources\Source|null $source,
 	): void
 	{
 		$mappedProperty = null;
@@ -551,7 +546,7 @@ final class DevicePropertiesManager extends PropertiesManager
 				$this->logger->error(
 					'Provided property actual value is not valid',
 					[
-						'source' => MetadataTypes\ModuleSource::DEVICES,
+						'source' => MetadataTypes\Sources\Module::DEVICES,
 						'type' => 'device-properties-states',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 					],
@@ -603,7 +598,7 @@ final class DevicePropertiesManager extends PropertiesManager
 					$this->logger->error(
 						'Provided property expected value was not valid',
 						[
-							'source' => MetadataTypes\ModuleSource::DEVICES,
+							'source' => MetadataTypes\Sources\Module::DEVICES,
 							'type' => 'device-properties-states',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 						],
@@ -673,7 +668,7 @@ final class DevicePropertiesManager extends PropertiesManager
 						$property,
 						$readValue,
 						$getValue,
-						$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+						$source ?? MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
 					),
 				);
 			} else {
@@ -682,7 +677,7 @@ final class DevicePropertiesManager extends PropertiesManager
 						$property,
 						$readValue,
 						$getValue,
-						$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+						$source ?? MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
 					),
 				);
 			}
@@ -697,7 +692,7 @@ final class DevicePropertiesManager extends PropertiesManager
 							$child,
 							$readValue,
 							$getValue,
-							$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+							$source ?? MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
 						),
 					);
 				} else {
@@ -706,7 +701,7 @@ final class DevicePropertiesManager extends PropertiesManager
 							$child,
 							$readValue,
 							$getValue,
-							$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+							$source ?? MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
 						),
 					);
 				}
@@ -715,7 +710,7 @@ final class DevicePropertiesManager extends PropertiesManager
 			$this->logger->debug(
 				$state === null ? 'Device property state was created' : 'Device property state was updated',
 				[
-					'source' => MetadataTypes\ModuleSource::DEVICES,
+					'source' => MetadataTypes\Sources\Module::DEVICES,
 					'type' => 'device-properties-states',
 					'property' => [
 						'id' => $property->getId()->toString(),
@@ -727,7 +722,7 @@ final class DevicePropertiesManager extends PropertiesManager
 			$this->logger->warning(
 				'Devices states manager is not configured. State could not be saved',
 				[
-					'source' => MetadataTypes\ModuleSource::DEVICES,
+					'source' => MetadataTypes\Sources\Module::DEVICES,
 					'type' => 'device-properties-states',
 				],
 			);

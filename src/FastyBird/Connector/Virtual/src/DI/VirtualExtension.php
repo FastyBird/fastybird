@@ -172,6 +172,12 @@ class VirtualExtension extends DI\CompilerExtension implements Translation\DI\Tr
 				'logger' => $logger,
 			]);
 
+		$builder->addDefinition(
+			$this->prefix('queue.messageBuilder'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Queue\MessageBuilder::class);
+
 		/**
 		 * SUBSCRIBERS
 		 */
@@ -187,21 +193,18 @@ class VirtualExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		 */
 
 		$builder->addDefinition($this->prefix('schemas.connector.virtual'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\VirtualConnector::class);
+			->setType(Schemas\Connectors\Connector::class);
 
 		/**
 		 * JSON-API HYDRATORS
 		 */
 
 		$builder->addDefinition($this->prefix('hydrators.connector.virtual'), new DI\Definitions\ServiceDefinition())
-			->setType(Hydrators\VirtualConnector::class);
+			->setType(Hydrators\Connectors\Connector::class);
 
 		/**
 		 * HELPERS
 		 */
-
-		$builder->addDefinition($this->prefix('helpers.entity'), new DI\Definitions\ServiceDefinition())
-			->setType(Helpers\Entity::class);
 
 		$builder->addDefinition($this->prefix('helpers.device'), new DI\Definitions\ServiceDefinition())
 			->setType(Helpers\Device::class);
@@ -227,7 +230,7 @@ class VirtualExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setImplement(Connector\ConnectorFactory::class)
 			->addTag(
 				DevicesDI\DevicesExtension::CONNECTOR_TYPE_TAG,
-				Entities\VirtualConnector::TYPE,
+				Entities\Connectors\Connector::TYPE,
 			)
 			->getResultDefinition()
 			->setType(Connector\Connector::class)
@@ -247,7 +250,7 @@ class VirtualExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		$builder = $this->getContainerBuilder();
 
 		/**
-		 * Doctrine entities
+		 * DOCTRINE ENTITIES
 		 */
 
 		$ormAnnotationDriverService = $builder->getDefinition('nettrineOrmAnnotations.annotationDriver');
@@ -271,7 +274,7 @@ class VirtualExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		}
 
 		/**
-		 * Devices
+		 * VIRTUAL DEVICES
 		 */
 
 		$driversManagerServiceName = $builder->getByType(Drivers\DriversManager::class);

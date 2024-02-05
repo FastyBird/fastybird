@@ -93,7 +93,7 @@ abstract class PropertiesManager
 					$this->logger->error(
 						'Property stored actual value could not be converted to mapped property',
 						[
-							'source' => MetadataTypes\ModuleSource::DEVICES,
+							'source' => MetadataTypes\Sources\Module::DEVICES,
 							'type' => 'channel-properties-states',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 						],
@@ -127,7 +127,7 @@ abstract class PropertiesManager
 					$this->logger->error(
 						'Property stored actual value could not be converted to mapped property',
 						[
-							'source' => MetadataTypes\ModuleSource::DEVICES,
+							'source' => MetadataTypes\Sources\Module::DEVICES,
 							'type' => 'properties-states',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 						],

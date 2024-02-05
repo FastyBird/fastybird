@@ -32,7 +32,7 @@ class ConnectorPropertyStateEntityDeleted extends EventDispatcher\Event
 
 	public function __construct(
 		private readonly Uuid\UuidInterface $id,
-		private readonly MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource $source,
+		private readonly MetadataTypes\Sources\Source $source,
 	)
 	{
 	}
@@ -42,7 +42,7 @@ class ConnectorPropertyStateEntityDeleted extends EventDispatcher\Event
 		return $this->id;
 	}
 
-	public function getSource(): MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource
+	public function getSource(): MetadataTypes\Sources\Source
 	{
 		return $this->source;
 	}

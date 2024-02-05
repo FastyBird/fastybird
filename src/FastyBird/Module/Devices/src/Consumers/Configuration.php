@@ -69,7 +69,7 @@ final class Configuration implements ExchangeConsumers\Consumer
 	}
 
 	public function consume(
-		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource $source,
+		MetadataTypes\Sources\Source $source,
 		MetadataTypes\RoutingKey $routingKey,
 		MetadataDocuments\Document|null $entity,
 	): void

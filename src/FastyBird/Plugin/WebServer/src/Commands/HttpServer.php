@@ -81,7 +81,7 @@ class HttpServer extends Console\Command\Command
 		$this->logger->info(
 			'Starting HTTP Server',
 			[
-				'source' => MetadataTypes\PluginSource::WEB_SERVER,
+				'source' => MetadataTypes\Sources\Plugin::WEB_SERVER,
 				'type' => 'server-command',
 			],
 		);
@@ -122,7 +122,7 @@ class HttpServer extends Console\Command\Command
 			$this->logger->error(
 				'HTTP server was forced to close',
 				[
-					'source' => MetadataTypes\PluginSource::WEB_SERVER,
+					'source' => MetadataTypes\Sources\Plugin::WEB_SERVER,
 					'type' => 'server-command',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'cmd' => $this->getName(),
@@ -136,7 +136,7 @@ class HttpServer extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred. Stopping HTTP server',
 				[
-					'source' => MetadataTypes\PluginSource::WEB_SERVER,
+					'source' => MetadataTypes\Sources\Plugin::WEB_SERVER,
 					'type' => 'server-command',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'cmd' => $this->getName(),

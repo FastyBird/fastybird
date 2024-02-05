@@ -17,13 +17,11 @@ namespace FastyBird\Connector\Virtual\Queue\Consumers;
 
 use Doctrine\DBAL;
 use FastyBird\Connector\Virtual;
-use FastyBird\Connector\Virtual\Entities;
 use FastyBird\Connector\Virtual\Queue;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -72,9 +70,9 @@ final class StoreDevicePropertyState implements Queue\Consumer
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
-	public function consume(Entities\Messages\Entity $entity): bool
+	public function consume(Queue\Messages\Message $entity): bool
 	{
-		if (!$entity instanceof Entities\Messages\StoreDevicePropertyState) {
+		if (!$entity instanceof Queue\Messages\StoreDevicePropertyState) {
 			return false;
 		}
 
@@ -88,7 +86,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Device could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::VIRTUAL,
+					'source' => $entity->getSource()->getValue(),
 					'type' => 'store-device-property-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -121,7 +119,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Device device property could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::VIRTUAL,
+					'source' => $entity->getSource()->getValue(),
 					'type' => 'store-device-property-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -164,7 +162,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 				Utils\ArrayHash::from([
 					DevicesStates\Property::ACTUAL_VALUE_FIELD => $entity->getValue(),
 				]),
-				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
+				$entity->getSource(),
 			));
 		} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
 			$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceProperties();
@@ -178,7 +176,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 					Utils\ArrayHash::from([
 						DevicesStates\Property::EXPECTED_VALUE_FIELD => $entity->getValue(),
 					]),
-					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
+					$entity->getSource(),
 				));
 			} elseif ($parent instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty) {
 				$this->databaseHelper->transaction(function () use ($entity, $device, $property, $parent): void {
@@ -198,7 +196,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 						$this->logger->error(
 							'Mapped variable property could not be updated',
 							[
-								'source' => MetadataTypes\ConnectorSource::VIRTUAL,
+								'source' => $entity->getSource()->getValue(),
 								'type' => 'store-device-property-state-message-consumer',
 								'connector' => [
 									'id' => $entity->getConnector()->toString(),
@@ -220,7 +218,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed store device state message',
 			[
-				'source' => MetadataTypes\ConnectorSource::VIRTUAL,
+				'source' => $entity->getSource()->getValue(),
 				'type' => 'store-device-property-state-message-consumer',
 				'connector' => [
 					'id' => $entity->getConnector()->toString(),

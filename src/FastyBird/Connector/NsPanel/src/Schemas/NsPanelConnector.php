@@ -34,7 +34,7 @@ final class NsPanelConnector extends DevicesSchemas\Connectors\Connector
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::NS_PANEL . '/connector/' . Entities\NsPanelConnector::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Connector::NS_PANEL . '/connector/' . Entities\NsPanelConnector::TYPE;
 
 	public function getEntityClass(): string
 	{

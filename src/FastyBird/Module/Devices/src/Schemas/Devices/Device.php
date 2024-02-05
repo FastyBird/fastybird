@@ -46,7 +46,7 @@ class Device extends JsonApiSchemas\JsonApi
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ModuleSource::DEVICES . '/device/' . Entities\Devices\Device::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Module::DEVICES . '/device/' . Entities\Devices\Device::TYPE;
 
 	/**
 	 * Define relationships names

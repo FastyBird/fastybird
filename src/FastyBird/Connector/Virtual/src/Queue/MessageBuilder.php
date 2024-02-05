@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Entity.php
+ * MessageBuilder.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,10 +13,10 @@
  * @date           17.10.23
  */
 
-namespace FastyBird\Connector\Virtual\Helpers;
+namespace FastyBird\Connector\Virtual\Queue;
 
-use FastyBird\Connector\Virtual\Entities;
 use FastyBird\Connector\Virtual\Exceptions;
+use FastyBird\Connector\Virtual\Queue;
 use Orisai\ObjectMapper;
 
 /**
@@ -27,7 +27,7 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Entity
+final class MessageBuilder
 {
 
 	public function __construct(
@@ -37,7 +37,7 @@ final class Entity
 	}
 
 	/**
-	 * @template T of Entities\Messages\Entity
+	 * @template T of Queue\Messages\Message
 	 *
 	 * @param class-string<T> $entity
 	 * @param array<mixed> $data
@@ -46,10 +46,7 @@ final class Entity
 	 *
 	 * @throws Exceptions\Runtime
 	 */
-	public function create(
-		string $entity,
-		array $data,
-	): Entities\Messages\Entity
+	public function create(string $entity, array $data): Queue\Messages\Message
 	{
 		try {
 			$options = new ObjectMapper\Processing\Options();

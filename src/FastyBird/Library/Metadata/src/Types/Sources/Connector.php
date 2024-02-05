@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ConnectorSource.php
+ * Connector.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,11 +13,9 @@
  * @date           19.01.22
  */
 
-namespace FastyBird\Library\Metadata\Types;
+namespace FastyBird\Library\Metadata\Types\Sources;
 
-use Consistence;
 use FastyBird\Library\Metadata;
-use function strval;
 
 /**
  * Connectors sources types
@@ -27,7 +25,7 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class ConnectorSource extends Consistence\Enum\Enum
+class Connector extends Source
 {
 
 	/**
@@ -58,15 +56,5 @@ class ConnectorSource extends Consistence\Enum\Enum
 	public const NS_PANEL = Metadata\Constants::CONNECTOR_NS_PANEL_SOURCE;
 
 	public const ZIGBEE2MQTT = Metadata\Constants::CONNECTOR_ZIGBEE2MQTT_SOURCE;
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
 
 }

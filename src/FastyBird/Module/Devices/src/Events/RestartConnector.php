@@ -31,16 +31,14 @@ class RestartConnector extends EventDispatcher\Event
 {
 
 	public function __construct(
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		private readonly MetadataTypes\AutomatorSource|MetadataTypes\BridgeSource|MetadataTypes\ConnectorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource $source,
+		private readonly MetadataTypes\Sources\Source $source,
 		private readonly string|null $reason = null,
 		private readonly Throwable|null $exception = null,
 	)
 	{
 	}
 
-	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-	public function getSource(): MetadataTypes\BridgeSource|MetadataTypes\ModuleSource|MetadataTypes\AutomatorSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource
+	public function getSource(): MetadataTypes\Sources\Source
 	{
 		return $this->source;
 	}

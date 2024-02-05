@@ -41,9 +41,9 @@ trait TEntity
 		return $this->id->toString();
 	}
 
-	public function getSource(): MetadataTypes\ModuleSource|MetadataTypes\ConnectorSource|MetadataTypes\PluginSource
+	public function getSource(): MetadataTypes\Sources\Source
 	{
-		return MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::ACCOUNTS);
+		return MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::ACCOUNTS);
 	}
 
 }

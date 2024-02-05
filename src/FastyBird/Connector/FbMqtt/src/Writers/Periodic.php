@@ -251,7 +251,7 @@ abstract class Periodic
 		$state = await(
 			$this->devicePropertiesStatesManager->read(
 				$property,
-				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::FB_MQTT),
+				MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::FB_MQTT),
 			),
 		);
 
@@ -321,7 +321,7 @@ abstract class Periodic
 		$state = await(
 			$this->channelPropertiesStatesManager->read(
 				$property,
-				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::FB_MQTT),
+				MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::FB_MQTT),
 			),
 		);
 

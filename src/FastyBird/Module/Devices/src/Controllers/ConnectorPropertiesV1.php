@@ -194,7 +194,7 @@ final class ConnectorPropertiesV1 extends BaseV1
 				$this->logger->error(
 					'An unhandled error occurred',
 					[
-						'source' => MetadataTypes\ModuleSource::DEVICES,
+						'source' => MetadataTypes\Sources\Module::DEVICES,
 						'type' => 'connector-properties-controller',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 					],
@@ -272,7 +272,7 @@ final class ConnectorPropertiesV1 extends BaseV1
 				$this->logger->error(
 					'An unhandled error occurred',
 					[
-						'source' => MetadataTypes\ModuleSource::DEVICES,
+						'source' => MetadataTypes\Sources\Module::DEVICES,
 						'type' => 'connector-properties-controller',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 					],
@@ -342,7 +342,7 @@ final class ConnectorPropertiesV1 extends BaseV1
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ModuleSource::DEVICES,
+					'source' => MetadataTypes\Sources\Module::DEVICES,
 					'type' => 'connector-properties-controller',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],

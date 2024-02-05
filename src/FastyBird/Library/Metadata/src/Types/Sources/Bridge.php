@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * BridgeSource.php
+ * Bridge.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,11 +13,9 @@
  * @date           21.10.22
  */
 
-namespace FastyBird\Library\Metadata\Types;
+namespace FastyBird\Library\Metadata\Types\Sources;
 
-use Consistence;
 use FastyBird\Library\Metadata;
-use function strval;
 
 /**
  * Bridges sources types
@@ -27,7 +25,7 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class BridgeSource extends Consistence\Enum\Enum
+class Bridge extends Source
 {
 
 	/**
@@ -40,15 +38,5 @@ class BridgeSource extends Consistence\Enum\Enum
 	public const REDISDB_PLUGIN_TRIGGERS_MODULE = Metadata\Constants::BRIDGE_REDISDB_PLUGIN_TRIGGERS_MODULE;
 
 	public const VIRTUAL_THERMOSTAT_ADDON_HOMEKIT_CONNECTOR = Metadata\Constants::BRIDGE_VIRTUAL_THERMOSTAT_ADDON_HOMEKIT_CONNECTOR;
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
 
 }

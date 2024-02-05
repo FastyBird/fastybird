@@ -31,14 +31,14 @@ class AfterMessageConsumed extends EventDispatcher\Event
 {
 
 	public function __construct(
-		private readonly MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|MetadataTypes\AutomatorSource $source,
+		private readonly MetadataTypes\Sources\Source $source,
 		private readonly MetadataTypes\RoutingKey $routingKey,
 		private readonly MetadataDocuments\Document|null $entity,
 	)
 	{
 	}
 
-	public function getSource(): MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource
+	public function getSource(): MetadataTypes\Sources\Source
 	{
 		return $this->source;
 	}

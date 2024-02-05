@@ -35,7 +35,7 @@ class HomeKitDevice extends DevicesSchemas\Devices\Device
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::HOMEKIT . '/device/' . Entities\HomeKitDevice::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Connector::HOMEKIT . '/device/' . Entities\HomeKitDevice::TYPE;
 
 	public function getEntityClass(): string
 	{

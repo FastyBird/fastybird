@@ -59,7 +59,7 @@ final class Consumers
 		$this->logger->debug(
 			'Appended new messages consumer',
 			[
-				'source' => MetadataTypes\ConnectorSource::FB_MQTT,
+				'source' => MetadataTypes\Sources\Connector::FB_MQTT,
 				'type' => 'consumers',
 			],
 		);
@@ -79,7 +79,7 @@ final class Consumers
 			$this->logger->error(
 				'No consumer is registered, message could not be consumed',
 				[
-					'source' => MetadataTypes\ConnectorSource::FB_MQTT,
+					'source' => MetadataTypes\Sources\Connector::FB_MQTT,
 					'type' => 'consumers',
 				],
 			);
@@ -96,7 +96,7 @@ final class Consumers
 		$this->logger->error(
 			'Message could not be consumed',
 			[
-				'source' => MetadataTypes\ConnectorSource::FB_MQTT,
+				'source' => MetadataTypes\Sources\Connector::FB_MQTT,
 				'type' => 'consumers',
 				'message' => $entity->toArray(),
 			],

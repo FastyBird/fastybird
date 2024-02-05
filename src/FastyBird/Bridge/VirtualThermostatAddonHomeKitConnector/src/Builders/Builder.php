@@ -285,7 +285,7 @@ class Builder
 			$this->logger->debug(
 				'Virtual thermostat accessory was created',
 				[
-					'source' => MetadataTypes\BridgeSource::VIRTUAL_THERMOSTAT_ADDON_HOMEKIT_CONNECTOR,
+					'source' => MetadataTypes\Sources\Bridge::VIRTUAL_THERMOSTAT_ADDON_HOMEKIT_CONNECTOR,
 					'type' => 'builder',
 					'thermostat' => [
 						'id' => $thermostat->getId()->toString(),
@@ -379,7 +379,7 @@ class Builder
 				$this->logger->debug(
 					'Thermostat service for virtual thermostat accessory was created',
 					[
-						'source' => MetadataTypes\BridgeSource::VIRTUAL_THERMOSTAT_ADDON_HOMEKIT_CONNECTOR,
+						'source' => MetadataTypes\Sources\Bridge::VIRTUAL_THERMOSTAT_ADDON_HOMEKIT_CONNECTOR,
 						'type' => 'builder',
 						'thermostat' => [
 							'id' => $thermostat->getId()->toString(),
@@ -687,7 +687,7 @@ class Builder
 				$this->logger->debug(
 					'Characteristic for thermostat service was created',
 					[
-						'source' => MetadataTypes\BridgeSource::VIRTUAL_THERMOSTAT_ADDON_HOMEKIT_CONNECTOR,
+						'source' => MetadataTypes\Sources\Bridge::VIRTUAL_THERMOSTAT_ADDON_HOMEKIT_CONNECTOR,
 						'type' => 'builder',
 						'thermostat' => [
 							'id' => $thermostat->getId()->toString(),
@@ -731,7 +731,7 @@ class Builder
 				$this->logger->debug(
 					'Characteristic for thermostat service was updated',
 					[
-						'source' => MetadataTypes\BridgeSource::VIRTUAL_THERMOSTAT_ADDON_HOMEKIT_CONNECTOR,
+						'source' => MetadataTypes\Sources\Bridge::VIRTUAL_THERMOSTAT_ADDON_HOMEKIT_CONNECTOR,
 						'type' => 'builder',
 						'thermostat' => [
 							'id' => $thermostat->getId()->toString(),

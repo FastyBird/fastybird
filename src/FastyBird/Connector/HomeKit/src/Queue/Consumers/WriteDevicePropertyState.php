@@ -79,7 +79,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Connector could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::HOMEKIT,
+					'source' => MetadataTypes\Sources\Connector::HOMEKIT,
 					'type' => 'write-device-property-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -107,7 +107,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Device could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::HOMEKIT,
+					'source' => MetadataTypes\Sources\Connector::HOMEKIT,
 					'type' => 'write-device-property-state-message-consumer',
 					'connector' => [
 						'id' => $connector->getId()->toString(),
@@ -131,7 +131,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 			$this->logger->warning(
 				'Accessory for received device property message was not found in accessory driver',
 				[
-					'source' => MetadataTypes\ConnectorSource::HOMEKIT,
+					'source' => MetadataTypes\Sources\Connector::HOMEKIT,
 					'type' => 'write-device-property-state-message-consumer',
 					'connector' => [
 						'id' => $connector->getId()->toString(),
@@ -155,7 +155,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Device property could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::HOMEKIT,
+					'source' => MetadataTypes\Sources\Connector::HOMEKIT,
 					'type' => 'write-device-property-state-message-consumer',
 					'connector' => [
 						'id' => $connector->getId()->toString(),
@@ -198,7 +198,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 								$this->logger->warning(
 									'State entity is missing in event entity',
 									[
-										'source' => MetadataTypes\ConnectorSource::HOMEKIT,
+										'source' => MetadataTypes\Sources\Connector::HOMEKIT,
 										'type' => 'write-device-property-state-message-consumer',
 										'connector' => [
 											'id' => $connector->getId()->toString(),
@@ -229,7 +229,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 							$this->logger->warning(
 								'State entity is missing in event entity',
 								[
-									'source' => MetadataTypes\ConnectorSource::HOMEKIT,
+									'source' => MetadataTypes\Sources\Connector::HOMEKIT,
 									'type' => 'write-device-property-state-message-consumer',
 									'connector' => [
 										'id' => $connector->getId()->toString(),
@@ -293,7 +293,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed write device state message',
 			[
-				'source' => MetadataTypes\ConnectorSource::HOMEKIT,
+				'source' => MetadataTypes\Sources\Connector::HOMEKIT,
 				'type' => 'write-device-property-state-message-consumer',
 				'connector' => [
 					'id' => $connector->getId()->toString(),

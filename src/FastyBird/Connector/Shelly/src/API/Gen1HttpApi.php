@@ -356,7 +356,7 @@ final class Gen1HttpApi extends HttpApi
 					$this->logger->debug(
 						'Received device block description is not in valid format',
 						[
-							'source' => MetadataTypes\ConnectorSource::SHELLY,
+							'source' => MetadataTypes\Sources\Connector::SHELLY,
 							'type' => 'gen1-http-api',
 							'description' => (array) $block,
 						],
@@ -382,7 +382,7 @@ final class Gen1HttpApi extends HttpApi
 						$this->logger->debug(
 							'Received block sensor description is not in valid format',
 							[
-								'source' => MetadataTypes\ConnectorSource::SHELLY,
+								'source' => MetadataTypes\Sources\Connector::SHELLY,
 								'type' => 'gen1-http-api',
 								'description' => (array) $sensor,
 							],

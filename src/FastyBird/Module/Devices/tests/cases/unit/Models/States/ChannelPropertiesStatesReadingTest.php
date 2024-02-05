@@ -71,7 +71,7 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 
 		$state = $channelPropertiesStatesManager->read(
 			$property,
-			MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+			MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
 		);
 
 		self::assertInstanceOf(MetadataDocuments\DevicesModule\ChannelPropertyState::class, $state);
@@ -130,7 +130,7 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 
 		$state = $channelPropertiesStatesManager->read(
 			$property,
-			MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+			MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
 		);
 
 		self::assertInstanceOf(MetadataDocuments\DevicesModule\ChannelPropertyState::class, $state);

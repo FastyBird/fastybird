@@ -28,7 +28,7 @@ use function is_numeric;
 /**
  * @ORM\Entity
  */
-class Configuration extends VirtualEntities\VirtualChannel
+class Configuration extends VirtualEntities\Channels\Channel
 {
 
 	public const TYPE = 'virtual-thermostat-addon-configuration';
@@ -43,9 +43,9 @@ class Configuration extends VirtualEntities\VirtualChannel
 		return self::TYPE;
 	}
 
-	public function getSource(): MetadataTypes\AddonSource
+	public function getSource(): MetadataTypes\Sources\Addon
 	{
-		return MetadataTypes\AddonSource::get(MetadataTypes\AddonSource::VIRTUAL_THERMOSTAT);
+		return MetadataTypes\Sources\Addon::get(MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT);
 	}
 
 	/**

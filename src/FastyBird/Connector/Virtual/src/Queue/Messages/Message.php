@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Entity.php
+ * Message.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,19 +13,19 @@
  * @date           17.10.23
  */
 
-namespace FastyBird\Connector\Virtual\Entities\Messages;
+namespace FastyBird\Connector\Virtual\Queue\Messages;
 
 use Orisai\ObjectMapper;
 
 /**
- * Virtual base message data entity interface
+ * Virtual base message data message interface
  *
  * @package        FastyBird:VirtualConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-interface Entity extends ObjectMapper\MappedObject
+interface Message extends ObjectMapper\MappedObject
 {
 
 	/**

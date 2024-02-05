@@ -15,8 +15,8 @@
 
 namespace FastyBird\Connector\Virtual\Writers;
 
-use FastyBird\Connector\Virtual\Entities;
 use FastyBird\Connector\Virtual\Exceptions;
+use FastyBird\Connector\Virtual\Queue;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -77,8 +77,8 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 
 			if ($event->getProperty() instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
 				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\WriteDevicePropertyState::class,
+					$this->messageBuilder->create(
+						Queue\Messages\WriteDevicePropertyState::class,
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
@@ -89,8 +89,8 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 				);
 			} elseif ($event->getProperty() instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
 				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\WriteDevicePropertyState::class,
+					$this->messageBuilder->create(
+						Queue\Messages\WriteDevicePropertyState::class,
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
@@ -122,8 +122,8 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 
 			if ($event->getProperty() instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
 				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\WriteChannelPropertyState::class,
+					$this->messageBuilder->create(
+						Queue\Messages\WriteChannelPropertyState::class,
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
@@ -135,8 +135,8 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 				);
 			} elseif ($event->getProperty() instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
 				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\WriteChannelPropertyState::class,
+					$this->messageBuilder->create(
+						Queue\Messages\WriteChannelPropertyState::class,
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),

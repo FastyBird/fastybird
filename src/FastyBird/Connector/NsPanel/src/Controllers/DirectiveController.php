@@ -80,7 +80,7 @@ final class DirectiveController extends BaseController
 		$this->logger->debug(
 			'Requested updating of characteristics of selected accessories',
 			[
-				'source' => MetadataTypes\ConnectorSource::NS_PANEL,
+				'source' => MetadataTypes\Sources\Connector::NS_PANEL,
 				'type' => 'directive-controller',
 				'request' => [
 					'method' => $request->getMethod(),

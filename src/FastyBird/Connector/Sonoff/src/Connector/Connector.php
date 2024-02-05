@@ -103,7 +103,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Starting Sonoff connector service',
 			[
-				'source' => MetadataTypes\ConnectorSource::SONOFF,
+				'source' => MetadataTypes\Sources\Connector::SONOFF,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -164,7 +164,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Sonoff connector service has been started',
 			[
-				'source' => MetadataTypes\ConnectorSource::SONOFF,
+				'source' => MetadataTypes\Sources\Connector::SONOFF,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -187,7 +187,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Starting Sonoff connector discovery',
 			[
-				'source' => MetadataTypes\ConnectorSource::SONOFF,
+				'source' => MetadataTypes\Sources\Connector::SONOFF,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -202,7 +202,7 @@ final class Connector implements DevicesConnectors\Connector
 				DevicesConstants::EVENT_TERMINATE,
 				[
 					new DevicesEvents\TerminateConnector(
-						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::FB_MQTT),
+						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::FB_MQTT),
 						'Devices discovery finished',
 					),
 				],
@@ -219,7 +219,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Sonoff connector discovery has been started',
 			[
-				'source' => MetadataTypes\ConnectorSource::SONOFF,
+				'source' => MetadataTypes\Sources\Connector::SONOFF,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -252,7 +252,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Sonoff connector has been terminated',
 			[
-				'source' => MetadataTypes\ConnectorSource::SONOFF,
+				'source' => MetadataTypes\Sources\Connector::SONOFF,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),

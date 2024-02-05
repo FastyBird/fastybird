@@ -955,7 +955,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::VIRTUAL,
+					'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -984,7 +984,7 @@ class Install extends Console\Command\Command
 				DevicesStates\Property::ACTUAL_VALUE_FIELD => Types\HvacMode::OFF,
 				DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
 			]),
-			MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
+			MetadataTypes\Sources\Addon::get(MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT),
 		);
 
 		$presetModeState = $this->channelsPropertiesConfigurationRepository->find(
@@ -999,7 +999,7 @@ class Install extends Console\Command\Command
 				DevicesStates\Property::ACTUAL_VALUE_FIELD => Types\Preset::MANUAL,
 				DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
 			]),
-			MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
+			MetadataTypes\Sources\Addon::get(MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT),
 		);
 
 		foreach ($setPresets as $data) {
@@ -1015,7 +1015,7 @@ class Install extends Console\Command\Command
 					DevicesStates\Property::ACTUAL_VALUE_FIELD => $data['value'],
 					DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
 				]),
-				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
+				MetadataTypes\Sources\Addon::get(MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT),
 			);
 		}
 	}
@@ -1540,7 +1540,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::VIRTUAL,
+					'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -1569,7 +1569,7 @@ class Install extends Console\Command\Command
 				DevicesStates\Property::ACTUAL_VALUE_FIELD => Types\HvacMode::OFF,
 				DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
 			]),
-			MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
+			MetadataTypes\Sources\Addon::get(MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT),
 		);
 
 		assert($presetModeProperty instanceof DevicesEntities\Channels\Properties\Dynamic);
@@ -1586,7 +1586,7 @@ class Install extends Console\Command\Command
 				DevicesStates\Property::ACTUAL_VALUE_FIELD => Types\Preset::MANUAL,
 				DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
 			]),
-			MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
+			MetadataTypes\Sources\Addon::get(MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT),
 		);
 
 		foreach ($setPresets as $data) {
@@ -1602,7 +1602,7 @@ class Install extends Console\Command\Command
 					DevicesStates\Property::ACTUAL_VALUE_FIELD => $data['value'],
 					DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
 				]),
-				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
+				MetadataTypes\Sources\Addon::get(MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT),
 			);
 		}
 	}
@@ -1658,7 +1658,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::VIRTUAL,
+					'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 					'type' => 'initialize-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -1834,7 +1834,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::VIRTUAL,
+					'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -1921,7 +1921,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::VIRTUAL,
+					'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -2049,7 +2049,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::NS_PANEL,
+					'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -2127,7 +2127,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'Invalid sensor type selected',
 				[
-					'source' => MetadataTypes\ConnectorSource::NS_PANEL,
+					'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 					'type' => 'install-cmd',
 				],
 			);
@@ -2197,7 +2197,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::VIRTUAL,
+					'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -2308,7 +2308,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'Invalid sensor type selected',
 				[
-					'source' => MetadataTypes\ConnectorSource::NS_PANEL,
+					'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 					'type' => 'install-cmd',
 				],
 			);
@@ -2356,7 +2356,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::VIRTUAL,
+					'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -2509,7 +2509,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::NS_PANEL,
+					'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -2697,7 +2697,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::VIRTUAL,
+					'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -2726,7 +2726,7 @@ class Install extends Console\Command\Command
 				DevicesStates\Property::ACTUAL_VALUE_FIELD => $targetTemp,
 				DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
 			]),
-			MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
+			MetadataTypes\Sources\Addon::get(MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT),
 		);
 	}
 
@@ -3396,7 +3396,7 @@ class Install extends Console\Command\Command
 
 			$state = $this->channelPropertiesStatesManager->read(
 				$propertyConfiguration,
-				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
+				MetadataTypes\Sources\Addon::get(MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT),
 			);
 
 			if ($state instanceof MetadataDocuments\DevicesModule\ChannelPropertyState) {
@@ -4321,7 +4321,7 @@ class Install extends Console\Command\Command
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 */
-	private function askWhichConnector(Style\SymfonyStyle $io): VirtualEntities\VirtualConnector|null
+	private function askWhichConnector(Style\SymfonyStyle $io): VirtualEntities\Connectors\Connector|null
 	{
 		$connectors = [];
 
@@ -4329,11 +4329,11 @@ class Install extends Console\Command\Command
 
 		$systemConnectors = $this->connectorsRepository->findAllBy(
 			$findConnectorsQuery,
-			VirtualEntities\VirtualConnector::class,
+			VirtualEntities\Connectors\Connector::class,
 		);
 		usort(
 			$systemConnectors,
-			static fn (VirtualEntities\VirtualConnector $a, VirtualEntities\VirtualConnector $b): int => (
+			static fn (VirtualEntities\Connectors\Connector $a, VirtualEntities\Connectors\Connector $b): int => (
 				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
 			),
 		);
@@ -4358,7 +4358,7 @@ class Install extends Console\Command\Command
 			$this->translator->translate('//virtual-thermostat-addon.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(
-			function (string|int|null $answer) use ($connectors): VirtualEntities\VirtualConnector {
+			function (string|int|null $answer) use ($connectors): VirtualEntities\Connectors\Connector {
 				if ($answer === null) {
 					throw new Exceptions\Runtime(
 						sprintf(
@@ -4382,7 +4382,7 @@ class Install extends Console\Command\Command
 
 					$connector = $this->connectorsRepository->findOneBy(
 						$findConnectorQuery,
-						VirtualEntities\VirtualConnector::class,
+						VirtualEntities\Connectors\Connector::class,
 					);
 
 					if ($connector !== null) {
@@ -4402,7 +4402,7 @@ class Install extends Console\Command\Command
 		);
 
 		$connector = $io->askQuestion($question);
-		assert($connector instanceof VirtualEntities\VirtualConnector);
+		assert($connector instanceof VirtualEntities\Connectors\Connector);
 
 		return $connector;
 	}

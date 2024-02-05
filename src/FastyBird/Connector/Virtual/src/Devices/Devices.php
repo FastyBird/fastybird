@@ -19,7 +19,6 @@ use DateTimeInterface;
 use Exception;
 use FastyBird\Connector\Virtual;
 use FastyBird\Connector\Virtual\Drivers;
-use FastyBird\Connector\Virtual\Entities;
 use FastyBird\Connector\Virtual\Exceptions;
 use FastyBird\Connector\Virtual\Helpers;
 use FastyBird\Connector\Virtual\Queue;
@@ -76,7 +75,7 @@ class Devices
 	public function __construct(
 		private readonly MetadataDocuments\DevicesModule\Connector $connector,
 		private readonly Drivers\DriversManager $driversManager,
-		private readonly Helpers\Entity $entityHelper,
+		private readonly Queue\MessageBuilder $messageBuilder,
 		private readonly Helpers\Device $deviceHelper,
 		private readonly Queue\Queue $queue,
 		private readonly Virtual\Logger $logger,
@@ -190,7 +189,7 @@ class Devices
 							$this->logger->debug(
 								'Connected to virtual device',
 								[
-									'source' => MetadataTypes\ConnectorSource::VIRTUAL,
+									'source' => MetadataTypes\Sources\Connector::VIRTUAL,
 									'type' => 'devices-driver',
 									'connector' => [
 										'id' => $this->connector->getId()->toString(),
@@ -205,7 +204,7 @@ class Devices
 							$this->logger->error(
 								'Virtual device service could not be created',
 								[
-									'source' => MetadataTypes\ConnectorSource::VIRTUAL,
+									'source' => MetadataTypes\Sources\Connector::VIRTUAL,
 									'type' => 'devices-driver',
 									'exception' => ApplicationHelpers\Logger::buildException($ex),
 									'connector' => [
@@ -218,8 +217,8 @@ class Devices
 							);
 
 							$this->queue->append(
-								$this->entityHelper->create(
-									Entities\Messages\StoreDeviceConnectionState::class,
+								$this->messageBuilder->create(
+									Queue\Messages\StoreDeviceConnectionState::class,
 									[
 										'connector' => $device->getConnector(),
 										'device' => $device->getId(),
@@ -231,12 +230,13 @@ class Devices
 
 				} else {
 					$this->queue->append(
-						$this->entityHelper->create(
-							Entities\Messages\StoreDeviceConnectionState::class,
+						$this->messageBuilder->create(
+							Queue\Messages\StoreDeviceConnectionState::class,
 							[
 								'connector' => $device->getConnector(),
 								'device' => $device->getId(),
 								'state' => MetadataTypes\ConnectionState::DISCONNECTED,
+								'source' => MetadataTypes\Sources\Connector::VIRTUAL,
 							],
 						),
 					);
@@ -277,12 +277,13 @@ class Devices
 				$this->processedDevicesCommands[$device->getId()->toString()] = $this->dateTimeFactory->getNow();
 
 				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\StoreDeviceConnectionState::class,
+					$this->messageBuilder->create(
+						Queue\Messages\StoreDeviceConnectionState::class,
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
 							'state' => MetadataTypes\ConnectionState::CONNECTED,
+							'source' => MetadataTypes\Sources\Connector::VIRTUAL,
 						],
 					),
 				);
@@ -293,7 +294,7 @@ class Devices
 				$this->logger->warning(
 					'Could not call local api',
 					[
-						'source' => MetadataTypes\ConnectorSource::VIRTUAL,
+						'source' => MetadataTypes\Sources\Connector::VIRTUAL,
 						'type' => 'devices-driver',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'connector' => [
@@ -306,12 +307,13 @@ class Devices
 				);
 
 				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\StoreDeviceConnectionState::class,
+					$this->messageBuilder->create(
+						Queue\Messages\StoreDeviceConnectionState::class,
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
 							'state' => MetadataTypes\ConnectionState::ALERT,
+							'source' => MetadataTypes\Sources\Connector::VIRTUAL,
 						],
 					),
 				);

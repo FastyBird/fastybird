@@ -70,7 +70,7 @@ final class Properties implements Common\EventSubscriber
 		$entity = $eventArgs->getObject();
 
 		// Check for valid entity
-		if (!$entity instanceof Entities\VirtualDevice) {
+		if (!$entity instanceof Entities\Devices\Device) {
 			return;
 		}
 

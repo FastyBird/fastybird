@@ -102,7 +102,7 @@ final class Router
 			$this->logger->warning(
 				'Request ended with error',
 				[
-					'source' => MetadataTypes\ConnectorSource::NS_PANEL,
+					'source' => MetadataTypes\Sources\Connector::NS_PANEL,
 					'type' => 'router-middleware',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'request' => [
@@ -131,7 +131,7 @@ final class Router
 			$this->logger->warning(
 				'Received invalid HTTP request',
 				[
-					'source' => MetadataTypes\ConnectorSource::NS_PANEL,
+					'source' => MetadataTypes\Sources\Connector::NS_PANEL,
 					'type' => 'router-middleware',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'request' => [
@@ -160,7 +160,7 @@ final class Router
 			$this->logger->error(
 				'An unhandled error occurred during handling server HTTP request',
 				[
-					'source' => MetadataTypes\ConnectorSource::NS_PANEL,
+					'source' => MetadataTypes\Sources\Connector::NS_PANEL,
 					'type' => 'router-middleware',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],

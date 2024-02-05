@@ -15,8 +15,8 @@
 
 namespace FastyBird\Library\Tools\Transformers;
 
-use DateTimeInterface;
 use Contributte\Monolog;
+use DateTimeInterface;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 
@@ -129,7 +129,7 @@ final class DataTypeTransformer
 		Monolog\LoggerHolder::getInstance()->getLogger()->warning(
 			'Parent property value could not be transformed to mapped property value',
 			[
-				'source' => MetadataTypes\ModuleSource::DEVICES,
+				'source' => MetadataTypes\Sources\Module::DEVICES,
 				'type' => 'data-type-transformer',
 				'source_data_type' => $this->source->getValue(),
 				'destination_data_type' => $this->destination->getValue(),

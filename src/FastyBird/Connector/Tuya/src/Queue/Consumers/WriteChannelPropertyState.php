@@ -94,7 +94,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Connector could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::TUYA,
+					'source' => MetadataTypes\Sources\Connector::TUYA,
 					'type' => 'write-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -126,7 +126,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Device could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::TUYA,
+					'source' => MetadataTypes\Sources\Connector::TUYA,
 					'type' => 'write-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $connector->getId()->toString(),
@@ -158,7 +158,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Channel could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::TUYA,
+					'source' => MetadataTypes\Sources\Connector::TUYA,
 					'type' => 'write-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $connector->getId()->toString(),
@@ -192,7 +192,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Channel property could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::TUYA,
+					'source' => MetadataTypes\Sources\Connector::TUYA,
 					'type' => 'write-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $connector->getId()->toString(),
@@ -217,7 +217,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$this->logger->warning(
 				'Channel property is not writable',
 				[
-					'source' => MetadataTypes\ConnectorSource::TUYA,
+					'source' => MetadataTypes\Sources\Connector::TUYA,
 					'type' => 'write-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $connector->getId()->toString(),
@@ -250,7 +250,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$this->channelPropertiesStatesManager->setPendingState(
 				$property,
 				false,
-				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::TUYA),
+				MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::TUYA),
 			);
 
 			return true;
@@ -272,7 +272,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		$this->channelPropertiesStatesManager->setPendingState(
 			$property,
 			true,
-			MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::TUYA),
+			MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::TUYA),
 		);
 
 		try {
@@ -300,7 +300,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				$this->channelPropertiesStatesManager->setPendingState(
 					$property,
 					false,
-					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::TUYA),
+					MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::TUYA),
 				);
 
 				return true;
@@ -320,13 +320,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$this->channelPropertiesStatesManager->setPendingState(
 				$property,
 				false,
-				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::TUYA),
+				MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::TUYA),
 			);
 
 			$this->logger->error(
 				'Device is not properly configured',
 				[
-					'source' => MetadataTypes\ConnectorSource::TUYA,
+					'source' => MetadataTypes\Sources\Connector::TUYA,
 					'type' => 'write-channel-property-state-message-consumer',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
@@ -361,13 +361,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$this->channelPropertiesStatesManager->setPendingState(
 				$property,
 				false,
-				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::TUYA),
+				MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::TUYA),
 			);
 
 			$this->logger->error(
 				'Preparing api request failed',
 				[
-					'source' => MetadataTypes\ConnectorSource::TUYA,
+					'source' => MetadataTypes\Sources\Connector::TUYA,
 					'type' => 'write-channel-property-state-message-consumer',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
@@ -402,7 +402,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$this->channelPropertiesStatesManager->setPendingState(
 				$property,
 				false,
-				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::TUYA),
+				MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::TUYA),
 			);
 
 			$extra = [];
@@ -424,7 +424,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				'Calling device api failed',
 				array_merge(
 					[
-						'source' => MetadataTypes\ConnectorSource::TUYA,
+						'source' => MetadataTypes\Sources\Connector::TUYA,
 						'type' => 'write-channel-property-state-message-consumer',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'connector' => [
@@ -453,7 +453,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				$this->logger->debug(
 					'Channel state was successfully sent to device',
 					[
-						'source' => MetadataTypes\ConnectorSource::TUYA,
+						'source' => MetadataTypes\Sources\Connector::TUYA,
 						'type' => 'write-channel-property-state-message-consumer',
 						'connector' => [
 							'id' => $connector->getId()->toString(),
@@ -475,7 +475,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				$this->channelPropertiesStatesManager->setPendingState(
 					$property,
 					false,
-					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::TUYA),
+					MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::TUYA),
 				);
 
 				$extra = [];
@@ -534,7 +534,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					'Could write state to device',
 					array_merge(
 						[
-							'source' => MetadataTypes\ConnectorSource::TUYA,
+							'source' => MetadataTypes\Sources\Connector::TUYA,
 							'type' => 'write-channel-property-state-message-consumer',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 							'connector' => [
@@ -560,7 +560,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed write device state message',
 			[
-				'source' => MetadataTypes\ConnectorSource::TUYA,
+				'source' => MetadataTypes\Sources\Connector::TUYA,
 				'type' => 'write-channel-property-state-message-consumer',
 				'connector' => [
 					'id' => $connector->getId()->toString(),

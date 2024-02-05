@@ -94,7 +94,7 @@ final class DeviceProperty implements Queue\Consumer
 			$this->logger->warning(
 				sprintf('Device "%s" is not registered', $entity->getDevice()),
 				[
-					'source' => MetadataTypes\ConnectorSource::FB_MQTT,
+					'source' => MetadataTypes\Sources\Connector::FB_MQTT,
 					'type' => 'device-property-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -118,7 +118,7 @@ final class DeviceProperty implements Queue\Consumer
 			$this->logger->warning(
 				sprintf('Property "%s" is not registered', $entity->getProperty()),
 				[
-					'source' => MetadataTypes\ConnectorSource::FB_MQTT,
+					'source' => MetadataTypes\Sources\Connector::FB_MQTT,
 					'type' => 'device-property-message-consumer',
 					'connector' => [
 						'id' => $entity->getConnector()->toString(),
@@ -154,7 +154,7 @@ final class DeviceProperty implements Queue\Consumer
 					Utils\ArrayHash::from([
 						DevicesStates\Property::ACTUAL_VALUE_FIELD => $entity->getValue(),
 					]),
-					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::FB_MQTT),
+					MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::FB_MQTT),
 				));
 			}
 		} else {
@@ -175,7 +175,7 @@ final class DeviceProperty implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed channel property message',
 			[
-				'source' => MetadataTypes\ConnectorSource::FB_MQTT,
+				'source' => MetadataTypes\Sources\Connector::FB_MQTT,
 				'type' => 'device-property-message-consumer',
 				'connector' => [
 					'id' => $entity->getConnector()->toString(),

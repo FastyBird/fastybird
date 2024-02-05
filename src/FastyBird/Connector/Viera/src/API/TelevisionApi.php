@@ -1413,7 +1413,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 					$this->logger->error(
 						'Something went wrong with subscription socket',
 						[
-							'source' => MetadataTypes\ConnectorSource::VIERA,
+							'source' => MetadataTypes\Sources\Connector::VIERA,
 							'type' => 'television-api',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 							'device' => [
@@ -1439,7 +1439,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 			$this->logger->error(
 				'Could not get http client',
 				[
-					'source' => MetadataTypes\ConnectorSource::VIERA,
+					'source' => MetadataTypes\Sources\Connector::VIERA,
 					'type' => 'television-api',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'device' => [
@@ -1457,7 +1457,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 			$this->logger->error(
 				'Could not get connector local address',
 				[
-					'source' => MetadataTypes\ConnectorSource::VIERA,
+					'source' => MetadataTypes\Sources\Connector::VIERA,
 					'type' => 'television-api',
 					'device' => [
 						'identifier' => $this->identifier,
@@ -1517,7 +1517,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 			$this->logger->error(
 				'Could not get http client',
 				[
-					'source' => MetadataTypes\ConnectorSource::VIERA,
+					'source' => MetadataTypes\Sources\Connector::VIERA,
 					'type' => 'television-api',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'device' => [
@@ -2070,7 +2070,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 				$request->getUri(),
 			),
 			[
-				'source' => MetadataTypes\ConnectorSource::VIERA,
+				'source' => MetadataTypes\Sources\Connector::VIERA,
 				'type' => 'television-api',
 				'request' => [
 					'method' => $request->getMethod(),
@@ -2112,7 +2112,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 							$this->logger->debug(
 								'Received response',
 								[
-									'source' => MetadataTypes\ConnectorSource::VIERA,
+									'source' => MetadataTypes\Sources\Connector::VIERA,
 									'type' => 'television-api',
 									'request' => [
 										'method' => $request->getMethod(),
@@ -2173,7 +2173,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 			$this->logger->debug(
 				'Received response',
 				[
-					'source' => MetadataTypes\ConnectorSource::VIERA,
+					'source' => MetadataTypes\Sources\Connector::VIERA,
 					'type' => 'television-api',
 					'request' => [
 						'method' => $request->getMethod(),
@@ -2222,7 +2222,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 				$request->getUri(),
 			),
 			[
-				'source' => MetadataTypes\ConnectorSource::VIERA,
+				'source' => MetadataTypes\Sources\Connector::VIERA,
 				'type' => 'television-api',
 				'request' => [
 					'method' => $request->getMethod(),
@@ -2264,7 +2264,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 							$this->logger->debug(
 								'Received response',
 								[
-									'source' => MetadataTypes\ConnectorSource::VIERA,
+									'source' => MetadataTypes\Sources\Connector::VIERA,
 									'type' => 'television-api',
 									'request' => [
 										'method' => $request->getMethod(),
@@ -2325,7 +2325,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 			$this->logger->debug(
 				'Received response',
 				[
-					'source' => MetadataTypes\ConnectorSource::VIERA,
+					'source' => MetadataTypes\Sources\Connector::VIERA,
 					'type' => 'television-api',
 					'request' => [
 						'method' => $request->getMethod(),

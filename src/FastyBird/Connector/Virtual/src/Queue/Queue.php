@@ -16,7 +16,6 @@
 namespace FastyBird\Connector\Virtual\Queue;
 
 use FastyBird\Connector\Virtual;
-use FastyBird\Connector\Virtual\Entities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette;
 use SplQueue;
@@ -34,7 +33,7 @@ final class Queue
 
 	use Nette\SmartObject;
 
-	/** @var SplQueue<Entities\Messages\Entity> */
+	/** @var SplQueue<Messages\Message> */
 	private SplQueue $queue;
 
 	public function __construct(private readonly Virtual\Logger $logger)
@@ -42,21 +41,21 @@ final class Queue
 		$this->queue = new SplQueue();
 	}
 
-	public function append(Entities\Messages\Entity $entity): void
+	public function append(Messages\Message $entity): void
 	{
 		$this->queue->enqueue($entity);
 
 		$this->logger->debug(
 			'Appended new message into messages queue',
 			[
-				'source' => MetadataTypes\ConnectorSource::VIRTUAL,
+				'source' => MetadataTypes\Sources\Connector::VIRTUAL,
 				'type' => 'queue',
 				'message' => $entity->toArray(),
 			],
 		);
 	}
 
-	public function dequeue(): Entities\Messages\Entity|false
+	public function dequeue(): Messages\Message|false
 	{
 		$this->queue->rewind();
 

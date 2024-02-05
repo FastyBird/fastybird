@@ -60,7 +60,7 @@ final class Device
 		);
 
 		if ($property?->getValue() === null) {
-			return Entities\VirtualDevice::STATE_PROCESSING_DELAY;
+			return Entities\Devices\Device::STATE_PROCESSING_DELAY;
 		}
 
 		$value = $property->getValue();

@@ -82,15 +82,14 @@ final class ChannelPropertiesManager extends PropertiesManager
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function read(
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
-		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
+		MetadataTypes\Sources\Source|null $source,
 	): bool|MetadataDocuments\DevicesModule\ChannelPropertyState|null
 	{
 		if ($this->useExchange) {
 			try {
 				return $this->publisher->publish(
-					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+					$source ?? MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
 					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION),
 					$this->documentFactory->create(
 						MetadataDocuments\Actions\ActionChannelProperty::class,
@@ -121,16 +120,15 @@ final class ChannelPropertiesManager extends PropertiesManager
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function write(
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
 		Utils\ArrayHash $data,
-		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
+		MetadataTypes\Sources\Source|null $source,
 	): void
 	{
 		if ($this->useExchange) {
 			try {
 				$this->publisher->publish(
-					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+					$source ?? MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
 					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION),
 					$this->documentFactory->create(
 						MetadataDocuments\Actions\ActionChannelProperty::class,
@@ -172,16 +170,15 @@ final class ChannelPropertiesManager extends PropertiesManager
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function set(
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
 		Utils\ArrayHash $data,
-		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
+		MetadataTypes\Sources\Source|null $source,
 	): void
 	{
 		if ($this->useExchange) {
 			try {
 				$this->publisher->publish(
-					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+					$source ?? MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
 					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION),
 					$this->documentFactory->create(
 						MetadataDocuments\TriggersModule\ChannelPropertyAction::class,
@@ -227,7 +224,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 	public function setValidState(
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|array $property,
 		bool $state,
-		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
+		MetadataTypes\Sources\Source|null $source,
 	): void
 	{
 		if (is_array($property)) {
@@ -263,7 +260,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 	public function setPendingState(
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|array $property,
 		bool $pending,
-		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
+		MetadataTypes\Sources\Source|null $source,
 	): void
 	{
 		if (is_array($property)) {
@@ -324,13 +321,13 @@ final class ChannelPropertiesManager extends PropertiesManager
 			if ($result) {
 				$this->dispatcher?->dispatch(new Events\ChannelPropertyStateEntityDeleted(
 					$id,
-					MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+					MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
 				));
 
 				foreach ($this->findChildren($id) as $child) {
 					$this->dispatcher?->dispatch(new Events\ChannelPropertyStateEntityDeleted(
 						$child->getId(),
-						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+						MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
 					));
 				}
 			}
@@ -340,7 +337,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 			$this->logger->warning(
 				'Channels states manager is not configured. State could not be fetched',
 				[
-					'source' => MetadataTypes\ModuleSource::DEVICES,
+					'source' => MetadataTypes\Sources\Module::DEVICES,
 					'type' => 'channel-properties-states',
 				],
 			);
@@ -360,7 +357,6 @@ final class ChannelPropertiesManager extends PropertiesManager
 	 * @interal
 	 */
 	public function readState(
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
 	): MetadataDocuments\DevicesModule\ChannelPropertyState|null
 	{
@@ -385,7 +381,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 			$this->logger->warning(
 				'Channels states repository is not configured. State could not be fetched',
 				[
-					'source' => MetadataTypes\ModuleSource::DEVICES,
+					'source' => MetadataTypes\Sources\Module::DEVICES,
 					'type' => 'channel-properties-states',
 				],
 			);
@@ -426,7 +422,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 				$this->logger->error(
 					'Property stored actual value was not valid',
 					[
-						'source' => MetadataTypes\ModuleSource::DEVICES,
+						'source' => MetadataTypes\Sources\Module::DEVICES,
 						'type' => 'channel-properties-states',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 					],
@@ -437,7 +433,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 				$this->logger->warning(
 					'Channels states manager is not configured. State could not be fetched',
 					[
-						'source' => MetadataTypes\ModuleSource::DEVICES,
+						'source' => MetadataTypes\Sources\Module::DEVICES,
 						'type' => 'channel-properties-states',
 					],
 				);
@@ -454,7 +450,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 				$this->logger->error(
 					'Property stored expected value was not valid',
 					[
-						'source' => MetadataTypes\ModuleSource::DEVICES,
+						'source' => MetadataTypes\Sources\Module::DEVICES,
 						'type' => 'channel-properties-states',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 					],
@@ -465,7 +461,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 				$this->logger->warning(
 					'Channels states manager is not configured. State could not be fetched',
 					[
-						'source' => MetadataTypes\ModuleSource::DEVICES,
+						'source' => MetadataTypes\Sources\Module::DEVICES,
 						'type' => 'channel-properties-states',
 					],
 				);
@@ -485,11 +481,10 @@ final class ChannelPropertiesManager extends PropertiesManager
 	 * @interal
 	 */
 	public function writeState(
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
 		Utils\ArrayHash $data,
 		bool $forWriting,
-		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
+		MetadataTypes\Sources\Source|null $source,
 	): void
 	{
 		$mappedProperty = null;
@@ -571,7 +566,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 				$this->logger->error(
 					'Provided property actual value is not valid',
 					[
-						'source' => MetadataTypes\ModuleSource::DEVICES,
+						'source' => MetadataTypes\Sources\Module::DEVICES,
 						'type' => 'channel-properties-states',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 					],
@@ -627,7 +622,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 					$this->logger->error(
 						'Provided property expected value was not valid',
 						[
-							'source' => MetadataTypes\ModuleSource::DEVICES,
+							'source' => MetadataTypes\Sources\Module::DEVICES,
 							'type' => 'channel-properties-states',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 						],
@@ -697,7 +692,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 						$property,
 						$readValue,
 						$getValue,
-						$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+						$source ?? MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
 					),
 				);
 			} else {
@@ -706,7 +701,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 						$property,
 						$readValue,
 						$getValue,
-						$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+						$source ?? MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
 					),
 				);
 			}
@@ -721,7 +716,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 							$child,
 							$readValue,
 							$getValue,
-							$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+							$source ?? MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
 						),
 					);
 				} else {
@@ -730,7 +725,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 							$child,
 							$readValue,
 							$getValue,
-							$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+							$source ?? MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
 						),
 					);
 				}
@@ -739,7 +734,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 			$this->logger->debug(
 				$state === null ? 'Channel property state was created' : 'Channel property state was updated',
 				[
-					'source' => MetadataTypes\ModuleSource::DEVICES,
+					'source' => MetadataTypes\Sources\Module::DEVICES,
 					'type' => 'channel-properties-states',
 					'property' => [
 						'id' => $property->getId()->toString(),
@@ -751,7 +746,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 			$this->logger->warning(
 				'Channels states manager is not configured. State could not be saved',
 				[
-					'source' => MetadataTypes\ModuleSource::DEVICES,
+					'source' => MetadataTypes\Sources\Module::DEVICES,
 					'type' => 'channel-properties-states',
 				],
 			);

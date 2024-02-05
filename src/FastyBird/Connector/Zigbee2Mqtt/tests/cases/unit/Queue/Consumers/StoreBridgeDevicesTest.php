@@ -48,9 +48,8 @@ final class StoreBridgeDevicesTest extends DbTestCase
 			->method('publish')
 			->with(
 				self::callback(
-					// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-					static function (MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|MetadataTypes\AutomatorSource $source): bool {
-						self::assertTrue($source->equalsValue(MetadataTypes\ModuleSource::DEVICES));
+					static function (MetadataTypes\Sources\Source $source): bool {
+						self::assertTrue($source->equalsValue(MetadataTypes\Sources\Module::DEVICES));
 
 						return true;
 					},

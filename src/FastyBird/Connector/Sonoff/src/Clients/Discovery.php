@@ -165,7 +165,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 		$this->logger->debug(
 			'Starting cloud devices discovery',
 			[
-				'source' => MetadataTypes\ConnectorSource::SONOFF,
+				'source' => MetadataTypes\Sources\Connector::SONOFF,
 				'type' => 'discovery-client',
 			],
 		);
@@ -179,7 +179,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$this->logger->error(
 				'Log into eWelink account failed',
 				[
-					'source' => MetadataTypes\ConnectorSource::SONOFF,
+					'source' => MetadataTypes\Sources\Connector::SONOFF,
 					'type' => 'discovery-client',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -200,7 +200,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 						$this->logger->error(
 							'Loading devices from cloud failed',
 							[
-								'source' => MetadataTypes\ConnectorSource::SONOFF,
+								'source' => MetadataTypes\Sources\Connector::SONOFF,
 								'type' => 'discovery-client',
 								'exception' => ApplicationHelpers\Logger::buildException($ex),
 							],
@@ -213,7 +213,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$this->logger->error(
 					'Loading homes from cloud failed',
 					[
-						'source' => MetadataTypes\ConnectorSource::SONOFF,
+						'source' => MetadataTypes\Sources\Connector::SONOFF,
 						'type' => 'discovery-client',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 					],
@@ -237,7 +237,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 		$this->logger->debug(
 			'Starting lan devices discovery',
 			[
-				'source' => MetadataTypes\ConnectorSource::SONOFF,
+				'source' => MetadataTypes\Sources\Connector::SONOFF,
 				'type' => 'discovery-client',
 			],
 		);
@@ -288,7 +288,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$this->logger->error(
 					'Params mapping for device UIID could not be loaded',
 					[
-						'source' => MetadataTypes\ConnectorSource::SONOFF,
+						'source' => MetadataTypes\Sources\Connector::SONOFF,
 						'type' => 'discovery-client',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'device' => [
@@ -303,7 +303,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$this->logger->error(
 					'Device params mapping could not be prepared for mapping',
 					[
-						'source' => MetadataTypes\ConnectorSource::SONOFF,
+						'source' => MetadataTypes\Sources\Connector::SONOFF,
 						'type' => 'discovery-client',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'device' => [
@@ -485,7 +485,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$this->logger->error(
 					'Found device could not be attached to processing queue',
 					[
-						'source' => MetadataTypes\ConnectorSource::SONOFF,
+						'source' => MetadataTypes\Sources\Connector::SONOFF,
 						'type' => 'discovery-client',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'device' => $device->toArray(),

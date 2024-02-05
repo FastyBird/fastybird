@@ -153,7 +153,7 @@ final class Connector implements EventDispatcher\EventSubscriberInterface
 			$this->connectorPropertiesStatesManager->setValidState(
 				$property,
 				false,
-				MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+				MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
 			);
 		}
 
@@ -196,7 +196,7 @@ final class Connector implements EventDispatcher\EventSubscriberInterface
 			$this->devicePropertiesStatesManager->setValidState(
 				$property,
 				false,
-				MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+				MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
 			);
 		}
 
@@ -218,7 +218,7 @@ final class Connector implements EventDispatcher\EventSubscriberInterface
 				$this->channelPropertiesStatesManager->setValidState(
 					$property,
 					false,
-					MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+					MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
 				);
 			}
 		}

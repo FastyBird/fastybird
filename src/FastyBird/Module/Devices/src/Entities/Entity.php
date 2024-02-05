@@ -39,7 +39,6 @@ interface Entity extends DoctrineCrud\Entities\IEntity
 	 */
 	public function toArray(): array;
 
-	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-	public function getSource(): MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|MetadataTypes\AddonSource|MetadataTypes\BridgeSource;
+	public function getSource(): MetadataTypes\Sources\Source;
 
 }

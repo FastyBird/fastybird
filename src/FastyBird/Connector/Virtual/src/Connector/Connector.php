@@ -78,12 +78,12 @@ final class Connector implements DevicesConnectors\Connector
 	 */
 	public function execute(bool $standalone = true): Promise\PromiseInterface
 	{
-		assert($this->connector->getType() === Entities\VirtualConnector::TYPE);
+		assert($this->connector->getType() === Entities\Connectors\Connector::TYPE);
 
 		$this->logger->info(
 			'Starting Virtual connector service',
 			[
-				'source' => MetadataTypes\ConnectorSource::VIRTUAL,
+				'source' => MetadataTypes\Sources\Connector::VIRTUAL,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -120,7 +120,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Virtual connector service has been started',
 			[
-				'source' => MetadataTypes\ConnectorSource::VIRTUAL,
+				'source' => MetadataTypes\Sources\Connector::VIRTUAL,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -143,7 +143,7 @@ final class Connector implements DevicesConnectors\Connector
 
 	public function terminate(): void
 	{
-		assert($this->connector->getType() === Entities\VirtualConnector::TYPE);
+		assert($this->connector->getType() === Entities\Connectors\Connector::TYPE);
 
 		$this->devices?->stop();
 
@@ -156,7 +156,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Virtual connector has been terminated',
 			[
-				'source' => MetadataTypes\ConnectorSource::VIRTUAL,
+				'source' => MetadataTypes\Sources\Connector::VIRTUAL,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),

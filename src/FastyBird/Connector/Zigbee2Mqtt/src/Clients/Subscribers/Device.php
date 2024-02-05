@@ -111,7 +111,7 @@ class Device
 									$this->logger->warning(
 										'Received message payload is not valid for device connection state message',
 										[
-											'source' => MetadataTypes\ConnectorSource::ZIGBEE2MQTT,
+											'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
 											'type' => 'device-messages-subscriber',
 											'connector' => [
 												'id' => $this->connector->getId()->toString(),
@@ -136,7 +136,7 @@ class Device
 								$this->logger->warning(
 									'Received message payload is not valid for device get state message',
 									[
-										'source' => MetadataTypes\ConnectorSource::ZIGBEE2MQTT,
+										'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
 										'type' => 'device-messages-subscriber',
 										'connector' => [
 											'id' => $this->connector->getId()->toString(),
@@ -151,7 +151,7 @@ class Device
 							$this->logger->error(
 								'No handler for GET message type',
 								[
-									'source' => MetadataTypes\ConnectorSource::ZIGBEE2MQTT,
+									'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
 									'type' => 'device-messages-subscriber',
 									'payload' => $message->getPayload(),
 									'connector' => [
@@ -167,7 +167,7 @@ class Device
 							$this->logger->warning(
 								'Received message payload is not valid for device state message',
 								[
-									'source' => MetadataTypes\ConnectorSource::ZIGBEE2MQTT,
+									'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
 									'type' => 'device-messages-subscriber',
 									'connector' => [
 										'id' => $this->connector->getId()->toString(),
@@ -190,7 +190,7 @@ class Device
 				$this->logger->debug(
 					'Received message could not be successfully parsed to entity',
 					[
-						'source' => MetadataTypes\ConnectorSource::ZIGBEE2MQTT,
+						'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
 						'type' => 'device-messages-subscriber',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'connector' => [
@@ -239,7 +239,7 @@ class Device
 			$this->logger->error(
 				'Received device message payload is not valid JSON message',
 				[
-					'source' => MetadataTypes\ConnectorSource::ZIGBEE2MQTT,
+					'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
 					'type' => 'device-messages-subscriber',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [

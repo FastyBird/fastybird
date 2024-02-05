@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * VirtualDevice.php
+ * Device.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,9 +13,10 @@
  * @date           15.10.23
  */
 
-namespace FastyBird\Connector\Virtual\Entities;
+namespace FastyBird\Connector\Virtual\Entities\Devices;
 
 use Doctrine\ORM\Mapping as ORM;
+use FastyBird\Connector\Virtual\Entities;
 use FastyBird\Connector\Virtual\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -26,7 +27,7 @@ use function is_numeric;
 /**
  * @ORM\Entity
  */
-class VirtualDevice extends DevicesEntities\Devices\Device
+abstract class Device extends DevicesEntities\Devices\Device
 {
 
 	public const TYPE = 'virtual-connector';
@@ -43,20 +44,20 @@ class VirtualDevice extends DevicesEntities\Devices\Device
 		return self::TYPE;
 	}
 
-	public function getSource(): MetadataTypes\ConnectorSource|MetadataTypes\AddonSource
+	public function getSource(): MetadataTypes\Sources\Source
 	{
-		return MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL);
+		return MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::VIRTUAL);
 	}
 
 	/**
-	 * @return array<VirtualChannel>
+	 * @return array<Entities\Channels\Channel>
 	 */
 	public function getChannels(): array
 	{
 		$channels = [];
 
 		foreach (parent::getChannels() as $channel) {
-			if ($channel instanceof VirtualChannel) {
+			if ($channel instanceof Entities\Channels\Channel) {
 				$channels[] = $channel;
 			}
 		}

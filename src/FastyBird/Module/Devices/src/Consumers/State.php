@@ -72,7 +72,7 @@ final class State implements ExchangeConsumers\Consumer
 	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function consume(
-		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource $source,
+		MetadataTypes\Sources\Source $source,
 		MetadataTypes\RoutingKey $routingKey,
 		MetadataDocuments\Document|null $entity,
 	): void
@@ -140,7 +140,7 @@ final class State implements ExchangeConsumers\Consumer
 							$this->logger->debug(
 								'Requested write value to connector property',
 								[
-									'source' => MetadataTypes\ModuleSource::DEVICES,
+									'source' => MetadataTypes\Sources\Module::DEVICES,
 									'type' => 'state-consumer',
 									'connector' => [
 										'id' => $entity->getConnector()->toString(),
@@ -178,7 +178,7 @@ final class State implements ExchangeConsumers\Consumer
 					}
 
 					$this->publisher->publish(
-						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+						MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
 						MetadataTypes\RoutingKey::get(
 							MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_STATE_DOCUMENT_REPORTED,
 						),
@@ -188,7 +188,7 @@ final class State implements ExchangeConsumers\Consumer
 							$this->logger->debug(
 								'Requested write value to channel property',
 								[
-									'source' => MetadataTypes\ModuleSource::DEVICES,
+									'source' => MetadataTypes\Sources\Module::DEVICES,
 									'type' => 'state-consumer',
 									'connector' => [
 										'id' => $entity->getConnector()->toString(),
@@ -209,7 +209,7 @@ final class State implements ExchangeConsumers\Consumer
 							$this->logger->error(
 								'Requested action could not be published for write action',
 								[
-									'source' => MetadataTypes\ModuleSource::DEVICES,
+									'source' => MetadataTypes\Sources\Module::DEVICES,
 									'type' => 'channel-properties-states',
 									'exception' => ApplicationHelpers\Logger::buildException($ex),
 								],
@@ -274,7 +274,7 @@ final class State implements ExchangeConsumers\Consumer
 							$this->logger->debug(
 								'Requested write value to device property',
 								[
-									'source' => MetadataTypes\ModuleSource::DEVICES,
+									'source' => MetadataTypes\Sources\Module::DEVICES,
 									'type' => 'state-consumer',
 									'device' => [
 										'id' => $entity->getDevice()->toString(),
@@ -312,7 +312,7 @@ final class State implements ExchangeConsumers\Consumer
 					}
 
 					$this->publisher->publish(
-						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+						MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
 						MetadataTypes\RoutingKey::get(
 							MetadataTypes\RoutingKey::DEVICE_PROPERTY_STATE_DOCUMENT_REPORTED,
 						),
@@ -322,7 +322,7 @@ final class State implements ExchangeConsumers\Consumer
 							$this->logger->debug(
 								'Requested write value to channel property',
 								[
-									'source' => MetadataTypes\ModuleSource::DEVICES,
+									'source' => MetadataTypes\Sources\Module::DEVICES,
 									'type' => 'state-consumer',
 									'device' => [
 										'id' => $entity->getDevice()->toString(),
@@ -343,7 +343,7 @@ final class State implements ExchangeConsumers\Consumer
 							$this->logger->error(
 								'Requested action could not be published for write action',
 								[
-									'source' => MetadataTypes\ModuleSource::DEVICES,
+									'source' => MetadataTypes\Sources\Module::DEVICES,
 									'type' => 'channel-properties-states',
 									'exception' => ApplicationHelpers\Logger::buildException($ex),
 								],
@@ -408,7 +408,7 @@ final class State implements ExchangeConsumers\Consumer
 							$this->logger->debug(
 								'Requested write value to channel property',
 								[
-									'source' => MetadataTypes\ModuleSource::DEVICES,
+									'source' => MetadataTypes\Sources\Module::DEVICES,
 									'type' => 'state-consumer',
 									'channel' => [
 										'id' => $entity->getChannel()->toString(),
@@ -446,7 +446,7 @@ final class State implements ExchangeConsumers\Consumer
 					}
 
 					$this->publisher->publish(
-						MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+						MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
 						MetadataTypes\RoutingKey::get(
 							MetadataTypes\RoutingKey::CHANNEL_PROPERTY_STATE_DOCUMENT_REPORTED,
 						),
@@ -456,7 +456,7 @@ final class State implements ExchangeConsumers\Consumer
 							$this->logger->debug(
 								'Requested write value to channel property',
 								[
-									'source' => MetadataTypes\ModuleSource::DEVICES,
+									'source' => MetadataTypes\Sources\Module::DEVICES,
 									'type' => 'state-consumer',
 									'channel' => [
 										'id' => $entity->getChannel()->toString(),
@@ -477,7 +477,7 @@ final class State implements ExchangeConsumers\Consumer
 							$this->logger->error(
 								'Requested action could not be published for write action',
 								[
-									'source' => MetadataTypes\ModuleSource::DEVICES,
+									'source' => MetadataTypes\Sources\Module::DEVICES,
 									'type' => 'channel-properties-states',
 									'exception' => ApplicationHelpers\Logger::buildException($ex),
 								],

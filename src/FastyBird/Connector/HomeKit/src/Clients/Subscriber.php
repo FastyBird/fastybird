@@ -71,7 +71,7 @@ final class Subscriber
 			$this->logger->warning(
 				'Connected client is without defined IP address and could not be registered to subscriber',
 				[
-					'source' => MetadataTypes\ConnectorSource::HOMEKIT,
+					'source' => MetadataTypes\Sources\Connector::HOMEKIT,
 					'type' => 'subscriber',
 				],
 			);
@@ -82,7 +82,7 @@ final class Subscriber
 		$this->logger->debug(
 			'Registering client to subscriber',
 			[
-				'source' => MetadataTypes\ConnectorSource::HOMEKIT,
+				'source' => MetadataTypes\Sources\Connector::HOMEKIT,
 				'type' => 'subscriber',
 				'connection' => [
 					'address' => $connection->getRemoteAddress(),
@@ -100,7 +100,7 @@ final class Subscriber
 		$this->logger->debug(
 			'Unregistering client from subscriber',
 			[
-				'source' => MetadataTypes\ConnectorSource::HOMEKIT,
+				'source' => MetadataTypes\Sources\Connector::HOMEKIT,
 				'type' => 'subscriber',
 				'connection' => [
 					'address' => $connection->getRemoteAddress(),
@@ -124,7 +124,7 @@ final class Subscriber
 		$this->logger->debug(
 			'Subscribing to characteristic',
 			[
-				'source' => MetadataTypes\ConnectorSource::HOMEKIT,
+				'source' => MetadataTypes\Sources\Connector::HOMEKIT,
 				'type' => 'subscriber',
 				'subscription' => [
 					'aid' => $aid,
@@ -146,7 +146,7 @@ final class Subscriber
 		$this->logger->debug(
 			'Unsubscribing from characteristic',
 			[
-				'source' => MetadataTypes\ConnectorSource::HOMEKIT,
+				'source' => MetadataTypes\Sources\Connector::HOMEKIT,
 				'type' => 'subscriber',
 				'subscription' => [
 					'aid' => $aid,
@@ -214,7 +214,7 @@ final class Subscriber
 			$this->logger->error(
 				'Event message could not be created',
 				[
-					'source' => MetadataTypes\ConnectorSource::HOMEKIT,
+					'source' => MetadataTypes\Sources\Connector::HOMEKIT,
 					'type' => 'subscriber',
 					'data' => [
 						'aid' => $aid,

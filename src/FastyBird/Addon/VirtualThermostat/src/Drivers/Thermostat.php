@@ -21,9 +21,7 @@ use FastyBird\Addon\VirtualThermostat\Exceptions;
 use FastyBird\Addon\VirtualThermostat\Helpers;
 use FastyBird\Addon\VirtualThermostat\Types;
 use FastyBird\Connector\Virtual\Drivers as VirtualDrivers;
-use FastyBird\Connector\Virtual\Entities as VirtualEntities;
 use FastyBird\Connector\Virtual\Exceptions as VirtualExceptions;
-use FastyBird\Connector\Virtual\Helpers as VirtualHelpers;
 use FastyBird\Connector\Virtual\Queue as VirtualQueue;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
@@ -99,7 +97,7 @@ class Thermostat implements VirtualDrivers\Driver
 
 	public function __construct(
 		private readonly MetadataDocuments\DevicesModule\Device $device,
-		private readonly VirtualHelpers\Entity $entityHelper,
+		private readonly VirtualQueue\MessageBuilder $messageBuilder,
 		private readonly Helpers\Device $deviceHelper,
 		private readonly VirtualQueue\Queue $queue,
 		private readonly VirtualThermostat\Logger $logger,
@@ -140,7 +138,7 @@ class Thermostat implements VirtualDrivers\Driver
 		foreach ($this->deviceHelper->getActors($this->device) as $actor) {
 			$state = $this->channelPropertiesStatesManager->read(
 				$actor,
-				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
+				MetadataTypes\Sources\Addon::get(MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT),
 			);
 
 			if (!$state instanceof MetadataDocuments\DevicesModule\ChannelPropertyState) {
@@ -172,7 +170,7 @@ class Thermostat implements VirtualDrivers\Driver
 		foreach ($this->deviceHelper->getSensors($this->device) as $sensor) {
 			$state = $this->channelPropertiesStatesManager->read(
 				$sensor,
-				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
+				MetadataTypes\Sources\Addon::get(MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT),
 			);
 
 			if (!$state instanceof MetadataDocuments\DevicesModule\ChannelPropertyState) {
@@ -231,7 +229,7 @@ class Thermostat implements VirtualDrivers\Driver
 			if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
 				$state = $this->channelPropertiesStatesManager->read(
 					$property,
-					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
+					MetadataTypes\Sources\Addon::get(MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT),
 				);
 
 				if (!$state instanceof MetadataDocuments\DevicesModule\ChannelPropertyState) {
@@ -244,7 +242,7 @@ class Thermostat implements VirtualDrivers\Driver
 					$this->channelPropertiesStatesManager->setValidState(
 						$property,
 						true,
-						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
+						MetadataTypes\Sources\Addon::get(MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT),
 					);
 				}
 			}
@@ -253,7 +251,7 @@ class Thermostat implements VirtualDrivers\Driver
 		if ($this->deviceHelper->getPresetMode($this->device) !== null) {
 			$state = $this->channelPropertiesStatesManager->read(
 				$this->deviceHelper->getPresetMode($this->device),
-				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
+				MetadataTypes\Sources\Addon::get(MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT),
 			);
 
 			if (
@@ -265,7 +263,7 @@ class Thermostat implements VirtualDrivers\Driver
 				$this->channelPropertiesStatesManager->setValidState(
 					$this->deviceHelper->getPresetMode($this->device),
 					true,
-					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
+					MetadataTypes\Sources\Addon::get(MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT),
 				);
 			}
 		}
@@ -273,7 +271,7 @@ class Thermostat implements VirtualDrivers\Driver
 		if ($this->deviceHelper->getHvacMode($this->device) !== null) {
 			$state = $this->channelPropertiesStatesManager->read(
 				$this->deviceHelper->getHvacMode($this->device),
-				MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
+				MetadataTypes\Sources\Addon::get(MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT),
 			);
 
 			if (
@@ -285,7 +283,7 @@ class Thermostat implements VirtualDrivers\Driver
 				$this->channelPropertiesStatesManager->setValidState(
 					$this->deviceHelper->getHvacMode($this->device),
 					true,
-					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
+					MetadataTypes\Sources\Addon::get(MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT),
 				);
 			}
 		}
@@ -387,14 +385,15 @@ class Thermostat implements VirtualDrivers\Driver
 		$maxCurrentTemp = max($measuredTemp);
 
 		$this->queue->append(
-			$this->entityHelper->create(
-				VirtualEntities\Messages\StoreChannelPropertyState::class,
+			$this->messageBuilder->create(
+				VirtualQueue\Messages\StoreChannelPropertyState::class,
 				[
 					'connector' => $this->device->getConnector(),
 					'device' => $this->device->getId(),
 					'channel' => $this->deviceHelper->getState($this->device)->getId(),
 					'property' => Types\ChannelPropertyIdentifier::CURRENT_ROOM_TEMPERATURE,
 					'value' => array_sum($measuredTemp) / count($measuredTemp),
+					'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 				],
 			),
 		);
@@ -412,27 +411,29 @@ class Thermostat implements VirtualDrivers\Driver
 			}
 
 			$this->queue->append(
-				$this->entityHelper->create(
-					VirtualEntities\Messages\StoreChannelPropertyState::class,
+				$this->messageBuilder->create(
+					VirtualQueue\Messages\StoreChannelPropertyState::class,
 					[
 						'connector' => $this->device->getConnector(),
 						'device' => $this->device->getId(),
 						'channel' => $this->deviceHelper->getState($this->device)->getId(),
 						'property' => Types\ChannelPropertyIdentifier::CURRENT_FLOOR_TEMPERATURE,
 						'value' => array_sum($measuredFloorTemp) / count($measuredFloorTemp),
+						'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 					],
 				),
 			);
 
 			$this->queue->append(
-				$this->entityHelper->create(
-					VirtualEntities\Messages\StoreChannelPropertyState::class,
+				$this->messageBuilder->create(
+					VirtualQueue\Messages\StoreChannelPropertyState::class,
 					[
 						'connector' => $this->device->getConnector(),
 						'device' => $this->device->getId(),
 						'channel' => $this->deviceHelper->getState($this->device)->getId(),
 						'property' => Types\ChannelPropertyIdentifier::FLOOR_OVERHEATING,
 						'value' => $this->isFloorOverHeating(),
+						'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 					],
 				),
 			);
@@ -445,14 +446,15 @@ class Thermostat implements VirtualDrivers\Driver
 			);
 
 			$this->queue->append(
-				$this->entityHelper->create(
-					VirtualEntities\Messages\StoreChannelPropertyState::class,
+				$this->messageBuilder->create(
+					VirtualQueue\Messages\StoreChannelPropertyState::class,
 					[
 						'connector' => $this->device->getConnector(),
 						'device' => $this->device->getId(),
 						'channel' => $this->deviceHelper->getState($this->device)->getId(),
 						'property' => Types\ChannelPropertyIdentifier::CURRENT_ROOM_HUMIDITY,
 						'value' => $measuredHum !== [] ? array_sum($measuredHum) / count($measuredHum) : null,
+						'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 					],
 				),
 			);
@@ -460,14 +462,15 @@ class Thermostat implements VirtualDrivers\Driver
 
 		if ($this->hasOpeningsSensors) {
 			$this->queue->append(
-				$this->entityHelper->create(
-					VirtualEntities\Messages\StoreChannelPropertyState::class,
+				$this->messageBuilder->create(
+					VirtualQueue\Messages\StoreChannelPropertyState::class,
 					[
 						'connector' => $this->device->getConnector(),
 						'device' => $this->device->getId(),
 						'channel' => $this->deviceHelper->getState($this->device)->getId(),
 						'property' => Types\ChannelPropertyIdentifier::CURRENT_OPENINGS_STATE,
 						'value' => $this->isOpeningsClosed() ? Types\OpeningStatePayload::CLOSED : Types\OpeningStatePayload::OPENED,
+						'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 					],
 				),
 			);
@@ -595,14 +598,15 @@ class Thermostat implements VirtualDrivers\Driver
 						$this->presetMode = Types\Preset::get($expectedValue);
 
 						$this->queue->append(
-							$this->entityHelper->create(
-								VirtualEntities\Messages\StoreChannelPropertyState::class,
+							$this->messageBuilder->create(
+								VirtualQueue\Messages\StoreChannelPropertyState::class,
 								[
 									'connector' => $this->device->getConnector(),
 									'device' => $this->device->getId(),
 									'channel' => $this->deviceHelper->getState($this->device)->getId(),
 									'property' => $property->getId(),
 									'value' => $expectedValue,
+									'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 								],
 							),
 						);
@@ -619,14 +623,15 @@ class Thermostat implements VirtualDrivers\Driver
 						$this->hvacMode = Types\HvacMode::get($expectedValue);
 
 						$this->queue->append(
-							$this->entityHelper->create(
-								VirtualEntities\Messages\StoreChannelPropertyState::class,
+							$this->messageBuilder->create(
+								VirtualQueue\Messages\StoreChannelPropertyState::class,
 								[
 									'connector' => $this->device->getConnector(),
 									'device' => $this->device->getId(),
 									'channel' => $this->deviceHelper->getState($this->device)->getId(),
 									'property' => $property->getId(),
 									'value' => $expectedValue,
+									'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 								],
 							),
 						);
@@ -651,14 +656,15 @@ class Thermostat implements VirtualDrivers\Driver
 					$this->targetTemperature[$matches['preset']] = floatval($expectedValue);
 
 					$this->queue->append(
-						$this->entityHelper->create(
-							VirtualEntities\Messages\StoreChannelPropertyState::class,
+						$this->messageBuilder->create(
+							VirtualQueue\Messages\StoreChannelPropertyState::class,
 							[
 								'connector' => $this->device->getConnector(),
 								'device' => $this->device->getId(),
 								'channel' => $channel->getId(),
 								'property' => $property->getId(),
 								'value' => $expectedValue,
+								'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 							],
 						),
 					);
@@ -806,14 +812,15 @@ class Thermostat implements VirtualDrivers\Driver
 		}
 
 		$this->queue->append(
-			$this->entityHelper->create(
-				VirtualEntities\Messages\StoreChannelPropertyState::class,
+			$this->messageBuilder->create(
+				VirtualQueue\Messages\StoreChannelPropertyState::class,
 				[
 					'connector' => $this->device->getConnector(),
 					'device' => $this->device->getId(),
 					'channel' => $this->deviceHelper->getState($this->device)->getId(),
 					'property' => Types\ChannelPropertyIdentifier::HVAC_STATE,
 					'value' => $state,
+					'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 				],
 			),
 		);
@@ -834,7 +841,7 @@ class Thermostat implements VirtualDrivers\Driver
 			$this->logger->warning(
 				'Floor is overheating. Turning off heaters actors',
 				[
-					'source' => MetadataTypes\ConnectorSource::VIRTUAL,
+					'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 					'type' => 'thermostat-driver',
 					'connector' => [
 						'id' => $this->device->getConnector()->toString(),
@@ -862,14 +869,15 @@ class Thermostat implements VirtualDrivers\Driver
 			}
 
 			$this->queue->append(
-				$this->entityHelper->create(
-					VirtualEntities\Messages\StoreChannelPropertyState::class,
+				$this->messageBuilder->create(
+					VirtualQueue\Messages\StoreChannelPropertyState::class,
 					[
 						'connector' => $this->device->getConnector(),
 						'device' => $this->device->getId(),
 						'channel' => $actor->getChannel(),
 						'property' => $actor->getId(),
 						'value' => $state,
+						'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 					],
 				),
 			);
@@ -896,14 +904,15 @@ class Thermostat implements VirtualDrivers\Driver
 			}
 
 			$this->queue->append(
-				$this->entityHelper->create(
-					VirtualEntities\Messages\StoreChannelPropertyState::class,
+				$this->messageBuilder->create(
+					VirtualQueue\Messages\StoreChannelPropertyState::class,
 					[
 						'connector' => $this->device->getConnector(),
 						'device' => $this->device->getId(),
 						'channel' => $actor->getChannel(),
 						'property' => $actor->getId(),
 						'value' => $state,
+						'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 					],
 				),
 			);
@@ -938,7 +947,7 @@ class Thermostat implements VirtualDrivers\Driver
 				$this->logger->warning(
 					'Floor sensors are not provided values. Floor could not be protected',
 					[
-						'source' => MetadataTypes\ConnectorSource::VIRTUAL,
+						'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 						'type' => 'thermostat-driver',
 						'connector' => [
 							'id' => $this->device->getConnector()->toString(),
@@ -985,12 +994,13 @@ class Thermostat implements VirtualDrivers\Driver
 		$this->connected = false;
 
 		$this->queue->append(
-			$this->entityHelper->create(
-				VirtualEntities\Messages\StoreDeviceConnectionState::class,
+			$this->messageBuilder->create(
+				VirtualQueue\Messages\StoreDeviceConnectionState::class,
 				[
 					'connector' => $this->device->getConnector(),
 					'device' => $this->device->getId(),
 					'state' => MetadataTypes\ConnectionState::STOPPED,
+					'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 				],
 			),
 		);
@@ -998,7 +1008,7 @@ class Thermostat implements VirtualDrivers\Driver
 		$this->logger->warning(
 			$reason,
 			[
-				'source' => MetadataTypes\ConnectorSource::VIRTUAL,
+				'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 				'type' => 'thermostat-driver',
 				'connector' => [
 					'id' => $this->device->getConnector()->toString(),

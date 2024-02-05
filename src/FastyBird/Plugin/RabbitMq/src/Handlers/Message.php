@@ -79,7 +79,7 @@ final class Message extends Evenement\EventEmitter
 			} else {
 				// Log error action reason
 				$this->logger->warning('Received message is not in valid format', [
-					'source' => MetadataTypes\PluginSource::RABBITMQ,
+					'source' => MetadataTypes\Sources\Plugin::RABBITMQ,
 					'type' => 'messages-handler',
 				]);
 
@@ -88,7 +88,7 @@ final class Message extends Evenement\EventEmitter
 		} catch (Nette\Utils\JsonException $ex) {
 			// Log error action reason
 			$this->logger->warning('Received message is not valid json', [
-				'source' => MetadataTypes\PluginSource::RABBITMQ,
+				'source' => MetadataTypes\Sources\Plugin::RABBITMQ,
 				'type' => 'messages-handler',
 				'exception' => ApplicationHelpers\Logger::buildException($ex),
 			]);
@@ -125,7 +125,7 @@ final class Message extends Evenement\EventEmitter
 
 		} catch (Throwable $ex) {
 			$this->logger->error('Message could not be transformed into entity', [
-				'source' => MetadataTypes\PluginSource::RABBITMQ,
+				'source' => MetadataTypes\Sources\Plugin::RABBITMQ,
 				'type' => 'messages-handler',
 				'exception' => ApplicationHelpers\Logger::buildException($ex),
 				'data' => $data,
@@ -148,7 +148,7 @@ final class Message extends Evenement\EventEmitter
 		} catch (Exceptions\UnprocessableMessage $ex) {
 			// Log error consume reason
 			$this->logger->error('Message could not be handled', [
-				'source' => MetadataTypes\PluginSource::RABBITMQ,
+				'source' => MetadataTypes\Sources\Plugin::RABBITMQ,
 				'type' => 'messages-handler',
 				'exception' => ApplicationHelpers\Logger::buildException($ex),
 			]);
@@ -161,22 +161,30 @@ final class Message extends Evenement\EventEmitter
 
 	private function validateSource(
 		string $source,
-	): MetadataTypes\ModuleSource|MetadataTypes\ConnectorSource|MetadataTypes\PluginSource|MetadataTypes\AutomatorSource|null
+	): MetadataTypes\Sources\Source|null
 	{
-		if (MetadataTypes\ModuleSource::isValidValue($source)) {
-			return MetadataTypes\ModuleSource::get($source);
+		if (MetadataTypes\Sources\Module::isValidValue($source)) {
+			return MetadataTypes\Sources\Module::get($source);
 		}
 
-		if (MetadataTypes\PluginSource::isValidValue($source)) {
-			return MetadataTypes\PluginSource::get($source);
+		if (MetadataTypes\Sources\Plugin::isValidValue($source)) {
+			return MetadataTypes\Sources\Plugin::get($source);
 		}
 
-		if (MetadataTypes\ConnectorSource::isValidValue($source)) {
-			return MetadataTypes\ConnectorSource::get($source);
+		if (MetadataTypes\Sources\Connector::isValidValue($source)) {
+			return MetadataTypes\Sources\Connector::get($source);
 		}
 
-		if (MetadataTypes\AutomatorSource::isValidValue($source)) {
-			return MetadataTypes\AutomatorSource::get($source);
+		if (MetadataTypes\Sources\Automator::isValidValue($source)) {
+			return MetadataTypes\Sources\Automator::get($source);
+		}
+
+		if (MetadataTypes\Sources\Addon::isValidValue($source)) {
+			return MetadataTypes\Sources\Addon::get($source);
+		}
+
+		if (MetadataTypes\Sources\Bridge::isValidValue($source)) {
+			return MetadataTypes\Sources\Bridge::get($source);
 		}
 
 		return null;

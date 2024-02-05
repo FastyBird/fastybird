@@ -13,22 +13,23 @@
  * @date           22.11.22
  */
 
-namespace FastyBird\Connector\Virtual\Entities\Messages;
+namespace FastyBird\Connector\Virtual\Queue\Messages;
 
 use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function is_string;
 
 /**
- * Device status message entity
+ * Device status message
  *
  * @package        FastyBird:VirtualConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class StoreDevicePropertyState implements Entity
+final class StoreDevicePropertyState implements Message
 {
 
 	public function __construct(
@@ -49,6 +50,11 @@ final class StoreDevicePropertyState implements Entity
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		private readonly float|int|string|bool|null $value,
+		#[ObjectMapper\Rules\AnyOf([
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\Sources\Connector::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\Sources\Addon::class),
+		])]
+		private readonly MetadataTypes\Sources\Source $source,
 	)
 	{
 	}
@@ -77,6 +83,11 @@ final class StoreDevicePropertyState implements Entity
 		return $this->value;
 	}
 
+	public function getSource(): MetadataTypes\Sources\Source
+	{
+		return $this->source;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -87,6 +98,7 @@ final class StoreDevicePropertyState implements Entity
 			'device' => $this->getDevice()->toString(),
 			'property' => is_string($this->getProperty()) ? $this->getProperty() : $this->getProperty()->toString(),
 			'value' => $this->getValue(),
+			'source' => $this->getSource()->getValue(),
 		];
 	}
 

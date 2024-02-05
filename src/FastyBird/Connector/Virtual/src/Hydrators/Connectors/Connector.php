@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * VirtualDevice.php
+ * Connector.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,22 +13,26 @@
  * @date           15.10.23
  */
 
-namespace FastyBird\Connector\Virtual\Hydrators;
+namespace FastyBird\Connector\Virtual\Hydrators\Connectors;
 
 use FastyBird\Connector\Virtual\Entities;
 use FastyBird\Module\Devices\Hydrators as DevicesHydrators;
 
 /**
- * Virtual device entity hydrator
+ * Virtual connector entity hydrator
  *
- * @template  T of Entities\VirtualDevice
- * @extends   DevicesHydrators\Devices\Device<T>
+ * @extends DevicesHydrators\Connectors\Connector<Entities\Connectors\Connector>
  *
  * @package        FastyBird:VirtualConnector!
  * @subpackage     Hydrators
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-abstract class VirtualDevice extends DevicesHydrators\Devices\Device
+final class Connector extends DevicesHydrators\Connectors\Connector
 {
+
+	public function getEntityName(): string
+	{
+		return Entities\Connectors\Connector::class;
+	}
 
 }

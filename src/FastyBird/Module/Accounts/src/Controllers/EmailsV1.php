@@ -223,7 +223,7 @@ final class EmailsV1 extends BaseV1
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ModuleSource::ACCOUNTS,
+					'source' => MetadataTypes\Sources\Module::ACCOUNTS,
 					'type' => 'emails-controller',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -309,7 +309,7 @@ final class EmailsV1 extends BaseV1
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ModuleSource::ACCOUNTS,
+					'source' => MetadataTypes\Sources\Module::ACCOUNTS,
 					'type' => 'emails-controller',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -368,7 +368,7 @@ final class EmailsV1 extends BaseV1
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ModuleSource::ACCOUNTS,
+					'source' => MetadataTypes\Sources\Module::ACCOUNTS,
 					'type' => 'emails-controller',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],

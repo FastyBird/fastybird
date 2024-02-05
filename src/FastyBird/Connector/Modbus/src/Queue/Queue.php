@@ -49,7 +49,7 @@ final class Queue
 		$this->logger->debug(
 			'Appended new message into messages queue',
 			[
-				'source' => MetadataTypes\ConnectorSource::MODBUS,
+				'source' => MetadataTypes\Sources\Connector::MODBUS,
 				'type' => 'queue',
 				'message' => $entity->toArray(),
 			],

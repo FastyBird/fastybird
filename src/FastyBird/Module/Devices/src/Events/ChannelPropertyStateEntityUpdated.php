@@ -35,7 +35,7 @@ class ChannelPropertyStateEntityUpdated extends EventDispatcher\Event
 		private readonly MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
 		private readonly States\ChannelProperty $read,
 		private readonly States\ChannelProperty $get,
-		private readonly MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource $source,
+		private readonly MetadataTypes\Sources\Source $source,
 	)
 	{
 	}
@@ -55,7 +55,7 @@ class ChannelPropertyStateEntityUpdated extends EventDispatcher\Event
 		return $this->get;
 	}
 
-	public function getSource(): MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource
+	public function getSource(): MetadataTypes\Sources\Source
 	{
 		return $this->source;
 	}

@@ -60,7 +60,7 @@ final class ModuleEntitiesTest extends TestCase
 			->method('publish')
 			->with(
 				self::callback(static function ($source): bool {
-					self::assertTrue($source instanceof Metadata\Types\ModuleSource);
+					self::assertTrue($source instanceof Metadata\Types\Sources\Module);
 					self::assertSame(Metadata\Constants::MODULE_TRIGGERS_SOURCE, $source->getValue());
 
 					return true;
@@ -151,7 +151,7 @@ final class ModuleEntitiesTest extends TestCase
 			->method('publish')
 			->with(
 				self::callback(static function ($source): bool {
-					self::assertTrue($source instanceof Metadata\Types\ModuleSource);
+					self::assertTrue($source instanceof Metadata\Types\Sources\Module);
 					self::assertSame(Metadata\Constants::MODULE_TRIGGERS_SOURCE, $source->getValue());
 
 					return true;
@@ -242,7 +242,7 @@ final class ModuleEntitiesTest extends TestCase
 			->method('publish')
 			->with(
 				self::callback(static function ($source): bool {
-					self::assertTrue($source instanceof Metadata\Types\ModuleSource);
+					self::assertTrue($source instanceof Metadata\Types\Sources\Module);
 					self::assertSame(Metadata\Constants::MODULE_TRIGGERS_SOURCE, $source->getValue());
 
 					return true;

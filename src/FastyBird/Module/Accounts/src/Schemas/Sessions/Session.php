@@ -41,7 +41,7 @@ final class Session extends JsonApis\JsonApi
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ModuleSource::ACCOUNTS . '/session';
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Module::ACCOUNTS . '/session';
 
 	/**
 	 * Define relationships names

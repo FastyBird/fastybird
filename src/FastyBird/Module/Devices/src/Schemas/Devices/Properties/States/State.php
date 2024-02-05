@@ -49,7 +49,7 @@ final class State extends JsonApiSchemas\JsonApi
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ModuleSource::DEVICES . '/property/device/' . MetadataTypes\PropertyType::DYNAMIC . '/state';
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Module::DEVICES . '/property/device/' . MetadataTypes\PropertyType::DYNAMIC . '/state';
 
 	/**
 	 * Define relationships names

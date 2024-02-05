@@ -56,7 +56,7 @@ final class Publisher implements ExchangePublisher\Async\Publisher
 	 * @return Promise\PromiseInterface<bool>
 	 */
 	public function publish(
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|MetadataTypes\AutomatorSource $source,
+		MetadataTypes\Sources\Source $source,
 		MetadataTypes\RoutingKey $routingKey,
 		MetadataDocuments\Document|null $entity,
 	): Promise\PromiseInterface
@@ -78,7 +78,7 @@ final class Publisher implements ExchangePublisher\Async\Publisher
 					$this->logger->debug(
 						'Received message was pushed into data exchange',
 						[
-							'source' => MetadataTypes\PluginSource::REDISDB,
+							'source' => MetadataTypes\Sources\Plugin::REDISDB,
 							'type' => 'messages-async-publisher',
 							'message' => [
 								'routing_key' => $routingKey->getValue(),
@@ -94,7 +94,7 @@ final class Publisher implements ExchangePublisher\Async\Publisher
 					$this->logger->error(
 						'Received message could not be pushed into data exchange',
 						[
-							'source' => MetadataTypes\PluginSource::REDISDB,
+							'source' => MetadataTypes\Sources\Plugin::REDISDB,
 							'type' => 'messages-async-publisher',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 							'message' => [
@@ -117,7 +117,7 @@ final class Publisher implements ExchangePublisher\Async\Publisher
 			$this->logger->error(
 				'Data could not be converted to message',
 				[
-					'source' => MetadataTypes\PluginSource::REDISDB,
+					'source' => MetadataTypes\Sources\Plugin::REDISDB,
 					'type' => 'messages-async-publisher',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'message' => [

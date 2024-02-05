@@ -97,7 +97,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Starting Tuya connector service',
 			[
-				'source' => MetadataTypes\ConnectorSource::TUYA,
+				'source' => MetadataTypes\Sources\Connector::TUYA,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -157,7 +157,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Tuya connector service has been started',
 			[
-				'source' => MetadataTypes\ConnectorSource::TUYA,
+				'source' => MetadataTypes\Sources\Connector::TUYA,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -182,7 +182,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Starting Tuya connector discovery',
 			[
-				'source' => MetadataTypes\ConnectorSource::TUYA,
+				'source' => MetadataTypes\Sources\Connector::TUYA,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -197,7 +197,7 @@ final class Connector implements DevicesConnectors\Connector
 				DevicesConstants::EVENT_TERMINATE,
 				[
 					new DevicesEvents\TerminateConnector(
-						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::FB_MQTT),
+						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::FB_MQTT),
 						'Devices discovery finished',
 					),
 				],
@@ -214,7 +214,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Tuya connector discovery has been started',
 			[
-				'source' => MetadataTypes\ConnectorSource::TUYA,
+				'source' => MetadataTypes\Sources\Connector::TUYA,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -247,7 +247,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Tuya connector has been terminated',
 			[
-				'source' => MetadataTypes\ConnectorSource::TUYA,
+				'source' => MetadataTypes\Sources\Connector::TUYA,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),

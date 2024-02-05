@@ -145,7 +145,7 @@ final class RolesV1 extends BaseV1
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ModuleSource::ACCOUNTS,
+					'source' => MetadataTypes\Sources\Module::ACCOUNTS,
 					'type' => 'roles-controller',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],

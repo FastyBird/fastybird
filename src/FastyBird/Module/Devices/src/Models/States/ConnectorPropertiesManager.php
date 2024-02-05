@@ -80,13 +80,13 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	 */
 	public function read(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
-		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
+		MetadataTypes\Sources\Source|null $source,
 	): bool|MetadataDocuments\DevicesModule\ConnectorPropertyState|null
 	{
 		if ($this->useExchange) {
 			try {
 				return $this->publisher->publish(
-					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+					$source ?? MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
 					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_ACTION),
 					$this->documentFactory->create(
 						MetadataDocuments\Actions\ActionConnectorProperty::class,
@@ -119,13 +119,13 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	public function write(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
 		Utils\ArrayHash $data,
-		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
+		MetadataTypes\Sources\Source|null $source,
 	): void
 	{
 		if ($this->useExchange) {
 			try {
 				$this->publisher->publish(
-					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+					$source ?? MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
 					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_ACTION),
 					$this->documentFactory->create(
 						MetadataDocuments\Actions\ActionConnectorProperty::class,
@@ -169,13 +169,13 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	public function set(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
 		Utils\ArrayHash $data,
-		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
+		MetadataTypes\Sources\Source|null $source,
 	): void
 	{
 		if ($this->useExchange) {
 			try {
 				$this->publisher->publish(
-					$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+					$source ?? MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
 					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_ACTION),
 					$this->documentFactory->create(
 						MetadataDocuments\Actions\ActionConnectorProperty::class,
@@ -221,7 +221,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	public function setValidState(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|array $property,
 		bool $state,
-		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
+		MetadataTypes\Sources\Source|null $source,
 	): void
 	{
 		if (is_array($property)) {
@@ -257,7 +257,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	public function setPendingState(
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|array $property,
 		bool $pending,
-		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
+		MetadataTypes\Sources\Source|null $source,
 	): void
 	{
 		if (is_array($property)) {
@@ -315,7 +315,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 			if ($result) {
 				$this->dispatcher?->dispatch(new Events\ConnectorPropertyStateEntityDeleted(
 					$id,
-					MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+					MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
 				));
 			}
 
@@ -324,7 +324,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 			$this->logger->warning(
 				'Connectors states manager is not configured. State could not be saved',
 				[
-					'source' => MetadataTypes\ModuleSource::DEVICES,
+					'source' => MetadataTypes\Sources\Module::DEVICES,
 					'type' => 'connector-properties-states',
 				],
 			);
@@ -354,7 +354,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 			$this->logger->warning(
 				'connectors states repository is not configured. State could not be fetched',
 				[
-					'source' => MetadataTypes\ModuleSource::DEVICES,
+					'source' => MetadataTypes\Sources\Module::DEVICES,
 					'type' => 'connector-properties-states',
 				],
 			);
@@ -395,7 +395,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 				$this->logger->error(
 					'Property stored actual value was not valid',
 					[
-						'source' => MetadataTypes\ModuleSource::DEVICES,
+						'source' => MetadataTypes\Sources\Module::DEVICES,
 						'type' => 'connector-properties-states',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 					],
@@ -406,7 +406,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 				$this->logger->warning(
 					'connectors states manager is not configured. State could not be fetched',
 					[
-						'source' => MetadataTypes\ModuleSource::DEVICES,
+						'source' => MetadataTypes\Sources\Module::DEVICES,
 						'type' => 'connector-properties-states',
 					],
 				);
@@ -423,7 +423,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 				$this->logger->error(
 					'Property stored expected value was not valid',
 					[
-						'source' => MetadataTypes\ModuleSource::DEVICES,
+						'source' => MetadataTypes\Sources\Module::DEVICES,
 						'type' => 'connector-properties-states',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 					],
@@ -434,7 +434,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 				$this->logger->warning(
 					'connectors states manager is not configured. State could not be fetched',
 					[
-						'source' => MetadataTypes\ModuleSource::DEVICES,
+						'source' => MetadataTypes\Sources\Module::DEVICES,
 						'type' => 'connector-properties-states',
 					],
 				);
@@ -457,7 +457,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
 		Utils\ArrayHash $data,
 		bool $forWriting,
-		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|null $source,
+		MetadataTypes\Sources\Source|null $source,
 	): void
 	{
 		try {
@@ -502,7 +502,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 				$this->logger->error(
 					'Provided property actual value is not valid',
 					[
-						'source' => MetadataTypes\ModuleSource::DEVICES,
+						'source' => MetadataTypes\Sources\Module::DEVICES,
 						'type' => 'connector-properties-states',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 					],
@@ -545,7 +545,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 					$this->logger->error(
 						'Provided property expected value was not valid',
 						[
-							'source' => MetadataTypes\ModuleSource::DEVICES,
+							'source' => MetadataTypes\Sources\Module::DEVICES,
 							'type' => 'connector-properties-states',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 						],
@@ -615,7 +615,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 						$property,
 						$readValue,
 						$getValue,
-						$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+						$source ?? MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
 					),
 				);
 			} else {
@@ -624,7 +624,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 						$property,
 						$readValue,
 						$getValue,
-						$source ?? MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+						$source ?? MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
 					),
 				);
 			}
@@ -632,7 +632,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 			$this->logger->debug(
 				$state === null ? 'Connector property state was created' : 'Connector property state was updated',
 				[
-					'source' => MetadataTypes\ModuleSource::DEVICES,
+					'source' => MetadataTypes\Sources\Module::DEVICES,
 					'type' => 'connector-properties-states',
 					'property' => [
 						'id' => $property->getId()->toString(),
@@ -644,7 +644,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 			$this->logger->warning(
 				'Connectors states manager is not configured. State could not be saved',
 				[
-					'source' => MetadataTypes\ModuleSource::DEVICES,
+					'source' => MetadataTypes\Sources\Module::DEVICES,
 					'type' => 'connector-properties-states',
 				],
 			);

@@ -43,7 +43,7 @@ final class Role extends JsonApis\JsonApi
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ModuleSource::ACCOUNTS . '/role';
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Module::ACCOUNTS . '/role';
 
 	/**
 	 * Define relationships names

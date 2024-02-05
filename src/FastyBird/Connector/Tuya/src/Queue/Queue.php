@@ -49,7 +49,7 @@ final class Queue
 		$this->logger->debug(
 			'Appended new message into messages queue',
 			[
-				'source' => MetadataTypes\ConnectorSource::TUYA,
+				'source' => MetadataTypes\Sources\Connector::TUYA,
 				'type' => 'queue',
 				'message' => $entity->toArray(),
 			],

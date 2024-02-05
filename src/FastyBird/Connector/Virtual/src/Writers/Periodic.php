@@ -16,9 +16,7 @@
 namespace FastyBird\Connector\Virtual\Writers;
 
 use DateTimeInterface;
-use FastyBird\Connector\Virtual\Entities;
 use FastyBird\Connector\Virtual\Exceptions;
-use FastyBird\Connector\Virtual\Helpers;
 use FastyBird\Connector\Virtual\Queue;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
@@ -74,7 +72,7 @@ abstract class Periodic implements Writer
 
 	public function __construct(
 		protected readonly MetadataDocuments\DevicesModule\Connector $connector,
-		protected readonly Helpers\Entity $entityHelper,
+		protected readonly Queue\MessageBuilder $messageBuilder,
 		protected readonly Queue\Queue $queue,
 		protected readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		protected readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
@@ -243,7 +241,7 @@ abstract class Periodic implements Writer
 				$state = await(
 					$this->devicePropertiesStatesManager->read(
 						$property,
-						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
+						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::VIRTUAL),
 					),
 				);
 
@@ -267,7 +265,7 @@ abstract class Periodic implements Writer
 				$state = await(
 					$this->channelPropertiesStatesManager->read(
 						$property,
-						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::VIRTUAL),
+						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::VIRTUAL),
 					),
 				);
 
@@ -309,8 +307,8 @@ abstract class Periodic implements Writer
 			) {
 				if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
 					$this->queue->append(
-						$this->entityHelper->create(
-							Entities\Messages\WriteDevicePropertyState::class,
+						$this->messageBuilder->create(
+							Queue\Messages\WriteDevicePropertyState::class,
 							[
 								'connector' => $device->getConnector(),
 								'device' => $device->getId(),
@@ -330,8 +328,8 @@ abstract class Periodic implements Writer
 					);
 				} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
 					$this->queue->append(
-						$this->entityHelper->create(
-							Entities\Messages\WriteChannelPropertyState::class,
+						$this->messageBuilder->create(
+							Queue\Messages\WriteChannelPropertyState::class,
 							[
 								'connector' => $device->getConnector(),
 								'device' => $device->getId(),
@@ -357,8 +355,8 @@ abstract class Periodic implements Writer
 			) {
 				if ($property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
 					$this->queue->append(
-						$this->entityHelper->create(
-							Entities\Messages\WriteDevicePropertyState::class,
+						$this->messageBuilder->create(
+							Queue\Messages\WriteDevicePropertyState::class,
 							[
 								'connector' => $device->getConnector(),
 								'device' => $device->getId(),
@@ -378,8 +376,8 @@ abstract class Periodic implements Writer
 					);
 				} else {
 					$this->queue->append(
-						$this->entityHelper->create(
-							Entities\Messages\WriteChannelPropertyState::class,
+						$this->messageBuilder->create(
+							Queue\Messages\WriteChannelPropertyState::class,
 							[
 								'connector' => $device->getConnector(),
 								'device' => $device->getId(),

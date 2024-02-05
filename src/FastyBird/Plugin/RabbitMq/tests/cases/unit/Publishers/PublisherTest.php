@@ -42,7 +42,7 @@ final class PublisherTest extends TestCase
 				]),
 				[
 					'sender_id' => 'rabbitmq_client_identifier',
-					'source' => MetadataTypes\ModuleSource::DEVICES,
+					'source' => MetadataTypes\Sources\Module::DEVICES,
 					'created' => $now->format(DateTimeInterface::ATOM),
 				],
 				'exchange_name',
@@ -81,7 +81,7 @@ final class PublisherTest extends TestCase
 		);
 
 		$publisher->publish(
-			MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES),
+			MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
 			MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::DEVICE_DOCUMENT_UPDATED),
 			new MetadataDocuments\Actions\ActionChannelProperty(
 				MetadataTypes\PropertyAction::get(MetadataTypes\PropertyAction::SET),

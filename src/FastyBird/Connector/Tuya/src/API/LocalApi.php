@@ -232,7 +232,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 								$this->logger->debug(
 									'Rebuilding payload for device22',
 									[
-										'source' => MetadataTypes\ConnectorSource::TUYA,
+										'source' => MetadataTypes\Sources\Connector::TUYA,
 										'type' => 'local-api',
 										'device' => [
 											'identifier' => $this->identifier,
@@ -266,7 +266,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 								$this->logger->debug(
 									'Device has replied to heartbeat',
 									[
-										'source' => MetadataTypes\ConnectorSource::TUYA,
+										'source' => MetadataTypes\Sources\Connector::TUYA,
 										'type' => 'local-api',
 										'device' => [
 											'identifier' => $this->identifier,
@@ -279,7 +279,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 								$this->logger->debug(
 									'Device has reported its state',
 									[
-										'source' => MetadataTypes\ConnectorSource::TUYA,
+										'source' => MetadataTypes\Sources\Connector::TUYA,
 										'type' => 'local-api',
 										'device' => [
 											'identifier' => $this->identifier,
@@ -312,7 +312,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 						$this->logger->debug(
 							'Connection with device was closed',
 							[
-								'source' => MetadataTypes\ConnectorSource::TUYA,
+								'source' => MetadataTypes\Sources\Connector::TUYA,
 								'type' => 'local-api',
 								'device' => [
 									'identifier' => $this->identifier,
@@ -340,7 +340,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 								$this->logger->debug(
 									'Sending ping to device',
 									[
-										'source' => MetadataTypes\ConnectorSource::TUYA,
+										'source' => MetadataTypes\Sources\Connector::TUYA,
 										'type' => 'local-api',
 										'device' => [
 											'identifier' => $this->identifier,
@@ -618,7 +618,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 		$this->logger->debug(
 			'Detected device DPS',
 			[
-				'source' => MetadataTypes\ConnectorSource::TUYA,
+				'source' => MetadataTypes\Sources\Connector::TUYA,
 				'type' => 'local-api',
 				'device' => [
 					'identifier' => $this->identifier,
@@ -680,7 +680,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 		$this->logger->debug(
 			'Sending message to device',
 			[
-				'source' => MetadataTypes\ConnectorSource::TUYA,
+				'source' => MetadataTypes\Sources\Connector::TUYA,
 				'type' => 'local-api',
 				'device' => [
 					'identifier' => $this->identifier,
@@ -966,7 +966,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 				$this->logger->info(
 					'Received message from device in version 3.1. This code is untested',
 					[
-						'source' => MetadataTypes\ConnectorSource::TUYA,
+						'source' => MetadataTypes\Sources\Connector::TUYA,
 						'type' => 'local-api',
 						'device' => [
 							'identifier' => $this->identifier,
@@ -1052,7 +1052,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 							$this->deviceType->getValue(),
 						),
 						[
-							'source' => MetadataTypes\ConnectorSource::TUYA,
+							'source' => MetadataTypes\Sources\Connector::TUYA,
 							'type' => 'local-api',
 							'device' => [
 								'identifier' => $this->identifier,
@@ -1097,7 +1097,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 			$this->logger->warning(
 				'Received message from device with unsupported version',
 				[
-					'source' => MetadataTypes\ConnectorSource::TUYA,
+					'source' => MetadataTypes\Sources\Connector::TUYA,
 					'type' => 'local-api',
 					'device' => [
 						'identifier' => $this->identifier,
@@ -1116,7 +1116,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 		$this->logger->debug(
 			'Received message from device',
 			[
-				'source' => MetadataTypes\ConnectorSource::TUYA,
+				'source' => MetadataTypes\Sources\Connector::TUYA,
 				'type' => 'local-api',
 				'device' => [
 					'identifier' => $this->identifier,

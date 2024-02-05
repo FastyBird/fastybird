@@ -256,19 +256,19 @@ class Rtu implements Client
 					$this->channelPropertiesStatesManager->setValidState(
 						$property,
 						false,
-						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::MODBUS),
+						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::MODBUS),
 					);
 					$this->channelPropertiesStatesManager->setPendingState(
 						$property,
 						false,
-						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::MODBUS),
+						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::MODBUS),
 					);
 				}
 
 				$this->logger->warning(
 					'Channel address is missing',
 					[
-						'source' => MetadataTypes\ConnectorSource::MODBUS,
+						'source' => MetadataTypes\Sources\Connector::MODBUS,
 						'type' => 'rtu-client',
 						'connector' => [
 							'id' => $this->connector->getId()->toString(),
@@ -460,7 +460,7 @@ class Rtu implements Client
 							$this->channelPropertiesStatesManager->setValidState(
 								$property,
 								false,
-								MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::MODBUS),
+								MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::MODBUS),
 							);
 						}
 
@@ -479,7 +479,7 @@ class Rtu implements Client
 				$this->logger->error(
 					'Could not handle register reading',
 					[
-						'source' => MetadataTypes\ConnectorSource::MODBUS,
+						'source' => MetadataTypes\Sources\Connector::MODBUS,
 						'type' => 'rtu-client',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'connector' => [
@@ -577,7 +577,7 @@ class Rtu implements Client
 				$this->logger->warning(
 					'Maximum channel property read attempts reached. Device is lost',
 					[
-						'source' => MetadataTypes\ConnectorSource::MODBUS,
+						'source' => MetadataTypes\Sources\Connector::MODBUS,
 						'type' => 'rtu-client',
 						'connector' => [
 							'id' => $this->connector->getId()->toString(),
@@ -634,7 +634,7 @@ class Rtu implements Client
 		$this->logger->warning(
 			'Channel property data type is not supported for now',
 			[
-				'source' => MetadataTypes\ConnectorSource::MODBUS,
+				'source' => MetadataTypes\Sources\Connector::MODBUS,
 				'type' => 'rtu-client',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),

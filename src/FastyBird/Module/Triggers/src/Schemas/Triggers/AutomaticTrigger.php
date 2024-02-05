@@ -15,7 +15,7 @@
 
 namespace FastyBird\Module\Triggers\Schemas\Triggers;
 
-use FastyBird\Library\Metadata\Types\ModuleSource;
+use FastyBird\Library\Metadata\Types\Sources\Module;
 use FastyBird\Module\Triggers;
 use FastyBird\Module\Triggers\Entities;
 use FastyBird\Module\Triggers\Exceptions;
@@ -42,7 +42,7 @@ final class AutomaticTrigger extends Trigger
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = ModuleSource::TRIGGERS . '/trigger/automatic';
+	public const SCHEMA_TYPE = Module::TRIGGERS . '/trigger/automatic';
 
 	/**
 	 * Define relationships names

@@ -26,9 +26,9 @@ use function assert;
 abstract class NsPanelDevice extends DevicesEntities\Devices\Device
 {
 
-	public function getSource(): MetadataTypes\ConnectorSource
+	public function getSource(): MetadataTypes\Sources\Connector
 	{
-		return MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::NS_PANEL);
+		return MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::NS_PANEL);
 	}
 
 	public function getConnector(): NsPanelConnector

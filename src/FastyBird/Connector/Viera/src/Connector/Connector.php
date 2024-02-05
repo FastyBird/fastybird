@@ -85,7 +85,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Starting Viera connector service',
 			[
-				'source' => MetadataTypes\ConnectorSource::VIERA,
+				'source' => MetadataTypes\Sources\Connector::VIERA,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -121,7 +121,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Viera connector service has been started',
 			[
-				'source' => MetadataTypes\ConnectorSource::VIERA,
+				'source' => MetadataTypes\Sources\Connector::VIERA,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -142,7 +142,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Starting Viera connector discovery',
 			[
-				'source' => MetadataTypes\ConnectorSource::VIERA,
+				'source' => MetadataTypes\Sources\Connector::VIERA,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -157,7 +157,7 @@ final class Connector implements DevicesConnectors\Connector
 				DevicesConstants::EVENT_TERMINATE,
 				[
 					new DevicesEvents\TerminateConnector(
-						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::FB_MQTT),
+						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::FB_MQTT),
 						'Devices discovery finished',
 					),
 				],
@@ -174,7 +174,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Viera connector discovery has been started',
 			[
-				'source' => MetadataTypes\ConnectorSource::VIERA,
+				'source' => MetadataTypes\Sources\Connector::VIERA,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -202,7 +202,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Viera connector has been terminated',
 			[
-				'source' => MetadataTypes\ConnectorSource::VIERA,
+				'source' => MetadataTypes\Sources\Connector::VIERA,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),

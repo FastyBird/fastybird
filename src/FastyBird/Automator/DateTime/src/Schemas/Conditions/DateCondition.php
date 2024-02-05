@@ -17,7 +17,7 @@ namespace FastyBird\Automator\DateTime\Schemas\Conditions;
 
 use DateTimeInterface;
 use FastyBird\Automator\DateTime\Entities;
-use FastyBird\Library\Metadata\Types\ModuleSource;
+use FastyBird\Library\Metadata\Types\Sources\Module;
 use FastyBird\Module\Triggers\Schemas as TriggersSchemas;
 use Neomerx\JsonApi;
 use function array_merge;
@@ -37,7 +37,7 @@ final class DateCondition extends TriggersSchemas\Conditions\Condition
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = ModuleSource::TRIGGERS . '/condition/date';
+	public const SCHEMA_TYPE = Module::TRIGGERS . '/condition/date';
 
 	public function getType(): string
 	{

@@ -734,9 +734,9 @@ abstract class Property implements Entity,
 		return null;
 	}
 
-	public function getSource(): MetadataTypes\ModuleSource
+	public function getSource(): MetadataTypes\Sources\Module
 	{
-		return MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::DEVICES);
+		return MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES);
 	}
 
 }

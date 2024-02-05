@@ -37,9 +37,9 @@ class SonoffChannel extends DevicesEntities\Channels\Channel
 		return self::TYPE;
 	}
 
-	public function getSource(): MetadataTypes\ConnectorSource
+	public function getSource(): MetadataTypes\Sources\Connector
 	{
-		return MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SONOFF);
+		return MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::SONOFF);
 	}
 
 }

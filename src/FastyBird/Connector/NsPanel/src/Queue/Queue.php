@@ -49,7 +49,7 @@ final class Queue
 		$this->logger->debug(
 			'Appended new message into messages queue',
 			[
-				'source' => MetadataTypes\ConnectorSource::NS_PANEL,
+				'source' => MetadataTypes\Sources\Connector::NS_PANEL,
 				'type' => 'queue',
 				'message' => $entity->toArray(),
 			],
