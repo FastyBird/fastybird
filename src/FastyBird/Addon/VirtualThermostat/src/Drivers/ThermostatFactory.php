@@ -30,7 +30,7 @@ use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 interface ThermostatFactory extends DriverFactory
 {
 
-	public const DEVICE_TYPE = Entities\Devices\Thermostat::TYPE;
+	public const DEVICE_TYPE = Entities\Devices\Device::TYPE;
 
 	public function create(MetadataDocuments\DevicesModule\Device $device): Thermostat;
 

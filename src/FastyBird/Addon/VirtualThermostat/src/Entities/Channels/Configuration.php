@@ -70,7 +70,7 @@ class Configuration extends VirtualEntities\Channels\Channel
 			return floatval($property->getValue());
 		}
 
-		return Entities\Devices\Thermostat::MAXIMUM_FLOOR_TEMPERATURE;
+		return Entities\Devices\Device::MAXIMUM_FLOOR_TEMPERATURE;
 	}
 
 	/**
@@ -121,7 +121,7 @@ class Configuration extends VirtualEntities\Channels\Channel
 			return floatval($property->getValue());
 		}
 
-		return Entities\Devices\Thermostat::COLD_TOLERANCE;
+		return Entities\Devices\Device::COLD_TOLERANCE;
 	}
 
 	/**
@@ -147,7 +147,7 @@ class Configuration extends VirtualEntities\Channels\Channel
 			return floatval($property->getValue());
 		}
 
-		return Entities\Devices\Thermostat::HOT_TOLERANCE;
+		return Entities\Devices\Device::HOT_TOLERANCE;
 	}
 
 }

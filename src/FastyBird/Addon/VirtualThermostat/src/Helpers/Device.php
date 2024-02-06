@@ -322,7 +322,7 @@ final class Device
 		);
 
 		if ($property?->getValue() === null) {
-			return Entities\Devices\Thermostat::MAXIMUM_FLOOR_TEMPERATURE;
+			return Entities\Devices\Device::MAXIMUM_FLOOR_TEMPERATURE;
 		}
 
 		$value = $property->getValue();

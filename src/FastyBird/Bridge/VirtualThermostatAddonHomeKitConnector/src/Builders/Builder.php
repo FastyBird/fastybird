@@ -90,7 +90,7 @@ class Builder
 	 * @throws Exceptions\InvalidState
 	 */
 	public function build(
-		VirtualThermostatEntities\Devices\Thermostat $thermostat,
+		VirtualThermostatEntities\Devices\Device $thermostat,
 		HomeKitEntities\Connectors\Connector $homeKitConnector,
 		Entities\Devices\Thermostat|null $accessory = null,
 	): Entities\Devices\Thermostat
@@ -134,7 +134,7 @@ class Builder
 	 * @throws Exceptions\InvalidState
 	 */
 	private function createAccessory(
-		VirtualThermostatEntities\Devices\Thermostat $thermostat,
+		VirtualThermostatEntities\Devices\Device $thermostat,
 		HomeKitEntities\Connectors\Connector $homeKitConnector,
 		Entities\Devices\Thermostat|null $accessory = null,
 	): Entities\Devices\Thermostat
@@ -313,7 +313,7 @@ class Builder
 	 * @throws VirtualThermostatExceptions\InvalidState
 	 */
 	private function createService(
-		VirtualThermostatEntities\Devices\Thermostat $thermostat,
+		VirtualThermostatEntities\Devices\Device $thermostat,
 		Entities\Devices\Thermostat $accessory,
 		HomeKitTypes\ServiceType $type,
 	): void
@@ -468,7 +468,7 @@ class Builder
 	 * @throws VirtualThermostatExceptions\InvalidState
 	 */
 	private function createCharacteristic(
-		VirtualThermostatEntities\Devices\Thermostat $thermostat,
+		VirtualThermostatEntities\Devices\Device $thermostat,
 		Entities\Channels\Thermostat $service,
 		HomeKitTypes\CharacteristicType $characteristicType,
 		VirtualThermostatTypes\ChannelPropertyIdentifier|null $propertyType,

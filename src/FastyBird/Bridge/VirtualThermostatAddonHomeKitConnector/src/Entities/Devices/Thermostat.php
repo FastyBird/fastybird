@@ -51,7 +51,7 @@ class Thermostat extends HomeKitEntities\Devices\Device
 		$validParent = false;
 
 		foreach ($parents as $parent) {
-			if ($parent instanceof VirtualThermostatEntities\Devices\Thermostat) {
+			if ($parent instanceof VirtualThermostatEntities\Devices\Device) {
 				$validParent = true;
 			}
 		}
@@ -60,7 +60,7 @@ class Thermostat extends HomeKitEntities\Devices\Device
 			throw new Exceptions\InvalidArgument(
 				sprintf(
 					'At least one parent have to be instance of: %s',
-					VirtualThermostatEntities\Devices\Thermostat::class,
+					VirtualThermostatEntities\Devices\Device::class,
 				),
 			);
 		}
@@ -81,10 +81,10 @@ class Thermostat extends HomeKitEntities\Devices\Device
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public function getParent(): VirtualThermostatEntities\Devices\Thermostat
+	public function getParent(): VirtualThermostatEntities\Devices\Device
 	{
 		foreach ($this->parents->toArray() as $parent) {
-			if ($parent instanceof VirtualThermostatEntities\Devices\Thermostat) {
+			if ($parent instanceof VirtualThermostatEntities\Devices\Device) {
 				return $parent;
 			}
 		}

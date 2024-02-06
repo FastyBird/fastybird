@@ -506,19 +506,19 @@ class Build extends Console\Command\Command
 	 */
 	private function askWhichThermostat(
 		Style\SymfonyStyle $io,
-	): VirtualThermostatEntities\Devices\Thermostat|null
+	): VirtualThermostatEntities\Devices\Device|null
 	{
 		$devices = [];
 
-		$findDevicesQuery = new VirtualThermostatQueries\Entities\FindThermostatDevices();
+		$findDevicesQuery = new VirtualThermostatQueries\Entities\FindDevices();
 
 		$connectorDevices = $this->devicesRepository->findAllBy(
 			$findDevicesQuery,
-			VirtualThermostatEntities\Devices\Thermostat::class,
+			VirtualThermostatEntities\Devices\Device::class,
 		);
 		usort(
 			$connectorDevices,
-			static fn (VirtualThermostatEntities\Devices\Thermostat $a, VirtualThermostatEntities\Devices\Thermostat $b): int => (
+			static fn (VirtualThermostatEntities\Devices\Device $a, VirtualThermostatEntities\Devices\Device $b): int => (
 				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
 			),
 		);
@@ -545,7 +545,7 @@ class Build extends Console\Command\Command
 			),
 		);
 		$question->setValidator(
-			function (string|int|null $answer) use ($devices): VirtualThermostatEntities\Devices\Thermostat {
+			function (string|int|null $answer) use ($devices): VirtualThermostatEntities\Devices\Device {
 				if ($answer === null) {
 					throw new Exceptions\Runtime(
 						sprintf(
@@ -564,12 +564,12 @@ class Build extends Console\Command\Command
 				$identifier = array_search($answer, $devices, true);
 
 				if ($identifier !== false) {
-					$findDeviceQuery = new VirtualThermostatQueries\Entities\FindThermostatDevices();
+					$findDeviceQuery = new VirtualThermostatQueries\Entities\FindDevices();
 					$findDeviceQuery->byIdentifier($identifier);
 
 					$device = $this->devicesRepository->findOneBy(
 						$findDeviceQuery,
-						VirtualThermostatEntities\Devices\Thermostat::class,
+						VirtualThermostatEntities\Devices\Device::class,
 					);
 
 					if ($device !== null) {
@@ -589,7 +589,7 @@ class Build extends Console\Command\Command
 		);
 
 		$device = $io->askQuestion($question);
-		assert($device instanceof VirtualThermostatEntities\Devices\Thermostat);
+		assert($device instanceof VirtualThermostatEntities\Devices\Device);
 
 		return $device;
 	}

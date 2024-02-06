@@ -24,13 +24,13 @@ final class VirtualThermostatExtensionTest extends Tests\Cases\Unit\BaseTestCase
 	{
 		$container = $this->createContainer();
 
-		self::assertNotNull($container->getByType(Schemas\Devices\Thermostat::class, false));
+		self::assertNotNull($container->getByType(Schemas\Devices\Device::class, false));
 		self::assertNotNull($container->getByType(Schemas\Channels\Configuration::class, false));
 		self::assertNotNull($container->getByType(Schemas\Channels\Actors::class, false));
 		self::assertNotNull($container->getByType(Schemas\Channels\Sensors::class, false));
 		self::assertNotNull($container->getByType(Schemas\Channels\Preset::class, false));
 
-		self::assertNotNull($container->getByType(Hydrators\Devices\Thermostat::class, false));
+		self::assertNotNull($container->getByType(Hydrators\Devices\Device::class, false));
 		self::assertNotNull($container->getByType(Hydrators\Channels\Configuration::class, false));
 		self::assertNotNull($container->getByType(Hydrators\Channels\Actors::class, false));
 		self::assertNotNull($container->getByType(Hydrators\Channels\Sensors::class, false));

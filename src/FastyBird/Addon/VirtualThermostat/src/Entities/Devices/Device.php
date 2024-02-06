@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Thermostat.php
+ * Device.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -33,7 +33,7 @@ use function sprintf;
 /**
  * @ORM\Entity
  */
-class Thermostat extends VirtualEntities\Devices\Device
+class Device extends VirtualEntities\Devices\Device
 {
 
 	public const TYPE = 'virtual-thermostat-addon';

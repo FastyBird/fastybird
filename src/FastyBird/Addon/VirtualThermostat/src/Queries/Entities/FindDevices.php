@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * FindThermostatDevices.php
+ * FindDevices.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -21,7 +21,7 @@ use FastyBird\Connector\Virtual\Queries as VirtualQueries;
 /**
  * Find thermostat devices entities query
  *
- * @template T of Entities\Devices\Thermostat
+ * @template T of Entities\Devices\Device
  * @extends  VirtualQueries\Entities\FindDevices<T>
  *
  * @package        FastyBird:VirtualThermostatAddon!
@@ -29,7 +29,7 @@ use FastyBird\Connector\Virtual\Queries as VirtualQueries;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class FindThermostatDevices extends VirtualQueries\Entities\FindDevices
+class FindDevices extends VirtualQueries\Entities\FindDevices
 {
 
 }

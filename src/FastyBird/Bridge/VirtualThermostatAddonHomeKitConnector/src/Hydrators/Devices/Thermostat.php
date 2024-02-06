@@ -126,7 +126,7 @@ class Thermostat extends HomeKitHydrators\HomeKitDevice
 						Uuid\Uuid::fromString($relationship->getId()),
 					);
 
-					if ($parent instanceof VirtualThermostatEntities\Devices\Thermostat) {
+					if ($parent instanceof VirtualThermostatEntities\Devices\Device) {
 						$foundValidParent = true;
 					}
 
