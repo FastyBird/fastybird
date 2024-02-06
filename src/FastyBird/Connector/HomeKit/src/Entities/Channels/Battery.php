@@ -21,7 +21,7 @@ use FastyBird\Connector\HomeKit\Entities;
 /**
  * @ORM\Entity
  */
-class Battery extends Entities\HomeKitChannel
+class Battery extends Entities\Channels\Channel
 {
 
 	public const TYPE = 'homekit-connector-battery';

@@ -16,12 +16,13 @@
 namespace FastyBird\Connector\HomeKit\Hydrators;
 
 use FastyBird\Connector\HomeKit\Entities;
+use FastyBird\Connector\HomeKit\Entities\Devices\Device;
 use FastyBird\Module\Devices\Hydrators as DevicesHydrators;
 
 /**
  * HomeKit device entity hydrator
  *
- * @template  T of Entities\HomeKitDevice
+ * @template  T of Device
  * @extends   DevicesHydrators\Devices\Device<T>
  *
  * @package        FastyBird:HomeKitConnector!
@@ -33,7 +34,7 @@ class HomeKitDevice extends DevicesHydrators\Devices\Device
 
 	public function getEntityName(): string
 	{
-		return Entities\HomeKitDevice::class;
+		return Entities\Devices\Device::class;
 	}
 
 }

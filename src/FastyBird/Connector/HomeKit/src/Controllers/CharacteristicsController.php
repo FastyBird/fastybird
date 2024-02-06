@@ -17,7 +17,6 @@ namespace FastyBird\Connector\HomeKit\Controllers;
 
 use FastyBird\Connector\HomeKit\Clients;
 use FastyBird\Connector\HomeKit\Constants;
-use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Events;
 use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Helpers;
@@ -61,7 +60,7 @@ final class CharacteristicsController extends BaseController
 	private array $preparedWrites = [];
 
 	public function __construct(
-		private readonly Helpers\Entity $entityHelper,
+		private readonly Queue\MessageBuilder $messageBuilder,
 		private readonly Queue\Queue $queue,
 		private readonly Protocol\Driver $accessoryDriver,
 		private readonly Clients\Subscriber $subscriber,
@@ -625,8 +624,8 @@ final class CharacteristicsController extends BaseController
 						) || $row->getProperty() instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty
 					) {
 						$this->queue->append(
-							$this->entityHelper->create(
-								Entities\Messages\StoreChannelPropertyState::class,
+							$this->messageBuilder->create(
+								Queue\Messages\StoreChannelPropertyState::class,
 								[
 									'connector' => $connectorId,
 									'device' => $row->getService()->getChannel()?->getDevice(),

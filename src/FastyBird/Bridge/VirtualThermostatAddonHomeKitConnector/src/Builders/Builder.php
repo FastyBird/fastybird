@@ -91,7 +91,7 @@ class Builder
 	 */
 	public function build(
 		VirtualThermostatEntities\Devices\Thermostat $thermostat,
-		HomeKitEntities\HomeKitConnector $homeKitConnector,
+		HomeKitEntities\Connectors\Connector $homeKitConnector,
 		Entities\Devices\Thermostat|null $accessory = null,
 	): Entities\Devices\Thermostat
 	{
@@ -135,7 +135,7 @@ class Builder
 	 */
 	private function createAccessory(
 		VirtualThermostatEntities\Devices\Thermostat $thermostat,
-		HomeKitEntities\HomeKitConnector $homeKitConnector,
+		HomeKitEntities\Connectors\Connector $homeKitConnector,
 		Entities\Devices\Thermostat|null $accessory = null,
 	): Entities\Devices\Thermostat
 	{
@@ -148,7 +148,7 @@ class Builder
 
 				$existing = $this->devicesRepository->findOneBy(
 					$findDeviceQuery,
-					HomeKitEntities\HomeKitDevice::class,
+					HomeKitEntities\Devices\Device::class,
 				);
 
 				if ($existing !== null) {
@@ -162,7 +162,7 @@ class Builder
 						if (
 							$this->devicesRepository->findOneBy(
 								$findDeviceQuery,
-								HomeKitEntities\HomeKitDevice::class,
+								HomeKitEntities\Devices\Device::class,
 							) === null
 						) {
 							$identifier = sprintf($identifierPattern, $i);

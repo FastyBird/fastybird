@@ -16,13 +16,14 @@
 namespace FastyBird\Connector\HomeKit\Schemas;
 
 use FastyBird\Connector\HomeKit\Entities;
+use FastyBird\Connector\HomeKit\Entities\Channels\Channel;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Schemas as DevicesSchemas;
 
 /**
  * HomeKit channel entity schema
  *
- * @template T of Entities\HomeKitChannel
+ * @template T of Channel
  * @extends  DevicesSchemas\Channels\Channel<T>
  *
  * @package        FastyBird:HomeKitConnector!
@@ -35,11 +36,11 @@ class HomeKitChannel extends DevicesSchemas\Channels\Channel
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\Sources\Connector::HOMEKIT . '/channel/' . Entities\HomeKitChannel::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Connector::HOMEKIT . '/channel/' . Entities\Channels\Channel::TYPE;
 
 	public function getEntityClass(): string
 	{
-		return Entities\HomeKitChannel::class;
+		return Entities\Channels\Channel::class;
 	}
 
 	public function getType(): string

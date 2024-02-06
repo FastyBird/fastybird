@@ -42,7 +42,7 @@ class GenericFactory implements AccessoryFactory
 
 	public function getEntityClass(): string
 	{
-		return Entities\HomeKitDevice::class;
+		return Entities\Devices\Device::class;
 	}
 
 }

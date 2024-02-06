@@ -40,7 +40,7 @@ final class Channel
 	 */
 	public function getServiceType(MetadataDocuments\DevicesModule\Channel $channel): Types\ServiceType
 	{
-		preg_match(Entities\HomeKitChannel::SERVICE_IDENTIFIER, $channel->getIdentifier(), $matches);
+		preg_match(Entities\Channels\Channel::SERVICE_IDENTIFIER, $channel->getIdentifier(), $matches);
 
 		if (!array_key_exists('type', $matches)) {
 			throw new Exceptions\InvalidState('Device channel has invalid identifier');

@@ -41,7 +41,7 @@ final class SessionsManagerTest extends DbTestCase
 
 		$connector = $repository->find(
 			Uuid\Uuid::fromString('f5a8691b-4917-4866-878f-5217193cf14b'),
-			Entities\HomeKitConnector::class,
+			Entities\Connectors\Connector::class,
 		);
 
 		self::assertIsObject($connector);
@@ -56,7 +56,7 @@ final class SessionsManagerTest extends DbTestCase
 			'publicKey' => $clientPublicKey,
 		]));
 
-		self::assertSame(Entities\Client::class, $entity::class);
+		self::assertSame(Entities\Clients\Client::class, $entity::class);
 		self::assertSame($clientPublicKey, $entity->getPublicKey());
 		self::assertSame('7e11f659-a130-4eb1-b550-dc96c1160c85', $entity->getUid());
 	}
@@ -83,7 +83,7 @@ final class SessionsManagerTest extends DbTestCase
 		$entity = $repository->findOneBy($findQuery);
 
 		self::assertIsObject($entity);
-		self::assertSame(Entities\Client::class, $entity::class);
+		self::assertSame(Entities\Clients\Client::class, $entity::class);
 
 		$clientPublicKey = random_bytes(32);
 

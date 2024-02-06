@@ -17,7 +17,6 @@ namespace FastyBird\Connector\HomeKit\Queue\Consumers;
 
 use Doctrine\DBAL;
 use FastyBird\Connector\HomeKit;
-use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Queue;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
@@ -67,9 +66,9 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
-	public function consume(Entities\Messages\Entity $entity): bool
+	public function consume(Queue\Messages\Message $entity): bool
 	{
-		if (!$entity instanceof Entities\Messages\StoreDeviceConnectionState) {
+		if (!$entity instanceof Queue\Messages\StoreDeviceConnectionState) {
 			return false;
 		}
 

@@ -109,7 +109,7 @@ final class Http implements Server
 		private readonly array $accessoryFactories,
 		private readonly array $serviceFactories,
 		private readonly array $characteristicsFactories,
-		private readonly Helpers\Entity $entityHelper,
+		private readonly Queue\MessageBuilder $messageBuilder,
 		private readonly Helpers\Connector $connectorHelper,
 		private readonly Helpers\Device $deviceHelper,
 		private readonly Helpers\Channel $channelHelper,
@@ -266,9 +266,9 @@ final class Http implements Server
 					function () use ($accessory): void {
 						$device = $this->devicesRepository->find(
 							$accessory->getDevice()->getId(),
-							Entities\HomeKitDevice::class,
+							Entities\Devices\Device::class,
 						);
-						assert($device instanceof Entities\HomeKitDevice);
+						assert($device instanceof Entities\Devices\Device);
 
 						$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 							'entity' => DevicesEntities\Devices\Properties\Variable::class,
@@ -377,8 +377,8 @@ final class Http implements Server
 			}
 
 			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\StoreDeviceConnectionState::class,
+				$this->messageBuilder->create(
+					Queue\Messages\StoreDeviceConnectionState::class,
 					[
 						'connector' => $accessory->getDevice()->getConnector(),
 						'device' => $accessory->getDevice()->getId(),
@@ -702,9 +702,9 @@ final class Http implements Server
 					function () use ($owner, $serialNumber): void {
 						$device = $this->devicesRepository->find(
 							$owner->getId(),
-							Entities\HomeKitDevice::class,
+							Entities\Devices\Device::class,
 						);
-						assert($device instanceof Entities\HomeKitDevice);
+						assert($device instanceof Entities\Devices\Device);
 
 						$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 							'entity' => DevicesEntities\Devices\Properties\Variable::class,
@@ -747,9 +747,9 @@ final class Http implements Server
 					function () use ($owner, $firmwareVersion): void {
 						$device = $this->devicesRepository->find(
 							$owner->getId(),
-							Entities\HomeKitDevice::class,
+							Entities\Devices\Device::class,
 						);
-						assert($device instanceof Entities\HomeKitDevice);
+						assert($device instanceof Entities\Devices\Device);
 
 						$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 							'entity' => DevicesEntities\Devices\Properties\Variable::class,

@@ -58,7 +58,7 @@ final class MessageBuilder
 				new ObjectMapper\Printers\TypeToStringConverter(),
 			);
 
-			throw new Exceptions\Runtime('Could not map data to entity: ' . $errorPrinter->printError($ex));
+			throw new Exceptions\Runtime('Could not map data to message: ' . $errorPrinter->printError($ex));
 		}
 	}
 

@@ -194,6 +194,12 @@ class HomeKitExtension extends DI\CompilerExtension implements Translation\DI\Tr
 				'logger' => $logger,
 			]);
 
+		$builder->addDefinition(
+			$this->prefix('queue.messageBuilder'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Queue\MessageBuilder::class);
+
 		/**
 		 * SUBSCRIBERS
 		 */
@@ -242,9 +248,6 @@ class HomeKitExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		/**
 		 * HELPERS
 		 */
-
-		$builder->addDefinition($this->prefix('helpers.entity'), new DI\Definitions\ServiceDefinition())
-			->setType(Helpers\Entity::class);
 
 		$builder->addDefinition($this->prefix('helpers.loader'), new DI\Definitions\ServiceDefinition())
 			->setType(Helpers\Loader::class);
@@ -377,7 +380,7 @@ class HomeKitExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setImplement(Connector\ConnectorFactory::class)
 			->addTag(
 				DevicesDI\DevicesExtension::CONNECTOR_TYPE_TAG,
-				Entities\HomeKitConnector::TYPE,
+				Entities\Connectors\Connector::TYPE,
 			)
 			->getResultDefinition()
 			->setType(Connector\Connector::class)
@@ -458,7 +461,7 @@ class HomeKitExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		$devicesManagerService = $class->getMethod('createService' . ucfirst($this->name) . '__models__clientsManager');
 		$devicesManagerService->setBody(
 			'return new ' . Models\Entities\Clients\ClientsManager::class
-			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Client::class . '\'));',
+			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Clients\Client::class . '\'));',
 		);
 	}
 

@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * StoreDevicePropertyState.php
+ * StoreChannelPropertyState.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,21 +13,23 @@
  * @date           30.11.23
  */
 
-namespace FastyBird\Connector\HomeKit\Entities\Messages;
+namespace FastyBird\Connector\HomeKit\Queue\Messages;
 
 use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 
 /**
- * Device status message entity
+ * Device status message
  *
  * @package        FastyBird:HomeKitConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class StoreDevicePropertyState implements Entity
+final class StoreChannelPropertyState implements Message
 {
 
 	public function __construct(
@@ -36,6 +38,8 @@ final class StoreDevicePropertyState implements Entity
 		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $device,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $channel,
+		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $property,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\FloatValue(),
@@ -43,8 +47,11 @@ final class StoreDevicePropertyState implements Entity
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\BoolValue(),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\Payloads\Switcher::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\Payloads\Button::class),
+			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\Payloads\Cover::class),
 		])]
-		private readonly float|int|string|bool|null $value,
+		private readonly float|int|string|bool|MetadataTypes\Payloads\Payload|null $value,
 	)
 	{
 	}
@@ -59,12 +66,17 @@ final class StoreDevicePropertyState implements Entity
 		return $this->device;
 	}
 
+	public function getChannel(): Uuid\UuidInterface
+	{
+		return $this->channel;
+	}
+
 	public function getProperty(): Uuid\UuidInterface
 	{
 		return $this->property;
 	}
 
-	public function getValue(): float|bool|int|string|null
+	public function getValue(): float|int|string|bool|MetadataTypes\Payloads\Payload|null
 	{
 		return $this->value;
 	}
@@ -77,8 +89,9 @@ final class StoreDevicePropertyState implements Entity
 		return [
 			'connector' => $this->getConnector()->toString(),
 			'device' => $this->getDevice()->toString(),
+			'channel' => $this->getChannel()->toString(),
 			'property' => $this->getProperty()->toString(),
-			'value' => $this->getValue(),
+			'value' => MetadataUtilities\Value::flattenValue($this->getValue()),
 		];
 	}
 

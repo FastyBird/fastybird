@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * WriteChannelPropertyState.php
+ * StoreDeviceConnectionState.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,21 +13,21 @@
  * @date           30.11.23
  */
 
-namespace FastyBird\Connector\HomeKit\Entities\Messages;
+namespace FastyBird\Connector\HomeKit\Queue\Messages;
 
 use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
-use Orisai\ObjectMapper;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Ramsey\Uuid;
 
 /**
- * Write updated channel property state to device entity
+ * Device state message
  *
  * @package        FastyBird:HomeKitConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class WriteChannelPropertyState implements Entity
+final class StoreDeviceConnectionState implements Message
 {
 
 	public function __construct(
@@ -35,15 +35,8 @@ final class WriteChannelPropertyState implements Entity
 		private readonly Uuid\UuidInterface $connector,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $device,
-		#[ApplicationObjectMapper\Rules\UuidValue()]
-		private readonly Uuid\UuidInterface $channel,
-		#[ApplicationObjectMapper\Rules\UuidValue()]
-		private readonly Uuid\UuidInterface $property,
-		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\MappedObjectValue(class: State::class),
-			new ObjectMapper\Rules\NullValue(),
-		])]
-		private readonly State|null $state,
+		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\ConnectionState::class)]
+		private readonly MetadataTypes\ConnectionState $state,
 	)
 	{
 	}
@@ -58,17 +51,7 @@ final class WriteChannelPropertyState implements Entity
 		return $this->device;
 	}
 
-	public function getChannel(): Uuid\UuidInterface
-	{
-		return $this->channel;
-	}
-
-	public function getProperty(): Uuid\UuidInterface
-	{
-		return $this->property;
-	}
-
-	public function getState(): State|null
+	public function getState(): MetadataTypes\ConnectionState
 	{
 		return $this->state;
 	}
@@ -81,9 +64,7 @@ final class WriteChannelPropertyState implements Entity
 		return [
 			'connector' => $this->getConnector()->toString(),
 			'device' => $this->getDevice()->toString(),
-			'channel' => $this->getChannel()->toString(),
-			'property' => $this->getProperty()->toString(),
-			'state' => $this->getState()?->toArray(),
+			'state' => $this->getState()->getValue(),
 		];
 	}
 

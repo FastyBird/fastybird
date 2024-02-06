@@ -16,9 +16,7 @@
 namespace FastyBird\Connector\HomeKit\Writers;
 
 use DateTimeInterface;
-use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Exceptions;
-use FastyBird\Connector\HomeKit\Helpers;
 use FastyBird\Connector\HomeKit\Protocol;
 use FastyBird\Connector\HomeKit\Queue;
 use FastyBird\DateTimeFactory;
@@ -71,7 +69,7 @@ abstract class Periodic
 
 	public function __construct(
 		protected readonly MetadataDocuments\DevicesModule\Connector $connector,
-		protected readonly Helpers\Entity $entityHelper,
+		protected readonly Queue\MessageBuilder $messageBuilder,
 		protected readonly Queue\Queue $queue,
 		protected readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		protected readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
@@ -334,8 +332,8 @@ abstract class Periodic
 
 							if ($property instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty) {
 								$this->queue->append(
-									$this->entityHelper->create(
-										Entities\Messages\WriteDevicePropertyState::class,
+									$this->messageBuilder->create(
+										Queue\Messages\WriteDevicePropertyState::class,
 										[
 											'connector' => $device->getConnector(),
 											'device' => $device->getId(),
@@ -348,8 +346,8 @@ abstract class Periodic
 								&& $state !== null
 							) {
 								$this->queue->append(
-									$this->entityHelper->create(
-										Entities\Messages\WriteDevicePropertyState::class,
+									$this->messageBuilder->create(
+										Queue\Messages\WriteDevicePropertyState::class,
 										[
 											'connector' => $device->getConnector(),
 											'device' => $device->getId(),
@@ -372,8 +370,8 @@ abstract class Periodic
 								&& $state !== null
 							) {
 								$this->queue->append(
-									$this->entityHelper->create(
-										Entities\Messages\WriteDevicePropertyState::class,
+									$this->messageBuilder->create(
+										Queue\Messages\WriteDevicePropertyState::class,
 										[
 											'connector' => $device->getConnector(),
 											'device' => $device->getId(),
@@ -393,8 +391,8 @@ abstract class Periodic
 								);
 							} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
 								$this->queue->append(
-									$this->entityHelper->create(
-										Entities\Messages\WriteChannelPropertyState::class,
+									$this->messageBuilder->create(
+										Queue\Messages\WriteChannelPropertyState::class,
 										[
 											'connector' => $device->getConnector(),
 											'device' => $device->getId(),
@@ -408,8 +406,8 @@ abstract class Periodic
 								&& $state !== null
 							) {
 								$this->queue->append(
-									$this->entityHelper->create(
-										Entities\Messages\WriteChannelPropertyState::class,
+									$this->messageBuilder->create(
+										Queue\Messages\WriteChannelPropertyState::class,
 										[
 											'connector' => $device->getConnector(),
 											'device' => $device->getId(),
@@ -433,8 +431,8 @@ abstract class Periodic
 								&& $state !== null
 							) {
 								$this->queue->append(
-									$this->entityHelper->create(
-										Entities\Messages\WriteChannelPropertyState::class,
+									$this->messageBuilder->create(
+										Queue\Messages\WriteChannelPropertyState::class,
 										[
 											'connector' => $device->getConnector(),
 											'device' => $device->getId(),

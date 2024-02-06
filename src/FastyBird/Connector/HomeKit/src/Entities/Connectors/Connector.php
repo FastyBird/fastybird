@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * HomeKitConnector.php
+ * Connector.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,12 +13,12 @@
  * @date           29.03.22
  */
 
-namespace FastyBird\Connector\HomeKit\Entities;
+namespace FastyBird\Connector\HomeKit\Entities\Connectors;
 
 use Doctrine\Common;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Connector\HomeKit;
-use FastyBird\Connector\HomeKit\Entities;
+use FastyBird\Connector\HomeKit\Entities\Clients\Client;
 use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -32,16 +32,16 @@ use function is_string;
 /**
  * @ORM\Entity
  */
-class HomeKitConnector extends DevicesEntities\Connectors\Connector
+class Connector extends DevicesEntities\Connectors\Connector
 {
 
 	public const TYPE = 'homekit-connector';
 
 	/**
-	 * @var Common\Collections\Collection<int, Entities\Client>
+	 * @var Common\Collections\Collection<int, Client>
 	 *
 	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\OneToMany(targetEntity="FastyBird\Connector\HomeKit\Entities\Client", mappedBy="connector", cascade={"persist", "remove"}, orphanRemoval=true)
+	 * @ORM\OneToMany(targetEntity="FastyBird\Connector\HomeKit\Entities\Clients\Client", mappedBy="connector", cascade={"persist", "remove"}, orphanRemoval=true)
 	 */
 	protected Common\Collections\Collection $clients;
 
@@ -61,7 +61,7 @@ class HomeKitConnector extends DevicesEntities\Connectors\Connector
 	}
 
 	/**
-	 * @return array<Entities\Client>
+	 * @return array<Client>
 	 */
 	public function getClients(): array
 	{

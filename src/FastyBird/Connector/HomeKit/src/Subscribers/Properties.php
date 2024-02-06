@@ -74,7 +74,7 @@ final class Properties implements Common\EventSubscriber
 		$entity = $eventArgs->getObject();
 
 		// Check for valid entity
-		if ($entity instanceof Entities\HomeKitConnector) {
+		if ($entity instanceof Entities\Connectors\Connector) {
 			$findConnectorPropertyQuery = new Queries\Entities\FindConnectorProperties();
 			$findConnectorPropertyQuery->forConnector($entity);
 			$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::MAC_ADDRESS);
@@ -228,7 +228,7 @@ final class Properties implements Common\EventSubscriber
 				|| $entity->getIdentifier() === Types\ConnectorPropertyIdentifier::SETUP_ID
 			) {
 				$connector = $entity->getConnector();
-				assert($connector instanceof Entities\HomeKitConnector);
+				assert($connector instanceof Entities\Connectors\Connector);
 
 				$xhmUri = Helpers\Protocol::getXhmUri(
 					$connector->getPinCode(),

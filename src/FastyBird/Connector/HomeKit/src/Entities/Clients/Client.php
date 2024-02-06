@@ -13,9 +13,10 @@
  * @date           13.09.22
  */
 
-namespace FastyBird\Connector\HomeKit\Entities;
+namespace FastyBird\Connector\HomeKit\Entities\Clients;
 
 use Doctrine\ORM\Mapping as ORM;
+use FastyBird\Connector\HomeKit\Entities\Connectors\Connector;
 use IPub\DoctrineCrud;
 use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
 use IPub\DoctrineTimestampable;
@@ -55,10 +56,10 @@ class Client implements DoctrineCrud\Entities\IEntity,
 
 	/**
 	 * @IPubDoctrine\Crud(is="required")
-	 * @ORM\ManyToOne(targetEntity="FastyBird\Connector\HomeKit\Entities\HomeKitConnector", inversedBy="clients")
+	 * @ORM\ManyToOne(targetEntity="FastyBird\Connector\HomeKit\Entities\Connectors\Connector", inversedBy="clients")
 	 * @ORM\JoinColumn(name="connector_id", referencedColumnName="connector_id", onDelete="CASCADE", nullable=false)
 	 */
-	private HomeKitConnector $connector;
+	private Connector $connector;
 
 	/**
 	 * @IPubDoctrine\Crud(is="required")
@@ -83,7 +84,7 @@ class Client implements DoctrineCrud\Entities\IEntity,
 	public function __construct(
 		string $uid,
 		string $publicKey,
-		HomeKitConnector $connector,
+		Connector $connector,
 		Uuid\UuidInterface|null $id = null,
 	)
 	{
@@ -100,7 +101,7 @@ class Client implements DoctrineCrud\Entities\IEntity,
 		return $this->id;
 	}
 
-	public function getConnector(): HomeKitConnector
+	public function getConnector(): Connector
 	{
 		return $this->connector;
 	}

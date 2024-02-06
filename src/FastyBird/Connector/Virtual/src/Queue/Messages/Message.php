@@ -18,7 +18,7 @@ namespace FastyBird\Connector\Virtual\Queue\Messages;
 use Orisai\ObjectMapper;
 
 /**
- * Virtual base message data message interface
+ * Virtual base data message interface
  *
  * @package        FastyBird:VirtualConnector!
  * @subpackage     Entities

@@ -28,7 +28,7 @@ use function sprintf;
 /**
  * @ORM\Entity
  */
-class Thermostat extends HomeKitEntities\HomeKitDevice
+class Thermostat extends HomeKitEntities\Devices\Device
 {
 
 	public const TYPE = 'virtual-thermostat-addon-bridge';
@@ -40,7 +40,7 @@ class Thermostat extends HomeKitEntities\HomeKitDevice
 	 */
 	public function __construct(
 		string $identifier,
-		HomeKitEntities\HomeKitConnector $connector,
+		HomeKitEntities\Connectors\Connector $connector,
 		array|Utils\ArrayHash $parents,
 		string|null $name = null,
 		Uuid\UuidInterface|null $id = null,
@@ -94,10 +94,10 @@ class Thermostat extends HomeKitEntities\HomeKitDevice
 		);
 	}
 
-	public function getConnector(): HomeKitEntities\HomeKitConnector
+	public function getConnector(): HomeKitEntities\Connectors\Connector
 	{
 		$connector = parent::getConnector();
-		assert($connector instanceof HomeKitEntities\HomeKitConnector);
+		assert($connector instanceof HomeKitEntities\Connectors\Connector);
 
 		return $connector;
 	}

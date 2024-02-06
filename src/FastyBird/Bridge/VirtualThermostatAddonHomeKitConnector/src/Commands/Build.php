@@ -413,7 +413,7 @@ class Build extends Console\Command\Command
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 */
-	private function askWhichConnector(Style\SymfonyStyle $io): HomeKitEntities\HomeKitConnector|null
+	private function askWhichConnector(Style\SymfonyStyle $io): HomeKitEntities\Connectors\Connector|null
 	{
 		$connectors = [];
 
@@ -421,11 +421,11 @@ class Build extends Console\Command\Command
 
 		$systemConnectors = $this->connectorsRepository->findAllBy(
 			$findConnectorsQuery,
-			HomeKitEntities\HomeKitConnector::class,
+			HomeKitEntities\Connectors\Connector::class,
 		);
 		usort(
 			$systemConnectors,
-			static fn (HomeKitEntities\HomeKitConnector $a, HomeKitEntities\HomeKitConnector $b): int => (
+			static fn (HomeKitEntities\Connectors\Connector $a, HomeKitEntities\Connectors\Connector $b): int => (
 				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
 			),
 		);
@@ -452,7 +452,7 @@ class Build extends Console\Command\Command
 			),
 		);
 		$question->setValidator(
-			function (string|int|null $answer) use ($connectors): HomeKitEntities\HomeKitConnector {
+			function (string|int|null $answer) use ($connectors): HomeKitEntities\Connectors\Connector {
 				if ($answer === null) {
 					throw new Exceptions\Runtime(
 						sprintf(
@@ -476,7 +476,7 @@ class Build extends Console\Command\Command
 
 					$connector = $this->connectorsRepository->findOneBy(
 						$findConnectorQuery,
-						HomeKitEntities\HomeKitConnector::class,
+						HomeKitEntities\Connectors\Connector::class,
 					);
 
 					if ($connector !== null) {
@@ -496,7 +496,7 @@ class Build extends Console\Command\Command
 		);
 
 		$connector = $io->askQuestion($question);
-		assert($connector instanceof HomeKitEntities\HomeKitConnector);
+		assert($connector instanceof HomeKitEntities\Connectors\Connector);
 
 		return $connector;
 	}

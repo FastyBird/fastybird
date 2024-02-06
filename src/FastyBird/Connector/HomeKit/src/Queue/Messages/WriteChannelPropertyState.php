@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * StoreDeviceConnectionState.php
+ * WriteChannelPropertyState.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,21 +13,21 @@
  * @date           30.11.23
  */
 
-namespace FastyBird\Connector\HomeKit\Entities\Messages;
+namespace FastyBird\Connector\HomeKit\Queue\Messages;
 
 use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
+use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 
 /**
- * Device state message entity
+ * Write updated channel property state to device message
  *
  * @package        FastyBird:HomeKitConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class StoreDeviceConnectionState implements Entity
+final class WriteChannelPropertyState implements Message
 {
 
 	public function __construct(
@@ -35,8 +35,15 @@ final class StoreDeviceConnectionState implements Entity
 		private readonly Uuid\UuidInterface $connector,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $device,
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\ConnectionState::class)]
-		private readonly MetadataTypes\ConnectionState $state,
+		#[ApplicationObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $channel,
+		#[ApplicationObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $property,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\MappedObjectValue(class: State::class),
+			new ObjectMapper\Rules\NullValue(),
+		])]
+		private readonly State|null $state,
 	)
 	{
 	}
@@ -51,7 +58,17 @@ final class StoreDeviceConnectionState implements Entity
 		return $this->device;
 	}
 
-	public function getState(): MetadataTypes\ConnectionState
+	public function getChannel(): Uuid\UuidInterface
+	{
+		return $this->channel;
+	}
+
+	public function getProperty(): Uuid\UuidInterface
+	{
+		return $this->property;
+	}
+
+	public function getState(): State|null
 	{
 		return $this->state;
 	}
@@ -64,7 +81,9 @@ final class StoreDeviceConnectionState implements Entity
 		return [
 			'connector' => $this->getConnector()->toString(),
 			'device' => $this->getDevice()->toString(),
-			'state' => $this->getState()->getValue(),
+			'channel' => $this->getChannel()->toString(),
+			'property' => $this->getProperty()->toString(),
+			'state' => $this->getState()?->toArray(),
 		];
 	}
 

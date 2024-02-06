@@ -13,21 +13,21 @@
  * @date           30.11.23
  */
 
-namespace FastyBird\Connector\HomeKit\Entities\Messages;
+namespace FastyBird\Connector\HomeKit\Queue\Messages;
 
 use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 
 /**
- * Write updated device property state to device entity
+ * Write updated device property state to device message
  *
  * @package        FastyBird:HomeKitConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class WriteDevicePropertyState implements Entity
+final class WriteDevicePropertyState implements Message
 {
 
 	public function __construct(

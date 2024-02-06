@@ -17,7 +17,6 @@ namespace FastyBird\Connector\HomeKit\Queue\Consumers;
 
 use Doctrine\DBAL;
 use FastyBird\Connector\HomeKit;
-use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Queue;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
@@ -72,9 +71,9 @@ final class StoreChannelPropertyState implements Queue\Consumer
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
-	public function consume(Entities\Messages\Entity $entity): bool
+	public function consume(Queue\Messages\Message $entity): bool
 	{
-		if (!$entity instanceof Entities\Messages\StoreChannelPropertyState) {
+		if (!$entity instanceof Queue\Messages\StoreChannelPropertyState) {
 			return false;
 		}
 

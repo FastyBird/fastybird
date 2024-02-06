@@ -221,7 +221,7 @@ final class PairingController extends BaseController
 
 		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
 		$findConnectorQuery->byId($connectorId);
-		$findConnectorQuery->byType(Entities\HomeKitConnector::TYPE);
+		$findConnectorQuery->byType(Entities\Connectors\Connector::TYPE);
 
 		$connector = $this->connectorsConfigurationRepository->findOneBy($findConnectorQuery);
 
@@ -340,7 +340,7 @@ final class PairingController extends BaseController
 
 		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
 		$findConnectorQuery->byId($connectorId);
-		$findConnectorQuery->byType(Entities\HomeKitConnector::TYPE);
+		$findConnectorQuery->byType(Entities\Connectors\Connector::TYPE);
 
 		$connector = $this->connectorsConfigurationRepository->findOneBy($findConnectorQuery);
 
@@ -427,7 +427,7 @@ final class PairingController extends BaseController
 
 		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
 		$findConnectorQuery->byId($connectorId);
-		$findConnectorQuery->byType(Entities\HomeKitConnector::TYPE);
+		$findConnectorQuery->byType(Entities\Connectors\Connector::TYPE);
 
 		$connector = $this->connectorsConfigurationRepository->findOneBy($findConnectorQuery);
 
@@ -1053,9 +1053,9 @@ final class PairingController extends BaseController
 			function () use ($tlvEntry, $connector): void {
 				$connector = $this->connectorsRepository->find(
 					$connector->getId(),
-					Entities\HomeKitConnector::class,
+					Entities\Connectors\Connector::class,
 				);
-				assert($connector instanceof Entities\HomeKitConnector);
+				assert($connector instanceof Entities\Connectors\Connector);
 
 				$findClientQuery = new Queries\Entities\FindClients();
 				$findClientQuery->forConnector($connector);
@@ -1806,9 +1806,9 @@ final class PairingController extends BaseController
 					function () use ($connector, $clientUid, $clientPublicKey, $clientPermission): void {
 						$connector = $this->connectorsRepository->find(
 							$connector->getId(),
-							Entities\HomeKitConnector::class,
+							Entities\Connectors\Connector::class,
 						);
-						assert($connector instanceof Entities\HomeKitConnector);
+						assert($connector instanceof Entities\Connectors\Connector);
 
 						$this->clientsManager->create(Utils\ArrayHash::from([
 							'uid' => $clientUid,
@@ -1950,9 +1950,9 @@ final class PairingController extends BaseController
 					function () use ($connector, $type, $value): void {
 						$connector = $this->connectorsRepository->find(
 							$connector->getId(),
-							Entities\HomeKitConnector::class,
+							Entities\Connectors\Connector::class,
 						);
-						assert($connector instanceof Entities\HomeKitConnector);
+						assert($connector instanceof Entities\Connectors\Connector);
 
 						$this->propertiesManagers->create(
 							Utils\ArrayHash::from([

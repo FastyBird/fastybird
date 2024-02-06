@@ -13,11 +13,10 @@
  * @date           30.11.23
  */
 
-namespace FastyBird\Connector\HomeKit\Helpers;
+namespace FastyBird\Connector\HomeKit\Queue;
 
-use FastyBird\Connector\HomeKit\Entities;
-use FastyBird\Connector\HomeKit\Entities\Messages\Entity as T;
 use FastyBird\Connector\HomeKit\Exceptions;
+use FastyBird\Connector\HomeKit\Queue;
 use Orisai\ObjectMapper;
 
 /**
@@ -28,7 +27,7 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Entity
+final class MessageBuilder
 {
 
 	public function __construct(
@@ -38,17 +37,14 @@ final class Entity
 	}
 
 	/**
-	 * @template T of Entities\Messages\Entity
+	 * @template T of Queue\Messages\Message
 	 *
 	 * @param class-string<T> $entity
 	 * @param array<mixed> $data
 	 *
 	 * @throws Exceptions\Runtime
 	 */
-	public function create(
-		string $entity,
-		array $data,
-	): Entities\Messages\Entity
+	public function create(string $entity, array $data): Queue\Messages\Message
 	{
 		try {
 			$options = new ObjectMapper\Processing\Options();
@@ -60,7 +56,7 @@ final class Entity
 				new ObjectMapper\Printers\TypeToStringConverter(),
 			);
 
-			throw new Exceptions\Runtime('Could not map data to entity: ' . $errorPrinter->printError($ex));
+			throw new Exceptions\Runtime('Could not map data to message: ' . $errorPrinter->printError($ex));
 		}
 	}
 

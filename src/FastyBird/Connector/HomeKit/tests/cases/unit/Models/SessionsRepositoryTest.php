@@ -39,7 +39,7 @@ final class SessionsRepositoryTest extends DbTestCase
 		$entity = $repository->findOneBy($findQuery);
 
 		self::assertIsObject($entity);
-		self::assertSame(Entities\Client::class, $entity::class);
+		self::assertSame(Entities\Clients\Client::class, $entity::class);
 		self::assertSame('e348f5fc-42de-459e-926e-2f4cd039c665', $entity->getUid());
 	}
 

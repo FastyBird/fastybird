@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\HomeKit\Protocol\Services;
 
-use FastyBird\Connector\HomeKit\Entities;
+use FastyBird\Connector\HomeKit\Entities\Channels\Channel;
 use FastyBird\Connector\HomeKit\Protocol;
 use FastyBird\Connector\HomeKit\Types;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
@@ -50,7 +50,7 @@ interface ServiceFactory
 	): Service;
 
 	/**
-	 * @return class-string<Entities\HomeKitChannel>
+	 * @return class-string<Channel>
 	 */
 	public function getEntityClass(): string;
 

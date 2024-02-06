@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\HomeKit\Protocol\Accessories;
 
-use FastyBird\Connector\HomeKit\Entities;
+use FastyBird\Connector\HomeKit\Entities\Devices\Device;
 use FastyBird\Connector\HomeKit\Types;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 
@@ -38,7 +38,7 @@ interface AccessoryFactory
 	): Accessory;
 
 	/**
-	 * @return class-string<Entities\HomeKitDevice>
+	 * @return class-string<Device>
 	 */
 	public function getEntityClass(): string;
 

@@ -17,9 +17,7 @@ namespace FastyBird\Connector\HomeKit\Writers;
 
 use DateTimeInterface;
 use Exception;
-use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Exceptions;
-use FastyBird\Connector\HomeKit\Helpers;
 use FastyBird\Connector\HomeKit\Protocol;
 use FastyBird\Connector\HomeKit\Queue;
 use FastyBird\Connector\HomeKit\Types;
@@ -55,7 +53,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 	 */
 	public function __construct(
 		MetadataDocuments\DevicesModule\Connector $connector,
-		Helpers\Entity $entityHelper,
+		Queue\MessageBuilder $messageBuilder,
 		Queue\Queue $queue,
 		Protocol\Driver $accessoryDriver,
 		DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
@@ -72,7 +70,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 	{
 		parent::__construct(
 			$connector,
-			$entityHelper,
+			$messageBuilder,
 			$queue,
 			$devicesConfigurationRepository,
 			$devicesPropertiesConfigurationRepository,
@@ -152,8 +150,8 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 
 				if ($property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
 					$this->queue->append(
-						$this->entityHelper->create(
-							Entities\Messages\WriteDevicePropertyState::class,
+						$this->messageBuilder->create(
+							Queue\Messages\WriteDevicePropertyState::class,
 							[
 								'connector' => $device->getConnector(),
 								'device' => $device->getId(),
@@ -173,8 +171,8 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 					);
 				} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
 					$this->queue->append(
-						$this->entityHelper->create(
-							Entities\Messages\WriteDevicePropertyState::class,
+						$this->messageBuilder->create(
+							Queue\Messages\WriteDevicePropertyState::class,
 							[
 								'connector' => $device->getConnector(),
 								'device' => $device->getId(),
@@ -225,8 +223,8 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 
 				if ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
 					$this->queue->append(
-						$this->entityHelper->create(
-							Entities\Messages\WriteChannelPropertyState::class,
+						$this->messageBuilder->create(
+							Queue\Messages\WriteChannelPropertyState::class,
 							[
 								'connector' => $device->getConnector(),
 								'device' => $device->getId(),
@@ -247,8 +245,8 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 					);
 				} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
 					$this->queue->append(
-						$this->entityHelper->create(
-							Entities\Messages\WriteChannelPropertyState::class,
+						$this->messageBuilder->create(
+							Queue\Messages\WriteChannelPropertyState::class,
 							[
 								'connector' => $device->getConnector(),
 								'device' => $device->getId(),
@@ -285,8 +283,8 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 				}
 
 				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\WriteDevicePropertyState::class,
+					$this->messageBuilder->create(
+						Queue\Messages\WriteDevicePropertyState::class,
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
@@ -316,8 +314,8 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 				}
 
 				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\WriteChannelPropertyState::class,
+					$this->messageBuilder->create(
+						Queue\Messages\WriteChannelPropertyState::class,
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),

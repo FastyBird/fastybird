@@ -63,15 +63,15 @@ final class WriteDevicePropertyState implements Queue\Consumer
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws RuntimeException
 	 */
-	public function consume(Entities\Messages\Entity $entity): bool
+	public function consume(Queue\Messages\Message $entity): bool
 	{
-		if (!$entity instanceof Entities\Messages\WriteDevicePropertyState) {
+		if (!$entity instanceof Queue\Messages\WriteDevicePropertyState) {
 			return false;
 		}
 
 		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
 		$findConnectorQuery->byId($entity->getConnector());
-		$findConnectorQuery->byType(Entities\HomeKitConnector::TYPE);
+		$findConnectorQuery->byType(Entities\Connectors\Connector::TYPE);
 
 		$connector = $this->connectorsConfigurationRepository->findOneBy($findConnectorQuery);
 

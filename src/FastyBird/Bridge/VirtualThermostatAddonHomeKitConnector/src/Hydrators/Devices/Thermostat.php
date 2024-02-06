@@ -70,7 +70,7 @@ class Thermostat extends HomeKitHydrators\HomeKitDevice
 		JsonAPIDocument\Objects\IRelationshipObject $relationship,
 		JsonAPIDocument\Objects\IResourceObjectCollection|null $included,
 		Entities\Devices\Thermostat|null $entity,
-	): ConnectorHomeKit\Entities\HomeKitConnector
+	): ConnectorHomeKit\Entities\Connectors\Connector
 	{
 		if (
 			$relationship->getData() instanceof JsonAPIDocument\Objects\IResourceIdentifierObject
@@ -79,7 +79,7 @@ class Thermostat extends HomeKitHydrators\HomeKitDevice
 		) {
 			$connector = $this->connectorsRepository->find(
 				Uuid\Uuid::fromString($relationship->getData()->getId()),
-				ConnectorHomeKit\Entities\HomeKitConnector::class,
+				ConnectorHomeKit\Entities\Connectors\Connector::class,
 			);
 
 			if ($connector !== null) {

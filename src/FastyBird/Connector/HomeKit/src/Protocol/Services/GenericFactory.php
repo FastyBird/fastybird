@@ -64,7 +64,7 @@ class GenericFactory implements ServiceFactory
 
 	public function getEntityClass(): string
 	{
-		return Entities\HomeKitChannel::class;
+		return Entities\Channels\Channel::class;
 	}
 
 }

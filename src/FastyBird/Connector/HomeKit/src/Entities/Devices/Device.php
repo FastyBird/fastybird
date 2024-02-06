@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * HomeKitDevice.php
+ * Device.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,9 +13,10 @@
  * @date           29.03.22
  */
 
-namespace FastyBird\Connector\HomeKit\Entities;
+namespace FastyBird\Connector\HomeKit\Entities\Devices;
 
 use Doctrine\ORM\Mapping as ORM;
+use FastyBird\Connector\HomeKit\Entities\Channels\Channel;
 use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -26,7 +27,7 @@ use function is_int;
 /**
  * @ORM\Entity
  */
-class HomeKitDevice extends DevicesEntities\Devices\Device
+class Device extends DevicesEntities\Devices\Device
 {
 
 	public const TYPE = 'homekit-connector';
@@ -95,14 +96,14 @@ class HomeKitDevice extends DevicesEntities\Devices\Device
 	}
 
 	/**
-	 * @return array<HomeKitChannel>
+	 * @return array<Channel>
 	 */
 	public function getChannels(): array
 	{
 		$channels = [];
 
 		foreach (parent::getChannels() as $channel) {
-			if ($channel instanceof HomeKitChannel) {
+			if ($channel instanceof Channel) {
 				$channels[] = $channel;
 			}
 		}
@@ -115,7 +116,7 @@ class HomeKitDevice extends DevicesEntities\Devices\Device
 	 */
 	public function addChannel(DevicesEntities\Channels\Channel $channel): void
 	{
-		if (!$channel instanceof HomeKitChannel) {
+		if (!$channel instanceof Channel) {
 			throw new Exceptions\InvalidArgument('Provided channel type is not valid');
 		}
 
@@ -123,7 +124,7 @@ class HomeKitDevice extends DevicesEntities\Devices\Device
 	}
 
 	/**
-	 * @return array<HomeKitChannel>
+	 * @return array<Channel>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
@@ -132,7 +133,7 @@ class HomeKitDevice extends DevicesEntities\Devices\Device
 		$channels = [];
 
 		foreach (parent::getChannels() as $channel) {
-			if (!$channel instanceof HomeKitChannel) {
+			if (!$channel instanceof Channel) {
 				continue;
 			}
 

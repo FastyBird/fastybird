@@ -21,7 +21,7 @@ use FastyBird\Connector\HomeKit\Entities as HomeKitEntities;
 /**
  * @ORM\Entity
  */
-class Thermostat extends HomeKitEntities\HomeKitChannel
+class Thermostat extends HomeKitEntities\Channels\Channel
 {
 
 	public const TYPE = 'virtual-thermostat-addon-bridge';

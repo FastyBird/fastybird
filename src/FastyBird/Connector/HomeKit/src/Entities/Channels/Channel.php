@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * HomeKitChannel.php
+ * Channel.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,7 +13,7 @@
  * @date           04.03.22
  */
 
-namespace FastyBird\Connector\HomeKit\Entities;
+namespace FastyBird\Connector\HomeKit\Entities\Channels;
 
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Connector\HomeKit\Exceptions;
@@ -28,7 +28,7 @@ use function ucwords;
 /**
  * @ORM\Entity
  */
-class HomeKitChannel extends DevicesEntities\Channels\Channel
+class Channel extends DevicesEntities\Channels\Channel
 {
 
 	public const TYPE = 'homekit-connector';

@@ -39,7 +39,7 @@ class BridgeFactory
 
 	public function getEntityClass(): string
 	{
-		return Entities\HomeKitConnector::class;
+		return Entities\Connectors\Connector::class;
 	}
 
 }

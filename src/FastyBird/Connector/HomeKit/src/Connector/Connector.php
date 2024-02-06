@@ -80,7 +80,7 @@ final class Connector implements DevicesConnectors\Connector
 	 */
 	public function execute(bool $standalone = true): Promise\PromiseInterface
 	{
-		assert($this->connector->getType() === Entities\HomeKitConnector::TYPE);
+		assert($this->connector->getType() === Entities\Connectors\Connector::TYPE);
 
 		$this->logger->info(
 			'Starting HomeKit connector service',
@@ -149,7 +149,7 @@ final class Connector implements DevicesConnectors\Connector
 
 	public function terminate(): void
 	{
-		assert($this->connector->getType() === Entities\HomeKitConnector::TYPE);
+		assert($this->connector->getType() === Entities\Connectors\Connector::TYPE);
 
 		$this->writer?->disconnect();
 

@@ -16,13 +16,14 @@
 namespace FastyBird\Connector\HomeKit\Schemas;
 
 use FastyBird\Connector\HomeKit\Entities;
+use FastyBird\Connector\HomeKit\Entities\Connectors\Connector;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Schemas as DevicesSchemas;
 
 /**
  * HomeKit connector entity schema
  *
- * @extends DevicesSchemas\Connectors\Connector<Entities\HomeKitConnector>
+ * @extends DevicesSchemas\Connectors\Connector<Connector>
  *
  * @package        FastyBird:HomeKitConnector!
  * @subpackage     Schemas
@@ -37,11 +38,11 @@ final class HomeKitConnector extends DevicesSchemas\Connectors\Connector
 	public const SCHEMA_TYPE
 		= MetadataTypes\Sources\Connector::HOMEKIT
 		. '/connector/'
-		. Entities\HomeKitConnector::TYPE;
+		. Entities\Connectors\Connector::TYPE;
 
 	public function getEntityClass(): string
 	{
-		return Entities\HomeKitConnector::class;
+		return Entities\Connectors\Connector::class;
 	}
 
 	public function getType(): string

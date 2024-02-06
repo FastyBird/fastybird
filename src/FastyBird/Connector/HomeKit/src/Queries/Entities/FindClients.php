@@ -17,7 +17,7 @@ namespace FastyBird\Connector\HomeKit\Queries\Entities;
 
 use Closure;
 use Doctrine\ORM;
-use FastyBird\Connector\HomeKit\Entities;
+use FastyBird\Connector\HomeKit\Entities\Clients\Client;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use IPub\DoctrineOrmQuery;
 use Ramsey\Uuid;
@@ -25,7 +25,7 @@ use Ramsey\Uuid;
 /**
  * Find clients entities query
  *
- * @template T of Entities\Client
+ * @template T of Client
  * @extends  DoctrineOrmQuery\QueryObject<T>
  *
  * @package        FastyBird:HomeKitConnector!

@@ -18,6 +18,7 @@ namespace FastyBird\Connector\HomeKit\Models\Entities\Clients;
 use Doctrine\ORM;
 use Doctrine\Persistence;
 use FastyBird\Connector\HomeKit\Entities;
+use FastyBird\Connector\HomeKit\Entities\Clients\Client;
 use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Queries;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
@@ -39,7 +40,7 @@ final class ClientsRepository
 
 	use Nette\SmartObject;
 
-	/** @var ORM\EntityRepository<Entities\Client>|null */
+	/** @var ORM\EntityRepository<Client>|null */
 	private ORM\EntityRepository|null $repository = null;
 
 	public function __construct(
@@ -50,23 +51,23 @@ final class ClientsRepository
 	}
 
 	/**
-	 * @param Queries\Entities\FindClients<Entities\Client> $queryObject
+	 * @param Queries\Entities\FindClients<Client> $queryObject
 	 *
 	 * @throws ApplicationExceptions\InvalidState
 	 */
 	public function findOneBy(
 		Queries\Entities\FindClients $queryObject,
-	): Entities\Client|null
+	): Entities\Clients\Client|null
 	{
 		return $this->database->query(
-			fn (): Entities\Client|null => $queryObject->fetchOne($this->getRepository()),
+			fn (): Entities\Clients\Client|null => $queryObject->fetchOne($this->getRepository()),
 		);
 	}
 
 	/**
-	 * @param Queries\Entities\FindClients<Entities\Client> $queryObject
+	 * @param Queries\Entities\FindClients<Client> $queryObject
 	 *
-	 * @return DoctrineOrmQuery\ResultSet<Entities\Client>
+	 * @return DoctrineOrmQuery\ResultSet<Client>
 	 *
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
@@ -87,12 +88,12 @@ final class ClientsRepository
 	}
 
 	/**
-	 * @return ORM\EntityRepository<Entities\Client>
+	 * @return ORM\EntityRepository<Client>
 	 */
 	private function getRepository(): ORM\EntityRepository
 	{
 		if ($this->repository === null) {
-			$this->repository = $this->managerRegistry->getRepository(Entities\Client::class);
+			$this->repository = $this->managerRegistry->getRepository(Entities\Clients\Client::class);
 		}
 
 		return $this->repository;

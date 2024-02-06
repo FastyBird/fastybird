@@ -81,15 +81,15 @@ final class System implements Common\EventSubscriber
 			$uow->getScheduledEntityUpdates(),
 			$uow->getScheduledEntityDeletions(),
 		) as $object) {
-			if ($object instanceof Entities\HomeKitConnector) {
+			if ($object instanceof Entities\Connectors\Connector) {
 				$this->doUpdate[] = $object->getId()->toString();
-			} elseif ($object instanceof Entities\HomeKitDevice) {
+			} elseif ($object instanceof Entities\Devices\Device) {
 				$this->doUpdate[] = $object->getConnector()->getId()->toString();
 			} elseif ($object instanceof DevicesEntities\Devices\Properties\Property) {
 				$this->doUpdate[] = $object->getDevice()->getConnector()->getId()->toString();
 			} elseif ($object instanceof DevicesEntities\Devices\Controls\Control) {
 				$this->doUpdate[] = $object->getDevice()->getConnector()->getId()->toString();
-			} elseif ($object instanceof Entities\HomeKitChannel) {
+			} elseif ($object instanceof Entities\Channels\Channel) {
 				$this->doUpdate[] = $object->getDevice()->getConnector()->getId()->toString();
 			} elseif ($object instanceof DevicesEntities\Channels\Properties\Property) {
 				$this->doUpdate[] = $object->getChannel()->getDevice()->getConnector()->getId()->toString();

@@ -44,6 +44,7 @@ final class HomeKitExtensionTest extends BaseTestCase
 		self::assertNotNull($container->getByType(Queue\Consumers\WriteChannelPropertyState::class, false));
 		self::assertNotNull($container->getByType(Queue\Consumers::class, false));
 		self::assertNotNull($container->getByType(Queue\Queue::class, false));
+		self::assertNotNull($container->getByType(Queue\MessageBuilder::class, false));
 
 		self::assertNotNull($container->getByType(Subscribers\Properties::class, false));
 		self::assertNotNull($container->getByType(Subscribers\Controls::class, false));
@@ -57,7 +58,6 @@ final class HomeKitExtensionTest extends BaseTestCase
 		self::assertNotNull($container->getByType(Hydrators\HomeKitDevice::class, false));
 		self::assertNotNull($container->getByType(Hydrators\HomeKitChannel::class, false));
 
-		self::assertNotNull($container->getByType(Helpers\Entity::class, false));
 		self::assertNotNull($container->getByType(Helpers\Loader::class, false));
 		self::assertNotNull($container->getByType(Helpers\Connector::class, false));
 		self::assertNotNull($container->getByType(Helpers\Device::class, false));
