@@ -15,9 +15,6 @@
 
 namespace FastyBird\Module\Devices\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * Connector mode types
  *
@@ -26,21 +23,11 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class ConnectorMode extends Consistence\Enum\Enum
+enum ConnectorMode: string
 {
 
-	public const EXECUTE = 'execute';
+	case EXECUTE = 'execute';
 
-	public const DISCOVER = 'discover';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case DISCOVER = 'discover';
 
 }

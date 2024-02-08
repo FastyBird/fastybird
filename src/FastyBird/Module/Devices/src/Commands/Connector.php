@@ -42,6 +42,8 @@ use Symfony\Component\Console\Input;
 use Symfony\Component\Console\Output;
 use Symfony\Component\Console\Style;
 use Throwable;
+use TypeError;
+use ValueError;
 use function array_key_exists;
 use function array_search;
 use function array_values;
@@ -129,7 +131,7 @@ class Connector extends Console\Command\Command
 						'm',
 						Input\InputOption::VALUE_OPTIONAL,
 						'Connector mode',
-						Types\ConnectorMode::EXECUTE,
+						Types\ConnectorMode::EXECUTE->value,
 					),
 				]),
 			);
@@ -137,6 +139,8 @@ class Connector extends Console\Command\Command
 
 	/**
 	 * @throws Console\Exception\InvalidArgumentException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	protected function execute(Input\InputInterface $input, Output\OutputInterface $output): int
 	{
@@ -161,17 +165,17 @@ class Connector extends Console\Command\Command
 			}
 		}
 
-		$mode = Types\ConnectorMode::get(Types\ConnectorMode::EXECUTE);
+		$mode = Types\ConnectorMode::EXECUTE;
 
 		if (
 			$input->hasOption('mode')
 			&& is_string($input->getOption('mode'))
-			&& Types\ConnectorMode::isValidValue(Utils\Strings::lower($input->getOption('mode')))
+			&& Types\ConnectorMode::tryFrom(Utils\Strings::lower($input->getOption('mode'))) !== null
 		) {
-			$mode = Types\ConnectorMode::get(Utils\Strings::lower($input->getOption('mode')));
+			$mode = Types\ConnectorMode::from(Utils\Strings::lower($input->getOption('mode')));
 		}
 
-		if ($mode->equalsValue(Types\ConnectorMode::DISCOVER)) {
+		if ($mode === Types\ConnectorMode::DISCOVER) {
 			$this->progressBar = new Console\Helper\ProgressBar(
 				$output,
 				intval(self::DISCOVERY_MAX_PROCESSING_INTERVAL),
@@ -257,7 +261,7 @@ class Connector extends Console\Command\Command
 
 		if ($connector === null) {
 			if ($input->getOption('quiet') === false) {
-				if ($mode->equalsValue(Types\ConnectorMode::DISCOVER)) {
+				if ($mode === Types\ConnectorMode::DISCOVER) {
 					$io->warning(
 						$this->translator->translate(
 							'//devices-module.cmd.connector.messages.noDiscoverableConnectors',
@@ -355,7 +359,7 @@ class Connector extends Console\Command\Command
 			},
 		);
 
-		if ($mode->equalsValue(Types\ConnectorMode::DISCOVER)) {
+		if ($mode === Types\ConnectorMode::DISCOVER) {
 			$this->progressBarTimer = $this->eventLoop->addPeriodicTimer(
 				0.1,
 				async(function (): void {
@@ -371,7 +375,7 @@ class Connector extends Console\Command\Command
 		}
 
 		$this->eventLoop->futureTick(async(function () use ($connector, $service, $mode): void {
-			if ($mode->equalsValue(Types\ConnectorMode::DISCOVER)) {
+			if ($mode === Types\ConnectorMode::DISCOVER) {
 				$this->dispatcher?->dispatch(new Events\BeforeConnectorDiscoveryStart($connector));
 
 				$this->logger->debug('Starting connector...', [
@@ -441,7 +445,7 @@ class Connector extends Console\Command\Command
 			$this->terminate($connector, $service, $mode);
 		});
 
-		if ($mode->equalsValue(Types\ConnectorMode::DISCOVER)) {
+		if ($mode === Types\ConnectorMode::DISCOVER) {
 			$this->discoveryTimer = $this->eventLoop->addTimer(
 				self::DISCOVERY_MAX_PROCESSING_INTERVAL,
 				function () use ($connector, $service, $mode): void {
@@ -509,7 +513,7 @@ class Connector extends Console\Command\Command
 			$this->eventLoop->addTimer(
 				self::SHUTDOWN_WAITING_DELAY,
 				async(function () use ($connector, $service, $mode): void {
-					if ($mode->equalsValue(Types\ConnectorMode::DISCOVER)) {
+					if ($mode === Types\ConnectorMode::DISCOVER) {
 						$this->dispatcher?->dispatch(new Events\AfterConnectorDiscoveryTerminate($service, $connector));
 					} else {
 						$this->dispatcher?->dispatch(new Events\AfterConnectorExecutionTerminate($service, $connector));
@@ -584,7 +588,7 @@ class Connector extends Console\Command\Command
 				return false;
 			}
 
-			if ($mode->equalsValue(Types\ConnectorMode::DISCOVER)) {
+			if ($mode === Types\ConnectorMode::DISCOVER) {
 				$findConnectorControlQuery = new Queries\Configuration\FindConnectorControls();
 				$findConnectorControlQuery->forConnector($connector);
 				$findConnectorControlQuery->byName(MetadataTypes\ControlName::DISCOVER);
@@ -609,7 +613,7 @@ class Connector extends Console\Command\Command
 			$findConnectorsQuery = new Queries\Configuration\FindConnectors();
 
 			foreach ($this->connectorsConfigurationRepository->findAllBy($findConnectorsQuery) as $connector) {
-				if ($mode->equalsValue(Types\ConnectorMode::DISCOVER)) {
+				if ($mode === Types\ConnectorMode::DISCOVER) {
 					$findConnectorControlQuery = new Queries\Configuration\FindConnectorControls();
 					$findConnectorControlQuery->forConnector($connector);
 					$findConnectorControlQuery->byName(MetadataTypes\ControlName::DISCOVER);
