@@ -29,6 +29,9 @@ use FastyBird\Module\Devices\Entities;
 final class DeviceVariable extends Device
 {
 
+	/**
+	 * @return class-string<Entities\Devices\Properties\Variable>
+	 */
 	public function getEntityName(): string
 	{
 		return Entities\Devices\Properties\Variable::class;

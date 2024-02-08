@@ -15,9 +15,6 @@
 
 namespace FastyBird\Library\Metadata\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * Account state type
  *
@@ -26,41 +23,29 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class AccountState extends Consistence\Enum\Enum
+enum AccountState: string
 {
 
-	/**
-	 * Define states
-	 */
-	public const ACTIVE = 'active';
+	case ACTIVE = 'active';
 
-	public const BLOCKED = 'blocked';
+	case BLOCKED = 'blocked';
 
-	public const DELETED = 'deleted';
+	case DELETED = 'deleted';
 
-	public const NOT_ACTIVATED = 'not_activated';
+	case NOT_ACTIVATED = 'not_activated';
 
-	public const APPROVAL_WAITING = 'approval_waiting';
+	case APPROVAL_WAITING = 'approval_waiting';
 
 	/**
-	 * List of allowed states
-	 *
-	 * @var array<string>
+	 * @return array<self>
 	 */
-	public static array $allowedStates = [
-		self::ACTIVE,
-		self::BLOCKED,
-		self::DELETED,
-	];
-
-	public function getValue(): string
+	public static function getAllowed(): array
 	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
+		return [
+			self::ACTIVE,
+			self::BLOCKED,
+			self::DELETED,
+		];
 	}
 
 }

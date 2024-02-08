@@ -20,7 +20,7 @@ use FastyBird\Module\Devices\Entities;
 /**
  * Channel property entity hydrator
  *
- * @extends Channel<Entities\Channels\Properties\Dynamic>
+ * @extends  Channel<Entities\Channels\Properties\Mapped>
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Hydrators
@@ -29,6 +29,9 @@ use FastyBird\Module\Devices\Entities;
 final class ChannelMapped extends Channel
 {
 
+	/**
+	 * @return class-string<Entities\Channels\Properties\Mapped>
+	 */
 	public function getEntityName(): string
 	{
 		return Entities\Channels\Properties\Mapped::class;

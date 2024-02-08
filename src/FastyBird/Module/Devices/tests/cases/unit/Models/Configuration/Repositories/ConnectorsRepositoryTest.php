@@ -31,15 +31,15 @@ final class ConnectorsRepositoryTest extends DbTestCase
 		$repository = $this->getContainer()->getByType(Models\Configuration\Connectors\Repository::class);
 
 		$findQuery = new Queries\Configuration\FindConnectors();
-		$findQuery->byIdentifier('generic');
+		$findQuery->byIdentifier('dummy');
 
 		$entity = $repository->findOneBy($findQuery);
 
 		self::assertIsObject($entity);
-		self::assertSame('generic', $entity->getIdentifier());
+		self::assertSame('dummy', $entity->getIdentifier());
 
 		$findQuery = new Queries\Configuration\FindConnectors();
-		$findQuery->byTypes(['generic', 'unknown']);
+		$findQuery->byTypes(['dummy', 'unknown']);
 
 		$entity = $repository->findOneBy($findQuery);
 

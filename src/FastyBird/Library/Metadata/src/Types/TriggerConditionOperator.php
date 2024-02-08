@@ -15,9 +15,6 @@
 
 namespace FastyBird\Library\Metadata\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * Trigger condition operator type
  *
@@ -26,26 +23,13 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class TriggerConditionOperator extends Consistence\Enum\Enum
+enum TriggerConditionOperator: string
 {
 
-	/**
-	 * Define states
-	 */
-	public const EQUAL = 'eq';
+	case EQUAL = 'eq';
 
-	public const ABOVE = 'above';
+	case ABOVE = 'above';
 
-	public const BELOW = 'below';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case BELOW = 'below';
 
 }

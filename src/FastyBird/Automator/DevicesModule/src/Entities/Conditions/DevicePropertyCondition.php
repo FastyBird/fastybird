@@ -16,22 +16,22 @@
 namespace FastyBird\Automator\DevicesModule\Entities\Conditions;
 
 use Doctrine\ORM\Mapping as ORM;
+use FastyBird\Library\Application\Doctrine\Mapping as ApplicationMapping;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Triggers\Entities;
-use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
+use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use Ramsey\Uuid;
 use function array_merge;
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
+#[ApplicationMapping\DiscriminatorEntry(name: self::TYPE)]
 class DevicePropertyCondition extends PropertyCondition
 {
 
-	/**
-	 * @IPubDoctrine\Crud(is="required")
-	 * @ORM\Column(type="uuid_binary", name="condition_device_property", nullable=true)
-	 */
+	public const TYPE = 'device_property';
+
+	#[IPubDoctrine\Crud(required: true)]
+	#[ORM\Column(name: 'condition_device_property', type: Uuid\Doctrine\UuidBinaryType::NAME, nullable: true)]
 	private Uuid\UuidInterface $property;
 
 	public function __construct(
@@ -50,17 +50,12 @@ class DevicePropertyCondition extends PropertyCondition
 
 	public function getType(): string
 	{
-		return 'device_property';
+		return self::TYPE;
 	}
 
 	public function getProperty(): Uuid\UuidInterface
 	{
 		return $this->property;
-	}
-
-	public function getDiscriminatorName(): string
-	{
-		return $this->getType();
 	}
 
 	/**

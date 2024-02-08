@@ -2,49 +2,42 @@
 
 namespace FastyBird\Module\Triggers\Tests\Fixtures\Dummy;
 
-use Consistence\Doctrine\Enum\EnumAnnotation as Enum;
 use Doctrine\ORM\Mapping as ORM;
+use FastyBird\Library\Application\Doctrine\Mapping as ApplicationMapping;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Triggers\Entities;
-use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
+use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use Ramsey\Uuid;
 use function array_merge;
-use function strval;
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
+#[ApplicationMapping\DiscriminatorEntry(name: self::TYPE)]
 class DummyConditionEntity extends Entities\Conditions\Condition
 {
 
-	public const CONDITION_TYPE = 'dummy';
+	public const TYPE = 'dummy';
 
-	/**
-	 * @IPubDoctrine\Crud(is="required")
-	 * @ORM\Column(type="uuid_binary", name="condition_watch_item", nullable=true)
-	 */
+	#[IPubDoctrine\Crud(required: true)]
+	#[ORM\Column(name: 'condition_watch_item', type: Uuid\Doctrine\UuidBinaryType::NAME, nullable: true)]
 	private Uuid\UuidInterface $watchItem;
 
-	/**
-	 * @var MetadataTypes\TriggerConditionOperator
-	 *
-	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
-	 *
-	 * @IPubDoctrine\Crud(is={"required", "writable"})
-	 * @Enum(class=MetadataTypes\TriggerConditionOperator::class)
-	 * @ORM\Column(type="string_enum", name="condition_operator", length=15, nullable=true)
-	 */
-	private $operator;
+	#[IPubDoctrine\Crud(required: true, writable: true)]
+	#[ORM\Column(
+		name: 'condition_operator',
+		type: 'string',
+		length: 15,
+		nullable: true,
+		enumType: MetadataTypes\TriggerConditionOperator::class,
+	)]
+	private MetadataTypes\TriggerConditionOperator $operator;
 
-	/**
-	 * @IPubDoctrine\Crud(is={"required", "writable"})
-	 * @ORM\Column(type="string", name="condition_operand", length=20, nullable=true)
-	 */
+	#[IPubDoctrine\Crud(required: true, writable: true)]
+	#[ORM\Column(name: 'condition_operand', type: 'string', length: 20, nullable: true)]
 	private string $operand;
 
 	public function getType(): string
 	{
-		return 'dummy';
+		return self::TYPE;
 	}
 
 	public function setWatchItem(Uuid\UuidInterface $watchItem): void
@@ -77,22 +70,17 @@ class DummyConditionEntity extends Entities\Conditions\Condition
 		return $this->operand;
 	}
 
-	public function getDiscriminatorName(): string
-	{
-		return 'dummy';
-	}
-
 	public function validate(string $value): bool
 	{
-		if ($this->operator->equalsValue(MetadataTypes\TriggerConditionOperator::EQUAL)) {
+		if ($this->operator === MetadataTypes\TriggerConditionOperator::EQUAL) {
 			return $this->operand === $value;
 		}
 
-		if ($this->operator->equalsValue(MetadataTypes\TriggerConditionOperator::ABOVE)) {
+		if ($this->operator === MetadataTypes\TriggerConditionOperator::ABOVE) {
 			return (float) ($this->operand) < (float) $value;
 		}
 
-		if ($this->operator->equalsValue(MetadataTypes\TriggerConditionOperator::BELOW)) {
+		if ($this->operator === MetadataTypes\TriggerConditionOperator::BELOW) {
 			return (float) ($this->operand) > (float) $value;
 		}
 
@@ -106,7 +94,7 @@ class DummyConditionEntity extends Entities\Conditions\Condition
 	{
 		return array_merge(parent::toArray(), [
 			'watch_item' => $this->getWatchItem()->toString(),
-			'operator' => strval($this->getOperator()->getValue()),
+			'operator' => $this->getOperator()->value,
 			'operand' => $this->getOperand(),
 		]);
 	}

@@ -21,40 +21,32 @@ use Doctrine\Common;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities;
-use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
-use IPub\DoctrineDynamicDiscriminatorMap\Entities as DoctrineDynamicDiscriminatorMapEntities;
+use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use IPub\DoctrineTimestampable;
 use Nette\Utils;
 use Ramsey\Uuid;
 use function array_map;
 
-/**
- * @ORM\Entity
- * @ORM\Table(
- *     name="fb_devices_module_channels",
- *     options={
- *       "collate"="utf8mb4_general_ci",
- *       "charset"="utf8mb4",
- *       "comment"="Device channels"
- *     },
- *     uniqueConstraints={
- *       @ORM\UniqueConstraint(name="channel_identifier_unique", columns={"channel_identifier", "device_id"})
- *     },
- *     indexes={
- *       @ORM\Index(name="channel_identifier_idx", columns={"channel_identifier"})
- *     }
- * )
- * @ORM\InheritanceType("SINGLE_TABLE")
- * @ORM\DiscriminatorColumn(name="channel_type", type="string", length=100)
- * @ORM\DiscriminatorMap({
- *    "generic" = "FastyBird\Module\Devices\Entities\Channels\Channel"
- * })
- * @ORM\MappedSuperclass
- */
-class Channel implements Entities\Entity,
+#[ORM\Entity]
+#[ORM\Table(
+	name: 'fb_devices_module_channels',
+	options: [
+		'collate' => 'utf8mb4_general_ci',
+		'charset' => 'utf8mb4',
+		'comment' => 'Device channels',
+	],
+)]
+#[ORM\Index(columns: ['channel_identifier'], name: 'channel_identifier_idx')]
+#[ORM\UniqueConstraint(name: 'channel_identifier_unique', columns: ['channel_identifier', 'device_id'])]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'channel_type', type: 'string', length: 100)]
+#[ORM\DiscriminatorMap([
+	self::TYPE => Channel::class,
+])]
+#[ORM\MappedSuperclass]
+abstract class Channel implements Entities\Entity,
 	Entities\EntityParams,
-	DoctrineTimestampable\Entities\IEntityCreated, DoctrineTimestampable\Entities\IEntityUpdated,
-	DoctrineDynamicDiscriminatorMapEntities\IDiscriminatorProvider
+	DoctrineTimestampable\Entities\IEntityCreated, DoctrineTimestampable\Entities\IEntityUpdated
 {
 
 	use Entities\TEntity;
@@ -64,63 +56,72 @@ class Channel implements Entities\Entity,
 
 	public const TYPE = 'generic';
 
-	/**
-	 * @ORM\Id
-	 * @ORM\Column(type="uuid_binary", name="channel_id")
-	 * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
-	 */
+	#[ORM\Id]
+	#[ORM\Column(name: 'channel_id', type: Uuid\Doctrine\UuidBinaryType::NAME)]
+	#[ORM\CustomIdGenerator(class: Uuid\Doctrine\UuidGenerator::class)]
 	protected Uuid\UuidInterface $id;
 
 	/**
 	 * @var MetadataTypes\ChannelCategory
 	 *
-	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
-	 *
 	 * @Enum(class=MetadataTypes\ChannelCategory::class)
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="string_enum", name="channel_category", length=100, nullable=true, options={"default": "generic"})
+	 *
+	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
 	 */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(
+		name: 'channel_category',
+		type: 'string_enum',
+		length: 100,
+		nullable: false,
+		options: ['default' => MetadataTypes\ChannelCategory::GENERIC],
+	)]
 	protected $category;
 
-	/**
-	 * @IPubDoctrine\Crud(is="required")
-	 * @ORM\Column(type="string", name="channel_identifier", length=50, nullable=false)
-	 */
+	#[IPubDoctrine\Crud(required: true)]
+	#[ORM\Column(name: 'channel_identifier', type: 'string', length: 50, nullable: false)]
 	protected string $identifier;
 
-	/**
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="string", name="channel_name", nullable=true, options={"default": null})
-	 */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(name: 'channel_name', type: 'string', nullable: true, options: ['default' => null])]
 	protected string|null $name;
 
-	/**
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="text", name="channel_comment", nullable=true, options={"default": null})
-	 */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(name: 'channel_comment', type: 'text', nullable: true, options: ['default' => null])]
 	protected string|null $comment = null;
 
-	/**
-	 * @var Common\Collections\Collection<int, Entities\Channels\Properties\Property>
-	 *
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\OneToMany(targetEntity="FastyBird\Module\Devices\Entities\Channels\Properties\Property", mappedBy="channel", cascade={"persist", "remove"}, orphanRemoval=true)
-	 */
+	/** @var Common\Collections\Collection<int, Entities\Channels\Properties\Property> */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\OneToMany(
+		mappedBy: 'channel',
+		targetEntity: Entities\Channels\Properties\Property::class,
+		cascade: ['persist', 'remove'],
+		orphanRemoval: true,
+	)]
 	protected Common\Collections\Collection $properties;
 
-	/**
-	 * @var Common\Collections\Collection<int, Entities\Channels\Controls\Control>
-	 *
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\OneToMany(targetEntity="FastyBird\Module\Devices\Entities\Channels\Controls\Control", mappedBy="channel", cascade={"persist", "remove"}, orphanRemoval=true)
-	 */
+	/** @var Common\Collections\Collection<int, Entities\Channels\Controls\Control> */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\OneToMany(
+		mappedBy: 'channel',
+		targetEntity: Entities\Channels\Controls\Control::class,
+		cascade: ['persist', 'remove'],
+		orphanRemoval: true,
+	)]
 	protected Common\Collections\Collection $controls;
 
-	/**
-	 * @IPubDoctrine\Crud(is="required")
-	 * @ORM\ManyToOne(targetEntity="FastyBird\Module\Devices\Entities\Devices\Device", inversedBy="channels", cascade={"persist"})
-	 * @ORM\JoinColumn(name="device_id", referencedColumnName="device_id", onDelete="CASCADE", nullable=false)
-	 */
+	#[IPubDoctrine\Crud(required: true)]
+	#[ORM\ManyToOne(
+		targetEntity: Entities\Devices\Device::class,
+		cascade: ['persist'],
+		inversedBy: 'channels',
+	)]
+	#[ORM\JoinColumn(
+		name: 'device_id',
+		referencedColumnName: 'device_id',
+		nullable: false,
+		onDelete: 'CASCADE',
+	)]
 	protected Entities\Devices\Device $device;
 
 	public function __construct(
@@ -289,11 +290,6 @@ class Channel implements Entities\Entity,
 	public function getSource(): MetadataTypes\Sources\Source
 	{
 		return MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES);
-	}
-
-	public function getDiscriminatorName(): string
-	{
-		return self::TYPE;
 	}
 
 	/**

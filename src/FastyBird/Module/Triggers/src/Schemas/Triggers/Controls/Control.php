@@ -16,7 +16,7 @@
 namespace FastyBird\Module\Triggers\Schemas\Triggers\Controls;
 
 use FastyBird\JsonApi\Schemas as JsonApiSchemas;
-use FastyBird\Library\Metadata\Types\Sources\Module;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Triggers;
 use FastyBird\Module\Triggers\Entities;
 use FastyBird\Module\Triggers\Router;
@@ -40,7 +40,7 @@ final class Control extends JsonApiSchemas\JsonApi
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = Module::TRIGGERS . '/control/trigger';
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Module::TRIGGERS . '/control/trigger';
 
 	/**
 	 * Define relationships names

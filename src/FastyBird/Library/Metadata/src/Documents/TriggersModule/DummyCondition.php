@@ -42,7 +42,7 @@ final class DummyCondition extends Condition
 		private readonly Uuid\UuidInterface $watchItem,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $operand,
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\TriggerConditionOperator::class)]
+		#[ObjectMapper\Rules\BackedEnumValue(class: Types\TriggerConditionOperator::class)]
 		private readonly Types\TriggerConditionOperator $operator,
 		bool|null $isFulfilled = null,
 		Uuid\UuidInterface|null $owner = null,
@@ -71,7 +71,7 @@ final class DummyCondition extends Condition
 		return array_merge(parent::toArray(), [
 			'watch_item' => $this->getWatchItem()->toString(),
 			'operand' => $this->getOperand(),
-			'operator' => $this->getOperator()->getValue(),
+			'operator' => $this->getOperator()->value,
 		]);
 	}
 

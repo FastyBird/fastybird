@@ -19,26 +19,21 @@ use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Connector\Modbus;
 use FastyBird\Connector\Modbus\Exceptions;
 use FastyBird\Connector\Modbus\Types;
+use FastyBird\Library\Application\Doctrine\Mapping as ApplicationMapping;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use function is_numeric;
 use function is_string;
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
+#[ApplicationMapping\DiscriminatorEntry(name: self::TYPE)]
 class ModbusConnector extends DevicesEntities\Connectors\Connector
 {
 
 	public const TYPE = 'modbus-connector';
 
 	public static function getType(): string
-	{
-		return self::TYPE;
-	}
-
-	public function getDiscriminatorName(): string
 	{
 		return self::TYPE;
 	}

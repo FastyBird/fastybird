@@ -41,9 +41,7 @@ trait TEmail
 	{
 		$isPrivate = (bool) $attributes->get('private');
 
-		return Types\EmailVisibility::get(
-			$isPrivate ? Types\EmailVisibility::PRIVATE : Types\EmailVisibility::PUBLIC,
-		);
+		return $isPrivate ? Types\EmailVisibility::PRIVATE : Types\EmailVisibility::PUBLIC;
 	}
 
 }

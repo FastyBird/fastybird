@@ -19,25 +19,20 @@ use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Connector\HomeKit\Entities\Channels\Channel;
 use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Types;
+use FastyBird\Library\Application\Doctrine\Mapping as ApplicationMapping;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use function is_int;
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
+#[ApplicationMapping\DiscriminatorEntry(name: self::TYPE)]
 class Device extends DevicesEntities\Devices\Device
 {
 
 	public const TYPE = 'homekit-connector';
 
 	public static function getType(): string
-	{
-		return self::TYPE;
-	}
-
-	public function getDiscriminatorName(): string
 	{
 		return self::TYPE;
 	}

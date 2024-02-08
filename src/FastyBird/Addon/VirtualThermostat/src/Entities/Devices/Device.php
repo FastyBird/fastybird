@@ -20,6 +20,7 @@ use FastyBird\Addon\VirtualThermostat\Entities;
 use FastyBird\Addon\VirtualThermostat\Exceptions;
 use FastyBird\Addon\VirtualThermostat\Types;
 use FastyBird\Connector\Virtual\Entities as VirtualEntities;
+use FastyBird\Library\Application\Doctrine\Mapping as ApplicationMapping;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
@@ -30,9 +31,8 @@ use function array_map;
 use function assert;
 use function sprintf;
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
+#[ApplicationMapping\DiscriminatorEntry(name: self::TYPE)]
 class Device extends VirtualEntities\Devices\Device
 {
 
@@ -50,12 +50,9 @@ class Device extends VirtualEntities\Devices\Device
 
 	public const HOT_TOLERANCE = 0.3;
 
-	public static function getType(): string
-	{
-		return self::TYPE;
-	}
+	protected string $device_type = self::TYPE;
 
-	public function getDiscriminatorName(): string
+	public static function getType(): string
 	{
 		return self::TYPE;
 	}

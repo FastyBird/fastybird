@@ -22,9 +22,12 @@ use FastyBird\Module\Triggers\Hydrators as TriggersHydrators;
 use Fig\Http\Message\StatusCodeInterface;
 use IPub\JsonAPIDocument;
 use Ramsey\Uuid;
+use TypeError;
+use ValueError;
 use function is_bool;
 use function is_scalar;
 use function strtolower;
+use function strval;
 
 /**
  * Property condition entity hydrator
@@ -102,6 +105,8 @@ abstract class PropertyCondition extends TriggersHydrators\Conditions\Condition
 
 	/**
 	 * @throws JsonApiExceptions\JsonApi
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	protected function hydrateOperatorAttribute(
 		JsonAPIDocument\Objects\IStandardObject $attributes,
@@ -123,7 +128,7 @@ abstract class PropertyCondition extends TriggersHydrators\Conditions\Condition
 			);
 
 			// ...and have to be valid value
-		} elseif (!MetadataTypes\TriggerConditionOperator::isValidValue($attributes->get('operator'))) {
+		} elseif (MetadataTypes\TriggerConditionOperator::tryFrom(strval($attributes->get('operator'))) === null) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
 				$this->translator->translate('//triggers-module.conditions.messages.invalidOperator.heading'),
@@ -134,7 +139,7 @@ abstract class PropertyCondition extends TriggersHydrators\Conditions\Condition
 			);
 		}
 
-		return MetadataTypes\TriggerConditionOperator::get($attributes->get('operator'));
+		return MetadataTypes\TriggerConditionOperator::from(strval($attributes->get('operator')));
 	}
 
 	/**

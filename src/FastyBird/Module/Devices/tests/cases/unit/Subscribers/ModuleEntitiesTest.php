@@ -10,9 +10,9 @@ use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Subscribers;
+use FastyBird\Module\Devices\Tests\Fixtures;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid;
@@ -184,12 +184,12 @@ final class ModuleEntitiesTest extends TestCase
 			$asyncPublisher,
 		);
 
-		$connectorEntity = new Entities\Connectors\Connector(
+		$connectorEntity = new Fixtures\Dummy\DummyConnectorEntity(
 			'generic-connector-name',
 			Uuid\Uuid::fromString('dd6aa4bc-2611-40c3-84ef-0a438cf51e67'),
 		);
 
-		$entity = new Entities\Devices\Device('device-name', $connectorEntity, 'device-name');
+		$entity = new Fixtures\Dummy\DummyDeviceEntity('device-name', $connectorEntity, 'device-name');
 		$entity->setName('Device custom name');
 
 		$eventArgs = $this->createMock(Persistence\Event\LifecycleEventArgs::class);
@@ -306,12 +306,12 @@ final class ModuleEntitiesTest extends TestCase
 			$asyncPublisher,
 		);
 
-		$connectorEntity = new Entities\Connectors\Connector(
+		$connectorEntity = new Fixtures\Dummy\DummyConnectorEntity(
 			'generic-connector-name',
 			Uuid\Uuid::fromString('dd6aa4bc-2611-40c3-84ef-0a438cf51e67'),
 		);
 
-		$entity = new Entities\Devices\Device('device-name', $connectorEntity, 'device-name');
+		$entity = new Fixtures\Dummy\DummyDeviceEntity('device-name', $connectorEntity, 'device-name');
 		$entity->setName('Device custom name');
 
 		$eventArgs = $this->createMock(Persistence\Event\LifecycleEventArgs::class);
@@ -370,12 +370,12 @@ final class ModuleEntitiesTest extends TestCase
 
 		$asyncPublisher = $this->createMock(ExchangePublisher\Async\Publisher::class);
 
-		$connectorEntity = new Entities\Connectors\Connector(
+		$connectorEntity = new Fixtures\Dummy\DummyConnectorEntity(
 			'generic-connector-name',
 			Uuid\Uuid::fromString('dd6aa4bc-2611-40c3-84ef-0a438cf51e67'),
 		);
 
-		$entity = new Entities\Devices\Device('device-name', $connectorEntity, 'device-name');
+		$entity = new Fixtures\Dummy\DummyDeviceEntity('device-name', $connectorEntity, 'device-name');
 		$entity->setName('Device custom name');
 
 		$entityManager = $this->getEntityManager();
@@ -460,7 +460,7 @@ final class ModuleEntitiesTest extends TestCase
 		$entityManager = $this->createMock(ORM\EntityManagerInterface::class);
 		$entityManager
 			->method('getClassMetadata')
-			->with([Entities\Devices\Device::class])
+			->with([Fixtures\Dummy\DummyDeviceEntity::class])
 			->willReturn($metadata);
 
 		if ($withUow) {

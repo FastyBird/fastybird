@@ -20,9 +20,9 @@ extensions:
     nettrineDbal                        : Nettrine\DBAL\DI\DbalExtension
     nettrineOrm                         : Nettrine\ORM\DI\OrmExtension
     nettrineOrmAnnotations              : Nettrine\ORM\DI\OrmAnnotationsExtension
+    nettrineOrmAttributes               : Nettrine\ORM\DI\OrmAttributesExtension
     nettrineOrmConsole                  : Nettrine\ORM\DI\OrmConsoleExtension
     nettrineOrmCache                    : Nettrine\ORM\DI\OrmCacheExtension
-    ipubDoctrineConsistence             : IPub\DoctrineConsistence\DI\DoctrineConsistenceExtension
     ipubDoctrineCrud                    : IPub\DoctrineCrud\DI\DoctrineCrudExtension
     ipubDoctrineTimestampable           : IPub\DoctrineTimestampable\DI\DoctrineTimestampableExtension
     fbJsonApi                           : FastyBird\JsonApi\DI\JsonApiExtension
@@ -83,6 +83,9 @@ nettrineOrm:
         proxyDir: %tempDir%/cache/doctrine.proxies
 
 nettrineOrmAnnotations:
+    mapping: []
+
+nettrineOrmAttributes:
     mapping: []
 
 fbJsonApi:

@@ -59,7 +59,7 @@ final class ConditionsV1 extends BaseV1
 	use Controllers\Finders\TTrigger;
 
 	public function __construct(
-		private readonly Models\Entities\Triggers\TriggersRepository $triggersRepository,
+		protected readonly Models\Entities\Triggers\TriggersRepository $triggersRepository,
 		private readonly Models\Entities\Conditions\ConditionsRepository $conditionsRepository,
 		private readonly Models\Entities\Conditions\ConditionsManager $conditionsManager,
 	)

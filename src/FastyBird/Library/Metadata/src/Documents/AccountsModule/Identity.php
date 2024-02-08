@@ -37,7 +37,7 @@ final class Identity implements Documents\Document
 		private readonly Uuid\UuidInterface $id,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $account,
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\IdentityState::class)]
+		#[ObjectMapper\Rules\BackedEnumValue(class: Types\IdentityState::class)]
 		private readonly Types\IdentityState $state,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $uid,
@@ -80,7 +80,7 @@ final class Identity implements Documents\Document
 		return [
 			'id' => $this->getId()->toString(),
 			'account' => $this->getAccount()->toString(),
-			'state' => $this->getState()->getValue(),
+			'state' => $this->getState()->value,
 			'uid' => $this->getUid(),
 			'hash' => $this->getHash(),
 		];

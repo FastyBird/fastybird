@@ -25,7 +25,7 @@ use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
 use FastyBird\Library\Tools\Transformers as ToolsTransformers;
 use FastyBird\Module\Devices\Exceptions;
-use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
+use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use IPub\DoctrineTimestampable;
 use Nette\Utils;
 use Ramsey\Uuid;
@@ -60,105 +60,97 @@ abstract class Property implements Entity,
 
 	private const MATCH_MAC_ADDRESS = '/^([0-9a-fA-F][0-9a-fA-F]){1}(:([0-9a-fA-F][0-9a-fA-F])){5,7}$/';
 
-	/**
-	 * @ORM\Id
-	 * @ORM\Column(type="uuid_binary", name="property_id")
-	 * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
-	 */
+	#[ORM\Id]
+	#[ORM\Column(name: 'property_id', type: Uuid\Doctrine\UuidBinaryType::NAME)]
+	#[ORM\CustomIdGenerator(class: Uuid\Doctrine\UuidGenerator::class)]
 	protected Uuid\UuidInterface $id;
 
 	/**
 	 * @var MetadataTypes\PropertyCategory
 	 *
-	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
-	 *
 	 * @Enum(class=MetadataTypes\PropertyCategory::class)
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="string_enum", name="property_category", length=100, nullable=true, options={"default": "generic"})
+	 *
+	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
 	 */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(
+		name: 'property_category',
+		type: 'string_enum',
+		length: 100,
+		nullable: false,
+		options: ['default' => MetadataTypes\PropertyCategory::GENERIC],
+	)]
 	protected $category;
 
-	/**
-	 * @IPubDoctrine\Crud(is="required")
-	 * @ORM\Column(type="string", name="property_identifier", length=50, nullable=false)
-	 */
+	#[IPubDoctrine\Crud(required: true)]
+	#[ORM\Column(name: 'property_identifier', type: 'string', length: 50, nullable: false)]
 	protected string $identifier;
 
-	/**
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="string", name="property_name", nullable=true, options={"default": null})
-	 */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(name: 'property_name', type: 'string', nullable: true, options: ['default' => null])]
 	protected string|null $name = null;
 
-	/**
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="boolean", name="property_settable", nullable=false, options={"default": false})
-	 */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(name: 'property_settable', type: 'boolean', length: 1, nullable: false, options: ['default' => false])]
 	protected bool $settable = false;
 
-	/**
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="boolean", name="property_queryable", nullable=false, options={"default": false})
-	 */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(
+		name: 'property_queryable',
+		type: 'boolean',
+		length: 1,
+		nullable: false,
+		options: ['default' => false],
+	)]
 	protected bool $queryable = false;
 
 	/**
 	 * @var MetadataTypes\DataType
 	 *
-	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
-	 *
 	 * @Enum(class=MetadataTypes\DataType::class)
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="string_enum", name="property_data_type", length=100, nullable=true, options={"default": "unknown"})
+	 *
+	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
 	 */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(
+		name: 'property_data_type',
+		type: 'string_enum',
+		length: 100,
+		nullable: false,
+		options: ['default' => MetadataTypes\DataType::UNKNOWN],
+	)]
 	protected $dataType;
 
-	/**
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="string", name="property_unit", length=20, nullable=true, options={"default": null})
-	 */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(name: 'property_unit', type: 'string', length: 20, nullable: true, options: ['default' => null])]
 	protected string|null $unit = null;
 
-	/**
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="text", name="property_format", nullable=true, options={"default": null})
-	 */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(name: 'property_format', type: 'text', nullable: true, options: ['default' => null])]
 	protected string|null $format = null;
 
-	/**
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="string", name="property_invalid", nullable=true, options={"default": null})
-	 */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(name: 'property_invalid', type: 'string', nullable: true, options: ['default' => null])]
 	protected string|null $invalid = null;
 
-	/**
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="integer", name="property_scale", nullable=true, options={"default": null})
-	 */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(name: 'property_scale', type: 'integer', nullable: true, options: ['default' => null])]
 	protected int|null $scale = null;
 
-	/**
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="float", name="property_step", nullable=true, options={"default": null})
-	 */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(name: 'property_step', type: 'float', nullable: true, options: ['default' => null])]
 	protected float|null $step = null;
 
-	/**
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="string", name="property_value", nullable=true, options={"default": null})
-	 */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(name: 'property_value', type: 'string', nullable: true, options: ['default' => null])]
 	protected string|null $value = null;
 
-	/**
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="string", name="property_default", nullable=true, options={"default": null})
-	 */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(name: 'property_default', type: 'string', nullable: true, options: ['default' => null])]
 	protected string|null $default = null;
 
-	/**
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="string", name="property_value_transformer", nullable=true, options={"default": null})
-	 */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(name: 'property_value_transformer', type: 'string', nullable: true, options: ['default' => null])]
 	protected string|null $valueTransformer = null;
 
 	public function __construct(

@@ -32,6 +32,9 @@ use FastyBird\Module\Devices\Hydrators as DevicesHydrators;
 class HomeKitChannel extends DevicesHydrators\Channels\Channel
 {
 
+	/**
+	 * @return class-string<Channel>
+	 */
 	public function getEntityName(): string
 	{
 		return Entities\Channels\Channel::class;

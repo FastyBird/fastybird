@@ -24,6 +24,7 @@ extensions:
     nettrineDbalConsole                             : Nettrine\DBAL\DI\DbalConsoleExtension
     nettrineOrm                                     : Nettrine\ORM\DI\OrmExtension
     nettrineOrmAnnotations                          : Nettrine\ORM\DI\OrmAnnotationsExtension
+    nettrineOrmAttributes                           : Nettrine\ORM\DI\OrmAttributesExtension
     nettrineOrmConsole                              : Nettrine\ORM\DI\OrmConsoleExtension
     nettrineOrmCache                                : Nettrine\ORM\DI\OrmCacheExtension
     nettrineFixtures                                : Nettrine\Fixtures\DI\FixturesExtension
@@ -32,7 +33,6 @@ extensions:
     ipubDoctrineConsistence                         : IPub\DoctrineConsistence\DI\DoctrineConsistenceExtension
     ipubDoctrineCrud                                : IPub\DoctrineCrud\DI\DoctrineCrudExtension
     ipubDoctrineTimestampable                       : IPub\DoctrineTimestampable\DI\DoctrineTimestampableExtension
-    ipubDoctrineDynamicDiscriminatorMap             : IPub\DoctrineDynamicDiscriminatorMap\DI\DoctrineDynamicDiscriminatorMapExtension
     ipubWebsockets                                  : IPub\WebSockets\DI\WebSocketsExtension
     ipubWebsocketsWamp                              : IPub\WebSocketsWAMP\DI\WebSocketsWAMPExtension
     # FastyBird libs
@@ -63,11 +63,11 @@ extensions:
     fbVirtualConnector                              : FastyBird\Connector\Virtual\DI\VirtualExtension
     fbZigbee2MqttConnector                          : FastyBird\Connector\Zigbee2Mqtt\DI\Zigbee2MqttExtension
     # FastyBird bridges
-    fbRedisDbDevicesModuleBridge                    : FastyBird\Bridge\RedisDbDevicesModule\DI\RedisDbDevicesModuleExtension
-    fbRedisDbTriggersModuleBridge                   : FastyBird\Bridge\RedisDbTriggersModule\DI\RedisDbTriggersModuleExtension
+    fbRedisDbPluginDevicesModuleBridge              : FastyBird\Bridge\RedisDbPluginDevicesModule\DI\RedisDbPluginDevicesModuleExtension
+    fbRedisDbPluginTriggersModuleBridge             : FastyBird\Bridge\RedisDbPluginTriggersModule\DI\RedisDbPluginTriggersModuleExtension
     fbVirtualThermostatAddonHomeKitConnectorBridge  : FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\DI\VirtualThermostatAddonHomeKitConnectorExtension
     # FastyBird addons
-    fbThermostatDeviceAddon                         : FastyBird\Addon\ThermostatDevice\DI\ThermostatDeviceExtension
+    fbVirtualThermostatAddon                        : FastyBird\Addon\VirtualThermostat\DI\VirtualThermostatExtension
 
 decorator:
     FastyBird\Plugin\WebServer\Router\Router:
@@ -204,6 +204,9 @@ nettrineOrm:
         proxyDir: %tempDir%/cache/doctrine.proxies
 
 nettrineOrmAnnotations:
+    mapping: []
+
+nettrineOrmAttributes:
     mapping: []
 
 nettrineFixtures:

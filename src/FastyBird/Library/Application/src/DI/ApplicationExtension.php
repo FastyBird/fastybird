@@ -16,6 +16,7 @@
 namespace FastyBird\Library\Application\DI;
 
 use FastyBird\Library\Application\Boot;
+use FastyBird\Library\Application\Doctrine;
 use FastyBird\Library\Application\EventLoop\Wrapper;
 use FastyBird\Library\Application\Helpers;
 use FastyBird\Library\Application\Subscribers;
@@ -144,6 +145,12 @@ class ApplicationExtension extends DI\CompilerExtension
 		if (class_exists('\Doctrine\DBAL\Connection') && class_exists('\Doctrine\ORM\EntityManager')) {
 			$builder->addDefinition($this->prefix('helpers.database'), new DI\Definitions\ServiceDefinition())
 				->setType(Helpers\Database::class);
+
+			$builder->addDefinition(
+				$this->prefix('doctrine.mapping.discriminatorListener'),
+				new DI\Definitions\ServiceDefinition(),
+			)
+				->setType(Doctrine\Mapping\DiscriminatorListener::class);
 		}
 
 		if (interface_exists('\Sentry\ClientInterface')) {
@@ -235,6 +242,21 @@ class ApplicationExtension extends DI\CompilerExtension
 
 				$monologLoggerService->addSetup('?->pushHandler(?)', ['@self', $sentryHandlerService]);
 			}
+		}
+
+		if (
+			class_exists('\Doctrine\DBAL\Connection')
+			&& class_exists('\Doctrine\ORM\EntityManager')
+			&& $builder->getByType('\Doctrine\ORM\EntityManagerInterface') !== null
+		) {
+			$emService = $builder->getDefinitionByType('\Doctrine\ORM\EntityManagerInterface');
+			assert($emService instanceof DI\Definitions\ServiceDefinition);
+
+			$emService
+				->addSetup('?->getEventManager()->addEventSubscriber(?)', [
+					'@self',
+					$builder->getDefinitionByType(Doctrine\Mapping\DiscriminatorListener::class),
+				]);
 		}
 	}
 

@@ -27,12 +27,14 @@ use FastyBird\Module\Accounts\Router;
 use FastyBird\Module\Accounts\Schemas;
 use FastyBird\Module\Accounts\Security;
 use FastyBird\SimpleAuth\Entities as SimpleAuthEntities;
+use FastyBird\SimpleAuth\Exceptions as SimpleAuthExceptions;
 use FastyBird\SimpleAuth\Models as SimpleAuthModels;
 use FastyBird\SimpleAuth\Queries as SimpleAuthQueries;
 use FastyBird\SimpleAuth\Security as SimpleAuthSecurity;
 use FastyBird\SimpleAuth\Types as SimpleAuthTypes;
 use Fig\Http\Message\StatusCodeInterface;
 use InvalidArgumentException;
+use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette\Utils;
 use Psr\Http\Message;
 use Ramsey\Uuid;
@@ -54,7 +56,6 @@ final class SessionV1 extends BaseV1
 {
 
 	/**
-	 * @param SimpleAuthModels\Tokens\TokenRepository<SimpleAuthEntities\Tokens\Token> $tokenRepository
 	 * @param SimpleAuthModels\Tokens\TokensManager<SimpleAuthEntities\Tokens\Token> $tokensManager
 	 */
 	public function __construct(
@@ -67,9 +68,12 @@ final class SessionV1 extends BaseV1
 	}
 
 	/**
+	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
+	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 * @throws Exception
 	 * @throws Exceptions\InvalidState
 	 * @throws JsonApiExceptions\JsonApi
+	 * @throws SimpleAuthExceptions\UnauthorizedAccess
 	 *
 	 * @Secured
 	 * @Secured\User(loggedIn)
@@ -188,7 +192,7 @@ final class SessionV1 extends BaseV1
 					$validTill,
 				),
 				'validTill' => $validTill,
-				'state' => SimpleAuthTypes\TokenState::get(SimpleAuthTypes\TokenState::STATE_ACTIVE),
+				'state' => SimpleAuthTypes\TokenState::ACTIVE,
 				'identity' => $this->user->getIdentity(),
 			]);
 
@@ -202,7 +206,7 @@ final class SessionV1 extends BaseV1
 				'accessToken' => $accessToken,
 				'token' => $this->createToken($this->user->getId() ?? Uuid\Uuid::uuid4(), [], $validTill),
 				'validTill' => $validTill,
-				'state' => SimpleAuthTypes\TokenState::get(SimpleAuthTypes\TokenState::STATE_ACTIVE),
+				'state' => SimpleAuthTypes\TokenState::ACTIVE,
 			]);
 
 			$this->tokensManager->create($values);
@@ -274,7 +278,6 @@ final class SessionV1 extends BaseV1
 			(string) $attributes->get('refresh'),
 			Entities\Tokens\RefreshToken::class,
 		);
-		assert($refreshToken instanceof Entities\Tokens\RefreshToken || $refreshToken === null);
 
 		if ($refreshToken === null) {
 			throw new JsonApiExceptions\JsonApiError(
@@ -324,7 +327,7 @@ final class SessionV1 extends BaseV1
 					$validTill,
 				),
 				'validTill' => $validTill,
-				'state' => SimpleAuthTypes\TokenState::get(SimpleAuthTypes\TokenState::STATE_ACTIVE),
+				'state' => SimpleAuthTypes\TokenState::ACTIVE,
 				'identity' => $this->user->getIdentity(),
 			]);
 
@@ -338,7 +341,7 @@ final class SessionV1 extends BaseV1
 				'accessToken' => $newAccessToken,
 				'token' => $this->createToken($this->user->getId() ?? Uuid\Uuid::uuid4(), [], $validTill),
 				'validTill' => $validTill,
-				'state' => SimpleAuthTypes\TokenState::get(SimpleAuthTypes\TokenState::STATE_ACTIVE),
+				'state' => SimpleAuthTypes\TokenState::ACTIVE,
 			]);
 
 			$this->tokensManager->create($values);
@@ -378,12 +381,15 @@ final class SessionV1 extends BaseV1
 	}
 
 	/**
+	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
+	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 * @throws Doctrine\DBAL\ConnectionException
 	 * @throws Doctrine\DBAL\Exception
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws InvalidArgumentException
 	 * @throws JsonApiExceptions\JsonApi
+	 * @throws SimpleAuthExceptions\UnauthorizedAccess
 	 *
 	 * @Secured
 	 * @Secured\User(loggedIn)
@@ -466,6 +472,9 @@ final class SessionV1 extends BaseV1
 	}
 
 	/**
+	 * @throws SimpleAuthExceptions\UnauthorizedAccess
+	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
+	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 * @throws Exceptions\InvalidState
 	 * @throws JsonApiExceptions\JsonApi
 	 */

@@ -19,6 +19,7 @@ use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Types;
+use FastyBird\Library\Application\Doctrine\Mapping as ApplicationMapping;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use Nette\Utils;
@@ -26,9 +27,8 @@ use Ramsey\Uuid;
 use function count;
 use function is_string;
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
+#[ApplicationMapping\DiscriminatorEntry(name: self::TYPE)]
 class SubDevice extends Entities\NsPanelDevice
 {
 
@@ -51,11 +51,6 @@ class SubDevice extends Entities\NsPanelDevice
 	}
 
 	public static function getType(): string
-	{
-		return self::TYPE;
-	}
-
-	public function getDiscriminatorName(): string
 	{
 		return self::TYPE;
 	}

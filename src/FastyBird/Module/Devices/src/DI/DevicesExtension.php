@@ -630,12 +630,6 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 
 		// CONNECTORS
 		$builder->addDefinition(
-			$this->prefix('schemas.connector'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Schemas\Connectors\Connector::class);
-
-		$builder->addDefinition(
 			$this->prefix('schemas.connector.property.dynamic'),
 			new DI\Definitions\ServiceDefinition(),
 		)
@@ -660,12 +654,6 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setType(Schemas\Connectors\Controls\Control::class);
 
 		// DEVICES
-		$builder->addDefinition(
-			$this->prefix('schemas.device'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Schemas\Devices\Device::class);
-
 		$builder->addDefinition(
 			$this->prefix('schemas.device.property.dynamic'),
 			new DI\Definitions\ServiceDefinition(),
@@ -697,12 +685,6 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setType(Schemas\Devices\Controls\Control::class);
 
 		// CHANNELS
-		$builder->addDefinition(
-			$this->prefix('schemas.channel'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Schemas\Channels\Channel::class);
-
 		$builder->addDefinition(
 			$this->prefix('schemas.channel.property.dynamic'),
 			new DI\Definitions\ServiceDefinition(),
@@ -739,12 +721,6 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 
 		// CONNECTORS
 		$builder->addDefinition(
-			$this->prefix('hydrators.connectors'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Hydrators\Connectors\Connector::class);
-
-		$builder->addDefinition(
 			$this->prefix('hydrators.connector.property.dynamic'),
 			new DI\Definitions\ServiceDefinition(),
 		)
@@ -757,12 +733,6 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setType(Hydrators\Properties\ConnectorVariable::class);
 
 		// DEVICES
-		$builder->addDefinition(
-			$this->prefix('hydrators.device'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Hydrators\Devices\Device::class);
-
 		$builder->addDefinition(
 			$this->prefix('hydrators.device.property.dynamic'),
 			new DI\Definitions\ServiceDefinition(),
@@ -782,12 +752,6 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setType(Hydrators\Properties\DeviceMapped::class);
 
 		// CHANNELS
-		$builder->addDefinition(
-			$this->prefix('hydrators.channel'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Hydrators\Channels\Channel::class);
-
 		$builder->addDefinition(
 			$this->prefix('hydrators.channel.property.dynamic'),
 			new DI\Definitions\ServiceDefinition(),
@@ -915,6 +879,26 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		if ($ormAnnotationDriverChainService instanceof DI\Definitions\ServiceDefinition) {
 			$ormAnnotationDriverChainService->addSetup('addDriver', [
 				$ormAnnotationDriverService,
+				'FastyBird\Module\Devices\Entities',
+			]);
+		}
+
+		$ormAttributeDriverService = $builder->getDefinition('nettrineOrmAttributes.attributeDriver');
+
+		if ($ormAttributeDriverService instanceof DI\Definitions\ServiceDefinition) {
+			$ormAttributeDriverService->addSetup(
+				'addPaths',
+				[[__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'Entities']],
+			);
+		}
+
+		$ormAttributeDriverChainService = $builder->getDefinitionByType(
+			Persistence\Mapping\Driver\MappingDriverChain::class,
+		);
+
+		if ($ormAttributeDriverChainService instanceof DI\Definitions\ServiceDefinition) {
+			$ormAttributeDriverChainService->addSetup('addDriver', [
+				$ormAttributeDriverService,
 				'FastyBird\Module\Devices\Entities',
 			]);
 		}

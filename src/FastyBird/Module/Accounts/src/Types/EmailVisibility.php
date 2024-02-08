@@ -15,35 +15,19 @@
 
 namespace FastyBird\Module\Accounts\Types;
 
-use Consistence;
-use function strval;
-
 /**
- * Doctrine2 DB type for email visibility type column
+ * Email visibility types
  *
  * @package        FastyBird:AccountsModule!
  * @subpackage     Types
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class EmailVisibility extends Consistence\Enum\Enum
+enum EmailVisibility: string
 {
 
-	/**
-	 * Define states
-	 */
-	public const PUBLIC = 'public';
+	case PUBLIC = 'public';
 
-	public const PRIVATE = 'private';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case PRIVATE = 'private';
 
 }

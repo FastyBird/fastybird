@@ -17,7 +17,6 @@ namespace FastyBird\Module\Devices\Schemas\Channels;
 
 use DateTimeInterface;
 use FastyBird\JsonApi\Schemas as JsonApiSchemas;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Router;
@@ -37,13 +36,8 @@ use function strval;
  * @subpackage     Schemas
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Channel extends JsonApiSchemas\JsonApi
+abstract class Channel extends JsonApiSchemas\JsonApi
 {
-
-	/**
-	 * Define entity schema type string
-	 */
-	public const SCHEMA_TYPE = MetadataTypes\Sources\Module::DEVICES . '/channel/' . Entities\Channels\Channel::TYPE;
 
 	/**
 	 * Define relationships names
@@ -56,16 +50,6 @@ class Channel extends JsonApiSchemas\JsonApi
 
 	public function __construct(private readonly Routing\IRouter $router)
 	{
-	}
-
-	public function getEntityClass(): string
-	{
-		return Entities\Channels\Channel::class;
-	}
-
-	public function getType(): string
-	{
-		return self::SCHEMA_TYPE;
 	}
 
 	/**

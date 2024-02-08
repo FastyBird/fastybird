@@ -20,7 +20,7 @@ use FastyBird\Module\Devices\Entities;
 /**
  * Device property entity hydrator
  *
- * @extends Device<Entities\Devices\Properties\Dynamic>
+ * @extends Device<Entities\Devices\Properties\Mapped>
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Hydrators
@@ -29,9 +29,12 @@ use FastyBird\Module\Devices\Entities;
 final class DeviceMapped extends Device
 {
 
+	/**
+	 * @return class-string<Entities\Devices\Properties\Mapped>
+	 */
 	public function getEntityName(): string
 	{
-		return Entities\Devices\Properties\Dynamic::class;
+		return Entities\Devices\Properties\Mapped::class;
 	}
 
 }

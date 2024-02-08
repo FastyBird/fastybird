@@ -17,21 +17,16 @@ namespace FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Entities\Chann
 
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Connector\HomeKit\Entities as HomeKitEntities;
+use FastyBird\Library\Application\Doctrine\Mapping as ApplicationMapping;
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
+#[ApplicationMapping\DiscriminatorEntry(name: self::TYPE)]
 class Thermostat extends HomeKitEntities\Channels\Channel
 {
 
 	public const TYPE = 'virtual-thermostat-addon-bridge';
 
 	public static function getType(): string
-	{
-		return self::TYPE;
-	}
-
-	public function getDiscriminatorName(): string
 	{
 		return self::TYPE;
 	}

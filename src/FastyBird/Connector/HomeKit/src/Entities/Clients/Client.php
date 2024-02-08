@@ -16,9 +16,9 @@
 namespace FastyBird\Connector\HomeKit\Entities\Clients;
 
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\Connector\HomeKit\Entities\Connectors\Connector;
+use FastyBird\Connector\HomeKit\Entities;
 use IPub\DoctrineCrud;
-use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
+use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use IPub\DoctrineTimestampable;
 use Ramsey\Uuid;
 use function is_resource;
@@ -26,20 +26,16 @@ use function rewind;
 use function stream_get_contents;
 use function strval;
 
-/**
- * @ORM\Entity
- * @ORM\Table(
- *     name="fb_homekit_connector_clients",
- *     options={
- *       "collate"="utf8mb4_general_ci",
- *       "charset"="utf8mb4",
- *       "comment"="HomeKit connector clients"
- *     },
- *     uniqueConstraints={
- *       @ORM\UniqueConstraint(name="client_uid_unique", columns={"client_uid", "connector_id"})
- *     }
- * )
- */
+#[ORM\Entity]
+#[ORM\Table(
+	name: 'fb_homekit_connector_clients',
+	options: [
+		'collate' => 'utf8mb4_general_ci',
+		'charset' => 'utf8mb4',
+		'comment' => 'HomeKit connector clients',
+	],
+)]
+#[ORM\UniqueConstraint(name: 'client_uid_unique', columns: ['client_uid', 'connector_id'])]
 class Client implements DoctrineCrud\Entities\IEntity,
 	DoctrineTimestampable\Entities\IEntityCreated, DoctrineTimestampable\Entities\IEntityUpdated
 {
@@ -47,44 +43,41 @@ class Client implements DoctrineCrud\Entities\IEntity,
 	use DoctrineTimestampable\Entities\TEntityCreated;
 	use DoctrineTimestampable\Entities\TEntityUpdated;
 
-	/**
-	 * @ORM\Id
-	 * @ORM\Column(type="uuid_binary", name="client_id")
-	 * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
-	 */
+	#[ORM\Id]
+	#[ORM\Column(name: 'client_id', type: Uuid\Doctrine\UuidBinaryType::NAME)]
+	#[ORM\CustomIdGenerator(class: Uuid\Doctrine\UuidGenerator::class)]
 	protected Uuid\UuidInterface $id;
 
-	/**
-	 * @IPubDoctrine\Crud(is="required")
-	 * @ORM\ManyToOne(targetEntity="FastyBird\Connector\HomeKit\Entities\Connectors\Connector", inversedBy="clients")
-	 * @ORM\JoinColumn(name="connector_id", referencedColumnName="connector_id", onDelete="CASCADE", nullable=false)
-	 */
-	private Connector $connector;
+	#[IPubDoctrine\Crud(required: true)]
+	#[ORM\ManyToOne(
+		targetEntity: Entities\Connectors\Connector::class,
+		inversedBy: 'clients',
+	)]
+	#[ORM\JoinColumn(
+		name: 'connector_id',
+		referencedColumnName: 'connector_id',
+		nullable: false,
+		onDelete: 'CASCADE',
+	)]
+	private Entities\Connectors\Connector $connector;
 
-	/**
-	 * @IPubDoctrine\Crud(is="required")
-	 * @ORM\Column(type="string", name="client_uid", length=255, nullable=false)
-	 */
+	#[IPubDoctrine\Crud(required: true)]
+	#[ORM\Column(name: 'client_uid', type: 'string', nullable: false, length: 255)]
 	private string $uid;
 
-	/**
-	 * @var string|resource
-	 *
-	 * @IPubDoctrine\Crud(is={"required", "writable"})
-	 * @ORM\Column(name="client_public_key", type="binary", nullable=false)
-	 */
+	/** @var string|resource */
+	#[IPubDoctrine\Crud(required: true, writable: true)]
+	#[ORM\Column(name: 'client_public_key', type: 'binary', nullable: false)]
 	private $publicKey;
 
-	/**
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="boolean", name="client_admin", length=1, nullable=false, options={"default": true})
-	 */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(name: 'client_admin', type: 'boolean', nullable: false, options: ['default' => true])]
 	private bool $admin = true;
 
 	public function __construct(
 		string $uid,
 		string $publicKey,
-		Connector $connector,
+		Entities\Connectors\Connector $connector,
 		Uuid\UuidInterface|null $id = null,
 	)
 	{
@@ -101,7 +94,7 @@ class Client implements DoctrineCrud\Entities\IEntity,
 		return $this->id;
 	}
 
-	public function getConnector(): Connector
+	public function getConnector(): Entities\Connectors\Connector
 	{
 		return $this->connector;
 	}

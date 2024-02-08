@@ -9,6 +9,7 @@ use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Triggers\Entities;
 use FastyBird\Module\Triggers\Exceptions;
 use FastyBird\Module\Triggers\Models;
@@ -60,13 +61,13 @@ final class ModuleEntitiesTest extends TestCase
 			->method('publish')
 			->with(
 				self::callback(static function ($source): bool {
-					self::assertTrue($source instanceof Metadata\Types\Sources\Module);
+					self::assertTrue($source instanceof MetadataTypes\Sources\Module);
 					self::assertSame(Metadata\Constants::MODULE_TRIGGERS_SOURCE, $source->getValue());
 
 					return true;
 				}),
 				self::callback(static function ($key): bool {
-					self::assertTrue($key instanceof Metadata\Types\RoutingKey);
+					self::assertTrue($key instanceof MetadataTypes\RoutingKey);
 					self::assertSame(
 						Metadata\Constants::MESSAGE_BUS_TRIGGER_DOCUMENT_CREATED_ROUTING_KEY,
 						$key->getValue(),
@@ -151,13 +152,13 @@ final class ModuleEntitiesTest extends TestCase
 			->method('publish')
 			->with(
 				self::callback(static function ($source): bool {
-					self::assertTrue($source instanceof Metadata\Types\Sources\Module);
+					self::assertTrue($source instanceof MetadataTypes\Sources\Module);
 					self::assertSame(Metadata\Constants::MODULE_TRIGGERS_SOURCE, $source->getValue());
 
 					return true;
 				}),
 				self::callback(static function ($key): bool {
-					self::assertTrue($key instanceof Metadata\Types\RoutingKey);
+					self::assertTrue($key instanceof MetadataTypes\RoutingKey);
 					self::assertSame(
 						Metadata\Constants::MESSAGE_BUS_TRIGGER_DOCUMENT_UPDATED_ROUTING_KEY,
 						$key->getValue(),
@@ -242,13 +243,13 @@ final class ModuleEntitiesTest extends TestCase
 			->method('publish')
 			->with(
 				self::callback(static function ($source): bool {
-					self::assertTrue($source instanceof Metadata\Types\Sources\Module);
+					self::assertTrue($source instanceof MetadataTypes\Sources\Module);
 					self::assertSame(Metadata\Constants::MODULE_TRIGGERS_SOURCE, $source->getValue());
 
 					return true;
 				}),
 				self::callback(static function ($key): bool {
-					self::assertTrue($key instanceof Metadata\Types\RoutingKey);
+					self::assertTrue($key instanceof MetadataTypes\RoutingKey);
 					self::assertSame(
 						Metadata\Constants::MESSAGE_BUS_TRIGGER_DOCUMENT_DELETED_ROUTING_KEY,
 						$key->getValue(),

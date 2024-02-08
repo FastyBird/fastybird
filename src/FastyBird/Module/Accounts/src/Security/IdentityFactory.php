@@ -20,6 +20,7 @@ use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\SimpleAuth\Models as SimpleAuthModels;
 use FastyBird\SimpleAuth\Queries as SimpleAuthQueries;
 use FastyBird\SimpleAuth\Security as SimpleAuthSecurity;
+use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Lcobucci\JWT;
 
 /**
@@ -33,9 +34,6 @@ use Lcobucci\JWT;
 class IdentityFactory implements SimpleAuthSecurity\IIdentityFactory
 {
 
-	/**
-	 * @param SimpleAuthModels\Tokens\TokenRepository<Entities\Tokens\AccessToken> $tokenRepository
-	 */
 	public function __construct(
 		private readonly SimpleAuthModels\Tokens\TokenRepository $tokenRepository,
 	)
@@ -43,6 +41,8 @@ class IdentityFactory implements SimpleAuthSecurity\IIdentityFactory
 	}
 
 	/**
+	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
+	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 * @throws Exceptions\InvalidState
 	 */
 	public function create(JWT\Token $token): SimpleAuthSecurity\IIdentity|null

@@ -49,7 +49,7 @@ final class Account implements Documents\Document
 		private readonly string $lastName,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $language,
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\AccountState::class)]
+		#[ObjectMapper\Rules\BackedEnumValue(class: Types\AccountState::class)]
 		private readonly Types\AccountState $state,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
@@ -165,7 +165,7 @@ final class Account implements Documents\Document
 			'last_name' => $this->getLastName(),
 			'middle_name' => $this->getMiddleName(),
 			'email' => $this->getEmail(),
-			'state' => $this->getState()->getValue(),
+			'state' => $this->getState()->value,
 			'language' => $this->getLanguage(),
 			'registered' => $this->getRegistered()?->format(DateTimeInterface::ATOM),
 			'last_visit' => $this->getLastVisit()?->format(DateTimeInterface::ATOM),

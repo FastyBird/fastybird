@@ -63,7 +63,7 @@ final class ChannelPropertyCondition extends TriggersSchemas\Conditions\Conditio
 			'device' => $resource->getDevice()->toString(),
 			'channel' => $resource->getChannel()->toString(),
 			'property' => $resource->getProperty()->toString(),
-			'operator' => strval($resource->getOperator()->getValue()),
+			'operator' => $resource->getOperator()->value,
 			'operand' => strval($resource->getOperand()),
 		]);
 	}

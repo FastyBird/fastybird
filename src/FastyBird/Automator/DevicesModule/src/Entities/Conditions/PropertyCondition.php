@@ -15,41 +15,33 @@
 
 namespace FastyBird\Automator\DevicesModule\Entities\Conditions;
 
-use Consistence\Doctrine\Enum\EnumAnnotation as Enum;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Triggers\Entities as TriggersEntities;
-use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
+use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use Ramsey\Uuid;
 use function array_merge;
 
-/**
- * @ORM\MappedSuperclass
- */
+#[ORM\MappedSuperclass]
 abstract class PropertyCondition extends TriggersEntities\Conditions\Condition
 {
 
-	/**
-	 * @IPubDoctrine\Crud(is="required")
-	 * @ORM\Column(type="uuid_binary", name="condition_device", nullable=true)
-	 */
+	#[IPubDoctrine\Crud(required: true)]
+	#[ORM\Column(name: 'condition_device', type: Uuid\Doctrine\UuidBinaryType::NAME, nullable: true)]
 	protected Uuid\UuidInterface $device;
 
-	/**
-	 * @var MetadataTypes\TriggerConditionOperator
-	 *
-	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
-	 *
-	 * @IPubDoctrine\Crud(is={"required", "writable"})
-	 * @Enum(class=MetadataTypes\TriggerConditionOperator::class)
-	 * @ORM\Column(type="string_enum", name="condition_operator", length=15, nullable=true)
-	 */
-	protected $operator;
+	#[IPubDoctrine\Crud(required: true, writable: true)]
+	#[ORM\Column(
+		name: 'condition_operator',
+		type: 'string',
+		length: 15,
+		nullable: true,
+		enumType: MetadataTypes\TriggerConditionOperator::class,
+	)]
+	protected MetadataTypes\TriggerConditionOperator $operator;
 
-	/**
-	 * @IPubDoctrine\Crud(is={"required", "writable"})
-	 * @ORM\Column(type="string", name="condition_operand", length=20, nullable=true)
-	 */
+	#[IPubDoctrine\Crud(required: true, writable: true)]
+	#[ORM\Column(name: 'condition_operand', type: 'string', nullable: true, length: 20)]
 	protected string $operand;
 
 	public function __construct(
@@ -106,19 +98,15 @@ abstract class PropertyCondition extends TriggersEntities\Conditions\Condition
 
 	public function validate(string $value): bool
 	{
-		if ($this->operator->equalsValue(MetadataTypes\TriggerConditionOperator::EQUAL)) {
+		if ($this->operator === MetadataTypes\TriggerConditionOperator::EQUAL) {
 			return $this->operand === $value;
 		}
 
-		if ($this->operator->equalsValue(MetadataTypes\TriggerConditionOperator::ABOVE)) {
+		if ($this->operator === MetadataTypes\TriggerConditionOperator::ABOVE) {
 			return (float) ($this->operand) < (float) $value;
 		}
 
-		if ($this->operator->equalsValue(MetadataTypes\TriggerConditionOperator::BELOW)) {
-			return (float) ($this->operand) > (float) $value;
-		}
-
-		return false;
+		return (float) ($this->operand) > (float) $value;
 	}
 
 	/**
@@ -128,7 +116,7 @@ abstract class PropertyCondition extends TriggersEntities\Conditions\Condition
 	{
 		return array_merge(parent::toArray(), [
 			'device' => $this->getDevice()->toString(),
-			'operator' => $this->getOperator()->getValue(),
+			'operator' => $this->getOperator()->value,
 			'operand' => (string) $this->getOperand(),
 		]);
 	}

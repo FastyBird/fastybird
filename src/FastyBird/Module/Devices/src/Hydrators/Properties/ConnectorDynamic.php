@@ -29,6 +29,9 @@ use FastyBird\Module\Devices\Entities;
 final class ConnectorDynamic extends Connector
 {
 
+	/**
+	 * @return class-string<Entities\Connectors\Properties\Dynamic>
+	 */
 	public function getEntityName(): string
 	{
 		return Entities\Connectors\Properties\Dynamic::class;

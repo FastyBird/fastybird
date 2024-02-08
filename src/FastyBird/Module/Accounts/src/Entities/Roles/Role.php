@@ -19,26 +19,22 @@ use Doctrine\Common;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Module\Accounts\Entities;
 use FastyBird\SimpleAuth\Constants as SimpleAuthConstants;
-use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
+use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use IPub\DoctrineTimestampable;
 use Ramsey\Uuid;
 use function array_map;
 use function in_array;
 
-/**
- * @ORM\Entity
- * @ORM\Table(
- *     name="fb_accounts_module_acl_roles",
- *     options={
- *       "collate"="utf8mb4_general_ci",
- *       "charset"="utf8mb4",
- *       "comment"="ACL roles"
- *     },
- *     uniqueConstraints={
- *       @ORM\UniqueConstraint(name="role_name_unique", columns={"parent_id", "role_name"})
- *     }
- * )
- */
+#[ORM\Entity]
+#[ORM\Table(
+	name: 'fb_accounts_module_acl_roles',
+	options: [
+		'collate' => 'utf8mb4_general_ci',
+		'charset' => 'utf8mb4',
+		'comment' => 'ACL roles',
+	],
+)]
+#[ORM\UniqueConstraint(name: 'role_name_unique', columns: ['parent_id', 'role_name'])]
 class Role implements Entities\Entity,
 	DoctrineTimestampable\Entities\IEntityCreated,
 	DoctrineTimestampable\Entities\IEntityUpdated
@@ -48,35 +44,31 @@ class Role implements Entities\Entity,
 	use DoctrineTimestampable\Entities\TEntityCreated;
 	use DoctrineTimestampable\Entities\TEntityUpdated;
 
-	/**
-	 * @ORM\Id
-	 * @ORM\Column(type="uuid_binary", name="role_id")
-	 * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
-	 */
+	#[ORM\Id]
+	#[ORM\Column(name: 'role_id', type: Uuid\Doctrine\UuidBinaryType::NAME)]
+	#[ORM\CustomIdGenerator(class: Uuid\Doctrine\UuidGenerator::class)]
 	protected Uuid\UuidInterface $id;
 
-	/** @ORM\Column(type="string", name="role_name", length=100, nullable=false) */
+	#[ORM\Column(name: 'role_name', type: 'string', length: 100, nullable: false)]
 	private string $name;
 
-	/**
-	 * @IPubDoctrine\Crud(is={"required", "writable"})
-	 * @ORM\Column(type="text", name="role_comment", nullable=false)
-	 */
+	#[IPubDoctrine\Crud(required: true, writable: true)]
+	#[ORM\Column(name: 'role_comment', type: 'string', nullable: false)]
 	private string $comment;
 
-	/**
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\ManyToOne(targetEntity="FastyBird\Module\Accounts\Entities\Roles\Role", inversedBy="children")
-	 * @ORM\JoinColumn(name="parent_id", referencedColumnName="role_id", nullable=true, onDelete="set null")
-	 */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children')]
+	#[ORM\JoinColumn(
+		name: 'parent_id',
+		referencedColumnName: 'role_id',
+		nullable: true,
+		onDelete: 'set null',
+	)]
 	private self|null $parent = null;
 
-	/**
-	 * @var Common\Collections\Collection<int, Role>
-	 *
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\OneToMany(targetEntity="FastyBird\Module\Accounts\Entities\Roles\Role", mappedBy="parent")
-	 */
+	/** @var Common\Collections\Collection<int, Role> */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class)]
 	private Common\Collections\Collection $children;
 
 	public function __construct(

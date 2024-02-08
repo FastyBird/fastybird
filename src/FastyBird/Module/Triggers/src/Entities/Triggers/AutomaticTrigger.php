@@ -17,31 +17,35 @@ namespace FastyBird\Module\Triggers\Entities\Triggers;
 
 use Doctrine\Common;
 use Doctrine\ORM\Mapping as ORM;
+use FastyBird\Library\Application\Doctrine\Mapping as ApplicationMapping;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Triggers\Entities;
-use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
+use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use Ramsey\Uuid;
 
-/**
- * @ORM\Entity
- * @ORM\Table(
- *     name="fb_triggers_module_triggers_automatic",
- *     options={
- *       "collate"="utf8mb4_general_ci",
- *       "charset"="utf8mb4",
- *       "comment"="Automatic triggers"
- *     }
- * )
- */
+#[ORM\Entity]
+#[ORM\Table(
+	name: 'fb_triggers_module_triggers_automatic',
+	options: [
+		'collate' => 'utf8mb4_general_ci',
+		'charset' => 'utf8mb4',
+		'comment' => 'Automatic triggers',
+	],
+)]
+#[ApplicationMapping\DiscriminatorEntry(name: self::TYPE)]
 class AutomaticTrigger extends Trigger
 {
 
-	/**
-	 * @var Common\Collections\Collection<int, Entities\Conditions\Condition>
-	 *
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\OneToMany(targetEntity="FastyBird\Module\Triggers\Entities\Conditions\Condition", mappedBy="trigger", cascade={"persist", "remove"}, orphanRemoval=true)
-	 */
+	public const TYPE = 'automatic';
+
+	/** @var Common\Collections\Collection<int, Entities\Conditions\Condition> */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\OneToMany(
+		mappedBy: 'trigger',
+		targetEntity: Entities\Conditions\Condition::class,
+		cascade: ['persist', 'remove'],
+		orphanRemoval: true,
+	)]
 	private Common\Collections\Collection $conditions;
 
 	public function __construct(string $name, Uuid\UuidInterface|null $id = null)

@@ -16,23 +16,18 @@
 namespace FastyBird\Connector\Zigbee2Mqtt\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
+use FastyBird\Library\Application\Doctrine\Mapping as ApplicationMapping;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
+#[ApplicationMapping\DiscriminatorEntry(name: self::TYPE)]
 class Zigbee2MqttChannel extends DevicesEntities\Channels\Channel
 {
 
 	public const TYPE = 'zigbee2mqtt-connector';
 
 	public static function getType(): string
-	{
-		return self::TYPE;
-	}
-
-	public function getDiscriminatorName(): string
 	{
 		return self::TYPE;
 	}

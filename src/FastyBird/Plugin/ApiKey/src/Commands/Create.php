@@ -78,7 +78,7 @@ class Create extends Console\Command\Command
 			$createKey = new Utils\ArrayHash();
 			$createKey->offsetSet('name', $name);
 			$createKey->offsetSet('key', Uuid\Uuid::uuid4());
-			$createKey->offsetSet('state', Types\KeyState::get(Types\KeyState::ACTIVE));
+			$createKey->offsetSet('state', Types\KeyState::ACTIVE);
 
 			$key = $this->keysManager->create($createKey);
 

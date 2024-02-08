@@ -22,6 +22,7 @@ use FastyBird\Module\Accounts\Entities;
 use FastyBird\Module\Accounts\Exceptions;
 use IPub\DoctrineOrmQuery;
 use Ramsey\Uuid;
+use function in_array;
 
 /**
  * Find accounts entities query
@@ -52,15 +53,15 @@ class FindAccounts extends DoctrineOrmQuery\QueryObject
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 */
-	public function inState(string $state): void
+	public function inState(MetadataTypes\AccountState $state): void
 	{
-		if (!MetadataTypes\AccountState::isValidValue($state)) {
+		if (!in_array($state, MetadataTypes\AccountState::getAllowed(), true)) {
 			throw new Exceptions\InvalidArgument('Invalid account state given');
 		}
 
 		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($state): void {
 			$qb->andWhere('a.state = :state')
-				->setParameter('state', $state);
+				->setParameter('state', $state->value);
 		};
 	}
 

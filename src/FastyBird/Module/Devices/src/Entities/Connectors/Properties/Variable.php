@@ -19,9 +19,7 @@ use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions;
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class Variable extends Property
 {
 

@@ -60,7 +60,6 @@ final class Authenticator implements SimpleAuthSecurity\IAuthenticator
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\AccountNotFound
 	 * @throws Exceptions\AuthenticationFailed
-	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 */
 	public function authenticate(array $credentials): SimpleAuthSecurity\IIdentity
@@ -87,17 +86,16 @@ final class Authenticator implements SimpleAuthSecurity\IAuthenticator
 
 		$account = $identity->getAccount();
 
-		if ($account->getState()
-			->equalsValue(MetadataTypes\AccountState::ACTIVE)) {
+		if ($account->getState() === MetadataTypes\AccountState::ACTIVE) {
 			return $identity;
 		}
 
-		if ($account->getState()->equalsValue(MetadataTypes\AccountState::BLOCKED)) {
+		if ($account->getState() === MetadataTypes\AccountState::BLOCKED) {
 			throw new Exceptions\AuthenticationFailed(
 				'Account profile is blocked',
 				self::ACCOUNT_PROFILE_BLOCKED,
 			);
-		} elseif ($account->getState()->equalsValue(MetadataTypes\AccountState::DELETED)) {
+		} elseif ($account->getState() === MetadataTypes\AccountState::DELETED) {
 			throw new Exceptions\AuthenticationFailed(
 				'Account profile is deleted',
 				self::ACCOUNT_PROFILE_DELETED,

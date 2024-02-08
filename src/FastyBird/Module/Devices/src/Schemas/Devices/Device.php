@@ -18,7 +18,6 @@ namespace FastyBird\Module\Devices\Schemas\Devices;
 use DateTimeInterface;
 use Exception;
 use FastyBird\JsonApi\Schemas as JsonApiSchemas;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Models;
@@ -40,13 +39,8 @@ use function strval;
  * @subpackage     Schemas
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Device extends JsonApiSchemas\JsonApi
+abstract class Device extends JsonApiSchemas\JsonApi
 {
-
-	/**
-	 * Define entity schema type string
-	 */
-	public const SCHEMA_TYPE = MetadataTypes\Sources\Module::DEVICES . '/device/' . Entities\Devices\Device::TYPE;
 
 	/**
 	 * Define relationships names
@@ -71,16 +65,6 @@ class Device extends JsonApiSchemas\JsonApi
 		protected readonly Routing\IRouter $router,
 	)
 	{
-	}
-
-	public function getEntityClass(): string
-	{
-		return Entities\Devices\Device::class;
-	}
-
-	public function getType(): string
-	{
-		return self::SCHEMA_TYPE;
 	}
 
 	/**

@@ -19,28 +19,22 @@ use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities;
-use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
+use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use IPub\DoctrineTimestampable;
 use Nette\Utils;
 use Ramsey\Uuid;
 
-/**
- * @ORM\Entity
- * @ORM\Table(
- *     name="fb_devices_module_connectors_controls",
- *     options={
- *       "collate"="utf8mb4_general_ci",
- *       "charset"="utf8mb4",
- *       "comment"="Connectors controls"
- *     },
- *     uniqueConstraints={
- *       @ORM\UniqueConstraint(name="control_name_unique", columns={"control_name", "connector_id"})
- *     },
- *     indexes={
- *       @ORM\Index(name="control_name_idx", columns={"control_name"})
- *     }
- * )
- */
+#[ORM\Entity]
+#[ORM\Table(
+	name: 'fb_devices_module_connectors_controls',
+	options: [
+		'collate' => 'utf8mb4_general_ci',
+		'charset' => 'utf8mb4',
+		'comment' => 'Connectors controls',
+	],
+)]
+#[ORM\Index(columns: ['control_name'], name: 'control_name_idx')]
+#[ORM\UniqueConstraint(name: 'control_name_unique', columns: ['control_name', 'connector_id'])]
 class Control implements Entities\Entity,
 	DoctrineTimestampable\Entities\IEntityCreated, DoctrineTimestampable\Entities\IEntityUpdated
 {
@@ -49,24 +43,27 @@ class Control implements Entities\Entity,
 	use DoctrineTimestampable\Entities\TEntityCreated;
 	use DoctrineTimestampable\Entities\TEntityUpdated;
 
-	/**
-	 * @ORM\Id
-	 * @ORM\Column(type="uuid_binary", name="control_id")
-	 * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
-	 */
+	#[ORM\Id]
+	#[ORM\Column(name: 'control_id', type: Uuid\Doctrine\UuidBinaryType::NAME)]
+	#[ORM\CustomIdGenerator(class: Uuid\Doctrine\UuidGenerator::class)]
 	protected Uuid\UuidInterface $id;
 
-	/**
-	 * @IPubDoctrine\Crud(is="required")
-	 * @ORM\Column(type="string", name="control_name", length=100, nullable=false)
-	 */
+	#[IPubDoctrine\Crud(required: true)]
+	#[ORM\Column(name: 'control_name', type: 'string', length: 100, nullable: false)]
 	private string $name;
 
-	/**
-	 * @IPubDoctrine\Crud(is="required")
-	 * @ORM\ManyToOne(targetEntity="FastyBird\Module\Devices\Entities\Connectors\Connector", inversedBy="controls", cascade={"persist"})
-	 * @ORM\JoinColumn(name="connector_id", referencedColumnName="connector_id", onDelete="CASCADE", nullable=false)
-	 */
+	#[IPubDoctrine\Crud(required: true)]
+	#[ORM\ManyToOne(
+		targetEntity: Entities\Connectors\Connector::class,
+		cascade: ['persist'],
+		inversedBy: 'controls',
+	)]
+	#[ORM\JoinColumn(
+		name: 'connector_id',
+		referencedColumnName: 'connector_id',
+		nullable: false,
+		onDelete: 'CASCADE',
+	)]
 	private Entities\Connectors\Connector $connector;
 
 	public function __construct(string $name, Entities\Connectors\Connector $connector)

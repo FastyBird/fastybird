@@ -120,7 +120,7 @@ final class DevicesRepositoryTest extends DbTestCase
 
 		$findQuery = new Queries\Configuration\FindDevices();
 		$findQuery->byConnectorId(Uuid\Uuid::fromString('17c59dfa-2edd-438e-8c49-faa4e38e5a5e'));
-		$findQuery->byType('generic');
+		$findQuery->byType('dummy');
 
 		$entity = $repository->findOneBy($findQuery);
 
@@ -129,7 +129,7 @@ final class DevicesRepositoryTest extends DbTestCase
 
 		$findQuery = new Queries\Configuration\FindDevices();
 		$findQuery->byConnectorId(Uuid\Uuid::fromString('17c59dfa-2edd-438e-8c49-faa4e38e5a5e'));
-		$findQuery->byTypes(['generic', 'unknown']);
+		$findQuery->byTypes(['dummy', 'unknown']);
 
 		$entity = $repository->findOneBy($findQuery);
 

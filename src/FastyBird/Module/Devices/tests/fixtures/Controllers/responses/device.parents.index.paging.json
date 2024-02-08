@@ -15,7 +15,7 @@
   },
   "data": [
     {
-      "type": "com.fastybird.devices-module/device/generic",
+      "type": "com.fastybird.devices-module/device/dummy",
       "id": "69786d15-fd0c-4d9f-9378-33287c2009fa",
       "attributes": {
         "category": "generic",
@@ -109,11 +109,11 @@
           },
           "data": [
             {
-              "type": "com.fastybird.devices-module/channel/generic",
+              "type": "com.fastybird.devices-module/channel/dummy",
               "id": "17c59dfa-2edd-438e-8c49-faa4e38e5a5e"
             },
             {
-              "type": "com.fastybird.devices-module/channel/generic",
+              "type": "com.fastybird.devices-module/channel/dummy",
               "id": "6821f8e9-ae69-4d5c-9b7c-d2b213f1ae0a"
             }
           ]
@@ -124,7 +124,7 @@
             "related": "/api/devices-module/v1/connectors/17c59dfa-2edd-438e-8c49-faa4e38e5a5e"
           },
           "data": {
-            "type": "com.fastybird.devices-module/connector/generic",
+            "type": "com.fastybird.devices-module/connector/dummy",
             "id": "17c59dfa-2edd-438e-8c49-faa4e38e5a5e"
           }
         },
@@ -152,7 +152,7 @@
           },
           "data": [
             {
-              "type": "com.fastybird.devices-module/device/generic",
+              "type": "com.fastybird.devices-module/device/dummy",
               "id": "a1036ff8-6ee8-4405-aaed-58bae0814596"
             }
           ]

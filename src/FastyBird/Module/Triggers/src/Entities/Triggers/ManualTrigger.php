@@ -16,21 +16,23 @@
 namespace FastyBird\Module\Triggers\Entities\Triggers;
 
 use Doctrine\ORM\Mapping as ORM;
+use FastyBird\Library\Application\Doctrine\Mapping as ApplicationMapping;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 
-/**
- * @ORM\Entity
- * @ORM\Table(
- *     name="fb_triggers_module_triggers_manual",
- *     options={
- *       "collate"="utf8mb4_general_ci",
- *       "charset"="utf8mb4",
- *       "comment"="Manual triggers"
- *     }
- * )
- */
+#[ORM\Entity]
+#[ORM\Table(
+	name: 'fb_triggers_module_triggers_manual',
+	options: [
+		'collate' => 'utf8mb4_general_ci',
+		'charset' => 'utf8mb4',
+		'comment' => 'Manual triggers',
+	],
+)]
+#[ApplicationMapping\DiscriminatorEntry(name: self::TYPE)]
 class ManualTrigger extends Trigger
 {
+
+	public const TYPE = 'manual';
 
 	public function getType(): MetadataTypes\TriggerType
 	{

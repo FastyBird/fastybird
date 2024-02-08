@@ -4,11 +4,11 @@ namespace FastyBird\Module\Devices\Tests\Cases\Unit\Entities;
 
 use Error;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
-use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\Tests\Cases\Unit\DbTestCase;
+use FastyBird\Module\Devices\Tests\Fixtures;
 use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette;
@@ -72,7 +72,7 @@ final class DeviceEntitiesTest extends DbTestCase
 		self::assertSame('first-device', $parent->getIdentifier());
 
 		$child = $manager->create(Utils\ArrayHash::from([
-			'entity' => Entities\Devices\Device::class,
+			'entity' => Fixtures\Dummy\DummyDeviceEntity::class,
 			'identifier' => 'new-child-device',
 			'connector' => $parent->getConnector(),
 			'name' => 'New child device',

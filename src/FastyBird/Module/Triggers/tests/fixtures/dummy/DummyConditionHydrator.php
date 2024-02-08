@@ -77,7 +77,7 @@ final class DummyConditionHydrator extends Hydrators\Conditions\Condition
 			);
 
 			// ...and have to be valid value
-		} elseif (!MetadataTypes\TriggerConditionOperator::isValidValue($attributes->get('operator'))) {
+		} elseif (MetadataTypes\TriggerConditionOperator::tryFrom($attributes->get('operator')) === null) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
 				$this->translator->translate('//triggers-module.conditions.messages.invalidOperator.heading'),
@@ -88,7 +88,7 @@ final class DummyConditionHydrator extends Hydrators\Conditions\Condition
 			);
 		}
 
-		return MetadataTypes\TriggerConditionOperator::get($attributes->get('operator'));
+		return MetadataTypes\TriggerConditionOperator::from($attributes->get('operator'));
 	}
 
 	/**

@@ -16,27 +16,25 @@
 namespace FastyBird\Automator\DevicesModule\Entities\Actions;
 
 use Doctrine\ORM\Mapping as ORM;
+use FastyBird\Library\Application\Doctrine\Mapping as ApplicationMapping;
 use FastyBird\Module\Triggers\Entities as TriggersEntities;
-use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
+use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use Ramsey\Uuid;
 use function array_merge;
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
+#[ApplicationMapping\DiscriminatorEntry(name: self::TYPE)]
 class ChannelPropertyAction extends PropertyAction
 {
 
-	/**
-	 * @IPubDoctrine\Crud(is="required")
-	 * @ORM\Column(type="uuid_binary", name="action_channel", nullable=true)
-	 */
+	public const TYPE = 'channel_property';
+
+	#[IPubDoctrine\Crud(required: true)]
+	#[ORM\Column(name: 'action_channel', type: Uuid\Doctrine\UuidBinaryType::NAME, nullable: true)]
 	private Uuid\UuidInterface $channel;
 
-	/**
-	 * @IPubDoctrine\Crud(is="required")
-	 * @ORM\Column(type="uuid_binary", name="action_channel_property", nullable=true)
-	 */
+	#[IPubDoctrine\Crud(required: true)]
+	#[ORM\Column(name: 'action_channel_property', type: Uuid\Doctrine\UuidBinaryType::NAME, nullable: true)]
 	private Uuid\UuidInterface $property;
 
 	public function __construct(
@@ -56,7 +54,7 @@ class ChannelPropertyAction extends PropertyAction
 
 	public function getType(): string
 	{
-		return 'channel_property';
+		return self::TYPE;
 	}
 
 	public function getChannel(): Uuid\UuidInterface
@@ -67,11 +65,6 @@ class ChannelPropertyAction extends PropertyAction
 	public function getProperty(): Uuid\UuidInterface
 	{
 		return $this->property;
-	}
-
-	public function getDiscriminatorName(): string
-	{
-		return $this->getType();
 	}
 
 	/**

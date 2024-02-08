@@ -43,7 +43,7 @@ final class DevicePropertyCondition extends Condition
 		private readonly Uuid\UuidInterface $property,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $operand,
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\TriggerConditionOperator::class)]
+		#[ObjectMapper\Rules\BackedEnumValue(class: Types\TriggerConditionOperator::class)]
 		private readonly Types\TriggerConditionOperator $operator,
 		bool|null $isFulfilled = null,
 		Uuid\UuidInterface|null $owner = null,
@@ -78,7 +78,7 @@ final class DevicePropertyCondition extends Condition
 			'device' => $this->getDevice()->toString(),
 			'property' => $this->getProperty()->toString(),
 			'operand' => $this->getOperand(),
-			'operator' => $this->getOperator()->getValue(),
+			'operator' => $this->getOperator()->value,
 		]);
 	}
 

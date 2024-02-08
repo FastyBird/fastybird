@@ -24,9 +24,7 @@ use FastyBird\Module\Devices\Entities as DevicesEntities;
 use function floatval;
 use function is_numeric;
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 abstract class Device extends DevicesEntities\Devices\Device
 {
 
@@ -35,11 +33,6 @@ abstract class Device extends DevicesEntities\Devices\Device
 	public const STATE_PROCESSING_DELAY = 120.0;
 
 	public static function getType(): string
-	{
-		return self::TYPE;
-	}
-
-	public function getDiscriminatorName(): string
 	{
 		return self::TYPE;
 	}

@@ -382,6 +382,26 @@ class Zigbee2MqttExtension extends DI\CompilerExtension implements Translation\D
 				'FastyBird\Connector\Zigbee2Mqtt\Entities',
 			]);
 		}
+
+		$ormAttributeDriverService = $builder->getDefinition('nettrineOrmAttributes.attributeDriver');
+
+		if ($ormAttributeDriverService instanceof DI\Definitions\ServiceDefinition) {
+			$ormAttributeDriverService->addSetup(
+				'addPaths',
+				[[__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'Entities']],
+			);
+		}
+
+		$ormAttributeDriverChainService = $builder->getDefinitionByType(
+			Persistence\Mapping\Driver\MappingDriverChain::class,
+		);
+
+		if ($ormAttributeDriverChainService instanceof DI\Definitions\ServiceDefinition) {
+			$ormAttributeDriverChainService->addSetup('addDriver', [
+				$ormAttributeDriverService,
+				'FastyBird\Connector\Zigbee2Mqtt\Entities',
+			]);
+		}
 	}
 
 	/**

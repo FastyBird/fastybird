@@ -339,14 +339,14 @@ final class AccountsV1 extends BaseV1
 			$this->getOrmConnection()->beginTransaction();
 
 			$updateData = Utils\ArrayHash::from([
-				'state' => MetadataTypes\AccountState::get(MetadataTypes\AccountState::DELETED),
+				'state' => MetadataTypes\AccountState::DELETED,
 			]);
 
 			$this->accountsManager->update($account, $updateData);
 
 			foreach ($account->getIdentities() as $identity) {
 				$updateIdentity = Utils\ArrayHash::from([
-					'state' => MetadataTypes\IdentityState::get(MetadataTypes\IdentityState::DELETED),
+					'state' => MetadataTypes\IdentityState::DELETED,
 				]);
 
 				$this->identitiesManager->update($identity, $updateIdentity);

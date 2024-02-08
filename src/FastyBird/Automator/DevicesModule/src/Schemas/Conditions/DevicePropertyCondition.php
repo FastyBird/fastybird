@@ -62,7 +62,7 @@ final class DevicePropertyCondition extends TriggersSchemas\Conditions\Condition
 		return array_merge((array) parent::getAttributes($resource, $context), [
 			'device' => $resource->getDevice()->toString(),
 			'property' => $resource->getProperty()->toString(),
-			'operator' => strval($resource->getOperator()->getValue()),
+			'operator' => $resource->getOperator()->value,
 			'operand' => strval($resource->getOperand()),
 		]);
 	}

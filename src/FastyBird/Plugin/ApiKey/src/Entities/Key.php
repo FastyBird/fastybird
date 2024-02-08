@@ -15,26 +15,23 @@
 
 namespace FastyBird\Plugin\ApiKey\Entities;
 
-use Consistence\Doctrine\Enum\EnumAnnotation as Enum;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Plugin\ApiKey\Entities;
 use FastyBird\Plugin\ApiKey\Types;
 use IPub\DoctrineCrud;
-use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
+use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use IPub\DoctrineTimestampable;
 use Ramsey\Uuid;
 
-/**
- * @ORM\Entity
- * @ORM\Table(
- *     name="fb_api_key_plugin_keys",
- *     options={
- *       "collate"="utf8mb4_general_ci",
- *       "charset"="utf8mb4",
- *       "comment"="API Key plugin access keys"
- *     }
- * )
- */
+#[ORM\Entity]
+#[ORM\Table(
+	name: 'fb_api_key_plugin_keys',
+	options: [
+		'collate' => 'utf8mb4_general_ci',
+		'charset' => 'utf8mb4',
+		'comment' => 'API Key plugin access keys',
+	],
+)]
 class Key extends Entities\Entity implements DoctrineCrud\Entities\IEntity,
 	DoctrineTimestampable\Entities\IEntityCreated, DoctrineTimestampable\Entities\IEntityUpdated
 {
@@ -42,30 +39,28 @@ class Key extends Entities\Entity implements DoctrineCrud\Entities\IEntity,
 	use DoctrineTimestampable\Entities\TEntityCreated;
 	use DoctrineTimestampable\Entities\TEntityUpdated;
 
-	/**
-	 * @ORM\Id
-	 * @ORM\Column(type="uuid_binary", name="key_id")
-	 * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
-	 */
+	#[ORM\Id]
+	#[ORM\Column(name: 'key_id', type: Uuid\Doctrine\UuidBinaryType::NAME)]
+	#[ORM\CustomIdGenerator(class: Uuid\Doctrine\UuidGenerator::class)]
 	protected Uuid\UuidInterface $id;
 
-	/**
-	 * @IPubDoctrine\Crud(is={"required", "writable"})
-	 * @ORM\Column(type="string", name="key_name", length=50, nullable=false)
-	 */
+	#[IPubDoctrine\Crud(required: true, writable: true)]
+	#[ORM\Column(name: 'key_name', type: 'string', length: 50, nullable: false)]
 	private string $name;
 
-	/**
-	 * @IPubDoctrine\Crud(is={"required", "writable"})
-	 * @ORM\Column(type="string", name="key_key", length=150, nullable=false)
-	 */
+	#[IPubDoctrine\Crud(required: true, writable: true)]
+	#[ORM\Column(name: 'key_key', type: 'string', length: 150, nullable: false)]
 	private string $key;
 
-	/**
-	 * @Enum(class=Types\KeyStateType::class)
-	 * @IPubDoctrine\Crud(is={"writable"})
-	 * @ORM\Column(type="string_enum", name="key_state", length=10, nullable=false, options={"default": "active"})
-	 */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(
+		name: 'key_state',
+		type: 'string_enum',
+		length: 10,
+		nullable: false,
+		enumType: Types\KeyState::class,
+		options: ['default' => Types\KeyState::ACTIVE],
+	)]
 	private Types\KeyState $state;
 
 	public function __construct(

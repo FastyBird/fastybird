@@ -29,6 +29,9 @@ use FastyBird\Module\Devices\Entities;
 final class ChannelVariable extends Channel
 {
 
+	/**
+	 * @return class-string<Entities\Channels\Properties\Variable>
+	 */
 	public function getEntityName(): string
 	{
 		return Entities\Channels\Properties\Variable::class;

@@ -21,8 +21,8 @@ use Doctrine\Persistence;
 use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
-use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Accounts;
 use FastyBird\Module\Accounts\Entities;
 use Nette;
@@ -182,7 +182,7 @@ final class ModuleEntities implements Common\EventSubscriber
 			case self::ACTION_CREATED:
 				foreach (Accounts\Constants::MESSAGE_BUS_CREATED_ENTITIES_ROUTING_KEYS_MAPPING as $class => $routingKey) {
 					if ($this->validateEntity($entity, $class)) {
-						$publishRoutingKey = Metadata\Types\RoutingKey::get($routingKey);
+						$publishRoutingKey = MetadataTypes\RoutingKey::get($routingKey);
 					}
 				}
 
@@ -190,7 +190,7 @@ final class ModuleEntities implements Common\EventSubscriber
 			case self::ACTION_UPDATED:
 				foreach (Accounts\Constants::MESSAGE_BUS_UPDATED_ENTITIES_ROUTING_KEYS_MAPPING as $class => $routingKey) {
 					if ($this->validateEntity($entity, $class)) {
-						$publishRoutingKey = Metadata\Types\RoutingKey::get($routingKey);
+						$publishRoutingKey = MetadataTypes\RoutingKey::get($routingKey);
 					}
 				}
 
@@ -198,7 +198,7 @@ final class ModuleEntities implements Common\EventSubscriber
 			case self::ACTION_DELETED:
 				foreach (Accounts\Constants::MESSAGE_BUS_DELETED_ENTITIES_ROUTING_KEYS_MAPPING as $class => $routingKey) {
 					if ($this->validateEntity($entity, $class)) {
-						$publishRoutingKey = Metadata\Types\RoutingKey::get($routingKey);
+						$publishRoutingKey = MetadataTypes\RoutingKey::get($routingKey);
 					}
 				}
 

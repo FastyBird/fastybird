@@ -53,7 +53,6 @@ final class IdentitiesRepository
 
 	/**
 	 * @throws ApplicationExceptions\InvalidState
-	 * @throws Exceptions\InvalidArgument
 	 */
 	public function findOneForAccount(
 		Entities\Accounts\Account $account,
@@ -68,7 +67,6 @@ final class IdentitiesRepository
 
 	/**
 	 * @throws ApplicationExceptions\InvalidState
-	 * @throws Exceptions\InvalidArgument
 	 */
 	public function findOneByUid(string $uid): Entities\Identities\Identity|null
 	{

@@ -20,60 +20,66 @@ use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
-use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
+use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use Nette\Utils;
 use Ramsey\Uuid;
 use function array_merge;
 
-/**
- * @ORM\Entity
- * @ORM\Table(
- *     name="fb_devices_module_channels_properties",
- *     options={
- *       "collate"="utf8mb4_general_ci",
- *       "charset"="utf8mb4",
- *       "comment"="Device channels properties"
- *     },
- *     uniqueConstraints={
- *       @ORM\UniqueConstraint(name="property_identifier_unique", columns={"property_identifier", "channel_id"})
- *     },
- *     indexes={
- *       @ORM\Index(name="property_identifier_idx", columns={"property_identifier"}),
- *       @ORM\Index(name="property_settable_idx", columns={"property_settable"}),
- *       @ORM\Index(name="property_queryable_idx", columns={"property_queryable"})
- *     }
- * )
- * @ORM\InheritanceType("SINGLE_TABLE")
- * @ORM\DiscriminatorColumn(name="property_type", type="string", length=100)
- * @ORM\DiscriminatorMap({
- *    "variable" = "FastyBird\Module\Devices\Entities\Channels\Properties\Variable",
- *    "dynamic"  = "FastyBird\Module\Devices\Entities\Channels\Properties\Dynamic",
- *    "mapped"   = "FastyBird\Module\Devices\Entities\Channels\Properties\Mapped"
- * })
- * @ORM\MappedSuperclass
- */
+#[ORM\Entity]
+#[ORM\Table(
+	name: 'fb_devices_module_channels_properties',
+	options: [
+		'collate' => 'utf8mb4_general_ci',
+		'charset' => 'utf8mb4',
+		'comment' => 'Device channels properties',
+	],
+)]
+#[ORM\Index(columns: ['property_identifier'], name: 'property_identifier_idx')]
+#[ORM\Index(columns: ['property_settable'], name: 'property_settable_idx')]
+#[ORM\Index(columns: ['property_queryable'], name: 'property_queryable_idx')]
+#[ORM\UniqueConstraint(name: 'property_identifier_unique', columns: ['property_identifier', 'channel_id'])]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'property_type', type: 'string', length: 100)]
+#[ORM\DiscriminatorMap([
+	'variable' => Entities\Channels\Properties\Variable::class,
+	'dynamic' => Entities\Channels\Properties\Dynamic::class,
+	'mapped' => Entities\Channels\Properties\Mapped::class,
+])]
+#[ORM\MappedSuperclass]
 abstract class Property extends Entities\Property
 {
 
-	/**
-	 * @IPubDoctrine\Crud(is="required")
-	 * @ORM\ManyToOne(targetEntity="FastyBird\Module\Devices\Entities\Channels\Channel", inversedBy="properties", cascade={"persist"})
-	 * @ORM\JoinColumn(name="channel_id", referencedColumnName="channel_id", onDelete="CASCADE", nullable=false)
-	 */
+	#[IPubDoctrine\Crud(required: true)]
+	#[ORM\ManyToOne(
+		targetEntity: Entities\Channels\Channel::class,
+		cascade: ['persist'],
+		inversedBy: 'properties',
+	)]
+	#[ORM\JoinColumn(
+		name: 'channel_id',
+		referencedColumnName: 'channel_id',
+		nullable: false,
+		onDelete: 'CASCADE',
+	)]
 	protected Entities\Channels\Channel $channel;
 
-	/**
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\ManyToOne(targetEntity="FastyBird\Module\Devices\Entities\Channels\Properties\Property", inversedBy="children")
-	 * @ORM\JoinColumn(name="parent_id", referencedColumnName="property_id", nullable=true, onDelete="CASCADE")
-	 */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children')]
+	#[ORM\JoinColumn(
+		name: 'parent_id',
+		referencedColumnName: 'property_id',
+		nullable: true,
+		onDelete: 'CASCADE',
+	)]
 	protected self|null $parent = null;
 
-	/**
-	 * @var Common\Collections\Collection<int, Property>
-	 *
-	 * @ORM\OneToMany(targetEntity="FastyBird\Module\Devices\Entities\Channels\Properties\Property", mappedBy="parent", cascade={"remove"}, orphanRemoval=true)
-	 */
+	/** @var Common\Collections\Collection<int, Property> */
+	#[ORM\OneToMany(
+		mappedBy: 'parent',
+		targetEntity: self::class,
+		cascade: ['remove'],
+		orphanRemoval: true,
+	)]
 	protected Common\Collections\Collection $children;
 
 	public function __construct(

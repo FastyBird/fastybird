@@ -81,7 +81,7 @@ final class ChannelsRepositoryTest extends DbTestCase
 
 		$findQuery = new Queries\Configuration\FindChannels();
 		$findQuery->byDeviceId(Uuid\Uuid::fromString('bf4cd870-2aac-45f0-a85e-e1cefd2d6d9a'));
-		$findQuery->byTypes(['generic', 'unknown']);
+		$findQuery->byTypes(['dummy', 'unknown']);
 
 		$entity = $repository->findOneBy($findQuery);
 

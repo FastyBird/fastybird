@@ -22,9 +22,7 @@ use function array_map;
 use function array_merge;
 use function sprintf;
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class Variable extends Property
 {
 

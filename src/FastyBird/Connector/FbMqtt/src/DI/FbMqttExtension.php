@@ -304,6 +304,26 @@ class FbMqttExtension extends DI\CompilerExtension implements Translation\DI\Tra
 				'FastyBird\Connector\FbMqtt\Entities',
 			]);
 		}
+
+		$ormAttributeDriverService = $builder->getDefinition('nettrineOrmAttributes.attributeDriver');
+
+		if ($ormAttributeDriverService instanceof DI\Definitions\ServiceDefinition) {
+			$ormAttributeDriverService->addSetup(
+				'addPaths',
+				[[__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'Entities']],
+			);
+		}
+
+		$ormAttributeDriverChainService = $builder->getDefinitionByType(
+			Persistence\Mapping\Driver\MappingDriverChain::class,
+		);
+
+		if ($ormAttributeDriverChainService instanceof DI\Definitions\ServiceDefinition) {
+			$ormAttributeDriverChainService->addSetup('addDriver', [
+				$ormAttributeDriverService,
+				'FastyBird\Connector\FbMqtt\Entities',
+			]);
+		}
 	}
 
 	/**

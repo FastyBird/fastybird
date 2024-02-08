@@ -28,9 +28,7 @@ use function array_merge;
 use function assert;
 use function sprintf;
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class Mapped extends Property
 {
 

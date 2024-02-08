@@ -22,7 +22,10 @@ use Fig\Http\Message\StatusCodeInterface;
 use IPub\JsonAPIDocument;
 use Nette\Localization;
 use Nette\Utils;
+use TypeError;
+use ValueError;
 use function assert;
+use function in_array;
 use function is_scalar;
 
 /**
@@ -186,6 +189,8 @@ trait TAccount
 
 	/**
 	 * @throws JsonApiExceptions\JsonApiError
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	protected function hydrateStateAttribute(
 		JsonAPIDocument\Objects\IStandardObject $attributes,
@@ -193,7 +198,12 @@ trait TAccount
 	{
 		if (
 			!is_scalar($attributes->get('state'))
-			|| !MetadataTypes\AccountState::isValidValue((string) $attributes->get('state'))
+			|| MetadataTypes\AccountState::tryFrom((string) $attributes->get('state')) === null
+			|| !in_array(
+				MetadataTypes\AccountState::tryFrom((string) $attributes->get('state')),
+				MetadataTypes\AccountState::getAllowed(),
+				true,
+			)
 		) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
@@ -205,7 +215,7 @@ trait TAccount
 			);
 		}
 
-		return MetadataTypes\AccountState::get((string) $attributes->get('state'));
+		return MetadataTypes\AccountState::from((string) $attributes->get('state'));
 	}
 
 }

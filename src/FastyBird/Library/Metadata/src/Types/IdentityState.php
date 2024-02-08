@@ -15,9 +15,6 @@
 
 namespace FastyBird\Library\Metadata\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * Account identity state type
  *
@@ -26,28 +23,15 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class IdentityState extends Consistence\Enum\Enum
+enum IdentityState: string
 {
 
-	/**
-	 * Define states
-	 */
-	public const ACTIVE = 'active';
+	case ACTIVE = 'active';
 
-	public const BLOCKED = 'blocked';
+	case BLOCKED = 'blocked';
 
-	public const DELETED = 'deleted';
+	case DELETED = 'deleted';
 
-	public const INVALID = 'invalid';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case INVALID = 'invalid';
 
 }

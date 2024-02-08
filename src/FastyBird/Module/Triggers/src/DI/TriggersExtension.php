@@ -209,22 +209,22 @@ class TriggersExtension extends DI\CompilerExtension implements Translation\DI\T
 		 * Doctrine entities
 		 */
 
-		$ormAnnotationDriverService = $builder->getDefinition('nettrineOrmAnnotations.annotationDriver');
+		$ormAttributeDriverService = $builder->getDefinition('nettrineOrmAttributes.attributeDriver');
 
-		if ($ormAnnotationDriverService instanceof DI\Definitions\ServiceDefinition) {
-			$ormAnnotationDriverService->addSetup(
+		if ($ormAttributeDriverService instanceof DI\Definitions\ServiceDefinition) {
+			$ormAttributeDriverService->addSetup(
 				'addPaths',
 				[[__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'Entities']],
 			);
 		}
 
-		$ormAnnotationDriverChainService = $builder->getDefinitionByType(
+		$ormAttributeDriverChainService = $builder->getDefinitionByType(
 			Persistence\Mapping\Driver\MappingDriverChain::class,
 		);
 
-		if ($ormAnnotationDriverChainService instanceof DI\Definitions\ServiceDefinition) {
-			$ormAnnotationDriverChainService->addSetup('addDriver', [
-				$ormAnnotationDriverService,
+		if ($ormAttributeDriverChainService instanceof DI\Definitions\ServiceDefinition) {
+			$ormAttributeDriverChainService->addSetup('addDriver', [
+				$ormAttributeDriverService,
 				'FastyBird\Module\Triggers\Entities',
 			]);
 		}

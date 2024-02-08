@@ -17,6 +17,7 @@ namespace FastyBird\Connector\Viera\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Connector\Viera\Types;
+use FastyBird\Library\Application\Doctrine\Mapping as ApplicationMapping;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
@@ -26,9 +27,8 @@ use function is_int;
 use function is_numeric;
 use function is_string;
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
+#[ApplicationMapping\DiscriminatorEntry(name: self::TYPE)]
 class VieraDevice extends DevicesEntities\Devices\Device
 {
 
@@ -39,11 +39,6 @@ class VieraDevice extends DevicesEntities\Devices\Device
 	public const STATE_READING_DELAY = 5_000.0;
 
 	public static function getType(): string
-	{
-		return self::TYPE;
-	}
-
-	public function getDiscriminatorName(): string
 	{
 		return self::TYPE;
 	}

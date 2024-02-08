@@ -18,6 +18,7 @@ namespace FastyBird\Connector\HomeKit\Entities\Channels;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Types;
+use FastyBird\Library\Application\Doctrine\Mapping as ApplicationMapping;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use function array_key_exists;
@@ -25,9 +26,8 @@ use function preg_match;
 use function str_replace;
 use function ucwords;
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
+#[ApplicationMapping\DiscriminatorEntry(name: self::TYPE)]
 class Channel extends DevicesEntities\Channels\Channel
 {
 
@@ -36,11 +36,6 @@ class Channel extends DevicesEntities\Channels\Channel
 	public const SERVICE_IDENTIFIER = '/^(?P<type>[a-z_]+)(?:_(?P<cnt>[0-9]+){1})$/';
 
 	public static function getType(): string
-	{
-		return self::TYPE;
-	}
-
-	public function getDiscriminatorName(): string
 	{
 		return self::TYPE;
 	}

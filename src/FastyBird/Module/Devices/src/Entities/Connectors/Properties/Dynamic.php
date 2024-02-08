@@ -21,9 +21,7 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions;
 use function sprintf;
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class Dynamic extends Property
 {
 

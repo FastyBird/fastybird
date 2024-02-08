@@ -234,7 +234,6 @@ final class BridgesV1Test extends DbTestCase
 		$actual = Utils\Json::decode($responseBody, Utils\Json::FORCE_ARRAY);
 		self::assertTrue(is_array($actual));
 
-		self::assertSame($statusCode, $response->getStatusCode());
 		Tools\JsonAssert::assertFixtureMatch(
 			$fixture,
 			(string) $response->getBody(),

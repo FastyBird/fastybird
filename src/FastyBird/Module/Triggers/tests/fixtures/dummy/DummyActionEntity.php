@@ -3,34 +3,30 @@
 namespace FastyBird\Module\Triggers\Tests\Fixtures\Dummy;
 
 use Doctrine\ORM\Mapping as ORM;
+use FastyBird\Library\Application\Doctrine\Mapping as ApplicationMapping;
 use FastyBird\Module\Triggers\Entities;
-use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
+use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use Ramsey\Uuid;
 use function array_merge;
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
+#[ApplicationMapping\DiscriminatorEntry(name: self::TYPE)]
 class DummyActionEntity extends Entities\Actions\Action
 {
 
-	public const ACTION_TYPE = 'dummy';
+	public const TYPE = 'dummy';
 
-	/**
-	 * @IPubDoctrine\Crud(is="required")
-	 * @ORM\Column(type="uuid_binary", name="action_do_item", nullable=true)
-	 */
+	#[IPubDoctrine\Crud(required: true)]
+	#[ORM\Column(name: 'action_do_item', type: Uuid\Doctrine\UuidBinaryType::NAME, nullable: true)]
 	private Uuid\UuidInterface $doItem;
 
-	/**
-	 * @IPubDoctrine\Crud(is={"required", "writable"})
-	 * @ORM\Column(type="string", name="action_value", length=100, nullable=true)
-	 */
+	#[IPubDoctrine\Crud(required: true, writable: true)]
+	#[ORM\Column(name: 'action_value', type: 'string', length: 100, nullable: true)]
 	private string $value;
 
 	public function getType(): string
 	{
-		return 'dummy';
+		return self::TYPE;
 	}
 
 	public function setDoItem(Uuid\UuidInterface $doItem): void
@@ -51,11 +47,6 @@ class DummyActionEntity extends Entities\Actions\Action
 	public function getValue(): string
 	{
 		return $this->value;
-	}
-
-	public function getDiscriminatorName(): string
-	{
-		return 'dummy';
 	}
 
 	public function validate(string $value): bool

@@ -22,43 +22,35 @@ use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\SimpleAuth\Entities as SimpleAuthEntities;
-use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
-use IPub\DoctrineDynamicDiscriminatorMap\Entities as DoctrineDynamicDiscriminatorMapEntities;
+use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use IPub\DoctrineTimestampable;
 use Nette\Utils;
 use Ramsey\Uuid;
 use function array_map;
 
-/**
- * @ORM\Entity
- * @ORM\Table(
- *     name="fb_devices_module_connectors",
- *     options={
- *       "collate"="utf8mb4_general_ci",
- *       "charset"="utf8mb4",
- *       "comment"="Communication connectors"
- *     },
- *     uniqueConstraints={
- *       @ORM\UniqueConstraint(name="connector_identifier_unique", columns={"connector_identifier"})
- *     },
- *     indexes={
- *       @ORM\Index(name="connector_identifier_idx", columns={"connector_identifier"}),
- *       @ORM\Index(name="connector_name_idx", columns={"connector_name"}),
- *       @ORM\Index(name="connector_enabled_idx", columns={"connector_enabled"})
- *     }
- * )
- * @ORM\InheritanceType("SINGLE_TABLE")
- * @ORM\DiscriminatorColumn(name="connector_type", type="string", length=100)
- * @ORM\DiscriminatorMap({
- *    "generic" = "FastyBird\Module\Devices\Entities\Connectors\Connector"
- * })
- * @ORM\MappedSuperclass
- */
-class Connector implements Entities\Entity,
+#[ORM\Entity]
+#[ORM\Table(
+	name: 'fb_devices_module_connectors',
+	options: [
+		'collate' => 'utf8mb4_general_ci',
+		'charset' => 'utf8mb4',
+		'comment' => 'Communication connectors',
+	],
+)]
+#[ORM\Index(columns: ['connector_identifier'], name: 'connector_identifier_idx')]
+#[ORM\Index(columns: ['connector_name'], name: 'connector_name_idx')]
+#[ORM\Index(columns: ['connector_enabled'], name: 'connector_enabled_idx')]
+#[ORM\UniqueConstraint(name: 'connector_identifier_unique', columns: ['connector_identifier'])]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'connector_type', type: 'string', length: 100)]
+#[ORM\DiscriminatorMap([
+	self::TYPE => Connector::class,
+])]
+#[ORM\MappedSuperclass]
+abstract class Connector implements Entities\Entity,
 	Entities\EntityParams,
 	SimpleAuthEntities\Owner,
-	DoctrineTimestampable\Entities\IEntityCreated, DoctrineTimestampable\Entities\IEntityUpdated,
-	DoctrineDynamicDiscriminatorMapEntities\IDiscriminatorProvider
+	DoctrineTimestampable\Entities\IEntityCreated, DoctrineTimestampable\Entities\IEntityUpdated
 {
 
 	use Entities\TEntity;
@@ -69,70 +61,72 @@ class Connector implements Entities\Entity,
 
 	public const TYPE = 'generic';
 
-	/**
-	 * @ORM\Id
-	 * @ORM\Column(type="uuid_binary", name="connector_id")
-	 * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
-	 */
+	#[ORM\Id]
+	#[ORM\Column(name: 'connector_id', type: Uuid\Doctrine\UuidBinaryType::NAME)]
+	#[ORM\CustomIdGenerator(class: Uuid\Doctrine\UuidGenerator::class)]
 	protected Uuid\UuidInterface $id;
 
 	/**
 	 * @var MetadataTypes\ConnectorCategory
 	 *
-	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
-	 *
 	 * @Enum(class=MetadataTypes\ConnectorCategory::class)
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="string_enum", name="connector_category", length=100, nullable=true, options={"default": "generic"})
+	 *
+	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
 	 */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(
+		name: 'connector_category',
+		type: 'string_enum',
+		length: 100,
+		nullable: false,
+		options: ['default' => MetadataTypes\ConnectorCategory::GENERIC],
+	)]
 	protected $category;
 
-	/**
-	 * @IPubDoctrine\Crud(is="required")
-	 * @ORM\Column(type="string", name="connector_identifier", length=50, nullable=false)
-	 */
+	#[IPubDoctrine\Crud(required: true)]
+	#[ORM\Column(name: 'connector_identifier', type: 'string', length: 50, nullable: false)]
 	protected string $identifier;
 
-	/**
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="string", name="connector_name", nullable=true, options={"default": null})
-	 */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(name: 'connector_name', type: 'string', nullable: true, options: ['default' => null])]
 	protected string|null $name = null;
 
-	/**
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="text", name="connector_comment", nullable=true, options={"default": null})
-	 */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(name: 'connector_comment', type: 'text', nullable: true, options: ['default' => null])]
 	protected string|null $comment = null;
 
-	/**
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="boolean", name="connector_enabled", length=1, nullable=false, options={"default": true})
-	 */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(name: 'connector_enabled', type: 'boolean', length: 1, nullable: false, options: ['default' => true])]
 	protected bool $enabled = true;
 
-	/**
-	 * @var Common\Collections\Collection<int, Entities\Devices\Device>
-	 *
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\OneToMany(targetEntity="FastyBird\Module\Devices\Entities\Devices\Device", mappedBy="connector", cascade={"persist", "remove"}, orphanRemoval=true)
-	 */
+	/** @var Common\Collections\Collection<int, Entities\Devices\Device> */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\OneToMany(
+		mappedBy: 'connector',
+		targetEntity: Entities\Devices\Device::class,
+		cascade: ['persist', 'remove'],
+		orphanRemoval: true,
+	)]
 	protected Common\Collections\Collection $devices;
 
-	/**
-	 * @var Common\Collections\Collection<int, Entities\Connectors\Properties\Property>
-	 *
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\OneToMany(targetEntity="FastyBird\Module\Devices\Entities\Connectors\Properties\Property", mappedBy="connector", cascade={"persist", "remove"}, orphanRemoval=true)
-	 */
+	/** @var Common\Collections\Collection<int, Entities\Connectors\Properties\Property> */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\OneToMany(
+		mappedBy: 'connector',
+		targetEntity: Entities\Connectors\Properties\Property::class,
+		cascade: ['persist', 'remove'],
+		orphanRemoval: true,
+	)]
 	protected Common\Collections\Collection $properties;
 
-	/**
-	 * @var Common\Collections\Collection<int, Entities\Connectors\Controls\Control>
-	 *
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\OneToMany(targetEntity="FastyBird\Module\Devices\Entities\Connectors\Controls\Control", mappedBy="connector", cascade={"persist", "remove"}, orphanRemoval=true)
-	 */
+	/** @var Common\Collections\Collection<int, Entities\Connectors\Controls\Control> */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\OneToMany(
+		mappedBy: 'connector',
+		targetEntity: Entities\Connectors\Controls\Control::class,
+		cascade: ['persist', 'remove'],
+		orphanRemoval: true,
+	)]
 	protected Common\Collections\Collection $controls;
 
 	public function __construct(
@@ -331,11 +325,6 @@ class Connector implements Entities\Entity,
 	public function getSource(): MetadataTypes\Sources\Source
 	{
 		return MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES);
-	}
-
-	public function getDiscriminatorName(): string
-	{
-		return self::TYPE;
 	}
 
 	/**
