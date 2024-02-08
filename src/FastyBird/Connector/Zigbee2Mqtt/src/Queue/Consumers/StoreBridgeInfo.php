@@ -102,35 +102,35 @@ final class StoreBridgeInfo implements Queue\Consumer
 		$this->setDeviceProperty(
 			$bridge->getId(),
 			$entity->getCoordinator()->getType(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::MODEL,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MODEL),
 		);
 		$this->setDeviceProperty(
 			$bridge->getId(),
 			Types\DeviceType::COORDINATOR,
-			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::TYPE,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::TYPE),
 		);
 		$this->setDeviceProperty(
 			$bridge->getId(),
 			$entity->getVersion(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::VERSION,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::VERSION),
 		);
 		$this->setDeviceProperty(
 			$bridge->getId(),
 			$entity->getCommit(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::COMMIT,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::COMMIT),
 		);
 		$this->setDeviceProperty(
 			$bridge->getId(),
 			$entity->getCoordinator()->getIeeeAddress(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::IEEE_ADDRESS,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::IEEE_ADDRESS),
 		);

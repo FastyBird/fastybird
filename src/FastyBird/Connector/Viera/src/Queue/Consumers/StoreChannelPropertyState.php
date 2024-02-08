@@ -177,7 +177,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		if ($property->getDataType()->equalsValue(MetadataTypes\DataType::BUTTON)) {
+		if ($property->getDataType() === MetadataTypes\DataType::BUTTON) {
 			await($this->channelPropertiesStatesManager->set(
 				$property,
 				Utils\ArrayHash::from([

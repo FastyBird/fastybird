@@ -355,7 +355,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				default:
 					if (
 						Types\ChannelPropertyIdentifier::isValidValue($property->getIdentifier())
-						&& $property->getDataType()->equalsValue(MetadataTypes\DataType::BUTTON)
+						&& $property->getDataType() === MetadataTypes\DataType::BUTTON
 					) {
 						$result = $client->sendKey(Types\ActionKey::get($expectedValue));
 					} else {
@@ -571,7 +571,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					default:
 						if (
 							Types\ChannelPropertyIdentifier::isValidValue($property->getIdentifier())
-							&& $property->getDataType()->equalsValue(MetadataTypes\DataType::BUTTON)
+							&& $property->getDataType() === MetadataTypes\DataType::BUTTON
 						) {
 							$this->queue->append(
 								$this->entityHelper->create(

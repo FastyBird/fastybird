@@ -94,7 +94,7 @@ final class StoreThirdPartyDevice implements Queue\Consumer
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getGatewayIdentifier(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::GATEWAY_IDENTIFIER,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::GATEWAY_IDENTIFIER),
 		);

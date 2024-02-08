@@ -41,13 +41,13 @@ final class DataTypeTransformer
 
 	public function convert(): bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null
 	{
-		if ($this->destination->equalsValue($this->source->getValue())) {
+		if ($this->destination === $this->source) {
 			return $this->value;
 		}
 
 		if (
 			in_array(
-				$this->destination->getValue(),
+				$this->destination,
 				[
 					MetadataTypes\DataType::CHAR,
 					MetadataTypes\DataType::UCHAR,
@@ -60,7 +60,7 @@ final class DataTypeTransformer
 				true,
 			)
 			&& in_array(
-				$this->source->getValue(),
+				$this->source,
 				[
 					MetadataTypes\DataType::CHAR,
 					MetadataTypes\DataType::UCHAR,
@@ -76,9 +76,9 @@ final class DataTypeTransformer
 			return $this->value;
 		}
 
-		if ($this->destination->equalsValue(MetadataTypes\DataType::BOOLEAN)) {
+		if ($this->destination === MetadataTypes\DataType::BOOLEAN) {
 			if (
-				$this->source->equalsValue(MetadataTypes\DataType::SWITCH)
+				$this->source === MetadataTypes\DataType::SWITCH
 				&& (
 					$this->value instanceof MetadataTypes\Payloads\Switcher
 					|| $this->value === null
@@ -86,7 +86,7 @@ final class DataTypeTransformer
 			) {
 				return $this->value?->equalsValue(MetadataTypes\Payloads\Switcher::ON) ?? false;
 			} elseif (
-				$this->source->equalsValue(MetadataTypes\DataType::BUTTON)
+				$this->source === MetadataTypes\DataType::BUTTON
 				&& (
 					$this->value instanceof MetadataTypes\Payloads\Button
 					|| $this->value === null
@@ -94,7 +94,7 @@ final class DataTypeTransformer
 			) {
 				return $this->value?->equalsValue(MetadataTypes\Payloads\Button::PRESSED) ?? false;
 			} elseif (
-				$this->source->equalsValue(MetadataTypes\DataType::COVER)
+				$this->source === MetadataTypes\DataType::COVER
 				&& (
 					$this->value instanceof MetadataTypes\Payloads\Cover
 					|| $this->value === null
@@ -104,20 +104,20 @@ final class DataTypeTransformer
 			}
 		}
 
-		if ($this->source->equalsValue(MetadataTypes\DataType::BOOLEAN)) {
-			if ($this->destination->equalsValue(MetadataTypes\DataType::SWITCH)) {
+		if ($this->source === MetadataTypes\DataType::BOOLEAN) {
+			if ($this->destination === MetadataTypes\DataType::SWITCH) {
 				return MetadataTypes\Payloads\Switcher::get(
 					boolval($this->value)
 						? MetadataTypes\Payloads\Switcher::ON
 						: MetadataTypes\Payloads\Switcher::OFF,
 				);
-			} elseif ($this->destination->equalsValue(MetadataTypes\DataType::BUTTON)) {
+			} elseif ($this->destination === MetadataTypes\DataType::BUTTON) {
 				return MetadataTypes\Payloads\Button::get(
 					boolval($this->value)
 						? MetadataTypes\Payloads\Button::PRESSED
 						: MetadataTypes\Payloads\Button::RELEASED,
 				);
-			} elseif ($this->destination->equalsValue(MetadataTypes\DataType::COVER)) {
+			} elseif ($this->destination === MetadataTypes\DataType::COVER) {
 				return MetadataTypes\Payloads\Cover::get(
 					boolval($this->value)
 						? MetadataTypes\Payloads\Cover::OPEN
@@ -131,8 +131,8 @@ final class DataTypeTransformer
 			[
 				'source' => MetadataTypes\Sources\Module::DEVICES,
 				'type' => 'data-type-transformer',
-				'source_data_type' => $this->source->getValue(),
-				'destination_data_type' => $this->destination->getValue(),
+				'source_data_type' => $this->source,
+				'destination_data_type' => $this->destination,
 				'value' => MetadataUtilities\Value::flattenValue($this->value),
 			],
 		);

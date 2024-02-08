@@ -130,21 +130,21 @@ final class StoreLocalDevice implements Queue\Consumer
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getIpAddress(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::IP_ADDRESS,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::IP_ADDRESS),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getDomain(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::DOMAIN,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::DOMAIN),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			strval($entity->getGeneration()->getValue()),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
+			MetadataTypes\DataType::ENUM,
 			Types\DevicePropertyIdentifier::GENERATION,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::GENERATION),
 			[Types\DeviceGeneration::GENERATION_1, Types\DeviceGeneration::GENERATION_2],
@@ -152,28 +152,28 @@ final class StoreLocalDevice implements Queue\Consumer
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->isAuthEnabled(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN),
+			MetadataTypes\DataType::BOOLEAN,
 			Types\DevicePropertyIdentifier::AUTH_ENABLED,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::AUTH_ENABLED),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getModel(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::MODEL,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MODEL),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getMacAddress(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::MAC_ADDRESS,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MAC_ADDRESS),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getFirmwareVersion(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::FIRMWARE_VERSION,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::FIRMWARE_VERSION),
 		);

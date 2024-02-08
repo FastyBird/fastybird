@@ -363,26 +363,6 @@ class Zigbee2MqttExtension extends DI\CompilerExtension implements Translation\D
 		 * Doctrine entities
 		 */
 
-		$ormAnnotationDriverService = $builder->getDefinition('nettrineOrmAnnotations.annotationDriver');
-
-		if ($ormAnnotationDriverService instanceof DI\Definitions\ServiceDefinition) {
-			$ormAnnotationDriverService->addSetup(
-				'addPaths',
-				[[__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'Entities']],
-			);
-		}
-
-		$ormAnnotationDriverChainService = $builder->getDefinitionByType(
-			Persistence\Mapping\Driver\MappingDriverChain::class,
-		);
-
-		if ($ormAnnotationDriverChainService instanceof DI\Definitions\ServiceDefinition) {
-			$ormAnnotationDriverChainService->addSetup('addDriver', [
-				$ormAnnotationDriverService,
-				'FastyBird\Connector\Zigbee2Mqtt\Entities',
-			]);
-		}
-
 		$ormAttributeDriverService = $builder->getDefinition('nettrineOrmAttributes.attributeDriver');
 
 		if ($ormAttributeDriverService instanceof DI\Definitions\ServiceDefinition) {

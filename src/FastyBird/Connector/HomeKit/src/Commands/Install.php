@@ -44,6 +44,8 @@ use Symfony\Component\Console\Input;
 use Symfony\Component\Console\Output;
 use Symfony\Component\Console\Style;
 use Throwable;
+use TypeError;
+use ValueError;
 use function array_combine;
 use function array_diff;
 use function array_filter;
@@ -230,7 +232,7 @@ class Install extends Console\Command\Command
 			$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 				'identifier' => Types\ConnectorPropertyIdentifier::PORT,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
+				'dataType' => MetadataTypes\DataType::UCHAR,
 				'value' => $port,
 				'connector' => $connector,
 			]));
@@ -354,7 +356,7 @@ class Install extends Console\Command\Command
 				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::PORT,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
+					'dataType' => MetadataTypes\DataType::UCHAR,
 					'value' => $port,
 					'connector' => $connector,
 				]));
@@ -617,7 +619,7 @@ class Install extends Console\Command\Command
 			$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
 				'identifier' => Types\DevicePropertyIdentifier::CATEGORY,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
+				'dataType' => MetadataTypes\DataType::UCHAR,
 				'value' => $category->getValue(),
 				'device' => $device,
 			]));
@@ -709,7 +711,7 @@ class Install extends Console\Command\Command
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
 					'identifier' => Types\DevicePropertyIdentifier::CATEGORY,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
+					'dataType' => MetadataTypes\DataType::UCHAR,
 					'value' => $category->getValue(),
 					'device' => $device,
 				]));
@@ -1359,6 +1361,8 @@ class Install extends Console\Command\Command
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function createCharacteristics(
 		Style\SymfonyStyle $io,
@@ -1405,7 +1409,7 @@ class Install extends Console\Command\Command
 
 			if ($characteristicMetadata->offsetGet('DataType') instanceof Utils\ArrayHash) {
 				$dataTypes = array_map(
-					static fn (string $type): MetadataTypes\DataType => MetadataTypes\DataType::get($type),
+					static fn (string $type): MetadataTypes\DataType => MetadataTypes\DataType::from($type),
 					(array) $characteristicMetadata->offsetGet('DataType'),
 				);
 
@@ -1415,7 +1419,7 @@ class Install extends Console\Command\Command
 
 				$dataType = $dataTypes[0];
 			} else {
-				$dataType = MetadataTypes\DataType::get($characteristicMetadata->offsetGet('DataType'));
+				$dataType = MetadataTypes\DataType::from($characteristicMetadata->offsetGet('DataType'));
 			}
 
 			$format = $this->askFormat($io, $characteristic);
@@ -1446,17 +1450,17 @@ class Install extends Console\Command\Command
 
 				if (
 					(
-						$dataType->equalsValue(MetadataTypes\DataType::BOOLEAN)
+						$dataType === MetadataTypes\DataType::BOOLEAN
 						|| in_array(
-							MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN),
+							MetadataTypes\DataType::BOOLEAN,
 							$dataTypes ?? [],
 							true,
 						)
 					)
 					&& $connectProperty !== null
-					&& $connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::SWITCH)
+					&& $connectProperty->getDataType() === MetadataTypes\DataType::SWITCH
 				) {
-					$dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::SWITCH);
+					$dataType = MetadataTypes\DataType::SWITCH;
 
 					$format = [
 						[
@@ -1583,7 +1587,7 @@ class Install extends Console\Command\Command
 
 			if ($characteristicMetadata->offsetGet('DataType') instanceof Utils\ArrayHash) {
 				$dataTypes = array_map(
-					static fn (string $type): MetadataTypes\DataType => MetadataTypes\DataType::get($type),
+					static fn (string $type): MetadataTypes\DataType => MetadataTypes\DataType::from($type),
 					(array) $characteristicMetadata->offsetGet('DataType'),
 				);
 
@@ -1593,7 +1597,7 @@ class Install extends Console\Command\Command
 
 				$dataType = $dataTypes[0];
 			} else {
-				$dataType = MetadataTypes\DataType::get($characteristicMetadata->offsetGet('DataType'));
+				$dataType = MetadataTypes\DataType::from($characteristicMetadata->offsetGet('DataType'));
 			}
 
 			$format = $this->askFormat($io, $type);
@@ -1629,17 +1633,17 @@ class Install extends Console\Command\Command
 
 				if (
 					(
-						$dataType->equalsValue(MetadataTypes\DataType::BOOLEAN)
+						$dataType === MetadataTypes\DataType::BOOLEAN
 						|| in_array(
-							MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN),
+							MetadataTypes\DataType::BOOLEAN,
 							$dataTypes ?? [],
 							true,
 						)
 					)
 					&& $connectProperty !== null
-					&& $connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::SWITCH)
+					&& $connectProperty->getDataType() === MetadataTypes\DataType::SWITCH
 				) {
-					$dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::SWITCH);
+					$dataType = MetadataTypes\DataType::SWITCH;
 
 					$format = [
 						[
@@ -1849,7 +1853,7 @@ class Install extends Console\Command\Command
 			$value = $property instanceof DevicesEntities\Channels\Properties\Variable ? $property->getValue() : 'N/A';
 
 			if (
-				$property->getDataType()->equalsValue(MetadataTypes\DataType::ENUM)
+				$property->getDataType() === MetadataTypes\DataType::ENUM
 				&& $metadata->offsetExists($type)
 				&& $metadata->offsetGet($type) instanceof Utils\ArrayHash
 				&& $metadata->offsetGet($type)->offsetExists('ValidValues')
@@ -2869,6 +2873,8 @@ class Install extends Console\Command\Command
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function askFormat(
 		Style\SymfonyStyle $io,
@@ -2902,7 +2908,7 @@ class Install extends Console\Command\Command
 
 		if ($characteristicMetadata->offsetGet('DataType') instanceof Utils\ArrayHash) {
 			$dataTypes = array_map(
-				static fn (string $type): MetadataTypes\DataType => MetadataTypes\DataType::get($type),
+				static fn (string $type): MetadataTypes\DataType => MetadataTypes\DataType::from($type),
 				(array) $characteristicMetadata->offsetGet('DataType'),
 			);
 
@@ -2910,7 +2916,7 @@ class Install extends Console\Command\Command
 				throw new Exceptions\InvalidState('Characteristic definition is missing required attributes');
 			}
 		} else {
-			$dataTypes = [MetadataTypes\DataType::get($characteristicMetadata->offsetGet('DataType'))];
+			$dataTypes = [MetadataTypes\DataType::from($characteristicMetadata->offsetGet('DataType'))];
 		}
 
 		$format = null;
@@ -2931,9 +2937,9 @@ class Install extends Console\Command\Command
 
 		if (
 			(
-				in_array(MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM), $dataTypes, true)
-				|| in_array(MetadataTypes\DataType::get(MetadataTypes\DataType::SWITCH), $dataTypes, true)
-				|| in_array(MetadataTypes\DataType::get(MetadataTypes\DataType::BUTTON), $dataTypes, true)
+				in_array(MetadataTypes\DataType::ENUM, $dataTypes, true)
+				|| in_array(MetadataTypes\DataType::SWITCH, $dataTypes, true)
+				|| in_array(MetadataTypes\DataType::BUTTON, $dataTypes, true)
 			)
 			&& $characteristicMetadata->offsetExists('ValidValues')
 			&& $characteristicMetadata->offsetGet('ValidValues') instanceof Utils\ArrayHash
@@ -2945,9 +2951,9 @@ class Install extends Console\Command\Command
 			if (
 				$connectProperty !== null
 				&& (
-					$connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::ENUM)
-					|| $connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::SWITCH)
-					|| $connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::BUTTON)
+					$connectProperty->getDataType() === MetadataTypes\DataType::ENUM
+					|| $connectProperty->getDataType() === MetadataTypes\DataType::SWITCH
+					|| $connectProperty->getDataType() === MetadataTypes\DataType::BUTTON
 				) && (
 					$connectProperty->getFormat() instanceof MetadataFormats\StringEnum
 					|| $connectProperty->getFormat() instanceof MetadataFormats\CombinedEnum
@@ -3059,6 +3065,8 @@ class Install extends Console\Command\Command
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function provideCharacteristicValue(
 		Style\SymfonyStyle $io,
@@ -3090,7 +3098,7 @@ class Install extends Console\Command\Command
 
 		if ($characteristicMetadata->offsetGet('DataType') instanceof Utils\ArrayHash) {
 			$dataTypes = array_map(
-				static fn (string $type): MetadataTypes\DataType => MetadataTypes\DataType::get($type),
+				static fn (string $type): MetadataTypes\DataType => MetadataTypes\DataType::from($type),
 				(array) $characteristicMetadata->offsetGet('DataType'),
 			);
 
@@ -3098,7 +3106,7 @@ class Install extends Console\Command\Command
 				throw new Exceptions\InvalidState('Characteristic definition is missing required attributes');
 			}
 		} else {
-			$dataTypes = [MetadataTypes\DataType::get($characteristicMetadata->offsetGet('DataType'))];
+			$dataTypes = [MetadataTypes\DataType::from($characteristicMetadata->offsetGet('DataType'))];
 		}
 
 		if (
@@ -3157,7 +3165,7 @@ class Install extends Console\Command\Command
 
 		if (
 			count($dataTypes) === 1
-			&& in_array(MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN), $dataTypes, true)
+			&& in_array(MetadataTypes\DataType::BOOLEAN, $dataTypes, true)
 		) {
 			$question = new Console\Question\ChoiceQuestion(
 				$this->translator->translate('//homekit-connector.cmd.install.questions.select.device.value'),
@@ -3222,14 +3230,14 @@ class Install extends Console\Command\Command
 
 				if (
 					count($dataTypes) === 1
-					&& in_array(MetadataTypes\DataType::get(MetadataTypes\DataType::STRING), $dataTypes, true)
+					&& in_array(MetadataTypes\DataType::STRING, $dataTypes, true)
 				) {
 					return strval($answer);
 				}
 
 				if (
 					count($dataTypes) === 1
-					&& in_array(MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT), $dataTypes, true)
+					&& in_array(MetadataTypes\DataType::FLOAT, $dataTypes, true)
 				) {
 					if ($minValue !== null && floatval($answer) < $minValue) {
 						throw new Exceptions\Runtime(
@@ -3269,12 +3277,12 @@ class Install extends Console\Command\Command
 				if (
 					count($dataTypes) === 1
 					&& (
-						in_array(MetadataTypes\DataType::get(MetadataTypes\DataType::CHAR), $dataTypes, true)
-						|| in_array(MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR), $dataTypes, true)
-						|| in_array(MetadataTypes\DataType::get(MetadataTypes\DataType::SHORT), $dataTypes, true)
-						|| in_array(MetadataTypes\DataType::get(MetadataTypes\DataType::USHORT), $dataTypes, true)
-						|| in_array(MetadataTypes\DataType::get(MetadataTypes\DataType::INT), $dataTypes, true)
-						|| in_array(MetadataTypes\DataType::get(MetadataTypes\DataType::UINT), $dataTypes, true)
+						in_array(MetadataTypes\DataType::CHAR, $dataTypes, true)
+						|| in_array(MetadataTypes\DataType::UCHAR, $dataTypes, true)
+						|| in_array(MetadataTypes\DataType::SHORT, $dataTypes, true)
+						|| in_array(MetadataTypes\DataType::USHORT, $dataTypes, true)
+						|| in_array(MetadataTypes\DataType::INT, $dataTypes, true)
+						|| in_array(MetadataTypes\DataType::UINT, $dataTypes, true)
 					)
 				) {
 					if ($minValue !== null && intval($answer) < $minValue) {

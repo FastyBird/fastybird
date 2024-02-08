@@ -861,9 +861,9 @@ class Thermostat implements VirtualDrivers\Driver
 				continue;
 			}
 
-			if ($actor->getDataType()->equalsValue(MetadataTypes\DataType::BOOLEAN)) {
+			if ($actor->getDataType() === MetadataTypes\DataType::BOOLEAN) {
 				$state = boolval($state);
-			} elseif ($actor->getDataType()->equalsValue(MetadataTypes\DataType::SWITCH)) {
+			} elseif ($actor->getDataType() === MetadataTypes\DataType::SWITCH) {
 				$state = $state === true ? MetadataTypes\Payloads\Switcher::ON : MetadataTypes\Payloads\Switcher::OFF;
 			}
 
@@ -896,9 +896,9 @@ class Thermostat implements VirtualDrivers\Driver
 				continue;
 			}
 
-			if ($actor->getDataType()->equalsValue(MetadataTypes\DataType::BOOLEAN)) {
+			if ($actor->getDataType() === MetadataTypes\DataType::BOOLEAN) {
 				$state = boolval($state);
-			} elseif ($actor->getDataType()->equalsValue(MetadataTypes\DataType::SWITCH)) {
+			} elseif ($actor->getDataType() === MetadataTypes\DataType::SWITCH) {
 				$state = $state === true ? MetadataTypes\Payloads\Switcher::ON : MetadataTypes\Payloads\Switcher::OFF;
 			}
 

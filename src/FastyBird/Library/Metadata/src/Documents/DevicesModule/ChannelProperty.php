@@ -54,7 +54,10 @@ abstract class ChannelProperty implements Documents\Document, Documents\Owner
 		private readonly Uuid\UuidInterface $id,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $channel,
-		#[ObjectMapper\Rules\BackedEnumValue(class: Types\PropertyCategory::class)]
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BackedEnumValue(class: Types\PropertyCategory::class),
+			new ObjectMapper\Rules\InstanceOfValue(type: Types\PropertyCategory::class),
+		])]
 		private readonly Types\PropertyCategory $category,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $identifier,
@@ -63,7 +66,10 @@ abstract class ChannelProperty implements Documents\Document, Documents\Owner
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		private readonly string|null $name,
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\DataType::class)]
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BackedEnumValue(class: Types\DataType::class),
+			new ObjectMapper\Rules\InstanceOfValue(type: Types\DataType::class),
+		])]
 		#[ObjectMapper\Modifiers\FieldName('data_type')]
 		private readonly Types\DataType $dataType,
 		#[ObjectMapper\Rules\AnyOf([
@@ -254,15 +260,19 @@ abstract class ChannelProperty implements Documents\Document, Documents\Owner
 
 		if (preg_match(Metadata\Constants::VALUE_EQUATION_TRANSFORMER, $this->valueTransformer) === 1) {
 			if (
-				in_array($this->dataType->getValue(), [
-					Types\DataType::CHAR,
-					Types\DataType::UCHAR,
-					Types\DataType::SHORT,
-					Types\DataType::USHORT,
-					Types\DataType::INT,
-					Types\DataType::UINT,
-					Types\DataType::FLOAT,
-				], true)
+				in_array(
+					$this->dataType,
+					[
+						Types\DataType::CHAR,
+						Types\DataType::UCHAR,
+						Types\DataType::SHORT,
+						Types\DataType::USHORT,
+						Types\DataType::INT,
+						Types\DataType::UINT,
+						Types\DataType::FLOAT,
+					],
+					true,
+				)
 			) {
 				return $this->valueTransformer;
 			}
@@ -284,7 +294,7 @@ abstract class ChannelProperty implements Documents\Document, Documents\Owner
 			'category' => $this->getCategory()->value,
 			'identifier' => $this->getIdentifier(),
 			'name' => $this->getName(),
-			'data_type' => $this->getDataType()->getValue(),
+			'data_type' => $this->getDataType()->value,
 			'unit' => $this->getUnit(),
 			'format' => $this->getFormat()?->getValue(),
 			'invalid' => $this->getInvalid(),
@@ -313,15 +323,19 @@ abstract class ChannelProperty implements Documents\Document, Documents\Owner
 		}
 
 		if (
-			in_array($this->dataType->getValue(), [
-				Types\DataType::CHAR,
-				Types\DataType::UCHAR,
-				Types\DataType::SHORT,
-				Types\DataType::USHORT,
-				Types\DataType::INT,
-				Types\DataType::UINT,
-				Types\DataType::FLOAT,
-			], true)
+			in_array(
+				$this->dataType,
+				[
+					Types\DataType::CHAR,
+					Types\DataType::UCHAR,
+					Types\DataType::SHORT,
+					Types\DataType::USHORT,
+					Types\DataType::INT,
+					Types\DataType::UINT,
+					Types\DataType::FLOAT,
+				],
+				true,
+			)
 		) {
 			if (is_array($format)) {
 				$format = implode(':', array_map(static function ($item): string {
@@ -345,12 +359,16 @@ abstract class ChannelProperty implements Documents\Document, Documents\Owner
 				return new Formats\NumberRange($format);
 			}
 		} elseif (
-			in_array($this->dataType->getValue(), [
-				Types\DataType::ENUM,
-				Types\DataType::BUTTON,
-				Types\DataType::SWITCH,
-				Types\DataType::COVER,
-			], true)
+			in_array(
+				$this->dataType,
+				[
+					Types\DataType::ENUM,
+					Types\DataType::BUTTON,
+					Types\DataType::SWITCH,
+					Types\DataType::COVER,
+				],
+				true,
+			)
 		) {
 			if (is_array($format)) {
 				$format = implode(',', array_map(static function ($item): string {

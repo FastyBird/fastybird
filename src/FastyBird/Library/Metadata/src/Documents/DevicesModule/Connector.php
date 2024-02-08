@@ -48,7 +48,10 @@ final class Connector implements Documents\Document, Documents\Owner
 		private readonly Uuid\UuidInterface $id,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $type,
-		#[ObjectMapper\Rules\BackedEnumValue(class: Types\ConnectorCategory::class)]
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BackedEnumValue(class: Types\ConnectorCategory::class),
+			new ObjectMapper\Rules\InstanceOfValue(type: Types\ConnectorCategory::class),
+		])]
 		private readonly Types\ConnectorCategory $category,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $identifier,

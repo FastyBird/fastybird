@@ -18,6 +18,8 @@ namespace FastyBird\Connector\FbMqtt\Queue\Consumers;
 use FastyBird\Connector\FbMqtt\Entities;
 use FastyBird\Connector\FbMqtt\Exceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use TypeError;
+use ValueError;
 use function array_merge;
 use function boolval;
 use function is_string;
@@ -38,6 +40,8 @@ trait TProperty
 	 * @return array<string, (string|array<string>|array<float>|array<null>|bool|MetadataTypes\DataType|null)>
 	 *
 	 * @throws Exceptions\ParseMessage
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	protected function handlePropertyConfiguration(
 		Entities\Messages\Property $entity,
@@ -70,10 +74,10 @@ trait TProperty
 			if (
 				$attribute->getAttribute() === Entities\Messages\PropertyAttribute::DATA_TYPE
 				&& is_string($attribute->getValue())
-				&& MetadataTypes\DataType::isValidValue(strval($attribute->getValue()))
+				&& MetadataTypes\DataType::tryFrom(strval($attribute->getValue())) !== null
 			) {
 				$toUpdate = array_merge($toUpdate, [
-					'dataType' => MetadataTypes\DataType::get(strval($attribute->getValue())),
+					'dataType' => MetadataTypes\DataType::from(strval($attribute->getValue())),
 				]);
 			}
 

@@ -132,7 +132,7 @@ final class Properties implements Common\EventSubscriber
 
 		if ($stateProperty !== null) {
 			$this->devicesPropertiesManager->update($stateProperty, Utils\ArrayHash::from([
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
+				'dataType' => MetadataTypes\DataType::ENUM,
 				'unit' => null,
 				'format' => [
 					MetadataTypes\ConnectionState::CONNECTED,
@@ -149,7 +149,7 @@ final class Properties implements Common\EventSubscriber
 				'entity' => DevicesEntities\Devices\Properties\Dynamic::class,
 				'identifier' => Types\DevicePropertyIdentifier::STATE,
 				'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::STATE),
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
+				'dataType' => MetadataTypes\DataType::ENUM,
 				'unit' => null,
 				'format' => [
 					MetadataTypes\ConnectionState::CONNECTED,
@@ -235,7 +235,7 @@ final class Properties implements Common\EventSubscriber
 				'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 				'identifier' => $identifier->getValue(),
 				'name' => DevicesUtilities\Name::createName($identifier->getValue()),
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::BUTTON),
+				'dataType' => MetadataTypes\DataType::BUTTON,
 				'unit' => null,
 				'format' => [
 					[
@@ -250,7 +250,7 @@ final class Properties implements Common\EventSubscriber
 		} else {
 			$this->channelsPropertiesManager->update($property, Utils\ArrayHash::from([
 				'name' => DevicesUtilities\Name::createName($identifier->getValue()),
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::BUTTON),
+				'dataType' => MetadataTypes\DataType::BUTTON,
 				'unit' => null,
 				'format' => [
 					$key->getValue(),
@@ -315,7 +315,7 @@ final class Properties implements Common\EventSubscriber
 						'channel' => $channel,
 						'identifier' => Types\ChannelPropertyIdentifier::INPUT_SOURCE,
 						'name' => DevicesUtilities\Name::createName(Types\ChannelPropertyIdentifier::INPUT_SOURCE),
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
+						'dataType' => MetadataTypes\DataType::ENUM,
 						'settable' => true,
 						'queryable' => false,
 						'format' => array_merge(
@@ -337,7 +337,7 @@ final class Properties implements Common\EventSubscriber
 				$inputSourceProperty,
 				Utils\ArrayHash::from(
 					[
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
+						'dataType' => MetadataTypes\DataType::ENUM,
 						'settable' => true,
 						'queryable' => false,
 						'format' => array_merge(

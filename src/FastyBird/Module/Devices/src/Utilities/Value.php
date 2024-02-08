@@ -34,12 +34,12 @@ final class Value
 		MetadataTypes\DataType $right,
 	): bool
 	{
-		if ($left->equalsValue($right->getValue())) {
+		if ($left === $right) {
 			return true;
 		}
 
 		return in_array(
-			$left->getValue(),
+			$left,
 			[
 				MetadataTypes\DataType::CHAR,
 				MetadataTypes\DataType::UCHAR,
@@ -52,7 +52,7 @@ final class Value
 			true,
 		)
 			&& in_array(
-				$right->getValue(),
+				$right,
 				[
 					MetadataTypes\DataType::CHAR,
 					MetadataTypes\DataType::UCHAR,

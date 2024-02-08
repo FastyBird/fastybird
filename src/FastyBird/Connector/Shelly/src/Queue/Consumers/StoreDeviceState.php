@@ -100,7 +100,7 @@ final class StoreDeviceState implements Queue\Consumer
 			$this->setDeviceProperty(
 				$device->getId(),
 				$entity->getIpAddress(),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+				MetadataTypes\DataType::STRING,
 				Types\DevicePropertyIdentifier::IP_ADDRESS,
 			);
 		}

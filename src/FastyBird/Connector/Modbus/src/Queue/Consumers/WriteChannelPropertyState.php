@@ -397,22 +397,28 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				$property->getFormat(),
 			);
 
-			if (!in_array($deviceExpectedDataType->getValue(), [
-				MetadataTypes\DataType::CHAR,
-				MetadataTypes\DataType::UCHAR,
-				MetadataTypes\DataType::SHORT,
-				MetadataTypes\DataType::USHORT,
-				MetadataTypes\DataType::INT,
-				MetadataTypes\DataType::UINT,
-				MetadataTypes\DataType::FLOAT,
-				MetadataTypes\DataType::BOOLEAN,
-			], true)) {
+			if (
+				!in_array(
+					$deviceExpectedDataType,
+					[
+						MetadataTypes\DataType::CHAR,
+						MetadataTypes\DataType::UCHAR,
+						MetadataTypes\DataType::SHORT,
+						MetadataTypes\DataType::USHORT,
+						MetadataTypes\DataType::INT,
+						MetadataTypes\DataType::UINT,
+						MetadataTypes\DataType::FLOAT,
+						MetadataTypes\DataType::BOOLEAN,
+					],
+					true,
+				)
+			) {
 				$this->resetExpected($property);
 
 				$this->logger->error(
 					sprintf(
 						'Trying to write property with unsupported data type: %s for channel property',
-						strval($deviceExpectedDataType->getValue()),
+						$deviceExpectedDataType->value,
 					),
 					[
 						'source' => MetadataTypes\Sources\Connector::MODBUS,
@@ -437,7 +443,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			}
 
 			try {
-				if ($valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::BOOLEAN)) {
+				if ($valueToWrite->getDataType() === MetadataTypes\DataType::BOOLEAN) {
 					if (in_array($valueToWrite->getValue(), [0, 1], true) || is_bool($valueToWrite->getValue())) {
 						$this->connectionManager->getRtuClient($connector)->writeSingleCoil(
 							$station,
@@ -481,17 +487,17 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						return true;
 					}
 				} elseif (
-					$valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::SHORT)
-					|| $valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::USHORT)
-					|| $valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::CHAR)
-					|| $valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::UCHAR)
-					|| $valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::INT)
-					|| $valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::UINT)
-					|| $valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::FLOAT)
+					$valueToWrite->getDataType() === MetadataTypes\DataType::SHORT
+					|| $valueToWrite->getDataType() === MetadataTypes\DataType::USHORT
+					|| $valueToWrite->getDataType() === MetadataTypes\DataType::CHAR
+					|| $valueToWrite->getDataType() === MetadataTypes\DataType::UCHAR
+					|| $valueToWrite->getDataType() === MetadataTypes\DataType::INT
+					|| $valueToWrite->getDataType() === MetadataTypes\DataType::UINT
+					|| $valueToWrite->getDataType() === MetadataTypes\DataType::FLOAT
 				) {
 					if (
-						$deviceExpectedDataType->equalsValue(MetadataTypes\DataType::CHAR)
-						|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::SHORT)
+						$deviceExpectedDataType === MetadataTypes\DataType::CHAR
+						|| $deviceExpectedDataType === MetadataTypes\DataType::SHORT
 					) {
 						$bytes = $this->transformer->packSignedInt(
 							intval($valueToWrite->getValue()),
@@ -500,8 +506,8 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						);
 
 					} elseif (
-						$deviceExpectedDataType->equalsValue(MetadataTypes\DataType::UCHAR)
-						|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::USHORT)
+						$deviceExpectedDataType === MetadataTypes\DataType::UCHAR
+						|| $deviceExpectedDataType === MetadataTypes\DataType::USHORT
 					) {
 						$bytes = $this->transformer->packUnsignedInt(
 							intval($valueToWrite->getValue()),
@@ -509,21 +515,21 @@ final class WriteChannelPropertyState implements Queue\Consumer
 							$this->deviceHelper->getByteOrder($device),
 						);
 
-					} elseif ($deviceExpectedDataType->equalsValue(MetadataTypes\DataType::INT)) {
+					} elseif ($deviceExpectedDataType === MetadataTypes\DataType::INT) {
 						$bytes = $this->transformer->packSignedInt(
 							intval($valueToWrite->getValue()),
 							4,
 							$this->deviceHelper->getByteOrder($device),
 						);
 
-					} elseif ($deviceExpectedDataType->equalsValue(MetadataTypes\DataType::UINT)) {
+					} elseif ($deviceExpectedDataType === MetadataTypes\DataType::UINT) {
 						$bytes = $this->transformer->packUnsignedInt(
 							intval($valueToWrite->getValue()),
 							4,
 							$this->deviceHelper->getByteOrder($device),
 						);
 
-					} elseif ($deviceExpectedDataType->equalsValue(MetadataTypes\DataType::FLOAT)) {
+					} elseif ($deviceExpectedDataType === MetadataTypes\DataType::FLOAT) {
 						$bytes = $this->transformer->packFloat(
 							floatval($valueToWrite->getValue()),
 							$this->deviceHelper->getByteOrder($device),
@@ -600,7 +606,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					$this->logger->error(
 						sprintf(
 							'Unsupported value data type: %s',
-							strval($valueToWrite->getDataType()->getValue()),
+							strval($valueToWrite->getDataType()->value),
 						),
 						[
 							'source' => MetadataTypes\Sources\Connector::MODBUS,
@@ -731,23 +737,29 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				$property->getFormat(),
 			);
 
-			if (!in_array($deviceExpectedDataType->getValue(), [
-				MetadataTypes\DataType::CHAR,
-				MetadataTypes\DataType::UCHAR,
-				MetadataTypes\DataType::SHORT,
-				MetadataTypes\DataType::USHORT,
-				MetadataTypes\DataType::INT,
-				MetadataTypes\DataType::UINT,
-				MetadataTypes\DataType::FLOAT,
-				MetadataTypes\DataType::BOOLEAN,
-				MetadataTypes\DataType::STRING,
-			], true)) {
+			if (
+				!in_array(
+					$deviceExpectedDataType,
+					[
+						MetadataTypes\DataType::CHAR,
+						MetadataTypes\DataType::UCHAR,
+						MetadataTypes\DataType::SHORT,
+						MetadataTypes\DataType::USHORT,
+						MetadataTypes\DataType::INT,
+						MetadataTypes\DataType::UINT,
+						MetadataTypes\DataType::FLOAT,
+						MetadataTypes\DataType::BOOLEAN,
+						MetadataTypes\DataType::STRING,
+					],
+					true,
+				)
+			) {
 				$this->resetExpected($property);
 
 				$this->logger->error(
 					sprintf(
 						'Trying to write property with unsupported data type: %s for channel property',
-						strval($deviceExpectedDataType->getValue()),
+						$deviceExpectedDataType->value,
 					),
 					[
 						'source' => MetadataTypes\Sources\Connector::MODBUS,
@@ -771,7 +783,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				return true;
 			}
 
-			if ($valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::BOOLEAN)) {
+			if ($valueToWrite->getDataType() === MetadataTypes\DataType::BOOLEAN) {
 				if (in_array($valueToWrite->getValue(), [0, 1], true) || is_bool($valueToWrite->getValue())) {
 					$promise = $this->connectionManager
 						->getTcpClient()
@@ -811,17 +823,17 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					return true;
 				}
 			} elseif (
-				$valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::SHORT)
-				|| $valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::USHORT)
-				|| $valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::CHAR)
-				|| $valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::UCHAR)
-				|| $valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::INT)
-				|| $valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::UINT)
-				|| $valueToWrite->getDataType()->equalsValue(MetadataTypes\DataType::FLOAT)
+				$valueToWrite->getDataType() === MetadataTypes\DataType::SHORT
+				|| $valueToWrite->getDataType() === MetadataTypes\DataType::USHORT
+				|| $valueToWrite->getDataType() === MetadataTypes\DataType::CHAR
+				|| $valueToWrite->getDataType() === MetadataTypes\DataType::UCHAR
+				|| $valueToWrite->getDataType() === MetadataTypes\DataType::INT
+				|| $valueToWrite->getDataType() === MetadataTypes\DataType::UINT
+				|| $valueToWrite->getDataType() === MetadataTypes\DataType::FLOAT
 			) {
 				if (
-					$deviceExpectedDataType->equalsValue(MetadataTypes\DataType::CHAR)
-					|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::SHORT)
+					$deviceExpectedDataType === MetadataTypes\DataType::CHAR
+					|| $deviceExpectedDataType === MetadataTypes\DataType::SHORT
 				) {
 					$bytes = $this->transformer->packSignedInt(
 						intval($valueToWrite->getValue()),
@@ -830,8 +842,8 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					);
 
 				} elseif (
-					$deviceExpectedDataType->equalsValue(MetadataTypes\DataType::UCHAR)
-					|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::USHORT)
+					$deviceExpectedDataType === MetadataTypes\DataType::UCHAR
+					|| $deviceExpectedDataType === MetadataTypes\DataType::USHORT
 				) {
 					$bytes = $this->transformer->packUnsignedInt(
 						intval($valueToWrite->getValue()),
@@ -839,21 +851,21 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						$this->deviceHelper->getByteOrder($device),
 					);
 
-				} elseif ($deviceExpectedDataType->equalsValue(MetadataTypes\DataType::INT)) {
+				} elseif ($deviceExpectedDataType === MetadataTypes\DataType::INT) {
 					$bytes = $this->transformer->packSignedInt(
 						intval($valueToWrite->getValue()),
 						4,
 						$this->deviceHelper->getByteOrder($device),
 					);
 
-				} elseif ($deviceExpectedDataType->equalsValue(MetadataTypes\DataType::UINT)) {
+				} elseif ($deviceExpectedDataType === MetadataTypes\DataType::UINT) {
 					$bytes = $this->transformer->packUnsignedInt(
 						intval($valueToWrite->getValue()),
 						4,
 						$this->deviceHelper->getByteOrder($device),
 					);
 
-				} elseif ($deviceExpectedDataType->equalsValue(MetadataTypes\DataType::FLOAT)) {
+				} elseif ($deviceExpectedDataType === MetadataTypes\DataType::FLOAT) {
 					$bytes = $this->transformer->packFloat(
 						floatval($valueToWrite->getValue()),
 						$this->deviceHelper->getByteOrder($device),
@@ -927,7 +939,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				$this->logger->error(
 					sprintf(
 						'Unsupported value data type: %s',
-						strval($valueToWrite->getDataType()->getValue()),
+						strval($valueToWrite->getDataType()->value),
 					),
 					[
 						'source' => MetadataTypes\Sources\Connector::MODBUS,

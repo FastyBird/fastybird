@@ -199,7 +199,7 @@ class Install extends Console\Command\Command
 			$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 				'identifier' => Types\ConnectorPropertyIdentifier::PROTOCOL_VERSION,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+				'dataType' => MetadataTypes\DataType::STRING,
 				'value' => $protocol->getValue(),
 				'connector' => $connector,
 			]));
@@ -207,7 +207,7 @@ class Install extends Console\Command\Command
 			$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 				'identifier' => Types\ConnectorPropertyIdentifier::SERVER,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+				'dataType' => MetadataTypes\DataType::STRING,
 				'value' => $serverAddress,
 				'connector' => $connector,
 			]));
@@ -215,7 +215,7 @@ class Install extends Console\Command\Command
 			$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 				'identifier' => Types\ConnectorPropertyIdentifier::PORT,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UINT),
+				'dataType' => MetadataTypes\DataType::UINT,
 				'value' => $serverPort,
 				'connector' => $connector,
 			]));
@@ -223,7 +223,7 @@ class Install extends Console\Command\Command
 			$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 				'identifier' => Types\ConnectorPropertyIdentifier::SECURED_PORT,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UINT),
+				'dataType' => MetadataTypes\DataType::UINT,
 				'value' => $serverSecuredPort,
 				'connector' => $connector,
 			]));
@@ -232,7 +232,7 @@ class Install extends Console\Command\Command
 				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::USERNAME,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => $username,
 					'connector' => $connector,
 				]));
@@ -242,7 +242,7 @@ class Install extends Console\Command\Command
 				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::PASSWORD,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => $password,
 					'connector' => $connector,
 				]));
@@ -427,7 +427,7 @@ class Install extends Console\Command\Command
 				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::PROTOCOL_VERSION,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => $protocol->getValue(),
 					'connector' => $connector,
 				]));
@@ -441,7 +441,7 @@ class Install extends Console\Command\Command
 				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::SERVER,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => $serverAddress,
 					'connector' => $connector,
 				]));
@@ -455,7 +455,7 @@ class Install extends Console\Command\Command
 				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::PORT,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UINT),
+					'dataType' => MetadataTypes\DataType::UINT,
 					'value' => $serverPort,
 					'connector' => $connector,
 				]));
@@ -469,7 +469,7 @@ class Install extends Console\Command\Command
 				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::SECURED_PORT,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UINT),
+					'dataType' => MetadataTypes\DataType::UINT,
 					'value' => $serverSecuredPort,
 					'connector' => $connector,
 				]));
@@ -484,7 +484,7 @@ class Install extends Console\Command\Command
 					$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 						'identifier' => Types\ConnectorPropertyIdentifier::USERNAME,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+						'dataType' => MetadataTypes\DataType::STRING,
 						'value' => $username,
 						'connector' => $connector,
 					]));
@@ -502,7 +502,7 @@ class Install extends Console\Command\Command
 					$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 						'identifier' => Types\ConnectorPropertyIdentifier::PASSWORD,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+						'dataType' => MetadataTypes\DataType::STRING,
 						'value' => $password,
 						'connector' => $connector,
 					]));

@@ -432,7 +432,7 @@ final class Gen1HttpApi extends HttpApi
 							'identifier' => intval($sensor->offsetGet('I')),
 							'type' => $sensor->offsetGet('T'),
 							'description' => strval($sensor->offsetGet('D')),
-							'data_type' => $sensorRange->getDataType()->getValue(),
+							'data_type' => $sensorRange->getDataType()->value,
 							'unit' => array_key_exists(strval($sensor->offsetExists('U')), self::SENSORS_UNIT)
 								? self::SENSORS_UNIT[strval($sensor->offsetExists('U'))]
 								: null,
@@ -613,8 +613,8 @@ final class Gen1HttpApi extends HttpApi
 					'data_type' => $this->adjustSensorDataType(
 						$block,
 						$description,
-						MetadataTypes\DataType::get(MetadataTypes\DataType::UNKNOWN),
-					)->getValue(),
+						MetadataTypes\DataType::UNKNOWN,
+					)->value,
 					'format' => $this->adjustSensorFormat($block, $description, null),
 					'invalid' => null,
 				],
@@ -628,8 +628,8 @@ final class Gen1HttpApi extends HttpApi
 					'data_type' => $this->adjustSensorDataType(
 						$block,
 						$description,
-						MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN),
-					)->getValue(),
+						MetadataTypes\DataType::BOOLEAN,
+					)->value,
 					'format' => $this->adjustSensorFormat($block, $description, null),
 					'invalid' => $invalidValue,
 				],
@@ -643,8 +643,8 @@ final class Gen1HttpApi extends HttpApi
 					'data_type' => $this->adjustSensorDataType(
 						$block,
 						$description,
-						MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
-					)->getValue(),
+						MetadataTypes\DataType::UCHAR,
+					)->value,
 					'format' => $this->adjustSensorFormat($block, $description, null),
 					'invalid' => $invalidValue,
 				],
@@ -658,8 +658,8 @@ final class Gen1HttpApi extends HttpApi
 					'data_type' => $this->adjustSensorDataType(
 						$block,
 						$description,
-						MetadataTypes\DataType::get(MetadataTypes\DataType::USHORT),
-					)->getValue(),
+						MetadataTypes\DataType::USHORT,
+					)->value,
 					'format' => $this->adjustSensorFormat($block, $description, null),
 					'invalid' => $invalidValue,
 				],
@@ -673,8 +673,8 @@ final class Gen1HttpApi extends HttpApi
 					'data_type' => $this->adjustSensorDataType(
 						$block,
 						$description,
-						MetadataTypes\DataType::get(MetadataTypes\DataType::UINT),
-					)->getValue(),
+						MetadataTypes\DataType::UINT,
+					)->value,
 					'format' => $this->adjustSensorFormat($block, $description, null),
 					'invalid' => $invalidValue,
 				],
@@ -688,8 +688,8 @@ final class Gen1HttpApi extends HttpApi
 					'data_type' => $this->adjustSensorDataType(
 						$block,
 						$description,
-						MetadataTypes\DataType::get(MetadataTypes\DataType::CHAR),
-					)->getValue(),
+						MetadataTypes\DataType::CHAR,
+					)->value,
 					'format' => $this->adjustSensorFormat($block, $description, null),
 					'invalid' => $invalidValue,
 				],
@@ -703,8 +703,8 @@ final class Gen1HttpApi extends HttpApi
 					'data_type' => $this->adjustSensorDataType(
 						$block,
 						$description,
-						MetadataTypes\DataType::get(MetadataTypes\DataType::SHORT),
-					)->getValue(),
+						MetadataTypes\DataType::SHORT,
+					)->value,
 					'format' => $this->adjustSensorFormat($block, $description, null),
 					'invalid' => $invalidValue,
 				],
@@ -718,8 +718,8 @@ final class Gen1HttpApi extends HttpApi
 					'data_type' => $this->adjustSensorDataType(
 						$block,
 						$description,
-						MetadataTypes\DataType::get(MetadataTypes\DataType::INT),
-					)->getValue(),
+						MetadataTypes\DataType::INT,
+					)->value,
 					'format' => $this->adjustSensorFormat($block, $description, null),
 					'invalid' => $invalidValue,
 				],
@@ -740,8 +740,8 @@ final class Gen1HttpApi extends HttpApi
 						'data_type' => $this->adjustSensorDataType(
 							$block,
 							$description,
-							MetadataTypes\DataType::get(MetadataTypes\DataType::INT),
-						)->getValue(),
+							MetadataTypes\DataType::INT,
+						)->value,
 						'format' => $this->adjustSensorFormat(
 							$block,
 							$description,
@@ -763,8 +763,8 @@ final class Gen1HttpApi extends HttpApi
 						'data_type' => $this->adjustSensorDataType(
 							$block,
 							$description,
-							MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
-						)->getValue(),
+							MetadataTypes\DataType::FLOAT,
+						)->value,
 						'format' => $this->adjustSensorFormat(
 							$block,
 							$description,
@@ -781,8 +781,8 @@ final class Gen1HttpApi extends HttpApi
 					'data_type' => $this->adjustSensorDataType(
 						$block,
 						$description,
-						MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
-					)->getValue(),
+						MetadataTypes\DataType::ENUM,
+					)->value,
 					'format' => $this->adjustSensorFormat(
 						$block,
 						$description,
@@ -799,8 +799,8 @@ final class Gen1HttpApi extends HttpApi
 				'data_type' => $this->adjustSensorDataType(
 					$block,
 					$description,
-					MetadataTypes\DataType::get(MetadataTypes\DataType::UNKNOWN),
-				)->getValue(),
+					MetadataTypes\DataType::UNKNOWN,
+				)->value,
 				'format' => $this->adjustSensorFormat($block, $description, null),
 				'invalid' => null,
 			],
@@ -817,14 +817,14 @@ final class Gen1HttpApi extends HttpApi
 			Utils\Strings::startsWith($block, Types\BlockDescription::RELAY)
 			&& Utils\Strings::lower($description) === Types\SensorDescription::OUTPUT
 		) {
-			return MetadataTypes\DataType::get(MetadataTypes\DataType::SWITCH);
+			return MetadataTypes\DataType::SWITCH;
 		}
 
 		if (
 			Utils\Strings::startsWith($block, Types\BlockDescription::LIGHT)
 			&& Utils\Strings::lower($description) === Types\SensorDescription::OUTPUT
 		) {
-			return MetadataTypes\DataType::get(MetadataTypes\DataType::SWITCH);
+			return MetadataTypes\DataType::SWITCH;
 		}
 
 		return $dataType;

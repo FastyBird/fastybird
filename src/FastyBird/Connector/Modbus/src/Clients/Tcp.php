@@ -630,18 +630,18 @@ class Tcp implements Client
 			$property->getFormat(),
 		);
 
-		if ($deviceExpectedDataType->equalsValue(MetadataTypes\DataType::BOOLEAN)) {
+		if ($deviceExpectedDataType === MetadataTypes\DataType::BOOLEAN) {
 			return $property->isSettable()
 				? new Entities\Clients\ReadCoilAddress($address, $channel, $deviceExpectedDataType)
 				: new Entities\Clients\ReadDiscreteInputAddress($address, $channel, $deviceExpectedDataType);
 		} elseif (
-			$deviceExpectedDataType->equalsValue(MetadataTypes\DataType::CHAR)
-			|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::UCHAR)
-			|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::SHORT)
-			|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::USHORT)
-			|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::INT)
-			|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::UINT)
-			|| $deviceExpectedDataType->equalsValue(MetadataTypes\DataType::FLOAT)
+			$deviceExpectedDataType === MetadataTypes\DataType::CHAR
+			|| $deviceExpectedDataType === MetadataTypes\DataType::UCHAR
+			|| $deviceExpectedDataType === MetadataTypes\DataType::SHORT
+			|| $deviceExpectedDataType === MetadataTypes\DataType::USHORT
+			|| $deviceExpectedDataType === MetadataTypes\DataType::INT
+			|| $deviceExpectedDataType === MetadataTypes\DataType::UINT
+			|| $deviceExpectedDataType === MetadataTypes\DataType::FLOAT
 		) {
 			return $property->isSettable()
 				? new Entities\Clients\ReadHoldingRegisterAddress($address, $channel, $deviceExpectedDataType)

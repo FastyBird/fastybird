@@ -40,6 +40,8 @@ use Nette;
 use Nette\Localization;
 use Nette\Utils;
 use Throwable;
+use TypeError;
+use ValueError;
 use function array_key_exists;
 use function array_map;
 use function array_merge;
@@ -239,13 +241,13 @@ class Builder
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
 					'identifier' => HomeKitTypes\DevicePropertyIdentifier::CATEGORY,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
+					'dataType' => MetadataTypes\DataType::UCHAR,
 					'value' => HomeKitTypes\AccessoryCategory::get(HomeKitTypes\AccessoryCategory::THERMOSTAT),
 					'device' => $accessory,
 				]));
 			} else {
 				$this->devicesPropertiesManager->update($categoryProperty, Utils\ArrayHash::from([
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
+					'dataType' => MetadataTypes\DataType::UCHAR,
 					'value' => HomeKitTypes\AccessoryCategory::get(HomeKitTypes\AccessoryCategory::THERMOSTAT),
 				]));
 			}
@@ -254,13 +256,13 @@ class Builder
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
 					'identifier' => HomeKitTypes\DevicePropertyIdentifier::MODEL,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => VirtualThermostatAddonHomeKitConnector\Constants::MODEL,
 					'device' => $accessory,
 				]));
 			} else {
 				$this->devicesPropertiesManager->update($modelProperty, Utils\ArrayHash::from([
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => VirtualThermostatAddonHomeKitConnector\Constants::MODEL,
 				]));
 			}
@@ -269,13 +271,13 @@ class Builder
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
 					'identifier' => HomeKitTypes\DevicePropertyIdentifier::MANUFACTURER,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => VirtualThermostatAddonHomeKitConnector\Constants::MANUFACTURER,
 					'device' => $accessory,
 				]));
 			} else {
 				$this->devicesPropertiesManager->update($manufacturerProperty, Utils\ArrayHash::from([
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => VirtualThermostatAddonHomeKitConnector\Constants::MANUFACTURER,
 				]));
 			}
@@ -310,6 +312,8 @@ class Builder
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 * @throws VirtualThermostatExceptions\InvalidState
 	 */
 	private function createService(
@@ -465,6 +469,8 @@ class Builder
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 * @throws VirtualThermostatExceptions\InvalidState
 	 */
 	private function createCharacteristic(
@@ -545,9 +551,7 @@ class Builder
 
 			if ($characteristicMetadata->offsetGet('DataType') instanceof Utils\ArrayHash) {
 				$dataTypes = array_map(
-					static fn (string $type): MetadataTypes\DataType => MetadataTypes\DataType::get(
-						$characteristicType,
-					),
+					static fn (string $type): MetadataTypes\DataType => MetadataTypes\DataType::from($type),
 					(array) $characteristicMetadata->offsetGet('DataType'),
 				);
 
@@ -555,7 +559,7 @@ class Builder
 					throw new Exceptions\InvalidState('Characteristic definition is missing required attributes');
 				}
 			} else {
-				$dataTypes = [MetadataTypes\DataType::get($characteristicMetadata->offsetGet('DataType'))];
+				$dataTypes = [MetadataTypes\DataType::from($characteristicMetadata->offsetGet('DataType'))];
 			}
 
 			if (!in_array($connectProperty->getDataType(), $dataTypes, true)) {
@@ -613,9 +617,7 @@ class Builder
 
 			if ($characteristicMetadata->offsetGet('DataType') instanceof Utils\ArrayHash) {
 				$dataTypes = array_map(
-					static fn (string $type): MetadataTypes\DataType => MetadataTypes\DataType::get(
-						$characteristicType,
-					),
+					static fn (string $type): MetadataTypes\DataType => MetadataTypes\DataType::from($type),
 					(array) $characteristicMetadata->offsetGet('DataType'),
 				);
 
@@ -625,7 +627,7 @@ class Builder
 
 				$dataType = $dataTypes[0];
 			} else {
-				$dataType = MetadataTypes\DataType::get($characteristicMetadata->offsetGet('DataType'));
+				$dataType = MetadataTypes\DataType::from($characteristicMetadata->offsetGet('DataType'));
 			}
 		}
 

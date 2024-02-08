@@ -56,14 +56,14 @@ final class ChannelsProperties extends DataFixtures\AbstractFixture implements D
 				$channel,
 				ChannelPropertyIdentifier::ADDRESS,
 			);
-			$addressProperty->setDataType(MetadataTypes\DataType::get(MetadataTypes\DataType::UINT));
+			$addressProperty->setDataType(MetadataTypes\DataType::UINT);
 			$addressProperty->setValue(strval($i));
 
 			$switchProperty = new DevicesEntities\Channels\Properties\Dynamic(
 				$channel,
 				'switch',
 			);
-			$switchProperty->setDataType(MetadataTypes\DataType::get(MetadataTypes\DataType::SWITCH));
+			$switchProperty->setDataType(MetadataTypes\DataType::SWITCH);
 			$switchProperty->setSettable(true);
 			$switchProperty->setQueryable(true);
 			$switchProperty->setFormat(

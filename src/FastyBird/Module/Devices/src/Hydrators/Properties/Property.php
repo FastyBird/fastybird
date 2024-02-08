@@ -23,6 +23,8 @@ use FastyBird\Module\Devices\Entities;
 use Fig\Http\Message\StatusCodeInterface;
 use IPub\JsonAPIDocument;
 use Nette\Utils;
+use TypeError;
+use ValueError;
 use function array_map;
 use function boolval;
 use function implode;
@@ -84,6 +86,10 @@ abstract class Property extends JsonApiHydrators\Hydrator
 		return is_scalar($attributes->get('queryable')) && boolval($attributes->get('queryable'));
 	}
 
+	/**
+	 * @throws TypeError
+	 * @throws ValueError
+	 */
 	protected function hydrateDataTypeAttribute(
 		JsonAPIDocument\Objects\IStandardObject $attributes,
 	): MetadataTypes\DataType|null
@@ -91,12 +97,12 @@ abstract class Property extends JsonApiHydrators\Hydrator
 		if (
 			!is_scalar($attributes->get('data_type'))
 			|| (string) $attributes->get('data_type') === ''
-			|| !MetadataTypes\DataType::isValidValue((string) $attributes->get('data_type'))
+			|| MetadataTypes\DataType::tryFrom((string) $attributes->get('data_type')) === null
 		) {
 			return null;
 		}
 
-		return MetadataTypes\DataType::get((string) $attributes->get('data_type'));
+		return MetadataTypes\DataType::from((string) $attributes->get('data_type'));
 	}
 
 	protected function hydrateUnitAttribute(JsonAPIDocument\Objects\IStandardObject $attributes): string|null
@@ -113,6 +119,8 @@ abstract class Property extends JsonApiHydrators\Hydrator
 
 	/**
 	 * @throws JsonApiExceptions\JsonApiError
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	protected function hydrateFormatAttribute(JsonAPIDocument\Objects\IStandardObject $attributes): string|null
 	{
@@ -121,19 +129,19 @@ abstract class Property extends JsonApiHydrators\Hydrator
 
 		if (
 			!is_scalar($rawDataType)
-			|| !MetadataTypes\DataType::isValidValue((string) $rawDataType)
+			|| MetadataTypes\DataType::tryFrom((string) $rawDataType) === null
 		) {
 			return null;
 		}
 
-		$dataType = MetadataTypes\DataType::get((string) $rawDataType);
+		$dataType = MetadataTypes\DataType::from((string) $rawDataType);
 
 		if (is_array($rawFormat)) {
 			if (
-				$dataType->equalsValue(MetadataTypes\DataType::ENUM)
-				|| $dataType->equalsValue(MetadataTypes\DataType::BUTTON)
-				|| $dataType->equalsValue(MetadataTypes\DataType::SWITCH)
-				|| $dataType->equalsValue(MetadataTypes\DataType::COVER)
+				$dataType === MetadataTypes\DataType::ENUM
+				|| $dataType === MetadataTypes\DataType::BUTTON
+				|| $dataType === MetadataTypes\DataType::SWITCH
+				|| $dataType === MetadataTypes\DataType::COVER
 			) {
 				$plainFormat = implode(',', array_map(static function ($item): string {
 					if (is_array($item) || $item instanceof Utils\ArrayHash) {
@@ -171,15 +179,19 @@ abstract class Property extends JsonApiHydrators\Hydrator
 					],
 				);
 			} elseif (
-				in_array($dataType->getValue(), [
-					MetadataTypes\DataType::CHAR,
-					MetadataTypes\DataType::UCHAR,
-					MetadataTypes\DataType::SHORT,
-					MetadataTypes\DataType::USHORT,
-					MetadataTypes\DataType::INT,
-					MetadataTypes\DataType::UINT,
-					MetadataTypes\DataType::FLOAT,
-				], true)
+				in_array(
+					$dataType,
+					[
+						MetadataTypes\DataType::CHAR,
+						MetadataTypes\DataType::UCHAR,
+						MetadataTypes\DataType::SHORT,
+						MetadataTypes\DataType::USHORT,
+						MetadataTypes\DataType::INT,
+						MetadataTypes\DataType::UINT,
+						MetadataTypes\DataType::FLOAT,
+					],
+					true,
+				)
 			) {
 				$plainFormat = implode(':', array_map(static function ($item): string {
 					if (is_array($item) || $item instanceof Utils\ArrayHash) {

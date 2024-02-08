@@ -229,7 +229,7 @@ class Install extends Console\Command\Command
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
 				'identifier' => VirtualTypes\DevicePropertyIdentifier::MODEL,
 				'device' => $device,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+				'dataType' => MetadataTypes\DataType::STRING,
 				'value' => Entities\Devices\Device::TYPE,
 			]));
 
@@ -257,7 +257,7 @@ class Install extends Console\Command\Command
 					'entity' => DevicesEntities\Channels\Properties\Variable::class,
 					'identifier' => Types\ChannelPropertyIdentifier::UNIT,
 					'channel' => $configurationChannel,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
+					'dataType' => MetadataTypes\DataType::ENUM,
 					'format' => [Types\Unit::CELSIUS, Types\Unit::FAHRENHEIT],
 					'value' => $unit->getValue(),
 				]),
@@ -269,7 +269,7 @@ class Install extends Console\Command\Command
 					'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 					'identifier' => Types\ChannelPropertyIdentifier::HVAC_MODE,
 					'channel' => $stateChannel,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
+					'dataType' => MetadataTypes\DataType::ENUM,
 					'format' => array_merge(
 						[Types\HvacMode::OFF],
 						$modes,
@@ -289,7 +289,7 @@ class Install extends Console\Command\Command
 					'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 					'identifier' => Types\ChannelPropertyIdentifier::HVAC_STATE,
 					'channel' => $stateChannel,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
+					'dataType' => MetadataTypes\DataType::ENUM,
 					'format' => array_merge(
 						[Types\HvacState::OFF],
 						array_filter(
@@ -341,8 +341,8 @@ class Install extends Console\Command\Command
 							$heaterActors,
 						),
 						[
-							MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN),
-							MetadataTypes\DataType::get(MetadataTypes\DataType::SWITCH),
+							MetadataTypes\DataType::BOOLEAN,
+							MetadataTypes\DataType::SWITCH,
 						],
 					);
 
@@ -359,7 +359,7 @@ class Install extends Console\Command\Command
 									Types\ChannelPropertyIdentifier::HEATER_ACTOR,
 								),
 								'channel' => $actorsChannel,
-								'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN),
+								'dataType' => MetadataTypes\DataType::BOOLEAN,
 								'format' => null,
 								'unit' => null,
 								'invalid' => null,
@@ -399,8 +399,8 @@ class Install extends Console\Command\Command
 							$coolerActors,
 						),
 						[
-							MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN),
-							MetadataTypes\DataType::get(MetadataTypes\DataType::SWITCH),
+							MetadataTypes\DataType::BOOLEAN,
+							MetadataTypes\DataType::SWITCH,
 						],
 					);
 
@@ -417,7 +417,7 @@ class Install extends Console\Command\Command
 									Types\ChannelPropertyIdentifier::COOLER_ACTOR,
 								),
 								'channel' => $actorsChannel,
-								'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN),
+								'dataType' => MetadataTypes\DataType::BOOLEAN,
 								'format' => null,
 								'unit' => null,
 								'invalid' => null,
@@ -460,7 +460,7 @@ class Install extends Console\Command\Command
 							$openingSensors,
 						),
 						[
-							MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN),
+							MetadataTypes\DataType::BOOLEAN,
 						],
 					);
 
@@ -477,7 +477,7 @@ class Install extends Console\Command\Command
 									Types\ChannelPropertyIdentifier::OPENING_SENSOR,
 								),
 								'channel' => $sensorsChannel,
-								'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN),
+								'dataType' => MetadataTypes\DataType::BOOLEAN,
 								'format' => null,
 								'unit' => null,
 								'invalid' => null,
@@ -516,13 +516,13 @@ class Install extends Console\Command\Command
 						$roomTempSensors,
 					),
 					[
-						MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
-						MetadataTypes\DataType::get(MetadataTypes\DataType::CHAR),
-						MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
-						MetadataTypes\DataType::get(MetadataTypes\DataType::SHORT),
-						MetadataTypes\DataType::get(MetadataTypes\DataType::USHORT),
-						MetadataTypes\DataType::get(MetadataTypes\DataType::INT),
-						MetadataTypes\DataType::get(MetadataTypes\DataType::UINT),
+						MetadataTypes\DataType::FLOAT,
+						MetadataTypes\DataType::CHAR,
+						MetadataTypes\DataType::UCHAR,
+						MetadataTypes\DataType::SHORT,
+						MetadataTypes\DataType::USHORT,
+						MetadataTypes\DataType::INT,
+						MetadataTypes\DataType::UINT,
 					],
 				);
 
@@ -539,7 +539,7 @@ class Install extends Console\Command\Command
 								Types\ChannelPropertyIdentifier::ROOM_TEMPERATURE_SENSOR,
 							),
 							'channel' => $sensorsChannel,
-							'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
+							'dataType' => MetadataTypes\DataType::FLOAT,
 							'format' => null,
 							'unit' => null,
 							'invalid' => null,
@@ -581,13 +581,13 @@ class Install extends Console\Command\Command
 							$floorTempSensors,
 						),
 						[
-							MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
-							MetadataTypes\DataType::get(MetadataTypes\DataType::CHAR),
-							MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
-							MetadataTypes\DataType::get(MetadataTypes\DataType::SHORT),
-							MetadataTypes\DataType::get(MetadataTypes\DataType::USHORT),
-							MetadataTypes\DataType::get(MetadataTypes\DataType::INT),
-							MetadataTypes\DataType::get(MetadataTypes\DataType::UINT),
+							MetadataTypes\DataType::FLOAT,
+							MetadataTypes\DataType::CHAR,
+							MetadataTypes\DataType::UCHAR,
+							MetadataTypes\DataType::SHORT,
+							MetadataTypes\DataType::USHORT,
+							MetadataTypes\DataType::INT,
+							MetadataTypes\DataType::UINT,
 						],
 					);
 
@@ -604,7 +604,7 @@ class Install extends Console\Command\Command
 									Types\ChannelPropertyIdentifier::FLOOR_TEMPERATURE_SENSOR,
 								),
 								'channel' => $sensorsChannel,
-								'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
+								'dataType' => MetadataTypes\DataType::FLOAT,
 								'format' => null,
 								'unit' => null,
 								'invalid' => null,
@@ -647,10 +647,10 @@ class Install extends Console\Command\Command
 							$roomHumSensors,
 						),
 						[
-							MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
-							MetadataTypes\DataType::get(MetadataTypes\DataType::USHORT),
-							MetadataTypes\DataType::get(MetadataTypes\DataType::UINT),
-							MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
+							MetadataTypes\DataType::UCHAR,
+							MetadataTypes\DataType::USHORT,
+							MetadataTypes\DataType::UINT,
+							MetadataTypes\DataType::FLOAT,
 						],
 					);
 
@@ -667,7 +667,7 @@ class Install extends Console\Command\Command
 									Types\ChannelPropertyIdentifier::ROOM_HUMIDITY_SENSOR,
 								),
 								'channel' => $sensorsChannel,
-								'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UINT),
+								'dataType' => MetadataTypes\DataType::UINT,
 								'format' => null,
 								'unit' => null,
 								'invalid' => null,
@@ -698,7 +698,7 @@ class Install extends Console\Command\Command
 					'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 					'identifier' => Types\ChannelPropertyIdentifier::CURRENT_ROOM_TEMPERATURE,
 					'channel' => $stateChannel,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
+					'dataType' => MetadataTypes\DataType::FLOAT,
 					'format' => [Entities\Devices\Device::MINIMUM_TEMPERATURE, Entities\Devices\Device::MAXIMUM_TEMPERATURE],
 					'unit' => null,
 					'invalid' => null,
@@ -715,7 +715,7 @@ class Install extends Console\Command\Command
 					'entity' => DevicesEntities\Channels\Properties\Variable::class,
 					'identifier' => Types\ChannelPropertyIdentifier::LOW_TARGET_TEMPERATURE_TOLERANCE,
 					'channel' => $configurationChannel,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
+					'dataType' => MetadataTypes\DataType::FLOAT,
 					'format' => null,
 					'unit' => null,
 					'invalid' => null,
@@ -732,7 +732,7 @@ class Install extends Console\Command\Command
 					'entity' => DevicesEntities\Channels\Properties\Variable::class,
 					'identifier' => Types\ChannelPropertyIdentifier::HIGH_TARGET_TEMPERATURE_TOLERANCE,
 					'channel' => $configurationChannel,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
+					'dataType' => MetadataTypes\DataType::FLOAT,
 					'format' => null,
 					'unit' => null,
 					'invalid' => null,
@@ -750,7 +750,7 @@ class Install extends Console\Command\Command
 						'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 						'identifier' => Types\ChannelPropertyIdentifier::CURRENT_OPENINGS_STATE,
 						'channel' => $stateChannel,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
+						'dataType' => MetadataTypes\DataType::ENUM,
 						'format' => [Types\OpeningStatePayload::OPENED, Types\OpeningStatePayload::CLOSED],
 						'unit' => null,
 						'invalid' => null,
@@ -771,7 +771,7 @@ class Install extends Console\Command\Command
 						'entity' => DevicesEntities\Channels\Properties\Variable::class,
 						'identifier' => Types\ChannelPropertyIdentifier::MAXIMUM_FLOOR_TEMPERATURE,
 						'channel' => $configurationChannel,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
+						'dataType' => MetadataTypes\DataType::FLOAT,
 						'format' => [0, Entities\Devices\Device::MAXIMUM_TEMPERATURE],
 						'unit' => null,
 						'invalid' => null,
@@ -788,7 +788,7 @@ class Install extends Console\Command\Command
 						'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 						'identifier' => Types\ChannelPropertyIdentifier::CURRENT_FLOOR_TEMPERATURE,
 						'channel' => $stateChannel,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
+						'dataType' => MetadataTypes\DataType::FLOAT,
 						'format' => [0, Entities\Devices\Device::MAXIMUM_TEMPERATURE],
 						'unit' => null,
 						'invalid' => null,
@@ -805,7 +805,7 @@ class Install extends Console\Command\Command
 						'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 						'identifier' => Types\ChannelPropertyIdentifier::FLOOR_OVERHEATING,
 						'channel' => $stateChannel,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN),
+						'dataType' => MetadataTypes\DataType::BOOLEAN,
 						'format' => null,
 						'unit' => null,
 						'invalid' => null,
@@ -824,7 +824,7 @@ class Install extends Console\Command\Command
 						'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 						'identifier' => Types\ChannelPropertyIdentifier::CURRENT_ROOM_HUMIDITY,
 						'channel' => $stateChannel,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
+						'dataType' => MetadataTypes\DataType::UCHAR,
 						'format' => [0, 100],
 						'unit' => '%',
 						'invalid' => null,
@@ -844,7 +844,7 @@ class Install extends Console\Command\Command
 					'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 					'identifier' => Types\ChannelPropertyIdentifier::PRESET_MODE,
 					'channel' => $stateChannel,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
+					'dataType' => MetadataTypes\DataType::ENUM,
 					'format' => $presets,
 					'unit' => null,
 					'invalid' => null,
@@ -881,7 +881,7 @@ class Install extends Console\Command\Command
 							'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 							'identifier' => Types\ChannelPropertyIdentifier::TARGET_ROOM_TEMPERATURE,
 							'channel' => $presetChannel,
-							'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
+							'dataType' => MetadataTypes\DataType::FLOAT,
 							'format' => [Entities\Devices\Device::MINIMUM_TEMPERATURE, Entities\Devices\Device::MAXIMUM_TEMPERATURE],
 							'unit' => null,
 							'invalid' => null,
@@ -906,7 +906,7 @@ class Install extends Console\Command\Command
 							'entity' => DevicesEntities\Channels\Properties\Variable::class,
 							'identifier' => Types\ChannelPropertyIdentifier::HEATING_THRESHOLD_TEMPERATURE,
 							'channel' => $presetChannel,
-							'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
+							'dataType' => MetadataTypes\DataType::FLOAT,
 							'format' => [Entities\Devices\Device::MINIMUM_TEMPERATURE, Entities\Devices\Device::MAXIMUM_TEMPERATURE],
 							'unit' => null,
 							'invalid' => null,
@@ -929,7 +929,7 @@ class Install extends Console\Command\Command
 							'entity' => DevicesEntities\Channels\Properties\Variable::class,
 							'identifier' => Types\ChannelPropertyIdentifier::COOLING_THRESHOLD_TEMPERATURE,
 							'channel' => $presetChannel,
-							'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
+							'dataType' => MetadataTypes\DataType::FLOAT,
 							'format' => [Entities\Devices\Device::MINIMUM_TEMPERATURE, Entities\Devices\Device::MAXIMUM_TEMPERATURE],
 							'unit' => null,
 							'invalid' => null,
@@ -1194,12 +1194,12 @@ class Install extends Console\Command\Command
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
 					'identifier' => VirtualTypes\DevicePropertyIdentifier::MODEL,
 					'device' => $device,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => Entities\Devices\Device::TYPE,
 				]));
 			} else {
 				$this->devicesPropertiesManager->update($deviceModelProperty, Utils\ArrayHash::from([
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+					'dataType' => MetadataTypes\DataType::STRING,
 					'format' => null,
 					'unit' => null,
 					'invalid' => null,
@@ -1234,7 +1234,7 @@ class Install extends Console\Command\Command
 					'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 					'identifier' => Types\ChannelPropertyIdentifier::HVAC_MODE,
 					'channel' => $stateChannel,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
+					'dataType' => MetadataTypes\DataType::ENUM,
 					'format' => array_merge(
 						[Types\HvacMode::OFF],
 						$modes,
@@ -1255,7 +1255,7 @@ class Install extends Console\Command\Command
 					'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 					'identifier' => Types\ChannelPropertyIdentifier::HVAC_STATE,
 					'channel' => $stateChannel,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
+					'dataType' => MetadataTypes\DataType::ENUM,
 					'format' => array_merge(
 						[Types\HvacState::OFF],
 						array_filter(
@@ -1283,7 +1283,7 @@ class Install extends Console\Command\Command
 					'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 					'identifier' => Types\ChannelPropertyIdentifier::CURRENT_ROOM_TEMPERATURE,
 					'channel' => $stateChannel,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
+					'dataType' => MetadataTypes\DataType::FLOAT,
 					'format' => [Entities\Devices\Device::MINIMUM_TEMPERATURE, Entities\Devices\Device::MAXIMUM_TEMPERATURE],
 					'unit' => null,
 					'invalid' => null,
@@ -1302,7 +1302,7 @@ class Install extends Console\Command\Command
 						'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 						'identifier' => Types\ChannelPropertyIdentifier::CURRENT_OPENINGS_STATE,
 						'channel' => $stateChannel,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
+						'dataType' => MetadataTypes\DataType::ENUM,
 						'format' => [Types\OpeningStatePayload::OPENED, Types\OpeningStatePayload::CLOSED],
 						'unit' => null,
 						'invalid' => null,
@@ -1326,7 +1326,7 @@ class Install extends Console\Command\Command
 						'entity' => DevicesEntities\Channels\Properties\Variable::class,
 						'identifier' => Types\ChannelPropertyIdentifier::MAXIMUM_FLOOR_TEMPERATURE,
 						'channel' => $configurationChannel,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
+						'dataType' => MetadataTypes\DataType::FLOAT,
 						'format' => [0, Entities\Devices\Device::MAXIMUM_TEMPERATURE],
 						'unit' => null,
 						'invalid' => null,
@@ -1344,7 +1344,7 @@ class Install extends Console\Command\Command
 						'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 						'identifier' => Types\ChannelPropertyIdentifier::CURRENT_FLOOR_TEMPERATURE,
 						'channel' => $stateChannel,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
+						'dataType' => MetadataTypes\DataType::FLOAT,
 						'format' => [0, Entities\Devices\Device::MAXIMUM_TEMPERATURE],
 						'unit' => null,
 						'invalid' => null,
@@ -1362,7 +1362,7 @@ class Install extends Console\Command\Command
 						'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 						'identifier' => Types\ChannelPropertyIdentifier::FLOOR_OVERHEATING,
 						'channel' => $stateChannel,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN),
+						'dataType' => MetadataTypes\DataType::BOOLEAN,
 						'format' => null,
 						'unit' => null,
 						'invalid' => null,
@@ -1394,7 +1394,7 @@ class Install extends Console\Command\Command
 						'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 						'identifier' => Types\ChannelPropertyIdentifier::CURRENT_ROOM_HUMIDITY,
 						'channel' => $stateChannel,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
+						'dataType' => MetadataTypes\DataType::UCHAR,
 						'format' => [0, 100],
 						'unit' => '%',
 						'invalid' => null,
@@ -1417,7 +1417,7 @@ class Install extends Console\Command\Command
 					'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 					'identifier' => Types\ChannelPropertyIdentifier::PRESET_MODE,
 					'channel' => $stateChannel,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
+					'dataType' => MetadataTypes\DataType::ENUM,
 					'format' => $presets,
 					'unit' => null,
 					'invalid' => null,
@@ -1460,7 +1460,7 @@ class Install extends Console\Command\Command
 									'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 									'identifier' => Types\ChannelPropertyIdentifier::TARGET_ROOM_TEMPERATURE,
 									'channel' => $presetChannel,
-									'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
+									'dataType' => MetadataTypes\DataType::FLOAT,
 									'format' => [Entities\Devices\Device::MINIMUM_TEMPERATURE, Entities\Devices\Device::MAXIMUM_TEMPERATURE],
 									'unit' => null,
 									'invalid' => null,
@@ -1485,7 +1485,7 @@ class Install extends Console\Command\Command
 									'entity' => DevicesEntities\Channels\Properties\Variable::class,
 									'identifier' => Types\ChannelPropertyIdentifier::HEATING_THRESHOLD_TEMPERATURE,
 									'channel' => $presetChannel,
-									'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
+									'dataType' => MetadataTypes\DataType::FLOAT,
 									'format' => [Entities\Devices\Device::MINIMUM_TEMPERATURE, Entities\Devices\Device::MAXIMUM_TEMPERATURE],
 									'unit' => null,
 									'invalid' => null,
@@ -1508,7 +1508,7 @@ class Install extends Console\Command\Command
 									'entity' => DevicesEntities\Channels\Properties\Variable::class,
 									'identifier' => Types\ChannelPropertyIdentifier::COOLING_THRESHOLD_TEMPERATURE,
 									'channel' => $presetChannel,
-									'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
+									'dataType' => MetadataTypes\DataType::FLOAT,
 									'format' => [Entities\Devices\Device::MINIMUM_TEMPERATURE, Entities\Devices\Device::MAXIMUM_TEMPERATURE],
 									'unit' => null,
 									'invalid' => null,
@@ -1788,8 +1788,8 @@ class Install extends Console\Command\Command
 				),
 			),
 			[
-				MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::SWITCH),
+				MetadataTypes\DataType::BOOLEAN,
+				MetadataTypes\DataType::SWITCH,
 			],
 		);
 
@@ -1810,7 +1810,7 @@ class Install extends Console\Command\Command
 				),
 				'name' => $name,
 				'channel' => $actorsChannel,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN),
+				'dataType' => MetadataTypes\DataType::BOOLEAN,
 				'format' => null,
 				'unit' => null,
 				'invalid' => null,
@@ -1888,8 +1888,8 @@ class Install extends Console\Command\Command
 			$io,
 			[],
 			[
-				MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::SWITCH),
+				MetadataTypes\DataType::BOOLEAN,
+				MetadataTypes\DataType::SWITCH,
 			],
 			$parent,
 		);
@@ -2085,42 +2085,42 @@ class Install extends Console\Command\Command
 
 		if ($sensorType->equalsValue(Types\ChannelPropertyIdentifier::ROOM_TEMPERATURE_SENSOR)) {
 			$dataTypes = [
-				MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::CHAR),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::SHORT),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::USHORT),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::INT),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::UINT),
+				MetadataTypes\DataType::FLOAT,
+				MetadataTypes\DataType::CHAR,
+				MetadataTypes\DataType::UCHAR,
+				MetadataTypes\DataType::SHORT,
+				MetadataTypes\DataType::USHORT,
+				MetadataTypes\DataType::INT,
+				MetadataTypes\DataType::UINT,
 			];
-			$dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT);
+			$dataType = MetadataTypes\DataType::FLOAT;
 
 		} elseif ($sensorType->equalsValue(Types\ChannelPropertyIdentifier::FLOOR_TEMPERATURE_SENSOR)) {
 			$dataTypes = [
-				MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::CHAR),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::SHORT),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::USHORT),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::INT),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::UINT),
+				MetadataTypes\DataType::FLOAT,
+				MetadataTypes\DataType::CHAR,
+				MetadataTypes\DataType::UCHAR,
+				MetadataTypes\DataType::SHORT,
+				MetadataTypes\DataType::USHORT,
+				MetadataTypes\DataType::INT,
+				MetadataTypes\DataType::UINT,
 			];
-			$dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT);
+			$dataType = MetadataTypes\DataType::FLOAT;
 
 		} elseif ($sensorType->equalsValue(Types\ChannelPropertyIdentifier::OPENING_SENSOR)) {
 			$dataTypes = [
-				MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN),
+				MetadataTypes\DataType::BOOLEAN,
 			];
-			$dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN);
+			$dataType = MetadataTypes\DataType::BOOLEAN;
 
 		} elseif ($sensorType->equalsValue(Types\ChannelPropertyIdentifier::ROOM_HUMIDITY_SENSOR)) {
 			$dataTypes = [
-				MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::USHORT),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::UINT),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
+				MetadataTypes\DataType::UCHAR,
+				MetadataTypes\DataType::USHORT,
+				MetadataTypes\DataType::UINT,
+				MetadataTypes\DataType::FLOAT,
 			];
-			$dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::UINT);
+			$dataType = MetadataTypes\DataType::UINT;
 
 		} else {
 			// Log caught exception
@@ -2255,13 +2255,13 @@ class Install extends Console\Command\Command
 			)
 		) {
 			$dataTypes = [
-				MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::CHAR),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::SHORT),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::USHORT),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::INT),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::UINT),
+				MetadataTypes\DataType::FLOAT,
+				MetadataTypes\DataType::CHAR,
+				MetadataTypes\DataType::UCHAR,
+				MetadataTypes\DataType::SHORT,
+				MetadataTypes\DataType::USHORT,
+				MetadataTypes\DataType::INT,
+				MetadataTypes\DataType::UINT,
 			];
 
 		} elseif (
@@ -2271,13 +2271,13 @@ class Install extends Console\Command\Command
 			)
 		) {
 			$dataTypes = [
-				MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::CHAR),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::SHORT),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::USHORT),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::INT),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::UINT),
+				MetadataTypes\DataType::FLOAT,
+				MetadataTypes\DataType::CHAR,
+				MetadataTypes\DataType::UCHAR,
+				MetadataTypes\DataType::SHORT,
+				MetadataTypes\DataType::USHORT,
+				MetadataTypes\DataType::INT,
+				MetadataTypes\DataType::UINT,
 			];
 
 		} elseif (
@@ -2287,7 +2287,7 @@ class Install extends Console\Command\Command
 			)
 		) {
 			$dataTypes = [
-				MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN),
+				MetadataTypes\DataType::BOOLEAN,
 			];
 
 		} elseif (
@@ -2297,10 +2297,10 @@ class Install extends Console\Command\Command
 			)
 		) {
 			$dataTypes = [
-				MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::USHORT),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::UINT),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
+				MetadataTypes\DataType::UCHAR,
+				MetadataTypes\DataType::USHORT,
+				MetadataTypes\DataType::UINT,
+				MetadataTypes\DataType::FLOAT,
 			];
 
 		} else {
@@ -2634,7 +2634,7 @@ class Install extends Console\Command\Command
 					'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 					'identifier' => Types\ChannelPropertyIdentifier::TARGET_ROOM_TEMPERATURE,
 					'channel' => $channel,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
+					'dataType' => MetadataTypes\DataType::FLOAT,
 					'format' => [Entities\Devices\Device::MINIMUM_TEMPERATURE, Entities\Devices\Device::MAXIMUM_TEMPERATURE],
 					'unit' => null,
 					'invalid' => null,
@@ -2653,7 +2653,7 @@ class Install extends Console\Command\Command
 						'entity' => DevicesEntities\Channels\Properties\Variable::class,
 						'identifier' => Types\ChannelPropertyIdentifier::HEATING_THRESHOLD_TEMPERATURE,
 						'channel' => $channel,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
+						'dataType' => MetadataTypes\DataType::FLOAT,
 						'format' => [Entities\Devices\Device::MINIMUM_TEMPERATURE, Entities\Devices\Device::MAXIMUM_TEMPERATURE],
 						'unit' => null,
 						'invalid' => null,
@@ -2671,7 +2671,7 @@ class Install extends Console\Command\Command
 						'entity' => DevicesEntities\Channels\Properties\Variable::class,
 						'identifier' => Types\ChannelPropertyIdentifier::COOLING_THRESHOLD_TEMPERATURE,
 						'channel' => $channel,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT),
+						'dataType' => MetadataTypes\DataType::FLOAT,
 						'format' => [Entities\Devices\Device::MINIMUM_TEMPERATURE, Entities\Devices\Device::MAXIMUM_TEMPERATURE],
 						'unit' => null,
 						'invalid' => null,

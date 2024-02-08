@@ -191,7 +191,7 @@ final class ChannelAttribute implements Queue\Consumer
 					'identifier' => $propertyName,
 					'settable' => false,
 					'queryable' => false,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UNKNOWN),
+					'dataType' => MetadataTypes\DataType::UNKNOWN,
 				]));
 			}
 		}

@@ -71,7 +71,7 @@ abstract class Property extends JsonApiSchemas\JsonApi
 			'category' => $resource->getCategory()->value,
 			'identifier' => $resource->getIdentifier(),
 			'name' => $resource->getName(),
-			'data_type' => strval($resource->getDataType()->getValue()),
+			'data_type' => $resource->getDataType()->value,
 			'unit' => $resource->getUnit(),
 			'format' => $resource->getFormat()?->getValue(),
 			'invalid' => $resource->getInvalid(),

@@ -88,7 +88,7 @@ final class Properties implements Common\EventSubscriber
 
 		if ($stateProperty !== null) {
 			$this->propertiesManager->update($stateProperty, Utils\ArrayHash::from([
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
+				'dataType' => MetadataTypes\DataType::ENUM,
 				'unit' => null,
 				'format' => [
 					MetadataTypes\ConnectionState::CONNECTED,
@@ -105,7 +105,7 @@ final class Properties implements Common\EventSubscriber
 				'device' => $entity,
 				'entity' => DevicesEntities\Devices\Properties\Dynamic::class,
 				'identifier' => Types\DevicePropertyIdentifier::STATE,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
+				'dataType' => MetadataTypes\DataType::ENUM,
 				'unit' => null,
 				'format' => [
 					MetadataTypes\ConnectionState::CONNECTED,
@@ -139,7 +139,7 @@ final class Properties implements Common\EventSubscriber
 				'device' => $entity,
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
 				'identifier' => Types\DevicePropertyIdentifier::MANUFACTURER,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+				'dataType' => MetadataTypes\DataType::STRING,
 				'unit' => null,
 				'format' => null,
 				'value' => Virtual\Constants::MANUFACTURER,
@@ -166,7 +166,7 @@ final class Properties implements Common\EventSubscriber
 				'device' => $entity,
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
 				'identifier' => Types\DevicePropertyIdentifier::MAC_ADDRESS,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+				'dataType' => MetadataTypes\DataType::STRING,
 				'unit' => null,
 				'format' => null,
 				'value' => Helpers\Drivers::generateMacAddress(),

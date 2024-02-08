@@ -91,7 +91,7 @@ final class DeviceConnection
 						'device' => $device,
 						'entity' => Entities\Devices\Properties\Dynamic::class,
 						'identifier' => MetadataTypes\ConnectorPropertyIdentifier::STATE,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
+						'dataType' => MetadataTypes\DataType::ENUM,
 						'unit' => null,
 						'format' => [
 							MetadataTypes\ConnectionState::CONNECTED,

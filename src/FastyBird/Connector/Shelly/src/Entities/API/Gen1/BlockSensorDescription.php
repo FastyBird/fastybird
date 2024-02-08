@@ -42,7 +42,10 @@ final class BlockSensorDescription implements Entities\API\Entity
 		private readonly Types\SensorType $type,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $description,
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\DataType::class)]
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BackedEnumValue(class: MetadataTypes\DataType::class),
+			new ObjectMapper\Rules\InstanceOfValue(type: MetadataTypes\DataType::class),
+		])]
 		#[ObjectMapper\Modifiers\FieldName('data_type')]
 		private readonly MetadataTypes\DataType $dataType,
 		#[ObjectMapper\Rules\AnyOf([
@@ -146,7 +149,7 @@ final class BlockSensorDescription implements Entities\API\Entity
 			'identifier' => $this->getIdentifier(),
 			'type' => $this->getType()->getValue(),
 			'description' => $this->getDescription(),
-			'data_type' => $this->getDataType()->getValue(),
+			'data_type' => $this->getDataType()->value,
 			'unit' => $this->getUnit(),
 			'format' => $this->getFormat(),
 			'invalid' => $this->getInvalid(),

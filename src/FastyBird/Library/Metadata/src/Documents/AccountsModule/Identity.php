@@ -37,7 +37,10 @@ final class Identity implements Documents\Document
 		private readonly Uuid\UuidInterface $id,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $account,
-		#[ObjectMapper\Rules\BackedEnumValue(class: Types\IdentityState::class)]
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BackedEnumValue(class: Types\IdentityState::class),
+			new ObjectMapper\Rules\InstanceOfValue(type: Types\IdentityState::class),
+		])]
 		private readonly Types\IdentityState $state,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $uid,

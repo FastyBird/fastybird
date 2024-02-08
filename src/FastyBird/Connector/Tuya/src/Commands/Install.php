@@ -214,7 +214,7 @@ class Install extends Console\Command\Command
 			$this->propertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 				'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
+				'dataType' => MetadataTypes\DataType::ENUM,
 				'value' => $mode->getValue(),
 				'format' => [Types\ClientMode::LOCAL, Types\ClientMode::CLOUD],
 				'connector' => $connector,
@@ -223,7 +223,7 @@ class Install extends Console\Command\Command
 			$this->propertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 				'identifier' => Types\ConnectorPropertyIdentifier::ACCESS_ID,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+				'dataType' => MetadataTypes\DataType::STRING,
 				'value' => $accessId,
 				'connector' => $connector,
 			]));
@@ -231,7 +231,7 @@ class Install extends Console\Command\Command
 			$this->propertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 				'identifier' => Types\ConnectorPropertyIdentifier::ACCESS_SECRET,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+				'dataType' => MetadataTypes\DataType::STRING,
 				'value' => $accessSecret,
 				'connector' => $connector,
 			]));
@@ -239,7 +239,7 @@ class Install extends Console\Command\Command
 			$this->propertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 				'identifier' => Types\ConnectorPropertyIdentifier::OPENAPI_ENDPOINT,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
+				'dataType' => MetadataTypes\DataType::ENUM,
 				'value' => $dataCentre->getValue(),
 				'format' => [
 					Types\OpenApiEndpoint::EUROPE,
@@ -256,7 +256,7 @@ class Install extends Console\Command\Command
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::UID,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => $uid,
 					'connector' => $connector,
 				]));
@@ -471,7 +471,7 @@ class Install extends Console\Command\Command
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
+					'dataType' => MetadataTypes\DataType::ENUM,
 					'value' => $mode->getValue(),
 					'format' => [Types\ClientMode::LOCAL, Types\ClientMode::CLOUD],
 					'connector' => $connector,
@@ -490,7 +490,7 @@ class Install extends Console\Command\Command
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::ACCESS_ID,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => $accessId,
 					'connector' => $connector,
 				]));
@@ -508,7 +508,7 @@ class Install extends Console\Command\Command
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::ACCESS_SECRET,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => $accessSecret,
 					'connector' => $connector,
 				]));
@@ -535,7 +535,7 @@ class Install extends Console\Command\Command
 					$this->propertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 						'identifier' => Types\ConnectorPropertyIdentifier::UID,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+						'dataType' => MetadataTypes\DataType::STRING,
 						'value' => $uid,
 						'connector' => $connector,
 					]));

@@ -33,6 +33,8 @@ use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Nette\Utils;
+use TypeError;
+use ValueError;
 use function array_merge;
 use function assert;
 use function implode;
@@ -75,6 +77,8 @@ final class StoreBridgeDevices implements Queue\Consumer
 	 * @throws DBAL\Exception
 	 * @throws Exception
 	 * @throws Exceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function consume(Entities\Messages\Entity $entity): bool
 	{
@@ -214,49 +218,49 @@ final class StoreBridgeDevices implements Queue\Consumer
 			$this->setDeviceProperty(
 				$device->getId(),
 				$deviceDescription->getFriendlyName(),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+				MetadataTypes\DataType::STRING,
 				Types\DevicePropertyIdentifier::FRIENDLY_NAME,
 				DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::FRIENDLY_NAME),
 			);
 			$this->setDeviceProperty(
 				$device->getId(),
 				$deviceDescription->getIeeeAddress(),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+				MetadataTypes\DataType::STRING,
 				Types\DevicePropertyIdentifier::IEEE_ADDRESS,
 				DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::IEEE_ADDRESS),
 			);
 			$this->setDeviceProperty(
 				$device->getId(),
 				$deviceDescription->isDisabled(),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN),
+				MetadataTypes\DataType::BOOLEAN,
 				Types\DevicePropertyIdentifier::DISABLED,
 				DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::DISABLED),
 			);
 			$this->setDeviceProperty(
 				$device->getId(),
 				$deviceDescription->isSupported(),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN),
+				MetadataTypes\DataType::BOOLEAN,
 				Types\DevicePropertyIdentifier::SUPPORTED,
 				DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::SUPPORTED),
 			);
 			$this->setDeviceProperty(
 				$device->getId(),
 				$deviceDescription->getType()->getValue(),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+				MetadataTypes\DataType::STRING,
 				Types\DevicePropertyIdentifier::TYPE,
 				DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::TYPE),
 			);
 			$this->setDeviceProperty(
 				$device->getId(),
 				$deviceDescription->getDefinition()?->getModel(),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+				MetadataTypes\DataType::STRING,
 				Types\DevicePropertyIdentifier::MODEL,
 				DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MODEL),
 			);
 			$this->setDeviceProperty(
 				$device->getId(),
 				$deviceDescription->getDefinition()?->getVendor(),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+				MetadataTypes\DataType::STRING,
 				Types\DevicePropertyIdentifier::MANUFACTURER,
 				DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MANUFACTURER),
 			);
@@ -294,6 +298,8 @@ final class StoreBridgeDevices implements Queue\Consumer
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function processExposes(
 		Entities\Devices\SubDevice $device,

@@ -210,7 +210,7 @@ final class DeviceAttribute implements Queue\Consumer
 							'name' => $propertyName,
 							'settable' => false,
 							'queryable' => false,
-							'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+							'dataType' => MetadataTypes\DataType::STRING,
 						]));
 
 					} elseif (in_array($propertyName, [
@@ -227,7 +227,7 @@ final class DeviceAttribute implements Queue\Consumer
 							'name' => $propertyName,
 							'settable' => false,
 							'queryable' => false,
-							'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UINT),
+							'dataType' => MetadataTypes\DataType::UINT,
 						]));
 
 					} else {
@@ -237,7 +237,7 @@ final class DeviceAttribute implements Queue\Consumer
 							'identifier' => $propertyName,
 							'settable' => false,
 							'queryable' => false,
-							'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UNKNOWN),
+							'dataType' => MetadataTypes\DataType::UNKNOWN,
 						]));
 					}
 				}
@@ -282,7 +282,7 @@ final class DeviceAttribute implements Queue\Consumer
 							'entity' => DevicesEntities\Devices\Properties\Variable::class,
 							'device' => $device,
 							'identifier' => $propertyName,
-							'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+							'dataType' => MetadataTypes\DataType::STRING,
 						]));
 					}
 				}
@@ -301,7 +301,7 @@ final class DeviceAttribute implements Queue\Consumer
 							'entity' => DevicesEntities\Devices\Properties\Variable::class,
 							'device' => $device,
 							'identifier' => $propertyName,
-							'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+							'dataType' => MetadataTypes\DataType::STRING,
 						]));
 					}
 				}

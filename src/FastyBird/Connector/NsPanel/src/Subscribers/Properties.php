@@ -32,6 +32,8 @@ use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use IPub\DoctrineCrud;
 use Nette;
 use Nette\Utils;
+use TypeError;
+use ValueError;
 use function assert;
 use function floatval;
 use function is_string;
@@ -78,6 +80,8 @@ final class Properties implements Common\EventSubscriber
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function postPersist(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
@@ -123,7 +127,7 @@ final class Properties implements Common\EventSubscriber
 
 		if ($stateProperty !== null) {
 			$this->devicesPropertiesManager->update($stateProperty, Utils\ArrayHash::from([
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
+				'dataType' => MetadataTypes\DataType::ENUM,
 				'unit' => null,
 				'format' => [
 					MetadataTypes\ConnectionState::CONNECTED,
@@ -140,7 +144,7 @@ final class Properties implements Common\EventSubscriber
 				'entity' => DevicesEntities\Devices\Properties\Dynamic::class,
 				'identifier' => Types\DevicePropertyIdentifier::STATE,
 				'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::STATE),
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
+				'dataType' => MetadataTypes\DataType::ENUM,
 				'unit' => null,
 				'format' => [
 					MetadataTypes\ConnectionState::CONNECTED,
@@ -162,6 +166,8 @@ final class Properties implements Common\EventSubscriber
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function processRequiredCapability(Entities\Devices\ThirdPartyDevice $device): void
 	{
@@ -192,6 +198,8 @@ final class Properties implements Common\EventSubscriber
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function processSubDeviceChannelProperties(Entities\NsPanelChannel $channel): void
 	{
@@ -235,11 +243,12 @@ final class Properties implements Common\EventSubscriber
 				!$protocolMetadata instanceof Utils\ArrayHash
 				|| !$protocolMetadata->offsetExists('data_type')
 				|| !is_string($protocolMetadata->offsetGet('data_type'))
+				|| MetadataTypes\DataType::tryFrom($protocolMetadata->offsetGet('data_type')) === null
 			) {
 				throw new Exceptions\InvalidState('Protocol definition is missing required attributes');
 			}
 
-			$dataType = MetadataTypes\DataType::get($protocolMetadata->offsetGet('data_type'));
+			$dataType = MetadataTypes\DataType::from($protocolMetadata->offsetGet('data_type'));
 
 			$permission = Types\Permission::get($capabilityMetadata->offsetGet('permission'));
 
@@ -261,9 +270,9 @@ final class Properties implements Common\EventSubscriber
 
 			if (
 				(
-					$dataType->equalsValue(MetadataTypes\DataType::ENUM)
-					|| $dataType->equalsValue(MetadataTypes\DataType::SWITCH)
-					|| $dataType->equalsValue(MetadataTypes\DataType::BUTTON)
+					$dataType === MetadataTypes\DataType::ENUM
+					|| $dataType === MetadataTypes\DataType::SWITCH
+					|| $dataType === MetadataTypes\DataType::BUTTON
 				)
 			) {
 				if (

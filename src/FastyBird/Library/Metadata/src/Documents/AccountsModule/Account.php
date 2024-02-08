@@ -49,7 +49,10 @@ final class Account implements Documents\Document
 		private readonly string $lastName,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $language,
-		#[ObjectMapper\Rules\BackedEnumValue(class: Types\AccountState::class)]
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BackedEnumValue(class: Types\AccountState::class),
+			new ObjectMapper\Rules\InstanceOfValue(type: Types\AccountState::class),
+		])]
 		private readonly Types\AccountState $state,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),

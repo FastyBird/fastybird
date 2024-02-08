@@ -20,6 +20,8 @@ use FastyBird\Connector\FbMqtt\Exceptions;
 use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
+use TypeError;
+use ValueError;
 
 /**
  * Device or channel property
@@ -92,6 +94,8 @@ abstract class Property implements Entity
 	 * {@inheritDoc}
 	 *
 	 * @throws Exceptions\ParseMessage
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function toArray(): array
 	{

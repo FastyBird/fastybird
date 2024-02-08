@@ -247,8 +247,8 @@ class Mapped extends Property
 			throw new Exceptions\InvalidArgument(
 				sprintf(
 					'Mapped property data type: %s is not compatible with parent data type: %s',
-					$dataType->getValue(),
-					$this->getParent()->getDataType()->getValue(),
+					$dataType->value,
+					$this->getParent()->getDataType()->value,
 				),
 			);
 		}

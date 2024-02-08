@@ -18,6 +18,8 @@ namespace FastyBird\Library\Metadata\Utilities;
 use FastyBird\Library\Metadata\Exceptions;
 use FastyBird\Library\Metadata\Formats;
 use FastyBird\Library\Metadata\Types;
+use TypeError;
+use ValueError;
 use function floatval;
 use function intval;
 
@@ -32,17 +34,10 @@ use function intval;
 final class DataType
 {
 
-	private const RANGES = [
-		Types\DataType::CHAR => [-128, 127],
-		Types\DataType::UCHAR => [0, 255],
-		Types\DataType::SHORT => [-32_768, 32_767],
-		Types\DataType::USHORT => [0, 65_535],
-		Types\DataType::INT => [-2_147_483_648, 2_147_483_647],
-		Types\DataType::UINT => [0, 4_294_967_295],
-	];
-
 	/**
 	 * @throws Exceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public static function inferNumberDataType(
 		Formats\NumberRange $format,
@@ -55,14 +50,14 @@ final class DataType
 			|| $format->getMaxDataType() !== null
 		) {
 			return match ($format->getMinDataType()?->getValue() ?? $format->getMaxDataType()?->getValue()) {
-				Types\DataTypeShort::CHAR => Types\DataType::get(Types\DataType::CHAR),
-				Types\DataTypeShort::UCHAR => Types\DataType::get(Types\DataType::UCHAR),
-				Types\DataTypeShort::SHORT => Types\DataType::get(Types\DataType::SHORT),
-				Types\DataTypeShort::USHORT => Types\DataType::get(Types\DataType::USHORT),
-				Types\DataTypeShort::INT => Types\DataType::get(Types\DataType::INT),
-				Types\DataTypeShort::UINT => Types\DataType::get(Types\DataType::UINT),
-				Types\DataTypeShort::FLOAT => Types\DataType::get(Types\DataType::FLOAT),
-				default => Types\DataType::get(Types\DataType::UNKNOWN),
+				Types\DataTypeShort::CHAR => Types\DataType::CHAR,
+				Types\DataTypeShort::UCHAR => Types\DataType::UCHAR,
+				Types\DataTypeShort::SHORT => Types\DataType::SHORT,
+				Types\DataTypeShort::USHORT => Types\DataType::USHORT,
+				Types\DataTypeShort::INT => Types\DataType::INT,
+				Types\DataTypeShort::UINT => Types\DataType::UINT,
+				Types\DataTypeShort::FLOAT => Types\DataType::FLOAT,
+				default => Types\DataType::UNKNOWN,
 			};
 		}
 
@@ -71,7 +66,7 @@ final class DataType
 			// If step is defined and is float number, data type have to be float
 			&& floatval(intval($step)) !== $step
 		) {
-			Types\DataType::get(Types\DataType::FLOAT);
+			return Types\DataType::FLOAT;
 		}
 
 		if (
@@ -85,11 +80,20 @@ final class DataType
 				&& floatval(intval($format->getMax())) !== $format->getMax()
 			)
 		) {
-			Types\DataType::get(Types\DataType::FLOAT);
+			return Types\DataType::FLOAT;
 		}
 
 		if ($format->getMin() !== null || $format->getMax() !== null) {
-			foreach (self::RANGES as $dataType => $ranges) {
+			$dataTypeRanges = [
+				Types\DataType::CHAR->value => [-128, 127],
+				Types\DataType::UCHAR->value => [0, 255],
+				Types\DataType::SHORT->value => [-32_768, 32_767],
+				Types\DataType::USHORT->value => [0, 65_535],
+				Types\DataType::INT->value => [-2_147_483_648, 2_147_483_647],
+				Types\DataType::UINT->value => [0, 4_294_967_295],
+			];
+
+			foreach ($dataTypeRanges as $dataType => $ranges) {
 				if (
 					(
 						$format->getMin() === null
@@ -105,14 +109,14 @@ final class DataType
 						)
 					)
 				) {
-					return Types\DataType::get($dataType);
+					return Types\DataType::from($dataType);
 				}
 			}
 
-			Types\DataType::get(Types\DataType::FLOAT);
+			return Types\DataType::FLOAT;
 		}
 
-		return $fallback ?? Types\DataType::get(Types\DataType::UNKNOWN);
+		return $fallback ?? Types\DataType::UNKNOWN;
 	}
 
 }

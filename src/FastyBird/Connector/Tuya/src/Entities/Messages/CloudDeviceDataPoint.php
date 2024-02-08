@@ -15,7 +15,6 @@
 
 namespace FastyBird\Connector\Tuya\Entities\Messages;
 
-use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Orisai\ObjectMapper;
 
@@ -40,7 +39,10 @@ final class CloudDeviceDataPoint implements Entity
 		private readonly string $code,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $name,
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\DataType::class)]
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BackedEnumValue(class: MetadataTypes\DataType::class),
+			new ObjectMapper\Rules\InstanceOfValue(type: MetadataTypes\DataType::class),
+		])]
 		#[ObjectMapper\Modifiers\FieldName('data_type')]
 		private readonly MetadataTypes\DataType $dataType,
 		#[ObjectMapper\Rules\AnyOf([
@@ -154,13 +156,13 @@ final class CloudDeviceDataPoint implements Entity
 	{
 		if (
 			(
-				$this->getDataType()->equalsValue(MetadataTypes\DataType::CHAR)
-				|| $this->getDataType()->equalsValue(MetadataTypes\DataType::UCHAR)
-				|| $this->getDataType()->equalsValue(MetadataTypes\DataType::SHORT)
-				|| $this->getDataType()->equalsValue(MetadataTypes\DataType::USHORT)
-				|| $this->getDataType()->equalsValue(MetadataTypes\DataType::INT)
-				|| $this->getDataType()->equalsValue(MetadataTypes\DataType::UINT)
-				|| $this->getDataType()->equalsValue(MetadataTypes\DataType::FLOAT)
+				$this->getDataType() === MetadataTypes\DataType::CHAR
+				|| $this->getDataType() === MetadataTypes\DataType::UCHAR
+				|| $this->getDataType() === MetadataTypes\DataType::SHORT
+				|| $this->getDataType() === MetadataTypes\DataType::USHORT
+				|| $this->getDataType() === MetadataTypes\DataType::INT
+				|| $this->getDataType() === MetadataTypes\DataType::UINT
+				|| $this->getDataType() === MetadataTypes\DataType::FLOAT
 			) && (
 				$this->getMin() !== null
 				|| $this->getMax() !== null
@@ -177,7 +179,7 @@ final class CloudDeviceDataPoint implements Entity
 				],
 			];
 		} elseif (
-			$this->getDataType()->equalsValue(MetadataTypes\DataType::ENUM)
+			$this->getDataType() === MetadataTypes\DataType::ENUM
 			&& $this->getRange() !== []
 		) {
 			return $this->getRange();
@@ -196,7 +198,7 @@ final class CloudDeviceDataPoint implements Entity
 
 			'code' => $this->getCode(),
 			'name' => $this->getName(),
-			'data_type' => $this->getDataType()->getValue(),
+			'data_type' => $this->getDataType()->value,
 			'unit' => $this->getUnit(),
 			'range' => $this->getRange(),
 			'min' => $this->getMin(),

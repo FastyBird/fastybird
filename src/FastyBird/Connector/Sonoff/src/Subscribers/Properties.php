@@ -87,7 +87,7 @@ final class Properties implements Common\EventSubscriber
 
 		if ($stateProperty !== null) {
 			$this->propertiesManager->update($stateProperty, Utils\ArrayHash::from([
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
+				'dataType' => MetadataTypes\DataType::ENUM,
 				'unit' => null,
 				'format' => [
 					MetadataTypes\ConnectionState::CONNECTED,
@@ -104,7 +104,7 @@ final class Properties implements Common\EventSubscriber
 				'entity' => DevicesEntities\Devices\Properties\Dynamic::class,
 				'identifier' => Types\DevicePropertyIdentifier::STATE,
 				'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::STATE),
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
+				'dataType' => MetadataTypes\DataType::ENUM,
 				'unit' => null,
 				'format' => [
 					MetadataTypes\ConnectionState::CONNECTED,

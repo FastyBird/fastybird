@@ -1958,7 +1958,7 @@ final class PairingController extends BaseController
 							Utils\ArrayHash::from([
 								'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 								'identifier' => $type->getValue(),
-								'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+								'dataType' => MetadataTypes\DataType::STRING,
 								'value' => $value,
 								'connector' => $connector,
 							]),

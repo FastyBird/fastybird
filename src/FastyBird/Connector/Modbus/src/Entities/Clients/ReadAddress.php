@@ -59,9 +59,9 @@ abstract class ReadAddress implements Entities\API\Entity
 	public function getSize(): int
 	{
 		if (
-			$this->getDataType()->equalsValue(MetadataTypes\DataType::INT)
-			|| $this->getDataType()->equalsValue(MetadataTypes\DataType::UINT)
-			|| $this->getDataType()->equalsValue(MetadataTypes\DataType::FLOAT)
+			$this->getDataType() === MetadataTypes\DataType::INT
+			|| $this->getDataType() === MetadataTypes\DataType::UINT
+			|| $this->getDataType() === MetadataTypes\DataType::FLOAT
 		) {
 			return 2;
 		}
@@ -74,7 +74,7 @@ abstract class ReadAddress implements Entities\API\Entity
 		return [
 			'address' => $this->getAddress(),
 			'channel' => $this->getChannel()->getIdentifier(),
-			'data_type' => $this->getDataType()->getValue(),
+			'data_type' => $this->getDataType()->value,
 		];
 	}
 

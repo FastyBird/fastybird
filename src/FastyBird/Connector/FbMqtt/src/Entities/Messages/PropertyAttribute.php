@@ -22,6 +22,8 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette;
 use Nette\Utils;
 use Orisai\ObjectMapper;
+use TypeError;
+use ValueError;
 use function array_filter;
 use function array_map;
 use function array_unique;
@@ -88,6 +90,8 @@ final class PropertyAttribute implements Entity
 	 * @return string|array<string>|array<float>|array<null>|bool|MetadataTypes\DataType|null
 	 *
 	 * @throws Exceptions\ParseMessage
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getValue(): string|array|bool|MetadataTypes\DataType|null
 	{
@@ -111,6 +115,8 @@ final class PropertyAttribute implements Entity
 	 * {@inheritDoc}
 	 *
 	 * @throws Exceptions\ParseMessage
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function toArray(): array
 	{
@@ -124,6 +130,8 @@ final class PropertyAttribute implements Entity
 	 * @return string|array<string>|array<float>|array<null>|MetadataTypes\DataType|null
 	 *
 	 * @throws Exceptions\ParseMessage
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function parseValue(): MetadataTypes\DataType|string|array|null
 	{
@@ -137,11 +145,11 @@ final class PropertyAttribute implements Entity
 		} elseif ($this->getAttribute() === self::NAME) {
 			return Helpers\Payload::cleanName($this->value);
 		} elseif ($this->getAttribute() === self::DATA_TYPE) {
-			if (!MetadataTypes\DataType::isValidValue($this->value)) {
+			if (MetadataTypes\DataType::tryFrom($this->value) === null) {
 				throw new Exceptions\ParseMessage('Provided payload is not valid');
 			}
 
-			return MetadataTypes\DataType::get($this->value);
+			return MetadataTypes\DataType::from($this->value);
 		} elseif ($this->getAttribute() === self::FORMAT) {
 			if (Utils\Strings::contains($this->value, ':')) {
 				[$start, $end] = explode(':', $this->value) + [null, null];

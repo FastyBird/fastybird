@@ -210,7 +210,7 @@ class Install extends Console\Command\Command
 			$this->propertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 				'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
+				'dataType' => MetadataTypes\DataType::ENUM,
 				'value' => $mode->getValue(),
 				'format' => [Types\ClientMode::LAN, Types\ClientMode::CLOUD, Types\ClientMode::AUTO],
 				'connector' => $connector,
@@ -219,7 +219,7 @@ class Install extends Console\Command\Command
 			$this->propertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 				'identifier' => Types\ConnectorPropertyIdentifier::USERNAME,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+				'dataType' => MetadataTypes\DataType::STRING,
 				'value' => $username,
 				'connector' => $connector,
 			]));
@@ -227,7 +227,7 @@ class Install extends Console\Command\Command
 			$this->propertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 				'identifier' => Types\ConnectorPropertyIdentifier::PASSWORD,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+				'dataType' => MetadataTypes\DataType::STRING,
 				'value' => $password,
 				'connector' => $connector,
 			]));
@@ -235,7 +235,7 @@ class Install extends Console\Command\Command
 			$this->propertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 				'identifier' => Types\ConnectorPropertyIdentifier::REGION,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
+				'dataType' => MetadataTypes\DataType::ENUM,
 				'value' => $dataCentre->getValue(),
 				'format' => [
 					Types\CloudApiEndpoint::CHINA,
@@ -420,7 +420,7 @@ class Install extends Console\Command\Command
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
+					'dataType' => MetadataTypes\DataType::ENUM,
 					'value' => $mode->getValue(),
 					'format' => [Types\ClientMode::LAN, Types\ClientMode::CLOUD, Types\ClientMode::AUTO],
 					'connector' => $connector,
@@ -439,7 +439,7 @@ class Install extends Console\Command\Command
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::USERNAME,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => $username,
 					'connector' => $connector,
 				]));
@@ -457,7 +457,7 @@ class Install extends Console\Command\Command
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::PASSWORD,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => $password,
 					'connector' => $connector,
 				]));

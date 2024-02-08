@@ -50,7 +50,7 @@ final class ValueTest extends TestCase
 	{
 		return [
 			'integer_1' => [
-				Types\DataType::get(Types\DataType::CHAR),
+				Types\DataType::CHAR,
 				'10',
 				null,
 				null,
@@ -59,7 +59,7 @@ final class ValueTest extends TestCase
 				false,
 			],
 			'integer_2' => [
-				Types\DataType::get(Types\DataType::CHAR),
+				Types\DataType::CHAR,
 				'9',
 				new Formats\NumberRange([10, 20]),
 				null,
@@ -68,7 +68,7 @@ final class ValueTest extends TestCase
 				true,
 			],
 			'integer_3' => [
-				Types\DataType::get(Types\DataType::CHAR),
+				Types\DataType::CHAR,
 				'30',
 				new Formats\NumberRange([10, 20]),
 				null,
@@ -77,7 +77,7 @@ final class ValueTest extends TestCase
 				true,
 			],
 			'float_1' => [
-				Types\DataType::get(Types\DataType::FLOAT),
+				Types\DataType::FLOAT,
 				'30.3',
 				null,
 				null,

@@ -70,7 +70,7 @@ final class Transformer
 			return null;
 		}
 
-		if ($dataType->equalsValue(MetadataTypes\DataType::BOOLEAN)) {
+		if ($dataType === MetadataTypes\DataType::BOOLEAN) {
 			if (is_bool($value)) {
 				return new ValueObjects\DeviceData($value, $dataType);
 			}
@@ -85,7 +85,7 @@ final class Transformer
 			return null;
 		}
 
-		if ($dataType->equalsValue(MetadataTypes\DataType::FLOAT)) {
+		if ($dataType === MetadataTypes\DataType::FLOAT) {
 			if (is_numeric($value)) {
 				return new ValueObjects\DeviceData((float) $value, $dataType);
 			}
@@ -94,12 +94,12 @@ final class Transformer
 		}
 
 		if (
-			$dataType->equalsValue(MetadataTypes\DataType::CHAR)
-			|| $dataType->equalsValue(MetadataTypes\DataType::UCHAR)
-			|| $dataType->equalsValue(MetadataTypes\DataType::SHORT)
-			|| $dataType->equalsValue(MetadataTypes\DataType::USHORT)
-			|| $dataType->equalsValue(MetadataTypes\DataType::INT)
-			|| $dataType->equalsValue(MetadataTypes\DataType::UINT)
+			$dataType === MetadataTypes\DataType::CHAR
+			|| $dataType === MetadataTypes\DataType::UCHAR
+			|| $dataType === MetadataTypes\DataType::SHORT
+			|| $dataType === MetadataTypes\DataType::USHORT
+			|| $dataType === MetadataTypes\DataType::INT
+			|| $dataType === MetadataTypes\DataType::UINT
 		) {
 			if (is_numeric($value)) {
 				return new ValueObjects\DeviceData((int) $value, $dataType);
@@ -108,7 +108,7 @@ final class Transformer
 			return null;
 		}
 
-		if ($dataType->equalsValue(MetadataTypes\DataType::STRING)) {
+		if ($dataType === MetadataTypes\DataType::STRING) {
 			return new ValueObjects\DeviceData(
 				$value instanceof DateTimeInterface ? $value->format(DateTimeInterface::ATOM) : (string) $value,
 				$dataType,
@@ -116,9 +116,9 @@ final class Transformer
 		}
 
 		if (
-			$dataType->equalsValue(MetadataTypes\DataType::ENUM)
-			|| $dataType->equalsValue(MetadataTypes\DataType::SWITCH)
-			|| $dataType->equalsValue(MetadataTypes\DataType::BUTTON)
+			$dataType === MetadataTypes\DataType::ENUM
+			|| $dataType === MetadataTypes\DataType::SWITCH
+			|| $dataType === MetadataTypes\DataType::BUTTON
 		) {
 			if ($format instanceof MetadataFormats\StringEnum) {
 				$filtered = array_values(array_filter(
@@ -131,7 +131,7 @@ final class Transformer
 				if (count($filtered) === 1) {
 					return new ValueObjects\DeviceData(
 						MetadataUtilities\Value::flattenValue($value),
-						MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+						MetadataTypes\DataType::STRING,
 					);
 				}
 
@@ -162,19 +162,18 @@ final class Transformer
 
 			if (
 				(
-					$dataType->equalsValue(MetadataTypes\DataType::SWITCH)
+					$dataType === MetadataTypes\DataType::SWITCH
 					&& $value instanceof MetadataTypes\Payloads\Switcher
 				) || (
-					$dataType->equalsValue(MetadataTypes\DataType::BUTTON)
+					$dataType === MetadataTypes\DataType::BUTTON
 					&& $value instanceof MetadataTypes\Payloads\Button
 				) || (
-					$dataType->equalsValue(MetadataTypes\DataType::COVER)
-					&& $value instanceof MetadataTypes\Payloads\Cover
+					$value instanceof MetadataTypes\Payloads\Cover
 				)
 			) {
 				return new ValueObjects\DeviceData(
 					strval($value->getValue()),
-					MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+					MetadataTypes\DataType::STRING,
 				);
 			}
 		}
@@ -376,39 +375,17 @@ final class Transformer
 		}
 
 		return match ($dataType->getValue()) {
-			MetadataTypes\DataTypeShort::CHAR => MetadataTypes\DataType::get(
-				MetadataTypes\DataType::CHAR,
-			),
-			MetadataTypes\DataTypeShort::UCHAR => MetadataTypes\DataType::get(
-				MetadataTypes\DataType::UCHAR,
-			),
-			MetadataTypes\DataTypeShort::SHORT => MetadataTypes\DataType::get(
-				MetadataTypes\DataType::SHORT,
-			),
-			MetadataTypes\DataTypeShort::USHORT => MetadataTypes\DataType::get(
-				MetadataTypes\DataType::USHORT,
-			),
-			MetadataTypes\DataTypeShort::INT => MetadataTypes\DataType::get(
-				MetadataTypes\DataType::INT,
-			),
-			MetadataTypes\DataTypeShort::UINT => MetadataTypes\DataType::get(
-				MetadataTypes\DataType::UINT,
-			),
-			MetadataTypes\DataTypeShort::FLOAT => MetadataTypes\DataType::get(
-				MetadataTypes\DataType::FLOAT,
-			),
-			MetadataTypes\DataTypeShort::BOOLEAN => MetadataTypes\DataType::get(
-				MetadataTypes\DataType::BOOLEAN,
-			),
-			MetadataTypes\DataTypeShort::STRING => MetadataTypes\DataType::get(
-				MetadataTypes\DataType::STRING,
-			),
-			MetadataTypes\DataTypeShort::SWITCH => MetadataTypes\DataType::get(
-				MetadataTypes\DataType::SWITCH,
-			),
-			MetadataTypes\DataTypeShort::BUTTON => MetadataTypes\DataType::get(
-				MetadataTypes\DataType::BUTTON,
-			),
+			MetadataTypes\DataTypeShort::CHAR => MetadataTypes\DataType::CHAR,
+			MetadataTypes\DataTypeShort::UCHAR => MetadataTypes\DataType::UCHAR,
+			MetadataTypes\DataTypeShort::SHORT => MetadataTypes\DataType::SHORT,
+			MetadataTypes\DataTypeShort::USHORT => MetadataTypes\DataType::USHORT,
+			MetadataTypes\DataTypeShort::INT => MetadataTypes\DataType::INT,
+			MetadataTypes\DataTypeShort::UINT => MetadataTypes\DataType::UINT,
+			MetadataTypes\DataTypeShort::FLOAT => MetadataTypes\DataType::FLOAT,
+			MetadataTypes\DataTypeShort::BOOLEAN => MetadataTypes\DataType::BOOLEAN,
+			MetadataTypes\DataTypeShort::STRING => MetadataTypes\DataType::STRING,
+			MetadataTypes\DataTypeShort::SWITCH => MetadataTypes\DataType::SWITCH,
+			MetadataTypes\DataTypeShort::BUTTON => MetadataTypes\DataType::BUTTON,
 			default => null,
 		};
 	}

@@ -90,7 +90,7 @@ final class ConnectorConnection
 						'connector' => $connector,
 						'entity' => Entities\Connectors\Properties\Dynamic::class,
 						'identifier' => MetadataTypes\ConnectorPropertyIdentifier::STATE,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
+						'dataType' => MetadataTypes\DataType::ENUM,
 						'unit' => null,
 						'format' => [
 							MetadataTypes\ConnectionState::RUNNING,

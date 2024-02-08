@@ -79,7 +79,7 @@ abstract class Type implements Entities\Messages\Entity
 			);
 		}
 
-		return MetadataTypes\DataType::get(MetadataTypes\DataType::UNKNOWN);
+		return MetadataTypes\DataType::UNKNOWN;
 	}
 
 	/**

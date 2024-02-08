@@ -783,7 +783,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					}
 
 					$dataPointCode = null;
-					$dataPointDataType = MetadataTypes\DataType::get(MetadataTypes\DataType::UNKNOWN);
+					$dataPointDataType = MetadataTypes\DataType::UNKNOWN;
 
 					if ($dataPointFunction !== null) {
 						$dataPointCode = $dataPointFunction->getCode();
@@ -797,11 +797,11 @@ final class Discovery implements Evenement\EventEmitterInterface
 					}
 
 					if ($dataPointType === 'boolean') {
-						$dataPointDataType = MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN);
+						$dataPointDataType = MetadataTypes\DataType::BOOLEAN;
 					} elseif ($dataPointType === 'integer') {
-						$dataPointDataType = MetadataTypes\DataType::get(MetadataTypes\DataType::INT);
+						$dataPointDataType = MetadataTypes\DataType::INT;
 					} elseif ($dataPointType === 'enum') {
-						$dataPointDataType = MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM);
+						$dataPointDataType = MetadataTypes\DataType::ENUM;
 					}
 
 					try {
@@ -819,7 +819,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 						'code' => $dataPointCode,
 						'name' => $dataPointCode,
-						'data_type' => $dataPointDataType->getValue(),
+						'data_type' => $dataPointDataType->value,
 						'unit' => $dataPointSpecification->offsetExists('unit')
 							? strval($dataPointSpecification->offsetGet('unit'))
 							: null,
@@ -965,16 +965,16 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 				if (is_array($deviceStatuses)) {
 					foreach ($deviceStatuses as $status) {
-						$dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::UNKNOWN);
+						$dataType = MetadataTypes\DataType::UNKNOWN;
 
 						if (is_bool($status->getValue())) {
-							$dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN);
+							$dataType = MetadataTypes\DataType::BOOLEAN;
 						} elseif (is_float($status->getValue())) {
-							$dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::FLOAT);
+							$dataType = MetadataTypes\DataType::FLOAT;
 						} elseif (is_numeric($status->getValue())) {
-							$dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::INT);
+							$dataType = MetadataTypes\DataType::INT;
 						} elseif (is_string($status->getValue())) {
-							$dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::STRING);
+							$dataType = MetadataTypes\DataType::STRING;
 						}
 
 						$dataPoints[] = [
@@ -982,7 +982,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 							'code' => $status->getCode(),
 							'name' => $status->getCode(),
-							'data_type' => $dataType->getValue(),
+							'data_type' => $dataType->value,
 							'unit' => null,
 							'format' => null,
 							'min' => null,

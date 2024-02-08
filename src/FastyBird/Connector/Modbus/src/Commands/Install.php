@@ -223,7 +223,7 @@ class Install extends Console\Command\Command
 			$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 				'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+				'dataType' => MetadataTypes\DataType::STRING,
 				'value' => $mode->getValue(),
 				'connector' => $connector,
 			]));
@@ -232,7 +232,7 @@ class Install extends Console\Command\Command
 				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::RTU_INTERFACE,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => $interface,
 					'connector' => $connector,
 				]));
@@ -240,7 +240,7 @@ class Install extends Console\Command\Command
 				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::RTU_BAUD_RATE,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UINT),
+					'dataType' => MetadataTypes\DataType::UINT,
 					'value' => $baudRate?->getValue(),
 					'connector' => $connector,
 				]));
@@ -248,7 +248,7 @@ class Install extends Console\Command\Command
 				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::RTU_BYTE_SIZE,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
+					'dataType' => MetadataTypes\DataType::UCHAR,
 					'value' => $byteSize?->getValue(),
 					'connector' => $connector,
 				]));
@@ -256,7 +256,7 @@ class Install extends Console\Command\Command
 				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::RTU_PARITY,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
+					'dataType' => MetadataTypes\DataType::UCHAR,
 					'value' => $dataParity?->getValue(),
 					'connector' => $connector,
 				]));
@@ -264,7 +264,7 @@ class Install extends Console\Command\Command
 				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::RTU_STOP_BITS,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
+					'dataType' => MetadataTypes\DataType::UCHAR,
 					'value' => $stopBits?->getValue(),
 					'connector' => $connector,
 				]));
@@ -457,7 +457,7 @@ class Install extends Console\Command\Command
 				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
+					'dataType' => MetadataTypes\DataType::ENUM,
 					'value' => $mode->getValue(),
 					'format' => [
 						Types\ClientMode::RTU,
@@ -479,7 +479,7 @@ class Install extends Console\Command\Command
 					$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 						'identifier' => Types\ConnectorPropertyIdentifier::RTU_INTERFACE,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+						'dataType' => MetadataTypes\DataType::STRING,
 						'value' => $interface,
 						'connector' => $connector,
 					]));
@@ -493,7 +493,7 @@ class Install extends Console\Command\Command
 					$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 						'identifier' => Types\ConnectorPropertyIdentifier::RTU_BAUD_RATE,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UINT),
+						'dataType' => MetadataTypes\DataType::UINT,
 						'value' => $baudRate?->getValue(),
 						'connector' => $connector,
 					]));
@@ -507,7 +507,7 @@ class Install extends Console\Command\Command
 					$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 						'identifier' => Types\ConnectorPropertyIdentifier::RTU_BYTE_SIZE,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
+						'dataType' => MetadataTypes\DataType::UCHAR,
 						'value' => $byteSize?->getValue(),
 						'connector' => $connector,
 					]));
@@ -521,7 +521,7 @@ class Install extends Console\Command\Command
 					$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 						'identifier' => Types\ConnectorPropertyIdentifier::RTU_PARITY,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
+						'dataType' => MetadataTypes\DataType::UCHAR,
 						'value' => $dataParity?->getValue(),
 						'connector' => $connector,
 					]));
@@ -535,7 +535,7 @@ class Install extends Console\Command\Command
 					$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 						'identifier' => Types\ConnectorPropertyIdentifier::RTU_STOP_BITS,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
+						'dataType' => MetadataTypes\DataType::UCHAR,
 						'value' => $stopBits?->getValue(),
 						'connector' => $connector,
 					]));
@@ -857,7 +857,7 @@ class Install extends Console\Command\Command
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
 					'identifier' => Types\DevicePropertyIdentifier::ADDRESS,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
+					'dataType' => MetadataTypes\DataType::UCHAR,
 					'value' => $address,
 					'device' => $device,
 				]));
@@ -867,7 +867,7 @@ class Install extends Console\Command\Command
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
 					'identifier' => Types\DevicePropertyIdentifier::IP_ADDRESS,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => $ipAddress,
 					'device' => $device,
 				]));
@@ -875,7 +875,7 @@ class Install extends Console\Command\Command
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
 					'identifier' => Types\DevicePropertyIdentifier::PORT,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UINT),
+					'dataType' => MetadataTypes\DataType::UINT,
 					'value' => $port,
 					'device' => $device,
 				]));
@@ -883,7 +883,7 @@ class Install extends Console\Command\Command
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
 					'identifier' => Types\DevicePropertyIdentifier::UNIT_ID,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
+					'dataType' => MetadataTypes\DataType::UCHAR,
 					'value' => $unitId,
 					'device' => $device,
 				]));
@@ -892,7 +892,7 @@ class Install extends Console\Command\Command
 			$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
 				'identifier' => Types\DevicePropertyIdentifier::BYTE_ORDER,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+				'dataType' => MetadataTypes\DataType::STRING,
 				'value' => $byteOrder->getValue(),
 				'device' => $device,
 			]));
@@ -1046,7 +1046,7 @@ class Install extends Console\Command\Command
 					$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Devices\Properties\Variable::class,
 						'identifier' => Types\DevicePropertyIdentifier::ADDRESS,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
+						'dataType' => MetadataTypes\DataType::UCHAR,
 						'value' => $address,
 						'device' => $device,
 					]));
@@ -1064,7 +1064,7 @@ class Install extends Console\Command\Command
 					$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Devices\Properties\Variable::class,
 						'identifier' => Types\DevicePropertyIdentifier::IP_ADDRESS,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+						'dataType' => MetadataTypes\DataType::STRING,
 						'value' => $ipAddress,
 						'device' => $device,
 					]));
@@ -1078,7 +1078,7 @@ class Install extends Console\Command\Command
 					$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Devices\Properties\Variable::class,
 						'identifier' => Types\DevicePropertyIdentifier::PORT,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+						'dataType' => MetadataTypes\DataType::STRING,
 						'value' => $port,
 						'device' => $device,
 					]));
@@ -1092,7 +1092,7 @@ class Install extends Console\Command\Command
 					$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Devices\Properties\Variable::class,
 						'identifier' => Types\DevicePropertyIdentifier::UNIT_ID,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
+						'dataType' => MetadataTypes\DataType::UCHAR,
 						'value' => $unitId,
 						'device' => $device,
 					]));
@@ -1119,7 +1119,7 @@ class Install extends Console\Command\Command
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
 					'identifier' => Types\DevicePropertyIdentifier::BYTE_ORDER,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => $byteOrder->getValue(),
 					'device' => $device,
 				]));
@@ -1371,8 +1371,8 @@ class Install extends Console\Command\Command
 		$format = null;
 
 		if (
-			$dataType->equalsValue(MetadataTypes\DataType::SWITCH)
-			|| $dataType->equalsValue(MetadataTypes\DataType::BUTTON)
+			$dataType === MetadataTypes\DataType::SWITCH
+			|| $dataType === MetadataTypes\DataType::BUTTON
 		) {
 			$format = $this->askRegisterFormat($io, $dataType);
 		}
@@ -1392,7 +1392,7 @@ class Install extends Console\Command\Command
 				$this->channelsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Channels\Properties\Variable::class,
 					'identifier' => Types\ChannelPropertyIdentifier::ADDRESS,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
+					'dataType' => MetadataTypes\DataType::UCHAR,
 					'value' => $address,
 					'channel' => $channel,
 				]));
@@ -1400,7 +1400,7 @@ class Install extends Console\Command\Command
 				$this->channelsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Channels\Properties\Variable::class,
 					'identifier' => Types\ChannelPropertyIdentifier::TYPE,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => $type->getValue(),
 					'channel' => $channel,
 				]));
@@ -1408,7 +1408,7 @@ class Install extends Console\Command\Command
 				$this->channelsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Channels\Properties\Variable::class,
 					'identifier' => Types\ChannelPropertyIdentifier::READING_DELAY,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UINT),
+					'dataType' => MetadataTypes\DataType::UINT,
 					'value' => $readingDelay,
 					'channel' => $channel,
 				]));
@@ -1538,8 +1538,8 @@ class Install extends Console\Command\Command
 		$format = null;
 
 		if (
-			$dataType->equalsValue(MetadataTypes\DataType::SWITCH)
-			|| $dataType->equalsValue(MetadataTypes\DataType::BUTTON)
+			$dataType === MetadataTypes\DataType::SWITCH
+			|| $dataType === MetadataTypes\DataType::BUTTON
 		) {
 			$format = $this->askRegisterFormat($io, $dataType, $channel);
 		}
@@ -1580,7 +1580,7 @@ class Install extends Console\Command\Command
 				$this->channelsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Channels\Properties\Variable::class,
 					'identifier' => Types\ChannelPropertyIdentifier::ADDRESS,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
+					'dataType' => MetadataTypes\DataType::UCHAR,
 					'value' => $address,
 					'channel' => $channel,
 				]));
@@ -1594,7 +1594,7 @@ class Install extends Console\Command\Command
 				$this->channelsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Channels\Properties\Variable::class,
 					'identifier' => Types\ChannelPropertyIdentifier::TYPE,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => $type->getValue(),
 					'channel' => $channel,
 				]));
@@ -1604,7 +1604,7 @@ class Install extends Console\Command\Command
 				$this->channelsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Channels\Properties\Variable::class,
 					'identifier' => Types\ChannelPropertyIdentifier::READING_DELAY,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
+					'dataType' => MetadataTypes\DataType::UCHAR,
 					'value' => $readingDelay,
 					'channel' => $channel,
 				]));
@@ -1794,7 +1794,7 @@ class Install extends Console\Command\Command
 					)
 					: 'N/A',
 				$channel->getAddress(),
-				$valueProperty?->getDataType()->getValue(),
+				$valueProperty?->getDataType()->value,
 				$channel->getReadingDelay(),
 			]);
 		}
@@ -2934,25 +2934,25 @@ class Install extends Console\Command\Command
 			$type->equalsValue(Types\ChannelType::DISCRETE_INPUT)
 			|| $type->equalsValue(Types\ChannelType::COIL)
 		) {
-			return MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN);
+			return MetadataTypes\DataType::BOOLEAN;
 		} elseif (
 			$type->equalsValue(Types\ChannelType::HOLDING_REGISTER)
 			|| $type->equalsValue(Types\ChannelType::INPUT_REGISTER)
 		) {
 			$dataTypes = [
-				MetadataTypes\DataType::CHAR,
-				MetadataTypes\DataType::UCHAR,
-				MetadataTypes\DataType::SHORT,
-				MetadataTypes\DataType::USHORT,
-				MetadataTypes\DataType::INT,
-				MetadataTypes\DataType::UINT,
-				MetadataTypes\DataType::FLOAT,
-				MetadataTypes\DataType::STRING,
+				MetadataTypes\DataType::CHAR->value,
+				MetadataTypes\DataType::UCHAR->value,
+				MetadataTypes\DataType::SHORT->value,
+				MetadataTypes\DataType::USHORT->value,
+				MetadataTypes\DataType::INT->value,
+				MetadataTypes\DataType::UINT->value,
+				MetadataTypes\DataType::FLOAT->value,
+				MetadataTypes\DataType::STRING->value,
 			];
 
 			$dataTypes[] = $type->equalsValue(Types\ChannelType::HOLDING_REGISTER)
-				? MetadataTypes\DataType::SWITCH
-				: MetadataTypes\DataType::BUTTON;
+				? MetadataTypes\DataType::SWITCH->value
+				: MetadataTypes\DataType::BUTTON->value;
 
 			if ($channel !== null) {
 				$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
@@ -2961,7 +2961,7 @@ class Install extends Console\Command\Command
 
 				$valueProperty = $this->channelsPropertiesRepository->findOneBy($findChannelPropertyQuery);
 
-				switch ($valueProperty?->getDataType()->getValue()) {
+				switch ($valueProperty?->getDataType()) {
 					case MetadataTypes\DataType::CHAR:
 						$default = 0;
 
@@ -3002,6 +3002,10 @@ class Install extends Console\Command\Command
 						$default = 9;
 
 						break;
+					default:
+						$default = null;
+
+						break;
 				}
 			}
 		} else {
@@ -3027,15 +3031,12 @@ class Install extends Console\Command\Command
 				);
 			}
 
-			if (MetadataTypes\DataType::isValidValue($answer)) {
-				return MetadataTypes\DataType::get($answer);
+			if (MetadataTypes\DataType::tryFrom($answer) !== null) {
+				return MetadataTypes\DataType::from($answer);
 			}
 
-			if (
-				array_key_exists($answer, $dataTypes)
-				&& MetadataTypes\DataType::isValidValue($dataTypes[$answer])
-			) {
-				return MetadataTypes\DataType::get($dataTypes[$answer]);
+			if (array_key_exists($answer, $dataTypes)) {
+				return MetadataTypes\DataType::from($dataTypes[$answer]);
 			}
 
 			throw new Exceptions\Runtime(
@@ -3068,7 +3069,7 @@ class Install extends Console\Command\Command
 	{
 		$format = [];
 
-		if ($dataType->equalsValue(MetadataTypes\DataType::SWITCH)) {
+		if ($dataType === MetadataTypes\DataType::SWITCH) {
 			foreach ([
 				MetadataTypes\Payloads\Switcher::get(MetadataTypes\Payloads\Switcher::ON),
 				MetadataTypes\Payloads\Switcher::get(MetadataTypes\Payloads\Switcher::OFF),
@@ -3082,7 +3083,7 @@ class Install extends Console\Command\Command
 			}
 
 			return $format;
-		} elseif ($dataType->equalsValue(MetadataTypes\DataType::BUTTON)) {
+		} elseif ($dataType === MetadataTypes\DataType::BUTTON) {
 			foreach ([
 				MetadataTypes\Payloads\Button::get(MetadataTypes\Payloads\Button::PRESSED),
 				MetadataTypes\Payloads\Button::get(MetadataTypes\Payloads\Button::RELEASED),

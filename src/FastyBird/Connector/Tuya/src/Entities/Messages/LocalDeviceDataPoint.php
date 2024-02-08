@@ -15,7 +15,6 @@
 
 namespace FastyBird\Connector\Tuya\Entities\Messages;
 
-use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Orisai\ObjectMapper;
 
@@ -37,7 +36,10 @@ final class LocalDeviceDataPoint implements Entity
 		private readonly string $code,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $name,
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\DataType::class)]
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BackedEnumValue(class: MetadataTypes\DataType::class),
+			new ObjectMapper\Rules\InstanceOfValue(type: MetadataTypes\DataType::class),
+		])]
 		#[ObjectMapper\Modifiers\FieldName('data_type')]
 		private readonly MetadataTypes\DataType $dataType,
 		#[ObjectMapper\Rules\AnyOf([
@@ -141,7 +143,7 @@ final class LocalDeviceDataPoint implements Entity
 
 			'code' => $this->getCode(),
 			'name' => $this->getName(),
-			'data_type' => $this->getDataType()->getValue(),
+			'data_type' => $this->getDataType()->value,
 			'unit' => $this->getUnit(),
 			'format' => $this->getFormat(),
 			'min' => $this->getMin(),

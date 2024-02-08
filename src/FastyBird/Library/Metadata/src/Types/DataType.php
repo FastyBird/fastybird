@@ -15,8 +15,7 @@
 
 namespace FastyBird\Library\Metadata\Types;
 
-use Consistence;
-use function strval;
+use function in_array;
 
 /**
  * Device or channel property data types
@@ -26,66 +25,59 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class DataType extends Consistence\Enum\Enum
+enum DataType: string
 {
 
-	/**
-	 * Define data types
-	 */
-	public const CHAR = 'char';
+	case CHAR = 'char';
 
-	public const UCHAR = 'uchar';
+	case UCHAR = 'uchar';
 
-	public const SHORT = 'short';
+	case SHORT = 'short';
 
-	public const USHORT = 'ushort';
+	case USHORT = 'ushort';
 
-	public const INT = 'int';
+	case INT = 'int';
 
-	public const UINT = 'uint';
+	case UINT = 'uint';
 
-	public const FLOAT = 'float';
+	case FLOAT = 'float';
 
-	public const BOOLEAN = 'bool';
+	case BOOLEAN = 'bool';
 
-	public const STRING = 'string';
+	case STRING = 'string';
 
-	public const ENUM = 'enum';
+	case ENUM = 'enum';
 
-	public const DATE = 'date';
+	case DATE = 'date';
 
-	public const TIME = 'time';
+	case TIME = 'time';
 
-	public const DATETIME = 'datetime';
+	case DATETIME = 'datetime';
 
-	public const COLOR = 'color';
+	case COLOR = 'color';
 
-	public const BUTTON = 'button';
+	case BUTTON = 'button';
 
-	public const SWITCH = 'switch';
+	case SWITCH = 'switch';
 
-	public const COVER = 'cover';
+	case COVER = 'cover';
 
-	public const UNKNOWN = 'unknown';
+	case UNKNOWN = 'unknown';
 
 	public function isInteger(): bool
 	{
-		return self::equalsValue(self::CHAR)
-			|| self::equalsValue(self::UCHAR)
-			|| self::equalsValue(self::SHORT)
-			|| self::equalsValue(self::USHORT)
-			|| self::equalsValue(self::INT)
-			|| self::equalsValue(self::UINT);
-	}
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
+		return in_array(
+			$this,
+			[
+				self::CHAR,
+				self::UCHAR,
+				self::SHORT,
+				self::USHORT,
+				self::INT,
+				self::UINT,
+			],
+			true,
+		);
 	}
 
 }

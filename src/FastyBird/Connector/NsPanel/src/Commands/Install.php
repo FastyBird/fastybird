@@ -51,6 +51,8 @@ use Symfony\Component\Console\Input;
 use Symfony\Component\Console\Output;
 use Symfony\Component\Console\Style;
 use Throwable;
+use TypeError;
+use ValueError;
 use function array_combine;
 use function array_filter;
 use function array_flip;
@@ -243,7 +245,7 @@ class Install extends Console\Command\Command
 			$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 				'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
+				'dataType' => MetadataTypes\DataType::ENUM,
 				'value' => $mode->getValue(),
 				'format' => [
 					Types\ClientMode::GATEWAY,
@@ -399,7 +401,7 @@ class Install extends Console\Command\Command
 				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
 					'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::ENUM),
+					'dataType' => MetadataTypes\DataType::ENUM,
 					'value' => $mode->getValue(),
 					'format' => [Types\ClientMode::GATEWAY, Types\ClientMode::DEVICE, Types\ClientMode::BOTH],
 					'connector' => $connector,
@@ -733,7 +735,7 @@ class Install extends Console\Command\Command
 			$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
 				'identifier' => Types\DevicePropertyIdentifier::IP_ADDRESS,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+				'dataType' => MetadataTypes\DataType::STRING,
 				'value' => $panelInfo->getIpAddress(),
 				'device' => $gateway,
 			]));
@@ -741,7 +743,7 @@ class Install extends Console\Command\Command
 			$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
 				'identifier' => Types\DevicePropertyIdentifier::DOMAIN,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+				'dataType' => MetadataTypes\DataType::STRING,
 				'value' => $panelInfo->getDomain(),
 				'device' => $gateway,
 			]));
@@ -749,7 +751,7 @@ class Install extends Console\Command\Command
 			$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
 				'identifier' => Types\DevicePropertyIdentifier::MAC_ADDRESS,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+				'dataType' => MetadataTypes\DataType::STRING,
 				'value' => $panelInfo->getMacAddress(),
 				'device' => $gateway,
 			]));
@@ -757,7 +759,7 @@ class Install extends Console\Command\Command
 			$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
 				'identifier' => Types\DevicePropertyIdentifier::FIRMWARE_VERSION,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+				'dataType' => MetadataTypes\DataType::STRING,
 				'value' => $panelInfo->getFirmwareVersion(),
 				'device' => $gateway,
 			]));
@@ -765,7 +767,7 @@ class Install extends Console\Command\Command
 			$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
 				'identifier' => Types\DevicePropertyIdentifier::ACCESS_TOKEN,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+				'dataType' => MetadataTypes\DataType::STRING,
 				'value' => $accessToken->getData()->getAccessToken(),
 				'device' => $gateway,
 			]));
@@ -970,7 +972,7 @@ class Install extends Console\Command\Command
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
 					'identifier' => Types\DevicePropertyIdentifier::IP_ADDRESS,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => $panelInfo->getIpAddress(),
 					'device' => $gateway,
 				]));
@@ -984,7 +986,7 @@ class Install extends Console\Command\Command
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
 					'identifier' => Types\DevicePropertyIdentifier::DOMAIN,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => $panelInfo->getDomain(),
 					'device' => $gateway,
 				]));
@@ -998,7 +1000,7 @@ class Install extends Console\Command\Command
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
 					'identifier' => Types\DevicePropertyIdentifier::MAC_ADDRESS,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => $panelInfo->getMacAddress(),
 					'device' => $gateway,
 				]));
@@ -1012,7 +1014,7 @@ class Install extends Console\Command\Command
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
 					'identifier' => Types\DevicePropertyIdentifier::FIRMWARE_VERSION,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => $panelInfo->getFirmwareVersion(),
 					'device' => $gateway,
 				]));
@@ -1027,7 +1029,7 @@ class Install extends Console\Command\Command
 					$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Devices\Properties\Variable::class,
 						'identifier' => Types\DevicePropertyIdentifier::ACCESS_TOKEN,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+						'dataType' => MetadataTypes\DataType::STRING,
 						'value' => $accessToken->getData()->getAccessToken(),
 						'device' => $gateway,
 					]));
@@ -1427,7 +1429,7 @@ class Install extends Console\Command\Command
 			$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
 				'identifier' => Types\DevicePropertyIdentifier::CATEGORY,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+				'dataType' => MetadataTypes\DataType::STRING,
 				'value' => $category->getValue(),
 				'device' => $device,
 			]));
@@ -2203,6 +2205,8 @@ class Install extends Console\Command\Command
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function createProtocol(
 		Style\SymfonyStyle $io,
@@ -2261,7 +2265,7 @@ class Install extends Console\Command\Command
 			throw new Exceptions\InvalidState('Protocol definition is missing required attributes');
 		}
 
-		$dataType = MetadataTypes\DataType::get($protocolMetadata->offsetGet('data_type'));
+		$dataType = MetadataTypes\DataType::from($protocolMetadata->offsetGet('data_type'));
 
 		$format = $this->askFormat($io, $protocol);
 
@@ -2398,7 +2402,7 @@ class Install extends Console\Command\Command
 			// Start transaction connection to the database
 			$this->getOrmConnection()->beginTransaction();
 
-			$dataType = MetadataTypes\DataType::get($protocolMetadata->offsetGet('data_type'));
+			$dataType = MetadataTypes\DataType::from(strval($protocolMetadata->offsetGet('data_type')));
 
 			$format = $this->askFormat($io, $protocol);
 
@@ -2647,7 +2651,7 @@ class Install extends Console\Command\Command
 			$value = $property instanceof DevicesEntities\Channels\Properties\Variable ? $property->getValue() : 'N/A';
 
 			if (
-				$property->getDataType()->equalsValue(MetadataTypes\DataType::ENUM)
+				$property->getDataType() === MetadataTypes\DataType::ENUM
 				&& $metadata->offsetExists($type->getValue())
 				&& $metadata->offsetGet($type->getValue()) instanceof Utils\ArrayHash
 				&& $metadata->offsetGet($type->getValue())->offsetExists('valid_values')
@@ -3994,6 +3998,8 @@ class Install extends Console\Command\Command
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function askFormat(
 		Style\SymfonyStyle $io,
@@ -4016,11 +4022,12 @@ class Install extends Console\Command\Command
 			!$protocolMetadata instanceof Utils\ArrayHash
 			|| !$protocolMetadata->offsetExists('data_type')
 			|| !is_string($protocolMetadata->offsetGet('data_type'))
+			|| MetadataTypes\DataType::tryFrom($protocolMetadata->offsetGet('data_type')) === null
 		) {
 			throw new Exceptions\InvalidState('Protocol definition is missing required attributes');
 		}
 
-		$dataType = MetadataTypes\DataType::get($protocolMetadata->offsetGet('data_type'));
+		$dataType = MetadataTypes\DataType::from($protocolMetadata->offsetGet('data_type'));
 
 		$format = null;
 
@@ -4040,9 +4047,9 @@ class Install extends Console\Command\Command
 
 		if (
 			(
-				$dataType->equalsValue(MetadataTypes\DataType::ENUM)
-				|| $dataType->equalsValue(MetadataTypes\DataType::SWITCH)
-				|| $dataType->equalsValue(MetadataTypes\DataType::BUTTON)
+				$dataType === MetadataTypes\DataType::ENUM
+				|| $dataType === MetadataTypes\DataType::SWITCH
+				|| $dataType === MetadataTypes\DataType::BUTTON
 			)
 			&& $protocolMetadata->offsetExists('valid_values')
 			&& $protocolMetadata->offsetGet('valid_values') instanceof Utils\ArrayHash
@@ -4056,21 +4063,21 @@ class Install extends Console\Command\Command
 				&& (
 					(
 						(
-							$connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::ENUM)
-							|| $connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::SWITCH)
-							|| $connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::BUTTON)
+							$connectProperty->getDataType() === MetadataTypes\DataType::ENUM
+							|| $connectProperty->getDataType() === MetadataTypes\DataType::SWITCH
+							|| $connectProperty->getDataType() === MetadataTypes\DataType::BUTTON
 						) && (
 							$connectProperty->getFormat() instanceof MetadataFormats\StringEnum
 							|| $connectProperty->getFormat() instanceof MetadataFormats\CombinedEnum
 						)
 					)
-					|| $connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::BOOLEAN)
+					|| $connectProperty->getDataType() === MetadataTypes\DataType::BOOLEAN
 				)
 			) {
 				$mappedFormat = [];
 
 				foreach ($protocolMetadata->offsetGet('valid_values') as $name) {
-					if ($connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::BOOLEAN)) {
+					if ($connectProperty->getDataType() === MetadataTypes\DataType::BOOLEAN) {
 						$options = [
 							'true',
 							'false',
@@ -4185,6 +4192,8 @@ class Install extends Console\Command\Command
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function provideProtocolValue(
 		Style\SymfonyStyle $io,
@@ -4206,12 +4215,12 @@ class Install extends Console\Command\Command
 		if (
 			!$protocolMetadata instanceof Utils\ArrayHash
 			|| !$protocolMetadata->offsetExists('data_type')
-			|| !MetadataTypes\DataType::isValidValue($protocolMetadata->offsetGet('data_type'))
+			|| MetadataTypes\DataType::tryFrom(strval($protocolMetadata->offsetGet('data_type'))) === null
 		) {
 			throw new Exceptions\InvalidState('Protocol definition is missing required attributes');
 		}
 
-		$dataType = MetadataTypes\DataType::get($protocolMetadata->offsetGet('data_type'));
+		$dataType = MetadataTypes\DataType::from(strval($protocolMetadata->offsetGet('data_type')));
 
 		if (
 			$protocolMetadata->offsetExists('valid_values')
@@ -4267,7 +4276,7 @@ class Install extends Console\Command\Command
 			return $value;
 		}
 
-		if ($dataType->equalsValue(MetadataTypes\DataType::BOOLEAN)) {
+		if ($dataType === MetadataTypes\DataType::BOOLEAN) {
 			$question = new Console\Question\ChoiceQuestion(
 				$this->translator->translate('//ns-panel-connector.cmd.install.questions.select.value'),
 				[
@@ -4323,11 +4332,11 @@ class Install extends Console\Command\Command
 					);
 				}
 
-				if ($dataType->equalsValue(MetadataTypes\DataType::STRING)) {
+				if ($dataType === MetadataTypes\DataType::STRING) {
 					return strval($answer);
 				}
 
-				if ($dataType->equalsValue(MetadataTypes\DataType::FLOAT)) {
+				if ($dataType === MetadataTypes\DataType::FLOAT) {
 					if ($minValue !== null && floatval($answer) < $minValue) {
 						throw new Exceptions\Runtime(
 							sprintf(
@@ -4364,12 +4373,12 @@ class Install extends Console\Command\Command
 				}
 
 				if (
-					$dataType->equalsValue(MetadataTypes\DataType::CHAR)
-					|| $dataType->equalsValue(MetadataTypes\DataType::UCHAR)
-					|| $dataType->equalsValue(MetadataTypes\DataType::SHORT)
-					|| $dataType->equalsValue(MetadataTypes\DataType::USHORT)
-					|| $dataType->equalsValue(MetadataTypes\DataType::INT)
-					|| $dataType->equalsValue(MetadataTypes\DataType::UINT)
+					$dataType === MetadataTypes\DataType::CHAR
+					|| $dataType === MetadataTypes\DataType::UCHAR
+					|| $dataType === MetadataTypes\DataType::SHORT
+					|| $dataType === MetadataTypes\DataType::USHORT
+					|| $dataType === MetadataTypes\DataType::INT
+					|| $dataType === MetadataTypes\DataType::UINT
 				) {
 					if ($minValue !== null && intval($answer) < $minValue) {
 						throw new Exceptions\Runtime(

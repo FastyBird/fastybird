@@ -133,7 +133,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 					$format = $property->getFormat();
 
 					if (
-						$property->getDataType()->equalsValue(MetadataTypes\DataType::ENUM)
+						$property->getDataType() === MetadataTypes\DataType::ENUM
 						&& $dataPoint->getValue() !== null
 						&& $format instanceof MetadataFormats\StringEnum
 					) {

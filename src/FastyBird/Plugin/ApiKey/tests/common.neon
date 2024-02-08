@@ -15,11 +15,9 @@ php:
 
 extensions:
     contributteTranslation              : Contributte\Translation\DI\TranslationExtension
-    nettrineAnnotations                 : Nettrine\Annotations\DI\AnnotationsExtension
     nettrineCache                       : Nettrine\Cache\DI\CacheExtension
     nettrineDbal                        : Nettrine\DBAL\DI\DbalExtension
     nettrineOrm                         : Nettrine\ORM\DI\OrmExtension
-    nettrineOrmAnnotations              : Nettrine\ORM\DI\OrmAnnotationsExtension
     nettrineOrmAttributes               : Nettrine\ORM\DI\OrmAttributesExtension
     nettrineOrmConsole                  : Nettrine\ORM\DI\OrmConsoleExtension
     nettrineOrmCache                    : Nettrine\ORM\DI\OrmCacheExtension
@@ -67,23 +65,9 @@ nettrineDbal:
         typesMapping:
             uuid_binary: binary
 
-nettrineAnnotations:
-    debug: %debugMode%
-    ignore:
-        - writable
-        - required
-        - module
-        - author
-        - subpackage
-        - package
-        - phpcsSuppress
-
 nettrineOrm:
     configuration:
         proxyDir: %tempDir%/cache/doctrine.proxies
-
-nettrineOrmAnnotations:
-    mapping: []
 
 nettrineOrmAttributes:
     mapping: []

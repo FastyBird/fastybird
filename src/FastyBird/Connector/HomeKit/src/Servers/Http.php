@@ -273,7 +273,7 @@ final class Http implements Server
 						$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 							'entity' => DevicesEntities\Devices\Properties\Variable::class,
 							'identifier' => Types\DevicePropertyIdentifier::AID,
-							'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::UCHAR),
+							'dataType' => MetadataTypes\DataType::UCHAR,
 							'value' => $accessory->getAid(),
 							'device' => $device,
 						]));
@@ -709,7 +709,7 @@ final class Http implements Server
 						$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 							'entity' => DevicesEntities\Devices\Properties\Variable::class,
 							'identifier' => Types\DevicePropertyIdentifier::SERIAL_NUMBER,
-							'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+							'dataType' => MetadataTypes\DataType::STRING,
 							'value' => $serialNumber,
 							'device' => $device,
 						]));
@@ -754,7 +754,7 @@ final class Http implements Server
 						$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 							'entity' => DevicesEntities\Devices\Properties\Variable::class,
 							'identifier' => Types\DevicePropertyIdentifier::VERSION,
-							'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+							'dataType' => MetadataTypes\DataType::STRING,
 							'value' => strval($firmwareVersion),
 							'device' => $device,
 						]));

@@ -45,7 +45,10 @@ final class ChannelPropertyCondition extends Condition
 		private readonly Uuid\UuidInterface $property,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $operand,
-		#[ObjectMapper\Rules\BackedEnumValue(class: Types\TriggerConditionOperator::class)]
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BackedEnumValue(class: Types\TriggerConditionOperator::class),
+			new ObjectMapper\Rules\InstanceOfValue(type: Types\TriggerConditionOperator::class),
+		])]
 		private readonly Types\TriggerConditionOperator $operator,
 		bool|null $isFulfilled = null,
 		Uuid\UuidInterface|null $owner = null,

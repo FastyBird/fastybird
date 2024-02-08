@@ -168,35 +168,35 @@ final class StoreSubDevice implements Queue\Consumer
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getManufacturer(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::MANUFACTURER,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MANUFACTURER),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getModel(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::MODEL,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MODEL),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getFirmwareVersion(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::FIRMWARE_VERSION,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::FIRMWARE_VERSION),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getDisplayCategory()->getValue(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::CATEGORY,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::CATEGORY),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$entity->getMacAddress(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::STRING),
+			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::MAC_ADDRESS,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MAC_ADDRESS),
 		);

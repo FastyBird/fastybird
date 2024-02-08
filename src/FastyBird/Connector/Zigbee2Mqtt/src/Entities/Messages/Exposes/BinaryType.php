@@ -71,10 +71,10 @@ final class BinaryType extends Type
 	public function getDataType(): MetadataTypes\DataType
 	{
 		if (is_bool($this->getValueOn()) && is_bool($this->getValueOff())) {
-			return MetadataTypes\DataType::get(MetadataTypes\DataType::BOOLEAN);
+			return MetadataTypes\DataType::BOOLEAN;
 		}
 
-		return MetadataTypes\DataType::get(MetadataTypes\DataType::SWITCH);
+		return MetadataTypes\DataType::SWITCH;
 	}
 
 	public function getValueOn(): bool|string

@@ -43,7 +43,10 @@ final class DiscoveredDeviceParameter implements Entity
 		private readonly string $name,
 		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\ParameterType::class)]
 		private readonly Types\ParameterType $type,
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\DataType::class)]
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BackedEnumValue(class: MetadataTypes\DataType::class),
+			new ObjectMapper\Rules\InstanceOfValue(type: MetadataTypes\DataType::class),
+		])]
 		private readonly MetadataTypes\DataType $dataType,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\ArrayOf(
@@ -140,7 +143,7 @@ final class DiscoveredDeviceParameter implements Entity
 			'identifier' => $this->getIdentifier(),
 			'name' => $this->getName(),
 			'type' => $this->getType(),
-			'data_type' => $this->getDataType()->getValue(),
+			'data_type' => $this->getDataType()->value,
 			'format' => $this->getFormat(),
 			'settable' => $this->isSettable(),
 			'queryable' => $this->isQueryable(),

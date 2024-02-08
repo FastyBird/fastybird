@@ -50,7 +50,10 @@ final class Device implements Documents\Document, Documents\Owner
 		private readonly Uuid\UuidInterface $id,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $type,
-		#[ObjectMapper\Rules\BackedEnumValue(class: Types\DeviceCategory::class)]
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BackedEnumValue(class: Types\DeviceCategory::class),
+			new ObjectMapper\Rules\InstanceOfValue(type: Types\DeviceCategory::class),
+		])]
 		private readonly Types\DeviceCategory $category,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $identifier,

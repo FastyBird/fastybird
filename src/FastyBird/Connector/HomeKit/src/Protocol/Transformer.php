@@ -126,10 +126,10 @@ final class Transformer
 		}
 
 		if (
-			$property->getDataType()->equalsValue(MetadataTypes\DataType::ENUM)
-			|| $property->getDataType()->equalsValue(MetadataTypes\DataType::SWITCH)
-			|| $property->getDataType()->equalsValue(MetadataTypes\DataType::COVER)
-			|| $property->getDataType()->equalsValue(MetadataTypes\DataType::BUTTON)
+			$property->getDataType() === MetadataTypes\DataType::ENUM
+			|| $property->getDataType() === MetadataTypes\DataType::SWITCH
+			|| $property->getDataType() === MetadataTypes\DataType::COVER
+			|| $property->getDataType() === MetadataTypes\DataType::BUTTON
 		) {
 			if ($property->getFormat() instanceof MetadataFormats\StringEnum) {
 				$filtered = array_values(array_filter(
@@ -138,15 +138,15 @@ final class Transformer
 				));
 
 				if (count($filtered) === 1) {
-					if ($property->getDataType()->equalsValue(MetadataTypes\DataType::SWITCH)) {
+					if ($property->getDataType() === MetadataTypes\DataType::SWITCH) {
 						return MetadataTypes\Payloads\Switcher::isValidValue(strval($transformedValue))
 							? MetadataTypes\Payloads\Switcher::get(strval($transformedValue))
 							: null;
-					} elseif ($property->getDataType()->equalsValue(MetadataTypes\DataType::BUTTON)) {
+					} elseif ($property->getDataType() === MetadataTypes\DataType::BUTTON) {
 						return MetadataTypes\Payloads\Button::isValidValue(strval($transformedValue))
 							? MetadataTypes\Payloads\Button::get(strval($transformedValue))
 							: null;
-					} elseif ($property->getDataType()->equalsValue(MetadataTypes\DataType::COVER)) {
+					} elseif ($property->getDataType() === MetadataTypes\DataType::COVER) {
 						return MetadataTypes\Payloads\Cover::isValidValue(strval($transformedValue))
 							? MetadataTypes\Payloads\Cover::get(strval($transformedValue))
 							: null;
@@ -169,15 +169,15 @@ final class Transformer
 					count($filtered) === 1
 					&& $filtered[0][0] instanceof MetadataFormats\CombinedEnumItem
 				) {
-					if ($property->getDataType()->equalsValue(MetadataTypes\DataType::SWITCH)) {
+					if ($property->getDataType() === MetadataTypes\DataType::SWITCH) {
 						return MetadataTypes\Payloads\Switcher::isValidValue(strval($filtered[0][0]->getValue()))
 							? MetadataTypes\Payloads\Switcher::get(strval($filtered[0][0]->getValue()))
 							: null;
-					} elseif ($property->getDataType()->equalsValue(MetadataTypes\DataType::BUTTON)) {
+					} elseif ($property->getDataType() === MetadataTypes\DataType::BUTTON) {
 						return MetadataTypes\Payloads\Button::isValidValue(strval($filtered[0][0]->getValue()))
 							? MetadataTypes\Payloads\Button::get(strval($filtered[0][0]->getValue()))
 							: null;
-					} elseif ($property->getDataType()->equalsValue(MetadataTypes\DataType::COVER)) {
+					} elseif ($property->getDataType() === MetadataTypes\DataType::COVER) {
 						return MetadataTypes\Payloads\Cover::isValidValue(strval($filtered[0][0]->getValue()))
 							? MetadataTypes\Payloads\Cover::get(strval($filtered[0][0]->getValue()))
 							: null;
@@ -216,10 +216,10 @@ final class Transformer
 
 		if ($property !== null) {
 			if (
-				$property->getDataType()->equalsValue(MetadataTypes\DataType::ENUM)
-				|| $property->getDataType()->equalsValue(MetadataTypes\DataType::SWITCH)
-				|| $property->getDataType()->equalsValue(MetadataTypes\DataType::COVER)
-				|| $property->getDataType()->equalsValue(MetadataTypes\DataType::BUTTON)
+				$property->getDataType() === MetadataTypes\DataType::ENUM
+				|| $property->getDataType() === MetadataTypes\DataType::SWITCH
+				|| $property->getDataType() === MetadataTypes\DataType::COVER
+				|| $property->getDataType() === MetadataTypes\DataType::BUTTON
 			) {
 				if ($property->getFormat() instanceof MetadataFormats\StringEnum) {
 					$filtered = array_values(array_filter(
@@ -252,13 +252,13 @@ final class Transformer
 				} else {
 					if (
 						(
-							$property->getDataType()->equalsValue(MetadataTypes\DataType::SWITCH)
+							$property->getDataType() === MetadataTypes\DataType::SWITCH
 							&& $value instanceof MetadataTypes\Payloads\Switcher
 						) || (
-							$property->getDataType()->equalsValue(MetadataTypes\DataType::BUTTON)
+							$property->getDataType() === MetadataTypes\DataType::BUTTON
 							&& $value instanceof MetadataTypes\Payloads\Button
 						) || (
-							$property->getDataType()->equalsValue(MetadataTypes\DataType::COVER)
+							$property->getDataType() === MetadataTypes\DataType::COVER
 							&& $value instanceof MetadataTypes\Payloads\Cover
 						)
 					) {
