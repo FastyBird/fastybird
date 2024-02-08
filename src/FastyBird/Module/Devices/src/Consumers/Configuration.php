@@ -71,10 +71,10 @@ final class Configuration implements ExchangeConsumers\Consumer
 	public function consume(
 		MetadataTypes\Sources\Source $source,
 		MetadataTypes\RoutingKey $routingKey,
-		MetadataDocuments\Document|null $entity,
+		MetadataDocuments\Document|null $document,
 	): void
 	{
-		if ($entity === null) {
+		if ($document === null) {
 			return;
 		}
 

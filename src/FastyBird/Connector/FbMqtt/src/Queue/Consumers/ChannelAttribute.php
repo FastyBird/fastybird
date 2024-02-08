@@ -66,32 +66,32 @@ final class ChannelAttribute implements Queue\Consumer
 	 * @throws ApplicationExceptions\Runtime
 	 * @throws DBAL\Exception
 	 */
-	public function consume(Entities\Messages\Entity $entity): bool
+	public function consume(Queue\Messages\Message $message): bool
 	{
-		if (!$entity instanceof Entities\Messages\ChannelAttribute) {
+		if (!$message instanceof Queue\Messages\ChannelAttribute) {
 			return false;
 		}
 
 		$findDeviceQuery = new Queries\Entities\FindDevices();
-		$findDeviceQuery->byConnectorId($entity->getConnector());
-		$findDeviceQuery->byIdentifier($entity->getDevice());
+		$findDeviceQuery->byConnectorId($message->getConnector());
+		$findDeviceQuery->byIdentifier($message->getDevice());
 
 		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\FbMqttDevice::class);
 
 		if ($device === null) {
 			$this->logger->warning(
-				sprintf('Device "%s" is not registered', $entity->getDevice()),
+				sprintf('Device "%s" is not registered', $message->getDevice()),
 				[
 					'source' => MetadataTypes\Sources\Connector::FB_MQTT,
 					'type' => 'channel-attribute-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $message->getConnector()->toString(),
 					],
 					'device' => [
-						'identifier' => $entity->getDevice(),
+						'identifier' => $message->getDevice(),
 					],
 					'channel' => [
-						'identifier' => $entity->getChannel(),
+						'identifier' => $message->getChannel(),
 					],
 				],
 			);
@@ -101,24 +101,24 @@ final class ChannelAttribute implements Queue\Consumer
 
 		$findChannelQuery = new Queries\Entities\FindChannels();
 		$findChannelQuery->forDevice($device);
-		$findChannelQuery->byIdentifier($entity->getChannel());
+		$findChannelQuery->byIdentifier($message->getChannel());
 
 		$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\FbMqttChannel::class);
 
 		if ($channel === null) {
 			$this->logger->warning(
-				sprintf('Device channel "%s" is not registered', $entity->getChannel()),
+				sprintf('Device channel "%s" is not registered', $message->getChannel()),
 				[
 					'source' => MetadataTypes\Sources\Connector::FB_MQTT,
 					'type' => 'channel-attribute-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $message->getConnector()->toString(),
 					],
 					'device' => [
 						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
-						'identifier' => $entity->getChannel(),
+						'identifier' => $message->getChannel(),
 					],
 				],
 			);
@@ -126,19 +126,19 @@ final class ChannelAttribute implements Queue\Consumer
 			return true;
 		}
 
-		$this->databaseHelper->transaction(function () use ($entity, $channel): void {
+		$this->databaseHelper->transaction(function () use ($message, $channel): void {
 			$toUpdate = [];
 
-			if ($entity->getAttribute() === Entities\Messages\Attribute::NAME) {
-				$toUpdate['name'] = $entity->getValue();
+			if ($message->getAttribute() === Queue\Messages\Attribute::NAME) {
+				$toUpdate['name'] = $message->getValue();
 			}
 
-			if ($entity->getAttribute() === Entities\Messages\Attribute::PROPERTIES && is_array($entity->getValue())) {
-				$this->setChannelProperties($channel, Utils\ArrayHash::from($entity->getValue()));
+			if ($message->getAttribute() === Queue\Messages\Attribute::PROPERTIES && is_array($message->getValue())) {
+				$this->setChannelProperties($channel, Utils\ArrayHash::from($message->getValue()));
 			}
 
-			if ($entity->getAttribute() === Entities\Messages\Attribute::CONTROLS && is_array($entity->getValue())) {
-				$this->setChannelControls($channel, Utils\ArrayHash::from($entity->getValue()));
+			if ($message->getAttribute() === Queue\Messages\Attribute::CONTROLS && is_array($message->getValue())) {
+				$this->setChannelControls($channel, Utils\ArrayHash::from($message->getValue()));
 			}
 
 			if ($toUpdate !== []) {
@@ -152,7 +152,7 @@ final class ChannelAttribute implements Queue\Consumer
 				'source' => MetadataTypes\Sources\Connector::FB_MQTT,
 				'type' => 'channel-attribute-message-consumer',
 				'connector' => [
-					'id' => $entity->getConnector()->toString(),
+					'id' => $message->getConnector()->toString(),
 				],
 				'device' => [
 					'id' => $device->getId()->toString(),
@@ -160,7 +160,7 @@ final class ChannelAttribute implements Queue\Consumer
 				'channel' => [
 					'id' => $channel->getId()->toString(),
 				],
-				'data' => $entity->toArray(),
+				'data' => $message->toArray(),
 			],
 		);
 

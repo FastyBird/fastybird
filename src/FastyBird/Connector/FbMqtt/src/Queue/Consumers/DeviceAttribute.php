@@ -76,44 +76,44 @@ final class DeviceAttribute implements Queue\Consumer
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
-	public function consume(Entities\Messages\Entity $entity): bool
+	public function consume(Queue\Messages\Message $message): bool
 	{
-		if (!$entity instanceof Entities\Messages\DeviceAttribute) {
+		if (!$message instanceof Queue\Messages\DeviceAttribute) {
 			return false;
 		}
 
 		$findDeviceQuery = new Queries\Entities\FindDevices();
-		$findDeviceQuery->byConnectorId($entity->getConnector());
-		$findDeviceQuery->byIdentifier($entity->getDevice());
+		$findDeviceQuery->byConnectorId($message->getConnector());
+		$findDeviceQuery->byIdentifier($message->getDevice());
 
 		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\FbMqttDevice::class);
 
-		if ($entity->getAttribute() === Entities\Messages\Attribute::STATE) {
-			if (MetadataTypes\ConnectionState::isValidValue($entity->getValue())) {
+		if ($message->getAttribute() === Queue\Messages\Attribute::STATE) {
+			if (MetadataTypes\ConnectionState::isValidValue($message->getValue())) {
 				if ($device === null) {
 					$device = $this->devicesManager->create(Utils\ArrayHash::from([
 						'entity' => Entities\FbMqttDevice::class,
-						'identifier' => $entity->getDevice(),
+						'identifier' => $message->getDevice(),
 					]));
 				}
 
 				$this->deviceConnectionManager->setState(
 					$device,
-					MetadataTypes\ConnectionState::get($entity->getValue()),
+					MetadataTypes\ConnectionState::get($message->getValue()),
 				);
 			}
 		} else {
-			$this->databaseHelper->transaction(function () use ($entity, $device): void {
+			$this->databaseHelper->transaction(function () use ($message, $device): void {
 				$toUpdate = [
 					'entity' => Entities\FbMqttDevice::class,
 				];
 
-				if ($entity->getAttribute() === Entities\Messages\Attribute::NAME) {
-					$toUpdate['name'] = $entity->getValue();
+				if ($message->getAttribute() === Queue\Messages\Attribute::NAME) {
+					$toUpdate['name'] = $message->getValue();
 				}
 
 				if ($device === null) {
-					$toUpdate['identifier'] = $entity->getDevice();
+					$toUpdate['identifier'] = $message->getDevice();
 
 					$device = $this->devicesManager->create(Utils\ArrayHash::from($toUpdate));
 
@@ -122,31 +122,31 @@ final class DeviceAttribute implements Queue\Consumer
 				}
 
 				if (
-					$entity->getAttribute() === Entities\Messages\Attribute::PROPERTIES
-					&& is_array($entity->getValue())
+					$message->getAttribute() === Queue\Messages\Attribute::PROPERTIES
+					&& is_array($message->getValue())
 				) {
-					$this->setDeviceProperties($device, Utils\ArrayHash::from($entity->getValue()));
+					$this->setDeviceProperties($device, Utils\ArrayHash::from($message->getValue()));
 				}
 
 				if (
-					$entity->getAttribute() === Entities\Messages\Attribute::EXTENSIONS
-					&& is_array($entity->getValue())
+					$message->getAttribute() === Queue\Messages\Attribute::EXTENSIONS
+					&& is_array($message->getValue())
 				) {
-					$this->setDeviceExtensions($device, Utils\ArrayHash::from($entity->getValue()));
+					$this->setDeviceExtensions($device, Utils\ArrayHash::from($message->getValue()));
 				}
 
 				if (
-					$entity->getAttribute() === Entities\Messages\Attribute::CHANNELS
-					&& is_array($entity->getValue())
+					$message->getAttribute() === Queue\Messages\Attribute::CHANNELS
+					&& is_array($message->getValue())
 				) {
-					$this->setDeviceChannels($device, Utils\ArrayHash::from($entity->getValue()));
+					$this->setDeviceChannels($device, Utils\ArrayHash::from($message->getValue()));
 				}
 
 				if (
-					$entity->getAttribute() === Entities\Messages\Attribute::CONTROLS
-					&& is_array($entity->getValue())
+					$message->getAttribute() === Queue\Messages\Attribute::CONTROLS
+					&& is_array($message->getValue())
 				) {
-					$this->setDeviceControls($device, Utils\ArrayHash::from($entity->getValue()));
+					$this->setDeviceControls($device, Utils\ArrayHash::from($message->getValue()));
 				}
 			});
 		}
@@ -157,12 +157,12 @@ final class DeviceAttribute implements Queue\Consumer
 				'source' => MetadataTypes\Sources\Connector::FB_MQTT,
 				'type' => 'device-attribute-message-consumer',
 				'connector' => [
-					'id' => $entity->getConnector()->toString(),
+					'id' => $message->getConnector()->toString(),
 				],
 				'device' => [
-					'identifier' => $entity->getDevice(),
+					'identifier' => $message->getDevice(),
 				],
-				'data' => $entity->toArray(),
+				'data' => $message->toArray(),
 			],
 		);
 

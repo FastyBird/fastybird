@@ -17,7 +17,6 @@ namespace FastyBird\Connector\FbMqtt\Writers;
 
 use FastyBird\Connector\FbMqtt\Entities;
 use FastyBird\Connector\FbMqtt\Exceptions;
-use FastyBird\Connector\FbMqtt\Helpers;
 use FastyBird\Connector\FbMqtt\Queue;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
@@ -48,7 +47,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 	 */
 	public function __construct(
 		MetadataDocuments\DevicesModule\Connector $connector,
-		Helpers\Entity $entityHelper,
+		Queue\MessageBuilder $messageBuilder,
 		Queue\Queue $queue,
 		DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
@@ -63,7 +62,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 	{
 		parent::__construct(
 			$connector,
-			$entityHelper,
+			$messageBuilder,
 			$queue,
 			$devicesConfigurationRepository,
 			$channelsConfigurationRepository,
@@ -106,20 +105,20 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 	public function consume(
 		MetadataTypes\Sources\Source $source,
 		MetadataTypes\RoutingKey $routingKey,
-		MetadataDocuments\Document|null $entity,
+		MetadataDocuments\Document|null $document,
 	): void
 	{
-		if ($entity instanceof MetadataDocuments\DevicesModule\DevicePropertyState) {
+		if ($document instanceof MetadataDocuments\DevicesModule\DevicePropertyState) {
 			if (
-				$entity->getGet()->getExpectedValue() === null
-				|| $entity->getPending() !== true
+				$document->getGet()->getExpectedValue() === null
+				|| $document->getPending() !== true
 			) {
 				return;
 			}
 
 			$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
 			$findDeviceQuery->forConnector($this->connector);
-			$findDeviceQuery->byId($entity->getDevice());
+			$findDeviceQuery->byId($document->getDevice());
 			$findDeviceQuery->byType(Entities\FbMqttDevice::TYPE);
 
 			$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
@@ -129,34 +128,34 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 			}
 
 			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\WriteDevicePropertyState::class,
+				$this->messageBuilder->create(
+					Queue\Messages\WriteDevicePropertyState::class,
 					[
 						'connector' => $this->connector->getId(),
 						'device' => $device->getId(),
-						'property' => $entity->getId(),
+						'property' => $document->getId(),
 						'state' => array_merge(
-							$entity->getGet()->toArray(),
+							$document->getGet()->toArray(),
 							[
-								'id' => $entity->getId(),
-								'valid' => $entity->isValid(),
-								'pending' => $entity->getPending(),
+								'id' => $document->getId(),
+								'valid' => $document->isValid(),
+								'pending' => $document->getPending(),
 							],
 						),
 					],
 				),
 			);
 
-		} elseif ($entity instanceof MetadataDocuments\DevicesModule\ChannelPropertyState) {
+		} elseif ($document instanceof MetadataDocuments\DevicesModule\ChannelPropertyState) {
 			if (
-				$entity->getGet()->getExpectedValue() === null
-				|| $entity->getPending() !== true
+				$document->getGet()->getExpectedValue() === null
+				|| $document->getPending() !== true
 			) {
 				return;
 			}
 
 			$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
-			$findChannelQuery->byId($entity->getChannel());
+			$findChannelQuery->byId($document->getChannel());
 			$findChannelQuery->byType(Entities\FbMqttChannel::TYPE);
 
 			$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
@@ -177,19 +176,19 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 			}
 
 			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\WriteChannelPropertyState::class,
+				$this->messageBuilder->create(
+					Queue\Messages\WriteChannelPropertyState::class,
 					[
 						'connector' => $this->connector->getId(),
 						'device' => $device->getId(),
 						'channel' => $channel->getId(),
-						'property' => $entity->getId(),
+						'property' => $document->getId(),
 						'state' => array_merge(
-							$entity->getGet()->toArray(),
+							$document->getGet()->toArray(),
 							[
-								'id' => $entity->getId(),
-								'valid' => $entity->isValid(),
-								'pending' => $entity->getPending(),
+								'id' => $document->getId(),
+								'valid' => $document->isValid(),
+								'pending' => $document->getPending(),
 							],
 						),
 					],

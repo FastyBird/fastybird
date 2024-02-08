@@ -197,6 +197,12 @@ class FbMqttExtension extends DI\CompilerExtension implements Translation\DI\Tra
 				'logger' => $logger,
 			]);
 
+		$builder->addDefinition(
+			$this->prefix('queue.messageBuilder'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Queue\MessageBuilder::class);
+
 		/**
 		 * SUBSCRIBERS
 		 */
@@ -233,9 +239,6 @@ class FbMqttExtension extends DI\CompilerExtension implements Translation\DI\Tra
 		/**
 		 * HELPERS
 		 */
-
-		$builder->addDefinition($this->prefix('helpers.entity'), new DI\Definitions\ServiceDefinition())
-			->setType(Helpers\Entity::class);
 
 		$builder->addDefinition($this->prefix('helpers.connector'), new DI\Definitions\ServiceDefinition())
 			->setType(Helpers\Connector::class);

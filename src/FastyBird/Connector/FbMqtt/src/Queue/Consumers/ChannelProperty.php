@@ -78,33 +78,33 @@ final class ChannelProperty implements Queue\Consumer
 	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws Throwable
 	 */
-	public function consume(Entities\Messages\Entity $entity): bool
+	public function consume(Queue\Messages\Message $message): bool
 	{
-		if (!$entity instanceof Entities\Messages\ChannelProperty) {
+		if (!$message instanceof Queue\Messages\ChannelProperty) {
 			return false;
 		}
 
 		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
-		$findDeviceQuery->byConnectorId($entity->getConnector());
-		$findDeviceQuery->byIdentifier($entity->getDevice());
+		$findDeviceQuery->byConnectorId($message->getConnector());
+		$findDeviceQuery->byIdentifier($message->getDevice());
 		$findDeviceQuery->byType(Entities\FbMqttDevice::TYPE);
 
 		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
 		if ($device === null) {
 			$this->logger->warning(
-				sprintf('Device "%s" is not registered', $entity->getDevice()),
+				sprintf('Device "%s" is not registered', $message->getDevice()),
 				[
 					'source' => MetadataTypes\Sources\Connector::FB_MQTT,
 					'type' => 'channel-property-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $message->getConnector()->toString(),
 					],
 					'device' => [
-						'identifier' => $entity->getDevice(),
+						'identifier' => $message->getDevice(),
 					],
 					'channel' => [
-						'identifier' => $entity->getChannel(),
+						'identifier' => $message->getChannel(),
 					],
 				],
 			);
@@ -114,25 +114,25 @@ final class ChannelProperty implements Queue\Consumer
 
 		$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 		$findChannelQuery->forDevice($device);
-		$findChannelQuery->byIdentifier($entity->getChannel());
+		$findChannelQuery->byIdentifier($message->getChannel());
 		$findChannelQuery->byType(Entities\FbMqttChannel::TYPE);
 
 		$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 
 		if ($channel === null) {
 			$this->logger->warning(
-				sprintf('Device channel "%s" is not registered', $entity->getChannel()),
+				sprintf('Device channel "%s" is not registered', $message->getChannel()),
 				[
 					'source' => MetadataTypes\Sources\Connector::FB_MQTT,
 					'type' => 'channel-property-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $message->getConnector()->toString(),
 					],
 					'device' => [
 						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
-						'identifier' => $entity->getChannel(),
+						'identifier' => $message->getChannel(),
 					],
 				],
 			);
@@ -142,18 +142,18 @@ final class ChannelProperty implements Queue\Consumer
 
 		$findChannelPropertyQuery = new DevicesQueries\Configuration\FindChannelProperties();
 		$findChannelPropertyQuery->forChannel($channel);
-		$findChannelPropertyQuery->byIdentifier($entity->getProperty());
+		$findChannelPropertyQuery->byIdentifier($message->getProperty());
 
 		$property = $this->channelsPropertiesConfigurationRepository->findOneBy($findChannelPropertyQuery);
 
 		if ($property === null) {
 			$this->logger->warning(
-				sprintf('Property "%s" is not registered', $entity->getProperty()),
+				sprintf('Property "%s" is not registered', $message->getProperty()),
 				[
 					'source' => MetadataTypes\Sources\Connector::FB_MQTT,
 					'type' => 'channel-property-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $message->getConnector()->toString(),
 					],
 					'device' => [
 						'id' => $device->getId()->toString(),
@@ -162,7 +162,7 @@ final class ChannelProperty implements Queue\Consumer
 						'id' => $channel->getId()->toString(),
 					],
 					'property' => [
-						'identifier' => $entity->getProperty(),
+						'identifier' => $message->getProperty(),
 					],
 				],
 			);
@@ -170,16 +170,16 @@ final class ChannelProperty implements Queue\Consumer
 			return true;
 		}
 
-		if ($entity->getValue() !== FbMqtt\Constants::VALUE_NOT_SET) {
+		if ($message->getValue() !== FbMqtt\Constants::VALUE_NOT_SET) {
 			if ($property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
-				$this->databaseHelper->transaction(function () use ($entity, $property): void {
+				$this->databaseHelper->transaction(function () use ($message, $property): void {
 					$property = $this->channelsPropertiesRepository->find($property->getId());
 					assert($property instanceof DevicesEntities\Channels\Properties\Property);
 
 					$this->channelsPropertiesManager->update(
 						$property,
 						Utils\ArrayHash::from([
-							'value' => $entity->getValue(),
+							'value' => $message->getValue(),
 						]),
 					);
 				});
@@ -187,18 +187,18 @@ final class ChannelProperty implements Queue\Consumer
 				await($this->channelPropertiesStatesManager->set(
 					$property,
 					Utils\ArrayHash::from([
-						DevicesStates\Property::ACTUAL_VALUE_FIELD => $entity->getValue(),
+						DevicesStates\Property::ACTUAL_VALUE_FIELD => $message->getValue(),
 					]),
 					MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::FB_MQTT),
 				));
 			}
 		} else {
-			if (count($entity->getAttributes()) > 0) {
-				$this->databaseHelper->transaction(function () use ($entity, $property): void {
+			if (count($message->getAttributes()) > 0) {
+				$this->databaseHelper->transaction(function () use ($message, $property): void {
 					$property = $this->channelsPropertiesRepository->find($property->getId());
 					assert($property instanceof DevicesEntities\Channels\Properties\Property);
 
-					$toUpdate = $this->handlePropertyConfiguration($entity);
+					$toUpdate = $this->handlePropertyConfiguration($message);
 
 					$this->channelsPropertiesManager->update($property, Utils\ArrayHash::from($toUpdate));
 				});
@@ -211,7 +211,7 @@ final class ChannelProperty implements Queue\Consumer
 				'source' => MetadataTypes\Sources\Connector::FB_MQTT,
 				'type' => 'channel-property-message-consumer',
 				'connector' => [
-					'id' => $entity->getConnector()->toString(),
+					'id' => $message->getConnector()->toString(),
 				],
 				'device' => [
 					'id' => $device->getId()->toString(),
@@ -222,7 +222,7 @@ final class ChannelProperty implements Queue\Consumer
 				'property' => [
 					'id' => $property->getId()->toString(),
 				],
-				'data' => $entity->toArray(),
+				'data' => $message->toArray(),
 			],
 		);
 

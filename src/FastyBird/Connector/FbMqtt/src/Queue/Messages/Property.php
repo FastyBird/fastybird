@@ -13,7 +13,7 @@
  * @date           24.02.20
  */
 
-namespace FastyBird\Connector\FbMqtt\Entities\Messages;
+namespace FastyBird\Connector\FbMqtt\Queue\Messages;
 
 use FastyBird\Connector\FbMqtt;
 use FastyBird\Connector\FbMqtt\Exceptions;
@@ -31,7 +31,7 @@ use ValueError;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-abstract class Property implements Entity
+abstract class Property implements Message
 {
 
 	/**

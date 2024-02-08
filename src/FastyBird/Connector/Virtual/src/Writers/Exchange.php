@@ -104,13 +104,13 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 	public function consume(
 		MetadataTypes\Sources\Source $source,
 		MetadataTypes\RoutingKey $routingKey,
-		MetadataDocuments\Document|null $entity,
+		MetadataDocuments\Document|null $document,
 	): void
 	{
-		if ($entity instanceof MetadataDocuments\DevicesModule\DevicePropertyState) {
+		if ($document instanceof MetadataDocuments\DevicesModule\DevicePropertyState) {
 			$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
 			$findDeviceQuery->forConnector($this->connector);
-			$findDeviceQuery->byId($entity->getDevice());
+			$findDeviceQuery->byId($document->getDevice());
 
 			$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
@@ -119,7 +119,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 			}
 
 			$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceProperties();
-			$findPropertyQuery->byId($entity->getId());
+			$findPropertyQuery->byId($document->getId());
 			$findPropertyQuery->forDevice($device);
 
 			$property = $this->devicesPropertiesConfigurationRepository->findOneBy($findPropertyQuery);
@@ -135,13 +135,13 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
-							'property' => $entity->getId(),
+							'property' => $document->getId(),
 							'state' => array_merge(
-								$entity->getRead()->toArray(),
+								$document->getRead()->toArray(),
 								[
-									'id' => $entity->getId(),
-									'valid' => $entity->isValid(),
-									'pending' => $entity->getPending(),
+									'id' => $document->getId(),
+									'valid' => $document->isValid(),
+									'pending' => $document->getPending(),
 								],
 							),
 						],
@@ -154,22 +154,22 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
-							'property' => $entity->getId(),
+							'property' => $document->getId(),
 							'state' => array_merge(
-								$entity->getGet()->toArray(),
+								$document->getGet()->toArray(),
 								[
-									'id' => $entity->getId(),
-									'valid' => $entity->isValid(),
-									'pending' => $entity->getPending(),
+									'id' => $document->getId(),
+									'valid' => $document->isValid(),
+									'pending' => $document->getPending(),
 								],
 							),
 						],
 					),
 				);
 			}
-		} elseif ($entity instanceof MetadataDocuments\DevicesModule\ChannelPropertyState) {
+		} elseif ($document instanceof MetadataDocuments\DevicesModule\ChannelPropertyState) {
 			$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
-			$findChannelQuery->byId($entity->getChannel());
+			$findChannelQuery->byId($document->getChannel());
 
 			$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 
@@ -188,7 +188,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 			}
 
 			$findPropertyQuery = new DevicesQueries\Configuration\FindChannelProperties();
-			$findPropertyQuery->byId($entity->getId());
+			$findPropertyQuery->byId($document->getId());
 			$findPropertyQuery->forChannel($channel);
 
 			$property = $this->channelsPropertiesConfigurationRepository->findOneBy($findPropertyQuery);
@@ -205,13 +205,13 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
 							'channel' => $channel->getId(),
-							'property' => $entity->getId(),
+							'property' => $document->getId(),
 							'state' => array_merge(
-								$entity->getRead()->toArray(),
+								$document->getRead()->toArray(),
 								[
-									'id' => $entity->getId(),
-									'valid' => $entity->isValid(),
-									'pending' => $entity->getPending(),
+									'id' => $document->getId(),
+									'valid' => $document->isValid(),
+									'pending' => $document->getPending(),
 								],
 							),
 						],
@@ -225,13 +225,13 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
 							'channel' => $channel->getId(),
-							'property' => $entity->getId(),
+							'property' => $document->getId(),
 							'state' => array_merge(
-								$entity->getGet()->toArray(),
+								$document->getGet()->toArray(),
 								[
-									'id' => $entity->getId(),
-									'valid' => $entity->isValid(),
-									'pending' => $entity->getPending(),
+									'id' => $document->getId(),
+									'valid' => $document->isValid(),
+									'pending' => $document->getPending(),
 								],
 							),
 						],

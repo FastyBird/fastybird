@@ -67,9 +67,9 @@ final class Consumers
 
 	public function consume(): void
 	{
-		$entity = $this->queue->dequeue();
+		$message = $this->queue->dequeue();
 
-		if ($entity === false) {
+		if ($message === false) {
 			return;
 		}
 
@@ -88,7 +88,7 @@ final class Consumers
 		}
 
 		foreach ($this->consumers as $consumer) {
-			if ($consumer->consume($entity) === true) {
+			if ($consumer->consume($message) === true) {
 				return;
 			}
 		}
@@ -98,7 +98,7 @@ final class Consumers
 			[
 				'source' => MetadataTypes\Sources\Connector::FB_MQTT,
 				'type' => 'consumers',
-				'message' => $entity->toArray(),
+				'message' => $message->toArray(),
 			],
 		);
 	}

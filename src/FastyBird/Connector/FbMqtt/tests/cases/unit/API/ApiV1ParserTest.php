@@ -3,9 +3,9 @@
 namespace FastyBird\Connector\FbMqtt\Tests\Cases\Unit\API;
 
 use FastyBird\Connector\FbMqtt\API;
-use FastyBird\Connector\FbMqtt\Entities;
 use FastyBird\Connector\FbMqtt\Exceptions;
-use FastyBird\Connector\FbMqtt\Types\ExtensionType;
+use FastyBird\Connector\FbMqtt\Queue;
+use FastyBird\Connector\FbMqtt\Types;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid;
 use Throwable;
@@ -40,51 +40,51 @@ final class ApiV1ParserTest extends TestCase
 		$connectorId = Uuid\Uuid::fromString('37b86cdc-376b-4d4c-9683-aa4f41daa13a');
 
 		return [
-			'attr-' . Entities\Messages\Attribute::NAME => [
+			'attr-' . Queue\Messages\Attribute::NAME => [
 				$connectorId,
-				'/fb/v1/device-name/$' . Entities\Messages\Attribute::NAME,
+				'/fb/v1/device-name/$' . Queue\Messages\Attribute::NAME,
 				'Some content',
 				[
 					'connector' => $connectorId,
 					'device' => 'device-name',
 					'retained' => false,
-					'attribute' => Entities\Messages\Attribute::NAME,
+					'attribute' => Queue\Messages\Attribute::NAME,
 					'value' => 'Some content',
 				],
 			],
-			'attr-' . Entities\Messages\Attribute::PROPERTIES => [
+			'attr-' . Queue\Messages\Attribute::PROPERTIES => [
 				$connectorId,
-				'/fb/v1/device-name/$' . Entities\Messages\Attribute::PROPERTIES,
+				'/fb/v1/device-name/$' . Queue\Messages\Attribute::PROPERTIES,
 				'prop1,prop2',
 				[
 					'connector' => $connectorId,
 					'device' => 'device-name',
 					'retained' => false,
-					'attribute' => Entities\Messages\Attribute::PROPERTIES,
+					'attribute' => Queue\Messages\Attribute::PROPERTIES,
 					'value' => 'prop1,prop2',
 				],
 			],
-			'attr-' . Entities\Messages\Attribute::CHANNELS => [
+			'attr-' . Queue\Messages\Attribute::CHANNELS => [
 				$connectorId,
-				'/fb/v1/device-name/$' . Entities\Messages\Attribute::CHANNELS,
+				'/fb/v1/device-name/$' . Queue\Messages\Attribute::CHANNELS,
 				'channel-one,channel-two',
 				[
 					'connector' => $connectorId,
 					'device' => 'device-name',
 					'retained' => false,
-					'attribute' => Entities\Messages\Attribute::CHANNELS,
+					'attribute' => Queue\Messages\Attribute::CHANNELS,
 					'value' => 'channel-one,channel-two',
 				],
 			],
-			'attr-' . Entities\Messages\Attribute::CONTROLS => [
+			'attr-' . Queue\Messages\Attribute::CONTROLS => [
 				$connectorId,
-				'/fb/v1/device-name/$' . Entities\Messages\Attribute::CONTROLS,
+				'/fb/v1/device-name/$' . Queue\Messages\Attribute::CONTROLS,
 				'configure,reset',
 				[
 					'connector' => $connectorId,
 					'device' => 'device-name',
 					'retained' => false,
-					'attribute' => Entities\Messages\Attribute::CONTROLS,
+					'attribute' => Queue\Messages\Attribute::CONTROLS,
 					'value' => 'configure,reset',
 				],
 			],
@@ -118,55 +118,55 @@ final class ApiV1ParserTest extends TestCase
 		$connectorId = Uuid\Uuid::fromString('37b86cdc-376b-4d4c-9683-aa4f41daa13a');
 
 		return [
-			'hw-' . Entities\Messages\ExtensionAttribute::MAC_ADDRESS => [
+			'hw-' . Queue\Messages\ExtensionAttribute::MAC_ADDRESS => [
 				$connectorId,
-				'/fb/v1/device-name/$hw/' . Entities\Messages\ExtensionAttribute::MAC_ADDRESS,
+				'/fb/v1/device-name/$hw/' . Queue\Messages\ExtensionAttribute::MAC_ADDRESS,
 				'00:0a:95:9d:68:16',
 				[
 					'connector' => $connectorId,
 					'device' => 'device-name',
 					'retained' => false,
-					'extension' => ExtensionType::FASTYBIRD_HARDWARE,
-					'parameter' => Entities\Messages\ExtensionAttribute::MAC_ADDRESS,
+					'extension' => Types\ExtensionType::FASTYBIRD_HARDWARE,
+					'parameter' => Queue\Messages\ExtensionAttribute::MAC_ADDRESS,
 					'value' => '000a959d6816',
 				],
 			],
-			'hw-' . Entities\Messages\ExtensionAttribute::MANUFACTURER => [
+			'hw-' . Queue\Messages\ExtensionAttribute::MANUFACTURER => [
 				$connectorId,
-				'/fb/v1/device-name/$hw/' . Entities\Messages\ExtensionAttribute::MANUFACTURER,
+				'/fb/v1/device-name/$hw/' . Queue\Messages\ExtensionAttribute::MANUFACTURER,
 				'value-content',
 				[
 					'connector' => $connectorId,
 					'device' => 'device-name',
 					'retained' => false,
-					'extension' => ExtensionType::FASTYBIRD_HARDWARE,
-					'parameter' => Entities\Messages\ExtensionAttribute::MANUFACTURER,
+					'extension' => Types\ExtensionType::FASTYBIRD_HARDWARE,
+					'parameter' => Queue\Messages\ExtensionAttribute::MANUFACTURER,
 					'value' => 'value-content',
 				],
 			],
-			'hw-' . Entities\Messages\ExtensionAttribute::MODEL => [
+			'hw-' . Queue\Messages\ExtensionAttribute::MODEL => [
 				$connectorId,
-				'/fb/v1/device-name/$hw/' . Entities\Messages\ExtensionAttribute::MODEL,
+				'/fb/v1/device-name/$hw/' . Queue\Messages\ExtensionAttribute::MODEL,
 				'value-content',
 				[
 					'connector' => $connectorId,
 					'device' => 'device-name',
 					'retained' => false,
-					'extension' => ExtensionType::FASTYBIRD_HARDWARE,
-					'parameter' => Entities\Messages\ExtensionAttribute::MODEL,
+					'extension' => Types\ExtensionType::FASTYBIRD_HARDWARE,
+					'parameter' => Queue\Messages\ExtensionAttribute::MODEL,
 					'value' => 'value-content',
 				],
 			],
-			'hw-' . Entities\Messages\ExtensionAttribute::VERSION => [
+			'hw-' . Queue\Messages\ExtensionAttribute::VERSION => [
 				$connectorId,
-				'/fb/v1/device-name/$hw/' . Entities\Messages\ExtensionAttribute::VERSION,
+				'/fb/v1/device-name/$hw/' . Queue\Messages\ExtensionAttribute::VERSION,
 				'value-content',
 				[
 					'connector' => $connectorId,
 					'device' => 'device-name',
 					'retained' => false,
-					'extension' => ExtensionType::FASTYBIRD_HARDWARE,
-					'parameter' => Entities\Messages\ExtensionAttribute::VERSION,
+					'extension' => Types\ExtensionType::FASTYBIRD_HARDWARE,
+					'parameter' => Queue\Messages\ExtensionAttribute::VERSION,
 					'value' => 'value-content',
 				],
 			],
@@ -200,29 +200,29 @@ final class ApiV1ParserTest extends TestCase
 		$connectorId = Uuid\Uuid::fromString('37b86cdc-376b-4d4c-9683-aa4f41daa13a');
 
 		return [
-			'fw-' . Entities\Messages\ExtensionAttribute::MANUFACTURER => [
+			'fw-' . Queue\Messages\ExtensionAttribute::MANUFACTURER => [
 				$connectorId,
-				'/fb/v1/device-name/$fw/' . Entities\Messages\ExtensionAttribute::MANUFACTURER,
+				'/fb/v1/device-name/$fw/' . Queue\Messages\ExtensionAttribute::MANUFACTURER,
 				'value-content',
 				[
 					'connector' => $connectorId,
 					'device' => 'device-name',
 					'retained' => false,
-					'extension' => ExtensionType::FASTYBIRD_FIRMWARE,
-					'parameter' => Entities\Messages\ExtensionAttribute::MANUFACTURER,
+					'extension' => Types\ExtensionType::FASTYBIRD_FIRMWARE,
+					'parameter' => Queue\Messages\ExtensionAttribute::MANUFACTURER,
 					'value' => 'value-content',
 				],
 			],
-			'fw-' . Entities\Messages\ExtensionAttribute::VERSION => [
+			'fw-' . Queue\Messages\ExtensionAttribute::VERSION => [
 				$connectorId,
-				'/fb/v1/device-name/$fw/' . Entities\Messages\ExtensionAttribute::VERSION,
+				'/fb/v1/device-name/$fw/' . Queue\Messages\ExtensionAttribute::VERSION,
 				'value-content',
 				[
 					'connector' => $connectorId,
 					'device' => 'device-name',
 					'retained' => false,
-					'extension' => ExtensionType::FASTYBIRD_FIRMWARE,
-					'parameter' => Entities\Messages\ExtensionAttribute::VERSION,
+					'extension' => Types\ExtensionType::FASTYBIRD_FIRMWARE,
+					'parameter' => Queue\Messages\ExtensionAttribute::VERSION,
 					'value' => 'value-content',
 				],
 			],
@@ -298,9 +298,9 @@ final class ApiV1ParserTest extends TestCase
 		$connectorId = Uuid\Uuid::fromString('37b86cdc-376b-4d4c-9683-aa4f41daa13a');
 
 		return [
-			'attr-' . Entities\Messages\PropertyAttribute::NAME => [
+			'attr-' . Queue\Messages\PropertyAttribute::NAME => [
 				$connectorId,
-				'/fb/v1/device-name/$property/some-property/$' . Entities\Messages\PropertyAttribute::NAME,
+				'/fb/v1/device-name/$property/some-property/$' . Queue\Messages\PropertyAttribute::NAME,
 				'payload',
 				[
 					'connector' => $connectorId,
@@ -309,15 +309,15 @@ final class ApiV1ParserTest extends TestCase
 					'property' => 'some-property',
 					'attributes' => [
 						[
-							'attribute' => Entities\Messages\PropertyAttribute::NAME,
+							'attribute' => Queue\Messages\PropertyAttribute::NAME,
 							'value' => 'payload',
 						],
 					],
 				],
 			],
-			'attr-' . Entities\Messages\PropertyAttribute::SETTABLE => [
+			'attr-' . Queue\Messages\PropertyAttribute::SETTABLE => [
 				$connectorId,
-				'/fb/v1/device-name/$property/some-property/$' . Entities\Messages\PropertyAttribute::SETTABLE,
+				'/fb/v1/device-name/$property/some-property/$' . Queue\Messages\PropertyAttribute::SETTABLE,
 				'true',
 				[
 					'connector' => $connectorId,
@@ -326,15 +326,15 @@ final class ApiV1ParserTest extends TestCase
 					'property' => 'some-property',
 					'attributes' => [
 						[
-							'attribute' => Entities\Messages\PropertyAttribute::SETTABLE,
+							'attribute' => Queue\Messages\PropertyAttribute::SETTABLE,
 							'value' => 'true',
 						],
 					],
 				],
 			],
-			'attr-' . Entities\Messages\PropertyAttribute::QUERYABLE => [
+			'attr-' . Queue\Messages\PropertyAttribute::QUERYABLE => [
 				$connectorId,
-				'/fb/v1/device-name/$property/some-property/$' . Entities\Messages\PropertyAttribute::QUERYABLE,
+				'/fb/v1/device-name/$property/some-property/$' . Queue\Messages\PropertyAttribute::QUERYABLE,
 				'invalid',
 				[
 					'connector' => $connectorId,
@@ -343,7 +343,7 @@ final class ApiV1ParserTest extends TestCase
 					'property' => 'some-property',
 					'attributes' => [
 						[
-							'attribute' => Entities\Messages\PropertyAttribute::QUERYABLE,
+							'attribute' => Queue\Messages\PropertyAttribute::QUERYABLE,
 							'value' => 'invalid',
 						],
 					],
@@ -490,42 +490,42 @@ final class ApiV1ParserTest extends TestCase
 		$connectorId = Uuid\Uuid::fromString('37b86cdc-376b-4d4c-9683-aa4f41daa13a');
 
 		return [
-			'attr-' . Entities\Messages\Attribute::NAME => [
+			'attr-' . Queue\Messages\Attribute::NAME => [
 				$connectorId,
-				'/fb/v1/device-name/$channel/channel-name/$' . Entities\Messages\Attribute::NAME,
+				'/fb/v1/device-name/$channel/channel-name/$' . Queue\Messages\Attribute::NAME,
 				'Some content',
 				[
 					'connector' => $connectorId,
 					'device' => 'device-name',
 					'channel' => 'channel-name',
 					'retained' => false,
-					'attribute' => Entities\Messages\Attribute::NAME,
+					'attribute' => Queue\Messages\Attribute::NAME,
 					'value' => 'Some content',
 				],
 			],
-			'attr-' . Entities\Messages\Attribute::PROPERTIES => [
+			'attr-' . Queue\Messages\Attribute::PROPERTIES => [
 				$connectorId,
-				'/fb/v1/device-name/$channel/channel-name/$' . Entities\Messages\Attribute::PROPERTIES,
+				'/fb/v1/device-name/$channel/channel-name/$' . Queue\Messages\Attribute::PROPERTIES,
 				'prop1,prop2',
 				[
 					'connector' => $connectorId,
 					'device' => 'device-name',
 					'channel' => 'channel-name',
 					'retained' => false,
-					'attribute' => Entities\Messages\Attribute::PROPERTIES,
+					'attribute' => Queue\Messages\Attribute::PROPERTIES,
 					'value' => 'prop1,prop2',
 				],
 			],
-			'attr-' . Entities\Messages\Attribute::CONTROLS => [
+			'attr-' . Queue\Messages\Attribute::CONTROLS => [
 				$connectorId,
-				'/fb/v1/device-name/$channel/channel-name/$' . Entities\Messages\Attribute::CONTROLS,
+				'/fb/v1/device-name/$channel/channel-name/$' . Queue\Messages\Attribute::CONTROLS,
 				'configure,reset',
 				[
 					'connector' => $connectorId,
 					'device' => 'device-name',
 					'channel' => 'channel-name',
 					'retained' => false,
-					'attribute' => Entities\Messages\Attribute::CONTROLS,
+					'attribute' => Queue\Messages\Attribute::CONTROLS,
 					'value' => 'configure,reset',
 				],
 			],
@@ -602,9 +602,9 @@ final class ApiV1ParserTest extends TestCase
 		$connectorId = Uuid\Uuid::fromString('37b86cdc-376b-4d4c-9683-aa4f41daa13a');
 
 		return [
-			'attr-' . Entities\Messages\PropertyAttribute::NAME => [
+			'attr-' . Queue\Messages\PropertyAttribute::NAME => [
 				$connectorId,
-				'/fb/v1/device-name/$channel/channel-name/$property/some-property/$' . Entities\Messages\PropertyAttribute::NAME,
+				'/fb/v1/device-name/$channel/channel-name/$property/some-property/$' . Queue\Messages\PropertyAttribute::NAME,
 				'payload',
 				[
 					'connector' => $connectorId,
@@ -614,15 +614,15 @@ final class ApiV1ParserTest extends TestCase
 					'property' => 'some-property',
 					'attributes' => [
 						[
-							'attribute' => Entities\Messages\PropertyAttribute::NAME,
+							'attribute' => Queue\Messages\PropertyAttribute::NAME,
 							'value' => 'payload',
 						],
 					],
 				],
 			],
-			'attr-' . Entities\Messages\PropertyAttribute::SETTABLE => [
+			'attr-' . Queue\Messages\PropertyAttribute::SETTABLE => [
 				$connectorId,
-				'/fb/v1/device-name/$channel/channel-name/$property/some-property/$' . Entities\Messages\PropertyAttribute::SETTABLE,
+				'/fb/v1/device-name/$channel/channel-name/$property/some-property/$' . Queue\Messages\PropertyAttribute::SETTABLE,
 				'true',
 				[
 					'connector' => $connectorId,
@@ -632,15 +632,15 @@ final class ApiV1ParserTest extends TestCase
 					'property' => 'some-property',
 					'attributes' => [
 						[
-							'attribute' => Entities\Messages\PropertyAttribute::SETTABLE,
+							'attribute' => Queue\Messages\PropertyAttribute::SETTABLE,
 							'value' => true,
 						],
 					],
 				],
 			],
-			'attr-' . Entities\Messages\PropertyAttribute::QUERYABLE => [
+			'attr-' . Queue\Messages\PropertyAttribute::QUERYABLE => [
 				$connectorId,
-				'/fb/v1/device-name/$channel/channel-name/$property/some-property/$' . Entities\Messages\PropertyAttribute::QUERYABLE,
+				'/fb/v1/device-name/$channel/channel-name/$property/some-property/$' . Queue\Messages\PropertyAttribute::QUERYABLE,
 				'invalid',
 				[
 					'connector' => $connectorId,
@@ -650,7 +650,7 @@ final class ApiV1ParserTest extends TestCase
 					'property' => 'some-property',
 					'attributes' => [
 						[
-							'attribute' => Entities\Messages\PropertyAttribute::QUERYABLE,
+							'attribute' => Queue\Messages\PropertyAttribute::QUERYABLE,
 							'value' => 'invalid',
 						],
 					],
@@ -688,8 +688,8 @@ final class ApiV1ParserTest extends TestCase
 	public static function parseChannelAttributesInvalidProvider(): array
 	{
 		return [
-			'attr-' . Entities\Messages\Attribute::CHANNELS => [
-				'/fb/v1/device-name/$channel/channel-name/$' . Entities\Messages\Attribute::CHANNELS,
+			'attr-' . Queue\Messages\Attribute::CHANNELS => [
+				'/fb/v1/device-name/$channel/channel-name/$' . Queue\Messages\Attribute::CHANNELS,
 				Exceptions\ParseMessage::class,
 				'Provided topic is not valid',
 			],

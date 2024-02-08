@@ -53,7 +53,6 @@ class DiscriminatorListener implements Common\EventSubscriber
 	 */
 	public function loadClassMetadata(ORM\Event\LoadClassMetadataEventArgs $event): void
 	{
-		value('LISTENER');
 		$metadata = $event->getClassMetadata();
 		$classReflection = $metadata->getReflectionClass();
 

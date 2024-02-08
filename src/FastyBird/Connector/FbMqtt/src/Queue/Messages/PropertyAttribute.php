@@ -13,7 +13,7 @@
  * @date           24.02.20
  */
 
-namespace FastyBird\Connector\FbMqtt\Entities\Messages;
+namespace FastyBird\Connector\FbMqtt\Queue\Messages;
 
 use FastyBird\Connector\FbMqtt;
 use FastyBird\Connector\FbMqtt\Exceptions;
@@ -41,7 +41,7 @@ use function strtolower;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class PropertyAttribute implements Entity
+final class PropertyAttribute implements Message
 {
 
 	use Nette\SmartObject;

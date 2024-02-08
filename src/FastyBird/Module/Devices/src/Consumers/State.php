@@ -74,18 +74,18 @@ final class State implements ExchangeConsumers\Consumer
 	public function consume(
 		MetadataTypes\Sources\Source $source,
 		MetadataTypes\RoutingKey $routingKey,
-		MetadataDocuments\Document|null $entity,
+		MetadataDocuments\Document|null $document,
 	): void
 	{
-		if ($entity === null) {
+		if ($document === null) {
 			return;
 		}
 
 		if (in_array($routingKey->getValue(), self::PROPERTIES_ACTIONS_ROUTING_KEYS, true)) {
-			if ($entity instanceof MetadataDocuments\Actions\ActionConnectorProperty) {
-				if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::SET)) {
+			if ($document instanceof MetadataDocuments\Actions\ActionConnectorProperty) {
+				if ($document->getAction()->equalsValue(MetadataTypes\PropertyAction::SET)) {
 					$findConnectorPropertyQuery = new Queries\Configuration\FindConnectorDynamicProperties();
-					$findConnectorPropertyQuery->byId($entity->getProperty());
+					$findConnectorPropertyQuery->byId($document->getProperty());
 
 					$property = $this->connectorPropertiesConfigurationRepository->findOneBy(
 						$findConnectorPropertyQuery,
@@ -99,13 +99,13 @@ final class State implements ExchangeConsumers\Consumer
 					$result = null;
 					$data = [];
 
-					if ($entity->getSet() !== null) {
-						if ($entity->getSet()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
-							$data[States\Property::ACTUAL_VALUE_FIELD] = $entity->getSet()->getActualValue();
+					if ($document->getSet() !== null) {
+						if ($document->getSet()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+							$data[States\Property::ACTUAL_VALUE_FIELD] = $document->getSet()->getActualValue();
 						}
 
-						if ($entity->getSet()->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
-							$data[States\Property::EXPECTED_VALUE_FIELD] = $entity->getSet()->getExpectedValue();
+						if ($document->getSet()->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
+							$data[States\Property::EXPECTED_VALUE_FIELD] = $document->getSet()->getExpectedValue();
 						}
 
 						if ($data !== []) {
@@ -116,13 +116,13 @@ final class State implements ExchangeConsumers\Consumer
 								$source,
 							);
 						}
-					} elseif ($entity->getWrite() !== null) {
-						if ($entity->getWrite()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
-							$data[States\Property::ACTUAL_VALUE_FIELD] = $entity->getWrite()->getActualValue();
+					} elseif ($document->getWrite() !== null) {
+						if ($document->getWrite()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+							$data[States\Property::ACTUAL_VALUE_FIELD] = $document->getWrite()->getActualValue();
 						}
 
-						if ($entity->getWrite()->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
-							$data[States\Property::EXPECTED_VALUE_FIELD] = $entity->getWrite()->getExpectedValue();
+						if ($document->getWrite()->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
+							$data[States\Property::EXPECTED_VALUE_FIELD] = $document->getWrite()->getExpectedValue();
 						}
 
 						if ($data !== []) {
@@ -136,14 +136,14 @@ final class State implements ExchangeConsumers\Consumer
 					}
 
 					$result
-						?->then(function () use ($entity, $property, $source, $routingKey, $data): void {
+						?->then(function () use ($document, $property, $source, $routingKey, $data): void {
 							$this->logger->debug(
 								'Requested write value to connector property',
 								[
 									'source' => MetadataTypes\Sources\Module::DEVICES,
 									'type' => 'state-consumer',
 									'connector' => [
-										'id' => $entity->getConnector()->toString(),
+										'id' => $document->getConnector()->toString(),
 									],
 									'property' => [
 										'id' => $property->getId()->toString(),
@@ -153,14 +153,14 @@ final class State implements ExchangeConsumers\Consumer
 									'message' => [
 										'routing_key' => $routingKey->getValue(),
 										'source' => $source->getValue(),
-										'data' => $entity->toArray(),
+										'data' => $document->toArray(),
 									],
 								],
 							);
 						});
-				} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::GET)) {
+				} elseif ($document->getAction()->equalsValue(MetadataTypes\PropertyAction::GET)) {
 					$findConnectorPropertyQuery = new Queries\Configuration\FindConnectorDynamicProperties();
-					$findConnectorPropertyQuery->byId($entity->getProperty());
+					$findConnectorPropertyQuery->byId($document->getProperty());
 
 					$property = $this->connectorPropertiesConfigurationRepository->findOneBy(
 						$findConnectorPropertyQuery,
@@ -184,14 +184,14 @@ final class State implements ExchangeConsumers\Consumer
 						),
 						$state,
 					)
-						->then(function () use ($entity, $property, $source, $routingKey): void {
+						->then(function () use ($document, $property, $source, $routingKey): void {
 							$this->logger->debug(
 								'Requested write value to channel property',
 								[
 									'source' => MetadataTypes\Sources\Module::DEVICES,
 									'type' => 'state-consumer',
 									'connector' => [
-										'id' => $entity->getConnector()->toString(),
+										'id' => $document->getConnector()->toString(),
 									],
 									'property' => [
 										'id' => $property->getId()->toString(),
@@ -200,7 +200,7 @@ final class State implements ExchangeConsumers\Consumer
 									'message' => [
 										'routing_key' => $routingKey->getValue(),
 										'source' => $source->getValue(),
-										'data' => $entity->toArray(),
+										'data' => $document->toArray(),
 									],
 								],
 							);
@@ -216,10 +216,10 @@ final class State implements ExchangeConsumers\Consumer
 							);
 						});
 				}
-			} elseif ($entity instanceof MetadataDocuments\Actions\ActionDeviceProperty) {
-				if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::SET)) {
+			} elseif ($document instanceof MetadataDocuments\Actions\ActionDeviceProperty) {
+				if ($document->getAction()->equalsValue(MetadataTypes\PropertyAction::SET)) {
 					$findConnectorPropertyQuery = new Queries\Configuration\FindDeviceProperties();
-					$findConnectorPropertyQuery->byId($entity->getProperty());
+					$findConnectorPropertyQuery->byId($document->getProperty());
 
 					$property = $this->devicePropertiesConfigurationRepository->findOneBy($findConnectorPropertyQuery);
 
@@ -233,13 +233,13 @@ final class State implements ExchangeConsumers\Consumer
 					$result = null;
 					$data = [];
 
-					if ($entity->getSet() !== null) {
-						if ($entity->getSet()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
-							$data[States\Property::ACTUAL_VALUE_FIELD] = $entity->getSet()->getActualValue();
+					if ($document->getSet() !== null) {
+						if ($document->getSet()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+							$data[States\Property::ACTUAL_VALUE_FIELD] = $document->getSet()->getActualValue();
 						}
 
-						if ($entity->getSet()->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
-							$data[States\Property::EXPECTED_VALUE_FIELD] = $entity->getSet()->getExpectedValue();
+						if ($document->getSet()->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
+							$data[States\Property::EXPECTED_VALUE_FIELD] = $document->getSet()->getExpectedValue();
 						}
 
 						if ($data !== []) {
@@ -250,13 +250,13 @@ final class State implements ExchangeConsumers\Consumer
 								$source,
 							);
 						}
-					} elseif ($entity->getWrite() !== null) {
-						if ($entity->getWrite()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
-							$data[States\Property::ACTUAL_VALUE_FIELD] = $entity->getWrite()->getActualValue();
+					} elseif ($document->getWrite() !== null) {
+						if ($document->getWrite()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+							$data[States\Property::ACTUAL_VALUE_FIELD] = $document->getWrite()->getActualValue();
 						}
 
-						if ($entity->getWrite()->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
-							$data[States\Property::EXPECTED_VALUE_FIELD] = $entity->getWrite()->getExpectedValue();
+						if ($document->getWrite()->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
+							$data[States\Property::EXPECTED_VALUE_FIELD] = $document->getWrite()->getExpectedValue();
 						}
 
 						if ($data !== []) {
@@ -270,14 +270,14 @@ final class State implements ExchangeConsumers\Consumer
 					}
 
 					$result
-						?->then(function () use ($entity, $property, $source, $routingKey, $data): void {
+						?->then(function () use ($document, $property, $source, $routingKey, $data): void {
 							$this->logger->debug(
 								'Requested write value to device property',
 								[
 									'source' => MetadataTypes\Sources\Module::DEVICES,
 									'type' => 'state-consumer',
 									'device' => [
-										'id' => $entity->getDevice()->toString(),
+										'id' => $document->getDevice()->toString(),
 									],
 									'property' => [
 										'id' => $property->getId()->toString(),
@@ -287,14 +287,14 @@ final class State implements ExchangeConsumers\Consumer
 									'message' => [
 										'routing_key' => $routingKey->getValue(),
 										'source' => $source->getValue(),
-										'data' => $entity->toArray(),
+										'data' => $document->toArray(),
 									],
 								],
 							);
 						});
-				} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::GET)) {
+				} elseif ($document->getAction()->equalsValue(MetadataTypes\PropertyAction::GET)) {
 					$findConnectorPropertyQuery = new Queries\Configuration\FindDeviceProperties();
-					$findConnectorPropertyQuery->byId($entity->getProperty());
+					$findConnectorPropertyQuery->byId($document->getProperty());
 
 					$property = $this->devicePropertiesConfigurationRepository->findOneBy($findConnectorPropertyQuery);
 
@@ -318,14 +318,14 @@ final class State implements ExchangeConsumers\Consumer
 						),
 						$state,
 					)
-						->then(function () use ($entity, $property, $source, $routingKey): void {
+						->then(function () use ($document, $property, $source, $routingKey): void {
 							$this->logger->debug(
 								'Requested write value to channel property',
 								[
 									'source' => MetadataTypes\Sources\Module::DEVICES,
 									'type' => 'state-consumer',
 									'device' => [
-										'id' => $entity->getDevice()->toString(),
+										'id' => $document->getDevice()->toString(),
 									],
 									'property' => [
 										'id' => $property->getId()->toString(),
@@ -334,7 +334,7 @@ final class State implements ExchangeConsumers\Consumer
 									'message' => [
 										'routing_key' => $routingKey->getValue(),
 										'source' => $source->getValue(),
-										'data' => $entity->toArray(),
+										'data' => $document->toArray(),
 									],
 								],
 							);
@@ -350,10 +350,10 @@ final class State implements ExchangeConsumers\Consumer
 							);
 						});
 				}
-			} elseif ($entity instanceof MetadataDocuments\Actions\ActionChannelProperty) {
-				if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::SET)) {
+			} elseif ($document instanceof MetadataDocuments\Actions\ActionChannelProperty) {
+				if ($document->getAction()->equalsValue(MetadataTypes\PropertyAction::SET)) {
 					$findConnectorPropertyQuery = new Queries\Configuration\FindChannelProperties();
-					$findConnectorPropertyQuery->byId($entity->getProperty());
+					$findConnectorPropertyQuery->byId($document->getProperty());
 
 					$property = $this->channelPropertiesConfigurationRepository->findOneBy($findConnectorPropertyQuery);
 
@@ -367,13 +367,13 @@ final class State implements ExchangeConsumers\Consumer
 					$result = null;
 					$data = [];
 
-					if ($entity->getSet() !== null) {
-						if ($entity->getSet()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
-							$data[States\Property::ACTUAL_VALUE_FIELD] = $entity->getSet()->getActualValue();
+					if ($document->getSet() !== null) {
+						if ($document->getSet()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+							$data[States\Property::ACTUAL_VALUE_FIELD] = $document->getSet()->getActualValue();
 						}
 
-						if ($entity->getSet()->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
-							$data[States\Property::EXPECTED_VALUE_FIELD] = $entity->getSet()->getExpectedValue();
+						if ($document->getSet()->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
+							$data[States\Property::EXPECTED_VALUE_FIELD] = $document->getSet()->getExpectedValue();
 						}
 
 						if ($data !== []) {
@@ -384,13 +384,13 @@ final class State implements ExchangeConsumers\Consumer
 								$source,
 							);
 						}
-					} elseif ($entity->getWrite() !== null) {
-						if ($entity->getWrite()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
-							$data[States\Property::ACTUAL_VALUE_FIELD] = $entity->getWrite()->getActualValue();
+					} elseif ($document->getWrite() !== null) {
+						if ($document->getWrite()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+							$data[States\Property::ACTUAL_VALUE_FIELD] = $document->getWrite()->getActualValue();
 						}
 
-						if ($entity->getWrite()->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
-							$data[States\Property::EXPECTED_VALUE_FIELD] = $entity->getWrite()->getExpectedValue();
+						if ($document->getWrite()->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
+							$data[States\Property::EXPECTED_VALUE_FIELD] = $document->getWrite()->getExpectedValue();
 						}
 
 						if ($data !== []) {
@@ -404,14 +404,14 @@ final class State implements ExchangeConsumers\Consumer
 					}
 
 					$result
-						?->then(function () use ($entity, $property, $source, $routingKey, $data): void {
+						?->then(function () use ($document, $property, $source, $routingKey, $data): void {
 							$this->logger->debug(
 								'Requested write value to channel property',
 								[
 									'source' => MetadataTypes\Sources\Module::DEVICES,
 									'type' => 'state-consumer',
 									'channel' => [
-										'id' => $entity->getChannel()->toString(),
+										'id' => $document->getChannel()->toString(),
 									],
 									'property' => [
 										'id' => $property->getId()->toString(),
@@ -421,14 +421,14 @@ final class State implements ExchangeConsumers\Consumer
 									'message' => [
 										'routing_key' => $routingKey->getValue(),
 										'source' => $source->getValue(),
-										'data' => $entity->toArray(),
+										'data' => $document->toArray(),
 									],
 								],
 							);
 						});
-				} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::GET)) {
+				} elseif ($document->getAction()->equalsValue(MetadataTypes\PropertyAction::GET)) {
 					$findConnectorPropertyQuery = new Queries\Configuration\FindChannelProperties();
-					$findConnectorPropertyQuery->byId($entity->getProperty());
+					$findConnectorPropertyQuery->byId($document->getProperty());
 
 					$property = $this->channelPropertiesConfigurationRepository->findOneBy($findConnectorPropertyQuery);
 
@@ -452,14 +452,14 @@ final class State implements ExchangeConsumers\Consumer
 						),
 						$state,
 					)
-						->then(function () use ($entity, $property, $source, $routingKey): void {
+						->then(function () use ($document, $property, $source, $routingKey): void {
 							$this->logger->debug(
 								'Requested write value to channel property',
 								[
 									'source' => MetadataTypes\Sources\Module::DEVICES,
 									'type' => 'state-consumer',
 									'channel' => [
-										'id' => $entity->getChannel()->toString(),
+										'id' => $document->getChannel()->toString(),
 									],
 									'property' => [
 										'id' => $property->getId()->toString(),
@@ -468,7 +468,7 @@ final class State implements ExchangeConsumers\Consumer
 									'message' => [
 										'routing_key' => $routingKey->getValue(),
 										'source' => $source->getValue(),
-										'data' => $entity->toArray(),
+										'data' => $document->toArray(),
 									],
 								],
 							);

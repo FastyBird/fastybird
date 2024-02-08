@@ -46,10 +46,10 @@ class Container implements Consumer
 	public function consume(
 		MetadataTypes\Sources\Source $source,
 		MetadataTypes\RoutingKey $routingKey,
-		MetadataDocuments\Document|null $entity,
+		MetadataDocuments\Document|null $document,
 	): void
 	{
-		$this->dispatcher?->dispatch(new Events\BeforeMessageConsumed($source, $routingKey, $entity));
+		$this->dispatcher?->dispatch(new Events\BeforeMessageConsumed($source, $routingKey, $document));
 
 		$this->consumers->rewind();
 
@@ -64,13 +64,13 @@ class Container implements Consumer
 					|| $info->getRoutingKey()->equals($routingKey)
 				)
 			) {
-				$consumer->consume($source, $routingKey, $entity);
+				$consumer->consume($source, $routingKey, $document);
 			}
 
 			$this->consumers->next();
 		}
 
-		$this->dispatcher?->dispatch(new Events\AfterMessageConsumed($source, $routingKey, $entity));
+		$this->dispatcher?->dispatch(new Events\AfterMessageConsumed($source, $routingKey, $document));
 	}
 
 	/**

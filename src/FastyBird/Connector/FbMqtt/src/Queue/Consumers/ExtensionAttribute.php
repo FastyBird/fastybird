@@ -58,29 +58,29 @@ final class ExtensionAttribute implements Queue\Consumer
 	 * @throws ApplicationExceptions\Runtime
 	 * @throws DBAL\Exception
 	 */
-	public function consume(Entities\Messages\Entity $entity): bool
+	public function consume(Queue\Messages\Message $message): bool
 	{
-		if (!$entity instanceof Entities\Messages\ExtensionAttribute) {
+		if (!$message instanceof Queue\Messages\ExtensionAttribute) {
 			return false;
 		}
 
 		$findDeviceQuery = new Queries\Entities\FindDevices();
-		$findDeviceQuery->byConnectorId($entity->getConnector());
-		$findDeviceQuery->byIdentifier($entity->getDevice());
+		$findDeviceQuery->byConnectorId($message->getConnector());
+		$findDeviceQuery->byIdentifier($message->getDevice());
 
 		$device = $this->deviceRepository->findOneBy($findDeviceQuery, Entities\FbMqttDevice::class);
 
 		if ($device === null) {
 			$this->logger->warning(
-				sprintf('Device "%s" is not registered', $entity->getDevice()),
+				sprintf('Device "%s" is not registered', $message->getDevice()),
 				[
 					'source' => MetadataTypes\Sources\Connector::FB_MQTT,
 					'type' => 'extension-attribute-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $message->getConnector()->toString(),
 					],
 					'device' => [
-						'identifier' => $entity->getDevice(),
+						'identifier' => $message->getDevice(),
 					],
 				],
 			);
@@ -92,45 +92,45 @@ final class ExtensionAttribute implements Queue\Consumer
 
 		// HARDWARE INFO
 		if (
-			$entity->getExtension()->equalsValue(Types\ExtensionType::FASTYBIRD_HARDWARE)
-			&& $entity->getParameter() === Entities\Messages\ExtensionAttribute::MANUFACTURER
+			$message->getExtension()->equalsValue(Types\ExtensionType::FASTYBIRD_HARDWARE)
+			&& $message->getParameter() === Queue\Messages\ExtensionAttribute::MANUFACTURER
 		) {
 			$propertyIdentifier = Types\DevicePropertyIdentifier::HARDWARE_MANUFACTURER;
 
 		} elseif (
-			$entity->getExtension()->equalsValue(Types\ExtensionType::FASTYBIRD_HARDWARE)
-			&& $entity->getParameter() === Entities\Messages\ExtensionAttribute::MODEL
+			$message->getExtension()->equalsValue(Types\ExtensionType::FASTYBIRD_HARDWARE)
+			&& $message->getParameter() === Queue\Messages\ExtensionAttribute::MODEL
 		) {
 			$propertyIdentifier = Types\DevicePropertyIdentifier::HARDWARE_MODEL;
 
 		} elseif (
-			$entity->getExtension()->equalsValue(Types\ExtensionType::FASTYBIRD_HARDWARE)
-			&& $entity->getParameter() === Entities\Messages\ExtensionAttribute::VERSION
+			$message->getExtension()->equalsValue(Types\ExtensionType::FASTYBIRD_HARDWARE)
+			&& $message->getParameter() === Queue\Messages\ExtensionAttribute::VERSION
 		) {
 			$propertyIdentifier = Types\DevicePropertyIdentifier::HARDWARE_VERSION;
 
 		} elseif (
-			$entity->getExtension()->equalsValue(Types\ExtensionType::FASTYBIRD_HARDWARE)
-			&& $entity->getParameter() === Entities\Messages\ExtensionAttribute::MAC_ADDRESS
+			$message->getExtension()->equalsValue(Types\ExtensionType::FASTYBIRD_HARDWARE)
+			&& $message->getParameter() === Queue\Messages\ExtensionAttribute::MAC_ADDRESS
 		) {
 			$propertyIdentifier = Types\DevicePropertyIdentifier::HARDWARE_MAC_ADDRESS;
 
 			// FIRMWARE INFO
 		} elseif (
-			$entity->getExtension()->equalsValue(Types\ExtensionType::FASTYBIRD_FIRMWARE)
-			&& $entity->getParameter() === Entities\Messages\ExtensionAttribute::MANUFACTURER
+			$message->getExtension()->equalsValue(Types\ExtensionType::FASTYBIRD_FIRMWARE)
+			&& $message->getParameter() === Queue\Messages\ExtensionAttribute::MANUFACTURER
 		) {
 			$propertyIdentifier = Types\DevicePropertyIdentifier::FIRMWARE_MANUFACTURER;
 
 		} elseif (
-			$entity->getExtension()->equalsValue(Types\ExtensionType::FASTYBIRD_FIRMWARE)
-			&& $entity->getParameter() === Entities\Messages\ExtensionAttribute::NAME
+			$message->getExtension()->equalsValue(Types\ExtensionType::FASTYBIRD_FIRMWARE)
+			&& $message->getParameter() === Queue\Messages\ExtensionAttribute::NAME
 		) {
 			$propertyIdentifier = Types\DevicePropertyIdentifier::FIRMWARE_NAME;
 
 		} elseif (
-			$entity->getExtension()->equalsValue(Types\ExtensionType::FASTYBIRD_FIRMWARE)
-			&& $entity->getParameter() === Entities\Messages\ExtensionAttribute::VERSION
+			$message->getExtension()->equalsValue(Types\ExtensionType::FASTYBIRD_FIRMWARE)
+			&& $message->getParameter() === Queue\Messages\ExtensionAttribute::VERSION
 		) {
 			$propertyIdentifier = Types\DevicePropertyIdentifier::FIRMWARE_VERSION;
 		}
@@ -147,18 +147,18 @@ final class ExtensionAttribute implements Queue\Consumer
 
 		if ($property === null) {
 			$this->logger->warning(
-				sprintf('Device property "%s" is not registered', $entity->getParameter()),
+				sprintf('Device property "%s" is not registered', $message->getParameter()),
 				[
 					'source' => MetadataTypes\Sources\Connector::FB_MQTT,
 					'type' => 'extension-attribute-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $message->getConnector()->toString(),
 					],
 					'device' => [
 						'id' => $device->getId()->toString(),
 					],
 					'property' => [
-						'identifier' => $entity->getParameter(),
+						'identifier' => $message->getParameter(),
 					],
 				],
 			);
@@ -166,9 +166,9 @@ final class ExtensionAttribute implements Queue\Consumer
 			return true;
 		}
 
-		$this->databaseHelper->transaction(function () use ($entity, $property): void {
+		$this->databaseHelper->transaction(function () use ($message, $property): void {
 			$toUpdate = [
-				'value' => $entity->getValue(),
+				'value' => $message->getValue(),
 			];
 
 			$this->propertiesManager->update($property, Utils\ArrayHash::from($toUpdate));
@@ -180,7 +180,7 @@ final class ExtensionAttribute implements Queue\Consumer
 				'source' => MetadataTypes\Sources\Connector::FB_MQTT,
 				'type' => 'extension-attribute-message-consumer',
 				'connector' => [
-					'id' => $entity->getConnector()->toString(),
+					'id' => $message->getConnector()->toString(),
 				],
 				'device' => [
 					'id' => $device->getId()->toString(),
@@ -188,7 +188,7 @@ final class ExtensionAttribute implements Queue\Consumer
 				'property' => [
 					'id' => $property->getId()->toString(),
 				],
-				'data' => $entity->toArray(),
+				'data' => $message->toArray(),
 			],
 		);
 

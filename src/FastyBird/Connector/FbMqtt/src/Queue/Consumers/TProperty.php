@@ -15,8 +15,8 @@
 
 namespace FastyBird\Connector\FbMqtt\Queue\Consumers;
 
-use FastyBird\Connector\FbMqtt\Entities;
 use FastyBird\Connector\FbMqtt\Exceptions;
+use FastyBird\Connector\FbMqtt\Queue;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use TypeError;
 use ValueError;
@@ -44,14 +44,14 @@ trait TProperty
 	 * @throws ValueError
 	 */
 	protected function handlePropertyConfiguration(
-		Entities\Messages\Property $entity,
+		Queue\Messages\Property $message,
 	): array
 	{
 		$toUpdate = [];
 
-		foreach ($entity->getAttributes() as $attribute) {
+		foreach ($message->getAttributes() as $attribute) {
 			if (
-				$attribute->getAttribute() === Entities\Messages\PropertyAttribute::NAME
+				$attribute->getAttribute() === Queue\Messages\PropertyAttribute::NAME
 				&& is_string($attribute->getValue())
 			) {
 				$toUpdate = array_merge($toUpdate, [
@@ -59,20 +59,20 @@ trait TProperty
 				]);
 			}
 
-			if ($attribute->getAttribute() === Entities\Messages\PropertyAttribute::SETTABLE) {
+			if ($attribute->getAttribute() === Queue\Messages\PropertyAttribute::SETTABLE) {
 				$toUpdate = array_merge($toUpdate, [
 					'settable' => boolval($attribute->getValue()),
 				]);
 			}
 
-			if ($attribute->getAttribute() === Entities\Messages\PropertyAttribute::QUERYABLE) {
+			if ($attribute->getAttribute() === Queue\Messages\PropertyAttribute::QUERYABLE) {
 				$toUpdate = array_merge($toUpdate, [
 					'queryable' => boolval($attribute->getValue()),
 				]);
 			}
 
 			if (
-				$attribute->getAttribute() === Entities\Messages\PropertyAttribute::DATA_TYPE
+				$attribute->getAttribute() === Queue\Messages\PropertyAttribute::DATA_TYPE
 				&& is_string($attribute->getValue())
 				&& MetadataTypes\DataType::tryFrom(strval($attribute->getValue())) !== null
 			) {
@@ -81,13 +81,13 @@ trait TProperty
 				]);
 			}
 
-			if ($attribute->getAttribute() === Entities\Messages\PropertyAttribute::FORMAT) {
+			if ($attribute->getAttribute() === Queue\Messages\PropertyAttribute::FORMAT) {
 				$toUpdate = array_merge($toUpdate, [
 					'format' => $attribute->getValue(),
 				]);
 			}
 
-			if ($attribute->getAttribute() === Entities\Messages\PropertyAttribute::UNIT) {
+			if ($attribute->getAttribute() === Queue\Messages\PropertyAttribute::UNIT) {
 				$toUpdate = array_merge($toUpdate, [
 					'unit' => $attribute->getValue(),
 				]);

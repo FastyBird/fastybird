@@ -18,7 +18,6 @@ namespace FastyBird\Connector\FbMqtt\Writers;
 use DateTimeInterface;
 use FastyBird\Connector\FbMqtt\Entities;
 use FastyBird\Connector\FbMqtt\Exceptions;
-use FastyBird\Connector\FbMqtt\Helpers;
 use FastyBird\Connector\FbMqtt\Queue;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
@@ -74,7 +73,7 @@ abstract class Periodic
 
 	public function __construct(
 		protected readonly MetadataDocuments\DevicesModule\Connector $connector,
-		protected readonly Helpers\Entity $entityHelper,
+		protected readonly Queue\MessageBuilder $messageBuilder,
 		protected readonly Queue\Queue $queue,
 		protected readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		protected readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
@@ -276,8 +275,8 @@ abstract class Periodic
 			)
 		) {
 			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\WriteDevicePropertyState::class,
+				$this->messageBuilder->create(
+					Queue\Messages\WriteDevicePropertyState::class,
 					[
 						'connector' => $device->getConnector(),
 						'device' => $device->getId(),
@@ -346,8 +345,8 @@ abstract class Periodic
 			)
 		) {
 			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\WriteChannelPropertyState::class,
+				$this->messageBuilder->create(
+					Queue\Messages\WriteChannelPropertyState::class,
 					[
 						'connector' => $device->getConnector(),
 						'device' => $device->getId(),

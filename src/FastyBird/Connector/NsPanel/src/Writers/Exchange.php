@@ -107,12 +107,12 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 	public function consume(
 		MetadataTypes\Sources\Source $source,
 		MetadataTypes\RoutingKey $routingKey,
-		MetadataDocuments\Document|null $entity,
+		MetadataDocuments\Document|null $document,
 	): void
 	{
-		if ($entity instanceof MetadataDocuments\DevicesModule\ChannelPropertyState) {
+		if ($document instanceof MetadataDocuments\DevicesModule\ChannelPropertyState) {
 			$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
-			$findChannelQuery->byId($entity->getChannel());
+			$findChannelQuery->byId($document->getChannel());
 			$findChannelQuery->byType(Entities\NsPanelChannel::TYPE);
 
 			$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
@@ -133,8 +133,8 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 
 			if ($device->getType() === Entities\Devices\SubDevice::TYPE) {
 				if (
-					$entity->getGet()->getExpectedValue() === null
-					|| $entity->getPending() !== true
+					$document->getGet()->getExpectedValue() === null
+					|| $document->getPending() !== true
 				) {
 					return;
 				}
@@ -147,11 +147,11 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 							'device' => $device->getId(),
 							'channel' => $channel->getId(),
 							'state' => array_merge(
-								$entity->getGet()->toArray(),
+								$document->getGet()->toArray(),
 								[
-									'id' => $entity->getId(),
-									'valid' => $entity->isValid(),
-									'pending' => $entity->getPending(),
+									'id' => $document->getId(),
+									'valid' => $document->isValid(),
+									'pending' => $document->getPending(),
 								],
 							),
 						],
@@ -182,20 +182,20 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 							'device' => $device->getId(),
 							'channel' => $channel->getId(),
 							'state' => array_merge(
-								$entity->getRead()->toArray(),
+								$document->getRead()->toArray(),
 								[
-									'id' => $entity->getId(),
-									'valid' => $entity->isValid(),
-									'pending' => $entity->getPending(),
+									'id' => $document->getId(),
+									'valid' => $document->isValid(),
+									'pending' => $document->getPending(),
 								],
 							),
 						],
 					),
 				);
 			}
-		} elseif ($entity instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
+		} elseif ($document instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
 			$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
-			$findChannelQuery->byId($entity->getChannel());
+			$findChannelQuery->byId($document->getChannel());
 			$findChannelQuery->byType(Entities\NsPanelChannel::TYPE);
 
 			$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);

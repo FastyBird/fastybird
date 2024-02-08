@@ -13,7 +13,7 @@
  * @date           05.03.20
  */
 
-namespace FastyBird\Connector\FbMqtt\Entities\Messages;
+namespace FastyBird\Connector\FbMqtt\Queue\Messages;
 
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;

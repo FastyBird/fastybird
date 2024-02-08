@@ -47,7 +47,7 @@ final class Sockets implements ExchangeConsumer\Consumer
 	public function consume(
 		MetadataTypes\Sources\Source $source,
 		MetadataTypes\RoutingKey $routingKey,
-		MetadataDocuments\Document|null $entity,
+		MetadataDocuments\Document|null $document,
 	): void
 	{
 		if ($source->equalsValue(MetadataTypes\Sources\Module::DEVICES)) {
@@ -58,7 +58,7 @@ final class Sockets implements ExchangeConsumer\Consumer
 			[
 				'routing_key' => $routingKey->getValue(),
 				'source' => $source->getValue(),
-				'data' => $entity?->toArray(),
+				'data' => $document?->toArray(),
 			],
 		);
 
@@ -71,7 +71,7 @@ final class Sockets implements ExchangeConsumer\Consumer
 					'message' => [
 						'routing_key' => $routingKey->getValue(),
 						'source' => $source->getValue(),
-						'data' => $entity?->toArray(),
+						'data' => $document?->toArray(),
 					],
 				],
 			);
@@ -85,7 +85,7 @@ final class Sockets implements ExchangeConsumer\Consumer
 					'message' => [
 						'routing_key' => $routingKey->getValue(),
 						'source' => $source->getValue(),
-						'data' => $entity?->toArray(),
+						'data' => $document?->toArray(),
 					],
 				],
 			);
@@ -99,7 +99,7 @@ final class Sockets implements ExchangeConsumer\Consumer
 				'message' => [
 					'routing_key' => $routingKey->getValue(),
 					'source' => $source->getValue(),
-					'entity' => $entity?->toArray(),
+					'entity' => $document?->toArray(),
 				],
 			],
 		);

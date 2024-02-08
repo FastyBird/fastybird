@@ -13,7 +13,7 @@
  * @date           05.07.22
  */
 
-namespace FastyBird\Connector\FbMqtt\Entities\Messages;
+namespace FastyBird\Connector\FbMqtt\Queue\Messages;
 
 use FastyBird\Connector\FbMqtt\Types;
 use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
@@ -28,7 +28,7 @@ use Ramsey\Uuid;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ExtensionAttribute implements Entity
+final class ExtensionAttribute implements Message
 {
 
 	public const MAC_ADDRESS = 'mac-address';

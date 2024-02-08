@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Entity.php
+ * DeviceProperty.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,27 +10,20 @@
  * @subpackage     Entities
  * @since          1.0.0
  *
- * @date           03.12.23
+ * @date           05.03.20
  */
 
-namespace FastyBird\Connector\FbMqtt\Entities\Messages;
-
-use Orisai\ObjectMapper;
+namespace FastyBird\Connector\FbMqtt\Queue\Messages;
 
 /**
- * FB MQTT base message data entity interface
+ * Device property
  *
  * @package        FastyBird:FbMqttConnector!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-interface Entity extends ObjectMapper\MappedObject
+final class DeviceProperty extends Property
 {
-
-	/**
-	 * @return array<string, mixed>
-	 */
-	public function toArray(): array;
 
 }

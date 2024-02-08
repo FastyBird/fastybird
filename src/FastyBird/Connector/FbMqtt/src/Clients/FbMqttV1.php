@@ -18,9 +18,7 @@ namespace FastyBird\Connector\FbMqtt\Clients;
 use BinSoul\Net\Mqtt;
 use FastyBird\Connector\FbMqtt;
 use FastyBird\Connector\FbMqtt\API;
-use FastyBird\Connector\FbMqtt\Entities;
 use FastyBird\Connector\FbMqtt\Exceptions;
-use FastyBird\Connector\FbMqtt\Helpers;
 use FastyBird\Connector\FbMqtt\Queue;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
@@ -65,7 +63,7 @@ final class FbMqttV1 implements Client
 		private readonly API\ConnectionManager $connectionManager,
 		private readonly FbMqtt\Logger $logger,
 		private readonly Queue\Queue $queue,
-		private readonly Helpers\Entity $entityHelper,
+		private readonly Queue\MessageBuilder $messageBuilder,
 	)
 	{
 	}
@@ -239,8 +237,8 @@ final class FbMqttV1 implements Client
 							// Check for correct data
 							if ($username !== null && $deviceId !== null && $ipAddress !== null) {
 								$this->queue->append(
-									$this->entityHelper->create(
-										Entities\Messages\DeviceProperty::class,
+									$this->messageBuilder->create(
+										Queue\Messages\DeviceProperty::class,
 										[
 											'connector' => $this->connector->getId(),
 											'device' => $deviceId,
@@ -314,8 +312,8 @@ final class FbMqttV1 implements Client
 
 			try {
 				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\DeviceProperty::class,
+					$this->messageBuilder->create(
+						Queue\Messages\DeviceProperty::class,
 						API\V1Parser::parse(
 							$this->connector->getId(),
 							$message->getTopic(),
