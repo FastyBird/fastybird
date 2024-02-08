@@ -48,7 +48,7 @@
     "fastybird/application-library": "dev-main",
     "fastybird/datetime-factory": "^0.6",
     "fastybird/exchange-library": "dev-main",
-    "fastybird/json-api": "^0.15",
+    "fastybird/json-api": "^0.16",
     "fastybird/metadata-library": "dev-main",
     "fastybird/simple-auth": "^0.9",
     "ipub/doctrine-timestampable": "^2.0",

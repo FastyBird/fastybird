@@ -46,7 +46,7 @@
         "endroid/qr-code": "4.5",
         "evenement/evenement": "^3.0",
         "fastybird/datetime-factory": "^0.6",
-        "fastybird/json-api": "^0.15",
+        "fastybird/json-api": "^0.16",
         "fastybird/simple-auth": "^0.9",
         "fig/http-message-util": "^1.1",
         "guzzlehttp/guzzle": "^7.5",
