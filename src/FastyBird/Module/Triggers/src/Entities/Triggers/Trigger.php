@@ -17,7 +17,6 @@ namespace FastyBird\Module\Triggers\Entities\Triggers;
 
 use Doctrine\Common;
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Triggers\Entities;
 use FastyBird\SimpleAuth\Entities as SimpleAuthEntities;
 use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
@@ -36,9 +35,6 @@ use Ramsey\Uuid;
 )]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'trigger_type', type: 'string', length: 100)]
-#[ORM\DiscriminatorMap([
-	self::TYPE => self::class,
-])]
 #[ORM\MappedSuperclass]
 abstract class Trigger implements Entities\Entity,
 	Entities\EntityParams,
@@ -51,8 +47,6 @@ abstract class Trigger implements Entities\Entity,
 	use SimpleAuthEntities\TOwner;
 	use DoctrineTimestampable\Entities\TEntityCreated;
 	use DoctrineTimestampable\Entities\TEntityUpdated;
-
-	public const TYPE = 'generic';
 
 	#[ORM\Id]
 	#[ORM\Column(name: 'trigger_id', type: Uuid\Doctrine\UuidBinaryType::NAME)]
@@ -264,7 +258,7 @@ abstract class Trigger implements Entities\Entity,
 		return $found->isEmpty() ? null : $found->first();
 	}
 
-	abstract public function getType(): MetadataTypes\TriggerType;
+	abstract public static function getType(): string;
 
 	public function getName(): string
 	{
@@ -303,7 +297,7 @@ abstract class Trigger implements Entities\Entity,
 	{
 		return [
 			'id' => $this->getPlainId(),
-			'type' => $this->getType()->getValue(),
+			'type' => static::getType(),
 			'name' => $this->getName(),
 			'comment' => $this->getComment(),
 			'enabled' => $this->isEnabled(),

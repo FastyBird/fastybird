@@ -28,7 +28,7 @@ use function array_merge;
 class DevicePropertyCondition extends PropertyCondition
 {
 
-	public const TYPE = 'device_property';
+	public const TYPE = 'device-property';
 
 	#[IPubDoctrine\Crud(required: true)]
 	#[ORM\Column(name: 'condition_device_property', type: Uuid\Doctrine\UuidBinaryType::NAME, nullable: true)]
@@ -48,7 +48,7 @@ class DevicePropertyCondition extends PropertyCondition
 		$this->property = $property;
 	}
 
-	public function getType(): string
+	public static function getType(): string
 	{
 		return self::TYPE;
 	}

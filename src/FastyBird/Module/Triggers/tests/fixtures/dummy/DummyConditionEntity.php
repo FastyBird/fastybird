@@ -35,7 +35,7 @@ class DummyConditionEntity extends Entities\Conditions\Condition
 	#[ORM\Column(name: 'condition_operand', type: 'string', length: 20, nullable: true)]
 	private string $operand;
 
-	public function getType(): string
+	public static function getType(): string
 	{
 		return self::TYPE;
 	}

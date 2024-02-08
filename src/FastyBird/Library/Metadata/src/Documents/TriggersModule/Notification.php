@@ -17,7 +17,6 @@ namespace FastyBird\Library\Metadata\Documents\TriggersModule;
 
 use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Metadata\Documents;
-use FastyBird\Library\Metadata\Types;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 
@@ -39,8 +38,8 @@ abstract class Notification implements Documents\Document, Documents\Owner
 		private readonly Uuid\UuidInterface $id,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $trigger,
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\TriggerNotificationType::class)]
-		private readonly Types\TriggerNotificationType $type,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		private readonly string $type,
 		#[ObjectMapper\Rules\BoolValue()]
 		private readonly bool $enabled,
 		#[ObjectMapper\Rules\AnyOf([
@@ -62,7 +61,7 @@ abstract class Notification implements Documents\Document, Documents\Owner
 		return $this->trigger;
 	}
 
-	public function getType(): Types\TriggerNotificationType
+	public function getType(): string
 	{
 		return $this->type;
 	}
@@ -77,7 +76,7 @@ abstract class Notification implements Documents\Document, Documents\Owner
 		return [
 			'id' => $this->getId()->toString(),
 			'trigger' => $this->getTrigger()->toString(),
-			'type' => $this->getType()->getValue(),
+			'type' => $this->getType(),
 			'enabled' => $this->isEnabled(),
 			'owner' => $this->getOwner()?->toString(),
 		];

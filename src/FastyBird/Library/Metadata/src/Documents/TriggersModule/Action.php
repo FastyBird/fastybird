@@ -17,7 +17,6 @@ namespace FastyBird\Library\Metadata\Documents\TriggersModule;
 
 use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Metadata\Documents;
-use FastyBird\Library\Metadata\Types;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 
@@ -39,8 +38,8 @@ class Action implements Documents\Document, Documents\Owner
 		private readonly Uuid\UuidInterface $id,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $trigger,
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\TriggerActionType::class)]
-		private readonly Types\TriggerActionType $type,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		private readonly string $type,
 		#[ObjectMapper\Rules\BoolValue()]
 		private readonly bool $enabled,
 		#[ObjectMapper\Rules\AnyOf([
@@ -68,7 +67,7 @@ class Action implements Documents\Document, Documents\Owner
 		return $this->trigger;
 	}
 
-	public function getType(): Types\TriggerActionType
+	public function getType(): string
 	{
 		return $this->type;
 	}
@@ -88,7 +87,7 @@ class Action implements Documents\Document, Documents\Owner
 		return [
 			'id' => $this->getId()->toString(),
 			'trigger' => $this->getTrigger()->toString(),
-			'type' => $this->getType()->getValue(),
+			'type' => $this->getType(),
 			'enabled' => $this->isEnabled(),
 			'is_triggered' => $this->isTriggered(),
 			'owner' => $this->getOwner()?->toString(),

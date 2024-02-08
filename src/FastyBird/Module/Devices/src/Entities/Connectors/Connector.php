@@ -42,9 +42,6 @@ use function array_map;
 #[ORM\UniqueConstraint(name: 'connector_identifier_unique', columns: ['connector_identifier'])]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'connector_type', type: 'string', length: 100)]
-#[ORM\DiscriminatorMap([
-	self::TYPE => Connector::class,
-])]
 #[ORM\MappedSuperclass]
 abstract class Connector implements Entities\Entity,
 	Entities\EntityParams,
@@ -57,8 +54,6 @@ abstract class Connector implements Entities\Entity,
 	use SimpleAuthEntities\TOwner;
 	use DoctrineTimestampable\Entities\TEntityCreated;
 	use DoctrineTimestampable\Entities\TEntityUpdated;
-
-	public const TYPE = 'generic';
 
 	#[ORM\Id]
 	#[ORM\Column(name: 'connector_id', type: Uuid\Doctrine\UuidBinaryType::NAME)]
@@ -139,10 +134,7 @@ abstract class Connector implements Entities\Entity,
 		$this->controls = new Common\Collections\ArrayCollection();
 	}
 
-	public static function getType(): string
-	{
-		return self::TYPE;
-	}
+	abstract public static function getType(): string;
 
 	public function getCategory(): MetadataTypes\ConnectorCategory
 	{

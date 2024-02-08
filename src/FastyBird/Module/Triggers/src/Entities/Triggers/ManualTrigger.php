@@ -17,7 +17,6 @@ namespace FastyBird\Module\Triggers\Entities\Triggers;
 
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Application\Doctrine\Mapping as ApplicationMapping;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 
 #[ORM\Entity]
 #[ORM\Table(
@@ -34,9 +33,9 @@ class ManualTrigger extends Trigger
 
 	public const TYPE = 'manual';
 
-	public function getType(): MetadataTypes\TriggerType
+	public static function getType(): string
 	{
-		return MetadataTypes\TriggerType::get(MetadataTypes\TriggerType::MANUAL);
+		return self::TYPE;
 	}
 
 }

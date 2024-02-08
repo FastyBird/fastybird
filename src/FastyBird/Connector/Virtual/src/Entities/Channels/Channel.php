@@ -19,7 +19,7 @@ use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 
-#[ORM\Entity]
+#[ORM\MappedSuperclass]
 abstract class Channel extends DevicesEntities\Channels\Channel
 {
 

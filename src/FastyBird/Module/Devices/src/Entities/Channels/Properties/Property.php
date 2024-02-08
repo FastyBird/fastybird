@@ -41,9 +41,9 @@ use function array_merge;
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'property_type', type: 'string', length: 100)]
 #[ORM\DiscriminatorMap([
-	'variable' => Entities\Channels\Properties\Variable::class,
-	'dynamic' => Entities\Channels\Properties\Dynamic::class,
-	'mapped' => Entities\Channels\Properties\Mapped::class,
+	Entities\Channels\Properties\Variable::TYPE => Entities\Channels\Properties\Variable::class,
+	Entities\Channels\Properties\Dynamic::TYPE => Entities\Channels\Properties\Dynamic::class,
+	Entities\Channels\Properties\Mapped::TYPE => Entities\Channels\Properties\Mapped::class,
 ])]
 #[ORM\MappedSuperclass]
 abstract class Property extends Entities\Property

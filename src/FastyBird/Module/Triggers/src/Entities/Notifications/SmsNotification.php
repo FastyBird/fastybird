@@ -17,7 +17,6 @@ namespace FastyBird\Module\Triggers\Entities\Notifications;
 
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Application\Doctrine\Mapping as ApplicationMapping;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Triggers\Entities;
 use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use IPub\Phone;
@@ -54,9 +53,9 @@ class SmsNotification extends Notification
 		$this->phone = $phone;
 	}
 
-	public function getType(): MetadataTypes\TriggerNotificationType
+	public static function getType(): string
 	{
-		return MetadataTypes\TriggerNotificationType::get(MetadataTypes\TriggerNotificationType::SMS);
+		return self::TYPE;
 	}
 
 	public function getPhone(): Phone\Entities\Phone

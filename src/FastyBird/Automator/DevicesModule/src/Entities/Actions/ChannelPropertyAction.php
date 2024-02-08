@@ -27,7 +27,7 @@ use function array_merge;
 class ChannelPropertyAction extends PropertyAction
 {
 
-	public const TYPE = 'channel_property';
+	public const TYPE = 'channel-property';
 
 	#[IPubDoctrine\Crud(required: true)]
 	#[ORM\Column(name: 'action_channel', type: Uuid\Doctrine\UuidBinaryType::NAME, nullable: true)]
@@ -52,7 +52,7 @@ class ChannelPropertyAction extends PropertyAction
 		$this->property = $property;
 	}
 
-	public function getType(): string
+	public static function getType(): string
 	{
 		return self::TYPE;
 	}

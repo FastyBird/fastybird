@@ -40,8 +40,8 @@ use function array_merge;
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'property_type', type: 'string', length: 100)]
 #[ORM\DiscriminatorMap([
-	'variable' => Entities\Connectors\Properties\Variable::class,
-	'dynamic' => Entities\Connectors\Properties\Dynamic::class,
+	Entities\Connectors\Properties\Variable::TYPE => Entities\Connectors\Properties\Variable::class,
+	Entities\Connectors\Properties\Dynamic::TYPE => Entities\Connectors\Properties\Dynamic::class,
 ])]
 abstract class Property extends Entities\Property
 {

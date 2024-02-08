@@ -42,9 +42,6 @@ use function strval;
 #[ORM\UniqueConstraint(name: 'device_identifier_unique', columns: ['device_identifier', 'connector_id'])]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'device_type', type: 'string', length: 100)]
-#[ORM\DiscriminatorMap([
-	self::TYPE => Device::class,
-])]
 #[ORM\MappedSuperclass]
 abstract class Device implements Entities\Entity,
 	Entities\EntityParams,
@@ -57,8 +54,6 @@ abstract class Device implements Entities\Entity,
 	use SimpleAuthEntities\TOwner;
 	use DoctrineTimestampable\Entities\TEntityCreated;
 	use DoctrineTimestampable\Entities\TEntityUpdated;
-
-	public const TYPE = 'generic';
 
 	#[ORM\Id]
 	#[ORM\Column(name: 'device_id', type: Uuid\Doctrine\UuidBinaryType::NAME)]
@@ -187,10 +182,7 @@ abstract class Device implements Entities\Entity,
 		$this->properties = new Common\Collections\ArrayCollection();
 	}
 
-	public static function getType(): string
-	{
-		return self::TYPE;
-	}
+	abstract public static function getType(): string;
 
 	public function getCategory(): MetadataTypes\DeviceCategory
 	{

@@ -15,7 +15,6 @@
 
 namespace FastyBird\Library\Metadata\Documents\TriggersModule;
 
-use FastyBird\Library\Metadata\Types;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_merge;
@@ -34,7 +33,7 @@ final class EmailNotification extends Notification
 	public function __construct(
 		Uuid\UuidInterface $id,
 		Uuid\UuidInterface $trigger,
-		Types\TriggerNotificationType $type,
+		string $type,
 		bool $enabled,
 		#[ObjectMapper\Rules\StringValue(pattern: '/^[\w\-\.]+@[\w\-\.]+\.+[\w-]{2,63}$/', notEmpty: true)]
 		private readonly string $email,

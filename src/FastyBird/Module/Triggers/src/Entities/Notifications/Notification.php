@@ -16,7 +16,6 @@
 namespace FastyBird\Module\Triggers\Entities\Notifications;
 
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Triggers\Entities;
 use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use IPub\DoctrineTimestampable;
@@ -35,9 +34,6 @@ use function assert;
 )]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'notification_type', type: 'string', length: 100)]
-#[ORM\DiscriminatorMap([
-	self::TYPE => self::class,
-])]
 #[ORM\MappedSuperclass]
 abstract class Notification implements Entities\Entity,
 	DoctrineTimestampable\Entities\IEntityCreated, DoctrineTimestampable\Entities\IEntityUpdated
@@ -46,8 +42,6 @@ abstract class Notification implements Entities\Entity,
 	use Entities\TEntity;
 	use DoctrineTimestampable\Entities\TEntityCreated;
 	use DoctrineTimestampable\Entities\TEntityUpdated;
-
-	public const TYPE = 'generic';
 
 	#[ORM\Id]
 	#[ORM\Column(name: 'notification_id', type: Uuid\Doctrine\UuidBinaryType::NAME)]
@@ -87,7 +81,7 @@ abstract class Notification implements Entities\Entity,
 		$this->trigger = $trigger;
 	}
 
-	abstract public function getType(): MetadataTypes\TriggerNotificationType;
+	abstract public static function getType(): string;
 
 	public function isEnabled(): bool
 	{
@@ -113,7 +107,7 @@ abstract class Notification implements Entities\Entity,
 	{
 		return [
 			'id' => $this->getPlainId(),
-			'type' => $this->getType()->getValue(),
+			'type' => static::getType(),
 			'enabled' => $this->isEnabled(),
 
 			'trigger' => $this->getTrigger()->getPlainId(),

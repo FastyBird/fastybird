@@ -35,7 +35,7 @@ final class EmailNotification extends Notification
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\Sources\Module::TRIGGERS . '/notification/email';
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Module::TRIGGERS . '/notification/' . Entities\Notifications\EmailNotification::TYPE;
 
 	public function getType(): string
 	{

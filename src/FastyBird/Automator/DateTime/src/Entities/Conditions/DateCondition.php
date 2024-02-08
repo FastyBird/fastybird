@@ -46,7 +46,7 @@ class DateCondition extends TriggersEntities\Conditions\Condition
 		$this->date = $date;
 	}
 
-	public function getType(): string
+	public static function getType(): string
 	{
 		return self::TYPE;
 	}

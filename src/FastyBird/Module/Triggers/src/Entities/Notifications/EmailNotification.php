@@ -17,7 +17,6 @@ namespace FastyBird\Module\Triggers\Entities\Notifications;
 
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Application\Doctrine\Mapping as ApplicationMapping;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Triggers\Entities;
 use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use Ramsey\Uuid;
@@ -55,9 +54,9 @@ class EmailNotification extends Notification
 		$this->email = $email;
 	}
 
-	public function getType(): MetadataTypes\TriggerNotificationType
+	public static function getType(): string
 	{
-		return MetadataTypes\TriggerNotificationType::get(MetadataTypes\TriggerNotificationType::EMAIL);
+		return self::TYPE;
 	}
 
 	public function getEmail(): string

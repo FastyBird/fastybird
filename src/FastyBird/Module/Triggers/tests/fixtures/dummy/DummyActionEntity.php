@@ -24,7 +24,7 @@ class DummyActionEntity extends Entities\Actions\Action
 	#[ORM\Column(name: 'action_value', type: 'string', length: 100, nullable: true)]
 	private string $value;
 
-	public function getType(): string
+	public static function getType(): string
 	{
 		return self::TYPE;
 	}

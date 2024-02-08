@@ -39,9 +39,6 @@ use function array_map;
 #[ORM\UniqueConstraint(name: 'channel_identifier_unique', columns: ['channel_identifier', 'device_id'])]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'channel_type', type: 'string', length: 100)]
-#[ORM\DiscriminatorMap([
-	self::TYPE => Channel::class,
-])]
 #[ORM\MappedSuperclass]
 abstract class Channel implements Entities\Entity,
 	Entities\EntityParams,
@@ -52,8 +49,6 @@ abstract class Channel implements Entities\Entity,
 	use Entities\TEntityParams;
 	use DoctrineTimestampable\Entities\TEntityCreated;
 	use DoctrineTimestampable\Entities\TEntityUpdated;
-
-	public const TYPE = 'generic';
 
 	#[ORM\Id]
 	#[ORM\Column(name: 'channel_id', type: Uuid\Doctrine\UuidBinaryType::NAME)]
@@ -138,10 +133,7 @@ abstract class Channel implements Entities\Entity,
 		$this->controls = new Common\Collections\ArrayCollection();
 	}
 
-	public static function getType(): string
-	{
-		return self::TYPE;
-	}
+	abstract public static function getType(): string;
 
 	public function getCategory(): MetadataTypes\ChannelCategory
 	{

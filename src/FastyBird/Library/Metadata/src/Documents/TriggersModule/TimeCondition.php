@@ -16,7 +16,6 @@
 namespace FastyBird\Library\Metadata\Documents\TriggersModule;
 
 use DateTimeInterface;
-use FastyBird\Library\Metadata\Types;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_merge;
@@ -38,7 +37,7 @@ final class TimeCondition extends Condition
 	public function __construct(
 		Uuid\UuidInterface $id,
 		Uuid\UuidInterface $trigger,
-		Types\TriggerConditionType $type,
+		string $type,
 		bool $enabled,
 		#[ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM)]
 		private readonly DateTimeInterface $time,

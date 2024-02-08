@@ -40,6 +40,14 @@ services:
 
     cache.storage: Nette\Caching\Storages\DevNullStorage
 
+decorator:
+    Doctrine\Persistence\Mapping\Driver\MappingDriverChain:
+        setup:
+            - addDriver(@nettrineOrmAttributes.attributeDriver, 'FastyBird\Connector\Virtual\Tests\Fixtures\Dummy')
+    Doctrine\ORM\Mapping\Driver\AttributeDriver:
+        setup:
+            - addPaths([%appDir%/fixtures/dummy])
+
 contributteTranslation:
     locales:
         default: en_US
@@ -77,7 +85,9 @@ nettrineOrm:
         proxyDir: %tempDir%/cache/doctrine.proxies
 
 nettrineOrmAttributes:
-    mapping: []
+    mapping: [
+        FastyBird\Addon\VirtualThermostat\Tests\Fixtures\Dummy: %appDir%/fixtures/dummy
+    ]
 
 fbSimpleAuth:
     token:

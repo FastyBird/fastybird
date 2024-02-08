@@ -16,7 +16,7 @@
 namespace FastyBird\Automator\DevicesModule\Schemas\Conditions;
 
 use FastyBird\Automator\DevicesModule\Entities;
-use FastyBird\Library\Metadata\Types\Sources\Module;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Triggers\Schemas as TriggersSchemas;
 use Neomerx\JsonApi;
 use function array_merge;
@@ -37,7 +37,7 @@ final class DevicePropertyCondition extends TriggersSchemas\Conditions\Condition
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = Module::TRIGGERS . '/condition/device-property';
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Automator::DEVICE_MODULE . '/condition/' . Entities\Conditions\DevicePropertyCondition::TYPE;
 
 	public function getType(): string
 	{

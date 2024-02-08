@@ -42,7 +42,7 @@ final class AutomaticTrigger extends Trigger
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\Sources\Module::TRIGGERS . '/trigger/automatic';
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Module::TRIGGERS . '/trigger/' . Entities\Triggers\AutomaticTrigger::TYPE;
 
 	/**
 	 * Define relationships names

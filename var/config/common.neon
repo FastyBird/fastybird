@@ -18,19 +18,16 @@ extensions:
     contributteConsole                              : Contributte\Console\DI\ConsoleExtension(%consoleMode%)
     contributteTranslation                          : Contributte\Translation\DI\TranslationExtension
     contributteEvents                               : Contributte\EventDispatcher\DI\EventDispatcherExtension
-    nettrineAnnotations                             : Nettrine\Annotations\DI\AnnotationsExtension
     nettrineCache                                   : Nettrine\Cache\DI\CacheExtension
     nettrineDbal                                    : Nettrine\DBAL\DI\DbalExtension
     nettrineDbalConsole                             : Nettrine\DBAL\DI\DbalConsoleExtension
     nettrineOrm                                     : Nettrine\ORM\DI\OrmExtension
-    nettrineOrmAnnotations                          : Nettrine\ORM\DI\OrmAnnotationsExtension
     nettrineOrmAttributes                           : Nettrine\ORM\DI\OrmAttributesExtension
     nettrineOrmConsole                              : Nettrine\ORM\DI\OrmConsoleExtension
     nettrineOrmCache                                : Nettrine\ORM\DI\OrmCacheExtension
     nettrineFixtures                                : Nettrine\Fixtures\DI\FixturesExtension
     ipubPhone                                       : IPub\Phone\DI\PhoneExtension
     ipubDoctrinePhone                               : IPub\DoctrinePhone\DI\DoctrinePhoneExtension
-    ipubDoctrineConsistence                         : IPub\DoctrineConsistence\DI\DoctrineConsistenceExtension
     ipubDoctrineCrud                                : IPub\DoctrineCrud\DI\DoctrineCrudExtension
     ipubDoctrineTimestampable                       : IPub\DoctrineTimestampable\DI\DoctrineTimestampableExtension
     ipubWebsockets                                  : IPub\WebSockets\DI\WebSocketsExtension
@@ -188,23 +185,9 @@ nettrineDbal:
         typesMapping:
             uuid_binary: binary
 
-nettrineAnnotations:
-    debug: %debugMode%
-    ignore:
-        - writable
-        - validator
-        - module
-        - author
-        - subpackage
-        - package
-        - phpcsSuppress
-
 nettrineOrm:
     configuration:
         proxyDir: %tempDir%/cache/doctrine.proxies
-
-nettrineOrmAnnotations:
-    mapping: []
 
 nettrineOrmAttributes:
     mapping: []

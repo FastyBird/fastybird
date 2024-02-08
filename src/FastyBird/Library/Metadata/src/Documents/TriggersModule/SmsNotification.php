@@ -15,7 +15,6 @@
 
 namespace FastyBird\Library\Metadata\Documents\TriggersModule;
 
-use FastyBird\Library\Metadata\Types;
 use IPub\Phone\Entities as PhoneEntities;
 use IPub\Phone\Exceptions as PhoneExceptions;
 use Orisai\ObjectMapper;
@@ -36,7 +35,7 @@ final class SmsNotification extends Notification
 	public function __construct(
 		Uuid\UuidInterface $id,
 		Uuid\UuidInterface $trigger,
-		Types\TriggerNotificationType $type,
+		string $type,
 		bool $enabled,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $phone,

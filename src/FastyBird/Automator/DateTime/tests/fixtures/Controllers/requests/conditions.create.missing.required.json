@@ -1,12 +1,9 @@
 {
   "data" : {
     "id" : "f333fc7a-6e23-4b2f-808d-ed35105b8430",
-    "type" : "com.fastybird.triggers-module/condition/channel-property",
+    "type" : "com.fastybird.date-time-automator/condition/time",
     "attributes" : {
-      "channel" : "59606c85-8ce4-42c2-be5c-0df82f100db9",
-      "property" : "083ba91b-77c8-41a7-a28e-9eff006fa85d",
-      "operator" : "eq",
-      "operand" : "2"
+      "time" : "1970-01-01T15:30:00+00:00"
     },
     "relationships" : {
       "trigger" : {

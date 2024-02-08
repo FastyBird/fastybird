@@ -16,7 +16,6 @@
 namespace FastyBird\Library\Metadata\Documents\TriggersModule;
 
 use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
-use FastyBird\Library\Metadata\Types;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_merge;
@@ -35,7 +34,7 @@ final class DevicePropertyAction extends Action
 	public function __construct(
 		Uuid\UuidInterface $id,
 		Uuid\UuidInterface $trigger,
-		Types\TriggerActionType $type,
+		string $type,
 		bool $enabled,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $device,

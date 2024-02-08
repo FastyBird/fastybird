@@ -35,7 +35,7 @@ final class DummyCondition extends Condition
 	public function __construct(
 		Uuid\UuidInterface $id,
 		Uuid\UuidInterface $trigger,
-		Types\TriggerConditionType $type,
+		string $type,
 		bool $enabled,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
 		#[ObjectMapper\Modifiers\FieldName('watch_item')]

@@ -34,9 +34,6 @@ use function assert;
 )]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'action_type', type: 'string', length: 100)]
-#[ORM\DiscriminatorMap([
-	self::TYPE => self::class,
-])]
 #[ORM\MappedSuperclass]
 abstract class Action implements Entities\Entity,
 	DoctrineTimestampable\Entities\IEntityCreated, DoctrineTimestampable\Entities\IEntityUpdated
@@ -45,8 +42,6 @@ abstract class Action implements Entities\Entity,
 	use Entities\TEntity;
 	use DoctrineTimestampable\Entities\TEntityCreated;
 	use DoctrineTimestampable\Entities\TEntityUpdated;
-
-	public const TYPE = 'generic';
 
 	#[ORM\Id]
 	#[ORM\Column(name: 'action_id', type: Uuid\Doctrine\UuidBinaryType::NAME)]
@@ -80,7 +75,7 @@ abstract class Action implements Entities\Entity,
 		$this->trigger = $trigger;
 	}
 
-	abstract public function getType(): string;
+	abstract public static function getType(): string;
 
 	public function isEnabled(): bool
 	{
@@ -106,7 +101,7 @@ abstract class Action implements Entities\Entity,
 	{
 		return [
 			'id' => $this->getPlainId(),
-			'type' => $this->getType(),
+			'type' => static::getType(),
 			'enabled' => $this->isEnabled(),
 
 			'trigger' => $this->getTrigger()->getPlainId(),

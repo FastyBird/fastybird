@@ -24,7 +24,7 @@ use FastyBird\Module\Devices\Entities as DevicesEntities;
 use function floatval;
 use function is_numeric;
 
-#[ORM\Entity]
+#[ORM\MappedSuperclass]
 abstract class Device extends DevicesEntities\Devices\Device
 {
 

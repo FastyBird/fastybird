@@ -18,7 +18,6 @@ namespace FastyBird\Module\Triggers\Entities\Triggers;
 use Doctrine\Common;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Application\Doctrine\Mapping as ApplicationMapping;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Triggers\Entities;
 use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use Ramsey\Uuid;
@@ -55,9 +54,9 @@ class AutomaticTrigger extends Trigger
 		$this->conditions = new Common\Collections\ArrayCollection();
 	}
 
-	public function getType(): MetadataTypes\TriggerType
+	public static function getType(): string
 	{
-		return MetadataTypes\TriggerType::get(MetadataTypes\TriggerType::AUTOMATIC);
+		return self::TYPE;
 	}
 
 	/**

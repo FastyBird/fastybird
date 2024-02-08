@@ -16,7 +16,6 @@
 namespace FastyBird\Library\Metadata\Documents\TriggersModule;
 
 use FastyBird\Library\Metadata\Documents;
-use FastyBird\Library\Metadata\Types;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_merge;
@@ -34,7 +33,7 @@ final class AutomaticTrigger extends Trigger
 
 	public function __construct(
 		Uuid\UuidInterface $id,
-		Types\TriggerType $type,
+		string $type,
 		string $name,
 		string|null $comment = null,
 		bool $enabled = false,

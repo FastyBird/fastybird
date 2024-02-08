@@ -35,7 +35,7 @@ final class DevicePropertyCondition extends Condition
 	public function __construct(
 		Uuid\UuidInterface $id,
 		Uuid\UuidInterface $trigger,
-		Types\TriggerConditionType $type,
+		string $type,
 		bool $enabled,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $device,

@@ -10,7 +10,7 @@
     "self" : "/v1/triggers/1b17bcaa-a19e-45f0-98b4-56211cc648ae/conditions"
   },
   "data" : {
-    "type" : "com.fastybird.triggers-module/condition/channel-property",
+    "type" : "com.fastybird.devices-module-automator/condition/channel-property",
     "id" : "f333fc7a-6e23-4b2f-808d-ed35105b8430",
     "attributes" : {
       "enabled" : true,

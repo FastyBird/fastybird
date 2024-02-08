@@ -19,6 +19,7 @@
             <property name="rootNamespaces" type="array">
                 <element key="src" value="FastyBird\Connector\Virtual"/>
                 <element key="tests/cases/unit" value="FastyBird\Connector\Virtual\Tests\Cases\Unit"/>
+                <element key="tests/fixtures/dummy" value="FastyBird\Connector\Virtual\Tests\Fixtures\Dummy"/>
                 <element key="tests/tools" value="FastyBird\Connector\Virtual\Tests\Tools"/>
             </property>
         </properties>

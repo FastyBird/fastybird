@@ -63,7 +63,7 @@ class TimeCondition extends TriggersEntities\Conditions\Condition
 		$this->setDays($days);
 	}
 
-	public function getType(): string
+	public static function getType(): string
 	{
 		return self::TYPE;
 	}
