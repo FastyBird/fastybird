@@ -23,13 +23,13 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
  * Thermostat channel entity schema
  *
  * @template T of Entities\Channels\Thermostat
- * @extends  HomeKitSchemas\HomeKitChannel<T>
+ * @extends  HomeKitSchemas\Channels\Channel<T>
  *
  * @package        FastyBird:VirtualThermostatAddonHomeKitConnectorBridge!
  * @subpackage     Schemas
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Thermostat extends HomeKitSchemas\HomeKitChannel
+final class Thermostat extends HomeKitSchemas\Channels\Channel
 {
 
 	/**

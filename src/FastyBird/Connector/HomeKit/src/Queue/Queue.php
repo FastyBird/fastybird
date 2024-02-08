@@ -42,16 +42,16 @@ final class Queue
 		$this->queue = new SplQueue();
 	}
 
-	public function append(Messages\Message $entity): void
+	public function append(Messages\Message $message): void
 	{
-		$this->queue->enqueue($entity);
+		$this->queue->enqueue($message);
 
 		$this->logger->debug(
 			'Appended new message into messages queue',
 			[
 				'source' => MetadataTypes\Sources\Connector::HOMEKIT,
 				'type' => 'queue',
-				'message' => $entity->toArray(),
+				'message' => $message->toArray(),
 			],
 		);
 	}

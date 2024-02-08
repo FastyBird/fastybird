@@ -50,13 +50,17 @@ final class HomeKitExtensionTest extends BaseTestCase
 		self::assertNotNull($container->getByType(Subscribers\Controls::class, false));
 		self::assertNotNull($container->getByType(Subscribers\System::class, false));
 
-		self::assertNotNull($container->getByType(Schemas\HomeKitConnector::class, false));
-		self::assertNotNull($container->getByType(Schemas\HomeKitDevice::class, false));
-		//self::assertNotNull($container->getByType(Schemas\HomeKitChannel::class, false));
+		self::assertNotNull($container->getByType(Schemas\Connectors\Connector::class, false));
+		self::assertNotNull($container->getByType(Schemas\Devices\Device::class, false));
+		self::assertNotNull($container->getByType(Schemas\Channels\Channel::class, false));
+		self::assertNotNull($container->getByType(Schemas\Channels\Battery::class, false));
+		self::assertNotNull($container->getByType(Schemas\Channels\LightBulb::class, false));
 
-		self::assertNotNull($container->getByType(Hydrators\HomeKitConnector::class, false));
-		self::assertNotNull($container->getByType(Hydrators\HomeKitDevice::class, false));
-		self::assertNotNull($container->getByType(Hydrators\HomeKitChannel::class, false));
+		self::assertNotNull($container->getByType(Hydrators\Connectors\Connector::class, false));
+		self::assertNotNull($container->getByType(Hydrators\Devices\Device::class, false));
+		self::assertNotNull($container->getByType(Hydrators\Channels\Channel::class, false));
+		self::assertNotNull($container->getByType(Hydrators\Channels\Battery::class, false));
+		self::assertNotNull($container->getByType(Hydrators\Channels\LightBulb::class, false));
 
 		self::assertNotNull($container->getByType(Helpers\Loader::class, false));
 		self::assertNotNull($container->getByType(Helpers\Connector::class, false));

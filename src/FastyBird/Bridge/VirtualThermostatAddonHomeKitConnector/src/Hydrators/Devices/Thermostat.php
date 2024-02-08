@@ -20,7 +20,7 @@ use Doctrine\Persistence;
 use FastyBird\Addon\VirtualThermostat\Entities as VirtualThermostatEntities;
 use FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Entities;
 use FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Schemas;
-use FastyBird\Connector\HomeKit as ConnectorHomeKit;
+use FastyBird\Connector\HomeKit\Entities as HomeKitEntities;
 use FastyBird\Connector\HomeKit\Hydrators as HomeKitHydrators;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
 use FastyBird\JsonApi\Helpers;
@@ -36,13 +36,13 @@ use function is_string;
 /**
  * Thermostat device entity hydrator
  *
- * @extends HomeKitHydrators\HomeKitDevice<Entities\Devices\Thermostat>
+ * @extends HomeKitHydrators\Devices\Device<Entities\Devices\Thermostat>
  *
  * @package        FastyBird:VirtualThermostatAddonHomeKitConnectorBridge!
  * @subpackage     Hydrators
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Thermostat extends HomeKitHydrators\HomeKitDevice
+class Thermostat extends HomeKitHydrators\Devices\Device
 {
 
 	public function __construct(
@@ -70,7 +70,7 @@ class Thermostat extends HomeKitHydrators\HomeKitDevice
 		JsonAPIDocument\Objects\IRelationshipObject $relationship,
 		JsonAPIDocument\Objects\IResourceObjectCollection|null $included,
 		Entities\Devices\Thermostat|null $entity,
-	): ConnectorHomeKit\Entities\Connectors\Connector
+	): HomeKitEntities\Connectors\Connector
 	{
 		if (
 			$relationship->getData() instanceof JsonAPIDocument\Objects\IResourceIdentifierObject
@@ -79,7 +79,7 @@ class Thermostat extends HomeKitHydrators\HomeKitDevice
 		) {
 			$connector = $this->connectorsRepository->find(
 				Uuid\Uuid::fromString($relationship->getData()->getId()),
-				ConnectorHomeKit\Entities\Connectors\Connector::class,
+				HomeKitEntities\Connectors\Connector::class,
 			);
 
 			if ($connector !== null) {

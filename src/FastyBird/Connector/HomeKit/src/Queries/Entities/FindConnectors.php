@@ -15,13 +15,13 @@
 
 namespace FastyBird\Connector\HomeKit\Queries\Entities;
 
-use FastyBird\Connector\HomeKit\Entities\Connectors\Connector;
+use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 
 /**
  * Find connectors entities query
  *
- * @template T of Connector
+ * @template T of Entities\Connectors\Connector
  * @extends  DevicesQueries\Entities\FindConnectors<T>
  *
  * @package        FastyBird:HomeKitConnector!

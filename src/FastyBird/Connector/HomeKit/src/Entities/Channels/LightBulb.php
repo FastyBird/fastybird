@@ -16,12 +16,11 @@
 namespace FastyBird\Connector\HomeKit\Entities\Channels;
 
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Library\Application\Doctrine\Mapping as ApplicationMapping;
 
 #[ORM\Entity]
 #[ApplicationMapping\DiscriminatorEntry(name: self::TYPE)]
-class LightBulb extends Entities\Channels\Channel
+class LightBulb extends Channel
 {
 
 	public const TYPE = 'homekit-connector-light-bulb';

@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * HomeKit.php
+ * Connector.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,32 +13,28 @@
  * @date           29.03.22
  */
 
-namespace FastyBird\Connector\HomeKit\Schemas;
+namespace FastyBird\Connector\HomeKit\Schemas\Connectors;
 
 use FastyBird\Connector\HomeKit\Entities;
-use FastyBird\Connector\HomeKit\Entities\Connectors\Connector;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Schemas as DevicesSchemas;
 
 /**
  * HomeKit connector entity schema
  *
- * @extends DevicesSchemas\Connectors\Connector<Connector>
+ * @extends DevicesSchemas\Connectors\Connector<Entities\Connectors\Connector>
  *
  * @package        FastyBird:HomeKitConnector!
  * @subpackage     Schemas
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class HomeKitConnector extends DevicesSchemas\Connectors\Connector
+final class Connector extends DevicesSchemas\Connectors\Connector
 {
 
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE
-		= MetadataTypes\Sources\Connector::HOMEKIT
-		. '/connector/'
-		. Entities\Connectors\Connector::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Connector::HOMEKIT . '/connector/' . Entities\Connectors\Connector::TYPE;
 
 	public function getEntityClass(): string
 	{

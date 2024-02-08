@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * HomeKitChannel.php
+ * Channel.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,24 +13,23 @@
  * @date           04.03.23
  */
 
-namespace FastyBird\Connector\HomeKit\Schemas;
+namespace FastyBird\Connector\HomeKit\Schemas\Channels;
 
 use FastyBird\Connector\HomeKit\Entities;
-use FastyBird\Connector\HomeKit\Entities\Channels\Channel;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Schemas as DevicesSchemas;
 
 /**
  * HomeKit channel entity schema
  *
- * @template T of Channel
+ * @template T of Entities\Channels\Channel
  * @extends  DevicesSchemas\Channels\Channel<T>
  *
  * @package        FastyBird:HomeKitConnector!
  * @subpackage     Schemas
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class HomeKitChannel extends DevicesSchemas\Channels\Channel
+class Channel extends DevicesSchemas\Channels\Channel
 {
 
 	/**

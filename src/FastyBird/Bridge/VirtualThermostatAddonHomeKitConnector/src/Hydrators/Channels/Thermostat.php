@@ -21,13 +21,13 @@ use FastyBird\Connector\HomeKit\Hydrators as HomeKitHydrators;
 /**
  * Thermostat channel entity hydrator
  *
- * @extends HomeKitHydrators\HomeKitChannel<Entities\Channels\Thermostat>
+ * @extends HomeKitHydrators\Channels\Channel<Entities\Channels\Thermostat>
  *
  * @package        FastyBird:VirtualThermostatAddonHomeKitConnectorBridge!
  * @subpackage     Hydrators
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Thermostat extends HomeKitHydrators\HomeKitChannel
+class Thermostat extends HomeKitHydrators\Channels\Channel
 {
 
 	public function getEntityName(): string

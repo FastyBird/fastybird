@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * HomeKitChannel.php
+ * Connector.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,34 +10,29 @@
  * @subpackage     Hydrators
  * @since          1.0.0
  *
- * @date           24.01.23
+ * @date           29.03.22
  */
 
-namespace FastyBird\Connector\HomeKit\Hydrators;
+namespace FastyBird\Connector\HomeKit\Hydrators\Connectors;
 
 use FastyBird\Connector\HomeKit\Entities;
-use FastyBird\Connector\HomeKit\Entities\Channels\Channel;
 use FastyBird\Module\Devices\Hydrators as DevicesHydrators;
 
 /**
- * HomeKit channel entity hydrator
+ * HomeKit connector entity hydrator
  *
- * @template  T of Channel
- * @extends   DevicesHydrators\Channels\Channel<T>
+ * @extends DevicesHydrators\Connectors\Connector<Entities\Connectors\Connector>
  *
  * @package        FastyBird:HomeKitConnector!
  * @subpackage     Hydrators
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class HomeKitChannel extends DevicesHydrators\Channels\Channel
+final class Connector extends DevicesHydrators\Connectors\Connector
 {
 
-	/**
-	 * @return class-string<Channel>
-	 */
 	public function getEntityName(): string
 	{
-		return Entities\Channels\Channel::class;
+		return Entities\Connectors\Connector::class;
 	}
 
 }

@@ -218,13 +218,13 @@ class HomeKitExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		 */
 
 		$builder->addDefinition($this->prefix('schemas.connector.homekit'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\HomeKitConnector::class);
+			->setType(Schemas\Connectors\Connector::class);
 
 		$builder->addDefinition($this->prefix('schemas.device.homekit'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\HomeKitDevice::class);
+			->setType(Schemas\Devices\Device::class);
 
 		$builder->addDefinition($this->prefix('schemas.channel.homekit'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\HomeKitChannel::class);
+			->setType(Schemas\Channels\Channel::class);
 
 		$builder->addDefinition($this->prefix('schemas.channel.lightBulb'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\Channels\LightBulb::class);
@@ -237,13 +237,19 @@ class HomeKitExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		 */
 
 		$builder->addDefinition($this->prefix('hydrators.connector.homekit'), new DI\Definitions\ServiceDefinition())
-			->setType(Hydrators\HomeKitConnector::class);
+			->setType(Hydrators\Connectors\Connector::class);
 
 		$builder->addDefinition($this->prefix('hydrators.device.homekit'), new DI\Definitions\ServiceDefinition())
-			->setType(Hydrators\HomeKitDevice::class);
+			->setType(Hydrators\Devices\Device::class);
 
 		$builder->addDefinition($this->prefix('hydrators.channel.homekit'), new DI\Definitions\ServiceDefinition())
-			->setType(Hydrators\HomeKitChannel::class);
+			->setType(Hydrators\Channels\Channel::class);
+
+		$builder->addDefinition($this->prefix('hydrators.channel.lightBulb'), new DI\Definitions\ServiceDefinition())
+			->setType(Hydrators\Channels\LightBulb::class);
+
+		$builder->addDefinition($this->prefix('hydrators.channel.battery'), new DI\Definitions\ServiceDefinition())
+			->setType(Hydrators\Channels\Battery::class);
 
 		/**
 		 * HELPERS

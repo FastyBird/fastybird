@@ -15,13 +15,13 @@
 
 namespace FastyBird\Connector\HomeKit\Queries\Entities;
 
-use FastyBird\Connector\HomeKit\Entities\Channels\Channel;
+use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 
 /**
  * Find device channels entities query
  *
- * @template T of Channel
+ * @template T of Entities\Channels\Channel
  * @extends  DevicesQueries\Entities\FindChannels<T>
  *
  * @package        FastyBird:HomeKitConnector!

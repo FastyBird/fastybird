@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Entity.php
+ * MessageBuilder.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -20,7 +20,7 @@ use FastyBird\Connector\HomeKit\Queue;
 use Orisai\ObjectMapper;
 
 /**
- * Entity helper
+ * Message builder
  *
  * @package        FastyBird:HomeKitConnector!
  * @subpackage     Helpers
@@ -31,7 +31,7 @@ final class MessageBuilder
 {
 
 	public function __construct(
-		private readonly ObjectMapper\Processing\Processor $entityMapper,
+		private readonly ObjectMapper\Processing\Processor $processor,
 	)
 	{
 	}
@@ -39,18 +39,18 @@ final class MessageBuilder
 	/**
 	 * @template T of Queue\Messages\Message
 	 *
-	 * @param class-string<T> $entity
+	 * @param class-string<T> $message
 	 * @param array<mixed> $data
 	 *
 	 * @throws Exceptions\Runtime
 	 */
-	public function create(string $entity, array $data): Queue\Messages\Message
+	public function create(string $message, array $data): Queue\Messages\Message
 	{
 		try {
 			$options = new ObjectMapper\Processing\Options();
 			$options->setAllowUnknownFields();
 
-			return $this->entityMapper->process($data, $entity, $options);
+			return $this->processor->process($data, $message, $options);
 		} catch (ObjectMapper\Exception\InvalidData $ex) {
 			$errorPrinter = new ObjectMapper\Printers\ErrorVisualPrinter(
 				new ObjectMapper\Printers\TypeToStringConverter(),

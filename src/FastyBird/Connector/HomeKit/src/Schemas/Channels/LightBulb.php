@@ -16,20 +16,19 @@
 namespace FastyBird\Connector\HomeKit\Schemas\Channels;
 
 use FastyBird\Connector\HomeKit\Entities;
-use FastyBird\Connector\HomeKit\Schemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 
 /**
  * Light bulb channel entity schema
  *
  * @template T of Entities\Channels\LightBulb
- * @extends  Schemas\HomeKitChannel<T>
+ * @extends  Channel<T>
  *
  * @package        FastyBird:HomeKitConnector!
  * @subpackage     Schemas
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class LightBulb extends Schemas\HomeKitChannel
+final class LightBulb extends Channel
 {
 
 	/**

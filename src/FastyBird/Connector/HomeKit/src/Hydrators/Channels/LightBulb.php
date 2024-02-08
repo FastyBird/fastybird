@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * HomeKitDevice.php
+ * LightBulb.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,34 +10,32 @@
  * @subpackage     Hydrators
  * @since          1.0.0
  *
- * @date           29.03.22
+ * @date           24.01.23
  */
 
-namespace FastyBird\Connector\HomeKit\Hydrators;
+namespace FastyBird\Connector\HomeKit\Hydrators\Channels;
 
 use FastyBird\Connector\HomeKit\Entities;
-use FastyBird\Connector\HomeKit\Entities\Devices\Device;
-use FastyBird\Module\Devices\Hydrators as DevicesHydrators;
 
 /**
- * HomeKit device entity hydrator
+ * Light bulb channel entity hydrator
  *
- * @template  T of Device
- * @extends   DevicesHydrators\Devices\Device<T>
+ * @template  T of Entities\Channels\LightBulb
+ * @extends   Channel<T>
  *
  * @package        FastyBird:HomeKitConnector!
  * @subpackage     Hydrators
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class HomeKitDevice extends DevicesHydrators\Devices\Device
+class LightBulb extends Channel
 {
 
 	/**
-	 * @return class-string<Device>
+	 * @return class-string<Entities\Channels\LightBulb>
 	 */
 	public function getEntityName(): string
 	{
-		return Entities\Devices\Device::class;
+		return Entities\Channels\LightBulb::class;
 	}
 
 }
