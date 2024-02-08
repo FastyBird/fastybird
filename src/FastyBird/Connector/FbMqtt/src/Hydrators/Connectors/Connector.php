@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * FbMqttDevice.php
+ * Connector.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,29 +10,29 @@
  * @subpackage     Hydrators
  * @since          1.0.0
  *
- * @date           05.02.22
+ * @date           07.12.21
  */
 
-namespace FastyBird\Connector\FbMqtt\Hydrators;
+namespace FastyBird\Connector\FbMqtt\Hydrators\Connectors;
 
 use FastyBird\Connector\FbMqtt\Entities;
 use FastyBird\Module\Devices\Hydrators as DevicesHydrators;
 
 /**
- * FastyBird MQTT device entity hydrator
+ * FastyBird MQTT connector entity hydrator
  *
- * @extends DevicesHydrators\Devices\Device<Entities\FbMqttDevice>
+ * @extends DevicesHydrators\Connectors\Connector<Entities\Connectors\Connector>
  *
  * @package        FastyBird:FbMqttConnector!
  * @subpackage     Hydrators
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class FbMqttDevice extends DevicesHydrators\Devices\Device
+final class Connector extends DevicesHydrators\Connectors\Connector
 {
 
 	public function getEntityName(): string
 	{
-		return Entities\FbMqttDevice::class;
+		return Entities\Connectors\Connector::class;
 	}
 
 }

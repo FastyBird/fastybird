@@ -86,13 +86,13 @@ final class DeviceAttribute implements Queue\Consumer
 		$findDeviceQuery->byConnectorId($message->getConnector());
 		$findDeviceQuery->byIdentifier($message->getDevice());
 
-		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\FbMqttDevice::class);
+		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\Device::class);
 
 		if ($message->getAttribute() === Queue\Messages\Attribute::STATE) {
 			if (MetadataTypes\ConnectionState::isValidValue($message->getValue())) {
 				if ($device === null) {
 					$device = $this->devicesManager->create(Utils\ArrayHash::from([
-						'entity' => Entities\FbMqttDevice::class,
+						'entity' => Entities\Devices\Device::class,
 						'identifier' => $message->getDevice(),
 					]));
 				}
@@ -105,7 +105,7 @@ final class DeviceAttribute implements Queue\Consumer
 		} else {
 			$this->databaseHelper->transaction(function () use ($message, $device): void {
 				$toUpdate = [
-					'entity' => Entities\FbMqttDevice::class,
+					'entity' => Entities\Devices\Device::class,
 				];
 
 				if ($message->getAttribute() === Queue\Messages\Attribute::NAME) {
@@ -364,11 +364,11 @@ final class DeviceAttribute implements Queue\Consumer
 			$findChannelQuery->forDevice($device);
 			$findChannelQuery->byIdentifier($channelName);
 
-			$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\FbMqttChannel::class);
+			$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\Channels\Channel::class);
 
 			if ($channel === null) {
 				$this->channelsManager->create(Utils\ArrayHash::from([
-					'entity' => Entities\FbMqttChannel::class,
+					'entity' => Entities\Channels\Channel::class,
 					'device' => $device,
 					'identifier' => $channelName,
 				]));
@@ -379,7 +379,10 @@ final class DeviceAttribute implements Queue\Consumer
 		$findChannelsQuery->forDevice($device);
 
 		// Cleanup for unused channels
-		foreach ($this->channelsRepository->findAllBy($findChannelsQuery, Entities\FbMqttChannel::class) as $channel) {
+		foreach ($this->channelsRepository->findAllBy(
+			$findChannelsQuery,
+			Entities\Channels\Channel::class,
+		) as $channel) {
 			if (!in_array($channel->getIdentifier(), (array) $channels, true)) {
 				$this->channelsManager->delete($channel);
 			}

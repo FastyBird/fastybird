@@ -76,7 +76,7 @@ final class ChannelAttribute implements Queue\Consumer
 		$findDeviceQuery->byConnectorId($message->getConnector());
 		$findDeviceQuery->byIdentifier($message->getDevice());
 
-		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\FbMqttDevice::class);
+		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\Device::class);
 
 		if ($device === null) {
 			$this->logger->warning(
@@ -103,7 +103,7 @@ final class ChannelAttribute implements Queue\Consumer
 		$findChannelQuery->forDevice($device);
 		$findChannelQuery->byIdentifier($message->getChannel());
 
-		$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\FbMqttChannel::class);
+		$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\Channels\Channel::class);
 
 		if ($channel === null) {
 			$this->logger->warning(

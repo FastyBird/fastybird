@@ -70,7 +70,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 			$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
 			$findDeviceQuery->forConnector($this->connector);
 			$findDeviceQuery->byId($event->getProperty()->getDevice());
-			$findDeviceQuery->byType(Entities\FbMqttDevice::TYPE);
+			$findDeviceQuery->byType(Entities\Devices\Device::TYPE);
 
 			$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
@@ -92,7 +92,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 		} else {
 			$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 			$findChannelQuery->byId($event->getProperty()->getChannel());
-			$findChannelQuery->byType(Entities\FbMqttChannel::TYPE);
+			$findChannelQuery->byType(Entities\Channels\Channel::TYPE);
 
 			$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 
@@ -103,7 +103,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 			$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
 			$findDeviceQuery->forConnector($this->connector);
 			$findDeviceQuery->byId($channel->getDevice());
-			$findDeviceQuery->byType(Entities\FbMqttDevice::TYPE);
+			$findDeviceQuery->byType(Entities\Devices\Device::TYPE);
 
 			$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 

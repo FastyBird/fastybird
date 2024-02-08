@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * FbMqttChannel.php
+ * Channel.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,7 +13,7 @@
  * @date           07.01.23
  */
 
-namespace FastyBird\Connector\FbMqtt\Entities;
+namespace FastyBird\Connector\FbMqtt\Entities\Channels;
 
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Application\Doctrine\Mapping as ApplicationMapping;
@@ -22,7 +22,7 @@ use FastyBird\Module\Devices\Entities as DevicesEntities;
 
 #[ORM\Entity]
 #[ApplicationMapping\DiscriminatorEntry(name: self::TYPE)]
-class FbMqttChannel extends DevicesEntities\Channels\Channel
+class Channel extends DevicesEntities\Channels\Channel
 {
 
 	public const TYPE = 'fb-mqtt-connector';

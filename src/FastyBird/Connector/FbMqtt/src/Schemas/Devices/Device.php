@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * FbMqttDevice.php
+ * Device.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,32 +13,32 @@
  * @date           05.02.22
  */
 
-namespace FastyBird\Connector\FbMqtt\Schemas;
+namespace FastyBird\Connector\FbMqtt\Schemas\Devices;
 
 use FastyBird\Connector\FbMqtt\Entities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Schemas as DevicesSchemas;
 
 /**
- * FastyBird MQTT connector entity schema
+ * FastyBird MQTT device entity schema
  *
- * @extends DevicesSchemas\Devices\Device<Entities\FbMqttDevice>
+ * @extends DevicesSchemas\Devices\Device<Entities\Devices\Device>
  *
  * @package        FastyBird:FbMqttConnector!
  * @subpackage     Schemas
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class FbMqttDevice extends DevicesSchemas\Devices\Device
+final class Device extends DevicesSchemas\Devices\Device
 {
 
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\Sources\Connector::FB_MQTT . '/device/' . Entities\FbMqttDevice::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Connector::FB_MQTT . '/device/' . Entities\Devices\Device::TYPE;
 
 	public function getEntityClass(): string
 	{
-		return Entities\FbMqttDevice::class;
+		return Entities\Devices\Device::class;
 	}
 
 	public function getType(): string

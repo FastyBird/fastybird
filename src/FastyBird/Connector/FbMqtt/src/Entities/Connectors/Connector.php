@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * FbMqttConnector.php
+ * Connector.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,7 +13,7 @@
  * @date           23.01.22
  */
 
-namespace FastyBird\Connector\FbMqtt\Entities;
+namespace FastyBird\Connector\FbMqtt\Entities\Connectors;
 
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Connector\FbMqtt;
@@ -28,7 +28,7 @@ use function is_string;
 
 #[ORM\Entity]
 #[ApplicationMapping\DiscriminatorEntry(name: self::TYPE)]
-class FbMqttConnector extends DevicesEntities\Connectors\Connector
+class Connector extends DevicesEntities\Connectors\Connector
 {
 
 	public const TYPE = 'fb-mqtt-connector';

@@ -215,26 +215,26 @@ class FbMqttExtension extends DI\CompilerExtension implements Translation\DI\Tra
 		 */
 
 		$builder->addDefinition($this->prefix('schemas.connector.fbMqtt'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\FbMqttConnector::class);
+			->setType(Schemas\Connectors\Connector::class);
 
 		$builder->addDefinition($this->prefix('schemas.device.fbMqtt'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\FbMqttDevice::class);
+			->setType(Schemas\Devices\Device::class);
 
 		$builder->addDefinition($this->prefix('schemas.channel.fbMqtt'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\FbMqttChannel::class);
+			->setType(Schemas\Channels\Channel::class);
 
 		/**
 		 * JSON-API HYDRATORS
 		 */
 
 		$builder->addDefinition($this->prefix('hydrators.connector.fbMqtt'), new DI\Definitions\ServiceDefinition())
-			->setType(Hydrators\FbMqttConnector::class);
+			->setType(Hydrators\Connectors\Connector::class);
 
 		$builder->addDefinition($this->prefix('hydrators.device.fbMqtt'), new DI\Definitions\ServiceDefinition())
-			->setType(Hydrators\FbMqttDevice::class);
+			->setType(Hydrators\Devices\Device::class);
 
 		$builder->addDefinition($this->prefix('hydrators.channel.fbMqtt'), new DI\Definitions\ServiceDefinition())
-			->setType(Hydrators\FbMqttChannel::class);
+			->setType(Hydrators\Channels\Channel::class);
 
 		/**
 		 * HELPERS
@@ -264,7 +264,7 @@ class FbMqttExtension extends DI\CompilerExtension implements Translation\DI\Tra
 			->setImplement(Connector\ConnectorFactory::class)
 			->addTag(
 				DevicesDI\DevicesExtension::CONNECTOR_TYPE_TAG,
-				Entities\FbMqttConnector::TYPE,
+				Entities\Connectors\Connector::TYPE,
 			)
 			->getResultDefinition()
 			->setType(Connector\Connector::class)

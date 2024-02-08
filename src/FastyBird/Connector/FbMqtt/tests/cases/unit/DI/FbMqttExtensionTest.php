@@ -49,11 +49,11 @@ final class FbMqttExtensionTest extends Tests\Cases\Unit\BaseTestCase
 
 		self::assertNotNull($container->getByType(Subscribers\Controls::class, false));
 
-		self::assertNotNull($container->getByType(Schemas\FbMqttConnector::class, false));
-		self::assertNotNull($container->getByType(Schemas\FbMqttDevice::class, false));
+		self::assertNotNull($container->getByType(Schemas\Connectors\Connector::class, false));
+		self::assertNotNull($container->getByType(Schemas\Devices\Device::class, false));
 
-		self::assertNotNull($container->getByType(Hydrators\FbMqttConnector::class, false));
-		self::assertNotNull($container->getByType(Hydrators\FbMqttDevice::class, false));
+		self::assertNotNull($container->getByType(Hydrators\Connectors\Connector::class, false));
+		self::assertNotNull($container->getByType(Hydrators\Devices\Device::class, false));
 
 		self::assertNotNull($container->getByType(Helpers\Connector::class, false));
 

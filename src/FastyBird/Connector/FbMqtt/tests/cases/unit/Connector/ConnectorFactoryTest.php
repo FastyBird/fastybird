@@ -38,7 +38,7 @@ final class ConnectorFactoryTest extends DbTestCase
 		);
 		assert($connector instanceof MetadataDocuments\DevicesModule\Connector);
 
-		self::assertSame(Entities\FbMqttConnector::TYPE, $connector->getType());
+		self::assertSame(Entities\Connectors\Connector::TYPE, $connector->getType());
 		self::assertSame('37b86cdc-376b-4d4c-9683-aa4f41daa13a', $connector->getId()->toString());
 
 		$connector = $factory->create($connector);
