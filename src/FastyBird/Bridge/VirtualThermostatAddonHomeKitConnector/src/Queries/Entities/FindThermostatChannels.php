@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * FindDevices.php
+ * FindThermostatChannels.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -19,17 +19,17 @@ use FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Entities;
 use FastyBird\Connector\HomeKit\Queries as HomeKitQueries;
 
 /**
- * Find device devices entities query
+ * Find device channels entities query
  *
- * @template T of Entities\Devices\Thermostat
- * @extends  HomeKitQueries\Entities\FindDevices<T>
+ * @template T of Entities\Channels\Thermostat
+ * @extends  HomeKitQueries\Entities\FindChannels<T>
  *
  * @package        FastyBird:VirtualThermostatAddonHomeKitConnectorBridge!
  * @subpackage     Queries
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class FindDevices extends HomeKitQueries\Entities\FindDevices
+class FindThermostatChannels extends HomeKitQueries\Entities\FindChannels
 {
 
 }

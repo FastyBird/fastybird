@@ -77,7 +77,7 @@ class BridgesV1 extends BaseV1
 		Message\ResponseInterface $response,
 	): Message\ResponseInterface
 	{
-		$findQuery = new Queries\Entities\FindDevices();
+		$findQuery = new Queries\Entities\FindThermostatDevices();
 
 		$devices = $this->devicesRepository->getResultSet(
 			$findQuery,

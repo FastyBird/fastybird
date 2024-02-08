@@ -293,7 +293,7 @@ class Build extends Console\Command\Command
 	 */
 	private function listBridges(Style\SymfonyStyle $io): void
 	{
-		$findDevicesQuery = new Queries\Entities\FindDevices();
+		$findDevicesQuery = new Queries\Entities\FindThermostatDevices();
 
 		$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\Thermostat::class);
 		usort(
@@ -603,7 +603,7 @@ class Build extends Console\Command\Command
 	{
 		$devices = [];
 
-		$findDevicesQuery = new Queries\Entities\FindDevices();
+		$findDevicesQuery = new Queries\Entities\FindThermostatDevices();
 
 		$connectorDevices = $this->devicesRepository->findAllBy(
 			$findDevicesQuery,
@@ -657,7 +657,7 @@ class Build extends Console\Command\Command
 				$identifier = array_search($answer, $devices, true);
 
 				if ($identifier !== false) {
-					$findDeviceQuery = new Queries\Entities\FindDevices();
+					$findDeviceQuery = new Queries\Entities\FindThermostatDevices();
 					$findDeviceQuery->byIdentifier($identifier);
 
 					$device = $this->devicesRepository->findOneBy(

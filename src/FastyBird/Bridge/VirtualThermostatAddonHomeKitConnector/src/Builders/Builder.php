@@ -101,7 +101,7 @@ class Builder
 
 		try {
 			if ($accessory === null) {
-				$findAccessoryQuery = new Queries\Entities\FindDevices();
+				$findAccessoryQuery = new Queries\Entities\FindThermostatDevices();
 				$findAccessoryQuery->forParent($thermostat);
 
 				$accessory = $this->devicesRepository->findOneBy(
@@ -354,7 +354,7 @@ class Builder
 				),
 			) . '_1';
 
-			$findChannelsQuery = new Queries\Entities\FindChannels();
+			$findChannelsQuery = new Queries\Entities\FindThermostatChannels();
 			$findChannelsQuery->forDevice($accessory);
 			$findChannelsQuery->byIdentifier($identifier);
 
