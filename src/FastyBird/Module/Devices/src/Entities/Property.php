@@ -65,22 +65,16 @@ abstract class Property implements Entity,
 	#[ORM\CustomIdGenerator(class: Uuid\Doctrine\UuidGenerator::class)]
 	protected Uuid\UuidInterface $id;
 
-	/**
-	 * @var MetadataTypes\PropertyCategory
-	 *
-	 * @Enum(class=MetadataTypes\PropertyCategory::class)
-	 *
-	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
-	 */
 	#[IPubDoctrine\Crud(writable: true)]
 	#[ORM\Column(
 		name: 'property_category',
-		type: 'string_enum',
+		type: 'string',
 		length: 100,
 		nullable: false,
+		enumType: MetadataTypes\PropertyCategory::class,
 		options: ['default' => MetadataTypes\PropertyCategory::GENERIC],
 	)]
-	protected $category;
+	protected MetadataTypes\PropertyCategory $category;
 
 	#[IPubDoctrine\Crud(required: true)]
 	#[ORM\Column(name: 'property_identifier', type: 'string', length: 50, nullable: false)]
@@ -163,7 +157,7 @@ abstract class Property implements Entity,
 
 		$this->identifier = $identifier;
 
-		$this->category = MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::GENERIC);
+		$this->category = MetadataTypes\PropertyCategory::GENERIC;
 		$this->dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::UNKNOWN);
 
 		// Static property can not be set or read from device/channel property
@@ -652,7 +646,7 @@ abstract class Property implements Entity,
 		$data = [
 			'id' => $this->getId()->toString(),
 			'type' => static::getType(),
-			'category' => $this->getCategory()->getValue(),
+			'category' => $this->getCategory()->value,
 			'identifier' => $this->getIdentifier(),
 			'name' => $this->getName(),
 			'data_type' => $this->getDataType()->getValue(),

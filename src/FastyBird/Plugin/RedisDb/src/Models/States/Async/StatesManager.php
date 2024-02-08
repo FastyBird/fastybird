@@ -29,6 +29,7 @@ use Nette\Utils;
 use Psr\Log;
 use Ramsey\Uuid;
 use React\Promise;
+use ReflectionClass;
 use stdClass;
 use Throwable;
 use function array_keys;
@@ -257,7 +258,14 @@ class StatesManager
 						} elseif ($value instanceof Consistence\Enum\Enum) {
 							$value = $value->getValue();
 						} elseif (is_object($value)) {
-							$value = method_exists($value, '__toString') ? $value->__toString() : serialize($value);
+							$rc = new ReflectionClass($value);
+
+							if ($rc->isEnum()) {
+								// @phpstan-ignore-next-line
+								$value = $value->value;
+							} else {
+								$value = method_exists($value, '__toString') ? $value->__toString() : serialize($value);
+							}
 						}
 					} else {
 						$value = null;
@@ -353,7 +361,18 @@ class StatesManager
 								$value = $value->getValue();
 
 							} elseif (is_object($value)) {
-								$value = method_exists($value, '__toString') ? $value->__toString() : serialize($value);
+								$rc = new ReflectionClass($value);
+
+								if ($rc->isEnum()) {
+									// @phpstan-ignore-next-line
+									$value = $value->value;
+								} else {
+									$value = method_exists($value, '__toString')
+										? $value->__toString()
+										: serialize(
+											$value,
+										);
+								}
 							}
 
 							if (

@@ -15,9 +15,6 @@
 
 namespace FastyBird\Library\Metadata\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * Property category
  *
@@ -26,22 +23,9 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class PropertyCategory extends Consistence\Enum\Enum
+enum PropertyCategory: string
 {
 
-	/**
-	 * Define types
-	 */
-	public const GENERIC = 'generic';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case GENERIC = 'generic';
 
 }

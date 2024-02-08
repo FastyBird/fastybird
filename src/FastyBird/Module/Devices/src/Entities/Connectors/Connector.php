@@ -15,7 +15,6 @@
 
 namespace FastyBird\Module\Devices\Entities\Connectors;
 
-use Consistence\Doctrine\Enum\EnumAnnotation as Enum;
 use DateTimeInterface;
 use Doctrine\Common;
 use Doctrine\ORM\Mapping as ORM;
@@ -66,22 +65,16 @@ abstract class Connector implements Entities\Entity,
 	#[ORM\CustomIdGenerator(class: Uuid\Doctrine\UuidGenerator::class)]
 	protected Uuid\UuidInterface $id;
 
-	/**
-	 * @var MetadataTypes\ConnectorCategory
-	 *
-	 * @Enum(class=MetadataTypes\ConnectorCategory::class)
-	 *
-	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
-	 */
 	#[IPubDoctrine\Crud(writable: true)]
 	#[ORM\Column(
 		name: 'connector_category',
-		type: 'string_enum',
+		type: 'string',
 		length: 100,
 		nullable: false,
+		enumType: MetadataTypes\ConnectorCategory::class,
 		options: ['default' => MetadataTypes\ConnectorCategory::GENERIC],
 	)]
-	protected $category;
+	protected MetadataTypes\ConnectorCategory $category;
 
 	#[IPubDoctrine\Crud(required: true)]
 	#[ORM\Column(name: 'connector_identifier', type: 'string', length: 50, nullable: false)]
@@ -139,7 +132,7 @@ abstract class Connector implements Entities\Entity,
 
 		$this->identifier = $identifier;
 
-		$this->category = MetadataTypes\ConnectorCategory::get(MetadataTypes\ConnectorCategory::GENERIC);
+		$this->category = MetadataTypes\ConnectorCategory::GENERIC;
 
 		$this->devices = new Common\Collections\ArrayCollection();
 		$this->properties = new Common\Collections\ArrayCollection();
@@ -297,7 +290,7 @@ abstract class Connector implements Entities\Entity,
 		return [
 			'id' => $this->getId()->toString(),
 			'type' => static::getType(),
-			'category' => $this->getCategory()->getValue(),
+			'category' => $this->getCategory()->value,
 			'identifier' => $this->getIdentifier(),
 			'name' => $this->getName(),
 			'comment' => $this->getComment(),

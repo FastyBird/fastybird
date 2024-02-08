@@ -47,7 +47,7 @@ final class Channel implements Documents\Document, Documents\Owner
 		private readonly Uuid\UuidInterface $id,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $type,
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\ChannelCategory::class)]
+		#[ObjectMapper\Rules\BackedEnumValue(class: Types\ChannelCategory::class)]
 		private readonly Types\ChannelCategory $category,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $identifier,
@@ -148,7 +148,7 @@ final class Channel implements Documents\Document, Documents\Owner
 		return [
 			'id' => $this->getId()->toString(),
 			'type' => $this->getType(),
-			'category' => $this->getCategory()->getValue(),
+			'category' => $this->getCategory()->value,
 			'identifier' => $this->getIdentifier(),
 			'name' => $this->getName(),
 			'comment' => $this->getComment(),

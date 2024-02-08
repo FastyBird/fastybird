@@ -54,7 +54,7 @@ abstract class ChannelProperty implements Documents\Document, Documents\Owner
 		private readonly Uuid\UuidInterface $id,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $channel,
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\PropertyCategory::class)]
+		#[ObjectMapper\Rules\BackedEnumValue(class: Types\PropertyCategory::class)]
 		private readonly Types\PropertyCategory $category,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $identifier,
@@ -281,7 +281,7 @@ abstract class ChannelProperty implements Documents\Document, Documents\Owner
 	{
 		return [
 			'id' => $this->getId()->toString(),
-			'category' => $this->getCategory()->getValue(),
+			'category' => $this->getCategory()->value,
 			'identifier' => $this->getIdentifier(),
 			'name' => $this->getName(),
 			'data_type' => $this->getDataType()->getValue(),

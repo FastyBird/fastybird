@@ -15,7 +15,6 @@
 
 namespace FastyBird\Module\Devices\Entities\Channels;
 
-use Consistence\Doctrine\Enum\EnumAnnotation as Enum;
 use DateTimeInterface;
 use Doctrine\Common;
 use Doctrine\ORM\Mapping as ORM;
@@ -61,22 +60,16 @@ abstract class Channel implements Entities\Entity,
 	#[ORM\CustomIdGenerator(class: Uuid\Doctrine\UuidGenerator::class)]
 	protected Uuid\UuidInterface $id;
 
-	/**
-	 * @var MetadataTypes\ChannelCategory
-	 *
-	 * @Enum(class=MetadataTypes\ChannelCategory::class)
-	 *
-	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
-	 */
 	#[IPubDoctrine\Crud(writable: true)]
 	#[ORM\Column(
 		name: 'channel_category',
-		type: 'string_enum',
+		type: 'string',
 		length: 100,
 		nullable: false,
+		enumType: MetadataTypes\ChannelCategory::class,
 		options: ['default' => MetadataTypes\ChannelCategory::GENERIC],
 	)]
-	protected $category;
+	protected MetadataTypes\ChannelCategory $category;
 
 	#[IPubDoctrine\Crud(required: true)]
 	#[ORM\Column(name: 'channel_identifier', type: 'string', length: 50, nullable: false)]
@@ -139,7 +132,7 @@ abstract class Channel implements Entities\Entity,
 
 		$this->name = $name;
 
-		$this->category = MetadataTypes\ChannelCategory::get(MetadataTypes\ChannelCategory::GENERIC);
+		$this->category = MetadataTypes\ChannelCategory::GENERIC;
 
 		$this->properties = new Common\Collections\ArrayCollection();
 		$this->controls = new Common\Collections\ArrayCollection();
@@ -265,7 +258,7 @@ abstract class Channel implements Entities\Entity,
 		return [
 			'id' => $this->getId()->toString(),
 			'type' => static::getType(),
-			'category' => $this->getCategory()->getValue(),
+			'category' => $this->getCategory()->value,
 			'identifier' => $this->getIdentifier(),
 			'name' => $this->getName(),
 			'comment' => $this->getComment(),

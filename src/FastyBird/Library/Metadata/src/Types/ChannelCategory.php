@@ -15,9 +15,6 @@
 
 namespace FastyBird\Library\Metadata\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * Device channel category
  *
@@ -26,22 +23,9 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class ChannelCategory extends Consistence\Enum\Enum
+enum ChannelCategory: string
 {
 
-	/**
-	 * Define types
-	 */
-	public const GENERIC = 'generic';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case GENERIC = 'generic';
 
 }

@@ -50,7 +50,7 @@ final class Device implements Documents\Document, Documents\Owner
 		private readonly Uuid\UuidInterface $id,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $type,
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\DeviceCategory::class)]
+		#[ObjectMapper\Rules\BackedEnumValue(class: Types\DeviceCategory::class)]
 		private readonly Types\DeviceCategory $category,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $identifier,
@@ -187,7 +187,7 @@ final class Device implements Documents\Document, Documents\Owner
 		return [
 			'id' => $this->getId()->toString(),
 			'type' => $this->getType(),
-			'category' => $this->getCategory()->getValue(),
+			'category' => $this->getCategory()->value,
 			'identifier' => $this->getIdentifier(),
 			'name' => $this->getName(),
 			'comment' => $this->getComment(),

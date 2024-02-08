@@ -24,7 +24,6 @@ use FastyBird\Module\Devices\Schemas;
 use IPub\SlimRouter\Routing;
 use Neomerx\JsonApi;
 use function count;
-use function strval;
 
 /**
  * Channel entity schema
@@ -65,7 +64,7 @@ abstract class Channel extends JsonApiSchemas\JsonApi
 	): iterable
 	{
 		return [
-			'category' => strval($resource->getCategory()->getValue()),
+			'category' => $resource->getCategory()->value,
 			'identifier' => $resource->getIdentifier(),
 			'name' => $resource->getName(),
 			'comment' => $resource->getComment(),

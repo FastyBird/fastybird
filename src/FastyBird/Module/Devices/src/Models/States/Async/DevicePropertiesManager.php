@@ -582,7 +582,7 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 								$property->getInvalid() !== null
 								&& strval(
 									MetadataUtilities\Value::flattenValue(
-									/** @phpstan-ignore-next-line */
+										// @phpstan-ignore-next-line
 										$data->offsetGet(States\Property::ACTUAL_VALUE_FIELD),
 									),
 								) === strval(
@@ -594,7 +594,7 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 
 							} else {
 								$actualValue = $this->convertWriteActualValue(
-								/** @phpstan-ignore-next-line */
+									// @phpstan-ignore-next-line
 									$data->offsetGet(States\Property::ACTUAL_VALUE_FIELD),
 									$property,
 								);
@@ -639,7 +639,7 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 						) {
 							try {
 								$expectedValue = $this->convertWriteExpectedValue(
-								/** @phpstan-ignore-next-line */
+									// @phpstan-ignore-next-line
 									$data->offsetGet(States\Property::EXPECTED_VALUE_FIELD),
 									$property,
 									$mappedProperty,

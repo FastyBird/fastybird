@@ -15,7 +15,6 @@
 
 namespace FastyBird\Module\Devices\Entities\Devices;
 
-use Consistence\Doctrine\Enum\EnumAnnotation as Enum;
 use DateTimeInterface;
 use Doctrine\Common;
 use Doctrine\ORM\Mapping as ORM;
@@ -66,22 +65,16 @@ abstract class Device implements Entities\Entity,
 	#[ORM\CustomIdGenerator(class: Uuid\Doctrine\UuidGenerator::class)]
 	protected Uuid\UuidInterface $id;
 
-	/**
-	 * @var MetadataTypes\DeviceCategory
-	 *
-	 * @Enum(class=MetadataTypes\DeviceCategory::class)
-	 *
-	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
-	 */
 	#[IPubDoctrine\Crud(writable: true)]
 	#[ORM\Column(
 		name: 'device_category',
-		type: 'string_enum',
+		type: 'string',
 		length: 100,
 		nullable: false,
+		enumType: MetadataTypes\DeviceCategory::class,
 		options: ['default' => MetadataTypes\DeviceCategory::GENERIC],
 	)]
-	protected $category;
+	protected MetadataTypes\DeviceCategory $category;
 
 	#[IPubDoctrine\Crud(required: true)]
 	#[ORM\Column(name: 'device_identifier', type: 'string', length: 50, nullable: false)]
@@ -183,7 +176,7 @@ abstract class Device implements Entities\Entity,
 		$this->identifier = $identifier;
 		$this->name = $name;
 
-		$this->category = MetadataTypes\DeviceCategory::get(MetadataTypes\DeviceCategory::GENERIC);
+		$this->category = MetadataTypes\DeviceCategory::GENERIC;
 
 		$this->connector = $connector;
 
@@ -419,7 +412,7 @@ abstract class Device implements Entities\Entity,
 		return [
 			'id' => $this->getId()->toString(),
 			'type' => static::getType(),
-			'category' => $this->getCategory()->getValue(),
+			'category' => $this->getCategory()->value,
 			'identifier' => $this->getIdentifier(),
 			'name' => $this->getName(),
 			'comment' => $this->getComment(),

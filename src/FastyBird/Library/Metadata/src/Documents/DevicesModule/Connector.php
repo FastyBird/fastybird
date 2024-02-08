@@ -48,7 +48,7 @@ final class Connector implements Documents\Document, Documents\Owner
 		private readonly Uuid\UuidInterface $id,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $type,
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\ConnectorCategory::class)]
+		#[ObjectMapper\Rules\BackedEnumValue(class: Types\ConnectorCategory::class)]
 		private readonly Types\ConnectorCategory $category,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $identifier,
@@ -161,7 +161,7 @@ final class Connector implements Documents\Document, Documents\Owner
 		return [
 			'id' => $this->getId()->toString(),
 			'type' => $this->getType(),
-			'category' => $this->getCategory()->getValue(),
+			'category' => $this->getCategory()->value,
 			'identifier' => $this->getIdentifier(),
 			'name' => $this->getName(),
 			'comment' => $this->getComment(),

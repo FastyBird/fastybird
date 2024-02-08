@@ -364,7 +364,7 @@ final class Client implements Evenement\EventEmitterInterface
 				$exception = new Exceptions\Runtime(sprintf('Connection timed out after %d seconds', $timeout));
 				$deferred->reject($exception);
 
-				/** @phpstan-ignore-next-line */
+				// @phpstan-ignore-next-line
 				if ($future instanceof Promise\PromiseInterface) {
 					$future->cancel();
 				}

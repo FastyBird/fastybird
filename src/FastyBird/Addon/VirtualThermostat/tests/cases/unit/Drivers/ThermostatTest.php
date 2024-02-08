@@ -150,7 +150,7 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 
 		self::assertFalse($queue->isEmpty());
 
-		/** @phpstan-ignore-next-line */
+		// @phpstan-ignore-next-line
 		while (!$queue->isEmpty()) {
 			$consumers = $this->getContainer()->getByType(VirtualQueue\Consumers::class);
 

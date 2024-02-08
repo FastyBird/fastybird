@@ -55,7 +55,7 @@ class Key extends Entities\Entity implements DoctrineCrud\Entities\IEntity,
 	#[IPubDoctrine\Crud(writable: true)]
 	#[ORM\Column(
 		name: 'key_state',
-		type: 'string_enum',
+		type: 'string',
 		length: 10,
 		nullable: false,
 		enumType: Types\KeyState::class,
