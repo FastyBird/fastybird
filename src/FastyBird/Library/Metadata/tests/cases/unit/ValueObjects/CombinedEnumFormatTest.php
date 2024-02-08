@@ -3,9 +3,9 @@
 namespace FastyBird\Library\Metadata\Tests\Cases\Unit\ValueObjects;
 
 use FastyBird\Library\Metadata\Exceptions;
+use FastyBird\Library\Metadata\Formats;
 use FastyBird\Library\Metadata\Tests\Cases\Unit\BaseTestCase;
 use FastyBird\Library\Metadata\Types;
-use FastyBird\Library\Metadata\ValueObjects;
 use function strval;
 
 final class CombinedEnumFormatTest extends BaseTestCase
@@ -16,7 +16,7 @@ final class CombinedEnumFormatTest extends BaseTestCase
 	 */
 	public function testFromString(): void
 	{
-		$valueObject = new ValueObjects\CombinedEnumFormat('one,sw|switch_on:1000:s|on,sw|switch_off:2000:s|off');
+		$valueObject = new Formats\CombinedEnum('one,sw|switch_on:1000:s|on,sw|switch_off:2000:s|off');
 
 		$items = $valueObject->getItems();
 
@@ -27,14 +27,14 @@ final class CombinedEnumFormatTest extends BaseTestCase
 			[['sw', 'switch_off'], '2000', ['s', 'off']],
 		], $valueObject->toArray());
 		self::assertCount(3, $items);
-		self::assertTrue($items[1][0] instanceof ValueObjects\CombinedEnumFormatItem);
+		self::assertTrue($items[1][0] instanceof Formats\CombinedEnumItem);
 		self::assertTrue($items[1][0]->getDataType() instanceof Types\DataTypeShort);
 		self::assertSame(Types\DataTypeShort::SWITCH, $items[1][0]->getDataType()->getValue());
 		self::assertTrue($items[1][0]->getValue() instanceof Types\Payloads\Switcher);
 		self::assertSame(Types\Payloads\Switcher::ON, $items[1][0]->getValue()->getValue());
 		self::assertEquals('one::,sw|switch_on:1000:s|on,sw|switch_off:2000:s|off', strval($valueObject));
 
-		$valueObject = new ValueObjects\CombinedEnumFormat('sw|switch_on:1000:s|on,sw|switch_off:2000:s|off');
+		$valueObject = new Formats\CombinedEnum('sw|switch_on:1000:s|on,sw|switch_off:2000:s|off');
 
 		self::assertCount(2, $valueObject->toArray());
 		self::assertEquals([
@@ -46,7 +46,7 @@ final class CombinedEnumFormatTest extends BaseTestCase
 
 	public function testFromArray(): void
 	{
-		$valueObject = new ValueObjects\CombinedEnumFormat([
+		$valueObject = new Formats\CombinedEnum([
 			['one', null, null],
 			[['sw', 'switch_on'], '1000', ['s', 'on']],
 			[['sw', 'switch_off'], '2000', ['s', 'off']],

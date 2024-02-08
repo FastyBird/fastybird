@@ -22,8 +22,8 @@ use FastyBird\Addon\VirtualThermostat\Types;
 use FastyBird\Connector\Virtual\Entities as VirtualEntities;
 use FastyBird\Library\Application\Doctrine\Mapping as ApplicationMapping;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Formats as MetadataFormats;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use Nette\Utils;
 use function array_filter;
@@ -448,7 +448,7 @@ class Device extends VirtualEntities\Devices\Device
 
 		$format = $channel->getHvacMode()?->getFormat();
 
-		if (!$format instanceof MetadataValueObjects\StringEnumFormat) {
+		if (!$format instanceof MetadataFormats\StringEnum) {
 			return [];
 		}
 
@@ -470,7 +470,7 @@ class Device extends VirtualEntities\Devices\Device
 
 		$format = $channel->getPresetMode()?->getFormat();
 
-		if (!$format instanceof MetadataValueObjects\StringEnumFormat) {
+		if (!$format instanceof MetadataFormats\StringEnum) {
 			return [];
 		}
 

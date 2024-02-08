@@ -20,9 +20,9 @@ use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Formats as MetadataFormats;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
-use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
 use FastyBird\Library\Tools\Transformers as ToolsTransformers;
 use FastyBird\Module\Devices\Exceptions;
 use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
@@ -237,7 +237,7 @@ abstract class Property implements Entity,
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 */
-	public function getFormat(): MetadataValueObjects\StringEnumFormat|MetadataValueObjects\NumberRangeFormat|MetadataValueObjects\CombinedEnumFormat|null
+	public function getFormat(): MetadataFormats\StringEnum|MetadataFormats\NumberRange|MetadataFormats\CombinedEnum|null
 	{
 		return $this->buildFormat($this->format);
 	}
@@ -680,7 +680,7 @@ abstract class Property implements Entity,
 	 */
 	private function buildFormat(
 		string|null $format,
-	): MetadataValueObjects\StringEnumFormat|MetadataValueObjects\NumberRangeFormat|MetadataValueObjects\CombinedEnumFormat|null
+	): MetadataFormats\StringEnum|MetadataFormats\NumberRange|MetadataFormats\CombinedEnum|null
 	{
 		if ($format === null) {
 			return null;
@@ -698,7 +698,7 @@ abstract class Property implements Entity,
 			], true)
 		) {
 			if (preg_match(Metadata\Constants::VALUE_FORMAT_NUMBER_RANGE, $format) === 1) {
-				return new MetadataValueObjects\NumberRangeFormat($format);
+				return new MetadataFormats\NumberRange($format);
 			}
 		} elseif (
 			in_array($this->dataType->getValue(), [
@@ -709,9 +709,9 @@ abstract class Property implements Entity,
 			], true)
 		) {
 			if (preg_match(Metadata\Constants::VALUE_FORMAT_COMBINED_ENUM, $format) === 1) {
-				return new MetadataValueObjects\CombinedEnumFormat($format);
+				return new MetadataFormats\CombinedEnum($format);
 			} elseif (preg_match(Metadata\Constants::VALUE_FORMAT_STRING_ENUM, $format) === 1) {
-				return new MetadataValueObjects\StringEnumFormat($format);
+				return new MetadataFormats\StringEnum($format);
 			}
 		}
 

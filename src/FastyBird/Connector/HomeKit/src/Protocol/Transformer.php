@@ -19,9 +19,9 @@ use DateTimeInterface;
 use FastyBird\Connector\HomeKit\Types;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Formats as MetadataFormats;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
-use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
 use Nette\Utils;
 use function array_filter;
 use function array_values;
@@ -131,7 +131,7 @@ final class Transformer
 			|| $property->getDataType()->equalsValue(MetadataTypes\DataType::COVER)
 			|| $property->getDataType()->equalsValue(MetadataTypes\DataType::BUTTON)
 		) {
-			if ($property->getFormat() instanceof MetadataValueObjects\StringEnumFormat) {
+			if ($property->getFormat() instanceof MetadataFormats\StringEnum) {
 				$filtered = array_values(array_filter(
 					$property->getFormat()->getItems(),
 					static fn (string $item): bool => Utils\Strings::lower(strval($transformedValue)) === $item,
@@ -156,7 +156,7 @@ final class Transformer
 				}
 
 				return null;
-			} elseif ($property->getFormat() instanceof MetadataValueObjects\CombinedEnumFormat) {
+			} elseif ($property->getFormat() instanceof MetadataFormats\CombinedEnum) {
 				$filtered = array_values(array_filter(
 					$property->getFormat()->getItems(),
 					static fn (array $item): bool => $item[1] !== null
@@ -167,7 +167,7 @@ final class Transformer
 
 				if (
 					count($filtered) === 1
-					&& $filtered[0][0] instanceof MetadataValueObjects\CombinedEnumFormatItem
+					&& $filtered[0][0] instanceof MetadataFormats\CombinedEnumItem
 				) {
 					if ($property->getDataType()->equalsValue(MetadataTypes\DataType::SWITCH)) {
 						return MetadataTypes\Payloads\Switcher::isValidValue(strval($filtered[0][0]->getValue()))
@@ -221,7 +221,7 @@ final class Transformer
 				|| $property->getDataType()->equalsValue(MetadataTypes\DataType::COVER)
 				|| $property->getDataType()->equalsValue(MetadataTypes\DataType::BUTTON)
 			) {
-				if ($property->getFormat() instanceof MetadataValueObjects\StringEnumFormat) {
+				if ($property->getFormat() instanceof MetadataFormats\StringEnum) {
 					$filtered = array_values(array_filter(
 						$property->getFormat()->getItems(),
 						static fn (string $item): bool => Utils\Strings::lower(
@@ -232,7 +232,7 @@ final class Transformer
 					if (count($filtered) === 1) {
 						$transformedValue = MetadataUtilities\Value::flattenValue($value);
 					}
-				} elseif ($property->getFormat() instanceof MetadataValueObjects\CombinedEnumFormat) {
+				} elseif ($property->getFormat() instanceof MetadataFormats\CombinedEnum) {
 					$filtered = array_values(array_filter(
 						$property->getFormat()->getItems(),
 						static fn (array $item): bool => $item[0] !== null
@@ -243,7 +243,7 @@ final class Transformer
 
 					if (
 						count($filtered) === 1
-						&& $filtered[0][2] instanceof MetadataValueObjects\CombinedEnumFormatItem
+						&& $filtered[0][2] instanceof MetadataFormats\CombinedEnumItem
 					) {
 						$transformedValue = is_scalar($filtered[0][2]->getValue())
 							? $filtered[0][2]->getValue()

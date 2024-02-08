@@ -30,9 +30,9 @@ use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Formats as MetadataFormats;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
-use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Constants as DevicesConstants;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
@@ -209,12 +209,12 @@ final class Http implements Server
 						$property->getIdentifier(),
 						$service,
 						$property,
-						$format instanceof MetadataValueObjects\StringEnumFormat
+						$format instanceof MetadataFormats\StringEnum
 							? array_map(static fn (string $item): int => intval($item), $format->toArray())
 							: null,
 						null,
-						$format instanceof MetadataValueObjects\NumberRangeFormat ? $format->getMin() : null,
-						$format instanceof MetadataValueObjects\NumberRangeFormat ? $format->getMax() : null,
+						$format instanceof MetadataFormats\NumberRange ? $format->getMin() : null,
+						$format instanceof MetadataFormats\NumberRange ? $format->getMax() : null,
 						$property->getStep(),
 						$property->getUnit() !== null && Types\CharacteristicUnit::isValidValue($property->getUnit())
 							? Types\CharacteristicUnit::get($property->getUnit())
@@ -989,12 +989,12 @@ final class Http implements Server
 
 		if ($property !== null) {
 			if (
-				$property->getFormat() instanceof MetadataValueObjects\StringEnumFormat
-				|| $property->getFormat() instanceof MetadataValueObjects\CombinedEnumFormat
+				$property->getFormat() instanceof MetadataFormats\StringEnum
+				|| $property->getFormat() instanceof MetadataFormats\CombinedEnum
 			) {
 				$validValues = [];
 
-				if ($property->getFormat() instanceof MetadataValueObjects\StringEnumFormat) {
+				if ($property->getFormat() instanceof MetadataFormats\StringEnum) {
 					$validValues = array_map(
 						static fn (string $item): int => intval($item),
 						$property->getFormat()->toArray(),
@@ -1002,12 +1002,12 @@ final class Http implements Server
 
 				} else {
 					foreach ($property->getFormat()->getItems() as $item) {
-						if ($item[1] instanceof MetadataValueObjects\CombinedEnumFormatItem) {
+						if ($item[1] instanceof MetadataFormats\CombinedEnumItem) {
 							$validValues[] = intval(MetadataUtilities\Value::flattenValue($item[1]->getValue()));
 						}
 					}
 				}
-			} elseif ($property->getFormat() instanceof MetadataValueObjects\NumberRangeFormat) {
+			} elseif ($property->getFormat() instanceof MetadataFormats\NumberRange) {
 				$minValue = $property->getFormat()->getMin() ?? $minValue;
 				$maxValue = $property->getFormat()->getMax() ?? $maxValue;
 			}

@@ -19,11 +19,11 @@ use Consistence;
 use DateTime;
 use DateTimeInterface;
 use FastyBird\Library\Metadata\Exceptions;
+use FastyBird\Library\Metadata\Formats;
 use FastyBird\Library\Metadata\Types;
 use FastyBird\Library\Metadata\Types\Payloads\Button;
 use FastyBird\Library\Metadata\Types\Payloads\Cover;
 use FastyBird\Library\Metadata\Types\Payloads\Switcher;
-use FastyBird\Library\Metadata\ValueObjects;
 use Nette\Utils;
 use function array_filter;
 use function array_values;
@@ -67,7 +67,7 @@ final class Value
 	public static function normalizeValue(
 		bool|int|float|string|DateTimeInterface|Types\Payloads\Button|Types\Payloads\Switcher|Types\Payloads\Cover|null $value,
 		Types\DataType $dataType,
-		ValueObjects\StringEnumFormat|ValueObjects\NumberRangeFormat|ValueObjects\CombinedEnumFormat|null $format,
+		Formats\StringEnum|Formats\NumberRange|Formats\CombinedEnum|null $format,
 	): bool|int|float|string|DateTimeInterface|Types\Payloads\Button|Types\Payloads\Switcher|Types\Payloads\Cover|null
 	{
 		if ($value === null) {
@@ -85,7 +85,7 @@ final class Value
 			$value = intval(self::flattenValue($value));
 
 			if (
-				$format instanceof ValueObjects\NumberRangeFormat
+				$format instanceof Formats\NumberRange
 				&& (
 					(
 						$format->getMin() !== null
@@ -109,7 +109,7 @@ final class Value
 			$value = floatval(self::flattenValue($value));
 
 			if (
-				$format instanceof ValueObjects\NumberRangeFormat
+				$format instanceof Formats\NumberRange
 				&& (
 					(
 						$format->getMin() !== null
@@ -185,7 +185,7 @@ final class Value
 				$payloadClass = Types\Payloads\Cover::class;
 			}
 
-			if ($format instanceof ValueObjects\StringEnumFormat) {
+			if ($format instanceof Formats\StringEnum) {
 				$filtered = array_values(array_filter(
 					$format->getItems(),
 					static fn (string $item): bool => self::compareValues($value, $item),
@@ -215,7 +215,7 @@ final class Value
 						implode(', ', $format->toArray()),
 					),
 				);
-			} elseif ($format instanceof ValueObjects\CombinedEnumFormat) {
+			} elseif ($format instanceof Formats\CombinedEnum) {
 				$filtered = array_values(array_filter(
 					$format->getItems(),
 					static function (array $item) use ($value): bool {
@@ -232,7 +232,7 @@ final class Value
 
 				if (
 					count($filtered) === 1
-					&& $filtered[0][0] instanceof ValueObjects\CombinedEnumFormatItem
+					&& $filtered[0][0] instanceof Formats\CombinedEnumItem
 				) {
 					if (
 						$payloadClass !== null
@@ -303,7 +303,7 @@ final class Value
 	public static function transformValueFromDevice(
 		bool|int|float|string|null $value,
 		Types\DataType $dataType,
-		ValueObjects\StringEnumFormat|ValueObjects\NumberRangeFormat|ValueObjects\CombinedEnumFormat|null $format,
+		Formats\StringEnum|Formats\NumberRange|Formats\CombinedEnum|null $format,
 	): bool|int|float|string|Types\Payloads\Button|Types\Payloads\Switcher|Types\Payloads\Cover|null
 	{
 		if ($value === null) {
@@ -350,7 +350,7 @@ final class Value
 				$payloadClass = Types\Payloads\Cover::class;
 			}
 
-			if ($format instanceof ValueObjects\StringEnumFormat) {
+			if ($format instanceof Formats\StringEnum) {
 				$filtered = array_values(array_filter(
 					$format->getItems(),
 					static fn (string $item): bool => self::compareValues($value, $item),
@@ -374,7 +374,7 @@ final class Value
 				}
 
 				return null;
-			} elseif ($format instanceof ValueObjects\CombinedEnumFormat) {
+			} elseif ($format instanceof Formats\CombinedEnum) {
 				$filtered = array_values(array_filter(
 					$format->getItems(),
 					static function (array $item) use ($value): bool {
@@ -391,7 +391,7 @@ final class Value
 
 				if (
 					count($filtered) === 1
-					&& $filtered[0][0] instanceof ValueObjects\CombinedEnumFormatItem
+					&& $filtered[0][0] instanceof Formats\CombinedEnumItem
 				) {
 					if (
 						$payloadClass !== null
@@ -426,7 +426,7 @@ final class Value
 	public static function transformValueToDevice(
 		bool|int|float|string|DateTimeInterface|Types\Payloads\Button|Types\Payloads\Switcher|Types\Payloads\Cover|null $value,
 		Types\DataType $dataType,
-		ValueObjects\StringEnumFormat|ValueObjects\NumberRangeFormat|ValueObjects\CombinedEnumFormat|null $format,
+		Formats\StringEnum|Formats\NumberRange|Formats\CombinedEnum|null $format,
 	): bool|int|float|string|null
 	{
 		if ($value === null) {
@@ -526,7 +526,7 @@ final class Value
 				$payloadClass = Types\Payloads\Cover::class;
 			}
 
-			if ($format instanceof ValueObjects\StringEnumFormat) {
+			if ($format instanceof Formats\StringEnum) {
 				$filtered = array_values(array_filter(
 					$format->getItems(),
 					static fn (string $item): bool => self::compareValues($value, $item),
@@ -537,7 +537,7 @@ final class Value
 				}
 
 				return null;
-			} elseif ($format instanceof ValueObjects\CombinedEnumFormat) {
+			} elseif ($format instanceof Formats\CombinedEnum) {
 				$filtered = array_values(array_filter(
 					$format->getItems(),
 					static function (array $item) use ($value): bool {
@@ -554,7 +554,7 @@ final class Value
 
 				if (
 					count($filtered) === 1
-					&& $filtered[0][2] instanceof ValueObjects\CombinedEnumFormatItem
+					&& $filtered[0][2] instanceof Formats\CombinedEnumItem
 				) {
 					return self::flattenValue($filtered[0][2]->getValue());
 				}

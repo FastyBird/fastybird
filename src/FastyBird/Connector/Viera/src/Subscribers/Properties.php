@@ -22,8 +22,8 @@ use FastyBird\Connector\Viera\Entities;
 use FastyBird\Connector\Viera\Types;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Formats as MetadataFormats;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -281,7 +281,7 @@ final class Properties implements Common\EventSubscriber
 
 		$hdmiFormat = $hdmiProperty?->getFormat();
 
-		$hdmiFormat = $hdmiFormat instanceof MetadataValueObjects\CombinedEnumFormat ? $hdmiFormat->toArray() : [];
+		$hdmiFormat = $hdmiFormat instanceof MetadataFormats\CombinedEnum ? $hdmiFormat->toArray() : [];
 
 		$findChannelProperty = new DevicesQueries\Entities\FindChannelProperties();
 		$findChannelProperty->forChannel($channel);
@@ -294,7 +294,7 @@ final class Properties implements Common\EventSubscriber
 
 		$applicationFormat = $applicationProperty?->getFormat();
 
-		$applicationFormat = $applicationFormat instanceof MetadataValueObjects\CombinedEnumFormat
+		$applicationFormat = $applicationFormat instanceof MetadataFormats\CombinedEnum
 			? $applicationFormat->toArray()
 			: [];
 

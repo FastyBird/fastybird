@@ -20,7 +20,7 @@ use FastyBird\Addon\VirtualThermostat\Exceptions;
 use FastyBird\Addon\VirtualThermostat\Types;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
+use FastyBird\Library\Metadata\Formats as MetadataFormats;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -608,7 +608,7 @@ final class Device
 	{
 		$format = $this->getHvacMode($device)?->getFormat();
 
-		if (!$format instanceof MetadataValueObjects\StringEnumFormat) {
+		if (!$format instanceof MetadataFormats\StringEnum) {
 			return [];
 		}
 
@@ -629,7 +629,7 @@ final class Device
 	{
 		$format = $this->getPresetMode($device)?->getFormat();
 
-		if (!$format instanceof MetadataValueObjects\StringEnumFormat) {
+		if (!$format instanceof MetadataFormats\StringEnum) {
 			return [];
 		}
 

@@ -13,7 +13,7 @@
  * @date           05.08.22
  */
 
-namespace FastyBird\Library\Metadata\ValueObjects;
+namespace FastyBird\Library\Metadata\Formats;
 
 use ArrayIterator;
 use IteratorAggregate;
@@ -39,7 +39,7 @@ use function trim;
  * @subpackage     ValueObjects
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class StringEnumFormat implements IteratorAggregate
+final class StringEnum implements IteratorAggregate
 {
 
 	use Nette\SmartObject;

@@ -29,8 +29,8 @@ use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Formats as MetadataFormats;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -2757,14 +2757,14 @@ class Install extends Console\Command\Command
 			$property !== null
 			&& (
 				$property->getIdentifier() !== Types\ChannelPropertyIdentifier::HVAC_MODE
-				|| !$property->getFormat() instanceof MetadataValueObjects\StringEnumFormat
+				|| !$property->getFormat() instanceof MetadataFormats\StringEnum
 			)
 		) {
 			throw new Exceptions\InvalidArgument('Provided property is not valid');
 		}
 
 		$format = $property?->getFormat();
-		assert($format === null || $format instanceof MetadataValueObjects\StringEnumFormat);
+		assert($format === null || $format instanceof MetadataFormats\StringEnum);
 
 		$default = array_filter(
 			array_unique(array_map(static fn ($item): int|null => match ($item) {
@@ -2877,7 +2877,7 @@ class Install extends Console\Command\Command
 			$property !== null
 			&& (
 				$property->getIdentifier() !== Types\ChannelPropertyIdentifier::UNIT
-				|| !$property->getFormat() instanceof MetadataValueObjects\StringEnumFormat
+				|| !$property->getFormat() instanceof MetadataFormats\StringEnum
 			)
 		) {
 			throw new Exceptions\InvalidArgument('Provided property is not valid');
@@ -2962,14 +2962,14 @@ class Install extends Console\Command\Command
 			$property !== null
 			&& (
 				$property->getIdentifier() !== Types\ChannelPropertyIdentifier::PRESET_MODE
-				|| !$property->getFormat() instanceof MetadataValueObjects\StringEnumFormat
+				|| !$property->getFormat() instanceof MetadataFormats\StringEnum
 			)
 		) {
 			throw new Exceptions\InvalidArgument('Provided property is not valid');
 		}
 
 		$format = $property?->getFormat();
-		assert($format === null || $format instanceof MetadataValueObjects\StringEnumFormat);
+		assert($format === null || $format instanceof MetadataFormats\StringEnum);
 
 		$default = array_filter(
 			array_unique(array_map(static fn ($item): int|null => match ($item) {

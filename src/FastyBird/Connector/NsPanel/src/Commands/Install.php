@@ -31,9 +31,9 @@ use FastyBird\DateTimeFactory;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Formats as MetadataFormats;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
-use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
 use FastyBird\Module\Devices\Commands as DevicesCommands;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -3999,7 +3999,7 @@ class Install extends Console\Command\Command
 		Style\SymfonyStyle $io,
 		Types\Protocol $protocol,
 		DevicesEntities\Channels\Properties\Dynamic|null $connectProperty = null,
-	): MetadataValueObjects\NumberRangeFormat|MetadataValueObjects\StringEnumFormat|MetadataValueObjects\CombinedEnumFormat|null
+	): MetadataFormats\NumberRange|MetadataFormats\StringEnum|MetadataFormats\CombinedEnum|null
 	{
 		$metadata = $this->loader->loadProtocols();
 
@@ -4028,7 +4028,7 @@ class Install extends Console\Command\Command
 			$protocolMetadata->offsetExists('min_value')
 			|| $protocolMetadata->offsetExists('max_value')
 		) {
-			$format = new MetadataValueObjects\NumberRangeFormat([
+			$format = new MetadataFormats\NumberRange([
 				$protocolMetadata->offsetExists('min_value') ? floatval(
 					$protocolMetadata->offsetGet('min_value'),
 				) : null,
@@ -4047,7 +4047,7 @@ class Install extends Console\Command\Command
 			&& $protocolMetadata->offsetExists('valid_values')
 			&& $protocolMetadata->offsetGet('valid_values') instanceof Utils\ArrayHash
 		) {
-			$format = new MetadataValueObjects\StringEnumFormat(
+			$format = new MetadataFormats\StringEnum(
 				array_values((array) $protocolMetadata->offsetGet('valid_values')),
 			);
 
@@ -4060,8 +4060,8 @@ class Install extends Console\Command\Command
 							|| $connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::SWITCH)
 							|| $connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::BUTTON)
 						) && (
-							$connectProperty->getFormat() instanceof MetadataValueObjects\StringEnumFormat
-							|| $connectProperty->getFormat() instanceof MetadataValueObjects\CombinedEnumFormat
+							$connectProperty->getFormat() instanceof MetadataFormats\StringEnum
+							|| $connectProperty->getFormat() instanceof MetadataFormats\CombinedEnum
 						)
 					)
 					|| $connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::BOOLEAN)
@@ -4077,11 +4077,11 @@ class Install extends Console\Command\Command
 						];
 					} else {
 						assert(
-							$connectProperty->getFormat() instanceof MetadataValueObjects\StringEnumFormat
-							|| $connectProperty->getFormat() instanceof MetadataValueObjects\CombinedEnumFormat,
+							$connectProperty->getFormat() instanceof MetadataFormats\StringEnum
+							|| $connectProperty->getFormat() instanceof MetadataFormats\CombinedEnum,
 						);
 
-						$options = $connectProperty->getFormat() instanceof MetadataValueObjects\StringEnumFormat
+						$options = $connectProperty->getFormat() instanceof MetadataFormats\StringEnum
 							? $connectProperty->getFormat()->toArray()
 							: array_map(
 								static function (array $items): array|null {
@@ -4174,7 +4174,7 @@ class Install extends Console\Command\Command
 					];
 				}
 
-				$format = new MetadataValueObjects\CombinedEnumFormat($mappedFormat);
+				$format = new MetadataFormats\CombinedEnum($mappedFormat);
 			}
 		}
 

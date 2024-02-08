@@ -7,13 +7,13 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:MetadataLibrary!
- * @subpackage     ValueObjects
+ * @subpackage     Formats
  * @since          1.0.0
  *
  * @date           05.08.22
  */
 
-namespace FastyBird\Library\Metadata\ValueObjects;
+namespace FastyBird\Library\Metadata\Formats;
 
 use FastyBird\Library\Metadata\Exceptions;
 use FastyBird\Library\Metadata\Types;
@@ -35,11 +35,11 @@ use function trim;
  * String enum value format
  *
  * @package        FastyBird:MetadataLibrary!
- * @subpackage     ValueObjects
+ * @subpackage     Formats
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class NumberRangeFormat
+final class NumberRange
 {
 
 	use Nette\SmartObject;

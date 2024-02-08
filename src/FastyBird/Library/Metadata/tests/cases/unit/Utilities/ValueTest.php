@@ -4,9 +4,9 @@ namespace FastyBird\Library\Metadata\Tests\Cases\Unit\Utilities;
 
 use DateTimeInterface;
 use FastyBird\Library\Metadata\Exceptions;
+use FastyBird\Library\Metadata\Formats;
 use FastyBird\Library\Metadata\Types;
 use FastyBird\Library\Metadata\Utilities;
-use FastyBird\Library\Metadata\ValueObjects;
 use FastyBird\Library\Tools\Transformers as ToolsTransformers;
 use PHPUnit\Framework\TestCase;
 
@@ -23,7 +23,7 @@ final class ValueTest extends TestCase
 		Types\DataType $dataType,
 		bool|float|int|string|DateTimeInterface|Types\Payloads\Button|Types\Payloads\Switcher|Types\Payloads\Cover|null $value,
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		ValueObjects\StringEnumFormat|ValueObjects\NumberRangeFormat|ValueObjects\CombinedEnumFormat|null $format = null,
+		Formats\StringEnum|Formats\NumberRange|Formats\CombinedEnum|null $format = null,
 		float|int|string|null $invalid = null,
 		ToolsTransformers\EquationTransformer|null $transformer = null,
 		float|int|string|null $expected = null,
@@ -61,7 +61,7 @@ final class ValueTest extends TestCase
 			'integer_2' => [
 				Types\DataType::get(Types\DataType::CHAR),
 				'9',
-				new ValueObjects\NumberRangeFormat([10, 20]),
+				new Formats\NumberRange([10, 20]),
 				null,
 				null,
 				null,
@@ -70,7 +70,7 @@ final class ValueTest extends TestCase
 			'integer_3' => [
 				Types\DataType::get(Types\DataType::CHAR),
 				'30',
-				new ValueObjects\NumberRangeFormat([10, 20]),
+				new Formats\NumberRange([10, 20]),
 				null,
 				null,
 				null,

@@ -23,8 +23,8 @@ use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Formats as MetadataFormats;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -135,7 +135,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 					if (
 						$property->getDataType()->equalsValue(MetadataTypes\DataType::ENUM)
 						&& $dataPoint->getValue() !== null
-						&& $format instanceof MetadataValueObjects\StringEnumFormat
+						&& $format instanceof MetadataFormats\StringEnum
 					) {
 						$property = $this->databaseHelper->transaction(
 							function () use ($dataPoint, $property, $format): DevicesEntities\Channels\Properties\Dynamic {

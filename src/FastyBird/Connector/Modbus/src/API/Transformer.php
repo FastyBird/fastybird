@@ -20,9 +20,9 @@ use FastyBird\Connector\Modbus\Exceptions;
 use FastyBird\Connector\Modbus\Types;
 use FastyBird\Connector\Modbus\ValueObjects;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Formats as MetadataFormats;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
-use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
 use Nette;
 use Nette\Utils;
 use function array_filter;
@@ -62,7 +62,7 @@ final class Transformer
 	public function transformValueToDevice(
 		MetadataTypes\DataType $dataType,
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		MetadataValueObjects\StringEnumFormat|MetadataValueObjects\NumberRangeFormat|MetadataValueObjects\CombinedEnumFormat|null $format,
+		MetadataFormats\StringEnum|MetadataFormats\NumberRange|MetadataFormats\CombinedEnum|null $format,
 		bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $value,
 	): ValueObjects\DeviceData|null
 	{
@@ -120,7 +120,7 @@ final class Transformer
 			|| $dataType->equalsValue(MetadataTypes\DataType::SWITCH)
 			|| $dataType->equalsValue(MetadataTypes\DataType::BUTTON)
 		) {
-			if ($format instanceof MetadataValueObjects\StringEnumFormat) {
+			if ($format instanceof MetadataFormats\StringEnum) {
 				$filtered = array_values(array_filter(
 					$format->getItems(),
 					static fn (string $item): bool => Utils\Strings::lower(
@@ -136,7 +136,7 @@ final class Transformer
 				}
 
 				return null;
-			} elseif ($format instanceof MetadataValueObjects\CombinedEnumFormat) {
+			} elseif ($format instanceof MetadataFormats\CombinedEnum) {
 				$filtered = array_values(array_filter(
 					$format->getItems(),
 					static fn (array $item): bool => $item[0] !== null
@@ -147,7 +147,7 @@ final class Transformer
 
 				if (
 					count($filtered) === 1
-					&& $filtered[0][2] instanceof MetadataValueObjects\CombinedEnumFormatItem
+					&& $filtered[0][2] instanceof MetadataFormats\CombinedEnumItem
 				) {
 					return new ValueObjects\DeviceData(
 						is_scalar($filtered[0][2]->getValue()) ? $filtered[0][2]->getValue() : strval(
@@ -185,18 +185,18 @@ final class Transformer
 	public function determineDeviceReadDataType(
 		MetadataTypes\DataType $dataType,
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		MetadataValueObjects\StringEnumFormat|MetadataValueObjects\NumberRangeFormat|MetadataValueObjects\CombinedEnumFormat|null $format,
+		MetadataFormats\StringEnum|MetadataFormats\NumberRange|MetadataFormats\CombinedEnum|null $format,
 	): MetadataTypes\DataType
 	{
 		$deviceExpectedDataType = $dataType;
 
-		if ($format instanceof MetadataValueObjects\CombinedEnumFormat) {
+		if ($format instanceof MetadataFormats\CombinedEnum) {
 			$enumDataTypes = [];
 
 			foreach ($format->getItems() as $enumItem) {
 				if (
 					count($enumItem) === 3
-					&& $enumItem[1] instanceof MetadataValueObjects\CombinedEnumFormatItem
+					&& $enumItem[1] instanceof MetadataFormats\CombinedEnumItem
 					&& $enumItem[1]->getDataType() !== null
 				) {
 					$enumDataTypes[] = $enumItem[1]->getDataType();
@@ -220,18 +220,18 @@ final class Transformer
 	public function determineDeviceWriteDataType(
 		MetadataTypes\DataType $dataType,
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		MetadataValueObjects\StringEnumFormat|MetadataValueObjects\NumberRangeFormat|MetadataValueObjects\CombinedEnumFormat|null $format,
+		MetadataFormats\StringEnum|MetadataFormats\NumberRange|MetadataFormats\CombinedEnum|null $format,
 	): MetadataTypes\DataType
 	{
 		$deviceExpectedDataType = $dataType;
 
-		if ($format instanceof MetadataValueObjects\CombinedEnumFormat) {
+		if ($format instanceof MetadataFormats\CombinedEnum) {
 			$enumDataTypes = [];
 
 			foreach ($format->getItems() as $enumItem) {
 				if (
 					count($enumItem) === 3
-					&& $enumItem[2] instanceof MetadataValueObjects\CombinedEnumFormatItem
+					&& $enumItem[2] instanceof MetadataFormats\CombinedEnumItem
 					&& $enumItem[2]->getDataType() !== null
 				) {
 					$enumDataTypes[] = $enumItem[2]->getDataType();

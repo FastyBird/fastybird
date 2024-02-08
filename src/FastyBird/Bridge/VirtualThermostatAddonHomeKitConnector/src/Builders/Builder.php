@@ -30,8 +30,8 @@ use FastyBird\Connector\HomeKit\Types as HomeKitTypes;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Formats as MetadataFormats;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -592,7 +592,7 @@ class Builder
 				$characteristicMetadata->offsetExists('ValidValues')
 				&& $characteristicMetadata->offsetGet('ValidValues') instanceof Utils\ArrayHash
 			) {
-				$format = new MetadataValueObjects\StringEnumFormat(
+				$format = new MetadataFormats\StringEnum(
 					array_values((array) $characteristicMetadata->offsetGet('ValidValues')),
 				);
 			}
@@ -778,7 +778,7 @@ class Builder
 			$property->getIdentifier() === VirtualThermostatTypes\ChannelPropertyIdentifier::HVAC_STATE
 			&& $characteristicType->equalsValue(HomeKitTypes\CharacteristicType::CURRENT_HEATING_COOLING_STATE)
 		) {
-			assert($property->getFormat() instanceof MetadataValueObjects\StringEnumFormat);
+			assert($property->getFormat() instanceof MetadataFormats\StringEnum);
 
 			$format = [];
 
@@ -811,7 +811,7 @@ class Builder
 			$property->getIdentifier() === VirtualThermostatTypes\ChannelPropertyIdentifier::HVAC_MODE
 			&& $characteristicType->equalsValue(HomeKitTypes\CharacteristicType::TARGET_HEATING_COOLING_STATE)
 		) {
-			assert($property->getFormat() instanceof MetadataValueObjects\StringEnumFormat);
+			assert($property->getFormat() instanceof MetadataFormats\StringEnum);
 
 			$format = [];
 
@@ -870,7 +870,7 @@ class Builder
 			)
 		) {
 			assert(
-				$property->getFormat() instanceof MetadataValueObjects\NumberRangeFormat
+				$property->getFormat() instanceof MetadataFormats\NumberRange
 				|| $property->getFormat() === null,
 			);
 

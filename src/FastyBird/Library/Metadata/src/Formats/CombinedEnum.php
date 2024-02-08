@@ -7,13 +7,13 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:MetadataLibrary!
- * @subpackage     ValueObjects
+ * @subpackage     Formats
  * @since          1.0.0
  *
  * @date           05.08.22
  */
 
-namespace FastyBird\Library\Metadata\ValueObjects;
+namespace FastyBird\Library\Metadata\Formats;
 
 use ArrayIterator;
 use FastyBird\Library\Metadata\Exceptions;
@@ -30,19 +30,19 @@ use function trim;
 /**
  * Combined enum value format
  *
- * @implements     IteratorAggregate<int, array<int, CombinedEnumFormatItem|null>>
+ * @implements     IteratorAggregate<int, array<int, CombinedEnumItem|null>>
  *
  * @package        FastyBird:MetadataLibrary!
- * @subpackage     ValueObjects
+ * @subpackage     Formats
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class CombinedEnumFormat implements IteratorAggregate
+final class CombinedEnum implements IteratorAggregate
 {
 
 	use Nette\SmartObject;
 
-	/** @var array<int, array<int, CombinedEnumFormatItem|null>> */
+	/** @var array<int, array<int, CombinedEnumItem|null>> */
 	private array $items;
 
 	/**
@@ -58,12 +58,12 @@ final class CombinedEnumFormat implements IteratorAggregate
 
 				$parts = explode(':', $item) + [null, null, null];
 
-				return array_map(static function (string|null $part): CombinedEnumFormatItem|null {
+				return array_map(static function (string|null $part): CombinedEnumItem|null {
 					if ($part === null || trim($part) === '') {
 						return null;
 					}
 
-					return new CombinedEnumFormatItem($part);
+					return new CombinedEnumItem($part);
 				}, $parts);
 			}, explode(',', $items));
 		} else {
@@ -72,19 +72,19 @@ final class CombinedEnumFormat implements IteratorAggregate
 					throw new Exceptions\InvalidArgument('Provided format is not valid for combined enum format');
 				}
 
-				return array_map(static function (string|array|null $part): CombinedEnumFormatItem|null {
+				return array_map(static function (string|array|null $part): CombinedEnumItem|null {
 					if ($part === null || $part === []) {
 						return null;
 					}
 
-					return new CombinedEnumFormatItem($part);
+					return new CombinedEnumItem($part);
 				}, $item);
 			}, $items);
 		}
 	}
 
 	/**
-	 * @return array<int, array<int, CombinedEnumFormatItem|null>>
+	 * @return array<int, array<int, CombinedEnumItem|null>>
 	 */
 	public function getItems(): array
 	{
@@ -98,8 +98,8 @@ final class CombinedEnumFormat implements IteratorAggregate
 	{
 		return array_map(
 			static fn (array $item): array => array_map(
-				static function (CombinedEnumFormatItem|null $part): array|string|null {
-					if ($part instanceof CombinedEnumFormatItem) {
+				static function (CombinedEnumItem|null $part): array|string|null {
+					if ($part instanceof CombinedEnumItem) {
 						return $part->getDataType() !== null ? $part->toArray() : strval($part->getValue());
 					}
 
@@ -127,8 +127,8 @@ final class CombinedEnumFormat implements IteratorAggregate
 	public function __toString(): string
 	{
 		return implode(',', array_map(static fn (array $item) =>
-			implode(':', array_map(static function (CombinedEnumFormatItem|null $part): string {
-				if ($part instanceof CombinedEnumFormatItem) {
+			implode(':', array_map(static function (CombinedEnumItem|null $part): string {
+				if ($part instanceof CombinedEnumItem) {
 					return strval($part);
 				}
 

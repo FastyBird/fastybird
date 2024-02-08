@@ -25,8 +25,8 @@ use FastyBird\Connector\Modbus\Types;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Formats as MetadataFormats;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -3136,7 +3136,7 @@ class Install extends Console\Command\Command
 		if ($existingProperty !== null) {
 			$format = $existingProperty->getFormat();
 
-			if ($format instanceof MetadataValueObjects\CombinedEnumFormat) {
+			if ($format instanceof MetadataFormats\CombinedEnum) {
 				foreach ($format->getItems() as $item) {
 					if (count($item) === 3) {
 						if (
@@ -3394,7 +3394,7 @@ class Install extends Console\Command\Command
 		if ($existingProperty !== null) {
 			$format = $existingProperty->getFormat();
 
-			if ($format instanceof MetadataValueObjects\CombinedEnumFormat) {
+			if ($format instanceof MetadataFormats\CombinedEnum) {
 				foreach ($format->getItems() as $item) {
 					if (count($item) === 3) {
 						if (

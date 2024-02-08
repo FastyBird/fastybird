@@ -20,8 +20,8 @@ use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Documents;
 use FastyBird\Library\Metadata\Exceptions;
+use FastyBird\Library\Metadata\Formats;
 use FastyBird\Library\Metadata\Types;
-use FastyBird\Library\Metadata\ValueObjects;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_map;
@@ -219,7 +219,7 @@ abstract class ConnectorProperty implements Documents\Document, Documents\Owner
 	 * @throws Exceptions\InvalidArgument
 	 */
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-	public function getFormat(): ValueObjects\StringEnumFormat|ValueObjects\NumberRangeFormat|ValueObjects\CombinedEnumFormat|null
+	public function getFormat(): Formats\StringEnum|Formats\NumberRange|Formats\CombinedEnum|null
 	{
 		return $this->buildFormat($this->format);
 	}
@@ -306,7 +306,7 @@ abstract class ConnectorProperty implements Documents\Document, Documents\Owner
 	 */
 	private function buildFormat(
 		array|string|null $format,
-	): ValueObjects\StringEnumFormat|ValueObjects\NumberRangeFormat|ValueObjects\CombinedEnumFormat|null
+	): Formats\StringEnum|Formats\NumberRange|Formats\CombinedEnum|null
 	{
 		if ($format === null) {
 			return null;
@@ -342,7 +342,7 @@ abstract class ConnectorProperty implements Documents\Document, Documents\Owner
 			}
 
 			if (preg_match(Metadata\Constants::VALUE_FORMAT_NUMBER_RANGE, $format) === 1) {
-				return new ValueObjects\NumberRangeFormat($format);
+				return new Formats\NumberRange($format);
 			}
 		} elseif (
 			in_array($this->dataType->getValue(), [
@@ -369,9 +369,9 @@ abstract class ConnectorProperty implements Documents\Document, Documents\Owner
 			}
 
 			if (preg_match(Metadata\Constants::VALUE_FORMAT_COMBINED_ENUM, $format) === 1) {
-				return new ValueObjects\CombinedEnumFormat($format);
+				return new Formats\CombinedEnum($format);
 			} elseif (preg_match(Metadata\Constants::VALUE_FORMAT_STRING_ENUM, $format) === 1) {
-				return new ValueObjects\StringEnumFormat($format);
+				return new Formats\StringEnum($format);
 			}
 		}
 

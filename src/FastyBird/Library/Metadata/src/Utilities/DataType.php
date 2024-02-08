@@ -16,8 +16,8 @@
 namespace FastyBird\Library\Metadata\Utilities;
 
 use FastyBird\Library\Metadata\Exceptions;
+use FastyBird\Library\Metadata\Formats;
 use FastyBird\Library\Metadata\Types;
-use FastyBird\Library\Metadata\ValueObjects;
 use function floatval;
 use function intval;
 
@@ -45,7 +45,7 @@ final class DataType
 	 * @throws Exceptions\InvalidState
 	 */
 	public static function inferNumberDataType(
-		ValueObjects\NumberRangeFormat $format,
+		Formats\NumberRange $format,
 		float|int|null $step = null,
 		Types\DataType|null $fallback = null,
 	): Types\DataType

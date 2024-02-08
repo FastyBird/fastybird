@@ -28,9 +28,9 @@ use FastyBird\Connector\HomeKit\Types;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Formats as MetadataFormats;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
-use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -2874,7 +2874,7 @@ class Install extends Console\Command\Command
 		Style\SymfonyStyle $io,
 		string $characteristic,
 		DevicesEntities\Channels\Properties\Dynamic|null $connectProperty = null,
-	): MetadataValueObjects\NumberRangeFormat|MetadataValueObjects\StringEnumFormat|MetadataValueObjects\CombinedEnumFormat|null
+	): MetadataFormats\NumberRange|MetadataFormats\StringEnum|MetadataFormats\CombinedEnum|null
 	{
 		$metadata = $this->loader->loadCharacteristics();
 
@@ -2919,7 +2919,7 @@ class Install extends Console\Command\Command
 			$characteristicMetadata->offsetExists('MinValue')
 			|| $characteristicMetadata->offsetExists('MaxValue')
 		) {
-			$format = new MetadataValueObjects\NumberRangeFormat([
+			$format = new MetadataFormats\NumberRange([
 				$characteristicMetadata->offsetExists('MinValue')
 					? floatval($characteristicMetadata->offsetGet('MinValue'))
 					: null,
@@ -2938,7 +2938,7 @@ class Install extends Console\Command\Command
 			&& $characteristicMetadata->offsetExists('ValidValues')
 			&& $characteristicMetadata->offsetGet('ValidValues') instanceof Utils\ArrayHash
 		) {
-			$format = new MetadataValueObjects\StringEnumFormat(
+			$format = new MetadataFormats\StringEnum(
 				array_values((array) $characteristicMetadata->offsetGet('ValidValues')),
 			);
 
@@ -2949,14 +2949,14 @@ class Install extends Console\Command\Command
 					|| $connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::SWITCH)
 					|| $connectProperty->getDataType()->equalsValue(MetadataTypes\DataType::BUTTON)
 				) && (
-					$connectProperty->getFormat() instanceof MetadataValueObjects\StringEnumFormat
-					|| $connectProperty->getFormat() instanceof MetadataValueObjects\CombinedEnumFormat
+					$connectProperty->getFormat() instanceof MetadataFormats\StringEnum
+					|| $connectProperty->getFormat() instanceof MetadataFormats\CombinedEnum
 				)
 			) {
 				$mappedFormat = [];
 
 				foreach ($characteristicMetadata->offsetGet('ValidValues') as $name => $item) {
-					$options = $connectProperty->getFormat() instanceof MetadataValueObjects\StringEnumFormat
+					$options = $connectProperty->getFormat() instanceof MetadataFormats\StringEnum
 						? $connectProperty->getFormat()->toArray()
 						: array_map(
 							static function (array $items): array|null {
@@ -3048,7 +3048,7 @@ class Install extends Console\Command\Command
 					];
 				}
 
-				$format = new MetadataValueObjects\CombinedEnumFormat($mappedFormat);
+				$format = new MetadataFormats\CombinedEnum($mappedFormat);
 			}
 		}
 
