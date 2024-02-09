@@ -17,6 +17,7 @@ namespace FastyBird\Connector\Virtual\Writers;
 
 use DateTimeInterface;
 use FastyBird\Connector\Virtual\Exceptions;
+use FastyBird\Connector\Virtual\Helpers;
 use FastyBird\Connector\Virtual\Queue;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
@@ -72,7 +73,7 @@ abstract class Periodic implements Writer
 
 	public function __construct(
 		protected readonly MetadataDocuments\DevicesModule\Connector $connector,
-		protected readonly Queue\MessageBuilder $messageBuilder,
+		protected readonly Helpers\MessageBuilder $messageBuilder,
 		protected readonly Queue\Queue $queue,
 		protected readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		protected readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,

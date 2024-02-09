@@ -75,7 +75,7 @@ class Devices
 	public function __construct(
 		private readonly MetadataDocuments\DevicesModule\Connector $connector,
 		private readonly Drivers\DriversManager $driversManager,
-		private readonly Queue\MessageBuilder $messageBuilder,
+		private readonly Helpers\MessageBuilder $messageBuilder,
 		private readonly Helpers\Device $deviceHelper,
 		private readonly Queue\Queue $queue,
 		private readonly Virtual\Logger $logger,

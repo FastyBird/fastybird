@@ -58,6 +58,34 @@ class Connector extends DevicesEntities\Connectors\Connector
 	}
 
 	/**
+	 * @return array<Entities\Devices\Device>
+	 */
+	public function getDevices(): array
+	{
+		$devices = [];
+
+		foreach (parent::getDevices() as $device) {
+			if ($device instanceof Entities\Devices\Device) {
+				$devices[] = $device;
+			}
+		}
+
+		return $devices;
+	}
+
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 */
+	public function addDevice(DevicesEntities\Devices\Device $device): void
+	{
+		if (!$device instanceof Entities\Devices\Device) {
+			throw new Exceptions\InvalidArgument('Provided device type is not valid');
+		}
+
+		parent::addDevice($device);
+	}
+
+	/**
 	 * @return array<Entities\Clients\Client>
 	 */
 	public function getClients(): array

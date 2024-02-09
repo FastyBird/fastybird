@@ -17,10 +17,13 @@ namespace FastyBird\Connector\Virtual\Entities\Devices;
 
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Connector\Virtual\Entities;
+use FastyBird\Connector\Virtual\Exceptions;
 use FastyBird\Connector\Virtual\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
+use Ramsey\Uuid;
+use function assert;
 use function floatval;
 use function is_numeric;
 
@@ -32,6 +35,16 @@ abstract class Device extends DevicesEntities\Devices\Device
 
 	public const STATE_PROCESSING_DELAY = 120.0;
 
+	public function __construct(
+		string $identifier,
+		Entities\Connectors\Connector $connector,
+		string|null $name = null,
+		Uuid\UuidInterface|null $id = null,
+	)
+	{
+		parent::__construct($identifier, $connector, $name, $id);
+	}
+
 	public static function getType(): string
 	{
 		return self::TYPE;
@@ -40,6 +53,13 @@ abstract class Device extends DevicesEntities\Devices\Device
 	public function getSource(): MetadataTypes\Sources\Source
 	{
 		return MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::VIRTUAL);
+	}
+
+	public function getConnector(): Entities\Connectors\Connector
+	{
+		assert($this->connector instanceof Entities\Connectors\Connector);
+
+		return $this->connector;
 	}
 
 	/**
@@ -56,6 +76,18 @@ abstract class Device extends DevicesEntities\Devices\Device
 		}
 
 		return $channels;
+	}
+
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 */
+	public function addChannel(DevicesEntities\Channels\Channel $channel): void
+	{
+		if (!$channel instanceof Entities\Channels\Channel) {
+			throw new Exceptions\InvalidArgument('Provided channel type is not valid');
+		}
+
+		parent::addChannel($channel);
 	}
 
 	/**

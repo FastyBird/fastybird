@@ -17,11 +17,14 @@ namespace FastyBird\Connector\Modbus\Entities\Channels;
 
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Connector\Modbus;
+use FastyBird\Connector\Modbus\Entities;
 use FastyBird\Connector\Modbus\Types;
 use FastyBird\Library\Application\Doctrine\Mapping as ApplicationMapping;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
+use Ramsey\Uuid;
+use function assert;
 use function is_float;
 use function is_int;
 use function is_string;
@@ -33,6 +36,16 @@ class Channel extends DevicesEntities\Channels\Channel
 
 	public const TYPE = 'modbus-connector';
 
+	public function __construct(
+		Entities\Devices\Device $device,
+		string $identifier,
+		string|null $name = null,
+		Uuid\UuidInterface|null $id = null,
+	)
+	{
+		parent::__construct($device, $identifier, $name, $id);
+	}
+
 	public static function getType(): string
 	{
 		return self::TYPE;
@@ -41,6 +54,13 @@ class Channel extends DevicesEntities\Channels\Channel
 	public function getSource(): MetadataTypes\Sources\Connector
 	{
 		return MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::MODBUS);
+	}
+
+	public function getDevice(): Entities\Devices\Device
+	{
+		assert($this->device instanceof Entities\Devices\Device);
+
+		return $this->device;
 	}
 
 	/**

@@ -26,6 +26,7 @@ use FastyBird\Library\Metadata\Formats as MetadataFormats;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use Nette\Utils;
+use Ramsey\Uuid;
 use function array_filter;
 use function array_map;
 use function assert;
@@ -51,6 +52,16 @@ class Device extends VirtualEntities\Devices\Device
 	public const HOT_TOLERANCE = 0.3;
 
 	protected string $device_type = self::TYPE;
+
+	public function __construct(
+		string $identifier,
+		VirtualEntities\Connectors\Connector $connector,
+		string|null $name = null,
+		Uuid\UuidInterface|null $id = null,
+	)
+	{
+		parent::__construct($identifier, $connector, $name, $id);
+	}
 
 	public static function getType(): string
 	{

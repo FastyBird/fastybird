@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\Virtual\Writers;
 
 use FastyBird\Connector\Virtual\Exceptions;
+use FastyBird\Connector\Virtual\Helpers;
 use FastyBird\Connector\Virtual\Queue;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
@@ -46,7 +47,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 	 */
 	public function __construct(
 		MetadataDocuments\DevicesModule\Connector $connector,
-		Queue\MessageBuilder $messageBuilder,
+		Helpers\MessageBuilder $messageBuilder,
 		Queue\Queue $queue,
 		DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,

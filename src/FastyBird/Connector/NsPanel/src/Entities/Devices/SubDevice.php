@@ -40,7 +40,7 @@ class SubDevice extends Entities\Devices\Device
 	public function __construct(
 		string $identifier,
 		Gateway $parent,
-		DevicesEntities\Connectors\Connector $connector,
+		Entities\Connectors\Connector $connector,
 		string|null $name = null,
 		Uuid\UuidInterface|null $id = null,
 	)

@@ -16,13 +16,15 @@
 namespace FastyBird\Connector\HomeKit\Entities\Devices;
 
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\Connector\HomeKit\Entities\Channels\Channel;
+use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Types;
 use FastyBird\Library\Application\Doctrine\Mapping as ApplicationMapping;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
+use Ramsey\Uuid;
+use function assert;
 use function is_int;
 
 #[ORM\Entity]
@@ -32,6 +34,16 @@ class Device extends DevicesEntities\Devices\Device
 
 	public const TYPE = 'homekit-connector';
 
+	public function __construct(
+		string $identifier,
+		Entities\Connectors\Connector $connector,
+		string|null $name = null,
+		Uuid\UuidInterface|null $id = null,
+	)
+	{
+		parent::__construct($identifier, $connector, $name, $id);
+	}
+
 	public static function getType(): string
 	{
 		return self::TYPE;
@@ -40,6 +52,41 @@ class Device extends DevicesEntities\Devices\Device
 	public function getSource(): MetadataTypes\Sources\Connector
 	{
 		return MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::HOMEKIT);
+	}
+
+	public function getConnector(): Entities\Connectors\Connector
+	{
+		assert($this->connector instanceof Entities\Connectors\Connector);
+
+		return $this->connector;
+	}
+
+	/**
+	 * @return array<Entities\Channels\Channel>
+	 */
+	public function getChannels(): array
+	{
+		$channels = [];
+
+		foreach (parent::getChannels() as $channel) {
+			if ($channel instanceof Entities\Channels\Channel) {
+				$channels[] = $channel;
+			}
+		}
+
+		return $channels;
+	}
+
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 */
+	public function addChannel(DevicesEntities\Channels\Channel $channel): void
+	{
+		if (!$channel instanceof Entities\Channels\Channel) {
+			throw new Exceptions\InvalidArgument('Provided channel type is not valid');
+		}
+
+		parent::addChannel($channel);
 	}
 
 	/**
@@ -91,35 +138,7 @@ class Device extends DevicesEntities\Devices\Device
 	}
 
 	/**
-	 * @return array<Channel>
-	 */
-	public function getChannels(): array
-	{
-		$channels = [];
-
-		foreach (parent::getChannels() as $channel) {
-			if ($channel instanceof Channel) {
-				$channels[] = $channel;
-			}
-		}
-
-		return $channels;
-	}
-
-	/**
-	 * @throws Exceptions\InvalidArgument
-	 */
-	public function addChannel(DevicesEntities\Channels\Channel $channel): void
-	{
-		if (!$channel instanceof Channel) {
-			throw new Exceptions\InvalidArgument('Provided channel type is not valid');
-		}
-
-		parent::addChannel($channel);
-	}
-
-	/**
-	 * @return array<Channel>
+	 * @return array<Entities\Channels\Channel>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
@@ -128,7 +147,7 @@ class Device extends DevicesEntities\Devices\Device
 		$channels = [];
 
 		foreach (parent::getChannels() as $channel) {
-			if (!$channel instanceof Channel) {
+			if (!$channel instanceof Entities\Channels\Channel) {
 				continue;
 			}
 

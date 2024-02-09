@@ -23,7 +23,6 @@ use FastyBird\Library\Application\Doctrine\Mapping as ApplicationMapping;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use Nette\Utils;
 use Ramsey\Uuid;
-use function assert;
 use function sprintf;
 
 #[ORM\Entity]
@@ -87,14 +86,6 @@ class Thermostat extends HomeKitEntities\Devices\Device
 		throw new Exceptions\InvalidState(
 			'Bridged thermostat device have to have parent virtual thermostat device defined',
 		);
-	}
-
-	public function getConnector(): HomeKitEntities\Connectors\Connector
-	{
-		$connector = parent::getConnector();
-		assert($connector instanceof HomeKitEntities\Connectors\Connector);
-
-		return $connector;
 	}
 
 }

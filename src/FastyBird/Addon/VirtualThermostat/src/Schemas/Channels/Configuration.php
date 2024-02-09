@@ -18,14 +18,13 @@ namespace FastyBird\Addon\VirtualThermostat\Schemas\Channels;
 use FastyBird\Addon\VirtualThermostat\Entities;
 use FastyBird\Addon\VirtualThermostat\Schemas;
 use FastyBird\Connector\Virtual\Schemas as VirtualSchemas;
-use FastyBird\Connector\Virtual\Schemas\Channels\Channel;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 
 /**
  * Configuration channel entity schema
  *
  * @template T of Entities\Channels\Configuration
- * @extends  Channel<T>
+ * @extends  VirtualSchemas\Channels\Channel<T>
  *
  * @package        FastyBird:VirtualThermostatAddon!
  * @subpackage     Schemas

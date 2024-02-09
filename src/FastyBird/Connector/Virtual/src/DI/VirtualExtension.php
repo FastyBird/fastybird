@@ -172,12 +172,6 @@ class VirtualExtension extends DI\CompilerExtension implements Translation\DI\Tr
 				'logger' => $logger,
 			]);
 
-		$builder->addDefinition(
-			$this->prefix('queue.messageBuilder'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Queue\MessageBuilder::class);
-
 		/**
 		 * SUBSCRIBERS
 		 */
@@ -192,14 +186,14 @@ class VirtualExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		 * JSON-API SCHEMAS
 		 */
 
-		$builder->addDefinition($this->prefix('schemas.connector.virtual'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition($this->prefix('schemas.connector'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\Connectors\Connector::class);
 
 		/**
 		 * JSON-API HYDRATORS
 		 */
 
-		$builder->addDefinition($this->prefix('hydrators.connector.virtual'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition($this->prefix('hydrators.connector'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\Connectors\Connector::class);
 
 		/**
@@ -208,6 +202,9 @@ class VirtualExtension extends DI\CompilerExtension implements Translation\DI\Tr
 
 		$builder->addDefinition($this->prefix('helpers.device'), new DI\Definitions\ServiceDefinition())
 			->setType(Helpers\Device::class);
+
+		$builder->addDefinition($this->prefix('helpers.messageBuilder'), new DI\Definitions\ServiceDefinition())
+			->setType(Helpers\MessageBuilder::class);
 
 		/**
 		 * COMMANDS

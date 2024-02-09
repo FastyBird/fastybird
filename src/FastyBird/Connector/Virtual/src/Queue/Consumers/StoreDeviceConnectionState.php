@@ -66,15 +66,15 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
-	public function consume(Queue\Messages\Message $entity): bool
+	public function consume(Queue\Messages\Message $message): bool
 	{
-		if (!$entity instanceof Queue\Messages\StoreDeviceConnectionState) {
+		if (!$message instanceof Queue\Messages\StoreDeviceConnectionState) {
 			return false;
 		}
 
 		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
-		$findDeviceQuery->byConnectorId($entity->getConnector());
-		$findDeviceQuery->byId($entity->getDevice());
+		$findDeviceQuery->byConnectorId($message->getConnector());
+		$findDeviceQuery->byId($message->getDevice());
 
 		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
@@ -82,15 +82,15 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 			$this->logger->error(
 				'Device could not be loaded',
 				[
-					'source' => $entity->getSource()->getValue(),
+					'source' => $message->getSource()->getValue(),
 					'type' => 'store-device-connection-state-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $message->getConnector()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $message->getDevice()->toString(),
 					],
-					'data' => $entity->toArray(),
+					'data' => $message->toArray(),
 				],
 			);
 
@@ -99,18 +99,18 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 
 		// Check device state...
 		if (
-			!$this->deviceConnectionManager->getState($device)->equals($entity->getState())
+			!$this->deviceConnectionManager->getState($device)->equals($message->getState())
 		) {
 			// ... and if it is not ready, set it to ready
 			$this->deviceConnectionManager->setState(
 				$device,
-				$entity->getState(),
+				$message->getState(),
 			);
 
 			if (
-				$entity->getState()->equalsValue(MetadataTypes\ConnectionState::DISCONNECTED)
-				|| $entity->getState()->equalsValue(MetadataTypes\ConnectionState::ALERT)
-				|| $entity->getState()->equalsValue(MetadataTypes\ConnectionState::UNKNOWN)
+				$message->getState()->equalsValue(MetadataTypes\ConnectionState::DISCONNECTED)
+				|| $message->getState()->equalsValue(MetadataTypes\ConnectionState::ALERT)
+				|| $message->getState()->equalsValue(MetadataTypes\ConnectionState::UNKNOWN)
 			) {
 				$findDevicePropertiesQuery = new DevicesQueries\Configuration\FindDeviceDynamicProperties();
 				$findDevicePropertiesQuery->forDevice($device);
@@ -124,7 +124,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 					$this->devicePropertiesStatesManager->setValidState(
 						$property,
 						false,
-						$entity->getSource(),
+						$message->getSource(),
 					);
 				}
 
@@ -146,7 +146,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 						$this->channelPropertiesStatesManager->setValidState(
 							$property,
 							false,
-							$entity->getSource(),
+							$message->getSource(),
 						);
 					}
 				}
@@ -156,15 +156,15 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed device connection state message',
 			[
-				'source' => $entity->getSource()->getValue(),
+				'source' => $message->getSource()->getValue(),
 				'type' => 'store-device-connection-state-message-consumer',
 				'connector' => [
-					'id' => $entity->getConnector()->toString(),
+					'id' => $message->getConnector()->toString(),
 				],
 				'device' => [
 					'id' => $device->getId()->toString(),
 				],
-				'data' => $entity->toArray(),
+				'data' => $message->toArray(),
 			],
 		);
 

@@ -16,6 +16,8 @@
 namespace FastyBird\Connector\Virtual\Entities\Connectors;
 
 use Doctrine\ORM\Mapping as ORM;
+use FastyBird\Connector\Virtual\Entities;
+use FastyBird\Connector\Virtual\Exceptions;
 use FastyBird\Library\Application\Doctrine\Mapping as ApplicationMapping;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
@@ -35,6 +37,34 @@ class Connector extends DevicesEntities\Connectors\Connector
 	public function getSource(): MetadataTypes\Sources\Connector
 	{
 		return MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::VIRTUAL);
+	}
+
+	/**
+	 * @return array<Entities\Devices\Device>
+	 */
+	public function getDevices(): array
+	{
+		$devices = [];
+
+		foreach (parent::getDevices() as $device) {
+			if ($device instanceof Entities\Devices\Device) {
+				$devices[] = $device;
+			}
+		}
+
+		return $devices;
+	}
+
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 */
+	public function addDevice(DevicesEntities\Devices\Device $device): void
+	{
+		if (!$device instanceof Entities\Devices\Device) {
+			throw new Exceptions\InvalidArgument('Provided device type is not valid');
+		}
+
+		parent::addDevice($device);
 	}
 
 }

@@ -13,14 +13,15 @@
  * @date           17.10.23
  */
 
-namespace FastyBird\Connector\Virtual\Queue;
+namespace FastyBird\Connector\Virtual\Helpers;
 
 use FastyBird\Connector\Virtual\Exceptions;
 use FastyBird\Connector\Virtual\Queue;
+use FastyBird\Connector\Virtual\Queue\Messages\Message as T;
 use Orisai\ObjectMapper;
 
 /**
- * Entity helper
+ * Message builder
  *
  * @package        FastyBird:VirtualConnector!
  * @subpackage     Helpers
@@ -31,7 +32,7 @@ final class MessageBuilder
 {
 
 	public function __construct(
-		private readonly ObjectMapper\Processing\Processor $entityMapper,
+		private readonly ObjectMapper\Processing\Processor $processor,
 	)
 	{
 	}
@@ -39,20 +40,18 @@ final class MessageBuilder
 	/**
 	 * @template T of Queue\Messages\Message
 	 *
-	 * @param class-string<T> $entity
+	 * @param class-string<T> $message
 	 * @param array<mixed> $data
-	 *
-	 * @return T
 	 *
 	 * @throws Exceptions\Runtime
 	 */
-	public function create(string $entity, array $data): Queue\Messages\Message
+	public function create(string $message, array $data): Queue\Messages\Message
 	{
 		try {
 			$options = new ObjectMapper\Processing\Options();
 			$options->setAllowUnknownFields();
 
-			return $this->entityMapper->process($data, $entity, $options);
+			return $this->processor->process($data, $message, $options);
 		} catch (ObjectMapper\Exception\InvalidData $ex) {
 			$errorPrinter = new ObjectMapper\Printers\ErrorVisualPrinter(
 				new ObjectMapper\Printers\TypeToStringConverter(),

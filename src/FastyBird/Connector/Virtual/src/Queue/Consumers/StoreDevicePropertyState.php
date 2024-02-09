@@ -70,15 +70,15 @@ final class StoreDevicePropertyState implements Queue\Consumer
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
-	public function consume(Queue\Messages\Message $entity): bool
+	public function consume(Queue\Messages\Message $message): bool
 	{
-		if (!$entity instanceof Queue\Messages\StoreDevicePropertyState) {
+		if (!$message instanceof Queue\Messages\StoreDevicePropertyState) {
 			return false;
 		}
 
 		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
-		$findDeviceQuery->byConnectorId($entity->getConnector());
-		$findDeviceQuery->byId($entity->getDevice());
+		$findDeviceQuery->byConnectorId($message->getConnector());
+		$findDeviceQuery->byId($message->getDevice());
 
 		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
@@ -86,19 +86,19 @@ final class StoreDevicePropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Device could not be loaded',
 				[
-					'source' => $entity->getSource()->getValue(),
+					'source' => $message->getSource()->getValue(),
 					'type' => 'store-device-property-state-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $message->getConnector()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $message->getDevice()->toString(),
 					],
 					'property' => array_merge(
-						is_string($entity->getProperty()) ? ['identifier' => $entity->getProperty()] : [],
-						!is_string($entity->getProperty()) ? ['id' => $entity->getProperty()->toString()] : [],
+						is_string($message->getProperty()) ? ['identifier' => $message->getProperty()] : [],
+						!is_string($message->getProperty()) ? ['id' => $message->getProperty()->toString()] : [],
 					),
-					'data' => $entity->toArray(),
+					'data' => $message->toArray(),
 				],
 			);
 
@@ -107,10 +107,10 @@ final class StoreDevicePropertyState implements Queue\Consumer
 
 		$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($device);
-		if (is_string($entity->getProperty())) {
-			$findDevicePropertyQuery->byIdentifier($entity->getProperty());
+		if (is_string($message->getProperty())) {
+			$findDevicePropertyQuery->byIdentifier($message->getProperty());
 		} else {
-			$findDevicePropertyQuery->byId($entity->getProperty());
+			$findDevicePropertyQuery->byId($message->getProperty());
 		}
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy($findDevicePropertyQuery);
@@ -119,19 +119,19 @@ final class StoreDevicePropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Device device property could not be loaded',
 				[
-					'source' => $entity->getSource()->getValue(),
+					'source' => $message->getSource()->getValue(),
 					'type' => 'store-device-property-state-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $message->getConnector()->toString(),
 					],
 					'device' => [
 						'id' => $device->getId()->toString(),
 					],
 					'property' => array_merge(
-						is_string($entity->getProperty()) ? ['identifier' => $entity->getProperty()] : [],
-						!is_string($entity->getProperty()) ? ['id' => $entity->getProperty()->toString()] : [],
+						is_string($message->getProperty()) ? ['identifier' => $message->getProperty()] : [],
+						!is_string($message->getProperty()) ? ['id' => $message->getProperty()->toString()] : [],
 					),
-					'data' => $entity->toArray(),
+					'data' => $message->toArray(),
 				],
 			);
 
@@ -140,7 +140,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 
 		if ($property instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty) {
 			$this->databaseHelper->transaction(
-				function () use ($entity, $property): void {
+				function () use ($message, $property): void {
 					$property = $this->devicesPropertiesRepository->find(
 						$property->getId(),
 						DevicesEntities\Devices\Properties\Variable::class,
@@ -150,7 +150,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 					$this->devicesPropertiesManager->update(
 						$property,
 						Utils\ArrayHash::from([
-							'value' => $entity->getValue(),
+							'value' => $message->getValue(),
 						]),
 					);
 				},
@@ -160,9 +160,9 @@ final class StoreDevicePropertyState implements Queue\Consumer
 			await($this->devicePropertiesStatesManager->set(
 				$property,
 				Utils\ArrayHash::from([
-					DevicesStates\Property::ACTUAL_VALUE_FIELD => $entity->getValue(),
+					DevicesStates\Property::ACTUAL_VALUE_FIELD => $message->getValue(),
 				]),
-				$entity->getSource(),
+				$message->getSource(),
 			));
 		} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
 			$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceProperties();
@@ -174,12 +174,12 @@ final class StoreDevicePropertyState implements Queue\Consumer
 				await($this->devicePropertiesStatesManager->write(
 					$property,
 					Utils\ArrayHash::from([
-						DevicesStates\Property::EXPECTED_VALUE_FIELD => $entity->getValue(),
+						DevicesStates\Property::EXPECTED_VALUE_FIELD => $message->getValue(),
 					]),
-					$entity->getSource(),
+					$message->getSource(),
 				));
 			} elseif ($parent instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty) {
-				$this->databaseHelper->transaction(function () use ($entity, $device, $property, $parent): void {
+				$this->databaseHelper->transaction(function () use ($message, $device, $property, $parent): void {
 					$toUpdate = $this->devicesPropertiesRepository->find(
 						$parent->getId(),
 						DevicesEntities\Devices\Properties\Variable::class,
@@ -189,17 +189,17 @@ final class StoreDevicePropertyState implements Queue\Consumer
 						$this->devicesPropertiesManager->update(
 							$toUpdate,
 							Utils\ArrayHash::from([
-								'value' => $entity->getValue(),
+								'value' => $message->getValue(),
 							]),
 						);
 					} else {
 						$this->logger->error(
 							'Mapped variable property could not be updated',
 							[
-								'source' => $entity->getSource()->getValue(),
+								'source' => $message->getSource()->getValue(),
 								'type' => 'store-device-property-state-message-consumer',
 								'connector' => [
-									'id' => $entity->getConnector()->toString(),
+									'id' => $message->getConnector()->toString(),
 								],
 								'device' => [
 									'id' => $device->getId()->toString(),
@@ -207,7 +207,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 								'property' => [
 									'id' => $property->getId()->toString(),
 								],
-								'data' => $entity->toArray(),
+								'data' => $message->toArray(),
 							],
 						);
 					}
@@ -218,10 +218,10 @@ final class StoreDevicePropertyState implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed store device state message',
 			[
-				'source' => $entity->getSource()->getValue(),
+				'source' => $message->getSource()->getValue(),
 				'type' => 'store-device-property-state-message-consumer',
 				'connector' => [
-					'id' => $entity->getConnector()->toString(),
+					'id' => $message->getConnector()->toString(),
 				],
 				'device' => [
 					'id' => $device->getId()->toString(),
@@ -229,7 +229,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 				'property' => [
 					'id' => $property->getId()->toString(),
 				],
-				'data' => $entity->toArray(),
+				'data' => $message->toArray(),
 			],
 		);
 

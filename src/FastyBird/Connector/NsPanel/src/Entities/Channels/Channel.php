@@ -23,6 +23,7 @@ use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Application\Doctrine\Mapping as ApplicationMapping;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
+use Ramsey\Uuid;
 use function array_key_exists;
 use function assert;
 use function preg_match;
@@ -34,6 +35,16 @@ class Channel extends DevicesEntities\Channels\Channel
 {
 
 	public const TYPE = 'ns-panel-connector';
+
+	public function __construct(
+		Entities\Devices\Device $device,
+		string $identifier,
+		string|null $name = null,
+		Uuid\UuidInterface|null $id = null,
+	)
+	{
+		parent::__construct($device, $identifier, $name, $id);
+	}
 
 	public static function getType(): string
 	{

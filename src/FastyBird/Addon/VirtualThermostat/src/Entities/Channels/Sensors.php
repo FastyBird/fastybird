@@ -16,10 +16,13 @@
 namespace FastyBird\Addon\VirtualThermostat\Entities\Channels;
 
 use Doctrine\ORM\Mapping as ORM;
+use FastyBird\Addon\VirtualThermostat\Entities;
 use FastyBird\Connector\Virtual\Entities as VirtualEntities;
 use FastyBird\Library\Application\Doctrine\Mapping as ApplicationMapping;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
+use Ramsey\Uuid;
+use function assert;
 
 #[ORM\Entity]
 #[ApplicationMapping\DiscriminatorEntry(name: self::TYPE)]
@@ -27,6 +30,16 @@ class Sensors extends VirtualEntities\Channels\Channel
 {
 
 	public const TYPE = 'virtual-thermostat-addon-sensors';
+
+	public function __construct(
+		Entities\Devices\Device $device,
+		string $identifier,
+		string|null $name = null,
+		Uuid\UuidInterface|null $id = null,
+	)
+	{
+		parent::__construct($device, $identifier, $name, $id);
+	}
 
 	public static function getType(): string
 	{
@@ -36,6 +49,13 @@ class Sensors extends VirtualEntities\Channels\Channel
 	public function getSource(): MetadataTypes\Sources\Addon
 	{
 		return MetadataTypes\Sources\Addon::get(MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT);
+	}
+
+	public function getDevice(): Entities\Devices\Device
+	{
+		assert($this->device instanceof Entities\Devices\Device);
+
+		return $this->device;
 	}
 
 	/**
