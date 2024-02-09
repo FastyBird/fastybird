@@ -1159,7 +1159,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @return ($async is true ? Promise\PromiseInterface<AuthorizePinCode> : AuthorizePinCode)
+	 * @return ($async is true ? Promise\PromiseInterface<Messages\Response\AuthorizePinCode> : Messages\Response\AuthorizePinCode)
 	 *
 	 * @throws Exceptions\TelevisionApiCall
 	 * @throws Exceptions\TelevisionApiError

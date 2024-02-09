@@ -68,7 +68,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 	private const MATCH_DEVICE_ID = '/USN:\suuid:(?<usn>[\da-zA-Z-]+)::urn/';
 
-	/** @var SplObjectStorage<DiscoveredDevice, null> */
+	/** @var SplObjectStorage<Messages\Response\DiscoveredDevice, null> */
 	private SplObjectStorage $discoveredLocalDevices;
 
 	private EventLoop\TimerInterface|null $handlerTimer = null;
