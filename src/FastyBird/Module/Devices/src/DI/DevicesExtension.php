@@ -860,7 +860,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		$builder = $this->getContainerBuilder();
 
 		/**
-		 * Doctrine entities
+		 * DOCTRINE ENTITIES
 		 */
 
 		$ormAttributeDriverService = $builder->getDefinition('nettrineOrmAttributes.attributeDriver');
@@ -884,7 +884,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		}
 
 		/**
-		 * ApiRoutes
+		 * API ROUTES
 		 */
 
 		$routerService = $builder->getDefinitionByType(SlimRouterRouting\Router::class);
@@ -897,7 +897,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		}
 
 		/**
-		 * Connectors
+		 * CONNECTORS
 		 */
 
 		$connectorProxyServiceFactoryName = $builder->getByType(Connectors\ContainerFactory::class);
@@ -923,7 +923,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		}
 
 		/**
-		 * WebSockets
+		 * WEBSOCKETS
 		 */
 
 		if (class_exists('IPub\WebSockets\DI\WebSocketsExtension')) {
