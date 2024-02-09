@@ -48,7 +48,7 @@ final class ChannelsProperties extends DataFixtures\AbstractFixture implements D
 		for ($i = 1; $i <= 4; $i++) {
 			$channel = $this->getReference('modbus-rtu-channel-' . $i);
 
-			if (!$channel instanceof Entities\ModbusChannel) {
+			if (!$channel instanceof Entities\Channels\Channel) {
 				throw new Exceptions\InvalidState('Channel reference could not be loaded');
 			}
 

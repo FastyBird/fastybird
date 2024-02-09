@@ -47,15 +47,15 @@ final class ModbusExtensionTest extends Tests\Cases\Unit\BaseTestCase
 		self::assertNotNull($container->getByType(Subscribers\Properties::class, false));
 		self::assertNotNull($container->getByType(Subscribers\Controls::class, false));
 
-		self::assertNotNull($container->getByType(Schemas\ModbusConnector::class, false));
-		self::assertNotNull($container->getByType(Schemas\ModbusDevice::class, false));
-		self::assertNotNull($container->getByType(Schemas\ModbusChannel::class, false));
+		self::assertNotNull($container->getByType(Schemas\Connectors\Connector::class, false));
+		self::assertNotNull($container->getByType(Schemas\Devices\Device::class, false));
+		self::assertNotNull($container->getByType(Schemas\Channels\Channel::class, false));
 
-		self::assertNotNull($container->getByType(Hydrators\ModbusConnector::class, false));
-		self::assertNotNull($container->getByType(Hydrators\ModbusDevice::class, false));
-		self::assertNotNull($container->getByType(Hydrators\ModbusChannel::class, false));
+		self::assertNotNull($container->getByType(Hydrators\Connectors\Connector::class, false));
+		self::assertNotNull($container->getByType(Hydrators\Devices\Device::class, false));
+		self::assertNotNull($container->getByType(Hydrators\Channels\Channel::class, false));
 
-		self::assertNotNull($container->getByType(Helpers\Entity::class, false));
+		self::assertNotNull($container->getByType(Queue\MessageBuilder::class, false));
 		self::assertNotNull($container->getByType(Helpers\Connector::class, false));
 		self::assertNotNull($container->getByType(Helpers\Device::class, false));
 		self::assertNotNull($container->getByType(Helpers\Channel::class, false));

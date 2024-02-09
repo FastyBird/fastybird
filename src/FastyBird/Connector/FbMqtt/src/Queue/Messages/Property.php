@@ -7,7 +7,7 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:FbMqttConnector!
- * @subpackage     Entities
+ * @subpackage     Queue
  * @since          1.0.0
  *
  * @date           24.02.20
@@ -27,7 +27,7 @@ use ValueError;
  * Device or channel property
  *
  * @package        FastyBird:FbMqttConnector!
- * @subpackage     Entities
+ * @subpackage     Queue
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */

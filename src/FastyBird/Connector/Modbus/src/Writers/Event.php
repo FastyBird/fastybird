@@ -17,6 +17,7 @@ namespace FastyBird\Connector\Modbus\Writers;
 
 use FastyBird\Connector\Modbus\Entities;
 use FastyBird\Connector\Modbus\Exceptions;
+use FastyBird\Connector\Modbus\Queue\Messages\WriteChannelPropertyState;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -59,7 +60,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 
 		$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 		$findChannelQuery->byId($event->getProperty()->getChannel());
-		$findChannelQuery->byType(Entities\ModbusChannel::TYPE);
+		$findChannelQuery->byType(Entities\Channels\Channel::TYPE);
 
 		$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 
@@ -70,7 +71,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDeviceQuery->forConnector($this->connector);
 		$findDeviceQuery->byId($channel->getDevice());
-		$findDeviceQuery->byType(Entities\ModbusDevice::TYPE);
+		$findDeviceQuery->byType(Entities\Devices\Device::TYPE);
 
 		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
@@ -79,8 +80,8 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 		}
 
 		$this->queue->append(
-			$this->entityHelper->create(
-				Entities\Messages\WriteChannelPropertyState::class,
+			$this->messageBuilder->create(
+				WriteChannelPropertyState::class,
 				[
 					'connector' => $this->connector->getId(),
 					'device' => $device->getId(),

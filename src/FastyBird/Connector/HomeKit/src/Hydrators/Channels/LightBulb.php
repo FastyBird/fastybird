@@ -16,18 +16,19 @@
 namespace FastyBird\Connector\HomeKit\Hydrators\Channels;
 
 use FastyBird\Connector\HomeKit\Entities;
+use FastyBird\Module\Devices\Hydrators as DevicesHydrators;
 
 /**
  * Light bulb channel entity hydrator
  *
  * @template  T of Entities\Channels\LightBulb
- * @extends   Channel<T>
+ * @extends   DevicesHydrators\Channels\Channel<T>
  *
  * @package        FastyBird:HomeKitConnector!
  * @subpackage     Hydrators
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class LightBulb extends Channel
+class LightBulb extends DevicesHydrators\Channels\Channel
 {
 
 	/**

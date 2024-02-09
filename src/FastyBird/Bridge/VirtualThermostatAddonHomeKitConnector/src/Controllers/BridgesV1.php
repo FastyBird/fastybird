@@ -48,7 +48,7 @@ use function strval;
 /**
  * API bridges controller
  *
- * @package        FastyBird:DevicesModule!
+ * @package        FastyBird:VirtualThermostatAddonHomeKitConnectorBridge!
  * @subpackage     Controllers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

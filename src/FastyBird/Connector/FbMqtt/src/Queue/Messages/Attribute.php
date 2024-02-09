@@ -7,7 +7,7 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:FbMqttConnector!
- * @subpackage     Entities
+ * @subpackage     Queue
  * @since          1.0.0
  *
  * @date           24.02.20
@@ -31,7 +31,7 @@ use function strtolower;
  * Device, channel or property attribute
  *
  * @package        FastyBird:FbMqttConnector!
- * @subpackage     Entities
+ * @subpackage     Queue
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */

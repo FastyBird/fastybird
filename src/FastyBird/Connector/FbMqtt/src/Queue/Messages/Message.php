@@ -7,7 +7,7 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:FbMqttConnector!
- * @subpackage     Entities
+ * @subpackage     Queue
  * @since          1.0.0
  *
  * @date           03.12.23
@@ -21,7 +21,7 @@ use Orisai\ObjectMapper;
  * FB MQTT base message data message interface
  *
  * @package        FastyBird:FbMqttConnector!
- * @subpackage     Entities
+ * @subpackage     Queue
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */

@@ -16,7 +16,8 @@
 namespace FastyBird\Connector\Modbus\Clients;
 
 use FastyBird\Connector\Modbus\API;
-use FastyBird\Connector\Modbus\Entities;
+use FastyBird\Connector\Modbus\Clients\Requests\ReadAddress;
+use FastyBird\Connector\Modbus\Clients\Requests\ReadResponse;
 use FastyBird\Connector\Modbus\Exceptions;
 use FastyBird\Connector\Modbus\Helpers;
 use FastyBird\Connector\Modbus\Queue;
@@ -32,18 +33,18 @@ use function usort;
 
 /**
  * @property-read API\Transformer $transformer
- * @property-read Helpers\Entity $entityHelper
- * @property-read Helpers\Device $deviceHelper
+ * @property-read Queue\MessageBuilder $messageBuilder
  * @property-read Queue\Queue $queue
+ * @property-read Helpers\Device $deviceHelper
  * @property-read DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository
  */
 trait TReading
 {
 
 	/**
-	 * @param array<Entities\Clients\ReadAddress> $addresses
+	 * @param array<ReadAddress> $addresses
 	 *
-	 * @return array<Entities\Clients\ReadRequest>
+	 * @return array<ReadResponse>
 	 */
 	private function split(array $addresses, int $maxAddressesPerModbusRequest): array
 	{
@@ -56,7 +57,7 @@ trait TReading
 		// Sort by address to help chunking
 		usort(
 			$addresses,
-			static fn (Entities\Clients\ReadAddress $a, Entities\Clients\ReadAddress $b) => $a->getAddress() <=> $b->getAddress()
+			static fn (Requests\ReadAddress $a, Requests\ReadAddress $b) => $a->getAddress() <=> $b->getAddress()
 		);
 
 		$startAddress = null;
@@ -85,25 +86,25 @@ trait TReading
 				$quantity >= $maxAddressesPerModbusRequest
 				|| ($previousAddress !== null && ($currentAddress->getAddress() - $previousAddress->getAddress()) > $previousAddress->getSize())
 			) {
-				if ($currentAddress instanceof Entities\Clients\ReadCoilAddress) {
-					$result[] = new Entities\Clients\ReadCoilsRequest($chunk, $startAddress, $previousQuantity);
+				if ($currentAddress instanceof Requests\ReadCoilAddress) {
+					$result[] = new Requests\ReadCoilsRequest($chunk, $startAddress, $previousQuantity);
 
-				} elseif ($currentAddress instanceof Entities\Clients\ReadDiscreteInputAddress) {
-					$result[] = new Entities\Clients\ReadDiscreteInputsRequest(
+				} elseif ($currentAddress instanceof Requests\ReadDiscreteInputAddress) {
+					$result[] = new Requests\ReadDiscreteInputsRequest(
 						$chunk,
 						$startAddress,
 						$previousQuantity,
 					);
 
-				} elseif ($currentAddress instanceof Entities\Clients\ReadHoldingRegisterAddress) {
-					$result[] = new Entities\Clients\ReadHoldingsRegistersRequest(
+				} elseif ($currentAddress instanceof Requests\ReadHoldingRegisterAddress) {
+					$result[] = new Requests\ReadHoldingsRegistersRequest(
 						$chunk,
 						$startAddress,
 						$previousQuantity,
 					);
 
-				} elseif ($currentAddress instanceof Entities\Clients\ReadInputRegisterAddress) {
-					$result[] = new Entities\Clients\ReadInputsRegistersRequest(
+				} elseif ($currentAddress instanceof Requests\ReadInputRegisterAddress) {
+					$result[] = new Requests\ReadInputsRegistersRequest(
 						$chunk,
 						$startAddress,
 						$previousQuantity,
@@ -121,17 +122,17 @@ trait TReading
 			$chunk[] = $currentAddress;
 		}
 
-		if ($chunk[0] instanceof Entities\Clients\ReadCoilAddress) {
-			$result[] = new Entities\Clients\ReadCoilsRequest($chunk, $startAddress, $quantity);
+		if ($chunk[0] instanceof Requests\ReadCoilAddress) {
+			$result[] = new Requests\ReadCoilsRequest($chunk, $startAddress, $quantity);
 
-		} elseif ($chunk[0] instanceof Entities\Clients\ReadDiscreteInputAddress) {
-			$result[] = new Entities\Clients\ReadDiscreteInputsRequest($chunk, $startAddress, $quantity);
+		} elseif ($chunk[0] instanceof Requests\ReadDiscreteInputAddress) {
+			$result[] = new Requests\ReadDiscreteInputsRequest($chunk, $startAddress, $quantity);
 
-		} elseif ($chunk[0] instanceof Entities\Clients\ReadHoldingRegisterAddress) {
-			$result[] = new Entities\Clients\ReadHoldingsRegistersRequest($chunk, $startAddress, $quantity);
+		} elseif ($chunk[0] instanceof Requests\ReadHoldingRegisterAddress) {
+			$result[] = new Requests\ReadHoldingsRegistersRequest($chunk, $startAddress, $quantity);
 
-		} elseif ($chunk[0] instanceof Entities\Clients\ReadInputRegisterAddress) {
-			$result[] = new Entities\Clients\ReadInputsRegistersRequest($chunk, $startAddress, $quantity);
+		} elseif ($chunk[0] instanceof Requests\ReadInputRegisterAddress) {
+			$result[] = new Requests\ReadInputsRegistersRequest($chunk, $startAddress, $quantity);
 		}
 
 		return $result;
@@ -145,20 +146,20 @@ trait TReading
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	private function processDigitalRegistersResponse(
-		Entities\Clients\ReadRequest $request,
-		Entities\API\ReadDigitalInputs $response,
+		Requests\ReadResponse $request,
+		API\Responses\ReadDigitalInputs $response,
 		MetadataDocuments\DevicesModule\Device $device,
 	): void
 	{
 		foreach ($response->getRegisters() as $address => $value) {
-			if ($request instanceof Entities\Clients\ReadCoilsRequest) {
+			if ($request instanceof Requests\ReadCoilsRequest) {
 				$channel = $this->deviceHelper->findChannelByType(
 					$device,
 					$address,
 					Types\ChannelType::get(Types\ChannelType::COIL),
 				);
 
-			} elseif ($request instanceof Entities\Clients\ReadDiscreteInputsRequest) {
+			} elseif ($request instanceof Requests\ReadDiscreteInputsRequest) {
 				$channel = $this->deviceHelper->findChannelByType(
 					$device,
 					$address,
@@ -191,8 +192,8 @@ trait TReading
 			}
 
 			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\StoreChannelPropertyState::class,
+				$this->messageBuilder->create(
+					Queue\Messages\StoreChannelPropertyState::class,
 					[
 						'connector' => $device->getConnector(),
 						'device' => $device->getId(),
@@ -213,21 +214,21 @@ trait TReading
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	private function processAnalogRegistersResponse(
-		Entities\Clients\ReadRequest $request,
-		Entities\API\ReadAnalogInputs $response,
+		Requests\ReadResponse $request,
+		API\Responses\ReadAnalogInputs $response,
 		MetadataDocuments\DevicesModule\Device $device,
 	): void
 	{
 		$registersBytes = $response->getRegisters();
 
 		foreach ($request->getAddresses() as $requestAddress) {
-			if ($request instanceof Entities\Clients\ReadHoldingsRegistersRequest) {
+			if ($request instanceof Requests\ReadHoldingsRegistersRequest) {
 				$channel = $this->deviceHelper->findChannelByType(
 					$device,
 					$requestAddress->getAddress(),
 					Types\ChannelType::get(Types\ChannelType::HOLDING_REGISTER),
 				);
-			} elseif ($request instanceof Entities\Clients\ReadInputsRegistersRequest) {
+			} elseif ($request instanceof Requests\ReadInputsRegistersRequest) {
 				$channel = $this->deviceHelper->findChannelByType(
 					$device,
 					$requestAddress->getAddress(),
@@ -305,8 +306,8 @@ trait TReading
 			}
 
 			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\StoreChannelPropertyState::class,
+				$this->messageBuilder->create(
+					Queue\Messages\StoreChannelPropertyState::class,
 					[
 						'connector' => $device->getConnector(),
 						'device' => $device->getId(),

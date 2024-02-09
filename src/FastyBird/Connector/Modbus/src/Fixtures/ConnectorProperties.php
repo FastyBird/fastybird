@@ -46,7 +46,7 @@ final class ConnectorProperties extends DataFixtures\AbstractFixture implements 
 	{
 		$connector = $this->getReference('modbus-rtu-connector');
 
-		if (!$connector instanceof Entities\ModbusConnector) {
+		if (!$connector instanceof Entities\Connectors\Connector) {
 			throw new Exceptions\InvalidState('Connector reference could not be loaded');
 		}
 

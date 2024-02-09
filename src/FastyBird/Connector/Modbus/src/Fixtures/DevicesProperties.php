@@ -46,7 +46,7 @@ final class DevicesProperties extends DataFixtures\AbstractFixture implements Da
 	{
 		$device = $this->getReference('modbus-rtu-device');
 
-		if (!$device instanceof Entities\ModbusDevice) {
+		if (!$device instanceof Entities\Devices\Device) {
 			throw new Exceptions\InvalidState('Device reference could not be loaded');
 		}
 

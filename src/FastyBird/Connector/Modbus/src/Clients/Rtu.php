@@ -81,9 +81,9 @@ class Rtu implements Client
 
 	public function __construct(
 		protected readonly API\Transformer $transformer,
-		protected readonly Helpers\Entity $entityHelper,
-		protected readonly Helpers\Device $deviceHelper,
+		protected readonly Queue\MessageBuilder $messageBuilder,
 		protected readonly Queue\Queue $queue,
+		protected readonly Helpers\Device $deviceHelper,
 		protected readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
 		private readonly MetadataDocuments\DevicesModule\Connector $connector,
 		private readonly API\ConnectionManager $connectionManager,
@@ -110,7 +110,7 @@ class Rtu implements Client
 	{
 		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDevicesQuery->forConnector($this->connector);
-		$findDevicesQuery->byType(Entities\ModbusDevice::TYPE);
+		$findDevicesQuery->byType(Entities\Devices\Device::TYPE);
 
 		$devices = $this->devicesConfigurationRepository->findAllBy($findDevicesQuery);
 
@@ -119,8 +119,8 @@ class Rtu implements Client
 
 			if (!is_int($station)) {
 				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\StoreDeviceConnectionState::class,
+					$this->messageBuilder->create(
+						Queue\Messages\StoreDeviceConnectionState::class,
 						[
 							'connector' => $this->connector->getId(),
 							'device' => $device->getId(),
@@ -171,7 +171,7 @@ class Rtu implements Client
 	{
 		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDevicesQuery->forConnector($this->connector);
-		$findDevicesQuery->byType(Entities\ModbusDevice::TYPE);
+		$findDevicesQuery->byType(Entities\Devices\Device::TYPE);
 
 		$devices = $this->devicesConfigurationRepository->findAllBy($findDevicesQuery);
 
@@ -183,8 +183,8 @@ class Rtu implements Client
 				if (array_key_exists($device->getId()->toString(), $this->lostDevices)) {
 					if ($this->deviceConnectionManager->getLostAt($device) === null) {
 						$this->queue->append(
-							$this->entityHelper->create(
-								Entities\Messages\StoreDeviceConnectionState::class,
+							$this->messageBuilder->create(
+								Queue\Messages\StoreDeviceConnectionState::class,
 								[
 									'connector' => $this->connector->getId(),
 									'device' => $device->getId(),
@@ -236,7 +236,7 @@ class Rtu implements Client
 
 		$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
 		$findChannelsQuery->forDevice($device);
-		$findChannelsQuery->byType(Entities\ModbusChannel::TYPE);
+		$findChannelsQuery->byType(Entities\Channels\Channel::TYPE);
 
 		$channels = $this->channelsConfigurationRepository->findAllBy($findChannelsQuery);
 
@@ -287,13 +287,13 @@ class Rtu implements Client
 
 			$registerReadAddress = $this->createReadAddress($device, $channel);
 
-			if ($registerReadAddress instanceof Entities\Clients\ReadCoilAddress) {
+			if ($registerReadAddress instanceof Requests\ReadCoilAddress) {
 				$coilsAddresses[] = $registerReadAddress;
-			} elseif ($registerReadAddress instanceof Entities\Clients\ReadDiscreteInputAddress) {
+			} elseif ($registerReadAddress instanceof Requests\ReadDiscreteInputAddress) {
 				$discreteInputsAddresses[] = $registerReadAddress;
-			} elseif ($registerReadAddress instanceof Entities\Clients\ReadHoldingRegisterAddress) {
+			} elseif ($registerReadAddress instanceof Requests\ReadHoldingRegisterAddress) {
 				$holdingAddresses[] = $registerReadAddress;
-			} elseif ($registerReadAddress instanceof Entities\Clients\ReadInputRegisterAddress) {
+			} elseif ($registerReadAddress instanceof Requests\ReadInputRegisterAddress) {
 				$inputsAddresses[] = $registerReadAddress;
 			}
 		}
@@ -351,7 +351,7 @@ class Rtu implements Client
 
 		foreach ($requests as $request) {
 			try {
-				if ($request instanceof Entities\Clients\ReadCoilsRequest) {
+				if ($request instanceof Requests\ReadCoilsRequest) {
 					$response = $this->connectionManager
 						->getRtuClient($this->connector)
 						->readCoils(
@@ -359,7 +359,7 @@ class Rtu implements Client
 							$request->getStartAddress(),
 							$request->getQuantity(),
 						);
-				} elseif ($request instanceof Entities\Clients\ReadDiscreteInputsRequest) {
+				} elseif ($request instanceof Requests\ReadDiscreteInputsRequest) {
 					$response = $this->connectionManager
 						->getRtuClient($this->connector)
 						->readDiscreteInputs(
@@ -367,7 +367,7 @@ class Rtu implements Client
 							$request->getStartAddress(),
 							$request->getQuantity(),
 						);
-				} elseif ($request instanceof Entities\Clients\ReadHoldingsRegistersRequest) {
+				} elseif ($request instanceof Requests\ReadHoldingsRegistersRequest) {
 					$response = $this->connectionManager
 						->getRtuClient($this->connector)
 						->readHoldingRegisters(
@@ -375,7 +375,7 @@ class Rtu implements Client
 							$request->getStartAddress(),
 							$request->getQuantity(),
 						);
-				} elseif ($request instanceof Entities\Clients\ReadInputsRegistersRequest) {
+				} elseif ($request instanceof Requests\ReadInputsRegistersRequest) {
 					$response = $this->connectionManager
 						->getRtuClient($this->connector)
 						->readInputRegisters(
@@ -389,21 +389,21 @@ class Rtu implements Client
 
 				$now = $this->dateTimeFactory->getNow();
 
-				if ($response instanceof Entities\API\ReadDigitalInputs) {
+				if ($response instanceof API\Responses\ReadDigitalInputs) {
 					$this->processDigitalRegistersResponse($request, $response, $device);
 				} else {
 					$this->processAnalogRegistersResponse($request, $response, $device);
 				}
 
 				foreach ($response->getRegisters() as $address => $value) {
-					if ($request instanceof Entities\Clients\ReadHoldingsRegistersRequest) {
+					if ($request instanceof Requests\ReadHoldingsRegistersRequest) {
 						$channel = $this->deviceHelper->findChannelByType(
 							$device,
 							$address,
 							Types\ChannelType::get(Types\ChannelType::HOLDING_REGISTER),
 						);
 
-					} elseif ($request instanceof Entities\Clients\ReadInputsRegistersRequest) {
+					} elseif ($request instanceof Requests\ReadInputsRegistersRequest) {
 						$channel = $this->deviceHelper->findChannelByType(
 							$device,
 							$address,
@@ -420,19 +420,19 @@ class Rtu implements Client
 				}
 			} catch (Exceptions\ModbusRtu $ex) {
 				foreach ($request->getAddresses() as $requestAddress) {
-					if ($request instanceof Entities\Clients\ReadCoilsRequest) {
+					if ($request instanceof Requests\ReadCoilsRequest) {
 						$channel = $this->deviceHelper->findChannelByType(
 							$device,
 							$requestAddress->getAddress(),
 							Types\ChannelType::get(Types\ChannelType::COIL),
 						);
-					} elseif ($request instanceof Entities\Clients\ReadDiscreteInputsRequest) {
+					} elseif ($request instanceof Requests\ReadDiscreteInputsRequest) {
 						$channel = $this->deviceHelper->findChannelByType(
 							$device,
 							$requestAddress->getAddress(),
 							Types\ChannelType::get(Types\ChannelType::DISCRETE_INPUT),
 						);
-					} elseif ($request instanceof Entities\Clients\ReadHoldingsRegistersRequest) {
+					} elseif ($request instanceof Requests\ReadHoldingsRegistersRequest) {
 						$channel = $this->deviceHelper->findChannelByType(
 							$device,
 							$requestAddress->getAddress(),
@@ -504,8 +504,8 @@ class Rtu implements Client
 		) {
 			// ... and if it is not ready, set it to ready
 			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\StoreDeviceConnectionState::class,
+				$this->messageBuilder->create(
+					Queue\Messages\StoreDeviceConnectionState::class,
 					[
 						'connector' => $this->connector->getId(),
 						'device' => $device->getId(),
@@ -530,7 +530,7 @@ class Rtu implements Client
 	private function createReadAddress(
 		MetadataDocuments\DevicesModule\Device $device,
 		MetadataDocuments\DevicesModule\Channel $channel,
-	): Entities\Clients\ReadAddress|null
+	): Requests\ReadAddress|null
 	{
 		$now = $this->dateTimeFactory->getNow();
 
@@ -564,8 +564,8 @@ class Rtu implements Client
 
 			if ($this->deviceConnectionManager->getLostAt($device) === null) {
 				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\StoreDeviceConnectionState::class,
+					$this->messageBuilder->create(
+						Queue\Messages\StoreDeviceConnectionState::class,
 						[
 							'connector' => $this->connector->getId(),
 							'device' => $device->getId(),
@@ -615,8 +615,8 @@ class Rtu implements Client
 
 		if ($deviceExpectedDataType === MetadataTypes\DataType::BOOLEAN) {
 			return $property->isSettable()
-				? new Entities\Clients\ReadCoilAddress($address, $channel, $deviceExpectedDataType)
-				: new Entities\Clients\ReadDiscreteInputAddress($address, $channel, $deviceExpectedDataType);
+				? new Requests\ReadCoilAddress($address, $channel, $deviceExpectedDataType)
+				: new Requests\ReadDiscreteInputAddress($address, $channel, $deviceExpectedDataType);
 		} elseif (
 			$deviceExpectedDataType === MetadataTypes\DataType::CHAR
 			|| $deviceExpectedDataType === MetadataTypes\DataType::UCHAR
@@ -627,8 +627,8 @@ class Rtu implements Client
 			|| $deviceExpectedDataType === MetadataTypes\DataType::FLOAT
 		) {
 			return $property->isSettable()
-				? new Entities\Clients\ReadHoldingRegisterAddress($address, $channel, $deviceExpectedDataType)
-				: new Entities\Clients\ReadInputRegisterAddress($address, $channel, $deviceExpectedDataType);
+				? new Requests\ReadHoldingRegisterAddress($address, $channel, $deviceExpectedDataType)
+				: new Requests\ReadInputRegisterAddress($address, $channel, $deviceExpectedDataType);
 		}
 
 		$this->logger->warning(

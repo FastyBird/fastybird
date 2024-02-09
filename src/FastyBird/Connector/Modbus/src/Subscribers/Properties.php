@@ -74,7 +74,7 @@ final class Properties implements Common\EventSubscriber
 		$entity = $eventArgs->getObject();
 
 		// Check for valid entity
-		if ($entity instanceof Entities\ModbusDevice) {
+		if ($entity instanceof Entities\Devices\Device) {
 			$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
 			$findDevicePropertyQuery->forDevice($entity);
 			$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::STATE);
@@ -121,7 +121,7 @@ final class Properties implements Common\EventSubscriber
 			}
 		} elseif (
 			$entity instanceof DevicesEntities\Connectors\Properties\Variable
-			&& $entity->getConnector() instanceof Entities\ModbusConnector
+			&& $entity->getConnector() instanceof Entities\Connectors\Connector
 		) {
 			if (
 				(
@@ -148,7 +148,7 @@ final class Properties implements Common\EventSubscriber
 			}
 		} elseif (
 			$entity instanceof DevicesEntities\Devices\Properties\Variable
-			&& $entity->getDevice() instanceof Entities\ModbusDevice
+			&& $entity->getDevice() instanceof Entities\Devices\Device
 		) {
 			if (
 				(

@@ -305,7 +305,7 @@ class HomeKitExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->addTag('nette.inject');
 
 		/**
-		 * ENTITIES
+		 * HOMEKIT
 		 */
 
 		// ACCESSORIES
@@ -337,10 +337,6 @@ class HomeKitExtension extends DI\CompilerExtension implements Translation\DI\Tr
 
 		$builder->addDefinition($this->prefix('entities.characteristic.factory.variableProperty'))
 			->setType(Protocol\Characteristics\VariablePropertyFactory::class);
-
-		/**
-		 * HOMEKIT
-		 */
 
 		$builder->addDefinition($this->prefix('protocol.tlv'), new DI\Definitions\ServiceDefinition())
 			->setType(Protocol\Tlv::class);
@@ -407,7 +403,7 @@ class HomeKitExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		$builder = $this->getContainerBuilder();
 
 		/**
-		 * Doctrine entities
+		 * DOCTRINE ENTITIES
 		 */
 
 		$ormAttributeDriverService = $builder->getDefinition('nettrineOrmAttributes.attributeDriver');
@@ -431,7 +427,7 @@ class HomeKitExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		}
 
 		/**
-		 * Protocol factories
+		 * HOMEKIT
 		 */
 
 		$httpServerServiceFactoryName = $builder->getByType(Servers\HttpFactory::class);

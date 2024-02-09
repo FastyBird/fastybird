@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Connector\ModbusExtension.php
+ * ModbusExtension.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -176,6 +176,12 @@ class ModbusExtension extends DI\CompilerExtension implements Translation\DI\Tra
 				'logger' => $logger,
 			]);
 
+		$builder->addDefinition(
+			$this->prefix('helpers.messageBuilder'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Queue\MessageBuilder::class);
+
 		/**
 		 * SUBSCRIBERS
 		 */
@@ -191,33 +197,30 @@ class ModbusExtension extends DI\CompilerExtension implements Translation\DI\Tra
 		 */
 
 		$builder->addDefinition($this->prefix('schemas.connector.modbus'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\ModbusConnector::class);
+			->setType(Schemas\Connectors\Connector::class);
 
 		$builder->addDefinition($this->prefix('schemas.device.modbus'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\ModbusDevice::class);
+			->setType(Schemas\Devices\Device::class);
 
 		$builder->addDefinition($this->prefix('schemas.channel.modbus'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\ModbusChannel::class);
+			->setType(Schemas\Channels\Channel::class);
 
 		/**
 		 * JSON-API HYDRATORS
 		 */
 
 		$builder->addDefinition($this->prefix('hydrators.connector.modbus'), new DI\Definitions\ServiceDefinition())
-			->setType(Hydrators\ModbusConnector::class);
+			->setType(Hydrators\Connectors\Connector::class);
 
 		$builder->addDefinition($this->prefix('hydrators.device.modbus'), new DI\Definitions\ServiceDefinition())
-			->setType(Hydrators\ModbusDevice::class);
+			->setType(Hydrators\Devices\Device::class);
 
 		$builder->addDefinition($this->prefix('hydrators.channel.modbus'), new DI\Definitions\ServiceDefinition())
-			->setType(Hydrators\ModbusChannel::class);
+			->setType(Hydrators\Channels\Channel::class);
 
 		/**
 		 * HELPERS
 		 */
-
-		$builder->addDefinition($this->prefix('helpers.entity'), new DI\Definitions\ServiceDefinition())
-			->setType(Helpers\Entity::class);
 
 		$builder->addDefinition($this->prefix('helpers.connector'), new DI\Definitions\ServiceDefinition())
 			->setType(Helpers\Connector::class);
@@ -249,7 +252,7 @@ class ModbusExtension extends DI\CompilerExtension implements Translation\DI\Tra
 			->setImplement(Connector\ConnectorFactory::class)
 			->addTag(
 				DevicesDI\DevicesExtension::CONNECTOR_TYPE_TAG,
-				Entities\ModbusConnector::TYPE,
+				Entities\Connectors\Connector::TYPE,
 			)
 			->getResultDefinition()
 			->setType(Connector\Connector::class)
@@ -270,7 +273,7 @@ class ModbusExtension extends DI\CompilerExtension implements Translation\DI\Tra
 		$builder = $this->getContainerBuilder();
 
 		/**
-		 * Doctrine entities
+		 * DOCTRINE ENTITIES
 		 */
 
 		$ormAttributeDriverService = $builder->getDefinition('nettrineOrmAttributes.attributeDriver');
@@ -294,7 +297,7 @@ class ModbusExtension extends DI\CompilerExtension implements Translation\DI\Tra
 		}
 
 		/**
-		 * Database fixtures
+		 * DOCTRINE FIXTURES
 		 */
 
 		$fixturesLoaderService = $builder->getDefinitionByType(NettrineFixtures\Loader\FixturesLoader::class);

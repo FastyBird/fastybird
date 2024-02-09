@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\Modbus\API;
 
 use Exception;
-use FastyBird\Connector\Modbus\Entities;
+use FastyBird\Connector\Modbus\API;
 use FastyBird\Connector\Modbus\Exceptions;
 use FastyBird\Connector\Modbus\Types;
 use InvalidArgumentException;
@@ -76,7 +76,7 @@ class Tcp
 	/**
 	 * (0x01) Read Coils
 	 *
-	 * @return Promise\PromiseInterface<Entities\API\ReadDigitalInputs>
+	 * @return Promise\PromiseInterface<API\Responses\ReadDigitalInputs>
 	 *
 	 * @throws Exception
 	 * @throws Exceptions\InvalidState
@@ -105,7 +105,7 @@ class Tcp
 	/**
 	 * (0x02) Read Discrete Inputs
 	 *
-	 * @return Promise\PromiseInterface<Entities\API\ReadDigitalInputs>
+	 * @return Promise\PromiseInterface<API\Responses\ReadDigitalInputs>
 	 *
 	 * @throws Exception
 	 * @throws Exceptions\InvalidState
@@ -134,7 +134,7 @@ class Tcp
 	/**
 	 * (0x03) Read Holding Registers
 	 *
-	 * @return Promise\PromiseInterface<Entities\API\ReadAnalogInputs>
+	 * @return Promise\PromiseInterface<API\Responses\ReadAnalogInputs>
 	 *
 	 * @throws Exception
 	 * @throws Exceptions\InvalidState
@@ -163,7 +163,7 @@ class Tcp
 	/**
 	 * (0x04) Read Input Registers
 	 *
-	 * @return Promise\PromiseInterface<Entities\API\ReadAnalogInputs>
+	 * @return Promise\PromiseInterface<API\Responses\ReadAnalogInputs>
 	 *
 	 * @throws Exception
 	 * @throws Exceptions\InvalidState
@@ -192,7 +192,7 @@ class Tcp
 	/**
 	 * (0x05) Write Single Coil
 	 *
-	 * @return Promise\PromiseInterface<Entities\API\WriteCoil>
+	 * @return Promise\PromiseInterface<API\Responses\WriteCoil>
 	 *
 	 * @throws Exception
 	 * @throws Exceptions\InvalidState
@@ -256,7 +256,7 @@ class Tcp
 					return;
 				}
 
-				$deferred->resolve(new Entities\API\WriteCoil(
+				$deferred->resolve(new Responses\WriteCoil(
 					$header['station'],
 					$functionCode,
 					current($valueUnpacked) === 0xFF00,
@@ -274,7 +274,7 @@ class Tcp
 	 *
 	 * @param array<int> $value
 	 *
-	 * @return Promise\PromiseInterface<Entities\API\WriteHoldingRegister>
+	 * @return Promise\PromiseInterface<API\Responses\WriteHoldingRegister>
 	 *
 	 * @throws Exception
 	 * @throws Exceptions\InvalidState
@@ -346,7 +346,7 @@ class Tcp
 						return;
 					}
 
-					$deferred->resolve(new Entities\API\WriteHoldingRegister(
+					$deferred->resolve(new Responses\WriteHoldingRegister(
 						$header['station'],
 						$functionCode,
 					));
@@ -360,7 +360,7 @@ class Tcp
 	}
 
 	/**
-	 * @return Promise\PromiseInterface<Entities\API\ReadDigitalInputs>
+	 * @return Promise\PromiseInterface<API\Responses\ReadDigitalInputs>
 	 *
 	 * @throws Exception
 	 * @throws Exceptions\InvalidState
@@ -432,7 +432,7 @@ class Tcp
 
 				$addresses = array_fill($startingAddress, count($bits), 'value');
 
-				$deferred->resolve(new Entities\API\ReadDigitalInputs(
+				$deferred->resolve(new Responses\ReadDigitalInputs(
 					$header['station'],
 					$functionCode,
 					$header['count'],
@@ -447,7 +447,7 @@ class Tcp
 	}
 
 	/**
-	 * @return Promise\PromiseInterface<Entities\API\ReadAnalogInputs>
+	 * @return Promise\PromiseInterface<API\Responses\ReadAnalogInputs>
 	 *
 	 * @throws Exception
 	 * @throws Exceptions\InvalidState
@@ -509,7 +509,7 @@ class Tcp
 						return;
 					}
 
-					$deferred->resolve(new Entities\API\ReadAnalogInputs(
+					$deferred->resolve(new Responses\ReadAnalogInputs(
 						$header['station'],
 						$functionCode,
 						$header['count'],

@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:VirtualThermostatAddon!
+ * @package        FastyBird:VirtualThermostatAddonHomeKitConnectorBridge!
  * @subpackage     Commands
  * @since          1.0.0
  *
@@ -46,7 +46,7 @@ use function usort;
 /**
  * Virtual thermostat to HomeKit accessory bridge builder command
  *
- * @package        FastyBird:VirtualThermostatAddon!
+ * @package        FastyBird:VirtualThermostatAddonHomeKitConnectorBridge!
  * @subpackage     Commands
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

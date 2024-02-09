@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\HomeKit\Entities\Channels;
 
 use Doctrine\ORM\Mapping as ORM;
+use FastyBird\Connector\HomeKit;
 use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Types;
 use FastyBird\Library\Application\Doctrine\Mapping as ApplicationMapping;
@@ -50,7 +51,7 @@ class Channel extends DevicesEntities\Channels\Channel
 	 */
 	public function getServiceType(): Types\ServiceType
 	{
-		preg_match(self::SERVICE_IDENTIFIER, $this->getIdentifier(), $matches);
+		preg_match(HomeKit\Constants::SERVICE_IDENTIFIER, $this->getIdentifier(), $matches);
 
 		if (!array_key_exists('type', $matches)) {
 			throw new Exceptions\InvalidState('Device channel has invalid identifier');

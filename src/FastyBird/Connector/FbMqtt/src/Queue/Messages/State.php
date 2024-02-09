@@ -7,7 +7,7 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:FbMqttConnector!
- * @subpackage     States
+ * @subpackage     Queue
  * @since          1.0.0
  *
  * @date           25.01.24
@@ -28,7 +28,7 @@ use function is_bool;
  * Property state
  *
  * @package        FastyBird:FbMqttConnector!
- * @subpackage     States
+ * @subpackage     Queue
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */

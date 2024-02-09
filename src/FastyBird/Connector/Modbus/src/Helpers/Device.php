@@ -59,7 +59,7 @@ final class Device
 	{
 		$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
 		$findChannelsQuery->forDevice($device);
-		$findChannelsQuery->byType(Entities\ModbusChannel::TYPE);
+		$findChannelsQuery->byType(Entities\Channels\Channel::TYPE);
 
 		$channels = $this->channelsConfigurationRepository->findAllBy($findChannelsQuery);
 
