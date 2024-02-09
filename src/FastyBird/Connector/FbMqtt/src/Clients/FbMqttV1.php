@@ -19,6 +19,7 @@ use BinSoul\Net\Mqtt;
 use FastyBird\Connector\FbMqtt;
 use FastyBird\Connector\FbMqtt\API;
 use FastyBird\Connector\FbMqtt\Exceptions;
+use FastyBird\Connector\FbMqtt\Helpers;
 use FastyBird\Connector\FbMqtt\Queue;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
@@ -63,7 +64,7 @@ final class FbMqttV1 implements Client
 		private readonly API\ConnectionManager $connectionManager,
 		private readonly FbMqtt\Logger $logger,
 		private readonly Queue\Queue $queue,
-		private readonly Queue\MessageBuilder $messageBuilder,
+		private readonly Helpers\MessageBuilder $messageBuilder,
 	)
 	{
 	}
@@ -78,8 +79,8 @@ final class FbMqttV1 implements Client
 	{
 		$client = $this->connectionManager->getConnection($this->connector);
 
-		$client->on('connect', [$this, 'onConnect']);
-		$client->on('message', [$this, 'onMessage']);
+		$client->on(FbMqtt\Constants::EVENT_CONNECT, [$this, 'onConnect']);
+		$client->on(FbMqtt\Constants::EVENT_MESSAGE, [$this, 'onMessage']);
 
 		$client->connect();
 	}

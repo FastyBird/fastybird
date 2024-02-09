@@ -18,6 +18,7 @@ namespace FastyBird\Connector\HomeKit\Writers;
 use DateTimeInterface;
 use Exception;
 use FastyBird\Connector\HomeKit\Exceptions;
+use FastyBird\Connector\HomeKit\Helpers;
 use FastyBird\Connector\HomeKit\Protocol;
 use FastyBird\Connector\HomeKit\Queue;
 use FastyBird\Connector\HomeKit\Types;
@@ -53,7 +54,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 	 */
 	public function __construct(
 		MetadataDocuments\DevicesModule\Connector $connector,
-		Queue\MessageBuilder $messageBuilder,
+		Helpers\MessageBuilder $messageBuilder,
 		Queue\Queue $queue,
 		Protocol\Driver $accessoryDriver,
 		DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,

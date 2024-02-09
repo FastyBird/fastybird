@@ -109,7 +109,7 @@ final class Http implements Server
 		private readonly array $accessoryFactories,
 		private readonly array $serviceFactories,
 		private readonly array $characteristicsFactories,
-		private readonly Queue\MessageBuilder $messageBuilder,
+		private readonly Helpers\MessageBuilder $messageBuilder,
 		private readonly Helpers\Connector $connectorHelper,
 		private readonly Helpers\Device $deviceHelper,
 		private readonly Helpers\Channel $channelHelper,
@@ -438,26 +438,11 @@ final class Http implements Server
 			);
 		}
 
-		$this->socket->on('connection', function (Socket\ConnectionInterface $connection): void {
-			$this->logger->debug(
-				'New client has connected to server',
-				[
-					'source' => MetadataTypes\Sources\Connector::HOMEKIT,
-					'type' => 'http-server',
-					'connector' => [
-						'id' => $this->connector->getId()->toString(),
-					],
-					'client' => [
-						'address' => $connection->getRemoteAddress(),
-					],
-				],
-			);
-
-			$this->subscriber->registerConnection($connection);
-
-			$connection->on('close', function () use ($connection): void {
+		$this->socket->on(
+			HomeKit\Constants::EVENT_CONNECTION,
+			function (Socket\ConnectionInterface $connection): void {
 				$this->logger->debug(
-					'Connected client has closed connection',
+					'New client has connected to server',
 					[
 						'source' => MetadataTypes\Sources\Connector::HOMEKIT,
 						'type' => 'http-server',
@@ -470,11 +455,29 @@ final class Http implements Server
 					],
 				);
 
-				$this->subscriber->unregisterConnection($connection);
-			});
-		});
+				$this->subscriber->registerConnection($connection);
 
-		$this->socket->on('error', function (Throwable $ex): void {
+				$connection->on('close', function () use ($connection): void {
+					$this->logger->debug(
+						'Connected client has closed connection',
+						[
+							'source' => MetadataTypes\Sources\Connector::HOMEKIT,
+							'type' => 'http-server',
+							'connector' => [
+								'id' => $this->connector->getId()->toString(),
+							],
+							'client' => [
+								'address' => $connection->getRemoteAddress(),
+							],
+						],
+					);
+
+					$this->subscriber->unregisterConnection($connection);
+				});
+			},
+		);
+
+		$this->socket->on(HomeKit\Constants::EVENT_ERROR, function (Throwable $ex): void {
 			$this->logger->error(
 				'An error occurred during socket handling',
 				[
@@ -494,7 +497,7 @@ final class Http implements Server
 			);
 		});
 
-		$this->socket->on('close', function (): void {
+		$this->socket->on(HomeKit\Constants::EVENT_CLOSE, function (): void {
 			$this->logger->info(
 				'Server was closed',
 				[

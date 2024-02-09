@@ -17,7 +17,7 @@ use RuntimeException;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class SessionsRepositoryTest extends DbTestCase
+final class ClientsRepositoryTest extends DbTestCase
 {
 
 	/**

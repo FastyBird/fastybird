@@ -178,7 +178,7 @@ final class Client implements Evenement\EventEmitterInterface
 							],
 						);
 
-						$this->emit('connect');
+						$this->emit(FbMqtt\Constants::EVENT_CONNECT);
 
 						$deferred->resolve($result ?? $connection);
 					})
@@ -241,7 +241,7 @@ final class Client implements Evenement\EventEmitterInterface
 						],
 					);
 
-					$this->emit('disconnect');
+					$this->emit(FbMqtt\Constants::EVENT_DISCONNECT);
 				}
 
 				$deferred->resolve($flowResult ?? $connection);
@@ -597,7 +597,7 @@ final class Client implements Evenement\EventEmitterInterface
 				],
 			);
 
-			$this->emit('close');
+			$this->emit(FbMqtt\Constants::EVENT_CLOSE);
 		}
 	}
 
@@ -622,7 +622,7 @@ final class Client implements Evenement\EventEmitterInterface
 			],
 		);
 
-		$this->emit('warning', [$error]);
+		$this->emit(FbMqtt\Constants::EVENT_WARNING, [$error]);
 	}
 
 	/**
@@ -646,7 +646,7 @@ final class Client implements Evenement\EventEmitterInterface
 			],
 		);
 
-		$this->emit('error', [$error]);
+		$this->emit(FbMqtt\Constants::EVENT_ERROR, [$error]);
 	}
 
 	/**
@@ -743,7 +743,7 @@ final class Client implements Evenement\EventEmitterInterface
 							],
 						);
 
-						$this->emit('connect');
+						$this->emit(FbMqtt\Constants::EVENT_CONNECT);
 
 						break;
 					case 'disconnect':
@@ -763,7 +763,7 @@ final class Client implements Evenement\EventEmitterInterface
 							],
 						);
 
-						$this->emit('disconnect');
+						$this->emit(FbMqtt\Constants::EVENT_DISCONNECT);
 
 						break;
 					case 'message':
@@ -792,28 +792,28 @@ final class Client implements Evenement\EventEmitterInterface
 							],
 						);
 
-						$this->emit('message', [$result]);
+						$this->emit(FbMqtt\Constants::EVENT_MESSAGE, [$result]);
 
 						break;
 					case 'publish':
 						$result = $flow->getResult();
 						assert($result instanceof Mqtt\Message);
 
-						$this->emit('publish', [$result]);
+						$this->emit(FbMqtt\Constants::EVENT_PUBLISH, [$result]);
 
 						break;
 					case 'subscribe':
 						$result = $flow->getResult();
 						assert($result instanceof Mqtt\Subscription);
 
-						$this->emit('subscribe', [$result]);
+						$this->emit(FbMqtt\Constants::EVENT_SUBSCRIBE, [$result]);
 
 						break;
 					case 'unsubscribe':
 						/** @var array<Mqtt\Subscription> $result */
 						$result = $flow->getResult();
 
-						$this->emit('unsubscribe', [$result]);
+						$this->emit(FbMqtt\Constants::EVENT_UNSUBSCRIBE, [$result]);
 
 						break;
 				}

@@ -45,7 +45,7 @@ final class FbMqttExtensionTest extends Tests\Cases\Unit\BaseTestCase
 		self::assertNotNull($container->getByType(Queue\Consumers\WriteV1ChannelPropertyState::class, false));
 		self::assertNotNull($container->getByType(Queue\Consumers::class, false));
 		self::assertNotNull($container->getByType(Queue\Queue::class, false));
-		self::assertNotNull($container->getByType(Queue\MessageBuilder::class, false));
+		self::assertNotNull($container->getByType(Helpers\MessageBuilder::class, false));
 
 		self::assertNotNull($container->getByType(Subscribers\Controls::class, false));
 

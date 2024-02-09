@@ -198,7 +198,7 @@ class HomeKitExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			$this->prefix('queue.messageBuilder'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Queue\MessageBuilder::class);
+			->setType(Helpers\MessageBuilder::class);
 
 		/**
 		 * SUBSCRIBERS

@@ -6,24 +6,25 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:HomeKitConnector!
- * @subpackage     Queue
+ * @package        FastyBird:FbMqttConnector!
+ * @subpackage     Helpers
  * @since          1.0.0
  *
- * @date           30.11.23
+ * @date           03.12.23
  */
 
-namespace FastyBird\Connector\HomeKit\Queue;
+namespace FastyBird\Connector\FbMqtt\Helpers;
 
-use FastyBird\Connector\HomeKit\Exceptions;
-use FastyBird\Connector\HomeKit\Queue;
+use FastyBird\Connector\FbMqtt\Exceptions;
+use FastyBird\Connector\FbMqtt\Queue;
+use FastyBird\Connector\FbMqtt\Queue\Messages\Message as T;
 use Orisai\ObjectMapper;
 
 /**
  * Message builder
  *
- * @package        FastyBird:HomeKitConnector!
- * @subpackage     Queue
+ * @package        FastyBird:FbMqttConnector!
+ * @subpackage     Helpers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
@@ -44,7 +45,10 @@ final class MessageBuilder
 	 *
 	 * @throws Exceptions\Runtime
 	 */
-	public function create(string $message, array $data): Queue\Messages\Message
+	public function create(
+		string $message,
+		array $data,
+	): Queue\Messages\Message
 	{
 		try {
 			$options = new ObjectMapper\Processing\Options();

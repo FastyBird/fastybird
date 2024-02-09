@@ -19,6 +19,7 @@ use FastyBird\Connector\HomeKit\Subscribers;
 use FastyBird\Connector\HomeKit\Tests\Cases\Unit\BaseTestCase;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Nette;
+use function in_array;
 
 final class HomeKitExtensionTest extends BaseTestCase
 {
@@ -44,7 +45,6 @@ final class HomeKitExtensionTest extends BaseTestCase
 		self::assertNotNull($container->getByType(Queue\Consumers\WriteChannelPropertyState::class, false));
 		self::assertNotNull($container->getByType(Queue\Consumers::class, false));
 		self::assertNotNull($container->getByType(Queue\Queue::class, false));
-		self::assertNotNull($container->getByType(Queue\MessageBuilder::class, false));
 
 		self::assertNotNull($container->getByType(Subscribers\Properties::class, false));
 		self::assertNotNull($container->getByType(Subscribers\Controls::class, false));
@@ -52,16 +52,41 @@ final class HomeKitExtensionTest extends BaseTestCase
 
 		self::assertNotNull($container->getByType(Schemas\Connectors\Connector::class, false));
 		self::assertNotNull($container->getByType(Schemas\Devices\Device::class, false));
-		self::assertNotNull($container->getByType(Schemas\Channels\Channel::class, false));
-		self::assertNotNull($container->getByType(Schemas\Channels\Battery::class, false));
-		self::assertNotNull($container->getByType(Schemas\Channels\LightBulb::class, false));
+		foreach ($container->findByType(Schemas\Channels\Channel::class) as $serviceName) {
+			$service = $container->getByName($serviceName);
+
+			self::assertInstanceOf(Nette\DI\Definitions\ServiceDefinition::class, $service);
+			self::assertNotNull($service->class);
+			self::assertTrue(in_array(
+				$service->class,
+				[
+					Schemas\Channels\Channel::class,
+					Schemas\Channels\Battery::class,
+					Schemas\Channels\LightBulb::class,
+				],
+				true,
+			));
+		}
 
 		self::assertNotNull($container->getByType(Hydrators\Connectors\Connector::class, false));
 		self::assertNotNull($container->getByType(Hydrators\Devices\Device::class, false));
-		self::assertNotNull($container->getByType(Hydrators\Channels\Channel::class, false));
-		self::assertNotNull($container->getByType(Hydrators\Channels\Battery::class, false));
-		self::assertNotNull($container->getByType(Hydrators\Channels\LightBulb::class, false));
+		foreach ($container->findByType(Hydrators\Channels\Channel::class) as $serviceName) {
+			$service = $container->getByName($serviceName);
 
+			self::assertInstanceOf(Nette\DI\Definitions\ServiceDefinition::class, $service);
+			self::assertNotNull($service->class);
+			self::assertTrue(in_array(
+				$service->class,
+				[
+					Hydrators\Channels\Channel::class,
+					Hydrators\Channels\Battery::class,
+					Hydrators\Channels\LightBulb::class,
+				],
+				true,
+			));
+		}
+
+		self::assertNotNull($container->getByType(Helpers\MessageBuilder::class, false));
 		self::assertNotNull($container->getByType(Helpers\Loader::class, false));
 		self::assertNotNull($container->getByType(Helpers\Connector::class, false));
 		self::assertNotNull($container->getByType(Helpers\Device::class, false));

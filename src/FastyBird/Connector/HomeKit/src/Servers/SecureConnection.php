@@ -87,7 +87,7 @@ final class SecureConnection extends Evenement\EventEmitter implements Socket\Co
 			function (string $data): void {
 				$this->securedRequest = false;
 
-				$this->emit('data', [$this->decodeData($data)]);
+				$this->emit(HomeKit\Constants::EVENT_DATA, [$this->decodeData($data)]);
 			},
 		);
 

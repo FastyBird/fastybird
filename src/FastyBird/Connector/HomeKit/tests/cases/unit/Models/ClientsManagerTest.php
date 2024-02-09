@@ -22,7 +22,7 @@ use function random_bytes;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class SessionsManagerTest extends DbTestCase
+final class ClientsManagerTest extends DbTestCase
 {
 
 	/**

@@ -16,6 +16,7 @@
 namespace FastyBird\Connector\HomeKit\Servers;
 
 use Evenement\EventEmitter;
+use FastyBird\Connector\HomeKit;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use Nette;
 use React\Socket;
@@ -54,17 +55,19 @@ final class SecureServer extends EventEmitter implements Socket\ServerInterface
 				$connection,
 			);
 
-			$this->emit('connection', [$securedConnection]);
+			$this->emit(HomeKit\Constants::EVENT_CONNECTION, [$securedConnection]);
 
 			$this->activeConnections->attach($securedConnection);
 
 			$securedConnection->on('close', function () use ($securedConnection): void {
 				$this->activeConnections->detach($securedConnection);
+
+				$this->emit(HomeKit\Constants::EVENT_CLOSE);
 			});
 		});
 
 		$this->server->on('error', function ($error): void {
-			$this->emit('error', [$error]);
+			$this->emit(HomeKit\Constants::EVENT_ERROR, [$error]);
 		});
 	}
 

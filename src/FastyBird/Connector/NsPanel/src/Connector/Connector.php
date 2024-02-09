@@ -259,7 +259,7 @@ final class Connector implements DevicesConnectors\Connector
 
 		$client = $this->discoveryClientFactory->create($this->connector);
 
-		$client->on('finished', function (): void {
+		$client->on(NsPanel\Constants::EVENT_FINISHED, function (): void {
 			$this->emit(
 				DevicesConstants::EVENT_TERMINATE,
 				[

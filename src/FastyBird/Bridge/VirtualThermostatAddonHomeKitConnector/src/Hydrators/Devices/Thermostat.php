@@ -54,7 +54,7 @@ class Thermostat extends HomeKitHydrators\Devices\Device
 		Common\Cache\Cache|null $cache = null,
 	)
 	{
-		parent::__construct($managerRegistry, $translator, $crudReader, $cache);
+		parent::__construct($connectorsRepository, $managerRegistry, $translator, $crudReader, $cache);
 	}
 
 	public function getEntityName(): string
@@ -63,13 +63,15 @@ class Thermostat extends HomeKitHydrators\Devices\Device
 	}
 
 	/**
+	 * @param Entities\Devices\Thermostat|null $entity
+	 *
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws JsonApiExceptions\JsonApiError
 	 */
 	protected function hydrateConnectorRelationship(
 		JsonAPIDocument\Objects\IRelationshipObject $relationship,
 		JsonAPIDocument\Objects\IResourceObjectCollection|null $included,
-		Entities\Devices\Thermostat|null $entity,
+		HomeKitEntities\Devices\Device|null $entity,
 	): HomeKitEntities\Connectors\Connector
 	{
 		if (

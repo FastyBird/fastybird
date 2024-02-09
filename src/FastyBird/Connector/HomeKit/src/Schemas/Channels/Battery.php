@@ -17,19 +17,18 @@ namespace FastyBird\Connector\HomeKit\Schemas\Channels;
 
 use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Module\Devices\Schemas as DevicesSchemas;
 
 /**
  * Battery channel entity schema
  *
  * @template T of Entities\Channels\Battery
- * @extends  DevicesSchemas\Channels\Channel<T>
+ * @extends  Channel<T>
  *
  * @package        FastyBird:HomeKitConnector!
  * @subpackage     Schemas
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Battery extends DevicesSchemas\Channels\Channel
+final class Battery extends Channel
 {
 
 	/**

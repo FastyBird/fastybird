@@ -60,7 +60,7 @@ final class CharacteristicsController extends BaseController
 	private array $preparedWrites = [];
 
 	public function __construct(
-		private readonly Queue\MessageBuilder $messageBuilder,
+		private readonly Helpers\MessageBuilder $messageBuilder,
 		private readonly Queue\Queue $queue,
 		private readonly Protocol\Driver $accessoryDriver,
 		private readonly Clients\Subscriber $subscriber,

@@ -201,7 +201,7 @@ class FbMqttExtension extends DI\CompilerExtension implements Translation\DI\Tra
 			$this->prefix('queue.messageBuilder'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Queue\MessageBuilder::class);
+			->setType(Helpers\MessageBuilder::class);
 
 		/**
 		 * SUBSCRIBERS

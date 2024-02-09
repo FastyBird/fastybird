@@ -125,10 +125,10 @@ final class Discovery implements Evenement\EventEmitterInterface
 					}
 				}
 
-				$this->emit('finished', [$foundSubDevices]);
+				$this->emit(NsPanel\Constants::EVENT_FINISHED, [$foundSubDevices]);
 			})
 			->catch(function (): void {
-				$this->emit('finished', [[]]);
+				$this->emit(NsPanel\Constants::EVENT_FINISHED, [[]]);
 			});
 	}
 

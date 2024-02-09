@@ -65,7 +65,7 @@ final class Device extends DevicesHydrators\Devices\Device
 	protected function hydrateConnectorRelationship(
 		JsonAPIDocument\Objects\IRelationshipObject $relationship,
 		JsonAPIDocument\Objects\IResourceObjectCollection|null $included,
-		Entities\Channels\Channel|null $entity,
+		Entities\Devices\Device|null $entity,
 	): Entities\Connectors\Connector
 	{
 		if (
