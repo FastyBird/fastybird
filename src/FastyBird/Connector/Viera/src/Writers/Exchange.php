@@ -48,7 +48,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 	 */
 	public function __construct(
 		MetadataDocuments\DevicesModule\Connector $connector,
-		Helpers\Entity $entityHelper,
+		Helpers\MessageBuilder $messageBuilder,
 		Queue\Queue $queue,
 		DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
@@ -61,7 +61,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 	{
 		parent::__construct(
 			$connector,
-			$entityHelper,
+			$messageBuilder,
 			$queue,
 			$devicesConfigurationRepository,
 			$channelsConfigurationRepository,
@@ -115,7 +115,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 
 			$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 			$findChannelQuery->byId($document->getChannel());
-			$findChannelQuery->byType(Entities\VieraChannel::TYPE);
+			$findChannelQuery->byType(Entities\Channels\Channel::TYPE);
 
 			$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 
@@ -126,7 +126,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 			$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
 			$findDeviceQuery->forConnector($this->connector);
 			$findDeviceQuery->byId($channel->getDevice());
-			$findDeviceQuery->byType(Entities\VieraDevice::TYPE);
+			$findDeviceQuery->byType(Entities\Devices\Device::TYPE);
 
 			$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
@@ -135,8 +135,8 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 			}
 
 			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\WriteChannelPropertyState::class,
+				$this->messageBuilder->create(
+					Queue\Messages\WriteChannelPropertyState::class,
 					[
 						'connector' => $this->connector->getId(),
 						'device' => $device->getId(),

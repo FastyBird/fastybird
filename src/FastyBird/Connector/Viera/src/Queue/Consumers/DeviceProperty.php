@@ -111,7 +111,7 @@ trait DeviceProperty
 		if ($property === null) {
 			$device = $this->devicesRepository->find(
 				$deviceId,
-				Entities\VieraDevice::class,
+				Entities\Devices\Device::class,
 			);
 
 			if ($device === null) {

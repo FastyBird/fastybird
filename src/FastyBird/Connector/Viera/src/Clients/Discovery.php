@@ -68,7 +68,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 	private const MATCH_DEVICE_ID = '/USN:\suuid:(?<usn>[\da-zA-Z-]+)::urn/';
 
-	/** @var SplObjectStorage<Entities\Clients\DiscoveredDevice, null> */
+	/** @var SplObjectStorage<DiscoveredDevice, null> */
 	private SplObjectStorage $discoveredLocalDevices;
 
 	private EventLoop\TimerInterface|null $handlerTimer = null;
@@ -79,7 +79,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 		private readonly MetadataDocuments\DevicesModule\Connector $connector,
 		private readonly API\TelevisionApiFactory $televisionApiFactory,
 		private readonly Queue\Queue $queue,
-		private readonly Helpers\Entity $entityHelper,
+		private readonly Helpers\MessageBuilder $messageBuilder,
 		private readonly Viera\Logger $logger,
 		private readonly Services\MulticastFactory $multicastFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
@@ -135,7 +135,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 						array_key_exists(
 							'port',
 							$urlParts,
-						) ? $urlParts['port'] : Entities\VieraDevice::DEFAULT_PORT,
+						) ? $urlParts['port'] : Entities\Devices\Device::DEFAULT_PORT,
 					);
 				}
 			}
@@ -161,7 +161,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					$this->handleFoundLocalDevices($devices);
 				}
 
-				$this->emit('finished', [$devices]);
+				$this->emit(Viera\Constants::EVENT_FINISHED, [$devices]);
 			}),
 		);
 
@@ -295,8 +295,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 		}
 
 		$this->discoveredLocalDevices->attach(
-			$this->entityHelper->create(
-				Entities\Clients\DiscoveredDevice::class,
+			$this->messageBuilder->create(
+				Messages\Response\DiscoveredDevice::class,
 				[
 					'identifier' => $id,
 					'ip_address' => $host,
@@ -308,7 +308,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					'encrypted' => $needsAuthorization,
 					'applications' => $apps !== null
 						? array_map(
-							static fn (Entities\API\Application $application): array => [
+							static fn (API\Messages\Response\Application $application): array => [
 								'id' => $application->getId(),
 								'name' => $application->getName(),
 							],
@@ -321,7 +321,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @param array<Entities\Clients\DiscoveredDevice> $devices
+	 * @param array<Messages\Response\DiscoveredDevice> $devices
 	 *
 	 * @throws Exceptions\Runtime
 	 */
@@ -329,8 +329,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 	{
 		foreach ($devices as $device) {
 			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\StoreDevice::class,
+				$this->messageBuilder->create(
+					Queue\Messages\StoreDevice::class,
 					[
 						'connector' => $this->connector->getId(),
 						'identifier' => $device->getIdentifier(),
@@ -346,7 +346,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 						'encryption_key' => null,
 						'hdmi' => [],
 						'applications' => array_map(
-							static fn (Entities\Clients\DeviceApplication $application): array => [
+							static fn (Messages\Response\DeviceApplication $application): array => [
 								'id' => $application->getId(),
 								'name' => $application->getName(),
 							],

@@ -75,14 +75,14 @@ final class Properties implements Common\EventSubscriber
 		$entity = $eventArgs->getObject();
 
 		// Check for valid entity
-		if ($entity instanceof Entities\VieraDevice) {
+		if ($entity instanceof Entities\Devices\Device) {
 			$this->configureDeviceState($entity);
 		}
 
 		// Check for valid entity
 		if (
 			$entity instanceof DevicesEntities\Channels\Channel
-			&& $entity->getDevice() instanceof Entities\VieraDevice
+			&& $entity->getDevice() instanceof Entities\Devices\Device
 		) {
 			$this->configureDeviceKeys($entity);
 		}
@@ -102,7 +102,7 @@ final class Properties implements Common\EventSubscriber
 
 		if (
 			$entity instanceof DevicesEntities\Channels\Properties\Dynamic
-			&& $entity->getChannel()->getDevice() instanceof Entities\VieraDevice
+			&& $entity->getChannel()->getDevice() instanceof Entities\Devices\Device
 			&& (
 				$entity->getIdentifier() === Types\ChannelPropertyIdentifier::HDMI
 				|| $entity->getIdentifier() === Types\ChannelPropertyIdentifier::APPLICATION
@@ -116,7 +116,7 @@ final class Properties implements Common\EventSubscriber
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DoctrineCrud\Exceptions\InvalidArgumentException
 	 */
-	private function configureDeviceState(Entities\VieraDevice $device): void
+	private function configureDeviceState(Entities\Devices\Device $device): void
 	{
 		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($device);

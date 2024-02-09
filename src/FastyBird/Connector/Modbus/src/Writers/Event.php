@@ -17,7 +17,7 @@ namespace FastyBird\Connector\Modbus\Writers;
 
 use FastyBird\Connector\Modbus\Entities;
 use FastyBird\Connector\Modbus\Exceptions;
-use FastyBird\Connector\Modbus\Queue\Messages\WriteChannelPropertyState;
+use FastyBird\Connector\Modbus\Queue;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -81,7 +81,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 
 		$this->queue->append(
 			$this->messageBuilder->create(
-				WriteChannelPropertyState::class,
+				Queue\Messages\WriteChannelPropertyState::class,
 				[
 					'connector' => $this->connector->getId(),
 					'device' => $device->getId(),

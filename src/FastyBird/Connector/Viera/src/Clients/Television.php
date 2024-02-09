@@ -82,7 +82,7 @@ final class Television implements Client
 		private readonly MetadataDocuments\DevicesModule\Connector $connector,
 		private readonly API\ConnectionManager $connectionManager,
 		private readonly Queue\Queue $queue,
-		private readonly Helpers\Entity $entityHelper,
+		private readonly Helpers\MessageBuilder $messageBuilder,
 		private readonly Helpers\Device $deviceHelper,
 		private readonly Viera\Logger $logger,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
@@ -108,7 +108,7 @@ final class Television implements Client
 
 		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDevicesQuery->forConnector($this->connector);
-		$findDevicesQuery->byType(Entities\VieraDevice::TYPE);
+		$findDevicesQuery->byType(Entities\Devices\Device::TYPE);
 
 		foreach ($this->devicesConfigurationRepository->findAllBy($findDevicesQuery) as $device) {
 			if (!array_key_exists($device->getId()->toString(), $this->properties)) {
@@ -118,14 +118,14 @@ final class Television implements Client
 			$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 			$findChannelQuery->forDevice($device);
 			$findChannelQuery->byIdentifier(Types\ChannelType::TELEVISION);
-			$findChannelQuery->byType(Entities\VieraChannel::TYPE);
+			$findChannelQuery->byType(Entities\Channels\Channel::TYPE);
 
 			$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 
 			if ($channel === null) {
 				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\StoreDeviceConnectionState::class,
+					$this->messageBuilder->create(
+						Queue\Messages\StoreDeviceConnectionState::class,
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
@@ -247,8 +247,8 @@ final class Television implements Client
 					$client->connect(true);
 
 					$this->queue->append(
-						$this->entityHelper->create(
-							Entities\Messages\StoreDeviceConnectionState::class,
+						$this->messageBuilder->create(
+							Queue\Messages\StoreDeviceConnectionState::class,
 							[
 								'connector' => $device->getConnector(),
 								'device' => $device->getId(),
@@ -276,8 +276,8 @@ final class Television implements Client
 					return false;
 				} catch (Exceptions\TelevisionApiError $ex) {
 					$this->queue->append(
-						$this->entityHelper->create(
-							Entities\Messages\StoreDeviceConnectionState::class,
+						$this->messageBuilder->create(
+							Queue\Messages\StoreDeviceConnectionState::class,
 							[
 								'connector' => $device->getConnector(),
 								'device' => $device->getId(),
@@ -304,8 +304,8 @@ final class Television implements Client
 					return false;
 				} catch (Exceptions\InvalidState $ex) {
 					$this->queue->append(
-						$this->entityHelper->create(
-							Entities\Messages\StoreDeviceConnectionState::class,
+						$this->messageBuilder->create(
+							Queue\Messages\StoreDeviceConnectionState::class,
 							[
 								'connector' => $device->getConnector(),
 								'device' => $device->getId(),
@@ -339,8 +339,8 @@ final class Television implements Client
 				}
 			} else {
 				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\StoreDeviceConnectionState::class,
+					$this->messageBuilder->create(
+						Queue\Messages\StoreDeviceConnectionState::class,
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
@@ -404,8 +404,8 @@ final class Television implements Client
 				}
 			} catch (Exceptions\TelevisionApiError $ex) {
 				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\StoreDeviceConnectionState::class,
+					$this->messageBuilder->create(
+						Queue\Messages\StoreDeviceConnectionState::class,
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
@@ -449,8 +449,8 @@ final class Television implements Client
 				continue;
 			} catch (Exceptions\InvalidState $ex) {
 				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\StoreDeviceConnectionState::class,
+					$this->messageBuilder->create(
+						Queue\Messages\StoreDeviceConnectionState::class,
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
@@ -493,8 +493,8 @@ final class Television implements Client
 					$this->processedChannelsProperties[$device->getId()->toString()][$property->getId()->toString()] = $this->dateTimeFactory->getNow();
 
 					$this->queue->append(
-						$this->entityHelper->create(
-							Entities\Messages\StoreChannelPropertyState::class,
+						$this->messageBuilder->create(
+							Queue\Messages\StoreChannelPropertyState::class,
 							[
 								'connector' => $device->getConnector(),
 								'device' => $device->getId(),
@@ -525,8 +525,8 @@ final class Television implements Client
 
 					if ($ex instanceof Exceptions\TelevisionApiError) {
 						$this->queue->append(
-							$this->entityHelper->create(
-								Entities\Messages\StoreDeviceConnectionState::class,
+							$this->messageBuilder->create(
+								Queue\Messages\StoreDeviceConnectionState::class,
 								[
 									'connector' => $device->getConnector(),
 									'device' => $device->getId(),
@@ -536,8 +536,8 @@ final class Television implements Client
 						);
 					} elseif ($ex->getCode() === 500) {
 						$this->queue->append(
-							$this->entityHelper->create(
-								Entities\Messages\StoreDeviceConnectionState::class,
+							$this->messageBuilder->create(
+								Queue\Messages\StoreDeviceConnectionState::class,
 								[
 									'connector' => $device->getConnector(),
 									'device' => $device->getId(),
@@ -566,12 +566,12 @@ final class Television implements Client
 		$client = $this->connectionManager->getConnection($device);
 
 		$client->on(
-			'event-data',
-			function (Entities\API\Event $event) use ($device): void {
+			Viera\Constants::EVENT_EVENT_DATA,
+			function (API\Messages\Response\Event $event) use ($device): void {
 				if ($event->getScreenState() !== null) {
 					$this->queue->append(
-						$this->entityHelper->create(
-							Entities\Messages\StoreChannelPropertyState::class,
+						$this->messageBuilder->create(
+							Queue\Messages\StoreChannelPropertyState::class,
 							[
 								'connector' => $device->getConnector(),
 								'device' => $device->getId(),
@@ -586,7 +586,7 @@ final class Television implements Client
 		);
 
 		$client->on(
-			'event-error',
+			Viera\Constants::EVENT_EVENT_ERROR,
 			function (Throwable $ex) use ($device): void {
 				$this->logger->warning(
 					'Event subscription with device failed',
@@ -604,8 +604,8 @@ final class Television implements Client
 				);
 
 				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\StoreDeviceConnectionState::class,
+					$this->messageBuilder->create(
+						Queue\Messages\StoreDeviceConnectionState::class,
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),

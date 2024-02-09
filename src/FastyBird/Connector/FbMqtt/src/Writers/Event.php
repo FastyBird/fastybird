@@ -17,8 +17,7 @@ namespace FastyBird\Connector\FbMqtt\Writers;
 
 use FastyBird\Connector\FbMqtt\Entities;
 use FastyBird\Connector\FbMqtt\Exceptions;
-use FastyBird\Connector\FbMqtt\Queue\Messages\WriteChannelPropertyState;
-use FastyBird\Connector\FbMqtt\Queue\Messages\WriteDevicePropertyState;
+use FastyBird\Connector\FbMqtt\Queue;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -80,7 +79,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 
 			$this->queue->append(
 				$this->messageBuilder->create(
-					WriteDevicePropertyState::class,
+					Queue\Messages\WriteDevicePropertyState::class,
 					[
 						'connector' => $this->connector->getId(),
 						'device' => $device->getId(),
@@ -113,7 +112,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 
 			$this->queue->append(
 				$this->messageBuilder->create(
-					WriteChannelPropertyState::class,
+					Queue\Messages\WriteChannelPropertyState::class,
 					[
 						'connector' => $this->connector->getId(),
 						'device' => $device->getId(),

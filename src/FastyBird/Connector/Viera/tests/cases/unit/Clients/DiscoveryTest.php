@@ -238,7 +238,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 
 		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
 		$findConnectorQuery->byIdentifier('viera');
-		$findConnectorQuery->byType(Entities\VieraConnector::TYPE);
+		$findConnectorQuery->byType(Entities\Connectors\Connector::TYPE);
 
 		$connector = $connectorsConfigurationRepository->findOneBy($findConnectorQuery);
 		self::assertInstanceOf(MetadataDocuments\DevicesModule\Connector::class, $connector);
@@ -277,7 +277,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDeviceQuery->forConnector($connector);
 		$findDeviceQuery->byIdentifier('93e760e1-f011-4a33-a70d-c9629706ccf8');
-		$findDeviceQuery->byType(Entities\VieraDevice::TYPE);
+		$findDeviceQuery->byType(Entities\Devices\Device::TYPE);
 
 		$device = $devicesConfigurationRepository->findOneBy($findDeviceQuery);
 

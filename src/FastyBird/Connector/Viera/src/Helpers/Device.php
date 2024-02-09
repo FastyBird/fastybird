@@ -89,7 +89,7 @@ final class Device
 		);
 
 		if ($property?->getValue() === null) {
-			return Entities\VieraDevice::DEFAULT_PORT;
+			return Entities\Devices\Device::DEFAULT_PORT;
 		}
 
 		$value = $property->getValue();
@@ -297,7 +297,7 @@ final class Device
 		);
 
 		if ($property?->getValue() === null) {
-			return Entities\VieraDevice::STATE_READING_DELAY;
+			return Entities\Devices\Device::STATE_READING_DELAY;
 		}
 
 		$value = $property->getValue();

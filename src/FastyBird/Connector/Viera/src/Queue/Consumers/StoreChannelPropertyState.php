@@ -63,16 +63,16 @@ final class StoreChannelPropertyState implements Queue\Consumer
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
-	public function consume(Entities\Messages\Entity $entity): bool
+	public function consume(Queue\Messages\Message $message): bool
 	{
-		if (!$entity instanceof Entities\Messages\StoreChannelPropertyState) {
+		if (!$message instanceof Queue\Messages\StoreChannelPropertyState) {
 			return false;
 		}
 
 		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
-		$findDeviceQuery->byConnectorId($entity->getConnector());
-		$findDeviceQuery->byId($entity->getDevice());
-		$findDeviceQuery->byType(Entities\VieraDevice::TYPE);
+		$findDeviceQuery->byConnectorId($message->getConnector());
+		$findDeviceQuery->byId($message->getDevice());
+		$findDeviceQuery->byType(Entities\Devices\Device::TYPE);
 
 		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
@@ -83,19 +83,19 @@ final class StoreChannelPropertyState implements Queue\Consumer
 					'source' => MetadataTypes\Sources\Connector::VIERA,
 					'type' => 'store-channel-property-state-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $message->getConnector()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $message->getDevice()->toString(),
 					],
 					'channel' => array_merge(
-						is_string($entity->getChannel()) ? ['identifier' => $entity->getChannel()] : [],
-						!is_string($entity->getChannel()) ? ['id' => $entity->getChannel()->toString()] : [],
+						is_string($message->getChannel()) ? ['identifier' => $message->getChannel()] : [],
+						!is_string($message->getChannel()) ? ['id' => $message->getChannel()->toString()] : [],
 					),
 					'property' => [
-						'identifier' => $entity->getProperty(),
+						'identifier' => $message->getProperty(),
 					],
-					'data' => $entity->toArray(),
+					'data' => $message->toArray(),
 				],
 			);
 
@@ -104,11 +104,11 @@ final class StoreChannelPropertyState implements Queue\Consumer
 
 		$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 		$findChannelQuery->forDevice($device);
-		$findChannelQuery->byType(Entities\VieraChannel::TYPE);
-		if ($entity->getChannel() instanceof Uuid\UuidInterface) {
-			$findChannelQuery->byId($entity->getChannel());
+		$findChannelQuery->byType(Entities\Channels\Channel::TYPE);
+		if ($message->getChannel() instanceof Uuid\UuidInterface) {
+			$findChannelQuery->byId($message->getChannel());
 		} else {
-			$findChannelQuery->byIdentifier($entity->getChannel());
+			$findChannelQuery->byIdentifier($message->getChannel());
 		}
 
 		$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
@@ -120,19 +120,19 @@ final class StoreChannelPropertyState implements Queue\Consumer
 					'source' => MetadataTypes\Sources\Connector::VIERA,
 					'type' => 'store-channel-property-state-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $message->getConnector()->toString(),
 					],
 					'device' => [
 						'id' => $device->getId()->toString(),
 					],
 					'channel' => array_merge(
-						is_string($entity->getChannel()) ? ['identifier' => $entity->getChannel()] : [],
-						!is_string($entity->getChannel()) ? ['id' => $entity->getChannel()->toString()] : [],
+						is_string($message->getChannel()) ? ['identifier' => $message->getChannel()] : [],
+						!is_string($message->getChannel()) ? ['id' => $message->getChannel()->toString()] : [],
 					),
 					'property' => [
-						'identifier' => $entity->getProperty(),
+						'identifier' => $message->getProperty(),
 					],
-					'data' => $entity->toArray(),
+					'data' => $message->toArray(),
 				],
 			);
 
@@ -141,10 +141,10 @@ final class StoreChannelPropertyState implements Queue\Consumer
 
 		$findChannelPropertyQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
 		$findChannelPropertyQuery->forChannel($channel);
-		if ($entity->getProperty() instanceof Uuid\UuidInterface) {
-			$findChannelPropertyQuery->byId($entity->getProperty());
+		if ($message->getProperty() instanceof Uuid\UuidInterface) {
+			$findChannelPropertyQuery->byId($message->getProperty());
 		} else {
-			$findChannelPropertyQuery->byIdentifier($entity->getProperty());
+			$findChannelPropertyQuery->byIdentifier($message->getProperty());
 		}
 
 		$property = $this->channelsPropertiesConfigurationRepository->findOneBy(
@@ -159,7 +159,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 					'source' => MetadataTypes\Sources\Connector::VIERA,
 					'type' => 'store-channel-property-state-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $message->getConnector()->toString(),
 					],
 					'device' => [
 						'id' => $device->getId()->toString(),
@@ -168,9 +168,9 @@ final class StoreChannelPropertyState implements Queue\Consumer
 						'id' => $channel->getId()->toString(),
 					],
 					'property' => [
-						'identifier' => $entity->getProperty(),
+						'identifier' => $message->getProperty(),
 					],
-					'data' => $entity->toArray(),
+					'data' => $message->toArray(),
 				],
 			);
 
@@ -195,7 +195,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			await($this->channelPropertiesStatesManager->set(
 				$property,
 				Utils\ArrayHash::from([
-					DevicesStates\Property::ACTUAL_VALUE_FIELD => $entity->getValue(),
+					DevicesStates\Property::ACTUAL_VALUE_FIELD => $message->getValue(),
 				]),
 				MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::VIERA),
 			));
@@ -207,7 +207,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 				'source' => MetadataTypes\Sources\Connector::VIERA,
 				'type' => 'store-channel-property-state-message-consumer',
 				'connector' => [
-					'id' => $entity->getConnector()->toString(),
+					'id' => $message->getConnector()->toString(),
 				],
 				'device' => [
 					'id' => $device->getId()->toString(),
@@ -218,7 +218,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 				'property' => [
 					'id' => $property->getId()->toString(),
 				],
-				'data' => $entity->toArray(),
+				'data' => $message->toArray(),
 			],
 		);
 

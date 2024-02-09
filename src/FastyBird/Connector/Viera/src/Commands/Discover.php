@@ -154,7 +154,7 @@ class Discover extends Console\Command\Command
 			$connectorId = $input->getOption('connector');
 
 			$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
-			$findConnectorQuery->byType(Entities\VieraConnector::TYPE);
+			$findConnectorQuery->byType(Entities\Connectors\Connector::TYPE);
 
 			if (Uuid\Uuid::isValid($connectorId)) {
 				$findConnectorQuery->byId(Uuid\Uuid::fromString($connectorId));
@@ -175,7 +175,7 @@ class Discover extends Console\Command\Command
 			$connectors = [];
 
 			$findConnectorsQuery = new DevicesQueries\Configuration\FindConnectors();
-			$findConnectorsQuery->byType(Entities\VieraConnector::TYPE);
+			$findConnectorsQuery->byType(Entities\Connectors\Connector::TYPE);
 
 			$systemConnectors = $this->connectorsConfigurationRepository->findAllBy($findConnectorsQuery);
 			usort(
@@ -200,7 +200,7 @@ class Discover extends Console\Command\Command
 
 				$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
 				$findConnectorQuery->byIdentifier($connectorIdentifier);
-				$findConnectorQuery->byType(Entities\VieraConnector::TYPE);
+				$findConnectorQuery->byType(Entities\Connectors\Connector::TYPE);
 
 				$connector = $this->connectorsConfigurationRepository->findOneBy($findConnectorQuery);
 
@@ -255,7 +255,7 @@ class Discover extends Console\Command\Command
 						if ($identifier !== false) {
 							$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
 							$findConnectorQuery->byIdentifier($identifier);
-							$findConnectorQuery->byType(Entities\VieraConnector::TYPE);
+							$findConnectorQuery->byType(Entities\Connectors\Connector::TYPE);
 
 							$connector = $this->connectorsConfigurationRepository->findOneBy($findConnectorQuery);
 
@@ -342,7 +342,7 @@ class Discover extends Console\Command\Command
 
 		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDevicesQuery->forConnector($connector);
-		$findDevicesQuery->byType(Entities\VieraDevice::TYPE);
+		$findDevicesQuery->byType(Entities\Devices\Device::TYPE);
 
 		$devices = $this->devicesConfigurationRepository->findAllBy($findDevicesQuery);
 
@@ -426,7 +426,7 @@ class Discover extends Console\Command\Command
 		if ($continue) {
 			foreach ($encryptedDevices as $configuredDevice) {
 				$device = $this->devicesRepository->find($configuredDevice->getId());
-				assert($device instanceof Entities\VieraDevice);
+				assert($device instanceof Entities\Devices\Device);
 
 				if ($device->getIpAddress() === null) {
 					$io->error(
@@ -619,13 +619,13 @@ class Discover extends Console\Command\Command
 		Style\SymfonyStyle $io,
 		MetadataDocuments\DevicesModule\Connector $connector,
 		API\TelevisionApi $televisionApi,
-	): Entities\API\AuthorizePinCode
+	): API\Messages\Response\AuthorizePinCode
 	{
 		$question = new Console\Question\Question(
 			$this->translator->translate('//viera-connector.cmd.discover.questions.provide.pinCode'),
 		);
 		$question->setValidator(
-			function (string|null $answer) use ($connector, $televisionApi): Entities\API\AuthorizePinCode {
+			function (string|null $answer) use ($connector, $televisionApi): API\Messages\Response\AuthorizePinCode {
 				if ($answer !== null && $answer !== '') {
 					try {
 						return $televisionApi->authorizePinCode($answer, strval($this->challengeKey), false);
@@ -653,7 +653,7 @@ class Discover extends Console\Command\Command
 		);
 
 		$authorization = $io->askQuestion($question);
-		assert($authorization instanceof Entities\API\AuthorizePinCode);
+		assert($authorization instanceof API\Messages\Response\AuthorizePinCode);
 
 		return $authorization;
 	}

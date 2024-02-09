@@ -70,22 +70,22 @@ final class StoreDevice implements Queue\Consumer
 	 * @throws ApplicationExceptions\Runtime
 	 * @throws DBAL\Exception
 	 */
-	public function consume(Entities\Messages\Entity $entity): bool
+	public function consume(Queue\Messages\Message $message): bool
 	{
-		if (!$entity instanceof Entities\Messages\StoreDevice) {
+		if (!$message instanceof Queue\Messages\StoreDevice) {
 			return false;
 		}
 
 		$findDeviceQuery = new Queries\Entities\FindDevices();
-		$findDeviceQuery->byConnectorId($entity->getConnector());
-		$findDeviceQuery->byIdentifier($entity->getIdentifier());
+		$findDeviceQuery->byConnectorId($message->getConnector());
+		$findDeviceQuery->byIdentifier($message->getIdentifier());
 
-		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\VieraDevice::class);
+		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\Device::class);
 
 		if ($device === null) {
 			$connector = $this->connectorsRepository->find(
-				$entity->getConnector(),
-				Entities\VieraConnector::class,
+				$message->getConnector(),
+				Entities\Connectors\Connector::class,
 			);
 
 			if ($connector === null) {
@@ -93,14 +93,14 @@ final class StoreDevice implements Queue\Consumer
 			}
 
 			$device = $this->databaseHelper->transaction(
-				function () use ($entity, $connector): Entities\VieraDevice {
+				function () use ($message, $connector): Entities\Devices\Device {
 					$device = $this->devicesManager->create(Utils\ArrayHash::from([
-						'entity' => Entities\VieraDevice::class,
+						'entity' => Entities\Devices\Device::class,
 						'connector' => $connector,
-						'identifier' => $entity->getIdentifier(),
-						'name' => $entity->getName(),
+						'identifier' => $message->getIdentifier(),
+						'name' => $message->getName(),
 					]));
-					assert($device instanceof Entities\VieraDevice);
+					assert($device instanceof Entities\Devices\Device);
 
 					return $device;
 				},
@@ -112,14 +112,14 @@ final class StoreDevice implements Queue\Consumer
 					'source' => MetadataTypes\Sources\Connector::VIERA,
 					'type' => 'store-device-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $message->getConnector()->toString(),
 					],
 					'device' => [
 						'id' => $device->getId()->toString(),
-						'identifier' => $entity->getIdentifier(),
-						'address' => $entity->getIpAddress(),
+						'identifier' => $message->getIdentifier(),
+						'address' => $message->getIpAddress(),
 					],
-					'data' => $entity->toArray(),
+					'data' => $message->toArray(),
 				],
 			);
 		}
@@ -127,7 +127,7 @@ final class StoreDevice implements Queue\Consumer
 		$this->setDeviceProperty(
 			DevicesEntities\Devices\Properties\Variable::class,
 			$device->getId(),
-			$entity->getIpAddress(),
+			$message->getIpAddress(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::IP_ADDRESS,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::IP_ADDRESS),
@@ -135,7 +135,7 @@ final class StoreDevice implements Queue\Consumer
 		$this->setDeviceProperty(
 			DevicesEntities\Devices\Properties\Variable::class,
 			$device->getId(),
-			$entity->getPort(),
+			$message->getPort(),
 			MetadataTypes\DataType::UINT,
 			Types\DevicePropertyIdentifier::PORT,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::PORT),
@@ -143,7 +143,7 @@ final class StoreDevice implements Queue\Consumer
 		$this->setDeviceProperty(
 			DevicesEntities\Devices\Properties\Variable::class,
 			$device->getId(),
-			$entity->getModel(),
+			$message->getModel(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::MODEL,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MODEL),
@@ -151,7 +151,7 @@ final class StoreDevice implements Queue\Consumer
 		$this->setDeviceProperty(
 			DevicesEntities\Devices\Properties\Variable::class,
 			$device->getId(),
-			$entity->getManufacturer(),
+			$message->getManufacturer(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::MANUFACTURER,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MANUFACTURER),
@@ -159,7 +159,7 @@ final class StoreDevice implements Queue\Consumer
 		$this->setDeviceProperty(
 			DevicesEntities\Devices\Properties\Variable::class,
 			$device->getId(),
-			$entity->getSerialNumber(),
+			$message->getSerialNumber(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::SERIAL_NUMBER,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::SERIAL_NUMBER),
@@ -167,7 +167,7 @@ final class StoreDevice implements Queue\Consumer
 		$this->setDeviceProperty(
 			DevicesEntities\Devices\Properties\Variable::class,
 			$device->getId(),
-			$entity->getMacAddress(),
+			$message->getMacAddress(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::MAC_ADDRESS,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MAC_ADDRESS),
@@ -175,7 +175,7 @@ final class StoreDevice implements Queue\Consumer
 		$this->setDeviceProperty(
 			DevicesEntities\Devices\Properties\Variable::class,
 			$device->getId(),
-			$entity->isEncrypted(),
+			$message->isEncrypted(),
 			MetadataTypes\DataType::BOOLEAN,
 			Types\DevicePropertyIdentifier::ENCRYPTED,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::ENCRYPTED),
@@ -183,7 +183,7 @@ final class StoreDevice implements Queue\Consumer
 		$this->setDeviceProperty(
 			DevicesEntities\Devices\Properties\Variable::class,
 			$device->getId(),
-			$entity->getAppId(),
+			$message->getAppId(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::APP_ID,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::APP_ID),
@@ -191,22 +191,22 @@ final class StoreDevice implements Queue\Consumer
 		$this->setDeviceProperty(
 			DevicesEntities\Devices\Properties\Variable::class,
 			$device->getId(),
-			$entity->getEncryptionKey(),
+			$message->getEncryptionKey(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::ENCRYPTION_KEY,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::ENCRYPTION_KEY),
 		);
 
-		$this->databaseHelper->transaction(function () use ($entity, $device): bool {
+		$this->databaseHelper->transaction(function () use ($message, $device): bool {
 			$findChannelQuery = new Queries\Entities\FindChannels();
 			$findChannelQuery->byIdentifier(Types\ChannelType::TELEVISION);
 			$findChannelQuery->forDevice($device);
 
-			$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\VieraChannel::class);
+			$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\Channels\Channel::class);
 
 			if ($channel === null) {
 				$channel = $this->channelsManager->create(Utils\ArrayHash::from([
-					'entity' => Entities\VieraChannel::class,
+					'entity' => Entities\Channels\Channel::class,
 					'device' => $device,
 					'identifier' => Types\ChannelType::TELEVISION,
 				]));
@@ -217,7 +217,7 @@ final class StoreDevice implements Queue\Consumer
 						'source' => MetadataTypes\Sources\Connector::VIERA,
 						'type' => 'store-device-message-consumer',
 						'connector' => [
-							'id' => $entity->getConnector()->toString(),
+							'id' => $message->getConnector()->toString(),
 						],
 						'device' => [
 							'id' => $device->getId()->toString(),
@@ -225,7 +225,7 @@ final class StoreDevice implements Queue\Consumer
 						'channel' => [
 							'id' => $channel->getId()->toString(),
 						],
-						'data' => $entity->toArray(),
+						'data' => $message->toArray(),
 					],
 				);
 			}
@@ -276,13 +276,13 @@ final class StoreDevice implements Queue\Consumer
 				MetadataTypes\DataType::ENUM,
 				Types\ChannelPropertyIdentifier::HDMI,
 				DevicesUtilities\Name::createName(Types\ChannelPropertyIdentifier::HDMI),
-				$entity->getHdmi() !== [] ? array_map(
-					static fn (Entities\Messages\DeviceHdmi|Entities\Messages\DeviceApplication $item): array => [
+				$message->getHdmi() !== [] ? array_map(
+					static fn (Queue\Messages\DeviceHdmi|Queue\Messages\DeviceApplication $item): array => [
 						Helpers\Name::sanitizeEnumName($item->getName()),
 						$item->getId(),
 						$item->getId(),
 					],
-					$entity->getHdmi(),
+					$message->getHdmi(),
 				) : null,
 				true,
 			);
@@ -294,13 +294,13 @@ final class StoreDevice implements Queue\Consumer
 				MetadataTypes\DataType::ENUM,
 				Types\ChannelPropertyIdentifier::APPLICATION,
 				DevicesUtilities\Name::createName(Types\ChannelPropertyIdentifier::APPLICATION),
-				$entity->getApplications() !== [] ? array_map(
-					static fn (Entities\Messages\DeviceHdmi|Entities\Messages\DeviceApplication $item): array => [
+				$message->getApplications() !== [] ? array_map(
+					static fn (Queue\Messages\DeviceHdmi|Queue\Messages\DeviceApplication $item): array => [
 						Helpers\Name::sanitizeEnumName($item->getName()),
 						$item->getId(),
 						$item->getId(),
 					],
-					$entity->getApplications(),
+					$message->getApplications(),
 				) : null,
 				true,
 			);
@@ -321,12 +321,12 @@ final class StoreDevice implements Queue\Consumer
 						],
 					],
 					array_map(
-						static fn (Entities\Messages\DeviceHdmi|Entities\Messages\DeviceApplication $item): array => [
+						static fn (Queue\Messages\DeviceHdmi|Queue\Messages\DeviceApplication $item): array => [
 							Helpers\Name::sanitizeEnumName($item->getName()),
 							$item->getId(),
 							$item->getId(),
 						],
-						array_merge($entity->getHdmi(), $entity->getApplications()),
+						array_merge($message->getHdmi(), $message->getApplications()),
 					),
 				),
 				true,
@@ -341,12 +341,12 @@ final class StoreDevice implements Queue\Consumer
 				'source' => MetadataTypes\Sources\Connector::VIERA,
 				'type' => 'store-device-message-consumer',
 				'connector' => [
-					'id' => $entity->getConnector()->toString(),
+					'id' => $message->getConnector()->toString(),
 				],
 				'device' => [
 					'id' => $device->getId()->toString(),
 				],
-				'data' => $entity->toArray(),
+				'data' => $message->toArray(),
 			],
 		);
 

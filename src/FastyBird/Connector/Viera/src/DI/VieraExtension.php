@@ -95,7 +95,10 @@ class VieraExtension extends DI\CompilerExtension implements Translation\DI\Tran
 		)
 			->setType(Services\MulticastFactory::class);
 
-		$builder->addDefinition($this->prefix('services.httpClientFactory'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition(
+			$this->prefix('services.httpClientFactory'),
+			new DI\Definitions\ServiceDefinition(),
+		)
 			->setType(Services\HttpClientFactory::class);
 
 		$builder->addDefinition(
@@ -212,34 +215,34 @@ class VieraExtension extends DI\CompilerExtension implements Translation\DI\Tran
 		 * JSON-API SCHEMAS
 		 */
 
-		$builder->addDefinition($this->prefix('schemas.connector.viera'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\VieraConnector::class);
+		$builder->addDefinition($this->prefix('schemas.connector'), new DI\Definitions\ServiceDefinition())
+			->setType(Schemas\Connectors\Connector::class);
 
-		$builder->addDefinition($this->prefix('schemas.device.viera'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\VieraDevice::class);
+		$builder->addDefinition($this->prefix('schemas.device'), new DI\Definitions\ServiceDefinition())
+			->setType(Schemas\Devices\Device::class);
 
-		$builder->addDefinition($this->prefix('schemas.channel.viera'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\VieraChannel::class);
+		$builder->addDefinition($this->prefix('schemas.channel'), new DI\Definitions\ServiceDefinition())
+			->setType(Schemas\Channels\Channel::class);
 
 		/**
 		 * JSON-API HYDRATORS
 		 */
 
-		$builder->addDefinition($this->prefix('hydrators.connector.viera'), new DI\Definitions\ServiceDefinition())
-			->setType(Hydrators\VieraConnector::class);
+		$builder->addDefinition($this->prefix('hydrators.connector'), new DI\Definitions\ServiceDefinition())
+			->setType(Hydrators\Connectors\Connector::class);
 
-		$builder->addDefinition($this->prefix('hydrators.device.viera'), new DI\Definitions\ServiceDefinition())
-			->setType(Hydrators\VieraDevice::class);
+		$builder->addDefinition($this->prefix('hydrators.device'), new DI\Definitions\ServiceDefinition())
+			->setType(Hydrators\Devices\Device::class);
 
-		$builder->addDefinition($this->prefix('hydrators.channel.viera'), new DI\Definitions\ServiceDefinition())
-			->setType(Hydrators\VieraChannel::class);
+		$builder->addDefinition($this->prefix('hydrators.channel'), new DI\Definitions\ServiceDefinition())
+			->setType(Hydrators\Channels\Channel::class);
 
 		/**
 		 * HELPERS
 		 */
 
-		$builder->addDefinition($this->prefix('helpers.entity'), new DI\Definitions\ServiceDefinition())
-			->setType(Helpers\Entity::class);
+		$builder->addDefinition($this->prefix('helpers.messageBuilder'), new DI\Definitions\ServiceDefinition())
+			->setType(Helpers\MessageBuilder::class);
 
 		$builder->addDefinition($this->prefix('helpers.device'), new DI\Definitions\ServiceDefinition())
 			->setType(Helpers\Device::class);
@@ -271,7 +274,7 @@ class VieraExtension extends DI\CompilerExtension implements Translation\DI\Tran
 			->setImplement(Connector\ConnectorFactory::class)
 			->addTag(
 				DevicesDI\DevicesExtension::CONNECTOR_TYPE_TAG,
-				Entities\VieraConnector::TYPE,
+				Entities\Connectors\Connector::TYPE,
 			)
 			->getResultDefinition()
 			->setType(Connector\Connector::class)
@@ -291,7 +294,7 @@ class VieraExtension extends DI\CompilerExtension implements Translation\DI\Tran
 		$builder = $this->getContainerBuilder();
 
 		/**
-		 * Doctrine entities
+		 * DOCTRINE ENTITIES
 		 */
 
 		$ormAttributeDriverService = $builder->getDefinition('nettrineOrmAttributes.attributeDriver');

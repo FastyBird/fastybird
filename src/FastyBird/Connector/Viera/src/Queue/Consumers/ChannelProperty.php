@@ -108,7 +108,7 @@ trait ChannelProperty
 		}
 
 		if ($property === null) {
-			$channel = $this->channelsRepository->find($channelId, Viera\Entities\VieraChannel::class);
+			$channel = $this->channelsRepository->find($channelId, Viera\Entities\Channels\Channel::class);
 
 			if ($channel === null) {
 				$this->logger->error(

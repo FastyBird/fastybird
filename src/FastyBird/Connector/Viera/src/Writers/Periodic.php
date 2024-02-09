@@ -74,7 +74,7 @@ abstract class Periodic implements Writer
 
 	public function __construct(
 		protected readonly MetadataDocuments\DevicesModule\Connector $connector,
-		protected readonly Helpers\Entity $entityHelper,
+		protected readonly Helpers\MessageBuilder $messageBuilder,
 		protected readonly Queue\Queue $queue,
 		protected readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		protected readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
@@ -96,7 +96,7 @@ abstract class Periodic implements Writer
 
 		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDevicesQuery->forConnector($this->connector);
-		$findDevicesQuery->byType(Entities\VieraDevice::TYPE);
+		$findDevicesQuery->byType(Entities\Devices\Device::TYPE);
 
 		foreach ($this->devicesConfigurationRepository->findAllBy($findDevicesQuery) as $device) {
 			$this->devices[$device->getId()->toString()] = $device;
@@ -107,7 +107,7 @@ abstract class Periodic implements Writer
 
 			$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
 			$findChannelsQuery->forDevice($device);
-			$findChannelsQuery->byType(Entities\VieraChannel::TYPE);
+			$findChannelsQuery->byType(Entities\Channels\Channel::TYPE);
 
 			$channels = $this->channelsConfigurationRepository->findAllBy($findChannelsQuery);
 
@@ -233,8 +233,8 @@ abstract class Periodic implements Writer
 				)
 			) {
 				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\WriteChannelPropertyState::class,
+					$this->messageBuilder->create(
+						Queue\Messages\WriteChannelPropertyState::class,
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
