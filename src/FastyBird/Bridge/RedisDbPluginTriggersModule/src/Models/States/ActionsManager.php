@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:RedisDbPluginTriggersModule!
+ * @package        FastyBird:RedisDbPluginTriggersModuleBridge!
  * @subpackage     Models
  * @since          1.0.0
  *
@@ -26,7 +26,7 @@ use Ramsey\Uuid;
 /**
  * Action states manager
  *
- * @package        FastyBird:RedisDbPluginTriggersModule!
+ * @package        FastyBird:RedisDbPluginTriggersModuleBridge!
  * @subpackage     Models
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

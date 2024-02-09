@@ -15,8 +15,6 @@
 
 namespace FastyBird\Connector\Zigbee2Mqtt\Queue;
 
-use FastyBird\Connector\Zigbee2Mqtt\Entities;
-
 /**
  * Clients messages consumer interface
  *
@@ -28,6 +26,6 @@ use FastyBird\Connector\Zigbee2Mqtt\Entities;
 interface Consumer
 {
 
-	public function consume(Entities\Messages\Entity $entity): bool;
+	public function consume(Messages\Message $message): bool;
 
 }

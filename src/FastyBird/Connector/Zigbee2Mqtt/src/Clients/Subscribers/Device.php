@@ -43,17 +43,17 @@ class Device
 {
 
 	public function __construct(
-		private readonly MetadataDocuments\DevicesModule\Connector|Entities\Zigbee2MqttConnector $connector,
+		private readonly MetadataDocuments\DevicesModule\Connector|Entities\Connectors\Connector $connector,
 		private readonly Zigbee2Mqtt\Logger $logger,
 		private readonly Queue\Queue $queue,
-		private readonly Helpers\Entity $entityHelper,
+		private readonly Helpers\MessageBuilder $messageBuilder,
 	)
 	{
 	}
 
 	public function subscribe(API\Client $client): void
 	{
-		$client->on('message', [$this, 'onMessage']);
+		$client->on(Zigbee2Mqtt\Constants::EVENT_MESSAGE, [$this, 'onMessage']);
 	}
 
 	public function unsubscribe(API\Client $client): void
@@ -98,8 +98,8 @@ class Device
 								&& Types\ConnectionState::isValidValue($message->getPayload())
 							) {
 								$this->queue->append(
-									$this->entityHelper->create(
-										Entities\Messages\StoreDeviceConnectionState::class,
+									$this->messageBuilder->create(
+										Queue\Messages\StoreDeviceConnectionState::class,
 										array_merge($data, ['state' => $message->getPayload()]),
 									),
 								);
@@ -123,8 +123,8 @@ class Device
 								}
 
 								$this->queue->append(
-									$this->entityHelper->create(
-										Entities\Messages\StoreDeviceConnectionState::class,
+									$this->messageBuilder->create(
+										Queue\Messages\StoreDeviceConnectionState::class,
 										array_merge($data, $payload),
 									),
 								);
@@ -179,8 +179,8 @@ class Device
 						}
 
 						$this->queue->append(
-							$this->entityHelper->create(
-								Entities\Messages\StoreDeviceState::class,
+							$this->messageBuilder->create(
+								Queue\Messages\StoreDeviceState::class,
 								array_merge($data, ['states' => $this->convertStatePayload($payload)]),
 							),
 						);

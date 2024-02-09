@@ -29,6 +29,6 @@ use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 interface BridgeFactory
 {
 
-	public function create(MetadataDocuments\DevicesModule\Connector|Entities\Zigbee2MqttConnector $connector): Bridge;
+	public function create(MetadataDocuments\DevicesModule\Connector|Entities\Connectors\Connector $connector): Bridge;
 
 }

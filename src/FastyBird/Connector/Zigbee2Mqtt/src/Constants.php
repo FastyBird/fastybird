@@ -53,4 +53,24 @@ final class Constants
 
 	public const IEEE_ADDRESS_REGEX = '/^0x([a-zA-Z0-9]+)$/';
 
+	public const EVENT_CONNECT = 'connect';
+
+	public const EVENT_DISCONNECT = 'disconnect';
+
+	public const EVENT_CLOSE = 'close';
+
+	public const EVENT_WARNING = 'warning';
+
+	public const EVENT_ERROR = 'error';
+
+	public const EVENT_MESSAGE = 'message';
+
+	public const EVENT_PUBLISH = 'publish';
+
+	public const EVENT_SUBSCRIBE = 'subscribe';
+
+	public const EVENT_UNSUBSCRIBE = 'unsubscribe';
+
+	public const EVENT_FINISHED = 'finished';
+
 }

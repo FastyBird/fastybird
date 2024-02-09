@@ -51,15 +51,15 @@ final class StoreBridgeLog implements Queue\Consumer
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Psr\Log\InvalidArgumentException
 	 */
-	public function consume(Entities\Messages\Entity $entity): bool
+	public function consume(Queue\Messages\Message $message): bool
 	{
-		if (!$entity instanceof Entities\Messages\StoreBridgeLog) {
+		if (!$message instanceof Queue\Messages\StoreBridgeLog) {
 			return false;
 		}
 
 		$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
 		$findDevicePropertyQuery->byIdentifier(Zigbee2Mqtt\Types\DevicePropertyIdentifier::BASE_TOPIC);
-		$findDevicePropertyQuery->byValue($entity->getBaseTopic());
+		$findDevicePropertyQuery->byValue($message->getBaseTopic());
 
 		$baseTopicProperty = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findDevicePropertyQuery,
@@ -71,7 +71,7 @@ final class StoreBridgeLog implements Queue\Consumer
 		}
 
 		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
-		$findDeviceQuery->byConnectorId($entity->getConnector());
+		$findDeviceQuery->byConnectorId($message->getConnector());
 		$findDeviceQuery->byId($baseTopicProperty->getDevice());
 		$findDeviceQuery->byType(Entities\Devices\Bridge::TYPE);
 
@@ -82,13 +82,13 @@ final class StoreBridgeLog implements Queue\Consumer
 		}
 
 		$this->logger->log(
-			$entity->getLevel(),
-			$entity->getMessage(),
+			$message->getLevel(),
+			$message->getMessage(),
 			[
 				'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
 				'type' => 'bridge-log',
 				'connector' => [
-					'id' => $entity->getConnector()->toString(),
+					'id' => $message->getConnector()->toString(),
 				],
 				'bridge' => [
 					'id' => $bridge->getId()->toString(),
@@ -102,12 +102,12 @@ final class StoreBridgeLog implements Queue\Consumer
 				'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
 				'type' => 'store-bridge-log-message-consumer',
 				'connector' => [
-					'id' => $entity->getConnector()->toString(),
+					'id' => $message->getConnector()->toString(),
 				],
 				'bridge' => [
 					'id' => $bridge->getId()->toString(),
 				],
-				'data' => $entity->toArray(),
+				'data' => $message->toArray(),
 			],
 		);
 

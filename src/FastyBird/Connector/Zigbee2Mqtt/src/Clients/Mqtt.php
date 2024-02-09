@@ -57,7 +57,7 @@ final class Mqtt implements Client
 		private readonly Clients\Subscribers\DeviceFactory $deviceSubscriberFactory,
 		private readonly API\ConnectionManager $connectionManager,
 		private readonly Zigbee2Mqtt\Logger $logger,
-		private readonly Helpers\Connector $connectorHelper,
+		private readonly Helpers\Connectors\Connector $connectorHelper,
 		private readonly Helpers\Devices\Bridge $bridgeHelper,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 	)
@@ -75,7 +75,7 @@ final class Mqtt implements Client
 	public function connect(): void
 	{
 		$client = $this->getClient();
-		$client->on('connect', [$this, 'onConnect']);
+		$client->on(Zigbee2Mqtt\Constants::EVENT_CONNECT, [$this, 'onConnect']);
 
 		$this->bridgeSubscriber->subscribe($client);
 		$this->deviceSubscriber->subscribe($client);

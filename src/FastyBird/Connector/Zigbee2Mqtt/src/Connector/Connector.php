@@ -71,7 +71,7 @@ final class Connector implements DevicesConnectors\Connector
 		private readonly MetadataDocuments\DevicesModule\Connector $connector,
 		private readonly array $clientsFactories,
 		private readonly Clients\DiscoveryFactory $discoveryClientFactory,
-		private readonly Helpers\Connector $connectorHelper,
+		private readonly Helpers\Connectors\Connector $connectorHelper,
 		private readonly array $writersFactories,
 		private readonly Queue\Queue $queue,
 		private readonly Queue\Consumers $consumers,
@@ -92,7 +92,7 @@ final class Connector implements DevicesConnectors\Connector
 	 */
 	public function execute(bool $standalone = true): Promise\PromiseInterface
 	{
-		assert($this->connector->getType() === Entities\Zigbee2MqttConnector::TYPE);
+		assert($this->connector->getType() === Entities\Connectors\Connector::TYPE);
 
 		$this->logger->info(
 			'Starting Zigbee2MQTT connector service',
@@ -177,7 +177,7 @@ final class Connector implements DevicesConnectors\Connector
 	 */
 	public function discover(): Promise\PromiseInterface
 	{
-		assert($this->connector->getType() === Entities\Zigbee2MqttConnector::TYPE);
+		assert($this->connector->getType() === Entities\Connectors\Connector::TYPE);
 
 		$this->logger->info(
 			'Starting Zigbee2MQTT connector discovery',
@@ -192,7 +192,7 @@ final class Connector implements DevicesConnectors\Connector
 
 		$client = $this->discoveryClientFactory->create($this->connector);
 
-		$client->on('finished', function (): void {
+		$client->on(Zigbee2Mqtt\Constants::EVENT_FINISHED, function (): void {
 			$this->emit(
 				DevicesConstants::EVENT_TERMINATE,
 				[
@@ -236,7 +236,7 @@ final class Connector implements DevicesConnectors\Connector
 	 */
 	public function terminate(): void
 	{
-		assert($this->connector->getType() === Entities\Zigbee2MqttConnector::TYPE);
+		assert($this->connector->getType() === Entities\Connectors\Connector::TYPE);
 
 		foreach ($this->clients as $client) {
 			$client->disconnect();

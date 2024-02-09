@@ -40,7 +40,7 @@ final class StoreBridgeDevicesTest extends DbTestCase
 	 * @throws Error
 	 * @throws Exception
 	 */
-	public function testConsumeEntity(): void
+	public function testConsumeMessage(): void
 	{
 		$publisher = $this->createMock(ExchangePublisher\Container::class);
 		$publisher
@@ -55,8 +55,8 @@ final class StoreBridgeDevicesTest extends DbTestCase
 					},
 				),
 				self::callback(static fn (MetadataTypes\RoutingKey $routingKey): bool => true),
-				self::callback(static function (MetadataDocuments\Document|null $entity): bool {
-					self::assertTrue($entity !== null);
+				self::callback(static function (MetadataDocuments\Document|null $document): bool {
+					self::assertTrue($document !== null);
 
 					return true;
 				}),
@@ -71,12 +71,12 @@ final class StoreBridgeDevicesTest extends DbTestCase
 			Queue\Consumers\StoreBridgeDevices::class,
 		);
 
-		$entityFactory = $this->getContainer()->getByType(
-			Helpers\Entity::class,
+		$messageBuilder = $this->getContainer()->getByType(
+			Helpers\MessageBuilder::class,
 		);
 
-		$entity = $entityFactory->create(
-			Entities\Messages\StoreBridgeDevices::class,
+		$message = $messageBuilder->create(
+			Queue\Messages\StoreBridgeDevices::class,
 			[
 				'connector' => Uuid\Uuid::fromString('f15d2072-fb60-421a-a85f-2566e4dc13fe'),
 				'base_topic' => 'zigbee2mqtt',
@@ -224,7 +224,7 @@ final class StoreBridgeDevicesTest extends DbTestCase
 			],
 		);
 
-		$consumer->consume($entity);
+		$consumer->consume($message);
 
 		$connectorsRepository = $this->getContainer()->getByType(
 			DevicesModels\Entities\Connectors\ConnectorsRepository::class,
@@ -232,9 +232,9 @@ final class StoreBridgeDevicesTest extends DbTestCase
 
 		$connector = $connectorsRepository->find(
 			Uuid\Uuid::fromString('f15d2072-fb60-421a-a85f-2566e4dc13fe'),
-			Entities\Zigbee2MqttConnector::class,
+			Entities\Connectors\Connector::class,
 		);
-		assert($connector instanceof Entities\Zigbee2MqttConnector);
+		assert($connector instanceof Entities\Connectors\Connector);
 
 		$devicesRepository = $this->getContainer()->getByType(
 			DevicesModels\Entities\Devices\DevicesRepository::class,

@@ -81,7 +81,7 @@ final class Properties implements Common\EventSubscriber
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DoctrineCrud\Exceptions\InvalidArgumentException
 	 */
-	private function processDeviceProperties(Entities\Zigbee2MqttDevice $device): void
+	private function processDeviceProperties(Entities\Devices\Device $device): void
 	{
 		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($device);

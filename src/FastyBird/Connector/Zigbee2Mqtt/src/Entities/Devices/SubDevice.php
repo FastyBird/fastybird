@@ -31,7 +31,7 @@ use function is_string;
 
 #[ORM\Entity]
 #[ApplicationMapping\DiscriminatorEntry(name: self::TYPE)]
-class SubDevice extends Entities\Zigbee2MqttDevice
+class SubDevice extends Device
 {
 
 	public const TYPE = 'zigbee2mqtt-connector-sub-device';
@@ -42,7 +42,7 @@ class SubDevice extends Entities\Zigbee2MqttDevice
 	public function __construct(
 		string $identifier,
 		Bridge $parent,
-		DevicesEntities\Connectors\Connector $connector,
+		Entities\Connectors\Connector $connector,
 		string|null $name = null,
 		Uuid\UuidInterface|null $id = null,
 	)

@@ -55,10 +55,8 @@ final class HomeKitExtensionTest extends BaseTestCase
 		foreach ($container->findByType(Schemas\Channels\Channel::class) as $serviceName) {
 			$service = $container->getByName($serviceName);
 
-			self::assertInstanceOf(Nette\DI\Definitions\ServiceDefinition::class, $service);
-			self::assertNotNull($service->class);
 			self::assertTrue(in_array(
-				$service->class,
+				$service::class,
 				[
 					Schemas\Channels\Channel::class,
 					Schemas\Channels\Battery::class,
@@ -73,10 +71,8 @@ final class HomeKitExtensionTest extends BaseTestCase
 		foreach ($container->findByType(Hydrators\Channels\Channel::class) as $serviceName) {
 			$service = $container->getByName($serviceName);
 
-			self::assertInstanceOf(Nette\DI\Definitions\ServiceDefinition::class, $service);
-			self::assertNotNull($service->class);
 			self::assertTrue(in_array(
-				$service->class,
+				$service::class,
 				[
 					Hydrators\Channels\Channel::class,
 					Hydrators\Channels\Battery::class,

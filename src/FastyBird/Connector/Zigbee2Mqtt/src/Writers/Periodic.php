@@ -74,7 +74,7 @@ abstract class Periodic
 
 	public function __construct(
 		protected readonly MetadataDocuments\DevicesModule\Connector $connector,
-		protected readonly Helpers\Entity $entityHelper,
+		protected readonly Helpers\MessageBuilder $messageBuilder,
 		protected readonly Queue\Queue $queue,
 		protected readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		protected readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
@@ -107,7 +107,7 @@ abstract class Periodic
 
 			$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
 			$findChannelsQuery->forDevice($device);
-			$findChannelsQuery->byType(Entities\Zigbee2MqttChannel::TYPE);
+			$findChannelsQuery->byType(Entities\Channels\Channel::TYPE);
 
 			$channels = $this->channelsConfigurationRepository->findAllBy($findChannelsQuery);
 
@@ -237,8 +237,8 @@ abstract class Periodic
 				)
 			) {
 				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\WriteSubDeviceChannelPropertyState::class,
+					$this->messageBuilder->create(
+						Queue\Messages\WriteSubDeviceChannelPropertyState::class,
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),

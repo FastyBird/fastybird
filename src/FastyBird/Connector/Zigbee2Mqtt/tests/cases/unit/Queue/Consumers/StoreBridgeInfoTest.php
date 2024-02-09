@@ -35,18 +35,18 @@ final class StoreBridgeInfoTest extends DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function testConsumeEntity(): void
+	public function testConsumeMessage(): void
 	{
 		$consumer = $this->getContainer()->getByType(
 			Queue\Consumers\StoreBridgeInfo::class,
 		);
 
-		$entityFactory = $this->getContainer()->getByType(
-			Helpers\Entity::class,
+		$messageBuilder = $this->getContainer()->getByType(
+			Helpers\MessageBuilder::class,
 		);
 
-		$entity = $entityFactory->create(
-			Entities\Messages\StoreBridgeInfo::class,
+		$message = $messageBuilder->create(
+			Queue\Messages\StoreBridgeInfo::class,
 			[
 				'connector' => Uuid\Uuid::fromString('f15d2072-fb60-421a-a85f-2566e4dc13fe'),
 				'base_topic' => 'zigbee2mqtt',
@@ -59,7 +59,7 @@ final class StoreBridgeInfoTest extends DbTestCase
 			],
 		);
 
-		$consumer->consume($entity);
+		$consumer->consume($message);
 
 		$connectorsRepository = $this->getContainer()->getByType(
 			DevicesModels\Entities\Connectors\ConnectorsRepository::class,
@@ -67,9 +67,9 @@ final class StoreBridgeInfoTest extends DbTestCase
 
 		$connector = $connectorsRepository->find(
 			Uuid\Uuid::fromString('f15d2072-fb60-421a-a85f-2566e4dc13fe'),
-			Entities\Zigbee2MqttConnector::class,
+			Entities\Connectors\Connector::class,
 		);
-		assert($connector instanceof Entities\Zigbee2MqttConnector);
+		assert($connector instanceof Entities\Connectors\Connector);
 
 		$devicesRepository = $this->getContainer()->getByType(
 			DevicesModels\Entities\Devices\DevicesRepository::class,

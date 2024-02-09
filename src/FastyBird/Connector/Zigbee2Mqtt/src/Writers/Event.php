@@ -17,6 +17,7 @@ namespace FastyBird\Connector\Zigbee2Mqtt\Writers;
 
 use FastyBird\Connector\Zigbee2Mqtt\Entities;
 use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
+use FastyBird\Connector\Zigbee2Mqtt\Queue;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -59,7 +60,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 
 		$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 		$findChannelQuery->byId($event->getProperty()->getChannel());
-		$findChannelQuery->byType(Entities\Zigbee2MqttChannel::TYPE);
+		$findChannelQuery->byType(Entities\Channels\Channel::TYPE);
 
 		$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 
@@ -79,8 +80,8 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 		}
 
 		$this->queue->append(
-			$this->entityHelper->create(
-				Entities\Messages\WriteSubDeviceChannelPropertyState::class,
+			$this->messageBuilder->create(
+				Queue\Messages\WriteSubDeviceChannelPropertyState::class,
 				[
 					'connector' => $this->connector->getId(),
 					'device' => $device->getId(),

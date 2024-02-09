@@ -16,7 +16,6 @@
 namespace FastyBird\Connector\Zigbee2Mqtt\Queue\Consumers;
 
 use FastyBird\Connector\Zigbee2Mqtt;
-use FastyBird\Connector\Zigbee2Mqtt\Entities;
 use FastyBird\Connector\Zigbee2Mqtt\Queue;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette;
@@ -38,9 +37,9 @@ final class StoreBridgeGroups implements Queue\Consumer
 	{
 	}
 
-	public function consume(Entities\Messages\Entity $entity): bool
+	public function consume(Queue\Messages\Message $message): bool
 	{
-		if (!$entity instanceof Entities\Messages\StoreBridgeGroups) {
+		if (!$message instanceof Queue\Messages\StoreBridgeGroups) {
 			return false;
 		}
 
@@ -50,9 +49,9 @@ final class StoreBridgeGroups implements Queue\Consumer
 				'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
 				'type' => 'store-bridge-groups-message-consumer',
 				'connector' => [
-					'id' => $entity->getConnector()->toString(),
+					'id' => $message->getConnector()->toString(),
 				],
-				'data' => $entity->toArray(),
+				'data' => $message->toArray(),
 			],
 		);
 

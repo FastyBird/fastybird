@@ -60,15 +60,15 @@ final class StoreBridgeInfo implements Queue\Consumer
 	 * @throws ApplicationExceptions\Runtime
 	 * @throws DBAL\Exception
 	 */
-	public function consume(Entities\Messages\Entity $entity): bool
+	public function consume(Queue\Messages\Message $message): bool
 	{
-		if (!$entity instanceof Entities\Messages\StoreBridgeInfo) {
+		if (!$message instanceof Queue\Messages\StoreBridgeInfo) {
 			return false;
 		}
 
 		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceVariableProperties();
 		$findDevicePropertyQuery->byIdentifier(Zigbee2Mqtt\Types\DevicePropertyIdentifier::BASE_TOPIC);
-		$findDevicePropertyQuery->byValue($entity->getBaseTopic());
+		$findDevicePropertyQuery->byValue($message->getBaseTopic());
 
 		$baseTopicProperty = $this->devicesPropertiesRepository->findOneBy(
 			$findDevicePropertyQuery,
@@ -89,11 +89,11 @@ final class StoreBridgeInfo implements Queue\Consumer
 		}
 
 		$this->databaseHelper->transaction(
-			function () use ($bridge, $entity): void {
+			function () use ($bridge, $message): void {
 				$this->devicesManager->update(
 					$bridge,
 					Utils\ArrayHash::from([
-						'identifier' => $entity->getCoordinator()->getIeeeAddress(),
+						'identifier' => $message->getCoordinator()->getIeeeAddress(),
 					]),
 				);
 			},
@@ -101,7 +101,7 @@ final class StoreBridgeInfo implements Queue\Consumer
 
 		$this->setDeviceProperty(
 			$bridge->getId(),
-			$entity->getCoordinator()->getType(),
+			$message->getCoordinator()->getType(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::MODEL,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MODEL),
@@ -115,21 +115,21 @@ final class StoreBridgeInfo implements Queue\Consumer
 		);
 		$this->setDeviceProperty(
 			$bridge->getId(),
-			$entity->getVersion(),
+			$message->getVersion(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::VERSION,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::VERSION),
 		);
 		$this->setDeviceProperty(
 			$bridge->getId(),
-			$entity->getCommit(),
+			$message->getCommit(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::COMMIT,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::COMMIT),
 		);
 		$this->setDeviceProperty(
 			$bridge->getId(),
-			$entity->getCoordinator()->getIeeeAddress(),
+			$message->getCoordinator()->getIeeeAddress(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::IEEE_ADDRESS,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::IEEE_ADDRESS),
@@ -141,9 +141,9 @@ final class StoreBridgeInfo implements Queue\Consumer
 				'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
 				'type' => 'store-bridge-info-message-consumer',
 				'connector' => [
-					'id' => $entity->getConnector()->toString(),
+					'id' => $message->getConnector()->toString(),
 				],
-				'data' => $entity->toArray(),
+				'data' => $message->toArray(),
 			],
 		);
 

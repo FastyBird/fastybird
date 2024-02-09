@@ -66,15 +66,15 @@ final class StoreDeviceState implements Queue\Consumer
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
-	public function consume(Entities\Messages\Entity $entity): bool
+	public function consume(Queue\Messages\Message $message): bool
 	{
-		if (!$entity instanceof Entities\Messages\StoreDeviceState) {
+		if (!$message instanceof Queue\Messages\StoreDeviceState) {
 			return false;
 		}
 
 		$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
 		$findDevicePropertyQuery->byIdentifier(Zigbee2Mqtt\Types\DevicePropertyIdentifier::BASE_TOPIC);
-		$findDevicePropertyQuery->byValue($entity->getBaseTopic());
+		$findDevicePropertyQuery->byValue($message->getBaseTopic());
 
 		$baseTopicProperty = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findDevicePropertyQuery,
@@ -86,7 +86,7 @@ final class StoreDeviceState implements Queue\Consumer
 		}
 
 		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
-		$findDeviceQuery->byConnectorId($entity->getConnector());
+		$findDeviceQuery->byConnectorId($message->getConnector());
 		$findDeviceQuery->byId($baseTopicProperty->getDevice());
 		$findDeviceQuery->byType(Entities\Devices\Bridge::TYPE);
 
@@ -97,9 +97,9 @@ final class StoreDeviceState implements Queue\Consumer
 		}
 
 		$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
-		$findDevicePropertyQuery->byValue($entity->getDevice());
+		$findDevicePropertyQuery->byValue($message->getDevice());
 
-		if (preg_match(Zigbee2Mqtt\Constants::IEEE_ADDRESS_REGEX, $entity->getDevice()) === 1) {
+		if (preg_match(Zigbee2Mqtt\Constants::IEEE_ADDRESS_REGEX, $message->getDevice()) === 1) {
 			$findDevicePropertyQuery->byIdentifier(Zigbee2Mqtt\Types\DevicePropertyIdentifier::IEEE_ADDRESS);
 
 		} else {
@@ -116,7 +116,7 @@ final class StoreDeviceState implements Queue\Consumer
 		}
 
 		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
-		$findDeviceQuery->byConnectorId($entity->getConnector());
+		$findDeviceQuery->byConnectorId($message->getConnector());
 		$findDeviceQuery->byId($deviceTypeProperty->getDevice());
 		$findDeviceQuery->forParent($bridge);
 		$findDeviceQuery->byType(Entities\Devices\SubDevice::TYPE);
@@ -127,7 +127,7 @@ final class StoreDeviceState implements Queue\Consumer
 			return true;
 		}
 
-		$this->processStates($bridge, $device, $entity->getStates());
+		$this->processStates($bridge, $device, $message->getStates());
 
 		$this->logger->debug(
 			'Consumed device state message',
@@ -135,7 +135,7 @@ final class StoreDeviceState implements Queue\Consumer
 				'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
 				'type' => 'store-device-state-message-consumer',
 				'connector' => [
-					'id' => $entity->getConnector()->toString(),
+					'id' => $message->getConnector()->toString(),
 				],
 				'bridge' => [
 					'id' => $bridge->getId()->toString(),
@@ -143,7 +143,7 @@ final class StoreDeviceState implements Queue\Consumer
 				'device' => [
 					'id' => $device->getId()->toString(),
 				],
-				'data' => $entity->toArray(),
+				'data' => $message->toArray(),
 			],
 		);
 
@@ -151,7 +151,7 @@ final class StoreDeviceState implements Queue\Consumer
 	}
 
 	/**
-	 * @param array<Entities\Messages\SingleExposeData|Entities\Messages\CompositeExposeData> $states
+	 * @param array<Queue\Messages\SingleExposeData|Queue\Messages\CompositeExposeData> $states
 	 * @param array<string> $identifiers
 	 *
 	 * @throws DevicesExceptions\InvalidArgument
@@ -169,7 +169,7 @@ final class StoreDeviceState implements Queue\Consumer
 	): void
 	{
 		foreach ($states as $state) {
-			if ($state instanceof Entities\Messages\SingleExposeData) {
+			if ($state instanceof Queue\Messages\SingleExposeData) {
 				$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 				$findChannelQuery->forDevice($device);
 				$findChannelQuery->endWithIdentifier(
@@ -178,7 +178,7 @@ final class StoreDeviceState implements Queue\Consumer
 						implode('_', array_merge($identifiers, [$state->getIdentifier()])),
 					),
 				);
-				$findChannelQuery->byType(Entities\Zigbee2MqttChannel::TYPE);
+				$findChannelQuery->byType(Entities\Channels\Channel::TYPE);
 
 				$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 

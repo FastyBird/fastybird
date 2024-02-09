@@ -70,7 +70,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 		private readonly MetadataDocuments\DevicesModule\Connector $connector,
 		private readonly Clients\Subscribers\BridgeFactory $bridgeSubscriberFactory,
 		private readonly API\ConnectionManager $connectionManager,
-		private readonly Helpers\Connector $connectorHelper,
+		private readonly Helpers\Connectors\Connector $connectorHelper,
 		private readonly Helpers\Devices\Bridge $bridgeHelper,
 		private readonly Zigbee2Mqtt\Logger $logger,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
@@ -96,7 +96,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 		$client = $this->getClient();
 
-		$client->on('connect', [$this, 'onConnect']);
+		$client->on(Zigbee2Mqtt\Constants::EVENT_CONNECT, [$this, 'onConnect']);
 
 		if (!$this->isRunning()) {
 			$this->bridgeSubscriber->subscribe($client);
@@ -178,11 +178,11 @@ final class Discovery implements Evenement\EventEmitterInterface
 		Promise\all($promises)
 			->then(function (): void {
 				$this->eventLoop->addTimer(self::DISCOVERY_TIMEOUT, function (): void {
-					$this->emit('finished');
+					$this->emit(Zigbee2Mqtt\Constants::EVENT_FINISHED);
 				});
 			})
 			->catch(function (): void {
-				$this->emit('finished');
+				$this->emit(Zigbee2Mqtt\Constants::EVENT_FINISHED);
 			});
 	}
 

@@ -7,7 +7,7 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:VirtualConnector!
- * @subpackage     Entities
+ * @subpackage     Queue
  * @since          1.0.0
  *
  * @date           22.11.22
@@ -25,7 +25,7 @@ use function is_string;
  * Device status message
  *
  * @package        FastyBird:VirtualConnector!
- * @subpackage     Entities
+ * @subpackage     Queue
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */

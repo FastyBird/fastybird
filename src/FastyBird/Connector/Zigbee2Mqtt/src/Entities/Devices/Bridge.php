@@ -16,7 +16,6 @@
 namespace FastyBird\Connector\Zigbee2Mqtt\Entities\Devices;
 
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\Connector\Zigbee2Mqtt\Entities;
 use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
 use FastyBird\Connector\Zigbee2Mqtt\Types;
 use FastyBird\Library\Application\Doctrine\Mapping as ApplicationMapping;
@@ -27,7 +26,7 @@ use function is_string;
 
 #[ORM\Entity]
 #[ApplicationMapping\DiscriminatorEntry(name: self::TYPE)]
-class Bridge extends Entities\Zigbee2MqttDevice
+class Bridge extends Device
 {
 
 	public const TYPE = 'zigbee2mqtt-connector-bridge';

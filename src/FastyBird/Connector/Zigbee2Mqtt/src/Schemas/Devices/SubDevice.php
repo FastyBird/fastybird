@@ -22,13 +22,13 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 /**
  * Zigbee2MQTT sub-device entity schema
  *
- * @extends Schemas\Zigbee2MqttDevice<Entities\Devices\SubDevice>
+ * @extends  Device<Entities\Devices\SubDevice>
  *
  * @package        FastyBird:Zigbee2MqttConnector!
  * @subpackage     Schemas
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class SubDevice extends Schemas\Zigbee2MqttDevice
+final class SubDevice extends Device
 {
 
 	/**

@@ -68,15 +68,15 @@ final class StoreBridgeConnectionState implements Queue\Consumer
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
-	public function consume(Entities\Messages\Entity $entity): bool
+	public function consume(Queue\Messages\Message $message): bool
 	{
-		if (!$entity instanceof Entities\Messages\StoreBridgeConnectionState) {
+		if (!$message instanceof Queue\Messages\StoreBridgeConnectionState) {
 			return false;
 		}
 
 		$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
 		$findDevicePropertyQuery->byIdentifier(Zigbee2Mqtt\Types\DevicePropertyIdentifier::BASE_TOPIC);
-		$findDevicePropertyQuery->byValue($entity->getBaseTopic());
+		$findDevicePropertyQuery->byValue($message->getBaseTopic());
 
 		$baseTopicProperty = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findDevicePropertyQuery,
@@ -88,7 +88,7 @@ final class StoreBridgeConnectionState implements Queue\Consumer
 		}
 
 		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
-		$findDeviceQuery->byConnectorId($entity->getConnector());
+		$findDeviceQuery->byConnectorId($message->getConnector());
 		$findDeviceQuery->byId($baseTopicProperty->getDevice());
 		$findDeviceQuery->byType(Entities\Devices\Bridge::TYPE);
 
@@ -100,11 +100,11 @@ final class StoreBridgeConnectionState implements Queue\Consumer
 
 		$state = MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::UNKNOWN);
 
-		if ($entity->getState()->equalsValue(Types\ConnectionState::ONLINE)) {
+		if ($message->getState()->equalsValue(Types\ConnectionState::ONLINE)) {
 			$state = MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::CONNECTED);
-		} elseif ($entity->getState()->equalsValue(Types\ConnectionState::OFFLINE)) {
+		} elseif ($message->getState()->equalsValue(Types\ConnectionState::OFFLINE)) {
 			$state = MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::DISCONNECTED);
-		} elseif ($entity->getState()->equalsValue(Types\ConnectionState::ALERT)) {
+		} elseif ($message->getState()->equalsValue(Types\ConnectionState::ALERT)) {
 			$state = MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::ALERT);
 		}
 
@@ -138,7 +138,7 @@ final class StoreBridgeConnectionState implements Queue\Consumer
 
 				$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
 				$findChannelsQuery->forDevice($bridge);
-				$findChannelsQuery->byType(Entities\Zigbee2MqttChannel::TYPE);
+				$findChannelsQuery->byType(Entities\Channels\Channel::TYPE);
 
 				$channels = $this->channelsConfigurationRepository->findAllBy($findChannelsQuery);
 
@@ -187,7 +187,7 @@ final class StoreBridgeConnectionState implements Queue\Consumer
 
 					$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
 					$findChannelsQuery->forDevice($child);
-					$findChannelsQuery->byType(Entities\Zigbee2MqttChannel::TYPE);
+					$findChannelsQuery->byType(Entities\Channels\Channel::TYPE);
 
 					$channels = $this->channelsConfigurationRepository->findAllBy($findChannelsQuery);
 
@@ -218,12 +218,12 @@ final class StoreBridgeConnectionState implements Queue\Consumer
 				'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
 				'type' => 'store-bridge-connection-state-message-consumer',
 				'connector' => [
-					'id' => $entity->getConnector()->toString(),
+					'id' => $message->getConnector()->toString(),
 				],
 				'bridge' => [
 					'id' => $bridge->getId()->toString(),
 				],
-				'data' => $entity->toArray(),
+				'data' => $message->toArray(),
 			],
 		);
 

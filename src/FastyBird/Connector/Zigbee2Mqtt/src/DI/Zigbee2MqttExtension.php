@@ -253,61 +253,67 @@ class Zigbee2MqttExtension extends DI\CompilerExtension implements Translation\D
 		 * JSON-API SCHEMAS
 		 */
 
-		$builder->addDefinition($this->prefix('schemas.connector.zigbee2mqtt'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\Zigbee2MqttConnector::class);
+		$builder->addDefinition(
+			$this->prefix('schemas.connector'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Schemas\Connectors\Connector::class);
 
 		$builder->addDefinition(
-			$this->prefix('schemas.device.zigbee2mqtt.bridge'),
+			$this->prefix('schemas.device.bridge'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Schemas\Devices\Bridge::class);
 
 		$builder->addDefinition(
-			$this->prefix('schemas.device.zigbee2mqtt.subDevice'),
+			$this->prefix('schemas.device.subDevice'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Schemas\Devices\SubDevice::class);
 
-		$builder->addDefinition($this->prefix('schemas.channel.zigbee2mqtt'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\Zigbee2MqttChannel::class);
+		$builder->addDefinition(
+			$this->prefix('schemas.channel'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Schemas\Channels\Channel::class);
 
 		/**
 		 * JSON-API HYDRATORS
 		 */
 
 		$builder->addDefinition(
-			$this->prefix('hydrators.connector.zigbee2mqtt'),
+			$this->prefix('hydrators.connector'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Hydrators\Zigbee2MqttConnector::class);
+			->setType(Hydrators\Connectors\Connector::class);
 
 		$builder->addDefinition(
-			$this->prefix('hydrators.device.zigbee2mqtt.bridge'),
+			$this->prefix('hydrators.device.bridge'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Hydrators\Devices\Bridge::class);
 
 		$builder->addDefinition(
-			$this->prefix('hydrators.device.zigbee2mqtt.subDevice'),
+			$this->prefix('hydrators.device.subDevice'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Hydrators\Devices\SubDevice::class);
 
 		$builder->addDefinition(
-			$this->prefix('hydrators.channel.zigbee2mqtt'),
+			$this->prefix('hydrators.channel'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Hydrators\Zigbee2MqttChannel::class);
+			->setType(Hydrators\Channels\Channel::class);
 
 		/**
 		 * HELPERS
 		 */
 
-		$builder->addDefinition($this->prefix('helpers.entity'), new DI\Definitions\ServiceDefinition())
-			->setType(Helpers\Entity::class);
+		$builder->addDefinition($this->prefix('helpers.messageBuilder'), new DI\Definitions\ServiceDefinition())
+			->setType(Helpers\MessageBuilder::class);
 
 		$builder->addDefinition($this->prefix('helpers.connector'), new DI\Definitions\ServiceDefinition())
-			->setType(Helpers\Connector::class);
+			->setType(Helpers\Connectors\Connector::class);
 
 		$builder->addDefinition($this->prefix('helpers.devices.bridge'), new DI\Definitions\ServiceDefinition())
 			->setType(Helpers\Devices\Bridge::class);
@@ -339,7 +345,7 @@ class Zigbee2MqttExtension extends DI\CompilerExtension implements Translation\D
 			->setImplement(Connector\ConnectorFactory::class)
 			->addTag(
 				DevicesDI\DevicesExtension::CONNECTOR_TYPE_TAG,
-				Entities\Zigbee2MqttConnector::TYPE,
+				Entities\Connectors\Connector::TYPE,
 			)
 			->getResultDefinition()
 			->setType(Connector\Connector::class)
@@ -360,7 +366,7 @@ class Zigbee2MqttExtension extends DI\CompilerExtension implements Translation\D
 		$builder = $this->getContainerBuilder();
 
 		/**
-		 * Doctrine entities
+		 * DOCTRINE ENTITIES
 		 */
 
 		$ormAttributeDriverService = $builder->getDefinition('nettrineOrmAttributes.attributeDriver');

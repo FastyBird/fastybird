@@ -21,13 +21,13 @@ use FastyBird\Connector\Zigbee2Mqtt\Hydrators;
 /**
  * Zigbee2MQTT bridge device entity hydrator
  *
- * @extends Hydrators\Zigbee2MqttDevice<Entities\Devices\Bridge>
+ * @extends Device<Entities\Devices\Bridge>
  *
  * @package        FastyBird:Zigbee2MqttConnector!
  * @subpackage     Hydrators
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Bridge extends Hydrators\Zigbee2MqttDevice
+final class Bridge extends Device
 {
 
 	public function getEntityName(): string

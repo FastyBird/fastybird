@@ -15,8 +15,7 @@
 
 namespace FastyBird\Connector\Zigbee2Mqtt\API;
 
-use FastyBird\Connector\Zigbee2Mqtt\API;
-use FastyBird\Connector\Zigbee2Mqtt\Entities\Zigbee2MqttConnector;
+use FastyBird\Connector\Zigbee2Mqtt\Entities;
 use Nette;
 use function array_key_exists;
 use function md5;
@@ -43,8 +42,8 @@ final class ConnectionManager
 
 	public function getClient(
 		string $clientId,
-		string $serverAddress = Zigbee2MqttConnector::DEFAULT_SERVER_ADDRESS,
-		int $serverPort = Zigbee2MqttConnector::DEFAULT_SERVER_PORT,
+		string $serverAddress = Entities\Connectors\Connector::DEFAULT_SERVER_ADDRESS,
+		int $serverPort = Entities\Connectors\Connector::DEFAULT_SERVER_PORT,
 		string|null $username = null,
 		string|null $password = null,
 	): Client

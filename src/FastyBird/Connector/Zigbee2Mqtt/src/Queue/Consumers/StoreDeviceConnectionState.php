@@ -72,15 +72,15 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
-	public function consume(Entities\Messages\Entity $entity): bool
+	public function consume(Queue\Messages\Message $message): bool
 	{
-		if (!$entity instanceof Entities\Messages\StoreDeviceConnectionState) {
+		if (!$message instanceof Queue\Messages\StoreDeviceConnectionState) {
 			return false;
 		}
 
 		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
-		$findDeviceQuery->byConnectorId($entity->getConnector());
-		$findDeviceQuery->byIdentifier($entity->getDevice());
+		$findDeviceQuery->byConnectorId($message->getConnector());
+		$findDeviceQuery->byIdentifier($message->getDevice());
 		$findDeviceQuery->byType(Entities\Devices\SubDevice::TYPE);
 
 		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
@@ -91,17 +91,17 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 
 		$bridge = $this->subDeviceHelper->getBridge($device);
 
-		if ($this->bridgeHelper->getBaseTopic($bridge) !== $entity->getBaseTopic()) {
+		if ($this->bridgeHelper->getBaseTopic($bridge) !== $message->getBaseTopic()) {
 			return true;
 		}
 
 		$state = MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::UNKNOWN);
 
-		if ($entity->getState()->equalsValue(Types\ConnectionState::ONLINE)) {
+		if ($message->getState()->equalsValue(Types\ConnectionState::ONLINE)) {
 			$state = MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::CONNECTED);
-		} elseif ($entity->getState()->equalsValue(Types\ConnectionState::OFFLINE)) {
+		} elseif ($message->getState()->equalsValue(Types\ConnectionState::OFFLINE)) {
 			$state = MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::DISCONNECTED);
-		} elseif ($entity->getState()->equalsValue(Types\ConnectionState::ALERT)) {
+		} elseif ($message->getState()->equalsValue(Types\ConnectionState::ALERT)) {
 			$state = MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::ALERT);
 		}
 
@@ -135,7 +135,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 
 				$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
 				$findChannelsQuery->forDevice($device);
-				$findChannelsQuery->byType(Entities\Zigbee2MqttChannel::TYPE);
+				$findChannelsQuery->byType(Entities\Channels\Channel::TYPE);
 
 				$channels = $this->channelsConfigurationRepository->findAllBy($findChannelsQuery);
 
@@ -165,7 +165,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 				'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
 				'type' => 'store-device-connection-state-message-consumer',
 				'connector' => [
-					'id' => $entity->getConnector()->toString(),
+					'id' => $message->getConnector()->toString(),
 				],
 				'bridge' => [
 					'id' => $bridge->getId()->toString(),
@@ -173,7 +173,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 				'device' => [
 					'id' => $device->getId()->toString(),
 				],
-				'data' => $entity->toArray(),
+				'data' => $message->toArray(),
 			],
 		);
 

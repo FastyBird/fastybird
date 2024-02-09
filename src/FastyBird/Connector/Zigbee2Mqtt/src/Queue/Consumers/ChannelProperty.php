@@ -113,7 +113,7 @@ trait ChannelProperty
 		if ($property === null) {
 			$channel = $this->channelsRepository->find(
 				$channelId,
-				Zigbee2Mqtt\Entities\Zigbee2MqttChannel::class,
+				Zigbee2Mqtt\Entities\Channels\Channel::class,
 			);
 
 			if ($channel === null) {

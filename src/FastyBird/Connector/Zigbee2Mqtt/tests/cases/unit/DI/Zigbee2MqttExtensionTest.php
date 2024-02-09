@@ -45,16 +45,16 @@ final class Zigbee2MqttExtensionTest extends Tests\Cases\Unit\BaseTestCase
 		self::assertNotNull($container->getByType(Subscribers\Properties::class, false));
 		self::assertNotNull($container->getByType(Subscribers\Controls::class, false));
 
-		self::assertNotNull($container->getByType(Schemas\Zigbee2MqttConnector::class, false));
+		self::assertNotNull($container->getByType(Schemas\Connectors\Connector::class, false));
 		self::assertNotNull($container->getByType(Schemas\Devices\Bridge::class, false));
 		self::assertNotNull($container->getByType(Schemas\Devices\SubDevice::class, false));
 
-		self::assertNotNull($container->getByType(Hydrators\Zigbee2MqttConnector::class, false));
+		self::assertNotNull($container->getByType(Hydrators\Connectors\Connector::class, false));
 		self::assertNotNull($container->getByType(Hydrators\Devices\Bridge::class, false));
 		self::assertNotNull($container->getByType(Hydrators\Devices\SubDevice::class, false));
 
-		self::assertNotNull($container->getByType(Helpers\Entity::class, false));
-		self::assertNotNull($container->getByType(Helpers\Connector::class, false));
+		self::assertNotNull($container->getByType(Helpers\MessageBuilder::class, false));
+		self::assertNotNull($container->getByType(Helpers\Connectors\Connector::class, false));
 		self::assertNotNull($container->getByType(Helpers\Devices\Bridge::class, false));
 		self::assertNotNull($container->getByType(Helpers\Devices\SubDevice::class, false));
 

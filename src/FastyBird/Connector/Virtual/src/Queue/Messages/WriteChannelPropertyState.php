@@ -7,7 +7,7 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:VirtualConnector!
- * @subpackage     Entities
+ * @subpackage     Queue
  * @since          1.0.0
  *
  * @date           17.10.23
@@ -23,7 +23,7 @@ use Ramsey\Uuid;
  * Write updated channel property state to device message
  *
  * @package        FastyBird:VirtualConnector!
- * @subpackage     Entities
+ * @subpackage     Queue
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */

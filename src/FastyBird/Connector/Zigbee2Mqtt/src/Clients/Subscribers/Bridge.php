@@ -42,17 +42,17 @@ class Bridge
 {
 
 	public function __construct(
-		private readonly MetadataDocuments\DevicesModule\Connector|Entities\Zigbee2MqttConnector $connector,
+		private readonly MetadataDocuments\DevicesModule\Connector|Entities\Connectors\Connector $connector,
 		private readonly Zigbee2Mqtt\Logger $logger,
 		private readonly Queue\Queue $queue,
-		private readonly Helpers\Entity $entityHelper,
+		private readonly Helpers\MessageBuilder $messageBuilder,
 	)
 	{
 	}
 
 	public function subscribe(API\Client $client): void
 	{
-		$client->on('message', [$this, 'onMessage']);
+		$client->on(Zigbee2Mqtt\Constants::EVENT_MESSAGE, [$this, 'onMessage']);
 	}
 
 	public function unsubscribe(API\Client $client): void
@@ -105,8 +105,8 @@ class Bridge
 							}
 
 							$this->queue->append(
-								$this->entityHelper->create(
-									Entities\Messages\StoreBridgeInfo::class,
+								$this->messageBuilder->create(
+									Queue\Messages\StoreBridgeInfo::class,
 									array_merge($data, $payload),
 								),
 							);
@@ -117,8 +117,8 @@ class Bridge
 								&& Types\ConnectionState::isValidValue($message->getPayload())
 							) {
 								$this->queue->append(
-									$this->entityHelper->create(
-										Entities\Messages\StoreBridgeConnectionState::class,
+									$this->messageBuilder->create(
+										Queue\Messages\StoreBridgeConnectionState::class,
 										array_merge($data, ['state' => $message->getPayload()]),
 									),
 								);
@@ -142,8 +142,8 @@ class Bridge
 								}
 
 								$this->queue->append(
-									$this->entityHelper->create(
-										Entities\Messages\StoreBridgeConnectionState::class,
+									$this->messageBuilder->create(
+										Queue\Messages\StoreBridgeConnectionState::class,
 										array_merge($data, $payload),
 									),
 								);
@@ -167,8 +167,8 @@ class Bridge
 							}
 
 							$this->queue->append(
-								$this->entityHelper->create(
-									Entities\Messages\StoreBridgeLog::class,
+								$this->messageBuilder->create(
+									Queue\Messages\StoreBridgeLog::class,
 									array_merge($data, $payload),
 								),
 							);
@@ -192,8 +192,8 @@ class Bridge
 							}
 
 							$this->queue->append(
-								$this->entityHelper->create(
-									Entities\Messages\StoreBridgeDevices::class,
+								$this->messageBuilder->create(
+									Queue\Messages\StoreBridgeDevices::class,
 									array_merge($data, ['devices' => $payload]),
 								),
 							);
@@ -217,8 +217,8 @@ class Bridge
 							}
 
 							$this->queue->append(
-								$this->entityHelper->create(
-									Entities\Messages\StoreBridgeGroups::class,
+								$this->messageBuilder->create(
+									Queue\Messages\StoreBridgeGroups::class,
 									array_merge($data, ['groups' => $payload]),
 								),
 							);
@@ -242,8 +242,8 @@ class Bridge
 							}
 
 							$this->queue->append(
-								$this->entityHelper->create(
-									Entities\Messages\StoreBridgeEvent::class,
+								$this->messageBuilder->create(
+									Queue\Messages\StoreBridgeEvent::class,
 									array_merge($data, $payload),
 								),
 							);

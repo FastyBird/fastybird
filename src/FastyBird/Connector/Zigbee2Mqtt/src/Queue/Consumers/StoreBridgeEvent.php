@@ -50,15 +50,15 @@ final class StoreBridgeEvent implements Queue\Consumer
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 */
-	public function consume(Entities\Messages\Entity $entity): bool
+	public function consume(Queue\Messages\Message $message): bool
 	{
-		if (!$entity instanceof Entities\Messages\StoreBridgeEvent) {
+		if (!$message instanceof Queue\Messages\StoreBridgeEvent) {
 			return false;
 		}
 
 		$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
 		$findDevicePropertyQuery->byIdentifier(Zigbee2Mqtt\Types\DevicePropertyIdentifier::BASE_TOPIC);
-		$findDevicePropertyQuery->byValue($entity->getBaseTopic());
+		$findDevicePropertyQuery->byValue($message->getBaseTopic());
 
 		$baseTopicProperty = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findDevicePropertyQuery,
@@ -70,7 +70,7 @@ final class StoreBridgeEvent implements Queue\Consumer
 		}
 
 		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
-		$findDeviceQuery->byConnectorId($entity->getConnector());
+		$findDeviceQuery->byConnectorId($message->getConnector());
 		$findDeviceQuery->byId($baseTopicProperty->getDevice());
 		$findDeviceQuery->byType(Entities\Devices\Bridge::TYPE);
 
@@ -81,19 +81,19 @@ final class StoreBridgeEvent implements Queue\Consumer
 		}
 
 		$this->logger->info(
-			sprintf('Bridge published event: %s', $entity->getType()),
+			sprintf('Bridge published event: %s', $message->getType()),
 			[
 				'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
 				'type' => 'bridge-event',
 				'connector' => [
-					'id' => $entity->getConnector()->toString(),
+					'id' => $message->getConnector()->toString(),
 				],
 				'bridge' => [
 					'id' => $bridge->getId()->toString(),
 				],
 				'data' => [
-					'type' => $entity->getType()->getValue(),
-					'data' => $entity->getData()->toArray(),
+					'type' => $message->getType()->getValue(),
+					'data' => $message->getData()->toArray(),
 				],
 			],
 		);
@@ -104,12 +104,12 @@ final class StoreBridgeEvent implements Queue\Consumer
 				'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
 				'type' => 'store-bridge-event-message-consumer',
 				'connector' => [
-					'id' => $entity->getConnector()->toString(),
+					'id' => $message->getConnector()->toString(),
 				],
 				'bridge' => [
 					'id' => $bridge->getId()->toString(),
 				],
-				'data' => $entity->toArray(),
+				'data' => $message->toArray(),
 			],
 		);
 
