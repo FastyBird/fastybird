@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ReadRequest.php
+ * Read.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,8 +13,9 @@
  * @date           05.02.23
  */
 
-namespace FastyBird\Connector\Modbus\Clients\Requests;
+namespace FastyBird\Connector\Modbus\Clients\Messages\Request;
 
+use FastyBird\Connector\Modbus\Clients;
 use Nette;
 use function array_map;
 
@@ -26,13 +27,13 @@ use function array_map;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-abstract class ReadResponse implements Request
+abstract class Read implements Clients\Messages\Message
 {
 
 	use Nette\SmartObject;
 
 	/**
-	 * @param array<ReadAddress> $addresses
+	 * @param array<Clients\Messages\Pointer\ReadAddress> $addresses
 	 */
 	public function __construct(
 		private readonly array $addresses,
@@ -43,7 +44,7 @@ abstract class ReadResponse implements Request
 	}
 
 	/**
-	 * @return array<ReadAddress>
+	 * @return array<Clients\Messages\Pointer\ReadAddress>
 	 */
 	public function getAddresses(): array
 	{
@@ -64,7 +65,7 @@ abstract class ReadResponse implements Request
 	{
 		return [
 			'addresses' => array_map(
-				static fn (ReadAddress $address): array => $address->toArray(),
+				static fn (Clients\Messages\Pointer\ReadAddress $address): array => $address->toArray(),
 				$this->getAddresses(),
 			),
 			'start_address' => $this->getStartAddress(),

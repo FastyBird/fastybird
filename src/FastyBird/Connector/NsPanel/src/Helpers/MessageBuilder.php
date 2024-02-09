@@ -7,7 +7,7 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:NsPanelConnector!
- * @subpackage     Queue
+ * @subpackage     Helpers
  * @since          1.0.0
  *
  * @date           20.07.23
@@ -25,7 +25,7 @@ use Orisai\ObjectMapper;
  * Message builder
  *
  * @package        FastyBird:NsPanelConnector!
- * @subpackage     Queue
+ * @subpackage     Helpers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */

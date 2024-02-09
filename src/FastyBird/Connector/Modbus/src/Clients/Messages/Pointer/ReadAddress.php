@@ -13,8 +13,9 @@
  * @date           05.02.23
  */
 
-namespace FastyBird\Connector\Modbus\Clients\Requests;
+namespace FastyBird\Connector\Modbus\Clients\Messages\Pointer;
 
+use FastyBird\Connector\Modbus\Clients;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette;
@@ -27,7 +28,7 @@ use Nette;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-abstract class ReadAddress implements Request
+abstract class ReadAddress implements Clients\Messages\Message
 {
 
 	use Nette\SmartObject;

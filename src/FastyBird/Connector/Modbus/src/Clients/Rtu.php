@@ -81,7 +81,7 @@ class Rtu implements Client
 
 	public function __construct(
 		protected readonly API\Transformer $transformer,
-		protected readonly Queue\MessageBuilder $messageBuilder,
+		protected readonly Helpers\MessageBuilder $messageBuilder,
 		protected readonly Queue\Queue $queue,
 		protected readonly Helpers\Device $deviceHelper,
 		protected readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
@@ -287,13 +287,13 @@ class Rtu implements Client
 
 			$registerReadAddress = $this->createReadAddress($device, $channel);
 
-			if ($registerReadAddress instanceof Requests\ReadCoilAddress) {
+			if ($registerReadAddress instanceof Messages\Pointer\ReadCoilAddress) {
 				$coilsAddresses[] = $registerReadAddress;
-			} elseif ($registerReadAddress instanceof Requests\ReadDiscreteInputAddress) {
+			} elseif ($registerReadAddress instanceof Messages\Pointer\ReadDiscreteInputAddress) {
 				$discreteInputsAddresses[] = $registerReadAddress;
-			} elseif ($registerReadAddress instanceof Requests\ReadHoldingRegisterAddress) {
+			} elseif ($registerReadAddress instanceof Messages\Pointer\ReadHoldingRegisterAddress) {
 				$holdingAddresses[] = $registerReadAddress;
-			} elseif ($registerReadAddress instanceof Requests\ReadInputRegisterAddress) {
+			} elseif ($registerReadAddress instanceof Messages\Pointer\ReadInputRegisterAddress) {
 				$inputsAddresses[] = $registerReadAddress;
 			}
 		}
@@ -351,7 +351,7 @@ class Rtu implements Client
 
 		foreach ($requests as $request) {
 			try {
-				if ($request instanceof Requests\ReadCoilsRequest) {
+				if ($request instanceof Messages\Request\ReadCoils) {
 					$response = $this->connectionManager
 						->getRtuClient($this->connector)
 						->readCoils(
@@ -359,7 +359,7 @@ class Rtu implements Client
 							$request->getStartAddress(),
 							$request->getQuantity(),
 						);
-				} elseif ($request instanceof Requests\ReadDiscreteInputsRequest) {
+				} elseif ($request instanceof Messages\Request\ReadDiscreteInputs) {
 					$response = $this->connectionManager
 						->getRtuClient($this->connector)
 						->readDiscreteInputs(
@@ -367,7 +367,7 @@ class Rtu implements Client
 							$request->getStartAddress(),
 							$request->getQuantity(),
 						);
-				} elseif ($request instanceof Requests\ReadHoldingsRegistersRequest) {
+				} elseif ($request instanceof Messages\Request\ReadHoldingsRegisters) {
 					$response = $this->connectionManager
 						->getRtuClient($this->connector)
 						->readHoldingRegisters(
@@ -375,7 +375,7 @@ class Rtu implements Client
 							$request->getStartAddress(),
 							$request->getQuantity(),
 						);
-				} elseif ($request instanceof Requests\ReadInputsRegistersRequest) {
+				} elseif ($request instanceof Messages\Request\ReadInputsRegisters) {
 					$response = $this->connectionManager
 						->getRtuClient($this->connector)
 						->readInputRegisters(
@@ -389,21 +389,21 @@ class Rtu implements Client
 
 				$now = $this->dateTimeFactory->getNow();
 
-				if ($response instanceof API\Responses\ReadDigitalInputs) {
+				if ($response instanceof API\Messages\Response\ReadDigitalInputs) {
 					$this->processDigitalRegistersResponse($request, $response, $device);
 				} else {
 					$this->processAnalogRegistersResponse($request, $response, $device);
 				}
 
 				foreach ($response->getRegisters() as $address => $value) {
-					if ($request instanceof Requests\ReadHoldingsRegistersRequest) {
+					if ($request instanceof Messages\Request\ReadHoldingsRegisters) {
 						$channel = $this->deviceHelper->findChannelByType(
 							$device,
 							$address,
 							Types\ChannelType::get(Types\ChannelType::HOLDING_REGISTER),
 						);
 
-					} elseif ($request instanceof Requests\ReadInputsRegistersRequest) {
+					} elseif ($request instanceof Messages\Request\ReadInputsRegisters) {
 						$channel = $this->deviceHelper->findChannelByType(
 							$device,
 							$address,
@@ -420,19 +420,19 @@ class Rtu implements Client
 				}
 			} catch (Exceptions\ModbusRtu $ex) {
 				foreach ($request->getAddresses() as $requestAddress) {
-					if ($request instanceof Requests\ReadCoilsRequest) {
+					if ($request instanceof Messages\Request\ReadCoils) {
 						$channel = $this->deviceHelper->findChannelByType(
 							$device,
 							$requestAddress->getAddress(),
 							Types\ChannelType::get(Types\ChannelType::COIL),
 						);
-					} elseif ($request instanceof Requests\ReadDiscreteInputsRequest) {
+					} elseif ($request instanceof Messages\Request\ReadDiscreteInputs) {
 						$channel = $this->deviceHelper->findChannelByType(
 							$device,
 							$requestAddress->getAddress(),
 							Types\ChannelType::get(Types\ChannelType::DISCRETE_INPUT),
 						);
-					} elseif ($request instanceof Requests\ReadHoldingsRegistersRequest) {
+					} elseif ($request instanceof Messages\Request\ReadHoldingsRegisters) {
 						$channel = $this->deviceHelper->findChannelByType(
 							$device,
 							$requestAddress->getAddress(),
@@ -530,7 +530,7 @@ class Rtu implements Client
 	private function createReadAddress(
 		MetadataDocuments\DevicesModule\Device $device,
 		MetadataDocuments\DevicesModule\Channel $channel,
-	): Requests\ReadAddress|null
+	): Messages\Pointer\ReadAddress|null
 	{
 		$now = $this->dateTimeFactory->getNow();
 
@@ -615,8 +615,8 @@ class Rtu implements Client
 
 		if ($deviceExpectedDataType === MetadataTypes\DataType::BOOLEAN) {
 			return $property->isSettable()
-				? new Requests\ReadCoilAddress($address, $channel, $deviceExpectedDataType)
-				: new Requests\ReadDiscreteInputAddress($address, $channel, $deviceExpectedDataType);
+				? new Messages\Pointer\ReadCoilAddress($address, $channel, $deviceExpectedDataType)
+				: new Messages\Pointer\ReadDiscreteInputAddress($address, $channel, $deviceExpectedDataType);
 		} elseif (
 			$deviceExpectedDataType === MetadataTypes\DataType::CHAR
 			|| $deviceExpectedDataType === MetadataTypes\DataType::UCHAR
@@ -627,8 +627,8 @@ class Rtu implements Client
 			|| $deviceExpectedDataType === MetadataTypes\DataType::FLOAT
 		) {
 			return $property->isSettable()
-				? new Requests\ReadHoldingRegisterAddress($address, $channel, $deviceExpectedDataType)
-				: new Requests\ReadInputRegisterAddress($address, $channel, $deviceExpectedDataType);
+				? new Messages\Pointer\ReadHoldingRegisterAddress($address, $channel, $deviceExpectedDataType)
+				: new Messages\Pointer\ReadInputRegisterAddress($address, $channel, $deviceExpectedDataType);
 		}
 
 		$this->logger->warning(

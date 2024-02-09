@@ -66,7 +66,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		private readonly Queue\Queue $queue,
 		private readonly API\ConnectionManager $connectionManager,
 		private readonly API\Transformer $transformer,
-		private readonly Queue\MessageBuilder $messageBuilder,
+		private readonly Helpers\MessageBuilder $messageBuilder,
 		private readonly Helpers\Connector $connectorHelper,
 		private readonly Helpers\Device $deviceHelper,
 		private readonly Helpers\Channel $channelHelper,

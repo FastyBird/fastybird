@@ -16,6 +16,10 @@
 namespace FastyBird\Connector\Modbus\API;
 
 use FastyBird\Connector\Modbus\API;
+use FastyBird\Connector\Modbus\API\Messages\Response\ReadAnalogInputs;
+use FastyBird\Connector\Modbus\API\Messages\Response\ReadDigitalInputs;
+use FastyBird\Connector\Modbus\API\Messages\Response\WriteCoil;
+use FastyBird\Connector\Modbus\API\Messages\Response\WriteHoldingRegister;
 use FastyBird\Connector\Modbus\Exceptions;
 use FastyBird\Connector\Modbus\Types;
 use Nette;
@@ -129,7 +133,7 @@ class Rtu
 	 * will be padded with zeros (toward the high order end of the byte). The Byte Count field specifies
 	 * the quantity of complete bytes of data.
 	 *
-	 * @return ($raw is true ? string : API\Responses\ReadDigitalInputs)
+	 * @return ($raw is true ? string : ReadDigitalInputs)
 	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\ModbusRtu
@@ -139,7 +143,7 @@ class Rtu
 		int $startingAddress,
 		int $quantity,
 		bool $raw = false,
-	): string|API\Responses\ReadDigitalInputs
+	): string|Messages\Response\ReadDigitalInputs
 	{
 		return $this->readDigitalRegisters(
 			Types\ModbusFunction::get(Types\ModbusFunction::READ_COIL),
@@ -153,7 +157,7 @@ class Rtu
 	/**
 	 * (0x02) Read Discrete Inputs
 	 *
-	 * @return ($raw is true ? string : API\Responses\ReadDigitalInputs)
+	 * @return ($raw is true ? string : ReadDigitalInputs)
 	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\ModbusRtu
@@ -163,7 +167,7 @@ class Rtu
 		int $startingAddress,
 		int $quantity,
 		bool $raw = false,
-	): string|API\Responses\ReadDigitalInputs
+	): string|Messages\Response\ReadDigitalInputs
 	{
 		return $this->readDigitalRegisters(
 			Types\ModbusFunction::get(Types\ModbusFunction::READ_DISCRETE),
@@ -177,7 +181,7 @@ class Rtu
 	/**
 	 * (0x03) Read Holding Registers
 	 *
-	 * @return ($raw is true ? string : API\Responses\ReadAnalogInputs)
+	 * @return ($raw is true ? string : ReadAnalogInputs)
 	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\ModbusRtu
@@ -187,7 +191,7 @@ class Rtu
 		int $startingAddress,
 		int $quantity,
 		bool $raw = false,
-	): string|API\Responses\ReadAnalogInputs
+	): string|Messages\Response\ReadAnalogInputs
 	{
 		return $this->readAnalogRegisters(
 			Types\ModbusFunction::get(Types\ModbusFunction::READ_HOLDINGS_REGISTERS),
@@ -201,7 +205,7 @@ class Rtu
 	/**
 	 * (0x04) Read Input Registers
 	 *
-	 * @return ($raw is true ? string : API\Responses\ReadAnalogInputs)
+	 * @return ($raw is true ? string : ReadAnalogInputs)
 	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\ModbusRtu
@@ -211,7 +215,7 @@ class Rtu
 		int $startingAddress,
 		int $quantity,
 		bool $raw = false,
-	): string|API\Responses\ReadAnalogInputs
+	): string|Messages\Response\ReadAnalogInputs
 	{
 		return $this->readAnalogRegisters(
 			Types\ModbusFunction::get(Types\ModbusFunction::READ_INPUTS_REGISTERS),
@@ -225,7 +229,7 @@ class Rtu
 	/**
 	 * (0x05) Write Single Coil
 	 *
-	 * @return ($raw is true ? string : API\Responses\WriteCoil)
+	 * @return ($raw is true ? string : WriteCoil)
 	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\ModbusRtu
@@ -235,7 +239,7 @@ class Rtu
 		int $coilAddress,
 		bool $value,
 		bool $raw = false,
-	): string|API\Responses\WriteCoil
+	): string|Messages\Response\WriteCoil
 	{
 		$functionCode = Types\ModbusFunction::get(Types\ModbusFunction::WRITE_SINGLE_COIL);
 
@@ -261,7 +265,7 @@ class Rtu
 				throw new Exceptions\ModbusRtu('Response data could not be parsed');
 			}
 
-			return new API\Responses\WriteCoil(
+			return new Messages\Response\WriteCoil(
 				$header['station'],
 				$functionCode,
 				current($valueUnpacked) === 0xFF00,
@@ -276,7 +280,7 @@ class Rtu
 	 *
 	 * @param array<int> $value
 	 *
-	 * @return ($raw is true ? string : API\Responses\WriteHoldingRegister)
+	 * @return ($raw is true ? string : WriteHoldingRegister)
 	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\ModbusRtu
@@ -286,7 +290,7 @@ class Rtu
 		int $registerAddress,
 		array $value,
 		bool $raw = false,
-	): string|API\Responses\WriteHoldingRegister
+	): string|Messages\Response\WriteHoldingRegister
 	{
 		$functionCode = count($value) === 2
 			? Types\ModbusFunction::get(
@@ -324,7 +328,7 @@ class Rtu
 				throw new Exceptions\ModbusRtu('Response header could not be parsed');
 			}
 
-			return new API\Responses\WriteHoldingRegister(
+			return new Messages\Response\WriteHoldingRegister(
 				$header['station'],
 				$functionCode,
 			);
@@ -417,7 +421,7 @@ class Rtu
 		int $startingAddress,
 		int $quantity,
 		bool $raw = false,
-	): string|API\Responses\ReadDigitalInputs
+	): string|Messages\Response\ReadDigitalInputs
 	{
 		$request = pack('C2n2', $station, $functionCode->getValue(), $startingAddress, $quantity);
 		// Append CRC check
@@ -449,7 +453,7 @@ class Rtu
 
 			$addresses = array_fill($startingAddress, count($bits), 'value');
 
-			return new API\Responses\ReadDigitalInputs(
+			return new Messages\Response\ReadDigitalInputs(
 				$header['station'],
 				$functionCode,
 				$header['count'],
@@ -470,7 +474,7 @@ class Rtu
 		int $startingAddress,
 		int $quantity,
 		bool $raw = false,
-	): string|API\Responses\ReadAnalogInputs
+	): string|Messages\Response\ReadAnalogInputs
 	{
 		$request = pack('C2n2', $station, $functionCode->getValue(), $startingAddress, $quantity);
 		// Append CRC check
@@ -491,7 +495,7 @@ class Rtu
 				throw new Exceptions\ModbusRtu('Response data could not be parsed');
 			}
 
-			return new API\Responses\ReadAnalogInputs(
+			return new Messages\Response\ReadAnalogInputs(
 				$header['station'],
 				$functionCode,
 				$header['count'],

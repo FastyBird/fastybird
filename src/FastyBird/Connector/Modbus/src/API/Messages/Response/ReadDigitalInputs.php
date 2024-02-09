@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ReadAnalogInputs.php
+ * ReadDigitalInputs.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,26 +13,28 @@
  * @date           03.02.23
  */
 
-namespace FastyBird\Connector\Modbus\API\Responses;
+namespace FastyBird\Connector\Modbus\API\Messages\Response;
 
+use FastyBird\Connector\Modbus\API;
 use FastyBird\Connector\Modbus\Types;
 use Nette;
+use function array_key_exists;
 
 /**
- * Analog registers reading response
+ * Digital registers reading response
  *
  * @package        FastyBird:ModbusConnector!
  * @subpackage     API
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ReadAnalogInputs implements Response
+final class ReadDigitalInputs implements API\Messages\Message
 {
 
 	use Nette\SmartObject;
 
 	/**
-	 * @param array<int> $registers
+	 * @param array<int, bool> $registers
 	 */
 	public function __construct(
 		private readonly int $station,
@@ -59,11 +61,20 @@ final class ReadAnalogInputs implements Response
 	}
 
 	/**
-	 * @return array<int>
+	 * @return array<int, bool>
 	 */
 	public function getRegisters(): array
 	{
 		return $this->registers;
+	}
+
+	public function findRegister(int $address): bool|null
+	{
+		if (!array_key_exists($address, $this->registers)) {
+			return null;
+		}
+
+		return $this->registers[$address];
 	}
 
 	public function toArray(): array

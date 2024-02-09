@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * WriteMultiple.php
+ * WriteHoldingRegister.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,20 +13,21 @@
  * @date           03.02.23
  */
 
-namespace FastyBird\Connector\Modbus\API\Responses;
+namespace FastyBird\Connector\Modbus\API\Messages\Response;
 
+use FastyBird\Connector\Modbus\API;
 use FastyBird\Connector\Modbus\Types;
 use Nette;
 
 /**
- * Write single coil register response
+ * Write single holding register response
  *
  * @package        FastyBird:ModbusConnector!
  * @subpackage     API
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class WriteMultiple implements Response
+final class WriteHoldingRegister implements API\Messages\Message
 {
 
 	use Nette\SmartObject;

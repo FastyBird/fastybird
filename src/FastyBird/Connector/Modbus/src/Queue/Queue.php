@@ -16,7 +16,6 @@
 namespace FastyBird\Connector\Modbus\Queue;
 
 use FastyBird\Connector\Modbus;
-use FastyBird\Connector\Modbus\Queue\Messages\Message;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette;
 use SplQueue;
@@ -34,7 +33,7 @@ final class Queue
 
 	use Nette\SmartObject;
 
-	/** @var SplQueue<Message> */
+	/** @var SplQueue<Messages\Message> */
 	private SplQueue $queue;
 
 	public function __construct(private readonly Modbus\Logger $logger)

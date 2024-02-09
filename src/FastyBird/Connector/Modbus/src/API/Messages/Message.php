@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Response.php
+ * Message.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,7 +13,7 @@
  * @date           03.02.23
  */
 
-namespace FastyBird\Connector\Modbus\API\Responses;
+namespace FastyBird\Connector\Modbus\API\Messages;
 
 /**
  * Modbus base response interface
@@ -23,7 +23,7 @@ namespace FastyBird\Connector\Modbus\API\Responses;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-interface Response
+interface Message
 {
 
 	/**

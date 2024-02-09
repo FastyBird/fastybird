@@ -17,6 +17,7 @@ namespace FastyBird\Connector\Modbus\Writers;
 
 use FastyBird\Connector\Modbus\Entities;
 use FastyBird\Connector\Modbus\Exceptions;
+use FastyBird\Connector\Modbus\Helpers\MessageBuilder;
 use FastyBird\Connector\Modbus\Queue;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
@@ -47,7 +48,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 	 */
 	public function __construct(
 		MetadataDocuments\DevicesModule\Connector $connector,
-		Queue\MessageBuilder $messageBuilder,
+		MessageBuilder $messageBuilder,
 		Queue\Queue $queue,
 		DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,

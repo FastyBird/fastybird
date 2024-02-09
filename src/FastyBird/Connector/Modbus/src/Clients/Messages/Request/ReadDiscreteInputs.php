@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ReadHoldingsRegistersRequest.php
+ * ReadDiscreteInputsRequest.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,17 +13,17 @@
  * @date           05.02.23
  */
 
-namespace FastyBird\Connector\Modbus\Clients\Requests;
+namespace FastyBird\Connector\Modbus\Clients\Messages\Request;
 
 /**
- * Read holdings registers request request
+ * Read discrete registers request request
  *
  * @package        FastyBird:ModbusConnector!
  * @subpackage     Clients
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ReadHoldingsRegistersRequest extends ReadResponse
+final class ReadDiscreteInputs extends Read
 {
 
 }

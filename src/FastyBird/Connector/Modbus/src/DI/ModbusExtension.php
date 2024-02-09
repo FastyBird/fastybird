@@ -176,12 +176,6 @@ class ModbusExtension extends DI\CompilerExtension implements Translation\DI\Tra
 				'logger' => $logger,
 			]);
 
-		$builder->addDefinition(
-			$this->prefix('helpers.messageBuilder'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Queue\MessageBuilder::class);
-
 		/**
 		 * SUBSCRIBERS
 		 */
@@ -196,26 +190,26 @@ class ModbusExtension extends DI\CompilerExtension implements Translation\DI\Tra
 		 * JSON-API SCHEMAS
 		 */
 
-		$builder->addDefinition($this->prefix('schemas.connector.modbus'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition($this->prefix('schemas.connector'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\Connectors\Connector::class);
 
-		$builder->addDefinition($this->prefix('schemas.device.modbus'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition($this->prefix('schemas.device'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\Devices\Device::class);
 
-		$builder->addDefinition($this->prefix('schemas.channel.modbus'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition($this->prefix('schemas.channel'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\Channels\Channel::class);
 
 		/**
 		 * JSON-API HYDRATORS
 		 */
 
-		$builder->addDefinition($this->prefix('hydrators.connector.modbus'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition($this->prefix('hydrators.connector'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\Connectors\Connector::class);
 
-		$builder->addDefinition($this->prefix('hydrators.device.modbus'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition($this->prefix('hydrators.device'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\Devices\Device::class);
 
-		$builder->addDefinition($this->prefix('hydrators.channel.modbus'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition($this->prefix('hydrators.channel'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\Channels\Channel::class);
 
 		/**
@@ -230,6 +224,9 @@ class ModbusExtension extends DI\CompilerExtension implements Translation\DI\Tra
 
 		$builder->addDefinition($this->prefix('helpers.channel'), new DI\Definitions\ServiceDefinition())
 			->setType(Helpers\Channel::class);
+
+		$builder->addDefinition($this->prefix('helpers.messageBuilder'), new DI\Definitions\ServiceDefinition())
+			->setType(Helpers\MessageBuilder::class);
 
 		/**
 		 * COMMANDS

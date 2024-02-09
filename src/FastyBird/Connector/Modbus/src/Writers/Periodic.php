@@ -18,6 +18,7 @@ namespace FastyBird\Connector\Modbus\Writers;
 use DateTimeInterface;
 use FastyBird\Connector\Modbus\Entities;
 use FastyBird\Connector\Modbus\Exceptions;
+use FastyBird\Connector\Modbus\Helpers\MessageBuilder;
 use FastyBird\Connector\Modbus\Queue;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
@@ -75,7 +76,7 @@ abstract class Periodic
 
 	public function __construct(
 		protected readonly MetadataDocuments\DevicesModule\Connector $connector,
-		protected readonly Queue\MessageBuilder $messageBuilder,
+		protected readonly MessageBuilder $messageBuilder,
 		protected readonly Queue\Queue $queue,
 		protected readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		protected readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,

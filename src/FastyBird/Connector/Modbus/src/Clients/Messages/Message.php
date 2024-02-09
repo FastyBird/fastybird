@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ReadDiscreteInputsRequest.php
+ * Message.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,17 +13,22 @@
  * @date           05.02.23
  */
 
-namespace FastyBird\Connector\Modbus\Clients\Requests;
+namespace FastyBird\Connector\Modbus\Clients\Messages;
 
 /**
- * Read discrete registers request request
+ * Modbus base request interface
  *
  * @package        FastyBird:ModbusConnector!
  * @subpackage     Clients
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ReadDiscreteInputsRequest extends ReadResponse
+interface Message
 {
+
+	/**
+	 * @return array<string, mixed>
+	 */
+	public function toArray(): array;
 
 }

@@ -13,7 +13,7 @@
  * @date           05.02.23
  */
 
-namespace FastyBird\Connector\Modbus\Clients\Requests;
+namespace FastyBird\Connector\Modbus\Clients\Messages\Pointer;
 
 /**
  * Read coil register address request

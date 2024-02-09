@@ -7,13 +7,13 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:ModbusConnector!
- * @subpackage     Queue
+ * @subpackage     Helpers
  * @since          1.0.0
  *
  * @date           08.12.23
  */
 
-namespace FastyBird\Connector\Modbus\Queue;
+namespace FastyBird\Connector\Modbus\Helpers;
 
 use FastyBird\Connector\Modbus\Exceptions;
 use FastyBird\Connector\Modbus\Queue;
@@ -23,7 +23,7 @@ use Orisai\ObjectMapper;
  * Message builder
  *
  * @package        FastyBird:ModbusConnector!
- * @subpackage     Queue
+ * @subpackage     Helpers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */

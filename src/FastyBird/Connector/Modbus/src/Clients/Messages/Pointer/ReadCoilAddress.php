@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ReadInputRegisterAddress.php
+ * ReadCoilAddress.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,17 +13,17 @@
  * @date           05.02.23
  */
 
-namespace FastyBird\Connector\Modbus\Clients\Requests;
+namespace FastyBird\Connector\Modbus\Clients\Messages\Pointer;
 
 /**
- * Read coil register address request
+ * Read coils register address request
  *
  * @package        FastyBird:ModbusConnector!
  * @subpackage     Clients
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ReadInputRegisterAddress extends ReadAddress
+final class ReadCoilAddress extends ReadAddress
 {
 
 }

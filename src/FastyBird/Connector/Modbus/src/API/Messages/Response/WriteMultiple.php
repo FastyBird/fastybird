@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * WriteCoil.php
+ * WriteMultiple.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,8 +13,9 @@
  * @date           03.02.23
  */
 
-namespace FastyBird\Connector\Modbus\API\Responses;
+namespace FastyBird\Connector\Modbus\API\Messages\Response;
 
+use FastyBird\Connector\Modbus\API;
 use FastyBird\Connector\Modbus\Types;
 use Nette;
 
@@ -26,7 +27,7 @@ use Nette;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class WriteCoil implements Response
+final class WriteMultiple implements API\Messages\Message
 {
 
 	use Nette\SmartObject;
@@ -34,7 +35,6 @@ final class WriteCoil implements Response
 	public function __construct(
 		private readonly int $station,
 		private readonly Types\ModbusFunction $function,
-		private readonly bool $value,
 	)
 	{
 	}
@@ -49,17 +49,11 @@ final class WriteCoil implements Response
 		return $this->function;
 	}
 
-	public function getValue(): bool
-	{
-		return $this->value;
-	}
-
 	public function toArray(): array
 	{
 		return [
 			'station' => $this->getStation(),
 			'function' => $this->getFunction()->getValue(),
-			'value' => $this->getValue(),
 		];
 	}
 

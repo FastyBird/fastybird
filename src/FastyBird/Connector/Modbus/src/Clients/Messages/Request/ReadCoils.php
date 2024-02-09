@@ -13,7 +13,7 @@
  * @date           05.02.23
  */
 
-namespace FastyBird\Connector\Modbus\Clients\Requests;
+namespace FastyBird\Connector\Modbus\Clients\Messages\Request;
 
 /**
  * Read coil register request request
@@ -23,7 +23,7 @@ namespace FastyBird\Connector\Modbus\Clients\Requests;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ReadCoilsRequest extends ReadResponse
+final class ReadCoils extends Read
 {
 
 }
