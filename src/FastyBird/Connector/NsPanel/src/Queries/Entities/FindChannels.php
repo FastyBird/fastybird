@@ -21,7 +21,7 @@ use FastyBird\Module\Devices\Queries as DevicesQueries;
 /**
  * Find device channels entities query
  *
- * @template T of Entities\NsPanelChannel
+ * @template T of Entities\Channels\Channel
  * @extends  DevicesQueries\Entities\FindChannels<T>
  *
  * @package        FastyBird:NsPanelConnector!

@@ -16,20 +16,19 @@
 namespace FastyBird\Connector\NsPanel\Schemas\Devices;
 
 use FastyBird\Connector\NsPanel\Entities;
-use FastyBird\Connector\NsPanel\Schemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 
 /**
  * NS Panel gateway entity schema
  *
  * @template T of Entities\Devices\Gateway
- * @extends  Schemas\NsPanelDevice<T>
+ * @extends  Device<T>
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Schemas
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Gateway extends Schemas\NsPanelDevice
+final class Gateway extends Device
 {
 
 	/**

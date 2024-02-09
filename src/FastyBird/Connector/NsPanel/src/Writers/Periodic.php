@@ -74,7 +74,7 @@ abstract class Periodic implements Writer
 
 	public function __construct(
 		protected readonly MetadataDocuments\DevicesModule\Connector $connector,
-		protected readonly Helpers\Entity $entityHelper,
+		protected readonly Helpers\MessageBuilder $messageBuilder,
 		protected readonly Helpers\Devices\ThirdPartyDevice $thirdPartyDeviceHelper,
 		protected readonly Queue\Queue $queue,
 		protected readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
@@ -281,8 +281,8 @@ abstract class Periodic implements Writer
 			$this->processedProperties[$property->getId()->toString()] = $now;
 
 			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\WriteSubDeviceState::class,
+				$this->messageBuilder->create(
+					Queue\Messages\WriteSubDeviceState::class,
 					[
 						'connector' => $device->getConnector(),
 						'device' => $device->getId(),
@@ -325,8 +325,8 @@ abstract class Periodic implements Writer
 
 		if ($serialNumber === null) {
 			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\StoreDeviceConnectionState::class,
+				$this->messageBuilder->create(
+					Queue\Messages\StoreDeviceConnectionState::class,
 					[
 						'connector' => $device->getConnector(),
 						'identifier' => $device->getIdentifier(),
@@ -375,8 +375,8 @@ abstract class Periodic implements Writer
 			}
 
 			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\WriteThirdPartyDeviceState::class,
+				$this->messageBuilder->create(
+					Queue\Messages\WriteThirdPartyDeviceState::class,
 					[
 						'connector' => $device->getConnector(),
 						'device' => $device->getId(),
@@ -417,8 +417,8 @@ abstract class Periodic implements Writer
 			}
 
 			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\WriteThirdPartyDeviceState::class,
+				$this->messageBuilder->create(
+					Queue\Messages\WriteThirdPartyDeviceState::class,
 					[
 						'connector' => $device->getConnector(),
 						'device' => $device->getId(),
@@ -439,8 +439,8 @@ abstract class Periodic implements Writer
 
 		} else {
 			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\WriteThirdPartyDeviceState::class,
+				$this->messageBuilder->create(
+					Queue\Messages\WriteThirdPartyDeviceState::class,
 					[
 						'connector' => $device->getConnector(),
 						'device' => $device->getId(),

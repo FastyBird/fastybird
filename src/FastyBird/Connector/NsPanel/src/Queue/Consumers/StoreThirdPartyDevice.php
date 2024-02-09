@@ -57,15 +57,15 @@ final class StoreThirdPartyDevice implements Queue\Consumer
 	 * @throws ApplicationExceptions\Runtime
 	 * @throws DBAL\Exception
 	 */
-	public function consume(Entities\Messages\Entity $entity): bool
+	public function consume(Queue\Messages\Message $message): bool
 	{
-		if (!$entity instanceof Entities\Messages\StoreThirdPartyDevice) {
+		if (!$message instanceof Queue\Messages\StoreThirdPartyDevice) {
 			return false;
 		}
 
 		$findDeviceQuery = new Queries\Entities\FindThirdPartyDevices();
-		$findDeviceQuery->byConnectorId($entity->getConnector());
-		$findDeviceQuery->byIdentifier($entity->getIdentifier());
+		$findDeviceQuery->byConnectorId($message->getConnector());
+		$findDeviceQuery->byIdentifier($message->getIdentifier());
 
 		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\ThirdPartyDevice::class);
 
@@ -76,15 +76,15 @@ final class StoreThirdPartyDevice implements Queue\Consumer
 					'source' => MetadataTypes\Sources\Connector::NS_PANEL,
 					'type' => 'store-third-party-device-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $message->getConnector()->toString(),
 					],
 					'gateway' => [
-						'id' => $entity->getGateway()->toString(),
+						'id' => $message->getGateway()->toString(),
 					],
 					'device' => [
-						'identifier' => $entity->getIdentifier(),
+						'identifier' => $message->getIdentifier(),
 					],
-					'data' => $entity->toArray(),
+					'data' => $message->toArray(),
 				],
 			);
 
@@ -93,7 +93,7 @@ final class StoreThirdPartyDevice implements Queue\Consumer
 
 		$this->setDeviceProperty(
 			$device->getId(),
-			$entity->getGatewayIdentifier(),
+			$message->getGatewayIdentifier(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::GATEWAY_IDENTIFIER,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::GATEWAY_IDENTIFIER),
@@ -105,15 +105,15 @@ final class StoreThirdPartyDevice implements Queue\Consumer
 				'source' => MetadataTypes\Sources\Connector::NS_PANEL,
 				'type' => 'store-third-party-device-message-consumer',
 				'connector' => [
-					'id' => $entity->getConnector()->toString(),
+					'id' => $message->getConnector()->toString(),
 				],
 				'gateway' => [
-					'id' => $entity->getGateway()->toString(),
+					'id' => $message->getGateway()->toString(),
 				],
 				'device' => [
 					'id' => $device->getId()->toString(),
 				],
-				'data' => $entity->toArray(),
+				'data' => $message->toArray(),
 			],
 		);
 

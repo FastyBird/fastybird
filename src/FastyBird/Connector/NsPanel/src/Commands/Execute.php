@@ -128,7 +128,7 @@ class Execute extends Console\Command\Command
 			$connectorId = $input->getOption('connector');
 
 			$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
-			$findConnectorQuery->byType(Entities\NsPanelConnector::TYPE);
+			$findConnectorQuery->byType(Entities\Connectors\Connector::TYPE);
 
 			if (Uuid\Uuid::isValid($connectorId)) {
 				$findConnectorQuery->byId(Uuid\Uuid::fromString($connectorId));
@@ -149,7 +149,7 @@ class Execute extends Console\Command\Command
 			$connectors = [];
 
 			$findConnectorsQuery = new DevicesQueries\Configuration\FindConnectors();
-			$findConnectorsQuery->byType(Entities\NsPanelConnector::TYPE);
+			$findConnectorsQuery->byType(Entities\Connectors\Connector::TYPE);
 
 			$systemConnectors = $this->connectorsConfigurationRepository->findAllBy($findConnectorsQuery);
 			usort(
@@ -174,7 +174,7 @@ class Execute extends Console\Command\Command
 
 				$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
 				$findConnectorQuery->byIdentifier($connectorIdentifier);
-				$findConnectorQuery->byType(Entities\NsPanelConnector::TYPE);
+				$findConnectorQuery->byType(Entities\Connectors\Connector::TYPE);
 
 				$connector = $this->connectorsConfigurationRepository->findOneBy($findConnectorQuery);
 
@@ -229,7 +229,7 @@ class Execute extends Console\Command\Command
 						if ($identifier !== false) {
 							$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
 							$findConnectorQuery->byIdentifier($identifier);
-							$findConnectorQuery->byType(Entities\NsPanelConnector::TYPE);
+							$findConnectorQuery->byType(Entities\Connectors\Connector::TYPE);
 
 							$connector = $this->connectorsConfigurationRepository->findOneBy($findConnectorQuery);
 

@@ -29,7 +29,7 @@ use function is_string;
 
 #[ORM\Entity]
 #[ApplicationMapping\DiscriminatorEntry(name: self::TYPE)]
-class SubDevice extends Entities\NsPanelDevice
+class SubDevice extends Entities\Devices\Device
 {
 
 	public const TYPE = 'ns-panel-connector-sub-device';

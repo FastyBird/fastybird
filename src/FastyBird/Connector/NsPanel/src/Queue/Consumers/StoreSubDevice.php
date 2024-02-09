@@ -65,13 +65,13 @@ final class StoreSubDevice implements Queue\Consumer
 	 * @throws ApplicationExceptions\Runtime
 	 * @throws DBAL\Exception
 	 */
-	public function consume(Entities\Messages\Entity $entity): bool
+	public function consume(Queue\Messages\Message $message): bool
 	{
-		if (!$entity instanceof Entities\Messages\StoreSubDevice) {
+		if (!$message instanceof Queue\Messages\StoreSubDevice) {
 			return false;
 		}
 
-		$parent = $this->devicesRepository->find($entity->getGateway(), Entities\Devices\Gateway::class);
+		$parent = $this->devicesRepository->find($message->getGateway(), Entities\Devices\Gateway::class);
 
 		if ($parent === null) {
 			$this->logger->error(
@@ -80,15 +80,15 @@ final class StoreSubDevice implements Queue\Consumer
 					'source' => MetadataTypes\Sources\Connector::NS_PANEL,
 					'type' => 'store-sub-device-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $message->getConnector()->toString(),
 					],
 					'gateway' => [
-						'id' => $entity->getGateway()->toString(),
+						'id' => $message->getGateway()->toString(),
 					],
 					'device' => [
-						'identifier' => $entity->getIdentifier(),
+						'identifier' => $message->getIdentifier(),
 					],
-					'data' => $entity->toArray(),
+					'data' => $message->toArray(),
 				],
 			);
 
@@ -96,16 +96,16 @@ final class StoreSubDevice implements Queue\Consumer
 		}
 
 		$findDeviceQuery = new Queries\Entities\FindSubDevices();
-		$findDeviceQuery->byConnectorId($entity->getConnector());
+		$findDeviceQuery->byConnectorId($message->getConnector());
 		$findDeviceQuery->forParent($parent);
-		$findDeviceQuery->byIdentifier($entity->getIdentifier());
+		$findDeviceQuery->byIdentifier($message->getIdentifier());
 
 		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\SubDevice::class);
 
 		if ($device === null) {
 			$connector = $this->connectorsRepository->find(
-				$entity->getConnector(),
-				Entities\NsPanelConnector::class,
+				$message->getConnector(),
+				Entities\Connectors\Connector::class,
 			);
 
 			if ($connector === null) {
@@ -115,15 +115,15 @@ final class StoreSubDevice implements Queue\Consumer
 						'source' => MetadataTypes\Sources\Connector::NS_PANEL,
 						'type' => 'store-sub-device-message-consumer',
 						'connector' => [
-							'id' => $entity->getConnector()->toString(),
+							'id' => $message->getConnector()->toString(),
 						],
 						'gateway' => [
-							'id' => $entity->getGateway()->toString(),
+							'id' => $message->getGateway()->toString(),
 						],
 						'device' => [
-							'identifier' => $entity->getIdentifier(),
+							'identifier' => $message->getIdentifier(),
 						],
-						'data' => $entity->toArray(),
+						'data' => $message->toArray(),
 					],
 				);
 
@@ -131,13 +131,13 @@ final class StoreSubDevice implements Queue\Consumer
 			}
 
 			$device = $this->databaseHelper->transaction(
-				function () use ($entity, $connector, $parent): Entities\Devices\SubDevice {
+				function () use ($message, $connector, $parent): Entities\Devices\SubDevice {
 					$device = $this->devicesManager->create(Utils\ArrayHash::from([
 						'entity' => Entities\Devices\SubDevice::class,
 						'connector' => $connector,
 						'parent' => $parent,
-						'identifier' => $entity->getIdentifier(),
-						'name' => $entity->getName(),
+						'identifier' => $message->getIdentifier(),
+						'name' => $message->getName(),
 					]));
 					assert($device instanceof Entities\Devices\SubDevice);
 
@@ -154,12 +154,12 @@ final class StoreSubDevice implements Queue\Consumer
 						'id' => $connector->getId()->toString(),
 					],
 					'gateway' => [
-						'id' => $entity->getGateway()->toString(),
+						'id' => $message->getGateway()->toString(),
 					],
 					'device' => [
 						'id' => $device->getId()->toString(),
-						'identifier' => $entity->getIdentifier(),
-						'protocol' => $entity->getProtocol(),
+						'identifier' => $message->getIdentifier(),
+						'protocol' => $message->getProtocol(),
 					],
 				],
 			);
@@ -167,42 +167,42 @@ final class StoreSubDevice implements Queue\Consumer
 
 		$this->setDeviceProperty(
 			$device->getId(),
-			$entity->getManufacturer(),
+			$message->getManufacturer(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::MANUFACTURER,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MANUFACTURER),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
-			$entity->getModel(),
+			$message->getModel(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::MODEL,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MODEL),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
-			$entity->getFirmwareVersion(),
+			$message->getFirmwareVersion(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::FIRMWARE_VERSION,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::FIRMWARE_VERSION),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
-			$entity->getDisplayCategory()->getValue(),
+			$message->getDisplayCategory()->getValue(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::CATEGORY,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::CATEGORY),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
-			$entity->getMacAddress(),
+			$message->getMacAddress(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::MAC_ADDRESS,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MAC_ADDRESS),
 		);
 
-		foreach ($entity->getCapabilities() as $capability) {
-			$this->databaseHelper->transaction(function () use ($entity, $device, $capability): bool {
+		foreach ($message->getCapabilities() as $capability) {
+			$this->databaseHelper->transaction(function () use ($message, $device, $capability): bool {
 				$identifier = Helpers\Name::convertCapabilityToChannel($capability->getCapability());
 
 				if (
@@ -216,11 +216,11 @@ final class StoreSubDevice implements Queue\Consumer
 				$findChannelQuery->byIdentifier($identifier);
 				$findChannelQuery->forDevice($device);
 
-				$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\NsPanelChannel::class);
+				$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\Channels\Channel::class);
 
 				if ($channel === null) {
 					$channel = $this->channelsManager->create(Utils\ArrayHash::from([
-						'entity' => Entities\NsPanelChannel::class,
+						'entity' => Entities\Channels\Channel::class,
 						'device' => $device,
 						'identifier' => $identifier,
 					]));
@@ -231,10 +231,10 @@ final class StoreSubDevice implements Queue\Consumer
 							'source' => MetadataTypes\Sources\Connector::NS_PANEL,
 							'type' => 'store-sub-device-message-consumer',
 							'connector' => [
-								'id' => $entity->getConnector()->toString(),
+								'id' => $message->getConnector()->toString(),
 							],
 							'gateway' => [
-								'id' => $entity->getGateway()->toString(),
+								'id' => $message->getGateway()->toString(),
 							],
 							'device' => [
 								'id' => $device->getId()->toString(),
@@ -250,9 +250,9 @@ final class StoreSubDevice implements Queue\Consumer
 			});
 		}
 
-		foreach ($entity->getTags() as $tag => $value) {
+		foreach ($message->getTags() as $tag => $value) {
 			if ($tag === Types\Capability::TOGGLE && is_array($value)) {
-				$this->databaseHelper->transaction(function () use ($entity, $device, $value): void {
+				$this->databaseHelper->transaction(function () use ($message, $device, $value): void {
 					foreach ($value as $key => $name) {
 						$findChannelQuery = new Queries\Entities\FindChannels();
 						$findChannelQuery->byIdentifier(
@@ -265,7 +265,7 @@ final class StoreSubDevice implements Queue\Consumer
 
 						$channel = $this->channelsRepository->findOneBy(
 							$findChannelQuery,
-							Entities\NsPanelChannel::class,
+							Entities\Channels\Channel::class,
 						);
 
 						if ($channel !== null) {
@@ -279,10 +279,10 @@ final class StoreSubDevice implements Queue\Consumer
 									'source' => MetadataTypes\Sources\Connector::NS_PANEL,
 									'type' => 'store-sub-device-message-consumer',
 									'connector' => [
-										'id' => $entity->getConnector()->toString(),
+										'id' => $message->getConnector()->toString(),
 									],
 									'gateway' => [
-										'id' => $entity->getGateway()->toString(),
+										'id' => $message->getGateway()->toString(),
 									],
 									'device' => [
 										'id' => $device->getId()->toString(),
@@ -304,15 +304,15 @@ final class StoreSubDevice implements Queue\Consumer
 				'source' => MetadataTypes\Sources\Connector::NS_PANEL,
 				'type' => 'store-sub-device-message-consumer',
 				'connector' => [
-					'id' => $entity->getConnector()->toString(),
+					'id' => $message->getConnector()->toString(),
 				],
 				'gateway' => [
-					'id' => $entity->getGateway()->toString(),
+					'id' => $message->getGateway()->toString(),
 				],
 				'device' => [
 					'id' => $device->getId()->toString(),
 				],
-				'data' => $entity->toArray(),
+				'data' => $message->toArray(),
 			],
 		);
 

@@ -90,8 +90,8 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 		$findConnectorQuery = new Queries\Entities\FindConnectors();
 		$findConnectorQuery->byIdentifier('ns-panel');
 
-		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\NsPanelConnector::class);
-		self::assertInstanceOf(Entities\NsPanelConnector::class, $connector);
+		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\Connectors\Connector::class);
+		self::assertInstanceOf(Entities\Connectors\Connector::class, $connector);
 
 		$lanApiFactory = $this->getContainer()->getByType(API\LanApiFactory::class);
 
@@ -178,8 +178,8 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 		$findConnectorQuery = new Queries\Entities\FindConnectors();
 		$findConnectorQuery->byIdentifier('ns-panel');
 
-		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\NsPanelConnector::class);
-		self::assertInstanceOf(Entities\NsPanelConnector::class, $connector);
+		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\Connectors\Connector::class);
+		self::assertInstanceOf(Entities\Connectors\Connector::class, $connector);
 
 		$lanApiFactory = $this->getContainer()->getByType(API\LanApiFactory::class);
 
@@ -268,8 +268,8 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 		$findConnectorQuery = new Queries\Entities\FindConnectors();
 		$findConnectorQuery->byIdentifier('ns-panel');
 
-		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\NsPanelConnector::class);
-		self::assertInstanceOf(Entities\NsPanelConnector::class, $connector);
+		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\Connectors\Connector::class);
+		self::assertInstanceOf(Entities\Connectors\Connector::class, $connector);
 
 		$lanApiFactory = $this->getContainer()->getByType(API\LanApiFactory::class);
 
@@ -383,8 +383,8 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 		$findConnectorQuery = new Queries\Entities\FindConnectors();
 		$findConnectorQuery->byIdentifier('ns-panel');
 
-		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\NsPanelConnector::class);
-		self::assertInstanceOf(Entities\NsPanelConnector::class, $connector);
+		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\Connectors\Connector::class);
+		self::assertInstanceOf(Entities\Connectors\Connector::class, $connector);
 
 		$lanApiFactory = $this->getContainer()->getByType(API\LanApiFactory::class);
 
@@ -535,8 +535,8 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 		$findConnectorQuery = new Queries\Entities\FindConnectors();
 		$findConnectorQuery->byIdentifier('ns-panel');
 
-		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\NsPanelConnector::class);
-		self::assertInstanceOf(Entities\NsPanelConnector::class, $connector);
+		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\Connectors\Connector::class);
+		self::assertInstanceOf(Entities\Connectors\Connector::class, $connector);
 
 		$lanApiFactory = $this->getContainer()->getByType(API\LanApiFactory::class);
 
@@ -660,8 +660,8 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 		$findConnectorQuery = new Queries\Entities\FindConnectors();
 		$findConnectorQuery->byIdentifier('ns-panel');
 
-		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\NsPanelConnector::class);
-		self::assertInstanceOf(Entities\NsPanelConnector::class, $connector);
+		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\Connectors\Connector::class);
+		self::assertInstanceOf(Entities\Connectors\Connector::class, $connector);
 
 		$lanApiFactory = $this->getContainer()->getByType(API\LanApiFactory::class);
 
@@ -749,8 +749,8 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 		$findConnectorQuery = new Queries\Entities\FindConnectors();
 		$findConnectorQuery->byIdentifier('ns-panel');
 
-		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\NsPanelConnector::class);
-		self::assertInstanceOf(Entities\NsPanelConnector::class, $connector);
+		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\Connectors\Connector::class);
+		self::assertInstanceOf(Entities\Connectors\Connector::class, $connector);
 
 		$lanApiFactory = $this->getContainer()->getByType(API\LanApiFactory::class);
 
@@ -874,8 +874,8 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 		$findConnectorQuery = new Queries\Entities\FindConnectors();
 		$findConnectorQuery->byIdentifier('ns-panel');
 
-		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\NsPanelConnector::class);
-		self::assertInstanceOf(Entities\NsPanelConnector::class, $connector);
+		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\Connectors\Connector::class);
+		self::assertInstanceOf(Entities\Connectors\Connector::class, $connector);
 
 		$lanApiFactory = $this->getContainer()->getByType(API\LanApiFactory::class);
 

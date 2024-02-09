@@ -136,14 +136,6 @@ class NsPanelExtension extends DI\CompilerExtension implements Translation\DI\Tr
 				'logger' => $logger,
 			]);
 
-		$builder->addFactoryDefinition($this->prefix('server.http'))
-			->setImplement(Servers\HttpFactory::class)
-			->getResultDefinition()
-			->setType(Servers\Http::class)
-			->setArguments([
-				'logger' => $logger,
-			]);
-
 		/**
 		 * MESSAGES QUEUE
 		 */
@@ -236,65 +228,68 @@ class NsPanelExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		 */
 
 		$builder->addDefinition(
-			$this->prefix('schemas.connector.nsPanel'),
+			$this->prefix('schemas.connector'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Schemas\NsPanelConnector::class);
+			->setType(Schemas\Connectors\Connector::class);
 
 		$builder->addDefinition(
-			$this->prefix('schemas.device.nsPanel.gateway'),
+			$this->prefix('schemas.device.gateway'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Schemas\Devices\Gateway::class);
 
 		$builder->addDefinition(
-			$this->prefix('schemas.device.nsPanel.subDevice'),
+			$this->prefix('schemas.device.subDevice'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Schemas\Devices\SubDevice::class);
 
 		$builder->addDefinition(
-			$this->prefix('schemas.device.nsPanel.thirdPartyDevice'),
+			$this->prefix('schemas.device.thirdPartyDevice'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Schemas\Devices\ThirdPartyDevice::class);
 
 		$builder->addDefinition(
-			$this->prefix('schemas.channel.nsPanel'),
+			$this->prefix('schemas.channel'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Schemas\NsPanelChannel::class);
+			->setType(Schemas\Channels\Channel::class);
 
 		/**
 		 * JSON-API HYDRATORS
 		 */
 
 		$builder->addDefinition(
-			$this->prefix('hydrators.connector.nsPanel'),
+			$this->prefix('hydrators.connector'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Hydrators\NsPanelConnector::class);
+			->setType(Hydrators\Connectors\Connector::class);
 
 		$builder->addDefinition(
-			$this->prefix('hydrators.device.nsPanel.gateway'),
+			$this->prefix('hydrators.device.gateway'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Hydrators\Devices\Gateway::class);
 
 		$builder->addDefinition(
-			$this->prefix('hydrators.device.nsPanel.subDevice'),
+			$this->prefix('hydrators.device.subDevice'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Hydrators\Devices\SubDevice::class);
 
 		$builder->addDefinition(
-			$this->prefix('hydrators.device.nsPanel.thirdPartyDevice'),
+			$this->prefix('hydrators.device.thirdPartyDevice'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Hydrators\Devices\ThirdPartyDevice::class);
 
-		$builder->addDefinition($this->prefix('hydrators.channel.nsPanel'), new DI\Definitions\ServiceDefinition())
-			->setType(Hydrators\NsPanelChannel::class);
+		$builder->addDefinition(
+			$this->prefix('hydrators.channel'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Hydrators\Channels\Channel::class);
 
 		/**
 		 * HELPERS
@@ -303,11 +298,8 @@ class NsPanelExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		$builder->addDefinition($this->prefix('helpers.loader'), new DI\Definitions\ServiceDefinition())
 			->setType(Helpers\Loader::class);
 
-		$builder->addDefinition($this->prefix('helpers.entity'), new DI\Definitions\ServiceDefinition())
-			->setType(Helpers\Entity::class);
-
 		$builder->addDefinition($this->prefix('helpers.connector'), new DI\Definitions\ServiceDefinition())
-			->setType(Helpers\Connector::class);
+			->setType(Helpers\Connectors\Connector::class);
 
 		$builder->addDefinition($this->prefix('helpers.gatewayDevice'), new DI\Definitions\ServiceDefinition())
 			->setType(Helpers\Devices\Gateway::class);
@@ -319,11 +311,22 @@ class NsPanelExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setType(Helpers\Devices\SubDevice::class);
 
 		$builder->addDefinition($this->prefix('helpers.channel'), new DI\Definitions\ServiceDefinition())
-			->setType(Helpers\Channel::class);
+			->setType(Helpers\Channels\Channel::class);
+
+		$builder->addDefinition($this->prefix('helpers.messageBuilder'), new DI\Definitions\ServiceDefinition())
+			->setType(Helpers\MessageBuilder::class);
 
 		/**
 		 * SERVERS
 		 */
+
+		$builder->addFactoryDefinition($this->prefix('server.http'))
+			->setImplement(Servers\HttpFactory::class)
+			->getResultDefinition()
+			->setType(Servers\Http::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
 
 		$router = $builder->addDefinition($this->prefix('http.router'), new DI\Definitions\ServiceDefinition())
 			->setType(Router\Router::class)
@@ -365,7 +368,7 @@ class NsPanelExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setImplement(Connector\ConnectorFactory::class)
 			->addTag(
 				DevicesDI\DevicesExtension::CONNECTOR_TYPE_TAG,
-				Entities\NsPanelConnector::TYPE,
+				Entities\Connectors\Connector::TYPE,
 			)
 			->getResultDefinition()
 			->setType(Connector\Connector::class)
@@ -386,7 +389,7 @@ class NsPanelExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		$builder = $this->getContainerBuilder();
 
 		/**
-		 * Doctrine entities
+		 * DOCTRINE ENTITIES
 		 */
 
 		$ormAttributeDriverService = $builder->getDefinition('nettrineOrmAttributes.attributeDriver');

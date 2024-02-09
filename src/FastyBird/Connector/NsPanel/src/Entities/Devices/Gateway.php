@@ -27,7 +27,7 @@ use function is_string;
 
 #[ORM\Entity]
 #[ApplicationMapping\DiscriminatorEntry(name: self::TYPE)]
-class Gateway extends Entities\NsPanelDevice
+class Gateway extends Entities\Devices\Device
 {
 
 	public const TYPE = 'ns-panel-connector-gateway';

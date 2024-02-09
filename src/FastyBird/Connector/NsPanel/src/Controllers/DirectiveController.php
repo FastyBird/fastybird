@@ -16,9 +16,7 @@
 namespace FastyBird\Connector\NsPanel\Controllers;
 
 use FastyBird\Connector\NsPanel;
-use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
-use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Connector\NsPanel\Router;
 use FastyBird\Connector\NsPanel\Servers;
@@ -56,7 +54,7 @@ final class DirectiveController extends BaseController
 
 	public function __construct(
 		private readonly Queue\Queue $queue,
-		private readonly Helpers\Entity $entityHelper,
+		private readonly NsPanel\Helpers\MessageBuilder $messageBuilder,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		private readonly MetadataSchemas\Validator $schemaValidator,
 	)
@@ -138,15 +136,15 @@ final class DirectiveController extends BaseController
 		}
 
 		try {
-			$requestData = $this->entityHelper->create(
-				Entities\API\Request\SetDeviceState::class,
+			$requestData = $this->messageBuilder->create(
+				NsPanel\API\Messages\Request\SetDeviceState::class,
 				(array) Utils\Json::decode(Utils\Json::encode($body), Utils\Json::FORCE_ARRAY),
 			);
 		} catch (Exceptions\Runtime $ex) {
 			throw new Exceptions\ServerRequestError(
 				$request,
 				Types\ServerStatus::get(Types\ServerStatus::INVALID_DIRECTIVE),
-				'Could not map data to request entity',
+				'Could not map data to request message',
 				$ex->getCode(),
 				$ex,
 			);
@@ -184,8 +182,8 @@ final class DirectiveController extends BaseController
 		}
 
 		$this->queue->append(
-			$this->entityHelper->create(
-				Entities\Messages\StoreDeviceState::class,
+			$this->messageBuilder->create(
+				Queue\Messages\StoreDeviceState::class,
 				[
 					'connector' => $connectorId,
 					'gateway' => $gateway->getId(),
@@ -196,8 +194,8 @@ final class DirectiveController extends BaseController
 		);
 
 		try {
-			$responseData = $this->entityHelper->create(
-				Entities\API\Response\SetDeviceState::class,
+			$responseData = $this->messageBuilder->create(
+				NsPanel\API\Messages\Response\SetDeviceState::class,
 				[
 					'event' => [
 						'header' => [
@@ -214,7 +212,7 @@ final class DirectiveController extends BaseController
 			throw new Exceptions\ServerRequestError(
 				$request,
 				Types\ServerStatus::get(Types\ServerStatus::INTERNAL_ERROR),
-				'Could not map data to response entity',
+				'Could not map data to response message',
 				$ex->getCode(),
 				$ex,
 			);

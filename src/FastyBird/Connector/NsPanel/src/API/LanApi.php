@@ -17,7 +17,6 @@ namespace FastyBird\Connector\NsPanel\API;
 
 use Evenement;
 use FastyBird\Connector\NsPanel;
-use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Services;
@@ -81,7 +80,7 @@ final class LanApi
 	public function __construct(
 		private readonly string $identifier,
 		private readonly Services\HttpClientFactory $httpClientFactory,
-		private readonly Helpers\Entity $entityHelper,
+		private readonly Helpers\MessageBuilder $messageBuilder,
 		private readonly NsPanel\Logger $logger,
 		private readonly MetadataSchemas\Validator $schemaValidator,
 	)
@@ -89,7 +88,7 @@ final class LanApi
 	}
 
 	/**
-	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\Response\GetGatewayInfo> : Entities\API\Response\GetGatewayInfo)
+	 * @return ($async is true ? Promise\PromiseInterface<Messages\Response\GetGatewayInfo> : Messages\Response\GetGatewayInfo)
 	 *
 	 * @throws Exceptions\LanApiCall
 	 * @throws Exceptions\LanApiError
@@ -98,7 +97,7 @@ final class LanApi
 		string $ipAddress,
 		int $port = self::GATEWAY_PORT,
 		bool $async = true,
-	): Promise\PromiseInterface|Entities\API\Response\GetGatewayInfo
+	): Promise\PromiseInterface|Messages\Response\GetGatewayInfo
 	{
 		$deferred = new Promise\Deferred();
 
@@ -132,7 +131,7 @@ final class LanApi
 	}
 
 	/**
-	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\Response\GetGatewayAccessToken> : Entities\API\Response\GetGatewayAccessToken)
+	 * @return ($async is true ? Promise\PromiseInterface<Messages\Response\GetGatewayAccessToken> : Messages\Response\GetGatewayAccessToken)
 	 *
 	 * @throws Exceptions\LanApiCall
 	 * @throws Exceptions\LanApiError
@@ -142,7 +141,7 @@ final class LanApi
 		string $ipAddress,
 		int $port = self::GATEWAY_PORT,
 		bool $async = true,
-	): Promise\PromiseInterface|Entities\API\Response\GetGatewayAccessToken
+	): Promise\PromiseInterface|Messages\Response\GetGatewayAccessToken
 	{
 		$deferred = new Promise\Deferred();
 
@@ -181,7 +180,7 @@ final class LanApi
 	/**
 	 * @param array<mixed> $devices
 	 *
-	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\Response\SyncDevices> : Entities\API\Response\SyncDevices)
+	 * @return ($async is true ? Promise\PromiseInterface<Messages\Response\SyncDevices> : Messages\Response\SyncDevices)
 	 *
 	 * @throws Exceptions\LanApiCall
 	 * @throws Exceptions\LanApiError
@@ -192,12 +191,12 @@ final class LanApi
 		string $accessToken,
 		int $port = self::GATEWAY_PORT,
 		bool $async = true,
-	): Promise\PromiseInterface|Entities\API\Response\SyncDevices
+	): Promise\PromiseInterface|Messages\Response\SyncDevices
 	{
 		$deferred = new Promise\Deferred();
 
-		$entity = $this->createEntity(
-			Entities\API\Request\SyncDevices::class,
+		$message = $this->createMessage(
+			Messages\Request\SyncDevices::class,
 			Utils\ArrayHash::from([
 				'event' => [
 					'header' => [
@@ -221,7 +220,7 @@ final class LanApi
 					'Authorization' => sprintf('Bearer %s', $accessToken),
 				],
 				[],
-				Utils\Json::encode($entity->toJson()),
+				Utils\Json::encode($message->toJson()),
 			);
 
 			$result = $this->callRequest($request, $async);
@@ -267,7 +266,7 @@ final class LanApi
 	/**
 	 * @param array<mixed> $state
 	 *
-	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\Response\ReportDeviceState> : Entities\API\Response\ReportDeviceState)
+	 * @return ($async is true ? Promise\PromiseInterface<Messages\Response\ReportDeviceState> : Messages\Response\ReportDeviceState)
 	 *
 	 * @throws Exceptions\LanApiCall
 	 * @throws Exceptions\LanApiError
@@ -279,12 +278,12 @@ final class LanApi
 		string $accessToken,
 		int $port = self::GATEWAY_PORT,
 		bool $async = true,
-	): Promise\PromiseInterface|Entities\API\Response\ReportDeviceState
+	): Promise\PromiseInterface|Messages\Response\ReportDeviceState
 	{
 		$deferred = new Promise\Deferred();
 
-		$entity = $this->createEntity(
-			Entities\API\Request\ReportDeviceState::class,
+		$message = $this->createMessage(
+			Messages\Request\ReportDeviceState::class,
 			Utils\ArrayHash::from([
 				'event' => [
 					'header' => [
@@ -311,7 +310,7 @@ final class LanApi
 					'Authorization' => sprintf('Bearer %s', $accessToken),
 				],
 				[],
-				Utils\Json::encode($entity->toJson()),
+				Utils\Json::encode($message->toJson()),
 			);
 
 			$result = $this->callRequest($request, $async);
@@ -355,7 +354,7 @@ final class LanApi
 	}
 
 	/**
-	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\Response\ReportDeviceOnline> : Entities\API\Response\ReportDeviceOnline)
+	 * @return ($async is true ? Promise\PromiseInterface<Messages\Response\ReportDeviceOnline> : Messages\Response\ReportDeviceOnline)
 	 *
 	 * @throws Exceptions\LanApiCall
 	 * @throws Exceptions\LanApiError
@@ -367,12 +366,12 @@ final class LanApi
 		string $accessToken,
 		int $port = self::GATEWAY_PORT,
 		bool $async = true,
-	): Promise\PromiseInterface|Entities\API\Response\ReportDeviceOnline
+	): Promise\PromiseInterface|Messages\Response\ReportDeviceOnline
 	{
 		$deferred = new Promise\Deferred();
 
-		$entity = $this->createEntity(
-			Entities\API\Request\ReportDeviceOnline::class,
+		$message = $this->createMessage(
+			Messages\Request\ReportDeviceOnline::class,
 			Utils\ArrayHash::from([
 				'event' => [
 					'header' => [
@@ -399,7 +398,7 @@ final class LanApi
 					'Authorization' => sprintf('Bearer %s', $accessToken),
 				],
 				[],
-				Utils\Json::encode($entity->toJson()),
+				Utils\Json::encode($message->toJson()),
 			);
 
 			$result = $this->callRequest($request, $async);
@@ -490,7 +489,7 @@ final class LanApi
 	}
 
 	/**
-	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\Response\GetSubDevices> : Entities\API\Response\GetSubDevices)
+	 * @return ($async is true ? Promise\PromiseInterface<Messages\Response\GetSubDevices> : Messages\Response\GetSubDevices)
 	 *
 	 * @throws Exceptions\LanApiCall
 	 * @throws Exceptions\LanApiError
@@ -500,7 +499,7 @@ final class LanApi
 		string $accessToken,
 		int $port = self::GATEWAY_PORT,
 		bool $async = true,
-	): Promise\PromiseInterface|Entities\API\Response\GetSubDevices
+	): Promise\PromiseInterface|Messages\Response\GetSubDevices
 	{
 		$deferred = new Promise\Deferred();
 
@@ -537,7 +536,7 @@ final class LanApi
 	/**
 	 * @param array<mixed> $state
 	 *
-	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\Response\SetSubDeviceState> : Entities\API\Response\SetSubDeviceState)
+	 * @return ($async is true ? Promise\PromiseInterface<Messages\Response\SetSubDeviceState> : Messages\Response\SetSubDeviceState)
 	 *
 	 * @throws Exceptions\LanApiCall
 	 * @throws Exceptions\LanApiError
@@ -549,12 +548,12 @@ final class LanApi
 		string $accessToken,
 		int $port = self::GATEWAY_PORT,
 		bool $async = true,
-	): Promise\PromiseInterface|Entities\API\Response\SetSubDeviceState
+	): Promise\PromiseInterface|Messages\Response\SetSubDeviceState
 	{
 		$deferred = new Promise\Deferred();
 
-		$entity = $this->createEntity(
-			Entities\API\Request\SetSubDeviceState::class,
+		$message = $this->createMessage(
+			Messages\Request\SetSubDeviceState::class,
 			Utils\ArrayHash::from([
 				'state' => $state,
 			]),
@@ -569,7 +568,7 @@ final class LanApi
 					'Authorization' => sprintf('Bearer %s', $accessToken),
 				],
 				[],
-				Utils\Json::encode($entity->toJson()),
+				Utils\Json::encode($message->toJson()),
 			);
 
 			$result = $this->callRequest($request, $async);
@@ -619,7 +618,7 @@ final class LanApi
 	private function parseGetGatewayInfo(
 		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
-	): Entities\API\Response\GetGatewayInfo
+	): Messages\Response\GetGatewayInfo
 	{
 		$body = $this->validateResponseBody($request, $response, self::GET_GATEWAY_INFO_MESSAGE_SCHEMA_FILENAME);
 
@@ -636,7 +635,7 @@ final class LanApi
 			);
 		}
 
-		return $this->createEntity(Entities\API\Response\GetGatewayInfo::class, $body);
+		return $this->createMessage(Messages\Response\GetGatewayInfo::class, $body);
 	}
 
 	/**
@@ -646,7 +645,7 @@ final class LanApi
 	private function parseGetGatewayAccessToken(
 		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
-	): Entities\API\Response\GetGatewayAccessToken
+	): Messages\Response\GetGatewayAccessToken
 	{
 		$body = $this->validateResponseBody(
 			$request,
@@ -667,7 +666,7 @@ final class LanApi
 			);
 		}
 
-		return $this->createEntity(Entities\API\Response\GetGatewayAccessToken::class, $body);
+		return $this->createMessage(Messages\Response\GetGatewayAccessToken::class, $body);
 	}
 
 	/**
@@ -677,12 +676,12 @@ final class LanApi
 	private function parseSynchroniseDevices(
 		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
-	): Entities\API\Response\SyncDevices
+	): Messages\Response\SyncDevices
 	{
 		$errorBody = $this->validateResponseBody($request, $response, self::EVENT_ERROR_MESSAGE_SCHEMA_FILENAME, false);
 
 		if ($errorBody !== false) {
-			$error = $this->createEntity(Entities\API\Response\ErrorEvent::class, $errorBody);
+			$error = $this->createMessage(Messages\Response\ErrorEvent::class, $errorBody);
 
 			throw new Exceptions\LanApiCall(
 				sprintf('Synchronise third-party devices failed: %s', $error->getPayload()->getDescription()),
@@ -691,8 +690,8 @@ final class LanApi
 			);
 		}
 
-		return $this->createEntity(
-			Entities\API\Response\SyncDevices::class,
+		return $this->createMessage(
+			Messages\Response\SyncDevices::class,
 			$this->validateResponseBody($request, $response, self::SYNCHRONISE_DEVICES_MESSAGE_SCHEMA_FILENAME),
 		);
 	}
@@ -704,12 +703,12 @@ final class LanApi
 	private function parseReportDeviceState(
 		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
-	): Entities\API\Response\ReportDeviceState
+	): Messages\Response\ReportDeviceState
 	{
 		$errorBody = $this->validateResponseBody($request, $response, self::EVENT_ERROR_MESSAGE_SCHEMA_FILENAME, false);
 
 		if ($errorBody !== false) {
-			$error = $this->createEntity(Entities\API\Response\ErrorEvent::class, $errorBody);
+			$error = $this->createMessage(Messages\Response\ErrorEvent::class, $errorBody);
 
 			throw new Exceptions\LanApiCall(
 				sprintf('Report third-party device state failed: %s', $error->getPayload()->getDescription()),
@@ -718,8 +717,8 @@ final class LanApi
 			);
 		}
 
-		return $this->createEntity(
-			Entities\API\Response\ReportDeviceState::class,
+		return $this->createMessage(
+			Messages\Response\ReportDeviceState::class,
 			$this->validateResponseBody($request, $response, self::REPORT_DEVICE_STATE_MESSAGE_SCHEMA_FILENAME),
 		);
 	}
@@ -731,12 +730,12 @@ final class LanApi
 	private function parseReportDeviceOnline(
 		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
-	): Entities\API\Response\ReportDeviceOnline
+	): Messages\Response\ReportDeviceOnline
 	{
 		$errorBody = $this->validateResponseBody($request, $response, self::EVENT_ERROR_MESSAGE_SCHEMA_FILENAME, false);
 
 		if ($errorBody !== false) {
-			$error = $this->createEntity(Entities\API\Response\ErrorEvent::class, $errorBody);
+			$error = $this->createMessage(Messages\Response\ErrorEvent::class, $errorBody);
 
 			throw new Exceptions\LanApiCall(
 				sprintf('Report third-party device state failed: %s', $error->getPayload()->getDescription()),
@@ -745,8 +744,8 @@ final class LanApi
 			);
 		}
 
-		return $this->createEntity(
-			Entities\API\Response\ReportDeviceOnline::class,
+		return $this->createMessage(
+			Messages\Response\ReportDeviceOnline::class,
 			$this->validateResponseBody($request, $response, self::REPORT_DEVICE_ONLINE_MESSAGE_SCHEMA_FILENAME),
 		);
 	}
@@ -758,7 +757,7 @@ final class LanApi
 	private function parseGetSubDevices(
 		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
-	): Entities\API\Response\GetSubDevices
+	): Messages\Response\GetSubDevices
 	{
 		$body = $this->validateResponseBody($request, $response, self::GET_SUB_DEVICES_MESSAGE_SCHEMA_FILENAME);
 
@@ -775,7 +774,7 @@ final class LanApi
 			);
 		}
 
-		return $this->createEntity(Entities\API\Response\GetSubDevices::class, $body);
+		return $this->createMessage(Messages\Response\GetSubDevices::class, $body);
 	}
 
 	/**
@@ -785,7 +784,7 @@ final class LanApi
 	private function parseSetSubDeviceState(
 		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
-	): Entities\API\Response\SetSubDeviceState
+	): Messages\Response\SetSubDeviceState
 	{
 		$body = $this->validateResponseBody($request, $response, self::SET_SUB_DEVICE_STATE_MESSAGE_SCHEMA_FILENAME);
 
@@ -799,7 +798,7 @@ final class LanApi
 			);
 		}
 
-		return $this->createEntity(Entities\API\Response\SetSubDeviceState::class, $body);
+		return $this->createMessage(Messages\Response\SetSubDeviceState::class, $body);
 	}
 
 	/**
@@ -861,26 +860,26 @@ final class LanApi
 	}
 
 	/**
-	 * @template T of Entities\API\Entity
+	 * @template T of Messages\Message
 	 *
-	 * @param class-string<T> $entity
+	 * @param class-string<T> $message
 	 *
 	 * @return T
 	 *
 	 * @throws Exceptions\LanApiError
 	 */
-	private function createEntity(string $entity, Utils\ArrayHash $data): Entities\API\Entity
+	private function createMessage(string $message, Utils\ArrayHash $data): Messages\Message
 	{
 		try {
-			return $this->entityHelper->create(
-				$entity,
+			return $this->messageBuilder->create(
+				$message,
 				(array) Utils\Json::decode(Utils\Json::encode($data), Utils\Json::FORCE_ARRAY),
 			);
 		} catch (Exceptions\Runtime $ex) {
-			throw new Exceptions\LanApiError('Could not map data to entity', $ex->getCode(), $ex);
+			throw new Exceptions\LanApiError('Could not map data to message', $ex->getCode(), $ex);
 		} catch (Utils\JsonException $ex) {
 			throw new Exceptions\LanApiError(
-				'Could not create entity from response',
+				'Could not create message from response',
 				$ex->getCode(),
 				$ex,
 			);

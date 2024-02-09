@@ -16,19 +16,18 @@
 namespace FastyBird\Connector\NsPanel\Schemas\Devices;
 
 use FastyBird\Connector\NsPanel\Entities;
-use FastyBird\Connector\NsPanel\Schemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 
 /**
  * NS Panel third-party device entity schema
  *
- * @extends Schemas\NsPanelDevice<Entities\Devices\ThirdPartyDevice>
+ * @extends Device<Entities\Devices\ThirdPartyDevice>
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Schemas
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ThirdPartyDevice extends Schemas\NsPanelDevice
+final class ThirdPartyDevice extends Device
 {
 
 	/**

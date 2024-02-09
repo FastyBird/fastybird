@@ -83,7 +83,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 
 		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
 		$findConnectorQuery->byIdentifier('ns-panel');
-		$findConnectorQuery->byType(Entities\NsPanelConnector::TYPE);
+		$findConnectorQuery->byType(Entities\Connectors\Connector::TYPE);
 
 		$connector = $connectorsConfigurationRepository->findOneBy($findConnectorQuery);
 		self::assertInstanceOf(MetadataDocuments\DevicesModule\Connector::class, $connector);
@@ -101,7 +101,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 				self::assertCount(1, $gatewaySubDevices);
 
 				foreach ($gatewaySubDevices as $subDevice) {
-					self::assertInstanceOf(Entities\Clients\DiscoveredSubDevice::class, $subDevice);
+					self::assertInstanceOf(Clients\Messages\Response\DiscoveredSubDevice::class, $subDevice);
 
 					$data[] = $subDevice->toArray();
 				}
@@ -200,11 +200,11 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 
 		$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
 		$findChannelsQuery->forDevice($device);
-		$findChannelsQuery->byType(Entities\NsPanelChannel::TYPE);
+		$findChannelsQuery->byType(Entities\Channels\Channel::TYPE);
 
 		$channels = $channelsConfigurationRepository->findAllBy($findChannelsQuery);
 
-		$channelHelper = $this->getContainer()->getByType(Helpers\Channel::class);
+		$channelHelper = $this->getContainer()->getByType(Helpers\Channels\Channel::class);
 
 		self::assertCount(4, $channels);
 

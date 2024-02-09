@@ -27,7 +27,7 @@ use function is_string;
 
 #[ORM\Entity]
 #[ApplicationMapping\DiscriminatorEntry(name: self::TYPE)]
-class ThirdPartyDevice extends Entities\NsPanelDevice
+class ThirdPartyDevice extends Entities\Devices\Device
 {
 
 	public const TYPE = 'ns-panel-connector-third-party-device';

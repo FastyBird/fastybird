@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:MetadataLibrary!
+ * @package        FastyBird:NsPanelConnector!
  * @subpackage     Types
  * @since          1.0.0
  *
@@ -21,7 +21,7 @@ use function strval;
 /**
  * Toggle capability supported payload types
  *
- * @package        FastyBird:MetadataLibrary!
+ * @package        FastyBird:NsPanelConnector!
  * @subpackage     Types
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

@@ -49,7 +49,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 	 */
 	public function __construct(
 		MetadataDocuments\DevicesModule\Connector $connector,
-		Helpers\Entity $entityHelper,
+		Helpers\MessageBuilder $messageBuilder,
 		Helpers\Devices\ThirdPartyDevice $thirdPartyDeviceHelper,
 		Queue\Queue $queue,
 		DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
@@ -63,7 +63,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 	{
 		parent::__construct(
 			$connector,
-			$entityHelper,
+			$messageBuilder,
 			$thirdPartyDeviceHelper,
 			$queue,
 			$devicesConfigurationRepository,
@@ -113,7 +113,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 		if ($document instanceof MetadataDocuments\DevicesModule\ChannelPropertyState) {
 			$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 			$findChannelQuery->byId($document->getChannel());
-			$findChannelQuery->byType(Entities\NsPanelChannel::TYPE);
+			$findChannelQuery->byType(Entities\Channels\Channel::TYPE);
 
 			$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 
@@ -140,8 +140,8 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 				}
 
 				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\WriteSubDeviceState::class,
+					$this->messageBuilder->create(
+						Queue\Messages\WriteSubDeviceState::class,
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
@@ -161,8 +161,8 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 			} elseif ($device->getType() === Entities\Devices\ThirdPartyDevice::TYPE) {
 				if ($this->thirdPartyDeviceHelper->getGatewayIdentifier($device) === null) {
 					$this->queue->append(
-						$this->entityHelper->create(
-							Entities\Messages\StoreDeviceConnectionState::class,
+						$this->messageBuilder->create(
+							Queue\Messages\StoreDeviceConnectionState::class,
 							[
 								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
@@ -175,8 +175,8 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 				}
 
 				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\WriteThirdPartyDeviceState::class,
+					$this->messageBuilder->create(
+						Queue\Messages\WriteThirdPartyDeviceState::class,
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
@@ -196,7 +196,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 		} elseif ($document instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
 			$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 			$findChannelQuery->byId($document->getChannel());
-			$findChannelQuery->byType(Entities\NsPanelChannel::TYPE);
+			$findChannelQuery->byType(Entities\Channels\Channel::TYPE);
 
 			$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 
@@ -216,8 +216,8 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 
 			if ($device->getType() === Entities\Devices\SubDevice::TYPE) {
 				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\WriteSubDeviceState::class,
+					$this->messageBuilder->create(
+						Queue\Messages\WriteSubDeviceState::class,
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
@@ -229,8 +229,8 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 			} elseif ($device->getType() === Entities\Devices\ThirdPartyDevice::TYPE) {
 				if ($this->thirdPartyDeviceHelper->getGatewayIdentifier($device) === null) {
 					$this->queue->append(
-						$this->entityHelper->create(
-							Entities\Messages\StoreDeviceConnectionState::class,
+						$this->messageBuilder->create(
+							Queue\Messages\StoreDeviceConnectionState::class,
 							[
 								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
@@ -243,8 +243,8 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 				}
 
 				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\WriteThirdPartyDeviceState::class,
+					$this->messageBuilder->create(
+						Queue\Messages\WriteThirdPartyDeviceState::class,
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),

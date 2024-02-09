@@ -16,18 +16,17 @@
 namespace FastyBird\Connector\NsPanel\Hydrators\Devices;
 
 use FastyBird\Connector\NsPanel\Entities;
-use FastyBird\Connector\NsPanel\Hydrators;
 
 /**
  * NS Panel gateway device entity hydrator
  *
- * @extends Hydrators\NsPanelDevice<Entities\Devices\Gateway>
+ * @extends Device<Entities\Devices\Gateway>
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Hydrators
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Gateway extends Hydrators\NsPanelDevice
+final class Gateway extends Device
 {
 
 	public function getEntityName(): string

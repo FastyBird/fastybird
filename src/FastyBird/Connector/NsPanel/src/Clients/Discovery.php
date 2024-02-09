@@ -18,6 +18,7 @@ namespace FastyBird\Connector\NsPanel\Clients;
 use Evenement;
 use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\API;
+use FastyBird\Connector\NsPanel\Clients\Messages\Response\DiscoveredSubDevice;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
@@ -53,7 +54,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 		private readonly MetadataDocuments\DevicesModule\Connector $connector,
 		private readonly API\LanApiFactory $lanApiFactory,
 		private readonly Queue\Queue $queue,
-		private readonly Helpers\Entity $entityHelper,
+		private readonly Helpers\MessageBuilder $messageBuilder,
 		private readonly Helpers\Devices\Gateway $gatewayHelper,
 		private readonly NsPanel\Logger $logger,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
@@ -137,7 +138,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @return Promise\PromiseInterface<array<Entities\Clients\DiscoveredSubDevice>>
+	 * @return Promise\PromiseInterface<array<DiscoveredSubDevice>>
 	 *
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
@@ -165,7 +166,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$this->gatewayHelper->getIpAddress($gateway),
 				$this->gatewayHelper->getAccessToken($gateway),
 			)
-				->then(function (Entities\API\Response\GetSubDevices $response) use ($deferred, $gateway): void {
+				->then(function (API\Messages\Response\GetSubDevices $response) use ($deferred, $gateway): void {
 					$deferred->resolve($this->handleFoundSubDevices($gateway, $response));
 				})
 				->catch(static function (Throwable $ex) use ($deferred): void {
@@ -194,11 +195,11 @@ final class Discovery implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @return array<Entities\Clients\DiscoveredSubDevice>
+	 * @return array<DiscoveredSubDevice>
 	 */
 	private function handleFoundSubDevices(
 		MetadataDocuments\DevicesModule\Device $gateway,
-		Entities\API\Response\GetSubDevices $subDevices,
+		API\Messages\Response\GetSubDevices $subDevices,
 	): array
 	{
 		$processedSubDevices = [];
@@ -210,8 +211,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 			}
 
 			try {
-				$processedSubDevices[] = $this->entityHelper->create(
-					Entities\Clients\DiscoveredSubDevice::class,
+				$processedSubDevices[] = $this->messageBuilder->create(
+					Messages\Response\DiscoveredSubDevice::class,
 					array_merge(
 						$subDevice->toArray(),
 						[
@@ -221,8 +222,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 				);
 
 				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\StoreSubDevice::class,
+					$this->messageBuilder->create(
+						Queue\Messages\StoreSubDevice::class,
 						array_merge(
 							[
 								'connector' => $gateway->getConnector(),

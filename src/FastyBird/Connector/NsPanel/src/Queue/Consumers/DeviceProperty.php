@@ -113,7 +113,7 @@ trait DeviceProperty
 		if ($property === null) {
 			$device = $this->devicesRepository->find(
 				$deviceId,
-				Entities\NsPanelDevice::class,
+				Entities\Devices\Device::class,
 			);
 
 			if ($device === null) {

@@ -53,7 +53,7 @@ final class Http implements Server
 
 	public function __construct(
 		private readonly MetadataDocuments\DevicesModule\Connector $connector,
-		private readonly Helpers\Connector $connectorHelper,
+		private readonly Helpers\Connectors\Connector $connectorHelper,
 		private readonly Middleware\Router $routerMiddleware,
 		private readonly NsPanel\Logger $logger,
 		private readonly EventLoop\LoopInterface $eventLoop,

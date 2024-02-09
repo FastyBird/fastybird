@@ -17,6 +17,9 @@ namespace FastyBird\Connector\NsPanel\Writers;
 
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
+use FastyBird\Connector\NsPanel\Queue\Messages\StoreDeviceConnectionState;
+use FastyBird\Connector\NsPanel\Queue\Messages\WriteSubDeviceState;
+use FastyBird\Connector\NsPanel\Queue\Messages\WriteThirdPartyDeviceState;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Events as DevicesEvents;
@@ -67,7 +70,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 	{
 		$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 		$findChannelQuery->byId($event->getProperty()->getChannel());
-		$findChannelQuery->byType(Entities\NsPanelChannel::TYPE);
+		$findChannelQuery->byType(Entities\Channels\Channel::TYPE);
 
 		$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 
@@ -87,8 +90,8 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 
 		if ($device->getType() === Entities\Devices\SubDevice::TYPE) {
 			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\WriteSubDeviceState::class,
+				$this->messageBuilder->create(
+					WriteSubDeviceState::class,
 					[
 						'connector' => $device->getConnector(),
 						'device' => $device->getId(),
@@ -101,8 +104,8 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 		} elseif ($device->getType() === Entities\Devices\ThirdPartyDevice::TYPE) {
 			if ($this->thirdPartyDeviceHelper->getGatewayIdentifier($device) === null) {
 				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\StoreDeviceConnectionState::class,
+					$this->messageBuilder->create(
+						StoreDeviceConnectionState::class,
 						[
 							'connector' => $device->getConnector(),
 							'identifier' => $device->getIdentifier(),
@@ -115,8 +118,8 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 			}
 
 			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\WriteThirdPartyDeviceState::class,
+				$this->messageBuilder->create(
+					WriteThirdPartyDeviceState::class,
 					[
 						'connector' => $device->getConnector(),
 						'device' => $device->getId(),

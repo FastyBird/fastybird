@@ -56,25 +56,25 @@ final class NsPanelExtensionTest extends Tests\Cases\Unit\BaseTestCase
 		self::assertNotNull($container->getByType(Subscribers\Properties::class, false));
 		self::assertNotNull($container->getByType(Subscribers\Controls::class, false));
 
-		self::assertNotNull($container->getByType(Schemas\NsPanelConnector::class, false));
+		self::assertNotNull($container->getByType(Schemas\Connectors\Connector::class, false));
 		self::assertNotNull($container->getByType(Schemas\Devices\Gateway::class, false));
 		self::assertNotNull($container->getByType(Schemas\Devices\SubDevice::class, false));
 		self::assertNotNull($container->getByType(Schemas\Devices\ThirdPartyDevice::class, false));
-		self::assertNotNull($container->getByType(Schemas\NsPanelChannel::class, false));
+		self::assertNotNull($container->getByType(Schemas\Channels\Channel::class, false));
 
-		self::assertNotNull($container->getByType(Hydrators\NsPanelConnector::class, false));
+		self::assertNotNull($container->getByType(Hydrators\Connectors\Connector::class, false));
 		self::assertNotNull($container->getByType(Hydrators\Devices\Gateway::class, false));
 		self::assertNotNull($container->getByType(Hydrators\Devices\SubDevice::class, false));
 		self::assertNotNull($container->getByType(Hydrators\Devices\ThirdPartyDevice::class, false));
-		self::assertNotNull($container->getByType(Hydrators\NsPanelChannel::class, false));
+		self::assertNotNull($container->getByType(Hydrators\Channels\Channel::class, false));
 
 		self::assertNotNull($container->getByType(Helpers\Loader::class, false));
-		self::assertNotNull($container->getByType(Helpers\Entity::class, false));
-		self::assertNotNull($container->getByType(Helpers\Connector::class, false));
+		self::assertNotNull($container->getByType(Helpers\MessageBuilder::class, false));
+		self::assertNotNull($container->getByType(Helpers\Connectors\Connector::class, false));
 		self::assertNotNull($container->getByType(Helpers\Devices\Gateway::class, false));
 		self::assertNotNull($container->getByType(Helpers\Devices\ThirdPartyDevice::class, false));
 		self::assertNotNull($container->getByType(Helpers\Devices\SubDevice::class, false));
-		self::assertNotNull($container->getByType(Helpers\Channel::class, false));
+		self::assertNotNull($container->getByType(Helpers\Channels\Channel::class, false));
 
 		self::assertNotNull($container->getByType(Middleware\Router::class, false));
 

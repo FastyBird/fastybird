@@ -100,7 +100,7 @@ final class Properties implements Common\EventSubscriber
 				$this->processRequiredCapability($entity);
 			}
 		} elseif (
-			$entity instanceof Entities\NsPanelChannel
+			$entity instanceof Entities\Channels\Channel
 			&& $entity->getDevice() instanceof Entities\Devices\SubDevice
 		) {
 			$this->processSubDeviceChannelProperties($entity);
@@ -111,7 +111,7 @@ final class Properties implements Common\EventSubscriber
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DoctrineCrud\Exceptions\InvalidArgumentException
 	 */
-	private function processDeviceProperties(Entities\NsPanelDevice $device): void
+	private function processDeviceProperties(Entities\Devices\Device $device): void
 	{
 		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($device);
@@ -177,16 +177,16 @@ final class Properties implements Common\EventSubscriber
 			Helpers\Name::convertCapabilityToChannel(Types\Capability::get(Types\Capability::RSSI)),
 		);
 
-		$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\NsPanelChannel::class);
+		$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\Channels\Channel::class);
 
 		if ($channel === null) {
 			$channel = $this->channelsManager->create(Utils\ArrayHash::from([
-				'entity' => Entities\NsPanelChannel::class,
+				'entity' => Entities\Channels\Channel::class,
 				'identifier' => Helpers\Name::convertCapabilityToChannel(Types\Capability::get(Types\Capability::RSSI)),
 				'name' => 'RSSI',
 				'device' => $device,
 			]));
-			assert($channel instanceof Entities\NsPanelChannel);
+			assert($channel instanceof Entities\Channels\Channel);
 
 			$this->processSubDeviceChannelProperties($channel);
 		}
@@ -201,7 +201,7 @@ final class Properties implements Common\EventSubscriber
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
-	private function processSubDeviceChannelProperties(Entities\NsPanelChannel $channel): void
+	private function processSubDeviceChannelProperties(Entities\Channels\Channel $channel): void
 	{
 		$metadata = $this->loader->loadCapabilities();
 
@@ -314,7 +314,7 @@ final class Properties implements Common\EventSubscriber
 	 * @throws DoctrineCrud\Exceptions\InvalidArgumentException
 	 */
 	private function processChannelProperty(
-		Entities\NsPanelChannel $channel,
+		Entities\Channels\Channel $channel,
 		Types\Protocol $protocol,
 		MetadataTypes\DataType $dataType,
 		array|string|null $format = null,

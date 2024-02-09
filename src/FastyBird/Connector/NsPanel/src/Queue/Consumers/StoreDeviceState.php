@@ -20,6 +20,7 @@ use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Queue;
+use FastyBird\Connector\NsPanel\Queue\Messages\CapabilityState;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
@@ -67,15 +68,15 @@ final class StoreDeviceState implements Queue\Consumer
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 */
-	public function consume(Entities\Messages\Entity $entity): bool
+	public function consume(Queue\Messages\Message $message): bool
 	{
-		if (!$entity instanceof Entities\Messages\StoreDeviceState) {
+		if (!$message instanceof Queue\Messages\StoreDeviceState) {
 			return false;
 		}
 
 		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
-		$findDeviceQuery->byConnectorId($entity->getConnector());
-		$findDeviceQuery->byIdentifier($entity->getIdentifier());
+		$findDeviceQuery->byConnectorId($message->getConnector());
+		$findDeviceQuery->byIdentifier($message->getIdentifier());
 
 		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
@@ -86,12 +87,12 @@ final class StoreDeviceState implements Queue\Consumer
 					'source' => MetadataTypes\Sources\Connector::NS_PANEL,
 					'type' => 'store-device-state-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $message->getConnector()->toString(),
 					],
 					'device' => [
-						'identifier' => $entity->getIdentifier(),
+						'identifier' => $message->getIdentifier(),
 					],
-					'data' => $entity->toArray(),
+					'data' => $message->toArray(),
 				],
 			);
 
@@ -99,9 +100,9 @@ final class StoreDeviceState implements Queue\Consumer
 		}
 
 		if ($device->getType() === Entities\Devices\ThirdPartyDevice::TYPE) {
-			$this->processThirdPartyDevice($device, $entity->getState());
+			$this->processThirdPartyDevice($device, $message->getState());
 		} elseif ($device->getType() === Entities\Devices\SubDevice::TYPE) {
-			$this->processSubDevice($device, $entity->getState());
+			$this->processSubDevice($device, $message->getState());
 		}
 
 		$this->logger->debug(
@@ -110,12 +111,12 @@ final class StoreDeviceState implements Queue\Consumer
 				'source' => MetadataTypes\Sources\Connector::NS_PANEL,
 				'type' => 'store-device-state-message-consumer',
 				'connector' => [
-					'id' => $entity->getConnector()->toString(),
+					'id' => $message->getConnector()->toString(),
 				],
 				'device' => [
 					'id' => $device->getId()->toString(),
 				],
-				'data' => $entity->toArray(),
+				'data' => $message->toArray(),
 			],
 		);
 
@@ -123,7 +124,7 @@ final class StoreDeviceState implements Queue\Consumer
 	}
 
 	/**
-	 * @param array<Entities\Messages\CapabilityState> $state
+	 * @param array<CapabilityState> $state
 	 *
 	 * @throws DevicesExceptions\InvalidState
 	 */
@@ -169,7 +170,7 @@ final class StoreDeviceState implements Queue\Consumer
 	}
 
 	/**
-	 * @param array<Entities\Messages\CapabilityState> $state
+	 * @param array<CapabilityState> $state
 	 *
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws ApplicationExceptions\Runtime

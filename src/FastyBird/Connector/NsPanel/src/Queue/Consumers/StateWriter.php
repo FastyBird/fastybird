@@ -42,7 +42,7 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *
- * @property-read Helpers\Channel $channelHelper
+ * @property-read Helpers\Channels\Channel $channelHelper
  * @property-read DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository
  * @property-read DevicesModels\States\Async\ChannelPropertiesManager $channelPropertiesStatesManager
  */

@@ -102,7 +102,6 @@ class Install extends Console\Command\Command
 	public function __construct(
 		private readonly API\LanApiFactory $lanApiFactory,
 		private readonly Helpers\Loader $loader,
-		private readonly Helpers\Entity $entityHelper,
 		private readonly NsPanel\Logger $logger,
 		private readonly DevicesModels\Entities\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Entities\Connectors\ConnectorsManager $connectorsManager,
@@ -184,7 +183,7 @@ class Install extends Console\Command\Command
 
 				$connector = $this->connectorsRepository->findOneBy(
 					$findConnectorQuery,
-					Entities\NsPanelConnector::class,
+					Entities\Connectors\Connector::class,
 				);
 
 				if ($connector !== null) {
@@ -212,7 +211,7 @@ class Install extends Console\Command\Command
 
 				$connector = $this->connectorsRepository->findOneBy(
 					$findConnectorQuery,
-					Entities\NsPanelConnector::class,
+					Entities\Connectors\Connector::class,
 				);
 
 				if ($connector === null) {
@@ -236,11 +235,11 @@ class Install extends Console\Command\Command
 			$this->getOrmConnection()->beginTransaction();
 
 			$connector = $this->connectorsManager->create(Utils\ArrayHash::from([
-				'entity' => Entities\NsPanelConnector::class,
+				'entity' => Entities\Connectors\Connector::class,
 				'identifier' => $identifier,
 				'name' => $name === '' ? null : $name,
 			]));
-			assert($connector instanceof Entities\NsPanelConnector);
+			assert($connector instanceof Entities\Connectors\Connector);
 
 			$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
@@ -297,8 +296,8 @@ class Install extends Console\Command\Command
 		$createGateways = (bool) $io->askQuestion($question);
 
 		if ($createGateways) {
-			$connector = $this->connectorsRepository->find($connector->getId(), Entities\NsPanelConnector::class);
-			assert($connector instanceof Entities\NsPanelConnector);
+			$connector = $this->connectorsRepository->find($connector->getId(), Entities\Connectors\Connector::class);
+			assert($connector instanceof Entities\Connectors\Connector);
 
 			$this->createGateway($io, $connector);
 		}
@@ -391,7 +390,7 @@ class Install extends Console\Command\Command
 				'name' => $name === '' ? null : $name,
 				'enabled' => $enabled,
 			]));
-			assert($connector instanceof Entities\NsPanelConnector);
+			assert($connector instanceof Entities\Connectors\Connector);
 
 			if ($modeProperty === null) {
 				if ($mode === null) {
@@ -457,8 +456,8 @@ class Install extends Console\Command\Command
 			return;
 		}
 
-		$connector = $this->connectorsRepository->find($connector->getId(), Entities\NsPanelConnector::class);
-		assert($connector instanceof Entities\NsPanelConnector);
+		$connector = $this->connectorsRepository->find($connector->getId(), Entities\Connectors\Connector::class);
+		assert($connector instanceof Entities\Connectors\Connector);
 
 		$this->askManageConnectorAction($io, $connector);
 	}
@@ -568,10 +567,13 @@ class Install extends Console\Command\Command
 	{
 		$findConnectorsQuery = new Queries\Entities\FindConnectors();
 
-		$connectors = $this->connectorsRepository->findAllBy($findConnectorsQuery, Entities\NsPanelConnector::class);
+		$connectors = $this->connectorsRepository->findAllBy(
+			$findConnectorsQuery,
+			Entities\Connectors\Connector::class,
+		);
 		usort(
 			$connectors,
-			static fn (Entities\NsPanelConnector $a, Entities\NsPanelConnector $b): int => (
+			static fn (Entities\Connectors\Connector $a, Entities\Connectors\Connector $b): int => (
 				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
 			),
 		);
@@ -631,7 +633,7 @@ class Install extends Console\Command\Command
 	 */
 	private function createGateway(
 		Style\SymfonyStyle $io,
-		Entities\NsPanelConnector $connector,
+		Entities\Connectors\Connector $connector,
 	): void
 	{
 		$question = new Console\Question\Question(
@@ -644,7 +646,7 @@ class Install extends Console\Command\Command
 				$findDeviceQuery->byIdentifier($answer);
 
 				if (
-					$this->devicesRepository->findOneBy($findDeviceQuery, Entities\NsPanelDevice::class) !== null
+					$this->devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\Device::class) !== null
 				) {
 					throw new Exceptions\Runtime(
 						$this->translator->translate(
@@ -708,7 +710,7 @@ class Install extends Console\Command\Command
 		try {
 			$accessToken = $panelApi->getGatewayAccessToken(
 				$connector->getName() ?? $connector->getIdentifier(),
-				$panelInfo->getIpAddress(),
+				$panelInfo->getData()->getIpAddress(),
 				API\LanApi::GATEWAY_PORT,
 				false,
 			);
@@ -736,7 +738,7 @@ class Install extends Console\Command\Command
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
 				'identifier' => Types\DevicePropertyIdentifier::IP_ADDRESS,
 				'dataType' => MetadataTypes\DataType::STRING,
-				'value' => $panelInfo->getIpAddress(),
+				'value' => $panelInfo->getData()->getIpAddress(),
 				'device' => $gateway,
 			]));
 
@@ -744,7 +746,7 @@ class Install extends Console\Command\Command
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
 				'identifier' => Types\DevicePropertyIdentifier::DOMAIN,
 				'dataType' => MetadataTypes\DataType::STRING,
-				'value' => $panelInfo->getDomain(),
+				'value' => $panelInfo->getData()->getDomain(),
 				'device' => $gateway,
 			]));
 
@@ -752,7 +754,7 @@ class Install extends Console\Command\Command
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
 				'identifier' => Types\DevicePropertyIdentifier::MAC_ADDRESS,
 				'dataType' => MetadataTypes\DataType::STRING,
-				'value' => $panelInfo->getMacAddress(),
+				'value' => $panelInfo->getData()->getMacAddress(),
 				'device' => $gateway,
 			]));
 
@@ -760,7 +762,7 @@ class Install extends Console\Command\Command
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
 				'identifier' => Types\DevicePropertyIdentifier::FIRMWARE_VERSION,
 				'dataType' => MetadataTypes\DataType::STRING,
-				'value' => $panelInfo->getFirmwareVersion(),
+				'value' => $panelInfo->getData()->getFirmwareVersion(),
 				'device' => $gateway,
 			]));
 
@@ -838,7 +840,7 @@ class Install extends Console\Command\Command
 	 */
 	private function editGateway(
 		Style\SymfonyStyle $io,
-		Entities\NsPanelConnector $connector,
+		Entities\Connectors\Connector $connector,
 	): void
 	{
 		$gateway = $this->askWhichGateway($io, $connector);
@@ -939,7 +941,7 @@ class Install extends Console\Command\Command
 			try {
 				$accessToken = $panelApi->getGatewayAccessToken(
 					$connector->getName() ?? $connector->getIdentifier(),
-					$panelInfo->getIpAddress(),
+					$panelInfo->getData()->getIpAddress(),
 					API\LanApi::GATEWAY_PORT,
 					false,
 				);
@@ -973,12 +975,12 @@ class Install extends Console\Command\Command
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
 					'identifier' => Types\DevicePropertyIdentifier::IP_ADDRESS,
 					'dataType' => MetadataTypes\DataType::STRING,
-					'value' => $panelInfo->getIpAddress(),
+					'value' => $panelInfo->getData()->getIpAddress(),
 					'device' => $gateway,
 				]));
 			} elseif ($ipAddressProperty instanceof DevicesEntities\Devices\Properties\Variable) {
 				$this->devicesPropertiesManager->update($ipAddressProperty, Utils\ArrayHash::from([
-					'value' => $panelInfo->getIpAddress(),
+					'value' => $panelInfo->getData()->getIpAddress(),
 				]));
 			}
 
@@ -987,12 +989,12 @@ class Install extends Console\Command\Command
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
 					'identifier' => Types\DevicePropertyIdentifier::DOMAIN,
 					'dataType' => MetadataTypes\DataType::STRING,
-					'value' => $panelInfo->getDomain(),
+					'value' => $panelInfo->getData()->getDomain(),
 					'device' => $gateway,
 				]));
 			} elseif ($domainProperty instanceof DevicesEntities\Devices\Properties\Variable) {
 				$this->devicesPropertiesManager->update($domainProperty, Utils\ArrayHash::from([
-					'value' => $panelInfo->getDomain(),
+					'value' => $panelInfo->getData()->getDomain(),
 				]));
 			}
 
@@ -1001,12 +1003,12 @@ class Install extends Console\Command\Command
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
 					'identifier' => Types\DevicePropertyIdentifier::MAC_ADDRESS,
 					'dataType' => MetadataTypes\DataType::STRING,
-					'value' => $panelInfo->getMacAddress(),
+					'value' => $panelInfo->getData()->getMacAddress(),
 					'device' => $gateway,
 				]));
 			} elseif ($macAddressProperty instanceof DevicesEntities\Devices\Properties\Variable) {
 				$this->devicesPropertiesManager->update($macAddressProperty, Utils\ArrayHash::from([
-					'value' => $panelInfo->getMacAddress(),
+					'value' => $panelInfo->getData()->getMacAddress(),
 				]));
 			}
 
@@ -1015,12 +1017,12 @@ class Install extends Console\Command\Command
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
 					'identifier' => Types\DevicePropertyIdentifier::FIRMWARE_VERSION,
 					'dataType' => MetadataTypes\DataType::STRING,
-					'value' => $panelInfo->getFirmwareVersion(),
+					'value' => $panelInfo->getData()->getFirmwareVersion(),
 					'device' => $gateway,
 				]));
 			} elseif ($firmwareVersionProperty instanceof DevicesEntities\Devices\Properties\Variable) {
 				$this->devicesPropertiesManager->update($firmwareVersionProperty, Utils\ArrayHash::from([
-					'value' => $panelInfo->getFirmwareVersion(),
+					'value' => $panelInfo->getData()->getFirmwareVersion(),
 				]));
 			}
 
@@ -1097,7 +1099,7 @@ class Install extends Console\Command\Command
 	 */
 	private function deleteGateway(
 		Style\SymfonyStyle $io,
-		Entities\NsPanelConnector $connector,
+		Entities\Connectors\Connector $connector,
 	): void
 	{
 		$gateway = $this->askWhichGateway($io, $connector);
@@ -1177,7 +1179,7 @@ class Install extends Console\Command\Command
 	 */
 	private function manageGateway(
 		Style\SymfonyStyle $io,
-		Entities\NsPanelConnector $connector,
+		Entities\Connectors\Connector $connector,
 	): void
 	{
 		$gateway = $this->askWhichGateway($io, $connector);
@@ -1197,7 +1199,7 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function listGateways(Style\SymfonyStyle $io, Entities\NsPanelConnector $connector): void
+	private function listGateways(Style\SymfonyStyle $io, Entities\Connectors\Connector $connector): void
 	{
 		$findDevicesQuery = new Queries\Entities\FindGatewayDevices();
 		$findDevicesQuery->forConnector($connector);
@@ -1232,7 +1234,7 @@ class Install extends Console\Command\Command
 			$findDevicesQuery = new Queries\Entities\FindDevices();
 			$findDevicesQuery->forParent($device);
 
-			$childDevices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\NsPanelDevice::class);
+			$childDevices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\Device::class);
 
 			$table->addRow([
 				$index + 1,
@@ -1255,7 +1257,7 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function discoverDevices(Style\SymfonyStyle $io, Entities\NsPanelConnector $connector): void
+	private function discoverDevices(Style\SymfonyStyle $io, Entities\Connectors\Connector $connector): void
 	{
 		if ($this->output === null) {
 			throw new Exceptions\InvalidState('Something went wrong, console output is not configured');
@@ -1364,7 +1366,7 @@ class Install extends Console\Command\Command
 	 */
 	private function createDevice(
 		Style\SymfonyStyle $io,
-		Entities\NsPanelConnector $connector,
+		Entities\Connectors\Connector $connector,
 		Entities\Devices\Gateway $gateway,
 	): void
 	{
@@ -1378,7 +1380,7 @@ class Install extends Console\Command\Command
 				$findDeviceQuery->byIdentifier($answer);
 
 				if (
-					$this->devicesRepository->findOneBy($findDeviceQuery, Entities\NsPanelDevice::class) !== null
+					$this->devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\Device::class) !== null
 				) {
 					throw new Exceptions\Runtime(
 						$this->translator->translate(
@@ -1488,7 +1490,7 @@ class Install extends Console\Command\Command
 	 */
 	private function editDevice(
 		Style\SymfonyStyle $io,
-		Entities\NsPanelConnector $connector,
+		Entities\Connectors\Connector $connector,
 		Entities\Devices\Gateway $gateway,
 	): void
 	{
@@ -1562,7 +1564,7 @@ class Install extends Console\Command\Command
 	 */
 	private function deleteDevice(
 		Style\SymfonyStyle $io,
-		Entities\NsPanelConnector $connector,
+		Entities\Connectors\Connector $connector,
 		Entities\Devices\Gateway $gateway,
 	): void
 	{
@@ -1679,7 +1681,7 @@ class Install extends Console\Command\Command
 	 */
 	private function manageDevice(
 		Style\SymfonyStyle $io,
-		Entities\NsPanelConnector $connector,
+		Entities\Connectors\Connector $connector,
 		Entities\Devices\Gateway $gateway,
 	): void
 	{
@@ -1717,11 +1719,11 @@ class Install extends Console\Command\Command
 		$findDevicesQuery = new Queries\Entities\FindDevices();
 		$findDevicesQuery->forParent($gateway);
 
-		/** @var array<Entities\NsPanelDevice> $devices */
-		$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\NsPanelDevice::class);
+		/** @var array<Entities\Devices\Device> $devices */
+		$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\Device::class);
 		usort(
 			$devices,
-			static fn (Entities\NsPanelDevice $a, Entities\NsPanelDevice $b): int => (
+			static fn (Entities\Devices\Device $a, Entities\Devices\Device $b): int => (
 				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
 			),
 		);
@@ -1751,10 +1753,10 @@ class Install extends Console\Command\Command
 				implode(
 					', ',
 					array_map(
-						fn (Entities\NsPanelChannel $channel): string => $this->translator->translate(
+						fn (Entities\Channels\Channel $channel): string => $this->translator->translate(
 							'//ns-panel-connector.cmd.base.capability.' . $channel->getCapability()->getValue(),
 						),
-						$this->channelsRepository->findAllBy($findChannelsQuery, Entities\NsPanelChannel::class),
+						$this->channelsRepository->findAllBy($findChannelsQuery, Entities\Channels\Channel::class),
 					),
 				),
 			]);
@@ -1778,7 +1780,7 @@ class Install extends Console\Command\Command
 	private function createCapability(
 		Style\SymfonyStyle $io,
 		Entities\Devices\ThirdPartyDevice $device,
-	): Entities\NsPanelChannel|null
+	): Entities\Channels\Channel|null
 	{
 		$capability = $this->askCapabilityType($io, $device);
 
@@ -1822,7 +1824,7 @@ class Install extends Console\Command\Command
 			$findChannelQuery->forDevice($device);
 			$findChannelQuery->byIdentifier($identifier);
 
-			$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\NsPanelChannel::class);
+			$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\Channels\Channel::class);
 
 			if ($channel !== null) {
 				$io->error(
@@ -1843,7 +1845,7 @@ class Install extends Console\Command\Command
 			preg_match(NsPanel\Constants::CHANNEL_IDENTIFIER, $identifier, $matches);
 
 			$channel = $this->channelsManager->create(Utils\ArrayHash::from([
-				'entity' => Entities\NsPanelChannel::class,
+				'entity' => Entities\Channels\Channel::class,
 				'identifier' => $identifier,
 				'name' => $this->translator->translate(
 					'//ns-panel-connector.cmd.base.capability.' . $capability->getValue(),
@@ -1853,7 +1855,7 @@ class Install extends Console\Command\Command
 				) ? ' ' . $matches['key'] : ''),
 				'device' => $device,
 			]));
-			assert($channel instanceof Entities\NsPanelChannel);
+			assert($channel instanceof Entities\Channels\Channel);
 
 			do {
 				$property = $this->createProtocol($io, $device, $channel);
@@ -1893,8 +1895,8 @@ class Install extends Console\Command\Command
 			$this->databaseHelper->clear();
 		}
 
-		$channel = $this->channelsRepository->find($channel->getId(), Entities\NsPanelChannel::class);
-		assert($channel instanceof Entities\NsPanelChannel);
+		$channel = $this->channelsRepository->find($channel->getId(), Entities\Channels\Channel::class);
+		assert($channel instanceof Entities\Channels\Channel);
 
 		return $channel;
 	}
@@ -2151,11 +2153,11 @@ class Install extends Console\Command\Command
 		$findChannelsQuery = new Queries\Entities\FindChannels();
 		$findChannelsQuery->forDevice($device);
 
-		/** @var array<Entities\NsPanelChannel> $deviceChannels */
-		$deviceChannels = $this->channelsRepository->findAllBy($findChannelsQuery, Entities\NsPanelChannel::class);
+		/** @var array<Entities\Channels\Channel> $deviceChannels */
+		$deviceChannels = $this->channelsRepository->findAllBy($findChannelsQuery, Entities\Channels\Channel::class);
 		usort(
 			$deviceChannels,
-			static fn (Entities\NsPanelChannel $a, Entities\NsPanelChannel $b): int => (
+			static fn (Entities\Channels\Channel $a, Entities\Channels\Channel $b): int => (
 				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
 			),
 		);
@@ -2211,7 +2213,7 @@ class Install extends Console\Command\Command
 	private function createProtocol(
 		Style\SymfonyStyle $io,
 		Entities\Devices\ThirdPartyDevice $device,
-		Entities\NsPanelChannel $channel,
+		Entities\Channels\Channel $channel,
 	): DevicesEntities\Channels\Properties\Property|null
 	{
 		$capabilitiesMetadata = $this->loader->loadCapabilities();
@@ -2342,7 +2344,7 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
 	 */
-	private function editProtocol(Style\SymfonyStyle $io, Entities\NsPanelChannel $channel): void
+	private function editProtocol(Style\SymfonyStyle $io, Entities\Channels\Channel $channel): void
 	{
 		$capabilitiesMetadata = $this->loader->loadCapabilities();
 
@@ -2541,7 +2543,7 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
 	 */
-	private function deleteProtocol(Style\SymfonyStyle $io, Entities\NsPanelChannel $channel): void
+	private function deleteProtocol(Style\SymfonyStyle $io, Entities\Channels\Channel $channel): void
 	{
 		$property = $this->askWhichProtocol($io, $channel);
 
@@ -2622,7 +2624,7 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
 	 */
-	private function listProtocols(Style\SymfonyStyle $io, Entities\NsPanelChannel $channel): void
+	private function listProtocols(Style\SymfonyStyle $io, Entities\Channels\Channel $channel): void
 	{
 		$findPropertiesQuery = new DevicesQueries\Entities\FindChannelProperties();
 		$findPropertiesQuery->forChannel($channel);
@@ -2780,7 +2782,7 @@ class Install extends Console\Command\Command
 	 */
 	private function askManageConnectorAction(
 		Style\SymfonyStyle $io,
-		Entities\NsPanelConnector $connector,
+		Entities\Connectors\Connector $connector,
 	): void
 	{
 		$question
@@ -2900,7 +2902,7 @@ class Install extends Console\Command\Command
 	 */
 	private function askManageGatewayAction(
 		Style\SymfonyStyle $io,
-		Entities\NsPanelConnector $connector,
+		Entities\Connectors\Connector $connector,
 		Entities\Devices\Gateway $gateway,
 	): void
 	{
@@ -3198,7 +3200,7 @@ class Install extends Console\Command\Command
 	 */
 	private function askProtocolAction(
 		Style\SymfonyStyle $io,
-		Entities\NsPanelChannel $channel,
+		Entities\Channels\Channel $channel,
 	): void
 	{
 		$question = new Console\Question\ChoiceQuestion(
@@ -3315,7 +3317,7 @@ class Install extends Console\Command\Command
 
 	private function askConnectorName(
 		Style\SymfonyStyle $io,
-		Entities\NsPanelConnector|null $connector = null,
+		Entities\Connectors\Connector|null $connector = null,
 	): string|null
 	{
 		$question = new Console\Question\Question(
@@ -3328,7 +3330,7 @@ class Install extends Console\Command\Command
 		return strval($name) === '' ? null : strval($name);
 	}
 
-	private function askDeviceName(Style\SymfonyStyle $io, Entities\NsPanelDevice|null $device = null): string|null
+	private function askDeviceName(Style\SymfonyStyle $io, Entities\Devices\Device|null $device = null): string|null
 	{
 		$question = new Console\Question\Question(
 			$this->translator->translate('//ns-panel-connector.cmd.install.questions.provide.device.name'),
@@ -3468,7 +3470,10 @@ class Install extends Console\Command\Command
 						Helpers\Name::convertCapabilityToChannel(Types\Capability::get($type)),
 					);
 
-					$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\NsPanelChannel::class);
+					$channel = $this->channelsRepository->findOneBy(
+						$findChannelQuery,
+						Entities\Channels\Channel::class,
+					);
 
 					if ($channel === null || $allowMultiple) {
 						$capabilities[$type] = $this->translator->translate(
@@ -3498,7 +3503,7 @@ class Install extends Console\Command\Command
 
 						$channel = $this->channelsRepository->findOneBy(
 							$findChannelQuery,
-							Entities\NsPanelChannel::class,
+							Entities\Channels\Channel::class,
 						);
 
 						if ($channel === null || $allowMultiple) {
@@ -3569,7 +3574,7 @@ class Install extends Console\Command\Command
 	 */
 	private function askProtocolType(
 		Style\SymfonyStyle $io,
-		Entities\NsPanelChannel $channel,
+		Entities\Channels\Channel $channel,
 	): Types\Protocol|null
 	{
 		$metadata = $this->loader->loadCapabilities();
@@ -3704,7 +3709,7 @@ class Install extends Console\Command\Command
 		);
 
 		foreach ($systemDevices as $device) {
-			if ($device instanceof Entities\NsPanelDevice) {
+			if ($device instanceof Entities\Devices\Device) {
 				continue;
 			}
 
@@ -4428,7 +4433,7 @@ class Install extends Console\Command\Command
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 */
-	private function askWhichConnector(Style\SymfonyStyle $io): Entities\NsPanelConnector|null
+	private function askWhichConnector(Style\SymfonyStyle $io): Entities\Connectors\Connector|null
 	{
 		$connectors = [];
 
@@ -4436,11 +4441,11 @@ class Install extends Console\Command\Command
 
 		$systemConnectors = $this->connectorsRepository->findAllBy(
 			$findConnectorsQuery,
-			Entities\NsPanelConnector::class,
+			Entities\Connectors\Connector::class,
 		);
 		usort(
 			$systemConnectors,
-			static fn (Entities\NsPanelConnector $a, Entities\NsPanelConnector $b): int => (
+			static fn (Entities\Connectors\Connector $a, Entities\Connectors\Connector $b): int => (
 				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
 			),
 		);
@@ -4462,7 +4467,7 @@ class Install extends Console\Command\Command
 		$question->setErrorMessage(
 			$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 		);
-		$question->setValidator(function (string|int|null $answer) use ($connectors): Entities\NsPanelConnector {
+		$question->setValidator(function (string|int|null $answer) use ($connectors): Entities\Connectors\Connector {
 			if ($answer === null) {
 				throw new Exceptions\Runtime(
 					sprintf(
@@ -4484,7 +4489,7 @@ class Install extends Console\Command\Command
 
 				$connector = $this->connectorsRepository->findOneBy(
 					$findConnectorQuery,
-					Entities\NsPanelConnector::class,
+					Entities\Connectors\Connector::class,
 				);
 
 				if ($connector !== null) {
@@ -4501,7 +4506,7 @@ class Install extends Console\Command\Command
 		});
 
 		$connector = $io->askQuestion($question);
-		assert($connector instanceof Entities\NsPanelConnector);
+		assert($connector instanceof Entities\Connectors\Connector);
 
 		return $connector;
 	}
@@ -4512,21 +4517,21 @@ class Install extends Console\Command\Command
 	 */
 	private function askWhichPanel(
 		Style\SymfonyStyle $io,
-		Entities\NsPanelConnector $connector,
+		Entities\Connectors\Connector $connector,
 		Entities\Devices\Gateway|null $gateway = null,
-	): Entities\Commands\GatewayInfo
+	): API\Messages\Response\GetGatewayInfo
 	{
 		$question = new Console\Question\Question(
 			$this->translator->translate('//ns-panel-connector.cmd.install.questions.provide.device.address'),
 			$gateway?->getIpAddress(),
 		);
 		$question->setValidator(
-			function (string|null $answer) use ($connector): Entities\Commands\GatewayInfo {
+			function (string|null $answer) use ($connector): API\Messages\Response\GetGatewayInfo {
 				if ($answer !== null && $answer !== '') {
 					$panelApi = $this->lanApiFactory->create($connector->getIdentifier());
 
 					try {
-						$panelInfo = $panelApi->getGatewayInfo($answer, API\LanApi::GATEWAY_PORT, false);
+						return $panelApi->getGatewayInfo($answer, API\LanApi::GATEWAY_PORT, false);
 					} catch (Exceptions\LanApiCall $ex) {
 						$this->logger->error(
 							'Could not get NS Panel basic information',
@@ -4552,20 +4557,6 @@ class Install extends Console\Command\Command
 							),
 						);
 					}
-
-					try {
-						return $this->entityHelper->create(
-							Entities\Commands\GatewayInfo::class,
-							$panelInfo->getData()->toArray(),
-						);
-					} catch (Exceptions\Runtime) {
-						throw new Exceptions\Runtime(
-							sprintf(
-								$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
-								$answer,
-							),
-						);
-					}
 				}
 
 				throw new Exceptions\Runtime(
@@ -4578,7 +4569,7 @@ class Install extends Console\Command\Command
 		);
 
 		$panelInfo = $io->askQuestion($question);
-		assert($panelInfo instanceof Entities\Commands\GatewayInfo);
+		assert($panelInfo instanceof API\Messages\Response\GetGatewayInfo);
 
 		return $panelInfo;
 	}
@@ -4588,7 +4579,7 @@ class Install extends Console\Command\Command
 	 */
 	private function askWhichGateway(
 		Style\SymfonyStyle $io,
-		Entities\NsPanelConnector $connector,
+		Entities\Connectors\Connector $connector,
 	): Entities\Devices\Gateway|null
 	{
 		$gateways = [];
@@ -4670,7 +4661,7 @@ class Install extends Console\Command\Command
 	 */
 	private function askWhichDevice(
 		Style\SymfonyStyle $io,
-		Entities\NsPanelConnector $connector,
+		Entities\Connectors\Connector $connector,
 		Entities\Devices\Gateway $gateway,
 		bool $onlyThirdParty = false,
 	): Entities\Devices\ThirdPartyDevice|Entities\Devices\SubDevice|null
@@ -4691,12 +4682,12 @@ class Install extends Console\Command\Command
 			$findDevicesQuery->forConnector($connector);
 			$findDevicesQuery->forParent($gateway);
 
-			$connectorDevices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\NsPanelDevice::class);
+			$connectorDevices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\Device::class);
 		}
 
 		usort(
 			$connectorDevices,
-			static fn (Entities\NsPanelDevice $a, Entities\NsPanelDevice $b): int => (
+			static fn (Entities\Devices\Device $a, Entities\Devices\Device $b): int => (
 				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
 			),
 		);
@@ -4743,7 +4734,7 @@ class Install extends Console\Command\Command
 
 					$device = $this->devicesRepository->findOneBy(
 						$findDeviceQuery,
-						Entities\NsPanelDevice::class,
+						Entities\Devices\Device::class,
 					);
 
 					if (
@@ -4775,17 +4766,17 @@ class Install extends Console\Command\Command
 	private function askWhichCapability(
 		Style\SymfonyStyle $io,
 		Entities\Devices\ThirdPartyDevice $device,
-	): Entities\NsPanelChannel|false|null
+	): Entities\Channels\Channel|false|null
 	{
 		$channels = [];
 
 		$findChannelsQuery = new Queries\Entities\FindChannels();
 		$findChannelsQuery->forDevice($device);
 
-		$deviceChannels = $this->channelsRepository->findAllBy($findChannelsQuery, Entities\NsPanelChannel::class);
+		$deviceChannels = $this->channelsRepository->findAllBy($findChannelsQuery, Entities\Channels\Channel::class);
 		usort(
 			$deviceChannels,
-			static fn (Entities\NsPanelChannel $a, Entities\NsPanelChannel $b): int => (
+			static fn (Entities\Channels\Channel $a, Entities\Channels\Channel $b): int => (
 				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
 			),
 		);
@@ -4812,7 +4803,7 @@ class Install extends Console\Command\Command
 			$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(
-			function (string|int|null $answer) use ($device, $channels): Entities\NsPanelChannel|false {
+			function (string|int|null $answer) use ($device, $channels): Entities\Channels\Channel|false {
 				if ($answer === null) {
 					throw new Exceptions\Runtime(
 						sprintf(
@@ -4837,7 +4828,10 @@ class Install extends Console\Command\Command
 					$findChannelQuery->forDevice($device);
 					$findChannelQuery->byIdentifier($identifier);
 
-					$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\NsPanelChannel::class);
+					$channel = $this->channelsRepository->findOneBy(
+						$findChannelQuery,
+						Entities\Channels\Channel::class,
+					);
 
 					if ($channel !== null) {
 						return $channel;
@@ -4854,7 +4848,7 @@ class Install extends Console\Command\Command
 		);
 
 		$channel = $io->askQuestion($question);
-		assert($channel instanceof Entities\NsPanelChannel || $channel === false);
+		assert($channel instanceof Entities\Channels\Channel || $channel === false);
 
 		return $channel;
 	}
@@ -4864,7 +4858,7 @@ class Install extends Console\Command\Command
 	 */
 	private function askWhichProtocol(
 		Style\SymfonyStyle $io,
-		Entities\NsPanelChannel $channel,
+		Entities\Channels\Channel $channel,
 	): DevicesEntities\Channels\Properties\Variable|DevicesEntities\Channels\Properties\Mapped|null
 	{
 		$properties = [];
@@ -4954,7 +4948,7 @@ class Install extends Console\Command\Command
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 */
-	private function findNextDeviceIdentifier(Entities\NsPanelConnector $connector, string $pattern): string
+	private function findNextDeviceIdentifier(Entities\Connectors\Connector $connector, string $pattern): string
 	{
 		for ($i = 1; $i <= 100; $i++) {
 			$identifier = sprintf($pattern, $i);
@@ -4963,7 +4957,7 @@ class Install extends Console\Command\Command
 			$findDeviceQuery->forConnector($connector);
 			$findDeviceQuery->byIdentifier($identifier);
 
-			$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\NsPanelDevice::class);
+			$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\Device::class);
 
 			if ($device === null) {
 				return $identifier;
@@ -4986,7 +4980,7 @@ class Install extends Console\Command\Command
 			$findChannelQuery->forDevice($device);
 			$findChannelQuery->byIdentifier($identifier);
 
-			$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\NsPanelChannel::class);
+			$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\Channels\Channel::class);
 
 			if ($channel === null) {
 				return $identifier;

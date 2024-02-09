@@ -53,12 +53,12 @@ final class WriteSubDeviceState implements Queue\Consumer
 	private API\LanApi|null $lanApiApi = null;
 
 	public function __construct(
-		protected readonly Helpers\Channel $channelHelper,
+		protected readonly Helpers\Channels\Channel $channelHelper,
 		protected readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
 		protected readonly DevicesModels\States\Async\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly Queue\Queue $queue,
 		private readonly API\LanApiFactory $lanApiApiFactory,
-		private readonly Helpers\Entity $entityHelper,
+		private readonly Helpers\MessageBuilder $messageBuilder,
 		private readonly Helpers\Devices\Gateway $gatewayHelper,
 		private readonly Helpers\Devices\SubDevice $subDeviceHelper,
 		private readonly NsPanel\Logger $logger,
@@ -80,14 +80,14 @@ final class WriteSubDeviceState implements Queue\Consumer
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
-	public function consume(Entities\Messages\Entity $entity): bool
+	public function consume(Queue\Messages\Message $message): bool
 	{
-		if (!$entity instanceof Entities\Messages\WriteSubDeviceState) {
+		if (!$message instanceof Queue\Messages\WriteSubDeviceState) {
 			return false;
 		}
 
 		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
-		$findConnectorQuery->byId($entity->getConnector());
+		$findConnectorQuery->byId($message->getConnector());
 
 		$connector = $this->connectorsConfigurationRepository->findOneBy($findConnectorQuery);
 
@@ -98,15 +98,15 @@ final class WriteSubDeviceState implements Queue\Consumer
 					'source' => MetadataTypes\Sources\Connector::NS_PANEL,
 					'type' => 'write-sub-device-state-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $message->getConnector()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $message->getDevice()->toString(),
 					],
 					'channel' => [
-						'id' => $entity->getChannel()->toString(),
+						'id' => $message->getChannel()->toString(),
 					],
-					'data' => $entity->toArray(),
+					'data' => $message->toArray(),
 				],
 			);
 
@@ -115,7 +115,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 
 		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDeviceQuery->forConnector($connector);
-		$findDeviceQuery->byId($entity->getDevice());
+		$findDeviceQuery->byId($message->getDevice());
 		$findDeviceQuery->byType(Entities\Devices\SubDevice::TYPE);
 
 		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
@@ -130,12 +130,12 @@ final class WriteSubDeviceState implements Queue\Consumer
 						'id' => $connector->getId()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $message->getDevice()->toString(),
 					],
 					'channel' => [
-						'id' => $entity->getChannel()->toString(),
+						'id' => $message->getChannel()->toString(),
 					],
-					'data' => $entity->toArray(),
+					'data' => $message->toArray(),
 				],
 			);
 
@@ -149,8 +149,8 @@ final class WriteSubDeviceState implements Queue\Consumer
 
 		if ($ipAddress === null || $accessToken === null) {
 			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\StoreDeviceConnectionState::class,
+				$this->messageBuilder->create(
+					Queue\Messages\StoreDeviceConnectionState::class,
 					[
 						'connector' => $connector->getId(),
 						'identifier' => $gateway->getIdentifier(),
@@ -171,9 +171,9 @@ final class WriteSubDeviceState implements Queue\Consumer
 						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
-						'id' => $entity->getChannel()->toString(),
+						'id' => $message->getChannel()->toString(),
 					],
-					'data' => $entity->toArray(),
+					'data' => $message->toArray(),
 				],
 			);
 
@@ -182,7 +182,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 
 		$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 		$findChannelQuery->forDevice($device);
-		$findChannelQuery->byId($entity->getChannel());
+		$findChannelQuery->byId($message->getChannel());
 
 		$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 
@@ -199,9 +199,9 @@ final class WriteSubDeviceState implements Queue\Consumer
 						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
-						'id' => $entity->getChannel()->toString(),
+						'id' => $message->getChannel()->toString(),
 					],
-					'data' => $entity->toArray(),
+					'data' => $message->toArray(),
 				],
 			);
 
@@ -223,7 +223,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 					'channel' => [
 						'id' => $channel->getId()->toString(),
 					],
-					'data' => $entity->toArray(),
+					'data' => $message->toArray(),
 				],
 			);
 
@@ -247,7 +247,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 					'channel' => [
 						'id' => $channel->getId()->toString(),
 					],
-					'data' => $entity->toArray(),
+					'data' => $message->toArray(),
 				],
 			);
 
@@ -283,7 +283,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 						}
 					}
 				}))
-				->catch(function (Throwable $ex) use ($entity, $connector, $gateway, $device, $channel): void {
+				->catch(function (Throwable $ex) use ($message, $connector, $gateway, $device, $channel): void {
 					$findPropertiesQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
 					$findPropertiesQuery->forChannel($channel);
 					$findPropertiesQuery->settable(true);
@@ -316,8 +316,8 @@ final class WriteSubDeviceState implements Queue\Consumer
 						];
 
 						$this->queue->append(
-							$this->entityHelper->create(
-								Entities\Messages\StoreDeviceConnectionState::class,
+							$this->messageBuilder->create(
+								Queue\Messages\StoreDeviceConnectionState::class,
 								[
 									'connector' => $connector->getId(),
 									'identifier' => $gateway->getIdentifier(),
@@ -328,8 +328,8 @@ final class WriteSubDeviceState implements Queue\Consumer
 
 					} else {
 						$this->queue->append(
-							$this->entityHelper->create(
-								Entities\Messages\StoreDeviceConnectionState::class,
+							$this->messageBuilder->create(
+								Queue\Messages\StoreDeviceConnectionState::class,
 								[
 									'connector' => $connector->getId(),
 									'identifier' => $gateway->getIdentifier(),
@@ -355,7 +355,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 								'channel' => [
 									'id' => $channel->getId()->toString(),
 								],
-								'data' => $entity->toArray(),
+								'data' => $message->toArray(),
 							],
 							$extra,
 						),
@@ -377,7 +377,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 					'channel' => [
 						'id' => $channel->getId()->toString(),
 					],
-					'data' => $entity->toArray(),
+					'data' => $message->toArray(),
 				],
 			);
 		}
@@ -396,7 +396,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 				'channel' => [
 					'id' => $channel->getId()->toString(),
 				],
-				'data' => $entity->toArray(),
+				'data' => $message->toArray(),
 			],
 		);
 

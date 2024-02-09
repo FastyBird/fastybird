@@ -76,8 +76,8 @@ final class Connector implements DevicesConnectors\Connector
 		private readonly MetadataDocuments\DevicesModule\Connector $connector,
 		private readonly array $clientsFactories,
 		private readonly Clients\DiscoveryFactory $discoveryClientFactory,
-		private readonly Helpers\Entity $entityHelper,
-		private readonly Helpers\Connector $connectorHelper,
+		private readonly Helpers\MessageBuilder $messageBuilder,
+		private readonly Helpers\Connectors\Connector $connectorHelper,
 		private readonly Helpers\Devices\ThirdPartyDevice $thirdPartyDeviceHelper,
 		private readonly Queue\Queue $queue,
 		private readonly Queue\Consumers $consumers,
@@ -102,7 +102,7 @@ final class Connector implements DevicesConnectors\Connector
 	 */
 	public function execute(bool $standalone = true): Promise\PromiseInterface
 	{
-		assert($this->connector->getType() === Entities\NsPanelConnector::TYPE);
+		assert($this->connector->getType() === Entities\Connectors\Connector::TYPE);
 
 		$this->logger->info(
 			'Starting NS Panel connector service',
@@ -185,8 +185,8 @@ final class Connector implements DevicesConnectors\Connector
 					foreach ($channels as $channel) {
 						try {
 							$this->queue->append(
-								$this->entityHelper->create(
-									Entities\Messages\WriteThirdPartyDeviceState::class,
+								$this->messageBuilder->create(
+									Queue\Messages\WriteThirdPartyDeviceState::class,
 									[
 										'connector' => $device->getConnector(),
 										'device' => $device->getId(),
@@ -244,7 +244,7 @@ final class Connector implements DevicesConnectors\Connector
 	 */
 	public function discover(): Promise\PromiseInterface
 	{
-		assert($this->connector->getType() === Entities\NsPanelConnector::TYPE);
+		assert($this->connector->getType() === Entities\Connectors\Connector::TYPE);
 
 		$this->logger->info(
 			'Starting NS Panel connector discovery',
@@ -298,7 +298,7 @@ final class Connector implements DevicesConnectors\Connector
 
 	public function terminate(): void
 	{
-		assert($this->connector->getType() === Entities\NsPanelConnector::TYPE);
+		assert($this->connector->getType() === Entities\Connectors\Connector::TYPE);
 
 		foreach ($this->clients as $client) {
 			$client->disconnect();

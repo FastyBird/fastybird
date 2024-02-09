@@ -59,21 +59,21 @@ final class Device implements Client
 
 	public function __construct(
 		private readonly MetadataDocuments\DevicesModule\Connector $connector,
-		API\LanApiFactory $lanApiFactory,
+		private readonly API\LanApiFactory $lanApiFactory,
 		private readonly Queue\Queue $queue,
-		private readonly Helpers\Loader $loader,
-		private readonly Helpers\Entity $entityHelper,
-		private readonly Helpers\Connector $connectorHelper,
+		private readonly Helpers\MessageBuilder $messageBuilder,
+		private readonly Helpers\Connectors\Connector $connectorHelper,
 		private readonly Helpers\Devices\Gateway $gatewayHelper,
 		private readonly Helpers\Devices\ThirdPartyDevice $thirdPartyDeviceHelper,
-		private readonly Helpers\Channel $channelHelper,
+		private readonly Helpers\Channels\Channel $channelHelper,
+		private readonly Helpers\Loader $loader,
 		private readonly NsPanel\Logger $logger,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
 	)
 	{
-		$this->lanApi = $lanApiFactory->create($this->connector->getIdentifier());
+		$this->lanApi = $this->lanApiFactory->create($this->connector->getIdentifier());
 	}
 
 	/**
@@ -117,8 +117,8 @@ final class Device implements Client
 					(array) $categoriesMetadata,
 				)) {
 					$this->queue->append(
-						$this->entityHelper->create(
-							Entities\Messages\StoreDeviceConnectionState::class,
+						$this->messageBuilder->create(
+							Queue\Messages\StoreDeviceConnectionState::class,
 							[
 								'connector' => $gateway->getConnector(),
 								'identifier' => $gateway->getIdentifier(),
@@ -218,8 +218,8 @@ final class Device implements Client
 				// Device have to have configured all required capabilities
 				if (array_diff($requiredCapabilities, $deviceCapabilities) !== []) {
 					$this->queue->append(
-						$this->entityHelper->create(
-							Entities\Messages\StoreDeviceConnectionState::class,
+						$this->messageBuilder->create(
+							Queue\Messages\StoreDeviceConnectionState::class,
 							[
 								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
@@ -263,7 +263,7 @@ final class Device implements Client
 						$ipAddress,
 						$accessToken,
 					)
-						->then(function (Entities\API\Response\SyncDevices $response) use ($gateway, $deferred): void {
+						->then(function (API\Messages\Response\SyncDevices $response) use ($gateway, $deferred): void {
 							$this->logger->debug(
 								'NS Panel third-party devices was successfully synchronised',
 								[
@@ -288,8 +288,8 @@ final class Device implements Client
 
 								if ($device !== null) {
 									$this->queue->append(
-										$this->entityHelper->create(
-											Entities\Messages\StoreDeviceConnectionState::class,
+										$this->messageBuilder->create(
+											Queue\Messages\StoreDeviceConnectionState::class,
 											[
 												'connector' => $device->getConnector(),
 												'identifier' => $device->getIdentifier(),
@@ -299,8 +299,8 @@ final class Device implements Client
 									);
 
 									$this->queue->append(
-										$this->entityHelper->create(
-											Entities\Messages\StoreThirdPartyDevice::class,
+										$this->messageBuilder->create(
+											Queue\Messages\StoreThirdPartyDevice::class,
 											[
 												'connector' => $device->getConnector(),
 												'gateway' => $gateway->getId(),
@@ -349,8 +349,8 @@ final class Device implements Client
 								];
 
 								$this->queue->append(
-									$this->entityHelper->create(
-										Entities\Messages\StoreDeviceConnectionState::class,
+									$this->messageBuilder->create(
+										Queue\Messages\StoreDeviceConnectionState::class,
 										[
 											'connector' => $gateway->getConnector(),
 											'identifier' => $gateway->getIdentifier(),
@@ -361,8 +361,8 @@ final class Device implements Client
 
 							} else {
 								$this->queue->append(
-									$this->entityHelper->create(
-										Entities\Messages\StoreDeviceConnectionState::class,
+									$this->messageBuilder->create(
+										Queue\Messages\StoreDeviceConnectionState::class,
 										[
 											'connector' => $gateway->getConnector(),
 											'identifier' => $gateway->getIdentifier(),
@@ -399,7 +399,7 @@ final class Device implements Client
 				$promise->then(function () use ($gateway, $ipAddress, $accessToken): void {
 					$this->lanApi->getSubDevices($ipAddress, $accessToken)
 						->then(
-							function (Entities\API\Response\GetSubDevices $response) use ($gateway, $ipAddress, $accessToken): void {
+							function (API\Messages\Response\GetSubDevices $response) use ($gateway, $ipAddress, $accessToken): void {
 								foreach ($response->getData()->getDevicesList() as $subDevice) {
 									if ($subDevice->getThirdSerialNumber() === null) {
 										continue;
@@ -456,8 +456,8 @@ final class Device implements Client
 												];
 
 												$this->queue->append(
-													$this->entityHelper->create(
-														Entities\Messages\StoreDeviceConnectionState::class,
+													$this->messageBuilder->create(
+														Queue\Messages\StoreDeviceConnectionState::class,
 														[
 															'connector' => $gateway->getConnector(),
 															'identifier' => $gateway->getIdentifier(),
@@ -468,8 +468,8 @@ final class Device implements Client
 
 											} else {
 												$this->queue->append(
-													$this->entityHelper->create(
-														Entities\Messages\StoreDeviceConnectionState::class,
+													$this->messageBuilder->create(
+														Queue\Messages\StoreDeviceConnectionState::class,
 														[
 															'connector' => $gateway->getConnector(),
 															'identifier' => $gateway->getIdentifier(),
@@ -521,8 +521,8 @@ final class Device implements Client
 								];
 
 								$this->queue->append(
-									$this->entityHelper->create(
-										Entities\Messages\StoreDeviceConnectionState::class,
+									$this->messageBuilder->create(
+										Queue\Messages\StoreDeviceConnectionState::class,
 										[
 											'connector' => $gateway->getConnector(),
 											'identifier' => $gateway->getIdentifier(),
@@ -533,8 +533,8 @@ final class Device implements Client
 
 							} else {
 								$this->queue->append(
-									$this->entityHelper->create(
-										Entities\Messages\StoreDeviceConnectionState::class,
+									$this->messageBuilder->create(
+										Queue\Messages\StoreDeviceConnectionState::class,
 										[
 											'connector' => $gateway->getConnector(),
 											'identifier' => $gateway->getIdentifier(),
@@ -581,8 +581,8 @@ final class Device implements Client
 				);
 
 				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\StoreDeviceConnectionState::class,
+					$this->messageBuilder->create(
+						Queue\Messages\StoreDeviceConnectionState::class,
 						[
 							'connector' => $gateway->getConnector(),
 							'identifier' => $gateway->getIdentifier(),
@@ -622,8 +622,8 @@ final class Device implements Client
 
 			foreach ($this->devicesConfigurationRepository->findAllBy($findDevicesQuery) as $device) {
 				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\StoreDeviceConnectionState::class,
+					$this->messageBuilder->create(
+						Queue\Messages\StoreDeviceConnectionState::class,
 						[
 							'connector' => $gateway->getConnector(),
 							'identifier' => $device->getIdentifier(),
@@ -722,8 +722,8 @@ final class Device implements Client
 			}
 
 			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\StoreDeviceConnectionState::class,
+				$this->messageBuilder->create(
+					Queue\Messages\StoreDeviceConnectionState::class,
 					[
 						'connector' => $gateway->getConnector(),
 						'identifier' => $gateway->getIdentifier(),

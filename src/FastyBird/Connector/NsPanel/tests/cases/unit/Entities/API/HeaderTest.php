@@ -3,7 +3,7 @@
 namespace FastyBird\Connector\NsPanel\Tests\Cases\Unit\Entities\API;
 
 use Error;
-use FastyBird\Connector\NsPanel\Entities;
+use FastyBird\Connector\NsPanel\API\Messages\Header;
 use FastyBird\Connector\NsPanel\Tests;
 use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
@@ -21,7 +21,7 @@ final class HeaderTest extends Tests\Cases\Unit\BaseTestCase
 	 * @throws ObjectMapper\Exception\InvalidData
 	 * @throws Error
 	 */
-	public function testCreateEntity(): void
+	public function testCreateMessage(): void
 	{
 		$container = $this->createContainer();
 
@@ -30,18 +30,18 @@ final class HeaderTest extends Tests\Cases\Unit\BaseTestCase
 
 		$id = Uuid\Uuid::uuid4();
 
-		$entity = $processor->process(
+		$message = $processor->process(
 			[
 				'name' => Types\Header::ERROR_RESPONSE,
 				'message_id' => $id->toString(),
 				'version' => '1',
 			],
-			Entities\API\Header::class,
+			Header::class,
 		);
 
-		self::assertSame(Types\Header::ERROR_RESPONSE, $entity->getName()->getValue());
-		self::assertSame($id->toString(), $entity->getMessageId());
-		self::assertSame('1', $entity->getVersion());
+		self::assertSame(Types\Header::ERROR_RESPONSE, $message->getName()->getValue());
+		self::assertSame($id->toString(), $message->getMessageId());
+		self::assertSame('1', $message->getVersion());
 	}
 
 }
