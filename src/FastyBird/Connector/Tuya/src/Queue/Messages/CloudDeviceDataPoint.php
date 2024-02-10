@@ -39,10 +39,7 @@ final class CloudDeviceDataPoint implements Message
 		private readonly string $code,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $name,
-		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\BackedEnumValue(class: MetadataTypes\DataType::class),
-			new ObjectMapper\Rules\InstanceOfValue(type: MetadataTypes\DataType::class),
-		])]
+		#[ObjectMapper\Rules\BackedEnumValue(class: MetadataTypes\DataType::class)]
 		#[ObjectMapper\Modifiers\FieldName('data_type')]
 		private readonly MetadataTypes\DataType $dataType,
 		#[ObjectMapper\Rules\AnyOf([

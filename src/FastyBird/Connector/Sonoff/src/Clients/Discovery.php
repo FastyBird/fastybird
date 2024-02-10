@@ -19,7 +19,6 @@ use BadMethodCallException;
 use Evenement;
 use FastyBird\Connector\Sonoff;
 use FastyBird\Connector\Sonoff\API;
-use FastyBird\Connector\Sonoff\Entities;
 use FastyBird\Connector\Sonoff\Exceptions;
 use FastyBird\Connector\Sonoff\Helpers;
 use FastyBird\Connector\Sonoff\Queue;
@@ -70,10 +69,10 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 	private EventLoop\TimerInterface|null $handlerTimer = null;
 
-	/** @var SplObjectStorage<Entities\Clients\DiscoveredCloudDevice, null> */
+	/** @var SplObjectStorage<Messages\Response\DiscoveredCloudDevice, null> */
 	private SplObjectStorage $discoveredDevices;
 
-	/** @var array<string, Entities\Clients\DiscoveredLocalDevice> */
+	/** @var array<string, Messages\Response\DiscoveredLocalDevice> */
 	private array $foundLocalDevices = [];
 
 	private API\LanApi|null $lanApiConnection = null;
@@ -84,7 +83,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 		private readonly MetadataDocuments\DevicesModule\Connector $connector,
 		private readonly API\LanApiFactory $lanApiFactory,
 		private readonly API\CloudApiFactory $cloudApiFactory,
-		private readonly Helpers\Entity $entityHelper,
+		private readonly Helpers\MessageBuilder $entityHelper,
 		private readonly Helpers\Connector $connectorHelper,
 		private readonly Queue\Queue $queue,
 		private readonly Sonoff\Logger $logger,
@@ -189,9 +188,9 @@ final class Discovery implements Evenement\EventEmitterInterface
 		}
 
 		$apiClient->getFamily()
-			->then(function (Entities\API\Cloud\Family $family) use ($deferred, $apiClient): void {
+			->then(function (API\Messages\Response\Cloud\Family $family) use ($deferred, $apiClient): void {
 				$apiClient->getFamilyThings($family->getFamilyId())
-					->then(function (Entities\API\Cloud\Things $things) use ($deferred): void {
+					->then(function (API\Messages\Response\Cloud\Things $things) use ($deferred): void {
 						$this->handleFoundCloudDevices($things);
 
 						$deferred->resolve(true);
@@ -248,9 +247,9 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 		$apiClient->on(
 			'message',
-			function (Entities\API\Lan\DeviceEvent $message): void {
+			function (API\Messages\Response\Lan\DeviceEvent $message): void {
 				$this->foundLocalDevices[$message->getId()] = $this->entityHelper->create(
-					Entities\Clients\DiscoveredLocalDevice::class,
+					Messages\Response\DiscoveredLocalDevice::class,
 					[
 						'ipAddress' => $message->getIpAddress(),
 						'domain' => $message->getDomain(),
@@ -278,7 +277,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 	/**
 	 * @throws Exceptions\Runtime
 	 */
-	private function handleFoundCloudDevices(Entities\API\Cloud\Things $things): void
+	private function handleFoundCloudDevices(API\Messages\Response\Cloud\Things $things): void
 	{
 		foreach ($things->getDevices() as $device) {
 			try {
@@ -412,7 +411,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 			$this->discoveredDevices->attach(
 				$this->entityHelper->create(
-					Entities\Clients\DiscoveredCloudDevice::class,
+					Messages\Response\DiscoveredCloudDevice::class,
 					[
 						'id' => $device->getDeviceId(),
 						'apiKey' => $device->getApiKey(),
@@ -446,7 +445,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			try {
 				$this->queue->append(
 					$this->entityHelper->create(
-						Entities\Messages\StoreDevice::class,
+						Queue\Messages\StoreDevice::class,
 						[
 							'connector' => $this->connector->getId(),
 							'id' => $device->getId(),
@@ -465,12 +464,12 @@ final class Discovery implements Evenement\EventEmitterInterface
 							'port' => $localConfiguration?->getPort(),
 							'parameters' => array_map(
 							// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-								static fn (Entities\Clients\DiscoveredDeviceParameter $parameter): array => [
+								static fn (Messages\Response\DiscoveredDeviceParameter $parameter): array => [
 									'group' => $parameter->getGroup(),
 									'identifier' => $parameter->getIdentifier(),
 									'name' => $parameter->getName(),
 									'type' => $parameter->getType(),
-									'dataType' => $parameter->getDataType(),
+									'dataType' => $parameter->getDataType()->value,
 									'format' => $parameter->getFormat(),
 									'settable' => $parameter->isSettable(),
 									'queryable' => $parameter->isQueryable(),

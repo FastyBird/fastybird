@@ -7,7 +7,7 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:SonoffConnector!
- * @subpackage     Consumers
+ * @subpackage     Queue
  * @since          1.0.0
  *
  * @date           19.05.23
@@ -31,7 +31,7 @@ use Ramsey\Uuid;
  * Device ip address consumer trait
  *
  * @package        FastyBird:SonoffConnector!
- * @subpackage     Consumers
+ * @subpackage     Queue
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *
@@ -113,7 +113,7 @@ trait DeviceProperty
 		if ($property === null) {
 			$device = $this->devicesRepository->find(
 				$deviceId,
-				Entities\SonoffDevice::class,
+				Entities\Devices\Device::class,
 			);
 
 			if ($device === null) {

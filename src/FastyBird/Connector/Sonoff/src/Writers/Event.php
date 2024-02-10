@@ -17,6 +17,8 @@ namespace FastyBird\Connector\Sonoff\Writers;
 
 use FastyBird\Connector\Sonoff\Entities;
 use FastyBird\Connector\Sonoff\Exceptions;
+use FastyBird\Connector\Sonoff\Queue\Messages\WriteChannelPropertyState;
+use FastyBird\Connector\Sonoff\Queue\Messages\WriteDevicePropertyState;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -68,7 +70,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 			$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
 			$findDeviceQuery->forConnector($this->connector);
 			$findDeviceQuery->byId($event->getProperty()->getDevice());
-			$findDeviceQuery->byType(Entities\SonoffDevice::TYPE);
+			$findDeviceQuery->byType(Entities\Devices\Device::TYPE);
 
 			$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
@@ -78,7 +80,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 
 			$this->queue->append(
 				$this->entityHelper->create(
-					Entities\Messages\WriteDevicePropertyState::class,
+					WriteDevicePropertyState::class,
 					[
 						'connector' => $this->connector->getId(),
 						'device' => $device->getId(),
@@ -90,7 +92,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 		} else {
 			$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 			$findChannelQuery->byId($event->getProperty()->getChannel());
-			$findChannelQuery->byType(Entities\SonoffChannel::TYPE);
+			$findChannelQuery->byType(Entities\Channels\Channel::TYPE);
 
 			$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 
@@ -101,7 +103,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 			$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
 			$findDeviceQuery->forConnector($this->connector);
 			$findDeviceQuery->byId($channel->getDevice());
-			$findDeviceQuery->byType(Entities\SonoffDevice::TYPE);
+			$findDeviceQuery->byType(Entities\Devices\Device::TYPE);
 
 			$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
@@ -111,7 +113,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 
 			$this->queue->append(
 				$this->entityHelper->create(
-					Entities\Messages\WriteChannelPropertyState::class,
+					WriteChannelPropertyState::class,
 					[
 						'connector' => $this->connector->getId(),
 						'device' => $device->getId(),

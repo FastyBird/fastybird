@@ -58,7 +58,7 @@ final class Cloud extends ClientProcess implements Client
 		private readonly MetadataDocuments\DevicesModule\Connector $connector,
 		private readonly bool $autoMode,
 		private readonly API\ConnectionManager $connectionManager,
-		private readonly Helpers\Entity $entityHelper,
+		private readonly Helpers\MessageBuilder $entityHelper,
 		private readonly Queue\Queue $queue,
 		private readonly Sonoff\Logger $logger,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
@@ -98,7 +98,7 @@ final class Cloud extends ClientProcess implements Client
 
 			$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
 			$findDevicesQuery->forConnector($this->connector);
-			$findDevicesQuery->byType(Entities\SonoffDevice::TYPE);
+			$findDevicesQuery->byType(Entities\Devices\Device::TYPE);
 
 			foreach ($this->devicesConfigurationRepository->findAllBy($findDevicesQuery) as $device) {
 				$this->devices[$device->getId()->toString()] = $device;
@@ -117,11 +117,11 @@ final class Cloud extends ClientProcess implements Client
 
 			$cloudWs->on(
 				'message',
-				function (Entities\API\Sockets\DeviceConnectionStateEvent|Entities\API\Sockets\DeviceStateEvent $message): void {
-					if ($message instanceof Entities\API\Sockets\DeviceConnectionStateEvent) {
+				function (API\Messages\Response\Sockets\DeviceConnectionStateEvent|API\Messages\Response\Sockets\DeviceStateEvent $message): void {
+					if ($message instanceof API\Messages\Response\Sockets\DeviceConnectionStateEvent) {
 						$this->queue->append(
 							$this->entityHelper->create(
-								Entities\Messages\StoreDeviceConnectionState::class,
+								Queue\Messages\StoreDeviceConnectionState::class,
 								[
 									'connector' => $this->connector->getId(),
 									'identifier' => $message->getDeviceId(),
@@ -249,10 +249,10 @@ final class Cloud extends ClientProcess implements Client
 		$this->connectionManager
 			->getCloudApiConnection($this->connector)
 			->getThing($device->getIdentifier())
-			->then(function (Entities\API\Cloud\Device $result) use ($deferred, $device): void {
+			->then(function (API\Messages\Response\Cloud\Device $result) use ($deferred, $device): void {
 					$this->queue->append(
 						$this->entityHelper->create(
-							Entities\Messages\StoreDeviceConnectionState::class,
+							Queue\Messages\StoreDeviceConnectionState::class,
 							[
 								'connector' => $this->connector->getId(),
 								'identifier' => $device->getIdentifier(),
@@ -284,7 +284,7 @@ final class Cloud extends ClientProcess implements Client
 					if ($ex instanceof Exceptions\CloudApiError) {
 						$this->queue->append(
 							$this->entityHelper->create(
-								Entities\Messages\StoreDeviceConnectionState::class,
+								Queue\Messages\StoreDeviceConnectionState::class,
 								[
 									'connector' => $device->getConnector(),
 									'identifier' => $device->getIdentifier(),
@@ -339,7 +339,7 @@ final class Cloud extends ClientProcess implements Client
 					$device->getIdentifier(),
 					$this->deviceHelper->getApiKey($device),
 				)
-				->then(function (Entities\API\Sockets\DeviceStateEvent $result) use ($deferred): void {
+				->then(function (API\Messages\Response\Sockets\DeviceStateEvent $result) use ($deferred): void {
 						$this->handleDeviceState($result);
 
 						$deferred->resolve(true);
@@ -350,7 +350,7 @@ final class Cloud extends ClientProcess implements Client
 							->getThingState(
 								$device->getIdentifier(),
 							)
-							->then(function (Entities\API\Cloud\DeviceState $result) use ($deferred): void {
+							->then(function (API\Messages\Response\Cloud\DeviceState $result) use ($deferred): void {
 									$this->handleDeviceState($result);
 
 									$deferred->resolve(true);
@@ -374,7 +374,7 @@ final class Cloud extends ClientProcess implements Client
 									if ($ex instanceof Exceptions\CloudApiError) {
 										$this->queue->append(
 											$this->entityHelper->create(
-												Entities\Messages\StoreDeviceConnectionState::class,
+												Queue\Messages\StoreDeviceConnectionState::class,
 												[
 													'connector' => $device->getConnector(),
 													'identifier' => $device->getIdentifier(),
@@ -406,7 +406,7 @@ final class Cloud extends ClientProcess implements Client
 			$this->connectionManager
 				->getCloudApiConnection($this->connector)
 				->getThingState($device->getIdentifier())
-				->then(function (Entities\API\Cloud\DeviceState $result) use ($deferred): void {
+				->then(function (API\Messages\Response\Cloud\DeviceState $result) use ($deferred): void {
 						$this->handleDeviceState($result);
 
 						$deferred->resolve(true);
@@ -451,7 +451,7 @@ final class Cloud extends ClientProcess implements Client
 	 * @throws Exceptions\Runtime
 	 */
 	private function handleDeviceState(
-		Entities\API\Cloud\DeviceState|Entities\API\Sockets\DeviceStateEvent $message,
+		API\Messages\Response\Cloud\DeviceState|API\Messages\Response\Sockets\DeviceStateEvent $message,
 	): void
 	{
 		if ($message->getState() === null) {
@@ -460,7 +460,7 @@ final class Cloud extends ClientProcess implements Client
 
 		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDeviceQuery->byIdentifier($message->getDeviceId());
-		$findDeviceQuery->byType(Entities\SonoffDevice::TYPE);
+		$findDeviceQuery->byType(Entities\Devices\Device::TYPE);
 
 		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
@@ -470,7 +470,7 @@ final class Cloud extends ClientProcess implements Client
 
 		$this->queue->append(
 			$this->entityHelper->create(
-				Entities\Messages\StoreParametersStates::class,
+				Queue\Messages\StoreParametersStates::class,
 				[
 					'connector' => $this->connector->getId(),
 					'identifier' => $device->getIdentifier(),

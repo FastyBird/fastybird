@@ -89,7 +89,10 @@ class SonoffExtension extends DI\CompilerExtension implements Translation\DI\Tra
 		 * SERVICES & FACTORIES
 		 */
 
-		$builder->addDefinition($this->prefix('services.httpClientFactory'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition(
+			$this->prefix('services.httpClientFactory'),
+			new DI\Definitions\ServiceDefinition(),
+		)
 			->setType(Services\HttpClientFactory::class);
 
 		$builder->addDefinition(
@@ -144,7 +147,10 @@ class SonoffExtension extends DI\CompilerExtension implements Translation\DI\Tra
 		 * API
 		 */
 
-		$builder->addDefinition($this->prefix('api.connectionsManager'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition(
+			$this->prefix('api.connectionsManager'),
+			new DI\Definitions\ServiceDefinition(),
+		)
 			->setType(API\ConnectionManager::class);
 
 		$builder->addFactoryDefinition($this->prefix('api.cloudApi'))
@@ -253,34 +259,34 @@ class SonoffExtension extends DI\CompilerExtension implements Translation\DI\Tra
 		 * JSON-API SCHEMAS
 		 */
 
-		$builder->addDefinition($this->prefix('schemas.connector.sonoff'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\SonoffConnector::class);
+		$builder->addDefinition($this->prefix('schemas.connector'), new DI\Definitions\ServiceDefinition())
+			->setType(Schemas\Connectors\Connector::class);
 
-		$builder->addDefinition($this->prefix('schemas.device.sonoff'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\SonoffDevice::class);
+		$builder->addDefinition($this->prefix('schemas.device'), new DI\Definitions\ServiceDefinition())
+			->setType(Schemas\Devices\Device::class);
 
-		$builder->addDefinition($this->prefix('schemas.channel.sonoff'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\SonoffChannel::class);
+		$builder->addDefinition($this->prefix('schemas.channel'), new DI\Definitions\ServiceDefinition())
+			->setType(Schemas\Channels\Channel::class);
 
 		/**
 		 * JSON-API HYDRATORS
 		 */
 
-		$builder->addDefinition($this->prefix('hydrators.connector.sonoff'), new DI\Definitions\ServiceDefinition())
-			->setType(Hydrators\SonoffConnector::class);
+		$builder->addDefinition($this->prefix('hydrators.connector'), new DI\Definitions\ServiceDefinition())
+			->setType(Hydrators\Connectors\Connector::class);
 
-		$builder->addDefinition($this->prefix('hydrators.device.sonoff'), new DI\Definitions\ServiceDefinition())
-			->setType(Hydrators\SonoffDevice::class);
+		$builder->addDefinition($this->prefix('hydrators.device'), new DI\Definitions\ServiceDefinition())
+			->setType(Hydrators\Devices\Device::class);
 
-		$builder->addDefinition($this->prefix('hydrators.channel.sonoff'), new DI\Definitions\ServiceDefinition())
-			->setType(Hydrators\SonoffChannel::class);
+		$builder->addDefinition($this->prefix('hydrators.channel'), new DI\Definitions\ServiceDefinition())
+			->setType(Hydrators\Channels\Channel::class);
 
 		/**
 		 * HELPERS
 		 */
 
 		$builder->addDefinition($this->prefix('helpers.entity'), new DI\Definitions\ServiceDefinition())
-			->setType(Helpers\Entity::class);
+			->setType(Helpers\MessageBuilder::class);
 
 		$builder->addDefinition($this->prefix('helpers.connector'), new DI\Definitions\ServiceDefinition())
 			->setType(Helpers\Connector::class);
@@ -312,7 +318,7 @@ class SonoffExtension extends DI\CompilerExtension implements Translation\DI\Tra
 			->setImplement(Connector\ConnectorFactory::class)
 			->addTag(
 				DevicesDI\DevicesExtension::CONNECTOR_TYPE_TAG,
-				Entities\SonoffConnector::TYPE,
+				Entities\Connectors\Connector::TYPE,
 			)
 			->getResultDefinition()
 			->setType(Connector\Connector::class)
@@ -333,7 +339,7 @@ class SonoffExtension extends DI\CompilerExtension implements Translation\DI\Tra
 		$builder = $this->getContainerBuilder();
 
 		/**
-		 * Doctrine entities
+		 * DOCTRINE ENTITIES
 		 */
 
 		$ormAttributeDriverService = $builder->getDefinition('nettrineOrmAttributes.attributeDriver');

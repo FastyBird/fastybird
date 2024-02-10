@@ -56,13 +56,13 @@ final class SonoffExtensionTest extends Tests\Cases\Unit\BaseTestCase
 		self::assertNotNull($container->getByType(Subscribers\Properties::class, false));
 		self::assertNotNull($container->getByType(Subscribers\Controls::class, false));
 
-		self::assertNotNull($container->getByType(Schemas\SonoffConnector::class, false));
-		self::assertNotNull($container->getByType(Schemas\SonoffDevice::class, false));
+		self::assertNotNull($container->getByType(Schemas\Connectors\Connector::class, false));
+		self::assertNotNull($container->getByType(Schemas\Devices\Device::class, false));
 
-		self::assertNotNull($container->getByType(Hydrators\SonoffConnector::class, false));
-		self::assertNotNull($container->getByType(Hydrators\SonoffDevice::class, false));
+		self::assertNotNull($container->getByType(Hydrators\Connectors\Connector::class, false));
+		self::assertNotNull($container->getByType(Hydrators\Devices\Device::class, false));
 
-		self::assertNotNull($container->getByType(Helpers\Entity::class, false));
+		self::assertNotNull($container->getByType(Helpers\MessageBuilder::class, false));
 
 		self::assertNotNull($container->getByType(Commands\Execute::class, false));
 		self::assertNotNull($container->getByType(Commands\Discover::class, false));

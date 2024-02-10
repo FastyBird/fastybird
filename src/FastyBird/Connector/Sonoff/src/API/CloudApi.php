@@ -18,10 +18,7 @@ namespace FastyBird\Connector\Sonoff\API;
 use DateTimeInterface;
 use Evenement;
 use FastyBird\Connector\Sonoff;
-use FastyBird\Connector\Sonoff\Entities;
-use FastyBird\Connector\Sonoff\Entities\API\Cloud\DeviceState;
-use FastyBird\Connector\Sonoff\Entities\API\Cloud\Family;
-use FastyBird\Connector\Sonoff\Entities\API\Cloud\Things;
+use FastyBird\Connector\Sonoff\API;
 use FastyBird\Connector\Sonoff\Exceptions;
 use FastyBird\Connector\Sonoff\Helpers;
 use FastyBird\Connector\Sonoff\Services;
@@ -104,7 +101,7 @@ final class CloudApi implements Evenement\EventEmitterInterface
 	/** @var array<string, string> */
 	private array $validationSchemas = [];
 
-	private Entities\API\Cloud\User|null $user = null;
+	private Messages\Response\Cloud\User|null $user = null;
 
 	private DateTimeInterface|null $tokensAcquired = null;
 
@@ -116,7 +113,7 @@ final class CloudApi implements Evenement\EventEmitterInterface
 		private readonly string $appId,
 		private readonly string $appSecret,
 		private readonly Services\HttpClientFactory $httpClientFactory,
-		private readonly Helpers\Entity $entityHelper,
+		private readonly Helpers\MessageBuilder $entityHelper,
 		private readonly Sonoff\Logger $logger,
 		private readonly MetadataSchemas\Validator $schemaValidator,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
@@ -170,20 +167,20 @@ final class CloudApi implements Evenement\EventEmitterInterface
 		return $this->region;
 	}
 
-	public function getUser(): Entities\API\Cloud\User|null
+	public function getUser(): Messages\Response\Cloud\User|null
 	{
 		return $this->user;
 	}
 
 	/**
-	 * @return ($async is true ? Promise\PromiseInterface<Family> : Family)
+	 * @return ($async is true ? Promise\PromiseInterface<Messages\Response\Cloud\Family> : Messages\Response\Cloud\Family)
 	 *
 	 * @throws Exceptions\CloudApiCall
 	 * @throws Exceptions\CloudApiError
 	 */
 	public function getFamily(
 		bool $async = true,
-	): Promise\PromiseInterface|Entities\API\Cloud\Family
+	): Promise\PromiseInterface|Messages\Response\Cloud\Family
 	{
 		if (!$this->isConnected()) {
 			$this->connect();
@@ -230,7 +227,7 @@ final class CloudApi implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @return ($async is true ? Promise\PromiseInterface<Things> : Things)
+	 * @return ($async is true ? Promise\PromiseInterface<Messages\Response\Cloud\Things> : Messages\Response\Cloud\Things)
 	 *
 	 * @throws Exceptions\CloudApiCall
 	 * @throws Exceptions\CloudApiError
@@ -238,7 +235,7 @@ final class CloudApi implements Evenement\EventEmitterInterface
 	public function getFamilyThings(
 		string $familyId,
 		bool $async = true,
-	): Promise\PromiseInterface|Entities\API\Cloud\Things
+	): Promise\PromiseInterface|Messages\Response\Cloud\Things
 	{
 		if (!$this->isConnected()) {
 			$this->connect();
@@ -289,7 +286,7 @@ final class CloudApi implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @return ($async is true ? ($itemType is 3 ? Promise\PromiseInterface<Entities\API\Cloud\Group> : Promise\PromiseInterface<Entities\API\Cloud\Device>) : ($itemType is 3 ? Entities\API\Cloud\Group : Entities\API\Cloud\Device))
+	 * @return ($async is true ? ($itemType is 3 ? Promise\PromiseInterface<Messages\Response\Cloud\Group> : Promise\PromiseInterface<Messages\Response\Cloud\Device>) : ($itemType is 3 ? Messages\Response\Cloud\Group : Messages\Response\Cloud\Device))
 	 *
 	 * @throws Exceptions\CloudApiCall
 	 * @throws Exceptions\CloudApiError
@@ -298,7 +295,7 @@ final class CloudApi implements Evenement\EventEmitterInterface
 		string $id,
 		int $itemType = 1,
 		bool $async = true,
-	): Promise\PromiseInterface|Entities\API\Cloud\Device|Entities\API\Cloud\Group
+	): Promise\PromiseInterface|Messages\Response\Cloud\Device|Messages\Response\Cloud\Group
 	{
 		if (!$this->isConnected()) {
 			$this->connect();
@@ -376,7 +373,7 @@ final class CloudApi implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @return ($async is true ? Promise\PromiseInterface<DeviceState> : DeviceState)
+	 * @return ($async is true ? Promise\PromiseInterface<Messages\Response\Cloud\DeviceState> : Messages\Response\Cloud\DeviceState)
 	 *
 	 * @throws Exceptions\CloudApiCall
 	 * @throws Exceptions\CloudApiError
@@ -385,7 +382,7 @@ final class CloudApi implements Evenement\EventEmitterInterface
 		string $id,
 		int $itemType = 1,
 		bool $async = true,
-	): Promise\PromiseInterface|Entities\API\Cloud\DeviceState
+	): Promise\PromiseInterface|Messages\Response\Cloud\DeviceState
 	{
 		if (!$this->isConnected()) {
 			$this->connect();
@@ -540,7 +537,7 @@ final class CloudApi implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\Cloud\ThirdPartyDevice> : Entities\API\Cloud\ThirdPartyDevice)
+	 * @return ($async is true ? Promise\PromiseInterface<Messages\Response\Cloud\ThirdPartyDevice> : Messages\Response\Cloud\ThirdPartyDevice)
 	 *
 	 * @throws Exceptions\CloudApiCall
 	 * @throws Exceptions\CloudApiError
@@ -548,7 +545,7 @@ final class CloudApi implements Evenement\EventEmitterInterface
 	public function addThirdPartyDevice(
 		string $id,
 		bool $async = true,
-	): Promise\PromiseInterface|Entities\API\Cloud\ThirdPartyDevice
+	): Promise\PromiseInterface|Messages\Response\Cloud\ThirdPartyDevice
 	{
 		if (!$this->isConnected()) {
 			$this->connect();
@@ -632,7 +629,7 @@ final class CloudApi implements Evenement\EventEmitterInterface
 	 * @throws Exceptions\CloudApiCall
 	 * @throws Exceptions\CloudApiError
 	 */
-	private function login(bool $redirect = false): Entities\API\Cloud\UserLogin
+	private function login(bool $redirect = false): Messages\Response\Cloud\UserLogin
 	{
 		$payload = new stdClass();
 		$payload->password = $this->password;
@@ -699,14 +696,14 @@ final class CloudApi implements Evenement\EventEmitterInterface
 			);
 		}
 
-		return $this->createEntity(Entities\API\Cloud\UserLogin::class, $data);
+		return $this->createEntity(Messages\Response\Cloud\UserLogin::class, $data);
 	}
 
 	/**
 	 * @throws Exceptions\CloudApiCall
 	 * @throws Exceptions\CloudApiError
 	 */
-	private function refreshToken(): Entities\API\Cloud\UserRefresh
+	private function refreshToken(): Messages\Response\Cloud\UserRefresh
 	{
 		$payload = new stdClass();
 		$payload->rt = $this->refreshToken;
@@ -753,7 +750,7 @@ final class CloudApi implements Evenement\EventEmitterInterface
 		}
 
 		return $this->createEntity(
-			Entities\API\Cloud\UserRefresh::class,
+			Messages\Response\Cloud\UserRefresh::class,
 			$data,
 		);
 	}
@@ -765,7 +762,7 @@ final class CloudApi implements Evenement\EventEmitterInterface
 	private function parseGetFamily(
 		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
-	): Entities\API\Cloud\Family
+	): Messages\Response\Cloud\Family
 	{
 		$body = $this->validateResponseBody($request, $response, self::GET_FAMILY_MESSAGE_SCHEMA_FILENAME);
 
@@ -782,7 +779,7 @@ final class CloudApi implements Evenement\EventEmitterInterface
 		$data = $body->offsetGet('data');
 		assert($data instanceof Utils\ArrayHash);
 
-		return $this->createEntity(Entities\API\Cloud\Family::class, $data);
+		return $this->createEntity(Messages\Response\Cloud\Family::class, $data);
 	}
 
 	/**
@@ -792,7 +789,7 @@ final class CloudApi implements Evenement\EventEmitterInterface
 	private function parseGetFamilyThings(
 		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
-	): Entities\API\Cloud\Things
+	): Messages\Response\Cloud\Things
 	{
 		$body = $this->validateResponseBody($request, $response, self::GET_FAMILY_THINGS_MESSAGE_SCHEMA_FILENAME);
 
@@ -828,7 +825,7 @@ final class CloudApi implements Evenement\EventEmitterInterface
 			}
 		}
 
-		return $this->createEntity(Entities\API\Cloud\Things::class, Utils\ArrayHash::from([
+		return $this->createEntity(Messages\Response\Cloud\Things::class, Utils\ArrayHash::from([
 			'devices' => $devices,
 			'groups' => $groups,
 		]));
@@ -841,7 +838,7 @@ final class CloudApi implements Evenement\EventEmitterInterface
 	private function parseGetThing(
 		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
-	): Entities\API\Cloud\Device|Entities\API\Cloud\Group
+	): Messages\Response\Cloud\Device|Messages\Response\Cloud\Group
 	{
 		$body = $this->validateResponseBody($request, $response, self::GET_FAMILY_THINGS_MESSAGE_SCHEMA_FILENAME);
 
@@ -872,12 +869,12 @@ final class CloudApi implements Evenement\EventEmitterInterface
 
 			if (in_array($item->offsetGet('itemType'), [1, 2], true)) {
 				$devices[] = $this->createEntity(
-					Entities\API\Cloud\Device::class,
+					Messages\Response\Cloud\Device::class,
 					$data,
 				);
 			} elseif ($item->offsetGet('itemType') === 3) {
 				$groups[] = $this->createEntity(
-					Entities\API\Cloud\Group::class,
+					Messages\Response\Cloud\Group::class,
 					$data,
 				);
 			}
@@ -923,7 +920,7 @@ final class CloudApi implements Evenement\EventEmitterInterface
 		string $id,
 		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
-	): Entities\API\Cloud\DeviceState
+	): Messages\Response\Cloud\DeviceState
 	{
 		$body = $this->validateResponseBody($request, $response, self::GET_THING_STATE_MESSAGE_SCHEMA_FILENAME);
 
@@ -944,7 +941,7 @@ final class CloudApi implements Evenement\EventEmitterInterface
 		assert($params instanceof Utils\ArrayHash);
 
 		return $this->createEntity(
-			Entities\API\Cloud\DeviceState::class,
+			Messages\Response\Cloud\DeviceState::class,
 			Utils\ArrayHash::from([
 				'deviceId' => $id,
 				'params' => $params,
@@ -983,7 +980,7 @@ final class CloudApi implements Evenement\EventEmitterInterface
 	private function parseAddThirdPartyDevice(
 		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
-	): Entities\API\Cloud\ThirdPartyDevice
+	): Messages\Response\Cloud\ThirdPartyDevice
 	{
 		$body = $this->validateResponseBody($request, $response, self::ADD_THIRD_PARTY_DEVICE_MESSAGE_SCHEMA_FILENAME);
 
@@ -1013,7 +1010,7 @@ final class CloudApi implements Evenement\EventEmitterInterface
 
 			if (in_array($item->offsetGet('itemType'), [1, 2], true)) {
 				$devices[] = $this->createEntity(
-					Entities\API\Cloud\ThirdPartyDevice::class,
+					Messages\Response\Cloud\ThirdPartyDevice::class,
 					$data,
 				);
 			}
@@ -1054,7 +1051,7 @@ final class CloudApi implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @template T of Entities\API\Entity
+	 * @template T of \FastyBird\Connector\Sonoff\API\Messages\Message
 	 *
 	 * @param class-string<T> $entity
 	 *
@@ -1062,7 +1059,7 @@ final class CloudApi implements Evenement\EventEmitterInterface
 	 *
 	 * @throws Exceptions\CloudApiError
 	 */
-	private function createEntity(string $entity, Utils\ArrayHash $data): Entities\API\Entity
+	private function createEntity(string $entity, Utils\ArrayHash $data): Messages\Message
 	{
 		try {
 			return $this->entityHelper->create(

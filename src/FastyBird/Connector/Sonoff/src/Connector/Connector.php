@@ -98,7 +98,7 @@ final class Connector implements DevicesConnectors\Connector
 	 */
 	public function execute(bool $standalone = true): Promise\PromiseInterface
 	{
-		assert($this->connector->getType() === Entities\SonoffConnector::TYPE);
+		assert($this->connector->getType() === Entities\Connectors\Connector::TYPE);
 
 		$this->logger->info(
 			'Starting Sonoff connector service',
@@ -182,7 +182,7 @@ final class Connector implements DevicesConnectors\Connector
 	 */
 	public function discover(): Promise\PromiseInterface
 	{
-		assert($this->connector->getType() === Entities\SonoffConnector::TYPE);
+		assert($this->connector->getType() === Entities\Connectors\Connector::TYPE);
 
 		$this->logger->info(
 			'Starting Sonoff connector discovery',
@@ -239,7 +239,7 @@ final class Connector implements DevicesConnectors\Connector
 	 */
 	public function terminate(): void
 	{
-		assert($this->connector->getType() === Entities\SonoffConnector::TYPE);
+		assert($this->connector->getType() === Entities\Connectors\Connector::TYPE);
 
 		$this->client?->disconnect();
 

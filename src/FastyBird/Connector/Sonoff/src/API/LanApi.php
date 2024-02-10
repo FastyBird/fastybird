@@ -18,7 +18,6 @@ namespace FastyBird\Connector\Sonoff\API;
 use BadMethodCallException;
 use Evenement;
 use FastyBird\Connector\Sonoff;
-use FastyBird\Connector\Sonoff\Entities;
 use FastyBird\Connector\Sonoff\Exceptions;
 use FastyBird\Connector\Sonoff\Helpers;
 use FastyBird\Connector\Sonoff\Helpers\Transformer;
@@ -113,7 +112,7 @@ final class LanApi
 	public function __construct(
 		private readonly Services\HttpClientFactory $httpClientFactory,
 		private readonly Services\MulticastFactory $multicastFactory,
-		private readonly Helpers\Entity $entityHelper,
+		private readonly Helpers\MessageBuilder $entityHelper,
 		private readonly Sonoff\Logger $logger,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
@@ -233,7 +232,7 @@ final class LanApi
 						'message',
 						[
 							$this->createEntity(
-								Entities\API\Lan\DeviceEvent::class,
+								Messages\Response\Lan\DeviceEvent::class,
 								Utils\ArrayHash::from([
 									'id' => $deviceData['id'],
 									'ip_address' => $deviceIpAddress,
@@ -244,7 +243,7 @@ final class LanApi
 									'iv' => array_key_exists('iv', $deviceData) ? $deviceData['iv'] : null,
 									'encrypt' => $dataEncrypted,
 									'data' => $this->createEntity(
-										Entities\API\Lan\DeviceEventData::class,
+										Messages\Response\Lan\DeviceEventData::class,
 										Utils\ArrayHash::from($data),
 									),
 								]),
@@ -256,7 +255,7 @@ final class LanApi
 						'message',
 						[
 							$this->createEntity(
-								Entities\API\Lan\DeviceEvent::class,
+								Messages\Response\Lan\DeviceEvent::class,
 								Utils\ArrayHash::from([
 									'id' => $deviceData['id'],
 									'ip_address' => $deviceIpAddress,
@@ -299,7 +298,7 @@ final class LanApi
 	}
 
 	/**
-	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\Lan\DeviceInfo> : Entities\API\Lan\DeviceInfo)
+	 * @return ($async is true ? Promise\PromiseInterface<Messages\Response\Lan\DeviceInfo> : Messages\Response\Lan\DeviceInfo)
 	 *
 	 * @throws Exceptions\LanApiCall
 	 * @throws Exceptions\LanApiError
@@ -309,7 +308,7 @@ final class LanApi
 		string $ipAddress,
 		int $port,
 		bool $async = true,
-	): Promise\PromiseInterface|Entities\API\Lan\DeviceInfo
+	): Promise\PromiseInterface|Messages\Response\Lan\DeviceInfo
 	{
 		$deferred = new Promise\Deferred();
 
@@ -502,7 +501,7 @@ final class LanApi
 	private function parseGetDeviceInfo(
 		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
-	): Entities\API\Lan\DeviceInfo
+	): Messages\Response\Lan\DeviceInfo
 	{
 		$body = $this->validateResponseBody($request, $response, self::GET_DEVICE_INFO_MESSAGE_SCHEMA_FILENAME);
 
@@ -521,7 +520,7 @@ final class LanApi
 			);
 		}
 
-		return $this->createEntity(Entities\API\Lan\DeviceInfo::class, $data);
+		return $this->createEntity(Messages\Response\Lan\DeviceInfo::class, $data);
 	}
 
 	/**
@@ -554,7 +553,7 @@ final class LanApi
 	}
 
 	/**
-	 * @template T of Entities\API\Entity
+	 * @template T of Messages\Message
 	 *
 	 * @param class-string<T> $entity
 	 *
@@ -562,7 +561,7 @@ final class LanApi
 	 *
 	 * @throws Exceptions\LanApiError
 	 */
-	private function createEntity(string $entity, Utils\ArrayHash $data): Entities\API\Entity
+	private function createEntity(string $entity, Utils\ArrayHash $data): Messages\Message
 	{
 		try {
 			return $this->entityHelper->create(

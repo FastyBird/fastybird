@@ -7,7 +7,7 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:SonoffConnector!
- * @subpackage     API
+ * @subpackage     Services
  * @since          1.0.0
  *
  * @date           12.10.23
@@ -26,7 +26,7 @@ use React\Socket;
  * OpenPulsar websockets client factory
  *
  * @package        FastyBird:SonoffConnector!
- * @subpackage     API
+ * @subpackage     Services
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */

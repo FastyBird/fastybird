@@ -317,7 +317,7 @@ final class CloudApiTest extends Tests\Cases\Unit\DbTestCase
 		$device = $cloudApi->getThing('1000191aa7', 1, false);
 
 		self::assertSame('1000191aa7', $device->getDeviceId());
-		self::assertInstanceOf(Sonoff\Entities\Uiid\Uiid1::class, $device->getState());
+		self::assertInstanceOf(API\Messages\Uiid\Uiid1::class, $device->getState());
 	}
 
 	/**

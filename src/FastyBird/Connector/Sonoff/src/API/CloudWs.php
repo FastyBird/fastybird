@@ -18,7 +18,6 @@ namespace FastyBird\Connector\Sonoff\API;
 use DateTimeInterface;
 use Evenement;
 use FastyBird\Connector\Sonoff;
-use FastyBird\Connector\Sonoff\Entities;
 use FastyBird\Connector\Sonoff\Exceptions;
 use FastyBird\Connector\Sonoff\Helpers;
 use FastyBird\Connector\Sonoff\Services;
@@ -118,7 +117,7 @@ final class CloudWs implements Evenement\EventEmitterInterface
 		private readonly Types\Region $region,
 		private readonly Services\HttpClientFactory $httpClientFactory,
 		private readonly Services\WebSocketClientFactory $webSocketClientFactory,
-		private readonly Helpers\Entity $entityHelper,
+		private readonly Helpers\MessageBuilder $entityHelper,
 		private readonly Sonoff\Logger $logger,
 		private readonly MetadataSchemas\Validator $schemaValidator,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
@@ -161,7 +160,7 @@ final class CloudWs implements Evenement\EventEmitterInterface
 
 				$this->doWsHandshake()
 					->then(
-						function (Entities\API\Sockets\ApplicationHandshake $response): void {
+						function (Messages\Response\Sockets\ApplicationHandshake $response): void {
 							$this->connecting = false;
 							$this->connected = true;
 
@@ -312,7 +311,7 @@ final class CloudWs implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @return Promise\PromiseInterface<Entities\API\Sockets\DeviceStateEvent>
+	 * @return Promise\PromiseInterface<Messages\Response\Sockets\DeviceStateEvent>
 	 */
 	public function readStates(string $id, string $apiKey): Promise\PromiseInterface
 	{
@@ -333,7 +332,7 @@ final class CloudWs implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @return Promise\PromiseInterface<Entities\API\Sockets\DeviceStateEvent>
+	 * @return Promise\PromiseInterface<Messages\Response\Sockets\DeviceStateEvent>
 	 */
 	public function writeState(
 		string $id,
@@ -379,7 +378,7 @@ final class CloudWs implements Evenement\EventEmitterInterface
 	 * @throws Exceptions\CloudWsCall
 	 * @throws RuntimeException
 	 */
-	private function login(): Entities\API\Sockets\ApplicationLogin
+	private function login(): Messages\Response\Sockets\ApplicationLogin
 	{
 		$request = $this->createHttpRequest(
 			RequestMethodInterface::METHOD_GET,
@@ -405,11 +404,11 @@ final class CloudWs implements Evenement\EventEmitterInterface
 			);
 		}
 
-		return $this->createEntity(Entities\API\Sockets\ApplicationLogin::class, $data);
+		return $this->createEntity(Messages\Response\Sockets\ApplicationLogin::class, $data);
 	}
 
 	/**
-	 * @return Promise\PromiseInterface<Entities\API\Sockets\ApplicationHandshake>
+	 * @return Promise\PromiseInterface<Messages\Response\Sockets\ApplicationHandshake>
 	 */
 	private function doWsHandshake(): Promise\PromiseInterface
 	{
@@ -485,7 +484,7 @@ final class CloudWs implements Evenement\EventEmitterInterface
 				$entity = $this->parseEntity(
 					$content,
 					self::SYSTEM_MESSAGE_SCHEMA_FILENAME,
-					Entities\API\Sockets\DeviceConnectionStateEvent::class,
+					Messages\Response\Sockets\DeviceConnectionStateEvent::class,
 				);
 
 				if ($entity !== null) {
@@ -518,7 +517,7 @@ final class CloudWs implements Evenement\EventEmitterInterface
 			$this->parseEntity(
 				$content,
 				self::HANDSHAKE_MESSAGE_SCHEMA_FILENAME,
-				Entities\API\Sockets\ApplicationHandshake::class,
+				Messages\Response\Sockets\ApplicationHandshake::class,
 				$message->getDeferred(),
 			);
 
@@ -541,14 +540,14 @@ final class CloudWs implements Evenement\EventEmitterInterface
 				$entity = $this->parseEntity(
 					Utils\Json::encode($payload),
 					self::DEVICE_UPDATE_MESSAGE_SCHEMA_FILENAME,
-					Entities\API\Sockets\DeviceStateEvent::class,
+					Messages\Response\Sockets\DeviceStateEvent::class,
 					$message?->getDeferred(),
 				);
 			} catch (Utils\JsonException) {
 				$entity = $this->parseEntity(
 					$content,
 					self::DEVICE_UPDATE_MESSAGE_SCHEMA_FILENAME,
-					Entities\API\Sockets\DeviceStateEvent::class,
+					Messages\Response\Sockets\DeviceStateEvent::class,
 					$message?->getDeferred(),
 				);
 			}
@@ -568,7 +567,7 @@ final class CloudWs implements Evenement\EventEmitterInterface
 			$entity = $this->parseEntity(
 				$content,
 				self::DEVICE_QUERY_MESSAGE_SCHEMA_FILENAME,
-				Entities\API\Sockets\DeviceStateEvent::class,
+				Messages\Response\Sockets\DeviceStateEvent::class,
 				$this->messages[$sequence]->getDeferred(),
 			);
 
@@ -581,7 +580,7 @@ final class CloudWs implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @template T of Entities\API\Entity
+	 * @template T of \FastyBird\Connector\Sonoff\API\Messages\Message
 	 *
 	 * @param class-string<T> $entityClass
 	 * @param Promise\Deferred<T>|null $deferred
@@ -595,7 +594,7 @@ final class CloudWs implements Evenement\EventEmitterInterface
 		string $schemaFilename,
 		string $entityClass,
 		Promise\Deferred|null $deferred = null,
-	): Entities\API\Entity|null
+	): Messages\Message|null
 	{
 		try {
 			$entity = $this->createEntity(
@@ -614,7 +613,7 @@ final class CloudWs implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @param Promise\Deferred<Entities\API\Entity>|null $deferred
+	 * @param Promise\Deferred<Messages\Message>|null $deferred
 	 */
 	private function sendRequest(
 		stdClass $payload,
@@ -690,7 +689,7 @@ final class CloudWs implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @template T of Entities\API\Entity
+	 * @template T of Messages\Message
 	 *
 	 * @param class-string<T> $entity
 	 *
@@ -698,7 +697,7 @@ final class CloudWs implements Evenement\EventEmitterInterface
 	 *
 	 * @throws Exceptions\CloudWsError
 	 */
-	private function createEntity(string $entity, Utils\ArrayHash $data): Entities\API\Entity
+	private function createEntity(string $entity, Utils\ArrayHash $data): Messages\Message
 	{
 		try {
 			return $this->entityHelper->create(

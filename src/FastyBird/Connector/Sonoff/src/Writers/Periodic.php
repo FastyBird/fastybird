@@ -74,7 +74,7 @@ abstract class Periodic implements Writer
 
 	public function __construct(
 		protected readonly MetadataDocuments\DevicesModule\Connector $connector,
-		protected readonly Helpers\Entity $entityHelper,
+		protected readonly Helpers\MessageBuilder $entityHelper,
 		protected readonly Queue\Queue $queue,
 		protected readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		protected readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
@@ -98,7 +98,7 @@ abstract class Periodic implements Writer
 
 		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDevicesQuery->forConnector($this->connector);
-		$findDevicesQuery->byType(Entities\SonoffDevice::TYPE);
+		$findDevicesQuery->byType(Entities\Devices\Device::TYPE);
 
 		foreach ($this->devicesConfigurationRepository->findAllBy($findDevicesQuery) as $device) {
 			$this->devices[$device->getId()->toString()] = $device;
@@ -121,7 +121,7 @@ abstract class Periodic implements Writer
 
 			$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
 			$findChannelsQuery->forDevice($device);
-			$findChannelsQuery->byType(Entities\SonoffChannel::TYPE);
+			$findChannelsQuery->byType(Entities\Channels\Channel::TYPE);
 
 			$channels = $this->channelsConfigurationRepository->findAllBy($findChannelsQuery);
 
@@ -275,7 +275,7 @@ abstract class Periodic implements Writer
 				if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
 					$this->queue->append(
 						$this->entityHelper->create(
-							Entities\Messages\WriteDevicePropertyState::class,
+							Queue\Messages\WriteDevicePropertyState::class,
 							[
 								'connector' => $device->getConnector(),
 								'device' => $device->getId(),
@@ -296,7 +296,7 @@ abstract class Periodic implements Writer
 				} else {
 					$this->queue->append(
 						$this->entityHelper->create(
-							Entities\Messages\WriteChannelPropertyState::class,
+							Queue\Messages\WriteChannelPropertyState::class,
 							[
 								'connector' => $device->getConnector(),
 								'device' => $device->getId(),

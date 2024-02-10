@@ -60,7 +60,7 @@ final class Lan extends ClientProcess implements Client
 		private readonly MetadataDocuments\DevicesModule\Connector $connector,
 		private readonly bool $autoMode,
 		private readonly API\ConnectionManager $connectionManager,
-		private readonly Helpers\Entity $entityHelper,
+		private readonly Helpers\MessageBuilder $entityHelper,
 		private readonly Queue\Queue $queue,
 		private readonly Sonoff\Logger $logger,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
@@ -100,7 +100,7 @@ final class Lan extends ClientProcess implements Client
 
 			$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
 			$findDevicesQuery->forConnector($this->connector);
-			$findDevicesQuery->byType(Entities\SonoffDevice::TYPE);
+			$findDevicesQuery->byType(Entities\Devices\Device::TYPE);
 
 			foreach ($this->devicesConfigurationRepository->findAllBy($findDevicesQuery) as $device) {
 				$this->devices[$device->getId()->toString()] = $device;
@@ -111,17 +111,17 @@ final class Lan extends ClientProcess implements Client
 
 		$this->connectionManager
 			->getLanConnection()
-			->on('message', function (Entities\API\Lan\DeviceEvent $message): void {
+			->on('message', function (API\Messages\Response\Lan\DeviceEvent $message): void {
 				$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
 				$findDeviceQuery->byIdentifier($message->getId());
-				$findDeviceQuery->byType(Entities\SonoffDevice::TYPE);
+				$findDeviceQuery->byType(Entities\Devices\Device::TYPE);
 
 				$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
 				if ($device !== null) {
 					$this->queue->append(
 						$this->entityHelper->create(
-							Entities\Messages\StoreDeviceConnectionState::class,
+							Queue\Messages\StoreDeviceConnectionState::class,
 							[
 								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
@@ -136,7 +136,7 @@ final class Lan extends ClientProcess implements Client
 
 		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDevicesQuery->forConnector($this->connector);
-		$findDevicesQuery->byType(Entities\SonoffDevice::TYPE);
+		$findDevicesQuery->byType(Entities\Devices\Device::TYPE);
 
 		foreach ($this->devicesConfigurationRepository->findAllBy($findDevicesQuery) as $device) {
 			if ($this->deviceHelper->getDeviceKey($device) !== null) {
@@ -173,7 +173,7 @@ final class Lan extends ClientProcess implements Client
 		if ($this->deviceHelper->getIpAddress($device) === null) {
 			$this->queue->append(
 				$this->entityHelper->create(
-					Entities\Messages\StoreDeviceConnectionState::class,
+					Queue\Messages\StoreDeviceConnectionState::class,
 					[
 						'connector' => $device->getConnector(),
 						'identifier' => $device->getIdentifier(),
@@ -194,10 +194,10 @@ final class Lan extends ClientProcess implements Client
 				$this->deviceHelper->getIpAddress($device),
 				$this->deviceHelper->getPort($device),
 			)
-			->then(function (Entities\API\Lan\DeviceInfo $result) use ($deferred, $device): void {
+			->then(function (API\Messages\Response\Lan\DeviceInfo $result) use ($deferred, $device): void {
 					$this->queue->append(
 						$this->entityHelper->create(
-							Entities\Messages\StoreDeviceConnectionState::class,
+							Queue\Messages\StoreDeviceConnectionState::class,
 							[
 								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
@@ -214,7 +214,7 @@ final class Lan extends ClientProcess implements Client
 					if ($ex instanceof Exceptions\LanApiError) {
 						$this->queue->append(
 							$this->entityHelper->create(
-								Entities\Messages\StoreDeviceConnectionState::class,
+								Queue\Messages\StoreDeviceConnectionState::class,
 								[
 									'connector' => $device->getConnector(),
 									'identifier' => $device->getIdentifier(),
@@ -321,7 +321,7 @@ final class Lan extends ClientProcess implements Client
 	 */
 	private function handleDeviceEvent(
 		MetadataDocuments\DevicesModule\Device $device,
-		Entities\API\Lan\DeviceEvent $event,
+		API\Messages\Response\Lan\DeviceEvent $event,
 	): void
 	{
 		if ($event->getData() === null) {
@@ -333,7 +333,7 @@ final class Lan extends ClientProcess implements Client
 			$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
 			$findDeviceQuery->forParent($device);
 			$findDeviceQuery->byIdentifier($event->getData()->getSubDeviceId());
-			$findDeviceQuery->byType(Entities\SonoffDevice::TYPE);
+			$findDeviceQuery->byType(Entities\Devices\Device::TYPE);
 
 			$subDevice = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
@@ -478,7 +478,7 @@ final class Lan extends ClientProcess implements Client
 
 		$this->queue->append(
 			$this->entityHelper->create(
-				Entities\Messages\StoreParametersStates::class,
+				Queue\Messages\StoreParametersStates::class,
 				[
 					'connector' => $this->connector->getId(),
 					'identifier' => $device->getIdentifier(),
@@ -491,7 +491,7 @@ final class Lan extends ClientProcess implements Client
 	/**
 	 * @throws Exceptions\Runtime
 	 */
-	private function handleDeviceInfo(Entities\API\Lan\DeviceInfo $info): void
+	private function handleDeviceInfo(API\Messages\Response\Lan\DeviceInfo $info): void
 	{
 		$states = [];
 
@@ -620,7 +620,7 @@ final class Lan extends ClientProcess implements Client
 
 		$this->queue->append(
 			$this->entityHelper->create(
-				Entities\Messages\StoreParametersStates::class,
+				Queue\Messages\StoreParametersStates::class,
 				[
 					'connector' => $this->connector->getId(),
 					'identifier' => $info->getId(),

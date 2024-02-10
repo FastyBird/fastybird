@@ -7,7 +7,7 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:SonoffConnector!
- * @subpackage     Consumers
+ * @subpackage     Queue
  * @since          1.0.0
  *
  * @date           27.05.23
@@ -18,7 +18,7 @@ namespace FastyBird\Connector\Sonoff\Queue\Consumers;
 use Doctrine\DBAL;
 use FastyBird\Connector\Sonoff;
 use FastyBird\Connector\Sonoff\Entities;
-use FastyBird\Connector\Sonoff\Queue\Consumer;
+use FastyBird\Connector\Sonoff\Queue;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
@@ -39,11 +39,11 @@ use function React\Async\await;
  * Device state message consumer
  *
  * @package        FastyBird:SonoffConnector!
- * @subpackage     Consumers
+ * @subpackage     Queue
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class StoreParametersStates implements Consumer
+final class StoreParametersStates implements Queue\Consumer
 {
 
 	use Nette\SmartObject;
@@ -75,16 +75,16 @@ final class StoreParametersStates implements Consumer
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
-	public function consume(Entities\Messages\Entity $entity): bool
+	public function consume(Queue\Messages\Message $message): bool
 	{
-		if (!$entity instanceof Entities\Messages\StoreParametersStates) {
+		if (!$message instanceof Queue\Messages\StoreParametersStates) {
 			return false;
 		}
 
 		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
-		$findDeviceQuery->byConnectorId($entity->getConnector());
-		$findDeviceQuery->startWithIdentifier($entity->getIdentifier());
-		$findDeviceQuery->byType(Entities\SonoffDevice::TYPE);
+		$findDeviceQuery->byConnectorId($message->getConnector());
+		$findDeviceQuery->startWithIdentifier($message->getIdentifier());
+		$findDeviceQuery->byType(Entities\Devices\Device::TYPE);
 
 		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
@@ -92,8 +92,8 @@ final class StoreParametersStates implements Consumer
 			return true;
 		}
 
-		foreach ($entity->getParameters() as $parameter) {
-			if ($parameter instanceof Entities\Messages\States\DeviceParameterState) {
+		foreach ($message->getParameters() as $parameter) {
+			if ($parameter instanceof Queue\Messages\States\DeviceParameterState) {
 				$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceProperties();
 				$findDevicePropertyQuery->forDevice($device);
 				$findDevicePropertyQuery->byIdentifier($parameter->getName());
@@ -126,11 +126,11 @@ final class StoreParametersStates implements Consumer
 						},
 					);
 				}
-			} elseif ($parameter instanceof Entities\Messages\States\ChannelParameterState) {
+			} elseif ($parameter instanceof Queue\Messages\States\ChannelParameterState) {
 				$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 				$findChannelQuery->forDevice($device);
 				$findChannelQuery->byIdentifier($parameter->getGroup());
-				$findChannelQuery->byType(Entities\SonoffChannel::TYPE);
+				$findChannelQuery->byType(Entities\Channels\Channel::TYPE);
 
 				$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 
@@ -177,12 +177,12 @@ final class StoreParametersStates implements Consumer
 				'source' => MetadataTypes\Sources\Connector::SONOFF,
 				'type' => 'status-parameters-states-message-consumer',
 				'connector' => [
-					'id' => $entity->getConnector()->toString(),
+					'id' => $message->getConnector()->toString(),
 				],
 				'device' => [
 					'id' => $device->getId()->toString(),
 				],
-				'data' => $entity->toArray(),
+				'data' => $message->toArray(),
 			],
 		);
 
