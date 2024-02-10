@@ -80,7 +80,7 @@ final class Local implements Client
 	public function __construct(
 		private readonly MetadataDocuments\DevicesModule\Connector $connector,
 		private readonly API\ConnectionManager $connectionManager,
-		private readonly Helpers\Entity $entityHelper,
+		private readonly Helpers\MessageBuilder $messageBuilder,
 		private readonly Helpers\Device $deviceHelper,
 		private readonly Queue\Queue $queue,
 		private readonly Tuya\Logger $logger,
@@ -104,7 +104,7 @@ final class Local implements Client
 
 		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDevicesQuery->forConnector($this->connector);
-		$findDevicesQuery->byType(Entities\TuyaDevice::TYPE);
+		$findDevicesQuery->byType(Entities\Devices\Device::TYPE);
 
 		foreach ($this->devicesConfigurationRepository->findAllBy($findDevicesQuery) as $device) {
 			$this->devices[$device->getId()->toString()] = $device;
@@ -236,8 +236,8 @@ final class Local implements Client
 							);
 
 							$this->queue->append(
-								$this->entityHelper->create(
-									Entities\Messages\StoreDeviceConnectionState::class,
+								$this->messageBuilder->create(
+									Queue\Messages\StoreDeviceConnectionState::class,
 									[
 										'connector' => $device->getConnector(),
 										'identifier' => $device->getIdentifier(),
@@ -249,8 +249,8 @@ final class Local implements Client
 
 				} else {
 					$this->queue->append(
-						$this->entityHelper->create(
-							Entities\Messages\StoreDeviceConnectionState::class,
+						$this->messageBuilder->create(
+							Queue\Messages\StoreDeviceConnectionState::class,
 							[
 								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
@@ -294,7 +294,7 @@ final class Local implements Client
 
 		$client->readStates($this->deviceHelper->getGateway($device) !== null ? $device->getIdentifier() : null)
 			->then(
-				function (array|Entities\API\LocalDeviceWifiScan|Types\LocalDeviceError|string|null $statuses) use ($device): void {
+				function (array|API\Messages\Response\LocalDeviceWifiScan|Types\LocalDeviceError|string|null $statuses) use ($device): void {
 					$this->processedDevicesCommands[$device->getId()->toString()][self::CMD_STATE] = $this->dateTimeFactory->getNow();
 
 					if (is_array($statuses)) {
@@ -310,8 +310,8 @@ final class Local implements Client
 						}
 
 						$this->queue->append(
-							$this->entityHelper->create(
-								Entities\Messages\StoreChannelPropertyState::class,
+							$this->messageBuilder->create(
+								Queue\Messages\StoreChannelPropertyState::class,
 								[
 									'connector' => $device->getConnector(),
 									'identifier' => $device->getIdentifier(),
@@ -322,8 +322,8 @@ final class Local implements Client
 					}
 
 					$this->queue->append(
-						$this->entityHelper->create(
-							Entities\Messages\StoreDeviceConnectionState::class,
+						$this->messageBuilder->create(
+							Queue\Messages\StoreDeviceConnectionState::class,
 							[
 								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
@@ -354,8 +354,8 @@ final class Local implements Client
 					);
 
 					$this->queue->append(
-						$this->entityHelper->create(
-							Entities\Messages\StoreDeviceConnectionState::class,
+						$this->messageBuilder->create(
+							Queue\Messages\StoreDeviceConnectionState::class,
 							[
 								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
@@ -393,25 +393,25 @@ final class Local implements Client
 		$client = $this->connectionManager->getLocalConnection($device);
 
 		$client->on(
-			'message',
-			function (Entities\API\Entity $message): void {
+			Tuya\Constants::EVENT_MESSAGE,
+			function (API\Messages\Message $message): void {
 				if (
-					$message instanceof Entities\API\LocalDeviceMessage
+					$message instanceof API\Messages\Response\LocalDeviceMessage
 					&& $message->getCommand()->equalsValue(Types\LocalDeviceCommand::STATUS)
 					&& is_array($message->getData())
 				) {
 					$dataPointsStatuses = [];
 
-					foreach ($message->getData() as $entity) {
+					foreach ($message->getData() as $dataPoint) {
 						$dataPointsStatuses[] = [
-							'code' => $entity->getCode(),
-							'value' => $entity->getValue(),
+							'code' => $dataPoint->getCode(),
+							'value' => $dataPoint->getValue(),
 						];
 					}
 
 					$this->queue->append(
-						$this->entityHelper->create(
-							Entities\Messages\StoreChannelPropertyState::class,
+						$this->messageBuilder->create(
+							Queue\Messages\StoreChannelPropertyState::class,
 							[
 								'connector' => $this->connector->getId(),
 								'identifier' => $message->getIdentifier(),
@@ -424,7 +424,7 @@ final class Local implements Client
 		);
 
 		$client->on(
-			'connected',
+			Tuya\Constants::EVENT_CONNECTED,
 			function () use ($device): void {
 				$this->logger->debug(
 					'Connected to device',
@@ -441,8 +441,8 @@ final class Local implements Client
 				);
 
 				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\StoreDeviceConnectionState::class,
+					$this->messageBuilder->create(
+						Queue\Messages\StoreDeviceConnectionState::class,
 						[
 							'connector' => $device->getConnector(),
 							'identifier' => $device->getIdentifier(),
@@ -454,7 +454,7 @@ final class Local implements Client
 		);
 
 		$client->on(
-			'error',
+			Tuya\Constants::EVENT_ERROR,
 			function (Throwable $ex) use ($device): void {
 				$this->logger->warning(
 					'An error occurred in Tuya local device client',
@@ -472,8 +472,8 @@ final class Local implements Client
 				);
 
 				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\StoreDeviceConnectionState::class,
+					$this->messageBuilder->create(
+						Queue\Messages\StoreDeviceConnectionState::class,
 						[
 							'connector' => $device->getConnector(),
 							'identifier' => $device->getIdentifier(),

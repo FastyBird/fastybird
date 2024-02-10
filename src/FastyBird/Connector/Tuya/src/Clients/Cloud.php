@@ -79,7 +79,7 @@ final class Cloud implements Client
 		private readonly MetadataDocuments\DevicesModule\Connector $connector,
 		private readonly API\ConnectionManager $connectionManager,
 		private readonly Queue\Queue $queue,
-		private readonly Helpers\Entity $entityHelper,
+		private readonly Helpers\MessageBuilder $messageBuilder,
 		private readonly Helpers\Device $deviceHelper,
 		private readonly Tuya\Logger $logger,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
@@ -107,7 +107,7 @@ final class Cloud implements Client
 
 		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDevicesQuery->forConnector($this->connector);
-		$findDevicesQuery->byType(Entities\TuyaDevice::TYPE);
+		$findDevicesQuery->byType(Entities\Devices\Device::TYPE);
 
 		foreach ($this->devicesConfigurationRepository->findAllBy($findDevicesQuery) as $device) {
 			$this->devices[$device->getId()->toString()] = $device;
@@ -159,12 +159,12 @@ final class Cloud implements Client
 		$this->connectionManager
 			->getCloudWsConnection($this->connector)
 			->on(
-				'message',
-				function (Entities\API\ReportDeviceState|Entities\API\ReportDeviceOnline $message): void {
-					if ($message instanceof Entities\API\ReportDeviceOnline) {
+				Tuya\Constants::EVENT_MESSAGE,
+				function (API\Messages\Response\ReportDeviceState|API\Messages\Response\ReportDeviceOnline $message): void {
+					if ($message instanceof API\Messages\Response\ReportDeviceOnline) {
 						$this->queue->append(
-							$this->entityHelper->create(
-								Entities\Messages\StoreDeviceConnectionState::class,
+							$this->messageBuilder->create(
+								Queue\Messages\StoreDeviceConnectionState::class,
 								[
 									'connector' => $this->connector->getId(),
 									'identifier' => $message->getIdentifier(),
@@ -176,13 +176,13 @@ final class Cloud implements Client
 						);
 					} else {
 						$this->queue->append(
-							$this->entityHelper->create(
-								Entities\Messages\StoreChannelPropertyState::class,
+							$this->messageBuilder->create(
+								Queue\Messages\StoreChannelPropertyState::class,
 								[
 									'connector' => $this->connector->getId(),
 									'identifier' => $message->getIdentifier(),
 									'data_points' => array_map(
-										static fn (Entities\API\DataPointState $dps): array => [
+										static fn (API\Messages\Response\DataPointState $dps): array => [
 											'code' => $dps->getCode(),
 											'value' => $dps->getValue(),
 										],
@@ -194,7 +194,7 @@ final class Cloud implements Client
 					}
 				},
 			)
-			->on('error', function (Throwable $ex): void {
+			->on(Tuya\Constants::EVENT_ERROR, function (Throwable $ex): void {
 				$this->logger->error(
 					'An error occurred in Tuya cloud WS client',
 					[
@@ -362,12 +362,12 @@ final class Cloud implements Client
 		$this->connectionManager
 			->getCloudApiConnection($this->connector)
 			->getDeviceDetail($device->getIdentifier())
-			->then(function (Entities\API\GetDevice $detail) use ($device): void {
+			->then(function (API\Messages\Response\GetDevice $detail) use ($device): void {
 				$this->processedDevicesCommands[$device->getId()->toString()][self::CMD_HEARTBEAT] = $this->dateTimeFactory->getNow();
 
 				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\StoreDeviceConnectionState::class,
+					$this->messageBuilder->create(
+						Queue\Messages\StoreDeviceConnectionState::class,
 						[
 							'connector' => $device->getConnector(),
 							'identifier' => $device->getIdentifier(),
@@ -393,8 +393,8 @@ final class Cloud implements Client
 
 				if ($ex instanceof Exceptions\OpenApiError) {
 					$this->queue->append(
-						$this->entityHelper->create(
-							Entities\Messages\StoreDeviceConnectionState::class,
+						$this->messageBuilder->create(
+							Queue\Messages\StoreDeviceConnectionState::class,
 							[
 								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
@@ -404,8 +404,8 @@ final class Cloud implements Client
 					);
 				} elseif ($ex instanceof Exceptions\OpenApiCall) {
 					$this->queue->append(
-						$this->entityHelper->create(
-							Entities\Messages\StoreDeviceConnectionState::class,
+						$this->messageBuilder->create(
+							Queue\Messages\StoreDeviceConnectionState::class,
 							[
 								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
@@ -469,17 +469,17 @@ final class Cloud implements Client
 		$this->connectionManager
 			->getCloudApiConnection($this->connector)
 			->getDeviceState($device->getIdentifier())
-			->then(function (Entities\API\GetDeviceState $state) use ($device): void {
+			->then(function (API\Messages\Response\GetDeviceState $state) use ($device): void {
 				$this->processedDevicesCommands[$device->getId()->toString()][self::CMD_STATE] = $this->dateTimeFactory->getNow();
 
 				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\StoreChannelPropertyState::class,
+					$this->messageBuilder->create(
+						Queue\Messages\StoreChannelPropertyState::class,
 						[
 							'connector' => $device->getConnector(),
 							'identifier' => $device->getIdentifier(),
 							'data_points' => array_map(
-								static fn (Entities\API\DeviceDataPointState $dps): array => [
+								static fn (API\Messages\Response\DeviceDataPointState $dps): array => [
 									'code' => $dps->getCode(),
 									'value' => $dps->getValue(),
 								],
@@ -504,8 +504,8 @@ final class Cloud implements Client
 
 				if ($ex instanceof Exceptions\OpenApiError) {
 					$this->queue->append(
-						$this->entityHelper->create(
-							Entities\Messages\StoreDeviceConnectionState::class,
+						$this->messageBuilder->create(
+							Queue\Messages\StoreDeviceConnectionState::class,
 							[
 								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
@@ -515,8 +515,8 @@ final class Cloud implements Client
 					);
 				} elseif ($ex instanceof Exceptions\OpenApiCall) {
 					$this->queue->append(
-						$this->entityHelper->create(
-							Entities\Messages\StoreDeviceConnectionState::class,
+						$this->messageBuilder->create(
+							Queue\Messages\StoreDeviceConnectionState::class,
 							[
 								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),

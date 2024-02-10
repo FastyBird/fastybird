@@ -18,6 +18,7 @@ namespace FastyBird\Connector\Tuya\Queue\Consumers;
 use Doctrine\DBAL;
 use FastyBird\Connector\Tuya;
 use FastyBird\Connector\Tuya\Entities;
+use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Queries;
 use FastyBird\Connector\Tuya\Queue;
 use FastyBird\Connector\Tuya\Types;
@@ -71,22 +72,22 @@ final class StoreLocalDevice implements Queue\Consumer
 	 * @throws ApplicationExceptions\Runtime
 	 * @throws DBAL\Exception
 	 */
-	public function consume(Entities\Messages\Entity $entity): bool
+	public function consume(Queue\Messages\Message $message): bool
 	{
-		if (!$entity instanceof Entities\Messages\StoreLocalDevice) {
+		if (!$message instanceof Queue\Messages\StoreLocalDevice) {
 			return false;
 		}
 
 		$findDeviceQuery = new Queries\Entities\FindDevices();
-		$findDeviceQuery->byConnectorId($entity->getConnector());
-		$findDeviceQuery->byIdentifier($entity->getId());
+		$findDeviceQuery->byConnectorId($message->getConnector());
+		$findDeviceQuery->byIdentifier($message->getId());
 
-		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\TuyaDevice::class);
+		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\Device::class);
 
 		if ($device === null) {
 			$connector = $this->connectorsRepository->find(
-				$entity->getConnector(),
-				Entities\TuyaConnector::class,
+				$message->getConnector(),
+				Entities\Connectors\Connector::class,
 			);
 
 			if ($connector === null) {
@@ -94,21 +95,21 @@ final class StoreLocalDevice implements Queue\Consumer
 			}
 
 			$device = $this->databaseHelper->transaction(
-				function () use ($entity, $connector): Entities\TuyaDevice {
+				function () use ($message, $connector): Entities\Devices\Device {
 					$parents = [];
 
-					if ($entity->getGateway() !== null) {
+					if ($message->getGateway() !== null) {
 						$findParentDeviceQuery = new Queries\Entities\FindDevices();
-						$findParentDeviceQuery->byConnectorId($entity->getConnector());
-						$findParentDeviceQuery->byIdentifier($entity->getGateway());
+						$findParentDeviceQuery->byConnectorId($message->getConnector());
+						$findParentDeviceQuery->byIdentifier($message->getGateway());
 
 						$parent = $this->devicesRepository->findOneBy(
 							$findParentDeviceQuery,
-							Entities\TuyaDevice::class,
+							Entities\Devices\Device::class,
 						);
 
 						if ($parent === null) {
-							throw new Tuya\Exceptions\InvalidState(
+							throw new Exceptions\InvalidState(
 								'Parent device could not be loaded for child device',
 							);
 						}
@@ -119,17 +120,17 @@ final class StoreLocalDevice implements Queue\Consumer
 					$device = $this->devicesManager->create(
 						Utils\ArrayHash::from(array_merge(
 							[
-								'entity' => Entities\TuyaDevice::class,
+								'entity' => Entities\Devices\Device::class,
 								'connector' => $connector,
-								'identifier' => $entity->getId(),
-								'name' => $entity->getName(),
+								'identifier' => $message->getId(),
+								'name' => $message->getName(),
 							],
-							$entity->getGateway() !== null
+							$message->getGateway() !== null
 								? ['parents' => $parents]
 								: [],
 						)),
 					);
-					assert($device instanceof Entities\TuyaDevice);
+					assert($device instanceof Entities\Devices\Device);
 
 					return $device;
 				},
@@ -141,28 +142,28 @@ final class StoreLocalDevice implements Queue\Consumer
 					'source' => MetadataTypes\Sources\Connector::TUYA,
 					'type' => 'store-local-device-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $message->getConnector()->toString(),
 					],
 					'device' => [
 						'id' => $device->getId()->toString(),
-						'identifier' => $entity->getId(),
-						'address' => $entity->getIpAddress(),
+						'identifier' => $message->getId(),
+						'address' => $message->getIpAddress(),
 					],
-					'data' => $entity->toArray(),
+					'data' => $message->toArray(),
 				],
 			);
 		}
 
 		$this->setDeviceProperty(
 			$device->getId(),
-			$entity->getIpAddress(),
+			$message->getIpAddress(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::IP_ADDRESS,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::IP_ADDRESS),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
-			$entity->getVersion(),
+			$message->getVersion(),
 			MetadataTypes\DataType::ENUM,
 			Types\DevicePropertyIdentifier::PROTOCOL_VERSION,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::PROTOCOL_VERSION),
@@ -176,107 +177,107 @@ final class StoreLocalDevice implements Queue\Consumer
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
-			$entity->getLocalKey(),
+			$message->getLocalKey(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::LOCAL_KEY,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::LOCAL_KEY),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
-			$entity->getNodeId(),
+			$message->getNodeId(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::NODE_ID,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::NODE_ID),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
-			$entity->getGateway(),
+			$message->getGateway(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::GATEWAY_ID,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::GATEWAY_ID),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
-			$entity->getCategory(),
+			$message->getCategory(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::CATEGORY,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::CATEGORY),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
-			$entity->getIcon(),
+			$message->getIcon(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::ICON,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::ICON),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
-			$entity->getLatitude(),
+			$message->getLatitude(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::LATITUDE,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::LATITUDE),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
-			$entity->getLongitude(),
+			$message->getLongitude(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::LONGITUDE,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::LONGITUDE),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
-			$entity->getProductId(),
+			$message->getProductId(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::PRODUCT_ID,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::PRODUCT_ID),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
-			$entity->getProductName(),
+			$message->getProductName(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::PRODUCT_NAME,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::PRODUCT_NAME),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
-			$entity->isEncrypted(),
+			$message->isEncrypted(),
 			MetadataTypes\DataType::BOOLEAN,
 			Types\DevicePropertyIdentifier::ENCRYPTED,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::ENCRYPTED),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
-			$entity->getModel(),
+			$message->getModel(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::MODEL,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MODEL),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
-			$entity->getMac(),
+			$message->getMac(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::MAC_ADDRESS,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MAC_ADDRESS),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
-			$entity->getSn(),
+			$message->getSn(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::SERIAL_NUMBER,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::SERIAL_NUMBER),
 		);
 
-		if (count($entity->getDataPoints()) > 0) {
-			$this->databaseHelper->transaction(function () use ($entity, $device): bool {
+		if (count($message->getDataPoints()) > 0) {
+			$this->databaseHelper->transaction(function () use ($message, $device): bool {
 				$findChannelQuery = new Queries\Entities\FindChannels();
 				$findChannelQuery->byIdentifier(Types\DataPoint::LOCAL);
 				$findChannelQuery->forDevice($device);
 
-				$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\TuyaChannel::class);
+				$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\Channels\Channel::class);
 
 				if ($channel === null) {
 					$channel = $this->channelsManager->create(Utils\ArrayHash::from([
-						'entity' => Entities\TuyaChannel::class,
+						'entity' => Entities\Channels\Channel::class,
 						'device' => $device,
 						'identifier' => Types\DataPoint::LOCAL,
 					]));
@@ -287,7 +288,7 @@ final class StoreLocalDevice implements Queue\Consumer
 							'source' => MetadataTypes\Sources\Connector::TUYA,
 							'type' => 'store-local-device-message-consumer',
 							'connector' => [
-								'id' => $entity->getConnector()->toString(),
+								'id' => $message->getConnector()->toString(),
 							],
 							'device' => [
 								'id' => $device->getId()->toString(),
@@ -299,7 +300,7 @@ final class StoreLocalDevice implements Queue\Consumer
 					);
 				}
 
-				foreach ($entity->getDataPoints() as $dataPoint) {
+				foreach ($message->getDataPoints() as $dataPoint) {
 					$this->setChannelProperty(
 						DevicesEntities\Channels\Properties\Dynamic::class,
 						$channel->getId(),
@@ -327,12 +328,12 @@ final class StoreLocalDevice implements Queue\Consumer
 				'source' => MetadataTypes\Sources\Connector::TUYA,
 				'type' => 'store-local-device-message-consumer',
 				'connector' => [
-					'id' => $entity->getConnector()->toString(),
+					'id' => $message->getConnector()->toString(),
 				],
 				'device' => [
 					'id' => $device->getId()->toString(),
 				],
-				'data' => $entity->toArray(),
+				'data' => $message->toArray(),
 			],
 		);
 

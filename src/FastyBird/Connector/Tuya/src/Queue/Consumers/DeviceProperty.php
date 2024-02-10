@@ -113,7 +113,7 @@ trait DeviceProperty
 		if ($property === null) {
 			$device = $this->devicesRepository->find(
 				$deviceId,
-				Entities\TuyaDevice::class,
+				Entities\Devices\Device::class,
 			);
 
 			if ($device === null) {

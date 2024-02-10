@@ -17,6 +17,7 @@ namespace FastyBird\Connector\Tuya\Queue\Consumers;
 
 use Doctrine\DBAL;
 use FastyBird\Connector\Tuya;
+use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -114,7 +115,7 @@ trait ChannelProperty
 		}
 
 		if ($property === null) {
-			$channel = $this->channelsRepository->find($channelId, Tuya\Entities\TuyaChannel::class);
+			$channel = $this->channelsRepository->find($channelId, Entities\Channels\Channel::class);
 
 			if ($channel === null) {
 				$this->logger->error(

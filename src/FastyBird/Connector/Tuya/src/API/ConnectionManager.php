@@ -73,12 +73,12 @@ final class ConnectionManager
 	public function getLocalConnection(MetadataDocuments\DevicesModule\Device $device): LocalApi
 	{
 		$connector = $device->getConnector();
-		assert($connector instanceof Entities\TuyaConnector);
+		assert($connector instanceof Entities\Connectors\Connector);
 
 		if (!array_key_exists($device->getId()->toString(), $this->localConnections)) {
 			$findChildrenDevicesQuery = new DevicesQueries\Configuration\FindDevices();
 			$findChildrenDevicesQuery->forParent($device);
-			$findChildrenDevicesQuery->byType(Entities\TuyaDevice::TYPE);
+			$findChildrenDevicesQuery->byType(Entities\Devices\Device::TYPE);
 
 			$children = $this->devicesConfigurationRepository->findAllBy($findChildrenDevicesQuery);
 

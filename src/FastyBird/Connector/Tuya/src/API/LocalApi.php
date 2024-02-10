@@ -19,7 +19,6 @@ use Brick\Math;
 use DateTimeInterface;
 use Evenement;
 use FastyBird\Connector\Tuya;
-use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Services;
@@ -138,7 +137,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 
 	private DateTimeInterface|null $lost = null;
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-	/** @var array<int, Promise\Deferred<string|array<Entities\API\DeviceDataPointState>|Entities\API\LocalDeviceWifiScan|Types\LocalDeviceError|null>> */
+	/** @var array<int, Promise\Deferred<string|array<Messages\Response\DeviceDataPointState>|Messages\Response\LocalDeviceWifiScan|Types\LocalDeviceError|null>> */
 	private array $messagesListeners = [];
 
 	/** @var array<int, EventLoop\TimerInterface> */
@@ -160,7 +159,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 		private readonly Types\DeviceProtocolVersion $protocolVersion,
 		private readonly array $children,
 		private readonly Services\SocketClientFactory $socketClientFactory,
-		private readonly Helpers\Entity $entityHelper,
+		private readonly Helpers\MessageBuilder $messageBuilder,
 		private readonly Tuya\Logger $logger,
 		private readonly MetadataSchemas\Validator $schemaValidator,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
@@ -291,13 +290,13 @@ final class LocalApi implements Evenement\EventEmitterInterface
 								);
 							}
 
-							$this->emit('message', [$message]);
+							$this->emit(Tuya\Constants::EVENT_MESSAGE, [$message]);
 						}
 					});
 
 					$this->connection->on('error', function (Throwable $ex): void {
 						$this->emit(
-							'error',
+							Tuya\Constants::EVENT_ERROR,
 							[new Exceptions\LocalApiError(
 								'An error occurred on device connection',
 								$ex->getCode(),
@@ -322,7 +321,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 
 						$this->disconnect();
 
-						$this->emit('disconnected');
+						$this->emit(Tuya\Constants::EVENT_DISCONNECTED);
 					});
 
 					$this->heartBeatTimer = $this->eventLoop->addPeriodicTimer(
@@ -357,7 +356,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 						}),
 					);
 
-					$this->emit('connected');
+					$this->emit(Tuya\Constants::EVENT_CONNECTED);
 
 					if (
 						$this->deviceType->equalsValue(Types\LocalDeviceType::DEVICE_22)
@@ -443,7 +442,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @return Promise\PromiseInterface<string|array<Entities\API\DeviceDataPointState>|Entities\API\LocalDeviceWifiScan|Types\LocalDeviceError|null>
+	 * @return Promise\PromiseInterface<string|array<Messages\Response\DeviceDataPointState>|Messages\Response\LocalDeviceWifiScan|Types\LocalDeviceError|null>
 	 */
 	public function readStates(string|null $child = null): Promise\PromiseInterface
 	{
@@ -510,7 +509,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 	/**
 	 * @param array<string, int|float|string|bool> $states
 	 *
-	 * @return Promise\PromiseInterface<string|array<Entities\API\DeviceDataPointState>|Entities\API\LocalDeviceWifiScan|Types\LocalDeviceError|null>
+	 * @return Promise\PromiseInterface<string|array<Messages\Response\DeviceDataPointState>|Messages\Response\LocalDeviceWifiScan|Types\LocalDeviceError|null>
 	 */
 	public function writeStates(array $states, string|null $child = null): Promise\PromiseInterface
 	{
@@ -562,7 +561,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @return Promise\PromiseInterface<string|array<Entities\API\DeviceDataPointState>|Entities\API\LocalDeviceWifiScan|Types\LocalDeviceError|null>
+	 * @return Promise\PromiseInterface<string|array<Messages\Response\DeviceDataPointState>|Messages\Response\LocalDeviceWifiScan|Types\LocalDeviceError|null>
 	 */
 	public function writeState(
 		string $idx,
@@ -594,7 +593,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 			$this->addDpsToRequest(range($dpsRange[0], $dpsRange[1]));
 
 			try {
-				/** @var array<Entities\API\DeviceDataPointState>|Types\LocalDeviceError $deviceStates */
+				/** @var array<Messages\Response\DeviceDataPointState>|Types\LocalDeviceError $deviceStates */
 				$deviceStates = await($this->readStates());
 			} catch (Throwable $ex) {
 				throw new Exceptions\LocalApiCall('Reading state from device failed', $ex->getCode(), $ex);
@@ -647,7 +646,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 
 	private function lost(): void
 	{
-		$this->emit('lost');
+		$this->emit(Tuya\Constants::EVENT_LOST);
 
 		$this->lost = $this->dateTimeFactory->getNow();
 
@@ -839,7 +838,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 	 * @throws Exceptions\LocalApiCall
 	 * @throws Exceptions\LocalApiError
 	 */
-	private function decodePayload(string $data): Entities\API\LocalDeviceMessage|null
+	private function decodePayload(string $data): Messages\Response\LocalDeviceMessage|null
 	{
 		$headerLength = 16; // 4B prefix + 4B sequence nr + 4B command + 4B data length
 		$footerLength = 8; // 4B CRC check + 4B suffix
@@ -1060,8 +1059,8 @@ final class LocalApi implements Evenement\EventEmitterInterface
 						],
 					);
 
-					return $this->createEntity(
-						Entities\API\LocalDeviceMessage::class,
+					return $this->createMessage(
+						Messages\Response\LocalDeviceMessage::class,
 						Utils\ArrayHash::from([
 							'identifier' => $this->identifier,
 							'command' => $command->getValue(),
@@ -1081,8 +1080,8 @@ final class LocalApi implements Evenement\EventEmitterInterface
 					|| Utils\Strings::contains(Utils\Strings::lower($payload), 'format error')
 				)
 			) {
-				return $this->createEntity(
-					Entities\API\LocalDeviceMessage::class,
+				return $this->createMessage(
+					Messages\Response\LocalDeviceMessage::class,
 					Utils\ArrayHash::from([
 						'identifier' => $this->identifier,
 						'command' => $command->getValue(),
@@ -1141,7 +1140,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 				? $this->validateData($payload, self::DP_QUERY_MESSAGE_SCHEMA_FILENAME)
 				: $this->validateData($payload, self::DP_STATE_MESSAGE_SCHEMA_FILENAME);
 
-			$entityData = [];
+			$messageData = [];
 
 			// v3.4 stuffs it into {"data":{"dps":{"1":true}}, ...}
 			if (
@@ -1155,7 +1154,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 
 			foreach ((array) $parsedMessage->offsetGet('dps') as $key => $value) {
 				if (is_string($value) || is_numeric($value) || is_bool($value)) {
-					$entityData[] = [
+					$messageData[] = [
 						'code' => (string) $key,
 						'value' => $value,
 					];
@@ -1167,7 +1166,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 		) {
 			$parsedMessage = $this->validateData($payload, self::WIFI_QUERY_MESSAGE_SCHEMA_FILENAME);
 
-			$entityData = [
+			$messageData = [
 				'identifier' => $this->identifier,
 				'ssids' => array_map(
 					static fn ($item): string => strval($item),
@@ -1175,17 +1174,17 @@ final class LocalApi implements Evenement\EventEmitterInterface
 				),
 			];
 		} else {
-			$entityData = $payload;
+			$messageData = $payload;
 		}
 
-		return $this->createEntity(
-			Entities\API\LocalDeviceMessage::class,
+		return $this->createMessage(
+			Messages\Response\LocalDeviceMessage::class,
 			Utils\ArrayHash::from([
 				'identifier' => $this->identifier,
 				'command' => $command->getValue(),
 				'sequence' => $sequenceNr,
 				'return_code' => $hasReturnCode ? $returnCode : null,
-				'data' => $entityData,
+				'data' => $messageData,
 			]),
 		);
 	}
@@ -1204,7 +1203,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 		Types\LocalDeviceType $deviceType,
 		string|null $nodeId,
 		array|null $data = null,
-	): Entities\API\LocalMessagePayload
+	): Messages\Response\LocalMessagePayload
 	{
 		$templates = [
 			Types\LocalDeviceType::DEFAULT => [
@@ -1381,8 +1380,8 @@ final class LocalApi implements Evenement\EventEmitterInterface
 		}
 
 		try {
-			return $this->createEntity(
-				Entities\API\LocalMessagePayload::class,
+			return $this->createMessage(
+				Messages\Response\LocalMessagePayload::class,
 				Utils\ArrayHash::from([
 					'command' => $commandOverride->getValue(),
 					'payload' => str_replace(' ', '', Utils\Json::encode($result)),
@@ -1492,26 +1491,26 @@ final class LocalApi implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @template T of Entities\API\Entity
+	 * @template T of Messages\Message
 	 *
-	 * @param class-string<T> $entity
+	 * @param class-string<T> $message
 	 *
 	 * @return T
 	 *
 	 * @throws Exceptions\LocalApiError
 	 */
-	private function createEntity(string $entity, Utils\ArrayHash $data): Entities\API\Entity
+	private function createMessage(string $message, Utils\ArrayHash $data): Messages\Message
 	{
 		try {
-			return $this->entityHelper->create(
-				$entity,
+			return $this->messageBuilder->create(
+				$message,
 				(array) Utils\Json::decode(Utils\Json::encode($data), Utils\Json::FORCE_ARRAY),
 			);
 		} catch (Exceptions\Runtime $ex) {
-			throw new Exceptions\LocalApiError('Could not map data to entity', $ex->getCode(), $ex);
+			throw new Exceptions\LocalApiError('Could not map data to message', $ex->getCode(), $ex);
 		} catch (Utils\JsonException $ex) {
 			throw new Exceptions\LocalApiError(
-				'Could not create entity from data',
+				'Could not create message from data',
 				$ex->getCode(),
 				$ex,
 			);

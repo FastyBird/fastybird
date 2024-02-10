@@ -18,7 +18,7 @@ namespace FastyBird\Connector\Tuya\ValueObjects;
 use Orisai\ObjectMapper;
 
 /**
- * OpenAPI sign entity
+ * OpenAPI sign
  *
  * @package        FastyBird:TuyaConnector!
  * @subpackage     ValueObjects

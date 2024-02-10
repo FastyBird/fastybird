@@ -172,7 +172,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 
 		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
 		$findConnectorQuery->byIdentifier('tuya-cloud');
-		$findConnectorQuery->byType(Entities\TuyaConnector::TYPE);
+		$findConnectorQuery->byType(Entities\Connectors\Connector::TYPE);
 
 		$connector = $connectorsConfigurationRepository->findOneBy($findConnectorQuery);
 		self::assertInstanceOf(MetadataDocuments\DevicesModule\Connector::class, $connector);
@@ -210,7 +210,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDeviceQuery->forConnector($connector);
 		$findDeviceQuery->byIdentifier('402675772462ab280dae');
-		$findDeviceQuery->byType(Entities\TuyaDevice::TYPE);
+		$findDeviceQuery->byType(Entities\Devices\Device::TYPE);
 
 		$device = $devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
@@ -230,7 +230,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 		$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 		$findChannelQuery->forDevice($device);
 		$findChannelQuery->byIdentifier(Types\DataPoint::CLOUD);
-		$findChannelQuery->byType(Entities\TuyaChannel::TYPE);
+		$findChannelQuery->byType(Entities\Channels\Channel::TYPE);
 
 		$channel = $channelsConfigurationRepository->findOneBy($findChannelQuery);
 
@@ -285,11 +285,11 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 						->willReturnCallback(
 							static function (callable $callback) use ($promise): Promise\PromiseInterface {
 								$entities = [
-									new Entities\API\DeviceDataPointState(
+									new API\Messages\Response\DeviceDataPointState(
 										'1',
 										false,
 									),
-									new Entities\API\DeviceDataPointState(
+									new API\Messages\Response\DeviceDataPointState(
 										'2',
 										1_000,
 									),
@@ -465,7 +465,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 
 		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
 		$findConnectorQuery->byIdentifier('tuya-local');
-		$findConnectorQuery->byType(Entities\TuyaConnector::TYPE);
+		$findConnectorQuery->byType(Entities\Connectors\Connector::TYPE);
 
 		$connector = $connectorsConfigurationRepository->findOneBy($findConnectorQuery);
 		self::assertInstanceOf(MetadataDocuments\DevicesModule\Connector::class, $connector);
@@ -503,7 +503,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDeviceQuery->forConnector($connector);
 		$findDeviceQuery->byIdentifier('402675772462ab280dae');
-		$findDeviceQuery->byType(Entities\TuyaDevice::TYPE);
+		$findDeviceQuery->byType(Entities\Devices\Device::TYPE);
 
 		$device = $devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
@@ -523,7 +523,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 		$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 		$findChannelQuery->forDevice($device);
 		$findChannelQuery->byIdentifier(Types\DataPoint::LOCAL);
-		$findChannelQuery->byType(Entities\TuyaChannel::TYPE);
+		$findChannelQuery->byType(Entities\Channels\Channel::TYPE);
 
 		$channel = $channelsConfigurationRepository->findOneBy($findChannelQuery);
 

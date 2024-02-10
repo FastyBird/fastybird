@@ -69,22 +69,22 @@ final class StoreCloudDevice implements Queue\Consumer
 	 * @throws ApplicationExceptions\Runtime
 	 * @throws DBAL\Exception
 	 */
-	public function consume(Entities\Messages\Entity $entity): bool
+	public function consume(Queue\Messages\Message $message): bool
 	{
-		if (!$entity instanceof Entities\Messages\StoreCloudDevice) {
+		if (!$message instanceof Queue\Messages\StoreCloudDevice) {
 			return false;
 		}
 
 		$findDeviceQuery = new Queries\Entities\FindDevices();
-		$findDeviceQuery->byConnectorId($entity->getConnector());
-		$findDeviceQuery->byIdentifier($entity->getId());
+		$findDeviceQuery->byConnectorId($message->getConnector());
+		$findDeviceQuery->byIdentifier($message->getId());
 
-		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\TuyaDevice::class);
+		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\Device::class);
 
 		if ($device === null) {
 			$connector = $this->connectorsRepository->find(
-				$entity->getConnector(),
-				Entities\TuyaConnector::class,
+				$message->getConnector(),
+				Entities\Connectors\Connector::class,
 			);
 
 			if ($connector === null) {
@@ -92,14 +92,14 @@ final class StoreCloudDevice implements Queue\Consumer
 			}
 
 			$device = $this->databaseHelper->transaction(
-				function () use ($entity, $connector): Entities\TuyaDevice {
+				function () use ($message, $connector): Entities\Devices\Device {
 					$device = $this->devicesManager->create(Utils\ArrayHash::from([
-						'entity' => Entities\TuyaDevice::class,
+						'entity' => Entities\Devices\Device::class,
 						'connector' => $connector,
-						'identifier' => $entity->getId(),
-						'name' => $entity->getName(),
+						'identifier' => $message->getId(),
+						'name' => $message->getName(),
 					]));
-					assert($device instanceof Entities\TuyaDevice);
+					assert($device instanceof Entities\Devices\Device);
 
 					return $device;
 				},
@@ -111,70 +111,70 @@ final class StoreCloudDevice implements Queue\Consumer
 					'source' => MetadataTypes\Sources\Connector::TUYA,
 					'type' => 'store-cloud-device-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $message->getConnector()->toString(),
 					],
 					'device' => [
 						'id' => $device->getId()->toString(),
-						'identifier' => $entity->getId(),
-						'address' => $entity->getIpAddress(),
+						'identifier' => $message->getId(),
+						'address' => $message->getIpAddress(),
 					],
-					'data' => $entity->toArray(),
+					'data' => $message->toArray(),
 				],
 			);
 		}
 
 		$this->setDeviceProperty(
 			$device->getId(),
-			$entity->getLocalKey(),
+			$message->getLocalKey(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::LOCAL_KEY,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::LOCAL_KEY),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
-			$entity->getIpAddress(),
+			$message->getIpAddress(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::IP_ADDRESS,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::IP_ADDRESS),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
-			$entity->getCategory(),
+			$message->getCategory(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::CATEGORY,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::CATEGORY),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
-			$entity->getIcon(),
+			$message->getIcon(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::ICON,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::ICON),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
-			$entity->getLatitude(),
+			$message->getLatitude(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::LATITUDE,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::LATITUDE),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
-			$entity->getLongitude(),
+			$message->getLongitude(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::LONGITUDE,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::LONGITUDE),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
-			$entity->getProductId(),
+			$message->getProductId(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::PRODUCT_ID,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::PRODUCT_ID),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
-			$entity->getProductName(),
+			$message->getProductName(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::PRODUCT_NAME,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::PRODUCT_NAME),
@@ -182,36 +182,36 @@ final class StoreCloudDevice implements Queue\Consumer
 
 		$this->setDeviceProperty(
 			$device->getId(),
-			$entity->getModel(),
+			$message->getModel(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::MODEL,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MODEL),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
-			$entity->getMac(),
+			$message->getMac(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::MAC_ADDRESS,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MAC_ADDRESS),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
-			$entity->getSn(),
+			$message->getSn(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::SERIAL_NUMBER,
 			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::SERIAL_NUMBER),
 		);
 
-		$this->databaseHelper->transaction(function () use ($entity, $device): bool {
+		$this->databaseHelper->transaction(function () use ($message, $device): bool {
 			$findChannelQuery = new Queries\Entities\FindChannels();
 			$findChannelQuery->byIdentifier(Types\DataPoint::CLOUD);
 			$findChannelQuery->forDevice($device);
 
-			$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\TuyaChannel::class);
+			$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\Channels\Channel::class);
 
 			if ($channel === null) {
 				$channel = $this->channelsManager->create(Utils\ArrayHash::from([
-					'entity' => Entities\TuyaChannel::class,
+					'entity' => Entities\Channels\Channel::class,
 					'device' => $device,
 					'identifier' => Types\DataPoint::CLOUD,
 				]));
@@ -222,7 +222,7 @@ final class StoreCloudDevice implements Queue\Consumer
 						'source' => MetadataTypes\Sources\Connector::TUYA,
 						'type' => 'store-cloud-device-message-consumer',
 						'connector' => [
-							'id' => $entity->getConnector()->toString(),
+							'id' => $message->getConnector()->toString(),
 						],
 						'device' => [
 							'id' => $device->getId()->toString(),
@@ -234,7 +234,7 @@ final class StoreCloudDevice implements Queue\Consumer
 				);
 			}
 
-			foreach ($entity->getDataPoints() as $dataPoint) {
+			foreach ($message->getDataPoints() as $dataPoint) {
 				$this->setChannelProperty(
 					DevicesEntities\Channels\Properties\Dynamic::class,
 					$channel->getId(),
@@ -261,12 +261,12 @@ final class StoreCloudDevice implements Queue\Consumer
 				'source' => MetadataTypes\Sources\Connector::TUYA,
 				'type' => 'store-cloud-device-message-consumer',
 				'connector' => [
-					'id' => $entity->getConnector()->toString(),
+					'id' => $message->getConnector()->toString(),
 				],
 				'device' => [
 					'id' => $device->getId()->toString(),
 				],
-				'data' => $entity->toArray(),
+				'data' => $message->toArray(),
 			],
 		);
 

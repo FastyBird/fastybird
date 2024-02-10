@@ -67,16 +67,16 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
-	public function consume(Entities\Messages\Entity $entity): bool
+	public function consume(Queue\Messages\Message $message): bool
 	{
-		if (!$entity instanceof Entities\Messages\StoreDeviceConnectionState) {
+		if (!$message instanceof Queue\Messages\StoreDeviceConnectionState) {
 			return false;
 		}
 
 		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
-		$findDeviceQuery->byConnectorId($entity->getConnector());
-		$findDeviceQuery->byIdentifier($entity->getIdentifier());
-		$findDeviceQuery->byType(Entities\TuyaDevice::TYPE);
+		$findDeviceQuery->byConnectorId($message->getConnector());
+		$findDeviceQuery->byIdentifier($message->getIdentifier());
+		$findDeviceQuery->byType(Entities\Devices\Device::TYPE);
 
 		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
@@ -87,12 +87,12 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 					'source' => MetadataTypes\Sources\Connector::TUYA,
 					'type' => 'store-device-connection-state-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $message->getConnector()->toString(),
 					],
 					'device' => [
-						'identifier' => $entity->getIdentifier(),
+						'identifier' => $message->getIdentifier(),
 					],
-					'data' => $entity->toArray(),
+					'data' => $message->toArray(),
 				],
 			);
 
@@ -101,19 +101,19 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 
 		// Check device state...
 		if (
-			!$this->deviceConnectionManager->getState($device)->equals($entity->getState())
+			!$this->deviceConnectionManager->getState($device)->equals($message->getState())
 		) {
 			// ... and if it is not ready, set it to ready
 			$this->deviceConnectionManager->setState(
 				$device,
-				$entity->getState(),
+				$message->getState(),
 			);
 
 			if (
-				$entity->getState()->equalsValue(MetadataTypes\ConnectionState::DISCONNECTED)
-				|| $entity->getState()->equalsValue(MetadataTypes\ConnectionState::LOST)
-				|| $entity->getState()->equalsValue(MetadataTypes\ConnectionState::ALERT)
-				|| $entity->getState()->equalsValue(MetadataTypes\ConnectionState::UNKNOWN)
+				$message->getState()->equalsValue(MetadataTypes\ConnectionState::DISCONNECTED)
+				|| $message->getState()->equalsValue(MetadataTypes\ConnectionState::LOST)
+				|| $message->getState()->equalsValue(MetadataTypes\ConnectionState::ALERT)
+				|| $message->getState()->equalsValue(MetadataTypes\ConnectionState::UNKNOWN)
 			) {
 				$findDevicePropertiesQuery = new DevicesQueries\Configuration\FindDeviceDynamicProperties();
 				$findDevicePropertiesQuery->forDevice($device);
@@ -133,7 +133,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 
 				$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
 				$findChannelsQuery->forDevice($device);
-				$findChannelsQuery->byType(Entities\TuyaChannel::TYPE);
+				$findChannelsQuery->byType(Entities\Channels\Channel::TYPE);
 
 				$channels = $this->channelsConfigurationRepository->findAllBy($findChannelsQuery);
 
@@ -157,14 +157,14 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 
 				$findChildrenDevicesQuery = new DevicesQueries\Configuration\FindDevices();
 				$findChildrenDevicesQuery->forParent($device);
-				$findChildrenDevicesQuery->byType(Entities\TuyaDevice::TYPE);
+				$findChildrenDevicesQuery->byType(Entities\Devices\Device::TYPE);
 
 				$children = $this->devicesConfigurationRepository->findAllBy($findChildrenDevicesQuery);
 
 				foreach ($children as $child) {
 					$this->deviceConnectionManager->setState(
 						$child,
-						$entity->getState(),
+						$message->getState(),
 					);
 
 					$findDevicePropertiesQuery = new DevicesQueries\Configuration\FindDeviceDynamicProperties();
@@ -185,7 +185,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 
 					$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
 					$findChannelsQuery->forDevice($child);
-					$findChannelsQuery->byType(Entities\TuyaChannel::TYPE);
+					$findChannelsQuery->byType(Entities\Channels\Channel::TYPE);
 
 					$channels = $this->channelsConfigurationRepository->findAllBy($findChannelsQuery);
 
@@ -216,12 +216,12 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 				'source' => MetadataTypes\Sources\Connector::TUYA,
 				'type' => 'store-device-connection-state-message-consumer',
 				'connector' => [
-					'id' => $entity->getConnector()->toString(),
+					'id' => $message->getConnector()->toString(),
 				],
 				'device' => [
 					'id' => $device->getId()->toString(),
 				],
-				'data' => $entity->toArray(),
+				'data' => $message->toArray(),
 			],
 		);
 

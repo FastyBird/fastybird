@@ -69,7 +69,7 @@ final class Properties implements Common\EventSubscriber
 		$entity = $eventArgs->getObject();
 
 		// Check for valid entity
-		if (!$entity instanceof Entities\TuyaDevice) {
+		if (!$entity instanceof Entities\Devices\Device) {
 			return;
 		}
 

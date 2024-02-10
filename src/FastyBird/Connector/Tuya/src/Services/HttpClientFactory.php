@@ -7,7 +7,7 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:TuyaConnector!
- * @subpackage     API
+ * @subpackage     Services
  * @since          1.0.0
  *
  * @date           09.07.23
@@ -26,7 +26,7 @@ use React\Socket;
  * HTTP client factory
  *
  * @package        FastyBird:TuyaConnector!
- * @subpackage     API
+ * @subpackage     Services
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */

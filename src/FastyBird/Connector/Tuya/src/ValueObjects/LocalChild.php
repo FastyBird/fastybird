@@ -20,7 +20,7 @@ use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 
 /**
- * Local device child entity
+ * Local device child
  *
  * @package        FastyBird:TuyaConnector!
  * @subpackage     ValueObjects

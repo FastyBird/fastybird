@@ -95,7 +95,10 @@ class TuyaExtension extends DI\CompilerExtension implements Translation\DI\Trans
 		)
 			->setType(Services\DatagramFactory::class);
 
-		$builder->addDefinition($this->prefix('services.httpClientFactory'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition(
+			$this->prefix('services.httpClientFactory'),
+			new DI\Definitions\ServiceDefinition(),
+		)
 			->setType(Services\HttpClientFactory::class);
 
 		$builder->addDefinition(
@@ -142,7 +145,10 @@ class TuyaExtension extends DI\CompilerExtension implements Translation\DI\Trans
 		 * API
 		 */
 
-		$builder->addDefinition($this->prefix('api.connectionsManager'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition(
+			$this->prefix('api.connectionsManager'),
+			new DI\Definitions\ServiceDefinition(),
+		)
 			->setType(API\ConnectionManager::class);
 
 		$builder->addFactoryDefinition($this->prefix('api.openApi'))
@@ -251,34 +257,34 @@ class TuyaExtension extends DI\CompilerExtension implements Translation\DI\Trans
 		 * JSON-API SCHEMAS
 		 */
 
-		$builder->addDefinition($this->prefix('schemas.connector.tuya'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\TuyaConnector::class);
+		$builder->addDefinition($this->prefix('schemas.connector'), new DI\Definitions\ServiceDefinition())
+			->setType(Schemas\Connectors\Connector::class);
 
-		$builder->addDefinition($this->prefix('schemas.device.tuya'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\TuyaDevice::class);
+		$builder->addDefinition($this->prefix('schemas.device'), new DI\Definitions\ServiceDefinition())
+			->setType(Schemas\Devices\Device::class);
 
-		$builder->addDefinition($this->prefix('schemas.channel.tuya'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\TuyaChannel::class);
+		$builder->addDefinition($this->prefix('schemas.channel'), new DI\Definitions\ServiceDefinition())
+			->setType(Schemas\Channels\Channel::class);
 
 		/**
 		 * JSON-API HYDRATORS
 		 */
 
-		$builder->addDefinition($this->prefix('hydrators.connector.tuya'), new DI\Definitions\ServiceDefinition())
-			->setType(Hydrators\TuyaConnector::class);
+		$builder->addDefinition($this->prefix('hydrators.connector'), new DI\Definitions\ServiceDefinition())
+			->setType(Hydrators\Connectors\Connector::class);
 
-		$builder->addDefinition($this->prefix('hydrators.device.tuya'), new DI\Definitions\ServiceDefinition())
-			->setType(Hydrators\TuyaDevice::class);
+		$builder->addDefinition($this->prefix('hydrators.device'), new DI\Definitions\ServiceDefinition())
+			->setType(Hydrators\Devices\Device::class);
 
-		$builder->addDefinition($this->prefix('hydrators.channel.tuya'), new DI\Definitions\ServiceDefinition())
-			->setType(Hydrators\TuyaChannel::class);
+		$builder->addDefinition($this->prefix('hydrators.channel'), new DI\Definitions\ServiceDefinition())
+			->setType(Hydrators\Channels\Channel::class);
 
 		/**
 		 * HELPERS
 		 */
 
-		$builder->addDefinition($this->prefix('helpers.entity'), new DI\Definitions\ServiceDefinition())
-			->setType(Helpers\Entity::class);
+		$builder->addDefinition($this->prefix('helpers.messageBuilder'), new DI\Definitions\ServiceDefinition())
+			->setType(Helpers\MessageBuilder::class);
 
 		$builder->addDefinition($this->prefix('helpers.connector'), new DI\Definitions\ServiceDefinition())
 			->setType(Helpers\Connector::class);
@@ -310,7 +316,7 @@ class TuyaExtension extends DI\CompilerExtension implements Translation\DI\Trans
 			->setImplement(Connector\ConnectorFactory::class)
 			->addTag(
 				DevicesDI\DevicesExtension::CONNECTOR_TYPE_TAG,
-				Entities\TuyaConnector::TYPE,
+				Entities\Connectors\Connector::TYPE,
 			)
 			->getResultDefinition()
 			->setType(Connector\Connector::class)
@@ -331,7 +337,7 @@ class TuyaExtension extends DI\CompilerExtension implements Translation\DI\Trans
 		$builder = $this->getContainerBuilder();
 
 		/**
-		 * Doctrine entities
+		 * DOCTRINE ENTITIES
 		 */
 
 		$ormAttributeDriverService = $builder->getDefinition('nettrineOrmAttributes.attributeDriver');

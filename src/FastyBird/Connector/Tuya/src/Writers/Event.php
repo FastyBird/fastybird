@@ -17,6 +17,7 @@ namespace FastyBird\Connector\Tuya\Writers;
 
 use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Exceptions;
+use FastyBird\Connector\Tuya\Queue;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -60,7 +61,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 
 		$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 		$findChannelQuery->byId($event->getProperty()->getChannel());
-		$findChannelQuery->byType(Entities\TuyaChannel::TYPE);
+		$findChannelQuery->byType(Entities\Channels\Channel::TYPE);
 
 		$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
 
@@ -71,7 +72,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDeviceQuery->forConnector($this->connector);
 		$findDeviceQuery->byId($channel->getDevice());
-		$findDeviceQuery->byType(Entities\TuyaDevice::TYPE);
+		$findDeviceQuery->byType(Entities\Devices\Device::TYPE);
 
 		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
@@ -80,8 +81,8 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 		}
 
 		$this->queue->append(
-			$this->entityHelper->create(
-				Entities\Messages\WriteChannelPropertyState::class,
+			$this->messageBuilder->create(
+				Queue\Messages\WriteChannelPropertyState::class,
 				[
 					'connector' => $this->connector->getId(),
 					'device' => $device->getId(),

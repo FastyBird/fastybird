@@ -18,7 +18,6 @@ namespace FastyBird\Connector\Tuya\Clients;
 use Evenement;
 use FastyBird\Connector\Tuya;
 use FastyBird\Connector\Tuya\API;
-use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Queue;
@@ -92,7 +91,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 	private API\OpenApi|null $cloudApiConnection = null;
 
-	/** @var SplObjectStorage<Entities\Clients\DiscoveredLocalDevice, null> */
+	/** @var SplObjectStorage<Messages\Response\DiscoveredLocalDevice, null> */
 	private SplObjectStorage $discoveredLocalDevices;
 
 	/** @var array<EventLoop\TimerInterface> */
@@ -103,7 +102,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 		private readonly API\OpenApiFactory $openApiFactory,
 		private readonly API\LocalApiFactory $localApiFactory,
 		private readonly Services\DatagramFactory $datagramFactory,
-		private readonly Helpers\Entity $entityHelper,
+		private readonly Helpers\MessageBuilder $messageBuilder,
 		private readonly Helpers\Connector $connectorHelper,
 		private readonly Queue\Queue $queue,
 		private readonly Tuya\Logger $logger,
@@ -229,10 +228,10 @@ final class Discovery implements Evenement\EventEmitterInterface
 					$this->handleFoundLocalDevices($devices);
 				}
 
-				$this->emit('finished', [$devices]);
+				$this->emit(Tuya\Constants::EVENT_FINISHED, [$devices]);
 			}))
 			->catch(function (): void {
-				$this->emit('finished', [[]]);
+				$this->emit(Tuya\Constants::EVENT_FINISHED, [[]]);
 			})
 			->finally(function (): void {
 				foreach ($this->handlerTimer as $index => $timer) {
@@ -283,21 +282,23 @@ final class Discovery implements Evenement\EventEmitterInterface
 					'source_type' => 'tuyaUser',
 				],
 			)
-			->then(function (Entities\API\GetDevices $response): void {
+			->then(function (API\Messages\Response\GetDevices $response): void {
 				$devices = $response->getResult()->getList();
 
 				$this->getCloudApiConnection()
 					->getDevicesFactoryInfos(
 						array_map(
-							static fn (Entities\API\Device $userDevice): string => $userDevice->getId(),
+							static fn (API\Messages\Response\Device $userDevice): string => $userDevice->getId(),
 							$devices,
 						),
 					)
-					->then(async(function (Entities\API\GetDevicesFactoryInfos $response) use ($devices): void {
-						$devices = $this->handleFoundCloudDevices($devices, $response->getResult());
+					->then(
+						async(function (API\Messages\Response\GetDevicesFactoryInfos $response) use ($devices): void {
+							$devices = $this->handleFoundCloudDevices($devices, $response->getResult());
 
-						$this->emit('finished', [$devices]);
-					}))
+							$this->emit(Tuya\Constants::EVENT_FINISHED, [$devices]);
+						}),
+					)
 					->catch(function (Throwable $ex): void {
 						if ($ex instanceof Exceptions\OpenApiError) {
 							$this->logger->warning(
@@ -418,8 +419,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 			}
 
 			$this->discoveredLocalDevices->attach(
-				$this->entityHelper->create(
-					Entities\Clients\DiscoveredLocalDevice::class,
+				$this->messageBuilder->create(
+					Messages\Response\DiscoveredLocalDevice::class,
 					[
 						'id' => strval($deviceInfo->offsetGet('gwId')),
 						'ip_address' => strval($deviceInfo->offsetGet('ip')),
@@ -443,7 +444,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			return;
 		} catch (Exceptions\Runtime $ex) {
 			$this->logger->error(
-				'Received data could not be transformed to entity',
+				'Received data could not be transformed to message',
 				[
 					'source' => MetadataTypes\Sources\Connector::TUYA,
 					'type' => 'discovery-client',
@@ -456,9 +457,9 @@ final class Discovery implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @param array<Entities\Clients\DiscoveredLocalDevice> $devices
+	 * @param array<Messages\Response\DiscoveredLocalDevice> $devices
 	 *
-	 * @return array<Entities\Clients\DiscoveredLocalDevice>
+	 * @return array<Messages\Response\DiscoveredLocalDevice>
 	 *
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
@@ -490,7 +491,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$response = await($this->getCloudApiConnection()
 				->getDevicesFactoryInfos(
 					array_map(
-						static fn (Entities\Clients\DiscoveredLocalDevice $userDevice): string => $userDevice->getId(),
+						static fn (Messages\Response\DiscoveredLocalDevice $userDevice): string => $userDevice->getId(),
 						$devices,
 					),
 				));
@@ -538,17 +539,17 @@ final class Discovery implements Evenement\EventEmitterInterface
 			);
 
 			try {
-				/** @var array<Entities\API\DeviceFactoryInfos> $deviceFactoryInfosFiltered */
+				/** @var array<API\Messages\Response\DeviceFactoryInfos> $deviceFactoryInfosFiltered */
 				$deviceFactoryInfosFiltered = array_values(array_filter(
 					$devicesFactoryInfos,
-					static fn (Entities\API\DeviceFactoryInfos $item): bool => $device->getId() === $item->getId(),
+					static fn (API\Messages\Response\DeviceFactoryInfos $item): bool => $device->getId() === $item->getId(),
 				));
 
 				$deviceFactoryInfos = count($deviceFactoryInfosFiltered) > 0 ? $deviceFactoryInfosFiltered[0] : null;
 
 				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\StoreLocalDevice::class,
+					$this->messageBuilder->create(
+						Queue\Messages\StoreLocalDevice::class,
 						[
 							'connector' => $this->connector->getId(),
 							'id' => $device->getId(),
@@ -641,10 +642,10 @@ final class Discovery implements Evenement\EventEmitterInterface
 					);
 
 					try {
-						/** @var array<Entities\API\DeviceFactoryInfos> $childDeviceFactoryInfosFiltered */
+						/** @var array<API\Messages\Response\DeviceFactoryInfos> $childDeviceFactoryInfosFiltered */
 						$childDeviceFactoryInfosFiltered = array_values(array_filter(
 							$devicesFactoryInfos,
-							static fn (Entities\API\DeviceFactoryInfos $item): bool => $device->getId() === $item->getId(),
+							static fn (API\Messages\Response\DeviceFactoryInfos $item): bool => $device->getId() === $item->getId(),
 						));
 
 						$childDeviceFactoryInfos = count(
@@ -654,8 +655,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 							: null;
 
 						$this->queue->append(
-							$this->entityHelper->create(
-								Entities\Messages\StoreLocalDevice::class,
+							$this->messageBuilder->create(
+								Queue\Messages\StoreLocalDevice::class,
 								[
 									'connector' => $this->connector->getId(),
 									'id' => $child->getId(),
@@ -701,10 +702,10 @@ final class Discovery implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @param array<Entities\API\Device> $devices
-	 * @param array<Entities\API\DeviceFactoryInfos> $devicesFactoryInfos
+	 * @param array<API\Messages\Response\Device> $devices
+	 * @param array<API\Messages\Response\DeviceFactoryInfos> $devicesFactoryInfos
 	 *
-	 * @return array<Entities\Clients\DiscoveredCloudDevice>
+	 * @return array<Messages\Response\DiscoveredCloudDevice>
 	 *
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
@@ -734,10 +735,10 @@ final class Discovery implements Evenement\EventEmitterInterface
 		}
 
 		foreach ($devices as $device) {
-			/** @var array<Entities\API\DeviceFactoryInfos> $deviceFactoryInfosFiltered */
+			/** @var array<API\Messages\Response\DeviceFactoryInfos> $deviceFactoryInfosFiltered */
 			$deviceFactoryInfosFiltered = array_values(array_filter(
 				$devicesFactoryInfos,
-				static fn (Entities\API\DeviceFactoryInfos $item): bool => $device->getId() === $item->getId(),
+				static fn (API\Messages\Response\DeviceFactoryInfos $item): bool => $device->getId() === $item->getId(),
 			));
 
 			$deviceFactoryInfos = count($deviceFactoryInfosFiltered) > 0 ? $deviceFactoryInfosFiltered[0] : null;
@@ -876,8 +877,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 			}
 
 			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\StoreCloudDevice::class,
+				$this->messageBuilder->create(
+					Queue\Messages\StoreCloudDevice::class,
 					[
 						'connector' => $this->connector->getId(),
 						'id' => $device->getId(),
@@ -898,8 +899,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 				),
 			);
 
-			$processedDevices[] = $this->entityHelper->create(
-				Entities\Clients\DiscoveredCloudDevice::class,
+			$processedDevices[] = $this->messageBuilder->create(
+				Messages\Response\DiscoveredCloudDevice::class,
 				[
 					'id' => $device->getId(),
 					'ip_address' => $device->getIp(),
@@ -958,7 +959,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 		try {
 			if ($localApi->isConnected()) {
-				/** @var array<Entities\API\DeviceDataPointState>|Types\LocalDeviceError $deviceStatuses */
+				/** @var array<API\Messages\Response\DeviceDataPointState>|Types\LocalDeviceError $deviceStatuses */
 				$deviceStatuses = await($localApi->readStates());
 
 				$localApi->disconnect();

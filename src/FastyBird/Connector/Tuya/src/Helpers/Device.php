@@ -84,7 +84,7 @@ final class Device
 		foreach ($device->getParents() as $parent) {
 			$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
 			$findDeviceQuery->byId($parent);
-			$findDeviceQuery->byType(Entities\TuyaDevice::TYPE);
+			$findDeviceQuery->byType(Entities\Devices\Device::TYPE);
 
 			return $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 		}
@@ -319,7 +319,7 @@ final class Device
 		);
 
 		if ($property?->getValue() === null) {
-			return Entities\TuyaDevice::STATE_READING_DELAY;
+			return Entities\Devices\Device::STATE_READING_DELAY;
 		}
 
 		$value = $property->getValue();
@@ -345,7 +345,7 @@ final class Device
 		);
 
 		if ($property?->getValue() === null) {
-			return Entities\TuyaDevice::HEARTBEAT_DELAY;
+			return Entities\Devices\Device::HEARTBEAT_DELAY;
 		}
 
 		$value = $property->getValue();

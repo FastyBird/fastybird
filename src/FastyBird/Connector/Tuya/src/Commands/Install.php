@@ -143,7 +143,7 @@ class Install extends Console\Command\Command
 
 				$connector = $this->connectorsRepository->findOneBy(
 					$findConnectorQuery,
-					Entities\TuyaConnector::class,
+					Entities\Connectors\Connector::class,
 				);
 
 				if ($connector !== null) {
@@ -169,7 +169,7 @@ class Install extends Console\Command\Command
 
 				$connector = $this->connectorsRepository->findOneBy(
 					$findConnectorQuery,
-					Entities\TuyaConnector::class,
+					Entities\Connectors\Connector::class,
 				);
 
 				if ($connector === null) {
@@ -205,11 +205,11 @@ class Install extends Console\Command\Command
 			$this->getOrmConnection()->beginTransaction();
 
 			$connector = $this->connectorsManager->create(Utils\ArrayHash::from([
-				'entity' => Entities\TuyaConnector::class,
+				'entity' => Entities\Connectors\Connector::class,
 				'identifier' => $identifier,
 				'name' => $name === '' ? null : $name,
 			]));
-			assert($connector instanceof Entities\TuyaConnector);
+			assert($connector instanceof Entities\Connectors\Connector);
 
 			$this->propertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
@@ -461,7 +461,7 @@ class Install extends Console\Command\Command
 				'name' => $name === '' ? null : $name,
 				'enabled' => $enabled,
 			]));
-			assert($connector instanceof Entities\TuyaConnector);
+			assert($connector instanceof Entities\Connectors\Connector);
 
 			if ($modeProperty === null) {
 				if ($mode === null) {
@@ -688,10 +688,13 @@ class Install extends Console\Command\Command
 	{
 		$findConnectorsQuery = new Queries\Entities\FindConnectors();
 
-		$connectors = $this->connectorsRepository->findAllBy($findConnectorsQuery, Entities\TuyaConnector::class);
+		$connectors = $this->connectorsRepository->findAllBy(
+			$findConnectorsQuery,
+			Entities\Connectors\Connector::class,
+		);
 		usort(
 			$connectors,
-			static fn (Entities\TuyaConnector $a, Entities\TuyaConnector $b): int => (
+			static fn (Entities\Connectors\Connector $a, Entities\Connectors\Connector $b): int => (
 				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
 			),
 		);
@@ -708,7 +711,7 @@ class Install extends Console\Command\Command
 			$findDevicesQuery = new Queries\Entities\FindDevices();
 			$findDevicesQuery->forConnector($connector);
 
-			$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\TuyaDevice::class);
+			$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\Device::class);
 
 			$table->addRow([
 				$index + 1,
@@ -731,7 +734,7 @@ class Install extends Console\Command\Command
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 */
-	private function editDevice(Style\SymfonyStyle $io, Entities\TuyaConnector $connector): void
+	private function editDevice(Style\SymfonyStyle $io, Entities\Connectors\Connector $connector): void
 	{
 		$device = $this->askWhichDevice($io, $connector);
 
@@ -750,7 +753,7 @@ class Install extends Console\Command\Command
 			$device = $this->devicesManager->update($device, Utils\ArrayHash::from([
 				'name' => $name,
 			]));
-			assert($device instanceof Entities\TuyaDevice);
+			assert($device instanceof Entities\Devices\Device);
 
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
@@ -791,7 +794,7 @@ class Install extends Console\Command\Command
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 */
-	private function deleteDevice(Style\SymfonyStyle $io, Entities\TuyaConnector $connector): void
+	private function deleteDevice(Style\SymfonyStyle $io, Entities\Connectors\Connector $connector): void
 	{
 		$device = $this->askWhichDevice($io, $connector);
 
@@ -861,15 +864,15 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function listDevices(Style\SymfonyStyle $io, Entities\TuyaConnector $connector): void
+	private function listDevices(Style\SymfonyStyle $io, Entities\Connectors\Connector $connector): void
 	{
 		$findDevicesQuery = new Queries\Entities\FindDevices();
 		$findDevicesQuery->forConnector($connector);
 
-		$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\TuyaDevice::class);
+		$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\Device::class);
 		usort(
 			$devices,
-			static fn (Entities\TuyaDevice $a, Entities\TuyaDevice $b): int => (
+			static fn (Entities\Devices\Device $a, Entities\Devices\Device $b): int => (
 				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
 			),
 		);
@@ -904,7 +907,7 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function discoverDevices(Style\SymfonyStyle $io, Entities\TuyaConnector $connector): void
+	private function discoverDevices(Style\SymfonyStyle $io, Entities\Connectors\Connector $connector): void
 	{
 		if ($this->output === null) {
 			throw new Exceptions\InvalidState('Something went wrong, console output is not configured');
@@ -955,7 +958,7 @@ class Install extends Console\Command\Command
 		$findDevicesQuery = new Queries\Entities\FindDevices();
 		$findDevicesQuery->forConnector($connector);
 
-		$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\TuyaDevice::class);
+		$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\Device::class);
 
 		foreach ($devices as $device) {
 			$createdAt = $device->getCreatedAt();
@@ -1090,7 +1093,7 @@ class Install extends Console\Command\Command
 	 */
 	private function askManageConnectorAction(
 		Style\SymfonyStyle $io,
-		Entities\TuyaConnector $connector,
+		Entities\Connectors\Connector $connector,
 	): void
 	{
 		$question = new Console\Question\ChoiceQuestion(
@@ -1208,7 +1211,7 @@ class Install extends Console\Command\Command
 
 	private function askConnectorName(
 		Style\SymfonyStyle $io,
-		Entities\TuyaConnector|null $connector = null,
+		Entities\Connectors\Connector|null $connector = null,
 	): string|null
 	{
 		$question = new Console\Question\Question(
@@ -1225,7 +1228,10 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function askConnectorAccessId(Style\SymfonyStyle $io, Entities\TuyaConnector|null $connector = null): string
+	private function askConnectorAccessId(
+		Style\SymfonyStyle $io,
+		Entities\Connectors\Connector|null $connector = null,
+	): string
 	{
 		$question = new Console\Question\Question(
 			$this->translator->translate('//tuya-connector.cmd.install.questions.provide.connector.accessId'),
@@ -1253,7 +1259,7 @@ class Install extends Console\Command\Command
 	 */
 	private function askConnectorAccessSecret(
 		Style\SymfonyStyle $io,
-		Entities\TuyaConnector|null $connector = null,
+		Entities\Connectors\Connector|null $connector = null,
 	): string
 	{
 		$question = new Console\Question\Question(
@@ -1371,7 +1377,10 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function askConnectorUid(Style\SymfonyStyle $io, Entities\TuyaConnector|null $connector = null): string
+	private function askConnectorUid(
+		Style\SymfonyStyle $io,
+		Entities\Connectors\Connector|null $connector = null,
+	): string
 	{
 		$question = new Console\Question\Question(
 			$this->translator->translate('//tuya-connector.cmd.install.questions.provide.connector.uid'),
@@ -1393,7 +1402,7 @@ class Install extends Console\Command\Command
 		return strval($io->askQuestion($question));
 	}
 
-	private function askDeviceName(Style\SymfonyStyle $io, Entities\TuyaDevice|null $device = null): string|null
+	private function askDeviceName(Style\SymfonyStyle $io, Entities\Devices\Device|null $device = null): string|null
 	{
 		$question = new Console\Question\Question(
 			$this->translator->translate('//tuya-connector.cmd.install.questions.provide.device.name'),
@@ -1408,7 +1417,7 @@ class Install extends Console\Command\Command
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 */
-	private function askWhichConnector(Style\SymfonyStyle $io): Entities\TuyaConnector|null
+	private function askWhichConnector(Style\SymfonyStyle $io): Entities\Connectors\Connector|null
 	{
 		$connectors = [];
 
@@ -1416,11 +1425,11 @@ class Install extends Console\Command\Command
 
 		$systemConnectors = $this->connectorsRepository->findAllBy(
 			$findConnectorsQuery,
-			Entities\TuyaConnector::class,
+			Entities\Connectors\Connector::class,
 		);
 		usort(
 			$systemConnectors,
-			static fn (Entities\TuyaConnector $a, Entities\TuyaConnector $b): int => (
+			static fn (Entities\Connectors\Connector $a, Entities\Connectors\Connector $b): int => (
 				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
 			),
 		);
@@ -1442,7 +1451,7 @@ class Install extends Console\Command\Command
 		$question->setErrorMessage(
 			$this->translator->translate('//tuya-connector.cmd.base.messages.answerNotValid'),
 		);
-		$question->setValidator(function (string|int|null $answer) use ($connectors): Entities\TuyaConnector {
+		$question->setValidator(function (string|int|null $answer) use ($connectors): Entities\Connectors\Connector {
 			if ($answer === null) {
 				throw new Exceptions\Runtime(
 					sprintf(
@@ -1464,7 +1473,7 @@ class Install extends Console\Command\Command
 
 				$connector = $this->connectorsRepository->findOneBy(
 					$findConnectorQuery,
-					Entities\TuyaConnector::class,
+					Entities\Connectors\Connector::class,
 				);
 
 				if ($connector !== null) {
@@ -1481,7 +1490,7 @@ class Install extends Console\Command\Command
 		});
 
 		$connector = $io->askQuestion($question);
-		assert($connector instanceof Entities\TuyaConnector);
+		assert($connector instanceof Entities\Connectors\Connector);
 
 		return $connector;
 	}
@@ -1491,8 +1500,8 @@ class Install extends Console\Command\Command
 	 */
 	private function askWhichDevice(
 		Style\SymfonyStyle $io,
-		Entities\TuyaConnector $connector,
-	): Entities\TuyaDevice|null
+		Entities\Connectors\Connector $connector,
+	): Entities\Devices\Device|null
 	{
 		$devices = [];
 
@@ -1501,11 +1510,11 @@ class Install extends Console\Command\Command
 
 		$connectorDevices = $this->devicesRepository->findAllBy(
 			$findDevicesQuery,
-			Entities\TuyaDevice::class,
+			Entities\Devices\Device::class,
 		);
 		usort(
 			$connectorDevices,
-			static fn (Entities\TuyaDevice $a, Entities\TuyaDevice $b): int => (
+			static fn (Entities\Devices\Device $a, Entities\Devices\Device $b): int => (
 				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
 			),
 		);
@@ -1528,7 +1537,7 @@ class Install extends Console\Command\Command
 			$this->translator->translate('//tuya-connector.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(
-			function (string|int|null $answer) use ($connector, $devices): Entities\TuyaDevice {
+			function (string|int|null $answer) use ($connector, $devices): Entities\Devices\Device {
 				if ($answer === null) {
 					throw new Exceptions\Runtime(
 						sprintf(
@@ -1551,7 +1560,7 @@ class Install extends Console\Command\Command
 
 					$device = $this->devicesRepository->findOneBy(
 						$findDeviceQuery,
-						Entities\TuyaDevice::class,
+						Entities\Devices\Device::class,
 					);
 
 					if ($device !== null) {
@@ -1569,7 +1578,7 @@ class Install extends Console\Command\Command
 		);
 
 		$device = $io->askQuestion($question);
-		assert($device instanceof Entities\TuyaDevice);
+		assert($device instanceof Entities\Devices\Device);
 
 		return $device;
 	}
