@@ -79,16 +79,16 @@ final class StoreDeviceState implements Queue\Consumer
 	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws Utils\JsonException
 	 */
-	public function consume(Entities\Messages\Entity $entity): bool
+	public function consume(Queue\Messages\Message $message): bool
 	{
-		if (!$entity instanceof Entities\Messages\StoreDeviceState) {
+		if (!$message instanceof Queue\Messages\StoreDeviceState) {
 			return false;
 		}
 
 		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
-		$findDeviceQuery->byConnectorId($entity->getConnector());
-		$findDeviceQuery->startWithIdentifier($entity->getIdentifier());
-		$findDeviceQuery->byType(Entities\ShellyDevice::TYPE);
+		$findDeviceQuery->byConnectorId($message->getConnector());
+		$findDeviceQuery->startWithIdentifier($message->getIdentifier());
+		$findDeviceQuery->byType(Entities\Devices\Device::TYPE);
 
 		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
@@ -96,17 +96,17 @@ final class StoreDeviceState implements Queue\Consumer
 			return true;
 		}
 
-		if ($entity->getIpAddress() !== null) {
+		if ($message->getIpAddress() !== null) {
 			$this->setDeviceProperty(
 				$device->getId(),
-				$entity->getIpAddress(),
+				$message->getIpAddress(),
 				MetadataTypes\DataType::STRING,
 				Types\DevicePropertyIdentifier::IP_ADDRESS,
 			);
 		}
 
-		foreach ($entity->getStates() as $state) {
-			if ($state instanceof Entities\Messages\PropertyState) {
+		foreach ($message->getStates() as $state) {
+			if ($state instanceof Queue\Messages\PropertyState) {
 				$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceProperties();
 				$findDevicePropertyQuery->forDevice($device);
 
@@ -150,7 +150,7 @@ final class StoreDeviceState implements Queue\Consumer
 				} else {
 					$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
 					$findChannelsQuery->forDevice($device);
-					$findChannelsQuery->byType(Entities\ShellyChannel::TYPE);
+					$findChannelsQuery->byType(Entities\Channels\Channel::TYPE);
 
 					$channels = $this->channelsConfigurationRepository->findAllBy($findChannelsQuery);
 
@@ -205,7 +205,7 @@ final class StoreDeviceState implements Queue\Consumer
 			} else {
 				$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
 				$findChannelQuery->forDevice($device);
-				$findChannelQuery->byType(Entities\ShellyChannel::TYPE);
+				$findChannelQuery->byType(Entities\Channels\Channel::TYPE);
 
 				if (Utils\Strings::startsWith($state->getIdentifier(), '_')) {
 					$findChannelQuery->endWithIdentifier($state->getIdentifier());
@@ -271,12 +271,12 @@ final class StoreDeviceState implements Queue\Consumer
 				'source' => MetadataTypes\Sources\Connector::SHELLY,
 				'type' => 'store-device-state-message-consumer',
 				'connector' => [
-					'id' => $entity->getConnector()->toString(),
+					'id' => $message->getConnector()->toString(),
 				],
 				'device' => [
 					'id' => $device->getId()->toString(),
 				],
-				'data' => $entity->toArray(),
+				'data' => $message->toArray(),
 			],
 		);
 

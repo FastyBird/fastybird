@@ -193,7 +193,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 
 		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
 		$findConnectorQuery->byIdentifier('shelly-local');
-		$findConnectorQuery->byType(Entities\ShellyConnector::TYPE);
+		$findConnectorQuery->byType(Entities\Connectors\Connector::TYPE);
 
 		$connector = $connectorsConfigurationRepository->findOneBy($findConnectorQuery);
 		self::assertInstanceOf(MetadataDocuments\DevicesModule\Connector::class, $connector);
@@ -231,7 +231,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDeviceQuery->forConnector($connector);
 		$findDeviceQuery->byIdentifier('c45bbee4c926-shellyrgbw2');
-		$findDeviceQuery->byType(Entities\ShellyDevice::TYPE);
+		$findDeviceQuery->byType(Entities\Devices\Device::TYPE);
 
 		$device = $devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
@@ -251,7 +251,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 
 		$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
 		$findChannelsQuery->forDevice($device);
-		$findChannelsQuery->byType(Entities\ShellyChannel::TYPE);
+		$findChannelsQuery->byType(Entities\Channels\Channel::TYPE);
 
 		$channels = $channelsConfigurationRepository->findAllBy($findChannelsQuery);
 
@@ -405,7 +405,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 
 		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
 		$findConnectorQuery->byIdentifier('shelly-local');
-		$findConnectorQuery->byType(Entities\ShellyConnector::TYPE);
+		$findConnectorQuery->byType(Entities\Connectors\Connector::TYPE);
 
 		$connector = $connectorsConfigurationRepository->findOneBy($findConnectorQuery);
 		self::assertInstanceOf(MetadataDocuments\DevicesModule\Connector::class, $connector);
@@ -443,7 +443,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDeviceQuery->forConnector($connector);
 		$findDeviceQuery->byIdentifier('441793ad07e8-shellyplus2pm');
-		$findDeviceQuery->byType(Entities\ShellyDevice::TYPE);
+		$findDeviceQuery->byType(Entities\Devices\Device::TYPE);
 
 		$device = $devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
@@ -463,7 +463,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 
 		$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
 		$findChannelsQuery->forDevice($device);
-		$findChannelsQuery->byType(Entities\ShellyChannel::TYPE);
+		$findChannelsQuery->byType(Entities\Channels\Channel::TYPE);
 
 		$channels = $channelsConfigurationRepository->findAllBy($findChannelsQuery);
 

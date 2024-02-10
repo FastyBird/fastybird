@@ -91,7 +91,7 @@ final class Connector implements DevicesConnectors\Connector
 	 */
 	public function execute(bool $standalone = true): Promise\PromiseInterface
 	{
-		assert($this->connector->getType() === Entities\ShellyConnector::TYPE);
+		assert($this->connector->getType() === Entities\Connectors\Connector::TYPE);
 
 		$this->logger->info(
 			'Starting Shelly connector service',
@@ -178,7 +178,7 @@ final class Connector implements DevicesConnectors\Connector
 	 */
 	public function discover(): Promise\PromiseInterface
 	{
-		assert($this->connector->getType() === Entities\ShellyConnector::TYPE);
+		assert($this->connector->getType() === Entities\Connectors\Connector::TYPE);
 
 		$this->logger->info(
 			'Starting Shelly connector discovery',
@@ -193,7 +193,7 @@ final class Connector implements DevicesConnectors\Connector
 
 		$this->client = $this->discoveryClientFactory->create($this->connector);
 
-		$this->client->on('finished', function (): void {
+		$this->client->on(Shelly\Constants::EVENT_FINISHED, function (): void {
 			$this->emit(
 				DevicesConstants::EVENT_TERMINATE,
 				[
@@ -230,7 +230,7 @@ final class Connector implements DevicesConnectors\Connector
 
 	public function terminate(): void
 	{
-		assert($this->connector->getType() === Entities\ShellyConnector::TYPE);
+		assert($this->connector->getType() === Entities\Connectors\Connector::TYPE);
 
 		$this->client?->disconnect();
 

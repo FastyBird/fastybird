@@ -95,7 +95,10 @@ class ShellyExtension extends DI\CompilerExtension implements Translation\DI\Tra
 		)
 			->setType(Services\MulticastFactory::class);
 
-		$builder->addDefinition($this->prefix('services.httpClientFactory'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition(
+			$this->prefix('services.httpClientFactory'),
+			new DI\Definitions\ServiceDefinition(),
+		)
 			->setType(Services\HttpClientFactory::class);
 
 		/**
@@ -132,7 +135,10 @@ class ShellyExtension extends DI\CompilerExtension implements Translation\DI\Tra
 		 * API
 		 */
 
-		$builder->addDefinition($this->prefix('api.connectionsManager'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition(
+			$this->prefix('api.connectionsManager'),
+			new DI\Definitions\ServiceDefinition(),
+		)
 			->setType(API\ConnectionManager::class);
 
 		$builder->addFactoryDefinition($this->prefix('api.gen1HttpApi'))
@@ -240,34 +246,34 @@ class ShellyExtension extends DI\CompilerExtension implements Translation\DI\Tra
 		 * JSON-API SCHEMAS
 		 */
 
-		$builder->addDefinition($this->prefix('schemas.connector.shelly'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\ShellyConnector::class);
+		$builder->addDefinition($this->prefix('schemas.connector'), new DI\Definitions\ServiceDefinition())
+			->setType(Schemas\Connectors\Connector::class);
 
-		$builder->addDefinition($this->prefix('schemas.device.shelly'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\ShellyDevice::class);
+		$builder->addDefinition($this->prefix('schemas.device'), new DI\Definitions\ServiceDefinition())
+			->setType(Schemas\Devices\Device::class);
 
-		$builder->addDefinition($this->prefix('schemas.channel.shelly'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\ShellyChannel::class);
+		$builder->addDefinition($this->prefix('schemas.channel'), new DI\Definitions\ServiceDefinition())
+			->setType(Schemas\Channels\Channel::class);
 
 		/**
 		 * JSON-API HYDRATORS
 		 */
 
-		$builder->addDefinition($this->prefix('hydrators.connector.shelly'), new DI\Definitions\ServiceDefinition())
-			->setType(Hydrators\ShellyConnector::class);
+		$builder->addDefinition($this->prefix('hydrators.connector'), new DI\Definitions\ServiceDefinition())
+			->setType(Hydrators\Connectors\Connector::class);
 
-		$builder->addDefinition($this->prefix('hydrators.device.shelly'), new DI\Definitions\ServiceDefinition())
-			->setType(Hydrators\ShellyDevice::class);
+		$builder->addDefinition($this->prefix('hydrators.device'), new DI\Definitions\ServiceDefinition())
+			->setType(Hydrators\Devices\Device::class);
 
-		$builder->addDefinition($this->prefix('hydrators.channel.shelly'), new DI\Definitions\ServiceDefinition())
-			->setType(Hydrators\ShellyChannel::class);
+		$builder->addDefinition($this->prefix('hydrators.channel'), new DI\Definitions\ServiceDefinition())
+			->setType(Hydrators\Channels\Channel::class);
 
 		/**
 		 * HELPERS
 		 */
 
-		$builder->addDefinition($this->prefix('helpers.entity'), new DI\Definitions\ServiceDefinition())
-			->setType(Helpers\Entity::class);
+		$builder->addDefinition($this->prefix('helpers.messageBuilder'), new DI\Definitions\ServiceDefinition())
+			->setType(Helpers\MessageBuilder::class);
 
 		$builder->addDefinition($this->prefix('helpers.connector'), new DI\Definitions\ServiceDefinition())
 			->setType(Helpers\Connector::class);
@@ -302,7 +308,7 @@ class ShellyExtension extends DI\CompilerExtension implements Translation\DI\Tra
 			->setImplement(Connector\ConnectorFactory::class)
 			->addTag(
 				DevicesDI\DevicesExtension::CONNECTOR_TYPE_TAG,
-				Entities\ShellyConnector::TYPE,
+				Entities\Connectors\Connector::TYPE,
 			)
 			->getResultDefinition()
 			->setType(Connector\Connector::class)
@@ -323,7 +329,7 @@ class ShellyExtension extends DI\CompilerExtension implements Translation\DI\Tra
 		$builder = $this->getContainerBuilder();
 
 		/**
-		 * Doctrine entities
+		 * DOCTRINE ENTITIES
 		 */
 
 		$ormAttributeDriverService = $builder->getDefinition('nettrineOrmAttributes.attributeDriver');

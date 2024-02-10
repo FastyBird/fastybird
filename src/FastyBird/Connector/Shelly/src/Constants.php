@@ -38,4 +38,18 @@ final class Constants
 
 	public const STATE_READING_DELAY = 5_000.0;
 
+	public const EVENT_ERROR = 'error';
+
+	public const EVENT_CLOSED = 'closed';
+
+	public const EVENT_MESSAGE = 'message';
+
+	public const EVENT_CONNECTED = 'connected';
+
+	public const EVENT_DISCONNECTED = 'disconnected';
+
+	public const EVENT_LOST = 'lost';
+
+	public const EVENT_FINISHED = 'finished';
+
 }

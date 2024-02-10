@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\Shelly\API;
 
-use FastyBird\Connector\Shelly\Entities;
+use FastyBird\Connector\Shelly\API;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Types;
 use Fig\Http\Message\RequestMethodInterface;
@@ -78,7 +78,7 @@ final class Gen2HttpApi extends HttpApi
 	private const SMOKE_SET_METHOD = 'Smoke.Mute';
 
 	/**
-	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\Gen2\GetDeviceInformation> : Entities\API\Gen2\GetDeviceInformation)
+	 * @return ($async is true ? Promise\PromiseInterface<Messages\Response\Gen2\GetDeviceInformation> : Messages\Response\Gen2\GetDeviceInformation)
 	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\HttpApiCall
@@ -87,7 +87,7 @@ final class Gen2HttpApi extends HttpApi
 	public function getDeviceInformation(
 		string $address,
 		bool $async = true,
-	): Promise\PromiseInterface|Entities\API\Gen2\GetDeviceInformation
+	): Promise\PromiseInterface|Messages\Response\Gen2\GetDeviceInformation
 	{
 		$deferred = new Promise\Deferred();
 
@@ -118,7 +118,7 @@ final class Gen2HttpApi extends HttpApi
 	}
 
 	/**
-	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\Gen2\GetDeviceConfiguration> : Entities\API\Gen2\GetDeviceConfiguration)
+	 * @return ($async is true ? Promise\PromiseInterface<Messages\Response\Gen2\GetDeviceConfiguration> : Messages\Response\Gen2\GetDeviceConfiguration)
 	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\HttpApiCall
@@ -129,7 +129,7 @@ final class Gen2HttpApi extends HttpApi
 		string|null $username,
 		string|null $password,
 		bool $async = true,
-	): Promise\PromiseInterface|Entities\API\Gen2\GetDeviceConfiguration
+	): Promise\PromiseInterface|Messages\Response\Gen2\GetDeviceConfiguration
 	{
 		$deferred = new Promise\Deferred();
 
@@ -160,7 +160,7 @@ final class Gen2HttpApi extends HttpApi
 	}
 
 	/**
-	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\Gen2\GetDeviceState> : Entities\API\Gen2\GetDeviceState)
+	 * @return ($async is true ? Promise\PromiseInterface<Messages\Response\Gen2\GetDeviceState> : Messages\Response\Gen2\GetDeviceState)
 	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\HttpApiCall
@@ -171,7 +171,7 @@ final class Gen2HttpApi extends HttpApi
 		string|null $username,
 		string|null $password,
 		bool $async = true,
-	): Promise\PromiseInterface|Entities\API\Gen2\GetDeviceState
+	): Promise\PromiseInterface|Messages\Response\Gen2\GetDeviceState
 	{
 		$deferred = new Promise\Deferred();
 
@@ -317,7 +317,7 @@ final class Gen2HttpApi extends HttpApi
 	private function parseGetDeviceInformation(
 		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
-	): Entities\API\Gen2\GetDeviceInformation
+	): Messages\Response\Gen2\GetDeviceInformation
 	{
 		$body = $this->validateResponseBody(
 			$request,
@@ -325,7 +325,7 @@ final class Gen2HttpApi extends HttpApi
 			self::GET_DEVICE_INFORMATION_MESSAGE_SCHEMA_FILENAME,
 		);
 
-		return $this->createEntity(Entities\API\Gen2\GetDeviceInformation::class, $body);
+		return $this->createMessage(Messages\Response\Gen2\GetDeviceInformation::class, $body);
 	}
 
 	/**
@@ -335,7 +335,7 @@ final class Gen2HttpApi extends HttpApi
 	private function parseGetDeviceConfiguration(
 		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
-	): Entities\API\Gen2\GetDeviceConfiguration
+	): Messages\Response\Gen2\GetDeviceConfiguration
 	{
 		$body = $this->validateResponseBody(
 			$request,
@@ -396,7 +396,7 @@ final class Gen2HttpApi extends HttpApi
 			}
 		}
 
-		return $this->createEntity(Entities\API\Gen2\GetDeviceConfiguration::class, Utils\ArrayHash::from([
+		return $this->createMessage(Messages\Response\Gen2\GetDeviceConfiguration::class, Utils\ArrayHash::from([
 			Types\ComponentType::SWITCH => $switches,
 			Types\ComponentType::COVER => $covers,
 			Types\ComponentType::INPUT => $inputs,
@@ -417,7 +417,7 @@ final class Gen2HttpApi extends HttpApi
 	private function parseGetDeviceState(
 		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
-	): Entities\API\Gen2\GetDeviceState
+	): Messages\Response\Gen2\GetDeviceState
 	{
 		$body = $this->validateResponseBody(
 			$request,
@@ -544,7 +544,7 @@ final class Gen2HttpApi extends HttpApi
 			}
 		}
 
-		return $this->createEntity(Entities\API\Gen2\GetDeviceState::class, Utils\ArrayHash::from([
+		return $this->createMessage(Messages\Response\Gen2\GetDeviceState::class, Utils\ArrayHash::from([
 			Types\ComponentType::SWITCH => $switches,
 			Types\ComponentType::COVER => $covers,
 			Types\ComponentType::INPUT => $inputs,

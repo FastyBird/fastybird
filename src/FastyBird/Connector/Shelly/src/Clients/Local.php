@@ -87,7 +87,7 @@ final class Local implements Client
 		private readonly MetadataDocuments\DevicesModule\Connector $connector,
 		private readonly API\ConnectionManager $connectionManager,
 		private readonly Queue\Queue $queue,
-		private readonly Helpers\Entity $entityHelper,
+		private readonly Helpers\MessageBuilder $messageBuilder,
 		private readonly Helpers\Device $deviceHelper,
 		private readonly Shelly\Logger $logger,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
@@ -117,11 +117,14 @@ final class Local implements Client
 
 			$gen1CoapClient->connect();
 
-			$gen1CoapClient->on('message', function (Entities\API\Gen1\ReportDeviceState $message): void {
-				$this->processGen1DeviceReportedStatus($message);
-			});
+			$gen1CoapClient->on(
+				Shelly\Constants::EVENT_MESSAGE,
+				function (API\Messages\Response\Gen1\ReportDeviceState $message): void {
+					$this->processGen1DeviceReportedStatus($message);
+				},
+			);
 
-			$gen1CoapClient->on('error', function (Throwable $ex): void {
+			$gen1CoapClient->on(Shelly\Constants::EVENT_ERROR, function (Throwable $ex): void {
 				$this->logger->error(
 					'An error occur in CoAP connection',
 					[
@@ -166,7 +169,7 @@ final class Local implements Client
 
 		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDevicesQuery->forConnector($this->connector);
-		$findDevicesQuery->byType(Entities\ShellyDevice::TYPE);
+		$findDevicesQuery->byType(Entities\Devices\Device::TYPE);
 
 		foreach ($this->devicesConfigurationRepository->findAllBy($findDevicesQuery) as $device) {
 			$this->devices[$device->getId()->toString()] = $device;
@@ -386,8 +389,8 @@ final class Local implements Client
 
 					} else {
 						$this->queue->append(
-							$this->entityHelper->create(
-								Entities\Messages\StoreDeviceConnectionState::class,
+							$this->messageBuilder->create(
+								Queue\Messages\StoreDeviceConnectionState::class,
 								[
 									'connector' => $device->getConnector(),
 									'identifier' => $device->getIdentifier(),
@@ -402,7 +405,7 @@ final class Local implements Client
 			}
 
 			$client->readStates()
-				->then(function (Entities\API\Gen2\GetDeviceState $response) use ($device): void {
+				->then(function (API\Messages\Response\Gen2\GetDeviceState $response) use ($device): void {
 					$this->processedDevicesCommands[$device->getId()->toString()][self::CMD_STATE] = $this->dateTimeFactory->getNow();
 
 					$this->processGen2DeviceGetState($device, $response);
@@ -429,8 +432,8 @@ final class Local implements Client
 
 			if ($address === null) {
 				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\StoreDeviceConnectionState::class,
+					$this->messageBuilder->create(
+						Queue\Messages\StoreDeviceConnectionState::class,
 						[
 							'connector' => $device->getConnector(),
 							'identifier' => $device->getIdentifier(),
@@ -447,12 +450,12 @@ final class Local implements Client
 				$this->deviceHelper->getUsername($device),
 				$this->deviceHelper->getPassword($device),
 			)
-				->then(function (Entities\API\Gen1\GetDeviceState $response) use ($device): void {
+				->then(function (API\Messages\Response\Gen1\GetDeviceState $response) use ($device): void {
 					$this->processedDevicesCommands[$device->getId()->toString()][self::CMD_STATE] = $this->dateTimeFactory->getNow();
 
 					$this->queue->append(
-						$this->entityHelper->create(
-							Entities\Messages\StoreDeviceConnectionState::class,
+						$this->messageBuilder->create(
+							Queue\Messages\StoreDeviceConnectionState::class,
 							[
 								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
@@ -466,8 +469,8 @@ final class Local implements Client
 				->catch(function (Throwable $ex) use ($device): void {
 					if ($ex instanceof Exceptions\HttpApiError) {
 						$this->queue->append(
-							$this->entityHelper->create(
-								Entities\Messages\StoreDeviceConnectionState::class,
+							$this->messageBuilder->create(
+								Queue\Messages\StoreDeviceConnectionState::class,
 								[
 									'connector' => $device->getConnector(),
 									'identifier' => $device->getIdentifier(),
@@ -482,8 +485,8 @@ final class Local implements Client
 							&& $ex->getResponse()->getStatusCode() < StatusCodeInterface::STATUS_UNAVAILABLE_FOR_LEGAL_REASONS
 						) {
 							$this->queue->append(
-								$this->entityHelper->create(
-									Entities\Messages\StoreDeviceConnectionState::class,
+								$this->messageBuilder->create(
+									Queue\Messages\StoreDeviceConnectionState::class,
 									[
 										'connector' => $device->getConnector(),
 										'identifier' => $device->getIdentifier(),
@@ -498,8 +501,8 @@ final class Local implements Client
 							&& $ex->getResponse()->getStatusCode() < StatusCodeInterface::STATUS_NETWORK_AUTHENTICATION_REQUIRED
 						) {
 							$this->queue->append(
-								$this->entityHelper->create(
-									Entities\Messages\StoreDeviceConnectionState::class,
+								$this->messageBuilder->create(
+									Queue\Messages\StoreDeviceConnectionState::class,
 									[
 										'connector' => $device->getConnector(),
 										'identifier' => $device->getIdentifier(),
@@ -510,8 +513,8 @@ final class Local implements Client
 
 						} else {
 							$this->queue->append(
-								$this->entityHelper->create(
-									Entities\Messages\StoreDeviceConnectionState::class,
+								$this->messageBuilder->create(
+									Queue\Messages\StoreDeviceConnectionState::class,
 									[
 										'connector' => $device->getConnector(),
 										'identifier' => $device->getIdentifier(),
@@ -559,12 +562,12 @@ final class Local implements Client
 		$client = $this->connectionManager->getGen2WsApiConnection($device);
 
 		$client->on(
-			'message',
-			function (Entities\API\Gen2\GetDeviceState|Entities\API\Gen2\DeviceEvent $message) use ($device): void {
+			Shelly\Constants::EVENT_MESSAGE,
+			function (API\Messages\Response\Gen2\GetDeviceState|API\Messages\Response\Gen2\DeviceEvent $message) use ($device): void {
 				try {
-					if ($message instanceof Entities\API\Gen2\GetDeviceState) {
+					if ($message instanceof API\Messages\Response\Gen2\GetDeviceState) {
 						$this->processGen2DeviceGetState($device, $message);
-					} elseif ($message instanceof Entities\API\Gen2\DeviceEvent) {
+					} elseif ($message instanceof API\Messages\Response\Gen2\DeviceEvent) {
 						$this->processGen2DeviceEvent($device, $message);
 					}
 				} catch (Throwable $ex) {
@@ -587,7 +590,7 @@ final class Local implements Client
 		);
 
 		$client->on(
-			'error',
+			Shelly\Constants::EVENT_ERROR,
 			function (Throwable $ex) use ($device): void {
 				$this->logger->warning(
 					'Connection with Gen 2 device failed',
@@ -605,8 +608,8 @@ final class Local implements Client
 				);
 
 				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\StoreDeviceConnectionState::class,
+					$this->messageBuilder->create(
+						Queue\Messages\StoreDeviceConnectionState::class,
 						[
 							'connector' => $device->getConnector(),
 							'identifier' => $device->getIdentifier(),
@@ -618,7 +621,7 @@ final class Local implements Client
 		);
 
 		$client->on(
-			'connected',
+			Shelly\Constants::EVENT_CONNECTED,
 			function () use ($client, $device): void {
 				$this->logger->debug(
 					'Connected to Gen 2 device',
@@ -635,8 +638,8 @@ final class Local implements Client
 				);
 
 				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\StoreDeviceConnectionState::class,
+					$this->messageBuilder->create(
+						Queue\Messages\StoreDeviceConnectionState::class,
 						[
 							'connector' => $device->getConnector(),
 							'identifier' => $device->getIdentifier(),
@@ -646,13 +649,13 @@ final class Local implements Client
 				);
 
 				$client->readStates()
-					->then(function (Entities\API\Gen2\GetDeviceState $state) use ($device): void {
+					->then(function (API\Messages\Response\Gen2\GetDeviceState $state) use ($device): void {
 						$this->processGen2DeviceGetState($device, $state);
 					})
 					->catch(function (Throwable $ex) use ($device): void {
 						$this->queue->append(
-							$this->entityHelper->create(
-								Entities\Messages\StoreDeviceConnectionState::class,
+							$this->messageBuilder->create(
+								Queue\Messages\StoreDeviceConnectionState::class,
 								[
 									'connector' => $device->getConnector(),
 									'identifier' => $device->getIdentifier(),
@@ -680,7 +683,7 @@ final class Local implements Client
 		);
 
 		$client->on(
-			'disconnected',
+			Shelly\Constants::EVENT_DISCONNECTED,
 			function () use ($device): void {
 				$this->logger->debug(
 					'Disconnected from Gen 2 device',
@@ -697,8 +700,8 @@ final class Local implements Client
 				);
 
 				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\StoreDeviceConnectionState::class,
+					$this->messageBuilder->create(
+						Queue\Messages\StoreDeviceConnectionState::class,
 						[
 							'connector' => $device->getConnector(),
 							'identifier' => $device->getIdentifier(),
@@ -732,7 +735,7 @@ final class Local implements Client
 	 */
 	private function processGen1DeviceGetState(
 		MetadataDocuments\DevicesModule\Device $device,
-		Entities\API\Gen1\GetDeviceState $state,
+		API\Messages\Response\Gen1\GetDeviceState $state,
 	): void
 	{
 		$states = [];
@@ -939,8 +942,8 @@ final class Local implements Client
 
 		if (count($states) > 0) {
 			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\StoreDeviceState::class,
+				$this->messageBuilder->create(
+					Queue\Messages\StoreDeviceState::class,
 					[
 						'connector' => $device->getConnector(),
 						'identifier' => $device->getIdentifier(),
@@ -956,7 +959,7 @@ final class Local implements Client
 	 * @throws Exceptions\Runtime
 	 */
 	public function processGen1DeviceReportedStatus(
-		Entities\API\Gen1\ReportDeviceState $state,
+		API\Messages\Response\Gen1\ReportDeviceState $state,
 	): void
 	{
 		$states = [];
@@ -969,8 +972,8 @@ final class Local implements Client
 		}
 
 		$this->queue->append(
-			$this->entityHelper->create(
-				Entities\Messages\StoreDeviceConnectionState::class,
+			$this->messageBuilder->create(
+				Queue\Messages\StoreDeviceConnectionState::class,
 				[
 					'connector' => $this->connector->getId(),
 					'identifier' => $state->getIdentifier(),
@@ -981,8 +984,8 @@ final class Local implements Client
 
 		if (count($states) > 0) {
 			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\StoreDeviceState::class,
+				$this->messageBuilder->create(
+					Queue\Messages\StoreDeviceState::class,
 					[
 						'connector' => $this->connector->getId(),
 						'identifier' => $state->getIdentifier(),
@@ -1002,7 +1005,7 @@ final class Local implements Client
 	 */
 	private function processGen2DeviceGetState(
 		MetadataDocuments\DevicesModule\Device $device,
-		Entities\API\Gen2\GetDeviceState $state,
+		API\Messages\Response\Gen2\GetDeviceState $state,
 	): void
 	{
 		$states = [];
@@ -1024,8 +1027,8 @@ final class Local implements Client
 
 		if (count($states) > 0) {
 			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\StoreDeviceState::class,
+				$this->messageBuilder->create(
+					Queue\Messages\StoreDeviceState::class,
 					[
 						'connector' => $device->getConnector(),
 						'identifier' => $device->getIdentifier(),
@@ -1043,7 +1046,7 @@ final class Local implements Client
 	 */
 	private function processGen2DeviceEvent(
 		MetadataDocuments\DevicesModule\Device $device,
-		Entities\API\Gen2\DeviceEvent $notification,
+		API\Messages\Response\Gen2\DeviceEvent $notification,
 	): void
 	{
 		foreach ($notification->getEvents() as $event) {
@@ -1060,8 +1063,8 @@ final class Local implements Client
 					&& $event->getData() !== null
 				) {
 					$this->queue->append(
-						$this->entityHelper->create(
-							Entities\Messages\StoreDeviceState::class,
+						$this->messageBuilder->create(
+							Queue\Messages\StoreDeviceState::class,
 							[
 								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),

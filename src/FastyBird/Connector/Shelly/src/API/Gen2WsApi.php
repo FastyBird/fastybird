@@ -18,7 +18,6 @@ namespace FastyBird\Connector\Shelly\API;
 use DateTimeInterface;
 use Evenement;
 use FastyBird\Connector\Shelly;
-use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Types;
@@ -131,7 +130,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 		private readonly string|null $domain,
 		private readonly string|null $username,
 		private readonly string|null $password,
-		private readonly Helpers\Entity $entityHelper,
+		private readonly Helpers\MessageBuilder $messageBuilder,
 		private readonly Shelly\Logger $logger,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
@@ -205,9 +204,9 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 
 					$connection->on(
 						'message',
-						function (RFC6455\Messaging\MessageInterface $message): void {
+						function (RFC6455\Messaging\MessageInterface $socketMessage): void {
 							try {
-								$payload = Utils\Json::decode($message->getPayload());
+								$payload = Utils\Json::decode($socketMessage->getPayload());
 
 							} catch (Utils\JsonException $ex) {
 								$this->logger->debug(
@@ -222,7 +221,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 									],
 								);
 
-								$this->emit('error', [$ex]);
+								$this->emit(Shelly\Constants::EVENT_ERROR, [$ex]);
 
 								return;
 							}
@@ -240,11 +239,11 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 									|| $payload->method === self::NOTIFY_FULL_STATUS_METHOD
 								) {
 									try {
-										$entity = $this->parseDeviceStatusResponse(
+										$message = $this->parseDeviceStatusResponse(
 											Utils\Json::encode($payload->params),
 										);
 
-										$this->emit('message', [$entity]);
+										$this->emit(Shelly\Constants::EVENT_MESSAGE, [$message]);
 									} catch (Exceptions\WsCall | Exceptions\WsError $ex) {
 										$this->logger->error(
 											'Could not handle received device status message',
@@ -262,15 +261,15 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 											],
 										);
 
-										$this->emit('error', [$ex]);
+										$this->emit(Shelly\Constants::EVENT_ERROR, [$ex]);
 									}
 								} elseif ($payload->method === self::NOTIFY_EVENT_METHOD) {
 									try {
-										$entity = $this->parseDeviceEventsResponse(
+										$message = $this->parseDeviceEventsResponse(
 											Utils\Json::encode($payload->params),
 										);
 
-										$this->emit('message', [$entity]);
+										$this->emit(Shelly\Constants::EVENT_MESSAGE, [$message]);
 									} catch (Exceptions\WsCall | Exceptions\WsError $ex) {
 										$this->logger->error(
 											'Could not handle received event message',
@@ -288,7 +287,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 											],
 										);
 
-										$this->emit('error', [$ex]);
+										$this->emit(Shelly\Constants::EVENT_ERROR, [$ex]);
 									}
 								} else {
 									$this->logger->warning(
@@ -301,7 +300,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 											],
 											'response' => [
 												'method' => $payload->method,
-												'payload' => $message->getPayload(),
+												'payload' => $socketMessage->getPayload(),
 											],
 										],
 									);
@@ -318,11 +317,11 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 							if (property_exists($payload, 'result')) {
 								if ($this->messages[$payload->id]->getFrame()->getMethod() === self::DEVICE_STATUS_METHOD) {
 									try {
-										$entity = $this->parseDeviceStatusResponse(
+										$message = $this->parseDeviceStatusResponse(
 											Utils\Json::encode($payload->result),
 										);
 
-										$this->messages[$payload->id]->getDeferred()?->resolve($entity);
+										$this->messages[$payload->id]->getDeferred()?->resolve($message);
 									} catch (Exceptions\WsCall | Exceptions\WsError $ex) {
 										$this->logger->error(
 											'Could not handle received response device status message',
@@ -511,7 +510,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 
 						$this->lost();
 
-						$this->emit('error', [$ex]);
+						$this->emit(Shelly\Constants::EVENT_ERROR, [$ex]);
 					});
 
 					$connection->on('close', function ($code = null, $reason = null): void {
@@ -532,10 +531,10 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 
 						$this->disconnect();
 
-						$this->emit('disconnected');
+						$this->emit(Shelly\Constants::EVENT_DISCONNECTED);
 					});
 
-					$this->emit('connected');
+					$this->emit(Shelly\Constants::EVENT_CONNECTED);
 
 					$deferred->resolve(true);
 				})
@@ -557,7 +556,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 					$this->connecting = false;
 					$this->connected = false;
 
-					$this->emit('error', [$ex]);
+					$this->emit(Shelly\Constants::EVENT_ERROR, [$ex]);
 
 					$deferred->reject($ex);
 				});
@@ -579,7 +578,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 				],
 			);
 
-			$this->emit('error', [$ex]);
+			$this->emit(Shelly\Constants::EVENT_ERROR, [$ex]);
 
 			$deferred->reject($ex);
 		}
@@ -636,7 +635,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @return Promise\PromiseInterface<Entities\API\Gen2\GetDeviceState>
+	 * @return Promise\PromiseInterface<Messages\Response\Gen2\GetDeviceState>
 	 */
 	public function readStates(): Promise\PromiseInterface
 	{
@@ -673,7 +672,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @return Promise\PromiseInterface<Entities\API\Gen2\GetDeviceState>
+	 * @return Promise\PromiseInterface<Messages\Response\Gen2\GetDeviceState>
 	 */
 	public function writeState(
 		string $component,
@@ -759,13 +758,13 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 	{
 		$this->lost = $this->dateTimeFactory->getNow();
 
-		$this->emit('lost');
+		$this->emit(Shelly\Constants::EVENT_LOST);
 
 		$this->disconnect();
 	}
 
 	/**
-	 * @param Promise\Deferred<Entities\API\Gen2\GetDeviceState|bool>|null $deferred
+	 * @param Promise\Deferred<Messages\Response\Gen2\GetDeviceState|bool>|null $deferred
 	 *
 	 * @throws Exceptions\WsError
 	 */
@@ -812,7 +811,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 	 */
 	private function parseDeviceStatusResponse(
 		string $payload,
-	): Entities\API\Gen2\GetDeviceState
+	): Messages\Response\Gen2\GetDeviceState
 	{
 		$data = $this->validatePayload(
 			$payload,
@@ -938,7 +937,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 			}
 		}
 
-		return $this->createEntity(Entities\API\Gen2\GetDeviceState::class, Utils\ArrayHash::from([
+		return $this->createMessage(Messages\Response\Gen2\GetDeviceState::class, Utils\ArrayHash::from([
 			Types\ComponentType::SWITCH => $switches,
 			Types\ComponentType::COVER => $covers,
 			Types\ComponentType::INPUT => $inputs,
@@ -960,7 +959,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 	 */
 	private function parseDeviceEventsResponse(
 		string $payload,
-	): Entities\API\Gen2\DeviceEvent
+	): Messages\Response\Gen2\DeviceEvent
 	{
 		$data = $this->validatePayload($payload, self::DEVICE_EVENT_MESSAGE_SCHEMA_FILENAME);
 
@@ -984,8 +983,8 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 			}
 		}
 
-		return $this->createEntity(
-			Entities\API\Gen2\DeviceEvent::class,
+		return $this->createMessage(
+			Messages\Response\Gen2\DeviceEvent::class,
 			Utils\ArrayHash::from([
 				'events' => $events,
 			]),
@@ -993,25 +992,25 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @template T of Entities\API\Entity
+	 * @template T of Messages\Message
 	 *
-	 * @param class-string<T> $entity
+	 * @param class-string<T> $message
 	 *
 	 * @return T
 	 *
 	 * @throws Exceptions\WsError
 	 */
-	protected function createEntity(string $entity, Utils\ArrayHash $data): Entities\API\Entity
+	protected function createMessage(string $message, Utils\ArrayHash $data): Messages\Message
 	{
 		try {
-			return $this->entityHelper->create(
-				$entity,
+			return $this->messageBuilder->create(
+				$message,
 				(array) Utils\Json::decode(Utils\Json::encode($data), Utils\Json::FORCE_ARRAY),
 			);
 		} catch (Exceptions\Runtime $ex) {
-			throw new Exceptions\WsError('Could not map payload to entity', $ex->getCode(), $ex);
+			throw new Exceptions\WsError('Could not map payload to message', $ex->getCode(), $ex);
 		} catch (Utils\JsonException $ex) {
-			throw new Exceptions\WsError('Could not create entity from payload', $ex->getCode(), $ex);
+			throw new Exceptions\WsError('Could not create message from payload', $ex->getCode(), $ex);
 		}
 	}
 

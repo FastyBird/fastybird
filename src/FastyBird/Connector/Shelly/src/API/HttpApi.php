@@ -16,7 +16,6 @@
 namespace FastyBird\Connector\Shelly\API;
 
 use FastyBird\Connector\Shelly;
-use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Services;
@@ -73,7 +72,7 @@ abstract class HttpApi
 
 	public function __construct(
 		protected readonly Services\HttpClientFactory $httpClientFactory,
-		protected readonly Helpers\Entity $entityHelper,
+		protected readonly Helpers\MessageBuilder $messageBuilder,
 		protected readonly Shelly\Logger $logger,
 		protected readonly MetadataSchemas\Validator $schemaValidator,
 	)
@@ -81,26 +80,26 @@ abstract class HttpApi
 	}
 
 	/**
-	 * @template T of Entities\API\Entity
+	 * @template T of Messages\Message
 	 *
-	 * @param class-string<T> $entity
+	 * @param class-string<T> $message
 	 *
 	 * @return T
 	 *
 	 * @throws Exceptions\HttpApiError
 	 */
-	protected function createEntity(string $entity, Utils\ArrayHash $data): Entities\API\Entity
+	protected function createMessage(string $message, Utils\ArrayHash $data): Messages\Message
 	{
 		try {
-			return $this->entityHelper->create(
-				$entity,
+			return $this->messageBuilder->create(
+				$message,
 				(array) Utils\Json::decode(Utils\Json::encode($data), Utils\Json::FORCE_ARRAY),
 			);
 		} catch (Exceptions\Runtime $ex) {
-			throw new Exceptions\HttpApiError('Could not map data to entity', $ex->getCode(), $ex);
+			throw new Exceptions\HttpApiError('Could not map data to message', $ex->getCode(), $ex);
 		} catch (Utils\JsonException $ex) {
 			throw new Exceptions\HttpApiError(
-				'Could not create entity from response',
+				'Could not create message from response',
 				$ex->getCode(),
 				$ex,
 			);

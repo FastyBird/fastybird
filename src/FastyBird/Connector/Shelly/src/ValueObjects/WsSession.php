@@ -18,7 +18,7 @@ namespace FastyBird\Connector\Shelly\ValueObjects;
 use Orisai\ObjectMapper;
 
 /**
- * Websocket session entity
+ * Websocket session
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     ValueObjects

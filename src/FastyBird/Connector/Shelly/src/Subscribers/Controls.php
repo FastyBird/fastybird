@@ -63,7 +63,7 @@ final class Controls implements Common\EventSubscriber
 		$entity = $eventArgs->getObject();
 
 		// Check for valid entity
-		if ($entity instanceof Entities\ShellyConnector) {
+		if ($entity instanceof Entities\Connectors\Connector) {
 			$findConnectorControlQuery = new DevicesQueries\Entities\FindConnectorControls();
 			$findConnectorControlQuery->forConnector($entity);
 			$findConnectorControlQuery->byName(Types\ConnectorControlName::REBOOT);

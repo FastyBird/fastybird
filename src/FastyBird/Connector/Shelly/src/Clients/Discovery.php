@@ -18,7 +18,7 @@ namespace FastyBird\Connector\Shelly\Clients;
 use Evenement;
 use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\API;
-use FastyBird\Connector\Shelly\Entities;
+use FastyBird\Connector\Shelly\Clients;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Queue;
@@ -83,7 +83,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 	private const MATCH_IP_ADDRESS_PORT = '/^(?P<address>((?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])[.]){3}(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]))(:(?P<port>[0-9]{1,5}))?$/';
 
-	/** @var SplObjectStorage<Entities\Clients\DiscoveredLocalDevice, null> */
+	/** @var SplObjectStorage<Messages\Response\DiscoveredLocalDevice, null> */
 	private SplObjectStorage $discoveredLocalDevices;
 
 	private Storages\MdnsResultStorage $searchResult;
@@ -99,12 +99,12 @@ final class Discovery implements Evenement\EventEmitterInterface
 		private readonly API\Gen1HttpApiFactory $gen1HttpApiFactory,
 		private readonly API\Gen2HttpApiFactory $gen2HttpApiFactory,
 		private readonly Services\MulticastFactory $multicastFactory,
-		private readonly Helpers\Entity $entityHelper,
+		private readonly Helpers\MessageBuilder $messageBuilder,
 		private readonly Helpers\Loader $loader,
 		private readonly Helpers\Connector $connectorHelper,
 		private readonly Queue\Queue $queue,
 		private readonly Shelly\Logger $logger,
-		private readonly ObjectMapper\Processing\Processor $entityMapper,
+		private readonly ObjectMapper\Processing\Processor $objectMapper,
 		private readonly EventLoop\LoopInterface $eventLoop,
 	)
 	{
@@ -255,7 +255,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					$options = new ObjectMapper\Processing\Options();
 					$options->setAllowUnknownFields();
 
-					$serviceResult = $this->entityMapper->process(
+					$serviceResult = $this->objectMapper->process(
 						[
 							'address' => $serviceIpAddress,
 							'name' => $serviceName,
@@ -269,7 +269,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					);
 
 					$this->logger->error(
-						'Could not map mDNS result to entity: ' . $errorPrinter->printError($ex),
+						'Could not map mDNS result to message: ' . $errorPrinter->printError($ex),
 						[
 							'source' => MetadataTypes\Sources\Connector::SHELLY,
 							'type' => 'discovery-client',
@@ -300,8 +300,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 						}
 
 						$this->discoveredLocalDevices->attach(
-							$this->entityHelper->create(
-								Entities\Clients\DiscoveredLocalDevice::class,
+							$this->messageBuilder->create(
+								Messages\Response\DiscoveredLocalDevice::class,
 								[
 									'generation' => $generation,
 									'id' => Utils\Strings::lower($matches['id']),
@@ -348,7 +348,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					$this->handleFoundLocalDevices($devices);
 				}
 
-				$this->emit('finished', [$devices]);
+				$this->emit(Shelly\Constants::EVENT_FINISHED, [$devices]);
 			}),
 		);
 	}
@@ -359,7 +359,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @param array<Entities\Clients\DiscoveredLocalDevice> $devices
+	 * @param array<Messages\Response\DiscoveredLocalDevice> $devices
 	 */
 	private function handleFoundLocalDevices(array $devices): void
 	{
@@ -476,8 +476,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 					$generation->equalsValue(Types\DeviceGeneration::GENERATION_1)
 					&& $deviceDescription !== null
 				) {
-					$message = $this->entityHelper->create(
-						Entities\Messages\StoreLocalDevice::class,
+					$message = $this->messageBuilder->create(
+						Queue\Messages\StoreLocalDevice::class,
 						[
 							'connector' => $this->connector->getId(),
 							'identifier' => $device->getIdentifier(),
@@ -489,11 +489,11 @@ final class Discovery implements Evenement\EventEmitterInterface
 							'auth_enabled' => $deviceInformation->hasAuthentication(),
 							'firmware_version' => $deviceInformation->getFirmware(),
 							'channels' => array_map(
-								static fn (Entities\API\Gen1\DeviceBlockDescription $block): array => [
+								static fn (API\Messages\Response\Gen1\DeviceBlockDescription $block): array => [
 									'identifier' => $block->getIdentifier() . '_' . $block->getDescription(),
 									'name' => DevicesUtilities\Name::createName($block->getDescription()),
 									'properties' => array_map(
-										static fn (Entities\API\Gen1\BlockSensorDescription $sensor): array => [
+										static fn (API\Messages\Response\Gen1\BlockSensorDescription $sensor): array => [
 											'identifier' => (
 												$sensor->getIdentifier()
 												. '_'
@@ -502,7 +502,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 												. $sensor->getDescription()
 											),
 											'name' => DevicesUtilities\Name::createName($sensor->getDescription()),
-											'data_type' => $sensor->getDataType(),
+											'data_type' => $sensor->getDataType()->value,
 											'unit' => $sensor->getUnit(),
 											'format' => $sensor->getFormat(),
 											'invalid' => $sensor->getInvalid(),
@@ -520,8 +520,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 					$generation->equalsValue(Types\DeviceGeneration::GENERATION_2)
 					&& $deviceConfiguration !== null
 				) {
-					$message = $this->entityHelper->create(
-						Entities\Messages\StoreLocalDevice::class,
+					$message = $this->messageBuilder->create(
+						Queue\Messages\StoreLocalDevice::class,
 						[
 							'connector' => $this->connector->getId(),
 							'identifier' => $device->getIdentifier(),
@@ -550,7 +550,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 										);
 										assert($componentMetadata instanceof Utils\ArrayHash);
 
-										if ($component instanceof Entities\API\Gen2\DeviceInputConfiguration) {
+										if ($component instanceof API\Messages\Response\Gen2\DeviceInputConfiguration) {
 											$inputType = $component->getInputType()->getValue();
 
 											if ($componentMetadata->offsetExists($inputType)) {

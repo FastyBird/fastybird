@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\Shelly\API;
 
-use FastyBird\Connector\Shelly\Entities;
+use FastyBird\Connector\Shelly\API;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -103,7 +103,7 @@ final class Gen1HttpApi extends HttpApi
 	];
 
 	/**
-	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\Gen1\GetDeviceInformation> : Entities\API\Gen1\GetDeviceInformation)
+	 * @return ($async is true ? Promise\PromiseInterface<Messages\Response\Gen1\GetDeviceInformation> : Messages\Response\Gen1\GetDeviceInformation)
 	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\HttpApiCall
@@ -112,7 +112,7 @@ final class Gen1HttpApi extends HttpApi
 	public function getDeviceInformation(
 		string $address,
 		bool $async = true,
-	): Promise\PromiseInterface|Entities\API\Gen1\GetDeviceInformation
+	): Promise\PromiseInterface|Messages\Response\Gen1\GetDeviceInformation
 	{
 		$deferred = new Promise\Deferred();
 
@@ -143,7 +143,7 @@ final class Gen1HttpApi extends HttpApi
 	}
 
 	/**
-	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\Gen1\GetDeviceDescription> : Entities\API\Gen1\GetDeviceDescription)
+	 * @return ($async is true ? Promise\PromiseInterface<Messages\Response\Gen1\GetDeviceDescription> : Messages\Response\Gen1\GetDeviceDescription)
 	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\HttpApiCall
@@ -154,7 +154,7 @@ final class Gen1HttpApi extends HttpApi
 		string|null $username,
 		string|null $password,
 		bool $async = true,
-	): Promise\PromiseInterface|Entities\API\Gen1\GetDeviceDescription
+	): Promise\PromiseInterface|Messages\Response\Gen1\GetDeviceDescription
 	{
 		$deferred = new Promise\Deferred();
 
@@ -185,7 +185,7 @@ final class Gen1HttpApi extends HttpApi
 	}
 
 	/**
-	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\Gen1\GetDeviceState> : Entities\API\Gen1\GetDeviceState)
+	 * @return ($async is true ? Promise\PromiseInterface<Messages\Response\Gen1\GetDeviceState> : Messages\Response\Gen1\GetDeviceState)
 	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\HttpApiCall
@@ -196,7 +196,7 @@ final class Gen1HttpApi extends HttpApi
 		string|null $username,
 		string|null $password,
 		bool $async = true,
-	): Promise\PromiseInterface|Entities\API\Gen1\GetDeviceState
+	): Promise\PromiseInterface|Messages\Response\Gen1\GetDeviceState
 	{
 		$deferred = new Promise\Deferred();
 
@@ -305,7 +305,7 @@ final class Gen1HttpApi extends HttpApi
 	private function parseGetDeviceInformation(
 		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
-	): Entities\API\Gen1\GetDeviceInformation
+	): Messages\Response\Gen1\GetDeviceInformation
 	{
 		$body = $this->validateResponseBody(
 			$request,
@@ -313,7 +313,7 @@ final class Gen1HttpApi extends HttpApi
 			self::GET_DEVICE_INFORMATION_MESSAGE_SCHEMA_FILENAME,
 		);
 
-		return $this->createEntity(Entities\API\Gen1\GetDeviceInformation::class, $body);
+		return $this->createMessage(Messages\Response\Gen1\GetDeviceInformation::class, $body);
 	}
 
 	/**
@@ -323,7 +323,7 @@ final class Gen1HttpApi extends HttpApi
 	private function parseGetDeviceDescription(
 		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
-	): Entities\API\Gen1\GetDeviceDescription
+	): Messages\Response\Gen1\GetDeviceDescription
 	{
 		$body = $this->validateResponseBody(
 			$request,
@@ -448,7 +448,7 @@ final class Gen1HttpApi extends HttpApi
 			}
 		}
 
-		return $this->createEntity(Entities\API\Gen1\GetDeviceDescription::class, Utils\ArrayHash::from($data));
+		return $this->createMessage(Messages\Response\Gen1\GetDeviceDescription::class, Utils\ArrayHash::from($data));
 	}
 
 	/**
@@ -458,7 +458,7 @@ final class Gen1HttpApi extends HttpApi
 	private function parseGetDeviceStatus(
 		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
-	): Entities\API\Gen1\GetDeviceState
+	): Messages\Response\Gen1\GetDeviceState
 	{
 		$body = $this->validateResponseBody(
 			$request,
@@ -571,7 +571,7 @@ final class Gen1HttpApi extends HttpApi
 			$wifi = (array) $body->offsetGet('wifi_sta');
 		}
 
-		return $this->createEntity(Entities\API\Gen1\GetDeviceState::class, Utils\ArrayHash::from([
+		return $this->createMessage(Messages\Response\Gen1\GetDeviceState::class, Utils\ArrayHash::from([
 			'relays' => $relays,
 			'rollers' => $rollers,
 			'inputs' => $inputs,
@@ -591,7 +591,7 @@ final class Gen1HttpApi extends HttpApi
 		string $block,
 		string $description,
 		string|array|null $rawRange,
-	): Entities\API\Gen1\SensorRange
+	): Messages\Response\Gen1\SensorRange
 	{
 		$invalidValue = null;
 
@@ -607,8 +607,8 @@ final class Gen1HttpApi extends HttpApi
 			$normalValue = $rawRange;
 
 		} else {
-			return $this->entityHelper->create(
-				Entities\API\Gen1\SensorRange::class,
+			return $this->messageBuilder->create(
+				Messages\Response\Gen1\SensorRange::class,
 				[
 					'data_type' => $this->adjustSensorDataType(
 						$block,
@@ -622,8 +622,8 @@ final class Gen1HttpApi extends HttpApi
 		}
 
 		if ($normalValue === '0/1' || $normalValue === '1/0') {
-			return $this->entityHelper->create(
-				Entities\API\Gen1\SensorRange::class,
+			return $this->messageBuilder->create(
+				Messages\Response\Gen1\SensorRange::class,
 				[
 					'data_type' => $this->adjustSensorDataType(
 						$block,
@@ -637,8 +637,8 @@ final class Gen1HttpApi extends HttpApi
 		}
 
 		if ($normalValue === 'U8') {
-			return $this->entityHelper->create(
-				Entities\API\Gen1\SensorRange::class,
+			return $this->messageBuilder->create(
+				Messages\Response\Gen1\SensorRange::class,
 				[
 					'data_type' => $this->adjustSensorDataType(
 						$block,
@@ -652,8 +652,8 @@ final class Gen1HttpApi extends HttpApi
 		}
 
 		if ($normalValue === 'U16') {
-			return $this->entityHelper->create(
-				Entities\API\Gen1\SensorRange::class,
+			return $this->messageBuilder->create(
+				Messages\Response\Gen1\SensorRange::class,
 				[
 					'data_type' => $this->adjustSensorDataType(
 						$block,
@@ -667,8 +667,8 @@ final class Gen1HttpApi extends HttpApi
 		}
 
 		if ($normalValue === 'U32') {
-			return $this->entityHelper->create(
-				Entities\API\Gen1\SensorRange::class,
+			return $this->messageBuilder->create(
+				Messages\Response\Gen1\SensorRange::class,
 				[
 					'data_type' => $this->adjustSensorDataType(
 						$block,
@@ -682,8 +682,8 @@ final class Gen1HttpApi extends HttpApi
 		}
 
 		if ($normalValue === 'I8') {
-			return $this->entityHelper->create(
-				Entities\API\Gen1\SensorRange::class,
+			return $this->messageBuilder->create(
+				Messages\Response\Gen1\SensorRange::class,
 				[
 					'data_type' => $this->adjustSensorDataType(
 						$block,
@@ -697,8 +697,8 @@ final class Gen1HttpApi extends HttpApi
 		}
 
 		if ($normalValue === 'I16') {
-			return $this->entityHelper->create(
-				Entities\API\Gen1\SensorRange::class,
+			return $this->messageBuilder->create(
+				Messages\Response\Gen1\SensorRange::class,
 				[
 					'data_type' => $this->adjustSensorDataType(
 						$block,
@@ -712,8 +712,8 @@ final class Gen1HttpApi extends HttpApi
 		}
 
 		if ($normalValue === 'I32') {
-			return $this->entityHelper->create(
-				Entities\API\Gen1\SensorRange::class,
+			return $this->messageBuilder->create(
+				Messages\Response\Gen1\SensorRange::class,
 				[
 					'data_type' => $this->adjustSensorDataType(
 						$block,
@@ -734,8 +734,8 @@ final class Gen1HttpApi extends HttpApi
 				&& $normalValueParts[0] === (string) (int) $normalValueParts[0]
 				&& $normalValueParts[1] === (string) (int) $normalValueParts[1]
 			) {
-				return $this->entityHelper->create(
-					Entities\API\Gen1\SensorRange::class,
+				return $this->messageBuilder->create(
+					Messages\Response\Gen1\SensorRange::class,
 					[
 						'data_type' => $this->adjustSensorDataType(
 							$block,
@@ -757,8 +757,8 @@ final class Gen1HttpApi extends HttpApi
 				&& $normalValueParts[0] === (string) (float) $normalValueParts[0]
 				&& $normalValueParts[1] === (string) (float) $normalValueParts[1]
 			) {
-				return $this->entityHelper->create(
-					Entities\API\Gen1\SensorRange::class,
+				return $this->messageBuilder->create(
+					Messages\Response\Gen1\SensorRange::class,
 					[
 						'data_type' => $this->adjustSensorDataType(
 							$block,
@@ -775,8 +775,8 @@ final class Gen1HttpApi extends HttpApi
 				);
 			}
 
-			return $this->entityHelper->create(
-				Entities\API\Gen1\SensorRange::class,
+			return $this->messageBuilder->create(
+				Messages\Response\Gen1\SensorRange::class,
 				[
 					'data_type' => $this->adjustSensorDataType(
 						$block,
@@ -793,8 +793,8 @@ final class Gen1HttpApi extends HttpApi
 			);
 		}
 
-		return $this->entityHelper->create(
-			Entities\API\Gen1\SensorRange::class,
+		return $this->messageBuilder->create(
+			Messages\Response\Gen1\SensorRange::class,
 			[
 				'data_type' => $this->adjustSensorDataType(
 					$block,

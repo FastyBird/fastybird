@@ -134,7 +134,7 @@ class Discover extends Console\Command\Command
 			$connectorId = $input->getOption('connector');
 
 			$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
-			$findConnectorQuery->byType(Entities\ShellyConnector::TYPE);
+			$findConnectorQuery->byType(Entities\Connectors\Connector::TYPE);
 
 			if (Uuid\Uuid::isValid($connectorId)) {
 				$findConnectorQuery->byId(Uuid\Uuid::fromString($connectorId));
@@ -155,7 +155,7 @@ class Discover extends Console\Command\Command
 			$connectors = [];
 
 			$findConnectorsQuery = new DevicesQueries\Configuration\FindConnectors();
-			$findConnectorsQuery->byType(Entities\ShellyConnector::TYPE);
+			$findConnectorsQuery->byType(Entities\Connectors\Connector::TYPE);
 
 			$systemConnectors = $this->connectorsConfigurationRepository->findAllBy($findConnectorsQuery);
 			usort(
@@ -180,7 +180,7 @@ class Discover extends Console\Command\Command
 
 				$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
 				$findConnectorQuery->byIdentifier($connectorIdentifier);
-				$findConnectorQuery->byType(Entities\ShellyConnector::TYPE);
+				$findConnectorQuery->byType(Entities\Connectors\Connector::TYPE);
 
 				$connector = $this->connectorsConfigurationRepository->findOneBy($findConnectorQuery);
 
@@ -235,7 +235,7 @@ class Discover extends Console\Command\Command
 						if ($identifier !== false) {
 							$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
 							$findConnectorQuery->byIdentifier($identifier);
-							$findConnectorQuery->byType(Entities\ShellyConnector::TYPE);
+							$findConnectorQuery->byType(Entities\Connectors\Connector::TYPE);
 
 							$connector = $this->connectorsConfigurationRepository->findOneBy($findConnectorQuery);
 
@@ -320,7 +320,7 @@ class Discover extends Console\Command\Command
 
 		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
 		$findDevicesQuery->forConnector($connector);
-		$findDevicesQuery->byType(Entities\ShellyDevice::TYPE);
+		$findDevicesQuery->byType(Entities\Devices\Device::TYPE);
 
 		$devices = $this->devicesConfigurationRepository->findAllBy($findDevicesQuery);
 

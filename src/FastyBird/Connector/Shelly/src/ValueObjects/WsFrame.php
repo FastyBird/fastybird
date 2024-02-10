@@ -19,7 +19,7 @@ use Nette\Utils;
 use Orisai\ObjectMapper;
 
 /**
- * Websocket frame entity
+ * Websocket frame
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     ValueObjects

@@ -15,13 +15,13 @@
 
 namespace FastyBird\Connector\Shelly\ValueObjects;
 
-use FastyBird\Connector\Shelly\Entities;
+use FastyBird\Connector\Shelly\API;
 use Orisai\ObjectMapper;
 use React\EventLoop;
 use React\Promise;
 
 /**
- * Websocket message entity
+ * Websocket message
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     ValueObjects
@@ -32,7 +32,7 @@ final class WsMessage implements ObjectMapper\MappedObject
 {
 
 	/**
-	 * @param Promise\Deferred<Entities\API\Gen2\GetDeviceState|bool>|null $deferred
+	 * @param Promise\Deferred<API\Messages\Response\Gen2\GetDeviceState|bool>|null $deferred
 	 */
 	public function __construct(
 		#[ObjectMapper\Rules\InstanceOfValue(WsFrame::class)]
@@ -57,7 +57,7 @@ final class WsMessage implements ObjectMapper\MappedObject
 	}
 
 	/**
-	 * @return Promise\Deferred<Entities\API\Gen2\GetDeviceState|bool>|null
+	 * @return Promise\Deferred<API\Messages\Response\Gen2\GetDeviceState|bool>|null
 	 */
 	public function getDeferred(): Promise\Deferred|null
 	{

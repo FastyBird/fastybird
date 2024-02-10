@@ -88,7 +88,7 @@ final class ConnectionManager
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function getGen2WsApiConnection(
-		Entities\ShellyDevice|MetadataDocuments\DevicesModule\Device $device,
+		Entities\Devices\Device|MetadataDocuments\DevicesModule\Device $device,
 	): Gen2WsApi
 	{
 		if (!array_key_exists($device->getId()->toString(), $this->gen2WsApiConnection)) {
@@ -109,9 +109,9 @@ final class ConnectionManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function getIpAddress(Entities\ShellyDevice|MetadataDocuments\DevicesModule\Device $device): string|null
+	private function getIpAddress(Entities\Devices\Device|MetadataDocuments\DevicesModule\Device $device): string|null
 	{
-		if ($device instanceof Entities\ShellyDevice) {
+		if ($device instanceof Entities\Devices\Device) {
 			return $device->getIpAddress();
 		}
 
@@ -123,9 +123,9 @@ final class ConnectionManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function getDomain(Entities\ShellyDevice|MetadataDocuments\DevicesModule\Device $device): string|null
+	private function getDomain(Entities\Devices\Device|MetadataDocuments\DevicesModule\Device $device): string|null
 	{
-		if ($device instanceof Entities\ShellyDevice) {
+		if ($device instanceof Entities\Devices\Device) {
 			return $device->getDomain();
 		}
 
@@ -137,9 +137,9 @@ final class ConnectionManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function getUsername(Entities\ShellyDevice|MetadataDocuments\DevicesModule\Device $device): string|null
+	private function getUsername(Entities\Devices\Device|MetadataDocuments\DevicesModule\Device $device): string|null
 	{
-		if ($device instanceof Entities\ShellyDevice) {
+		if ($device instanceof Entities\Devices\Device) {
 			return $device->getUsername();
 		}
 
@@ -151,9 +151,9 @@ final class ConnectionManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function getPassword(Entities\ShellyDevice|MetadataDocuments\DevicesModule\Device $device): string|null
+	private function getPassword(Entities\Devices\Device|MetadataDocuments\DevicesModule\Device $device): string|null
 	{
-		if ($device instanceof Entities\ShellyDevice) {
+		if ($device instanceof Entities\Devices\Device) {
 			return $device->getPassword();
 		}
 
