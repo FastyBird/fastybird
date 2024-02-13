@@ -203,6 +203,7 @@
             "FastyBird\\Library\\Exchange\\Tests\\Cases\\Unit\\": "src/FastyBird/Library/Exchange/tests/cases/unit",
             "FastyBird\\Library\\Metadata\\Tests\\Cases\\Unit\\": "src/FastyBird/Library/Metadata/tests/cases/unit",
             "FastyBird\\Library\\Metadata\\Tests\\Fixtures\\": "src/FastyBird/Library/Metadata/tests/fixtures",
+            "FastyBird\\Library\\Metadata\\Tests\\Fixtures\\Dummy\\": "src/FastyBird/Library/Metadata/tests/fixtures/dummy",
             "FastyBird\\Library\\Tools\\Tests\\Cases\\Unit\\": "src/FastyBird/Library/Tools/tests/cases/unit",
             "FastyBird\\Module\\Accounts\\Tests\\Cases\\Unit\\": "src/FastyBird/Module/Accounts/tests/cases/unit",
             "FastyBird\\Module\\Accounts\\Tests\\Fixtures\\": "src/FastyBird/Module/Accounts/tests/fixtures",
@@ -221,24 +222,27 @@
             "FastyBird\\Plugin\\CouchDb\\Tests\\Fixtures\\": "src/FastyBird/Plugin/CouchDb/tests/fixtures",
             "FastyBird\\Plugin\\RabbitMq\\Tests\\Cases\\Unit\\": "src/FastyBird/Plugin/RabbitMq/tests/cases/unit",
             "FastyBird\\Plugin\\RabbitMq\\Tests\\Fixtures\\": "src/FastyBird/Plugin/RabbitMq/tests/fixtures",
+            "FastyBird\\Plugin\\RabbitMq\\Tests\\Fixtures\\Dummy\\": "src/FastyBird/Plugin/RabbitMq/tests/fixtures/dummy",
             "FastyBird\\Plugin\\RedisDb\\Tests\\Cases\\Unit\\": "src/FastyBird/Plugin/RedisDb/tests/cases/unit",
             "FastyBird\\Plugin\\RedisDb\\Tests\\Fixtures\\": "src/FastyBird/Plugin/RedisDb/tests/fixtures",
+            "FastyBird\\Plugin\\RedisDb\\Tests\\Fixtures\\Dummy\\": "src/FastyBird/Plugin/RedisDb/tests/fixtures/dummy",
             "FastyBird\\Plugin\\WebServer\\Tests\\Cases\\Unit\\": "src/FastyBird/Plugin/WebServer/tests/cases/unit",
             "FastyBird\\Plugin\\WsServer\\Tests\\Cases\\Unit\\": "src/FastyBird/Plugin/WsServer/tests/cases/unit"
         }
     },
     "extra": {
+        "enable-patching": false,
         "patches": {
-            "doctrine/orm": {
-                "Bug: Ramsey uuid not working - Part 1": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/doctrine-orm-lib-doctrine-orm-persisters-entity-basicentitypersister-php.patch",
-                "Bug: Ramsey uuid not working - Part 2": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/doctrine-orm-lib-doctrine-orm-persisters-entity-joinedsubclasspersister-php.patch",
-                "Feature: Dynamic discriminator map": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/doctrine-orm-lib-doctrine-orm-mapping-classmetadatafactory-php.patch"
-            },
             "contributte/monolog": {
                 "Bug: invalid callback definition": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/contributte-monolog-src-loggerholder-php.patch"
             },
             "dg/bypass-finals": {
                 "Bug: mkdir check": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/dg-bypass-finals-src-nativewrapper-php.patch"
+            },
+            "doctrine/orm": {
+                "Bug: Ramsey uuid not working - Part 1": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/doctrine-orm-lib-doctrine-orm-persisters-entity-basicentitypersister-php.patch",
+                "Bug: Ramsey uuid not working - Part 2": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/doctrine-orm-lib-doctrine-orm-persisters-entity-joinedsubclasspersister-php.patch",
+                "Feature: Dynamic discriminator map": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/doctrine-orm-lib-doctrine-orm-mapping-classmetadatafactory-php.patch"
             },
             "nettrine/orm": {
                 "Enable connection overrides": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/nettrine-orm-src-managerregistry-php.patch"
@@ -252,8 +256,7 @@
             "softcreatr/jsonpath": {
                 "Feature: enable extended queries": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/softcreatr-jsonpath-src-filters-querymatchfilter-php.patch"
             }
-        },
-        "enable-patching": false
+        }
     },
     "config": {
         "sort-packages": true,

@@ -48,7 +48,7 @@ abstract class PropertyCondition extends TriggersEntities\Conditions\Condition
 		Uuid\UuidInterface $device,
 		MetadataTypes\TriggerConditionOperator $operator,
 		string $operand,
-		TriggersEntities\Triggers\AutomaticTrigger $trigger,
+		TriggersEntities\Triggers\Automatic $trigger,
 		Uuid\UuidInterface|null $id = null,
 	)
 	{

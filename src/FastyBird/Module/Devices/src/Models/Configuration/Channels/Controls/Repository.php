@@ -18,6 +18,7 @@ namespace FastyBird\Module\Devices\Models\Configuration\Channels\Controls;
 use Contributte\Cache;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Module\Devices;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
@@ -51,7 +52,7 @@ final class Repository extends Models\Configuration\Repository
 	 */
 	public function find(
 		Uuid\UuidInterface $id,
-	): MetadataDocuments\DevicesModule\ChannelControl|null
+	): Documents\Channels\Controls\Control|null
 	{
 		$queryObject = new Queries\Configuration\FindChannelControls();
 		$queryObject->byId($id);
@@ -60,18 +61,18 @@ final class Repository extends Models\Configuration\Repository
 	}
 
 	/**
-	 * @param Queries\Configuration\FindChannelControls<MetadataDocuments\DevicesModule\ChannelControl> $queryObject
+	 * @param Queries\Configuration\FindChannelControls<Documents\Channels\Controls\Control> $queryObject
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
 	public function findOneBy(
 		Queries\Configuration\FindChannelControls $queryObject,
-	): MetadataDocuments\DevicesModule\ChannelControl|null
+	): Documents\Channels\Controls\Control|null
 	{
 		try {
 			$document = $this->cache->load(
 				$this->createKeyOne($queryObject),
-				function () use ($queryObject): MetadataDocuments\DevicesModule\ChannelControl|false {
+				function () use ($queryObject): Documents\Channels\Controls\Control|false {
 					$space = $this->builder
 						->load()
 						->find('.' . Devices\Constants::DATA_STORAGE_CONTROLS_KEY . '.*');
@@ -83,7 +84,7 @@ final class Repository extends Models\Configuration\Repository
 					}
 
 					return $this->documentFactory->create(
-						MetadataDocuments\DevicesModule\ChannelControl::class,
+						Documents\Channels\Controls\Control::class,
 						$result[0],
 					);
 				},
@@ -96,7 +97,7 @@ final class Repository extends Models\Configuration\Repository
 			return null;
 		}
 
-		if (!$document instanceof MetadataDocuments\DevicesModule\ChannelControl) {
+		if (!$document instanceof Documents\Channels\Controls\Control) {
 			throw new Exceptions\InvalidState('Could not load document');
 		}
 
@@ -104,9 +105,9 @@ final class Repository extends Models\Configuration\Repository
 	}
 
 	/**
-	 * @param Queries\Configuration\FindChannelControls<MetadataDocuments\DevicesModule\ChannelControl> $queryObject
+	 * @param Queries\Configuration\FindChannelControls<Documents\Channels\Controls\Control> $queryObject
 	 *
-	 * @return array<MetadataDocuments\DevicesModule\ChannelControl>
+	 * @return array<Documents\Channels\Controls\Control>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
@@ -129,8 +130,8 @@ final class Repository extends Models\Configuration\Repository
 					}
 
 					return array_map(
-						fn (stdClass $item): MetadataDocuments\DevicesModule\ChannelControl => $this->documentFactory->create(
-							MetadataDocuments\DevicesModule\ChannelControl::class,
+						fn (stdClass $item): Documents\Channels\Controls\Control => $this->documentFactory->create(
+							Documents\Channels\Controls\Control::class,
 							$item,
 						),
 						$result,

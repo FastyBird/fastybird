@@ -15,9 +15,9 @@
 
 namespace FastyBird\Connector\HomeKit\Protocol\Accessories;
 
+use FastyBird\Connector\HomeKit\Documents;
 use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Types;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 
 /**
  * HAP generic accessory factory
@@ -34,7 +34,7 @@ class GenericFactory implements AccessoryFactory
 		string $name,
 		int|null $aid,
 		Types\AccessoryCategory $category,
-		MetadataDocuments\DevicesModule\Device $device,
+		Documents\Devices\Device $device,
 	): Generic
 	{
 		return new Generic($name, $aid, $category, $device);

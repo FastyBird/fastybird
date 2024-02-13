@@ -72,7 +72,7 @@ final class Message extends Evenement\EventEmitter
 			if (is_array($data) && $message->hasHeader('source')) {
 				return $this->consume(
 					strval($message->getHeader('source')),
-					MetadataTypes\RoutingKey::get($message->routingKey),
+					$message->routingKey,
 					Nette\Utils\Json::encode($data),
 					$message->hasHeader('sender_id') ? strval($message->getHeader('sender_id')) : null,
 				);
@@ -101,7 +101,7 @@ final class Message extends Evenement\EventEmitter
 
 	private function consume(
 		string $source,
-		MetadataTypes\RoutingKey $routingKey,
+		string $routingKey,
 		string $data,
 		string|null $senderId = null,
 	): int

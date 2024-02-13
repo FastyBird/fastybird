@@ -16,10 +16,11 @@
 namespace FastyBird\Connector\Modbus\Helpers;
 
 use FastyBird\Connector\Modbus;
-use FastyBird\Connector\Modbus\Entities;
+use FastyBird\Connector\Modbus\Documents;
+use FastyBird\Connector\Modbus\Queries;
 use FastyBird\Connector\Modbus\Types;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -52,16 +53,18 @@ final class Device
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function findChannelByType(
-		MetadataDocuments\DevicesModule\Device $device,
+		Documents\Devices\Device $device,
 		int $address,
 		Types\ChannelType $type,
-	): MetadataDocuments\DevicesModule\Channel|null
+	): Documents\Channels\Channel|null
 	{
-		$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
+		$findChannelsQuery = new Queries\Configuration\FindChannels();
 		$findChannelsQuery->forDevice($device);
-		$findChannelsQuery->byType(Entities\Channels\Channel::TYPE);
 
-		$channels = $this->channelsConfigurationRepository->findAllBy($findChannelsQuery);
+		$channels = $this->channelsConfigurationRepository->findAllBy(
+			$findChannelsQuery,
+			Documents\Channels\Channel::class,
+		);
 
 		foreach ($channels as $channel) {
 			if (
@@ -81,7 +84,7 @@ final class Device
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getAddress(MetadataDocuments\DevicesModule\Device $device): int|null
+	public function getAddress(Documents\Devices\Device $device): int|null
 	{
 		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
@@ -89,7 +92,7 @@ final class Device
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+			DevicesDocuments\Devices\Properties\Variable::class,
 		);
 
 		if ($property === null) {
@@ -107,7 +110,7 @@ final class Device
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getIpAddress(MetadataDocuments\DevicesModule\Device $device): string|null
+	public function getIpAddress(Documents\Devices\Device $device): string|null
 	{
 		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
@@ -115,7 +118,7 @@ final class Device
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+			DevicesDocuments\Devices\Properties\Variable::class,
 		);
 
 		if ($property === null) {
@@ -133,7 +136,7 @@ final class Device
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getPort(MetadataDocuments\DevicesModule\Device $device): int
+	public function getPort(Documents\Devices\Device $device): int
 	{
 		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
@@ -141,7 +144,7 @@ final class Device
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+			DevicesDocuments\Devices\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null) {
@@ -159,7 +162,7 @@ final class Device
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getByteOrder(MetadataDocuments\DevicesModule\Device $device): Types\ByteOrder
+	public function getByteOrder(Documents\Devices\Device $device): Types\ByteOrder
 	{
 		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
@@ -167,7 +170,7 @@ final class Device
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+			DevicesDocuments\Devices\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null || !Types\ByteOrder::isValidValue($property->getValue())) {
@@ -185,7 +188,7 @@ final class Device
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getUnitId(MetadataDocuments\DevicesModule\Device $device): int
+	public function getUnitId(Documents\Devices\Device $device): int
 	{
 		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
@@ -193,7 +196,7 @@ final class Device
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+			DevicesDocuments\Devices\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null) {

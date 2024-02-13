@@ -16,11 +16,11 @@
 namespace FastyBird\Module\Devices\Schemas\Connectors\Properties;
 
 use Exception;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
@@ -106,6 +106,7 @@ final class Dynamic extends Property
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 *
@@ -187,15 +188,16 @@ final class Dynamic extends Property
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	protected function getState(
 		Entities\Connectors\Properties\Dynamic $property,
-	): MetadataDocuments\DevicesModule\ConnectorPropertyState|null
+	): Documents\States\Properties\Connector|null
 	{
 		$configuration = $this->connectorsPropertiesConfigurationRepository->find($property->getId());
-		assert($configuration instanceof MetadataDocuments\DevicesModule\ConnectorDynamicProperty);
+		assert($configuration instanceof Documents\Connectors\Properties\Dynamic);
 
 		return $this->connectorPropertiesStatesManager->readState($configuration);
 	}

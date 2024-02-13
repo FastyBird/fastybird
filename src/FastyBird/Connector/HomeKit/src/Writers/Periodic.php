@@ -16,15 +16,17 @@
 namespace FastyBird\Connector\HomeKit\Writers;
 
 use DateTimeInterface;
+use FastyBird\Connector\HomeKit\Documents;
 use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Helpers;
 use FastyBird\Connector\HomeKit\Protocol;
+use FastyBird\Connector\HomeKit\Queries;
 use FastyBird\Connector\HomeKit\Queue;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -54,10 +56,10 @@ abstract class Periodic
 
 	private const HANDLER_PROCESSING_INTERVAL = 0.01;
 
-	/** @var array<string, MetadataDocuments\DevicesModule\Device>  */
+	/** @var array<string, Documents\Devices\Device>  */
 	private array $devices = [];
 
-	/** @var array<string, array<string, MetadataDocuments\DevicesModule\DeviceProperty|MetadataDocuments\DevicesModule\ChannelProperty>>  */
+	/** @var array<string, array<string, DevicesDocuments\Devices\Properties\Property|DevicesDocuments\Channels\Properties\Property>>  */
 	private array $properties = [];
 
 	/** @var array<string> */
@@ -69,7 +71,7 @@ abstract class Periodic
 	private EventLoop\TimerInterface|null $handlerTimer = null;
 
 	public function __construct(
-		protected readonly MetadataDocuments\DevicesModule\Connector $connector,
+		protected readonly Documents\Connectors\Connector $connector,
 		protected readonly Helpers\MessageBuilder $messageBuilder,
 		protected readonly Queue\Queue $queue,
 		protected readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
@@ -93,10 +95,15 @@ abstract class Periodic
 		$this->processedDevices = [];
 		$this->processedProperties = [];
 
-		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDevicesQuery = new Queries\Configuration\FindDevices();
 		$findDevicesQuery->forConnector($this->connector);
 
-		foreach ($this->devicesConfigurationRepository->findAllBy($findDevicesQuery) as $device) {
+		$devices = $this->devicesConfigurationRepository->findAllBy(
+			$findDevicesQuery,
+			Documents\Devices\Device::class,
+		);
+
+		foreach ($devices as $device) {
 			$this->devices[$device->getId()->toString()] = $device;
 
 			if (!array_key_exists($device->getId()->toString(), $this->properties)) {
@@ -112,10 +119,13 @@ abstract class Periodic
 				$this->properties[$device->getId()->toString()][$property->getId()->toString()] = $property;
 			}
 
-			$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
+			$findChannelsQuery = new Queries\Configuration\FindChannels();
 			$findChannelsQuery->forDevice($device);
 
-			$channels = $this->channelsConfigurationRepository->findAllBy($findChannelsQuery);
+			$channels = $this->channelsConfigurationRepository->findAllBy(
+				$findChannelsQuery,
+				Documents\Channels\Channel::class,
+			);
 
 			foreach ($channels as $channel) {
 				$findChannelPropertiesQuery = new DevicesQueries\Configuration\FindChannelProperties();
@@ -183,7 +193,7 @@ abstract class Periodic
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
-	private function writeProperty(MetadataDocuments\DevicesModule\Device $device): bool
+	private function writeProperty(Documents\Devices\Device $device): bool
 	{
 		$now = $this->dateTimeFactory->getNow();
 
@@ -211,7 +221,7 @@ abstract class Periodic
 
 			$state = null;
 
-			if ($property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
+			if ($property instanceof DevicesDocuments\Devices\Properties\Mapped) {
 				$state = await(
 					$this->devicePropertiesStatesManager->read(
 						$property,
@@ -227,11 +237,11 @@ abstract class Periodic
 
 					// Requesting property state failed
 					continue;
-				} elseif ($state instanceof MetadataDocuments\DevicesModule\DevicePropertyState) {
+				} elseif ($state instanceof DevicesDocuments\States\Properties\Device) {
 					// Property state is set
 					$characteristicValue = $state->getRead()->getExpectedValue() ?? ($state->isValid() ? $state->getRead()->getActualValue() : null);
 				}
-			} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
+			} elseif ($property instanceof DevicesDocuments\Channels\Properties\Mapped) {
 				$state = await(
 					$this->channelPropertiesStatesManager->read(
 						$property,
@@ -247,11 +257,11 @@ abstract class Periodic
 
 					// Requesting property state failed
 					continue;
-				} elseif ($state instanceof MetadataDocuments\DevicesModule\ChannelPropertyState) {
+				} elseif ($state instanceof DevicesDocuments\States\Properties\Channel) {
 					// Property state is set
 					$characteristicValue = $state->getRead()->getExpectedValue() ?? ($state->isValid() ? $state->getRead()->getActualValue() : null);
 				}
-			} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
+			} elseif ($property instanceof DevicesDocuments\Devices\Properties\Dynamic) {
 				$state = await(
 					$this->devicePropertiesStatesManager->read(
 						$property,
@@ -267,11 +277,11 @@ abstract class Periodic
 
 					// Requesting property state failed
 					continue;
-				} elseif ($state instanceof MetadataDocuments\DevicesModule\DevicePropertyState) {
+				} elseif ($state instanceof DevicesDocuments\States\Properties\Device) {
 					// Property state is set
 					$characteristicValue = $state->getGet()->getExpectedValue() ?? ($state->isValid() ? $state->getGet()->getActualValue() : null);
 				}
-			} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+			} elseif ($property instanceof DevicesDocuments\Channels\Properties\Dynamic) {
 				$state = await(
 					$this->channelPropertiesStatesManager->read(
 						$property,
@@ -287,31 +297,31 @@ abstract class Periodic
 
 					// Requesting property state failed
 					continue;
-				} elseif ($state instanceof MetadataDocuments\DevicesModule\ChannelPropertyState) {
+				} elseif ($state instanceof DevicesDocuments\States\Properties\Channel) {
 					// Property state is set
 					$characteristicValue = $state->getGet()->getExpectedValue() ?? ($state->isValid() ? $state->getGet()->getActualValue() : null);
 				}
-			} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty) {
+			} elseif ($property instanceof DevicesDocuments\Devices\Properties\Variable) {
 				$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
 				$findDevicePropertyQuery->byId($property->getId());
 
 				$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 					$findDevicePropertyQuery,
-					MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+					DevicesDocuments\Devices\Properties\Variable::class,
 				);
-				assert($property instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty);
+				assert($property instanceof DevicesDocuments\Devices\Properties\Variable);
 
 				$characteristicValue = $property->getValue();
 
-			} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
+			} elseif ($property instanceof DevicesDocuments\Channels\Properties\Variable) {
 				$findChannelPropertyQuery = new DevicesQueries\Configuration\FindChannelVariableProperties();
 				$findChannelPropertyQuery->byId($property->getId());
 
 				$property = $this->channelsPropertiesConfigurationRepository->findOneBy(
 					$findChannelPropertyQuery,
-					MetadataDocuments\DevicesModule\ChannelVariableProperty::class,
+					DevicesDocuments\Channels\Properties\Variable::class,
 				);
-				assert($property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty);
+				assert($property instanceof DevicesDocuments\Channels\Properties\Variable);
 
 				$characteristicValue = $property->getValue();
 			}
@@ -331,7 +341,7 @@ abstract class Periodic
 								return true;
 							}
 
-							if ($property instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty) {
+							if ($property instanceof DevicesDocuments\Devices\Properties\Variable) {
 								$this->queue->append(
 									$this->messageBuilder->create(
 										Queue\Messages\WriteDevicePropertyState::class,
@@ -343,7 +353,7 @@ abstract class Periodic
 									),
 								);
 							} elseif (
-								$property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
+								$property instanceof DevicesDocuments\Devices\Properties\Dynamic
 								&& $state !== null
 							) {
 								$this->queue->append(
@@ -367,7 +377,7 @@ abstract class Periodic
 									),
 								);
 							} elseif (
-								$property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
+								$property instanceof DevicesDocuments\Devices\Properties\Mapped
 								&& $state !== null
 							) {
 								$this->queue->append(
@@ -390,7 +400,7 @@ abstract class Periodic
 										],
 									),
 								);
-							} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
+							} elseif ($property instanceof DevicesDocuments\Channels\Properties\Variable) {
 								$this->queue->append(
 									$this->messageBuilder->create(
 										Queue\Messages\WriteChannelPropertyState::class,
@@ -403,7 +413,7 @@ abstract class Periodic
 									),
 								);
 							} elseif (
-								$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+								$property instanceof DevicesDocuments\Channels\Properties\Dynamic
 								&& $state !== null
 							) {
 								$this->queue->append(
@@ -428,7 +438,7 @@ abstract class Periodic
 									),
 								);
 							} elseif (
-								$property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
+								$property instanceof DevicesDocuments\Channels\Properties\Mapped
 								&& $state !== null
 							) {
 								$this->queue->append(

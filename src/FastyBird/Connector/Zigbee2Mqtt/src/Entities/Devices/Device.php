@@ -27,8 +27,6 @@ use function assert;
 abstract class Device extends DevicesEntities\Devices\Device
 {
 
-	public const TYPE = 'zigbee2mqtt-connector';
-
 	public function __construct(
 		string $identifier,
 		Entities\Connectors\Connector $connector,
@@ -37,11 +35,6 @@ abstract class Device extends DevicesEntities\Devices\Device
 	)
 	{
 		parent::__construct($identifier, $connector, $name, $id);
-	}
-
-	public static function getType(): string
-	{
-		return self::TYPE;
 	}
 
 	public function getSource(): MetadataTypes\Sources\Connector

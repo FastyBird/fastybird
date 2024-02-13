@@ -19,6 +19,7 @@ use Contributte\Cache;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
@@ -51,7 +52,7 @@ final class Repository extends Models\Configuration\Repository
 	}
 
 	/**
-	 * @template T of MetadataDocuments\DevicesModule\ChannelProperty
+	 * @template T of Documents\Channels\Properties\Property
 	 *
 	 * @param class-string<T> $type
 	 *
@@ -61,8 +62,8 @@ final class Repository extends Models\Configuration\Repository
 	 */
 	public function find(
 		Uuid\UuidInterface $id,
-		string $type = MetadataDocuments\DevicesModule\ChannelProperty::class,
-	): MetadataDocuments\DevicesModule\ChannelProperty|null
+		string $type = Documents\Channels\Properties\Property::class,
+	): Documents\Channels\Properties\Property|null
 	{
 		$queryObject = new Queries\Configuration\FindChannelProperties();
 		$queryObject->byId($id);
@@ -77,7 +78,7 @@ final class Repository extends Models\Configuration\Repository
 	}
 
 	/**
-	 * @template T of MetadataDocuments\DevicesModule\ChannelProperty
+	 * @template T of Documents\Channels\Properties\Property
 	 *
 	 * @param Queries\Configuration\FindChannelProperties<T> $queryObject
 	 * @param class-string<T> $type
@@ -88,26 +89,26 @@ final class Repository extends Models\Configuration\Repository
 	 */
 	public function findOneBy(
 		Queries\Configuration\FindChannelProperties $queryObject,
-		string $type = MetadataDocuments\DevicesModule\ChannelProperty::class,
-	): MetadataDocuments\DevicesModule\ChannelProperty|null
+		string $type = Documents\Channels\Properties\Property::class,
+	): Documents\Channels\Properties\Property|null
 	{
 		try {
 			$document = $this->cache->load(
 				$this->createKeyOne($queryObject) . '_' . md5($type),
-				function () use ($queryObject, $type): MetadataDocuments\DevicesModule\ChannelProperty|false {
+				function () use ($queryObject, $type): Documents\Channels\Properties\Property|false {
 					$space = $this->builder
 						->load()
 						->find('.' . Devices\Constants::DATA_STORAGE_PROPERTIES_KEY . '.*');
 
-					if ($type === MetadataDocuments\DevicesModule\ChannelDynamicProperty::class) {
+					if ($type === Documents\Channels\Properties\Dynamic::class) {
 						$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::DYNAMIC . '")]');
 
-					} elseif ($type === MetadataDocuments\DevicesModule\ChannelVariableProperty::class) {
+					} elseif ($type === Documents\Channels\Properties\Variable::class) {
 						$space = $space->find(
 							'.[?(@.type == "' . MetadataTypes\PropertyType::VARIABLE . '")]',
 						);
 
-					} elseif ($type === MetadataDocuments\DevicesModule\ChannelMappedProperty::class) {
+					} elseif ($type === Documents\Channels\Properties\Mapped::class) {
 						$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::MAPPED . '")]');
 					}
 
@@ -119,9 +120,9 @@ final class Repository extends Models\Configuration\Repository
 
 					foreach (
 						[
-							MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
-							MetadataDocuments\DevicesModule\ChannelVariableProperty::class,
-							MetadataDocuments\DevicesModule\ChannelMappedProperty::class,
+							Documents\Channels\Properties\Dynamic::class,
+							Documents\Channels\Properties\Variable::class,
+							Documents\Channels\Properties\Mapped::class,
 						] as $class
 					) {
 						try {
@@ -153,7 +154,7 @@ final class Repository extends Models\Configuration\Repository
 	}
 
 	/**
-	 * @template T of MetadataDocuments\DevicesModule\ChannelProperty
+	 * @template T of Documents\Channels\Properties\Property
 	 *
 	 * @param Queries\Configuration\FindChannelProperties<T> $queryObject
 	 * @param class-string<T> $type
@@ -164,7 +165,7 @@ final class Repository extends Models\Configuration\Repository
 	 */
 	public function findAllBy(
 		Queries\Configuration\FindChannelProperties $queryObject,
-		string $type = MetadataDocuments\DevicesModule\ChannelProperty::class,
+		string $type = Documents\Channels\Properties\Property::class,
 	): array
 	{
 		try {
@@ -175,15 +176,15 @@ final class Repository extends Models\Configuration\Repository
 						->load()
 						->find('.' . Devices\Constants::DATA_STORAGE_PROPERTIES_KEY . '.*');
 
-					if ($type === MetadataDocuments\DevicesModule\ChannelDynamicProperty::class) {
+					if ($type === Documents\Channels\Properties\Dynamic::class) {
 						$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::DYNAMIC . '")]');
 
-					} elseif ($type === MetadataDocuments\DevicesModule\ChannelVariableProperty::class) {
+					} elseif ($type === Documents\Channels\Properties\Variable::class) {
 						$space = $space->find(
 							'.[?(@.type == "' . MetadataTypes\PropertyType::VARIABLE . '")]',
 						);
 
-					} elseif ($type === MetadataDocuments\DevicesModule\ChannelMappedProperty::class) {
+					} elseif ($type === Documents\Channels\Properties\Mapped::class) {
 						$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::MAPPED . '")]');
 					}
 
@@ -195,12 +196,12 @@ final class Repository extends Models\Configuration\Repository
 
 					return array_filter(
 						array_map(
-							function (stdClass $item): MetadataDocuments\DevicesModule\ChannelProperty|null {
+							function (stdClass $item): Documents\Channels\Properties\Property|null {
 								foreach (
 									[
-										MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
-										MetadataDocuments\DevicesModule\ChannelVariableProperty::class,
-										MetadataDocuments\DevicesModule\ChannelMappedProperty::class,
+										Documents\Channels\Properties\Dynamic::class,
+										Documents\Channels\Properties\Variable::class,
+										Documents\Channels\Properties\Mapped::class,
 									] as $class
 								) {
 									try {

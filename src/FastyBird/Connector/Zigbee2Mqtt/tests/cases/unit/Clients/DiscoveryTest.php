@@ -7,17 +7,16 @@ use Error;
 use FastyBird\Connector\Zigbee2Mqtt;
 use FastyBird\Connector\Zigbee2Mqtt\API;
 use FastyBird\Connector\Zigbee2Mqtt\Clients;
+use FastyBird\Connector\Zigbee2Mqtt\Documents;
 use FastyBird\Connector\Zigbee2Mqtt\Entities;
 use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
 use FastyBird\Connector\Zigbee2Mqtt\Queries;
 use FastyBird\Connector\Zigbee2Mqtt\Queue;
 use FastyBird\Connector\Zigbee2Mqtt\Tests;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use InvalidArgumentException;
 use Nette\DI;
 use Nette\Utils;
@@ -41,6 +40,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws InvalidArgumentException
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws RuntimeException
 	 */
 	public function testDiscover(): void
@@ -139,12 +139,14 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 			DevicesModels\Configuration\Connectors\Repository::class,
 		);
 
-		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
+		$findConnectorQuery = new Queries\Configuration\FindConnectors();
 		$findConnectorQuery->byIdentifier('zigbee2mqtt');
-		$findConnectorQuery->byType(Entities\Connectors\Connector::TYPE);
 
-		$connectorDocument = $connectorsConfigurationRepository->findOneBy($findConnectorQuery);
-		self::assertInstanceOf(MetadataDocuments\DevicesModule\Connector::class, $connectorDocument);
+		$connectorDocument = $connectorsConfigurationRepository->findOneBy(
+			$findConnectorQuery,
+			Documents\Connectors\Connector::class,
+		);
+		self::assertInstanceOf(Documents\Connectors\Connector::class, $connectorDocument);
 
 		self::assertEquals($connector->getId(), $connectorDocument->getId());
 

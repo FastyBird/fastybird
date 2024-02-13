@@ -17,16 +17,16 @@ namespace FastyBird\Connector\HomeKit\Queue\Consumers;
 
 use FastyBird\Connector\HomeKit;
 use FastyBird\Connector\HomeKit\Clients;
-use FastyBird\Connector\HomeKit\Entities;
+use FastyBird\Connector\HomeKit\Documents;
 use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Protocol;
+use FastyBird\Connector\HomeKit\Queries;
 use FastyBird\Connector\HomeKit\Queue;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
 use RuntimeException;
 use function intval;
@@ -70,11 +70,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return false;
 		}
 
-		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
+		$findConnectorQuery = new Queries\Configuration\FindConnectors();
 		$findConnectorQuery->byId($message->getConnector());
-		$findConnectorQuery->byType(Entities\Connectors\Connector::TYPE);
 
-		$connector = $this->connectorsConfigurationRepository->findOneBy($findConnectorQuery);
+		$connector = $this->connectorsConfigurationRepository->findOneBy(
+			$findConnectorQuery,
+			Documents\Connectors\Connector::class,
+		);
 
 		if ($connector === null) {
 			$this->logger->error(
@@ -101,11 +103,14 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDeviceQuery = new Queries\Configuration\FindDevices();
 		$findDeviceQuery->forConnector($connector);
 		$findDeviceQuery->byId($message->getDevice());
 
-		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+		$device = $this->devicesConfigurationRepository->findOneBy(
+			$findDeviceQuery,
+			Documents\Devices\Device::class,
+		);
 
 		if ($device === null) {
 			$this->logger->error(
@@ -159,11 +164,14 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
+		$findChannelQuery = new Queries\Configuration\FindChannels();
 		$findChannelQuery->forDevice($device);
 		$findChannelQuery->byId($message->getChannel());
 
-		$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
+		$channel = $this->channelsConfigurationRepository->findOneBy(
+			$findChannelQuery,
+			Documents\Channels\Channel::class,
+		);
 
 		if ($channel === null) {
 			$this->logger->error(
@@ -223,10 +231,10 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					$characteristic->getProperty() !== null
 					&& $characteristic->getProperty()->getId()->equals($property->getId())
 				) {
-					if ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
+					if ($property instanceof DevicesDocuments\Channels\Properties\Mapped) {
 						$parent = $this->channelsPropertiesConfigurationRepository->find($property->getParent());
 
-						if ($parent instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+						if ($parent instanceof DevicesDocuments\Channels\Properties\Dynamic) {
 							if ($message->getState() !== null) {
 								if ($message->getState()->getExpectedValue() !== null) {
 									$characteristic->setActualValue($message->getState()->getExpectedValue());
@@ -262,11 +270,11 @@ final class WriteChannelPropertyState implements Queue\Consumer
 
 								continue;
 							}
-						} elseif ($parent instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
+						} elseif ($parent instanceof DevicesDocuments\Channels\Properties\Variable) {
 							$characteristic->setActualValue($parent->getValue());
 							$characteristic->setValid(true);
 						}
-					} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+					} elseif ($property instanceof DevicesDocuments\Channels\Properties\Dynamic) {
 						if ($message->getState() !== null) {
 							if ($message->getState()->getExpectedValue() !== null) {
 								$characteristic->setActualValue($message->getState()->getExpectedValue());
@@ -296,7 +304,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 
 							continue;
 						}
-					} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
+					} elseif ($property instanceof DevicesDocuments\Channels\Properties\Variable) {
 						$characteristic->setActualValue($property->getValue());
 						$characteristic->setValid(true);
 					}

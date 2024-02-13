@@ -18,17 +18,17 @@ namespace FastyBird\Connector\Shelly\Connector;
 use Evenement;
 use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\Clients;
-use FastyBird\Connector\Shelly\Entities;
+use FastyBird\Connector\Shelly\Documents;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Queue;
 use FastyBird\Connector\Shelly\Writers;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Connectors as DevicesConnectors;
 use FastyBird\Module\Devices\Constants as DevicesConstants;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Nette;
@@ -66,7 +66,7 @@ final class Connector implements DevicesConnectors\Connector
 	 * @param array<Writers\WriterFactory> $writersFactories
 	 */
 	public function __construct(
-		private readonly MetadataDocuments\DevicesModule\Connector $connector,
+		private readonly DevicesDocuments\Connectors\Connector $connector,
 		private readonly array $clientsFactories,
 		private readonly Clients\DiscoveryFactory $discoveryClientFactory,
 		private readonly Helpers\Connector $connectorHelper,
@@ -77,6 +77,7 @@ final class Connector implements DevicesConnectors\Connector
 		private readonly EventLoop\LoopInterface $eventLoop,
 	)
 	{
+		assert($this->connector instanceof Documents\Connectors\Connector);
 	}
 
 	/**
@@ -91,7 +92,7 @@ final class Connector implements DevicesConnectors\Connector
 	 */
 	public function execute(bool $standalone = true): Promise\PromiseInterface
 	{
-		assert($this->connector->getType() === Entities\Connectors\Connector::TYPE);
+		assert($this->connector instanceof Documents\Connectors\Connector);
 
 		$this->logger->info(
 			'Starting Shelly connector service',
@@ -178,7 +179,7 @@ final class Connector implements DevicesConnectors\Connector
 	 */
 	public function discover(): Promise\PromiseInterface
 	{
-		assert($this->connector->getType() === Entities\Connectors\Connector::TYPE);
+		assert($this->connector instanceof Documents\Connectors\Connector);
 
 		$this->logger->info(
 			'Starting Shelly connector discovery',
@@ -230,7 +231,7 @@ final class Connector implements DevicesConnectors\Connector
 
 	public function terminate(): void
 	{
-		assert($this->connector->getType() === Entities\Connectors\Connector::TYPE);
+		assert($this->connector instanceof Documents\Connectors\Connector);
 
 		$this->client?->disconnect();
 

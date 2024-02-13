@@ -39,7 +39,7 @@ class DevicePropertyCondition extends PropertyCondition
 		Uuid\UuidInterface $property,
 		MetadataTypes\TriggerConditionOperator $operator,
 		string $operand,
-		Entities\Triggers\AutomaticTrigger $trigger,
+		Entities\Triggers\Automatic $trigger,
 		Uuid\UuidInterface|null $id = null,
 	)
 	{

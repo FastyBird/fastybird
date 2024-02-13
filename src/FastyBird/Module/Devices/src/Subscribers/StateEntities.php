@@ -22,6 +22,8 @@ use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\States;
@@ -149,18 +151,16 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	private function publishEntity(
 		bool $async,
 		MetadataTypes\Sources\Source $source,
-		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
+		Documents\Connectors\Properties\Dynamic|Documents\Devices\Properties\Dynamic|Documents\Channels\Properties\Dynamic|Documents\Devices\Properties\Mapped|Documents\Channels\Properties\Mapped $property,
 		States\ConnectorProperty|States\ChannelProperty|States\DeviceProperty $readState,
 		States\ConnectorProperty|States\ChannelProperty|States\DeviceProperty|null $getState = null,
 	): Promise\PromiseInterface|bool
 	{
-		if ($property instanceof MetadataDocuments\DevicesModule\ConnectorDynamicProperty) {
-			$routingKey = MetadataTypes\RoutingKey::get(
-				MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_STATE_DOCUMENT_REPORTED,
-			);
+		if ($property instanceof Documents\Connectors\Properties\Dynamic) {
+			$routingKey = Devices\Constants::MESSAGE_BUS_CONNECTOR_PROPERTY_STATE_DOCUMENT_REPORTED_ROUTING_KEY;
 
 			$document = $this->documentFactory->create(
-				MetadataDocuments\DevicesModule\ConnectorPropertyState::class,
+				Documents\States\Properties\Connector::class,
 				[
 					'id' => $property->getId()->toString(),
 					'connector' => $property->getConnector()->toString(),
@@ -176,15 +176,13 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 			);
 
 		} elseif (
-			$property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
-			|| $property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
+			$property instanceof Documents\Devices\Properties\Dynamic
+			|| $property instanceof Documents\Devices\Properties\Mapped
 		) {
-			$routingKey = MetadataTypes\RoutingKey::get(
-				MetadataTypes\RoutingKey::DEVICE_PROPERTY_STATE_DOCUMENT_REPORTED,
-			);
+			$routingKey = Devices\Constants::MESSAGE_BUS_DEVICE_PROPERTY_STATE_DOCUMENT_REPORTED_ROUTING_KEY;
 
 			$document = $this->documentFactory->create(
-				MetadataDocuments\DevicesModule\DevicePropertyState::class,
+				Documents\States\Properties\Device::class,
 				[
 					'id' => $property->getId()->toString(),
 					'device' => $property->getDevice()->toString(),
@@ -200,12 +198,10 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 			);
 
 		} else {
-			$routingKey = MetadataTypes\RoutingKey::get(
-				MetadataTypes\RoutingKey::CHANNEL_PROPERTY_STATE_DOCUMENT_REPORTED,
-			);
+			$routingKey = Devices\Constants::MESSAGE_BUS_CHANNEL_PROPERTY_STATE_DOCUMENT_REPORTED_ROUTING_KEY;
 
 			$document = $this->documentFactory->create(
-				MetadataDocuments\DevicesModule\ChannelPropertyState::class,
+				Documents\States\Properties\Channel::class,
 				[
 					'id' => $property->getId()->toString(),
 					'channel' => $property->getChannel()->toString(),

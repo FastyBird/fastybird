@@ -20,17 +20,16 @@ use Evenement;
 use FastyBird\Connector\Zigbee2Mqtt;
 use FastyBird\Connector\Zigbee2Mqtt\API;
 use FastyBird\Connector\Zigbee2Mqtt\Clients;
-use FastyBird\Connector\Zigbee2Mqtt\Entities;
+use FastyBird\Connector\Zigbee2Mqtt\Documents;
 use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
 use FastyBird\Connector\Zigbee2Mqtt\Helpers;
+use FastyBird\Connector\Zigbee2Mqtt\Queries;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use InvalidArgumentException;
 use Nette;
@@ -60,14 +59,14 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 	public const DISCOVERY_TOPIC = '%s/bridge/request/permit_join';
 
-	private MetadataDocuments\DevicesModule\Device|null $onlyBridge = null;
+	private Documents\Devices\Bridge|null $onlyBridge = null;
 
 	private Clients\Subscribers\Bridge $bridgeSubscriber;
 
 	private bool $subscribed = false;
 
 	public function __construct(
-		private readonly MetadataDocuments\DevicesModule\Connector $connector,
+		private readonly Documents\Connectors\Connector $connector,
 		private readonly Clients\Subscribers\BridgeFactory $bridgeSubscriberFactory,
 		private readonly API\ConnectionManager $connectionManager,
 		private readonly Helpers\Connectors\Connector $connectorHelper,
@@ -87,10 +86,11 @@ final class Discovery implements Evenement\EventEmitterInterface
 	 * @throws InvalidArgumentException
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
-	public function discover(MetadataDocuments\DevicesModule\Device|null $onlyBridge = null): void
+	public function discover(Documents\Devices\Bridge|null $onlyBridge = null): void
 	{
 		$this->onlyBridge = $onlyBridge;
 
@@ -164,11 +164,13 @@ final class Discovery implements Evenement\EventEmitterInterface
 				],
 			);
 
-			$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
+			$findDevicesQuery = new Queries\Configuration\FindBridgeDevices();
 			$findDevicesQuery->forConnector($this->connector);
-			$findDevicesQuery->byType(Entities\Devices\Bridge::TYPE);
 
-			$bridges = $this->devicesConfigurationRepository->findAllBy($findDevicesQuery);
+			$bridges = $this->devicesConfigurationRepository->findAllBy(
+				$findDevicesQuery,
+				Documents\Devices\Bridge::class,
+			);
 
 			foreach ($bridges as $bridge) {
 				$promises[] = $this->discoverSubDevices($bridge);
@@ -194,7 +196,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	private function discoverSubDevices(
-		MetadataDocuments\DevicesModule\Device $bridge,
+		Documents\Devices\Bridge $bridge,
 	): Promise\PromiseInterface
 	{
 		$deferred = new Promise\Deferred();
@@ -260,6 +262,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
@@ -276,7 +279,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	private function publishDiscoveryRequest(
-		MetadataDocuments\DevicesModule\Device $bridge,
+		Documents\Devices\Bridge $bridge,
 	): Promise\PromiseInterface
 	{
 		$deferred = new Promise\Deferred();

@@ -63,7 +63,7 @@ final class Handler extends Evenement\EventEmitter
 			) {
 				$this->consume(
 					strval($data['source']),
-					MetadataTypes\RoutingKey::get($data['routing_key']),
+					$data['routing_key'],
 					Nette\Utils\Json::encode($data['data']),
 					array_key_exists('sender_id', $data) ? $data['sender_id'] : null,
 				);
@@ -93,7 +93,7 @@ final class Handler extends Evenement\EventEmitter
 
 	private function consume(
 		string $source,
-		MetadataTypes\RoutingKey $routingKey,
+		string $routingKey,
 		string $data,
 		string|null $senderId = null,
 	): void

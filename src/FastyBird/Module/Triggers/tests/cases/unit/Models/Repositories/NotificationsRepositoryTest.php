@@ -39,7 +39,7 @@ final class NotificationsRepositoryTest extends DbTestCase
 		$entity = $repository->findOneBy($findQuery);
 
 		self::assertIsObject($entity);
-		self::assertTrue($entity instanceof Entities\Notifications\EmailNotification);
+		self::assertTrue($entity instanceof Entities\Notifications\Email);
 
 		$findQuery = new Queries\Entities\FindNotifications();
 		$findQuery->byId(Uuid\Uuid::fromString('4fe1019c-f49e-4cbf-83e6-20b394e76317'));
@@ -47,7 +47,7 @@ final class NotificationsRepositoryTest extends DbTestCase
 		$entity = $repository->findOneBy($findQuery);
 
 		self::assertIsObject($entity);
-		self::assertTrue($entity instanceof Entities\Notifications\SmsNotification);
+		self::assertTrue($entity instanceof Entities\Notifications\Sms);
 	}
 
 	/**

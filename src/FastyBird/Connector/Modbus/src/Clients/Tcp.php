@@ -19,16 +19,17 @@ use DateTimeInterface;
 use Exception;
 use FastyBird\Connector\Modbus;
 use FastyBird\Connector\Modbus\API;
-use FastyBird\Connector\Modbus\Entities;
+use FastyBird\Connector\Modbus\Documents;
 use FastyBird\Connector\Modbus\Exceptions;
 use FastyBird\Connector\Modbus\Helpers;
+use FastyBird\Connector\Modbus\Queries;
 use FastyBird\Connector\Modbus\Queue;
 use FastyBird\Connector\Modbus\Types;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -84,7 +85,7 @@ class Tcp implements Client
 		protected readonly Queue\Queue $queue,
 		protected readonly Helpers\Device $deviceHelper,
 		protected readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
-		private readonly MetadataDocuments\DevicesModule\Connector $connector,
+		private readonly Documents\Connectors\Connector $connector,
 		private readonly API\ConnectionManager $connectionManager,
 		private readonly Helpers\Channel $channelHelper,
 		private readonly Modbus\Logger $logger,
@@ -106,11 +107,13 @@ class Tcp implements Client
 	 */
 	public function connect(): void
 	{
-		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDevicesQuery = new Queries\Configuration\FindDevices();
 		$findDevicesQuery->forConnector($this->connector);
-		$findDevicesQuery->byType(Entities\Devices\Device::TYPE);
 
-		$devices = $this->devicesConfigurationRepository->findAllBy($findDevicesQuery);
+		$devices = $this->devicesConfigurationRepository->findAllBy(
+			$findDevicesQuery,
+			Documents\Devices\Device::class,
+		);
 
 		foreach ($devices as $device) {
 			$ipAddress = $this->deviceHelper->getIpAddress($device);
@@ -156,11 +159,13 @@ class Tcp implements Client
 	 */
 	private function handleCommunication(): void
 	{
-		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDevicesQuery = new Queries\Configuration\FindDevices();
 		$findDevicesQuery->forConnector($this->connector);
-		$findDevicesQuery->byType(Entities\Devices\Device::TYPE);
 
-		$devices = $this->devicesConfigurationRepository->findAllBy($findDevicesQuery);
+		$devices = $this->devicesConfigurationRepository->findAllBy(
+			$findDevicesQuery,
+			Documents\Devices\Device::class,
+		);
 
 		foreach ($devices as $device) {
 			if (!in_array($device->getId()->toString(), $this->processedDevices, true)) {
@@ -214,7 +219,7 @@ class Tcp implements Client
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function processDevice(MetadataDocuments\DevicesModule\Device $device): bool
+	private function processDevice(Documents\Devices\Device $device): bool
 	{
 		$ipAddress = $this->deviceHelper->getIpAddress($device);
 		assert(is_string($ipAddress));
@@ -227,11 +232,13 @@ class Tcp implements Client
 
 		$coilsAddresses = $discreteInputsAddresses = $holdingAddresses = $inputsAddresses = [];
 
-		$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
+		$findChannelsQuery = new Queries\Configuration\FindChannels();
 		$findChannelsQuery->forDevice($device);
-		$findChannelsQuery->byType(Entities\Channels\Channel::TYPE);
 
-		$channels = $this->channelsConfigurationRepository->findAllBy($findChannelsQuery);
+		$channels = $this->channelsConfigurationRepository->findAllBy(
+			$findChannelsQuery,
+			Documents\Channels\Channel::class,
+		);
 
 		foreach ($channels as $channel) {
 			$address = $this->channelHelper->getAddress($channel);
@@ -242,7 +249,7 @@ class Tcp implements Client
 
 				$properties = $this->channelsPropertiesConfigurationRepository->findAllBy(
 					$findChannelPropertiesQuery,
-					MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
+					DevicesDocuments\Channels\Properties\Dynamic::class,
 				);
 
 				foreach ($properties as $property) {
@@ -495,10 +502,10 @@ class Tcp implements Client
 
 								$property = $this->channelsPropertiesConfigurationRepository->findOneBy(
 									$findChannelPropertyQuery,
-									MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
+									DevicesDocuments\Channels\Properties\Dynamic::class,
 								);
 
-								if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+								if ($property instanceof DevicesDocuments\Channels\Properties\Dynamic) {
 									$this->channelPropertiesStatesManager->setValidState(
 										$property,
 										false,
@@ -591,8 +598,8 @@ class Tcp implements Client
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	private function createReadAddress(
-		MetadataDocuments\DevicesModule\Device $device,
-		MetadataDocuments\DevicesModule\Channel $channel,
+		Documents\Devices\Device $device,
+		Documents\Channels\Channel $channel,
 	): Messages\Pointer\ReadAddress|null
 	{
 		$now = $this->dateTimeFactory->getNow();
@@ -603,7 +610,7 @@ class Tcp implements Client
 
 		$property = $this->channelsPropertiesConfigurationRepository->findOneBy(
 			$findChannelPropertyQuery,
-			MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
+			DevicesDocuments\Channels\Properties\Dynamic::class,
 		);
 
 		if ($property === null || !$property->isQueryable()) {

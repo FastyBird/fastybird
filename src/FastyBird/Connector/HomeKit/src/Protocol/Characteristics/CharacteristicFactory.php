@@ -17,7 +17,7 @@ namespace FastyBird\Connector\HomeKit\Protocol\Characteristics;
 
 use FastyBird\Connector\HomeKit\Protocol;
 use FastyBird\Connector\HomeKit\Types;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use Ramsey\Uuid;
 
@@ -42,7 +42,7 @@ interface CharacteristicFactory
 		Types\DataType $dataType,
 		array $permissions,
 		Protocol\Services\Service $service,
-		MetadataDocuments\DevicesModule\ChannelProperty|null $property = null,
+		DevicesDocuments\Channels\Properties\Property|null $property = null,
 		array|null $validValues = [],
 		int|null $maxLength = null,
 		float|null $minValue = null,

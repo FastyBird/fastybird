@@ -85,6 +85,10 @@ nettrineFixtures:
     paths:
         - %appDir%/../src/Fixtures
 
+fbMetadataLibrary:
+    documents:
+        mapping: []
+
 fbSimpleAuth:
     token:
         issuer: com.fastybird.auth-module

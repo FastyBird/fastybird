@@ -19,10 +19,10 @@ use DateTimeInterface;
 use Doctrine\DBAL;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
@@ -66,7 +66,7 @@ final class DeviceConnection
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function setState(
-		Entities\Devices\Device|MetadataDocuments\DevicesModule\Device $device,
+		Entities\Devices\Device|Documents\Devices\Device $device,
 		MetadataTypes\ConnectionState $state,
 	): bool
 	{
@@ -76,7 +76,7 @@ final class DeviceConnection
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findDevicePropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceDynamicProperty::class,
+			Documents\Devices\Properties\Dynamic::class,
 		);
 
 		if ($property === null) {
@@ -114,7 +114,7 @@ final class DeviceConnection
 		}
 
 		$property = $this->devicesPropertiesConfigurationRepository->find($property->getId());
-		assert($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty);
+		assert($property instanceof Documents\Devices\Properties\Dynamic);
 
 		$this->propertiesStatesManager->set(
 			$property,
@@ -133,11 +133,12 @@ final class DeviceConnection
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function getState(
-		Entities\Devices\Device|MetadataDocuments\DevicesModule\Device $device,
+		Entities\Devices\Device|Documents\Devices\Device $device,
 	): MetadataTypes\ConnectionState
 	{
 		$findDevicePropertyQuery = new Queries\Configuration\FindDeviceDynamicProperties();
@@ -146,10 +147,10 @@ final class DeviceConnection
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findDevicePropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceDynamicProperty::class,
+			Documents\Devices\Properties\Dynamic::class,
 		);
 
-		if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
+		if ($property instanceof Documents\Devices\Properties\Dynamic) {
 			$state = $this->propertiesStatesManager->readState($property);
 
 			if (
@@ -168,11 +169,12 @@ final class DeviceConnection
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function getLostAt(
-		Entities\Devices\Device|MetadataDocuments\DevicesModule\Device $device,
+		Entities\Devices\Device|Documents\Devices\Device $device,
 	): DateTimeInterface|null
 	{
 		$findDevicePropertyQuery = new Queries\Configuration\FindDeviceDynamicProperties();
@@ -181,10 +183,10 @@ final class DeviceConnection
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findDevicePropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceDynamicProperty::class,
+			Documents\Devices\Properties\Dynamic::class,
 		);
 
-		if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
+		if ($property instanceof Documents\Devices\Properties\Dynamic) {
 			$state = $this->propertiesStatesManager->readState($property);
 
 			if (

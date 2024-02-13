@@ -18,7 +18,6 @@ final class MetadataExtensionTest extends BaseTestCase
 	{
 		self::assertNotNull($this->container->getByType(Documents\DocumentFactory::class, false));
 
-		self::assertNotNull($this->container->getByType(Loaders\SchemaLoader::class, false));
 		self::assertNotNull($this->container->getByType(Loaders\MetadataLoader::class, false));
 
 		self::assertNotNull($this->container->getByType(Schemas\Validator::class, false));

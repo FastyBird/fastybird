@@ -70,7 +70,8 @@
   "autoload-dev": {
     "psr-4": {
       "FastyBird\\Plugin\\RabbitMq\\Tests\\Cases\\Unit\\": "tests/cases/unit",
-      "FastyBird\\Plugin\\RabbitMq\\Tests\\Fixtures\\": "tests/fixtures"
+      "FastyBird\\Plugin\\RabbitMq\\Tests\\Fixtures\\": "tests/fixtures",
+      "FastyBird\\Plugin\\RabbitMq\\Tests\\Fixtures\\Dummy\\": "tests/fixtures/dummy"
     }
   },
   "config": {

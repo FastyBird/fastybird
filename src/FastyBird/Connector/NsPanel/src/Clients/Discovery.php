@@ -19,17 +19,16 @@ use Evenement;
 use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\API;
 use FastyBird\Connector\NsPanel\Clients\Messages\Response\DiscoveredSubDevice;
-use FastyBird\Connector\NsPanel\Entities;
+use FastyBird\Connector\NsPanel\Documents;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
+use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
 use React\Promise;
 use Throwable;
@@ -51,7 +50,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 	use Evenement\EventEmitterTrait;
 
 	public function __construct(
-		private readonly MetadataDocuments\DevicesModule\Connector $connector,
+		private readonly Documents\Connectors\Connector $connector,
 		private readonly API\LanApiFactory $lanApiFactory,
 		private readonly Queue\Queue $queue,
 		private readonly Helpers\MessageBuilder $messageBuilder,
@@ -67,7 +66,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function discover(MetadataDocuments\DevicesModule\Device|null $onlyGateway = null): void
+	public function discover(Documents\Devices\Gateway|null $onlyGateway = null): void
 	{
 		$promises = [];
 
@@ -100,11 +99,13 @@ final class Discovery implements Evenement\EventEmitterInterface
 				],
 			);
 
-			$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
+			$findDevicesQuery = new Queries\Configuration\FindGatewayDevices();
 			$findDevicesQuery->forConnector($this->connector);
-			$findDevicesQuery->byType(Entities\Devices\Gateway::TYPE);
 
-			$gateways = $this->devicesConfigurationRepository->findAllBy($findDevicesQuery);
+			$gateways = $this->devicesConfigurationRepository->findAllBy(
+				$findDevicesQuery,
+				Documents\Devices\Gateway::class,
+			);
 
 			foreach ($gateways as $gateway) {
 				$promises[] = $this->discoverSubDevices($gateway);
@@ -145,7 +146,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	private function discoverSubDevices(
-		MetadataDocuments\DevicesModule\Device $gateway,
+		Documents\Devices\Gateway $gateway,
 	): Promise\PromiseInterface
 	{
 		$deferred = new Promise\Deferred();
@@ -198,7 +199,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 	 * @return array<DiscoveredSubDevice>
 	 */
 	private function handleFoundSubDevices(
-		MetadataDocuments\DevicesModule\Device $gateway,
+		Documents\Devices\Gateway $gateway,
 		API\Messages\Response\GetSubDevices $subDevices,
 	): array
 	{

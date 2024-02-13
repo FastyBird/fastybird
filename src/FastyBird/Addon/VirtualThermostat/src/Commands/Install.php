@@ -27,11 +27,11 @@ use FastyBird\Connector\Virtual\Queries as VirtualQueries;
 use FastyBird\Connector\Virtual\Types as VirtualTypes;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Formats as MetadataFormats;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -974,7 +974,7 @@ class Install extends Console\Command\Command
 
 		$hvacModeState = $this->channelsPropertiesConfigurationRepository->find(
 			$hvacModeProperty->getId(),
-			MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
+			DevicesDocuments\Channels\Properties\Dynamic::class,
 		);
 		assert($hvacModeState !== null);
 
@@ -989,7 +989,7 @@ class Install extends Console\Command\Command
 
 		$presetModeState = $this->channelsPropertiesConfigurationRepository->find(
 			$presetModeProperty->getId(),
-			MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
+			DevicesDocuments\Channels\Properties\Dynamic::class,
 		);
 		assert($presetModeState !== null);
 
@@ -1005,7 +1005,7 @@ class Install extends Console\Command\Command
 		foreach ($setPresets as $data) {
 			$presetConfiguration = $this->channelsPropertiesConfigurationRepository->find(
 				$data['property']->getId(),
-				MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
+				DevicesDocuments\Channels\Properties\Dynamic::class,
 			);
 			assert($presetConfiguration !== null);
 
@@ -1559,7 +1559,7 @@ class Install extends Console\Command\Command
 
 		$hvacModeState = $this->channelsPropertiesConfigurationRepository->find(
 			$hvacModeProperty->getId(),
-			MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
+			DevicesDocuments\Channels\Properties\Dynamic::class,
 		);
 		assert($hvacModeState !== null);
 
@@ -1576,7 +1576,7 @@ class Install extends Console\Command\Command
 
 		$presetModeState = $this->channelsPropertiesConfigurationRepository->find(
 			$presetModeProperty->getId(),
-			MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
+			DevicesDocuments\Channels\Properties\Dynamic::class,
 		);
 		assert($presetModeState !== null);
 
@@ -1592,7 +1592,7 @@ class Install extends Console\Command\Command
 		foreach ($setPresets as $data) {
 			$presetConfiguration = $this->channelsPropertiesConfigurationRepository->find(
 				$data['property']->getId(),
-				MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
+				DevicesDocuments\Channels\Properties\Dynamic::class,
 			);
 			assert($presetConfiguration !== null);
 
@@ -2532,6 +2532,7 @@ class Install extends Console\Command\Command
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
@@ -2716,7 +2717,7 @@ class Install extends Console\Command\Command
 
 		$targetTempConfiguration = $this->channelsPropertiesConfigurationRepository->find(
 			$targetTempProperty->getId(),
-			MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
+			DevicesDocuments\Channels\Properties\Dynamic::class,
 		);
 		assert($targetTempConfiguration !== null);
 
@@ -3369,6 +3370,7 @@ class Install extends Console\Command\Command
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
@@ -3390,7 +3392,7 @@ class Install extends Console\Command\Command
 		if ($property !== null) {
 			$propertyConfiguration = $this->channelsPropertiesConfigurationRepository->find(
 				$property->getId(),
-				MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
+				DevicesDocuments\Channels\Properties\Dynamic::class,
 			);
 			assert($propertyConfiguration !== null);
 
@@ -3399,7 +3401,7 @@ class Install extends Console\Command\Command
 				MetadataTypes\Sources\Addon::get(MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT),
 			);
 
-			if ($state instanceof MetadataDocuments\DevicesModule\ChannelPropertyState) {
+			if ($state instanceof DevicesDocuments\States\Properties\Channel) {
 				$targetTemp = $state->getGet()->getActualValue();
 			}
 

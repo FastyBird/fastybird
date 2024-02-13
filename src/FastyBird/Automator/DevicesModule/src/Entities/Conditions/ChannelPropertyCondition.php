@@ -44,7 +44,7 @@ class ChannelPropertyCondition extends PropertyCondition
 		Uuid\UuidInterface $property,
 		MetadataTypes\TriggerConditionOperator $operator,
 		string $operand,
-		TriggersEntities\Triggers\AutomaticTrigger $trigger,
+		TriggersEntities\Triggers\Automatic $trigger,
 		Uuid\UuidInterface|null $id = null,
 	)
 	{

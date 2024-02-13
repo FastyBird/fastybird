@@ -18,6 +18,7 @@ namespace FastyBird\Module\Devices\Models\Configuration\Connectors;
 use Contributte\Cache;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Module\Devices;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
@@ -49,7 +50,7 @@ final class Repository extends Models\Configuration\Repository
 	}
 
 	/**
-	 * @template T of MetadataDocuments\DevicesModule\Connector
+	 * @template T of Documents\Connectors\Connector
 	 *
 	 * @param class-string<T> $type
 	 *
@@ -59,8 +60,8 @@ final class Repository extends Models\Configuration\Repository
 	 */
 	public function find(
 		Uuid\UuidInterface $id,
-		string $type = MetadataDocuments\DevicesModule\Connector::class,
-	): MetadataDocuments\DevicesModule\Connector|null
+		string $type = Documents\Connectors\Connector::class,
+	): Documents\Connectors\Connector|null
 	{
 		$queryObject = new Queries\Configuration\FindConnectors();
 		$queryObject->byId($id);
@@ -75,7 +76,7 @@ final class Repository extends Models\Configuration\Repository
 	}
 
 	/**
-	 * @template T of MetadataDocuments\DevicesModule\Connector
+	 * @template T of Documents\Connectors\Connector
 	 *
 	 * @param Queries\Configuration\FindConnectors<T> $queryObject
 	 * @param class-string<T> $type
@@ -86,13 +87,13 @@ final class Repository extends Models\Configuration\Repository
 	 */
 	public function findOneBy(
 		Queries\Configuration\FindConnectors $queryObject,
-		string $type = MetadataDocuments\DevicesModule\Connector::class,
-	): MetadataDocuments\DevicesModule\Connector|null
+		string $type = Documents\Connectors\Connector::class,
+	): Documents\Connectors\Connector|null
 	{
 		try {
 			$document = $this->cache->load(
 				$this->createKeyOne($queryObject) . '_' . md5($type),
-				function () use ($queryObject, $type): MetadataDocuments\DevicesModule\Connector|false {
+				function () use ($queryObject, $type): Documents\Connectors\Connector|false {
 					$space = $this->builder
 						->load()
 						->find('.' . Devices\Constants::DATA_STORAGE_CONNECTORS_KEY . '.*');
@@ -122,7 +123,7 @@ final class Repository extends Models\Configuration\Repository
 	}
 
 	/**
-	 * @template T of MetadataDocuments\DevicesModule\Connector
+	 * @template T of Documents\Connectors\Connector
 	 *
 	 * @param Queries\Configuration\FindConnectors<T> $queryObject
 	 * @param class-string<T> $type
@@ -133,7 +134,7 @@ final class Repository extends Models\Configuration\Repository
 	 */
 	public function findAllBy(
 		Queries\Configuration\FindConnectors $queryObject,
-		string $type = MetadataDocuments\DevicesModule\Connector::class,
+		string $type = Documents\Connectors\Connector::class,
 	): array
 	{
 		try {
@@ -151,7 +152,7 @@ final class Repository extends Models\Configuration\Repository
 					}
 
 					return array_map(
-						fn (stdClass $item): MetadataDocuments\DevicesModule\Connector => $this->documentFactory->create(
+						fn (stdClass $item): Documents\Connectors\Connector => $this->documentFactory->create(
 							$type,
 							$item,
 						),

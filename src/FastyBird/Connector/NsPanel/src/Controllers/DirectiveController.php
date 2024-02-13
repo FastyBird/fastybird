@@ -16,20 +16,20 @@
 namespace FastyBird\Connector\NsPanel\Controllers;
 
 use FastyBird\Connector\NsPanel;
+use FastyBird\Connector\NsPanel\Documents;
 use FastyBird\Connector\NsPanel\Exceptions;
+use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Connector\NsPanel\Router;
 use FastyBird\Connector\NsPanel\Servers;
 use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette\Utils;
 use Psr\Http\Message;
 use Ramsey\Uuid;
@@ -244,16 +244,19 @@ final class DirectiveController extends BaseController
 	private function findGateway(
 		Message\ServerRequestInterface $request,
 		Uuid\UuidInterface $connectorId,
-	): MetadataDocuments\DevicesModule\Device
+	): Documents\Devices\Gateway
 	{
 		$id = strval($request->getAttribute(Router\Router::URL_GATEWAY_ID));
 
 		try {
-			$findQuery = new DevicesQueries\Configuration\FindDevices();
+			$findQuery = new Queries\Configuration\FindGatewayDevices();
 			$findQuery->byId(Uuid\Uuid::fromString($id));
 			$findQuery->byConnectorId($connectorId);
 
-			$gateway = $this->devicesConfigurationRepository->findOneBy($findQuery);
+			$gateway = $this->devicesConfigurationRepository->findOneBy(
+				$findQuery,
+				Documents\Devices\Gateway::class,
+			);
 
 			if ($gateway === null) {
 				throw new Exceptions\ServerRequestError(
@@ -280,18 +283,21 @@ final class DirectiveController extends BaseController
 	private function findDevice(
 		Message\ServerRequestInterface $request,
 		Uuid\UuidInterface $connectorId,
-		MetadataDocuments\DevicesModule\Device $gateway,
-	): MetadataDocuments\DevicesModule\Device
+		Documents\Devices\Gateway $gateway,
+	): Documents\Devices\Device
 	{
 		$id = strval($request->getAttribute(Router\Router::URL_DEVICE_ID));
 
 		try {
-			$findQuery = new DevicesQueries\Configuration\FindDevices();
+			$findQuery = new Queries\Configuration\FindDevices();
 			$findQuery->byId(Uuid\Uuid::fromString($id));
 			$findQuery->byConnectorId($connectorId);
 			$findQuery->forParent($gateway);
 
-			$device = $this->devicesConfigurationRepository->findOneBy($findQuery);
+			$device = $this->devicesConfigurationRepository->findOneBy(
+				$findQuery,
+				Documents\Devices\Device::class,
+			);
 
 			if ($device === null) {
 				throw new Exceptions\ServerRequestError(

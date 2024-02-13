@@ -15,13 +15,13 @@
 
 namespace FastyBird\Connector\Modbus\Queries\Entities;
 
-use FastyBird\Connector\Modbus\Entities\Devices\Device;
+use FastyBird\Connector\Modbus\Entities;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 
 /**
  * Find devices entities query
  *
- * @template T of Device
+ * @template T of Entities\Devices\Device
  * @extends  DevicesQueries\Entities\FindDevices<T>
  *
  * @package        FastyBird:ModbusConnector!

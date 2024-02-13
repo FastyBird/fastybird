@@ -15,9 +15,6 @@
 
 namespace FastyBird\Library\Metadata\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * Property action
  *
@@ -26,24 +23,11 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class PropertyAction extends Consistence\Enum\Enum
+enum PropertyAction: string
 {
 
-	/**
-	 * Define actions
-	 */
-	public const SET = 'set';
+	case SET = 'set';
 
-	public const GET = 'get';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case GET = 'get';
 
 }

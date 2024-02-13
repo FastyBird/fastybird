@@ -54,7 +54,7 @@ final class StoreBridgeDevicesTest extends DbTestCase
 						return true;
 					},
 				),
-				self::callback(static fn (MetadataTypes\RoutingKey $routingKey): bool => true),
+				self::callback(static fn (string $routingKey): bool => true),
 				self::callback(static function (MetadataDocuments\Document|null $document): bool {
 					self::assertTrue($document !== null);
 

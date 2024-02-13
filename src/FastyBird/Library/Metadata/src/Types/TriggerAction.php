@@ -15,9 +15,6 @@
 
 namespace FastyBird\Library\Metadata\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * Trigger action
  *
@@ -26,22 +23,9 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class TriggerAction extends Consistence\Enum\Enum
+enum TriggerAction: string
 {
 
-	/**
-	 * Define actions
-	 */
-	public const SET = 'set';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case SET = 'set';
 
 }

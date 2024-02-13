@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\Virtual\Devices;
 
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Connector\Virtual\Documents;
 
 /**
  * Devices factory
@@ -28,6 +28,6 @@ use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 interface DevicesFactory
 {
 
-	public function create(MetadataDocuments\DevicesModule\Connector $connector): Devices;
+	public function create(Documents\Connectors\Connector $connector): Devices;
 
 }

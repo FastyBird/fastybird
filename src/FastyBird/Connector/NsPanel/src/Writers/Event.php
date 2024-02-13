@@ -15,8 +15,9 @@
 
 namespace FastyBird\Connector\NsPanel\Writers;
 
-use FastyBird\Connector\NsPanel\Entities;
+use FastyBird\Connector\NsPanel\Documents;
 use FastyBird\Connector\NsPanel\Exceptions;
+use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Queue\Messages\StoreDeviceConnectionState;
 use FastyBird\Connector\NsPanel\Queue\Messages\WriteSubDeviceState;
 use FastyBird\Connector\NsPanel\Queue\Messages\WriteThirdPartyDeviceState;
@@ -68,11 +69,13 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 		DevicesEvents\ChannelPropertyStateEntityCreated|DevicesEvents\ChannelPropertyStateEntityUpdated $event,
 	): void
 	{
-		$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
+		$findChannelQuery = new Queries\Configuration\FindChannels();
 		$findChannelQuery->byId($event->getProperty()->getChannel());
-		$findChannelQuery->byType(Entities\Channels\Channel::TYPE);
 
-		$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
+		$channel = $this->channelsConfigurationRepository->findOneBy(
+			$findChannelQuery,
+			Documents\Channels\Channel::class,
+		);
 
 		if ($channel === null) {
 			return;
@@ -88,7 +91,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 			return;
 		}
 
-		if ($device->getType() === Entities\Devices\SubDevice::TYPE) {
+		if ($device instanceof Documents\Devices\SubDevice) {
 			$this->queue->append(
 				$this->messageBuilder->create(
 					WriteSubDeviceState::class,
@@ -101,7 +104,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 				),
 			);
 
-		} elseif ($device->getType() === Entities\Devices\ThirdPartyDevice::TYPE) {
+		} elseif ($device instanceof Documents\Devices\ThirdPartyDevice) {
 			if ($this->thirdPartyDeviceHelper->getGatewayIdentifier($device) === null) {
 				$this->queue->append(
 					$this->messageBuilder->create(

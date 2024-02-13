@@ -17,14 +17,16 @@ namespace FastyBird\Connector\Virtual\Queue\Consumers;
 
 use DateTimeInterface;
 use FastyBird\Connector\Virtual;
+use FastyBird\Connector\Virtual\Documents;
 use FastyBird\Connector\Virtual\Drivers;
 use FastyBird\Connector\Virtual\Exceptions;
+use FastyBird\Connector\Virtual\Queries;
 use FastyBird\Connector\Virtual\Queue;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -75,10 +77,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return false;
 		}
 
-		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
+		$findConnectorQuery = new Queries\Configuration\FindConnectors();
 		$findConnectorQuery->byId($message->getConnector());
 
-		$connector = $this->connectorsConfigurationRepository->findOneBy($findConnectorQuery);
+		$connector = $this->connectorsConfigurationRepository->findOneBy(
+			$findConnectorQuery,
+			Documents\Connectors\Connector::class,
+		);
 
 		if ($connector === null) {
 			$this->logger->error(
@@ -105,11 +110,14 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDeviceQuery = new Queries\Configuration\FindDevices();
 		$findDeviceQuery->forConnector($connector);
 		$findDeviceQuery->byId($message->getDevice());
 
-		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+		$device = $this->devicesConfigurationRepository->findOneBy(
+			$findDeviceQuery,
+			Documents\Devices\Device::class,
+		);
 
 		if ($device === null) {
 			$this->logger->error(
@@ -136,11 +144,14 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
+		$findChannelQuery = new Queries\Configuration\FindChannels();
 		$findChannelQuery->forDevice($device);
 		$findChannelQuery->byId($message->getChannel());
 
-		$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
+		$channel = $this->channelsConfigurationRepository->findOneBy(
+			$findChannelQuery,
+			Documents\Channels\Channel::class,
+		);
 
 		if ($channel === null) {
 			$this->logger->error(
@@ -174,8 +185,8 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		$property = $this->channelsPropertiesConfigurationRepository->findOneBy($findChannelPropertyQuery);
 
 		if (
-			!$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-			&& !$property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
+			!$property instanceof DevicesDocuments\Channels\Properties\Dynamic
+			&& !$property instanceof DevicesDocuments\Channels\Properties\Mapped
 		) {
 			$this->logger->error(
 				'Channel property could not be loaded',
@@ -201,10 +212,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		if (
-			$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-			&& !$property->isSettable()
-		) {
+		if ($property instanceof DevicesDocuments\Channels\Properties\Dynamic && !$property->isSettable()) {
 			$this->logger->error(
 				'Channel property is not writable',
 				[
@@ -235,14 +243,14 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+		if ($property instanceof DevicesDocuments\Channels\Properties\Dynamic) {
 			$valueToWrite = $state->getExpectedValue();
 		} else {
 			$valueToWrite = $state->getExpectedValue() ?? ($state->isValid() ? $state->getActualValue() : null);
 		}
 
 		if ($valueToWrite === null) {
-			if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+			if ($property instanceof DevicesDocuments\Channels\Properties\Dynamic) {
 				$this->channelPropertiesStatesManager->setPendingState(
 					$property,
 					false,
@@ -253,7 +261,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+		if ($property instanceof DevicesDocuments\Channels\Properties\Dynamic) {
 			$now = $this->dateTimeFactory->getNow();
 			$pending = $state->getPending();
 
@@ -277,7 +285,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		try {
 			$driver = $this->driversManager->getDriver($device);
 
-			$result = $property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
+			$result = $property instanceof DevicesDocuments\Channels\Properties\Mapped
 				? $driver->notifyState($property, $valueToWrite)
 				: $driver->writeState($property, $valueToWrite);
 		} catch (Exceptions\InvalidState $ex) {
@@ -293,7 +301,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				),
 			);
 
-			if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+			if ($property instanceof DevicesDocuments\Channels\Properties\Dynamic) {
 				$this->channelPropertiesStatesManager->setPendingState(
 					$property,
 					false,
@@ -350,7 +358,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				);
 			},
 			function (Throwable $ex) use ($connector, $device, $channel, $property, $message): void {
-				if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+				if ($property instanceof DevicesDocuments\Channels\Properties\Dynamic) {
 					$this->channelPropertiesStatesManager->setPendingState(
 						$property,
 						false,

@@ -18,13 +18,13 @@ namespace FastyBird\Connector\Tuya\Clients;
 use Evenement;
 use FastyBird\Connector\Tuya;
 use FastyBird\Connector\Tuya\API;
+use FastyBird\Connector\Tuya\Documents;
 use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Queue;
 use FastyBird\Connector\Tuya\Services;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -98,7 +98,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 	private array $handlerTimer = [];
 
 	public function __construct(
-		private readonly MetadataDocuments\DevicesModule\Connector $connector,
+		private readonly Documents\Connectors\Connector $connector,
 		private readonly API\OpenApiFactory $openApiFactory,
 		private readonly API\LocalApiFactory $localApiFactory,
 		private readonly Services\DatagramFactory $datagramFactory,

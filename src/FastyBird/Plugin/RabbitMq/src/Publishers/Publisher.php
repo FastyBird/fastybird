@@ -30,7 +30,6 @@ use Psr\Log;
 use React\Promise;
 use Throwable;
 use function is_bool;
-use function strval;
 
 /**
  * RabbitMQ exchange publisher
@@ -67,7 +66,7 @@ final class Publisher implements ExchangePublisher\Publisher
 
 	public function publish(
 		MetadataTypes\Sources\Source $source,
-		MetadataTypes\RoutingKey $routingKey,
+		string $routingKey,
 		MetadataDocuments\Document|null $entity,
 	): bool
 	{
@@ -82,7 +81,7 @@ final class Publisher implements ExchangePublisher\Publisher
 					'source' => MetadataTypes\Sources\Plugin::RABBITMQ,
 					'type' => 'messages-publisher',
 					'message' => [
-						'routingKey' => $routingKey->getValue(),
+						'routingKey' => $routingKey,
 						'source' => $source->getValue(),
 						'data' => $entity?->toArray(),
 					],
@@ -101,7 +100,7 @@ final class Publisher implements ExchangePublisher\Publisher
 				'created' => $this->dateTimeFactory->getNow()->format(DateTimeInterface::ATOM),
 			],
 			$this->exchangeName,
-			strval($routingKey->getValue()),
+			$routingKey,
 		);
 
 		if (is_bool($result)) {
@@ -112,7 +111,7 @@ final class Publisher implements ExchangePublisher\Publisher
 						'source' => MetadataTypes\Sources\Plugin::RABBITMQ,
 						'type' => 'messages-publisher',
 						'message' => [
-							'routingKey' => $routingKey->getValue(),
+							'routingKey' => $routingKey,
 							'source' => $source->getValue(),
 							'data' => $entity?->toArray(),
 							'body' => $body,
@@ -126,7 +125,7 @@ final class Publisher implements ExchangePublisher\Publisher
 						'source' => MetadataTypes\Sources\Plugin::RABBITMQ,
 						'type' => 'messages-publisher',
 						'message' => [
-							'routingKey' => $routingKey->getValue(),
+							'routingKey' => $routingKey,
 							'source' => $source->getValue(),
 							'data' => $entity?->toArray(),
 							'body' => $body,
@@ -144,7 +143,7 @@ final class Publisher implements ExchangePublisher\Publisher
 								'source' => MetadataTypes\Sources\Plugin::RABBITMQ,
 								'type' => 'messages-publisher',
 								'message' => [
-									'routingKey' => $routingKey->getValue(),
+									'routingKey' => $routingKey,
 									'source' => $source->getValue(),
 									'data' => $entity?->toArray(),
 									'body' => $body,
@@ -159,7 +158,7 @@ final class Publisher implements ExchangePublisher\Publisher
 								'source' => MetadataTypes\Sources\Plugin::RABBITMQ,
 								'type' => 'messages-publisher',
 								'message' => [
-									'routingKey' => $routingKey->getValue(),
+									'routingKey' => $routingKey,
 									'source' => $source->getValue(),
 									'data' => $entity?->toArray(),
 									'body' => $body,

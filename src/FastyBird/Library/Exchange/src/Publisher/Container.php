@@ -44,7 +44,7 @@ class Container implements Publisher
 
 	public function publish(
 		MetadataTypes\Sources\Source $source,
-		MetadataTypes\RoutingKey $routingKey,
+		string $routingKey,
 		MetadataDocuments\Document|null $entity,
 	): bool
 	{

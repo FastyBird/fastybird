@@ -15,9 +15,9 @@
 
 namespace FastyBird\Connector\Sonoff\API;
 
+use FastyBird\Connector\Sonoff\Documents;
 use FastyBird\Connector\Sonoff\Exceptions;
 use FastyBird\Connector\Sonoff\Helpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Nette;
@@ -64,7 +64,7 @@ final class ConnectionManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getCloudApiConnection(MetadataDocuments\DevicesModule\Connector $connector): CloudApi
+	public function getCloudApiConnection(Documents\Connectors\Connector $connector): CloudApi
 	{
 		if ($this->cloudApiConnection === null) {
 			$this->cloudApiConnection = $this->cloudApiFactory->create(
@@ -85,7 +85,7 @@ final class ConnectionManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getCloudWsConnection(MetadataDocuments\DevicesModule\Connector $connector): CloudWs
+	public function getCloudWsConnection(Documents\Connectors\Connector $connector): CloudWs
 	{
 		if ($this->cloudApiConnection?->getAccessToken() === null) {
 			throw new Exceptions\InvalidState('Cloud API connection have to be established first');

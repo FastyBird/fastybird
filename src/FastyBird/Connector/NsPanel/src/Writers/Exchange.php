@@ -15,9 +15,10 @@
 
 namespace FastyBird\Connector\NsPanel\Writers;
 
-use FastyBird\Connector\NsPanel\Entities;
+use FastyBird\Connector\NsPanel\Documents;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
+use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
@@ -25,9 +26,9 @@ use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use React\EventLoop;
 use function array_merge;
 
@@ -44,11 +45,8 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 
 	public const NAME = 'exchange';
 
-	/**
-	 * @throws ExchangeExceptions\InvalidArgument
-	 */
 	public function __construct(
-		MetadataDocuments\DevicesModule\Connector $connector,
+		Documents\Connectors\Connector $connector,
 		Helpers\MessageBuilder $messageBuilder,
 		Helpers\Devices\ThirdPartyDevice $thirdPartyDeviceHelper,
 		Queue\Queue $queue,
@@ -106,32 +104,37 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 	 */
 	public function consume(
 		MetadataTypes\Sources\Source $source,
-		MetadataTypes\RoutingKey $routingKey,
+		string $routingKey,
 		MetadataDocuments\Document|null $document,
 	): void
 	{
-		if ($document instanceof MetadataDocuments\DevicesModule\ChannelPropertyState) {
-			$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
+		if ($document instanceof DevicesDocuments\States\Properties\Channel) {
+			$findChannelQuery = new Queries\Configuration\FindChannels();
 			$findChannelQuery->byId($document->getChannel());
-			$findChannelQuery->byType(Entities\Channels\Channel::TYPE);
 
-			$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
+			$channel = $this->channelsConfigurationRepository->findOneBy(
+				$findChannelQuery,
+				Documents\Channels\Channel::class,
+			);
 
 			if ($channel === null) {
 				return;
 			}
 
-			$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+			$findDeviceQuery = new Queries\Configuration\FindDevices();
 			$findDeviceQuery->forConnector($this->connector);
 			$findDeviceQuery->byId($channel->getDevice());
 
-			$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+			$device = $this->devicesConfigurationRepository->findOneBy(
+				$findDeviceQuery,
+				Documents\Devices\Device::class,
+			);
 
 			if ($device === null) {
 				return;
 			}
 
-			if ($device->getType() === Entities\Devices\SubDevice::TYPE) {
+			if ($device instanceof Documents\Devices\SubDevice) {
 				if (
 					$document->getGet()->getExpectedValue() === null
 					|| $document->getPending() !== true
@@ -158,7 +161,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 					),
 				);
 
-			} elseif ($device->getType() === Entities\Devices\ThirdPartyDevice::TYPE) {
+			} elseif ($device instanceof Documents\Devices\ThirdPartyDevice) {
 				if ($this->thirdPartyDeviceHelper->getGatewayIdentifier($device) === null) {
 					$this->queue->append(
 						$this->messageBuilder->create(
@@ -193,28 +196,33 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 					),
 				);
 			}
-		} elseif ($document instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
-			$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
+		} elseif ($document instanceof DevicesDocuments\Channels\Properties\Variable) {
+			$findChannelQuery = new Queries\Configuration\FindChannels();
 			$findChannelQuery->byId($document->getChannel());
-			$findChannelQuery->byType(Entities\Channels\Channel::TYPE);
 
-			$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
+			$channel = $this->channelsConfigurationRepository->findOneBy(
+				$findChannelQuery,
+				Documents\Channels\Channel::class,
+			);
 
 			if ($channel === null) {
 				return;
 			}
 
-			$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+			$findDeviceQuery = new Queries\Configuration\FindDevices();
 			$findDeviceQuery->forConnector($this->connector);
 			$findDeviceQuery->byId($channel->getDevice());
 
-			$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+			$device = $this->devicesConfigurationRepository->findOneBy(
+				$findDeviceQuery,
+				Documents\Devices\Device::class,
+			);
 
 			if ($device === null) {
 				return;
 			}
 
-			if ($device->getType() === Entities\Devices\SubDevice::TYPE) {
+			if ($device instanceof Documents\Devices\SubDevice) {
 				$this->queue->append(
 					$this->messageBuilder->create(
 						Queue\Messages\WriteSubDeviceState::class,
@@ -226,7 +234,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 					),
 				);
 
-			} elseif ($device->getType() === Entities\Devices\ThirdPartyDevice::TYPE) {
+			} elseif ($device instanceof Documents\Devices\ThirdPartyDevice) {
 				if ($this->thirdPartyDeviceHelper->getGatewayIdentifier($device) === null) {
 					$this->queue->append(
 						$this->messageBuilder->create(

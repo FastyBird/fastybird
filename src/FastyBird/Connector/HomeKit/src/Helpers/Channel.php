@@ -15,10 +15,10 @@
 
 namespace FastyBird\Connector\HomeKit\Helpers;
 
+use FastyBird\Connector\HomeKit\Documents;
 use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Types;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use function array_key_exists;
 use function preg_match;
 use function str_replace;
@@ -38,7 +38,7 @@ final class Channel
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public function getServiceType(MetadataDocuments\DevicesModule\Channel $channel): Types\ServiceType
+	public function getServiceType(Documents\Channels\Channel $channel): Types\ServiceType
 	{
 		preg_match(Entities\Channels\Channel::SERVICE_IDENTIFIER, $channel->getIdentifier(), $matches);
 

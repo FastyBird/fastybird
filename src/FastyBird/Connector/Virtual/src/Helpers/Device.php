@@ -15,10 +15,11 @@
 
 namespace FastyBird\Connector\Virtual\Helpers;
 
+use FastyBird\Connector\Virtual\Documents;
 use FastyBird\Connector\Virtual\Entities;
 use FastyBird\Connector\Virtual\Types;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -48,7 +49,7 @@ final class Device
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getStateProcessingDelay(MetadataDocuments\DevicesModule\Device $device): float
+	public function getStateProcessingDelay(Documents\Devices\Device $device): float
 	{
 		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
@@ -56,7 +57,7 @@ final class Device
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+			DevicesDocuments\Devices\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null) {

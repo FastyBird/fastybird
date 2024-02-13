@@ -17,10 +17,10 @@ namespace FastyBird\Module\Devices\Subscribers;
 
 use Doctrine\DBAL;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
@@ -137,7 +137,7 @@ final class Connector implements EventDispatcher\EventSubscriberInterface
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	private function resetConnector(
-		MetadataDocuments\DevicesModule\Connector $connector,
+		Documents\Connectors\Connector $connector,
 		MetadataTypes\ConnectionState $state,
 	): void
 	{
@@ -146,7 +146,7 @@ final class Connector implements EventDispatcher\EventSubscriberInterface
 
 		$properties = $this->connectorsPropertiesConfigurationRepository->findAllBy(
 			$findConnectorPropertiesQuery,
-			MetadataDocuments\DevicesModule\ConnectorDynamicProperty::class,
+			Documents\Connectors\Properties\Dynamic::class,
 		);
 
 		foreach ($properties as $property) {
@@ -178,7 +178,7 @@ final class Connector implements EventDispatcher\EventSubscriberInterface
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	private function resetDevice(
-		MetadataDocuments\DevicesModule\Device $device,
+		Documents\Devices\Device $device,
 		MetadataTypes\ConnectionState $state,
 	): void
 	{
@@ -189,7 +189,7 @@ final class Connector implements EventDispatcher\EventSubscriberInterface
 
 		$properties = $this->devicesPropertiesConfigurationRepository->findAllBy(
 			$findDevicePropertiesQuery,
-			MetadataDocuments\DevicesModule\DeviceDynamicProperty::class,
+			Documents\Devices\Properties\Dynamic::class,
 		);
 
 		foreach ($properties as $property) {
@@ -211,7 +211,7 @@ final class Connector implements EventDispatcher\EventSubscriberInterface
 
 			$properties = $this->channelsPropertiesConfigurationRepository->findAllBy(
 				$findChannelPropertiesQuery,
-				MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
+				Documents\Channels\Properties\Dynamic::class,
 			);
 
 			foreach ($properties as $property) {

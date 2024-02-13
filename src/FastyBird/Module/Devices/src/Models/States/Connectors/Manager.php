@@ -16,7 +16,7 @@
 namespace FastyBird\Module\Devices\Models\States\Connectors;
 
 use DateTimeInterface;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\States;
@@ -47,7 +47,7 @@ final class Manager
 	 * @interal
 	 */
 	public function create(
-		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
+		Documents\Connectors\Properties\Dynamic $property,
 		Utils\ArrayHash $values,
 	): States\ConnectorProperty
 	{
@@ -64,7 +64,7 @@ final class Manager
 	 * @interal
 	 */
 	public function update(
-		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
+		Documents\Connectors\Properties\Dynamic $property,
 		States\ConnectorProperty $state,
 		Utils\ArrayHash $values,
 	): States\ConnectorProperty|false

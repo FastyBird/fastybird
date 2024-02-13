@@ -5,16 +5,14 @@ namespace FastyBird\Plugin\RedisDb\Tests\Cases\Unit\Publishers;
 use DateTime;
 use DateTimeInterface;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Metadata;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\RedisDb\Clients;
 use FastyBird\Plugin\RedisDb\Publishers;
+use FastyBird\Plugin\RedisDb\Tests\Fixtures;
 use FastyBird\Plugin\RedisDb\Utilities;
 use Nette;
 use Nette\Utils;
 use PHPUnit\Framework\TestCase;
-use Ramsey\Uuid;
 
 final class PublisherTest extends TestCase
 {
@@ -33,15 +31,11 @@ final class PublisherTest extends TestCase
 			->with('exchange_channel', Nette\Utils\Json::encode([
 				'sender_id' => 'redis_client_identifier',
 				'source' => MetadataTypes\Sources\Module::DEVICES,
-				'routing_key' => MetadataTypes\RoutingKey::DEVICE_DOCUMENT_UPDATED,
+				'routing_key' => 'testing.routing.key',
 				'created' => $now->format(DateTimeInterface::ATOM),
 				'data' => [
-					'action' => MetadataTypes\PropertyAction::SET,
-					'channel' => '06a64596-ca03-478b-ad1e-4f53731e66a5',
-					'property' => '60d754c2-4590-4eff-af1e-5c45f4234c7b',
-					'write' => [
-						'expected_value' => 10,
-					],
+					'attribute' => 'someAttribute',
+					'value' => 10,
 				],
 			]))
 			->willReturn(true);
@@ -67,16 +61,10 @@ final class PublisherTest extends TestCase
 
 		$publisher->publish(
 			MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
-			MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::DEVICE_DOCUMENT_UPDATED),
-			new MetadataDocuments\Actions\ActionChannelProperty(
-				MetadataTypes\PropertyAction::get(MetadataTypes\PropertyAction::SET),
-				Uuid\Uuid::fromString('06a64596-ca03-478b-ad1e-4f53731e66a5'),
-				Uuid\Uuid::fromString('60d754c2-4590-4eff-af1e-5c45f4234c7b'),
-				null,
-				new MetadataDocuments\Actions\PropertyValues(
-					Metadata\Constants::VALUE_NOT_SET,
-					10,
-				),
+			'testing.routing.key',
+			new Fixtures\Dummy\DummyDocument(
+				'someAttribute',
+				10,
 			),
 		);
 	}

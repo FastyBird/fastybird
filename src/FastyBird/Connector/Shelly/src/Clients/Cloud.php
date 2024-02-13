@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\Shelly\Clients;
 
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Connector\Shelly\Documents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Nette;
 use function sprintf;
@@ -33,9 +33,7 @@ final class Cloud implements Client
 
 	use Nette\SmartObject;
 
-	public function __construct(
-		private readonly MetadataDocuments\DevicesModule\Connector $connector,
-	)
+	public function __construct(private readonly Documents\Connectors\Connector $connector)
 	{
 	}
 

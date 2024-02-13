@@ -16,10 +16,11 @@
 namespace FastyBird\Connector\Sonoff\Helpers;
 
 use FastyBird\Connector\Sonoff;
+use FastyBird\Connector\Sonoff\Documents;
 use FastyBird\Connector\Sonoff\Exceptions;
 use FastyBird\Connector\Sonoff\Types;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -49,7 +50,7 @@ final class Connector
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getClientMode(MetadataDocuments\DevicesModule\Connector $connector): Types\ClientMode
+	public function getClientMode(Documents\Connectors\Connector $connector): Types\ClientMode
 	{
 		$findPropertyQuery = new DevicesQueries\Configuration\FindConnectorVariableProperties();
 		$findPropertyQuery->forConnector($connector);
@@ -57,7 +58,7 @@ final class Connector
 
 		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
+			DevicesDocuments\Connectors\Properties\Variable::class,
 		);
 
 		$value = $property?->getValue();
@@ -74,7 +75,7 @@ final class Connector
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getUsername(MetadataDocuments\DevicesModule\Connector $connector): string
+	public function getUsername(Documents\Connectors\Connector $connector): string
 	{
 		$findPropertyQuery = new DevicesQueries\Configuration\FindConnectorVariableProperties();
 		$findPropertyQuery->forConnector($connector);
@@ -82,7 +83,7 @@ final class Connector
 
 		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
+			DevicesDocuments\Connectors\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null) {
@@ -100,7 +101,7 @@ final class Connector
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getPassword(MetadataDocuments\DevicesModule\Connector $connector): string
+	public function getPassword(Documents\Connectors\Connector $connector): string
 	{
 		$findPropertyQuery = new DevicesQueries\Configuration\FindConnectorVariableProperties();
 		$findPropertyQuery->forConnector($connector);
@@ -108,7 +109,7 @@ final class Connector
 
 		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
+			DevicesDocuments\Connectors\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null) {
@@ -126,7 +127,7 @@ final class Connector
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getAppId(MetadataDocuments\DevicesModule\Connector $connector): string
+	public function getAppId(Documents\Connectors\Connector $connector): string
 	{
 		$findPropertyQuery = new DevicesQueries\Configuration\FindConnectorVariableProperties();
 		$findPropertyQuery->forConnector($connector);
@@ -134,7 +135,7 @@ final class Connector
 
 		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
+			DevicesDocuments\Connectors\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null) {
@@ -152,7 +153,7 @@ final class Connector
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getAppSecret(MetadataDocuments\DevicesModule\Connector $connector): string
+	public function getAppSecret(Documents\Connectors\Connector $connector): string
 	{
 		$findPropertyQuery = new DevicesQueries\Configuration\FindConnectorVariableProperties();
 		$findPropertyQuery->forConnector($connector);
@@ -160,7 +161,7 @@ final class Connector
 
 		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
+			DevicesDocuments\Connectors\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null) {
@@ -178,7 +179,7 @@ final class Connector
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getRegion(MetadataDocuments\DevicesModule\Connector $connector): Types\Region
+	public function getRegion(Documents\Connectors\Connector $connector): Types\Region
 	{
 		$findPropertyQuery = new DevicesQueries\Configuration\FindConnectorVariableProperties();
 		$findPropertyQuery->forConnector($connector);
@@ -186,7 +187,7 @@ final class Connector
 
 		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
+			DevicesDocuments\Connectors\Properties\Variable::class,
 		);
 
 		$value = $property?->getValue();
@@ -203,7 +204,7 @@ final class Connector
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getGatewayId(MetadataDocuments\DevicesModule\Connector $connector): string|null
+	public function getGatewayId(Documents\Connectors\Connector $connector): string|null
 	{
 		$findPropertyQuery = new DevicesQueries\Configuration\FindConnectorVariableProperties();
 		$findPropertyQuery->forConnector($connector);
@@ -211,7 +212,7 @@ final class Connector
 
 		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
+			DevicesDocuments\Connectors\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null) {
@@ -229,7 +230,7 @@ final class Connector
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getGatewayApiKey(MetadataDocuments\DevicesModule\Connector $connector): string|null
+	public function getGatewayApiKey(Documents\Connectors\Connector $connector): string|null
 	{
 		$findPropertyQuery = new DevicesQueries\Configuration\FindConnectorVariableProperties();
 		$findPropertyQuery->forConnector($connector);
@@ -237,7 +238,7 @@ final class Connector
 
 		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
+			DevicesDocuments\Connectors\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null) {

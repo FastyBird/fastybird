@@ -17,9 +17,11 @@ namespace FastyBird\Connector\HomeKit\Writers;
 
 use DateTimeInterface;
 use Exception;
+use FastyBird\Connector\HomeKit\Documents;
 use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Helpers;
 use FastyBird\Connector\HomeKit\Protocol;
+use FastyBird\Connector\HomeKit\Queries;
 use FastyBird\Connector\HomeKit\Queue;
 use FastyBird\Connector\HomeKit\Types;
 use FastyBird\DateTimeFactory;
@@ -28,6 +30,7 @@ use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -49,11 +52,8 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 
 	public const NAME = 'exchange';
 
-	/**
-	 * @throws ExchangeExceptions\InvalidArgument
-	 */
 	public function __construct(
-		MetadataDocuments\DevicesModule\Connector $connector,
+		Documents\Connectors\Connector $connector,
 		Helpers\MessageBuilder $messageBuilder,
 		Queue\Queue $queue,
 		Protocol\Driver $accessoryDriver,
@@ -120,20 +120,23 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 	 */
 	public function consume(
 		MetadataTypes\Sources\Source $source,
-		MetadataTypes\RoutingKey $routingKey,
+		string $routingKey,
 		MetadataDocuments\Document|null $document,
 	): void
 	{
 		if (
-			$document instanceof MetadataDocuments\DevicesModule\DevicePropertyState
-			|| $document instanceof MetadataDocuments\DevicesModule\ChannelPropertyState
+			$document instanceof DevicesDocuments\States\Properties\Device
+			|| $document instanceof DevicesDocuments\States\Properties\Channel
 		) {
-			if ($document instanceof MetadataDocuments\DevicesModule\DevicePropertyState) {
-				$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+			if ($document instanceof DevicesDocuments\States\Properties\Device) {
+				$findDeviceQuery = new Queries\Configuration\FindDevices();
 				$findDeviceQuery->forConnector($this->connector);
 				$findDeviceQuery->byId($document->getDevice());
 
-				$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+				$device = $this->devicesConfigurationRepository->findOneBy(
+					$findDeviceQuery,
+					Documents\Devices\Device::class,
+				);
 
 				if ($device === null) {
 					return;
@@ -149,7 +152,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 					return;
 				}
 
-				if ($property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
+				if ($property instanceof DevicesDocuments\Devices\Properties\Mapped) {
 					$this->queue->append(
 						$this->messageBuilder->create(
 							Queue\Messages\WriteDevicePropertyState::class,
@@ -170,7 +173,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 							],
 						),
 					);
-				} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
+				} elseif ($property instanceof DevicesDocuments\Devices\Properties\Dynamic) {
 					$this->queue->append(
 						$this->messageBuilder->create(
 							Queue\Messages\WriteDevicePropertyState::class,
@@ -193,20 +196,26 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 					);
 				}
 			} else {
-				$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
+				$findChannelQuery = new Queries\Configuration\FindChannels();
 				$findChannelQuery->byId($document->getChannel());
 
-				$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
+				$channel = $this->channelsConfigurationRepository->findOneBy(
+					$findChannelQuery,
+					Documents\Channels\Channel::class,
+				);
 
 				if ($channel === null) {
 					return;
 				}
 
-				$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+				$findDeviceQuery = new Queries\Configuration\FindDevices();
 				$findDeviceQuery->forConnector($this->connector);
 				$findDeviceQuery->byId($channel->getDevice());
 
-				$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+				$device = $this->devicesConfigurationRepository->findOneBy(
+					$findDeviceQuery,
+					Documents\Devices\Device::class,
+				);
 
 				if ($device === null) {
 					return;
@@ -222,7 +231,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 					return;
 				}
 
-				if ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
+				if ($property instanceof DevicesDocuments\Channels\Properties\Mapped) {
 					$this->queue->append(
 						$this->messageBuilder->create(
 							Queue\Messages\WriteChannelPropertyState::class,
@@ -244,7 +253,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 							],
 						),
 					);
-				} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+				} elseif ($property instanceof DevicesDocuments\Channels\Properties\Dynamic) {
 					$this->queue->append(
 						$this->messageBuilder->create(
 							Queue\Messages\WriteChannelPropertyState::class,
@@ -269,15 +278,18 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 				}
 			}
 		} elseif (
-			$document instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty
-			|| $document instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty
+			$document instanceof DevicesDocuments\Devices\Properties\Variable
+			|| $document instanceof DevicesDocuments\Channels\Properties\Variable
 		) {
-			if ($document instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty) {
-				$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+			if ($document instanceof DevicesDocuments\Devices\Properties\Variable) {
+				$findDeviceQuery = new Queries\Configuration\FindDevices();
 				$findDeviceQuery->forConnector($this->connector);
 				$findDeviceQuery->byId($document->getDevice());
 
-				$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+				$device = $this->devicesConfigurationRepository->findOneBy(
+					$findDeviceQuery,
+					Documents\Devices\Device::class,
+				);
 
 				if ($device === null) {
 					return;
@@ -295,20 +307,26 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 				);
 
 			} else {
-				$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
+				$findChannelQuery = new Queries\Configuration\FindChannels();
 				$findChannelQuery->byId($document->getChannel());
 
-				$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
+				$channel = $this->channelsConfigurationRepository->findOneBy(
+					$findChannelQuery,
+					Documents\Channels\Channel::class,
+				);
 
 				if ($channel === null) {
 					return;
 				}
 
-				$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+				$findDeviceQuery = new Queries\Configuration\FindDevices();
 				$findDeviceQuery->forConnector($this->connector);
 				$findDeviceQuery->byId($channel->getDevice());
 
-				$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+				$device = $this->devicesConfigurationRepository->findOneBy(
+					$findDeviceQuery,
+					Documents\Devices\Device::class,
+				);
 
 				if ($device === null) {
 					return;
@@ -326,7 +344,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 					),
 				);
 			}
-		} elseif ($document instanceof MetadataDocuments\DevicesModule\ConnectorVariableProperty) {
+		} elseif ($document instanceof DevicesDocuments\Connectors\Properties\Variable) {
 			if (!$document->getConnector()->equals($this->connector->getId())) {
 				return;
 			}

@@ -15,15 +15,15 @@
 
 namespace FastyBird\Module\Devices\Queries\Configuration;
 
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
 use Ramsey\Uuid;
 
 /**
  * Find channel dynamic properties entities query
  *
- * @template T of MetadataDocuments\DevicesModule\ChannelDynamicProperty
+ * @template T of Documents\Channels\Properties\Dynamic
  * @extends  FindChannelProperties<T>
  *
  * @package        FastyBird:DevicesModule!
@@ -44,7 +44,7 @@ class FindChannelDynamicProperties extends FindChannelProperties
 	 * @throws Exceptions\InvalidState
 	 */
 	public function forParent(
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelVariableProperty $parent,
+		Documents\Channels\Properties\Dynamic|Documents\Channels\Properties\Variable $parent,
 	): void
 	{
 		throw new Exceptions\InvalidState('Searching by parent is not allowed for this type of property');

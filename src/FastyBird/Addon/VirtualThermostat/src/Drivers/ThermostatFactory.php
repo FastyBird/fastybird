@@ -17,7 +17,7 @@ namespace FastyBird\Addon\VirtualThermostat\Drivers;
 
 use FastyBird\Addon\VirtualThermostat\Entities;
 use FastyBird\Connector\Virtual\Drivers\DriverFactory;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 
 /**
  * Thermostat service factory
@@ -32,6 +32,6 @@ interface ThermostatFactory extends DriverFactory
 
 	public const DEVICE_TYPE = Entities\Devices\Device::TYPE;
 
-	public function create(MetadataDocuments\DevicesModule\Device $device): Thermostat;
+	public function create(DevicesDocuments\Devices\Device $device): Thermostat;
 
 }

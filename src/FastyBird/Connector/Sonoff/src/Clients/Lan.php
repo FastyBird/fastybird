@@ -18,20 +18,19 @@ namespace FastyBird\Connector\Sonoff\Clients;
 use BadMethodCallException;
 use FastyBird\Connector\Sonoff;
 use FastyBird\Connector\Sonoff\API;
-use FastyBird\Connector\Sonoff\Entities;
+use FastyBird\Connector\Sonoff\Documents;
 use FastyBird\Connector\Sonoff\Exceptions;
 use FastyBird\Connector\Sonoff\Helpers;
+use FastyBird\Connector\Sonoff\Queries;
 use FastyBird\Connector\Sonoff\Queue;
 use FastyBird\Connector\Sonoff\Types;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Psr\EventDispatcher;
 use React\EventLoop;
@@ -57,7 +56,7 @@ final class Lan extends ClientProcess implements Client
 		DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		DateTimeFactory\Factory $dateTimeFactory,
 		EventLoop\LoopInterface $eventLoop,
-		private readonly MetadataDocuments\DevicesModule\Connector $connector,
+		private readonly Documents\Connectors\Connector $connector,
 		private readonly bool $autoMode,
 		private readonly API\ConnectionManager $connectionManager,
 		private readonly Helpers\MessageBuilder $entityHelper,
@@ -98,11 +97,15 @@ final class Lan extends ClientProcess implements Client
 				}),
 			);
 
-			$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
+			$findDevicesQuery = new Queries\Configuration\FindDevices();
 			$findDevicesQuery->forConnector($this->connector);
-			$findDevicesQuery->byType(Entities\Devices\Device::TYPE);
 
-			foreach ($this->devicesConfigurationRepository->findAllBy($findDevicesQuery) as $device) {
+			$devices = $this->devicesConfigurationRepository->findAllBy(
+				$findDevicesQuery,
+				Documents\Devices\Device::class,
+			);
+
+			foreach ($devices as $device) {
 				$this->devices[$device->getId()->toString()] = $device;
 			}
 		}
@@ -112,11 +115,13 @@ final class Lan extends ClientProcess implements Client
 		$this->connectionManager
 			->getLanConnection()
 			->on('message', function (API\Messages\Response\Lan\DeviceEvent $message): void {
-				$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+				$findDeviceQuery = new Queries\Configuration\FindDevices();
 				$findDeviceQuery->byIdentifier($message->getId());
-				$findDeviceQuery->byType(Entities\Devices\Device::TYPE);
 
-				$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+				$device = $this->devicesConfigurationRepository->findOneBy(
+					$findDeviceQuery,
+					Documents\Devices\Device::class,
+				);
 
 				if ($device !== null) {
 					$this->queue->append(
@@ -134,11 +139,15 @@ final class Lan extends ClientProcess implements Client
 				}
 			});
 
-		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDevicesQuery = new Queries\Configuration\FindDevices();
 		$findDevicesQuery->forConnector($this->connector);
-		$findDevicesQuery->byType(Entities\Devices\Device::TYPE);
 
-		foreach ($this->devicesConfigurationRepository->findAllBy($findDevicesQuery) as $device) {
+		$devices = $this->devicesConfigurationRepository->findAllBy(
+			$findDevicesQuery,
+			Documents\Devices\Device::class,
+		);
+
+		foreach ($devices as $device) {
 			if ($this->deviceHelper->getDeviceKey($device) !== null) {
 				$this->connectionManager
 					->getLanConnection()
@@ -168,7 +177,9 @@ final class Lan extends ClientProcess implements Client
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	protected function readInformation(MetadataDocuments\DevicesModule\Device $device): Promise\PromiseInterface
+	protected function readInformation(
+		Documents\Devices\Device $device,
+	): Promise\PromiseInterface
 	{
 		if ($this->deviceHelper->getIpAddress($device) === null) {
 			$this->queue->append(
@@ -290,13 +301,16 @@ final class Lan extends ClientProcess implements Client
 	/**
 	 * @return Promise\PromiseInterface<bool>
 	 */
-	protected function readState(MetadataDocuments\DevicesModule\Device $device): Promise\PromiseInterface
+	protected function readState(Documents\Devices\Device $device): Promise\PromiseInterface
 	{
 		// Reading device state is not supported by LAN api
 		return Promise\resolve(true);
 	}
 
-	private function checkError(Exceptions\LanApiCall $ex, MetadataDocuments\DevicesModule\Device $device): void
+	private function checkError(
+		Exceptions\LanApiCall $ex,
+		Documents\Devices\Device $device,
+	): void
 	{
 		if (
 			in_array(
@@ -320,7 +334,7 @@ final class Lan extends ClientProcess implements Client
 	 * @throws Exceptions\Runtime
 	 */
 	private function handleDeviceEvent(
-		MetadataDocuments\DevicesModule\Device $device,
+		Documents\Devices\Device $device,
 		API\Messages\Response\Lan\DeviceEvent $event,
 	): void
 	{
@@ -330,12 +344,14 @@ final class Lan extends ClientProcess implements Client
 
 		// Special handling for Sonoff SPM devices acting as sub-devices
 		if ($event->getData()->getSubDeviceId() !== null) {
-			$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+			$findDeviceQuery = new Queries\Configuration\FindDevices();
 			$findDeviceQuery->forParent($device);
 			$findDeviceQuery->byIdentifier($event->getData()->getSubDeviceId());
-			$findDeviceQuery->byType(Entities\Devices\Device::TYPE);
 
-			$subDevice = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+			$subDevice = $this->devicesConfigurationRepository->findOneBy(
+				$findDeviceQuery,
+				Documents\Devices\Device::class,
+			);
 
 			if ($subDevice === null) {
 				$this->logger->error(

@@ -16,10 +16,11 @@
 namespace FastyBird\Connector\Modbus\Helpers;
 
 use FastyBird\Connector\Modbus;
+use FastyBird\Connector\Modbus\Documents;
 use FastyBird\Connector\Modbus\Exceptions;
 use FastyBird\Connector\Modbus\Types;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -49,7 +50,7 @@ final class Connector
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getClientMode(MetadataDocuments\DevicesModule\Connector $connector): Types\ClientMode
+	public function getClientMode(Documents\Connectors\Connector $connector): Types\ClientMode
 	{
 		$findPropertyQuery = new DevicesQueries\Configuration\FindConnectorVariableProperties();
 		$findPropertyQuery->forConnector($connector);
@@ -57,7 +58,7 @@ final class Connector
 
 		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
+			DevicesDocuments\Connectors\Properties\Variable::class,
 		);
 
 		$value = $property?->getValue();
@@ -74,7 +75,7 @@ final class Connector
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getByteSize(MetadataDocuments\DevicesModule\Connector $connector): Types\ByteSize
+	public function getByteSize(Documents\Connectors\Connector $connector): Types\ByteSize
 	{
 		$findPropertyQuery = new DevicesQueries\Configuration\FindConnectorVariableProperties();
 		$findPropertyQuery->forConnector($connector);
@@ -82,7 +83,7 @@ final class Connector
 
 		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
+			DevicesDocuments\Connectors\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null || !Types\ByteSize::isValidValue($property->getValue())) {
@@ -100,7 +101,7 @@ final class Connector
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getBaudRate(MetadataDocuments\DevicesModule\Connector $connector): Types\BaudRate
+	public function getBaudRate(Documents\Connectors\Connector $connector): Types\BaudRate
 	{
 		$findPropertyQuery = new DevicesQueries\Configuration\FindConnectorVariableProperties();
 		$findPropertyQuery->forConnector($connector);
@@ -108,7 +109,7 @@ final class Connector
 
 		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
+			DevicesDocuments\Connectors\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null || !Types\BaudRate::isValidValue($property->getValue())) {
@@ -126,7 +127,7 @@ final class Connector
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getParity(MetadataDocuments\DevicesModule\Connector $connector): Types\Parity
+	public function getParity(Documents\Connectors\Connector $connector): Types\Parity
 	{
 		$findPropertyQuery = new DevicesQueries\Configuration\FindConnectorVariableProperties();
 		$findPropertyQuery->forConnector($connector);
@@ -134,7 +135,7 @@ final class Connector
 
 		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
+			DevicesDocuments\Connectors\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null || !Types\Parity::isValidValue($property->getValue())) {
@@ -152,7 +153,7 @@ final class Connector
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getStopBits(MetadataDocuments\DevicesModule\Connector $connector): Types\StopBits
+	public function getStopBits(Documents\Connectors\Connector $connector): Types\StopBits
 	{
 		$findPropertyQuery = new DevicesQueries\Configuration\FindConnectorVariableProperties();
 		$findPropertyQuery->forConnector($connector);
@@ -160,7 +161,7 @@ final class Connector
 
 		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
+			DevicesDocuments\Connectors\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null || !Types\StopBits::isValidValue($property->getValue())) {
@@ -178,7 +179,7 @@ final class Connector
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getRtuInterface(MetadataDocuments\DevicesModule\Connector $connector): string
+	public function getRtuInterface(Documents\Connectors\Connector $connector): string
 	{
 		$findPropertyQuery = new DevicesQueries\Configuration\FindConnectorVariableProperties();
 		$findPropertyQuery->forConnector($connector);
@@ -186,7 +187,7 @@ final class Connector
 
 		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
+			DevicesDocuments\Connectors\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null) {

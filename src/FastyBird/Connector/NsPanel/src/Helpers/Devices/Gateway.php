@@ -15,10 +15,11 @@
 
 namespace FastyBird\Connector\NsPanel\Helpers\Devices;
 
+use FastyBird\Connector\NsPanel\Documents;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Types;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -49,7 +50,7 @@ final class Gateway
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getIpAddress(MetadataDocuments\DevicesModule\Device $device): string|null
+	public function getIpAddress(Documents\Devices\Gateway $device): string|null
 	{
 		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
@@ -57,7 +58,7 @@ final class Gateway
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+			DevicesDocuments\Devices\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null) {
@@ -75,7 +76,7 @@ final class Gateway
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getDomain(MetadataDocuments\DevicesModule\Device $device): string|null
+	public function getDomain(Documents\Devices\Gateway $device): string|null
 	{
 		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
@@ -83,7 +84,7 @@ final class Gateway
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+			DevicesDocuments\Devices\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null) {
@@ -101,7 +102,7 @@ final class Gateway
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getAccessToken(MetadataDocuments\DevicesModule\Device $device): string|null
+	public function getAccessToken(Documents\Devices\Gateway $device): string|null
 	{
 		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
@@ -109,7 +110,7 @@ final class Gateway
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+			DevicesDocuments\Devices\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null) {
@@ -127,7 +128,7 @@ final class Gateway
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getMacAddress(MetadataDocuments\DevicesModule\Device $device): string|null
+	public function getMacAddress(Documents\Devices\Gateway $device): string|null
 	{
 		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
@@ -135,7 +136,7 @@ final class Gateway
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+			DevicesDocuments\Devices\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null) {
@@ -153,7 +154,7 @@ final class Gateway
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getFirmwareVersion(MetadataDocuments\DevicesModule\Device $device): string|null
+	public function getFirmwareVersion(Documents\Devices\Gateway $device): string|null
 	{
 		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
@@ -161,7 +162,7 @@ final class Gateway
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+			DevicesDocuments\Devices\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null) {
@@ -179,7 +180,7 @@ final class Gateway
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getStateReadingDelay(MetadataDocuments\DevicesModule\Device $device): float
+	public function getStateReadingDelay(Documents\Devices\Gateway $device): float
 	{
 		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
@@ -187,7 +188,7 @@ final class Gateway
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+			DevicesDocuments\Devices\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null) {
@@ -205,7 +206,7 @@ final class Gateway
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getHeartbeatDelay(MetadataDocuments\DevicesModule\Device $device): float
+	public function getHeartbeatDelay(Documents\Devices\Gateway $device): float
 	{
 		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
@@ -213,7 +214,7 @@ final class Gateway
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+			DevicesDocuments\Devices\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null) {

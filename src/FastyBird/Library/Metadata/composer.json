@@ -67,7 +67,8 @@
   "autoload-dev": {
     "psr-4": {
       "FastyBird\\Library\\Metadata\\Tests\\Cases\\Unit\\": "tests/cases/unit",
-      "FastyBird\\Library\\Metadata\\Tests\\Fixtures\\": "tests/fixtures"
+      "FastyBird\\Library\\Metadata\\Tests\\Fixtures\\": "tests/fixtures",
+      "FastyBird\\Library\\Metadata\\Tests\\Fixtures\\Dummy\\": "tests/fixtures/dummy"
     }
   },
   "config": {

@@ -5,7 +5,7 @@ namespace FastyBird\Plugin\RedisDb\Tests\Cases\Unit\States;
 use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Plugin\RedisDb\Exceptions;
 use FastyBird\Plugin\RedisDb\States;
-use FastyBird\Plugin\RedisDb\Tests\Fixtures;
+use FastyBird\Plugin\RedisDb\Tests\Fixtures\Dummy\DummyState;
 use Nette\Utils;
 use Orisai\ObjectMapper;
 use PHPUnit\Framework\TestCase;
@@ -17,7 +17,7 @@ final class FactoryTest extends TestCase
 {
 
 	/**
-	 * @param class-string<Fixtures\CustomState> $class
+	 * @param class-string<DummyState> $class
 	 * @param array<string, array<string|array<string, mixed>>> $data
 	 *
 	 * @throws Exceptions\InvalidArgument
@@ -65,7 +65,7 @@ final class FactoryTest extends TestCase
 	}
 
 	/**
-	 * @param class-string<Fixtures\CustomState> $class
+	 * @param class-string<DummyState> $class
 	 * @param array<string, array<string|array<string, mixed>>> $data
 	 * @param class-string<Throwable> $exception
 	 *

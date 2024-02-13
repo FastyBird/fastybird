@@ -15,11 +15,11 @@
 
 namespace FastyBird\Module\Triggers\Models\States;
 
-use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
-use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Triggers;
+use FastyBird\Module\Triggers\Documents;
 use FastyBird\Module\Triggers\Entities;
 use FastyBird\Module\Triggers\Exceptions;
 use FastyBird\Module\Triggers\Models;
@@ -42,7 +42,7 @@ final class ConditionsManager
 	use Nette\SmartObject;
 
 	public function __construct(
-		protected readonly ExchangeDocuments\DocumentFactory $documentFactory,
+		protected readonly MetadataDocuments\DocumentFactory $documentFactory,
 		protected readonly IConditionsManager|null $manager = null,
 		protected readonly ExchangePublisher\Publisher|null $publisher = null,
 	)
@@ -51,9 +51,9 @@ final class ConditionsManager
 
 	/**
 	 * @throws Exceptions\NotImplemented
-	 * @throws ExchangeExceptions\InvalidArgument
-	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function create(
@@ -74,9 +74,9 @@ final class ConditionsManager
 
 	/**
 	 * @throws Exceptions\NotImplemented
-	 * @throws ExchangeExceptions\InvalidArgument
-	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function update(
@@ -102,9 +102,9 @@ final class ConditionsManager
 
 	/**
 	 * @throws Exceptions\NotImplemented
-	 * @throws ExchangeExceptions\InvalidArgument
-	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function delete(
@@ -126,9 +126,9 @@ final class ConditionsManager
 	}
 
 	/**
-	 * @throws ExchangeExceptions\InvalidArgument
-	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function publishEntity(
@@ -142,12 +142,16 @@ final class ConditionsManager
 
 		$this->publisher->publish(
 			$condition->getSource(),
-			MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::TRIGGER_CONDITION_DOCUMENT_UPDATED),
-			$this->documentFactory->create(Utils\ArrayHash::from(array_merge($condition->toArray(), [
-				'is_fulfilled' => !($state === null) && $state->isFulfilled(),
-			])), MetadataTypes\RoutingKey::get(
-				MetadataTypes\RoutingKey::TRIGGER_CONDITION_DOCUMENT_UPDATED,
-			)),
+			Triggers\Constants::MESSAGE_BUS_CONDITION_DOCUMENT_UPDATED_ROUTING_KEY,
+			$this->documentFactory->create(
+				Documents\Conditions\Condition::class,
+				array_merge(
+					$condition->toArray(),
+					[
+						'is_fulfilled' => !($state === null) && $state->isFulfilled(),
+					],
+				),
+			),
 		);
 	}
 

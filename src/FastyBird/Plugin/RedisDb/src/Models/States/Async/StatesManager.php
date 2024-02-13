@@ -24,6 +24,7 @@ use FastyBird\Plugin\RedisDb\Clients;
 use FastyBird\Plugin\RedisDb\Exceptions;
 use FastyBird\Plugin\RedisDb\States;
 use FastyBird\Plugin\RedisDb\States\State as T;
+use InvalidArgumentException;
 use Nette;
 use Nette\Utils;
 use Psr\Log;
@@ -75,6 +76,8 @@ class StatesManager
 
 	/**
 	 * @return Promise\PromiseInterface<T>
+	 *
+	 * @throws InvalidArgumentException
 	 */
 	public function create(
 		Uuid\UuidInterface $id,
@@ -136,6 +139,8 @@ class StatesManager
 
 	/**
 	 * @return Promise\PromiseInterface<T|false>
+	 *
+	 * @throws InvalidArgumentException
 	 */
 	public function update(
 		Uuid\UuidInterface $id,
@@ -201,6 +206,8 @@ class StatesManager
 
 	/**
 	 * @return Promise\PromiseInterface<bool>
+	 *
+	 * @throws InvalidArgumentException
 	 */
 	public function delete(
 		Uuid\UuidInterface $id,
@@ -214,6 +221,8 @@ class StatesManager
 	 * @param array<string>|array<string, int|string|bool|null> $fields
 	 *
 	 * @return Promise\PromiseInterface<string>
+	 *
+	 * @throws InvalidArgumentException
 	 */
 	private function createKey(
 		Uuid\UuidInterface $id,
@@ -319,6 +328,8 @@ class StatesManager
 	 * @param array<string> $fields
 	 *
 	 * @return Promise\PromiseInterface<string>
+	 *
+	 * @throws InvalidArgumentException
 	 */
 	private function updateKey(
 		Uuid\UuidInterface $id,
@@ -427,6 +438,8 @@ class StatesManager
 
 	/**
 	 * @return Promise\PromiseInterface<bool>
+	 *
+	 * @throws InvalidArgumentException
 	 */
 	private function deleteKey(
 		Uuid\UuidInterface $id,

@@ -4,18 +4,17 @@ namespace FastyBird\Connector\Viera\Tests\Cases\Unit\Clients;
 
 use Error;
 use FastyBird\Connector\Viera\Clients;
-use FastyBird\Connector\Viera\Entities;
+use FastyBird\Connector\Viera\Documents;
 use FastyBird\Connector\Viera\Exceptions;
 use FastyBird\Connector\Viera\Helpers;
+use FastyBird\Connector\Viera\Queries;
 use FastyBird\Connector\Viera\Queue;
 use FastyBird\Connector\Viera\Services;
 use FastyBird\Connector\Viera\Tests;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use GuzzleHttp;
 use Nette\DI;
 use Nette\Utils;
@@ -236,12 +235,14 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 			DevicesModels\Configuration\Connectors\Repository::class,
 		);
 
-		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
+		$findConnectorQuery = new Queries\Configuration\FindConnectors();
 		$findConnectorQuery->byIdentifier('viera');
-		$findConnectorQuery->byType(Entities\Connectors\Connector::TYPE);
 
-		$connector = $connectorsConfigurationRepository->findOneBy($findConnectorQuery);
-		self::assertInstanceOf(MetadataDocuments\DevicesModule\Connector::class, $connector);
+		$connector = $connectorsConfigurationRepository->findOneBy(
+			$findConnectorQuery,
+			Documents\Connectors\Connector::class,
+		);
+		self::assertInstanceOf(Documents\Connectors\Connector::class, $connector);
 
 		$clientFactory = $this->getContainer()->getByType(Clients\DiscoveryFactory::class);
 
@@ -274,14 +275,16 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 		);
 		$deviceHelper = $this->getContainer()->getByType(Helpers\Device::class);
 
-		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDeviceQuery = new Queries\Configuration\FindDevices();
 		$findDeviceQuery->forConnector($connector);
 		$findDeviceQuery->byIdentifier('93e760e1-f011-4a33-a70d-c9629706ccf8');
-		$findDeviceQuery->byType(Entities\Devices\Device::TYPE);
 
-		$device = $devicesConfigurationRepository->findOneBy($findDeviceQuery);
+		$device = $devicesConfigurationRepository->findOneBy(
+			$findDeviceQuery,
+			Documents\Devices\Device::class,
+		);
 
-		self::assertInstanceOf(MetadataDocuments\DevicesModule\Device::class, $device);
+		self::assertInstanceOf(Documents\Devices\Device::class, $device);
 		self::assertSame('4D454930-0200-1000-8001-A81374B30314', $deviceHelper->getSerialNumber($device));
 		self::assertSame('Panasonic VIErA TX-49DX600EA', $deviceHelper->getModel($device));
 		self::assertSame('Panasonic', $deviceHelper->getManufacturer($device));

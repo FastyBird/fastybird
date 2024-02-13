@@ -3,17 +3,18 @@
 namespace FastyBird\Addon\VirtualThermostat\Tests\Cases\Unit\Drivers;
 
 use Error;
+use FastyBird\Addon\VirtualThermostat\Documents;
 use FastyBird\Addon\VirtualThermostat\Exceptions;
+use FastyBird\Addon\VirtualThermostat\Queries;
 use FastyBird\Addon\VirtualThermostat\Tests;
 use FastyBird\Addon\VirtualThermostat\Types;
 use FastyBird\Connector\Virtual\Drivers as VirtualDrivers;
 use FastyBird\Connector\Virtual\Queue as VirtualQueue;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette\DI;
 use React\EventLoop;
 use RuntimeException;
@@ -38,11 +39,14 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 	{
 		$devicesRepository = $this->getContainer()->getByType(DevicesModels\Configuration\Devices\Repository::class);
 
-		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDeviceQuery = new Queries\Configuration\FindDevices();
 		$findDeviceQuery->byIdentifier('thermostat-office');
 
-		$device = $devicesRepository->findOneBy($findDeviceQuery);
-		self::assertInstanceOf(MetadataDocuments\DevicesModule\Device::class, $device);
+		$device = $devicesRepository->findOneBy(
+			$findDeviceQuery,
+			Documents\Devices\Device::class,
+		);
+		self::assertInstanceOf(Documents\Devices\Device::class, $device);
 
 		$driversManager = $this->getContainer()->getByType(VirtualDrivers\DriversManager::class);
 
@@ -75,17 +79,17 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 			->method('read')
 			->willReturnCallback(
 				static function (
-					MetadataDocuments\DevicesModule\ChannelProperty $property,
-				) use ($readInitialStates): MetadataDocuments\DevicesModule\ChannelPropertyState|null {
+					DevicesDocuments\Channels\Properties\Property $property,
+				) use ($readInitialStates): DevicesDocuments\States\Properties\Channel|null {
 					if (array_key_exists($property->getId()->toString(), $readInitialStates)) {
-						return new MetadataDocuments\DevicesModule\ChannelPropertyState(
+						return new DevicesDocuments\States\Properties\Channel(
 							$property->getId(),
 							$property->getChannel(),
-							new MetadataDocuments\DevicesModule\PropertyValues(
+							new DevicesDocuments\States\Properties\Values(
 								$readInitialStates[$property->getId()->toString()],
 								null,
 							),
-							new MetadataDocuments\DevicesModule\PropertyValues(
+							new DevicesDocuments\States\Properties\Values(
 								$readInitialStates[$property->getId()->toString()],
 								null,
 							),
@@ -124,11 +128,14 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 
 		$devicesRepository = $this->getContainer()->getByType(DevicesModels\Configuration\Devices\Repository::class);
 
-		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDeviceQuery = new Queries\Configuration\FindDevices();
 		$findDeviceQuery->byIdentifier('thermostat-office');
 
-		$device = $devicesRepository->findOneBy($findDeviceQuery);
-		self::assertInstanceOf(MetadataDocuments\DevicesModule\Device::class, $device);
+		$device = $devicesRepository->findOneBy(
+			$findDeviceQuery,
+			Documents\Devices\Device::class,
+		);
+		self::assertInstanceOf(Documents\Devices\Device::class, $device);
 
 		$driversManager = $this->getContainer()->getByType(VirtualDrivers\DriversManager::class);
 

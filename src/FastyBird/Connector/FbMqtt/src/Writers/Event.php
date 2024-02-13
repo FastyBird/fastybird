@@ -15,12 +15,12 @@
 
 namespace FastyBird\Connector\FbMqtt\Writers;
 
-use FastyBird\Connector\FbMqtt\Entities;
+use FastyBird\Connector\FbMqtt\Documents;
 use FastyBird\Connector\FbMqtt\Exceptions;
+use FastyBird\Connector\FbMqtt\Queries;
 use FastyBird\Connector\FbMqtt\Queue;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Symfony\Component\EventDispatcher;
 
 /**
@@ -66,12 +66,14 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 			$event instanceof DevicesEvents\DevicePropertyStateEntityCreated
 			|| $event instanceof DevicesEvents\DevicePropertyStateEntityUpdated
 		) {
-			$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+			$findDeviceQuery = new Queries\Configuration\FindDevices();
 			$findDeviceQuery->forConnector($this->connector);
 			$findDeviceQuery->byId($event->getProperty()->getDevice());
-			$findDeviceQuery->byType(Entities\Devices\Device::TYPE);
 
-			$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+			$device = $this->devicesConfigurationRepository->findOneBy(
+				$findDeviceQuery,
+				Documents\Devices\Device::class,
+			);
 
 			if ($device === null) {
 				return;
@@ -89,22 +91,26 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 				),
 			);
 		} else {
-			$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
+			$findChannelQuery = new Queries\Configuration\FindChannels();
 			$findChannelQuery->byId($event->getProperty()->getChannel());
-			$findChannelQuery->byType(Entities\Channels\Channel::TYPE);
 
-			$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
+			$channel = $this->channelsConfigurationRepository->findOneBy(
+				$findChannelQuery,
+				Documents\Channels\Channel::class,
+			);
 
 			if ($channel === null) {
 				return;
 			}
 
-			$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+			$findDeviceQuery = new Queries\Configuration\FindDevices();
 			$findDeviceQuery->forConnector($this->connector);
 			$findDeviceQuery->byId($channel->getDevice());
-			$findDeviceQuery->byType(Entities\Devices\Device::TYPE);
 
-			$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+			$device = $this->devicesConfigurationRepository->findOneBy(
+				$findDeviceQuery,
+				Documents\Devices\Device::class,
+			);
 
 			if ($device === null) {
 				return;

@@ -16,10 +16,10 @@
 namespace FastyBird\Connector\NsPanel\Servers;
 
 use FastyBird\Connector\NsPanel;
+use FastyBird\Connector\NsPanel\Documents;
 use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Middleware;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Nette;
@@ -52,7 +52,7 @@ final class Http implements Server
 	private Socket\ServerInterface|null $socket = null;
 
 	public function __construct(
-		private readonly MetadataDocuments\DevicesModule\Connector $connector,
+		private readonly Documents\Connectors\Connector $connector,
 		private readonly Helpers\Connectors\Connector $connectorHelper,
 		private readonly Middleware\Router $routerMiddleware,
 		private readonly NsPanel\Logger $logger,

@@ -25,10 +25,15 @@ use FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Hydrators;
 use FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Router;
 use FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Schemas;
 use FastyBird\Library\Application\Boot as ApplicationBoot;
+use FastyBird\Library\Metadata;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use IPub\SlimRouter\Routing as SlimRouterRouting;
 use Nette\DI;
 use Nette\Schema;
+use Nettrine\ORM as NettrineORM;
 use stdClass;
+use function array_keys;
+use function array_pop;
 use function assert;
 use const DIRECTORY_SEPARATOR;
 
@@ -149,24 +154,62 @@ class VirtualThermostatAddonHomeKitConnectorExtension extends DI\CompilerExtensi
 		 * DOCTRINE ENTITIES
 		 */
 
-		$ormAttributeDriverService = $builder->getDefinition('nettrineOrmAttributes.attributeDriver');
+		$services = $builder->findByTag(NettrineORM\DI\OrmAttributesExtension::DRIVER_TAG);
 
-		if ($ormAttributeDriverService instanceof DI\Definitions\ServiceDefinition) {
-			$ormAttributeDriverService->addSetup(
-				'addPaths',
-				[[__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'Entities']],
-			);
+		if ($services !== []) {
+			$services = array_keys($services);
+			$ormAttributeDriverServiceName = array_pop($services);
+
+			$ormAttributeDriverService = $builder->getDefinition($ormAttributeDriverServiceName);
+
+			if ($ormAttributeDriverService instanceof DI\Definitions\ServiceDefinition) {
+				$ormAttributeDriverService->addSetup(
+					'addPaths',
+					[[__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'Entities']],
+				);
+
+				$ormAttributeDriverChainService = $builder->getDefinitionByType(
+					Persistence\Mapping\Driver\MappingDriverChain::class,
+				);
+
+				if ($ormAttributeDriverChainService instanceof DI\Definitions\ServiceDefinition) {
+					$ormAttributeDriverChainService->addSetup('addDriver', [
+						$ormAttributeDriverService,
+						'FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Entities',
+					]);
+				}
+			}
 		}
 
-		$ormAttributeDriverChainService = $builder->getDefinitionByType(
-			Persistence\Mapping\Driver\MappingDriverChain::class,
-		);
+		/**
+		 * APPLICATION DOCUMENTS
+		 */
 
-		if ($ormAttributeDriverChainService instanceof DI\Definitions\ServiceDefinition) {
-			$ormAttributeDriverChainService->addSetup('addDriver', [
-				$ormAttributeDriverService,
-				'FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Entities',
-			]);
+		$services = $builder->findByTag(Metadata\DI\MetadataExtension::DRIVER_TAG);
+
+		if ($services !== []) {
+			$services = array_keys($services);
+			$documentAttributeDriverServiceName = array_pop($services);
+
+			$documentAttributeDriverService = $builder->getDefinition($documentAttributeDriverServiceName);
+
+			if ($documentAttributeDriverService instanceof DI\Definitions\ServiceDefinition) {
+				$documentAttributeDriverService->addSetup(
+					'addPaths',
+					[[__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'Documents']],
+				);
+
+				$documentAttributeDriverChainService = $builder->getDefinitionByType(
+					MetadataDocuments\Mapping\Driver\MappingDriverChain::class,
+				);
+
+				if ($documentAttributeDriverChainService instanceof DI\Definitions\ServiceDefinition) {
+					$documentAttributeDriverChainService->addSetup('addDriver', [
+						$documentAttributeDriverService,
+						'FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Documents',
+					]);
+				}
+			}
 		}
 
 		/**

@@ -15,11 +15,12 @@
 
 namespace FastyBird\Connector\NsPanel\Helpers\Devices;
 
-use FastyBird\Connector\NsPanel\Entities;
+use FastyBird\Connector\NsPanel\Documents;
 use FastyBird\Connector\NsPanel\Exceptions;
+use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Types;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -48,14 +49,16 @@ final class ThirdPartyDevice
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 */
-	public function getGateway(MetadataDocuments\DevicesModule\Device $device): MetadataDocuments\DevicesModule\Device
+	public function getGateway(Documents\Devices\ThirdPartyDevice $device): Documents\Devices\Gateway
 	{
 		foreach ($device->getParents() as $parent) {
-			$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+			$findDeviceQuery = new Queries\Configuration\FindGatewayDevices();
 			$findDeviceQuery->byId($parent);
-			$findDeviceQuery->byType(Entities\Devices\Gateway::TYPE);
 
-			$parent = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+			$parent = $this->devicesConfigurationRepository->findOneBy(
+				$findDeviceQuery,
+				Documents\Devices\Gateway::class,
+			);
 
 			if ($parent !== null) {
 				return $parent;
@@ -70,7 +73,7 @@ final class ThirdPartyDevice
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getDisplayCategory(MetadataDocuments\DevicesModule\Device $device): Types\Category
+	public function getDisplayCategory(Documents\Devices\ThirdPartyDevice $device): Types\Category
 	{
 		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
@@ -78,7 +81,7 @@ final class ThirdPartyDevice
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+			DevicesDocuments\Devices\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null) {
@@ -100,7 +103,7 @@ final class ThirdPartyDevice
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getManufacturer(MetadataDocuments\DevicesModule\Device $device): string
+	public function getManufacturer(Documents\Devices\ThirdPartyDevice $device): string
 	{
 		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
@@ -108,7 +111,7 @@ final class ThirdPartyDevice
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+			DevicesDocuments\Devices\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null) {
@@ -126,7 +129,7 @@ final class ThirdPartyDevice
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getModel(MetadataDocuments\DevicesModule\Device $device): string
+	public function getModel(Documents\Devices\ThirdPartyDevice $device): string
 	{
 		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
@@ -134,7 +137,7 @@ final class ThirdPartyDevice
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+			DevicesDocuments\Devices\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null) {
@@ -152,7 +155,7 @@ final class ThirdPartyDevice
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getFirmwareVersion(MetadataDocuments\DevicesModule\Device $device): string
+	public function getFirmwareVersion(Documents\Devices\ThirdPartyDevice $device): string
 	{
 		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
@@ -160,7 +163,7 @@ final class ThirdPartyDevice
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+			DevicesDocuments\Devices\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null) {
@@ -178,7 +181,7 @@ final class ThirdPartyDevice
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getGatewayIdentifier(MetadataDocuments\DevicesModule\Device $device): string|null
+	public function getGatewayIdentifier(Documents\Devices\ThirdPartyDevice $device): string|null
 	{
 		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
@@ -186,7 +189,7 @@ final class ThirdPartyDevice
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+			DevicesDocuments\Devices\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null) {

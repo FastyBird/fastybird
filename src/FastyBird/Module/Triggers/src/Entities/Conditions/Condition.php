@@ -54,7 +54,7 @@ abstract class Condition implements Entities\Entity,
 
 	#[IPubDoctrine\Crud(required: true)]
 	#[ORM\ManyToOne(
-		targetEntity: Entities\Triggers\AutomaticTrigger::class,
+		targetEntity: Entities\Triggers\Automatic::class,
 		inversedBy: 'conditions',
 	)]
 	#[ORM\JoinColumn(
@@ -62,10 +62,10 @@ abstract class Condition implements Entities\Entity,
 		referencedColumnName: 'trigger_id',
 		onDelete: 'CASCADE',
 	)]
-	protected Entities\Triggers\AutomaticTrigger|null $trigger;
+	protected Entities\Triggers\Automatic|null $trigger;
 
 	public function __construct(
-		Entities\Triggers\AutomaticTrigger $trigger,
+		Entities\Triggers\Automatic $trigger,
 		Uuid\UuidInterface|null $id = null,
 	)
 	{
@@ -87,9 +87,9 @@ abstract class Condition implements Entities\Entity,
 		$this->enabled = $enabled;
 	}
 
-	public function getTrigger(): Entities\Triggers\AutomaticTrigger
+	public function getTrigger(): Entities\Triggers\Automatic
 	{
-		assert($this->trigger instanceof Entities\Triggers\AutomaticTrigger);
+		assert($this->trigger instanceof Entities\Triggers\Automatic);
 
 		return $this->trigger;
 	}

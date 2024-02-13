@@ -17,15 +17,16 @@ namespace FastyBird\Connector\NsPanel\Queue\Consumers;
 
 use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\API;
-use FastyBird\Connector\NsPanel\Entities;
+use FastyBird\Connector\NsPanel\Documents;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
+use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -86,10 +87,13 @@ final class WriteSubDeviceState implements Queue\Consumer
 			return false;
 		}
 
-		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
+		$findConnectorQuery = new Queries\Configuration\FindConnectors();
 		$findConnectorQuery->byId($message->getConnector());
 
-		$connector = $this->connectorsConfigurationRepository->findOneBy($findConnectorQuery);
+		$connector = $this->connectorsConfigurationRepository->findOneBy(
+			$findConnectorQuery,
+			Documents\Connectors\Connector::class,
+		);
 
 		if ($connector === null) {
 			$this->logger->error(
@@ -113,12 +117,14 @@ final class WriteSubDeviceState implements Queue\Consumer
 			return true;
 		}
 
-		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDeviceQuery = new Queries\Configuration\FindSubDevices();
 		$findDeviceQuery->forConnector($connector);
 		$findDeviceQuery->byId($message->getDevice());
-		$findDeviceQuery->byType(Entities\Devices\SubDevice::TYPE);
 
-		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+		$device = $this->devicesConfigurationRepository->findOneBy(
+			$findDeviceQuery,
+			Documents\Devices\SubDevice::class,
+		);
 
 		if ($device === null) {
 			$this->logger->error(
@@ -180,11 +186,14 @@ final class WriteSubDeviceState implements Queue\Consumer
 			return true;
 		}
 
-		$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
+		$findChannelQuery = new Queries\Configuration\FindChannels();
 		$findChannelQuery->forDevice($device);
 		$findChannelQuery->byId($message->getChannel());
 
-		$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
+		$channel = $this->channelsConfigurationRepository->findOneBy(
+			$findChannelQuery,
+			Documents\Channels\Channel::class,
+		);
 
 		if ($channel === null) {
 			$this->logger->error(
@@ -268,7 +277,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 
 					$properties = $this->channelsPropertiesConfigurationRepository->findAllBy(
 						$findPropertiesQuery,
-						MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
+						DevicesDocuments\Channels\Properties\Dynamic::class,
 					);
 
 					foreach ($properties as $property) {
@@ -290,7 +299,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 
 					$properties = $this->channelsPropertiesConfigurationRepository->findAllBy(
 						$findPropertiesQuery,
-						MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
+						DevicesDocuments\Channels\Properties\Dynamic::class,
 					);
 
 					foreach ($properties as $property) {
@@ -403,7 +412,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 		return true;
 	}
 
-	private function getApiClient(MetadataDocuments\DevicesModule\Connector $connector): API\LanApi
+	private function getApiClient(Documents\Connectors\Connector $connector): API\LanApi
 	{
 		if ($this->lanApiApi === null) {
 			$this->lanApiApi = $this->lanApiApiFactory->create($connector->getIdentifier());

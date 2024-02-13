@@ -24,6 +24,7 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
@@ -47,7 +48,7 @@ use function strval;
 /**
  * Useful connector dynamic property state helpers
  *
- * @extends Models\States\PropertiesManager<MetadataDocuments\DevicesModule\ConnectorDynamicProperty, null, States\ConnectorProperty>
+ * @extends Models\States\PropertiesManager<Documents\Connectors\Properties\Dynamic, null, States\ConnectorProperty>
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Models
@@ -75,10 +76,10 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 	}
 
 	/**
-	 * @return Promise\PromiseInterface<bool|MetadataDocuments\DevicesModule\ConnectorPropertyState|null>
+	 * @return Promise\PromiseInterface<bool|Documents\States\Properties\Connector|null>
 	 */
 	public function read(
-		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
+		Documents\Connectors\Properties\Dynamic $property,
 		MetadataTypes\Sources\Source|null $source,
 	): Promise\PromiseInterface
 	{
@@ -86,11 +87,11 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 			try {
 				return $this->publisher->publish(
 					$source ?? MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
-					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_ACTION),
+					Devices\Constants::MESSAGE_BUS_CONNECTOR_PROPERTY_ACTION_ROUTING_KEY,
 					$this->documentFactory->create(
-						MetadataDocuments\Actions\ActionConnectorProperty::class,
+						Documents\Actions\Properties\Connector::class,
 						[
-							'action' => MetadataTypes\PropertyAction::GET,
+							'action' => MetadataTypes\PropertyAction::GET->value,
 							'connector' => $property->getConnector()->toString(),
 							'property' => $property->getId()->toString(),
 						],
@@ -112,7 +113,7 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 	 * @return Promise\PromiseInterface<bool>
 	 */
 	public function write(
-		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
+		Documents\Connectors\Properties\Dynamic $property,
 		Utils\ArrayHash $data,
 		MetadataTypes\Sources\Source|null $source,
 	): Promise\PromiseInterface
@@ -121,12 +122,12 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 			try {
 				return $this->publisher->publish(
 					$source ?? MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
-					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_ACTION),
+					Devices\Constants::MESSAGE_BUS_CONNECTOR_PROPERTY_ACTION_ROUTING_KEY,
 					$this->documentFactory->create(
-						MetadataDocuments\Actions\ActionConnectorProperty::class,
+						Documents\Actions\Properties\Connector::class,
 						array_merge(
 							[
-								'action' => MetadataTypes\PropertyAction::SET,
+								'action' => MetadataTypes\PropertyAction::SET->value,
 								'connector' => $property->getConnector()->toString(),
 								'property' => $property->getId()->toString(),
 							],
@@ -158,7 +159,7 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 	 * @return Promise\PromiseInterface<bool>
 	 */
 	public function set(
-		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
+		Documents\Connectors\Properties\Dynamic $property,
 		Utils\ArrayHash $data,
 		MetadataTypes\Sources\Source|null $source,
 	): Promise\PromiseInterface
@@ -167,12 +168,12 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 			try {
 				return $this->publisher->publish(
 					$source ?? MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
-					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_ACTION),
+					Devices\Constants::MESSAGE_BUS_CONNECTOR_PROPERTY_ACTION_ROUTING_KEY,
 					$this->documentFactory->create(
-						MetadataDocuments\Actions\ActionConnectorProperty::class,
+						Documents\Actions\Properties\Connector::class,
 						array_merge(
 							[
-								'action' => MetadataTypes\PropertyAction::SET,
+								'action' => MetadataTypes\PropertyAction::SET->value,
 								'connector' => $property->getConnector()->toString(),
 								'property' => $property->getId()->toString(),
 							],
@@ -201,12 +202,12 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 	}
 
 	/**
-	 * @param MetadataDocuments\DevicesModule\ConnectorDynamicProperty|array<MetadataDocuments\DevicesModule\ConnectorDynamicProperty> $property
+	 * @param Documents\Connectors\Properties\Dynamic|array<Documents\Connectors\Properties\Dynamic> $property
 	 *
 	 * @return Promise\PromiseInterface<bool>
 	 */
 	public function setValidState(
-		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|array $property,
+		Documents\Connectors\Properties\Dynamic|array $property,
 		bool $state,
 		MetadataTypes\Sources\Source|null $source,
 	): Promise\PromiseInterface
@@ -247,12 +248,12 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 	}
 
 	/**
-	 * @param MetadataDocuments\DevicesModule\ConnectorDynamicProperty|array<MetadataDocuments\DevicesModule\ConnectorDynamicProperty> $property
+	 * @param Documents\Connectors\Properties\Dynamic|array<Documents\Connectors\Properties\Dynamic> $property
 	 *
 	 * @return Promise\PromiseInterface<bool>
 	 */
 	public function setPendingState(
-		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|array $property,
+		Documents\Connectors\Properties\Dynamic|array $property,
 		bool $pending,
 		MetadataTypes\Sources\Source|null $source,
 	): Promise\PromiseInterface
@@ -344,12 +345,12 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 	}
 
 	/**
-	 * @return Promise\PromiseInterface<MetadataDocuments\DevicesModule\ConnectorPropertyState|null>
+	 * @return Promise\PromiseInterface<Documents\States\Properties\Connector|null>
 	 *
 	 * @interal
 	 */
 	public function readState(
-		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
+		Documents\Connectors\Properties\Dynamic $property,
 	): Promise\PromiseInterface
 	{
 		$deferred = new Promise\Deferred();
@@ -373,7 +374,7 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 						$getValue = $this->convertStoredState($property, null, $state, false);
 
 						$deferred->resolve($this->documentFactory->create(
-							MetadataDocuments\DevicesModule\ConnectorPropertyState::class,
+							Documents\States\Properties\Connector::class,
 							[
 								'id' => $property->getId()->toString(),
 								'connector' => $property->getConnector()->toString(),
@@ -485,7 +486,7 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 	 * @interal
 	 */
 	public function writeState(
-		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
+		Documents\Connectors\Properties\Dynamic $property,
 		Utils\ArrayHash $data,
 		bool $forWriting,
 		MetadataTypes\Sources\Source|null $source,

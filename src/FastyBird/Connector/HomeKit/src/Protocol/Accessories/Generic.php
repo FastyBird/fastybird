@@ -15,8 +15,8 @@
 
 namespace FastyBird\Connector\HomeKit\Protocol\Accessories;
 
+use FastyBird\Connector\HomeKit\Documents;
 use FastyBird\Connector\HomeKit\Types;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use Ramsey\Uuid;
 
 /**
@@ -34,7 +34,7 @@ class Generic extends Accessory
 		string $name,
 		int|null $aid,
 		Types\AccessoryCategory $category,
-		private readonly MetadataDocuments\DevicesModule\Device $device,
+		private readonly Documents\Devices\Device $device,
 	)
 	{
 		parent::__construct($name, $aid, $category);
@@ -45,7 +45,7 @@ class Generic extends Accessory
 		return $this->device->getId();
 	}
 
-	public function getDevice(): MetadataDocuments\DevicesModule\Device
+	public function getDevice(): Documents\Devices\Device
 	{
 		return $this->device;
 	}

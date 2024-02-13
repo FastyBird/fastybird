@@ -2,8 +2,8 @@
 
 namespace FastyBird\Addon\VirtualThermostat\Tests\Fixtures\Dummy;
 
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Module\Devices\Connectors as DevicesConnectors;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 
 class DummyConnectorFactory implements DevicesConnectors\ConnectorFactory
 {
@@ -13,9 +13,7 @@ class DummyConnectorFactory implements DevicesConnectors\ConnectorFactory
 		return 'dummy';
 	}
 
-	public function create(
-		MetadataDocuments\DevicesModule\Connector $connector,
-	): DevicesConnectors\Connector
+	public function create(DevicesDocuments\Connectors\Connector $connector): DevicesConnectors\Connector
 	{
 		return new DummyConnector();
 	}

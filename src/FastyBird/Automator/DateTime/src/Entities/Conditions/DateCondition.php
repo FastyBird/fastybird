@@ -37,7 +37,7 @@ class DateCondition extends TriggersEntities\Conditions\Condition
 
 	public function __construct(
 		DateTimeInterface $date,
-		TriggersEntities\Triggers\AutomaticTrigger $trigger,
+		TriggersEntities\Triggers\Automatic $trigger,
 		Uuid\UuidInterface|null $id = null,
 	)
 	{

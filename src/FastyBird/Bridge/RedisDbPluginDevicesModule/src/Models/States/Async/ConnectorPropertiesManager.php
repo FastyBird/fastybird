@@ -19,6 +19,7 @@ use FastyBird\Bridge\RedisDbPluginDevicesModule\States;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Plugin\RedisDb\Exceptions as RedisDbExceptions;
 use FastyBird\Plugin\RedisDb\Models as RedisDbModels;
+use InvalidArgumentException;
 use Nette;
 use Nette\Utils;
 use Ramsey\Uuid;
@@ -53,16 +54,25 @@ class ConnectorPropertiesManager implements DevicesModels\States\Connectors\Asyn
 		$this->statesManager = $statesManagerFactory->create(States\ConnectorProperty::class);
 	}
 
+	/**
+	 * @throws InvalidArgumentException
+	 */
 	public function create(Uuid\UuidInterface $id, Utils\ArrayHash $values): Promise\PromiseInterface
 	{
 		return $this->statesManager->create($id, $values, $this->database);
 	}
 
+	/**
+	 * @throws InvalidArgumentException
+	 */
 	public function update(Uuid\UuidInterface $id, Utils\ArrayHash $values): Promise\PromiseInterface
 	{
 		return $this->statesManager->update($id, $values, $this->database);
 	}
 
+	/**
+	 * @throws InvalidArgumentException
+	 */
 	public function delete(Uuid\UuidInterface $id): Promise\PromiseInterface
 	{
 		return $this->statesManager->delete($id, $this->database);

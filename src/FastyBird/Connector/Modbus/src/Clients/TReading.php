@@ -18,14 +18,15 @@ namespace FastyBird\Connector\Modbus\Clients;
 use FastyBird\Connector\Modbus\API;
 use FastyBird\Connector\Modbus\Clients\Messages\Pointer\ReadAddress;
 use FastyBird\Connector\Modbus\Clients\Messages\Request\Read;
+use FastyBird\Connector\Modbus\Documents;
 use FastyBird\Connector\Modbus\Exceptions;
 use FastyBird\Connector\Modbus\Helpers;
 use FastyBird\Connector\Modbus\Helpers\MessageBuilder;
 use FastyBird\Connector\Modbus\Queue;
 use FastyBird\Connector\Modbus\Types;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -149,7 +150,7 @@ trait TReading
 	private function processDigitalRegistersResponse(
 		Messages\Request\Read $request,
 		API\Messages\Response\ReadDigitalInputs $response,
-		MetadataDocuments\DevicesModule\Device $device,
+		Documents\Devices\Device $device,
 	): void
 	{
 		foreach ($response->getRegisters() as $address => $value) {
@@ -183,10 +184,10 @@ trait TReading
 
 			$property = $this->channelsPropertiesConfigurationRepository->findOneBy(
 				$findChannelPropertyQuery,
-				MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
+				DevicesDocuments\Channels\Properties\Dynamic::class,
 			);
 
-			if (!$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+			if (!$property instanceof DevicesDocuments\Channels\Properties\Dynamic) {
 				throw new Exceptions\InvalidState(
 					'Register value storage could not be loaded. Received data could not be handled',
 				);
@@ -217,7 +218,7 @@ trait TReading
 	private function processAnalogRegistersResponse(
 		Messages\Request\Read $request,
 		API\Messages\Response\ReadAnalogInputs $response,
-		MetadataDocuments\DevicesModule\Device $device,
+		Documents\Devices\Device $device,
 	): void
 	{
 		$registersBytes = $response->getRegisters();
@@ -251,10 +252,10 @@ trait TReading
 
 			$property = $this->channelsPropertiesConfigurationRepository->findOneBy(
 				$findChannelPropertyQuery,
-				MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
+				DevicesDocuments\Channels\Properties\Dynamic::class,
 			);
 
-			if (!$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+			if (!$property instanceof DevicesDocuments\Channels\Properties\Dynamic) {
 				throw new Exceptions\InvalidState(
 					'Register value storage could not be loaded. Received data could not be handled',
 				);

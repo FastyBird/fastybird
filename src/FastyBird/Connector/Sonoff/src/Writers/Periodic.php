@@ -16,15 +16,16 @@
 namespace FastyBird\Connector\Sonoff\Writers;
 
 use DateTimeInterface;
-use FastyBird\Connector\Sonoff\Entities;
+use FastyBird\Connector\Sonoff\Documents;
 use FastyBird\Connector\Sonoff\Exceptions;
 use FastyBird\Connector\Sonoff\Helpers;
+use FastyBird\Connector\Sonoff\Queries;
 use FastyBird\Connector\Sonoff\Queue;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -58,10 +59,10 @@ abstract class Periodic implements Writer
 
 	private const HANDLER_PENDING_DELAY = 2_000.0;
 
-	/** @var array<string, MetadataDocuments\DevicesModule\Device>  */
+	/** @var array<string, Documents\Devices\Device>  */
 	private array $devices = [];
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-	/** @var array<string, array<string, MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\ChannelDynamicProperty>>  */
+	/** @var array<string, array<string, DevicesDocuments\Devices\Properties\Dynamic|DevicesDocuments\Channels\Properties\Dynamic>>  */
 	private array $properties = [];
 
 	/** @var array<string> */
@@ -73,7 +74,7 @@ abstract class Periodic implements Writer
 	private EventLoop\TimerInterface|null $handlerTimer = null;
 
 	public function __construct(
-		protected readonly MetadataDocuments\DevicesModule\Connector $connector,
+		protected readonly Documents\Connectors\Connector $connector,
 		protected readonly Helpers\MessageBuilder $entityHelper,
 		protected readonly Queue\Queue $queue,
 		protected readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
@@ -96,11 +97,15 @@ abstract class Periodic implements Writer
 		$this->processedDevices = [];
 		$this->processedProperties = [];
 
-		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDevicesQuery = new Queries\Configuration\FindDevices();
 		$findDevicesQuery->forConnector($this->connector);
-		$findDevicesQuery->byType(Entities\Devices\Device::TYPE);
 
-		foreach ($this->devicesConfigurationRepository->findAllBy($findDevicesQuery) as $device) {
+		$devices = $this->devicesConfigurationRepository->findAllBy(
+			$findDevicesQuery,
+			Documents\Devices\Device::class,
+		);
+
+		foreach ($devices as $device) {
 			$this->devices[$device->getId()->toString()] = $device;
 
 			if (!array_key_exists($device->getId()->toString(), $this->properties)) {
@@ -114,16 +119,18 @@ abstract class Periodic implements Writer
 			$properties = $this->devicesPropertiesConfigurationRepository->findAllBy($findDevicePropertiesQuery);
 
 			foreach ($properties as $property) {
-				if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
+				if ($property instanceof DevicesDocuments\Devices\Properties\Dynamic) {
 					$this->properties[$device->getId()->toString()][$property->getId()->toString()] = $property;
 				}
 			}
 
-			$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
+			$findChannelsQuery = new Queries\Configuration\FindChannels();
 			$findChannelsQuery->forDevice($device);
-			$findChannelsQuery->byType(Entities\Channels\Channel::TYPE);
 
-			$channels = $this->channelsConfigurationRepository->findAllBy($findChannelsQuery);
+			$channels = $this->channelsConfigurationRepository->findAllBy(
+				$findChannelsQuery,
+				Documents\Channels\Channel::class,
+			);
 
 			foreach ($channels as $channel) {
 				$findChannelPropertiesQuery = new DevicesQueries\Configuration\FindChannelProperties();
@@ -133,7 +140,7 @@ abstract class Periodic implements Writer
 				$properties = $this->channelsPropertiesConfigurationRepository->findAllBy($findChannelPropertiesQuery);
 
 				foreach ($properties as $property) {
-					if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+					if ($property instanceof DevicesDocuments\Channels\Properties\Dynamic) {
 						$this->properties[$device->getId()->toString()][$property->getId()->toString()] = $property;
 					}
 				}
@@ -194,7 +201,7 @@ abstract class Periodic implements Writer
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
-	private function writeProperty(MetadataDocuments\DevicesModule\Device $device): bool
+	private function writeProperty(Documents\Devices\Device $device): bool
 	{
 		$now = $this->dateTimeFactory->getNow();
 
@@ -212,7 +219,7 @@ abstract class Periodic implements Writer
 
 			$this->processedProperties[$property->getId()->toString()] = $now;
 
-			if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
+			if ($property instanceof DevicesDocuments\Devices\Properties\Dynamic) {
 				$state = await(
 					$this->devicePropertiesStatesManager->read(
 						$property,
@@ -228,7 +235,7 @@ abstract class Periodic implements Writer
 
 					// Requesting property state failed
 					continue;
-				} elseif (!$state instanceof MetadataDocuments\DevicesModule\DevicePropertyState) {
+				} elseif (!$state instanceof DevicesDocuments\States\Properties\Device) {
 					// Property state is not set
 					continue;
 				}
@@ -251,7 +258,7 @@ abstract class Periodic implements Writer
 
 					// Requesting property state failed
 					continue;
-				} elseif (!$state instanceof MetadataDocuments\DevicesModule\ChannelPropertyState) {
+				} elseif (!$state instanceof DevicesDocuments\States\Properties\Channel) {
 					// Property state is not set
 					continue;
 				}
@@ -272,7 +279,7 @@ abstract class Periodic implements Writer
 					&& (float) $now->format('Uv') - (float) $pending->format('Uv') > self::HANDLER_PENDING_DELAY
 				)
 			) {
-				if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
+				if ($property instanceof DevicesDocuments\Devices\Properties\Dynamic) {
 					$this->queue->append(
 						$this->entityHelper->create(
 							Queue\Messages\WriteDevicePropertyState::class,

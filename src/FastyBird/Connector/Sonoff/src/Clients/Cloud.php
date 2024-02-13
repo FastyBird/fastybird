@@ -17,19 +17,18 @@ namespace FastyBird\Connector\Sonoff\Clients;
 
 use FastyBird\Connector\Sonoff;
 use FastyBird\Connector\Sonoff\API;
-use FastyBird\Connector\Sonoff\Entities;
+use FastyBird\Connector\Sonoff\Documents;
 use FastyBird\Connector\Sonoff\Exceptions;
 use FastyBird\Connector\Sonoff\Helpers;
+use FastyBird\Connector\Sonoff\Queries;
 use FastyBird\Connector\Sonoff\Queue;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use InvalidArgumentException;
 use Psr\EventDispatcher;
@@ -55,7 +54,7 @@ final class Cloud extends ClientProcess implements Client
 		DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		DateTimeFactory\Factory $dateTimeFactory,
 		EventLoop\LoopInterface $eventLoop,
-		private readonly MetadataDocuments\DevicesModule\Connector $connector,
+		private readonly Documents\Connectors\Connector $connector,
 		private readonly bool $autoMode,
 		private readonly API\ConnectionManager $connectionManager,
 		private readonly Helpers\MessageBuilder $entityHelper,
@@ -96,11 +95,15 @@ final class Cloud extends ClientProcess implements Client
 				}),
 			);
 
-			$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
+			$findDevicesQuery = new Queries\Configuration\FindDevices();
 			$findDevicesQuery->forConnector($this->connector);
-			$findDevicesQuery->byType(Entities\Devices\Device::TYPE);
 
-			foreach ($this->devicesConfigurationRepository->findAllBy($findDevicesQuery) as $device) {
+			$devices = $this->devicesConfigurationRepository->findAllBy(
+				$findDevicesQuery,
+				Documents\Devices\Device::class,
+			);
+
+			foreach ($devices as $device) {
 				$this->devices[$device->getId()->toString()] = $device;
 			}
 		}
@@ -242,7 +245,9 @@ final class Cloud extends ClientProcess implements Client
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	protected function readInformation(MetadataDocuments\DevicesModule\Device $device): Promise\PromiseInterface
+	protected function readInformation(
+		Documents\Devices\Device $device,
+	): Promise\PromiseInterface
 	{
 		$deferred = new Promise\Deferred();
 
@@ -325,7 +330,7 @@ final class Cloud extends ClientProcess implements Client
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	protected function readState(MetadataDocuments\DevicesModule\Device $device): Promise\PromiseInterface
+	protected function readState(Documents\Devices\Device $device): Promise\PromiseInterface
 	{
 		$deferred = new Promise\Deferred();
 
@@ -458,11 +463,13 @@ final class Cloud extends ClientProcess implements Client
 			return;
 		}
 
-		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDeviceQuery = new Queries\Configuration\FindDevices();
 		$findDeviceQuery->byIdentifier($message->getDeviceId());
-		$findDeviceQuery->byType(Entities\Devices\Device::TYPE);
 
-		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+		$device = $this->devicesConfigurationRepository->findOneBy(
+			$findDeviceQuery,
+			Documents\Devices\Device::class,
+		);
 
 		if ($device === null) {
 			return;

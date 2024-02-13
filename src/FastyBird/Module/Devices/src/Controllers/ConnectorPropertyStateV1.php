@@ -17,13 +17,13 @@ namespace FastyBird\Module\Devices\Controllers;
 
 use Exception;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Controllers;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\Router;
 use Fig\Http\Message\StatusCodeInterface;
 use Psr\Http\Message;
@@ -73,7 +73,7 @@ final class ConnectorPropertyStateV1 extends BaseV1
 		// At first, try to load connector
 		$connector = $this->findConnector(strval($request->getAttribute(Router\ApiRoutes::URL_CONNECTOR_ID)));
 		// & property
-		$findPropertyQuery = new DevicesQueries\Configuration\FindConnectorProperties();
+		$findPropertyQuery = new Queries\Configuration\FindConnectorProperties();
 		$findPropertyQuery->byConnectorId($connector->getId());
 		$findPropertyQuery->byId(
 			Uuid\Uuid::fromString(strval($request->getAttribute(Router\ApiRoutes::URL_PROPERTY_ID))),
@@ -81,7 +81,7 @@ final class ConnectorPropertyStateV1 extends BaseV1
 
 		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy($findPropertyQuery);
 
-		if (!$property instanceof MetadataDocuments\DevicesModule\ConnectorDynamicProperty) {
+		if (!$property instanceof Documents\Connectors\Properties\Dynamic) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				$this->translator->translate('//connectors-module.base.messages.notFound.heading'),

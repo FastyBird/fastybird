@@ -89,6 +89,12 @@ nettrineOrmAttributes:
         FastyBird\Addon\VirtualThermostat\Tests\Fixtures\Dummy: %appDir%/fixtures/dummy
     ]
 
+fbMetadataLibrary:
+    documents:
+        mapping: [
+            FastyBird\Addon\VirtualThermostat\Tests\Fixtures\Dummy: %appDir%/fixtures/dummy
+        ]
+
 fbSimpleAuth:
     token:
         issuer: com.fastybird.auth-module

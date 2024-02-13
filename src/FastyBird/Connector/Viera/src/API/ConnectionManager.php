@@ -15,8 +15,8 @@
 
 namespace FastyBird\Connector\Viera\API;
 
+use FastyBird\Connector\Viera\Documents;
 use FastyBird\Connector\Viera\Helpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Nette;
@@ -53,7 +53,7 @@ final class ConnectionManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getConnection(MetadataDocuments\DevicesModule\Device $device): TelevisionApi
+	public function getConnection(Documents\Devices\Device $device): TelevisionApi
 	{
 		if (!array_key_exists($device->getId()->toString(), $this->connections)) {
 			assert(is_string($this->deviceHelper->getIpAddress($device)));

@@ -24,6 +24,7 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
@@ -48,7 +49,7 @@ use function strval;
 /**
  * Useful channel dynamic property state helpers
  *
- * @extends Models\States\PropertiesManager<MetadataDocuments\DevicesModule\ChannelDynamicProperty, MetadataDocuments\DevicesModule\ChannelMappedProperty | null, States\ChannelProperty>
+ * @extends Models\States\PropertiesManager<Documents\Channels\Properties\Dynamic, Documents\Channels\Properties\Mapped | null, States\ChannelProperty>
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Models
@@ -77,12 +78,12 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 	}
 
 	/**
-	 * @return Promise\PromiseInterface<bool|MetadataDocuments\DevicesModule\ChannelPropertyState|null>
+	 * @return Promise\PromiseInterface<bool|Documents\States\Properties\Channel|null>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
 	public function read(
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
+		Documents\Channels\Properties\Dynamic|Documents\Channels\Properties\Mapped $property,
 		MetadataTypes\Sources\Source|null $source,
 	): Promise\PromiseInterface
 	{
@@ -90,11 +91,11 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 			try {
 				return $this->publisher->publish(
 					$source ?? MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
-					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION),
+					Devices\Constants::MESSAGE_BUS_CHANNEL_PROPERTY_ACTION_ROUTING_KEY,
 					$this->documentFactory->create(
-						MetadataDocuments\Actions\ActionChannelProperty::class,
+						Documents\Actions\Properties\Channel::class,
 						[
-							'action' => MetadataTypes\PropertyAction::GET,
+							'action' => MetadataTypes\PropertyAction::GET->value,
 							'channel' => $property->getChannel()->toString(),
 							'property' => $property->getId()->toString(),
 						],
@@ -118,7 +119,7 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 	 * @throws Exceptions\InvalidState
 	 */
 	public function write(
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
+		Documents\Channels\Properties\Dynamic|Documents\Channels\Properties\Mapped $property,
 		Utils\ArrayHash $data,
 		MetadataTypes\Sources\Source|null $source,
 	): Promise\PromiseInterface
@@ -127,12 +128,12 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 			try {
 				return $this->publisher->publish(
 					$source ?? MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
-					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION),
+					Devices\Constants::MESSAGE_BUS_CHANNEL_PROPERTY_ACTION_ROUTING_KEY,
 					$this->documentFactory->create(
-						MetadataDocuments\Actions\ActionChannelProperty::class,
+						Documents\Actions\Properties\Channel::class,
 						array_merge(
 							[
-								'action' => MetadataTypes\PropertyAction::SET,
+								'action' => MetadataTypes\PropertyAction::SET->value,
 								'channel' => $property->getChannel()->toString(),
 								'property' => $property->getId()->toString(),
 							],
@@ -166,7 +167,7 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 	 * @throws Exceptions\InvalidState
 	 */
 	public function set(
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
+		Documents\Channels\Properties\Dynamic|Documents\Channels\Properties\Mapped $property,
 		Utils\ArrayHash $data,
 		MetadataTypes\Sources\Source|null $source,
 	): Promise\PromiseInterface
@@ -175,12 +176,12 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 			try {
 				return $this->publisher->publish(
 					$source ?? MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
-					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CHANNEL_PROPERTY_ACTION),
+					Devices\Constants::MESSAGE_BUS_CHANNEL_PROPERTY_ACTION_ROUTING_KEY,
 					$this->documentFactory->create(
-						MetadataDocuments\Actions\ActionChannelProperty::class,
+						Documents\Actions\Properties\Channel::class,
 						array_merge(
 							[
-								'action' => MetadataTypes\PropertyAction::SET,
+								'action' => MetadataTypes\PropertyAction::SET->value,
 								'channel' => $property->getChannel()->toString(),
 								'property' => $property->getId()->toString(),
 							],
@@ -209,14 +210,14 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 	}
 
 	/**
-	 * @param MetadataDocuments\DevicesModule\ChannelDynamicProperty|array<MetadataDocuments\DevicesModule\ChannelDynamicProperty> $property
+	 * @param Documents\Channels\Properties\Dynamic|array<Documents\Channels\Properties\Dynamic> $property
 	 *
 	 * @return Promise\PromiseInterface<bool>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
 	public function setValidState(
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty|array $property,
+		Documents\Channels\Properties\Dynamic|array $property,
 		bool $state,
 		MetadataTypes\Sources\Source|null $source,
 	): Promise\PromiseInterface
@@ -257,14 +258,14 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 	}
 
 	/**
-	 * @param MetadataDocuments\DevicesModule\ChannelDynamicProperty|array<MetadataDocuments\DevicesModule\ChannelDynamicProperty> $property
+	 * @param Documents\Channels\Properties\Dynamic|array<Documents\Channels\Properties\Dynamic> $property
 	 *
 	 * @return Promise\PromiseInterface<bool>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
 	public function setPendingState(
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty|array $property,
+		Documents\Channels\Properties\Dynamic|array $property,
 		bool $pending,
 		MetadataTypes\Sources\Source|null $source,
 	): Promise\PromiseInterface
@@ -363,22 +364,22 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 	}
 
 	/**
-	 * @return Promise\PromiseInterface<MetadataDocuments\DevicesModule\ChannelPropertyState|null>
+	 * @return Promise\PromiseInterface<Documents\States\Properties\Channel|null>
 	 *
 	 * @throws Exceptions\InvalidState
 	 *
 	 * @interal
 	 */
 	public function readState(
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
+		Documents\Channels\Properties\Dynamic|Documents\Channels\Properties\Mapped $property,
 	): Promise\PromiseInterface
 	{
 		$mappedProperty = null;
 
-		if ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
+		if ($property instanceof Documents\Channels\Properties\Mapped) {
 			$parent = $this->channelPropertiesConfigurationRepository->find($property->getParent());
 
-			if (!$parent instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+			if (!$parent instanceof Documents\Channels\Properties\Dynamic) {
 				return Promise\reject(new Exceptions\InvalidState('Mapped property parent could not be loaded'));
 			}
 
@@ -409,7 +410,7 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 						$getValue = $this->convertStoredState($property, $mappedProperty, $state, false);
 
 						$deferred->resolve($this->documentFactory->create(
-							MetadataDocuments\DevicesModule\ChannelPropertyState::class,
+							Documents\States\Properties\Channel::class,
 							[
 								'id' => $property->getId()->toString(),
 								'channel' => $property->getChannel()->toString(),
@@ -523,7 +524,7 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 	 * @interal
 	 */
 	public function writeState(
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
+		Documents\Channels\Properties\Dynamic|Documents\Channels\Properties\Mapped $property,
 		Utils\ArrayHash $data,
 		bool $forWriting,
 		MetadataTypes\Sources\Source|null $source,
@@ -531,10 +532,10 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 	{
 		$mappedProperty = null;
 
-		if ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
+		if ($property instanceof Documents\Channels\Properties\Mapped) {
 			$parent = $this->channelPropertiesConfigurationRepository->find($property->getParent());
 
-			if (!$parent instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+			if (!$parent instanceof Documents\Channels\Properties\Dynamic) {
 				return Promise\reject(new Exceptions\InvalidState('Mapped property parent could not be loaded'));
 			}
 
@@ -831,7 +832,7 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 	}
 
 	/**
-	 * @return array<MetadataDocuments\DevicesModule\ChannelMappedProperty>
+	 * @return array<Documents\Channels\Properties\Mapped>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
@@ -842,7 +843,7 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 
 		return $this->channelPropertiesConfigurationRepository->findAllBy(
 			$findPropertiesQuery,
-			MetadataDocuments\DevicesModule\ChannelMappedProperty::class,
+			Documents\Channels\Properties\Mapped::class,
 		);
 	}
 

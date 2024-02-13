@@ -45,7 +45,7 @@ class Container implements Consumer
 
 	public function consume(
 		MetadataTypes\Sources\Source $source,
-		MetadataTypes\RoutingKey $routingKey,
+		string $routingKey,
 		MetadataDocuments\Document|null $document,
 	): void
 	{
@@ -61,7 +61,7 @@ class Container implements Consumer
 				$info->isEnabled()
 				&& (
 					$info->getRoutingKey() === null
-					|| $info->getRoutingKey()->equals($routingKey)
+					|| $info->getRoutingKey() === $routingKey
 				)
 			) {
 				$consumer->consume($source, $routingKey, $document);
@@ -73,19 +73,12 @@ class Container implements Consumer
 		$this->dispatcher?->dispatch(new Events\AfterMessageConsumed($source, $routingKey, $document));
 	}
 
-	/**
-	 * @throws Exceptions\InvalidArgument
-	 */
 	public function register(Consumer $consumer, string|null $routingKey, bool $status = true): void
 	{
-		if ($routingKey !== null && !MetadataTypes\RoutingKey::isValidValue($routingKey)) {
-			throw new Exceptions\InvalidArgument('Provided routing key is not valid');
-		}
-
 		if (!$this->consumers->contains($consumer)) {
 			$this->consumers->attach(
 				$consumer,
-				new Info($routingKey !== null ? MetadataTypes\RoutingKey::get($routingKey) : null, $status),
+				new Info($routingKey, $status),
 			);
 		}
 	}

@@ -18,6 +18,7 @@ namespace FastyBird\Module\Devices\Models\Configuration\Connectors\Controls;
 use Contributte\Cache;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Module\Devices;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
@@ -51,7 +52,7 @@ final class Repository extends Models\Configuration\Repository
 	 */
 	public function find(
 		Uuid\UuidInterface $id,
-	): MetadataDocuments\DevicesModule\ConnectorControl|null
+	): Documents\Connectors\Controls\Control|null
 	{
 		$queryObject = new Queries\Configuration\FindConnectorControls();
 		$queryObject->byId($id);
@@ -60,18 +61,18 @@ final class Repository extends Models\Configuration\Repository
 	}
 
 	/**
-	 * @param Queries\Configuration\FindConnectorControls<MetadataDocuments\DevicesModule\ConnectorControl> $queryObject
+	 * @param Queries\Configuration\FindConnectorControls<Documents\Connectors\Controls\Control> $queryObject
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
 	public function findOneBy(
 		Queries\Configuration\FindConnectorControls $queryObject,
-	): MetadataDocuments\DevicesModule\ConnectorControl|null
+	): Documents\Connectors\Controls\Control|null
 	{
 		try {
 			$document = $this->cache->load(
 				$this->createKeyOne($queryObject),
-				function () use ($queryObject): MetadataDocuments\DevicesModule\ConnectorControl|false {
+				function () use ($queryObject): Documents\Connectors\Controls\Control|false {
 					$space = $this->builder
 						->load()
 						->find('.' . Devices\Constants::DATA_STORAGE_CONTROLS_KEY . '.*');
@@ -83,7 +84,7 @@ final class Repository extends Models\Configuration\Repository
 					}
 
 					return $this->documentFactory->create(
-						MetadataDocuments\DevicesModule\ConnectorControl::class,
+						Documents\Connectors\Controls\Control::class,
 						$result[0],
 					);
 				},
@@ -96,7 +97,7 @@ final class Repository extends Models\Configuration\Repository
 			return null;
 		}
 
-		if (!$document instanceof MetadataDocuments\DevicesModule\ConnectorControl) {
+		if (!$document instanceof Documents\Connectors\Controls\Control) {
 			throw new Exceptions\InvalidState('Could not load document');
 		}
 
@@ -104,9 +105,9 @@ final class Repository extends Models\Configuration\Repository
 	}
 
 	/**
-	 * @param Queries\Configuration\FindConnectorControls<MetadataDocuments\DevicesModule\ConnectorControl> $queryObject
+	 * @param Queries\Configuration\FindConnectorControls<Documents\Connectors\Controls\Control> $queryObject
 	 *
-	 * @return array<MetadataDocuments\DevicesModule\ConnectorControl>
+	 * @return array<Documents\Connectors\Controls\Control>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
@@ -129,8 +130,8 @@ final class Repository extends Models\Configuration\Repository
 					}
 
 					return array_map(
-						fn (stdClass $item): MetadataDocuments\DevicesModule\ConnectorControl => $this->documentFactory->create(
-							MetadataDocuments\DevicesModule\ConnectorControl::class,
+						fn (stdClass $item): Documents\Connectors\Controls\Control => $this->documentFactory->create(
+							Documents\Connectors\Controls\Control::class,
 							$item,
 						),
 						$result,

@@ -17,15 +17,16 @@ namespace FastyBird\Connector\NsPanel\Clients;
 
 use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\API;
-use FastyBird\Connector\NsPanel\Entities;
+use FastyBird\Connector\NsPanel\Documents;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
+use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -58,7 +59,7 @@ final class Device implements Client
 	private API\LanApi $lanApi;
 
 	public function __construct(
-		private readonly MetadataDocuments\DevicesModule\Connector $connector,
+		private readonly Documents\Connectors\Connector $connector,
 		private readonly API\LanApiFactory $lanApiFactory,
 		private readonly Queue\Queue $queue,
 		private readonly Helpers\MessageBuilder $messageBuilder,
@@ -87,12 +88,16 @@ final class Device implements Client
 	 */
 	public function connect(): void
 	{
-		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDevicesQuery = new Queries\Configuration\FindGatewayDevices();
 		$findDevicesQuery->forConnector($this->connector);
 		$findDevicesQuery->withoutParents();
-		$findDevicesQuery->byType(Entities\Devices\Gateway::TYPE);
 
-		foreach ($this->devicesConfigurationRepository->findAllBy($findDevicesQuery) as $gateway) {
+		$gateways = $this->devicesConfigurationRepository->findAllBy(
+			$findDevicesQuery,
+			Documents\Devices\Gateway::class,
+		);
+
+		foreach ($gateways as $gateway) {
 			$ipAddress = $this->gatewayHelper->getIpAddress($gateway);
 			$accessToken = $this->gatewayHelper->getAccessToken($gateway);
 
@@ -100,12 +105,14 @@ final class Device implements Client
 				continue;
 			}
 
-			$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
+			$findDevicesQuery = new Queries\Configuration\FindThirdPartyDevices();
 			$findDevicesQuery->forConnector($this->connector);
 			$findDevicesQuery->forParent($gateway);
-			$findDevicesQuery->byType(Entities\Devices\ThirdPartyDevice::TYPE);
 
-			$devices = $this->devicesConfigurationRepository->findAllBy($findDevicesQuery);
+			$devices = $this->devicesConfigurationRepository->findAllBy(
+				$findDevicesQuery,
+				Documents\Devices\ThirdPartyDevice::class,
+			);
 
 			$categoriesMetadata = $this->loader->loadCategories();
 
@@ -154,10 +161,15 @@ final class Device implements Client
 				$capabilities = [];
 				$tags = [];
 
-				$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
+				$findChannelsQuery = new Queries\Configuration\FindChannels();
 				$findChannelsQuery->forDevice($device);
 
-				foreach ($this->channelsConfigurationRepository->findAllBy($findChannelsQuery) as $channel) {
+				$channels = $this->channelsConfigurationRepository->findAllBy(
+					$findChannelsQuery,
+					Documents\Channels\Channel::class,
+				);
+
+				foreach ($channels as $channel) {
 					$deviceCapabilities[] = $this->channelHelper->getCapability($channel)->getValue();
 
 					$capabilityName = null;
@@ -184,7 +196,7 @@ final class Device implements Client
 
 					$properties = $this->channelsPropertiesConfigurationRepository->findAllBy(
 						$findChannelPropertiesQuery,
-						MetadataDocuments\DevicesModule\ChannelVariableProperty::class,
+						DevicesDocuments\Channels\Properties\Variable::class,
 					);
 
 					foreach ($properties as $property) {
@@ -279,12 +291,15 @@ final class Device implements Client
 							);
 
 							foreach ($response->getPayload()->getEndpoints() as $endpoint) {
-								$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+								$findDeviceQuery = new Queries\Configuration\FindDevices();
 								$findDeviceQuery->byId($endpoint->getThirdSerialNumber());
 								$findDeviceQuery->forConnector($this->connector);
 								$findDeviceQuery->forParent($gateway);
 
-								$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+								$device = $this->devicesConfigurationRepository->findOneBy(
+									$findDeviceQuery,
+									Documents\Devices\Device::class,
+								);
 
 								if ($device !== null) {
 									$this->queue->append(
@@ -405,11 +420,14 @@ final class Device implements Client
 										continue;
 									}
 
-									$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
+									$findDevicesQuery = new Queries\Configuration\FindDevices();
 									$findDevicesQuery->forParent($gateway);
 									$findDevicesQuery->byId($subDevice->getThirdSerialNumber());
 
-									$device = $this->devicesConfigurationRepository->findOneBy($findDevicesQuery);
+									$device = $this->devicesConfigurationRepository->findOneBy(
+										$findDevicesQuery,
+										Documents\Devices\Device::class,
+									);
 
 									if ($device !== null) {
 										continue;
@@ -602,12 +620,16 @@ final class Device implements Client
 	 */
 	public function disconnect(): void
 	{
-		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDevicesQuery = new Queries\Configuration\FindGatewayDevices();
 		$findDevicesQuery->forConnector($this->connector);
 		$findDevicesQuery->withoutParents();
-		$findDevicesQuery->byType(Entities\Devices\Gateway::TYPE);
 
-		foreach ($this->devicesConfigurationRepository->findAllBy($findDevicesQuery) as $gateway) {
+		$gateways = $this->devicesConfigurationRepository->findAllBy(
+			$findDevicesQuery,
+			Documents\Devices\Gateway::class,
+		);
+
+		foreach ($gateways as $gateway) {
 			$ipAddress = $this->gatewayHelper->getIpAddress($gateway);
 			$accessToken = $this->gatewayHelper->getAccessToken($gateway);
 
@@ -615,12 +637,16 @@ final class Device implements Client
 				continue;
 			}
 
-			$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
+			$findDevicesQuery = new Queries\Configuration\FindThirdPartyDevices();
 			$findDevicesQuery->forConnector($this->connector);
 			$findDevicesQuery->forParent($gateway);
-			$findDevicesQuery->byType(Entities\Devices\ThirdPartyDevice::TYPE);
 
-			foreach ($this->devicesConfigurationRepository->findAllBy($findDevicesQuery) as $device) {
+			$devices = $this->devicesConfigurationRepository->findAllBy(
+				$findDevicesQuery,
+				Documents\Devices\ThirdPartyDevice::class,
+			);
+
+			foreach ($devices as $device) {
 				$this->queue->append(
 					$this->messageBuilder->create(
 						Queue\Messages\StoreDeviceConnectionState::class,

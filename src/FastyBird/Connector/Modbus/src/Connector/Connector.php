@@ -18,16 +18,16 @@ namespace FastyBird\Connector\Modbus\Connector;
 use Evenement;
 use FastyBird\Connector\Modbus;
 use FastyBird\Connector\Modbus\Clients;
-use FastyBird\Connector\Modbus\Entities;
+use FastyBird\Connector\Modbus\Documents;
 use FastyBird\Connector\Modbus\Exceptions;
 use FastyBird\Connector\Modbus\Helpers;
 use FastyBird\Connector\Modbus\Queue;
 use FastyBird\Connector\Modbus\Writers;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Connectors as DevicesConnectors;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Nette;
 use React\EventLoop;
@@ -64,7 +64,7 @@ final class Connector implements DevicesConnectors\Connector
 	 * @param array<Writers\WriterFactory> $writersFactories
 	 */
 	public function __construct(
-		private readonly MetadataDocuments\DevicesModule\Connector $connector,
+		private readonly DevicesDocuments\Connectors\Connector $connector,
 		private readonly array $clientsFactories,
 		private readonly Helpers\Connector $connectorHelper,
 		private readonly array $writersFactories,
@@ -74,6 +74,7 @@ final class Connector implements DevicesConnectors\Connector
 		private readonly EventLoop\LoopInterface $eventLoop,
 	)
 	{
+		assert($this->connector instanceof Documents\Connectors\Connector);
 	}
 
 	/**
@@ -87,7 +88,7 @@ final class Connector implements DevicesConnectors\Connector
 	 */
 	public function execute(bool $standalone = true): Promise\PromiseInterface
 	{
-		assert($this->connector->getType() === Entities\Connectors\Connector::TYPE);
+		assert($this->connector instanceof Documents\Connectors\Connector);
 
 		$this->logger->info(
 			'Starting Modbus connector service',
@@ -162,6 +163,8 @@ final class Connector implements DevicesConnectors\Connector
 	 */
 	public function discover(): Promise\PromiseInterface
 	{
+		assert($this->connector instanceof Documents\Connectors\Connector);
+
 		return Promise\reject(
 			new Exceptions\InvalidState('Devices discovery is not allowed for Modbus connector type'),
 		);
@@ -169,7 +172,7 @@ final class Connector implements DevicesConnectors\Connector
 
 	public function terminate(): void
 	{
-		assert($this->connector->getType() === Entities\Connectors\Connector::TYPE);
+		assert($this->connector instanceof Documents\Connectors\Connector);
 
 		$this->client?->disconnect();
 

@@ -94,6 +94,12 @@ nettrineOrmAttributes:
         FastyBird\Module\Triggers\Tests\Fixtures\Dummy: %appDir%/fixtures/dummy
     ]
 
+fbMetadataLibrary:
+    documents:
+        mapping: [
+            FastyBird\Module\Triggers\Tests\Fixtures\Dummy: %appDir%/fixtures/dummy
+        ]
+
 fbSimpleAuth:
     token:
         issuer: com.fastybird.auth-module

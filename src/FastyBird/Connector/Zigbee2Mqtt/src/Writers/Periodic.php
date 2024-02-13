@@ -16,15 +16,16 @@
 namespace FastyBird\Connector\Zigbee2Mqtt\Writers;
 
 use DateTimeInterface;
-use FastyBird\Connector\Zigbee2Mqtt\Entities;
+use FastyBird\Connector\Zigbee2Mqtt\Documents;
 use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
 use FastyBird\Connector\Zigbee2Mqtt\Helpers;
+use FastyBird\Connector\Zigbee2Mqtt\Queries;
 use FastyBird\Connector\Zigbee2Mqtt\Queue;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -58,10 +59,10 @@ abstract class Periodic
 
 	private const HANDLER_PENDING_DELAY = 2_000.0;
 
-	/** @var array<string, MetadataDocuments\DevicesModule\Device>  */
+	/** @var array<string, Documents\Devices\Device>  */
 	private array $devices = [];
 
-	/** @var array<string, array<string, MetadataDocuments\DevicesModule\ChannelDynamicProperty>>  */
+	/** @var array<string, array<string, DevicesDocuments\Channels\Properties\Dynamic>>  */
 	private array $properties = [];
 
 	/** @var array<string> */
@@ -73,7 +74,7 @@ abstract class Periodic
 	private EventLoop\TimerInterface|null $handlerTimer = null;
 
 	public function __construct(
-		protected readonly MetadataDocuments\DevicesModule\Connector $connector,
+		protected readonly Documents\Connectors\Connector $connector,
 		protected readonly Helpers\MessageBuilder $messageBuilder,
 		protected readonly Queue\Queue $queue,
 		protected readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
@@ -94,22 +95,28 @@ abstract class Periodic
 		$this->processedDevices = [];
 		$this->processedProperties = [];
 
-		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDevicesQuery = new Queries\Configuration\FindSubDevices();
 		$findDevicesQuery->forConnector($this->connector);
-		$findDevicesQuery->byType(Entities\Devices\SubDevice::TYPE);
 
-		foreach ($this->devicesConfigurationRepository->findAllBy($findDevicesQuery) as $device) {
+		$devices = $this->devicesConfigurationRepository->findAllBy(
+			$findDevicesQuery,
+			Documents\Devices\SubDevice::class,
+		);
+
+		foreach ($devices as $device) {
 			$this->devices[$device->getId()->toString()] = $device;
 
 			if (!array_key_exists($device->getId()->toString(), $this->properties)) {
 				$this->properties[$device->getId()->toString()] = [];
 			}
 
-			$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
+			$findChannelsQuery = new Queries\Configuration\FindChannels();
 			$findChannelsQuery->forDevice($device);
-			$findChannelsQuery->byType(Entities\Channels\Channel::TYPE);
 
-			$channels = $this->channelsConfigurationRepository->findAllBy($findChannelsQuery);
+			$channels = $this->channelsConfigurationRepository->findAllBy(
+				$findChannelsQuery,
+				Documents\Channels\Channel::class,
+			);
 
 			foreach ($channels as $channel) {
 				$findChannelPropertiesQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
@@ -118,7 +125,7 @@ abstract class Periodic
 
 				$properties = $this->channelsPropertiesConfigurationRepository->findAllBy(
 					$findChannelPropertiesQuery,
-					MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
+					DevicesDocuments\Channels\Properties\Dynamic::class,
 				);
 
 				foreach ($properties as $property) {
@@ -181,7 +188,7 @@ abstract class Periodic
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
-	private function writeProperty(MetadataDocuments\DevicesModule\Device $device): bool
+	private function writeProperty(Documents\Devices\Device $device): bool
 	{
 		$now = $this->dateTimeFactory->getNow();
 
@@ -218,7 +225,7 @@ abstract class Periodic
 
 				// Requesting property state failed
 				continue;
-			} elseif (!$state instanceof MetadataDocuments\DevicesModule\ChannelPropertyState) {
+			} elseif (!$state instanceof DevicesDocuments\States\Properties\Channel) {
 				// Property state is not set
 				continue;
 			}

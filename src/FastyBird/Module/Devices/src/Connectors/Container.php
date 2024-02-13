@@ -16,8 +16,8 @@
 namespace FastyBird\Module\Devices\Connectors;
 
 use Evenement;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Module\Devices;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Exceptions;
 use React\Promise;
@@ -44,7 +44,7 @@ class Container implements Connector, EventDispatcher\EventSubscriberInterface
 	 */
 	public function __construct(
 		private readonly array $factories,
-		private readonly MetadataDocuments\DevicesModule\Connector $connector,
+		private readonly Documents\Connectors\Connector $connector,
 	)
 	{
 	}
@@ -103,7 +103,7 @@ class Container implements Connector, EventDispatcher\EventSubscriberInterface
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	private function getService(MetadataDocuments\DevicesModule\Connector $connector): Connector
+	private function getService(Documents\Connectors\Connector $connector): Connector
 	{
 		if ($this->service === null) {
 			$factory = $this->getServiceFactory($connector);
@@ -131,10 +131,10 @@ class Container implements Connector, EventDispatcher\EventSubscriberInterface
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	private function getServiceFactory(MetadataDocuments\DevicesModule\Connector $connector): ConnectorFactory
+	private function getServiceFactory(Documents\Connectors\Connector $connector): ConnectorFactory
 	{
-		if (array_key_exists($connector->getType(), $this->factories)) {
-			return $this->factories[$connector->getType()];
+		if (array_key_exists($connector::getType(), $this->factories)) {
+			return $this->factories[$connector::getType()];
 		}
 
 		throw new Exceptions\InvalidState('Connector service factory is not registered');

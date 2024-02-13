@@ -9,7 +9,8 @@ use FastyBird\Library\Application\Events as ApplicationEvents;
 use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Module\Devices;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Subscribers;
 use FastyBird\Module\Devices\Tests\Fixtures;
@@ -17,6 +18,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid;
 use stdClass;
+use function is_string;
 
 final class ModuleEntitiesTest extends TestCase
 {
@@ -50,7 +52,7 @@ final class ModuleEntitiesTest extends TestCase
 
 		$asyncChannelPropertiesStates = $this->createMock(Models\States\Async\ChannelPropertiesManager::class);
 
-		$entityFactory = $this->createMock(ExchangeDocuments\DocumentFactory::class);
+		$documentFactory = $this->createMock(ExchangeDocuments\DocumentFactory::class);
 
 		$configurationBuilder = $this->createMock(Models\Configuration\Builder::class);
 
@@ -63,7 +65,7 @@ final class ModuleEntitiesTest extends TestCase
 			$asyncDevicePropertiesStates,
 			$channelPropertiesStates,
 			$asyncChannelPropertiesStates,
-			$entityFactory,
+			$documentFactory,
 			$publisher,
 			$asyncPublisher,
 		);
@@ -96,10 +98,10 @@ final class ModuleEntitiesTest extends TestCase
 					return true;
 				}),
 				self::callback(static function ($key): bool {
-					self::assertTrue($key instanceof Metadata\Types\RoutingKey);
+					self::assertTrue(is_string($key));
 					self::assertSame(
-						Metadata\Constants::MESSAGE_BUS_DEVICE_DOCUMENT_CREATED_ROUTING_KEY,
-						$key->getValue(),
+						Devices\Constants::MESSAGE_BUS_DEVICE_DOCUMENT_CREATED_ROUTING_KEY,
+						$key,
 					);
 
 					return true;
@@ -149,8 +151,8 @@ final class ModuleEntitiesTest extends TestCase
 
 		$asyncChannelPropertiesStates = $this->createMock(Models\States\Async\ChannelPropertiesManager::class);
 
-		$entityItem = $this->createMock(MetadataDocuments\DevicesModule\Device::class);
-		$entityItem
+		$document = $this->createMock(Documents\Devices\Device::class);
+		$document
 			->method('toArray')
 			->willReturn([
 				'identifier' => 'device-name',
@@ -163,10 +165,10 @@ final class ModuleEntitiesTest extends TestCase
 				'children' => [],
 			]);
 
-		$entityFactory = $this->createMock(ExchangeDocuments\DocumentFactory::class);
-		$entityFactory
+		$documentFactory = $this->createMock(ExchangeDocuments\DocumentFactory::class);
+		$documentFactory
 			->method('create')
-			->willReturn($entityItem);
+			->willReturn($document);
 
 		$configurationBuilder = $this->createMock(Models\Configuration\Builder::class);
 
@@ -179,7 +181,7 @@ final class ModuleEntitiesTest extends TestCase
 			$asyncDevicePropertiesStates,
 			$channelPropertiesStates,
 			$asyncChannelPropertiesStates,
-			$entityFactory,
+			$documentFactory,
 			$publisher,
 			$asyncPublisher,
 		);
@@ -218,10 +220,10 @@ final class ModuleEntitiesTest extends TestCase
 					return true;
 				}),
 				self::callback(static function ($key): bool {
-					self::assertTrue($key instanceof Metadata\Types\RoutingKey);
+					self::assertTrue(is_string($key));
 					self::assertSame(
-						Metadata\Constants::MESSAGE_BUS_DEVICE_DOCUMENT_UPDATED_ROUTING_KEY,
-						$key->getValue(),
+						Devices\Constants::MESSAGE_BUS_DEVICE_DOCUMENT_UPDATED_ROUTING_KEY,
+						$key,
 					);
 
 					return true;
@@ -271,8 +273,8 @@ final class ModuleEntitiesTest extends TestCase
 
 		$asyncChannelPropertiesStates = $this->createMock(Models\States\Async\ChannelPropertiesManager::class);
 
-		$entityItem = $this->createMock(MetadataDocuments\DevicesModule\Device::class);
-		$entityItem
+		$document = $this->createMock(Documents\Devices\Device::class);
+		$document
 			->method('toArray')
 			->willReturn([
 				'identifier' => 'device-name',
@@ -285,10 +287,10 @@ final class ModuleEntitiesTest extends TestCase
 				'children' => [],
 			]);
 
-		$entityFactory = $this->createMock(ExchangeDocuments\DocumentFactory::class);
-		$entityFactory
+		$documentFactory = $this->createMock(ExchangeDocuments\DocumentFactory::class);
+		$documentFactory
 			->method('create')
-			->willReturn($entityItem);
+			->willReturn($document);
 
 		$configurationBuilder = $this->createMock(Models\Configuration\Builder::class);
 
@@ -301,7 +303,7 @@ final class ModuleEntitiesTest extends TestCase
 			$asyncDevicePropertiesStates,
 			$channelPropertiesStates,
 			$asyncChannelPropertiesStates,
-			$entityFactory,
+			$documentFactory,
 			$publisher,
 			$asyncPublisher,
 		);
@@ -340,10 +342,10 @@ final class ModuleEntitiesTest extends TestCase
 					return true;
 				}),
 				self::callback(static function ($key): bool {
-					self::assertTrue($key instanceof Metadata\Types\RoutingKey);
+					self::assertTrue(is_string($key));
 					self::assertSame(
-						Metadata\Constants::MESSAGE_BUS_DEVICE_DOCUMENT_DELETED_ROUTING_KEY,
-						$key->getValue(),
+						Devices\Constants::MESSAGE_BUS_DEVICE_DOCUMENT_DELETED_ROUTING_KEY,
+						$key,
 					);
 
 					return true;
@@ -401,8 +403,8 @@ final class ModuleEntitiesTest extends TestCase
 
 		$asyncChannelPropertiesStates = $this->createMock(Models\States\Async\ChannelPropertiesManager::class);
 
-		$entityItem = $this->createMock(MetadataDocuments\DevicesModule\Device::class);
-		$entityItem
+		$document = $this->createMock(Documents\Devices\Device::class);
+		$document
 			->method('toArray')
 			->willReturn([
 				'identifier' => 'device-name',
@@ -415,10 +417,10 @@ final class ModuleEntitiesTest extends TestCase
 				'children' => [],
 			]);
 
-		$entityFactory = $this->createMock(ExchangeDocuments\DocumentFactory::class);
-		$entityFactory
+		$documentFactory = $this->createMock(ExchangeDocuments\DocumentFactory::class);
+		$documentFactory
 			->method('create')
-			->willReturn($entityItem);
+			->willReturn($document);
 
 		$configurationBuilder = $this->createMock(Models\Configuration\Builder::class);
 
@@ -431,7 +433,7 @@ final class ModuleEntitiesTest extends TestCase
 			$asyncDevicePropertiesStates,
 			$channelPropertiesStates,
 			$asyncChannelPropertiesStates,
-			$entityFactory,
+			$documentFactory,
 			$publisher,
 			$asyncPublisher,
 		);

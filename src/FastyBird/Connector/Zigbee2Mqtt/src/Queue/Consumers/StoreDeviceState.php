@@ -16,12 +16,13 @@
 namespace FastyBird\Connector\Zigbee2Mqtt\Queue\Consumers;
 
 use FastyBird\Connector\Zigbee2Mqtt;
-use FastyBird\Connector\Zigbee2Mqtt\Entities;
+use FastyBird\Connector\Zigbee2Mqtt\Documents;
+use FastyBird\Connector\Zigbee2Mqtt\Queries;
 use FastyBird\Connector\Zigbee2Mqtt\Queue;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -78,19 +79,21 @@ final class StoreDeviceState implements Queue\Consumer
 
 		$baseTopicProperty = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findDevicePropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+			DevicesDocuments\Devices\Properties\Variable::class,
 		);
 
 		if ($baseTopicProperty === null) {
 			return true;
 		}
 
-		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDeviceQuery = new Queries\Configuration\FindBridgeDevices();
 		$findDeviceQuery->byConnectorId($message->getConnector());
 		$findDeviceQuery->byId($baseTopicProperty->getDevice());
-		$findDeviceQuery->byType(Entities\Devices\Bridge::TYPE);
 
-		$bridge = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+		$bridge = $this->devicesConfigurationRepository->findOneBy(
+			$findDeviceQuery,
+			Documents\Devices\Bridge::class,
+		);
 
 		if ($bridge === null) {
 			return true;
@@ -108,20 +111,22 @@ final class StoreDeviceState implements Queue\Consumer
 
 		$deviceTypeProperty = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findDevicePropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+			DevicesDocuments\Devices\Properties\Variable::class,
 		);
 
 		if ($deviceTypeProperty === null) {
 			return true;
 		}
 
-		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDeviceQuery = new Queries\Configuration\FindSubDevices();
 		$findDeviceQuery->byConnectorId($message->getConnector());
 		$findDeviceQuery->byId($deviceTypeProperty->getDevice());
 		$findDeviceQuery->forParent($bridge);
-		$findDeviceQuery->byType(Entities\Devices\SubDevice::TYPE);
 
-		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+		$device = $this->devicesConfigurationRepository->findOneBy(
+			$findDeviceQuery,
+			Documents\Devices\SubDevice::class,
+		);
 
 		if ($device === null) {
 			return true;
@@ -162,15 +167,15 @@ final class StoreDeviceState implements Queue\Consumer
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	private function processStates(
-		MetadataDocuments\DevicesModule\Device $bridge,
-		MetadataDocuments\DevicesModule\Device $device,
+		Documents\Devices\Bridge $bridge,
+		Documents\Devices\SubDevice $device,
 		array $states,
 		array $identifiers = [],
 	): void
 	{
 		foreach ($states as $state) {
 			if ($state instanceof Queue\Messages\SingleExposeData) {
-				$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
+				$findChannelQuery = new Queries\Configuration\FindChannels();
 				$findChannelQuery->forDevice($device);
 				$findChannelQuery->endWithIdentifier(
 					sprintf(
@@ -178,9 +183,11 @@ final class StoreDeviceState implements Queue\Consumer
 						implode('_', array_merge($identifiers, [$state->getIdentifier()])),
 					),
 				);
-				$findChannelQuery->byType(Entities\Channels\Channel::TYPE);
 
-				$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
+				$channel = $this->channelsConfigurationRepository->findOneBy(
+					$findChannelQuery,
+					Documents\Channels\Channel::class,
+				);
 
 				if ($channel === null) {
 					$this->logger->debug(
@@ -210,7 +217,7 @@ final class StoreDeviceState implements Queue\Consumer
 
 				$property = $this->channelsPropertiesConfigurationRepository->findOneBy(
 					$findChannelPropertyQuery,
-					MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
+					DevicesDocuments\Channels\Properties\Dynamic::class,
 				);
 
 				if ($property === null) {

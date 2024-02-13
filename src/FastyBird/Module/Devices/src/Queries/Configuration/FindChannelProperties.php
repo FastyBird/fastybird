@@ -15,7 +15,7 @@
 
 namespace FastyBird\Module\Devices\Queries\Configuration;
 
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
 use Flow\JSONPath;
 use Nette\Utils;
@@ -25,7 +25,7 @@ use function serialize;
 /**
  * Find channels properties configuration query
  *
- * @template T of MetadataDocuments\DevicesModule\ChannelProperty
+ * @template T of Documents\Channels\Properties\Property
  * @extends  QueryObject<T>
  *
  * @package        FastyBird:DevicesModule!
@@ -63,7 +63,7 @@ class FindChannelProperties extends QueryObject
 		$this->filter[] = '.[?(@.identifier =~ /^[\w\d\-_]+(?i).*' . $identifier . '*$/)]';
 	}
 
-	public function forChannel(MetadataDocuments\DevicesModule\Channel $channel): void
+	public function forChannel(Documents\Channels\Channel $channel): void
 	{
 		$this->filter[] = '.[?(@.channel =~ /(?i).*^' . $channel->getId()->toString() . '*$/)]';
 	}
@@ -74,7 +74,7 @@ class FindChannelProperties extends QueryObject
 	}
 
 	public function forParent(
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelVariableProperty $parent,
+		Documents\Channels\Properties\Dynamic|Documents\Channels\Properties\Variable $parent,
 	): void
 	{
 		$this->filter[] = '.[?(@.parent =~ /(?i).*^' . $parent->getId()->toString() . '*$/)]';

@@ -15,8 +15,8 @@
 
 namespace FastyBird\Module\Devices\Connectors;
 
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Module\Devices\Connectors as DevicesConnectors;
+use FastyBird\Module\Devices\Documents;
 
 /**
  * Connector service executor factory
@@ -29,8 +29,6 @@ use FastyBird\Module\Devices\Connectors as DevicesConnectors;
 interface ContainerFactory extends DevicesConnectors\ConnectorFactory
 {
 
-	public function create(
-		MetadataDocuments\DevicesModule\Connector $connector,
-	): Container;
+	public function create(Documents\Connectors\Connector $connector): Container;
 
 }

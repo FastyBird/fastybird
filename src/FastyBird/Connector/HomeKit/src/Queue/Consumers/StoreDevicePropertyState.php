@@ -17,13 +17,15 @@ namespace FastyBird\Connector\HomeKit\Queue\Consumers;
 
 use Doctrine\DBAL;
 use FastyBird\Connector\HomeKit;
+use FastyBird\Connector\HomeKit\Documents;
+use FastyBird\Connector\HomeKit\Queries;
 use FastyBird\Connector\HomeKit\Queue;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -76,11 +78,14 @@ final class StoreDevicePropertyState implements Queue\Consumer
 			return false;
 		}
 
-		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDeviceQuery = new Queries\Configuration\FindDevices();
 		$findDeviceQuery->byConnectorId($message->getConnector());
 		$findDeviceQuery->byId($message->getDevice());
 
-		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+		$device = $this->devicesConfigurationRepository->findOneBy(
+			$findDeviceQuery,
+			Documents\Devices\Device::class,
+		);
 
 		if ($device === null) {
 			$this->logger->error(
@@ -132,7 +137,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 			return true;
 		}
 
-		if ($property instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty) {
+		if ($property instanceof DevicesDocuments\Devices\Properties\Variable) {
 			$this->databaseHelper->transaction(
 				function () use ($message, $property): void {
 					$property = $this->devicesPropertiesRepository->find(
@@ -150,7 +155,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 				},
 			);
 
-		} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
+		} elseif ($property instanceof DevicesDocuments\Devices\Properties\Dynamic) {
 			await($this->devicePropertiesStatesManager->set(
 				$property,
 				Utils\ArrayHash::from([
@@ -158,13 +163,13 @@ final class StoreDevicePropertyState implements Queue\Consumer
 				]),
 				MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::HOMEKIT),
 			));
-		} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
+		} elseif ($property instanceof DevicesDocuments\Devices\Properties\Mapped) {
 			$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceProperties();
 			$findDevicePropertyQuery->byId($property->getParent());
 
 			$parent = $this->devicesPropertiesConfigurationRepository->findOneBy($findDevicePropertyQuery);
 
-			if ($parent instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
+			if ($parent instanceof DevicesDocuments\Devices\Properties\Dynamic) {
 				await($this->devicePropertiesStatesManager->write(
 					$property,
 					Utils\ArrayHash::from([
@@ -172,7 +177,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 					]),
 					MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::HOMEKIT),
 				));
-			} elseif ($parent instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty) {
+			} elseif ($parent instanceof DevicesDocuments\Devices\Properties\Variable) {
 				$this->databaseHelper->transaction(function () use ($message, $parent, $device, $property): void {
 					$toUpdate = $this->devicesPropertiesRepository->find(
 						$parent->getId(),

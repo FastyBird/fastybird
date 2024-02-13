@@ -15,9 +15,9 @@
 
 namespace FastyBird\Connector\Modbus\API;
 
+use FastyBird\Connector\Modbus\Documents;
 use FastyBird\Connector\Modbus\Exceptions;
 use FastyBird\Connector\Modbus\Helpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Nette;
@@ -52,7 +52,7 @@ final class ConnectionManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function getRtuClient(MetadataDocuments\DevicesModule\Connector $connector): Rtu
+	public function getRtuClient(Documents\Connectors\Connector $connector): Rtu
 	{
 		if ($this->rtuClient === null) {
 			$this->rtuClient = $this->rtuFactory->create(

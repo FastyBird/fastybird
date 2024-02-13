@@ -14,4 +14,10 @@ php:
     date.timezone: Europe/Prague
 
 extensions:
-    ipubPhone           : IPub\Phone\DI\PhoneExtension
+    ipubPhone   : IPub\Phone\DI\PhoneExtension
+
+fbMetadataLibrary:
+    documents:
+        mapping: [
+            FastyBird\Library\Metadata\Tests\Fixtures\Dummy: %appDir%/fixtures/dummy
+        ]

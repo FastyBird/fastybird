@@ -82,7 +82,8 @@
   "autoload-dev": {
     "psr-4": {
       "FastyBird\\Plugin\\RedisDb\\Tests\\Cases\\Unit\\": "tests/cases/unit",
-      "FastyBird\\Plugin\\RedisDb\\Tests\\Fixtures\\": "tests/fixtures"
+      "FastyBird\\Plugin\\RedisDb\\Tests\\Fixtures\\": "tests/fixtures",
+      "FastyBird\\Plugin\\RedisDb\\Tests\\Fixtures\\Dummy\\": "tests/fixtures/dummy"
     }
   },
   "config": {

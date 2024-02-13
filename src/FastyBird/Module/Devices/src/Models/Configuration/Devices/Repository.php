@@ -18,6 +18,7 @@ namespace FastyBird\Module\Devices\Models\Configuration\Devices;
 use Contributte\Cache;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Module\Devices;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
@@ -49,7 +50,7 @@ final class Repository extends Models\Configuration\Repository
 	}
 
 	/**
-	 * @template T of MetadataDocuments\DevicesModule\Device
+	 * @template T of Documents\Devices\Device
 	 *
 	 * @param class-string<T> $type
 	 *
@@ -59,8 +60,8 @@ final class Repository extends Models\Configuration\Repository
 	 */
 	public function find(
 		Uuid\UuidInterface $id,
-		string $type = MetadataDocuments\DevicesModule\Device::class,
-	): MetadataDocuments\DevicesModule\Device|null
+		string $type = Documents\Devices\Device::class,
+	): Documents\Devices\Device|null
 	{
 		$queryObject = new Queries\Configuration\FindDevices();
 		$queryObject->byId($id);
@@ -75,7 +76,7 @@ final class Repository extends Models\Configuration\Repository
 	}
 
 	/**
-	 * @template T of MetadataDocuments\DevicesModule\Device
+	 * @template T of Documents\Devices\Device
 	 *
 	 * @param Queries\Configuration\FindDevices<T> $queryObject
 	 * @param class-string<T> $type
@@ -86,13 +87,13 @@ final class Repository extends Models\Configuration\Repository
 	 */
 	public function findOneBy(
 		Queries\Configuration\FindDevices $queryObject,
-		string $type = MetadataDocuments\DevicesModule\Device::class,
-	): MetadataDocuments\DevicesModule\Device|null
+		string $type = Documents\Devices\Device::class,
+	): Documents\Devices\Device|null
 	{
 		try {
 			$document = $this->cache->load(
 				$this->createKeyOne($queryObject) . '_' . md5($type),
-				function () use ($queryObject, $type): MetadataDocuments\DevicesModule\Device|false {
+				function () use ($queryObject, $type): Documents\Devices\Device|false {
 					$space = $this->builder
 						->load()
 						->find('.' . Devices\Constants::DATA_STORAGE_DEVICES_KEY . '.*');
@@ -122,7 +123,7 @@ final class Repository extends Models\Configuration\Repository
 	}
 
 	/**
-	 * @template T of MetadataDocuments\DevicesModule\Device
+	 * @template T of Documents\Devices\Device
 	 *
 	 * @param Queries\Configuration\FindDevices<T> $queryObject
 	 * @param class-string<T> $type
@@ -133,7 +134,7 @@ final class Repository extends Models\Configuration\Repository
 	 */
 	public function findAllBy(
 		Queries\Configuration\FindDevices $queryObject,
-		string $type = MetadataDocuments\DevicesModule\Device::class,
+		string $type = Documents\Devices\Device::class,
 	): array
 	{
 		try {
@@ -151,7 +152,7 @@ final class Repository extends Models\Configuration\Repository
 					}
 
 					return array_map(
-						fn (stdClass $item): MetadataDocuments\DevicesModule\Device => $this->documentFactory->create(
+						fn (stdClass $item): Documents\Devices\Device => $this->documentFactory->create(
 							$type,
 							$item,
 						),

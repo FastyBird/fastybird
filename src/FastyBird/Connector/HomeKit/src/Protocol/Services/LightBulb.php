@@ -93,7 +93,7 @@ final class LightBulb extends Generic
 			$hue !== null
 			&& (
 				$hue->getProperty() === null
-				|| $hue->getProperty()->getType() === $updatePropertyType->getValue()
+				|| $hue->getProperty()::getType() === $updatePropertyType->getValue()
 			)
 		) {
 			$hue->setValue($hsb->getHue());
@@ -105,7 +105,7 @@ final class LightBulb extends Generic
 			$saturation !== null
 			&& (
 				$saturation->getProperty() === null
-				|| $saturation->getProperty()->getType() === $updatePropertyType->getValue()
+				|| $saturation->getProperty()::getType() === $updatePropertyType->getValue()
 			)
 		) {
 			$saturation->setValue($hsb->getSaturation());
@@ -117,7 +117,7 @@ final class LightBulb extends Generic
 			$brightness !== null
 			&& (
 				$brightness->getProperty() === null
-				|| $brightness->getProperty()->getType() === $updatePropertyType->getValue()
+				|| $brightness->getProperty()::getType() === $updatePropertyType->getValue()
 			)
 		) {
 			$brightness->setValue($hsb->getBrightness());
@@ -148,7 +148,7 @@ final class LightBulb extends Generic
 			// If brightness is controlled with separate property, we will use 100% brightness for calculation
 			if (
 				$brightnessCharacteristic->getProperty() !== null
-				&& $brightnessCharacteristic->getProperty()->getType() === MetadataTypes\PropertyType::MAPPED
+				&& $brightnessCharacteristic->getProperty()::getType() === MetadataTypes\PropertyType::MAPPED
 			) {
 				$brightness = 100;
 			}
@@ -175,7 +175,7 @@ final class LightBulb extends Generic
 			$red !== null
 			&& (
 				$red->getProperty() === null
-				|| $red->getProperty()->getType() === $updatePropertyType->getValue()
+				|| $red->getProperty()::getType() === $updatePropertyType->getValue()
 			)
 		) {
 			$red->setValue($rgb->getRed());
@@ -187,7 +187,7 @@ final class LightBulb extends Generic
 			$green !== null
 			&& (
 				$green->getProperty() === null
-				|| $green->getProperty()->getType() === $updatePropertyType->getValue()
+				|| $green->getProperty()::getType() === $updatePropertyType->getValue()
 			)
 		) {
 			$green->setValue($rgb->getGreen());
@@ -199,7 +199,7 @@ final class LightBulb extends Generic
 			$blue !== null
 			&& (
 				$blue->getProperty() === null
-				|| $blue->getProperty()->getType() === $updatePropertyType->getValue()
+				|| $blue->getProperty()::getType() === $updatePropertyType->getValue()
 			)
 		) {
 			$blue->setValue($rgb->getBlue());
@@ -211,7 +211,7 @@ final class LightBulb extends Generic
 			$white !== null
 			&& (
 				$white->getProperty() === null
-				|| $white->getProperty()->getType() === $updatePropertyType->getValue()
+				|| $white->getProperty()::getType() === $updatePropertyType->getValue()
 			)
 			&& $rgb->getWhite() !== null
 		) {

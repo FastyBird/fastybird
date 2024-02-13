@@ -18,10 +18,10 @@ namespace FastyBird\Module\Devices\Schemas\Devices\Properties\States;
 use DateTimeInterface;
 use FastyBird\JsonApi\Schemas as JsonApiSchemas;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Entities\Devices\Properties\Dynamic as T;
 use FastyBird\Module\Devices\Models;
@@ -65,7 +65,7 @@ final class State extends JsonApiSchemas\JsonApi
 
 	public function getEntityClass(): string
 	{
-		return MetadataDocuments\DevicesModule\DevicePropertyState::class;
+		return Documents\States\Properties\Device::class;
 	}
 
 	public function getType(): string

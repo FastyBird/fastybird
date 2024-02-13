@@ -18,6 +18,8 @@ namespace FastyBird\Module\Triggers\DI;
 use Contributte\Translation;
 use Doctrine\Persistence;
 use FastyBird\Library\Application\Boot as ApplicationBoot;
+use FastyBird\Library\Metadata;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Module\Triggers\Commands;
 use FastyBird\Module\Triggers\Controllers;
 use FastyBird\Module\Triggers\Entities;
@@ -33,7 +35,10 @@ use Nette;
 use Nette\DI;
 use Nette\PhpGenerator;
 use Nette\Schema;
+use Nettrine\ORM as NettrineORM;
 use stdClass;
+use function array_keys;
+use function array_pop;
 use function assert;
 use function ucfirst;
 use const DIRECTORY_SEPARATOR;
@@ -154,19 +159,19 @@ class TriggersExtension extends DI\CompilerExtension implements Translation\DI\T
 			->addTag('nette.inject');
 
 		$builder->addDefinition($this->prefix('schemas.triggers.automatic'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\Triggers\AutomaticTrigger::class);
+			->setType(Schemas\Triggers\Automatic::class);
 
 		$builder->addDefinition($this->prefix('schemas.triggers.manual'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\Triggers\ManualTrigger::class);
+			->setType(Schemas\Triggers\Manual::class);
 
 		$builder->addDefinition($this->prefix('schemas.trigger.control'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\Triggers\Controls\Control::class);
 
 		$builder->addDefinition($this->prefix('schemas.notifications.email'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\Notifications\EmailNotification::class);
+			->setType(Schemas\Notifications\Email::class);
 
 		$builder->addDefinition($this->prefix('schemas.notifications.sms'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\Notifications\SmsNotification::class);
+			->setType(Schemas\Notifications\Sms::class);
 
 		$builder->addDefinition($this->prefix('hydrators.triggers.automatic'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\Triggers\AutomaticTrigger::class);
@@ -175,10 +180,10 @@ class TriggersExtension extends DI\CompilerExtension implements Translation\DI\T
 			->setType(Hydrators\Triggers\ManualTrigger::class);
 
 		$builder->addDefinition($this->prefix('hydrators.notifications.email'), new DI\Definitions\ServiceDefinition())
-			->setType(Hydrators\Notifications\EmailNotification::class);
+			->setType(Hydrators\Notifications\Email::class);
 
 		$builder->addDefinition($this->prefix('hydrators.notifications.sms'), new DI\Definitions\ServiceDefinition())
-			->setType(Hydrators\Notifications\SmsNotification::class);
+			->setType(Hydrators\Notifications\Sms::class);
 
 		$builder->addDefinition($this->prefix('states.repositories.actions'), new DI\Definitions\ServiceDefinition())
 			->setType(Models\States\ActionsRepository::class);
@@ -206,27 +211,65 @@ class TriggersExtension extends DI\CompilerExtension implements Translation\DI\T
 		$builder = $this->getContainerBuilder();
 
 		/**
-		 * Doctrine entities
+		 * DOCTRINE ENTITIES
 		 */
 
-		$ormAttributeDriverService = $builder->getDefinition('nettrineOrmAttributes.attributeDriver');
+		$services = $builder->findByTag(NettrineORM\DI\OrmAttributesExtension::DRIVER_TAG);
 
-		if ($ormAttributeDriverService instanceof DI\Definitions\ServiceDefinition) {
-			$ormAttributeDriverService->addSetup(
-				'addPaths',
-				[[__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'Entities']],
-			);
+		if ($services !== []) {
+			$services = array_keys($services);
+			$ormAttributeDriverServiceName = array_pop($services);
+
+			$ormAttributeDriverService = $builder->getDefinition($ormAttributeDriverServiceName);
+
+			if ($ormAttributeDriverService instanceof DI\Definitions\ServiceDefinition) {
+				$ormAttributeDriverService->addSetup(
+					'addPaths',
+					[[__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'Entities']],
+				);
+
+				$ormAttributeDriverChainService = $builder->getDefinitionByType(
+					Persistence\Mapping\Driver\MappingDriverChain::class,
+				);
+
+				if ($ormAttributeDriverChainService instanceof DI\Definitions\ServiceDefinition) {
+					$ormAttributeDriverChainService->addSetup('addDriver', [
+						$ormAttributeDriverService,
+						'FastyBird\Module\Triggers\Entities',
+					]);
+				}
+			}
 		}
 
-		$ormAttributeDriverChainService = $builder->getDefinitionByType(
-			Persistence\Mapping\Driver\MappingDriverChain::class,
-		);
+		/**
+		 * APPLICATION DOCUMENTS
+		 */
 
-		if ($ormAttributeDriverChainService instanceof DI\Definitions\ServiceDefinition) {
-			$ormAttributeDriverChainService->addSetup('addDriver', [
-				$ormAttributeDriverService,
-				'FastyBird\Module\Triggers\Entities',
-			]);
+		$services = $builder->findByTag(Metadata\DI\MetadataExtension::DRIVER_TAG);
+
+		if ($services !== []) {
+			$services = array_keys($services);
+			$documentAttributeDriverServiceName = array_pop($services);
+
+			$documentAttributeDriverService = $builder->getDefinition($documentAttributeDriverServiceName);
+
+			if ($documentAttributeDriverService instanceof DI\Definitions\ServiceDefinition) {
+				$documentAttributeDriverService->addSetup(
+					'addPaths',
+					[[__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'Documents']],
+				);
+
+				$documentAttributeDriverChainService = $builder->getDefinitionByType(
+					MetadataDocuments\Mapping\Driver\MappingDriverChain::class,
+				);
+
+				if ($documentAttributeDriverChainService instanceof DI\Definitions\ServiceDefinition) {
+					$documentAttributeDriverChainService->addSetup('addDriver', [
+						$documentAttributeDriverService,
+						'FastyBird\Module\Triggers\Documents',
+					]);
+				}
+			}
 		}
 
 		/**

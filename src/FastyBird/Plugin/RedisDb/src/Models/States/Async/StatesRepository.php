@@ -21,6 +21,7 @@ use FastyBird\Plugin\RedisDb\Clients;
 use FastyBird\Plugin\RedisDb\Exceptions;
 use FastyBird\Plugin\RedisDb\States;
 use FastyBird\Plugin\RedisDb\States\State as T;
+use InvalidArgumentException;
 use Nette;
 use Psr\Log;
 use Ramsey\Uuid;
@@ -57,6 +58,8 @@ class StatesRepository
 
 	/**
 	 * @return Promise\PromiseInterface<T|null>
+	 *
+	 * @throws InvalidArgumentException
 	 */
 	public function find(Uuid\UuidInterface $id, int $database = 0): Promise\PromiseInterface
 	{
@@ -108,6 +111,8 @@ class StatesRepository
 
 	/**
 	 * @return Promise\PromiseInterface<string|null>
+	 *
+	 * @throws InvalidArgumentException
 	 */
 	private function getRaw(Uuid\UuidInterface $id, int $database): Promise\PromiseInterface
 	{

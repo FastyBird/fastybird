@@ -53,7 +53,7 @@ class TimeCondition extends TriggersEntities\Conditions\Condition
 	public function __construct(
 		DateTimeInterface $time,
 		Utils\ArrayHash $days,
-		TriggersEntities\Triggers\AutomaticTrigger $trigger,
+		TriggersEntities\Triggers\Automatic $trigger,
 		Uuid\UuidInterface|null $id = null,
 	)
 	{

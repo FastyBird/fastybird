@@ -18,6 +18,7 @@ namespace FastyBird\Connector\HomeKit\Controllers;
 use Brick\Math;
 use Doctrine\DBAL;
 use Elliptic\EdDSA;
+use FastyBird\Connector\HomeKit\Documents;
 use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Helpers;
@@ -28,7 +29,6 @@ use FastyBird\Connector\HomeKit\Servers;
 use FastyBird\Connector\HomeKit\Types;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
@@ -219,11 +219,13 @@ final class PairingController extends BaseController
 
 		$connectorId = Uuid\Uuid::fromString($connectorId);
 
-		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
+		$findConnectorQuery = new Queries\Configuration\FindConnectors();
 		$findConnectorQuery->byId($connectorId);
-		$findConnectorQuery->byType(Entities\Connectors\Connector::TYPE);
 
-		$connector = $this->connectorsConfigurationRepository->findOneBy($findConnectorQuery);
+		$connector = $this->connectorsConfigurationRepository->findOneBy(
+			$findConnectorQuery,
+			Documents\Connectors\Connector::class,
+		);
 
 		if ($connector === null) {
 			throw new Exceptions\InvalidState('Connector could not be loaded');
@@ -338,11 +340,13 @@ final class PairingController extends BaseController
 
 		$connectorId = Uuid\Uuid::fromString($connectorId);
 
-		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
+		$findConnectorQuery = new Queries\Configuration\FindConnectors();
 		$findConnectorQuery->byId($connectorId);
-		$findConnectorQuery->byType(Entities\Connectors\Connector::TYPE);
 
-		$connector = $this->connectorsConfigurationRepository->findOneBy($findConnectorQuery);
+		$connector = $this->connectorsConfigurationRepository->findOneBy(
+			$findConnectorQuery,
+			Documents\Connectors\Connector::class,
+		);
 
 		if ($connector === null) {
 			throw new Exceptions\InvalidState('Connector could not be loaded');
@@ -425,11 +429,13 @@ final class PairingController extends BaseController
 
 		$connectorId = Uuid\Uuid::fromString($connectorId);
 
-		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
+		$findConnectorQuery = new Queries\Configuration\FindConnectors();
 		$findConnectorQuery->byId($connectorId);
-		$findConnectorQuery->byType(Entities\Connectors\Connector::TYPE);
 
-		$connector = $this->connectorsConfigurationRepository->findOneBy($findConnectorQuery);
+		$connector = $this->connectorsConfigurationRepository->findOneBy(
+			$findConnectorQuery,
+			Documents\Connectors\Connector::class,
+		);
 
 		if ($connector === null) {
 			throw new Exceptions\InvalidState('Connector could not be loaded');
@@ -514,7 +520,7 @@ final class PairingController extends BaseController
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function srpStart(MetadataDocuments\DevicesModule\Connector $connector): array
+	private function srpStart(Documents\Connectors\Connector $connector): array
 	{
 		if ($this->connectorHelper->isPaired($connector)) {
 			$this->logger->error(
@@ -702,7 +708,7 @@ final class PairingController extends BaseController
 	 * @throws Math\Exception\NumberFormatException
 	 */
 	private function srpFinish(
-		MetadataDocuments\DevicesModule\Connector $connector,
+		Documents\Connectors\Connector $connector,
 		array $clientPublicKey,
 		array $clientProof,
 	): array
@@ -846,10 +852,7 @@ final class PairingController extends BaseController
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	public function exchange(
-		MetadataDocuments\DevicesModule\Connector $connector,
-		array $encryptedData,
-	): array
+	public function exchange(Documents\Connectors\Connector $connector, array $encryptedData): array
 	{
 		if ($this->srp === null || !$this->expectedState->equalsValue(Types\TlvState::M5)) {
 			$this->logger->error(
@@ -1233,7 +1236,7 @@ final class PairingController extends BaseController
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	private function verifyStart(
-		MetadataDocuments\DevicesModule\Connector $connector,
+		Documents\Connectors\Connector $connector,
 		array $clientPublicKey,
 	): array
 	{
@@ -1428,7 +1431,7 @@ final class PairingController extends BaseController
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	private function verifyFinish(
-		MetadataDocuments\DevicesModule\Connector $connector,
+		Documents\Connectors\Connector $connector,
 		array $encryptedData,
 	): array
 	{
@@ -1675,7 +1678,7 @@ final class PairingController extends BaseController
 	/**
 	 * @return array<int, array<int, (int|array<int>|string)>>
 	 */
-	private function listPairings(MetadataDocuments\DevicesModule\Connector $connector): array
+	private function listPairings(Documents\Connectors\Connector $connector): array
 	{
 		$this->logger->debug(
 			'Requested list pairings',
@@ -1727,7 +1730,7 @@ final class PairingController extends BaseController
 	 * @return array<int, array<int, int>>
 	 */
 	private function addPairing(
-		MetadataDocuments\DevicesModule\Connector $connector,
+		Documents\Connectors\Connector $connector,
 		string $clientUid,
 		array $clientPublicKey,
 		int $clientPermission,
@@ -1839,7 +1842,7 @@ final class PairingController extends BaseController
 	 * @return array<int, array<int, int>>
 	 */
 	private function removePairing(
-		MetadataDocuments\DevicesModule\Connector $connector,
+		Documents\Connectors\Connector $connector,
 		string $clientUid,
 	): array
 	{
@@ -1923,7 +1926,7 @@ final class PairingController extends BaseController
 	 * @throws Exceptions\InvalidState
 	 */
 	private function setConfiguration(
-		MetadataDocuments\DevicesModule\Connector $connector,
+		Documents\Connectors\Connector $connector,
 		Types\ConnectorPropertyIdentifier $type,
 		string|int|float|bool|null $value = null,
 	): void

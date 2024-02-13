@@ -18,6 +18,7 @@ namespace FastyBird\Module\Accounts\Subscribers;
 use Doctrine\Common;
 use Doctrine\ORM;
 use Doctrine\Persistence;
+use FastyBird\Library\Application\Events as ApplicationEvents;
 use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
@@ -28,14 +29,9 @@ use FastyBird\Module\Accounts\Entities;
 use Nette;
 use Nette\Utils;
 use ReflectionClass;
-use function array_merge;
 use function count;
-use function implode;
-use function in_array;
-use function is_subclass_of;
+use function is_a;
 use function str_starts_with;
-use function strrpos;
-use function substr;
 
 /**
  * Doctrine entities events
@@ -56,10 +52,13 @@ final class ModuleEntities implements Common\EventSubscriber
 
 	private const ACTION_DELETED = 'deleted';
 
+	private bool $useAsync = false;
+
 	public function __construct(
-		private readonly ExchangeDocuments\DocumentFactory $documentFactory,
 		private readonly ORM\EntityManagerInterface $entityManager,
+		private readonly ExchangeDocuments\DocumentFactory $documentFactory,
 		private readonly ExchangePublisher\Publisher $publisher,
+		private readonly ExchangePublisher\Async\Publisher $asyncPublisher,
 	)
 	{
 	}
@@ -70,18 +69,23 @@ final class ModuleEntities implements Common\EventSubscriber
 	public function getSubscribedEvents(): array
 	{
 		return [
-			ORM\Events::onFlush,
-			ORM\Events::postPersist,
-			ORM\Events::postUpdate,
+			0 => ORM\Events::postPersist,
+			1 => ORM\Events::postUpdate,
+			2 => ORM\Events::postRemove,
+
+			ApplicationEvents\EventLoopStarted::class => 'enableAsync',
+			ApplicationEvents\EventLoopStopped::class => 'disableAsync',
+			ApplicationEvents\EventLoopStopping::class => 'disableAsync',
 		];
 	}
 
 	/**
 	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
 	 *
-	 * @throws ExchangeExceptions\InvalidArgument
 	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function postPersist(Persistence\Event\LifecycleEventArgs $eventArgs): void
@@ -100,9 +104,10 @@ final class ModuleEntities implements Common\EventSubscriber
 	/**
 	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
 	 *
-	 * @throws ExchangeExceptions\InvalidArgument
 	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function postUpdate(Persistence\Event\LifecycleEventArgs $eventArgs): void
@@ -113,10 +118,10 @@ final class ModuleEntities implements Common\EventSubscriber
 		$entity = $eventArgs->getObject();
 
 		// Get changes => should be already computed here (is a listener)
-		$changeset = $uow->getEntityChangeSet($entity);
+		$changeSet = $uow->getEntityChangeSet($entity);
 
 		// If we have no changes left => don't create revision log
-		if (count($changeset) === 0) {
+		if (count($changeSet) === 0) {
 			return;
 		}
 
@@ -133,45 +138,42 @@ final class ModuleEntities implements Common\EventSubscriber
 	}
 
 	/**
-	 * @throws ExchangeExceptions\InvalidArgument
+	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
+	 *
 	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 */
-	public function onFlush(): void
+	public function postRemove(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
-		$uow = $this->entityManager->getUnitOfWork();
+		// onFlush was executed before, everything already initialized
+		$entity = $eventArgs->getObject();
 
-		$processedEntities = [];
-
-		$processEntities = [];
-
-		foreach ($uow->getScheduledEntityDeletions() as $entity) {
-			// Check for valid entity
-			if (!$entity instanceof Entities\Entity || !$this->validateNamespace($entity)) {
-				continue;
-			}
-
-			// Doctrine is fine deleting elements multiple times. We are not.
-			$hash = $this->getHash($entity, $uow->getEntityIdentifier($entity));
-
-			if (in_array($hash, $processedEntities, true)) {
-				continue;
-			}
-
-			$processedEntities[] = $hash;
-			$processEntities[] = $entity;
+		// Check for valid entity
+		if (!$entity instanceof Entities\Entity || !$this->validateNamespace($entity)) {
+			return;
 		}
 
-		foreach ($processEntities as $entity) {
-			$this->publishEntity($entity, self::ACTION_DELETED);
-		}
+		$this->publishEntity($entity, self::ACTION_DELETED);
+	}
+
+	public function enableAsync(): void
+	{
+		$this->useAsync = true;
+	}
+
+	public function disableAsync(): void
+	{
+		$this->useAsync = false;
 	}
 
 	/**
-	 * @throws ExchangeExceptions\InvalidArgument
 	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function publishEntity(Entities\Entity $entity, string $action): void
@@ -181,24 +183,30 @@ final class ModuleEntities implements Common\EventSubscriber
 		switch ($action) {
 			case self::ACTION_CREATED:
 				foreach (Accounts\Constants::MESSAGE_BUS_CREATED_ENTITIES_ROUTING_KEYS_MAPPING as $class => $routingKey) {
-					if ($this->validateEntity($entity, $class)) {
-						$publishRoutingKey = MetadataTypes\RoutingKey::get($routingKey);
+					if (is_a($entity, $class)) {
+						$publishRoutingKey = $routingKey;
+
+						break;
 					}
 				}
 
 				break;
 			case self::ACTION_UPDATED:
 				foreach (Accounts\Constants::MESSAGE_BUS_UPDATED_ENTITIES_ROUTING_KEYS_MAPPING as $class => $routingKey) {
-					if ($this->validateEntity($entity, $class)) {
-						$publishRoutingKey = MetadataTypes\RoutingKey::get($routingKey);
+					if (is_a($entity, $class)) {
+						$publishRoutingKey = $routingKey;
+
+						break;
 					}
 				}
 
 				break;
 			case self::ACTION_DELETED:
 				foreach (Accounts\Constants::MESSAGE_BUS_DELETED_ENTITIES_ROUTING_KEYS_MAPPING as $class => $routingKey) {
-					if ($this->validateEntity($entity, $class)) {
-						$publishRoutingKey = MetadataTypes\RoutingKey::get($routingKey);
+					if (is_a($entity, $class)) {
+						$publishRoutingKey = $routingKey;
+
+						break;
 					}
 				}
 
@@ -206,10 +214,13 @@ final class ModuleEntities implements Common\EventSubscriber
 		}
 
 		if ($publishRoutingKey !== null) {
-			$this->publisher->publish(
-				$entity->getSource(),
+			$this->getPublisher()->publish(
+				MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::ACCOUNTS),
 				$publishRoutingKey,
-				$this->documentFactory->create(Utils\ArrayHash::from($entity->toArray()), $publishRoutingKey),
+				$this->documentFactory->create(
+					Utils\ArrayHash::from($entity->toArray()),
+					$publishRoutingKey,
+				),
 			);
 		}
 	}
@@ -231,48 +242,9 @@ final class ModuleEntities implements Common\EventSubscriber
 		return false;
 	}
 
-	/**
-	 * @param class-string<Entities\Entity> $class
-	 */
-	private function validateEntity(Entities\Entity $entity, string $class): bool
+	private function getPublisher(): ExchangePublisher\Publisher|ExchangePublisher\Async\Publisher
 	{
-		$result = false;
-
-		if ($entity::class === $class) {
-			$result = true;
-		}
-
-		// @phpstan-ignore-next-line
-		if (is_subclass_of($entity, $class)) {
-			$result = true;
-		}
-
-		return $result;
-	}
-
-	/**
-	 * @param array<mixed> $identifier
-	 */
-	private function getHash(Entities\Entity $entity, array $identifier): string
-	{
-		return implode(
-			' ',
-			array_merge(
-				[$this->getRealClass($entity::class)],
-				$identifier,
-			),
-		);
-	}
-
-	private function getRealClass(string $class): string
-	{
-		$pos = strrpos($class, '\\' . Persistence\Proxy::MARKER . '\\');
-
-		if ($pos === false) {
-			return $class;
-		}
-
-		return substr($class, $pos + Persistence\Proxy::MARKER_LENGTH + 2);
+		return $this->useAsync ? $this->asyncPublisher : $this->publisher;
 	}
 
 }

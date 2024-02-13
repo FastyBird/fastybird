@@ -79,7 +79,7 @@ final class ConditionsV1 extends BaseV1
 		// At first, try to load trigger
 		$trigger = $this->findTrigger(strval($request->getAttribute(Router\ApiRoutes::URL_TRIGGER_ID)));
 
-		if (!$trigger instanceof Entities\Triggers\AutomaticTrigger) {
+		if (!$trigger instanceof Entities\Triggers\Automatic) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				$this->translator->translate('//triggers-module.base.messages.notFound.heading'),
@@ -109,7 +109,7 @@ final class ConditionsV1 extends BaseV1
 		// At first, try to load trigger
 		$trigger = $this->findTrigger(strval($request->getAttribute(Router\ApiRoutes::URL_TRIGGER_ID)));
 
-		if (!$trigger instanceof Entities\Triggers\AutomaticTrigger) {
+		if (!$trigger instanceof Entities\Triggers\Automatic) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				$this->translator->translate('//triggers-module.base.messages.notFound.heading'),
@@ -142,7 +142,7 @@ final class ConditionsV1 extends BaseV1
 		// At first, try to load trigger
 		$trigger = $this->findTrigger(strval($request->getAttribute(Router\ApiRoutes::URL_TRIGGER_ID)));
 
-		if ($trigger instanceof Entities\Triggers\AutomaticTrigger) {
+		if ($trigger instanceof Entities\Triggers\Automatic) {
 			$document = $this->createDocument($request);
 
 			$hydrator = $this->hydratorsContainer->findHydrator($document);
@@ -274,7 +274,7 @@ final class ConditionsV1 extends BaseV1
 		// At first, try to load trigger
 		$trigger = $this->findTrigger(strval($request->getAttribute(Router\ApiRoutes::URL_TRIGGER_ID)));
 
-		if (!$trigger instanceof Entities\Triggers\AutomaticTrigger) {
+		if (!$trigger instanceof Entities\Triggers\Automatic) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				$this->translator->translate('//triggers-module.base.messages.notFound.heading'),
@@ -358,7 +358,7 @@ final class ConditionsV1 extends BaseV1
 		// At first, try to load trigger
 		$trigger = $this->findTrigger(strval($request->getAttribute(Router\ApiRoutes::URL_TRIGGER_ID)));
 
-		if (!$trigger instanceof Entities\Triggers\AutomaticTrigger) {
+		if (!$trigger instanceof Entities\Triggers\Automatic) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				$this->translator->translate('//triggers-module.base.messages.notFound.heading'),
@@ -417,7 +417,7 @@ final class ConditionsV1 extends BaseV1
 		// At first, try to load trigger
 		$trigger = $this->findTrigger(strval($request->getAttribute(Router\ApiRoutes::URL_TRIGGER_ID)));
 
-		if (!$trigger instanceof Entities\Triggers\AutomaticTrigger) {
+		if (!$trigger instanceof Entities\Triggers\Automatic) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				$this->translator->translate('//triggers-module.base.messages.notFound.heading'),

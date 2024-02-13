@@ -17,15 +17,16 @@ namespace FastyBird\Connector\Tuya\Queue\Consumers;
 
 use Doctrine\DBAL;
 use FastyBird\Connector\Tuya;
-use FastyBird\Connector\Tuya\Entities;
+use FastyBird\Connector\Tuya\Documents;
+use FastyBird\Connector\Tuya\Queries;
 use FastyBird\Connector\Tuya\Queue;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Formats as MetadataFormats;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -87,12 +88,14 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			return false;
 		}
 
-		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDeviceQuery = new Queries\Configuration\FindDevices();
 		$findDeviceQuery->byConnectorId($message->getConnector());
 		$findDeviceQuery->byIdentifier($message->getIdentifier());
-		$findDeviceQuery->byType(Entities\Devices\Device::TYPE);
 
-		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+		$device = $this->devicesConfigurationRepository->findOneBy(
+			$findDeviceQuery,
+			Documents\Devices\Device::class,
+		);
 
 		if ($device === null) {
 			$this->logger->error(
@@ -158,7 +161,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 						);
 
 						$property = $this->channelsPropertiesConfigurationRepository->find($property->getId());
-						assert($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty);
+						assert($property instanceof DevicesDocuments\Channels\Properties\Dynamic);
 
 					} else {
 						throw $ex;
@@ -200,7 +203,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 		Uuid\UuidInterface $connector,
 		string $deviceIdentifier,
 		string $dataPointIdentifier,
-	): MetadataDocuments\DevicesModule\ChannelDynamicProperty|null
+	): DevicesDocuments\Channels\Properties\Dynamic|null
 	{
 		$key = $deviceIdentifier . '-' . $dataPointIdentifier;
 
@@ -210,10 +213,10 @@ final class StoreChannelPropertyState implements Queue\Consumer
 
 			$property = $this->channelsPropertiesConfigurationRepository->findOneBy(
 				$findPropertyQuery,
-				MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
+				DevicesDocuments\Channels\Properties\Dynamic::class,
 			);
 
-			if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+			if ($property instanceof DevicesDocuments\Channels\Properties\Dynamic) {
 				return $property;
 			}
 		}
@@ -234,24 +237,28 @@ final class StoreChannelPropertyState implements Queue\Consumer
 		Uuid\UuidInterface $connectorId,
 		string $deviceIdentifier,
 		string $dataPointIdentifier,
-	): MetadataDocuments\DevicesModule\ChannelDynamicProperty|null
+	): DevicesDocuments\Channels\Properties\Dynamic|null
 	{
-		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDeviceQuery = new Queries\Configuration\FindDevices();
 		$findDeviceQuery->byConnectorId($connectorId);
 		$findDeviceQuery->byIdentifier($deviceIdentifier);
-		$findDeviceQuery->byType(Entities\Devices\Device::TYPE);
 
-		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+		$device = $this->devicesConfigurationRepository->findOneBy(
+			$findDeviceQuery,
+			Documents\Devices\Device::class,
+		);
 
 		if ($device === null) {
 			return null;
 		}
 
-		$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
+		$findChannelsQuery = new Queries\Configuration\FindChannels();
 		$findChannelsQuery->forDevice($device);
-		$findChannelsQuery->byType(Entities\Channels\Channel::TYPE);
 
-		$channels = $this->channelsConfigurationRepository->findAllBy($findChannelsQuery);
+		$channels = $this->channelsConfigurationRepository->findAllBy(
+			$findChannelsQuery,
+			Documents\Channels\Channel::class,
+		);
 
 		foreach ($channels as $channel) {
 			$findPropertyQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
@@ -260,7 +267,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			foreach (
 				$this->channelsPropertiesConfigurationRepository->findAllBy(
 					$findPropertyQuery,
-					MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
+					DevicesDocuments\Channels\Properties\Dynamic::class,
 				) as $property
 			) {
 				if ($property->getIdentifier() === $dataPointIdentifier) {

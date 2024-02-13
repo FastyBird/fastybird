@@ -15,18 +15,19 @@
 
 namespace FastyBird\Connector\FbMqtt\Writers;
 
-use FastyBird\Connector\FbMqtt\Entities;
+use FastyBird\Connector\FbMqtt\Documents;
 use FastyBird\Connector\FbMqtt\Exceptions;
 use FastyBird\Connector\FbMqtt\Helpers;
+use FastyBird\Connector\FbMqtt\Queries;
 use FastyBird\Connector\FbMqtt\Queue;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use React\EventLoop;
 use function array_merge;
 
@@ -43,11 +44,8 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 
 	public const NAME = 'exchange';
 
-	/**
-	 * @throws ExchangeExceptions\InvalidArgument
-	 */
 	public function __construct(
-		MetadataDocuments\DevicesModule\Connector $connector,
+		Documents\Connectors\Connector $connector,
 		Helpers\MessageBuilder $messageBuilder,
 		Queue\Queue $queue,
 		DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
@@ -105,11 +103,11 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 	 */
 	public function consume(
 		MetadataTypes\Sources\Source $source,
-		MetadataTypes\RoutingKey $routingKey,
+		string $routingKey,
 		MetadataDocuments\Document|null $document,
 	): void
 	{
-		if ($document instanceof MetadataDocuments\DevicesModule\DevicePropertyState) {
+		if ($document instanceof DevicesDocuments\States\Properties\Device) {
 			if (
 				$document->getGet()->getExpectedValue() === null
 				|| $document->getPending() !== true
@@ -117,12 +115,14 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 				return;
 			}
 
-			$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+			$findDeviceQuery = new Queries\Configuration\FindDevices();
 			$findDeviceQuery->forConnector($this->connector);
 			$findDeviceQuery->byId($document->getDevice());
-			$findDeviceQuery->byType(Entities\Devices\Device::TYPE);
 
-			$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+			$device = $this->devicesConfigurationRepository->findOneBy(
+				$findDeviceQuery,
+				Documents\Devices\Device::class,
+			);
 
 			if ($device === null) {
 				return;
@@ -147,7 +147,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 				),
 			);
 
-		} elseif ($document instanceof MetadataDocuments\DevicesModule\ChannelPropertyState) {
+		} elseif ($document instanceof DevicesDocuments\States\Properties\Channel) {
 			if (
 				$document->getGet()->getExpectedValue() === null
 				|| $document->getPending() !== true
@@ -155,22 +155,26 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 				return;
 			}
 
-			$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
+			$findChannelQuery = new Queries\Configuration\FindChannels();
 			$findChannelQuery->byId($document->getChannel());
-			$findChannelQuery->byType(Entities\Channels\Channel::TYPE);
 
-			$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
+			$channel = $this->channelsConfigurationRepository->findOneBy(
+				$findChannelQuery,
+				Documents\Channels\Channel::class,
+			);
 
 			if ($channel === null) {
 				return;
 			}
 
-			$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+			$findDeviceQuery = new Queries\Configuration\FindDevices();
 			$findDeviceQuery->forConnector($this->connector);
 			$findDeviceQuery->byId($channel->getDevice());
-			$findDeviceQuery->byType(Entities\Devices\Device::TYPE);
 
-			$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+			$device = $this->devicesConfigurationRepository->findOneBy(
+				$findDeviceQuery,
+				Documents\Devices\Device::class,
+			);
 
 			if ($device === null) {
 				return;

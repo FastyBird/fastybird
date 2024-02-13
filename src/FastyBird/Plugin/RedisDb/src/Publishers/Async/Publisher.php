@@ -24,6 +24,7 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\RedisDb\Clients;
 use FastyBird\Plugin\RedisDb\Exceptions;
 use FastyBird\Plugin\RedisDb\Utilities;
+use InvalidArgumentException;
 use Nette;
 use Psr\Log;
 use React\Promise;
@@ -54,10 +55,12 @@ final class Publisher implements ExchangePublisher\Async\Publisher
 
 	/**
 	 * @return Promise\PromiseInterface<bool>
+	 *
+	 * @throws InvalidArgumentException
 	 */
 	public function publish(
 		MetadataTypes\Sources\Source $source,
-		MetadataTypes\RoutingKey $routingKey,
+		string $routingKey,
 		MetadataDocuments\Document|null $entity,
 	): Promise\PromiseInterface
 	{
@@ -69,7 +72,7 @@ final class Publisher implements ExchangePublisher\Async\Publisher
 				Nette\Utils\Json::encode([
 					'sender_id' => $this->identifier->getIdentifier(),
 					'source' => $source->getValue(),
-					'routing_key' => $routingKey->getValue(),
+					'routing_key' => $routingKey,
 					'created' => $this->dateTimeFactory->getNow()->format(DateTimeInterface::ATOM),
 					'data' => $entity?->toArray(),
 				]),
@@ -81,7 +84,7 @@ final class Publisher implements ExchangePublisher\Async\Publisher
 							'source' => MetadataTypes\Sources\Plugin::REDISDB,
 							'type' => 'messages-async-publisher',
 							'message' => [
-								'routing_key' => $routingKey->getValue(),
+								'routing_key' => $routingKey,
 								'source' => $source->getValue(),
 								'data' => $entity?->toArray(),
 							],
@@ -98,7 +101,7 @@ final class Publisher implements ExchangePublisher\Async\Publisher
 							'type' => 'messages-async-publisher',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 							'message' => [
-								'routing_key' => $routingKey->getValue(),
+								'routing_key' => $routingKey,
 								'source' => $source->getValue(),
 								'data' => $entity?->toArray(),
 							],
@@ -121,7 +124,7 @@ final class Publisher implements ExchangePublisher\Async\Publisher
 					'type' => 'messages-async-publisher',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'message' => [
-						'routing_key' => $routingKey->getValue(),
+						'routing_key' => $routingKey,
 						'source' => $source->getValue(),
 						'data' => $entity?->toArray(),
 					],

@@ -36,9 +36,11 @@ services:
         factory: IPub\SlimRouter\Routing\Router
         setup:
             - addMiddleware(@fbJsonApi.middlewares.jsonapi)
+
     -
         factory: FastyBird\Module\Devices\Tests\Fixtures\Dummy\DummyConnectorFactory
         tags: [connector_type: dummy]
+
     - {factory: FastyBird\Module\Devices\Tests\Fixtures\Dummy\DummyConnectorSchema}
     - {factory: FastyBird\Module\Devices\Tests\Fixtures\Dummy\DummyConnectorHydrator}
     - {factory: FastyBird\Module\Devices\Tests\Fixtures\Dummy\DummyDeviceSchema}
@@ -101,6 +103,12 @@ nettrineOrmAttributes:
     mapping: [
         FastyBird\Module\Devices\Tests\Fixtures\Dummy: %appDir%/fixtures/dummy
     ]
+
+fbMetadataLibrary:
+    documents:
+        mapping: [
+            FastyBird\Module\Devices\Tests\Fixtures\Dummy: %appDir%/fixtures/dummy
+        ]
 
 fbSimpleAuth:
     token:

@@ -20,8 +20,10 @@ use FastyBird\Library\Exchange\Events as ExchangeEvents;
 use FastyBird\Library\Exchange\Exchange as ExchangeExchange;
 use FastyBird\Plugin\RedisDb\Connections;
 use FastyBird\Plugin\RedisDb\Events;
+use InvalidArgumentException;
 use Psr\EventDispatcher;
 use React\EventLoop;
+use React\Socket;
 use Throwable;
 
 /**
@@ -44,12 +46,14 @@ final class Factory implements ExchangeExchange\Factory
 	{
 	}
 
+	/**
+	 * @throws InvalidArgumentException
+	 */
 	public function create(): void
 	{
 		$redis = new Redis\RedisClient(
 			$this->connection->getHost() . ':' . $this->connection->getPort(),
-			null,
-			$this->eventLoop,
+			new Socket\Connector($this->eventLoop),
 		);
 
 		$redis->on('close', function (): void {

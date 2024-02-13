@@ -17,16 +17,16 @@ namespace FastyBird\Connector\HomeKit\Queue\Consumers;
 
 use FastyBird\Connector\HomeKit;
 use FastyBird\Connector\HomeKit\Clients;
-use FastyBird\Connector\HomeKit\Entities;
+use FastyBird\Connector\HomeKit\Documents;
 use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Protocol;
+use FastyBird\Connector\HomeKit\Queries;
 use FastyBird\Connector\HomeKit\Queue;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
 use RuntimeException;
 use function intval;
@@ -69,11 +69,13 @@ final class WriteDevicePropertyState implements Queue\Consumer
 			return false;
 		}
 
-		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
+		$findConnectorQuery = new Queries\Configuration\FindConnectors();
 		$findConnectorQuery->byId($message->getConnector());
-		$findConnectorQuery->byType(Entities\Connectors\Connector::TYPE);
 
-		$connector = $this->connectorsConfigurationRepository->findOneBy($findConnectorQuery);
+		$connector = $this->connectorsConfigurationRepository->findOneBy(
+			$findConnectorQuery,
+			Documents\Connectors\Connector::class,
+		);
 
 		if ($connector === null) {
 			$this->logger->error(
@@ -97,11 +99,14 @@ final class WriteDevicePropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDeviceQuery = new Queries\Configuration\FindDevices();
 		$findDeviceQuery->forConnector($connector);
 		$findDeviceQuery->byId($message->getDevice());
 
-		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+		$device = $this->devicesConfigurationRepository->findOneBy(
+			$findDeviceQuery,
+			Documents\Devices\Device::class,
+		);
 
 		if ($device === null) {
 			$this->logger->error(
@@ -179,10 +184,10 @@ final class WriteDevicePropertyState implements Queue\Consumer
 					$characteristic->getProperty() !== null
 					&& $characteristic->getProperty()->getId()->equals($property->getId())
 				) {
-					if ($property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
+					if ($property instanceof DevicesDocuments\Devices\Properties\Mapped) {
 						$parent = $this->devicesPropertiesConfigurationRepository->find($property->getParent());
 
-						if ($parent instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
+						if ($parent instanceof DevicesDocuments\Devices\Properties\Dynamic) {
 							if ($message->getState() !== null) {
 								if ($message->getState()->getExpectedValue() !== null) {
 									$characteristic->setActualValue($message->getState()->getExpectedValue());
@@ -215,11 +220,11 @@ final class WriteDevicePropertyState implements Queue\Consumer
 
 								return true;
 							}
-						} elseif ($parent instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty) {
+						} elseif ($parent instanceof DevicesDocuments\Devices\Properties\Variable) {
 							$characteristic->setActualValue($parent->getValue());
 							$characteristic->setValid(true);
 						}
-					} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
+					} elseif ($property instanceof DevicesDocuments\Devices\Properties\Dynamic) {
 						if ($message->getState() !== null) {
 							if ($message->getState()->getExpectedValue() !== null) {
 								$characteristic->setActualValue($message->getState()->getExpectedValue());
@@ -246,7 +251,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 
 							continue;
 						}
-					} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty) {
+					} elseif ($property instanceof DevicesDocuments\Devices\Properties\Variable) {
 						$characteristic->setActualValue($property->getValue());
 						$characteristic->setValid(true);
 					}

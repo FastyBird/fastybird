@@ -19,6 +19,7 @@ use Contributte\Cache;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
@@ -51,7 +52,7 @@ final class Repository extends Models\Configuration\Repository
 	}
 
 	/**
-	 * @template T of MetadataDocuments\DevicesModule\ConnectorProperty
+	 * @template T of Documents\Connectors\Properties\Property
 	 *
 	 * @param class-string<T> $type
 	 *
@@ -61,8 +62,8 @@ final class Repository extends Models\Configuration\Repository
 	 */
 	public function find(
 		Uuid\UuidInterface $id,
-		string $type = MetadataDocuments\DevicesModule\ConnectorProperty::class,
-	): MetadataDocuments\DevicesModule\ConnectorProperty|null
+		string $type = Documents\Connectors\Properties\Property::class,
+	): Documents\Connectors\Properties\Property|null
 	{
 		$queryObject = new Queries\Configuration\FindConnectorProperties();
 		$queryObject->byId($id);
@@ -77,7 +78,7 @@ final class Repository extends Models\Configuration\Repository
 	}
 
 	/**
-	 * @template T of MetadataDocuments\DevicesModule\ConnectorProperty
+	 * @template T of Documents\Connectors\Properties\Property
 	 *
 	 * @param Queries\Configuration\FindConnectorProperties<T> $queryObject
 	 * @param class-string<T> $type
@@ -88,21 +89,21 @@ final class Repository extends Models\Configuration\Repository
 	 */
 	public function findOneBy(
 		Queries\Configuration\FindConnectorProperties $queryObject,
-		string $type = MetadataDocuments\DevicesModule\ConnectorProperty::class,
-	): MetadataDocuments\DevicesModule\ConnectorProperty|null
+		string $type = Documents\Connectors\Properties\Property::class,
+	): Documents\Connectors\Properties\Property|null
 	{
 		try {
 			$document = $this->cache->load(
 				$this->createKeyOne($queryObject) . '_' . md5($type),
-				function () use ($queryObject, $type): MetadataDocuments\DevicesModule\ConnectorProperty|false {
+				function () use ($queryObject, $type): Documents\Connectors\Properties\Property|false {
 					$space = $this->builder
 						->load()
 						->find('.' . Devices\Constants::DATA_STORAGE_PROPERTIES_KEY . '.*');
 
-					if ($type === MetadataDocuments\DevicesModule\ConnectorDynamicProperty::class) {
+					if ($type === Documents\Connectors\Properties\Dynamic::class) {
 						$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::DYNAMIC . '")]');
 
-					} elseif ($type === MetadataDocuments\DevicesModule\ConnectorVariableProperty::class) {
+					} elseif ($type === Documents\Connectors\Properties\Variable::class) {
 						$space = $space->find(
 							'.[?(@.type == "' . MetadataTypes\PropertyType::VARIABLE . '")]',
 						);
@@ -116,8 +117,8 @@ final class Repository extends Models\Configuration\Repository
 
 					foreach (
 						[
-							MetadataDocuments\DevicesModule\ConnectorDynamicProperty::class,
-							MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
+							Documents\Connectors\Properties\Dynamic::class,
+							Documents\Connectors\Properties\Variable::class,
 						] as $class
 					) {
 						try {
@@ -149,7 +150,7 @@ final class Repository extends Models\Configuration\Repository
 	}
 
 	/**
-	 * @template T of MetadataDocuments\DevicesModule\ConnectorProperty
+	 * @template T of Documents\Connectors\Properties\Property
 	 *
 	 * @param Queries\Configuration\FindConnectorProperties<T> $queryObject
 	 * @param class-string<T> $type
@@ -160,7 +161,7 @@ final class Repository extends Models\Configuration\Repository
 	 */
 	public function findAllBy(
 		Queries\Configuration\FindConnectorProperties $queryObject,
-		string $type = MetadataDocuments\DevicesModule\ConnectorProperty::class,
+		string $type = Documents\Connectors\Properties\Property::class,
 	): array
 	{
 		try {
@@ -171,10 +172,10 @@ final class Repository extends Models\Configuration\Repository
 						->load()
 						->find('.' . Devices\Constants::DATA_STORAGE_PROPERTIES_KEY . '.*');
 
-					if ($type === MetadataDocuments\DevicesModule\ConnectorDynamicProperty::class) {
+					if ($type === Documents\Connectors\Properties\Dynamic::class) {
 						$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::DYNAMIC . '")]');
 
-					} elseif ($type === MetadataDocuments\DevicesModule\ConnectorVariableProperty::class) {
+					} elseif ($type === Documents\Connectors\Properties\Variable::class) {
 						$space = $space->find(
 							'.[?(@.type == "' . MetadataTypes\PropertyType::VARIABLE . '")]',
 						);
@@ -188,11 +189,11 @@ final class Repository extends Models\Configuration\Repository
 
 					return array_filter(
 						array_map(
-							function (stdClass $item): MetadataDocuments\DevicesModule\ConnectorProperty|null {
+							function (stdClass $item): Documents\Connectors\Properties\Property|null {
 								foreach (
 									[
-										MetadataDocuments\DevicesModule\ConnectorDynamicProperty::class,
-										MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
+										Documents\Connectors\Properties\Dynamic::class,
+										Documents\Connectors\Properties\Variable::class,
 									] as $class
 								) {
 									try {

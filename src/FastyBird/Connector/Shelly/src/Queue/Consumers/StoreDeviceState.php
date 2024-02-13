@@ -17,15 +17,16 @@ namespace FastyBird\Connector\Shelly\Queue\Consumers;
 
 use Doctrine\DBAL;
 use FastyBird\Connector\Shelly;
-use FastyBird\Connector\Shelly\Entities;
+use FastyBird\Connector\Shelly\Documents;
+use FastyBird\Connector\Shelly\Queries;
 use FastyBird\Connector\Shelly\Queue;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -85,12 +86,14 @@ final class StoreDeviceState implements Queue\Consumer
 			return false;
 		}
 
-		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDeviceQuery = new Queries\Configuration\FindDevices();
 		$findDeviceQuery->byConnectorId($message->getConnector());
 		$findDeviceQuery->startWithIdentifier($message->getIdentifier());
-		$findDeviceQuery->byType(Entities\Devices\Device::TYPE);
 
-		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+		$device = $this->devicesConfigurationRepository->findOneBy(
+			$findDeviceQuery,
+			Documents\Devices\Device::class,
+		);
 
 		if ($device === null) {
 			return true;
@@ -121,7 +124,7 @@ final class StoreDeviceState implements Queue\Consumer
 				$property = $this->devicesPropertiesConfigurationRepository->findOneBy($findDevicePropertyQuery);
 
 				if ($property !== null) {
-					if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
+					if ($property instanceof DevicesDocuments\Devices\Properties\Dynamic) {
 						await($this->devicePropertiesStatesManager->set(
 							$property,
 							Utils\ArrayHash::from([
@@ -129,7 +132,7 @@ final class StoreDeviceState implements Queue\Consumer
 							]),
 							MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::SHELLY),
 						));
-					} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceVariableProperty) {
+					} elseif ($property instanceof DevicesDocuments\Devices\Properties\Variable) {
 						$this->databaseHelper->transaction(
 							function () use ($property, $state): void {
 								$property = $this->devicesPropertiesRepository->find(
@@ -148,11 +151,13 @@ final class StoreDeviceState implements Queue\Consumer
 						);
 					}
 				} else {
-					$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
+					$findChannelsQuery = new Queries\Configuration\FindChannels();
 					$findChannelsQuery->forDevice($device);
-					$findChannelsQuery->byType(Entities\Channels\Channel::TYPE);
 
-					$channels = $this->channelsConfigurationRepository->findAllBy($findChannelsQuery);
+					$channels = $this->channelsConfigurationRepository->findAllBy(
+						$findChannelsQuery,
+						Documents\Channels\Channel::class,
+					);
 
 					foreach ($channels as $channel) {
 						$findChannelPropertyQuery = new DevicesQueries\Configuration\FindChannelProperties();
@@ -171,7 +176,7 @@ final class StoreDeviceState implements Queue\Consumer
 						);
 
 						if ($property !== null) {
-							if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+							if ($property instanceof DevicesDocuments\Channels\Properties\Dynamic) {
 								await($this->channelPropertiesStatesManager->set(
 									$property,
 									Utils\ArrayHash::from([
@@ -179,7 +184,7 @@ final class StoreDeviceState implements Queue\Consumer
 									]),
 									MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::SHELLY),
 								));
-							} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
+							} elseif ($property instanceof DevicesDocuments\Channels\Properties\Variable) {
 								$this->databaseHelper->transaction(
 									function () use ($property, $state): void {
 										$property = $this->channelsPropertiesRepository->find(
@@ -203,9 +208,8 @@ final class StoreDeviceState implements Queue\Consumer
 					}
 				}
 			} else {
-				$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
+				$findChannelQuery = new Queries\Configuration\FindChannels();
 				$findChannelQuery->forDevice($device);
-				$findChannelQuery->byType(Entities\Channels\Channel::TYPE);
 
 				if (Utils\Strings::startsWith($state->getIdentifier(), '_')) {
 					$findChannelQuery->endWithIdentifier($state->getIdentifier());
@@ -215,7 +219,10 @@ final class StoreDeviceState implements Queue\Consumer
 					$findChannelQuery->byIdentifier($state->getIdentifier());
 				}
 
-				$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
+				$channel = $this->channelsConfigurationRepository->findOneBy(
+					$findChannelQuery,
+					Documents\Channels\Channel::class,
+				);
 
 				if ($channel !== null) {
 					foreach ($state->getSensors() as $sensor) {
@@ -234,7 +241,7 @@ final class StoreDeviceState implements Queue\Consumer
 							$findChannelPropertyQuery,
 						);
 
-						if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+						if ($property instanceof DevicesDocuments\Channels\Properties\Dynamic) {
 							await($this->channelPropertiesStatesManager->set(
 								$property,
 								Utils\ArrayHash::from([
@@ -242,7 +249,7 @@ final class StoreDeviceState implements Queue\Consumer
 								]),
 								MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::SHELLY),
 							));
-						} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
+						} elseif ($property instanceof DevicesDocuments\Channels\Properties\Variable) {
 							$this->databaseHelper->transaction(
 								function () use ($property, $sensor): void {
 									$property = $this->channelsPropertiesRepository->find(

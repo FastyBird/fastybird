@@ -40,6 +40,7 @@ services:
         factory: IPub\SlimRouter\Routing\Router
         setup:
             - addMiddleware(@fbJsonApi.middlewares.jsonapi)
+
     - {factory: FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Tests\Tools\DateTimeProvider}
 
     cache.storage: Nette\Caching\Storages\DevNullStorage
@@ -95,6 +96,12 @@ nettrineOrmAttributes:
     mapping: [
         FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Tests\Fixtures\Dummy: %appDir%/fixtures/dummy
     ]
+
+fbMetadataLibrary:
+    documents:
+        mapping: [
+            FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Tests\Fixtures\Dummy: %appDir%/fixtures/dummy
+        ]
 
 fbSimpleAuth:
     token:

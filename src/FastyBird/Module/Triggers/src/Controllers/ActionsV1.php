@@ -41,6 +41,7 @@ use function explode;
 use function preg_match;
 use function strtolower;
 use function strval;
+use function var_dump;
 
 /**
  * Triggers actions controller
@@ -194,6 +195,7 @@ final class ActionsV1 extends BaseV1
 					$this->translator->translate('//triggers-module.base.messages.uniqueAttribute.message'),
 				);
 			} catch (Throwable $ex) {
+				var_dump($ex->getMessage());
 				// Log caught exception
 				$this->logger->error(
 					'An unhandled error occurred',

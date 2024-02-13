@@ -15,10 +15,10 @@
 
 namespace FastyBird\Connector\HomeKit\Protocol\Services;
 
-use FastyBird\Connector\HomeKit\Entities\Channels\Channel;
+use FastyBird\Connector\HomeKit\Documents;
+use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Protocol;
 use FastyBird\Connector\HomeKit\Types;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use Ramsey\Uuid;
 
 /**
@@ -41,7 +41,7 @@ interface ServiceFactory
 		Uuid\UuidInterface $typeId,
 		Types\ServiceType $type,
 		Protocol\Accessories\Accessory $accessory,
-		MetadataDocuments\DevicesModule\Channel|null $channel = null,
+		Documents\Channels\Channel|null $channel = null,
 		array $requiredCharacteristics = [],
 		array $optionalCharacteristics = [],
 		array $virtualCharacteristics = [],
@@ -50,7 +50,7 @@ interface ServiceFactory
 	): Service;
 
 	/**
-	 * @return class-string<Channel>
+	 * @return class-string<Entities\Channels\Channel>
 	 */
 	public function getEntityClass(): string;
 

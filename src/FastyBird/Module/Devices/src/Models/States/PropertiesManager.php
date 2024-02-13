@@ -17,18 +17,15 @@ namespace FastyBird\Module\Devices\Models\States;
 
 use DateTimeInterface;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Library\Metadata\Documents\DevicesModule\ConnectorDynamicProperty as TParent;
-use FastyBird\Library\Metadata\Documents\DevicesModule\DeviceMappedProperty as TChild;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Library\Tools\Transformers as ToolsTransformers;
 use FastyBird\Module\Devices;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\States;
-use FastyBird\Module\Devices\States\ConnectorProperty as TState;
 use FastyBird\Module\Devices\Utilities;
 use Orisai\ObjectMapper;
 use function array_merge;
@@ -39,8 +36,8 @@ use function is_string;
 /**
  * Useful dynamic property state helpers
  *
- * @template TParent of (MetadataDocuments\DevicesModule\ConnectorDynamicProperty | MetadataDocuments\DevicesModule\DeviceDynamicProperty | MetadataDocuments\DevicesModule\ChannelDynamicProperty)
- * @template TChild of (MetadataDocuments\DevicesModule\DeviceMappedProperty | MetadataDocuments\DevicesModule\ChannelMappedProperty | null)
+ * @template TParent of (Documents\Connectors\Properties\Dynamic | Documents\Devices\Properties\Dynamic | Documents\Channels\Properties\Dynamic)
+ * @template TChild of (Documents\Devices\Properties\Mapped | Documents\Channels\Properties\Mapped | null)
  * @template TState of States\Property
  *
  * @package        FastyBird:DevicesModule!

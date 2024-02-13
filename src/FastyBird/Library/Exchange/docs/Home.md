@@ -33,7 +33,7 @@ class ModuleDataPublisher implements Publisher
 
     public function publish(
         MetadataTypes\Sources\Module|MetadataTypes\Sources\Plugin|MetadataTypes\Sources\Connector $source,
-        MetadataTypes\RoutingKey $routingKey,
+        string $routingKey,
         MetadataDocuments\Document|null $entity,
     ) : void {
         // Service logic here, e.g. publish message to RabbitMQ or Redis etc. 
@@ -63,7 +63,7 @@ class ModuleDataPublisher implements Publisher
      */
     public function publish(
         MetadataTypes\Sources\Module|MetadataTypes\Sources\Plugin|MetadataTypes\Sources\Connector $source,
-        MetadataTypes\RoutingKey $routingKey,
+        string $routingKey,
         MetadataDocuments\Document|null $entity,
     ) : PromiseInterface {
         $deferred  = new Deferred();
@@ -129,7 +129,7 @@ class DataConsumer implements Consumer
 
     public function consume(
         MetadataTypes\Sources\Module|MetadataTypes\Sources\Plugin|MetadataTypes\Sources\Connector $source,
-        MetadataTypes\RoutingKey $routingKey,
+        string $routingKey,
         MetadataDocuments\Document|null $entity,
     ) : void {
         // Do your data processing logic here 

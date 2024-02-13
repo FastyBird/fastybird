@@ -16,12 +16,12 @@
 namespace FastyBird\Module\Devices\Schemas\Devices\Properties;
 
 use Exception;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
@@ -111,6 +111,7 @@ final class Mapped extends Property
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 *
@@ -212,15 +213,16 @@ final class Mapped extends Property
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	protected function getState(
 		Entities\Devices\Properties\Mapped $property,
-	): MetadataDocuments\DevicesModule\DevicePropertyState|null
+	): Documents\States\Properties\Device|null
 	{
 		$configuration = $this->devicesPropertiesConfigurationRepository->find($property->getId());
-		assert($configuration instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty);
+		assert($configuration instanceof Documents\Devices\Properties\Dynamic);
 
 		return $this->devicePropertiesStatesManager->readState($configuration);
 	}

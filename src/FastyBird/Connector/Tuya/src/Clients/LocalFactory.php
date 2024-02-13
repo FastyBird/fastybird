@@ -15,8 +15,8 @@
 
 namespace FastyBird\Connector\Tuya\Clients;
 
+use FastyBird\Connector\Tuya\Documents;
 use FastyBird\Connector\Tuya\Types;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 
 /**
  * Local devices client factory
@@ -31,6 +31,6 @@ interface LocalFactory extends ClientFactory
 
 	public const MODE = Types\ClientMode::LOCAL;
 
-	public function create(MetadataDocuments\DevicesModule\Connector $connector): Local;
+	public function create(Documents\Connectors\Connector $connector): Local;
 
 }

@@ -39,7 +39,7 @@ final class TriggersRepositoryTest extends DbTestCase
 		$entity = $repository->findOneBy($findQuery);
 
 		self::assertIsObject($entity);
-		self::assertTrue($entity instanceof Entities\Triggers\AutomaticTrigger);
+		self::assertTrue($entity instanceof Entities\Triggers\Automatic);
 		self::assertSame('Good Evening', $entity->getName());
 	}
 

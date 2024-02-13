@@ -18,14 +18,14 @@ namespace FastyBird\Connector\Virtual\Connector;
 use Evenement;
 use FastyBird\Connector\Virtual;
 use FastyBird\Connector\Virtual\Devices;
-use FastyBird\Connector\Virtual\Entities;
+use FastyBird\Connector\Virtual\Documents;
 use FastyBird\Connector\Virtual\Exceptions;
 use FastyBird\Connector\Virtual\Queue;
 use FastyBird\Connector\Virtual\Writers;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Connectors as DevicesConnectors;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Nette;
 use React\EventLoop;
@@ -59,7 +59,7 @@ final class Connector implements DevicesConnectors\Connector
 	 * @param array<Writers\WriterFactory> $writersFactories
 	 */
 	public function __construct(
-		private readonly MetadataDocuments\DevicesModule\Connector $connector,
+		private readonly DevicesDocuments\Connectors\Connector $connector,
 		private readonly Devices\DevicesFactory $devicesFactory,
 		private readonly array $writersFactories,
 		private readonly Queue\Queue $queue,
@@ -68,6 +68,7 @@ final class Connector implements DevicesConnectors\Connector
 		private readonly EventLoop\LoopInterface $eventLoop,
 	)
 	{
+		assert($this->connector instanceof Documents\Connectors\Connector);
 	}
 
 	/**
@@ -78,7 +79,7 @@ final class Connector implements DevicesConnectors\Connector
 	 */
 	public function execute(bool $standalone = true): Promise\PromiseInterface
 	{
-		assert($this->connector->getType() === Entities\Connectors\Connector::TYPE);
+		assert($this->connector instanceof Documents\Connectors\Connector);
 
 		$this->logger->info(
 			'Starting Virtual connector service',
@@ -136,6 +137,8 @@ final class Connector implements DevicesConnectors\Connector
 	 */
 	public function discover(): Promise\PromiseInterface
 	{
+		assert($this->connector instanceof Documents\Connectors\Connector);
+
 		return Promise\reject(
 			new Exceptions\InvalidState('Devices discovery is not allowed for Virtual connector type'),
 		);
@@ -143,7 +146,7 @@ final class Connector implements DevicesConnectors\Connector
 
 	public function terminate(): void
 	{
-		assert($this->connector->getType() === Entities\Connectors\Connector::TYPE);
+		assert($this->connector instanceof Documents\Connectors\Connector);
 
 		$this->devices?->stop();
 

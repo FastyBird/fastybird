@@ -18,13 +18,13 @@ namespace FastyBird\Connector\Viera\Clients;
 use Evenement;
 use FastyBird\Connector\Viera;
 use FastyBird\Connector\Viera\API;
+use FastyBird\Connector\Viera\Documents;
 use FastyBird\Connector\Viera\Entities;
 use FastyBird\Connector\Viera\Exceptions;
 use FastyBird\Connector\Viera\Helpers;
 use FastyBird\Connector\Viera\Queue;
 use FastyBird\Connector\Viera\Services;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette;
 use React\Datagram;
@@ -76,7 +76,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 	private Datagram\SocketInterface|null $sender = null;
 
 	public function __construct(
-		private readonly MetadataDocuments\DevicesModule\Connector $connector,
+		private readonly Documents\Connectors\Connector $connector,
 		private readonly API\TelevisionApiFactory $televisionApiFactory,
 		private readonly Queue\Queue $queue,
 		private readonly Helpers\MessageBuilder $messageBuilder,

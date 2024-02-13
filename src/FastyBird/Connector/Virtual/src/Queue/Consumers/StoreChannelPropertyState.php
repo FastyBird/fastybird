@@ -17,12 +17,14 @@ namespace FastyBird\Connector\Virtual\Queue\Consumers;
 
 use Doctrine\DBAL;
 use FastyBird\Connector\Virtual;
+use FastyBird\Connector\Virtual\Documents;
+use FastyBird\Connector\Virtual\Queries;
 use FastyBird\Connector\Virtual\Queue;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -77,11 +79,14 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			return false;
 		}
 
-		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDeviceQuery = new Queries\Configuration\FindDevices();
 		$findDeviceQuery->byConnectorId($message->getConnector());
 		$findDeviceQuery->byId($message->getDevice());
 
-		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+		$device = $this->devicesConfigurationRepository->findOneBy(
+			$findDeviceQuery,
+			Documents\Devices\Device::class,
+		);
 
 		if ($device === null) {
 			$this->logger->error(
@@ -109,11 +114,14 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
+		$findChannelQuery = new Queries\Configuration\FindChannels();
 		$findChannelQuery->forDevice($device);
 		$findChannelQuery->byId($message->getChannel());
 
-		$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
+		$channel = $this->channelsConfigurationRepository->findOneBy(
+			$findChannelQuery,
+			Documents\Channels\Channel::class,
+		);
 
 		if ($channel === null) {
 			$this->logger->error(
@@ -177,7 +185,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		if ($property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
+		if ($property instanceof DevicesDocuments\Channels\Properties\Variable) {
 			$this->databaseHelper->transaction(
 				function () use ($message, $property): void {
 					$property = $this->channelsPropertiesRepository->find(
@@ -195,7 +203,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 				},
 			);
 
-		} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+		} elseif ($property instanceof DevicesDocuments\Channels\Properties\Dynamic) {
 			await($this->channelPropertiesStatesManager->set(
 				$property,
 				Utils\ArrayHash::from([
@@ -203,13 +211,13 @@ final class StoreChannelPropertyState implements Queue\Consumer
 				]),
 				$message->getSource(),
 			));
-		} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
+		} elseif ($property instanceof DevicesDocuments\Channels\Properties\Mapped) {
 			$findChannelPropertyQuery = new DevicesQueries\Configuration\FindChannelProperties();
 			$findChannelPropertyQuery->byId($property->getParent());
 
 			$parent = $this->channelsPropertiesConfigurationRepository->findOneBy($findChannelPropertyQuery);
 
-			if ($parent instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+			if ($parent instanceof DevicesDocuments\Channels\Properties\Dynamic) {
 				await($this->channelPropertiesStatesManager->write(
 					$property,
 					Utils\ArrayHash::from([
@@ -217,7 +225,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 					]),
 					$message->getSource(),
 				));
-			} elseif ($parent instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
+			} elseif ($parent instanceof DevicesDocuments\Channels\Properties\Variable) {
 				$this->databaseHelper->transaction(
 					function () use ($message, $device, $channel, $property, $parent): void {
 						$toUpdate = $this->channelsPropertiesRepository->find(

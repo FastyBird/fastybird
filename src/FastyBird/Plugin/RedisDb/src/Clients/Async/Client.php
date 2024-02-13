@@ -19,10 +19,12 @@ use Clue\React\Redis;
 use FastyBird\Library\Exchange\Events as ExchangeEvents;
 use FastyBird\Plugin\RedisDb\Connections;
 use FastyBird\Plugin\RedisDb\Events;
+use InvalidArgumentException;
 use Nette;
 use Psr\EventDispatcher;
 use React\EventLoop;
 use React\Promise;
+use React\Socket;
 use Throwable;
 use function strval;
 
@@ -52,6 +54,8 @@ class Client
 
 	/**
 	 * @return Promise\PromiseInterface<string|null>
+	 *
+	 * @throws InvalidArgumentException
 	 */
 	public function get(string $key): Promise\PromiseInterface
 	{
@@ -60,6 +64,8 @@ class Client
 
 	/**
 	 * @return Promise\PromiseInterface<bool>
+	 *
+	 * @throws InvalidArgumentException
 	 */
 	public function set(string $key, string $content): Promise\PromiseInterface
 	{
@@ -78,6 +84,8 @@ class Client
 
 	/**
 	 * @return Promise\PromiseInterface<bool>
+	 *
+	 * @throws InvalidArgumentException
 	 */
 	public function del(string $key): Promise\PromiseInterface
 	{
@@ -96,6 +104,8 @@ class Client
 
 	/**
 	 * @return Promise\PromiseInterface<bool>
+	 *
+	 * @throws InvalidArgumentException
 	 */
 	public function publish(string $channel, string $content): Promise\PromiseInterface
 	{
@@ -112,6 +122,9 @@ class Client
 		return $deferred->promise();
 	}
 
+	/**
+	 * @throws InvalidArgumentException
+	 */
 	public function select(int $database): void
 	{
 		if ($this->selectedDatabase !== $database) {
@@ -121,13 +134,15 @@ class Client
 		}
 	}
 
+	/**
+	 * @throws InvalidArgumentException
+	 */
 	public function getClient(): Redis\RedisClient
 	{
 		if ($this->redis === null) {
 			$this->redis = new Redis\RedisClient(
 				$this->connection->getHost() . ':' . $this->connection->getPort(),
-				null,
-				$this->eventLoop,
+				new Socket\Connector($this->eventLoop),
 			);
 
 			$this->redis->on('close', function (): void {

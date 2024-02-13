@@ -24,6 +24,7 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
@@ -48,7 +49,7 @@ use function strval;
 /**
  * Useful device dynamic property state helpers
  *
- * @extends Models\States\PropertiesManager<MetadataDocuments\DevicesModule\DeviceDynamicProperty, MetadataDocuments\DevicesModule\DeviceMappedProperty | null, States\DeviceProperty>
+ * @extends Models\States\PropertiesManager<Documents\Devices\Properties\Dynamic, Documents\Devices\Properties\Mapped | null, States\DeviceProperty>
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Models
@@ -77,12 +78,12 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 	}
 
 	/**
-	 * @return Promise\PromiseInterface<bool|MetadataDocuments\DevicesModule\DevicePropertyState|null>
+	 * @return Promise\PromiseInterface<bool|Documents\States\Properties\Device|null>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
 	public function read(
-		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty $property,
+		Documents\Devices\Properties\Dynamic|Documents\Devices\Properties\Mapped $property,
 		MetadataTypes\Sources\Source|null $source,
 	): Promise\PromiseInterface
 	{
@@ -90,11 +91,11 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 			try {
 				return $this->publisher->publish(
 					$source ?? MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
-					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::DEVICE_PROPERTY_ACTION),
+					Devices\Constants::MESSAGE_BUS_DEVICE_PROPERTY_ACTION_ROUTING_KEY,
 					$this->documentFactory->create(
-						MetadataDocuments\Actions\ActionDeviceProperty::class,
+						Documents\Actions\Properties\Device::class,
 						[
-							'action' => MetadataTypes\PropertyAction::GET,
+							'action' => MetadataTypes\PropertyAction::GET->value,
 							'device' => $property->getDevice()->toString(),
 							'property' => $property->getId()->toString(),
 						],
@@ -118,7 +119,7 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 	 * @throws Exceptions\InvalidState
 	 */
 	public function write(
-		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty $property,
+		Documents\Devices\Properties\Dynamic|Documents\Devices\Properties\Mapped $property,
 		Utils\ArrayHash $data,
 		MetadataTypes\Sources\Source|null $source,
 	): Promise\PromiseInterface
@@ -127,12 +128,12 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 			try {
 				return $this->publisher->publish(
 					$source ?? MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
-					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::DEVICE_PROPERTY_ACTION),
+					Devices\Constants::MESSAGE_BUS_DEVICE_PROPERTY_ACTION_ROUTING_KEY,
 					$this->documentFactory->create(
-						MetadataDocuments\Actions\ActionDeviceProperty::class,
+						Documents\Actions\Properties\Device::class,
 						array_merge(
 							[
-								'action' => MetadataTypes\PropertyAction::SET,
+								'action' => MetadataTypes\PropertyAction::SET->value,
 								'device' => $property->getDevice()->toString(),
 								'property' => $property->getId()->toString(),
 							],
@@ -166,7 +167,7 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 	 * @throws Exceptions\InvalidState
 	 */
 	public function set(
-		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty $property,
+		Documents\Devices\Properties\Dynamic|Documents\Devices\Properties\Mapped $property,
 		Utils\ArrayHash $data,
 		MetadataTypes\Sources\Source|null $source,
 	): Promise\PromiseInterface
@@ -175,12 +176,12 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 			try {
 				return $this->publisher->publish(
 					$source ?? MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
-					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::DEVICE_PROPERTY_ACTION),
+					Devices\Constants::MESSAGE_BUS_DEVICE_PROPERTY_ACTION_ROUTING_KEY,
 					$this->documentFactory->create(
-						MetadataDocuments\Actions\ActionDeviceProperty::class,
+						Documents\Actions\Properties\Device::class,
 						array_merge(
 							[
-								'action' => MetadataTypes\PropertyAction::SET,
+								'action' => MetadataTypes\PropertyAction::SET->value,
 								'device' => $property->getDevice()->toString(),
 								'property' => $property->getId()->toString(),
 							],
@@ -209,14 +210,14 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 	}
 
 	/**
-	 * @param MetadataDocuments\DevicesModule\DeviceDynamicProperty|array<MetadataDocuments\DevicesModule\DeviceDynamicProperty> $property
+	 * @param Documents\Devices\Properties\Dynamic|array<Documents\Devices\Properties\Dynamic> $property
 	 *
 	 * @return Promise\PromiseInterface<bool>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
 	public function setValidState(
-		MetadataDocuments\DevicesModule\DeviceDynamicProperty|array $property,
+		Documents\Devices\Properties\Dynamic|array $property,
 		bool $state,
 		MetadataTypes\Sources\Source|null $source,
 	): Promise\PromiseInterface
@@ -257,14 +258,14 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 	}
 
 	/**
-	 * @param MetadataDocuments\DevicesModule\DeviceDynamicProperty|array<MetadataDocuments\DevicesModule\DeviceDynamicProperty> $property
+	 * @param Documents\Devices\Properties\Dynamic|array<Documents\Devices\Properties\Dynamic> $property
 	 *
 	 * @return Promise\PromiseInterface<bool>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
 	public function setPendingState(
-		MetadataDocuments\DevicesModule\DeviceDynamicProperty|array $property,
+		Documents\Devices\Properties\Dynamic|array $property,
 		bool $pending,
 		MetadataTypes\Sources\Source|null $source,
 	): Promise\PromiseInterface
@@ -363,22 +364,22 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 	}
 
 	/**
-	 * @return Promise\PromiseInterface<MetadataDocuments\DevicesModule\DevicePropertyState|null>
+	 * @return Promise\PromiseInterface<Documents\States\Properties\Device|null>
 	 *
 	 * @throws Exceptions\InvalidState
 	 *
 	 * @interal
 	 */
 	public function readState(
-		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty $property,
+		Documents\Devices\Properties\Dynamic|Documents\Devices\Properties\Mapped $property,
 	): Promise\PromiseInterface
 	{
 		$mappedProperty = null;
 
-		if ($property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
+		if ($property instanceof Documents\Devices\Properties\Mapped) {
 			$parent = $this->devicePropertiesConfigurationRepository->find($property->getParent());
 
-			if (!$parent instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
+			if (!$parent instanceof Documents\Devices\Properties\Dynamic) {
 				return Promise\reject(new Exceptions\InvalidState('Mapped property parent could not be loaded'));
 			}
 
@@ -409,7 +410,7 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 						$getValue = $this->convertStoredState($property, $mappedProperty, $state, false);
 
 						$deferred->resolve($this->documentFactory->create(
-							MetadataDocuments\DevicesModule\DevicePropertyState::class,
+							Documents\States\Properties\Device::class,
 							[
 								'id' => $property->getId()->toString(),
 								'device' => $property->getDevice()->toString(),
@@ -523,7 +524,7 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 	 * @interal
 	 */
 	public function writeState(
-		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty $property,
+		Documents\Devices\Properties\Dynamic|Documents\Devices\Properties\Mapped $property,
 		Utils\ArrayHash $data,
 		bool $forWriting,
 		MetadataTypes\Sources\Source|null $source,
@@ -531,10 +532,10 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 	{
 		$mappedProperty = null;
 
-		if ($property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
+		if ($property instanceof Documents\Devices\Properties\Mapped) {
 			$parent = $this->devicePropertiesConfigurationRepository->find($property->getParent());
 
-			if (!$parent instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
+			if (!$parent instanceof Documents\Devices\Properties\Dynamic) {
 				return Promise\reject(new Exceptions\InvalidState('Mapped property parent could not be loaded'));
 			}
 
@@ -831,7 +832,7 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 	}
 
 	/**
-	 * @return array<MetadataDocuments\DevicesModule\DeviceMappedProperty>
+	 * @return array<Documents\Devices\Properties\Mapped>
 	 *
 	 * @throws Exceptions\InvalidState
 	 */
@@ -842,7 +843,7 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 
 		return $this->devicePropertiesConfigurationRepository->findAllBy(
 			$findPropertiesQuery,
-			MetadataDocuments\DevicesModule\DeviceMappedProperty::class,
+			Documents\Devices\Properties\Mapped::class,
 		);
 	}
 

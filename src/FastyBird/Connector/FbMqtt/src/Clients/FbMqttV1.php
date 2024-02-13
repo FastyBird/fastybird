@@ -18,11 +18,11 @@ namespace FastyBird\Connector\FbMqtt\Clients;
 use BinSoul\Net\Mqtt;
 use FastyBird\Connector\FbMqtt;
 use FastyBird\Connector\FbMqtt\API;
+use FastyBird\Connector\FbMqtt\Documents;
 use FastyBird\Connector\FbMqtt\Exceptions;
 use FastyBird\Connector\FbMqtt\Helpers;
 use FastyBird\Connector\FbMqtt\Queue;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -60,7 +60,7 @@ final class FbMqttV1 implements Client
 	private const NEW_CLIENT_MESSAGE_PAYLOAD = 'New client connected from';
 
 	public function __construct(
-		private readonly MetadataDocuments\DevicesModule\Connector $connector,
+		private readonly Documents\Connectors\Connector $connector,
 		private readonly API\ConnectionManager $connectionManager,
 		private readonly FbMqtt\Logger $logger,
 		private readonly Queue\Queue $queue,

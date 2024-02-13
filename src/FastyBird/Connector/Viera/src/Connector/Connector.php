@@ -18,14 +18,14 @@ namespace FastyBird\Connector\Viera\Connector;
 use Evenement;
 use FastyBird\Connector\Viera;
 use FastyBird\Connector\Viera\Clients;
-use FastyBird\Connector\Viera\Entities;
+use FastyBird\Connector\Viera\Documents;
 use FastyBird\Connector\Viera\Queue;
 use FastyBird\Connector\Viera\Writers;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Connectors as DevicesConnectors;
 use FastyBird\Module\Devices\Constants as DevicesConstants;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Nette;
@@ -60,7 +60,7 @@ final class Connector implements DevicesConnectors\Connector
 	 * @param array<Writers\WriterFactory> $writersFactories
 	 */
 	public function __construct(
-		private readonly MetadataDocuments\DevicesModule\Connector $connector,
+		private readonly DevicesDocuments\Connectors\Connector $connector,
 		private readonly Clients\ClientFactory $clientFactory,
 		private readonly Clients\DiscoveryFactory $discoveryClientFactory,
 		private readonly array $writersFactories,
@@ -70,6 +70,7 @@ final class Connector implements DevicesConnectors\Connector
 		private readonly EventLoop\LoopInterface $eventLoop,
 	)
 	{
+		assert($this->connector instanceof Documents\Connectors\Connector);
 	}
 
 	/**
@@ -80,7 +81,7 @@ final class Connector implements DevicesConnectors\Connector
 	 */
 	public function execute(bool $standalone = true): Promise\PromiseInterface
 	{
-		assert($this->connector->getType() === Entities\Connectors\Connector::TYPE);
+		assert($this->connector instanceof Documents\Connectors\Connector);
 
 		$this->logger->info(
 			'Starting Viera connector service',
@@ -137,7 +138,7 @@ final class Connector implements DevicesConnectors\Connector
 	 */
 	public function discover(): Promise\PromiseInterface
 	{
-		assert($this->connector->getType() === Entities\Connectors\Connector::TYPE);
+		assert($this->connector instanceof Documents\Connectors\Connector);
 
 		$this->logger->info(
 			'Starting Viera connector discovery',
@@ -189,7 +190,7 @@ final class Connector implements DevicesConnectors\Connector
 
 	public function terminate(): void
 	{
-		assert($this->connector->getType() === Entities\Connectors\Connector::TYPE);
+		assert($this->connector instanceof Documents\Connectors\Connector);
 
 		$this->client?->disconnect();
 

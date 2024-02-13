@@ -17,14 +17,15 @@ namespace FastyBird\Connector\Zigbee2Mqtt\Queue\Consumers;
 
 use Doctrine\DBAL;
 use FastyBird\Connector\Zigbee2Mqtt;
-use FastyBird\Connector\Zigbee2Mqtt\Entities;
+use FastyBird\Connector\Zigbee2Mqtt\Documents;
+use FastyBird\Connector\Zigbee2Mqtt\Queries;
 use FastyBird\Connector\Zigbee2Mqtt\Queue;
 use FastyBird\Connector\Zigbee2Mqtt\Types;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -65,6 +66,7 @@ final class StoreBridgeConnectionState implements Queue\Consumer
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
@@ -80,19 +82,21 @@ final class StoreBridgeConnectionState implements Queue\Consumer
 
 		$baseTopicProperty = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findDevicePropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+			DevicesDocuments\Devices\Properties\Variable::class,
 		);
 
 		if ($baseTopicProperty === null) {
 			return true;
 		}
 
-		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDeviceQuery = new Queries\Configuration\FindBridgeDevices();
 		$findDeviceQuery->byConnectorId($message->getConnector());
 		$findDeviceQuery->byId($baseTopicProperty->getDevice());
-		$findDeviceQuery->byType(Entities\Devices\Bridge::TYPE);
 
-		$bridge = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+		$bridge = $this->devicesConfigurationRepository->findOneBy(
+			$findDeviceQuery,
+			Documents\Devices\Bridge::class,
+		);
 
 		if ($bridge === null) {
 			return true;
@@ -125,7 +129,7 @@ final class StoreBridgeConnectionState implements Queue\Consumer
 
 				$properties = $this->devicesPropertiesConfigurationRepository->findAllBy(
 					$findDevicePropertiesQuery,
-					MetadataDocuments\DevicesModule\DeviceDynamicProperty::class,
+					DevicesDocuments\Devices\Properties\Dynamic::class,
 				);
 
 				foreach ($properties as $property) {
@@ -136,11 +140,13 @@ final class StoreBridgeConnectionState implements Queue\Consumer
 					);
 				}
 
-				$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
+				$findChannelsQuery = new Queries\Configuration\FindChannels();
 				$findChannelsQuery->forDevice($bridge);
-				$findChannelsQuery->byType(Entities\Channels\Channel::TYPE);
 
-				$channels = $this->channelsConfigurationRepository->findAllBy($findChannelsQuery);
+				$channels = $this->channelsConfigurationRepository->findAllBy(
+					$findChannelsQuery,
+					Documents\Channels\Channel::class,
+				);
 
 				foreach ($channels as $channel) {
 					$findChannelPropertiesQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
@@ -148,7 +154,7 @@ final class StoreBridgeConnectionState implements Queue\Consumer
 
 					$properties = $this->channelsPropertiesConfigurationRepository->findAllBy(
 						$findChannelPropertiesQuery,
-						MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
+						DevicesDocuments\Channels\Properties\Dynamic::class,
 					);
 
 					foreach ($properties as $property) {
@@ -160,11 +166,13 @@ final class StoreBridgeConnectionState implements Queue\Consumer
 					}
 				}
 
-				$findChildrenDevicesQuery = new DevicesQueries\Configuration\FindDevices();
+				$findChildrenDevicesQuery = new Queries\Configuration\FindSubDevices();
 				$findChildrenDevicesQuery->forParent($bridge);
-				$findChildrenDevicesQuery->byType(Entities\Devices\SubDevice::TYPE);
 
-				$children = $this->devicesConfigurationRepository->findAllBy($findChildrenDevicesQuery);
+				$children = $this->devicesConfigurationRepository->findAllBy(
+					$findChildrenDevicesQuery,
+					Documents\Devices\SubDevice::class,
+				);
 
 				foreach ($children as $child) {
 					$this->deviceConnectionManager->setState($child, $state);
@@ -174,7 +182,7 @@ final class StoreBridgeConnectionState implements Queue\Consumer
 
 					$properties = $this->devicesPropertiesConfigurationRepository->findAllBy(
 						$findDevicePropertiesQuery,
-						MetadataDocuments\DevicesModule\DeviceDynamicProperty::class,
+						DevicesDocuments\Devices\Properties\Dynamic::class,
 					);
 
 					foreach ($properties as $property) {
@@ -185,11 +193,13 @@ final class StoreBridgeConnectionState implements Queue\Consumer
 						);
 					}
 
-					$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
+					$findChannelsQuery = new Queries\Configuration\FindChannels();
 					$findChannelsQuery->forDevice($child);
-					$findChannelsQuery->byType(Entities\Channels\Channel::TYPE);
 
-					$channels = $this->channelsConfigurationRepository->findAllBy($findChannelsQuery);
+					$channels = $this->channelsConfigurationRepository->findAllBy(
+						$findChannelsQuery,
+						Documents\Channels\Channel::class,
+					);
 
 					foreach ($channels as $channel) {
 						$findChannelPropertiesQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
@@ -197,7 +207,7 @@ final class StoreBridgeConnectionState implements Queue\Consumer
 
 						$properties = $this->channelsPropertiesConfigurationRepository->findAllBy(
 							$findChannelPropertiesQuery,
-							MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
+							DevicesDocuments\Channels\Properties\Dynamic::class,
 						);
 
 						foreach ($properties as $property) {

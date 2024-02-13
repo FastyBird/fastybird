@@ -19,6 +19,7 @@ use FastyBird\Bridge\RedisDbPluginDevicesModule\States;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Plugin\RedisDb\Exceptions as RedisDbExceptions;
 use FastyBird\Plugin\RedisDb\Models as RedisDbModels;
+use InvalidArgumentException;
 use Nette;
 use Ramsey\Uuid;
 use React\Promise;
@@ -52,6 +53,9 @@ class DevicePropertiesRepository implements DevicesModels\States\Devices\Async\I
 		$this->stateRepository = $stateRepositoryFactory->create(States\DeviceProperty::class);
 	}
 
+	/**
+	 * @throws InvalidArgumentException
+	 */
 	public function find(Uuid\UuidInterface $id): Promise\PromiseInterface
 	{
 		return $this->stateRepository->find($id, $this->database);

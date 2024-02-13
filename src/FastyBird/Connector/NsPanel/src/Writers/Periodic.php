@@ -16,15 +16,16 @@
 namespace FastyBird\Connector\NsPanel\Writers;
 
 use DateTimeInterface;
-use FastyBird\Connector\NsPanel\Entities;
+use FastyBird\Connector\NsPanel\Documents;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
+use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -58,10 +59,10 @@ abstract class Periodic implements Writer
 
 	private const HANDLER_PENDING_DELAY = 2_000.0;
 
-	/** @var array<string, MetadataDocuments\DevicesModule\Device>  */
+	/** @var array<string, Documents\Devices\Device>  */
 	private array $devices = [];
 
-	/** @var array<string, array<string, MetadataDocuments\DevicesModule\ChannelProperty>>  */
+	/** @var array<string, array<string, DevicesDocuments\Channels\Properties\Property>>  */
 	private array $properties = [];
 
 	/** @var array<string> */
@@ -73,7 +74,7 @@ abstract class Periodic implements Writer
 	private EventLoop\TimerInterface|null $handlerTimer = null;
 
 	public function __construct(
-		protected readonly MetadataDocuments\DevicesModule\Connector $connector,
+		protected readonly Documents\Connectors\Connector $connector,
 		protected readonly Helpers\MessageBuilder $messageBuilder,
 		protected readonly Helpers\Devices\ThirdPartyDevice $thirdPartyDeviceHelper,
 		protected readonly Queue\Queue $queue,
@@ -95,13 +96,18 @@ abstract class Periodic implements Writer
 		$this->processedDevices = [];
 		$this->processedProperties = [];
 
-		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDevicesQuery = new Queries\Configuration\FindDevices();
 		$findDevicesQuery->forConnector($this->connector);
 
-		foreach ($this->devicesConfigurationRepository->findAllBy($findDevicesQuery) as $device) {
+		$devices = $this->devicesConfigurationRepository->findAllBy(
+			$findDevicesQuery,
+			Documents\Devices\Device::class,
+		);
+
+		foreach ($devices as $device) {
 			if (
-				$device->getType() !== Entities\Devices\SubDevice::TYPE
-				&& $device->getType() !== Entities\Devices\ThirdPartyDevice::TYPE
+				!$device instanceof Documents\Devices\SubDevice
+				&& !$device instanceof Documents\Devices\ThirdPartyDevice
 			) {
 				continue;
 			}
@@ -127,14 +133,14 @@ abstract class Periodic implements Writer
 				foreach ($properties as $property) {
 					if (
 						(
-							$device->getType() === Entities\Devices\SubDevice::TYPE
-							&& $property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+							$device instanceof Documents\Devices\SubDevice
+							&& $property instanceof DevicesDocuments\Channels\Properties\Dynamic
 						) || (
-							$device->getType() === Entities\Devices\ThirdPartyDevice::TYPE
+							$device instanceof Documents\Devices\ThirdPartyDevice
 							&& (
-								$property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
-								|| $property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-								|| $property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty
+								$property instanceof DevicesDocuments\Channels\Properties\Mapped
+								|| $property instanceof DevicesDocuments\Channels\Properties\Dynamic
+								|| $property instanceof DevicesDocuments\Channels\Properties\Variable
 							)
 						)
 					) {
@@ -198,7 +204,7 @@ abstract class Periodic implements Writer
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
-	private function writeProperty(MetadataDocuments\DevicesModule\Device $device): bool
+	private function writeProperty(Documents\Devices\Device $device): bool
 	{
 		if (!array_key_exists($device->getId()->toString(), $this->properties)) {
 			return false;
@@ -206,13 +212,13 @@ abstract class Periodic implements Writer
 
 		foreach ($this->properties[$device->getId()->toString()] as $property) {
 			if (
-				$device->getType() === Entities\Devices\SubDevice::TYPE
-				&& $property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+				$device instanceof Documents\Devices\SubDevice
+				&& $property instanceof DevicesDocuments\Channels\Properties\Dynamic
 			) {
 				if ($this->writeSubDeviceChannelProperty($device, $property)) {
 					return true;
 				}
-			} elseif ($device->getType() === Entities\Devices\ThirdPartyDevice::TYPE) {
+			} elseif ($device instanceof Documents\Devices\ThirdPartyDevice) {
 				if ($this->writeThirdPartyDeviceChannelProperty($device, $property)) {
 					return true;
 				}
@@ -232,8 +238,8 @@ abstract class Periodic implements Writer
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	private function writeSubDeviceChannelProperty(
-		MetadataDocuments\DevicesModule\Device $device,
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty $property,
+		Documents\Devices\SubDevice $device,
+		DevicesDocuments\Channels\Properties\Dynamic $property,
 	): bool
 	{
 		$now = $this->dateTimeFactory->getNow();
@@ -260,7 +266,7 @@ abstract class Periodic implements Writer
 
 		if (is_bool($state)) {
 			return $state;
-		} elseif (!$state instanceof MetadataDocuments\DevicesModule\ChannelPropertyState) {
+		} elseif (!$state instanceof DevicesDocuments\States\Properties\Channel) {
 			// Property state is not set
 			return false;
 		}
@@ -315,8 +321,8 @@ abstract class Periodic implements Writer
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	private function writeThirdPartyDeviceChannelProperty(
-		MetadataDocuments\DevicesModule\Device $device,
-		MetadataDocuments\DevicesModule\ChannelProperty $property,
+		Documents\Devices\ThirdPartyDevice $device,
+		DevicesDocuments\Channels\Properties\Property $property,
 	): bool
 	{
 		$now = $this->dateTimeFactory->getNow();
@@ -353,7 +359,7 @@ abstract class Periodic implements Writer
 
 		$this->processedProperties[$property->getId()->toString()] = $now;
 
-		if ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
+		if ($property instanceof DevicesDocuments\Channels\Properties\Mapped) {
 			$state = await(
 				$this->channelPropertiesStatesManager->read(
 					$property,
@@ -363,7 +369,7 @@ abstract class Periodic implements Writer
 
 			if (is_bool($state)) {
 				return $state;
-			} elseif (!$state instanceof MetadataDocuments\DevicesModule\ChannelPropertyState) {
+			} elseif (!$state instanceof DevicesDocuments\States\Properties\Channel) {
 				// Property state is not set
 				return false;
 			}
@@ -395,7 +401,7 @@ abstract class Periodic implements Writer
 				),
 			);
 
-		} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+		} elseif ($property instanceof DevicesDocuments\Channels\Properties\Dynamic) {
 			$state = await(
 				$this->channelPropertiesStatesManager->read(
 					$property,
@@ -405,7 +411,7 @@ abstract class Periodic implements Writer
 
 			if (is_bool($state)) {
 				return $state;
-			} elseif (!$state instanceof MetadataDocuments\DevicesModule\ChannelPropertyState) {
+			} elseif (!$state instanceof DevicesDocuments\States\Properties\Channel) {
 				// Property state is not set
 				return false;
 			}

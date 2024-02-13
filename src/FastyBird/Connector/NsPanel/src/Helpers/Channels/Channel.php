@@ -16,9 +16,9 @@
 namespace FastyBird\Connector\NsPanel\Helpers\Channels;
 
 use FastyBird\Connector\NsPanel;
+use FastyBird\Connector\NsPanel\Documents;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Types;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use function array_key_exists;
 use function preg_match;
 use function str_replace;
@@ -37,7 +37,7 @@ final class Channel
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public function getCapability(MetadataDocuments\DevicesModule\Channel $channel): Types\Capability
+	public function getCapability(Documents\Channels\Channel $channel): Types\Capability
 	{
 		preg_match(NsPanel\Constants::CHANNEL_IDENTIFIER, $channel->getIdentifier(), $matches);
 

@@ -19,6 +19,7 @@ use Contributte\Cache;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
@@ -51,7 +52,7 @@ final class Repository extends Models\Configuration\Repository
 	}
 
 	/**
-	 * @template T of MetadataDocuments\DevicesModule\DeviceProperty
+	 * @template T of Documents\Devices\Properties\Property
 	 *
 	 * @param class-string<T> $type
 	 *
@@ -61,8 +62,8 @@ final class Repository extends Models\Configuration\Repository
 	 */
 	public function find(
 		Uuid\UuidInterface $id,
-		string $type = MetadataDocuments\DevicesModule\DeviceProperty::class,
-	): MetadataDocuments\DevicesModule\DeviceProperty|null
+		string $type = Documents\Devices\Properties\Property::class,
+	): Documents\Devices\Properties\Property|null
 	{
 		$queryObject = new Queries\Configuration\FindDeviceProperties();
 		$queryObject->byId($id);
@@ -77,7 +78,7 @@ final class Repository extends Models\Configuration\Repository
 	}
 
 	/**
-	 * @template T of MetadataDocuments\DevicesModule\DeviceProperty
+	 * @template T of Documents\Devices\Properties\Property
 	 *
 	 * @param Queries\Configuration\FindDeviceProperties<T> $queryObject
 	 * @param class-string<T> $type
@@ -88,26 +89,26 @@ final class Repository extends Models\Configuration\Repository
 	 */
 	public function findOneBy(
 		Queries\Configuration\FindDeviceProperties $queryObject,
-		string $type = MetadataDocuments\DevicesModule\DeviceProperty::class,
-	): MetadataDocuments\DevicesModule\DeviceProperty|null
+		string $type = Documents\Devices\Properties\Property::class,
+	): Documents\Devices\Properties\Property|null
 	{
 		try {
 			$document = $this->cache->load(
 				$this->createKeyOne($queryObject) . '_' . md5($type),
-				function () use ($queryObject, $type): MetadataDocuments\DevicesModule\DeviceProperty|false {
+				function () use ($queryObject, $type): Documents\Devices\Properties\Property|false {
 					$space = $this->builder
 						->load()
 						->find('.' . Devices\Constants::DATA_STORAGE_PROPERTIES_KEY . '.*');
 
-					if ($type === MetadataDocuments\DevicesModule\DeviceDynamicProperty::class) {
+					if ($type === Documents\Devices\Properties\Dynamic::class) {
 						$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::DYNAMIC . '")]');
 
-					} elseif ($type === MetadataDocuments\DevicesModule\DeviceVariableProperty::class) {
+					} elseif ($type === Documents\Devices\Properties\Variable::class) {
 						$space = $space->find(
 							'.[?(@.type == "' . MetadataTypes\PropertyType::VARIABLE . '")]',
 						);
 
-					} elseif ($type === MetadataDocuments\DevicesModule\DeviceMappedProperty::class) {
+					} elseif ($type === Documents\Devices\Properties\Mapped::class) {
 						$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::MAPPED . '")]');
 					}
 
@@ -119,9 +120,9 @@ final class Repository extends Models\Configuration\Repository
 
 					foreach (
 						[
-							MetadataDocuments\DevicesModule\DeviceDynamicProperty::class,
-							MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
-							MetadataDocuments\DevicesModule\DeviceMappedProperty::class,
+							Documents\Devices\Properties\Dynamic::class,
+							Documents\Devices\Properties\Variable::class,
+							Documents\Devices\Properties\Mapped::class,
 						] as $class
 					) {
 						try {
@@ -153,7 +154,7 @@ final class Repository extends Models\Configuration\Repository
 	}
 
 	/**
-	 * @template T of MetadataDocuments\DevicesModule\DeviceProperty
+	 * @template T of Documents\Devices\Properties\Property
 	 *
 	 * @param Queries\Configuration\FindDeviceProperties<T> $queryObject
 	 * @param class-string<T> $type
@@ -164,7 +165,7 @@ final class Repository extends Models\Configuration\Repository
 	 */
 	public function findAllBy(
 		Queries\Configuration\FindDeviceProperties $queryObject,
-		string $type = MetadataDocuments\DevicesModule\DeviceProperty::class,
+		string $type = Documents\Devices\Properties\Property::class,
 	): array
 	{
 		try {
@@ -175,15 +176,15 @@ final class Repository extends Models\Configuration\Repository
 						->load()
 						->find('.' . Devices\Constants::DATA_STORAGE_PROPERTIES_KEY . '.*');
 
-					if ($type === MetadataDocuments\DevicesModule\DeviceDynamicProperty::class) {
+					if ($type === Documents\Devices\Properties\Dynamic::class) {
 						$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::DYNAMIC . '")]');
 
-					} elseif ($type === MetadataDocuments\DevicesModule\DeviceVariableProperty::class) {
+					} elseif ($type === Documents\Devices\Properties\Variable::class) {
 						$space = $space->find(
 							'.[?(@.type == "' . MetadataTypes\PropertyType::VARIABLE . '")]',
 						);
 
-					} elseif ($type === MetadataDocuments\DevicesModule\DeviceMappedProperty::class) {
+					} elseif ($type === Documents\Devices\Properties\Mapped::class) {
 						$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::MAPPED . '")]');
 					}
 
@@ -195,12 +196,12 @@ final class Repository extends Models\Configuration\Repository
 
 					return array_filter(
 						array_map(
-							function (stdClass $item): MetadataDocuments\DevicesModule\DeviceProperty|null {
+							function (stdClass $item): Documents\Devices\Properties\Property|null {
 								foreach (
 									[
-										MetadataDocuments\DevicesModule\DeviceDynamicProperty::class,
-										MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
-										MetadataDocuments\DevicesModule\DeviceMappedProperty::class,
+										Documents\Devices\Properties\Dynamic::class,
+										Documents\Devices\Properties\Variable::class,
+										Documents\Devices\Properties\Mapped::class,
 									] as $class
 								) {
 									try {

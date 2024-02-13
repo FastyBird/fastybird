@@ -51,7 +51,7 @@ final class Publisher implements ExchangePublisher\Publisher
 
 	public function publish(
 		MetadataTypes\Sources\Source $source,
-		MetadataTypes\RoutingKey $routingKey,
+		string $routingKey,
 		MetadataDocuments\Document|null $entity,
 	): bool
 	{
@@ -61,7 +61,7 @@ final class Publisher implements ExchangePublisher\Publisher
 				Nette\Utils\Json::encode([
 					'sender_id' => $this->identifier->getIdentifier(),
 					'source' => $source->getValue(),
-					'routing_key' => $routingKey->getValue(),
+					'routing_key' => $routingKey,
 					'created' => $this->dateTimeFactory->getNow()->format(DateTimeInterface::ATOM),
 					'data' => $entity?->toArray(),
 				]),
@@ -74,7 +74,7 @@ final class Publisher implements ExchangePublisher\Publisher
 						'source' => MetadataTypes\Sources\Plugin::REDISDB,
 						'type' => 'messages-publisher',
 						'message' => [
-							'routing_key' => $routingKey->getValue(),
+							'routing_key' => $routingKey,
 							'source' => $source->getValue(),
 							'data' => $entity?->toArray(),
 						],
@@ -89,7 +89,7 @@ final class Publisher implements ExchangePublisher\Publisher
 						'source' => MetadataTypes\Sources\Plugin::REDISDB,
 						'type' => 'messages-publisher',
 						'message' => [
-							'routing_key' => $routingKey->getValue(),
+							'routing_key' => $routingKey,
 							'source' => $source->getValue(),
 							'data' => $entity?->toArray(),
 						],
@@ -106,7 +106,7 @@ final class Publisher implements ExchangePublisher\Publisher
 					'type' => 'messages-publisher',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'message' => [
-						'routing_key' => $routingKey->getValue(),
+						'routing_key' => $routingKey,
 						'source' => $source->getValue(),
 						'data' => $entity?->toArray(),
 					],

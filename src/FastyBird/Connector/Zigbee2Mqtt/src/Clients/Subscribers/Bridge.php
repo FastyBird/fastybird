@@ -18,13 +18,13 @@ namespace FastyBird\Connector\Zigbee2Mqtt\Clients\Subscribers;
 use BinSoul\Net\Mqtt as NetMqtt;
 use FastyBird\Connector\Zigbee2Mqtt;
 use FastyBird\Connector\Zigbee2Mqtt\API;
+use FastyBird\Connector\Zigbee2Mqtt\Documents;
 use FastyBird\Connector\Zigbee2Mqtt\Entities;
 use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
 use FastyBird\Connector\Zigbee2Mqtt\Helpers;
 use FastyBird\Connector\Zigbee2Mqtt\Queue;
 use FastyBird\Connector\Zigbee2Mqtt\Types;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette\Utils;
 use function array_key_exists;
@@ -42,7 +42,7 @@ class Bridge
 {
 
 	public function __construct(
-		private readonly MetadataDocuments\DevicesModule\Connector|Entities\Connectors\Connector $connector,
+		private readonly Documents\Connectors\Connector|Entities\Connectors\Connector $connector,
 		private readonly Zigbee2Mqtt\Logger $logger,
 		private readonly Queue\Queue $queue,
 		private readonly Helpers\MessageBuilder $messageBuilder,

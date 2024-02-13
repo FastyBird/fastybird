@@ -16,3 +16,7 @@ php:
 extensions:
     ipubPhone           : IPub\Phone\DI\PhoneExtension
     fbMetadataLibrary   : FastyBird\Library\Metadata\DI\MetadataExtension
+
+fbMetadataLibrary:
+    documents:
+        mapping: []

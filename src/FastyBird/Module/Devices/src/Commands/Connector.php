@@ -22,11 +22,11 @@ use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Exchange\Exchange as ExchangeExchange;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Connectors;
 use FastyBird\Module\Devices\Consumers;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
@@ -481,7 +481,7 @@ class Connector extends Console\Command\Command
 	 * @throws Exceptions\Terminate
 	 */
 	private function terminate(
-		MetadataDocuments\DevicesModule\Connector $connector,
+		Documents\Connectors\Connector $connector,
 		Connectors\Connector $service,
 		Types\ConnectorMode $mode,
 	): void
@@ -557,7 +557,7 @@ class Connector extends Console\Command\Command
 		Style\SymfonyStyle $io,
 		Input\InputInterface $input,
 		Types\ConnectorMode $mode,
-	): MetadataDocuments\DevicesModule\Connector|false|null
+	): Documents\Connectors\Connector|false|null
 	{
 		if (
 			$input->hasOption('connector')
@@ -634,7 +634,7 @@ class Connector extends Console\Command\Command
 
 			usort(
 				$systemConnectors,
-				static fn (MetadataDocuments\DevicesModule\Connector $a, MetadataDocuments\DevicesModule\Connector $b): int => (
+				static fn (Documents\Connectors\Connector $a, Documents\Connectors\Connector $b): int => (
 					($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
 				),
 			);
@@ -655,7 +655,7 @@ class Connector extends Console\Command\Command
 				$this->translator->translate('//devices-module.cmd.base.messages.answerNotValid'),
 			);
 			$question->setValidator(
-				function (string|int|null $answer) use ($connectors): MetadataDocuments\DevicesModule\Connector {
+				function (string|int|null $answer) use ($connectors): Documents\Connectors\Connector {
 					if ($answer === null) {
 						throw new Exceptions\Runtime(
 							sprintf(
@@ -692,7 +692,7 @@ class Connector extends Console\Command\Command
 			);
 
 			$connector = $io->askQuestion($question);
-			assert($connector instanceof MetadataDocuments\DevicesModule\Connector);
+			assert($connector instanceof Documents\Connectors\Connector);
 		}
 
 		if (!$connector->isEnabled()) {

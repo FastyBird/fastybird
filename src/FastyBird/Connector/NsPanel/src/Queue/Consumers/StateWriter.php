@@ -15,13 +15,14 @@
 
 namespace FastyBird\Connector\NsPanel\Queue\Consumers;
 
+use FastyBird\Connector\NsPanel\Documents;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Types;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -61,9 +62,7 @@ trait StateWriter
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
-	public function mapChannelToState(
-		MetadataDocuments\DevicesModule\Channel $channel,
-	): array|null
+	public function mapChannelToState(Documents\Channels\Channel $channel): array|null
 	{
 		switch ($this->channelHelper->getCapability($channel)->getValue()) {
 			case Types\Capability::POWER:
@@ -496,18 +495,18 @@ trait StateWriter
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	private function getPropertyValue(
-		MetadataDocuments\DevicesModule\ChannelProperty $property,
+		DevicesDocuments\Channels\Properties\Property $property,
 	): string|int|float|bool|null
 	{
-		if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+		if ($property instanceof DevicesDocuments\Channels\Properties\Dynamic) {
 			$state = await($this->channelPropertiesStatesManager->readState($property));
 
 			$value = $state?->getGet()->getExpectedValue();
-		} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
+		} elseif ($property instanceof DevicesDocuments\Channels\Properties\Mapped) {
 			$state = await($this->channelPropertiesStatesManager->readState($property));
 
 			$value = $state?->getRead()->getExpectedValue() ?? ($state?->isValid() === true ? $state->getRead()->getActualValue() : null);
-		} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
+		} elseif ($property instanceof DevicesDocuments\Channels\Properties\Variable) {
 			$value = $property->getValue();
 		} else {
 			throw new Exceptions\InvalidArgument('Provided property is not valid');
@@ -520,9 +519,9 @@ trait StateWriter
 	 * @throws DevicesExceptions\InvalidState
 	 */
 	private function findProtocolProperty(
-		MetadataDocuments\DevicesModule\Channel $channel,
+		Documents\Channels\Channel $channel,
 		Types\Protocol $protocol,
-	): MetadataDocuments\DevicesModule\ChannelProperty|null
+	): DevicesDocuments\Channels\Properties\Property|null
 	{
 		$findChannelPropertyQuery = new DevicesQueries\Configuration\FindChannelProperties();
 		$findChannelPropertyQuery->forChannel($channel);

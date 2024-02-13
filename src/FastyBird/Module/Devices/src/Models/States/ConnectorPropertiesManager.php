@@ -25,6 +25,7 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
@@ -43,7 +44,7 @@ use function strval;
 /**
  * Useful connector dynamic property state helpers
  *
- * @extends PropertiesManager<MetadataDocuments\DevicesModule\ConnectorDynamicProperty, null, States\ConnectorProperty>
+ * @extends PropertiesManager<Documents\Connectors\Properties\Dynamic, null, States\ConnectorProperty>
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Models
@@ -75,23 +76,24 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function read(
-		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
+		Documents\Connectors\Properties\Dynamic $property,
 		MetadataTypes\Sources\Source|null $source,
-	): bool|MetadataDocuments\DevicesModule\ConnectorPropertyState|null
+	): bool|Documents\States\Properties\Connector|null
 	{
 		if ($this->useExchange) {
 			try {
 				return $this->publisher->publish(
 					$source ?? MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
-					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_ACTION),
+					Devices\Constants::MESSAGE_BUS_CONNECTOR_PROPERTY_ACTION_ROUTING_KEY,
 					$this->documentFactory->create(
-						MetadataDocuments\Actions\ActionConnectorProperty::class,
+						Documents\Actions\Properties\Connector::class,
 						[
-							'action' => MetadataTypes\PropertyAction::GET,
+							'action' => MetadataTypes\PropertyAction::GET->value,
 							'connector' => $property->getConnector()->toString(),
 							'property' => $property->getId()->toString(),
 						],
@@ -117,7 +119,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function write(
-		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
+		Documents\Connectors\Properties\Dynamic $property,
 		Utils\ArrayHash $data,
 		MetadataTypes\Sources\Source|null $source,
 	): void
@@ -126,12 +128,12 @@ final class ConnectorPropertiesManager extends PropertiesManager
 			try {
 				$this->publisher->publish(
 					$source ?? MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
-					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_ACTION),
+					Devices\Constants::MESSAGE_BUS_CONNECTOR_PROPERTY_ACTION_ROUTING_KEY,
 					$this->documentFactory->create(
-						MetadataDocuments\Actions\ActionConnectorProperty::class,
+						Documents\Actions\Properties\Connector::class,
 						array_merge(
 							[
-								'action' => MetadataTypes\PropertyAction::SET,
+								'action' => MetadataTypes\PropertyAction::SET->value,
 								'connector' => $property->getConnector()->toString(),
 								'property' => $property->getId()->toString(),
 							],
@@ -167,7 +169,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function set(
-		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
+		Documents\Connectors\Properties\Dynamic $property,
 		Utils\ArrayHash $data,
 		MetadataTypes\Sources\Source|null $source,
 	): void
@@ -176,12 +178,12 @@ final class ConnectorPropertiesManager extends PropertiesManager
 			try {
 				$this->publisher->publish(
 					$source ?? MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
-					MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_ACTION),
+					Devices\Constants::MESSAGE_BUS_CONNECTOR_PROPERTY_ACTION_ROUTING_KEY,
 					$this->documentFactory->create(
-						MetadataDocuments\Actions\ActionConnectorProperty::class,
+						Documents\Actions\Properties\Connector::class,
 						array_merge(
 							[
-								'action' => MetadataTypes\PropertyAction::SET,
+								'action' => MetadataTypes\PropertyAction::SET->value,
 								'connector' => $property->getConnector()->toString(),
 								'property' => $property->getId()->toString(),
 							],
@@ -210,7 +212,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	}
 
 	/**
-	 * @param MetadataDocuments\DevicesModule\ConnectorDynamicProperty|array<MetadataDocuments\DevicesModule\ConnectorDynamicProperty> $property
+	 * @param Documents\Connectors\Properties\Dynamic|array<Documents\Connectors\Properties\Dynamic> $property
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
@@ -219,7 +221,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function setValidState(
-		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|array $property,
+		Documents\Connectors\Properties\Dynamic|array $property,
 		bool $state,
 		MetadataTypes\Sources\Source|null $source,
 	): void
@@ -246,7 +248,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	}
 
 	/**
-	 * @param MetadataDocuments\DevicesModule\ConnectorDynamicProperty|array<MetadataDocuments\DevicesModule\ConnectorDynamicProperty> $property
+	 * @param Documents\Connectors\Properties\Dynamic|array<Documents\Connectors\Properties\Dynamic> $property
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
@@ -255,7 +257,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function setPendingState(
-		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|array $property,
+		Documents\Connectors\Properties\Dynamic|array $property,
 		bool $pending,
 		MetadataTypes\Sources\Source|null $source,
 	): void
@@ -338,14 +340,15 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 *
 	 * @interal
 	 */
 	public function readState(
-		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
-	): MetadataDocuments\DevicesModule\ConnectorPropertyState|null
+		Documents\Connectors\Properties\Dynamic $property,
+	): Documents\States\Properties\Connector|null
 	{
 		try {
 			$state = $this->connectorPropertyStateRepository->find($property->getId());
@@ -371,7 +374,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 			$getValue = $this->convertStoredState($property, null, $state, false);
 
 			return $this->documentFactory->create(
-				MetadataDocuments\DevicesModule\ConnectorPropertyState::class,
+				Documents\States\Properties\Connector::class,
 				[
 					'id' => $property->getId()->toString(),
 					'connector' => $property->getConnector()->toString(),
@@ -454,7 +457,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	 * @interal
 	 */
 	public function writeState(
-		MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
+		Documents\Connectors\Properties\Dynamic $property,
 		Utils\ArrayHash $data,
 		bool $forWriting,
 		MetadataTypes\Sources\Source|null $source,

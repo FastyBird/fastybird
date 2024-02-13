@@ -18,10 +18,10 @@ namespace FastyBird\Module\Devices\Utilities;
 use Doctrine\DBAL;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
@@ -65,7 +65,7 @@ final class ConnectorConnection
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function setState(
-		Entities\Connectors\Connector|MetadataDocuments\DevicesModule\Connector $connector,
+		Entities\Connectors\Connector|Documents\Connectors\Connector $connector,
 		MetadataTypes\ConnectionState $state,
 	): bool
 	{
@@ -75,7 +75,7 @@ final class ConnectorConnection
 
 		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
 			$findConnectorPropertyQuery,
-			MetadataDocuments\DevicesModule\ConnectorDynamicProperty::class,
+			Documents\Connectors\Properties\Dynamic::class,
 		);
 
 		if ($property === null) {
@@ -110,7 +110,7 @@ final class ConnectorConnection
 		}
 
 		$property = $this->connectorsPropertiesConfigurationRepository->find($property->getId());
-		assert($property instanceof MetadataDocuments\DevicesModule\ConnectorDynamicProperty);
+		assert($property instanceof Documents\Connectors\Properties\Dynamic);
 
 		$this->propertiesStatesManager->set(
 			$property,
@@ -129,11 +129,12 @@ final class ConnectorConnection
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function getState(
-		Entities\Connectors\Connector|MetadataDocuments\DevicesModule\Connector $connector,
+		Entities\Connectors\Connector|Documents\Connectors\Connector $connector,
 	): MetadataTypes\ConnectionState
 	{
 		$findConnectorPropertyQuery = new Queries\Configuration\FindConnectorDynamicProperties();
@@ -142,10 +143,10 @@ final class ConnectorConnection
 
 		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
 			$findConnectorPropertyQuery,
-			MetadataDocuments\DevicesModule\ConnectorDynamicProperty::class,
+			Documents\Connectors\Properties\Dynamic::class,
 		);
 
-		if ($property instanceof MetadataDocuments\DevicesModule\ConnectorDynamicProperty) {
+		if ($property instanceof Documents\Connectors\Properties\Dynamic) {
 			$state = $this->propertiesStatesManager->readState($property);
 
 			if (
@@ -164,11 +165,12 @@ final class ConnectorConnection
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function isRunning(
-		Entities\Devices\Device|MetadataDocuments\DevicesModule\Connector $connector,
+		Entities\Devices\Device|Documents\Connectors\Connector $connector,
 	): bool
 	{
 		$findDevicePropertyQuery = new Queries\Configuration\FindConnectorProperties();
@@ -177,10 +179,10 @@ final class ConnectorConnection
 
 		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
 			$findDevicePropertyQuery,
-			MetadataDocuments\DevicesModule\ConnectorDynamicProperty::class,
+			Documents\Connectors\Properties\Dynamic::class,
 		);
 
-		if ($property instanceof MetadataDocuments\DevicesModule\ConnectorDynamicProperty) {
+		if ($property instanceof Documents\Connectors\Properties\Dynamic) {
 			$state = $this->propertiesStatesManager->readState($property);
 
 			if (

@@ -17,15 +17,15 @@ namespace FastyBird\Connector\NsPanel\Queue\Consumers;
 
 use Doctrine\DBAL;
 use FastyBird\Connector\NsPanel;
-use FastyBird\Connector\NsPanel\Entities;
+use FastyBird\Connector\NsPanel\Documents;
 use FastyBird\Connector\NsPanel\Helpers;
+use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Queue;
-use FastyBird\Connector\NsPanel\Queue\Messages\CapabilityState;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -74,11 +74,14 @@ final class StoreDeviceState implements Queue\Consumer
 			return false;
 		}
 
-		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDeviceQuery = new Queries\Configuration\FindDevices();
 		$findDeviceQuery->byConnectorId($message->getConnector());
 		$findDeviceQuery->byIdentifier($message->getIdentifier());
 
-		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+		$device = $this->devicesConfigurationRepository->findOneBy(
+			$findDeviceQuery,
+			Documents\Devices\Device::class,
+		);
 
 		if ($device === null) {
 			$this->logger->error(
@@ -99,9 +102,9 @@ final class StoreDeviceState implements Queue\Consumer
 			return true;
 		}
 
-		if ($device->getType() === Entities\Devices\ThirdPartyDevice::TYPE) {
+		if ($device instanceof Documents\Devices\ThirdPartyDevice) {
 			$this->processThirdPartyDevice($device, $message->getState());
-		} elseif ($device->getType() === Entities\Devices\SubDevice::TYPE) {
+		} elseif ($device instanceof Documents\Devices\SubDevice) {
 			$this->processSubDevice($device, $message->getState());
 		}
 
@@ -124,23 +127,23 @@ final class StoreDeviceState implements Queue\Consumer
 	}
 
 	/**
-	 * @param array<CapabilityState> $state
+	 * @param array<Queue\Messages\CapabilityState> $state
 	 *
 	 * @throws DevicesExceptions\InvalidState
 	 */
-	private function processSubDevice(
-		MetadataDocuments\DevicesModule\Device $device,
-		array $state,
-	): void
+	private function processSubDevice(Documents\Devices\Device $device, array $state): void
 	{
 		foreach ($state as $item) {
-			$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
+			$findChannelQuery = new Queries\Configuration\FindChannels();
 			$findChannelQuery->forDevice($device);
 			$findChannelQuery->byIdentifier(
 				Helpers\Name::convertCapabilityToChannel($item->getCapability(), $item->getIdentifier()),
 			);
 
-			$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
+			$channel = $this->channelsConfigurationRepository->findOneBy(
+				$findChannelQuery,
+				Documents\Channels\Channel::class,
+			);
 
 			if ($channel === null) {
 				continue;
@@ -152,7 +155,7 @@ final class StoreDeviceState implements Queue\Consumer
 
 			$property = $this->channelsPropertiesConfigurationRepository->findOneBy(
 				$findChannelPropertiesQuery,
-				MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
+				DevicesDocuments\Channels\Properties\Dynamic::class,
 			);
 
 			if ($property === null) {
@@ -170,7 +173,7 @@ final class StoreDeviceState implements Queue\Consumer
 	}
 
 	/**
-	 * @param array<CapabilityState> $state
+	 * @param array<Queue\Messages\CapabilityState> $state
 	 *
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws ApplicationExceptions\Runtime
@@ -178,18 +181,21 @@ final class StoreDeviceState implements Queue\Consumer
 	 * @throws DevicesExceptions\InvalidState
 	 */
 	private function processThirdPartyDevice(
-		MetadataDocuments\DevicesModule\Device $device,
+		Documents\Devices\Device $device,
 		array $state,
 	): void
 	{
 		foreach ($state as $item) {
-			$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
+			$findChannelQuery = new Queries\Configuration\FindChannels();
 			$findChannelQuery->forDevice($device);
 			$findChannelQuery->byIdentifier(
 				Helpers\Name::convertCapabilityToChannel($item->getCapability(), $item->getIdentifier()),
 			);
 
-			$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
+			$channel = $this->channelsConfigurationRepository->findOneBy(
+				$findChannelQuery,
+				Documents\Channels\Channel::class,
+			);
 
 			if ($channel === null) {
 				continue;
@@ -221,13 +227,13 @@ final class StoreDeviceState implements Queue\Consumer
 	 * @throws DevicesExceptions\InvalidState
 	 */
 	private function writeThirdPartyProperty(
-		MetadataDocuments\DevicesModule\Device $device,
-		MetadataDocuments\DevicesModule\Channel $channel,
-		MetadataDocuments\DevicesModule\ChannelProperty $property,
+		Documents\Devices\Device $device,
+		Documents\Channels\Channel $channel,
+		DevicesDocuments\Channels\Properties\Property $property,
 		float|int|string|bool|null $value,
 	): void
 	{
-		if ($property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
+		if ($property instanceof DevicesDocuments\Channels\Properties\Variable) {
 			$this->databaseHelper->transaction(
 				function () use ($property, $value): void {
 					$property = $this->channelsPropertiesRepository->find(
@@ -245,7 +251,7 @@ final class StoreDeviceState implements Queue\Consumer
 				},
 			);
 
-		} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+		} elseif ($property instanceof DevicesDocuments\Channels\Properties\Dynamic) {
 			await($this->channelPropertiesStatesManager->set(
 				$property,
 				Utils\ArrayHash::from([
@@ -254,7 +260,7 @@ final class StoreDeviceState implements Queue\Consumer
 				MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::NS_PANEL),
 			));
 
-		} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
+		} elseif ($property instanceof DevicesDocuments\Channels\Properties\Mapped) {
 			await($this->channelPropertiesStatesManager->write(
 				$property,
 				Utils\ArrayHash::from([

@@ -20,6 +20,7 @@
                 <element key="src" value="FastyBird\Plugin\RabbitMq"/>
                 <element key="tests/cases/unit" value="FastyBird\Plugin\RabbitMq\Tests\Cases\Unit"/>
                 <element key="tests/fixtures" value="FastyBird\Plugin\RabbitMq\Tests\Fixtures"/>
+                <element key="tests/fixtures/dummy" value="FastyBird\Plugin\RabbitMq\Tests\Fixtures\Dummy"/>
             </property>
         </properties>
     </rule>

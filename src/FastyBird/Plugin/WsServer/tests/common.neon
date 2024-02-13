@@ -22,3 +22,7 @@ extensions:
 
 services:
     - {factory: Symfony\Component\EventDispatcher\EventDispatcher}
+
+fbMetadataLibrary:
+    documents:
+        mapping: []

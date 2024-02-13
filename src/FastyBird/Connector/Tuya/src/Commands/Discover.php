@@ -16,16 +16,15 @@
 namespace FastyBird\Connector\Tuya\Commands;
 
 use DateTimeInterface;
-use FastyBird\Connector\Tuya\Entities;
+use FastyBird\Connector\Tuya\Documents;
 use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Helpers;
+use FastyBird\Connector\Tuya\Queries;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Commands as DevicesCommands;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Types as DevicesTypes;
 use Nette\Localization;
 use Ramsey\Uuid;
@@ -132,8 +131,7 @@ class Discover extends Console\Command\Command
 		) {
 			$connectorId = $input->getOption('connector');
 
-			$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
-			$findConnectorQuery->byType(Entities\Connectors\Connector::TYPE);
+			$findConnectorQuery = new Queries\Configuration\FindConnectors();
 
 			if (Uuid\Uuid::isValid($connectorId)) {
 				$findConnectorQuery->byId(Uuid\Uuid::fromString($connectorId));
@@ -141,7 +139,10 @@ class Discover extends Console\Command\Command
 				$findConnectorQuery->byIdentifier($connectorId);
 			}
 
-			$connector = $this->connectorsConfigurationRepository->findOneBy($findConnectorQuery);
+			$connector = $this->connectorsConfigurationRepository->findOneBy(
+				$findConnectorQuery,
+				Documents\Connectors\Connector::class,
+			);
 
 			if ($connector === null) {
 				$io->warning(
@@ -153,14 +154,16 @@ class Discover extends Console\Command\Command
 		} else {
 			$connectors = [];
 
-			$findConnectorsQuery = new DevicesQueries\Configuration\FindConnectors();
-			$findConnectorsQuery->byType(Entities\Connectors\Connector::TYPE);
+			$findConnectorsQuery = new Queries\Configuration\FindConnectors();
 
-			$systemConnectors = $this->connectorsConfigurationRepository->findAllBy($findConnectorsQuery);
+			$systemConnectors = $this->connectorsConfigurationRepository->findAllBy(
+				$findConnectorsQuery,
+				Documents\Connectors\Connector::class,
+			);
 			usort(
 				$systemConnectors,
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (MetadataDocuments\DevicesModule\Connector $a, MetadataDocuments\DevicesModule\Connector $b): int => $a->getIdentifier() <=> $b->getIdentifier()
+				static fn (Documents\Connectors\Connector $a, Documents\Connectors\Connector $b): int => $a->getIdentifier() <=> $b->getIdentifier()
 			);
 
 			foreach ($systemConnectors as $connector) {
@@ -177,11 +180,13 @@ class Discover extends Console\Command\Command
 			if (count($connectors) === 1) {
 				$connectorIdentifier = array_key_first($connectors);
 
-				$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
+				$findConnectorQuery = new Queries\Configuration\FindConnectors();
 				$findConnectorQuery->byIdentifier($connectorIdentifier);
-				$findConnectorQuery->byType(Entities\Connectors\Connector::TYPE);
 
-				$connector = $this->connectorsConfigurationRepository->findOneBy($findConnectorQuery);
+				$connector = $this->connectorsConfigurationRepository->findOneBy(
+					$findConnectorQuery,
+					Documents\Connectors\Connector::class,
+				);
 
 				if ($connector === null) {
 					$io->warning(
@@ -213,7 +218,7 @@ class Discover extends Console\Command\Command
 					$this->translator->translate('//tuya-connector.cmd.base.messages.answerNotValid'),
 				);
 				$question->setValidator(
-					function (string|int|null $answer) use ($connectors): MetadataDocuments\DevicesModule\Connector {
+					function (string|int|null $answer) use ($connectors): Documents\Connectors\Connector {
 						if ($answer === null) {
 							throw new Exceptions\Runtime(
 								sprintf(
@@ -232,11 +237,13 @@ class Discover extends Console\Command\Command
 						$identifier = array_search($answer, $connectors, true);
 
 						if ($identifier !== false) {
-							$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
+							$findConnectorQuery = new Queries\Configuration\FindConnectors();
 							$findConnectorQuery->byIdentifier($identifier);
-							$findConnectorQuery->byType(Entities\Connectors\Connector::TYPE);
 
-							$connector = $this->connectorsConfigurationRepository->findOneBy($findConnectorQuery);
+							$connector = $this->connectorsConfigurationRepository->findOneBy(
+								$findConnectorQuery,
+								Documents\Connectors\Connector::class,
+							);
 
 							if ($connector !== null) {
 								return $connector;
@@ -253,7 +260,7 @@ class Discover extends Console\Command\Command
 				);
 
 				$connector = $io->askQuestion($question);
-				assert($connector instanceof MetadataDocuments\DevicesModule\Connector);
+				assert($connector instanceof Documents\Connectors\Connector);
 			}
 		}
 
@@ -301,7 +308,7 @@ class Discover extends Console\Command\Command
 	private function showResults(
 		Style\SymfonyStyle $io,
 		Output\OutputInterface $output,
-		MetadataDocuments\DevicesModule\Connector $connector,
+		Documents\Connectors\Connector $connector,
 	): void
 	{
 		$table = new Console\Helper\Table($output);
@@ -315,11 +322,13 @@ class Discover extends Console\Command\Command
 
 		$foundDevices = 0;
 
-		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDevicesQuery = new Queries\Configuration\FindDevices();
 		$findDevicesQuery->forConnector($connector);
-		$findDevicesQuery->byType(Entities\Devices\Device::TYPE);
 
-		$devices = $this->devicesConfigurationRepository->findAllBy($findDevicesQuery);
+		$devices = $this->devicesConfigurationRepository->findAllBy(
+			$findDevicesQuery,
+			Documents\Devices\Device::class,
+		);
 
 		foreach ($devices as $device) {
 			$createdAt = $device->getCreatedAt();

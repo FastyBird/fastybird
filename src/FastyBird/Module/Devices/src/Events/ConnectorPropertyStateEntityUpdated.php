@@ -15,8 +15,8 @@
 
 namespace FastyBird\Module\Devices\Events;
 
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\States;
 use Symfony\Contracts\EventDispatcher;
 
@@ -32,7 +32,7 @@ class ConnectorPropertyStateEntityUpdated extends EventDispatcher\Event
 {
 
 	public function __construct(
-		private readonly MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
+		private readonly Documents\Connectors\Properties\Dynamic $property,
 		private readonly States\ConnectorProperty $read,
 		private readonly States\ConnectorProperty $get,
 		private readonly MetadataTypes\Sources\Source $source,
@@ -40,7 +40,7 @@ class ConnectorPropertyStateEntityUpdated extends EventDispatcher\Event
 	{
 	}
 
-	public function getProperty(): MetadataDocuments\DevicesModule\ConnectorDynamicProperty
+	public function getProperty(): Documents\Connectors\Properties\Dynamic
 	{
 		return $this->property;
 	}

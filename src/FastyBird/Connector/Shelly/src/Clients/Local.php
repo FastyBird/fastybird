@@ -18,17 +18,18 @@ namespace FastyBird\Connector\Shelly\Clients;
 use DateTimeInterface;
 use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\API;
-use FastyBird\Connector\Shelly\Entities;
+use FastyBird\Connector\Shelly\Documents;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Helpers;
+use FastyBird\Connector\Shelly\Queries;
 use FastyBird\Connector\Shelly\Queue;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -69,7 +70,7 @@ final class Local implements Client
 
 	private const CMD_STATE = 'state';
 
-	/** @var array<string, MetadataDocuments\DevicesModule\Device>  */
+	/** @var array<string, Documents\Devices\Device>  */
 	private array $devices = [];
 
 	/** @var array<string, API\Gen2WsApi> */
@@ -84,7 +85,7 @@ final class Local implements Client
 	private EventLoop\TimerInterface|null $handlerTimer = null;
 
 	public function __construct(
-		private readonly MetadataDocuments\DevicesModule\Connector $connector,
+		private readonly Documents\Connectors\Connector $connector,
 		private readonly API\ConnectionManager $connectionManager,
 		private readonly Queue\Queue $queue,
 		private readonly Helpers\MessageBuilder $messageBuilder,
@@ -167,11 +168,15 @@ final class Local implements Client
 			);
 		}
 
-		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDevicesQuery = new Queries\Configuration\FindDevices();
 		$findDevicesQuery->forConnector($this->connector);
-		$findDevicesQuery->byType(Entities\Devices\Device::TYPE);
 
-		foreach ($this->devicesConfigurationRepository->findAllBy($findDevicesQuery) as $device) {
+		$devices = $this->devicesConfigurationRepository->findAllBy(
+			$findDevicesQuery,
+			Documents\Devices\Device::class,
+		);
+
+		foreach ($devices as $device) {
 			$this->devices[$device->getId()->toString()] = $device;
 
 			$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
@@ -180,7 +185,7 @@ final class Local implements Client
 
 			$generationProperty = $this->devicesPropertiesConfigurationRepository->findOneBy(
 				$findDevicePropertyQuery,
-				MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+				DevicesDocuments\Devices\Properties\Variable::class,
 			);
 
 			if (
@@ -277,6 +282,7 @@ final class Local implements Client
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws RuntimeException
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
@@ -305,10 +311,11 @@ final class Local implements Client
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws RuntimeException
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
-	private function readDeviceState(MetadataDocuments\DevicesModule\Device $device): bool
+	private function readDeviceState(Documents\Devices\Device $device): bool
 	{
 		if (!array_key_exists($device->getId()->toString(), $this->processedDevicesCommands)) {
 			$this->processedDevicesCommands[$device->getId()->toString()] = [];
@@ -551,7 +558,7 @@ final class Local implements Client
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function createGen2DeviceWsClient(MetadataDocuments\DevicesModule\Device $device): API\Gen2WsApi
+	private function createGen2DeviceWsClient(Documents\Devices\Device $device): API\Gen2WsApi
 	{
 		if (array_key_exists($device->getId()->toString(), $this->gen2DevicesWsClients)) {
 			throw new Exceptions\InvalidState('Gen 2 device WS client is already created');
@@ -717,7 +724,7 @@ final class Local implements Client
 		return $this->gen2DevicesWsClients[$device->getId()->toString()];
 	}
 
-	private function getGen2DeviceWsClient(MetadataDocuments\DevicesModule\Device $device): API\Gen2WsApi|null
+	private function getGen2DeviceWsClient(Documents\Devices\Device $device): API\Gen2WsApi|null
 	{
 		return array_key_exists(
 			$device->getId()->toString(),
@@ -734,7 +741,7 @@ final class Local implements Client
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	private function processGen1DeviceGetState(
-		MetadataDocuments\DevicesModule\Device $device,
+		Documents\Devices\Device $device,
 		API\Messages\Response\Gen1\GetDeviceState $state,
 	): void
 	{
@@ -1004,7 +1011,7 @@ final class Local implements Client
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	private function processGen2DeviceGetState(
-		MetadataDocuments\DevicesModule\Device $device,
+		Documents\Devices\Device $device,
 		API\Messages\Response\Gen2\GetDeviceState $state,
 	): void
 	{
@@ -1045,7 +1052,7 @@ final class Local implements Client
 	 * @throws Exceptions\Runtime
 	 */
 	private function processGen2DeviceEvent(
-		MetadataDocuments\DevicesModule\Device $device,
+		Documents\Devices\Device $device,
 		API\Messages\Response\Gen2\DeviceEvent $notification,
 	): void
 	{

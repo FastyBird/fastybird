@@ -15,8 +15,8 @@
 
 namespace FastyBird\Connector\HomeKit\Protocol\Accessories;
 
+use FastyBird\Connector\HomeKit\Documents;
 use FastyBird\Connector\HomeKit\Entities;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 
 /**
  * HAP bridge accessory factory
@@ -29,10 +29,7 @@ use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 class BridgeFactory
 {
 
-	public function create(
-		string $name,
-		MetadataDocuments\DevicesModule\Connector $connector,
-	): Bridge
+	public function create(string $name, Documents\Connectors\Connector $connector): Bridge
 	{
 		return new Bridge($name, $connector);
 	}

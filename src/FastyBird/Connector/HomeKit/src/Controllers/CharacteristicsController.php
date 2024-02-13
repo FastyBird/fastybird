@@ -25,10 +25,10 @@ use FastyBird\Connector\HomeKit\Queue;
 use FastyBird\Connector\HomeKit\Servers;
 use FastyBird\Connector\HomeKit\Types;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use Fig\Http\Message\StatusCodeInterface;
 use InvalidArgumentException;
 use IPub\SlimRouter;
@@ -616,12 +616,12 @@ final class CharacteristicsController extends BaseController
 				foreach ($characteristic->getService()->getCharacteristics() as $row) {
 					if (
 						(
-							$row->getProperty() instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+							$row->getProperty() instanceof DevicesDocuments\Channels\Properties\Dynamic
 							&& $row->getProperty()->isSettable()
 						) || (
-							$row->getProperty() instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
+							$row->getProperty() instanceof DevicesDocuments\Channels\Properties\Mapped
 							&& $row->getProperty()->isSettable()
-						) || $row->getProperty() instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty
+						) || $row->getProperty() instanceof DevicesDocuments\Channels\Properties\Variable
 					) {
 						$this->queue->append(
 							$this->messageBuilder->create(

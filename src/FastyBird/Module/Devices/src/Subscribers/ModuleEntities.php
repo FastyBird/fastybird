@@ -89,9 +89,10 @@ final class ModuleEntities implements Common\EventSubscriber
 	/**
 	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
 	 *
-	 * @throws ExchangeExceptions\InvalidArgument
 	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function postPersist(Persistence\Event\LifecycleEventArgs $eventArgs): void
@@ -112,9 +113,10 @@ final class ModuleEntities implements Common\EventSubscriber
 	/**
 	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
 	 *
-	 * @throws ExchangeExceptions\InvalidArgument
 	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function postUpdate(Persistence\Event\LifecycleEventArgs $eventArgs): void
@@ -186,9 +188,10 @@ final class ModuleEntities implements Common\EventSubscriber
 	/**
 	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
 	 *
-	 * @throws ExchangeExceptions\InvalidArgument
 	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function postRemove(Persistence\Event\LifecycleEventArgs $eventArgs): void
@@ -217,9 +220,10 @@ final class ModuleEntities implements Common\EventSubscriber
 	}
 
 	/**
-	 * @throws ExchangeExceptions\InvalidArgument
 	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function publishEntity(Entities\Entity $entity, string $action): void
@@ -230,7 +234,9 @@ final class ModuleEntities implements Common\EventSubscriber
 			case self::ACTION_CREATED:
 				foreach (Devices\Constants::MESSAGE_BUS_CREATED_ENTITIES_ROUTING_KEYS_MAPPING as $class => $routingKey) {
 					if (is_a($entity, $class)) {
-						$publishRoutingKey = MetadataTypes\RoutingKey::get($routingKey);
+						$publishRoutingKey = $routingKey;
+
+						break;
 					}
 				}
 
@@ -238,7 +244,9 @@ final class ModuleEntities implements Common\EventSubscriber
 			case self::ACTION_UPDATED:
 				foreach (Devices\Constants::MESSAGE_BUS_UPDATED_ENTITIES_ROUTING_KEYS_MAPPING as $class => $routingKey) {
 					if (is_a($entity, $class)) {
-						$publishRoutingKey = MetadataTypes\RoutingKey::get($routingKey);
+						$publishRoutingKey = $routingKey;
+
+						break;
 					}
 				}
 
@@ -246,7 +254,9 @@ final class ModuleEntities implements Common\EventSubscriber
 			case self::ACTION_DELETED:
 				foreach (Devices\Constants::MESSAGE_BUS_DELETED_ENTITIES_ROUTING_KEYS_MAPPING as $class => $routingKey) {
 					if (is_a($entity, $class)) {
-						$publishRoutingKey = MetadataTypes\RoutingKey::get($routingKey);
+						$publishRoutingKey = $routingKey;
+
+						break;
 					}
 				}
 

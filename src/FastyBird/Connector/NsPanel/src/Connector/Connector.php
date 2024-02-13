@@ -18,23 +18,23 @@ namespace FastyBird\Connector\NsPanel\Connector;
 use Evenement;
 use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Clients;
-use FastyBird\Connector\NsPanel\Entities;
+use FastyBird\Connector\NsPanel\Documents;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
+use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Connector\NsPanel\Servers;
 use FastyBird\Connector\NsPanel\Writers;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Connectors as DevicesConnectors;
 use FastyBird\Module\Devices\Constants as DevicesConstants;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
 use React\EventLoop;
 use React\Promise;
@@ -73,7 +73,7 @@ final class Connector implements DevicesConnectors\Connector
 	 * @param array<Writers\WriterFactory> $writersFactories
 	 */
 	public function __construct(
-		private readonly MetadataDocuments\DevicesModule\Connector $connector,
+		private readonly DevicesDocuments\Connectors\Connector $connector,
 		private readonly array $clientsFactories,
 		private readonly Clients\DiscoveryFactory $discoveryClientFactory,
 		private readonly Helpers\MessageBuilder $messageBuilder,
@@ -89,6 +89,7 @@ final class Connector implements DevicesConnectors\Connector
 		private readonly EventLoop\LoopInterface $eventLoop,
 	)
 	{
+		assert($this->connector instanceof Documents\Connectors\Connector);
 	}
 
 	/**
@@ -102,7 +103,7 @@ final class Connector implements DevicesConnectors\Connector
 	 */
 	public function execute(bool $standalone = true): Promise\PromiseInterface
 	{
-		assert($this->connector->getType() === Entities\Connectors\Connector::TYPE);
+		assert($this->connector instanceof Documents\Connectors\Connector);
 
 		$this->logger->info(
 			'Starting NS Panel connector service',
@@ -170,17 +171,22 @@ final class Connector implements DevicesConnectors\Connector
 			|| $mode->equalsValue(NsPanel\Types\ClientMode::DEVICE)
 		) {
 			$this->eventLoop->addTimer(1, async(function (): void {
-				$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
+				$findDevicesQuery = new Queries\Configuration\FindThirdPartyDevices();
 				$findDevicesQuery->forConnector($this->connector);
-				$findDevicesQuery->byType(Entities\Devices\ThirdPartyDevice::TYPE);
 
-				$devices = $this->devicesConfigurationRepository->findAllBy($findDevicesQuery);
+				$devices = $this->devicesConfigurationRepository->findAllBy(
+					$findDevicesQuery,
+					Documents\Devices\ThirdPartyDevice::class,
+				);
 
 				foreach ($devices as $device) {
-					$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
+					$findChannelsQuery = new Queries\Configuration\FindChannels();
 					$findChannelsQuery->forDevice($device);
 
-					$channels = $this->channelsConfigurationRepository->findAllBy($findChannelsQuery);
+					$channels = $this->channelsConfigurationRepository->findAllBy(
+						$findChannelsQuery,
+						Documents\Channels\Channel::class,
+					);
 
 					foreach ($channels as $channel) {
 						try {
@@ -244,7 +250,7 @@ final class Connector implements DevicesConnectors\Connector
 	 */
 	public function discover(): Promise\PromiseInterface
 	{
-		assert($this->connector->getType() === Entities\Connectors\Connector::TYPE);
+		assert($this->connector instanceof Documents\Connectors\Connector);
 
 		$this->logger->info(
 			'Starting NS Panel connector discovery',
@@ -298,7 +304,7 @@ final class Connector implements DevicesConnectors\Connector
 
 	public function terminate(): void
 	{
-		assert($this->connector->getType() === Entities\Connectors\Connector::TYPE);
+		assert($this->connector instanceof Documents\Connectors\Connector);
 
 		foreach ($this->clients as $client) {
 			$client->disconnect();

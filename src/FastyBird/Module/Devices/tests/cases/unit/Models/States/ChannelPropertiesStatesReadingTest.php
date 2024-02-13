@@ -5,13 +5,13 @@ namespace FastyBird\Module\Devices\Tests\Cases\Unit\Models\States;
 use DateTimeInterface;
 use Error;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Types\Payloads\Button;
 use FastyBird\Library\Metadata\Types\Payloads\Cover;
 use FastyBird\Library\Metadata\Types\Payloads\Switcher;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\States;
@@ -31,14 +31,15 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 	 * @throws DI\MissingServiceException
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 *
 	 * @dataProvider readStates
 	 */
 	public function testReadState(
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty|null $parent,
+		Documents\Channels\Properties\Dynamic|Documents\Channels\Properties\Mapped $property,
+		Documents\Channels\Properties\Dynamic|null $parent,
 		States\ChannelProperty $stored,
 		bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $actual,
 		bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $expected,
@@ -77,7 +78,7 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 			MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
 		);
 
-		self::assertInstanceOf(MetadataDocuments\DevicesModule\ChannelPropertyState::class, $state);
+		self::assertInstanceOf(Documents\States\Properties\Channel::class, $state);
 		self::assertSame($actual, $state->getRead()->getActualValue(), 'actual value check');
 		self::assertSame($expected, $state->getRead()->getExpectedValue(), 'expected value check');
 	}
@@ -90,14 +91,15 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 	 * @throws DI\MissingServiceException
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 *
 	 * @dataProvider getStates
 	 */
 	public function testGetState(
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty|null $parent,
+		Documents\Channels\Properties\Dynamic|Documents\Channels\Properties\Mapped $property,
+		Documents\Channels\Properties\Dynamic|null $parent,
 		States\ChannelProperty $stored,
 		bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $actual,
 		bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $expected,
@@ -136,13 +138,13 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 			MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
 		);
 
-		self::assertInstanceOf(MetadataDocuments\DevicesModule\ChannelPropertyState::class, $state);
+		self::assertInstanceOf(Documents\States\Properties\Channel::class, $state);
 		self::assertSame($actual, $state->getGet()->getActualValue(), 'actual value check');
 		self::assertSame($expected, $state->getGet()->getExpectedValue(), 'expected value check');
 	}
 
 	/**
-	 * @return array<string, array<MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty|States\ChannelProperty|bool|float|int|string|DateTimeInterface|Button|Switcher|Cover|null>>
+	 * @return array<string, array<Documents\Channels\Properties\Dynamic|Documents\Channels\Properties\Mapped|States\ChannelProperty|bool|float|int|string|DateTimeInterface|Button|Switcher|Cover|null>>
 	 */
 	public static function readStates(): array
 	{
@@ -157,9 +159,8 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 			 * Classic property - no scale, no transformer.
 			 */
 			'read_01' => [
-				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
+				new Documents\Channels\Properties\Dynamic(
 					$property01,
-					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::GENERIC,
 					'test-property-01',
@@ -189,9 +190,8 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 			 * Scale transformer is applied because state is loaded for reading/displaying.
 			 */
 			'read_02' => [
-				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
+				new Documents\Channels\Properties\Dynamic(
 					$property01,
-					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::GENERIC,
 					'test-property-02',
@@ -221,9 +221,8 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 			 * Equation transformer is applied because state is loaded for reading/displaying.
 			 */
 			'read_03' => [
-				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
+				new Documents\Channels\Properties\Dynamic(
 					$property01,
-					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::GENERIC,
 					'test-property-03',
@@ -253,9 +252,8 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 			 * Both transformers are applied because state is loaded for reading/displaying.
 			 */
 			'read_04' => [
-				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
+				new Documents\Channels\Properties\Dynamic(
 					$property01,
-					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::GENERIC,
 					'test-property-04',
@@ -284,9 +282,8 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 			 * Mapped property - no scale, no transformer.
 			 */
 			'read_05' => [
-				new MetadataDocuments\DevicesModule\ChannelMappedProperty(
+				new Documents\Channels\Properties\Mapped(
 					$child01,
-					MetadataTypes\PropertyType::MAPPED,
 					$channel02,
 					$property01,
 					MetadataTypes\PropertyCategory::GENERIC,
@@ -301,9 +298,8 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					null,
 					true,
 				),
-				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
+				new Documents\Channels\Properties\Dynamic(
 					$property01,
-					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::GENERIC,
 					'test-property-05',
@@ -332,9 +328,8 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 			 * Scale transformer is applied because state is loaded for reading/displaying.
 			 */
 			'read_06' => [
-				new MetadataDocuments\DevicesModule\ChannelMappedProperty(
+				new Documents\Channels\Properties\Mapped(
 					$child01,
-					MetadataTypes\PropertyType::MAPPED,
 					$channel02,
 					$property01,
 					MetadataTypes\PropertyCategory::GENERIC,
@@ -349,9 +344,8 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					null,
 					true,
 				),
-				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
+				new Documents\Channels\Properties\Dynamic(
 					$property01,
-					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::GENERIC,
 					'test-property-06',
@@ -380,9 +374,8 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 			 * Scale transformer is applied on both properties because state is loaded for reading/displaying.
 			 */
 			'read_07' => [
-				new MetadataDocuments\DevicesModule\ChannelMappedProperty(
+				new Documents\Channels\Properties\Mapped(
 					$child01,
-					MetadataTypes\PropertyType::MAPPED,
 					$channel02,
 					$property01,
 					MetadataTypes\PropertyCategory::GENERIC,
@@ -397,9 +390,8 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					null,
 					true,
 				),
-				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
+				new Documents\Channels\Properties\Dynamic(
 					$property01,
-					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::GENERIC,
 					'test-property-07',
@@ -428,9 +420,8 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 			 * Equation transformer is applied because equation transformers is used always on mapped properties.
 			 */
 			'read_08' => [
-				new MetadataDocuments\DevicesModule\ChannelMappedProperty(
+				new Documents\Channels\Properties\Mapped(
 					$child01,
-					MetadataTypes\PropertyType::MAPPED,
 					$channel02,
 					$property01,
 					MetadataTypes\PropertyCategory::GENERIC,
@@ -445,9 +436,8 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					'equation:x=y/2.54|y=x*2.54',
 					true,
 				),
-				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
+				new Documents\Channels\Properties\Dynamic(
 					$property01,
-					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::GENERIC,
 					'test-property-08',
@@ -477,9 +467,8 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 			 * and stored value is 1000 which is over mapped property accepted range.
 			 */
 			'read_09' => [
-				new MetadataDocuments\DevicesModule\ChannelMappedProperty(
+				new Documents\Channels\Properties\Mapped(
 					$child01,
-					MetadataTypes\PropertyType::MAPPED,
 					$channel02,
 					$property01,
 					MetadataTypes\PropertyCategory::GENERIC,
@@ -494,9 +483,8 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					null,
 					true,
 				),
-				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
+				new Documents\Channels\Properties\Dynamic(
 					$property01,
-					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::GENERIC,
 					'test-property-09',
@@ -525,9 +513,8 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 			 * System value is returned because state is loaded for reading/displaying.
 			 */
 			'read_10' => [
-				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
+				new Documents\Channels\Properties\Dynamic(
 					$property01,
-					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::GENERIC,
 					'test-property-10',
@@ -568,9 +555,8 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 			 * System value is returned because state is loaded for reading/displaying.
 			 */
 			'read_11' => [
-				new MetadataDocuments\DevicesModule\ChannelMappedProperty(
+				new Documents\Channels\Properties\Mapped(
 					$child01,
-					MetadataTypes\PropertyType::MAPPED,
 					$channel02,
 					$property01,
 					MetadataTypes\PropertyCategory::GENERIC,
@@ -608,9 +594,8 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					null,
 					true,
 				),
-				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
+				new Documents\Channels\Properties\Dynamic(
 					$property01,
-					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::GENERIC,
 					'test-property-11',
@@ -649,7 +634,7 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 	}
 
 	/**
-	 * @return array<string, array<MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty|States\ChannelProperty|bool|float|int|string|DateTimeInterface|Button|Switcher|Cover|null>>
+	 * @return array<string, array<Documents\Channels\Properties\Dynamic|Documents\Channels\Properties\Mapped|States\ChannelProperty|bool|float|int|string|DateTimeInterface|Button|Switcher|Cover|null>>
 	 */
 	public static function getStates(): array
 	{
@@ -664,9 +649,8 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 			 * Classic property - no scale, no transformer.
 			 */
 			'get_01' => [
-				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
+				new Documents\Channels\Properties\Dynamic(
 					$property01,
-					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::GENERIC,
 					'test-property-01',
@@ -696,9 +680,8 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 			 * Scale transformer is NOT applied because state is loaded for using.
 			 */
 			'get_02' => [
-				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
+				new Documents\Channels\Properties\Dynamic(
 					$property01,
-					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::GENERIC,
 					'test-property-02',
@@ -728,9 +711,8 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 			 * Equation transformer is NOT applied because state is loaded for using.
 			 */
 			'get_03' => [
-				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
+				new Documents\Channels\Properties\Dynamic(
 					$property01,
-					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::GENERIC,
 					'test-property-03',
@@ -760,9 +742,8 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 			 * Both transformers are NOT applied because state is loaded for using.
 			 */
 			'get_04' => [
-				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
+				new Documents\Channels\Properties\Dynamic(
 					$property01,
-					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::GENERIC,
 					'test-property-04',
@@ -791,9 +772,8 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 			 * Mapped property - no scale, no transformer.
 			 */
 			'get_05' => [
-				new MetadataDocuments\DevicesModule\ChannelMappedProperty(
+				new Documents\Channels\Properties\Mapped(
 					$child01,
-					MetadataTypes\PropertyType::MAPPED,
 					$channel02,
 					$property01,
 					MetadataTypes\PropertyCategory::GENERIC,
@@ -808,9 +788,8 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					null,
 					true,
 				),
-				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
+				new Documents\Channels\Properties\Dynamic(
 					$property01,
-					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::GENERIC,
 					'test-property-05',
@@ -839,9 +818,8 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 			 * Scale transformer is NOT applied because state is loaded for using.
 			 */
 			'get_06' => [
-				new MetadataDocuments\DevicesModule\ChannelMappedProperty(
+				new Documents\Channels\Properties\Mapped(
 					$child01,
-					MetadataTypes\PropertyType::MAPPED,
 					$channel02,
 					$property01,
 					MetadataTypes\PropertyCategory::GENERIC,
@@ -856,9 +834,8 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					null,
 					true,
 				),
-				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
+				new Documents\Channels\Properties\Dynamic(
 					$property01,
-					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::GENERIC,
 					'test-property-06',
@@ -887,9 +864,8 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 			 * Scale transformer is applied because all transformers are used on parent properties.
 			 */
 			'get_07' => [
-				new MetadataDocuments\DevicesModule\ChannelMappedProperty(
+				new Documents\Channels\Properties\Mapped(
 					$child01,
-					MetadataTypes\PropertyType::MAPPED,
 					$channel02,
 					$property01,
 					MetadataTypes\PropertyCategory::GENERIC,
@@ -904,9 +880,8 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					null,
 					true,
 				),
-				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
+				new Documents\Channels\Properties\Dynamic(
 					$property01,
-					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::GENERIC,
 					'test-property-07',
@@ -935,9 +910,8 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 			 * Equation transformer is applied because all transformers are used on parent properties.
 			 */
 			'get_08' => [
-				new MetadataDocuments\DevicesModule\ChannelMappedProperty(
+				new Documents\Channels\Properties\Mapped(
 					$child01,
-					MetadataTypes\PropertyType::MAPPED,
 					$channel02,
 					$property01,
 					MetadataTypes\PropertyCategory::GENERIC,
@@ -952,9 +926,8 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					null,
 					true,
 				),
-				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
+				new Documents\Channels\Properties\Dynamic(
 					$property01,
-					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::GENERIC,
 					'test-property-08',
@@ -983,9 +956,8 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 			 * Equation transformer is applied because equation transformers is used always on mapped properties
 			 */
 			'get_09' => [
-				new MetadataDocuments\DevicesModule\ChannelMappedProperty(
+				new Documents\Channels\Properties\Mapped(
 					$child01,
-					MetadataTypes\PropertyType::MAPPED,
 					$channel02,
 					$property01,
 					MetadataTypes\PropertyCategory::GENERIC,
@@ -1000,9 +972,8 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					'equation:x=y/2.54|y=x*2.54',
 					true,
 				),
-				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
+				new Documents\Channels\Properties\Dynamic(
 					$property01,
-					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::GENERIC,
 					'test-property-09',
@@ -1033,9 +1004,8 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 			 * and parent property scale transformer is applied, because parent property transformers are used always on mapped properties,
 			 */
 			'get_10' => [
-				new MetadataDocuments\DevicesModule\ChannelMappedProperty(
+				new Documents\Channels\Properties\Mapped(
 					$child01,
-					MetadataTypes\PropertyType::MAPPED,
 					$channel02,
 					$property01,
 					MetadataTypes\PropertyCategory::GENERIC,
@@ -1050,9 +1020,8 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					'equation:x=y/10|y=x*10',
 					true,
 				),
-				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
+				new Documents\Channels\Properties\Dynamic(
 					$property01,
-					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::GENERIC,
 					'test-property-10',
@@ -1081,9 +1050,8 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 			 * Device value is returned because state is loaded for using.
 			 */
 			'get_11' => [
-				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
+				new Documents\Channels\Properties\Dynamic(
 					$property01,
-					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::GENERIC,
 					'test-property-11',
@@ -1124,9 +1092,8 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 			 * Device value with data type conversion is returned because state is loaded for using.
 			 */
 			'get_12' => [
-				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
+				new Documents\Channels\Properties\Dynamic(
 					$property01,
-					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::GENERIC,
 					'test-property-12',
@@ -1173,9 +1140,8 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 			 * Device value is returned because state is loaded for using.
 			 */
 			'get_13' => [
-				new MetadataDocuments\DevicesModule\ChannelMappedProperty(
+				new Documents\Channels\Properties\Mapped(
 					$child01,
-					MetadataTypes\PropertyType::MAPPED,
 					$channel02,
 					$property01,
 					MetadataTypes\PropertyCategory::GENERIC,
@@ -1213,9 +1179,8 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					null,
 					true,
 				),
-				new MetadataDocuments\DevicesModule\ChannelDynamicProperty(
+				new Documents\Channels\Properties\Dynamic(
 					$property01,
-					MetadataTypes\PropertyType::DYNAMIC,
 					$channel01,
 					MetadataTypes\PropertyCategory::GENERIC,
 					'test-property-13',

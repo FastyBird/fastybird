@@ -2,8 +2,8 @@
 
 namespace FastyBird\Module\Devices\Tests\Fixtures\Dummy;
 
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Module\Devices\Connectors;
+use FastyBird\Module\Devices\Documents;
 
 class DummyConnectorFactory implements Connectors\ConnectorFactory
 {
@@ -13,9 +13,7 @@ class DummyConnectorFactory implements Connectors\ConnectorFactory
 		return 'dummy';
 	}
 
-	public function create(
-		MetadataDocuments\DevicesModule\Connector $connector,
-	): Connectors\Connector
+	public function create(Documents\Connectors\Connector $connector): Connectors\Connector
 	{
 		return new DummyConnector();
 	}

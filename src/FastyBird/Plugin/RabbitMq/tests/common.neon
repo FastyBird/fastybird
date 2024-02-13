@@ -22,3 +22,7 @@ extensions:
 fbRabbitMqPlugin:
     queue:
         name: testingQueueName
+
+fbMetadataLibrary:
+    documents:
+        mapping: []

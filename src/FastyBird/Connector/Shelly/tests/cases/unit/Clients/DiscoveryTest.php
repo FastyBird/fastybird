@@ -5,20 +5,19 @@ namespace FastyBird\Connector\Shelly\Tests\Cases\Unit\Clients;
 use DateTimeImmutable;
 use Error;
 use FastyBird\Connector\Shelly\Clients;
-use FastyBird\Connector\Shelly\Entities;
+use FastyBird\Connector\Shelly\Documents;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Helpers;
+use FastyBird\Connector\Shelly\Queries;
 use FastyBird\Connector\Shelly\Queue;
 use FastyBird\Connector\Shelly\Services;
 use FastyBird\Connector\Shelly\Tests;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette\DI;
 use Nette\Utils;
 use Psr\Http;
@@ -191,12 +190,14 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 			DevicesModels\Configuration\Connectors\Repository::class,
 		);
 
-		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
+		$findConnectorQuery = new Queries\Configuration\FindConnectors();
 		$findConnectorQuery->byIdentifier('shelly-local');
-		$findConnectorQuery->byType(Entities\Connectors\Connector::TYPE);
 
-		$connector = $connectorsConfigurationRepository->findOneBy($findConnectorQuery);
-		self::assertInstanceOf(MetadataDocuments\DevicesModule\Connector::class, $connector);
+		$connector = $connectorsConfigurationRepository->findOneBy(
+			$findConnectorQuery,
+			Documents\Connectors\Connector::class,
+		);
+		self::assertInstanceOf(Documents\Connectors\Connector::class, $connector);
 
 		$clientFactory = $this->getContainer()->getByType(Clients\DiscoveryFactory::class);
 
@@ -228,16 +229,18 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 			DevicesModels\Configuration\Devices\Repository::class,
 		);
 
-		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDeviceQuery = new Queries\Configuration\FindDevices();
 		$findDeviceQuery->forConnector($connector);
 		$findDeviceQuery->byIdentifier('c45bbee4c926-shellyrgbw2');
-		$findDeviceQuery->byType(Entities\Devices\Device::TYPE);
 
-		$device = $devicesConfigurationRepository->findOneBy($findDeviceQuery);
+		$device = $devicesConfigurationRepository->findOneBy(
+			$findDeviceQuery,
+			Documents\Devices\Device::class,
+		);
 
 		$deviceHelper = $this->getContainer()->getByType(Helpers\Device::class);
 
-		self::assertInstanceOf(MetadataDocuments\DevicesModule\Device::class, $device);
+		self::assertInstanceOf(Documents\Devices\Device::class, $device);
 		self::assertSame(Types\DeviceGeneration::GENERATION_1, $deviceHelper->getGeneration($device)->getValue());
 		self::assertSame('10.10.0.239', $deviceHelper->getIpAddress($device));
 		self::assertSame('shellyrgbw2-C45BBEE4C926.local', $deviceHelper->getDomain($device));
@@ -249,11 +252,13 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 			DevicesModels\Configuration\Channels\Repository::class,
 		);
 
-		$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
+		$findChannelsQuery = new Queries\Configuration\FindChannels();
 		$findChannelsQuery->forDevice($device);
-		$findChannelsQuery->byType(Entities\Channels\Channel::TYPE);
 
-		$channels = $channelsConfigurationRepository->findAllBy($findChannelsQuery);
+		$channels = $channelsConfigurationRepository->findAllBy(
+			$findChannelsQuery,
+			Documents\Channels\Channel::class,
+		);
 
 		self::assertCount(5, $channels);
 	}
@@ -403,12 +408,14 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 			DevicesModels\Configuration\Connectors\Repository::class,
 		);
 
-		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
+		$findConnectorQuery = new Queries\Configuration\FindConnectors();
 		$findConnectorQuery->byIdentifier('shelly-local');
-		$findConnectorQuery->byType(Entities\Connectors\Connector::TYPE);
 
-		$connector = $connectorsConfigurationRepository->findOneBy($findConnectorQuery);
-		self::assertInstanceOf(MetadataDocuments\DevicesModule\Connector::class, $connector);
+		$connector = $connectorsConfigurationRepository->findOneBy(
+			$findConnectorQuery,
+			Documents\Connectors\Connector::class,
+		);
+		self::assertInstanceOf(Documents\Connectors\Connector::class, $connector);
 
 		$clientFactory = $this->getContainer()->getByType(Clients\DiscoveryFactory::class);
 
@@ -440,16 +447,18 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 			DevicesModels\Configuration\Devices\Repository::class,
 		);
 
-		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDeviceQuery = new Queries\Configuration\FindDevices();
 		$findDeviceQuery->forConnector($connector);
 		$findDeviceQuery->byIdentifier('441793ad07e8-shellyplus2pm');
-		$findDeviceQuery->byType(Entities\Devices\Device::TYPE);
 
-		$device = $devicesConfigurationRepository->findOneBy($findDeviceQuery);
+		$device = $devicesConfigurationRepository->findOneBy(
+			$findDeviceQuery,
+			Documents\Devices\Device::class,
+		);
 
 		$deviceHelper = $this->getContainer()->getByType(Helpers\Device::class);
 
-		self::assertInstanceOf(MetadataDocuments\DevicesModule\Device::class, $device);
+		self::assertInstanceOf(Documents\Devices\Device::class, $device);
 		self::assertSame(Types\DeviceGeneration::GENERATION_2, $deviceHelper->getGeneration($device)->getValue());
 		self::assertSame('10.10.0.37', $deviceHelper->getIpAddress($device));
 		self::assertSame('ShellyPlus2PM-441793AD07E8.local', $deviceHelper->getDomain($device));
@@ -461,11 +470,13 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 			DevicesModels\Configuration\Channels\Repository::class,
 		);
 
-		$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
+		$findChannelsQuery = new Queries\Configuration\FindChannels();
 		$findChannelsQuery->forDevice($device);
-		$findChannelsQuery->byType(Entities\Channels\Channel::TYPE);
 
-		$channels = $channelsConfigurationRepository->findAllBy($findChannelsQuery);
+		$channels = $channelsConfigurationRepository->findAllBy(
+			$findChannelsQuery,
+			Documents\Channels\Channel::class,
+		);
 
 		self::assertCount(4, $channels);
 	}

@@ -67,7 +67,7 @@ final class TriggerControlsV1 extends BaseV1
 		// At first, try to load trigger
 		$trigger = $this->findTrigger(strval($request->getAttribute(Router\ApiRoutes::URL_TRIGGER_ID)));
 
-		if (!$trigger instanceof Entities\Triggers\ManualTrigger) {
+		if (!$trigger instanceof Entities\Triggers\Manual) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				$this->translator->translate('//triggers-module.base.messages.notFound.heading'),
@@ -97,7 +97,7 @@ final class TriggerControlsV1 extends BaseV1
 		// At first, try to load trigger
 		$trigger = $this->findTrigger(strval($request->getAttribute(Router\ApiRoutes::URL_TRIGGER_ID)));
 
-		if (!$trigger instanceof Entities\Triggers\ManualTrigger) {
+		if (!$trigger instanceof Entities\Triggers\Manual) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				$this->translator->translate('//triggers-module.base.messages.notFound.heading'),
@@ -138,7 +138,7 @@ final class TriggerControlsV1 extends BaseV1
 		// At first, try to load trigger
 		$trigger = $this->findTrigger(strval($request->getAttribute(Router\ApiRoutes::URL_TRIGGER_ID)));
 
-		if (!$trigger instanceof Entities\Triggers\ManualTrigger) {
+		if (!$trigger instanceof Entities\Triggers\Manual) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				$this->translator->translate('//triggers-module.base.messages.notFound.heading'),

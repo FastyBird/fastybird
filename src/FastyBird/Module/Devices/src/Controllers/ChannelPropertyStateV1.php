@@ -17,13 +17,13 @@ namespace FastyBird\Module\Devices\Controllers;
 
 use Exception;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Controllers;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\Router;
 use Fig\Http\Message\StatusCodeInterface;
 use Psr\Http\Message;
@@ -75,7 +75,7 @@ final class ChannelPropertyStateV1 extends BaseV1
 		// & channel
 		$channel = $this->findChannel(strval($request->getAttribute(Router\ApiRoutes::URL_CHANNEL_ID)), $device);
 		// & property
-		$findPropertyQuery = new DevicesQueries\Configuration\FindChannelProperties();
+		$findPropertyQuery = new Queries\Configuration\FindChannelProperties();
 		$findPropertyQuery->byChannelId($channel->getId());
 		$findPropertyQuery->byId(
 			Uuid\Uuid::fromString(strval($request->getAttribute(Router\ApiRoutes::URL_PROPERTY_ID))),
@@ -84,8 +84,8 @@ final class ChannelPropertyStateV1 extends BaseV1
 		$property = $this->channelsPropertiesConfigurationRepository->findOneBy($findPropertyQuery);
 
 		if (
-			!$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-			&& !$property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
+			!$property instanceof Documents\Channels\Properties\Dynamic
+			&& !$property instanceof Documents\Channels\Properties\Mapped
 		) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_NOT_FOUND,

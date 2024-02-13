@@ -17,13 +17,13 @@ namespace FastyBird\Module\Devices\Controllers;
 
 use Exception;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Controllers;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\Router;
 use Fig\Http\Message\StatusCodeInterface;
 use Psr\Http\Message;
@@ -72,7 +72,7 @@ final class DevicePropertyStateV1 extends BaseV1
 		// At first, try to load device
 		$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
 		// & property
-		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceProperties();
+		$findPropertyQuery = new Queries\Configuration\FindDeviceProperties();
 		$findPropertyQuery->byDeviceId($device->getId());
 		$findPropertyQuery->byId(
 			Uuid\Uuid::fromString(strval($request->getAttribute(Router\ApiRoutes::URL_PROPERTY_ID))),
@@ -81,8 +81,8 @@ final class DevicePropertyStateV1 extends BaseV1
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy($findPropertyQuery);
 
 		if (
-			!$property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
-			&& !$property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
+			!$property instanceof Documents\Devices\Properties\Dynamic
+			&& !$property instanceof Documents\Devices\Properties\Mapped
 		) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_NOT_FOUND,

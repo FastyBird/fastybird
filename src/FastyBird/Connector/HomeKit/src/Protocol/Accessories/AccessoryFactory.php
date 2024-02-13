@@ -15,9 +15,9 @@
 
 namespace FastyBird\Connector\HomeKit\Protocol\Accessories;
 
-use FastyBird\Connector\HomeKit\Entities\Devices\Device;
+use FastyBird\Connector\HomeKit\Documents;
+use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Types;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 
 /**
  * HAP accessory factory interface
@@ -34,11 +34,11 @@ interface AccessoryFactory
 		string $name,
 		int|null $aid,
 		Types\AccessoryCategory $category,
-		MetadataDocuments\DevicesModule\Device $device,
+		Documents\Devices\Device $device,
 	): Accessory;
 
 	/**
-	 * @return class-string<Device>
+	 * @return class-string<Entities\Devices\Device>
 	 */
 	public function getEntityClass(): string;
 

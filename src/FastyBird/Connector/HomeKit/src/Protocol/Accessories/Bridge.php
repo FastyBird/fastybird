@@ -16,9 +16,9 @@
 namespace FastyBird\Connector\HomeKit\Protocol\Accessories;
 
 use FastyBird\Connector\HomeKit;
+use FastyBird\Connector\HomeKit\Documents;
 use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Types;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use Ramsey\Uuid;
 use SplObjectStorage;
 
@@ -38,7 +38,7 @@ class Bridge extends Accessory
 
 	public function __construct(
 		string $name,
-		private readonly MetadataDocuments\DevicesModule\Connector $connector,
+		private readonly Documents\Connectors\Connector $connector,
 	)
 	{
 		parent::__construct(
@@ -55,7 +55,7 @@ class Bridge extends Accessory
 		return $this->connector->getId();
 	}
 
-	public function getConnector(): MetadataDocuments\DevicesModule\Connector
+	public function getConnector(): Documents\Connectors\Connector
 	{
 		return $this->connector;
 	}

@@ -16,7 +16,8 @@
 namespace FastyBird\Connector\Zigbee2Mqtt\API;
 
 use FastyBird\Connector\Zigbee2Mqtt;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Connector\Zigbee2Mqtt\Documents;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use Nette;
 use function str_replace;
 
@@ -56,8 +57,8 @@ final class MqttBuilder
 
 	public static function buildDevicePropertyTopic(
 		string $baseTopic,
-		MetadataDocuments\DevicesModule\Device $device,
-		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\ChannelDynamicProperty $property,
+		Documents\Devices\Device $device,
+		DevicesDocuments\Devices\Properties\Dynamic|DevicesDocuments\Channels\Properties\Dynamic $property,
 	): string
 	{
 		$topic = self::DEVICE_PROPERTY_TOPIC;

@@ -20,18 +20,19 @@ use FastyBird\Addon\VirtualThermostat;
 use FastyBird\Addon\VirtualThermostat\Exceptions;
 use FastyBird\Addon\VirtualThermostat\Helpers;
 use FastyBird\Addon\VirtualThermostat\Types;
+use FastyBird\Connector\Virtual\Documents as VirtualDocuments;
 use FastyBird\Connector\Virtual\Drivers as VirtualDrivers;
 use FastyBird\Connector\Virtual\Exceptions as VirtualExceptions;
 use FastyBird\Connector\Virtual\Helpers as VirtualHelpers;
+use FastyBird\Connector\Virtual\Queries as VirtualQueries;
 use FastyBird\Connector\Virtual\Queue as VirtualQueue;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette\Utils;
 use React\Promise;
 use function array_filter;
@@ -97,7 +98,7 @@ class Thermostat implements VirtualDrivers\Driver
 	private DateTimeInterface|null $connectedAt = null;
 
 	public function __construct(
-		private readonly MetadataDocuments\DevicesModule\Device $device,
+		private readonly DevicesDocuments\Devices\Device $device,
 		private readonly Helpers\Device $deviceHelper,
 		private readonly VirtualQueue\Queue $queue,
 		private readonly VirtualHelpers\MessageBuilder $messageBuilder,
@@ -119,6 +120,7 @@ class Thermostat implements VirtualDrivers\Driver
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
@@ -142,11 +144,11 @@ class Thermostat implements VirtualDrivers\Driver
 				MetadataTypes\Sources\Addon::get(MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT),
 			);
 
-			if (!$state instanceof MetadataDocuments\DevicesModule\ChannelPropertyState) {
+			if (!$state instanceof DevicesDocuments\States\Properties\Channel) {
 				continue;
 			}
 
-			$actualValue = $actor instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+			$actualValue = $actor instanceof DevicesDocuments\Channels\Properties\Dynamic
 				? $state->getGet()->getActualValue()
 				: $state->getRead()->getExpectedValue() ?? $state->getRead()->getActualValue();
 
@@ -174,11 +176,11 @@ class Thermostat implements VirtualDrivers\Driver
 				MetadataTypes\Sources\Addon::get(MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT),
 			);
 
-			if (!$state instanceof MetadataDocuments\DevicesModule\ChannelPropertyState) {
+			if (!$state instanceof DevicesDocuments\States\Properties\Channel) {
 				continue;
 			}
 
-			$actualValue = $sensor instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
+			$actualValue = $sensor instanceof DevicesDocuments\Channels\Properties\Dynamic
 				? $state->getGet()->getActualValue()
 				: $state->getRead()->getExpectedValue() ?? $state->getRead()->getActualValue();
 
@@ -227,13 +229,13 @@ class Thermostat implements VirtualDrivers\Driver
 		foreach ($this->deviceHelper->getPresetModes($this->device) as $mode) {
 			$property = $this->deviceHelper->getTargetTemp($this->device, Types\Preset::get($mode));
 
-			if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+			if ($property instanceof DevicesDocuments\Channels\Properties\Dynamic) {
 				$state = $this->channelPropertiesStatesManager->read(
 					$property,
 					MetadataTypes\Sources\Addon::get(MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT),
 				);
 
-				if (!$state instanceof MetadataDocuments\DevicesModule\ChannelPropertyState) {
+				if (!$state instanceof DevicesDocuments\States\Properties\Channel) {
 					continue;
 				}
 
@@ -256,7 +258,7 @@ class Thermostat implements VirtualDrivers\Driver
 			);
 
 			if (
-				$state instanceof MetadataDocuments\DevicesModule\ChannelPropertyState
+				$state instanceof DevicesDocuments\States\Properties\Channel
 				&& Types\Preset::isValidValue($state->getGet()->getActualValue())
 			) {
 				$this->presetMode = Types\Preset::get($state->getGet()->getActualValue());
@@ -276,7 +278,7 @@ class Thermostat implements VirtualDrivers\Driver
 			);
 
 			if (
-				$state instanceof MetadataDocuments\DevicesModule\ChannelPropertyState
+				$state instanceof DevicesDocuments\States\Properties\Channel
 				&& Types\HvacMode::isValidValue($state->getGet()->getActualValue())
 			) {
 				$this->hvacMode = Types\HvacMode::get($state->getGet()->getActualValue());
@@ -573,15 +575,18 @@ class Thermostat implements VirtualDrivers\Driver
 	 * @throws VirtualExceptions\Runtime
 	 */
 	public function writeState(
-		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\ChannelDynamicProperty $property,
+		DevicesDocuments\Devices\Properties\Dynamic|DevicesDocuments\Channels\Properties\Dynamic $property,
 		bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $expectedValue,
 	): Promise\PromiseInterface
 	{
-		if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-			$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
+		if ($property instanceof DevicesDocuments\Channels\Properties\Dynamic) {
+			$findChannelQuery = new VirtualQueries\Configuration\FindChannels();
 			$findChannelQuery->byId($property->getChannel());
 
-			$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
+			$channel = $this->channelsConfigurationRepository->findOneBy(
+				$findChannelQuery,
+				VirtualDocuments\Channels\Channel::class,
+			);
 
 			if ($channel === null) {
 				return Promise\reject(
@@ -685,15 +690,18 @@ class Thermostat implements VirtualDrivers\Driver
 	 * @throws DevicesExceptions\InvalidState
 	 */
 	public function notifyState(
-		MetadataDocuments\DevicesModule\DeviceMappedProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
+		DevicesDocuments\Devices\Properties\Mapped|DevicesDocuments\Channels\Properties\Mapped $property,
 		bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $actualValue,
 	): Promise\PromiseInterface
 	{
-		if ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
-			$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
+		if ($property instanceof DevicesDocuments\Channels\Properties\Mapped) {
+			$findChannelQuery = new VirtualQueries\Configuration\FindChannels();
 			$findChannelQuery->byId($property->getChannel());
 
-			$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
+			$channel = $this->channelsConfigurationRepository->findOneBy(
+				$findChannelQuery,
+				VirtualDocuments\Channels\Channel::class,
+			);
 
 			if ($channel === null) {
 				return Promise\reject(
@@ -856,7 +864,7 @@ class Thermostat implements VirtualDrivers\Driver
 		}
 
 		foreach ($this->deviceHelper->getActors($this->device) as $actor) {
-			assert($actor instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty);
+			assert($actor instanceof DevicesDocuments\Channels\Properties\Mapped);
 
 			if (!Utils\Strings::startsWith($actor->getIdentifier(), Types\ChannelPropertyIdentifier::HEATER_ACTOR)) {
 				continue;
@@ -891,7 +899,7 @@ class Thermostat implements VirtualDrivers\Driver
 	private function setCoolerState(bool $state): void
 	{
 		foreach ($this->deviceHelper->getActors($this->device) as $actor) {
-			assert($actor instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty);
+			assert($actor instanceof DevicesDocuments\Channels\Properties\Mapped);
 
 			if (!Utils\Strings::startsWith($actor->getIdentifier(), Types\ChannelPropertyIdentifier::COOLER_ACTOR)) {
 				continue;

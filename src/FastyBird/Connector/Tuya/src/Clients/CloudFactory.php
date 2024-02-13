@@ -15,8 +15,8 @@
 
 namespace FastyBird\Connector\Tuya\Clients;
 
+use FastyBird\Connector\Tuya\Documents;
 use FastyBird\Connector\Tuya\Types;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 
 /**
  * Cloud devices client factory
@@ -31,6 +31,6 @@ interface CloudFactory extends ClientFactory
 
 	public const MODE = Types\ClientMode::CLOUD;
 
-	public function create(MetadataDocuments\DevicesModule\Connector $connector): Cloud;
+	public function create(Documents\Connectors\Connector $connector): Cloud;
 
 }

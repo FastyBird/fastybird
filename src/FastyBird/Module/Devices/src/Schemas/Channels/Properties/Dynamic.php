@@ -16,11 +16,11 @@
 namespace FastyBird\Module\Devices\Schemas\Channels\Properties;
 
 use Exception;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
@@ -105,6 +105,7 @@ final class Dynamic extends Property
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 *
@@ -212,15 +213,16 @@ final class Dynamic extends Property
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	protected function getState(
 		Entities\Channels\Properties\Dynamic $property,
-	): MetadataDocuments\DevicesModule\ChannelPropertyState|null
+	): Documents\States\Properties\Channel|null
 	{
 		$configuration = $this->channelsPropertiesConfigurationRepository->find($property->getId());
-		assert($configuration instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty);
+		assert($configuration instanceof Documents\Channels\Properties\Dynamic);
 
 		return $this->channelPropertiesStatesManager->readState($configuration);
 	}

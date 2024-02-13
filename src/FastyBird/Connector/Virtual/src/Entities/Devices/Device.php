@@ -31,8 +31,6 @@ use function is_numeric;
 abstract class Device extends DevicesEntities\Devices\Device
 {
 
-	public const TYPE = 'virtual-connector';
-
 	public const STATE_PROCESSING_DELAY = 120.0;
 
 	public function __construct(
@@ -43,11 +41,6 @@ abstract class Device extends DevicesEntities\Devices\Device
 	)
 	{
 		parent::__construct($identifier, $connector, $name, $id);
-	}
-
-	public static function getType(): string
-	{
-		return self::TYPE;
 	}
 
 	public function getSource(): MetadataTypes\Sources\Source

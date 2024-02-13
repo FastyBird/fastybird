@@ -363,13 +363,13 @@ final class TriggersV1 extends BaseV1
 		} elseif ($relationEntity === Schemas\Triggers\Trigger::RELATIONSHIPS_NOTIFICATIONS) {
 			return $this->buildResponse($request, $response, $trigger->getNotifications());
 		} elseif (
-			$relationEntity === Schemas\Triggers\AutomaticTrigger::RELATIONSHIPS_CONDITIONS
-			&& $trigger instanceof Entities\Triggers\AutomaticTrigger
+			$relationEntity === Schemas\Triggers\Automatic::RELATIONSHIPS_CONDITIONS
+			&& $trigger instanceof Entities\Triggers\Automatic
 		) {
 			return $this->buildResponse($request, $response, $trigger->getConditions());
 		} elseif (
-			$relationEntity === Schemas\Triggers\ManualTrigger::RELATIONSHIPS_CONTROLS
-			&& $trigger instanceof Entities\Triggers\ManualTrigger
+			$relationEntity === Schemas\Triggers\Manual::RELATIONSHIPS_CONTROLS
+			&& $trigger instanceof Entities\Triggers\Manual
 		) {
 			return $this->buildResponse($request, $response, $trigger->getControls());
 		}

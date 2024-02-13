@@ -15,9 +15,9 @@
 
 namespace FastyBird\Connector\Shelly\API;
 
+use FastyBird\Connector\Shelly\Documents;
 use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Helpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Nette;
@@ -88,7 +88,7 @@ final class ConnectionManager
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function getGen2WsApiConnection(
-		Entities\Devices\Device|MetadataDocuments\DevicesModule\Device $device,
+		Entities\Devices\Device|Documents\Devices\Device $device,
 	): Gen2WsApi
 	{
 		if (!array_key_exists($device->getId()->toString(), $this->gen2WsApiConnection)) {
@@ -109,7 +109,9 @@ final class ConnectionManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function getIpAddress(Entities\Devices\Device|MetadataDocuments\DevicesModule\Device $device): string|null
+	private function getIpAddress(
+		Entities\Devices\Device|Documents\Devices\Device $device,
+	): string|null
 	{
 		if ($device instanceof Entities\Devices\Device) {
 			return $device->getIpAddress();
@@ -123,7 +125,9 @@ final class ConnectionManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function getDomain(Entities\Devices\Device|MetadataDocuments\DevicesModule\Device $device): string|null
+	private function getDomain(
+		Entities\Devices\Device|Documents\Devices\Device $device,
+	): string|null
 	{
 		if ($device instanceof Entities\Devices\Device) {
 			return $device->getDomain();
@@ -137,7 +141,9 @@ final class ConnectionManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function getUsername(Entities\Devices\Device|MetadataDocuments\DevicesModule\Device $device): string|null
+	private function getUsername(
+		Entities\Devices\Device|Documents\Devices\Device $device,
+	): string|null
 	{
 		if ($device instanceof Entities\Devices\Device) {
 			return $device->getUsername();
@@ -151,7 +157,9 @@ final class ConnectionManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function getPassword(Entities\Devices\Device|MetadataDocuments\DevicesModule\Device $device): string|null
+	private function getPassword(
+		Entities\Devices\Device|Documents\Devices\Device $device,
+	): string|null
 	{
 		if ($device instanceof Entities\Devices\Device) {
 			return $device->getPassword();

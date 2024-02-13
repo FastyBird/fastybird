@@ -15,7 +15,7 @@
 
 namespace FastyBird\Module\Devices\Queries\Configuration;
 
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
 use Flow\JSONPath;
 use Nette\Utils;
@@ -27,7 +27,7 @@ use function serialize;
 /**
  * Find channels configuration query
  *
- * @template T of MetadataDocuments\DevicesModule\Channel
+ * @template T of Documents\Channels\Channel
  * @extends  QueryObject<T>
  *
  * @package        FastyBird:DevicesModule!
@@ -73,7 +73,7 @@ class FindChannels extends QueryObject
 		$this->filter[] = '.[?(@.identifier =~ /^[\w\d\-_]+(?i).*' . $identifier . '*$/)]';
 	}
 
-	public function forDevice(MetadataDocuments\DevicesModule\Device $device): void
+	public function forDevice(Documents\Devices\Device $device): void
 	{
 		$this->filter[] = '.[?(@.device =~ /(?i).*^' . $device->getId()->toString() . '*$/)]';
 	}

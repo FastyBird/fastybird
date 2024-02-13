@@ -17,7 +17,7 @@ namespace FastyBird\Connector\HomeKit\Writers;
 
 use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Queue;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -69,7 +69,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 				return;
 			}
 
-			if ($event->getProperty() instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty) {
+			if ($event->getProperty() instanceof DevicesDocuments\Devices\Properties\Mapped) {
 				$this->queue->append(
 					$this->messageBuilder->create(
 						Queue\Messages\WriteDevicePropertyState::class,
@@ -81,7 +81,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 						],
 					),
 				);
-			} elseif ($event->getProperty() instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
+			} elseif ($event->getProperty() instanceof DevicesDocuments\Devices\Properties\Dynamic) {
 				$this->queue->append(
 					$this->messageBuilder->create(
 						Queue\Messages\WriteDevicePropertyState::class,
@@ -114,7 +114,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 				return;
 			}
 
-			if ($event->getProperty() instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
+			if ($event->getProperty() instanceof DevicesDocuments\Channels\Properties\Mapped) {
 				$this->queue->append(
 					$this->messageBuilder->create(
 						Queue\Messages\WriteChannelPropertyState::class,
@@ -127,7 +127,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 						],
 					),
 				);
-			} elseif ($event->getProperty() instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+			} elseif ($event->getProperty() instanceof DevicesDocuments\Channels\Properties\Dynamic) {
 				$this->queue->append(
 					$this->messageBuilder->create(
 						Queue\Messages\WriteChannelPropertyState::class,

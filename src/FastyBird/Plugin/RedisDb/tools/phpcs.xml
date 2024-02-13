@@ -20,6 +20,7 @@
                 <element key="src" value="FastyBird\Plugin\RedisDb"/>
                 <element key="tests/cases/unit" value="FastyBird\Plugin\RedisDb\Tests\Cases\Unit"/>
                 <element key="tests/fixtures" value="FastyBird\Plugin\RedisDb\Tests\Fixtures"/>
+                <element key="tests/fixtures/dummy" value="FastyBird\Plugin\RedisDb\Tests\Fixtures\Dummy"/>
             </property>
         </properties>
     </rule>

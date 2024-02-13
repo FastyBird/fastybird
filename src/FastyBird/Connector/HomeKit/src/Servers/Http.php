@@ -19,22 +19,24 @@ use Composer;
 use Doctrine\DBAL;
 use FastyBird\Connector\HomeKit;
 use FastyBird\Connector\HomeKit\Clients;
+use FastyBird\Connector\HomeKit\Documents;
 use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Helpers;
 use FastyBird\Connector\HomeKit\Middleware;
 use FastyBird\Connector\HomeKit\Protocol;
+use FastyBird\Connector\HomeKit\Queries;
 use FastyBird\Connector\HomeKit\Queue;
 use FastyBird\Connector\HomeKit\Types;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Formats as MetadataFormats;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Constants as DevicesConstants;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -100,7 +102,7 @@ final class Http implements Server
 	 * @throws Hashids\HashidsException
 	 */
 	public function __construct(
-		private readonly MetadataDocuments\DevicesModule\Connector $connector,
+		private readonly Documents\Connectors\Connector $connector,
 		private readonly Middleware\Router $routerMiddleware,
 		private readonly SecureServerFactory $secureServerFactory,
 		private readonly Clients\Subscriber $subscriber,
@@ -142,6 +144,7 @@ final class Http implements Server
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws Nette\IOException
 	 * @throws SemVer\SemverException
@@ -161,17 +164,22 @@ final class Http implements Server
 
 		$bridgedAccessories = [];
 
-		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDevicesQuery = new Queries\Configuration\FindDevices();
 		$findDevicesQuery->forConnector($this->connector);
 
-		foreach ($this->devicesConfigurationRepository->findAllBy($findDevicesQuery) as $device) {
+		$devices = $this->devicesConfigurationRepository->findAllBy(
+			$findDevicesQuery,
+			Documents\Devices\Device::class,
+		);
+
+		foreach ($devices as $device) {
 			$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
 			$findDevicePropertyQuery->forDevice($device);
 			$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::AID);
 
 			$aidProperty = $this->devicesPropertiesConfigurationRepository->findOneBy(
 				$findDevicePropertyQuery,
-				MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+				DevicesDocuments\Devices\Properties\Variable::class,
 			);
 
 			$aid = $aidProperty?->getValue() ?? null;
@@ -187,10 +195,15 @@ final class Http implements Server
 			);
 			assert($accessory instanceof Protocol\Accessories\Generic);
 
-			$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
+			$findChannelsQuery = new Queries\Configuration\FindChannels();
 			$findChannelsQuery->forDevice($device);
 
-			foreach ($this->channelsConfigurationRepository->findAllBy($findChannelsQuery) as $channel) {
+			$channels = $this->channelsConfigurationRepository->findAllBy(
+				$findChannelsQuery,
+				Documents\Channels\Channel::class,
+			);
+
+			foreach ($channels as $channel) {
 				$service = $this->buildService(
 					$this->channelHelper->getServiceType($channel),
 					$accessory,
@@ -258,7 +271,7 @@ final class Http implements Server
 
 			$aidProperty = $this->devicesPropertiesConfigurationRepository->findOneBy(
 				$findDevicePropertyQuery,
-				MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+				DevicesDocuments\Devices\Properties\Variable::class,
 			);
 
 			if ($aidProperty === null) {
@@ -285,17 +298,17 @@ final class Http implements Server
 				foreach ($service->getCharacteristics() as $characteristic) {
 					$property = $characteristic->getProperty();
 
-					if ($property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
+					if ($property instanceof DevicesDocuments\Channels\Properties\Variable) {
 						$characteristic->setActualValue($property->getValue());
 						$characteristic->setValid(true);
-					} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+					} elseif ($property instanceof DevicesDocuments\Channels\Properties\Dynamic) {
 						try {
 							$state = $this->channelPropertiesStatesManager->read(
 								$property,
 								MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::HOMEKIT),
 							);
 
-							if ($state instanceof MetadataDocuments\DevicesModule\ChannelPropertyState) {
+							if ($state instanceof DevicesDocuments\States\Properties\Channel) {
 								$characteristic->setActualValue(
 									$state->getGet()->getExpectedValue() ?? $state->getGet()->getActualValue(),
 								);
@@ -325,20 +338,20 @@ final class Http implements Server
 						} catch (DevicesExceptions\NotImplemented) {
 							// Ignore error
 						}
-					} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty) {
+					} elseif ($property instanceof DevicesDocuments\Channels\Properties\Mapped) {
 						$findParentPropertyQuery = new DevicesQueries\Configuration\FindChannelProperties();
 						$findParentPropertyQuery->byId($property->getParent());
 
 						$parent = $this->channelsPropertiesConfigurationRepository->findOneBy($findParentPropertyQuery);
 
-						if ($parent instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+						if ($parent instanceof DevicesDocuments\Channels\Properties\Dynamic) {
 							try {
 								$state = $this->channelPropertiesStatesManager->read(
 									$property,
 									MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::HOMEKIT),
 								);
 
-								if ($state instanceof MetadataDocuments\DevicesModule\ChannelPropertyState) {
+								if ($state instanceof DevicesDocuments\States\Properties\Channel) {
 									$characteristic->setActualValue(
 										$state->getRead()->getExpectedValue() ?? $state->getRead()->getActualValue(),
 									);
@@ -368,7 +381,7 @@ final class Http implements Server
 							} catch (DevicesExceptions\NotImplemented) {
 								// Ignore error
 							}
-						} elseif ($parent instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
+						} elseif ($parent instanceof DevicesDocuments\Channels\Properties\Variable) {
 							$characteristic->setActualValue($parent->getValue());
 							$characteristic->setValid(true);
 						}
@@ -628,7 +641,7 @@ final class Http implements Server
 	 * @throws SemVer\SemverException
 	 */
 	private function buildAccessory(
-		MetadataDocuments\DevicesModule\Connector|MetadataDocuments\DevicesModule\Device $owner,
+		Documents\Connectors\Connector|Documents\Devices\Device $owner,
 		int|null $aid = null,
 		Types\AccessoryCategory|null $category = null,
 	): Protocol\Accessories\Accessory
@@ -636,20 +649,20 @@ final class Http implements Server
 		$category ??= Types\AccessoryCategory::get(Types\AccessoryCategory::OTHER);
 
 		if ($category->equalsValue(Types\AccessoryCategory::BRIDGE)) {
-			if (!$owner instanceof MetadataDocuments\DevicesModule\Connector) {
+			if (!$owner instanceof Documents\Connectors\Connector) {
 				throw new Exceptions\InvalidArgument('Bridge accessory owner have to be connector item instance');
 			}
 
 			$accessory = $this->bridgeAccessoryFactory->create($owner->getName() ?? $owner->getIdentifier(), $owner);
 		} else {
-			if (!$owner instanceof MetadataDocuments\DevicesModule\Device) {
+			if (!$owner instanceof Documents\Devices\Device) {
 				throw new Exceptions\InvalidArgument('Device accessory owner have to be device item instance');
 			}
 
 			$accessory = null;
 
 			foreach ($this->accessoryFactories as $accessoryFactory) {
-				if ($owner->getType() === $accessoryFactory->getEntityClass()::getType()) {
+				if ($owner::getType() === $accessoryFactory->getEntityClass()::getType()) {
 					$accessory = $accessoryFactory->create(
 						$owner->getName() ?? $owner->getIdentifier(),
 						$aid,
@@ -690,7 +703,7 @@ final class Http implements Server
 			$accessoryInformation,
 		);
 
-		if ($owner instanceof MetadataDocuments\DevicesModule\Device) {
+		if ($owner instanceof Documents\Devices\Device) {
 			$serialNumber = $this->deviceHelper->getSerialNumber($owner);
 
 			if ($serialNumber === null) {
@@ -740,7 +753,7 @@ final class Http implements Server
 			$accessoryInformation,
 		);
 
-		if ($owner instanceof MetadataDocuments\DevicesModule\Device) {
+		if ($owner instanceof Documents\Devices\Device) {
 			$firmwareVersion = $this->deviceHelper->getFirmwareVersion($owner);
 
 			if ($firmwareVersion === null) {
@@ -844,7 +857,7 @@ final class Http implements Server
 	private function buildService(
 		Types\ServiceType $type,
 		Protocol\Accessories\Accessory $accessory,
-		MetadataDocuments\DevicesModule\Channel|null $channel = null,
+		Documents\Channels\Channel|null $channel = null,
 	): Protocol\Services\Service
 	{
 		$metadata = $this->loader->loadServices();
@@ -870,8 +883,10 @@ final class Http implements Server
 
 		foreach ($this->serviceFactories as $serviceFactory) {
 			if (
-				$channel?->getType() === $serviceFactory->getEntityClass()::getType()
-				|| (
+				(
+					$channel !== null
+					&& $channel::getType() === $serviceFactory->getEntityClass()::getType()
+				) || (
 					$type->equalsValue(Types\ServiceType::ACCESSORY_INFORMATION)
 					&& $serviceFactory instanceof Protocol\Services\GenericFactory
 				)
@@ -911,7 +926,7 @@ final class Http implements Server
 	public function buildCharacteristic(
 		string $name,
 		Protocol\Services\Service $service,
-		MetadataDocuments\DevicesModule\ChannelProperty|null $property = null,
+		DevicesDocuments\Channels\Properties\Property|null $property = null,
 		array|null $validValues = [],
 		int|null $maxLength = null,
 		float|null $minValue = null,
@@ -1022,7 +1037,10 @@ final class Http implements Server
 			if (
 				(
 					$characteristicFactory->getEntityClass() !== null
-					&& $property?->getType() === $characteristicFactory->getEntityClass()::getType()
+					&& (
+						$property !== null
+						&& $property::getType() === $characteristicFactory->getEntityClass()::getType()
+					)
 				) || (
 					$service->getChannel() === null
 					&& $characteristicFactory instanceof Protocol\Characteristics\GenericFactory

@@ -1051,7 +1051,7 @@ final class CloudApi implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @template T of \FastyBird\Connector\Sonoff\API\Messages\Message
+	 * @template T of Messages\Message
 	 *
 	 * @param class-string<T> $entity
 	 *

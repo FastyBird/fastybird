@@ -20,10 +20,10 @@ use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Helpers;
 use FastyBird\Connector\HomeKit\Protocol;
 use FastyBird\Connector\HomeKit\Types;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use Nette;
 use Ramsey\Uuid;
 use function array_merge;
@@ -82,7 +82,7 @@ class Characteristic
 		private readonly Types\DataType $dataType,
 		private readonly array $permissions,
 		private readonly Protocol\Services\Service $service,
-		private readonly MetadataDocuments\DevicesModule\ChannelProperty|null $property = null,
+		private readonly DevicesDocuments\Channels\Properties\Property|null $property = null,
 		private readonly array|null $validValues = [],
 		private readonly int|null $maxLength = null,
 		private readonly float|null $minValue = null,
@@ -152,7 +152,7 @@ class Characteristic
 		return $this->service;
 	}
 
-	public function getProperty(): MetadataDocuments\DevicesModule\ChannelProperty|null
+	public function getProperty(): DevicesDocuments\Channels\Properties\Property|null
 	{
 		return $this->property;
 	}

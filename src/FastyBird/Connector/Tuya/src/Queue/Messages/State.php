@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:FbMqttConnector!
+ * @package        FastyBird:TuyaConnector!
  * @subpackage     Queue
  * @since          1.0.0
  *
@@ -27,7 +27,7 @@ use function is_bool;
 /**
  * Property state
  *
- * @package        FastyBird:FbMqttConnector!
+ * @package        FastyBird:TuyaConnector!
  * @subpackage     Queue
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

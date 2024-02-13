@@ -18,17 +18,18 @@ namespace FastyBird\Connector\Viera\Clients;
 use DateTimeInterface;
 use FastyBird\Connector\Viera;
 use FastyBird\Connector\Viera\API;
-use FastyBird\Connector\Viera\Entities;
+use FastyBird\Connector\Viera\Documents;
 use FastyBird\Connector\Viera\Exceptions;
 use FastyBird\Connector\Viera\Helpers;
+use FastyBird\Connector\Viera\Queries;
 use FastyBird\Connector\Viera\Queue;
 use FastyBird\Connector\Viera\Types;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -61,10 +62,10 @@ final class Television implements Client
 
 	private const RECONNECT_COOL_DOWN_TIME = 300.0;
 
-	/** @var array<string, MetadataDocuments\DevicesModule\Device>  */
+	/** @var array<string, Documents\Devices\Device>  */
 	private array $devices = [];
 
-	/** @var array<string, array<string, MetadataDocuments\DevicesModule\ChannelDynamicProperty>>  */
+	/** @var array<string, array<string, DevicesDocuments\Channels\Properties\Dynamic>>  */
 	private array $properties = [];
 
 	/** @var array<string, API\TelevisionApi> */
@@ -79,7 +80,7 @@ final class Television implements Client
 	private EventLoop\TimerInterface|null $handlerTimer = null;
 
 	public function __construct(
-		private readonly MetadataDocuments\DevicesModule\Connector $connector,
+		private readonly Documents\Connectors\Connector $connector,
 		private readonly API\ConnectionManager $connectionManager,
 		private readonly Queue\Queue $queue,
 		private readonly Helpers\MessageBuilder $messageBuilder,
@@ -106,21 +107,27 @@ final class Television implements Client
 		$this->processedDevices = [];
 		$this->processedChannelsProperties = [];
 
-		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDevicesQuery = new Queries\Configuration\FindDevices();
 		$findDevicesQuery->forConnector($this->connector);
-		$findDevicesQuery->byType(Entities\Devices\Device::TYPE);
 
-		foreach ($this->devicesConfigurationRepository->findAllBy($findDevicesQuery) as $device) {
+		$devices = $this->devicesConfigurationRepository->findAllBy(
+			$findDevicesQuery,
+			Documents\Devices\Device::class,
+		);
+
+		foreach ($devices as $device) {
 			if (!array_key_exists($device->getId()->toString(), $this->properties)) {
 				$this->properties[$device->getId()->toString()] = [];
 			}
 
-			$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
+			$findChannelQuery = new Queries\Configuration\FindChannels();
 			$findChannelQuery->forDevice($device);
 			$findChannelQuery->byIdentifier(Types\ChannelType::TELEVISION);
-			$findChannelQuery->byType(Entities\Channels\Channel::TYPE);
 
-			$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
+			$channel = $this->channelsConfigurationRepository->findOneBy(
+				$findChannelQuery,
+				Documents\Channels\Channel::class,
+			);
 
 			if ($channel === null) {
 				$this->queue->append(
@@ -143,7 +150,7 @@ final class Television implements Client
 
 			$properties = $this->channelsPropertiesConfigurationRepository->findAllBy(
 				$findChannelPropertiesQuery,
-				MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
+				DevicesDocuments\Channels\Properties\Dynamic::class,
 			);
 
 			foreach ($properties as $property) {
@@ -186,6 +193,7 @@ final class Television implements Client
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
@@ -214,10 +222,11 @@ final class Television implements Client
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 */
-	private function processDevice(MetadataDocuments\DevicesModule\Device $device): bool
+	private function processDevice(Documents\Devices\Device $device): bool
 	{
 		$client = $this->getDeviceClient($device);
 
@@ -557,7 +566,7 @@ final class Television implements Client
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
-	private function createDeviceClient(MetadataDocuments\DevicesModule\Device $device): void
+	private function createDeviceClient(Documents\Devices\Device $device): void
 	{
 		unset($this->processedChannelsProperties[$device->getId()->toString()]);
 
@@ -619,7 +628,7 @@ final class Television implements Client
 		$this->devicesClients[$device->getId()->toString()] = $client;
 	}
 
-	private function getDeviceClient(MetadataDocuments\DevicesModule\Device $device): API\TelevisionApi|null
+	private function getDeviceClient(Documents\Devices\Device $device): API\TelevisionApi|null
 	{
 		return array_key_exists(
 			$device->getId()->toString(),

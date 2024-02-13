@@ -15,13 +15,13 @@
 
 namespace FastyBird\Module\Devices\Queries\Configuration;
 
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Documents;
 
 /**
  * Find channel mapped properties entities query
  *
- * @template T of MetadataDocuments\DevicesModule\ChannelMappedProperty
+ * @template T of Documents\Channels\Properties\Mapped
  * @extends  FindChannelProperties<T>
  *
  * @package        FastyBird:DevicesModule!

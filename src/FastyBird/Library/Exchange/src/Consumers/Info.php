@@ -15,7 +15,6 @@
 
 namespace FastyBird\Library\Exchange\Consumers;
 
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette;
 
 /**
@@ -32,13 +31,13 @@ final class Info
 	use Nette\SmartObject;
 
 	public function __construct(
-		private readonly MetadataTypes\RoutingKey|null $routingKey,
+		private readonly string|null $routingKey,
 		private readonly bool $enabled,
 	)
 	{
 	}
 
-	public function getRoutingKey(): MetadataTypes\RoutingKey|null
+	public function getRoutingKey(): string|null
 	{
 		return $this->routingKey;
 	}

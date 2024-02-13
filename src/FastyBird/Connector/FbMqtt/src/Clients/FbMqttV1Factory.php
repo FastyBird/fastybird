@@ -15,8 +15,8 @@
 
 namespace FastyBird\Connector\FbMqtt\Clients;
 
+use FastyBird\Connector\FbMqtt\Documents;
 use FastyBird\Connector\FbMqtt\Types;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 
 /**
  * FastyBird MQTT v1 client factory
@@ -31,6 +31,6 @@ interface FbMqttV1Factory extends ClientFactory
 
 	public const VERSION = Types\ProtocolVersion::VERSION_1;
 
-	public function create(MetadataDocuments\DevicesModule\Connector $connector): FbMqttV1;
+	public function create(Documents\Connectors\Connector $connector): FbMqttV1;
 
 }

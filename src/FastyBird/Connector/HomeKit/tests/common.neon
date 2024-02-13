@@ -79,6 +79,10 @@ nettrineOrm:
 nettrineOrmAttributes:
     mapping: []
 
+fbMetadataLibrary:
+    documents:
+        mapping: []
+
 fbSimpleAuth:
     token:
         issuer: com.fastybird.auth-module

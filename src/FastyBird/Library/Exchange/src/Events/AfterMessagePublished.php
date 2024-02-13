@@ -32,7 +32,7 @@ class AfterMessagePublished extends EventDispatcher\Event
 
 	public function __construct(
 		private readonly MetadataTypes\Sources\Source $source,
-		private readonly MetadataTypes\RoutingKey $routingKey,
+		private readonly string $routingKey,
 		private readonly MetadataDocuments\Document|null $entity,
 	)
 	{
@@ -43,7 +43,7 @@ class AfterMessagePublished extends EventDispatcher\Event
 		return $this->source;
 	}
 
-	public function getRoutingKey(): MetadataTypes\RoutingKey
+	public function getRoutingKey(): string
 	{
 		return $this->routingKey;
 	}
