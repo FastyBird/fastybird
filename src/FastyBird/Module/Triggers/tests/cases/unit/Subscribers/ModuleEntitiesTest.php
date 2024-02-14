@@ -13,8 +13,6 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Triggers;
 use FastyBird\Module\Triggers\Documents;
 use FastyBird\Module\Triggers\Entities;
-use FastyBird\Module\Triggers\Exceptions;
-use FastyBird\Module\Triggers\Models;
 use FastyBird\Module\Triggers\Subscribers;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
