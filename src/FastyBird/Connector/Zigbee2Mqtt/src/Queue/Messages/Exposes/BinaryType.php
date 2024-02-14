@@ -101,12 +101,12 @@ final class BinaryType extends Type
 		return array_merge(
 			[
 				[
-					MetadataTypes\Payloads\Switcher::ON,
+					MetadataTypes\Payloads\Switcher::ON->value,
 					$this->getValueOn(),
 					$this->getValueOn(),
 				],
 				[
-					MetadataTypes\Payloads\Switcher::OFF,
+					MetadataTypes\Payloads\Switcher::OFF->value,
 					$this->getValueOff(),
 					$this->getValueOff(),
 				],
@@ -114,7 +114,7 @@ final class BinaryType extends Type
 			[
 				$this->getValueToggle() !== null
 					? [
-						MetadataTypes\Payloads\Switcher::TOGGLE,
+						MetadataTypes\Payloads\Switcher::TOGGLE->value,
 						$this->getValueToggle(),
 						$this->getValueToggle(),
 					]

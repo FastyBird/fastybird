@@ -138,17 +138,17 @@ final class ChannelPropertyDocumentTest extends BaseTestCase
 					'unit' => null,
 					'format' => [
 						[
-							['sw', MetadataTypes\Payloads\Switcher::ON],
+							['sw', MetadataTypes\Payloads\Switcher::ON->value],
 							'1000',
 							['s', 'on'],
 						],
 						[
-							['sw', MetadataTypes\Payloads\Switcher::OFF],
+							['sw', MetadataTypes\Payloads\Switcher::OFF->value],
 							'2000',
 							['s', 'off'],
 						],
 						[
-							['sw', MetadataTypes\Payloads\Switcher::TOGGLE],
+							['sw', MetadataTypes\Payloads\Switcher::TOGGLE->value],
 							null,
 							['s', 'toggle'],
 						],

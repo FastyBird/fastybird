@@ -17,6 +17,7 @@ namespace FastyBird\Automator\DevicesModule\Schemas\Conditions;
 
 use FastyBird\Automator\DevicesModule\Entities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Triggers\Schemas as TriggersSchemas;
 use Neomerx\JsonApi;
 use function array_merge;
@@ -63,7 +64,7 @@ final class DevicePropertyCondition extends TriggersSchemas\Conditions\Condition
 			'device' => $resource->getDevice()->toString(),
 			'property' => $resource->getProperty()->toString(),
 			'operator' => $resource->getOperator()->value,
-			'operand' => strval($resource->getOperand()),
+			'operand' => strval(MetadataUtilities\Value::flattenValue($resource->getOperand())),
 		]);
 	}
 

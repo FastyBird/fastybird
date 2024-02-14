@@ -110,7 +110,9 @@ final class Transformer
 
 		if ($dataType === MetadataTypes\DataType::STRING) {
 			return new ValueObjects\DeviceData(
-				$value instanceof DateTimeInterface ? $value->format(DateTimeInterface::ATOM) : (string) $value,
+				$value instanceof DateTimeInterface
+					? $value->format(DateTimeInterface::ATOM)
+					: strval(MetadataUtilities\Value::flattenValue($value)),
 				$dataType,
 			);
 		}
@@ -140,7 +142,9 @@ final class Transformer
 				$filtered = array_values(array_filter(
 					$format->getItems(),
 					static fn (array $item): bool => $item[0] !== null
-							&& Utils\Strings::lower(strval($item[0]->getValue())) === Utils\Strings::lower(
+							&& Utils\Strings::lower(
+								strval(MetadataUtilities\Value::flattenValue($item[0]->getValue())),
+							) === Utils\Strings::lower(
 								strval(MetadataUtilities\Value::flattenValue($value)),
 							),
 				));
@@ -151,7 +155,7 @@ final class Transformer
 				) {
 					return new ValueObjects\DeviceData(
 						is_scalar($filtered[0][2]->getValue()) ? $filtered[0][2]->getValue() : strval(
-							$filtered[0][2]->getValue(),
+							MetadataUtilities\Value::flattenValue($filtered[0][2]->getValue()),
 						),
 						$this->shortDataTypeToLong($filtered[0][2]->getDataType()),
 					);
@@ -172,7 +176,7 @@ final class Transformer
 				)
 			) {
 				return new ValueObjects\DeviceData(
-					strval($value->getValue()),
+					$value->value,
 					MetadataTypes\DataType::STRING,
 				);
 			}
@@ -478,7 +482,7 @@ final class Transformer
 	 */
 	private function packNumber(string $format, int|float $value, int $bytes, Types\ByteOrder $byteOrder): array|null
 	{
-		$bytearray = unpack("C{$bytes}", pack($format, $value));
+		$bytearray = unpack("C$bytes", pack($format, $value));
 
 		if ($bytearray === false) {
 			return null;

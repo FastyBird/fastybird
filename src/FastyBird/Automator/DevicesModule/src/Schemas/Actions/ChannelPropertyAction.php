@@ -17,6 +17,7 @@ namespace FastyBird\Automator\DevicesModule\Schemas\Actions;
 
 use FastyBird\Automator\DevicesModule\Entities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Triggers\Schemas as TriggersSchemas;
 use Neomerx\JsonApi;
 use function array_merge;
@@ -63,7 +64,7 @@ final class ChannelPropertyAction extends TriggersSchemas\Actions\Action
 			'device' => $resource->getDevice()->toString(),
 			'channel' => $resource->getChannel()->toString(),
 			'property' => $resource->getProperty()->toString(),
-			'value' => strval($resource->getValue()),
+			'value' => strval(MetadataUtilities\Value::flattenValue($resource->getValue())),
 		]);
 	}
 

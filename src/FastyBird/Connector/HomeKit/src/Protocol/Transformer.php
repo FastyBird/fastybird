@@ -61,7 +61,7 @@ final class Transformer
 		DevicesDocuments\Channels\Properties\Property|null $property,
 		Types\DataType $dataType,
 		bool|float|int|string|null $value,
-	): bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null
+	): bool|float|int|string|MetadataTypes\Payloads\Payload|null
 	{
 		$transformedValue = null;
 
@@ -139,17 +139,11 @@ final class Transformer
 
 				if (count($filtered) === 1) {
 					if ($property->getDataType() === MetadataTypes\DataType::SWITCH) {
-						return MetadataTypes\Payloads\Switcher::isValidValue(strval($transformedValue))
-							? MetadataTypes\Payloads\Switcher::get(strval($transformedValue))
-							: null;
+						return MetadataTypes\Payloads\Switcher::tryFrom(strval($transformedValue));
 					} elseif ($property->getDataType() === MetadataTypes\DataType::BUTTON) {
-						return MetadataTypes\Payloads\Button::isValidValue(strval($transformedValue))
-							? MetadataTypes\Payloads\Button::get(strval($transformedValue))
-							: null;
+						return MetadataTypes\Payloads\Button::tryFrom(strval($transformedValue));
 					} elseif ($property->getDataType() === MetadataTypes\DataType::COVER) {
-						return MetadataTypes\Payloads\Cover::isValidValue(strval($transformedValue))
-							? MetadataTypes\Payloads\Cover::get(strval($transformedValue))
-							: null;
+						return MetadataTypes\Payloads\Cover::tryFrom(strval($transformedValue));
 					} else {
 						return strval($transformedValue);
 					}
@@ -160,7 +154,9 @@ final class Transformer
 				$filtered = array_values(array_filter(
 					$property->getFormat()->getItems(),
 					static fn (array $item): bool => $item[1] !== null
-						&& Utils\Strings::lower(strval($item[1]->getValue())) === Utils\Strings::lower(
+						&& Utils\Strings::lower(
+							strval(MetadataUtilities\Value::flattenValue($item[1]->getValue())),
+						) === Utils\Strings::lower(
 							strval($transformedValue),
 						),
 				));
@@ -170,19 +166,19 @@ final class Transformer
 					&& $filtered[0][0] instanceof MetadataFormats\CombinedEnumItem
 				) {
 					if ($property->getDataType() === MetadataTypes\DataType::SWITCH) {
-						return MetadataTypes\Payloads\Switcher::isValidValue(strval($filtered[0][0]->getValue()))
-							? MetadataTypes\Payloads\Switcher::get(strval($filtered[0][0]->getValue()))
-							: null;
+						return MetadataTypes\Payloads\Switcher::tryFrom(
+							strval(MetadataUtilities\Value::flattenValue($filtered[0][0]->getValue())),
+						);
 					} elseif ($property->getDataType() === MetadataTypes\DataType::BUTTON) {
-						return MetadataTypes\Payloads\Button::isValidValue(strval($filtered[0][0]->getValue()))
-							? MetadataTypes\Payloads\Button::get(strval($filtered[0][0]->getValue()))
-							: null;
+						return MetadataTypes\Payloads\Button::tryFrom(
+							strval(MetadataUtilities\Value::flattenValue($filtered[0][0]->getValue())),
+						);
 					} elseif ($property->getDataType() === MetadataTypes\DataType::COVER) {
-						return MetadataTypes\Payloads\Cover::isValidValue(strval($filtered[0][0]->getValue()))
-							? MetadataTypes\Payloads\Cover::get(strval($filtered[0][0]->getValue()))
-							: null;
+						return MetadataTypes\Payloads\Cover::tryFrom(
+							strval(MetadataUtilities\Value::flattenValue($filtered[0][0]->getValue())),
+						);
 					} else {
-						return strval($filtered[0][0]->getValue());
+						return strval(MetadataUtilities\Value::flattenValue($filtered[0][0]->getValue()));
 					}
 				}
 
@@ -236,7 +232,9 @@ final class Transformer
 					$filtered = array_values(array_filter(
 						$property->getFormat()->getItems(),
 						static fn (array $item): bool => $item[0] !== null
-							&& Utils\Strings::lower(strval($item[0]->getValue())) === Utils\Strings::lower(
+							&& Utils\Strings::lower(
+								strval(MetadataUtilities\Value::flattenValue($item[0]->getValue())),
+							) === Utils\Strings::lower(
 								strval(MetadataUtilities\Value::flattenValue($value)),
 							),
 					));
@@ -262,7 +260,7 @@ final class Transformer
 							&& $value instanceof MetadataTypes\Payloads\Cover
 						)
 					) {
-						$transformedValue = strval($value->getValue());
+						$transformedValue = $value->value;
 					}
 				}
 			} else {

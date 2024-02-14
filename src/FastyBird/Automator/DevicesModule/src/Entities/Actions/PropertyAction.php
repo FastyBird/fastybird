@@ -17,10 +17,12 @@ namespace FastyBird\Automator\DevicesModule\Entities\Actions;
 
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Triggers\Entities as TriggersEntities;
 use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use Ramsey\Uuid;
 use function array_merge;
+use function strval;
 
 #[ORM\MappedSuperclass]
 abstract class PropertyAction extends TriggersEntities\Actions\Action
@@ -49,16 +51,16 @@ abstract class PropertyAction extends TriggersEntities\Actions\Action
 
 	public function getValue(): string|MetadataTypes\Payloads\Payload
 	{
-		if (MetadataTypes\Payloads\Button::isValidValue($this->value)) {
-			return MetadataTypes\Payloads\Button::get($this->value);
+		if (MetadataTypes\Payloads\Button::tryFrom($this->value) !== null) {
+			return MetadataTypes\Payloads\Button::tryFrom($this->value);
 		}
 
-		if (MetadataTypes\Payloads\Switcher::isValidValue($this->value)) {
-			return MetadataTypes\Payloads\Switcher::get($this->value);
+		if (MetadataTypes\Payloads\Switcher::tryFrom($this->value) !== null) {
+			return MetadataTypes\Payloads\Switcher::tryFrom($this->value);
 		}
 
-		if (MetadataTypes\Payloads\Cover::isValidValue($this->value)) {
-			return MetadataTypes\Payloads\Cover::get($this->value);
+		if (MetadataTypes\Payloads\Cover::tryFrom($this->value) !== null) {
+			return MetadataTypes\Payloads\Cover::tryFrom($this->value);
 		}
 
 		return $this->value;
@@ -81,7 +83,7 @@ abstract class PropertyAction extends TriggersEntities\Actions\Action
 	{
 		return array_merge(parent::toArray(), [
 			'device' => $this->getDevice()->toString(),
-			'value' => (string) $this->getValue(),
+			'value' => strval(MetadataUtilities\Value::flattenValue($this->getValue())),
 		]);
 	}
 

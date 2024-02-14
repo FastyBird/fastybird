@@ -521,12 +521,12 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					null,
 					[
 						[
-							MetadataTypes\Payloads\Switcher::ON,
+							MetadataTypes\Payloads\Switcher::ON->value,
 							'ON',
 							'true',
 						],
 						[
-							MetadataTypes\Payloads\Switcher::OFF,
+							MetadataTypes\Payloads\Switcher::OFF->value,
 							'OFF',
 							'false',
 						],
@@ -545,8 +545,8 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					false,
 					true,
 				),
-				MetadataTypes\Payloads\Switcher::get(MetadataTypes\Payloads\Switcher::ON),
-				MetadataTypes\Payloads\Switcher::get(MetadataTypes\Payloads\Switcher::OFF),
+				MetadataTypes\Payloads\Switcher::ON,
+				MetadataTypes\Payloads\Switcher::OFF,
 			],
 			/**
 			 * Mapped property - no scale, no transformer.
@@ -564,7 +564,7 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					null,
 					[
 						[
-							MetadataTypes\Payloads\Switcher::ON,
+							MetadataTypes\Payloads\Switcher::ON->value,
 							[
 								MetadataTypes\DataTypeShort::BOOLEAN,
 								'true',
@@ -575,7 +575,7 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 							],
 						],
 						[
-							MetadataTypes\Payloads\Switcher::OFF,
+							MetadataTypes\Payloads\Switcher::OFF->value,
 							[
 								MetadataTypes\DataTypeShort::BOOLEAN,
 								'false',
@@ -602,12 +602,12 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					null,
 					[
 						[
-							MetadataTypes\Payloads\Switcher::ON,
+							MetadataTypes\Payloads\Switcher::ON->value,
 							'ON',
 							'true',
 						],
 						[
-							MetadataTypes\Payloads\Switcher::OFF,
+							MetadataTypes\Payloads\Switcher::OFF->value,
 							'OFF',
 							'false',
 						],
@@ -625,8 +625,8 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					false,
 					true,
 				),
-				MetadataTypes\Payloads\Switcher::get(MetadataTypes\Payloads\Switcher::ON),
-				MetadataTypes\Payloads\Switcher::get(MetadataTypes\Payloads\Switcher::OFF),
+				MetadataTypes\Payloads\Switcher::ON,
+				MetadataTypes\Payloads\Switcher::OFF,
 			],
 		];
 	}
@@ -1058,12 +1058,12 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					null,
 					[
 						[
-							MetadataTypes\Payloads\Switcher::ON,
+							MetadataTypes\Payloads\Switcher::ON->value,
 							'ON',
 							'true',
 						],
 						[
-							MetadataTypes\Payloads\Switcher::OFF,
+							MetadataTypes\Payloads\Switcher::OFF->value,
 							'OFF',
 							'false',
 						],
@@ -1100,7 +1100,7 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					null,
 					[
 						[
-							MetadataTypes\Payloads\Switcher::ON,
+							MetadataTypes\Payloads\Switcher::ON->value,
 							'ON',
 							[
 								MetadataTypes\DataTypeShort::BOOLEAN,
@@ -1108,7 +1108,7 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 							],
 						],
 						[
-							MetadataTypes\Payloads\Switcher::OFF,
+							MetadataTypes\Payloads\Switcher::OFF->value,
 							'OFF',
 							[
 								MetadataTypes\DataTypeShort::BOOLEAN,
@@ -1149,7 +1149,7 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					null,
 					[
 						[
-							MetadataTypes\Payloads\Switcher::ON,
+							MetadataTypes\Payloads\Switcher::ON->value,
 							[
 								MetadataTypes\DataTypeShort::BOOLEAN,
 								'true',
@@ -1160,7 +1160,7 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 							],
 						],
 						[
-							MetadataTypes\Payloads\Switcher::OFF,
+							MetadataTypes\Payloads\Switcher::OFF->value,
 							[
 								MetadataTypes\DataTypeShort::BOOLEAN,
 								'false',
@@ -1187,12 +1187,12 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					null,
 					[
 						[
-							MetadataTypes\Payloads\Switcher::ON,
+							MetadataTypes\Payloads\Switcher::ON->value,
 							'ON',
 							'true',
 						],
 						[
-							MetadataTypes\Payloads\Switcher::OFF,
+							MetadataTypes\Payloads\Switcher::OFF->value,
 							'OFF',
 							'false',
 						],

@@ -15,7 +15,7 @@
 
 namespace FastyBird\Library\Metadata\Formats;
 
-use Consistence;
+use BackedEnum;
 use FastyBird\Library\Metadata\Exceptions;
 use FastyBird\Library\Metadata\Types;
 use Nette;
@@ -101,7 +101,7 @@ final class CombinedEnumItem
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public function getValue(): float|bool|int|string|Types\Payloads\Button|Types\Payloads\Switcher|Types\Payloads\Cover
+	public function getValue(): float|bool|int|string|Types\Payloads\Payload
 	{
 		if ($this->dataType === null) {
 			return $this->value;
@@ -123,20 +123,20 @@ final class CombinedEnumItem
 		} elseif ($this->dataType->equalsValue(Types\DataTypeShort::BOOLEAN)) {
 			return in_array(Utils\Strings::lower(strval($this->value)), ['true', 't', 'yes', 'y', '1', 'on'], true);
 		} elseif ($this->dataType->equalsValue(Types\DataTypeShort::BUTTON)) {
-			if (Types\Payloads\Button::isValidValue(Utils\Strings::lower(strval($this->value)))) {
-				return Types\Payloads\Button::get(Utils\Strings::lower(strval($this->value)));
+			if (Types\Payloads\Button::tryFrom(Utils\Strings::lower(strval($this->value))) !== null) {
+				return Types\Payloads\Button::tryFrom(Utils\Strings::lower(strval($this->value)));
 			}
 
 			throw new Exceptions\InvalidState('Combined enum value is not valid');
 		} elseif ($this->dataType->equalsValue(Types\DataTypeShort::SWITCH)) {
-			if (Types\Payloads\Switcher::isValidValue(Utils\Strings::lower(strval($this->value)))) {
-				return Types\Payloads\Switcher::get(Utils\Strings::lower(strval($this->value)));
+			if (Types\Payloads\Switcher::tryFrom(Utils\Strings::lower(strval($this->value))) !== null) {
+				return Types\Payloads\Switcher::tryFrom(Utils\Strings::lower(strval($this->value)));
 			}
 
 			throw new Exceptions\InvalidState('Combined enum value is not valid');
 		} elseif ($this->dataType->equalsValue(Types\DataTypeShort::COVER)) {
-			if (Types\Payloads\Cover::isValidValue(Utils\Strings::lower(strval($this->value)))) {
-				return Types\Payloads\Cover::get(Utils\Strings::lower(strval($this->value)));
+			if (Types\Payloads\Cover::tryFrom(Utils\Strings::lower(strval($this->value))) !== null) {
+				return Types\Payloads\Cover::tryFrom(Utils\Strings::lower(strval($this->value)));
 			}
 
 			throw new Exceptions\InvalidState('Combined enum value is not valid');
@@ -159,7 +159,7 @@ final class CombinedEnumItem
 	{
 		$value = $this->getValue();
 
-		$flattenValue = $value instanceof Consistence\Enum\Enum ? strval($value->getValue()) : $value;
+		$flattenValue = $value instanceof BackedEnum ? strval($value->value) : $value;
 
 		if ($this->dataType === null) {
 			return [

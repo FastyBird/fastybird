@@ -47,9 +47,9 @@ final class StoreChannelPropertyState implements Message
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\BoolValue(),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
-			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\Payloads\Switcher::class),
-			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\Payloads\Button::class),
-			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\Payloads\Cover::class),
+			new ObjectMapper\Rules\BackedEnumValue(class: MetadataTypes\Payloads\Button::class),
+			new ObjectMapper\Rules\BackedEnumValue(class: MetadataTypes\Payloads\Switcher::class),
+			new ObjectMapper\Rules\BackedEnumValue(class: MetadataTypes\Payloads\Cover::class),
 		])]
 		private readonly float|int|string|bool|MetadataTypes\Payloads\Payload|null $value,
 	)

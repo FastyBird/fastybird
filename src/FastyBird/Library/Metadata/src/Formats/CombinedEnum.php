@@ -17,6 +17,7 @@ namespace FastyBird\Library\Metadata\Formats;
 
 use ArrayIterator;
 use FastyBird\Library\Metadata\Exceptions;
+use FastyBird\Library\Metadata\Utilities;
 use IteratorAggregate;
 use Nette;
 use Traversable;
@@ -100,7 +101,9 @@ final class CombinedEnum implements IteratorAggregate
 			static fn (array $item): array => array_map(
 				static function (CombinedEnumItem|null $part): array|string|null {
 					if ($part instanceof CombinedEnumItem) {
-						return $part->getDataType() !== null ? $part->toArray() : strval($part->getValue());
+						return $part->getDataType() !== null
+							? $part->toArray()
+							: strval(Utilities\Value::flattenValue($part->getValue()));
 					}
 
 					return $part;

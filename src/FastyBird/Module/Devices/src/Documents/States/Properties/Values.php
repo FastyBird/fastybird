@@ -16,7 +16,6 @@
 namespace FastyBird\Module\Devices\Documents\States\Properties;
 
 use DateTimeInterface;
-use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Documents\Mapping as DOC;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -38,9 +37,9 @@ final class Values implements MetadataDocuments\Document
 	public function __construct(
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
-			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\Payloads\Button::class),
-			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\Payloads\Switcher::class),
-			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\Payloads\Cover::class),
+			new ObjectMapper\Rules\BackedEnumValue(class: MetadataTypes\Payloads\Button::class),
+			new ObjectMapper\Rules\BackedEnumValue(class: MetadataTypes\Payloads\Switcher::class),
+			new ObjectMapper\Rules\BackedEnumValue(class: MetadataTypes\Payloads\Cover::class),
 			new ObjectMapper\Rules\BoolValue(),
 			new ObjectMapper\Rules\IntValue(),
 			new ObjectMapper\Rules\FloatValue(),
@@ -51,9 +50,9 @@ final class Values implements MetadataDocuments\Document
 		private readonly bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $actualValue,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
-			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\Payloads\Button::class),
-			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\Payloads\Switcher::class),
-			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\Payloads\Cover::class),
+			new ObjectMapper\Rules\BackedEnumValue(class: MetadataTypes\Payloads\Button::class),
+			new ObjectMapper\Rules\BackedEnumValue(class: MetadataTypes\Payloads\Switcher::class),
+			new ObjectMapper\Rules\BackedEnumValue(class: MetadataTypes\Payloads\Cover::class),
 			new ObjectMapper\Rules\BoolValue(),
 			new ObjectMapper\Rules\IntValue(),
 			new ObjectMapper\Rules\FloatValue(),

@@ -84,7 +84,7 @@ final class DataTypeTransformer
 					|| $this->value === null
 				)
 			) {
-				return $this->value?->equalsValue(MetadataTypes\Payloads\Switcher::ON) ?? false;
+				return $this->value === MetadataTypes\Payloads\Switcher::ON;
 			} elseif (
 				$this->source === MetadataTypes\DataType::BUTTON
 				&& (
@@ -92,7 +92,7 @@ final class DataTypeTransformer
 					|| $this->value === null
 				)
 			) {
-				return $this->value?->equalsValue(MetadataTypes\Payloads\Button::PRESSED) ?? false;
+				return $this->value === MetadataTypes\Payloads\Button::PRESSED;
 			} elseif (
 				$this->source === MetadataTypes\DataType::COVER
 				&& (
@@ -100,29 +100,23 @@ final class DataTypeTransformer
 					|| $this->value === null
 				)
 			) {
-				return $this->value?->equalsValue(MetadataTypes\Payloads\Cover::OPEN) ?? false;
+				return $this->value === MetadataTypes\Payloads\Cover::OPEN;
 			}
 		}
 
 		if ($this->source === MetadataTypes\DataType::BOOLEAN) {
 			if ($this->destination === MetadataTypes\DataType::SWITCH) {
-				return MetadataTypes\Payloads\Switcher::get(
-					boolval($this->value)
-						? MetadataTypes\Payloads\Switcher::ON
-						: MetadataTypes\Payloads\Switcher::OFF,
-				);
+				return boolval($this->value)
+					? MetadataTypes\Payloads\Switcher::ON
+					: MetadataTypes\Payloads\Switcher::OFF;
 			} elseif ($this->destination === MetadataTypes\DataType::BUTTON) {
-				return MetadataTypes\Payloads\Button::get(
-					boolval($this->value)
-						? MetadataTypes\Payloads\Button::PRESSED
-						: MetadataTypes\Payloads\Button::RELEASED,
-				);
+				return boolval($this->value)
+					? MetadataTypes\Payloads\Button::PRESSED
+					: MetadataTypes\Payloads\Button::RELEASED;
 			} elseif ($this->destination === MetadataTypes\DataType::COVER) {
-				return MetadataTypes\Payloads\Cover::get(
-					boolval($this->value)
-						? MetadataTypes\Payloads\Cover::OPEN
-						: MetadataTypes\Payloads\Cover::CLOSE,
-				);
+				return boolval($this->value)
+					? MetadataTypes\Payloads\Cover::OPEN
+					: MetadataTypes\Payloads\Cover::CLOSE;
 			}
 		}
 

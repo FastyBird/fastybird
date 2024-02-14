@@ -1289,7 +1289,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 					null,
 					[
 						[
-							MetadataTypes\Payloads\Switcher::ON,
+							MetadataTypes\Payloads\Switcher::ON->value,
 							[
 								MetadataTypes\DataTypeShort::BOOLEAN,
 								true,
@@ -1300,7 +1300,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 							],
 						],
 						[
-							MetadataTypes\Payloads\Switcher::OFF,
+							MetadataTypes\Payloads\Switcher::OFF->value,
 							[
 								MetadataTypes\DataTypeShort::BOOLEAN,
 								false,
@@ -1327,12 +1327,12 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 					null,
 					[
 						[
-							MetadataTypes\Payloads\Switcher::ON,
+							MetadataTypes\Payloads\Switcher::ON->value,
 							'ON',
 							'ON',
 						],
 						[
-							MetadataTypes\Payloads\Switcher::OFF,
+							MetadataTypes\Payloads\Switcher::OFF->value,
 							'OFF',
 							'OFF',
 						],
@@ -1348,7 +1348,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 					States\Property::EXPECTED_VALUE_FIELD => true,
 				]),
 				Utils\ArrayHash::from([
-					States\Property::EXPECTED_VALUE_FIELD => MetadataTypes\Payloads\Switcher::ON,
+					States\Property::EXPECTED_VALUE_FIELD => MetadataTypes\Payloads\Switcher::ON->value,
 					States\Property::PENDING_FIELD => true,
 				]),
 				null,

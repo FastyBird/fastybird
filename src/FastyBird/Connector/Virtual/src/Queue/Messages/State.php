@@ -16,7 +16,6 @@
 namespace FastyBird\Connector\Virtual\Queue\Messages;
 
 use DateTimeInterface;
-use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\States as DevicesStates;
@@ -43,9 +42,9 @@ class State implements Message
 			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
-			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\Payloads\Button::class),
-			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\Payloads\Switcher::class),
-			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\Payloads\Cover::class),
+			new ObjectMapper\Rules\BackedEnumValue(class: MetadataTypes\Payloads\Button::class),
+			new ObjectMapper\Rules\BackedEnumValue(class: MetadataTypes\Payloads\Switcher::class),
+			new ObjectMapper\Rules\BackedEnumValue(class: MetadataTypes\Payloads\Cover::class),
 			new ObjectMapper\Rules\ObjectValue(),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
@@ -58,9 +57,9 @@ class State implements Message
 			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
-			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\Payloads\Button::class),
-			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\Payloads\Switcher::class),
-			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\Payloads\Cover::class),
+			new ObjectMapper\Rules\BackedEnumValue(class: MetadataTypes\Payloads\Button::class),
+			new ObjectMapper\Rules\BackedEnumValue(class: MetadataTypes\Payloads\Switcher::class),
+			new ObjectMapper\Rules\BackedEnumValue(class: MetadataTypes\Payloads\Cover::class),
 			new ObjectMapper\Rules\ObjectValue(),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]

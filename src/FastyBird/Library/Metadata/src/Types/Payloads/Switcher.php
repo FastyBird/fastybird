@@ -23,16 +23,13 @@ namespace FastyBird\Library\Metadata\Types\Payloads;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Switcher extends Payload
+enum Switcher: string implements Payload
 {
 
-	/**
-	 * Define types
-	 */
-	public const ON = 'switch_on';
+	case ON = 'switch_on';
 
-	public const OFF = 'switch_off';
+	case OFF = 'switch_off';
 
-	public const TOGGLE = 'switch_toggle';
+	case TOGGLE = 'switch_toggle';
 
 }

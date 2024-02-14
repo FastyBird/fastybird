@@ -1464,7 +1464,7 @@ class Install extends Console\Command\Command
 
 					$format = [
 						[
-							MetadataTypes\Payloads\Switcher::ON,
+							MetadataTypes\Payloads\Switcher::ON->value,
 							[
 								MetadataTypes\DataTypeShort::BOOLEAN,
 								'true',
@@ -1475,7 +1475,7 @@ class Install extends Console\Command\Command
 							],
 						],
 						[
-							MetadataTypes\Payloads\Switcher::OFF,
+							MetadataTypes\Payloads\Switcher::OFF->value,
 							[
 								MetadataTypes\DataTypeShort::BOOLEAN,
 								'false',
@@ -1647,7 +1647,7 @@ class Install extends Console\Command\Command
 
 					$format = [
 						[
-							MetadataTypes\Payloads\Switcher::ON,
+							MetadataTypes\Payloads\Switcher::ON->value,
 							[
 								MetadataTypes\DataTypeShort::BOOLEAN,
 								'true',
@@ -1658,7 +1658,7 @@ class Install extends Console\Command\Command
 							],
 						],
 						[
-							MetadataTypes\Payloads\Switcher::OFF,
+							MetadataTypes\Payloads\Switcher::OFF->value,
 							[
 								MetadataTypes\DataTypeShort::BOOLEAN,
 								'false',
@@ -2972,7 +2972,7 @@ class Install extends Console\Command\Command
 
 								return [
 									$items[0]->getDataType(),
-									strval($items[0]->getValue()),
+									strval(MetadataUtilities\Value::flattenValue($items[0]->getValue())),
 								];
 							},
 							$connectProperty->getFormat()->getItems(),
@@ -3037,13 +3037,13 @@ class Install extends Console\Command\Command
 					$valueDataType = is_array($value) ? strval($value[0]) : null;
 					$value = is_array($value) ? $value[1] : $value;
 
-					if (MetadataTypes\Payloads\Switcher::isValidValue($value)) {
+					if (MetadataTypes\Payloads\Switcher::tryFrom($value) !== null) {
 						$valueDataType = MetadataTypes\DataTypeShort::SWITCH;
 
-					} elseif (MetadataTypes\Payloads\Button::isValidValue($value)) {
+					} elseif (MetadataTypes\Payloads\Button::tryFrom($value) !== null) {
 						$valueDataType = MetadataTypes\DataTypeShort::BUTTON;
 
-					} elseif (MetadataTypes\Payloads\Cover::isValidValue($value)) {
+					} elseif (MetadataTypes\Payloads\Cover::tryFrom($value) !== null) {
 						$valueDataType = MetadataTypes\DataTypeShort::COVER;
 					}
 
@@ -3215,7 +3215,7 @@ class Install extends Console\Command\Command
 
 		$question = new Console\Question\Question(
 			$this->translator->translate('//homekit-connector.cmd.install.questions.provide.value'),
-			is_object($value) ? strval($value) : $value,
+			is_object($value) ? strval(MetadataUtilities\Value::flattenValue($value)) : $value,
 		);
 		$question->setValidator(
 			function (string|int|null $answer) use ($dataTypes, $minValue, $maxValue, $step): string|int|float {

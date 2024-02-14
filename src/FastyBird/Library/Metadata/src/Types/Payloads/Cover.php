@@ -23,30 +23,27 @@ namespace FastyBird\Library\Metadata\Types\Payloads;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Cover extends Payload
+enum Cover: string implements Payload
 {
 
-	/**
-	 * Define types
-	 */
-	public const OPEN = 'cover_open';
+	case OPEN = 'cover_open';
 
-	public const OPENING = 'cover_opening';
+	case OPENING = 'cover_opening';
 
-	public const OPENED = 'cover_opened';
+	case OPENED = 'cover_opened';
 
-	public const CLOSE = 'cover_close';
+	case CLOSE = 'cover_close';
 
-	public const CLOSING = 'cover_closing';
+	case CLOSING = 'cover_closing';
 
-	public const CLOSED = 'cover_closed';
+	case CLOSED = 'cover_closed';
 
-	public const STOP = 'cover_stop';
+	case STOP = 'cover_stop';
 
-	public const STOPPED = 'cover_stopped';
+	case STOPPED = 'cover_stopped';
 
-	public const CALIBRATE = 'cover_calibrate';
+	case CALIBRATE = 'cover_calibrate';
 
-	public const CALIBRATING = 'cover_calibrating';
+	case CALIBRATING = 'cover_calibrating';
 
 }

@@ -23,24 +23,21 @@ namespace FastyBird\Library\Metadata\Types\Payloads;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Button extends Payload
+enum Button: string implements Payload
 {
 
-	/**
-	 * Define types
-	 */
-	public const PRESSED = 'btn_pressed';
+	case PRESSED = 'btn_pressed';
 
-	public const RELEASED = 'btn_released';
+	case RELEASED = 'btn_released';
 
-	public const CLICKED = 'btn_clicked';
+	case CLICKED = 'btn_clicked';
 
-	public const DOUBLE_CLICKED = 'btn_double_clicked';
+	case DOUBLE_CLICKED = 'btn_double_clicked';
 
-	public const TRIPLE_CLICKED = 'btn_triple_clicked';
+	case TRIPLE_CLICKED = 'btn_triple_clicked';
 
-	public const LONG_CLICKED = 'btn_long_clicked';
+	case LONG_CLICKED = 'btn_long_clicked';
 
-	public const EXTRA_LONG_CLICKED = 'btn_extra_long_clicked';
+	case EXTRA_LONG_CLICKED = 'btn_extra_long_clicked';
 
 }

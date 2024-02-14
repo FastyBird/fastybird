@@ -3010,8 +3010,6 @@ class Install extends Console\Command\Command
 
 						break;
 					default:
-						$default = null;
-
 						break;
 				}
 			}
@@ -3064,7 +3062,6 @@ class Install extends Console\Command\Command
 	 * @return array<int, array<int, array<int, string>>>|null
 	 *
 	 * @throws ApplicationExceptions\InvalidState
-	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -3078,9 +3075,9 @@ class Install extends Console\Command\Command
 
 		if ($dataType === MetadataTypes\DataType::SWITCH) {
 			foreach ([
-				MetadataTypes\Payloads\Switcher::get(MetadataTypes\Payloads\Switcher::ON),
-				MetadataTypes\Payloads\Switcher::get(MetadataTypes\Payloads\Switcher::OFF),
-				MetadataTypes\Payloads\Switcher::get(MetadataTypes\Payloads\Switcher::TOGGLE),
+				MetadataTypes\Payloads\Switcher::ON,
+				MetadataTypes\Payloads\Switcher::OFF,
+				MetadataTypes\Payloads\Switcher::TOGGLE,
 			] as $payloadType) {
 				$result = $this->askFormatSwitchAction($io, $payloadType, $channel);
 
@@ -3092,13 +3089,13 @@ class Install extends Console\Command\Command
 			return $format;
 		} elseif ($dataType === MetadataTypes\DataType::BUTTON) {
 			foreach ([
-				MetadataTypes\Payloads\Button::get(MetadataTypes\Payloads\Button::PRESSED),
-				MetadataTypes\Payloads\Button::get(MetadataTypes\Payloads\Button::RELEASED),
-				MetadataTypes\Payloads\Button::get(MetadataTypes\Payloads\Button::CLICKED),
-				MetadataTypes\Payloads\Button::get(MetadataTypes\Payloads\Button::DOUBLE_CLICKED),
-				MetadataTypes\Payloads\Button::get(MetadataTypes\Payloads\Button::TRIPLE_CLICKED),
-				MetadataTypes\Payloads\Button::get(MetadataTypes\Payloads\Button::LONG_CLICKED),
-				MetadataTypes\Payloads\Button::get(MetadataTypes\Payloads\Button::EXTRA_LONG_CLICKED),
+				MetadataTypes\Payloads\Button::PRESSED,
+				MetadataTypes\Payloads\Button::RELEASED,
+				MetadataTypes\Payloads\Button::CLICKED,
+				MetadataTypes\Payloads\Button::DOUBLE_CLICKED,
+				MetadataTypes\Payloads\Button::TRIPLE_CLICKED,
+				MetadataTypes\Payloads\Button::LONG_CLICKED,
+				MetadataTypes\Payloads\Button::EXTRA_LONG_CLICKED,
 			] as $payloadType) {
 				$result = $this->askFormatButtonAction($io, $payloadType, $channel);
 
@@ -3117,7 +3114,6 @@ class Install extends Console\Command\Command
 	 * @return array<int, array<int, string>>|null
 	 *
 	 * @throws ApplicationExceptions\InvalidState
-	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -3150,7 +3146,7 @@ class Install extends Console\Command\Command
 						if (
 							$item[0] !== null
 							&& $item[0]->getValue() instanceof MetadataTypes\Payloads\Switcher
-							&& $item[0]->getValue()->equals($payload)
+							&& $item[0]->getValue() === $payload
 						) {
 							$defaultReading = $item[1]?->toArray();
 							$defaultWriting = $item[2]?->toArray();
@@ -3162,11 +3158,11 @@ class Install extends Console\Command\Command
 			}
 		}
 
-		if ($payload->equalsValue(MetadataTypes\Payloads\Switcher::ON)) {
+		if ($payload === MetadataTypes\Payloads\Switcher::ON) {
 			$questionText = $this->translator->translate('//modbus-connector.cmd.install.questions.switch.hasOn');
-		} elseif ($payload->equalsValue(MetadataTypes\Payloads\Switcher::OFF)) {
+		} elseif ($payload === MetadataTypes\Payloads\Switcher::OFF) {
 			$questionText = $this->translator->translate('//modbus-connector.cmd.install.questions.switch.hasOff');
-		} elseif ($payload->equalsValue(MetadataTypes\Payloads\Switcher::TOGGLE)) {
+		} elseif ($payload === MetadataTypes\Payloads\Switcher::TOGGLE) {
 			$questionText = $this->translator->translate('//modbus-connector.cmd.install.questions.switch.hasToggle');
 		} else {
 			throw new Exceptions\InvalidArgument('Provided payload type is not valid');
@@ -3183,7 +3179,7 @@ class Install extends Console\Command\Command
 		return [
 			[
 				MetadataTypes\DataTypeShort::SWITCH,
-				strval($payload->getValue()),
+				$payload->value,
 			],
 			$this->askFormatSwitchActionValues($io, $payload, true, $defaultReading),
 			$this->askFormatSwitchActionValues($io, $payload, false, $defaultWriting),
@@ -3194,8 +3190,6 @@ class Install extends Console\Command\Command
 	 * @param array<int, bool|float|int|string>|null $default
 	 *
 	 * @return array<int, string>
-	 *
-	 * @throws Exceptions\InvalidArgument
 	 */
 	private function askFormatSwitchActionValues(
 		Style\SymfonyStyle $io,
@@ -3207,21 +3201,21 @@ class Install extends Console\Command\Command
 		assert((is_array($default) && count($default) === 2) || $default === null);
 
 		if ($reading) {
-			if ($payload->equalsValue(MetadataTypes\Payloads\Switcher::ON)) {
+			if ($payload === MetadataTypes\Payloads\Switcher::ON) {
 				$questionText = $this->translator->translate(
 					'//modbus-connector.cmd.install.questions.provide.switch.readOnValue',
 				);
 				$questionError = $this->translator->translate(
 					'//modbus-connector.cmd.install.messages.provide.switch.readOnValueError',
 				);
-			} elseif ($payload->equalsValue(MetadataTypes\Payloads\Switcher::OFF)) {
+			} elseif ($payload === MetadataTypes\Payloads\Switcher::OFF) {
 				$questionText = $this->translator->translate(
 					'//modbus-connector.cmd.install.questions.provide.switch.readOffValue',
 				);
 				$questionError = $this->translator->translate(
 					'//modbus-connector.cmd.install.messages.provide.switch.readOffValueError',
 				);
-			} elseif ($payload->equalsValue(MetadataTypes\Payloads\Switcher::TOGGLE)) {
+			} elseif ($payload === MetadataTypes\Payloads\Switcher::TOGGLE) {
 				$questionText = $this->translator->translate(
 					'//modbus-connector.cmd.install.questions.provide.switch.readToggleValue',
 				);
@@ -3232,21 +3226,21 @@ class Install extends Console\Command\Command
 				throw new Exceptions\InvalidArgument('Provided payload type is not valid');
 			}
 		} else {
-			if ($payload->equalsValue(MetadataTypes\Payloads\Switcher::ON)) {
+			if ($payload === MetadataTypes\Payloads\Switcher::ON) {
 				$questionText = $this->translator->translate(
 					'//modbus-connector.cmd.install.questions.provide.switch.writeOnValue',
 				);
 				$questionError = $this->translator->translate(
 					'//modbus-connector.cmd.install.messages.provide.switch.writeOnValueError',
 				);
-			} elseif ($payload->equalsValue(MetadataTypes\Payloads\Switcher::OFF)) {
+			} elseif ($payload === MetadataTypes\Payloads\Switcher::OFF) {
 				$questionText = $this->translator->translate(
 					'//modbus-connector.cmd.install.questions.provide.switch.writeOffValue',
 				);
 				$questionError = $this->translator->translate(
 					'//modbus-connector.cmd.install.messages.provide.switch.writeOffValueError',
 				);
-			} elseif ($payload->equalsValue(MetadataTypes\Payloads\Switcher::TOGGLE)) {
+			} elseif ($payload === MetadataTypes\Payloads\Switcher::TOGGLE) {
 				$questionText = $this->translator->translate(
 					'//modbus-connector.cmd.install.questions.provide.switch.writeToggleValue',
 				);
@@ -3375,7 +3369,6 @@ class Install extends Console\Command\Command
 	 * @return array<int, array<int, string>>|null
 	 *
 	 * @throws ApplicationExceptions\InvalidState
-	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -3407,8 +3400,8 @@ class Install extends Console\Command\Command
 					if (count($item) === 3) {
 						if (
 							$item[0] !== null
-							&& $item[0]->getValue() instanceof MetadataTypes\Payloads\Switcher
-							&& $item[0]->getValue()->equals($payload)
+							&& $item[0]->getValue() instanceof MetadataTypes\Payloads\Button
+							&& $item[0]->getValue() === $payload
 						) {
 							$defaultReading = $item[1]?->toArray();
 							$defaultWriting = $item[2]?->toArray();
@@ -3420,25 +3413,25 @@ class Install extends Console\Command\Command
 			}
 		}
 
-		if ($payload->equalsValue(MetadataTypes\Payloads\Button::PRESSED)) {
+		if ($payload === MetadataTypes\Payloads\Button::PRESSED) {
 			$questionText = $this->translator->translate('//modbus-connector.cmd.install.questions.button.hasPress');
-		} elseif ($payload->equalsValue(MetadataTypes\Payloads\Button::RELEASED)) {
+		} elseif ($payload === MetadataTypes\Payloads\Button::RELEASED) {
 			$questionText = $this->translator->translate('//modbus-connector.cmd.install.questions.button.hasRelease');
-		} elseif ($payload->equalsValue(MetadataTypes\Payloads\Button::CLICKED)) {
+		} elseif ($payload === MetadataTypes\Payloads\Button::CLICKED) {
 			$questionText = $this->translator->translate('//modbus-connector.cmd.install.questions.button.hasClick');
-		} elseif ($payload->equalsValue(MetadataTypes\Payloads\Button::DOUBLE_CLICKED)) {
+		} elseif ($payload === MetadataTypes\Payloads\Button::DOUBLE_CLICKED) {
 			$questionText = $this->translator->translate(
 				'//modbus-connector.cmd.install.questions.button.hasDoubleClick',
 			);
-		} elseif ($payload->equalsValue(MetadataTypes\Payloads\Button::TRIPLE_CLICKED)) {
+		} elseif ($payload === MetadataTypes\Payloads\Button::TRIPLE_CLICKED) {
 			$questionText = $this->translator->translate(
 				'//modbus-connector.cmd.install.questions.button.hasTripleClick',
 			);
-		} elseif ($payload->equalsValue(MetadataTypes\Payloads\Button::LONG_CLICKED)) {
+		} elseif ($payload === MetadataTypes\Payloads\Button::LONG_CLICKED) {
 			$questionText = $this->translator->translate(
 				'//modbus-connector.cmd.install.questions.button.hasLongClick',
 			);
-		} elseif ($payload->equalsValue(MetadataTypes\Payloads\Button::EXTRA_LONG_CLICKED)) {
+		} elseif ($payload === MetadataTypes\Payloads\Button::EXTRA_LONG_CLICKED) {
 			$questionText = $this->translator->translate(
 				'//modbus-connector.cmd.install.questions.button.hasExtraLongClick',
 			);
@@ -3457,7 +3450,7 @@ class Install extends Console\Command\Command
 		return [
 			[
 				MetadataTypes\DataTypeShort::BUTTON,
-				strval($payload->getValue()),
+				strval($payload->value),
 			],
 			$this->askFormatButtonActionValues($io, $payload, true, $defaultReading),
 			$this->askFormatButtonActionValues($io, $payload, false, $defaultWriting),
@@ -3468,8 +3461,6 @@ class Install extends Console\Command\Command
 	 * @param array<int, bool|float|int|string>|null $default
 	 *
 	 * @return array<int, string>
-	 *
-	 * @throws Exceptions\InvalidArgument
 	 */
 	private function askFormatButtonActionValues(
 		Style\SymfonyStyle $io,
@@ -3481,49 +3472,49 @@ class Install extends Console\Command\Command
 		assert((is_array($default) && count($default) === 2) || $default === null);
 
 		if ($reading) {
-			if ($payload->equalsValue(MetadataTypes\Payloads\Button::PRESSED)) {
+			if ($payload === MetadataTypes\Payloads\Button::PRESSED) {
 				$questionText = $this->translator->translate(
 					'//modbus-connector.cmd.install.questions.provide.button.readPressValue',
 				);
 				$questionError = $this->translator->translate(
 					'//modbus-connector.cmd.install.messages.provide.button.readPressValueError',
 				);
-			} elseif ($payload->equalsValue(MetadataTypes\Payloads\Button::RELEASED)) {
+			} elseif ($payload === MetadataTypes\Payloads\Button::RELEASED) {
 				$questionText = $this->translator->translate(
 					'//modbus-connector.cmd.install.questions.provide.button.readReleaseValue',
 				);
 				$questionError = $this->translator->translate(
 					'//modbus-connector.cmd.install.messages.provide.button.readReleaseValueError',
 				);
-			} elseif ($payload->equalsValue(MetadataTypes\Payloads\Button::CLICKED)) {
+			} elseif ($payload === MetadataTypes\Payloads\Button::CLICKED) {
 				$questionText = $this->translator->translate(
 					'//modbus-connector.cmd.install.questions.provide.button.readClickValue',
 				);
 				$questionError = $this->translator->translate(
 					'//modbus-connector.cmd.install.messages.provide.button.readClickValueError',
 				);
-			} elseif ($payload->equalsValue(MetadataTypes\Payloads\Button::DOUBLE_CLICKED)) {
+			} elseif ($payload === MetadataTypes\Payloads\Button::DOUBLE_CLICKED) {
 				$questionText = $this->translator->translate(
 					'//modbus-connector.cmd.install.questions.provide.button.readDoubleClickValue',
 				);
 				$questionError = $this->translator->translate(
 					'//modbus-connector.cmd.install.messages.provide.button.readDoubleClickValueError',
 				);
-			} elseif ($payload->equalsValue(MetadataTypes\Payloads\Button::TRIPLE_CLICKED)) {
+			} elseif ($payload === MetadataTypes\Payloads\Button::TRIPLE_CLICKED) {
 				$questionText = $this->translator->translate(
 					'//modbus-connector.cmd.install.questions.provide.button.readTripleClickValue',
 				);
 				$questionError = $this->translator->translate(
 					'//modbus-connector.cmd.install.messages.provide.button.readTripleClickValueError',
 				);
-			} elseif ($payload->equalsValue(MetadataTypes\Payloads\Button::LONG_CLICKED)) {
+			} elseif ($payload === MetadataTypes\Payloads\Button::LONG_CLICKED) {
 				$questionText = $this->translator->translate(
 					'//modbus-connector.cmd.install.questions.provide.button.readLongClickValue',
 				);
 				$questionError = $this->translator->translate(
 					'//modbus-connector.cmd.install.messages.provide.button.readLongClickValueError',
 				);
-			} elseif ($payload->equalsValue(MetadataTypes\Payloads\Button::EXTRA_LONG_CLICKED)) {
+			} elseif ($payload === MetadataTypes\Payloads\Button::EXTRA_LONG_CLICKED) {
 				$questionText = $this->translator->translate(
 					'//modbus-connector.cmd.install.questions.provide.button.readExtraLongClickValue',
 				);
@@ -3534,49 +3525,49 @@ class Install extends Console\Command\Command
 				throw new Exceptions\InvalidArgument('Provided payload type is not valid');
 			}
 		} else {
-			if ($payload->equalsValue(MetadataTypes\Payloads\Button::PRESSED)) {
+			if ($payload === MetadataTypes\Payloads\Button::PRESSED) {
 				$questionText = $this->translator->translate(
 					'//modbus-connector.cmd.install.questions.provide.button.writePressValue',
 				);
 				$questionError = $this->translator->translate(
 					'//modbus-connector.cmd.install.messages.provide.button.writePressValueError',
 				);
-			} elseif ($payload->equalsValue(MetadataTypes\Payloads\Button::RELEASED)) {
+			} elseif ($payload === MetadataTypes\Payloads\Button::RELEASED) {
 				$questionText = $this->translator->translate(
 					'//modbus-connector.cmd.install.questions.provide.button.writeReleaseValue',
 				);
 				$questionError = $this->translator->translate(
 					'//modbus-connector.cmd.install.messages.provide.button.writeReleaseValueError',
 				);
-			} elseif ($payload->equalsValue(MetadataTypes\Payloads\Button::CLICKED)) {
+			} elseif ($payload === MetadataTypes\Payloads\Button::CLICKED) {
 				$questionText = $this->translator->translate(
 					'//modbus-connector.cmd.install.questions.provide.button.writeClickValue',
 				);
 				$questionError = $this->translator->translate(
 					'//modbus-connector.cmd.install.messages.provide.button.writeClickValueError',
 				);
-			} elseif ($payload->equalsValue(MetadataTypes\Payloads\Button::DOUBLE_CLICKED)) {
+			} elseif ($payload === MetadataTypes\Payloads\Button::DOUBLE_CLICKED) {
 				$questionText = $this->translator->translate(
 					'//modbus-connector.cmd.install.questions.provide.button.writeDoubleClickValue',
 				);
 				$questionError = $this->translator->translate(
 					'//modbus-connector.cmd.install.messages.provide.button.writeDoubleClickValueError',
 				);
-			} elseif ($payload->equalsValue(MetadataTypes\Payloads\Button::TRIPLE_CLICKED)) {
+			} elseif ($payload === MetadataTypes\Payloads\Button::TRIPLE_CLICKED) {
 				$questionText = $this->translator->translate(
 					'//modbus-connector.cmd.install.questions.provide.button.writeTripleClickValue',
 				);
 				$questionError = $this->translator->translate(
 					'//modbus-connector.cmd.install.messages.provide.button.writeTripleClickValueError',
 				);
-			} elseif ($payload->equalsValue(MetadataTypes\Payloads\Button::LONG_CLICKED)) {
+			} elseif ($payload === MetadataTypes\Payloads\Button::LONG_CLICKED) {
 				$questionText = $this->translator->translate(
 					'//modbus-connector.cmd.install.questions.provide.button.writeLongClickValue',
 				);
 				$questionError = $this->translator->translate(
 					'//modbus-connector.cmd.install.messages.provide.button.writeLongClickValueError',
 				);
-			} elseif ($payload->equalsValue(MetadataTypes\Payloads\Button::EXTRA_LONG_CLICKED)) {
+			} elseif ($payload === MetadataTypes\Payloads\Button::EXTRA_LONG_CLICKED) {
 				$questionText = $this->translator->translate(
 					'//modbus-connector.cmd.install.questions.provide.button.writeExtraLongClickValue',
 				);
@@ -3897,7 +3888,7 @@ class Install extends Console\Command\Command
 			$channels[$channel->getIdentifier()] = sprintf(
 				'%s, Type: %s, Address: %d',
 				($channel->getName() ?? $channel->getIdentifier()),
-				strval($channel->getRegisterType()?->getValue()),
+				$channel->getRegisterType()?->getValue(),
 				$channel->getAddress(),
 			);
 		}
