@@ -19,9 +19,9 @@ use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Exchange\Documents\Mapping as EXCHANGE;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Documents\Mapping as DOC;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Accounts;
 use FastyBird\Module\Accounts\Entities;
+use FastyBird\Module\Accounts\Types;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 
@@ -49,10 +49,10 @@ final class Identity implements MetadataDocuments\Document
 		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $account,
 		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\BackedEnumValue(class: MetadataTypes\IdentityState::class),
-			new ObjectMapper\Rules\InstanceOfValue(type: MetadataTypes\IdentityState::class),
+			new ObjectMapper\Rules\BackedEnumValue(class: Types\IdentityState::class),
+			new ObjectMapper\Rules\InstanceOfValue(type: Types\IdentityState::class),
 		])]
-		private readonly MetadataTypes\IdentityState $state,
+		private readonly Types\IdentityState $state,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $uid,
 		#[ObjectMapper\Rules\AnyOf([
@@ -74,7 +74,7 @@ final class Identity implements MetadataDocuments\Document
 		return $this->account;
 	}
 
-	public function getState(): MetadataTypes\IdentityState
+	public function getState(): Types\IdentityState
 	{
 		return $this->state;
 	}

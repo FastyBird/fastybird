@@ -17,9 +17,9 @@ namespace FastyBird\Module\Accounts\Queries\Entities;
 
 use Closure;
 use Doctrine\ORM;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Accounts\Entities;
 use FastyBird\Module\Accounts\Exceptions;
+use FastyBird\Module\Accounts\Types;
 use IPub\DoctrineOrmQuery;
 use Ramsey\Uuid;
 use function in_array;
@@ -29,9 +29,9 @@ use function in_array;
  *
  * @extends  DoctrineOrmQuery\QueryObject<Entities\Accounts\Account>
  *
- * @package          FastyBird:AccountsModule!
- * @subpackage       Queries
- * @author           Adam Kadlec <adam.kadlec@fastybird.com>
+ * @package        FastyBird:AccountsModule!
+ * @subpackage     Queries
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 class FindAccounts extends DoctrineOrmQuery\QueryObject
 {
@@ -53,9 +53,9 @@ class FindAccounts extends DoctrineOrmQuery\QueryObject
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 */
-	public function inState(MetadataTypes\AccountState $state): void
+	public function inState(Types\AccountState $state): void
 	{
-		if (!in_array($state, MetadataTypes\AccountState::getAllowed(), true)) {
+		if (!in_array($state, Types\AccountState::getAllowed(), true)) {
 			throw new Exceptions\InvalidArgument('Invalid account state given');
 		}
 

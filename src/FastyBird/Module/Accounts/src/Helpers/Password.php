@@ -7,7 +7,7 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:AccountsModule!
- * @subpackage     Entities
+ * @subpackage     Helpers
  * @since          1.0.0
  *
  * @date           30.03.20

@@ -19,10 +19,10 @@ use Doctrine\ORM;
 use Doctrine\Persistence;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Accounts\Entities;
 use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\Module\Accounts\Queries;
+use FastyBird\Module\Accounts\Types;
 use IPub\DoctrineOrmQuery;
 use Nette;
 use Throwable;
@@ -60,7 +60,7 @@ final class IdentitiesRepository
 	{
 		$findQuery = new Queries\Entities\FindIdentities();
 		$findQuery->forAccount($account);
-		$findQuery->inState(MetadataTypes\IdentityState::ACTIVE);
+		$findQuery->inState(Types\IdentityState::ACTIVE);
 
 		return $this->findOneBy($findQuery);
 	}
@@ -72,7 +72,7 @@ final class IdentitiesRepository
 	{
 		$findQuery = new Queries\Entities\FindIdentities();
 		$findQuery->byUid($uid);
-		$findQuery->inState(MetadataTypes\IdentityState::ACTIVE);
+		$findQuery->inState(Types\IdentityState::ACTIVE);
 
 		return $this->findOneBy($findQuery);
 	}

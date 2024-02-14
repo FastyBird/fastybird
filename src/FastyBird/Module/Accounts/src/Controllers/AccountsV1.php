@@ -28,6 +28,7 @@ use FastyBird\Module\Accounts\Models;
 use FastyBird\Module\Accounts\Queries;
 use FastyBird\Module\Accounts\Router;
 use FastyBird\Module\Accounts\Schemas;
+use FastyBird\Module\Accounts\Types;
 use FastyBird\Module\Accounts\Utilities;
 use Fig\Http\Message\StatusCodeInterface;
 use InvalidArgumentException;
@@ -339,14 +340,14 @@ final class AccountsV1 extends BaseV1
 			$this->getOrmConnection()->beginTransaction();
 
 			$updateData = Utils\ArrayHash::from([
-				'state' => MetadataTypes\AccountState::DELETED,
+				'state' => Types\AccountState::DELETED,
 			]);
 
 			$this->accountsManager->update($account, $updateData);
 
 			foreach ($account->getIdentities() as $identity) {
 				$updateIdentity = Utils\ArrayHash::from([
-					'state' => MetadataTypes\IdentityState::DELETED,
+					'state' => Types\IdentityState::DELETED,
 				]);
 
 				$this->identitiesManager->update($identity, $updateIdentity);

@@ -16,10 +16,10 @@
 namespace FastyBird\Module\Accounts\Security;
 
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Accounts\Entities;
 use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\Module\Accounts\Models;
+use FastyBird\Module\Accounts\Types;
 use FastyBird\SimpleAuth\Security as SimpleAuthSecurity;
 use function is_string;
 
@@ -86,16 +86,16 @@ final class Authenticator implements SimpleAuthSecurity\IAuthenticator
 
 		$account = $identity->getAccount();
 
-		if ($account->getState() === MetadataTypes\AccountState::ACTIVE) {
+		if ($account->getState() === Types\AccountState::ACTIVE) {
 			return $identity;
 		}
 
-		if ($account->getState() === MetadataTypes\AccountState::BLOCKED) {
+		if ($account->getState() === Types\AccountState::BLOCKED) {
 			throw new Exceptions\AuthenticationFailed(
 				'Account profile is blocked',
 				self::ACCOUNT_PROFILE_BLOCKED,
 			);
-		} elseif ($account->getState() === MetadataTypes\AccountState::DELETED) {
+		} elseif ($account->getState() === Types\AccountState::DELETED) {
 			throw new Exceptions\AuthenticationFailed(
 				'Account profile is deleted',
 				self::ACCOUNT_PROFILE_DELETED,

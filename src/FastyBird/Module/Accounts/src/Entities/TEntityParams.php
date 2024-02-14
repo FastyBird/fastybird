@@ -30,8 +30,8 @@ use function trim;
 /**
  * Transformer params field trait
  *
- * @package        FastyBird:Database!
- * @subpackage     AccountsModule
+ * @package        FastyBird:AccountsModule!
+ * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */

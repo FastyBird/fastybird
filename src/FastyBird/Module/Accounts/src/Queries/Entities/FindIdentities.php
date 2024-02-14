@@ -17,8 +17,8 @@ namespace FastyBird\Module\Accounts\Queries\Entities;
 
 use Closure;
 use Doctrine\ORM;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Accounts\Entities;
+use FastyBird\Module\Accounts\Types;
 use IPub\DoctrineOrmQuery;
 use Ramsey\Uuid;
 
@@ -27,9 +27,9 @@ use Ramsey\Uuid;
  *
  * @extends  DoctrineOrmQuery\QueryObject<Entities\Identities\Identity>
  *
- * @package          FastyBird:AccountsModule!
- * @subpackage       Queries
- * @author           Adam Kadlec <adam.kadlec@fastybird.com>
+ * @package        FastyBird:AccountsModule!
+ * @subpackage     Queries
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 class FindIdentities extends DoctrineOrmQuery\QueryObject
 {
@@ -68,7 +68,7 @@ class FindIdentities extends DoctrineOrmQuery\QueryObject
 		};
 	}
 
-	public function inState(MetadataTypes\IdentityState $state): void
+	public function inState(Types\IdentityState $state): void
 	{
 		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($state): void {
 			$qb->andWhere('i.state = :state')

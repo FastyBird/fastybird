@@ -20,9 +20,9 @@ use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Exchange\Documents\Mapping as EXCHANGE;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Documents\Mapping as DOC;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Accounts;
 use FastyBird\Module\Accounts\Entities;
+use FastyBird\Module\Accounts\Types;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_map;
@@ -61,10 +61,10 @@ final class Account implements MetadataDocuments\Document
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $language,
 		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\BackedEnumValue(class: MetadataTypes\AccountState::class),
-			new ObjectMapper\Rules\InstanceOfValue(type: MetadataTypes\AccountState::class),
+			new ObjectMapper\Rules\BackedEnumValue(class: Types\AccountState::class),
+			new ObjectMapper\Rules\InstanceOfValue(type: Types\AccountState::class),
 		])]
-		private readonly MetadataTypes\AccountState $state,
+		private readonly Types\AccountState $state,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
@@ -130,7 +130,7 @@ final class Account implements MetadataDocuments\Document
 		return $this->email;
 	}
 
-	public function getState(): MetadataTypes\AccountState
+	public function getState(): Types\AccountState
 	{
 		return $this->state;
 	}

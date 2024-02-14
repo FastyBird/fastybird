@@ -18,8 +18,8 @@ namespace FastyBird\Module\Accounts\Entities\Accounts;
 use DateTimeInterface;
 use Doctrine\Common;
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Accounts\Entities;
+use FastyBird\Module\Accounts\Types;
 use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use IPub\DoctrineTimestampable;
 use Nette\Utils;
@@ -58,10 +58,10 @@ class Account implements Entities\Entity,
 		name: 'account_state',
 		type: 'string',
 		nullable: false,
-		enumType: MetadataTypes\AccountState::class,
-		options: ['default' => MetadataTypes\AccountState::NOT_ACTIVATED],
+		enumType: Types\AccountState::class,
+		options: ['default' => Types\AccountState::NOT_ACTIVATED],
 	)]
-	protected MetadataTypes\AccountState $state;
+	protected Types\AccountState $state;
 
 	#[IPubDoctrine\Crud(writable: true)]
 	#[ORM\Column(name: 'account_request_hash', type: 'string', nullable: true, options: ['default' => null])]
@@ -124,7 +124,7 @@ class Account implements Entities\Entity,
 		// @phpstan-ignore-next-line
 		$this->id = $id ?? Uuid\Uuid::uuid4();
 
-		$this->state = MetadataTypes\AccountState::NOT_ACTIVATED;
+		$this->state = Types\AccountState::NOT_ACTIVATED;
 
 		$this->emails = new Common\Collections\ArrayCollection();
 		$this->identities = new Common\Collections\ArrayCollection();
@@ -133,27 +133,27 @@ class Account implements Entities\Entity,
 
 	public function isActivated(): bool
 	{
-		return $this->state === MetadataTypes\AccountState::ACTIVE;
+		return $this->state === Types\AccountState::ACTIVE;
 	}
 
 	public function isBlocked(): bool
 	{
-		return $this->state === MetadataTypes\AccountState::BLOCKED;
+		return $this->state === Types\AccountState::BLOCKED;
 	}
 
 	public function isDeleted(): bool
 	{
-		return $this->state === MetadataTypes\AccountState::DELETED;
+		return $this->state === Types\AccountState::DELETED;
 	}
 
 	public function isNotActivated(): bool
 	{
-		return $this->state === MetadataTypes\AccountState::NOT_ACTIVATED;
+		return $this->state === Types\AccountState::NOT_ACTIVATED;
 	}
 
 	public function isApprovalRequired(): bool
 	{
-		return $this->state === MetadataTypes\AccountState::APPROVAL_WAITING;
+		return $this->state === Types\AccountState::APPROVAL_WAITING;
 	}
 
 	public function getRequestHash(): string|null
@@ -180,12 +180,12 @@ class Account implements Entities\Entity,
 		return $this->details;
 	}
 
-	public function getState(): MetadataTypes\AccountState
+	public function getState(): Types\AccountState
 	{
 		return $this->state;
 	}
 
-	public function setState(MetadataTypes\AccountState $state): void
+	public function setState(Types\AccountState $state): void
 	{
 		$this->state = $state;
 	}

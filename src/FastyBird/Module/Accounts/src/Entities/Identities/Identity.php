@@ -16,10 +16,10 @@
 namespace FastyBird\Module\Accounts\Entities\Identities;
 
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Accounts\Entities;
 use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\Module\Accounts\Helpers;
+use FastyBird\Module\Accounts\Types;
 use FastyBird\SimpleAuth\Security as SimpleAuthSecurity;
 use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use IPub\DoctrineTimestampable;
@@ -86,10 +86,10 @@ class Identity implements Entities\Entity,
 		name: 'identity_state',
 		type: 'string',
 		nullable: false,
-		enumType: MetadataTypes\IdentityState::class,
-		options: ['default' => MetadataTypes\IdentityState::ACTIVE],
+		enumType: Types\IdentityState::class,
+		options: ['default' => Types\IdentityState::ACTIVE],
 	)]
-	protected MetadataTypes\IdentityState $state;
+	protected Types\IdentityState $state;
 
 	/**
 	 * @throws Exceptions\InvalidState
@@ -107,7 +107,7 @@ class Identity implements Entities\Entity,
 		$this->account = $account;
 		$this->uid = $uid;
 
-		$this->state = MetadataTypes\IdentityState::ACTIVE;
+		$this->state = Types\IdentityState::ACTIVE;
 
 		$this->setPassword($password);
 	}
@@ -163,22 +163,22 @@ class Identity implements Entities\Entity,
 
 	public function isActive(): bool
 	{
-		return $this->state === MetadataTypes\IdentityState::ACTIVE;
+		return $this->state === Types\IdentityState::ACTIVE;
 	}
 
 	public function isBlocked(): bool
 	{
-		return $this->state === MetadataTypes\IdentityState::BLOCKED;
+		return $this->state === Types\IdentityState::BLOCKED;
 	}
 
 	public function isDeleted(): bool
 	{
-		return $this->state === MetadataTypes\IdentityState::DELETED;
+		return $this->state === Types\IdentityState::DELETED;
 	}
 
 	public function isInvalid(): bool
 	{
-		return $this->state === MetadataTypes\IdentityState::INVALID;
+		return $this->state === Types\IdentityState::INVALID;
 	}
 
 	/**
@@ -194,7 +194,7 @@ class Identity implements Entities\Entity,
 
 	public function invalidate(): void
 	{
-		$this->state = MetadataTypes\IdentityState::INVALID;
+		$this->state = Types\IdentityState::INVALID;
 	}
 
 	public function getAccount(): Entities\Accounts\Account
@@ -207,12 +207,12 @@ class Identity implements Entities\Entity,
 		return $this->uid;
 	}
 
-	public function getState(): MetadataTypes\IdentityState
+	public function getState(): Types\IdentityState
 	{
 		return $this->state;
 	}
 
-	public function setState(MetadataTypes\IdentityState $state): void
+	public function setState(Types\IdentityState $state): void
 	{
 		$this->state = $state;
 	}
@@ -240,7 +240,7 @@ class Identity implements Entities\Entity,
 		// @phpstan-ignore-next-line
 		$this->id = Uuid\Uuid::uuid4();
 		$this->createdAt = new Utils\DateTime();
-		$this->state = MetadataTypes\IdentityState::ACTIVE;
+		$this->state = Types\IdentityState::ACTIVE;
 	}
 
 	/**

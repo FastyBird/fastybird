@@ -16,8 +16,8 @@
 namespace FastyBird\Module\Accounts\Hydrators\Accounts;
 
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Accounts\Entities;
+use FastyBird\Module\Accounts\Types;
 use Fig\Http\Message\StatusCodeInterface;
 use IPub\JsonAPIDocument;
 use Nette\Localization;
@@ -194,14 +194,14 @@ trait TAccount
 	 */
 	protected function hydrateStateAttribute(
 		JsonAPIDocument\Objects\IStandardObject $attributes,
-	): MetadataTypes\AccountState
+	): Types\AccountState
 	{
 		if (
 			!is_scalar($attributes->get('state'))
-			|| MetadataTypes\AccountState::tryFrom((string) $attributes->get('state')) === null
+			|| Types\AccountState::tryFrom((string) $attributes->get('state')) === null
 			|| !in_array(
-				MetadataTypes\AccountState::tryFrom((string) $attributes->get('state')),
-				MetadataTypes\AccountState::getAllowed(),
+				Types\AccountState::tryFrom((string) $attributes->get('state')),
+				Types\AccountState::getAllowed(),
 				true,
 			)
 		) {
@@ -215,7 +215,7 @@ trait TAccount
 			);
 		}
 
-		return MetadataTypes\AccountState::from((string) $attributes->get('state'));
+		return Types\AccountState::from((string) $attributes->get('state'));
 	}
 
 }
