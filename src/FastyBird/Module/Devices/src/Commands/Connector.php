@@ -591,7 +591,7 @@ class Connector extends Console\Command\Command
 			if ($mode === Types\ConnectorMode::DISCOVER) {
 				$findConnectorControlQuery = new Queries\Configuration\FindConnectorControls();
 				$findConnectorControlQuery->forConnector($connector);
-				$findConnectorControlQuery->byName(MetadataTypes\ControlName::DISCOVER);
+				$findConnectorControlQuery->byName(Types\ControlName::DISCOVER->value);
 
 				$control = $this->connectorsControlsConfigurationRepository->findOneBy($findConnectorControlQuery);
 
@@ -616,7 +616,7 @@ class Connector extends Console\Command\Command
 				if ($mode === Types\ConnectorMode::DISCOVER) {
 					$findConnectorControlQuery = new Queries\Configuration\FindConnectorControls();
 					$findConnectorControlQuery->forConnector($connector);
-					$findConnectorControlQuery->byName(MetadataTypes\ControlName::DISCOVER);
+					$findConnectorControlQuery->byName(Types\ControlName::DISCOVER->value);
 
 					$control = $this->connectorsControlsConfigurationRepository->findOneBy($findConnectorControlQuery);
 

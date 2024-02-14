@@ -1,33 +1,31 @@
 <?php declare(strict_types = 1);
 
 /**
- * PropertyAction.php
+ * ControlAction.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:MetadataLibrary!
+ * @package        FastyBird:DevicesModule!
  * @subpackage     Types
  * @since          1.0.0
  *
  * @date           08.01.22
  */
 
-namespace FastyBird\Library\Metadata\Types;
+namespace FastyBird\Module\Devices\Types;
 
 /**
- * Property action
+ * Control action
  *
- * @package        FastyBird:MetadataLibrary!
+ * @package        FastyBird:DevicesModule!
  * @subpackage     Types
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-enum PropertyAction: string
+enum ControlAction: string
 {
 
 	case SET = 'set';
-
-	case GET = 'get';
 
 }

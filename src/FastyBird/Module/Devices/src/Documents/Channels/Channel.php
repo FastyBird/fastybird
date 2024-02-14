@@ -20,9 +20,9 @@ use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Exchange\Documents\Mapping as EXCHANGE;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Documents\Mapping as DOC;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Entities;
+use FastyBird\Module\Devices\Types;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_map;
@@ -60,10 +60,10 @@ abstract class Channel implements MetadataDocuments\Document, MetadataDocuments\
 		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $id,
 		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\BackedEnumValue(class: MetadataTypes\ChannelCategory::class),
-			new ObjectMapper\Rules\InstanceOfValue(type: MetadataTypes\ChannelCategory::class),
+			new ObjectMapper\Rules\BackedEnumValue(class: Types\ChannelCategory::class),
+			new ObjectMapper\Rules\InstanceOfValue(type: Types\ChannelCategory::class),
 		])]
-		private readonly MetadataTypes\ChannelCategory $category,
+		private readonly Types\ChannelCategory $category,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $identifier,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
@@ -114,7 +114,7 @@ abstract class Channel implements MetadataDocuments\Document, MetadataDocuments\
 
 	abstract public static function getType(): string;
 
-	public function getCategory(): MetadataTypes\ChannelCategory
+	public function getCategory(): Types\ChannelCategory
 	{
 		return $this->category;
 	}

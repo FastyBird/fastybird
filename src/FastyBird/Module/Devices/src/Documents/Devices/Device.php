@@ -20,9 +20,9 @@ use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Exchange\Documents\Mapping as EXCHANGE;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Documents\Mapping as DOC;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Entities;
+use FastyBird\Module\Devices\Types;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_map;
@@ -63,10 +63,10 @@ abstract class Device implements MetadataDocuments\Document, MetadataDocuments\O
 		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $id,
 		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\BackedEnumValue(class: MetadataTypes\DeviceCategory::class),
-			new ObjectMapper\Rules\InstanceOfValue(type: MetadataTypes\DeviceCategory::class),
+			new ObjectMapper\Rules\BackedEnumValue(class: Types\DeviceCategory::class),
+			new ObjectMapper\Rules\InstanceOfValue(type: Types\DeviceCategory::class),
 		])]
-		private readonly MetadataTypes\DeviceCategory $category,
+		private readonly Types\DeviceCategory $category,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $identifier,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
@@ -129,7 +129,7 @@ abstract class Device implements MetadataDocuments\Document, MetadataDocuments\O
 
 	abstract public static function getType(): string;
 
-	public function getCategory(): MetadataTypes\DeviceCategory
+	public function getCategory(): Types\DeviceCategory
 	{
 		return $this->category;
 	}

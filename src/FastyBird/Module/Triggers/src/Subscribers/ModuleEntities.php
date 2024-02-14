@@ -26,6 +26,7 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Triggers;
 use FastyBird\Module\Triggers\Entities;
+use FastyBird\Module\Triggers\Types;
 use Nette;
 use Nette\Utils;
 use ReflectionClass;
@@ -95,10 +96,7 @@ final class ModuleEntities implements Common\EventSubscriber
 		}
 
 		if ($entity instanceof Entities\Triggers\Manual) {
-			new Entities\Triggers\Controls\Control(
-				MetadataTypes\ControlName::TRIGGER,
-				$entity,
-			);
+			new Entities\Triggers\Controls\Control(Types\ControlName::TRIGGER->value, $entity);
 		}
 	}
 

@@ -28,6 +28,7 @@ use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Router;
 use FastyBird\Module\Devices\Schemas;
 use FastyBird\Module\Devices\States;
+use FastyBird\Module\Devices\Types;
 use IPub\SlimRouter\Routing;
 use Neomerx\JsonApi;
 use function assert;
@@ -49,7 +50,7 @@ final class State extends JsonApiSchemas\JsonApi
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\Sources\Module::DEVICES . '/property/device/' . MetadataTypes\PropertyType::DYNAMIC . '/state';
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Module::DEVICES . '/property/device/' . Types\PropertyType::DYNAMIC->value . '/state';
 
 	/**
 	 * Define relationships names

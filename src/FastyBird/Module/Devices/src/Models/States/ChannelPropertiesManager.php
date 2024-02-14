@@ -31,6 +31,7 @@ use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\States;
+use FastyBird\Module\Devices\Types;
 use Nette;
 use Nette\Utils;
 use Orisai\ObjectMapper;
@@ -96,7 +97,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 					$this->documentFactory->create(
 						Documents\Actions\Properties\Channel::class,
 						[
-							'action' => MetadataTypes\PropertyAction::GET->value,
+							'action' => Types\PropertyAction::GET->value,
 							'channel' => $property->getChannel()->toString(),
 							'property' => $property->getId()->toString(),
 						],
@@ -136,7 +137,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 						Documents\Actions\Properties\Channel::class,
 						array_merge(
 							[
-								'action' => MetadataTypes\PropertyAction::SET->value,
+								'action' => Types\PropertyAction::SET->value,
 								'channel' => $property->getChannel()->toString(),
 								'property' => $property->getId()->toString(),
 							],
@@ -186,7 +187,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 						Documents\Actions\Properties\Channel::class,
 						array_merge(
 							[
-								'action' => MetadataTypes\PropertyAction::SET->value,
+								'action' => Types\PropertyAction::SET->value,
 								'channel' => $property->getChannel()->toString(),
 								'property' => $property->getId()->toString(),
 							],

@@ -27,6 +27,7 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
+use FastyBird\Module\Devices\Types;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_map;
@@ -74,10 +75,10 @@ abstract class Property implements MetadataDocuments\Document, MetadataDocuments
 		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $connector,
 		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\BackedEnumValue(class: MetadataTypes\PropertyCategory::class),
-			new ObjectMapper\Rules\InstanceOfValue(type: MetadataTypes\PropertyCategory::class),
+			new ObjectMapper\Rules\BackedEnumValue(class: Types\PropertyCategory::class),
+			new ObjectMapper\Rules\InstanceOfValue(type: Types\PropertyCategory::class),
 		])]
-		private readonly MetadataTypes\PropertyCategory $category,
+		private readonly Types\PropertyCategory $category,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $identifier,
 		#[ObjectMapper\Rules\AnyOf([
@@ -215,7 +216,7 @@ abstract class Property implements MetadataDocuments\Document, MetadataDocuments
 		return $this->connector;
 	}
 
-	public function getCategory(): MetadataTypes\PropertyCategory
+	public function getCategory(): Types\PropertyCategory
 	{
 		return $this->category;
 	}

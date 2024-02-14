@@ -32,7 +32,7 @@
     "source": "https://github.com/FastyBird/ws-server-plugin"
   },
   "require": {
-    "php": ">=8.1.0",
+    "php": ">=8.2.0",
     "cweagans/composer-patches": "^1.7",
     "fastybird/application-library": "dev-main",
     "fastybird/exchange-library": "dev-main",

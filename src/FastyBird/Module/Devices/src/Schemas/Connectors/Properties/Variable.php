@@ -21,6 +21,7 @@ use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Schemas;
+use FastyBird\Module\Devices\Types;
 use Neomerx\JsonApi;
 use function array_merge;
 
@@ -40,7 +41,7 @@ final class Variable extends Property
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\Sources\Module::DEVICES . '/property/connector/' . MetadataTypes\PropertyType::VARIABLE;
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Module::DEVICES . '/property/connector/' . Types\PropertyType::VARIABLE->value;
 
 	public function getEntityClass(): string
 	{

@@ -17,8 +17,8 @@ namespace FastyBird\Connector\HomeKit\Protocol\Services;
 
 use FastyBird\Connector\HomeKit\Protocol;
 use FastyBird\Connector\HomeKit\Types;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Transformers as ToolsTransformers;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 use function is_float;
 use function is_int;
 
@@ -38,9 +38,7 @@ final class LightBulb extends Generic
 		bool $fromDevice,
 	): void
 	{
-		$updatePropertyType = MetadataTypes\PropertyType::get(
-			$fromDevice ? MetadataTypes\PropertyType::DYNAMIC : MetadataTypes\PropertyType::MAPPED,
-		);
+		$updatePropertyType = $fromDevice ? DevicesTypes\PropertyType::DYNAMIC : DevicesTypes\PropertyType::MAPPED;
 
 		if (
 			$characteristic->getName() === Types\CharacteristicType::COLOR_RED
@@ -60,7 +58,7 @@ final class LightBulb extends Generic
 	}
 
 	private function calculateRgbToHsb(
-		MetadataTypes\PropertyType $updatePropertyType,
+		DevicesTypes\PropertyType $updatePropertyType,
 	): void
 	{
 		$redCharacteristic = $this->findCharacteristic(Types\CharacteristicType::COLOR_RED);
@@ -93,7 +91,7 @@ final class LightBulb extends Generic
 			$hue !== null
 			&& (
 				$hue->getProperty() === null
-				|| $hue->getProperty()::getType() === $updatePropertyType->getValue()
+				|| $hue->getProperty()::getType() === $updatePropertyType->value
 			)
 		) {
 			$hue->setValue($hsb->getHue());
@@ -105,7 +103,7 @@ final class LightBulb extends Generic
 			$saturation !== null
 			&& (
 				$saturation->getProperty() === null
-				|| $saturation->getProperty()::getType() === $updatePropertyType->getValue()
+				|| $saturation->getProperty()::getType() === $updatePropertyType->value
 			)
 		) {
 			$saturation->setValue($hsb->getSaturation());
@@ -117,7 +115,7 @@ final class LightBulb extends Generic
 			$brightness !== null
 			&& (
 				$brightness->getProperty() === null
-				|| $brightness->getProperty()::getType() === $updatePropertyType->getValue()
+				|| $brightness->getProperty()::getType() === $updatePropertyType->value
 			)
 		) {
 			$brightness->setValue($hsb->getBrightness());
@@ -125,7 +123,7 @@ final class LightBulb extends Generic
 	}
 
 	private function calculateHsbToRgb(
-		MetadataTypes\PropertyType $updatePropertyType,
+		DevicesTypes\PropertyType $updatePropertyType,
 	): void
 	{
 		$hueCharacteristic = $this->findCharacteristic(Types\CharacteristicType::HUE);
@@ -148,7 +146,7 @@ final class LightBulb extends Generic
 			// If brightness is controlled with separate property, we will use 100% brightness for calculation
 			if (
 				$brightnessCharacteristic->getProperty() !== null
-				&& $brightnessCharacteristic->getProperty()::getType() === MetadataTypes\PropertyType::MAPPED
+				&& $brightnessCharacteristic->getProperty()::getType() === DevicesTypes\PropertyType::MAPPED->value
 			) {
 				$brightness = 100;
 			}
@@ -175,7 +173,7 @@ final class LightBulb extends Generic
 			$red !== null
 			&& (
 				$red->getProperty() === null
-				|| $red->getProperty()::getType() === $updatePropertyType->getValue()
+				|| $red->getProperty()::getType() === $updatePropertyType->value
 			)
 		) {
 			$red->setValue($rgb->getRed());
@@ -187,7 +185,7 @@ final class LightBulb extends Generic
 			$green !== null
 			&& (
 				$green->getProperty() === null
-				|| $green->getProperty()::getType() === $updatePropertyType->getValue()
+				|| $green->getProperty()::getType() === $updatePropertyType->value
 			)
 		) {
 			$green->setValue($rgb->getGreen());
@@ -199,7 +197,7 @@ final class LightBulb extends Generic
 			$blue !== null
 			&& (
 				$blue->getProperty() === null
-				|| $blue->getProperty()::getType() === $updatePropertyType->getValue()
+				|| $blue->getProperty()::getType() === $updatePropertyType->value
 			)
 		) {
 			$blue->setValue($rgb->getBlue());
@@ -211,7 +209,7 @@ final class LightBulb extends Generic
 			$white !== null
 			&& (
 				$white->getProperty() === null
-				|| $white->getProperty()::getType() === $updatePropertyType->getValue()
+				|| $white->getProperty()::getType() === $updatePropertyType->value
 			)
 			&& $rgb->getWhite() !== null
 		) {

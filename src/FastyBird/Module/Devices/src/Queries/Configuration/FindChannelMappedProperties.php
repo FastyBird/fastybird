@@ -15,8 +15,8 @@
 
 namespace FastyBird\Module\Devices\Queries\Configuration;
 
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Documents;
+use FastyBird\Module\Devices\Types;
 
 /**
  * Find channel mapped properties entities query
@@ -35,7 +35,7 @@ class FindChannelMappedProperties extends FindChannelProperties
 	{
 		parent::__construct();
 
-		$this->filter[] = '.[?(@.type == "' . MetadataTypes\PropertyType::MAPPED . '")]';
+		$this->filter[] = '.[?(@.type == "' . Types\PropertyType::MAPPED->value . '")]';
 	}
 
 }

@@ -29,7 +29,7 @@
     "source": "https://github.com/FastyBird/virtual-thermostat-addon-homekit-connector-bridge"
   },
   "require": {
-    "php": ">=8.1.0",
+    "php": ">=8.2.0",
     "contributte/console": "^0.9",
     "contributte/monolog": "^0.5",
     "contributte/translation": "^2.0",

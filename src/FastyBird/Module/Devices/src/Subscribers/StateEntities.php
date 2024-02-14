@@ -75,7 +75,6 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	/**
 	 * @throws Exception
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
@@ -101,7 +100,6 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	/**
 	 * @throws Exception
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
@@ -138,7 +136,6 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	 * @return ($async is true ? Promise\PromiseInterface<bool> : bool)
 	 *
 	 * @throws Exception
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState

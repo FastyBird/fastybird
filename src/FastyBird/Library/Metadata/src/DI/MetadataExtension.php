@@ -18,7 +18,6 @@ namespace FastyBird\Library\Metadata\DI;
 use FastyBird\Library\Application\Boot as ApplicationBoot;
 use FastyBird\Library\Metadata\Documents;
 use FastyBird\Library\Metadata\Exceptions;
-use FastyBird\Library\Metadata\Loaders;
 use FastyBird\Library\Metadata\Schemas;
 use Nette\DI;
 use Nette\Schema;
@@ -76,12 +75,10 @@ class MetadataExtension extends DI\CompilerExtension
 		$builder->addDefinition('schema.validator', new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\Validator::class);
 
-		$builder->addDefinition('loaders.metadata', new DI\Definitions\ServiceDefinition())
-			->setType(Loaders\MetadataLoader::class);
-
 		/**
 		 * DOCUMENTS SERVICES
 		 */
+
 		$builder->addDefinition('document.factory', new DI\Definitions\ServiceDefinition())
 			->setType(Documents\DocumentFactory::class);
 

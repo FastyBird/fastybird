@@ -19,10 +19,10 @@ use Doctrine\Common;
 use Doctrine\ORM;
 use Doctrine\Persistence;
 use FastyBird\Connector\Tuya\Entities;
-use FastyBird\Connector\Tuya\Types;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 use Nette;
 use Nette\Utils;
 
@@ -66,26 +66,26 @@ final class Controls implements Common\EventSubscriber
 		if ($entity instanceof Entities\Connectors\Connector) {
 			$findConnectorControlQuery = new DevicesQueries\Entities\FindConnectorControls();
 			$findConnectorControlQuery->forConnector($entity);
-			$findConnectorControlQuery->byName(Types\ConnectorControlName::REBOOT);
+			$findConnectorControlQuery->byName(DevicesTypes\ControlName::REBOOT->value);
 
 			$rebootControl = $this->controlsRepository->findOneBy($findConnectorControlQuery);
 
 			if ($rebootControl === null) {
 				$this->controlsManager->create(Utils\ArrayHash::from([
-					'name' => Types\ConnectorControlName::REBOOT,
+					'name' => DevicesTypes\ControlName::REBOOT->value,
 					'connector' => $entity,
 				]));
 			}
 
 			$findConnectorControlQuery = new DevicesQueries\Entities\FindConnectorControls();
 			$findConnectorControlQuery->forConnector($entity);
-			$findConnectorControlQuery->byName(Types\ConnectorControlName::DISCOVER);
+			$findConnectorControlQuery->byName(DevicesTypes\ControlName::DISCOVER->value);
 
 			$discoverControl = $this->controlsRepository->findOneBy($findConnectorControlQuery);
 
 			if ($discoverControl === null) {
 				$this->controlsManager->create(Utils\ArrayHash::from([
-					'name' => Types\ConnectorControlName::DISCOVER,
+					'name' => DevicesTypes\ControlName::DISCOVER->value,
 					'connector' => $entity,
 				]));
 			}

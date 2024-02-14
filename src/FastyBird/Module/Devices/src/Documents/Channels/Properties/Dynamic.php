@@ -22,6 +22,7 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
+use FastyBird\Module\Devices\Types;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_map;
@@ -46,7 +47,7 @@ class Dynamic extends Property
 	public function __construct(
 		Uuid\UuidInterface $id,
 		Uuid\UuidInterface $channel,
-		MetadataTypes\PropertyCategory $category,
+		Types\PropertyCategory $category,
 		string $identifier,
 		string|null $name,
 		MetadataTypes\DataType $dataType,
@@ -90,7 +91,7 @@ class Dynamic extends Property
 
 	public static function getType(): string
 	{
-		return Entities\Channels\Properties\Dynamic::TYPE;
+		return Entities\Channels\Properties\Dynamic::getType();
 	}
 
 	/**

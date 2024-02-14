@@ -27,6 +27,7 @@ use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\States;
+use FastyBird\Module\Devices\Types;
 use IPub\WebSockets;
 use IPub\WebSocketsWAMP;
 use Nette\Utils;
@@ -262,7 +263,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 		Documents\Actions\Properties\Connector $entity,
 	): void
 	{
-		if ($entity->getAction() === MetadataTypes\PropertyAction::SET) {
+		if ($entity->getAction() === Types\PropertyAction::SET) {
 			$property = $this->connectorPropertiesConfigurationRepository->find($entity->getProperty());
 
 			if (!$property instanceof Documents\Connectors\Properties\Dynamic) {
@@ -306,7 +307,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 					);
 				}
 			}
-		} elseif ($entity->getAction() === MetadataTypes\PropertyAction::GET) {
+		} elseif ($entity->getAction() === Types\PropertyAction::GET) {
 			$property = $this->connectorPropertiesConfigurationRepository->find($entity->getProperty());
 
 			if ($property === null) {
@@ -349,7 +350,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 		Documents\Actions\Properties\Device $entity,
 	): void
 	{
-		if ($entity->getAction() === MetadataTypes\PropertyAction::SET) {
+		if ($entity->getAction() === Types\PropertyAction::SET) {
 			$property = $this->devicePropertiesConfigurationRepository->find($entity->getProperty());
 
 			if (
@@ -396,7 +397,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 					);
 				}
 			}
-		} elseif ($entity->getAction() === MetadataTypes\PropertyAction::GET) {
+		} elseif ($entity->getAction() === Types\PropertyAction::GET) {
 			$property = $this->devicePropertiesConfigurationRepository->find($entity->getProperty());
 
 			if ($property === null) {
@@ -439,7 +440,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 		Documents\Actions\Properties\Channel $entity,
 	): void
 	{
-		if ($entity->getAction() === MetadataTypes\PropertyAction::SET) {
+		if ($entity->getAction() === Types\PropertyAction::SET) {
 			$property = $this->channelPropertiesConfigurationRepository->find($entity->getProperty());
 
 			if (
@@ -486,7 +487,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 					);
 				}
 			}
-		} elseif ($entity->getAction() === MetadataTypes\PropertyAction::GET) {
+		} elseif ($entity->getAction() === Types\PropertyAction::GET) {
 			$property = $this->channelPropertiesConfigurationRepository->find($entity->getProperty());
 
 			if ($property === null) {

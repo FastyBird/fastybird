@@ -20,6 +20,7 @@ use Doctrine\Common;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities;
+use FastyBird\Module\Devices\Types;
 use FastyBird\SimpleAuth\Entities as SimpleAuthEntities;
 use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use IPub\DoctrineTimestampable;
@@ -66,10 +67,10 @@ abstract class Device implements Entities\Entity,
 		type: 'string',
 		length: 100,
 		nullable: false,
-		enumType: MetadataTypes\DeviceCategory::class,
-		options: ['default' => MetadataTypes\DeviceCategory::GENERIC],
+		enumType: Types\DeviceCategory::class,
+		options: ['default' => Types\DeviceCategory::GENERIC],
 	)]
-	protected MetadataTypes\DeviceCategory $category;
+	protected Types\DeviceCategory $category;
 
 	#[IPubDoctrine\Crud(required: true)]
 	#[ORM\Column(name: 'device_identifier', type: 'string', length: 50, nullable: false)]
@@ -171,7 +172,7 @@ abstract class Device implements Entities\Entity,
 		$this->identifier = $identifier;
 		$this->name = $name;
 
-		$this->category = MetadataTypes\DeviceCategory::GENERIC;
+		$this->category = Types\DeviceCategory::GENERIC;
 
 		$this->connector = $connector;
 
@@ -184,12 +185,12 @@ abstract class Device implements Entities\Entity,
 
 	abstract public static function getType(): string;
 
-	public function getCategory(): MetadataTypes\DeviceCategory
+	public function getCategory(): Types\DeviceCategory
 	{
 		return $this->category;
 	}
 
-	public function setCategory(MetadataTypes\DeviceCategory $category): void
+	public function setCategory(Types\DeviceCategory $category): void
 	{
 		$this->category = $category;
 	}

@@ -29,6 +29,7 @@ use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\States;
+use FastyBird\Module\Devices\Types;
 use Nette\Utils;
 use Throwable;
 use function in_array;
@@ -84,7 +85,7 @@ final class State implements ExchangeConsumers\Consumer
 
 		if (in_array($routingKey, self::PROPERTIES_ACTIONS_ROUTING_KEYS, true)) {
 			if ($document instanceof Documents\Actions\Properties\Connector) {
-				if ($document->getAction() === MetadataTypes\PropertyAction::SET) {
+				if ($document->getAction() === Types\PropertyAction::SET) {
 					$findConnectorPropertyQuery = new Queries\Configuration\FindConnectorDynamicProperties();
 					$findConnectorPropertyQuery->byId($document->getProperty());
 
@@ -159,7 +160,7 @@ final class State implements ExchangeConsumers\Consumer
 								],
 							);
 						});
-				} elseif ($document->getAction() === MetadataTypes\PropertyAction::GET) {
+				} elseif ($document->getAction() === Types\PropertyAction::GET) {
 					$findConnectorPropertyQuery = new Queries\Configuration\FindConnectorDynamicProperties();
 					$findConnectorPropertyQuery->byId($document->getProperty());
 
@@ -216,7 +217,7 @@ final class State implements ExchangeConsumers\Consumer
 						});
 				}
 			} elseif ($document instanceof Documents\Actions\Properties\Device) {
-				if ($document->getAction() === MetadataTypes\PropertyAction::SET) {
+				if ($document->getAction() === Types\PropertyAction::SET) {
 					$findConnectorPropertyQuery = new Queries\Configuration\FindDeviceProperties();
 					$findConnectorPropertyQuery->byId($document->getProperty());
 
@@ -291,7 +292,7 @@ final class State implements ExchangeConsumers\Consumer
 								],
 							);
 						});
-				} elseif ($document->getAction() === MetadataTypes\PropertyAction::GET) {
+				} elseif ($document->getAction() === Types\PropertyAction::GET) {
 					$findConnectorPropertyQuery = new Queries\Configuration\FindDeviceProperties();
 					$findConnectorPropertyQuery->byId($document->getProperty());
 
@@ -348,7 +349,7 @@ final class State implements ExchangeConsumers\Consumer
 						});
 				}
 			} elseif ($document instanceof Documents\Actions\Properties\Channel) {
-				if ($document->getAction() === MetadataTypes\PropertyAction::SET) {
+				if ($document->getAction() === Types\PropertyAction::SET) {
 					$findConnectorPropertyQuery = new Queries\Configuration\FindChannelProperties();
 					$findConnectorPropertyQuery->byId($document->getProperty());
 
@@ -423,7 +424,7 @@ final class State implements ExchangeConsumers\Consumer
 								],
 							);
 						});
-				} elseif ($document->getAction() === MetadataTypes\PropertyAction::GET) {
+				} elseif ($document->getAction() === Types\PropertyAction::GET) {
 					$findConnectorPropertyQuery = new Queries\Configuration\FindChannelProperties();
 					$findConnectorPropertyQuery->byId($document->getProperty());
 

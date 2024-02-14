@@ -20,9 +20,9 @@ use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Exchange\Documents\Mapping as EXCHANGE;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Documents\Mapping as DOC;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Entities;
+use FastyBird\Module\Devices\Types;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_map;
@@ -61,10 +61,10 @@ abstract class Connector implements MetadataDocuments\Document, MetadataDocument
 		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $id,
 		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\BackedEnumValue(class: MetadataTypes\ConnectorCategory::class),
-			new ObjectMapper\Rules\InstanceOfValue(type: MetadataTypes\ConnectorCategory::class),
+			new ObjectMapper\Rules\BackedEnumValue(class: Types\ConnectorCategory::class),
+			new ObjectMapper\Rules\InstanceOfValue(type: Types\ConnectorCategory::class),
 		])]
-		private readonly MetadataTypes\ConnectorCategory $category,
+		private readonly Types\ConnectorCategory $category,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $identifier,
 		#[ObjectMapper\Rules\AnyOf([
@@ -119,7 +119,7 @@ abstract class Connector implements MetadataDocuments\Document, MetadataDocument
 
 	abstract public static function getType(): string;
 
-	public function getCategory(): MetadataTypes\ConnectorCategory
+	public function getCategory(): Types\ConnectorCategory
 	{
 		return $this->category;
 	}

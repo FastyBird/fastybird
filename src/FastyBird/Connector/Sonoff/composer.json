@@ -35,7 +35,7 @@
     "source": "https://github.com/FastyBird/sonoff-connector"
   },
   "require": {
-    "php": ">=8.1.0",
+    "php": ">=8.2.0",
     "ext-pcntl": "*",
     "clue/multicast-react": "^1.1",
     "contributte/console": "^0.9",

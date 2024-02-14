@@ -19,9 +19,9 @@ use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Exchange\Documents\Mapping as EXCHANGE;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Documents\Mapping as DOC;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Exceptions;
+use FastyBird\Module\Devices\Types;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_merge;
@@ -43,8 +43,8 @@ final class Device implements MetadataDocuments\Document
 {
 
 	public function __construct(
-		#[ObjectMapper\Rules\BackedEnumValue(class: MetadataTypes\PropertyAction::class)]
-		private readonly MetadataTypes\PropertyAction $action,
+		#[ObjectMapper\Rules\BackedEnumValue(class: Types\PropertyAction::class)]
+		private readonly Types\PropertyAction $action,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $device,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
@@ -63,7 +63,7 @@ final class Device implements MetadataDocuments\Document
 	{
 	}
 
-	public function getAction(): MetadataTypes\PropertyAction
+	public function getAction(): Types\PropertyAction
 	{
 		return $this->action;
 	}
@@ -83,9 +83,9 @@ final class Device implements MetadataDocuments\Document
 	 */
 	public function getSet(): Values|null
 	{
-		if ($this->getAction() !== MetadataTypes\PropertyAction::SET) {
+		if ($this->getAction() !== Types\PropertyAction::SET) {
 			throw new Exceptions\InvalidState(
-				sprintf('Write values are available only for action: %s', MetadataTypes\PropertyAction::SET->value),
+				sprintf('Write values are available only for action: %s', Types\PropertyAction::SET->value),
 			);
 		}
 
@@ -97,9 +97,9 @@ final class Device implements MetadataDocuments\Document
 	 */
 	public function getWrite(): Values|null
 	{
-		if ($this->getAction() !== MetadataTypes\PropertyAction::SET) {
+		if ($this->getAction() !== Types\PropertyAction::SET) {
 			throw new Exceptions\InvalidState(
-				sprintf('Write values are available only for action: %s', MetadataTypes\PropertyAction::SET->value),
+				sprintf('Write values are available only for action: %s', Types\PropertyAction::SET->value),
 			);
 		}
 
@@ -117,7 +117,7 @@ final class Device implements MetadataDocuments\Document
 			'property' => $this->getProperty()->toString(),
 		];
 
-		if ($this->getAction() === MetadataTypes\PropertyAction::SET) {
+		if ($this->getAction() === Types\PropertyAction::SET) {
 			if ($this->getSet() !== null) {
 				$data = array_merge($data, [
 					'set' => $this->getSet()->toArray(),

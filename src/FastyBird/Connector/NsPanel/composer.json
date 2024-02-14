@@ -32,7 +32,7 @@
     "source": "https://github.com/FastyBird/ns-panel-connector"
   },
   "require": {
-    "php": ">=8.1.0",
+    "php": ">=8.2.0",
     "ext-iconv": "*",
     "brick/math": "^0.10",
     "contributte/console": "^0.9",

@@ -1,29 +1,29 @@
 <?php declare(strict_types = 1);
 
 /**
- * ConnectorCategory.php
+ * ChannelCategory.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:MetadataLibrary!
+ * @package        FastyBird:DevicesModule!
  * @subpackage     Types
  * @since          1.0.0
  *
  * @date           09.04.23
  */
 
-namespace FastyBird\Library\Metadata\Types;
+namespace FastyBird\Module\Devices\Types;
 
 /**
- * Connector category
+ * Device channel category
  *
- * @package        FastyBird:MetadataLibrary!
+ * @package        FastyBird:DevicesModule!
  * @subpackage     Types
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-enum ConnectorCategory: string
+enum ChannelCategory: string
 {
 
 	case GENERIC = 'generic';

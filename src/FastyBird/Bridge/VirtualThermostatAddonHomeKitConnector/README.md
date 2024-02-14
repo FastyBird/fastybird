@@ -33,7 +33,7 @@ in [PHP](https://www.php.net) on top of the [Nette framework](https://nette.org)
 
 ## Requirements
 
-Virtual thermostat & HomeKit connector bridge is tested against PHP 8.1.
+Virtual thermostat & HomeKit connector bridge is tested against PHP 8.2.
 
 ## Installation
 

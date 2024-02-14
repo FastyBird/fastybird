@@ -19,8 +19,8 @@ use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Exchange\Documents\Mapping as EXCHANGE;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Documents\Mapping as DOC;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
+use FastyBird\Module\Devices\Types;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 
@@ -40,8 +40,8 @@ final class Connector implements MetadataDocuments\Document
 {
 
 	public function __construct(
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\ControlAction::class)]
-		private readonly MetadataTypes\ControlAction $action,
+		#[ObjectMapper\Rules\BackedEnumValue(class: Types\ControlAction::class)]
+		private readonly Types\ControlAction $action,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $connector,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
@@ -59,7 +59,7 @@ final class Connector implements MetadataDocuments\Document
 	{
 	}
 
-	public function getAction(): MetadataTypes\ControlAction
+	public function getAction(): Types\ControlAction
 	{
 		return $this->action;
 	}
@@ -82,7 +82,7 @@ final class Connector implements MetadataDocuments\Document
 	public function toArray(): array
 	{
 		return [
-			'action' => $this->getAction()->getValue(),
+			'action' => $this->getAction()->value,
 			'connector' => $this->getConnector()->toString(),
 			'control' => $this->getControl()->toString(),
 			'expected_value' => $this->getExpectedValue(),

@@ -24,6 +24,7 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Library\Tools\Transformers as ToolsTransformers;
 use FastyBird\Module\Devices\Exceptions;
+use FastyBird\Module\Devices\Types;
 use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use IPub\DoctrineTimestampable;
 use Nette\Utils;
@@ -70,10 +71,10 @@ abstract class Property implements Entity,
 		type: 'string',
 		length: 100,
 		nullable: false,
-		enumType: MetadataTypes\PropertyCategory::class,
-		options: ['default' => MetadataTypes\PropertyCategory::GENERIC],
+		enumType: Types\PropertyCategory::class,
+		options: ['default' => Types\PropertyCategory::GENERIC],
 	)]
-	protected MetadataTypes\PropertyCategory $category;
+	protected Types\PropertyCategory $category;
 
 	#[IPubDoctrine\Crud(required: true)]
 	#[ORM\Column(name: 'property_identifier', type: 'string', length: 50, nullable: false)]
@@ -150,11 +151,11 @@ abstract class Property implements Entity,
 
 		$this->identifier = $identifier;
 
-		$this->category = MetadataTypes\PropertyCategory::GENERIC;
+		$this->category = Types\PropertyCategory::GENERIC;
 		$this->dataType = MetadataTypes\DataType::UNKNOWN;
 
 		// Static property can not be set or read from device/channel property
-		if (static::getType() === MetadataTypes\PropertyType::VARIABLE) {
+		if (static::getType() === Types\PropertyType::VARIABLE->value) {
 			$this->settable = false;
 			$this->queryable = false;
 		}
@@ -162,12 +163,12 @@ abstract class Property implements Entity,
 
 	abstract public static function getType(): string;
 
-	public function getCategory(): MetadataTypes\PropertyCategory
+	public function getCategory(): Types\PropertyCategory
 	{
 		return $this->category;
 	}
 
-	public function setCategory(MetadataTypes\PropertyCategory $category): void
+	public function setCategory(Types\PropertyCategory $category): void
 	{
 		$this->category = $category;
 	}
@@ -673,12 +674,12 @@ abstract class Property implements Entity,
 			'updated_at' => $this->getUpdatedAt()?->format(DateTimeInterface::ATOM),
 		];
 
-		if (static::getType() === MetadataTypes\PropertyType::VARIABLE) {
+		if (static::getType() === Types\PropertyType::VARIABLE->value) {
 			return array_merge($data, [
 				'default' => MetadataUtilities\Value::flattenValue($this->getDefault()),
 				'value' => MetadataUtilities\Value::flattenValue($this->getValue()),
 			]);
-		} elseif (static::getType() === MetadataTypes\PropertyType::DYNAMIC) {
+		} elseif (static::getType() === Types\PropertyType::DYNAMIC->value) {
 			return array_merge($data, [
 				'settable' => $this->isSettable(),
 				'queryable' => $this->isQueryable(),

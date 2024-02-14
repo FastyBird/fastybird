@@ -6,8 +6,8 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:TuyaConnector!
- * @subpackage     Connector
+ * @package        FastyBird:DevicesModule!
+ * @subpackage     Connectors
  * @since          1.0.0
  *
  * @date           21.01.24
@@ -21,8 +21,8 @@ use FastyBird\Module\Devices\Documents;
 /**
  * Connector service executor factory
  *
- * @package        FastyBird:TuyaConnector!
- * @subpackage     Connector
+ * @package        FastyBird:DevicesModule!
+ * @subpackage     Connectors
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */

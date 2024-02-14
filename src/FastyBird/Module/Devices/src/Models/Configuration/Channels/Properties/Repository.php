@@ -17,7 +17,6 @@ namespace FastyBird\Module\Devices\Models\Configuration\Channels\Properties;
 
 use Contributte\Cache;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
@@ -101,15 +100,15 @@ final class Repository extends Models\Configuration\Repository
 						->find('.' . Devices\Constants::DATA_STORAGE_PROPERTIES_KEY . '.*');
 
 					if ($type === Documents\Channels\Properties\Dynamic::class) {
-						$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::DYNAMIC . '")]');
+						$space = $space->find('.[?(@.type == "' . Devices\Types\PropertyType::DYNAMIC->value . '")]');
 
 					} elseif ($type === Documents\Channels\Properties\Variable::class) {
 						$space = $space->find(
-							'.[?(@.type == "' . MetadataTypes\PropertyType::VARIABLE . '")]',
+							'.[?(@.type == "' . Devices\Types\PropertyType::VARIABLE->value . '")]',
 						);
 
 					} elseif ($type === Documents\Channels\Properties\Mapped::class) {
-						$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::MAPPED . '")]');
+						$space = $space->find('.[?(@.type == "' . Devices\Types\PropertyType::MAPPED->value . '")]');
 					}
 
 					$result = $queryObject->fetch($space);
@@ -177,15 +176,15 @@ final class Repository extends Models\Configuration\Repository
 						->find('.' . Devices\Constants::DATA_STORAGE_PROPERTIES_KEY . '.*');
 
 					if ($type === Documents\Channels\Properties\Dynamic::class) {
-						$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::DYNAMIC . '")]');
+						$space = $space->find('.[?(@.type == "' . Devices\Types\PropertyType::DYNAMIC->value . '")]');
 
 					} elseif ($type === Documents\Channels\Properties\Variable::class) {
 						$space = $space->find(
-							'.[?(@.type == "' . MetadataTypes\PropertyType::VARIABLE . '")]',
+							'.[?(@.type == "' . Devices\Types\PropertyType::VARIABLE->value . '")]',
 						);
 
 					} elseif ($type === Documents\Channels\Properties\Mapped::class) {
-						$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::MAPPED . '")]');
+						$space = $space->find('.[?(@.type == "' . Devices\Types\PropertyType::MAPPED->value . '")]');
 					}
 
 					$result = $queryObject->fetch($space);

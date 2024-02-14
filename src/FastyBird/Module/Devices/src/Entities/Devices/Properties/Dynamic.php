@@ -19,6 +19,7 @@ use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions;
+use FastyBird\Module\Devices\Types;
 use function array_map;
 use function array_merge;
 use function sprintf;
@@ -27,7 +28,7 @@ use function sprintf;
 class Dynamic extends Property
 {
 
-	public const TYPE = MetadataTypes\PropertyType::DYNAMIC;
+	public const TYPE = Types\PropertyType::DYNAMIC->value;
 
 	public static function getType(): string
 	{

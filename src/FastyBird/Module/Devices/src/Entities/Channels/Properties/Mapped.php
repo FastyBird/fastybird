@@ -22,6 +22,7 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
+use FastyBird\Module\Devices\Types;
 use FastyBird\Module\Devices\Utilities;
 use Ramsey\Uuid;
 use function array_merge;
@@ -32,7 +33,7 @@ use function sprintf;
 class Mapped extends Property
 {
 
-	public const TYPE = MetadataTypes\PropertyType::MAPPED;
+	public const TYPE = Types\PropertyType::MAPPED->value;
 
 	public function __construct(
 		Entities\Channels\Channel $channel,

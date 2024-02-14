@@ -15,9 +15,9 @@
 
 namespace FastyBird\Module\Devices\Queries\Configuration;
 
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
+use FastyBird\Module\Devices\Types;
 use Ramsey\Uuid;
 
 /**
@@ -37,7 +37,7 @@ class FindChannelVariableProperties extends FindChannelProperties
 	{
 		parent::__construct();
 
-		$this->filter[] = '.[?(@.type == "' . MetadataTypes\PropertyType::VARIABLE . '")]';
+		$this->filter[] = '.[?(@.type == "' . Types\PropertyType::VARIABLE->value . '")]';
 	}
 
 	/**

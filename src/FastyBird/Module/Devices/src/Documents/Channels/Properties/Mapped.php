@@ -23,6 +23,7 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
+use FastyBird\Module\Devices\Types;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_merge;
@@ -47,7 +48,7 @@ final class Mapped extends Property
 		Uuid\UuidInterface $channel,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $parent,
-		MetadataTypes\PropertyCategory $category,
+		Types\PropertyCategory $category,
 		string $identifier,
 		string|null $name,
 		MetadataTypes\DataType $dataType,
@@ -109,7 +110,7 @@ final class Mapped extends Property
 
 	public static function getType(): string
 	{
-		return Entities\Channels\Properties\Mapped::TYPE;
+		return Entities\Channels\Properties\Mapped::getType();
 	}
 
 	public function getParent(): Uuid\UuidInterface

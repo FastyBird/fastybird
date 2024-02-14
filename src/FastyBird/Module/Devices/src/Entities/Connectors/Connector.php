@@ -20,6 +20,7 @@ use Doctrine\Common;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities;
+use FastyBird\Module\Devices\Types;
 use FastyBird\SimpleAuth\Entities as SimpleAuthEntities;
 use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use IPub\DoctrineTimestampable;
@@ -66,10 +67,10 @@ abstract class Connector implements Entities\Entity,
 		type: 'string',
 		length: 100,
 		nullable: false,
-		enumType: MetadataTypes\ConnectorCategory::class,
-		options: ['default' => MetadataTypes\ConnectorCategory::GENERIC],
+		enumType: Types\ConnectorCategory::class,
+		options: ['default' => Types\ConnectorCategory::GENERIC],
 	)]
-	protected MetadataTypes\ConnectorCategory $category;
+	protected Types\ConnectorCategory $category;
 
 	#[IPubDoctrine\Crud(required: true)]
 	#[ORM\Column(name: 'connector_identifier', type: 'string', length: 50, nullable: false)]
@@ -127,7 +128,7 @@ abstract class Connector implements Entities\Entity,
 
 		$this->identifier = $identifier;
 
-		$this->category = MetadataTypes\ConnectorCategory::GENERIC;
+		$this->category = Types\ConnectorCategory::GENERIC;
 
 		$this->devices = new Common\Collections\ArrayCollection();
 		$this->properties = new Common\Collections\ArrayCollection();
@@ -136,12 +137,12 @@ abstract class Connector implements Entities\Entity,
 
 	abstract public static function getType(): string;
 
-	public function getCategory(): MetadataTypes\ConnectorCategory
+	public function getCategory(): Types\ConnectorCategory
 	{
 		return $this->category;
 	}
 
-	public function setCategory(MetadataTypes\ConnectorCategory $category): void
+	public function setCategory(Types\ConnectorCategory $category): void
 	{
 		$this->category = $category;
 	}

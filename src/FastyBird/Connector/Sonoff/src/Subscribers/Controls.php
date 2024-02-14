@@ -19,10 +19,10 @@ use Doctrine\Common;
 use Doctrine\ORM;
 use Doctrine\Persistence;
 use FastyBird\Connector\Sonoff\Entities;
-use FastyBird\Connector\Sonoff\Types;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 use Nette;
 use Nette\Utils;
 
@@ -66,26 +66,26 @@ final class Controls implements Common\EventSubscriber
 		if ($entity instanceof Entities\Connectors\Connector) {
 			$findConnectorControlQuery = new DevicesQueries\Entities\FindConnectorControls();
 			$findConnectorControlQuery->forConnector($entity);
-			$findConnectorControlQuery->byName(Types\ConnectorControlName::DISCOVER);
+			$findConnectorControlQuery->byName(DevicesTypes\ControlName::DISCOVER->value);
 
 			$discoveryControl = $this->connectorsControlsRepository->findOneBy($findConnectorControlQuery);
 
 			if ($discoveryControl === null) {
 				$this->connectorsControlsManager->create(Utils\ArrayHash::from([
-					'name' => Types\ConnectorControlName::DISCOVER,
+					'name' => DevicesTypes\ControlName::DISCOVER->value,
 					'connector' => $entity,
 				]));
 			}
 
 			$findConnectorControlQuery = new DevicesQueries\Entities\FindConnectorControls();
 			$findConnectorControlQuery->forConnector($entity);
-			$findConnectorControlQuery->byName(Types\ConnectorControlName::REBOOT);
+			$findConnectorControlQuery->byName(DevicesTypes\ControlName::REBOOT->value);
 
 			$rebootControl = $this->connectorsControlsRepository->findOneBy($findConnectorControlQuery);
 
 			if ($rebootControl === null) {
 				$this->connectorsControlsManager->create(Utils\ArrayHash::from([
-					'name' => Types\ConnectorControlName::REBOOT,
+					'name' => DevicesTypes\ControlName::REBOOT->value,
 					'connector' => $entity,
 				]));
 			}

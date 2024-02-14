@@ -1,31 +1,31 @@
 <?php declare(strict_types = 1);
 
 /**
- * DeviceCategory.php
+ * ControlName.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:MetadataLibrary!
+ * @package        FastyBird:TriggersModule!
  * @subpackage     Types
  * @since          1.0.0
  *
- * @date           09.04.23
+ * @date           29.09.21
  */
 
-namespace FastyBird\Library\Metadata\Types;
+namespace FastyBird\Module\Triggers\Types;
 
 /**
- * Device category
+ * Control name types
  *
- * @package        FastyBird:MetadataLibrary!
+ * @package        FastyBird:TriggersModule!
  * @subpackage     Types
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-enum DeviceCategory: string
+enum ControlName: string
 {
 
-	case GENERIC = 'generic';
+	case TRIGGER = 'trigger';
 
 }

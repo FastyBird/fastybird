@@ -33,7 +33,7 @@
     "source": "https://github.com/FastyBird/rabbitmq-plugin"
   },
   "require": {
-    "php": ">=8.1.0",
+    "php": ">=8.2.0",
     "bunny/bunny": "dev-promise-v3",
     "cweagans/composer-patches": "^1.7",
     "evenement/evenement": "^3.0",

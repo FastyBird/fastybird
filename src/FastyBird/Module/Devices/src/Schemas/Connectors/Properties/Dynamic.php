@@ -26,6 +26,7 @@ use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Router;
 use FastyBird\Module\Devices\Schemas;
+use FastyBird\Module\Devices\Types;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use IPub\SlimRouter\Routing;
 use Neomerx\JsonApi;
@@ -48,7 +49,7 @@ final class Dynamic extends Property
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\Sources\Module::DEVICES . '/property/connector/' . MetadataTypes\PropertyType::DYNAMIC;
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Module::DEVICES . '/property/connector/' . Types\PropertyType::DYNAMIC->value;
 
 	public function __construct(
 		Routing\IRouter $router,

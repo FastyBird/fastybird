@@ -20,6 +20,7 @@ use Doctrine\Common;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities;
+use FastyBird\Module\Devices\Types;
 use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use IPub\DoctrineTimestampable;
 use Nette\Utils;
@@ -61,10 +62,10 @@ abstract class Channel implements Entities\Entity,
 		type: 'string',
 		length: 100,
 		nullable: false,
-		enumType: MetadataTypes\ChannelCategory::class,
-		options: ['default' => MetadataTypes\ChannelCategory::GENERIC],
+		enumType: Types\ChannelCategory::class,
+		options: ['default' => Types\ChannelCategory::GENERIC],
 	)]
-	protected MetadataTypes\ChannelCategory $category;
+	protected Types\ChannelCategory $category;
 
 	#[IPubDoctrine\Crud(required: true)]
 	#[ORM\Column(name: 'channel_identifier', type: 'string', length: 50, nullable: false)]
@@ -127,7 +128,7 @@ abstract class Channel implements Entities\Entity,
 
 		$this->name = $name;
 
-		$this->category = MetadataTypes\ChannelCategory::GENERIC;
+		$this->category = Types\ChannelCategory::GENERIC;
 
 		$this->properties = new Common\Collections\ArrayCollection();
 		$this->controls = new Common\Collections\ArrayCollection();
@@ -135,12 +136,12 @@ abstract class Channel implements Entities\Entity,
 
 	abstract public static function getType(): string;
 
-	public function getCategory(): MetadataTypes\ChannelCategory
+	public function getCategory(): Types\ChannelCategory
 	{
 		return $this->category;
 	}
 
-	public function setCategory(MetadataTypes\ChannelCategory $category): void
+	public function setCategory(Types\ChannelCategory $category): void
 	{
 		$this->category = $category;
 	}

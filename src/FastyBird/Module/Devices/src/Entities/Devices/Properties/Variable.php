@@ -16,8 +16,8 @@
 namespace FastyBird\Module\Devices\Entities\Devices\Properties;
 
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions;
+use FastyBird\Module\Devices\Types;
 use function array_map;
 use function array_merge;
 use function sprintf;
@@ -26,7 +26,7 @@ use function sprintf;
 class Variable extends Property
 {
 
-	public const TYPE = MetadataTypes\PropertyType::VARIABLE;
+	public const TYPE = Types\PropertyType::VARIABLE->value;
 
 	public static function getType(): string
 	{

@@ -9,6 +9,7 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Tests\Cases\Unit\BaseTestCase;
+use FastyBird\Module\Devices\Types;
 use Nette;
 use Ramsey\Uuid;
 use function file_get_contents;
@@ -77,7 +78,7 @@ final class ChannelPropertyDocumentTest extends BaseTestCase
 				[
 					'id' => '176984ad-7cf7-465d-9e53-71668a74a688',
 					'type' => Documents\Channels\Properties\Dynamic::getType(),
-					'category' => MetadataTypes\PropertyCategory::GENERIC->value,
+					'category' => Types\PropertyCategory::GENERIC->value,
 					'identifier' => 'property-identifier',
 					'name' => null,
 					'queryable' => false,
@@ -103,7 +104,7 @@ final class ChannelPropertyDocumentTest extends BaseTestCase
 				[
 					'id' => '176984ad-7cf7-465d-9e53-71668a74a688',
 					'type' => Documents\Channels\Properties\Variable::getType(),
-					'category' => MetadataTypes\PropertyCategory::GENERIC->value,
+					'category' => Types\PropertyCategory::GENERIC->value,
 					'identifier' => 'property-identifier',
 					'name' => null,
 					'data_type' => MetadataTypes\DataType::ENUM->value,
@@ -128,7 +129,7 @@ final class ChannelPropertyDocumentTest extends BaseTestCase
 				[
 					'id' => '176984ad-7cf7-465d-9e53-71668a74a688',
 					'type' => Documents\Channels\Properties\Mapped::getType(),
-					'category' => MetadataTypes\PropertyCategory::GENERIC->value,
+					'category' => Types\PropertyCategory::GENERIC->value,
 					'identifier' => 'property-identifier',
 					'name' => null,
 					'queryable' => false,
@@ -171,7 +172,7 @@ final class ChannelPropertyDocumentTest extends BaseTestCase
 				[
 					'id' => '176984ad-7cf7-465d-9e53-71668a74a688',
 					'type' => Documents\Channels\Properties\Dynamic::getType(),
-					'category' => MetadataTypes\PropertyCategory::GENERIC->value,
+					'category' => Types\PropertyCategory::GENERIC->value,
 					'identifier' => 'property-identifier',
 					'name' => null,
 					'queryable' => false,
@@ -196,7 +197,7 @@ final class ChannelPropertyDocumentTest extends BaseTestCase
 				[
 					'id' => '176984ad-7cf7-465d-9e53-71668a74a688',
 					'type' => Documents\Channels\Properties\Dynamic::getType(),
-					'category' => MetadataTypes\PropertyCategory::GENERIC->value,
+					'category' => Types\PropertyCategory::GENERIC->value,
 					'identifier' => 'property-identifier',
 					'name' => null,
 					'queryable' => false,
@@ -221,7 +222,7 @@ final class ChannelPropertyDocumentTest extends BaseTestCase
 				[
 					'id' => '176984ad-7cf7-465d-9e53-71668a74a688',
 					'type' => Documents\Channels\Properties\Dynamic::getType(),
-					'category' => MetadataTypes\PropertyCategory::GENERIC->value,
+					'category' => Types\PropertyCategory::GENERIC->value,
 					'identifier' => 'property-identifier',
 					'name' => null,
 					'queryable' => false,

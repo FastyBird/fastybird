@@ -1,31 +1,35 @@
 <?php declare(strict_types = 1);
 
 /**
- * ChannelCategory.php
+ * PropertyType.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:MetadataLibrary!
+ * @package        FastyBird:DevicesModule!
  * @subpackage     Types
  * @since          1.0.0
  *
- * @date           09.04.23
+ * @date           02.01.22
  */
 
-namespace FastyBird\Library\Metadata\Types;
+namespace FastyBird\Module\Devices\Types;
 
 /**
- * Device channel category
+ * Property type
  *
- * @package        FastyBird:MetadataLibrary!
+ * @package        FastyBird:DevicesModule!
  * @subpackage     Types
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-enum ChannelCategory: string
+enum PropertyType: string
 {
 
-	case GENERIC = 'generic';
+	case VARIABLE = 'variable';
+
+	case DYNAMIC = 'dynamic';
+
+	case MAPPED = 'mapped';
 
 }

@@ -12,6 +12,7 @@ use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\States;
 use FastyBird\Module\Devices\Tests\Cases\Unit\BaseTestCase;
+use FastyBird\Module\Devices\Types;
 use Nette\DI;
 use Nette\Utils;
 use Ramsey\Uuid;
@@ -271,7 +272,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 				new Documents\Channels\Properties\Dynamic(
 					$property01,
 					$channel01,
-					MetadataTypes\PropertyCategory::GENERIC,
+					Types\PropertyCategory::GENERIC,
 					'test-property-01',
 					'Testing Property 01',
 					MetadataTypes\DataType::FLOAT,
@@ -302,7 +303,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 				new Documents\Channels\Properties\Dynamic(
 					$property01,
 					$channel01,
-					MetadataTypes\PropertyCategory::GENERIC,
+					Types\PropertyCategory::GENERIC,
 					'test-property-02',
 					'Testing Property 02',
 					MetadataTypes\DataType::FLOAT,
@@ -333,7 +334,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 				new Documents\Channels\Properties\Dynamic(
 					$property01,
 					$channel01,
-					MetadataTypes\PropertyCategory::GENERIC,
+					Types\PropertyCategory::GENERIC,
 					'test-property-03',
 					'Testing Property 03',
 					MetadataTypes\DataType::FLOAT,
@@ -364,7 +365,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 				new Documents\Channels\Properties\Dynamic(
 					$property01,
 					$channel01,
-					MetadataTypes\PropertyCategory::GENERIC,
+					Types\PropertyCategory::GENERIC,
 					'test-property-04',
 					'Testing Property 04',
 					MetadataTypes\DataType::FLOAT,
@@ -395,7 +396,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 					$child01,
 					$channel02,
 					$property01,
-					MetadataTypes\PropertyCategory::GENERIC,
+					Types\PropertyCategory::GENERIC,
 					'child-property-05',
 					'Child Property 05',
 					MetadataTypes\DataType::FLOAT,
@@ -410,7 +411,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 				new Documents\Channels\Properties\Dynamic(
 					$property01,
 					$channel01,
-					MetadataTypes\PropertyCategory::GENERIC,
+					Types\PropertyCategory::GENERIC,
 					'test-property-05',
 					'Testing Property 05',
 					MetadataTypes\DataType::FLOAT,
@@ -441,7 +442,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 					$child01,
 					$channel02,
 					$property01,
-					MetadataTypes\PropertyCategory::GENERIC,
+					Types\PropertyCategory::GENERIC,
 					'child-property-06',
 					'Child Property 06',
 					MetadataTypes\DataType::UCHAR,
@@ -456,7 +457,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 				new Documents\Channels\Properties\Dynamic(
 					$property01,
 					$channel01,
-					MetadataTypes\PropertyCategory::GENERIC,
+					Types\PropertyCategory::GENERIC,
 					'test-property-06',
 					'Testing Property 06',
 					MetadataTypes\DataType::UCHAR,
@@ -487,7 +488,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 					$child01,
 					$channel02,
 					$property01,
-					MetadataTypes\PropertyCategory::GENERIC,
+					Types\PropertyCategory::GENERIC,
 					'child-property-07',
 					'Child Property 07',
 					MetadataTypes\DataType::UCHAR,
@@ -502,7 +503,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 				new Documents\Channels\Properties\Dynamic(
 					$property01,
 					$channel01,
-					MetadataTypes\PropertyCategory::GENERIC,
+					Types\PropertyCategory::GENERIC,
 					'test-property-07',
 					'Testing Property 07',
 					MetadataTypes\DataType::UCHAR,
@@ -533,7 +534,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 					$child01,
 					$channel02,
 					$property01,
-					MetadataTypes\PropertyCategory::GENERIC,
+					Types\PropertyCategory::GENERIC,
 					'child-property-08',
 					'Child Property 08',
 					MetadataTypes\DataType::UCHAR,
@@ -548,7 +549,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 				new Documents\Channels\Properties\Dynamic(
 					$property01,
 					$channel01,
-					MetadataTypes\PropertyCategory::GENERIC,
+					Types\PropertyCategory::GENERIC,
 					'test-property-08',
 					'Testing Property 08',
 					MetadataTypes\DataType::UCHAR,
@@ -578,7 +579,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 				new Documents\Channels\Properties\Dynamic(
 					$property01,
 					$channel01,
-					MetadataTypes\PropertyCategory::GENERIC,
+					Types\PropertyCategory::GENERIC,
 					'test-property-09',
 					'Testing Property 09',
 					MetadataTypes\DataType::FLOAT,
@@ -608,7 +609,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 				new Documents\Channels\Properties\Dynamic(
 					$property01,
 					$channel01,
-					MetadataTypes\PropertyCategory::GENERIC,
+					Types\PropertyCategory::GENERIC,
 					'test-property-10',
 					'Testing Property 10',
 					MetadataTypes\DataType::FLOAT,
@@ -638,7 +639,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 				new Documents\Channels\Properties\Dynamic(
 					$property01,
 					$channel01,
-					MetadataTypes\PropertyCategory::GENERIC,
+					Types\PropertyCategory::GENERIC,
 					'test-property-11',
 					'Testing Property 11',
 					MetadataTypes\DataType::FLOAT,
@@ -682,7 +683,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 				new Documents\Channels\Properties\Dynamic(
 					$property01,
 					$channel01,
-					MetadataTypes\PropertyCategory::GENERIC,
+					Types\PropertyCategory::GENERIC,
 					'test-property-01',
 					'Testing Property 01',
 					MetadataTypes\DataType::FLOAT,
@@ -716,7 +717,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 				new Documents\Channels\Properties\Dynamic(
 					$property01,
 					$channel01,
-					MetadataTypes\PropertyCategory::GENERIC,
+					Types\PropertyCategory::GENERIC,
 					'test-property-02',
 					'Testing Property 02',
 					MetadataTypes\DataType::FLOAT,
@@ -750,7 +751,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 				new Documents\Channels\Properties\Dynamic(
 					$property01,
 					$channel01,
-					MetadataTypes\PropertyCategory::GENERIC,
+					Types\PropertyCategory::GENERIC,
 					'test-property-03',
 					'Testing Property 03',
 					MetadataTypes\DataType::FLOAT,
@@ -784,7 +785,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 				new Documents\Channels\Properties\Dynamic(
 					$property01,
 					$channel01,
-					MetadataTypes\PropertyCategory::GENERIC,
+					Types\PropertyCategory::GENERIC,
 					'test-property-04',
 					'Testing Property 04',
 					MetadataTypes\DataType::FLOAT,
@@ -818,7 +819,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 				new Documents\Channels\Properties\Dynamic(
 					$property01,
 					$channel01,
-					MetadataTypes\PropertyCategory::GENERIC,
+					Types\PropertyCategory::GENERIC,
 					'test-property-05',
 					'Testing Property 05',
 					MetadataTypes\DataType::FLOAT,
@@ -851,7 +852,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 				new Documents\Channels\Properties\Dynamic(
 					$property01,
 					$channel01,
-					MetadataTypes\PropertyCategory::GENERIC,
+					Types\PropertyCategory::GENERIC,
 					'test-property-06',
 					'Testing Property 06',
 					MetadataTypes\DataType::FLOAT,
@@ -884,7 +885,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 				new Documents\Channels\Properties\Dynamic(
 					$property01,
 					$channel01,
-					MetadataTypes\PropertyCategory::GENERIC,
+					Types\PropertyCategory::GENERIC,
 					'test-property-07',
 					'Testing Property 07',
 					MetadataTypes\DataType::FLOAT,
@@ -918,7 +919,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 					$child01,
 					$channel02,
 					$property01,
-					MetadataTypes\PropertyCategory::GENERIC,
+					Types\PropertyCategory::GENERIC,
 					'child-property-08',
 					'Child Property 08',
 					MetadataTypes\DataType::UCHAR,
@@ -933,7 +934,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 				new Documents\Channels\Properties\Dynamic(
 					$property01,
 					$channel01,
-					MetadataTypes\PropertyCategory::GENERIC,
+					Types\PropertyCategory::GENERIC,
 					'test-property-08',
 					'Testing Property 08',
 					MetadataTypes\DataType::FLOAT,
@@ -964,7 +965,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 					$child01,
 					$channel02,
 					$property01,
-					MetadataTypes\PropertyCategory::GENERIC,
+					Types\PropertyCategory::GENERIC,
 					'child-property-09',
 					'Child Property 09',
 					MetadataTypes\DataType::UCHAR,
@@ -979,7 +980,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 				new Documents\Channels\Properties\Dynamic(
 					$property01,
 					$channel01,
-					MetadataTypes\PropertyCategory::GENERIC,
+					Types\PropertyCategory::GENERIC,
 					'test-property-09',
 					'Testing Property 09',
 					MetadataTypes\DataType::FLOAT,
@@ -1010,7 +1011,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 					$child01,
 					$channel02,
 					$property01,
-					MetadataTypes\PropertyCategory::GENERIC,
+					Types\PropertyCategory::GENERIC,
 					'child-property-10',
 					'Child Property 10',
 					MetadataTypes\DataType::UCHAR,
@@ -1025,7 +1026,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 				new Documents\Channels\Properties\Dynamic(
 					$property01,
 					$channel01,
-					MetadataTypes\PropertyCategory::GENERIC,
+					Types\PropertyCategory::GENERIC,
 					'test-property-10',
 					'Testing Property 10',
 					MetadataTypes\DataType::FLOAT,
@@ -1056,7 +1057,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 					$child01,
 					$channel02,
 					$property01,
-					MetadataTypes\PropertyCategory::GENERIC,
+					Types\PropertyCategory::GENERIC,
 					'child-property-11',
 					'Child Property 11',
 					MetadataTypes\DataType::UCHAR,
@@ -1071,7 +1072,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 				new Documents\Channels\Properties\Dynamic(
 					$property01,
 					$channel01,
-					MetadataTypes\PropertyCategory::GENERIC,
+					Types\PropertyCategory::GENERIC,
 					'test-property-11',
 					'Testing Property 11',
 					MetadataTypes\DataType::UCHAR,
@@ -1104,7 +1105,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 					$child01,
 					$channel02,
 					$property01,
-					MetadataTypes\PropertyCategory::GENERIC,
+					Types\PropertyCategory::GENERIC,
 					'child-property-12',
 					'Child Property 12',
 					MetadataTypes\DataType::UCHAR,
@@ -1119,7 +1120,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 				new Documents\Channels\Properties\Dynamic(
 					$property01,
 					$channel01,
-					MetadataTypes\PropertyCategory::GENERIC,
+					Types\PropertyCategory::GENERIC,
 					'test-property-12',
 					'Testing Property 12',
 					MetadataTypes\DataType::UCHAR,
@@ -1149,7 +1150,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 					$child01,
 					$channel02,
 					$property01,
-					MetadataTypes\PropertyCategory::GENERIC,
+					Types\PropertyCategory::GENERIC,
 					'child-property-13',
 					'Child Property 13',
 					MetadataTypes\DataType::UCHAR,
@@ -1164,7 +1165,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 				new Documents\Channels\Properties\Dynamic(
 					$property01,
 					$channel01,
-					MetadataTypes\PropertyCategory::GENERIC,
+					Types\PropertyCategory::GENERIC,
 					'test-property-13',
 					'Testing Property 13',
 					MetadataTypes\DataType::UCHAR,
@@ -1194,7 +1195,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 					$child01,
 					$channel02,
 					$property01,
-					MetadataTypes\PropertyCategory::GENERIC,
+					Types\PropertyCategory::GENERIC,
 					'child-property-14',
 					'Child Property 14',
 					MetadataTypes\DataType::UCHAR,
@@ -1209,7 +1210,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 				new Documents\Channels\Properties\Dynamic(
 					$property01,
 					$channel01,
-					MetadataTypes\PropertyCategory::GENERIC,
+					Types\PropertyCategory::GENERIC,
 					'test-property-14',
 					'Testing Property 14',
 					MetadataTypes\DataType::UCHAR,
@@ -1239,7 +1240,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 					$child01,
 					$channel02,
 					$property01,
-					MetadataTypes\PropertyCategory::GENERIC,
+					Types\PropertyCategory::GENERIC,
 					'child-property-15',
 					'Child Property 15',
 					MetadataTypes\DataType::UCHAR,
@@ -1254,7 +1255,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 				new Documents\Channels\Properties\Dynamic(
 					$property01,
 					$channel01,
-					MetadataTypes\PropertyCategory::GENERIC,
+					Types\PropertyCategory::GENERIC,
 					'test-property-15',
 					'Testing Property 15',
 					MetadataTypes\DataType::UCHAR,
@@ -1281,7 +1282,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 					$child01,
 					$channel02,
 					$property01,
-					MetadataTypes\PropertyCategory::GENERIC,
+					Types\PropertyCategory::GENERIC,
 					'child-property-16',
 					'Child Property 16',
 					MetadataTypes\DataType::SWITCH,
@@ -1319,7 +1320,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 				new Documents\Channels\Properties\Dynamic(
 					$property01,
 					$channel01,
-					MetadataTypes\PropertyCategory::GENERIC,
+					Types\PropertyCategory::GENERIC,
 					'test-property-16',
 					'Testing Property 16',
 					MetadataTypes\DataType::SWITCH,
