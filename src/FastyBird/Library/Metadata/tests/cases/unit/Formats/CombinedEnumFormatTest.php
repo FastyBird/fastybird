@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace FastyBird\Library\Metadata\Tests\Cases\Unit\ValueObjects;
+namespace FastyBird\Library\Metadata\Tests\Cases\Unit\Formats;
 
 use FastyBird\Library\Metadata\Exceptions;
 use FastyBird\Library\Metadata\Formats;
@@ -29,7 +29,7 @@ final class CombinedEnumFormatTest extends BaseTestCase
 		self::assertCount(3, $items);
 		self::assertTrue($items[1][0] instanceof Formats\CombinedEnumItem);
 		self::assertTrue($items[1][0]->getDataType() instanceof Types\DataTypeShort);
-		self::assertSame(Types\DataTypeShort::SWITCH, $items[1][0]->getDataType()->getValue());
+		self::assertSame(Types\DataTypeShort::SWITCH, $items[1][0]->getDataType());
 		self::assertTrue($items[1][0]->getValue() instanceof Types\Payloads\Switcher);
 		self::assertSame(Types\Payloads\Switcher::ON, $items[1][0]->getValue());
 		self::assertEquals('one::,sw|switch_on:1000:s|on,sw|switch_off:2000:s|off', strval($valueObject));

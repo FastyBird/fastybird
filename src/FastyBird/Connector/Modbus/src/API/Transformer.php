@@ -378,7 +378,7 @@ final class Transformer
 			return null;
 		}
 
-		return match ($dataType->getValue()) {
+		return match ($dataType) {
 			MetadataTypes\DataTypeShort::CHAR => MetadataTypes\DataType::CHAR,
 			MetadataTypes\DataTypeShort::UCHAR => MetadataTypes\DataType::UCHAR,
 			MetadataTypes\DataTypeShort::SHORT => MetadataTypes\DataType::SHORT,

@@ -167,11 +167,11 @@ final class CloudDeviceDataPoint implements Message
 		) {
 			return [
 				[
-					MetadataTypes\DataTypeShort::FLOAT,
+					MetadataTypes\DataTypeShort::FLOAT->value,
 					$this->getMin(),
 				],
 				[
-					MetadataTypes\DataTypeShort::FLOAT,
+					MetadataTypes\DataTypeShort::FLOAT->value,
 					$this->getMax(),
 				],
 			];

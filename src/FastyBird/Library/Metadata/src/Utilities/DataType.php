@@ -49,7 +49,7 @@ final class DataType
 			$format->getMinDataType() !== null
 			|| $format->getMaxDataType() !== null
 		) {
-			return match ($format->getMinDataType()?->getValue() ?? $format->getMaxDataType()?->getValue()) {
+			return match ($format->getMinDataType() ?? $format->getMaxDataType()) {
 				Types\DataTypeShort::CHAR => Types\DataType::CHAR,
 				Types\DataTypeShort::UCHAR => Types\DataType::UCHAR,
 				Types\DataTypeShort::SHORT => Types\DataType::SHORT,

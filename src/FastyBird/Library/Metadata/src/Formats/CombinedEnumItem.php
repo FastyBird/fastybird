@@ -60,22 +60,22 @@ final class CombinedEnumItem
 			if (Utils\Strings::contains($item, '|')) {
 				$parts = explode('|', $item) + [null, null];
 
-				if ($parts[0] === null || !Types\DataTypeShort::isValidValue(Utils\Strings::lower($parts[0]))) {
+				if ($parts[0] === null || Types\DataTypeShort::tryFrom(Utils\Strings::lower($parts[0])) === null) {
 					throw new Exceptions\InvalidArgument('Provided format is not valid for combined enum format');
 				}
 
-				$dataType = Types\DataTypeShort::get(Utils\Strings::lower($parts[0]));
+				$dataType = Types\DataTypeShort::tryFrom(Utils\Strings::lower($parts[0]));
 				$this->value = trim(strval($parts[1]));
 			} else {
 				$this->value = trim($item);
 			}
 		} elseif (count($item) === 2) {
 			if ($item[0] !== null) {
-				if (!is_string($item[0]) || !Types\DataTypeShort::isValidValue(Utils\Strings::lower($item[0]))) {
+				if (!is_string($item[0]) || Types\DataTypeShort::tryFrom(Utils\Strings::lower($item[0])) === null) {
 					throw new Exceptions\InvalidArgument('Provided format is not valid for combined enum format');
 				}
 
-				$dataType = Types\DataTypeShort::get(Utils\Strings::lower($item[0]));
+				$dataType = Types\DataTypeShort::tryFrom(Utils\Strings::lower($item[0]));
 			}
 
 			if ($item[1] === null) {
@@ -108,33 +108,33 @@ final class CombinedEnumItem
 		}
 
 		if (
-			$this->dataType->equalsValue(Types\DataTypeShort::CHAR)
-			|| $this->dataType->equalsValue(Types\DataTypeShort::UCHAR)
-			|| $this->dataType->equalsValue(Types\DataTypeShort::SHORT)
-			|| $this->dataType->equalsValue(Types\DataTypeShort::USHORT)
-			|| $this->dataType->equalsValue(Types\DataTypeShort::INT)
-			|| $this->dataType->equalsValue(Types\DataTypeShort::UINT)
+			$this->dataType === Types\DataTypeShort::CHAR
+			|| $this->dataType === Types\DataTypeShort::UCHAR
+			|| $this->dataType === Types\DataTypeShort::SHORT
+			|| $this->dataType === Types\DataTypeShort::USHORT
+			|| $this->dataType === Types\DataTypeShort::INT
+			|| $this->dataType === Types\DataTypeShort::UINT
 		) {
 			return intval($this->value);
-		} elseif ($this->dataType->equalsValue(Types\DataTypeShort::FLOAT)) {
+		} elseif ($this->dataType === Types\DataTypeShort::FLOAT) {
 			return floatval($this->value);
-		} elseif ($this->dataType->equalsValue(Types\DataTypeShort::STRING)) {
+		} elseif ($this->dataType === Types\DataTypeShort::STRING) {
 			return strval($this->value);
-		} elseif ($this->dataType->equalsValue(Types\DataTypeShort::BOOLEAN)) {
+		} elseif ($this->dataType === Types\DataTypeShort::BOOLEAN) {
 			return in_array(Utils\Strings::lower(strval($this->value)), ['true', 't', 'yes', 'y', '1', 'on'], true);
-		} elseif ($this->dataType->equalsValue(Types\DataTypeShort::BUTTON)) {
+		} elseif ($this->dataType === Types\DataTypeShort::BUTTON) {
 			if (Types\Payloads\Button::tryFrom(Utils\Strings::lower(strval($this->value))) !== null) {
 				return Types\Payloads\Button::tryFrom(Utils\Strings::lower(strval($this->value)));
 			}
 
 			throw new Exceptions\InvalidState('Combined enum value is not valid');
-		} elseif ($this->dataType->equalsValue(Types\DataTypeShort::SWITCH)) {
+		} elseif ($this->dataType === Types\DataTypeShort::SWITCH) {
 			if (Types\Payloads\Switcher::tryFrom(Utils\Strings::lower(strval($this->value))) !== null) {
 				return Types\Payloads\Switcher::tryFrom(Utils\Strings::lower(strval($this->value)));
 			}
 
 			throw new Exceptions\InvalidState('Combined enum value is not valid');
-		} elseif ($this->dataType->equalsValue(Types\DataTypeShort::COVER)) {
+		} elseif ($this->dataType === Types\DataTypeShort::COVER) {
 			if (Types\Payloads\Cover::tryFrom(Utils\Strings::lower(strval($this->value))) !== null) {
 				return Types\Payloads\Cover::tryFrom(Utils\Strings::lower(strval($this->value)));
 			}
@@ -168,14 +168,14 @@ final class CombinedEnumItem
 		}
 
 		return [
-			strval($this->dataType->getValue()),
+			$this->dataType->value,
 			$flattenValue,
 		];
 	}
 
 	private function validateDataType(Types\DataTypeShort $dataType): bool
 	{
-		return in_array($dataType->getValue(), [
+		return in_array($dataType, [
 			Types\DataTypeShort::CHAR,
 			Types\DataTypeShort::UCHAR,
 			Types\DataTypeShort::SHORT,

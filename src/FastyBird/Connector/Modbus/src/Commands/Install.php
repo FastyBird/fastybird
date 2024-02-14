@@ -3178,7 +3178,7 @@ class Install extends Console\Command\Command
 
 		return [
 			[
-				MetadataTypes\DataTypeShort::SWITCH,
+				MetadataTypes\DataTypeShort::SWITCH->value,
 				$payload->value,
 			],
 			$this->askFormatSwitchActionValues($io, $payload, true, $defaultReading),
@@ -3281,34 +3281,34 @@ class Install extends Console\Command\Command
 
 		if (strval(intval($switchReading)) === $switchReading) {
 			$dataTypes = [
-				MetadataTypes\DataTypeShort::BOOLEAN,
-				MetadataTypes\DataTypeShort::CHAR,
-				MetadataTypes\DataTypeShort::UCHAR,
-				MetadataTypes\DataTypeShort::SHORT,
-				MetadataTypes\DataTypeShort::USHORT,
-				MetadataTypes\DataTypeShort::INT,
-				MetadataTypes\DataTypeShort::UINT,
-				MetadataTypes\DataTypeShort::FLOAT,
+				MetadataTypes\DataTypeShort::BOOLEAN->value,
+				MetadataTypes\DataTypeShort::CHAR->value,
+				MetadataTypes\DataTypeShort::UCHAR->value,
+				MetadataTypes\DataTypeShort::SHORT->value,
+				MetadataTypes\DataTypeShort::USHORT->value,
+				MetadataTypes\DataTypeShort::INT->value,
+				MetadataTypes\DataTypeShort::UINT->value,
+				MetadataTypes\DataTypeShort::FLOAT->value,
 			];
 
 			$selected = null;
 
 			if ($default !== null) {
-				if ($default[0] === MetadataTypes\DataTypeShort::BOOLEAN) {
+				if ($default[0] === MetadataTypes\DataTypeShort::BOOLEAN->value) {
 					$selected = 0;
-				} elseif ($default[0] === MetadataTypes\DataTypeShort::CHAR) {
+				} elseif ($default[0] === MetadataTypes\DataTypeShort::CHAR->value) {
 					$selected = 1;
-				} elseif ($default[0] === MetadataTypes\DataTypeShort::UCHAR) {
+				} elseif ($default[0] === MetadataTypes\DataTypeShort::UCHAR->value) {
 					$selected = 2;
-				} elseif ($default[0] === MetadataTypes\DataTypeShort::SHORT) {
+				} elseif ($default[0] === MetadataTypes\DataTypeShort::SHORT->value) {
 					$selected = 3;
-				} elseif ($default[0] === MetadataTypes\DataTypeShort::USHORT) {
+				} elseif ($default[0] === MetadataTypes\DataTypeShort::USHORT->value) {
 					$selected = 4;
-				} elseif ($default[0] === MetadataTypes\DataTypeShort::INT) {
+				} elseif ($default[0] === MetadataTypes\DataTypeShort::INT->value) {
 					$selected = 5;
-				} elseif ($default[0] === MetadataTypes\DataTypeShort::UINT) {
+				} elseif ($default[0] === MetadataTypes\DataTypeShort::UINT->value) {
 					$selected = 6;
-				} elseif ($default[0] === MetadataTypes\DataTypeShort::FLOAT) {
+				} elseif ($default[0] === MetadataTypes\DataTypeShort::FLOAT->value) {
 					$selected = 7;
 				}
 			}
@@ -3332,14 +3332,11 @@ class Install extends Console\Command\Command
 					);
 				}
 
-				if (MetadataTypes\DataTypeShort::isValidValue($answer)) {
+				if (MetadataTypes\DataTypeShort::tryFrom($answer) !== null) {
 					return $answer;
 				}
 
-				if (
-					array_key_exists($answer, $dataTypes)
-					&& MetadataTypes\DataTypeShort::isValidValue($dataTypes[$answer])
-				) {
+				if (array_key_exists($answer, $dataTypes)) {
 					return $dataTypes[$answer];
 				}
 
@@ -3360,7 +3357,7 @@ class Install extends Console\Command\Command
 		}
 
 		return [
-			MetadataTypes\DataTypeShort::STRING,
+			MetadataTypes\DataTypeShort::STRING->value,
 			$switchReading,
 		];
 	}
@@ -3449,7 +3446,7 @@ class Install extends Console\Command\Command
 
 		return [
 			[
-				MetadataTypes\DataTypeShort::BUTTON,
+				MetadataTypes\DataTypeShort::BUTTON->value,
 				strval($payload->value),
 			],
 			$this->askFormatButtonActionValues($io, $payload, true, $defaultReading),
@@ -3608,31 +3605,31 @@ class Install extends Console\Command\Command
 
 		if (strval(intval($switchReading)) === $switchReading) {
 			$dataTypes = [
-				MetadataTypes\DataTypeShort::CHAR,
-				MetadataTypes\DataTypeShort::UCHAR,
-				MetadataTypes\DataTypeShort::SHORT,
-				MetadataTypes\DataTypeShort::USHORT,
-				MetadataTypes\DataTypeShort::INT,
-				MetadataTypes\DataTypeShort::UINT,
-				MetadataTypes\DataTypeShort::FLOAT,
+				MetadataTypes\DataTypeShort::CHAR->value,
+				MetadataTypes\DataTypeShort::UCHAR->value,
+				MetadataTypes\DataTypeShort::SHORT->value,
+				MetadataTypes\DataTypeShort::USHORT->value,
+				MetadataTypes\DataTypeShort::INT->value,
+				MetadataTypes\DataTypeShort::UINT->value,
+				MetadataTypes\DataTypeShort::FLOAT->value,
 			];
 
 			$selected = null;
 
 			if ($default !== null) {
-				if ($default[0] === MetadataTypes\DataTypeShort::CHAR) {
+				if ($default[0] === MetadataTypes\DataTypeShort::CHAR->value) {
 					$selected = 0;
-				} elseif ($default[0] === MetadataTypes\DataTypeShort::UCHAR) {
+				} elseif ($default[0] === MetadataTypes\DataTypeShort::UCHAR->value) {
 					$selected = 1;
-				} elseif ($default[0] === MetadataTypes\DataTypeShort::SHORT) {
+				} elseif ($default[0] === MetadataTypes\DataTypeShort::SHORT->value) {
 					$selected = 2;
-				} elseif ($default[0] === MetadataTypes\DataTypeShort::USHORT) {
+				} elseif ($default[0] === MetadataTypes\DataTypeShort::USHORT->value) {
 					$selected = 3;
-				} elseif ($default[0] === MetadataTypes\DataTypeShort::INT) {
+				} elseif ($default[0] === MetadataTypes\DataTypeShort::INT->value) {
 					$selected = 4;
-				} elseif ($default[0] === MetadataTypes\DataTypeShort::UINT) {
+				} elseif ($default[0] === MetadataTypes\DataTypeShort::UINT->value) {
 					$selected = 5;
-				} elseif ($default[0] === MetadataTypes\DataTypeShort::FLOAT) {
+				} elseif ($default[0] === MetadataTypes\DataTypeShort::FLOAT->value) {
 					$selected = 6;
 				}
 			}
@@ -3656,14 +3653,11 @@ class Install extends Console\Command\Command
 					);
 				}
 
-				if (MetadataTypes\DataTypeShort::isValidValue($answer)) {
+				if (MetadataTypes\DataTypeShort::tryFrom($answer) !== null) {
 					return $answer;
 				}
 
-				if (
-					array_key_exists($answer, $dataTypes)
-					&& MetadataTypes\DataTypeShort::isValidValue($dataTypes[$answer])
-				) {
+				if (array_key_exists($answer, $dataTypes)) {
 					return $dataTypes[$answer];
 				}
 
@@ -3684,7 +3678,7 @@ class Install extends Console\Command\Command
 		}
 
 		return [
-			MetadataTypes\DataTypeShort::STRING,
+			MetadataTypes\DataTypeShort::STRING->value,
 			$switchReading,
 		];
 	}

@@ -15,8 +15,7 @@
 
 namespace FastyBird\Library\Metadata\Types;
 
-use Consistence;
-use function strval;
+use function in_array;
 
 /**
  * Device or channel property data types
@@ -26,64 +25,57 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class DataTypeShort extends Consistence\Enum\Enum
+enum DataTypeShort: string
 {
 
-	/**
-	 * Define data types
-	 */
-	public const CHAR = 'i8';
+	case CHAR = 'i8';
 
-	public const UCHAR = 'u8';
+	case UCHAR = 'u8';
 
-	public const SHORT = 'i16';
+	case SHORT = 'i16';
 
-	public const USHORT = 'u16';
+	case USHORT = 'u16';
 
-	public const INT = 'i32';
+	case INT = 'i32';
 
-	public const UINT = 'u32';
+	case UINT = 'u32';
 
-	public const FLOAT = 'f';
+	case FLOAT = 'f';
 
-	public const BOOLEAN = 'b';
+	case BOOLEAN = 'b';
 
-	public const STRING = 's';
+	case STRING = 's';
 
-	public const ENUM = 'e';
+	case ENUM = 'e';
 
-	public const DATE = 'd';
+	case DATE = 'd';
 
-	public const TIME = 't';
+	case TIME = 't';
 
-	public const DATETIME = 'dt';
+	case DATETIME = 'dt';
 
-	public const BUTTON = 'btn';
+	case BUTTON = 'btn';
 
-	public const SWITCH = 'sw';
+	case SWITCH = 'sw';
 
-	public const COVER = 'cvr';
+	case COVER = 'cvr';
 
-	public const UNKNOWN = 'unk';
+	case UNKNOWN = 'unk';
 
 	public function isInteger(): bool
 	{
-		return self::equalsValue(self::CHAR)
-			|| self::equalsValue(self::UCHAR)
-			|| self::equalsValue(self::SHORT)
-			|| self::equalsValue(self::USHORT)
-			|| self::equalsValue(self::INT)
-			|| self::equalsValue(self::UINT);
-	}
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
+		return in_array(
+			$this,
+			[
+				self::CHAR,
+				self::UCHAR,
+				self::SHORT,
+				self::USHORT,
+				self::INT,
+				self::UINT,
+			],
+			true,
+		);
 	}
 
 }

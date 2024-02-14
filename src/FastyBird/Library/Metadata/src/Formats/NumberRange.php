@@ -68,13 +68,13 @@ final class NumberRange
 
 					if (
 						$parts[0] === null
-						|| !Types\DataTypeShort::isValidValue(Utils\Strings::lower($parts[0]))
+						|| Types\DataTypeShort::tryFrom(Utils\Strings::lower($parts[0])) === null
 					) {
 						throw new Exceptions\InvalidArgument('Provided format is not valid for number range format');
 					}
 
 					$this->min = $parts[1] !== null && trim($parts[1]) !== '' ? floatval($parts[1]) : null;
-					$this->minDataType = Types\DataTypeShort::get(Utils\Strings::lower($parts[0]));
+					$this->minDataType = Types\DataTypeShort::tryFrom(Utils\Strings::lower($parts[0]));
 
 				} elseif (trim($items[0]) !== '') {
 					$this->min = floatval($items[0]);
@@ -94,13 +94,13 @@ final class NumberRange
 
 					if (
 						$parts[0] === null
-						|| !Types\DataTypeShort::isValidValue(Utils\Strings::lower($parts[0]))
+						|| Types\DataTypeShort::tryFrom(Utils\Strings::lower($parts[0])) === null
 					) {
 						throw new Exceptions\InvalidArgument('Provided format is not valid for number range format');
 					}
 
 					$this->max = $parts[1] !== null && trim($parts[1]) !== '' ? floatval($parts[1]) : null;
-					$this->maxDataType = Types\DataTypeShort::get(Utils\Strings::lower($parts[0]));
+					$this->maxDataType = Types\DataTypeShort::tryFrom(Utils\Strings::lower($parts[0]));
 
 				} elseif (trim($items[1]) !== '') {
 					$this->max = floatval($items[1]);
@@ -121,14 +121,14 @@ final class NumberRange
 			}
 
 			if (is_array($format[0]) && count($format[0]) === 2) {
-				$this->minDataType = Types\DataTypeShort::get(Utils\Strings::lower(strval($format[0][0])));
+				$this->minDataType = Types\DataTypeShort::tryFrom(Utils\Strings::lower(strval($format[0][0])));
 				$this->min = is_numeric($format[0][1]) ? floatval($format[0][1]) : null;
 			} else {
 				$this->min = is_numeric($format[0]) ? floatval($format[0]) : null;
 			}
 
 			if (is_array($format[1]) && count($format[1]) === 2) {
-				$this->maxDataType = Types\DataTypeShort::get(Utils\Strings::lower(strval($format[1][0])));
+				$this->maxDataType = Types\DataTypeShort::tryFrom(Utils\Strings::lower(strval($format[1][0])));
 				$this->max = is_numeric($format[1][1]) ? floatval($format[1][1]) : null;
 			} else {
 				$this->max = is_numeric($format[1]) ? floatval($format[1]) : null;
@@ -145,15 +145,15 @@ final class NumberRange
 	{
 		if ($this->getMinDataType() !== null) {
 			if (
-				$this->getMinDataType()->equalsValue(Types\DataTypeShort::CHAR)
-				|| $this->getMinDataType()->equalsValue(Types\DataTypeShort::UCHAR)
-				|| $this->getMinDataType()->equalsValue(Types\DataTypeShort::SHORT)
-				|| $this->getMinDataType()->equalsValue(Types\DataTypeShort::USHORT)
-				|| $this->getMinDataType()->equalsValue(Types\DataTypeShort::INT)
-				|| $this->getMinDataType()->equalsValue(Types\DataTypeShort::UINT)
+				$this->getMinDataType() === Types\DataTypeShort::CHAR
+				|| $this->getMinDataType() === Types\DataTypeShort::UCHAR
+				|| $this->getMinDataType() === Types\DataTypeShort::SHORT
+				|| $this->getMinDataType() === Types\DataTypeShort::USHORT
+				|| $this->getMinDataType() === Types\DataTypeShort::INT
+				|| $this->getMinDataType() === Types\DataTypeShort::UINT
 			) {
 				return intval($this->min);
-			} elseif ($this->getMinDataType()->equalsValue(Types\DataTypeShort::FLOAT)) {
+			} elseif ($this->getMinDataType() === Types\DataTypeShort::FLOAT) {
 				return floatval($this->min);
 			}
 
@@ -170,15 +170,15 @@ final class NumberRange
 	{
 		if ($this->getMaxDataType() !== null) {
 			if (
-				$this->getMaxDataType()->equalsValue(Types\DataTypeShort::CHAR)
-				|| $this->getMaxDataType()->equalsValue(Types\DataTypeShort::UCHAR)
-				|| $this->getMaxDataType()->equalsValue(Types\DataTypeShort::SHORT)
-				|| $this->getMaxDataType()->equalsValue(Types\DataTypeShort::USHORT)
-				|| $this->getMaxDataType()->equalsValue(Types\DataTypeShort::INT)
-				|| $this->getMaxDataType()->equalsValue(Types\DataTypeShort::UINT)
+				$this->getMaxDataType() === Types\DataTypeShort::CHAR
+				|| $this->getMaxDataType() === Types\DataTypeShort::UCHAR
+				|| $this->getMaxDataType() === Types\DataTypeShort::SHORT
+				|| $this->getMaxDataType() === Types\DataTypeShort::USHORT
+				|| $this->getMaxDataType() === Types\DataTypeShort::INT
+				|| $this->getMaxDataType() === Types\DataTypeShort::UINT
 			) {
 				return intval($this->max);
-			} elseif ($this->getMaxDataType()->equalsValue(Types\DataTypeShort::FLOAT)) {
+			} elseif ($this->getMaxDataType() === Types\DataTypeShort::FLOAT) {
 				return floatval($this->max);
 			}
 
@@ -206,12 +206,14 @@ final class NumberRange
 	public function toArray(): array
 	{
 		return [
-			($this->getMinDataType() !== null ? [strval(
-				$this->getMinDataType()->getValue(),
-			), $this->getMin()] : $this->getMin()),
-			($this->getMaxDataType() !== null ? [strval(
-				$this->getMaxDataType()->getValue(),
-			), $this->getMax()] : $this->getMax()),
+			($this->getMinDataType() !== null
+				? [$this->getMinDataType()->value, $this->getMin()]
+				: $this->getMin()
+			),
+			($this->getMaxDataType() !== null
+				? [$this->getMaxDataType()->value, $this->getMax()]
+				: $this->getMax()
+			),
 		];
 	}
 
@@ -234,7 +236,7 @@ final class NumberRange
 				is_array($item)
 				&& count($item) === 2
 				&& is_string($item[0])
-				&& Types\DataTypeShort::isValidValue(Utils\Strings::lower($item[0]))
+				&& Types\DataTypeShort::tryFrom(Utils\Strings::lower($item[0])) !== null
 				&& is_numeric($item[1])
 			)
 			|| is_numeric($item)

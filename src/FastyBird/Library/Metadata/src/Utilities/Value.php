@@ -722,43 +722,43 @@ final class Value
 		}
 
 		if (
-			$dataType->equalsValue(Types\DataTypeShort::CHAR)
-			|| $dataType->equalsValue(Types\DataTypeShort::UCHAR)
-			|| $dataType->equalsValue(Types\DataTypeShort::SHORT)
-			|| $dataType->equalsValue(Types\DataTypeShort::USHORT)
-			|| $dataType->equalsValue(Types\DataTypeShort::INT)
-			|| $dataType->equalsValue(Types\DataTypeShort::UINT)
+			$dataType === Types\DataTypeShort::CHAR
+			|| $dataType === Types\DataTypeShort::UCHAR
+			|| $dataType === Types\DataTypeShort::SHORT
+			|| $dataType === Types\DataTypeShort::USHORT
+			|| $dataType === Types\DataTypeShort::INT
+			|| $dataType === Types\DataTypeShort::UINT
 		) {
 			return intval(self::flattenValue($value));
-		} elseif ($dataType->equalsValue(Types\DataTypeShort::FLOAT)) {
+		} elseif ($dataType === Types\DataTypeShort::FLOAT) {
 			return floatval(self::flattenValue($value));
-		} elseif ($dataType->equalsValue(Types\DataTypeShort::STRING)) {
+		} elseif ($dataType === Types\DataTypeShort::STRING) {
 			return strval(self::flattenValue($value));
-		} elseif ($dataType->equalsValue(Types\DataTypeShort::BOOLEAN)) {
+		} elseif ($dataType === Types\DataTypeShort::BOOLEAN) {
 			return in_array(
 				Utils\Strings::lower(strval(self::flattenValue($value))),
 				self::BOOL_TRUE_VALUES,
 				true,
 			);
-		} elseif ($dataType->equalsValue(Types\DataTypeShort::BUTTON)) {
+		} elseif ($dataType === Types\DataTypeShort::BUTTON) {
 			if ($value instanceof Types\Payloads\Button) {
 				return $value;
 			}
 
 			return Types\Payloads\Button::tryFrom(strval(self::flattenValue($value))) ?? false;
-		} elseif ($dataType->equalsValue(Types\DataTypeShort::SWITCH)) {
+		} elseif ($dataType === Types\DataTypeShort::SWITCH) {
 			if ($value instanceof Types\Payloads\Switcher) {
 				return $value;
 			}
 
 			return Types\Payloads\Switcher::tryFrom(strval(self::flattenValue($value))) ?? false;
-		} elseif ($dataType->equalsValue(Types\DataTypeShort::COVER)) {
+		} elseif ($dataType === Types\DataTypeShort::COVER) {
 			if ($value instanceof Types\Payloads\Cover) {
 				return $value;
 			}
 
 			return Types\Payloads\Cover::tryFrom(strval(self::flattenValue($value))) ?? false;
-		} elseif ($dataType->equalsValue(Types\DataTypeShort::DATE)) {
+		} elseif ($dataType === Types\DataTypeShort::DATE) {
 			if ($value instanceof DateTime) {
 				return $value;
 			}
@@ -766,7 +766,7 @@ final class Value
 			$value = Utils\DateTime::createFromFormat(self::DATE_FORMAT, strval(self::flattenValue($value)));
 
 			return $value === false ? null : $value;
-		} elseif ($dataType->equalsValue(Types\DataTypeShort::TIME)) {
+		} elseif ($dataType === Types\DataTypeShort::TIME) {
 			if ($value instanceof DateTime) {
 				return $value;
 			}
@@ -774,7 +774,7 @@ final class Value
 			$value = Utils\DateTime::createFromFormat(self::TIME_FORMAT, strval(self::flattenValue($value)));
 
 			return $value === false ? null : $value;
-		} elseif ($dataType->equalsValue(Types\DataTypeShort::DATETIME)) {
+		} elseif ($dataType === Types\DataTypeShort::DATETIME) {
 			if ($value instanceof DateTime) {
 				return $value;
 			}

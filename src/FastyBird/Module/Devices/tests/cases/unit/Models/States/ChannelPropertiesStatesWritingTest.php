@@ -1291,22 +1291,22 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 						[
 							MetadataTypes\Payloads\Switcher::ON->value,
 							[
-								MetadataTypes\DataTypeShort::BOOLEAN,
+								MetadataTypes\DataTypeShort::BOOLEAN->value,
 								true,
 							],
 							[
-								MetadataTypes\DataTypeShort::BOOLEAN,
+								MetadataTypes\DataTypeShort::BOOLEAN->value,
 								true,
 							],
 						],
 						[
 							MetadataTypes\Payloads\Switcher::OFF->value,
 							[
-								MetadataTypes\DataTypeShort::BOOLEAN,
+								MetadataTypes\DataTypeShort::BOOLEAN->value,
 								false,
 							],
 							[
-								MetadataTypes\DataTypeShort::BOOLEAN,
+								MetadataTypes\DataTypeShort::BOOLEAN->value,
 								false,
 							],
 						],

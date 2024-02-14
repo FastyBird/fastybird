@@ -566,22 +566,22 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 						[
 							MetadataTypes\Payloads\Switcher::ON->value,
 							[
-								MetadataTypes\DataTypeShort::BOOLEAN,
+								MetadataTypes\DataTypeShort::BOOLEAN->value,
 								'true',
 							],
 							[
-								MetadataTypes\DataTypeShort::BOOLEAN,
+								MetadataTypes\DataTypeShort::BOOLEAN->value,
 								'true',
 							],
 						],
 						[
 							MetadataTypes\Payloads\Switcher::OFF->value,
 							[
-								MetadataTypes\DataTypeShort::BOOLEAN,
+								MetadataTypes\DataTypeShort::BOOLEAN->value,
 								'false',
 							],
 							[
-								MetadataTypes\DataTypeShort::BOOLEAN,
+								MetadataTypes\DataTypeShort::BOOLEAN->value,
 								'false',
 							],
 						],
@@ -1103,7 +1103,7 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 							MetadataTypes\Payloads\Switcher::ON->value,
 							'ON',
 							[
-								MetadataTypes\DataTypeShort::BOOLEAN,
+								MetadataTypes\DataTypeShort::BOOLEAN->value,
 								'true',
 							],
 						],
@@ -1111,7 +1111,7 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 							MetadataTypes\Payloads\Switcher::OFF->value,
 							'OFF',
 							[
-								MetadataTypes\DataTypeShort::BOOLEAN,
+								MetadataTypes\DataTypeShort::BOOLEAN->value,
 								'false',
 							],
 						],
@@ -1151,22 +1151,22 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 						[
 							MetadataTypes\Payloads\Switcher::ON->value,
 							[
-								MetadataTypes\DataTypeShort::BOOLEAN,
+								MetadataTypes\DataTypeShort::BOOLEAN->value,
 								'true',
 							],
 							[
-								MetadataTypes\DataTypeShort::BOOLEAN,
+								MetadataTypes\DataTypeShort::BOOLEAN->value,
 								'true',
 							],
 						],
 						[
 							MetadataTypes\Payloads\Switcher::OFF->value,
 							[
-								MetadataTypes\DataTypeShort::BOOLEAN,
+								MetadataTypes\DataTypeShort::BOOLEAN->value,
 								'false',
 							],
 							[
-								MetadataTypes\DataTypeShort::BOOLEAN,
+								MetadataTypes\DataTypeShort::BOOLEAN->value,
 								'false',
 							],
 						],

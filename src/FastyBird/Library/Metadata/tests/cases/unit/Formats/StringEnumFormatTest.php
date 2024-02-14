@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace FastyBird\Library\Metadata\Tests\Cases\Unit\ValueObjects;
+namespace FastyBird\Library\Metadata\Tests\Cases\Unit\Formats;
 
 use FastyBird\Library\Metadata\Formats;
 use FastyBird\Library\Metadata\Tests\Cases\Unit\BaseTestCase;

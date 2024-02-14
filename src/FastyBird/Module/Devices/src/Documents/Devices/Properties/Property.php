@@ -114,7 +114,7 @@ abstract class Property implements MetadataDocuments\Document, MetadataDocuments
 							item: new ObjectMapper\Rules\AnyOf([
 								new ObjectMapper\Rules\ArrayEnumValue(
 								// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-									cases: [MetadataTypes\DataTypeShort::CHAR, MetadataTypes\DataTypeShort::UCHAR, MetadataTypes\DataTypeShort::SHORT, MetadataTypes\DataTypeShort::USHORT, MetadataTypes\DataTypeShort::INT, MetadataTypes\DataTypeShort::UINT, MetadataTypes\DataTypeShort::FLOAT, MetadataTypes\DataTypeShort::BOOLEAN, MetadataTypes\DataTypeShort::STRING, MetadataTypes\DataTypeShort::BUTTON, MetadataTypes\DataTypeShort::SWITCH, MetadataTypes\DataTypeShort::COVER],
+									cases: [MetadataTypes\DataTypeShort::CHAR->value, MetadataTypes\DataTypeShort::UCHAR->value, MetadataTypes\DataTypeShort::SHORT->value, MetadataTypes\DataTypeShort::USHORT->value, MetadataTypes\DataTypeShort::INT->value, MetadataTypes\DataTypeShort::UINT->value, MetadataTypes\DataTypeShort::FLOAT->value, MetadataTypes\DataTypeShort::BOOLEAN->value, MetadataTypes\DataTypeShort::STRING->value, MetadataTypes\DataTypeShort::BUTTON->value, MetadataTypes\DataTypeShort::SWITCH->value, MetadataTypes\DataTypeShort::COVER->value],
 								),
 								new ObjectMapper\Rules\StringValue(notEmpty: true),
 								new ObjectMapper\Rules\IntValue(),
@@ -141,7 +141,7 @@ abstract class Property implements MetadataDocuments\Document, MetadataDocuments
 						item: new ObjectMapper\Rules\AnyOf([
 							new ObjectMapper\Rules\ArrayEnumValue(
 							// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-								cases: [MetadataTypes\DataTypeShort::CHAR, MetadataTypes\DataTypeShort::UCHAR, MetadataTypes\DataTypeShort::SHORT, MetadataTypes\DataTypeShort::USHORT, MetadataTypes\DataTypeShort::INT, MetadataTypes\DataTypeShort::UINT, MetadataTypes\DataTypeShort::FLOAT],
+								cases: [MetadataTypes\DataTypeShort::CHAR->value, MetadataTypes\DataTypeShort::UCHAR->value, MetadataTypes\DataTypeShort::SHORT->value, MetadataTypes\DataTypeShort::USHORT->value, MetadataTypes\DataTypeShort::INT->value, MetadataTypes\DataTypeShort::UINT->value, MetadataTypes\DataTypeShort::FLOAT->value],
 							),
 							new ObjectMapper\Rules\IntValue(),
 							new ObjectMapper\Rules\FloatValue(),

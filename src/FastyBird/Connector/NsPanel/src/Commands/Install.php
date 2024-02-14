@@ -4170,19 +4170,19 @@ class Install extends Console\Command\Command
 					$value = is_array($value) ? $value[1] : $value;
 
 					if (MetadataTypes\Payloads\Switcher::tryFrom($value) !== null) {
-						$valueDataType = MetadataTypes\DataTypeShort::SWITCH;
+						$valueDataType = MetadataTypes\DataTypeShort::SWITCH->value;
 
 					} elseif (MetadataTypes\Payloads\Button::tryFrom($value) !== null) {
-						$valueDataType = MetadataTypes\DataTypeShort::BUTTON;
+						$valueDataType = MetadataTypes\DataTypeShort::BUTTON->value;
 
 					} elseif (MetadataTypes\Payloads\Cover::tryFrom($value) !== null) {
-						$valueDataType = MetadataTypes\DataTypeShort::COVER;
+						$valueDataType = MetadataTypes\DataTypeShort::COVER->value;
 					}
 
 					$mappedFormat[] = [
 						[$valueDataType, strval($value)],
-						[MetadataTypes\DataTypeShort::STRING, strval($name)],
-						[MetadataTypes\DataTypeShort::STRING, strval($name)],
+						[MetadataTypes\DataTypeShort::STRING->value, strval($name)],
+						[MetadataTypes\DataTypeShort::STRING->value, strval($name)],
 					];
 				}
 
