@@ -26,9 +26,9 @@ use Ramsey\Uuid;
  *
  * @extends DoctrineOrmQuery\QueryObject<Entities\Triggers\Trigger>
  *
- * @package          FastyBird:TriggersModule!
- * @subpackage       Queries
- * @author           Adam Kadlec <adam.kadlec@fastybird.com>
+ * @package        FastyBird:TriggersModule!
+ * @subpackage     Queries
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 class FindTriggers extends DoctrineOrmQuery\QueryObject
 {

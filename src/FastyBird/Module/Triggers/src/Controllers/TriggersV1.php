@@ -44,10 +44,10 @@ use function strval;
 /**
  * API triggers controller
  *
- * @package         FastyBird:TriggersModule!
- * @subpackage      Controllers
+ * @package        FastyBird:TriggersModule!
+ * @subpackage     Controllers
  *
- * @author          Adam Kadlec <adam.kadlec@fastybird.com>
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *
  * @Secured
  * @Secured\User(loggedIn)

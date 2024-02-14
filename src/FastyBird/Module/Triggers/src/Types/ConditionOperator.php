@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:MetadataLibrary!
+ * @package        FastyBird:TriggersModule!
  * @subpackage     Types
  * @since          1.0.0
  *
@@ -18,7 +18,7 @@ namespace FastyBird\Module\Triggers\Types;
 /**
  * Trigger condition operator type
  *
- * @package        FastyBird:MetadataLibrary!
+ * @package        FastyBird:TriggersModule!
  * @subpackage     Types
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

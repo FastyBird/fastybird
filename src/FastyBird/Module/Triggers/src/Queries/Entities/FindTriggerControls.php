@@ -29,9 +29,9 @@ use function in_array;
  *
  * @extends  DoctrineOrmQuery\QueryObject<Entities\Triggers\Controls\Control>
  *
- * @package          FastyBird:TriggersModule!
- * @subpackage       Queries
- * @author           Adam Kadlec <adam.kadlec@fastybird.com>
+ * @package        FastyBird:TriggersModule!
+ * @subpackage     Queries
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 class FindTriggerControls extends DoctrineOrmQuery\QueryObject
 {

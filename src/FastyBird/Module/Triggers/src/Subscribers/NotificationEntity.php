@@ -7,7 +7,7 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:TriggersModule!
- * @subpackage     Events
+ * @subpackage     Subscribers
  * @since          1.0.0
  *
  * @date           05.04.20
@@ -26,7 +26,7 @@ use function array_merge;
  * Trigger notification entity listener
  *
  * @package        FastyBird:TriggersModule!
- * @subpackage     Events
+ * @subpackage     Subscribers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
