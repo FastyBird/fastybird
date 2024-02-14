@@ -41,6 +41,7 @@ use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 use Hashids;
 use Nette;
 use Nette\Utils;
@@ -395,7 +396,7 @@ final class Http implements Server
 					[
 						'connector' => $accessory->getDevice()->getConnector(),
 						'device' => $accessory->getDevice()->getId(),
-						'state' => MetadataTypes\ConnectionState::CONNECTED,
+						'state' => DevicesTypes\ConnectionState::CONNECTED->value,
 					],
 				),
 			);

@@ -31,6 +31,7 @@ use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Psr\EventDispatcher as PsrEventDispatcher;
@@ -204,7 +205,7 @@ final class Gateway implements Client
 					[
 						'connector' => $gateway->getConnector(),
 						'identifier' => $gateway->getIdentifier(),
-						'state' => MetadataTypes\ConnectionState::ALERT,
+						'state' => DevicesTypes\ConnectionState::ALERT->value,
 					],
 				),
 			);
@@ -234,7 +235,7 @@ final class Gateway implements Client
 
 		$deviceState = $this->deviceConnectionManager->getState($gateway);
 
-		if ($deviceState->equalsValue(MetadataTypes\ConnectionState::ALERT)) {
+		if ($deviceState === DevicesTypes\ConnectionState::ALERT) {
 			unset($this->devices[$gateway->getId()->toString()]);
 
 			return false;
@@ -251,7 +252,7 @@ final class Gateway implements Client
 							[
 								'connector' => $gateway->getConnector(),
 								'identifier' => $gateway->getIdentifier(),
-								'state' => MetadataTypes\ConnectionState::CONNECTED,
+								'state' => DevicesTypes\ConnectionState::CONNECTED->value,
 							],
 						),
 					);
@@ -279,7 +280,7 @@ final class Gateway implements Client
 								[
 									'connector' => $gateway->getConnector(),
 									'identifier' => $gateway->getIdentifier(),
-									'state' => MetadataTypes\ConnectionState::ALERT,
+									'state' => DevicesTypes\ConnectionState::ALERT->value,
 								],
 							),
 						);
@@ -313,7 +314,7 @@ final class Gateway implements Client
 								[
 									'connector' => $gateway->getConnector(),
 									'identifier' => $gateway->getIdentifier(),
-									'state' => MetadataTypes\ConnectionState::DISCONNECTED,
+									'state' => DevicesTypes\ConnectionState::DISCONNECTED->value,
 								],
 							),
 						);
@@ -387,7 +388,7 @@ final class Gateway implements Client
 					[
 						'connector' => $gateway->getConnector(),
 						'identifier' => $gateway->getIdentifier(),
-						'state' => MetadataTypes\ConnectionState::ALERT,
+						'state' => DevicesTypes\ConnectionState::ALERT->value,
 					],
 				),
 			);
@@ -417,7 +418,7 @@ final class Gateway implements Client
 
 		$deviceState = $this->deviceConnectionManager->getState($gateway);
 
-		if ($deviceState->equalsValue(MetadataTypes\ConnectionState::ALERT)) {
+		if ($deviceState === DevicesTypes\ConnectionState::ALERT) {
 			unset($this->devices[$gateway->getId()->toString()]);
 
 			return false;
@@ -437,7 +438,7 @@ final class Gateway implements Client
 							[
 								'connector' => $gateway->getConnector(),
 								'identifier' => $gateway->getIdentifier(),
-								'state' => MetadataTypes\ConnectionState::CONNECTED,
+								'state' => DevicesTypes\ConnectionState::CONNECTED->value,
 							],
 						),
 					);
@@ -455,8 +456,8 @@ final class Gateway implements Client
 									'connector' => $gateway->getConnector(),
 									'identifier' => $subDevice->getSerialNumber(),
 									'state' => $subDevice->isOnline()
-										? MetadataTypes\ConnectionState::CONNECTED
-										: MetadataTypes\ConnectionState::DISCONNECTED,
+										? DevicesTypes\ConnectionState::CONNECTED->value
+										: DevicesTypes\ConnectionState::DISCONNECTED->value,
 								],
 							),
 						);
@@ -520,7 +521,7 @@ final class Gateway implements Client
 								[
 									'connector' => $gateway->getConnector(),
 									'identifier' => $gateway->getIdentifier(),
-									'state' => MetadataTypes\ConnectionState::ALERT,
+									'state' => DevicesTypes\ConnectionState::ALERT->value,
 								],
 							),
 						);
@@ -554,7 +555,7 @@ final class Gateway implements Client
 								[
 									'connector' => $gateway->getConnector(),
 									'identifier' => $gateway->getIdentifier(),
-									'state' => MetadataTypes\ConnectionState::DISCONNECTED,
+									'state' => DevicesTypes\ConnectionState::DISCONNECTED->value,
 								],
 							),
 						);

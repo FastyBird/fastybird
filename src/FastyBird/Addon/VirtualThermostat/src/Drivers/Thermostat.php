@@ -33,6 +33,7 @@ use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 use Nette\Utils;
 use React\Promise;
 use function array_filter;
@@ -1007,7 +1008,7 @@ class Thermostat implements VirtualDrivers\Driver
 				[
 					'connector' => $this->device->getConnector(),
 					'device' => $this->device->getId(),
-					'state' => MetadataTypes\ConnectionState::STOPPED,
+					'state' => DevicesTypes\ConnectionState::STOPPED->value,
 					'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 				],
 			),

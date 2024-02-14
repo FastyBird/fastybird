@@ -30,6 +30,7 @@ use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 use Nette;
 use Throwable;
 use function array_merge;
@@ -160,7 +161,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 					[
 						'connector' => $connector->getId(),
 						'identifier' => $gateway->getIdentifier(),
-						'state' => MetadataTypes\ConnectionState::ALERT,
+						'state' => DevicesTypes\ConnectionState::ALERT->value,
 					],
 				),
 			);
@@ -330,7 +331,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 								[
 									'connector' => $connector->getId(),
 									'identifier' => $gateway->getIdentifier(),
-									'state' => MetadataTypes\ConnectionState::DISCONNECTED,
+									'state' => DevicesTypes\ConnectionState::DISCONNECTED->value,
 								],
 							),
 						);
@@ -342,7 +343,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 								[
 									'connector' => $connector->getId(),
 									'identifier' => $gateway->getIdentifier(),
-									'state' => MetadataTypes\ConnectionState::LOST,
+									'state' => DevicesTypes\ConnectionState::LOST->value,
 								],
 							),
 						);

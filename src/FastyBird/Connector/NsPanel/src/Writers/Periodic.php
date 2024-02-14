@@ -29,6 +29,7 @@ use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 use Nette;
 use React\EventLoop;
 use function array_key_exists;
@@ -336,7 +337,7 @@ abstract class Periodic implements Writer
 					[
 						'connector' => $device->getConnector(),
 						'identifier' => $device->getIdentifier(),
-						'state' => MetadataTypes\ConnectionState::ALERT,
+						'state' => DevicesTypes\ConnectionState::ALERT->value,
 					],
 				),
 			);

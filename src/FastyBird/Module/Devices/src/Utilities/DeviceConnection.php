@@ -21,6 +21,7 @@ use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Entities;
@@ -28,9 +29,11 @@ use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\States;
+use FastyBird\Module\Devices\Types;
 use Nette;
 use Nette\Utils;
 use function assert;
+use function strval;
 
 /**
  * Device connection states manager
@@ -67,7 +70,7 @@ final class DeviceConnection
 	 */
 	public function setState(
 		Entities\Devices\Device|Documents\Devices\Device $device,
-		MetadataTypes\ConnectionState $state,
+		Types\ConnectionState $state,
 	): bool
 	{
 		$findDevicePropertyQuery = new Queries\Configuration\FindDeviceDynamicProperties();
@@ -94,14 +97,14 @@ final class DeviceConnection
 						'dataType' => MetadataTypes\DataType::ENUM,
 						'unit' => null,
 						'format' => [
-							MetadataTypes\ConnectionState::CONNECTED,
-							MetadataTypes\ConnectionState::DISCONNECTED,
-							MetadataTypes\ConnectionState::RUNNING,
-							MetadataTypes\ConnectionState::SLEEPING,
-							MetadataTypes\ConnectionState::STOPPED,
-							MetadataTypes\ConnectionState::LOST,
-							MetadataTypes\ConnectionState::ALERT,
-							MetadataTypes\ConnectionState::UNKNOWN,
+							Types\ConnectionState::CONNECTED->value,
+							Types\ConnectionState::DISCONNECTED->value,
+							Types\ConnectionState::RUNNING->value,
+							Types\ConnectionState::SLEEPING->value,
+							Types\ConnectionState::STOPPED->value,
+							Types\ConnectionState::LOST->value,
+							Types\ConnectionState::ALERT->value,
+							Types\ConnectionState::UNKNOWN->value,
 						],
 						'settable' => false,
 						'queryable' => false,
@@ -119,7 +122,7 @@ final class DeviceConnection
 		$this->propertiesStatesManager->set(
 			$property,
 			Utils\ArrayHash::from([
-				States\Property::ACTUAL_VALUE_FIELD => $state->getValue(),
+				States\Property::ACTUAL_VALUE_FIELD => $state->value,
 				States\Property::EXPECTED_VALUE_FIELD => null,
 			]),
 			MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
@@ -139,7 +142,7 @@ final class DeviceConnection
 	 */
 	public function getState(
 		Entities\Devices\Device|Documents\Devices\Device $device,
-	): MetadataTypes\ConnectionState
+	): Types\ConnectionState
 	{
 		$findDevicePropertyQuery = new Queries\Configuration\FindDeviceDynamicProperties();
 		$findDevicePropertyQuery->byDeviceId($device->getId());
@@ -155,13 +158,17 @@ final class DeviceConnection
 
 			if (
 				$state?->getRead()->getActualValue() !== null
-				&& MetadataTypes\ConnectionState::isValidValue($state->getRead()->getActualValue())
+				&& Types\ConnectionState::tryFrom(
+					strval(MetadataUtilities\Value::flattenValue($state->getRead()->getActualValue())),
+				) !== null
 			) {
-				return MetadataTypes\ConnectionState::get($state->getRead()->getActualValue());
+				return Types\ConnectionState::tryFrom(
+					strval(MetadataUtilities\Value::flattenValue($state->getRead()->getActualValue())),
+				);
 			}
 		}
 
-		return MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::UNKNOWN);
+		return Types\ConnectionState::UNKNOWN;
 	}
 
 	/**
@@ -191,8 +198,10 @@ final class DeviceConnection
 
 			if (
 				$state?->getRead()->getActualValue() !== null
-				&& MetadataTypes\ConnectionState::isValidValue($state->getRead()->getActualValue())
-				&& $state->getRead()->getActualValue() === MetadataTypes\ConnectionState::LOST
+				&& Types\ConnectionState::tryFrom(
+					strval(MetadataUtilities\Value::flattenValue($state->getRead()->getActualValue())),
+				) !== null
+				&& $state->getRead()->getActualValue() === Types\ConnectionState::LOST->value
 			) {
 				return $state->getUpdatedAt();
 			}

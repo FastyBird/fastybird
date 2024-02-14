@@ -34,6 +34,7 @@ use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Fig\Http\Message\StatusCodeInterface;
 use Nette;
@@ -339,7 +340,7 @@ final class Local implements Client
 
 		$deviceState = $this->deviceConnectionManager->getState($device);
 
-		if ($deviceState->equalsValue(MetadataTypes\ConnectionState::ALERT)) {
+		if ($deviceState === DevicesTypes\ConnectionState::ALERT) {
 			unset($this->devices[$device->getId()->toString()]);
 
 			return false;
@@ -401,7 +402,7 @@ final class Local implements Client
 								[
 									'connector' => $device->getConnector(),
 									'identifier' => $device->getIdentifier(),
-									'state' => MetadataTypes\ConnectionState::DISCONNECTED,
+									'state' => DevicesTypes\ConnectionState::DISCONNECTED->value,
 								],
 							),
 						);
@@ -444,7 +445,7 @@ final class Local implements Client
 						[
 							'connector' => $device->getConnector(),
 							'identifier' => $device->getIdentifier(),
-							'state' => MetadataTypes\ConnectionState::ALERT,
+							'state' => DevicesTypes\ConnectionState::ALERT->value,
 						],
 					),
 				);
@@ -466,7 +467,7 @@ final class Local implements Client
 							[
 								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
-								'state' => MetadataTypes\ConnectionState::CONNECTED,
+								'state' => DevicesTypes\ConnectionState::CONNECTED->value,
 							],
 						),
 					);
@@ -481,7 +482,7 @@ final class Local implements Client
 								[
 									'connector' => $device->getConnector(),
 									'identifier' => $device->getIdentifier(),
-									'state' => MetadataTypes\ConnectionState::ALERT,
+									'state' => DevicesTypes\ConnectionState::ALERT->value,
 								],
 							),
 						);
@@ -497,7 +498,7 @@ final class Local implements Client
 									[
 										'connector' => $device->getConnector(),
 										'identifier' => $device->getIdentifier(),
-										'state' => MetadataTypes\ConnectionState::ALERT,
+										'state' => DevicesTypes\ConnectionState::ALERT->value,
 									],
 								),
 							);
@@ -513,7 +514,7 @@ final class Local implements Client
 									[
 										'connector' => $device->getConnector(),
 										'identifier' => $device->getIdentifier(),
-										'state' => MetadataTypes\ConnectionState::LOST,
+										'state' => DevicesTypes\ConnectionState::LOST->value,
 									],
 								),
 							);
@@ -525,7 +526,7 @@ final class Local implements Client
 									[
 										'connector' => $device->getConnector(),
 										'identifier' => $device->getIdentifier(),
-										'state' => MetadataTypes\ConnectionState::UNKNOWN,
+										'state' => DevicesTypes\ConnectionState::UNKNOWN->value,
 									],
 								),
 							);
@@ -620,7 +621,7 @@ final class Local implements Client
 						[
 							'connector' => $device->getConnector(),
 							'identifier' => $device->getIdentifier(),
-							'state' => MetadataTypes\ConnectionState::DISCONNECTED,
+							'state' => DevicesTypes\ConnectionState::DISCONNECTED->value,
 						],
 					),
 				);
@@ -650,7 +651,7 @@ final class Local implements Client
 						[
 							'connector' => $device->getConnector(),
 							'identifier' => $device->getIdentifier(),
-							'state' => MetadataTypes\ConnectionState::CONNECTED,
+							'state' => DevicesTypes\ConnectionState::CONNECTED->value,
 						],
 					),
 				);
@@ -666,7 +667,7 @@ final class Local implements Client
 								[
 									'connector' => $device->getConnector(),
 									'identifier' => $device->getIdentifier(),
-									'state' => MetadataTypes\ConnectionState::DISCONNECTED,
+									'state' => DevicesTypes\ConnectionState::DISCONNECTED->value,
 								],
 							),
 						);
@@ -712,7 +713,7 @@ final class Local implements Client
 						[
 							'connector' => $device->getConnector(),
 							'identifier' => $device->getIdentifier(),
-							'state' => MetadataTypes\ConnectionState::DISCONNECTED,
+							'state' => DevicesTypes\ConnectionState::DISCONNECTED->value,
 						],
 					),
 				);
@@ -984,7 +985,7 @@ final class Local implements Client
 				[
 					'connector' => $this->connector->getId(),
 					'identifier' => $state->getIdentifier(),
-					'state' => MetadataTypes\ConnectionState::CONNECTED,
+					'state' => DevicesTypes\ConnectionState::CONNECTED->value,
 				],
 			),
 		);

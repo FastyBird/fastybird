@@ -20,6 +20,7 @@ use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Entities;
@@ -27,9 +28,11 @@ use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\States;
+use FastyBird\Module\Devices\Types;
 use Nette;
 use Nette\Utils;
 use function assert;
+use function strval;
 
 /**
  * Connector connection states manager
@@ -66,7 +69,7 @@ final class ConnectorConnection
 	 */
 	public function setState(
 		Entities\Connectors\Connector|Documents\Connectors\Connector $connector,
-		MetadataTypes\ConnectionState $state,
+		Types\ConnectionState $state,
 	): bool
 	{
 		$findConnectorPropertyQuery = new Queries\Configuration\FindConnectorDynamicProperties();
@@ -93,11 +96,11 @@ final class ConnectorConnection
 						'dataType' => MetadataTypes\DataType::ENUM,
 						'unit' => null,
 						'format' => [
-							MetadataTypes\ConnectionState::RUNNING,
-							MetadataTypes\ConnectionState::STOPPED,
-							MetadataTypes\ConnectionState::UNKNOWN,
-							MetadataTypes\ConnectionState::SLEEPING,
-							MetadataTypes\ConnectionState::ALERT,
+							Types\ConnectionState::RUNNING->value,
+							Types\ConnectionState::STOPPED->value,
+							Types\ConnectionState::UNKNOWN->value,
+							Types\ConnectionState::SLEEPING->value,
+							Types\ConnectionState::ALERT->value,
 						],
 						'settable' => false,
 						'queryable' => false,
@@ -115,7 +118,7 @@ final class ConnectorConnection
 		$this->propertiesStatesManager->set(
 			$property,
 			Utils\ArrayHash::from([
-				States\Property::ACTUAL_VALUE_FIELD => $state->getValue(),
+				States\Property::ACTUAL_VALUE_FIELD => $state->value,
 				States\Property::EXPECTED_VALUE_FIELD => null,
 			]),
 			MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
@@ -135,7 +138,7 @@ final class ConnectorConnection
 	 */
 	public function getState(
 		Entities\Connectors\Connector|Documents\Connectors\Connector $connector,
-	): MetadataTypes\ConnectionState
+	): Types\ConnectionState
 	{
 		$findConnectorPropertyQuery = new Queries\Configuration\FindConnectorDynamicProperties();
 		$findConnectorPropertyQuery->byConnectorId($connector->getId());
@@ -151,13 +154,17 @@ final class ConnectorConnection
 
 			if (
 				$state?->getRead()->getActualValue() !== null
-				&& MetadataTypes\ConnectionState::isValidValue($state->getRead()->getActualValue())
+				&& Types\ConnectionState::tryFrom(
+					strval(MetadataUtilities\Value::flattenValue($state->getRead()->getActualValue())),
+				) !== null
 			) {
-				return MetadataTypes\ConnectionState::get($state->getRead()->getActualValue());
+				return Types\ConnectionState::tryFrom(
+					strval(MetadataUtilities\Value::flattenValue($state->getRead()->getActualValue())),
+				);
 			}
 		}
 
-		return MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::UNKNOWN);
+		return Types\ConnectionState::UNKNOWN;
 	}
 
 	/**
@@ -187,8 +194,10 @@ final class ConnectorConnection
 
 			if (
 				$state?->getRead()->getActualValue() !== null
-				&& MetadataTypes\ConnectionState::isValidValue($state->getRead()->getActualValue())
-				&& $state->getRead()->getActualValue() === MetadataTypes\ConnectionState::RUNNING
+				&& Types\ConnectionState::tryFrom(
+					strval(MetadataUtilities\Value::flattenValue($state->getRead()->getActualValue())),
+				) !== null
+				&& $state->getRead()->getActualValue() === Types\ConnectionState::RUNNING->value
 			) {
 				return true;
 			}

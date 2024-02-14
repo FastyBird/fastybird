@@ -31,6 +31,7 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use React\EventLoop;
@@ -174,8 +175,8 @@ class Devices
 			$deviceState = $this->deviceConnectionManager->getState($device);
 
 			if (
-				$deviceState->equalsValue(MetadataTypes\ConnectionState::ALERT)
-				|| $deviceState->equalsValue(MetadataTypes\ConnectionState::STOPPED)
+				$deviceState === DevicesTypes\ConnectionState::ALERT
+				|| $deviceState === DevicesTypes\ConnectionState::STOPPED
 			) {
 				unset($this->devices[$device->getId()->toString()]);
 
@@ -229,7 +230,7 @@ class Devices
 									[
 										'connector' => $device->getConnector(),
 										'device' => $device->getId(),
-										'state' => MetadataTypes\ConnectionState::ALERT,
+										'state' => DevicesTypes\ConnectionState::ALERT->value,
 									],
 								),
 							);
@@ -242,7 +243,7 @@ class Devices
 							[
 								'connector' => $device->getConnector(),
 								'device' => $device->getId(),
-								'state' => MetadataTypes\ConnectionState::DISCONNECTED,
+								'state' => DevicesTypes\ConnectionState::DISCONNECTED->value,
 								'source' => MetadataTypes\Sources\Connector::VIRTUAL,
 							],
 						),
@@ -273,7 +274,7 @@ class Devices
 
 		$deviceState = $this->deviceConnectionManager->getState($device);
 
-		if ($deviceState->equalsValue(MetadataTypes\ConnectionState::ALERT)) {
+		if ($deviceState === DevicesTypes\ConnectionState::ALERT) {
 			unset($this->devices[$device->getId()->toString()]);
 
 			return false;
@@ -289,7 +290,7 @@ class Devices
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
-							'state' => MetadataTypes\ConnectionState::CONNECTED,
+							'state' => DevicesTypes\ConnectionState::CONNECTED->value,
 							'source' => MetadataTypes\Sources\Connector::VIRTUAL,
 						],
 					),
@@ -319,7 +320,7 @@ class Devices
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
-							'state' => MetadataTypes\ConnectionState::ALERT,
+							'state' => DevicesTypes\ConnectionState::ALERT->value,
 							'source' => MetadataTypes\Sources\Connector::VIRTUAL,
 						],
 					),

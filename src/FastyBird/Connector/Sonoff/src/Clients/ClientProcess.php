@@ -20,9 +20,9 @@ use FastyBird\Connector\Sonoff\Documents;
 use FastyBird\Connector\Sonoff\Helpers;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use React\EventLoop;
@@ -154,7 +154,7 @@ abstract class ClientProcess
 
 		$deviceState = $this->deviceConnectionManager->getState($device);
 
-		if ($deviceState->equalsValue(MetadataTypes\ConnectionState::ALERT)) {
+		if ($deviceState === DevicesTypes\ConnectionState::ALERT) {
 			unset($this->devices[$device->getId()->toString()]);
 
 			return false;
@@ -201,7 +201,7 @@ abstract class ClientProcess
 
 		$deviceState = $this->deviceConnectionManager->getState($device);
 
-		if ($deviceState->equalsValue(MetadataTypes\ConnectionState::ALERT)) {
+		if ($deviceState === DevicesTypes\ConnectionState::ALERT) {
 			unset($this->devices[$device->getId()->toString()]);
 
 			return false;

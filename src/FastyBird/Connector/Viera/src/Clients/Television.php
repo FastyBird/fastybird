@@ -33,6 +33,7 @@ use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use React\EventLoop;
@@ -136,7 +137,7 @@ final class Television implements Client
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
-							'state' => MetadataTypes\ConnectionState::ALERT,
+							'state' => DevicesTypes\ConnectionState::ALERT->value,
 						],
 					),
 				);
@@ -239,7 +240,7 @@ final class Television implements Client
 		if (!$client->isConnected()) {
 			$deviceState = $this->deviceConnectionManager->getState($device);
 
-			if ($deviceState->equalsValue(MetadataTypes\ConnectionState::ALERT)) {
+			if ($deviceState === DevicesTypes\ConnectionState::ALERT) {
 				unset($this->devices[$device->getId()->toString()]);
 
 				return false;
@@ -261,7 +262,7 @@ final class Television implements Client
 							[
 								'connector' => $device->getConnector(),
 								'device' => $device->getId(),
-								'state' => MetadataTypes\ConnectionState::CONNECTED,
+								'state' => DevicesTypes\ConnectionState::CONNECTED->value,
 							],
 						),
 					);
@@ -290,7 +291,7 @@ final class Television implements Client
 							[
 								'connector' => $device->getConnector(),
 								'device' => $device->getId(),
-								'state' => MetadataTypes\ConnectionState::ALERT,
+								'state' => DevicesTypes\ConnectionState::ALERT->value,
 							],
 						),
 					);
@@ -318,7 +319,7 @@ final class Television implements Client
 							[
 								'connector' => $device->getConnector(),
 								'device' => $device->getId(),
-								'state' => MetadataTypes\ConnectionState::ALERT,
+								'state' => DevicesTypes\ConnectionState::ALERT->value,
 							],
 						),
 					);
@@ -353,7 +354,7 @@ final class Television implements Client
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
-							'state' => MetadataTypes\ConnectionState::DISCONNECTED,
+							'state' => DevicesTypes\ConnectionState::DISCONNECTED->value,
 						],
 					),
 				);
@@ -388,7 +389,7 @@ final class Television implements Client
 
 			$deviceState = $this->deviceConnectionManager->getState($device);
 
-			if ($deviceState->equalsValue(MetadataTypes\ConnectionState::ALERT)) {
+			if ($deviceState === DevicesTypes\ConnectionState::ALERT) {
 				unset($this->devices[$device->getId()->toString()]);
 
 				return false;
@@ -418,7 +419,7 @@ final class Television implements Client
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
-							'state' => MetadataTypes\ConnectionState::ALERT,
+							'state' => DevicesTypes\ConnectionState::ALERT->value,
 						],
 					),
 				);
@@ -463,7 +464,7 @@ final class Television implements Client
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
-							'state' => MetadataTypes\ConnectionState::ALERT,
+							'state' => DevicesTypes\ConnectionState::ALERT->value,
 						],
 					),
 				);
@@ -539,7 +540,7 @@ final class Television implements Client
 								[
 									'connector' => $device->getConnector(),
 									'device' => $device->getId(),
-									'state' => MetadataTypes\ConnectionState::ALERT,
+									'state' => DevicesTypes\ConnectionState::ALERT->value,
 								],
 							),
 						);
@@ -550,7 +551,7 @@ final class Television implements Client
 								[
 									'connector' => $device->getConnector(),
 									'device' => $device->getId(),
-									'state' => MetadataTypes\ConnectionState::DISCONNECTED,
+									'state' => DevicesTypes\ConnectionState::DISCONNECTED->value,
 								],
 							),
 						);
@@ -618,7 +619,7 @@ final class Television implements Client
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
-							'state' => MetadataTypes\ConnectionState::DISCONNECTED,
+							'state' => DevicesTypes\ConnectionState::DISCONNECTED->value,
 						],
 					),
 				);

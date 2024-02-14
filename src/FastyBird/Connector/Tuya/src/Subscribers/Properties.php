@@ -25,6 +25,7 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use IPub\DoctrineCrud;
 use Nette;
@@ -90,11 +91,11 @@ final class Properties implements Common\EventSubscriber
 				'dataType' => MetadataTypes\DataType::ENUM,
 				'unit' => null,
 				'format' => [
-					MetadataTypes\ConnectionState::CONNECTED,
-					MetadataTypes\ConnectionState::DISCONNECTED,
-					MetadataTypes\ConnectionState::ALERT,
-					MetadataTypes\ConnectionState::LOST,
-					MetadataTypes\ConnectionState::UNKNOWN,
+					DevicesTypes\ConnectionState::CONNECTED->value,
+					DevicesTypes\ConnectionState::DISCONNECTED->value,
+					DevicesTypes\ConnectionState::ALERT->value,
+					DevicesTypes\ConnectionState::LOST->value,
+					DevicesTypes\ConnectionState::UNKNOWN->value,
 				],
 				'settable' => false,
 				'queryable' => false,
@@ -108,11 +109,11 @@ final class Properties implements Common\EventSubscriber
 				'dataType' => MetadataTypes\DataType::ENUM,
 				'unit' => null,
 				'format' => [
-					MetadataTypes\ConnectionState::CONNECTED,
-					MetadataTypes\ConnectionState::DISCONNECTED,
-					MetadataTypes\ConnectionState::ALERT,
-					MetadataTypes\ConnectionState::LOST,
-					MetadataTypes\ConnectionState::UNKNOWN,
+					DevicesTypes\ConnectionState::CONNECTED->value,
+					DevicesTypes\ConnectionState::DISCONNECTED->value,
+					DevicesTypes\ConnectionState::ALERT->value,
+					DevicesTypes\ConnectionState::LOST->value,
+					DevicesTypes\ConnectionState::UNKNOWN->value,
 				],
 				'settable' => false,
 				'queryable' => false,

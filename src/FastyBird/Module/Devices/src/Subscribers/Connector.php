@@ -25,6 +25,7 @@ use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
+use FastyBird\Module\Devices\Types;
 use FastyBird\Module\Devices\Utilities;
 use Nette;
 use Symfony\Component\EventDispatcher;
@@ -81,7 +82,7 @@ final class Connector implements EventDispatcher\EventSubscriberInterface
 	{
 		$this->resetConnector(
 			$event->getConnector(),
-			MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::UNKNOWN),
+			Types\ConnectionState::UNKNOWN,
 		);
 	}
 
@@ -99,7 +100,7 @@ final class Connector implements EventDispatcher\EventSubscriberInterface
 	{
 		$this->connectorConnectionManager->setState(
 			$event->getConnector(),
-			MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::RUNNING),
+			Types\ConnectionState::RUNNING,
 		);
 	}
 
@@ -117,12 +118,12 @@ final class Connector implements EventDispatcher\EventSubscriberInterface
 	{
 		$this->connectorConnectionManager->setState(
 			$event->getConnector(),
-			MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STOPPED),
+			Types\ConnectionState::STOPPED,
 		);
 
 		$this->resetConnector(
 			$event->getConnector(),
-			MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::DISCONNECTED),
+			Types\ConnectionState::DISCONNECTED,
 		);
 	}
 
@@ -138,7 +139,7 @@ final class Connector implements EventDispatcher\EventSubscriberInterface
 	 */
 	private function resetConnector(
 		Documents\Connectors\Connector $connector,
-		MetadataTypes\ConnectionState $state,
+		Types\ConnectionState $state,
 	): void
 	{
 		$findConnectorPropertiesQuery = new Queries\Configuration\FindConnectorDynamicProperties();
@@ -179,7 +180,7 @@ final class Connector implements EventDispatcher\EventSubscriberInterface
 	 */
 	private function resetDevice(
 		Documents\Devices\Device $device,
-		MetadataTypes\ConnectionState $state,
+		Types\ConnectionState $state,
 	): void
 	{
 		$this->deviceConnectionManager->setState($device, $state);

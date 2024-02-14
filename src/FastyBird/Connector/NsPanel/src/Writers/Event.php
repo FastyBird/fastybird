@@ -22,10 +22,10 @@ use FastyBird\Connector\NsPanel\Queue\Messages\StoreDeviceConnectionState;
 use FastyBird\Connector\NsPanel\Queue\Messages\WriteSubDeviceState;
 use FastyBird\Connector\NsPanel\Queue\Messages\WriteThirdPartyDeviceState;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 use Symfony\Component\EventDispatcher;
 
 /**
@@ -112,7 +112,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 						[
 							'connector' => $device->getConnector(),
 							'identifier' => $device->getIdentifier(),
-							'state' => MetadataTypes\ConnectionState::ALERT,
+							'state' => DevicesTypes\ConnectionState::ALERT->value,
 						],
 					),
 				);

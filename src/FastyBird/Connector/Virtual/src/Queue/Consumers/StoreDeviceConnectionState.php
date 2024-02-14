@@ -22,12 +22,12 @@ use FastyBird\Connector\Virtual\Queries;
 use FastyBird\Connector\Virtual\Queue;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 
@@ -105,7 +105,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 
 		// Check device state...
 		if (
-			!$this->deviceConnectionManager->getState($device)->equals($message->getState())
+			$this->deviceConnectionManager->getState($device) !== $message->getState()
 		) {
 			// ... and if it is not ready, set it to ready
 			$this->deviceConnectionManager->setState(
@@ -114,9 +114,9 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 			);
 
 			if (
-				$message->getState()->equalsValue(MetadataTypes\ConnectionState::DISCONNECTED)
-				|| $message->getState()->equalsValue(MetadataTypes\ConnectionState::ALERT)
-				|| $message->getState()->equalsValue(MetadataTypes\ConnectionState::UNKNOWN)
+				$message->getState() === DevicesTypes\ConnectionState::DISCONNECTED
+				|| $message->getState() === DevicesTypes\ConnectionState::ALERT
+				|| $message->getState() === DevicesTypes\ConnectionState::UNKNOWN
 			) {
 				$findDevicePropertiesQuery = new DevicesQueries\Configuration\FindDeviceDynamicProperties();
 				$findDevicePropertiesQuery->forDevice($device);

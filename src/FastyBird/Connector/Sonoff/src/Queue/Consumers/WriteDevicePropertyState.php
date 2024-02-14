@@ -33,6 +33,7 @@ use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 use Nette;
 use React\Promise;
 use RuntimeException;
@@ -340,7 +341,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 					[
 						'connector' => $connector->getId()->toString(),
 						'device' => $device->getId()->toString(),
-						'state' => MetadataTypes\ConnectionState::ALERT,
+						'state' => DevicesTypes\ConnectionState::ALERT->value,
 					],
 				),
 			);
@@ -378,7 +379,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 					[
 						'connector' => $connector->getId()->toString(),
 						'device' => $device->getId()->toString(),
-						'state' => MetadataTypes\ConnectionState::DISCONNECTED,
+						'state' => DevicesTypes\ConnectionState::DISCONNECTED->value,
 					],
 				),
 			);
@@ -476,7 +477,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 							[
 								'connector' => $connector->getId()->toString(),
 								'identifier' => $device->getIdentifier(),
-								'state' => MetadataTypes\ConnectionState::DISCONNECTED,
+								'state' => DevicesTypes\ConnectionState::DISCONNECTED->value,
 							],
 						),
 					);
@@ -488,7 +489,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 							[
 								'connector' => $connector->getId()->toString(),
 								'identifier' => $device->getIdentifier(),
-								'state' => MetadataTypes\ConnectionState::ALERT,
+								'state' => DevicesTypes\ConnectionState::ALERT->value,
 							],
 						),
 					);

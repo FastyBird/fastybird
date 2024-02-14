@@ -16,7 +16,8 @@
 namespace FastyBird\Connector\HomeKit\Queue\Messages;
 
 use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Types as DevicesTypes;
+use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 
 /**
@@ -35,8 +36,8 @@ final class StoreDeviceConnectionState implements Message
 		private readonly Uuid\UuidInterface $connector,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $device,
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\ConnectionState::class)]
-		private readonly MetadataTypes\ConnectionState $state,
+		#[ObjectMapper\Rules\BackedEnumValue(class: DevicesTypes\ConnectionState::class)]
+		private readonly DevicesTypes\ConnectionState $state,
 	)
 	{
 	}
@@ -51,7 +52,7 @@ final class StoreDeviceConnectionState implements Message
 		return $this->device;
 	}
 
-	public function getState(): MetadataTypes\ConnectionState
+	public function getState(): DevicesTypes\ConnectionState
 	{
 		return $this->state;
 	}
@@ -64,7 +65,7 @@ final class StoreDeviceConnectionState implements Message
 		return [
 			'connector' => $this->getConnector()->toString(),
 			'device' => $this->getDevice()->toString(),
-			'state' => $this->getState()->getValue(),
+			'state' => $this->getState()->value,
 		];
 	}
 

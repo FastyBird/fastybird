@@ -30,10 +30,12 @@ use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
 use Nette;
 use Nette\Utils;
+use function assert;
 use function in_array;
 use function is_array;
 
@@ -89,7 +91,9 @@ final class DeviceAttribute implements Queue\Consumer
 		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\Device::class);
 
 		if ($message->getAttribute() === Queue\Messages\Attribute::STATE) {
-			if (MetadataTypes\ConnectionState::isValidValue($message->getValue())) {
+			assert(!is_array($message->getValue()));
+
+			if (DevicesTypes\ConnectionState::tryFrom($message->getValue()) !== null) {
 				if ($device === null) {
 					$device = $this->devicesManager->create(Utils\ArrayHash::from([
 						'entity' => Entities\Devices\Device::class,
@@ -99,7 +103,7 @@ final class DeviceAttribute implements Queue\Consumer
 
 				$this->deviceConnectionManager->setState(
 					$device,
-					MetadataTypes\ConnectionState::get($message->getValue()),
+					DevicesTypes\ConnectionState::tryFrom($message->getValue()),
 				);
 			}
 		} else {
@@ -191,7 +195,7 @@ final class DeviceAttribute implements Queue\Consumer
 			if ($propertyName === Types\DevicePropertyIdentifier::STATE) {
 				$this->deviceConnectionManager->setState(
 					$device,
-					MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::UNKNOWN),
+					DevicesTypes\ConnectionState::UNKNOWN,
 				);
 			} else {
 				$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();

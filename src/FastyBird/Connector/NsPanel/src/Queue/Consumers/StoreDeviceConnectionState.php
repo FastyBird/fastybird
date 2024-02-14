@@ -28,6 +28,7 @@ use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 
@@ -105,7 +106,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 
 		// Check device state...
 		if (
-			!$this->deviceConnectionManager->getState($device)->equals($message->getState())
+			$this->deviceConnectionManager->getState($device) !== $message->getState()
 		) {
 			// ... and if it is not ready, set it to ready
 			$this->deviceConnectionManager->setState(
@@ -114,9 +115,9 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 			);
 
 			if (
-				$message->getState()->equalsValue(MetadataTypes\ConnectionState::DISCONNECTED)
-				|| $message->getState()->equalsValue(MetadataTypes\ConnectionState::ALERT)
-				|| $message->getState()->equalsValue(MetadataTypes\ConnectionState::UNKNOWN)
+				$message->getState() === DevicesTypes\ConnectionState::DISCONNECTED
+				|| $message->getState() === DevicesTypes\ConnectionState::ALERT
+				|| $message->getState() === DevicesTypes\ConnectionState::UNKNOWN
 			) {
 				$findDevicePropertiesQuery = new DevicesQueries\Configuration\FindDeviceDynamicProperties();
 				$findDevicePropertiesQuery->forDevice($device);
@@ -163,9 +164,9 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 
 			if ($device instanceof Documents\Devices\Gateway) {
 				if (
-					$message->getState()->equalsValue(MetadataTypes\ConnectionState::DISCONNECTED)
-					|| $message->getState()->equalsValue(MetadataTypes\ConnectionState::ALERT)
-					|| $message->getState()->equalsValue(MetadataTypes\ConnectionState::UNKNOWN)
+					$message->getState() === DevicesTypes\ConnectionState::DISCONNECTED
+					|| $message->getState() === DevicesTypes\ConnectionState::ALERT
+					|| $message->getState() === DevicesTypes\ConnectionState::UNKNOWN
 				) {
 					$findChildrenDevicesQuery = new Queries\Configuration\FindSubDevices();
 					$findChildrenDevicesQuery->forParent($device);
@@ -225,7 +226,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 					}
 				}
 
-				if ($message->getState()->equalsValue(MetadataTypes\ConnectionState::ALERT)) {
+				if ($message->getState() === DevicesTypes\ConnectionState::ALERT) {
 					$findChildrenDevicesQuery = new Queries\Configuration\FindThirdPartyDevices();
 					$findChildrenDevicesQuery->forParent($device);
 

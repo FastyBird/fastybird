@@ -30,6 +30,7 @@ use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 use Nette;
 use Nette\Utils;
 use React\Promise;
@@ -129,7 +130,7 @@ final class Device implements Client
 							[
 								'connector' => $gateway->getConnector(),
 								'identifier' => $gateway->getIdentifier(),
-								'state' => MetadataTypes\ConnectionState::ALERT,
+								'state' => DevicesTypes\ConnectionState::ALERT->value,
 							],
 						),
 					);
@@ -235,7 +236,7 @@ final class Device implements Client
 							[
 								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
-								'state' => MetadataTypes\ConnectionState::ALERT,
+								'state' => DevicesTypes\ConnectionState::ALERT->value,
 							],
 						),
 					);
@@ -308,7 +309,7 @@ final class Device implements Client
 											[
 												'connector' => $device->getConnector(),
 												'identifier' => $device->getIdentifier(),
-												'state' => MetadataTypes\ConnectionState::CONNECTED,
+												'state' => DevicesTypes\ConnectionState::CONNECTED->value,
 											],
 										),
 									);
@@ -369,7 +370,7 @@ final class Device implements Client
 										[
 											'connector' => $gateway->getConnector(),
 											'identifier' => $gateway->getIdentifier(),
-											'state' => MetadataTypes\ConnectionState::DISCONNECTED,
+											'state' => DevicesTypes\ConnectionState::DISCONNECTED->value,
 										],
 									),
 								);
@@ -381,7 +382,7 @@ final class Device implements Client
 										[
 											'connector' => $gateway->getConnector(),
 											'identifier' => $gateway->getIdentifier(),
-											'state' => MetadataTypes\ConnectionState::ALERT,
+											'state' => DevicesTypes\ConnectionState::ALERT->value,
 										],
 									),
 								);
@@ -479,7 +480,7 @@ final class Device implements Client
 														[
 															'connector' => $gateway->getConnector(),
 															'identifier' => $gateway->getIdentifier(),
-															'state' => MetadataTypes\ConnectionState::DISCONNECTED,
+															'state' => DevicesTypes\ConnectionState::DISCONNECTED->value,
 														],
 													),
 												);
@@ -491,7 +492,7 @@ final class Device implements Client
 														[
 															'connector' => $gateway->getConnector(),
 															'identifier' => $gateway->getIdentifier(),
-															'state' => MetadataTypes\ConnectionState::ALERT,
+															'state' => DevicesTypes\ConnectionState::ALERT->value,
 														],
 													),
 												);
@@ -544,7 +545,7 @@ final class Device implements Client
 										[
 											'connector' => $gateway->getConnector(),
 											'identifier' => $gateway->getIdentifier(),
-											'state' => MetadataTypes\ConnectionState::DISCONNECTED,
+											'state' => DevicesTypes\ConnectionState::DISCONNECTED->value,
 										],
 									),
 								);
@@ -556,7 +557,7 @@ final class Device implements Client
 										[
 											'connector' => $gateway->getConnector(),
 											'identifier' => $gateway->getIdentifier(),
-											'state' => MetadataTypes\ConnectionState::ALERT,
+											'state' => DevicesTypes\ConnectionState::ALERT->value,
 										],
 									),
 								);
@@ -604,7 +605,7 @@ final class Device implements Client
 						[
 							'connector' => $gateway->getConnector(),
 							'identifier' => $gateway->getIdentifier(),
-							'state' => MetadataTypes\ConnectionState::ALERT,
+							'state' => DevicesTypes\ConnectionState::ALERT->value,
 						],
 					),
 				);
@@ -653,7 +654,7 @@ final class Device implements Client
 						[
 							'connector' => $gateway->getConnector(),
 							'identifier' => $device->getIdentifier(),
-							'state' => MetadataTypes\ConnectionState::DISCONNECTED,
+							'state' => DevicesTypes\ConnectionState::DISCONNECTED->value,
 						],
 					),
 				);
@@ -753,7 +754,7 @@ final class Device implements Client
 					[
 						'connector' => $gateway->getConnector(),
 						'identifier' => $gateway->getIdentifier(),
-						'state' => MetadataTypes\ConnectionState::DISCONNECTED,
+						'state' => DevicesTypes\ConnectionState::DISCONNECTED->value,
 					],
 				),
 			);

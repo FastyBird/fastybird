@@ -31,6 +31,7 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Psr\EventDispatcher;
 use React\EventLoop;
@@ -130,7 +131,7 @@ final class Lan extends ClientProcess implements Client
 							[
 								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
-								'state' => MetadataTypes\ConnectionState::CONNECTED,
+								'state' => DevicesTypes\ConnectionState::CONNECTED->value,
 							],
 						),
 					);
@@ -188,7 +189,7 @@ final class Lan extends ClientProcess implements Client
 					[
 						'connector' => $device->getConnector(),
 						'identifier' => $device->getIdentifier(),
-						'state' => MetadataTypes\ConnectionState::ALERT,
+						'state' => DevicesTypes\ConnectionState::ALERT->value,
 					],
 				),
 			);
@@ -212,7 +213,7 @@ final class Lan extends ClientProcess implements Client
 							[
 								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
-								'state' => MetadataTypes\ConnectionState::CONNECTED,
+								'state' => DevicesTypes\ConnectionState::CONNECTED->value,
 							],
 						),
 					);
@@ -229,7 +230,7 @@ final class Lan extends ClientProcess implements Client
 								[
 									'connector' => $device->getConnector(),
 									'identifier' => $device->getIdentifier(),
-									'state' => MetadataTypes\ConnectionState::ALERT,
+									'state' => DevicesTypes\ConnectionState::ALERT->value,
 								],
 							),
 						);

@@ -30,6 +30,7 @@ use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 use Nette;
 use RuntimeException;
 use Throwable;
@@ -248,7 +249,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 					[
 						'connector' => $connector->getId(),
 						'device' => $device->getId(),
-						'state' => MetadataTypes\ConnectionState::ALERT,
+						'state' => DevicesTypes\ConnectionState::ALERT->value,
 						'source' => MetadataTypes\Sources\Connector::VIRTUAL,
 					],
 				),
@@ -319,7 +320,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 						[
 							'connector' => $connector->getId(),
 							'device' => $device->getId(),
-							'state' => MetadataTypes\ConnectionState::ALERT,
+							'state' => DevicesTypes\ConnectionState::ALERT->value,
 						],
 					),
 				);

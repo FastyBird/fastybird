@@ -33,6 +33,7 @@ use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use React\EventLoop;
@@ -125,7 +126,7 @@ class Tcp implements Client
 						[
 							'connector' => $this->connector->getId(),
 							'device' => $device->getId(),
-							'state' => MetadataTypes\ConnectionState::ALERT,
+							'state' => DevicesTypes\ConnectionState::ALERT->value,
 						],
 					),
 				);
@@ -180,7 +181,7 @@ class Tcp implements Client
 								[
 									'connector' => $this->connector->getId(),
 									'device' => $device->getId(),
-									'state' => MetadataTypes\ConnectionState::LOST,
+									'state' => DevicesTypes\ConnectionState::LOST->value,
 								],
 							),
 						);
@@ -342,9 +343,7 @@ class Tcp implements Client
 		}
 
 		if (
-			$this->deviceConnectionManager->getState($device)->equalsValue(
-				MetadataTypes\ConnectionState::ALERT,
-			)
+			$this->deviceConnectionManager->getState($device) === DevicesTypes\ConnectionState::ALERT
 		) {
 			return false;
 		}
@@ -538,9 +537,7 @@ class Tcp implements Client
 			->then(function () use ($device): void {
 				// Check device state...
 				if (
-					!$this->deviceConnectionManager->getState($device)->equalsValue(
-						MetadataTypes\ConnectionState::CONNECTED,
-					)
+					$this->deviceConnectionManager->getState($device) !== DevicesTypes\ConnectionState::CONNECTED
 				) {
 					// ... and if it is not ready, set it to ready
 					$this->queue->append(
@@ -549,7 +546,7 @@ class Tcp implements Client
 							[
 								'connector' => $this->connector->getId(),
 								'device' => $device->getId(),
-								'state' => MetadataTypes\ConnectionState::CONNECTED,
+								'state' => DevicesTypes\ConnectionState::CONNECTED->value,
 							],
 						),
 					);
@@ -581,7 +578,7 @@ class Tcp implements Client
 								[
 									'connector' => $this->connector->getId(),
 									'device' => $device->getId(),
-									'state' => MetadataTypes\ConnectionState::LOST,
+									'state' => DevicesTypes\ConnectionState::LOST->value,
 								],
 							),
 						);

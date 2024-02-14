@@ -30,6 +30,7 @@ use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 
@@ -99,27 +100,25 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 			return true;
 		}
 
-		$state = MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::UNKNOWN);
+		$state = DevicesTypes\ConnectionState::UNKNOWN;
 
 		if ($message->getState()->equalsValue(Types\ConnectionState::ONLINE)) {
-			$state = MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::CONNECTED);
+			$state = DevicesTypes\ConnectionState::CONNECTED;
 		} elseif ($message->getState()->equalsValue(Types\ConnectionState::OFFLINE)) {
-			$state = MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::DISCONNECTED);
+			$state = DevicesTypes\ConnectionState::DISCONNECTED;
 		} elseif ($message->getState()->equalsValue(Types\ConnectionState::ALERT)) {
-			$state = MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::ALERT);
+			$state = DevicesTypes\ConnectionState::ALERT;
 		}
 
 		// Check device state...
-		if (
-			!$this->deviceConnectionManager->getState($device)->equals($state)
-		) {
+		if ($this->deviceConnectionManager->getState($device) !== $state) {
 			// ... and if it is not ready, set it to ready
 			$this->deviceConnectionManager->setState($device, $state);
 
 			if (
-				$state->equalsValue(MetadataTypes\ConnectionState::DISCONNECTED)
-				|| $state->equalsValue(MetadataTypes\ConnectionState::ALERT)
-				|| $state->equalsValue(MetadataTypes\ConnectionState::UNKNOWN)
+				$state === DevicesTypes\ConnectionState::DISCONNECTED
+				|| $state === DevicesTypes\ConnectionState::ALERT
+				|| $state === DevicesTypes\ConnectionState::UNKNOWN
 			) {
 				$findDevicePropertiesQuery = new DevicesQueries\Configuration\FindDeviceDynamicProperties();
 				$findDevicePropertiesQuery->forDevice($device);

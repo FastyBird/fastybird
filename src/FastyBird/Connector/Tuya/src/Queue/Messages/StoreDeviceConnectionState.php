@@ -15,13 +15,13 @@
 
 namespace FastyBird\Connector\Tuya\Queue\Messages;
 
-use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Types as DevicesTypes;
+use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_merge;
 
 /**
- * Device state message message
+ * Device state message
  *
  * @package        FastyBird:TuyaConnector!
  * @subpackage     Queue
@@ -34,14 +34,14 @@ final class StoreDeviceConnectionState extends Device
 	public function __construct(
 		Uuid\UuidInterface $connector,
 		string $identifier,
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\ConnectionState::class)]
-		private readonly MetadataTypes\ConnectionState $state,
+		#[ObjectMapper\Rules\BackedEnumValue(class: DevicesTypes\ConnectionState::class)]
+		private readonly DevicesTypes\ConnectionState $state,
 	)
 	{
 		parent::__construct($connector, $identifier);
 	}
 
-	public function getState(): MetadataTypes\ConnectionState
+	public function getState(): DevicesTypes\ConnectionState
 	{
 		return $this->state;
 	}
@@ -52,7 +52,7 @@ final class StoreDeviceConnectionState extends Device
 	public function toArray(): array
 	{
 		return array_merge(parent::toArray(), [
-			'state' => $this->getState()->getValue(),
+			'state' => $this->getState()->value,
 		]);
 	}
 

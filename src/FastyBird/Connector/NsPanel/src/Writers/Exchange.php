@@ -29,6 +29,7 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 use React\EventLoop;
 use function array_merge;
 
@@ -169,7 +170,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 							[
 								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
-								'state' => MetadataTypes\ConnectionState::ALERT,
+								'state' => DevicesTypes\ConnectionState::ALERT->value,
 							],
 						),
 					);
@@ -242,7 +243,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 							[
 								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
-								'state' => MetadataTypes\ConnectionState::ALERT,
+								'state' => DevicesTypes\ConnectionState::ALERT->value,
 							],
 						),
 					);

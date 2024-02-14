@@ -29,6 +29,7 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use InvalidArgumentException;
 use Psr\EventDispatcher;
@@ -129,8 +130,8 @@ final class Cloud extends ClientProcess implements Client
 									'connector' => $this->connector->getId(),
 									'identifier' => $message->getDeviceId(),
 									'state' => $message->isOnline()
-										? MetadataTypes\ConnectionState::CONNECTED
-										: MetadataTypes\ConnectionState::DISCONNECTED,
+										? DevicesTypes\ConnectionState::CONNECTED->value
+										: DevicesTypes\ConnectionState::DISCONNECTED->value,
 								],
 							),
 						);
@@ -262,8 +263,8 @@ final class Cloud extends ClientProcess implements Client
 								'connector' => $this->connector->getId(),
 								'identifier' => $device->getIdentifier(),
 								'state' => $result->isOnline()
-									? MetadataTypes\ConnectionState::CONNECTED
-									: MetadataTypes\ConnectionState::DISCONNECTED,
+									? DevicesTypes\ConnectionState::CONNECTED->value
+									: DevicesTypes\ConnectionState::DISCONNECTED->value,
 							],
 						),
 					);
@@ -293,7 +294,7 @@ final class Cloud extends ClientProcess implements Client
 								[
 									'connector' => $device->getConnector(),
 									'identifier' => $device->getIdentifier(),
-									'state' => MetadataTypes\ConnectionState::ALERT,
+									'state' => DevicesTypes\ConnectionState::ALERT->value,
 								],
 							),
 						);
@@ -383,7 +384,7 @@ final class Cloud extends ClientProcess implements Client
 												[
 													'connector' => $device->getConnector(),
 													'identifier' => $device->getIdentifier(),
-													'state' => MetadataTypes\ConnectionState::ALERT,
+													'state' => DevicesTypes\ConnectionState::ALERT->value,
 												],
 											),
 										);
