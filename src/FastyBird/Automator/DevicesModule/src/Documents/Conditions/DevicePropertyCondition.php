@@ -18,8 +18,8 @@ namespace FastyBird\Automator\DevicesModule\Documents\Conditions;
 use FastyBird\Automator\DevicesModule\Entities;
 use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Metadata\Documents\Mapping as DOC;
-use FastyBird\Library\Metadata\Types;
 use FastyBird\Module\Triggers\Documents as TriggersDocuments;
+use FastyBird\Module\Triggers\Types as TriggersTypes;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_merge;
@@ -48,10 +48,10 @@ final class DevicePropertyCondition extends TriggersDocuments\Conditions\Conditi
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $operand,
 		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\BackedEnumValue(class: Types\TriggerConditionOperator::class),
-			new ObjectMapper\Rules\InstanceOfValue(type: Types\TriggerConditionOperator::class),
+			new ObjectMapper\Rules\BackedEnumValue(class: TriggersTypes\ConditionOperator::class),
+			new ObjectMapper\Rules\InstanceOfValue(type: TriggersTypes\ConditionOperator::class),
 		])]
-		private readonly Types\TriggerConditionOperator $operator,
+		private readonly TriggersTypes\ConditionOperator $operator,
 		bool|null $isFulfilled = null,
 		Uuid\UuidInterface|null $owner = null,
 	)
@@ -79,7 +79,7 @@ final class DevicePropertyCondition extends TriggersDocuments\Conditions\Conditi
 		return $this->operand;
 	}
 
-	public function getOperator(): Types\TriggerConditionOperator
+	public function getOperator(): TriggersTypes\ConditionOperator
 	{
 		return $this->operator;
 	}

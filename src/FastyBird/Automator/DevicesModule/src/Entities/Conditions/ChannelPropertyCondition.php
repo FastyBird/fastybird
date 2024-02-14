@@ -17,8 +17,8 @@ namespace FastyBird\Automator\DevicesModule\Entities\Conditions;
 
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Application\Doctrine\Mapping as ApplicationMapping;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Triggers\Entities as TriggersEntities;
+use FastyBird\Module\Triggers\Types as TriggersTypes;
 use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use Ramsey\Uuid;
 use function array_merge;
@@ -42,7 +42,7 @@ class ChannelPropertyCondition extends PropertyCondition
 		Uuid\UuidInterface $device,
 		Uuid\UuidInterface $channel,
 		Uuid\UuidInterface $property,
-		MetadataTypes\TriggerConditionOperator $operator,
+		TriggersTypes\ConditionOperator $operator,
 		string $operand,
 		TriggersEntities\Triggers\Automatic $trigger,
 		Uuid\UuidInterface|null $id = null,

@@ -4,8 +4,8 @@ namespace FastyBird\Module\Triggers\Tests\Fixtures\Dummy;
 
 use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Metadata\Documents\Mapping as DOC;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Triggers\Documents;
+use FastyBird\Module\Triggers\Types;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_merge;
@@ -26,10 +26,10 @@ final class DummyConditionDocument extends Documents\Conditions\Condition
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $operand,
 		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\BackedEnumValue(class: MetadataTypes\TriggerConditionOperator::class),
-			new ObjectMapper\Rules\InstanceOfValue(type: MetadataTypes\TriggerConditionOperator::class),
+			new ObjectMapper\Rules\BackedEnumValue(class: Types\ConditionOperator::class),
+			new ObjectMapper\Rules\InstanceOfValue(type: Types\ConditionOperator::class),
 		])]
-		private readonly MetadataTypes\TriggerConditionOperator $operator,
+		private readonly Types\ConditionOperator $operator,
 		bool|null $isFulfilled = null,
 		Uuid\UuidInterface|null $owner = null,
 	)
@@ -52,7 +52,7 @@ final class DummyConditionDocument extends Documents\Conditions\Condition
 		return $this->operand;
 	}
 
-	public function getOperator(): MetadataTypes\TriggerConditionOperator
+	public function getOperator(): Types\ConditionOperator
 	{
 		return $this->operator;
 	}

@@ -19,8 +19,8 @@ use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Exchange\Documents\Mapping as EXCHANGE;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Documents\Mapping as DOC;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Triggers;
+use FastyBird\Module\Triggers\Types;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 
@@ -40,8 +40,8 @@ final class Action implements MetadataDocuments\Document
 {
 
 	public function __construct(
-		#[ObjectMapper\Rules\BackedEnumValue(class: MetadataTypes\TriggerAction::class)]
-		private readonly MetadataTypes\TriggerAction $action,
+		#[ObjectMapper\Rules\BackedEnumValue(class: Types\TriggerAction::class)]
+		private readonly Types\TriggerAction $action,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $trigger,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
@@ -59,7 +59,7 @@ final class Action implements MetadataDocuments\Document
 	{
 	}
 
-	public function getAction(): MetadataTypes\TriggerAction
+	public function getAction(): Types\TriggerAction
 	{
 		return $this->action;
 	}

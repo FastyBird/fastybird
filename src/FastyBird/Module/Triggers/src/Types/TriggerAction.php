@@ -13,7 +13,7 @@
  * @date           01.06.22
  */
 
-namespace FastyBird\Library\Metadata\Types;
+namespace FastyBird\Module\Triggers\Types;
 
 /**
  * Trigger action

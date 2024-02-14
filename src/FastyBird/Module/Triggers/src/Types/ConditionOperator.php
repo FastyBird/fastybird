@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * TriggerConditionOperator.php
+ * ConditionOperator.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,7 +13,7 @@
  * @date           04.04.20
  */
 
-namespace FastyBird\Library\Metadata\Types;
+namespace FastyBird\Module\Triggers\Types;
 
 /**
  * Trigger condition operator type
@@ -23,7 +23,7 @@ namespace FastyBird\Library\Metadata\Types;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-enum TriggerConditionOperator: string
+enum ConditionOperator: string
 {
 
 	case EQUAL = 'eq';

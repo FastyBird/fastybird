@@ -18,6 +18,7 @@ namespace FastyBird\Automator\DevicesModule\Entities\Conditions;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Triggers\Entities as TriggersEntities;
+use FastyBird\Module\Triggers\Types as TriggersTypes;
 use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use Ramsey\Uuid;
 use function array_merge;
@@ -36,9 +37,9 @@ abstract class PropertyCondition extends TriggersEntities\Conditions\Condition
 		type: 'string',
 		length: 15,
 		nullable: true,
-		enumType: MetadataTypes\TriggerConditionOperator::class,
+		enumType: TriggersTypes\ConditionOperator::class,
 	)]
-	protected MetadataTypes\TriggerConditionOperator $operator;
+	protected TriggersTypes\ConditionOperator $operator;
 
 	#[IPubDoctrine\Crud(required: true, writable: true)]
 	#[ORM\Column(name: 'condition_operand', type: 'string', nullable: true, length: 20)]
@@ -46,7 +47,7 @@ abstract class PropertyCondition extends TriggersEntities\Conditions\Condition
 
 	public function __construct(
 		Uuid\UuidInterface $device,
-		MetadataTypes\TriggerConditionOperator $operator,
+		TriggersTypes\ConditionOperator $operator,
 		string $operand,
 		TriggersEntities\Triggers\Automatic $trigger,
 		Uuid\UuidInterface|null $id = null,
@@ -64,12 +65,12 @@ abstract class PropertyCondition extends TriggersEntities\Conditions\Condition
 		return $this->device;
 	}
 
-	public function getOperator(): MetadataTypes\TriggerConditionOperator
+	public function getOperator(): TriggersTypes\ConditionOperator
 	{
 		return $this->operator;
 	}
 
-	public function setOperator(MetadataTypes\TriggerConditionOperator $operator): void
+	public function setOperator(TriggersTypes\ConditionOperator $operator): void
 	{
 		$this->operator = $operator;
 	}
@@ -98,11 +99,11 @@ abstract class PropertyCondition extends TriggersEntities\Conditions\Condition
 
 	public function validate(string $value): bool
 	{
-		if ($this->operator === MetadataTypes\TriggerConditionOperator::EQUAL) {
+		if ($this->operator === TriggersTypes\ConditionOperator::EQUAL) {
 			return $this->operand === $value;
 		}
 
-		if ($this->operator === MetadataTypes\TriggerConditionOperator::ABOVE) {
+		if ($this->operator === TriggersTypes\ConditionOperator::ABOVE) {
 			return (float) ($this->operand) < (float) $value;
 		}
 

@@ -4,8 +4,8 @@ namespace FastyBird\Module\Triggers\Tests\Fixtures\Dummy;
 
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Application\Doctrine\Mapping as ApplicationMapping;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Triggers\Entities;
+use FastyBird\Module\Triggers\Types;
 use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use Ramsey\Uuid;
 use function array_merge;
@@ -27,9 +27,9 @@ class DummyConditionEntity extends Entities\Conditions\Condition
 		type: 'string',
 		length: 15,
 		nullable: true,
-		enumType: MetadataTypes\TriggerConditionOperator::class,
+		enumType: Types\ConditionOperator::class,
 	)]
-	private MetadataTypes\TriggerConditionOperator $operator;
+	private Types\ConditionOperator $operator;
 
 	#[IPubDoctrine\Crud(required: true, writable: true)]
 	#[ORM\Column(name: 'condition_operand', type: 'string', length: 20, nullable: true)]
@@ -50,12 +50,12 @@ class DummyConditionEntity extends Entities\Conditions\Condition
 		return $this->watchItem;
 	}
 
-	public function setOperator(MetadataTypes\TriggerConditionOperator $operator): void
+	public function setOperator(Types\ConditionOperator $operator): void
 	{
 		$this->operator = $operator;
 	}
 
-	public function getOperator(): MetadataTypes\TriggerConditionOperator
+	public function getOperator(): Types\ConditionOperator
 	{
 		return $this->operator;
 	}
@@ -72,15 +72,15 @@ class DummyConditionEntity extends Entities\Conditions\Condition
 
 	public function validate(string $value): bool
 	{
-		if ($this->operator === MetadataTypes\TriggerConditionOperator::EQUAL) {
+		if ($this->operator === Types\ConditionOperator::EQUAL) {
 			return $this->operand === $value;
 		}
 
-		if ($this->operator === MetadataTypes\TriggerConditionOperator::ABOVE) {
+		if ($this->operator === Types\ConditionOperator::ABOVE) {
 			return (float) ($this->operand) < (float) $value;
 		}
 
-		if ($this->operator === MetadataTypes\TriggerConditionOperator::BELOW) {
+		if ($this->operator === Types\ConditionOperator::BELOW) {
 			return (float) ($this->operand) > (float) $value;
 		}
 
