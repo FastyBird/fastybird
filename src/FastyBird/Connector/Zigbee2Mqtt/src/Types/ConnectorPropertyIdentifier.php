@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\Zigbee2Mqtt\Types;
 
 use Consistence;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 use function strval;
 
 /**
@@ -30,15 +30,15 @@ use function strval;
 class ConnectorPropertyIdentifier extends Consistence\Enum\Enum
 {
 
-	public const STATE = MetadataTypes\ConnectorPropertyIdentifier::STATE;
+	public const STATE = DevicesTypes\ConnectorPropertyIdentifier::STATE->value;
+
+	public const SERVER = DevicesTypes\ConnectorPropertyIdentifier::SERVER->value;
+
+	public const PORT = DevicesTypes\ConnectorPropertyIdentifier::PORT->value;
+
+	public const SECURED_PORT = DevicesTypes\ConnectorPropertyIdentifier::SECURED_PORT->value;
 
 	public const CLIENT_MODE = 'mode';
-
-	public const SERVER = MetadataTypes\ConnectorPropertyIdentifier::SERVER;
-
-	public const PORT = MetadataTypes\ConnectorPropertyIdentifier::PORT;
-
-	public const SECURED_PORT = MetadataTypes\ConnectorPropertyIdentifier::SECURED_PORT;
 
 	public const USERNAME = 'username';
 

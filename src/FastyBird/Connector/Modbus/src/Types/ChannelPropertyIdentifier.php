@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\Modbus\Types;
 
 use Consistence;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 use function strval;
 
 /**
@@ -33,7 +33,7 @@ class ChannelPropertyIdentifier extends Consistence\Enum\Enum
 	/**
 	 * Define device states
 	 */
-	public const ADDRESS = MetadataTypes\ChannelPropertyIdentifier::ADDRESS;
+	public const ADDRESS = DevicesTypes\ChannelPropertyIdentifier::ADDRESS->value;
 
 	public const TYPE = 'type';
 

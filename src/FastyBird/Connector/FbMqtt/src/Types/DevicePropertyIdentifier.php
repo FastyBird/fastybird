@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\FbMqtt\Types;
 
 use Consistence;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 use function strval;
 
 /**
@@ -33,35 +33,35 @@ class DevicePropertyIdentifier extends Consistence\Enum\Enum
 	/**
 	 * Define device states
 	 */
-	public const STATE = MetadataTypes\DevicePropertyIdentifier::STATE;
+	public const STATE = DevicesTypes\DevicePropertyIdentifier::STATE->value;
 
-	public const IP_ADDRESS = MetadataTypes\DevicePropertyIdentifier::IP_ADDRESS;
+	public const IP_ADDRESS = DevicesTypes\DevicePropertyIdentifier::IP_ADDRESS->value;
 
-	public const STATUS_LED = MetadataTypes\DevicePropertyIdentifier::STATUS_LED;
+	public const STATUS_LED = DevicesTypes\DevicePropertyIdentifier::STATUS_LED->value;
 
-	public const UPTIME = MetadataTypes\DevicePropertyIdentifier::UPTIME;
+	public const UPTIME = DevicesTypes\DevicePropertyIdentifier::UPTIME->value;
 
-	public const FREE_HEAP = MetadataTypes\DevicePropertyIdentifier::FREE_HEAP;
+	public const FREE_HEAP = DevicesTypes\DevicePropertyIdentifier::FREE_HEAP->value;
 
-	public const CPU_LOAD = MetadataTypes\DevicePropertyIdentifier::CPU_LOAD;
+	public const CPU_LOAD = DevicesTypes\DevicePropertyIdentifier::CPU_LOAD->value;
 
-	public const VCC = MetadataTypes\DevicePropertyIdentifier::VCC;
+	public const VCC = DevicesTypes\DevicePropertyIdentifier::VCC->value;
 
-	public const RSSI = MetadataTypes\DevicePropertyIdentifier::RSSI;
+	public const RSSI = DevicesTypes\DevicePropertyIdentifier::RSSI->value;
 
-	public const HARDWARE_MAC_ADDRESS = MetadataTypes\DevicePropertyIdentifier::HARDWARE_MAC_ADDRESS;
+	public const HARDWARE_MAC_ADDRESS = DevicesTypes\DevicePropertyIdentifier::HARDWARE_MAC_ADDRESS->value;
 
-	public const HARDWARE_MANUFACTURER = MetadataTypes\DevicePropertyIdentifier::HARDWARE_MANUFACTURER;
+	public const HARDWARE_MANUFACTURER = DevicesTypes\DevicePropertyIdentifier::HARDWARE_MANUFACTURER->value;
 
-	public const HARDWARE_MODEL = MetadataTypes\DevicePropertyIdentifier::HARDWARE_MODEL;
+	public const HARDWARE_MODEL = DevicesTypes\DevicePropertyIdentifier::HARDWARE_MODEL->value;
 
-	public const HARDWARE_VERSION = MetadataTypes\DevicePropertyIdentifier::HARDWARE_VERSION;
+	public const HARDWARE_VERSION = DevicesTypes\DevicePropertyIdentifier::HARDWARE_VERSION->value;
 
-	public const FIRMWARE_MANUFACTURER = MetadataTypes\DevicePropertyIdentifier::FIRMWARE_MANUFACTURER;
+	public const FIRMWARE_MANUFACTURER = DevicesTypes\DevicePropertyIdentifier::FIRMWARE_MANUFACTURER->value;
 
-	public const FIRMWARE_NAME = MetadataTypes\DevicePropertyIdentifier::FIRMWARE_NAME;
+	public const FIRMWARE_NAME = DevicesTypes\DevicePropertyIdentifier::FIRMWARE_NAME->value;
 
-	public const FIRMWARE_VERSION = MetadataTypes\DevicePropertyIdentifier::FIRMWARE_VERSION;
+	public const FIRMWARE_VERSION = DevicesTypes\DevicePropertyIdentifier::FIRMWARE_VERSION->value;
 
 	public function getValue(): string
 	{

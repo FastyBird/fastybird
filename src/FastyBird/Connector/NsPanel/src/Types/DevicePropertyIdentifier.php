@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\NsPanel\Types;
 
 use Consistence;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 use function strval;
 
 /**
@@ -30,19 +30,19 @@ use function strval;
 class DevicePropertyIdentifier extends Consistence\Enum\Enum
 {
 
-	public const STATE = MetadataTypes\DevicePropertyIdentifier::STATE;
+	public const STATE = DevicesTypes\DevicePropertyIdentifier::STATE->value;
 
-	public const IP_ADDRESS = MetadataTypes\DevicePropertyIdentifier::IP_ADDRESS;
+	public const IP_ADDRESS = DevicesTypes\DevicePropertyIdentifier::IP_ADDRESS->value;
 
-	public const DOMAIN = MetadataTypes\DevicePropertyIdentifier::DOMAIN;
+	public const DOMAIN = DevicesTypes\DevicePropertyIdentifier::DOMAIN->value;
 
-	public const MANUFACTURER = MetadataTypes\DevicePropertyIdentifier::HARDWARE_MANUFACTURER;
+	public const MANUFACTURER = DevicesTypes\DevicePropertyIdentifier::HARDWARE_MANUFACTURER->value;
 
-	public const MODEL = MetadataTypes\DevicePropertyIdentifier::HARDWARE_MODEL;
+	public const MODEL = DevicesTypes\DevicePropertyIdentifier::HARDWARE_MODEL->value;
 
-	public const MAC_ADDRESS = MetadataTypes\DevicePropertyIdentifier::HARDWARE_MAC_ADDRESS;
+	public const MAC_ADDRESS = DevicesTypes\DevicePropertyIdentifier::HARDWARE_MAC_ADDRESS->value;
 
-	public const FIRMWARE_VERSION = MetadataTypes\DevicePropertyIdentifier::FIRMWARE_VERSION;
+	public const FIRMWARE_VERSION = DevicesTypes\DevicePropertyIdentifier::FIRMWARE_VERSION->value;
 
 	public const ACCESS_TOKEN = 'access_token';
 
@@ -50,7 +50,7 @@ class DevicePropertyIdentifier extends Consistence\Enum\Enum
 
 	public const GATEWAY_IDENTIFIER = 'gateway_identifier';
 
-	public const STATE_READING_DELAY = MetadataTypes\DevicePropertyIdentifier::STATE_READING_DELAY;
+	public const STATE_READING_DELAY = DevicesTypes\DevicePropertyIdentifier::STATE_READING_DELAY->value;
 
 	public function getValue(): string
 	{

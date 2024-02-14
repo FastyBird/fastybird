@@ -446,7 +446,7 @@ abstract class Property implements Entity,
 			$value = null;
 		}
 
-		if ($value !== null && $this->getIdentifier() === MetadataTypes\PropertyIdentifier::IP_ADDRESS) {
+		if ($value !== null && $this->getIdentifier() === Types\DevicePropertyIdentifier::IP_ADDRESS->value) {
 			if (!is_string($value)) {
 				throw new Exceptions\InvalidArgument(
 					'Provided property value is not valid value for IP address property',
@@ -462,7 +462,7 @@ abstract class Property implements Entity,
 			}
 		} elseif (
 			$value !== null
-			&& $this->getIdentifier() === MetadataTypes\PropertyIdentifier::HARDWARE_MAC_ADDRESS
+			&& $this->getIdentifier() === Types\DevicePropertyIdentifier::HARDWARE_MAC_ADDRESS->value
 		) {
 			if (!is_string($value)) {
 				throw new Exceptions\InvalidArgument(

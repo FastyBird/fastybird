@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\Zigbee2Mqtt\Types;
 
 use Consistence;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 use function strval;
 
 /**
@@ -30,19 +30,19 @@ use function strval;
 class DevicePropertyIdentifier extends Consistence\Enum\Enum
 {
 
-	public const STATE = MetadataTypes\DevicePropertyIdentifier::STATE;
+	public const STATE = DevicesTypes\DevicePropertyIdentifier::STATE->value;
 
 	public const BASE_TOPIC = 'base_topic';
 
-	public const MODEL = MetadataTypes\DevicePropertyIdentifier::HARDWARE_MODEL;
+	public const MODEL = DevicesTypes\DevicePropertyIdentifier::HARDWARE_MODEL->value;
 
-	public const MANUFACTURER = MetadataTypes\DevicePropertyIdentifier::HARDWARE_MANUFACTURER;
+	public const MANUFACTURER = DevicesTypes\DevicePropertyIdentifier::HARDWARE_MANUFACTURER->value;
 
-	public const VERSION = MetadataTypes\DevicePropertyIdentifier::FIRMWARE_VERSION;
+	public const VERSION = DevicesTypes\DevicePropertyIdentifier::FIRMWARE_VERSION->value;
 
 	public const COMMIT = 'commit';
 
-	public const IEEE_ADDRESS = MetadataTypes\DevicePropertyIdentifier::ADDRESS;
+	public const IEEE_ADDRESS = DevicesTypes\DevicePropertyIdentifier::ADDRESS->value;
 
 	public const TYPE = 'type';
 

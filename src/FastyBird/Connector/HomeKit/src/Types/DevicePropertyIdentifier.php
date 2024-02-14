@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\HomeKit\Types;
 
 use Consistence;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 use function strval;
 
 /**
@@ -39,13 +39,13 @@ class DevicePropertyIdentifier extends Consistence\Enum\Enum
 
 	public const AID = 'aid';
 
-	public const MANUFACTURER = MetadataTypes\DevicePropertyIdentifier::FIRMWARE_MANUFACTURER;
+	public const MANUFACTURER = DevicesTypes\DevicePropertyIdentifier::FIRMWARE_MANUFACTURER->value;
 
-	public const VERSION = MetadataTypes\DevicePropertyIdentifier::FIRMWARE_VERSION;
+	public const VERSION = DevicesTypes\DevicePropertyIdentifier::FIRMWARE_VERSION->value;
 
-	public const SERIAL_NUMBER = MetadataTypes\DevicePropertyIdentifier::SERIAL_NUMBER;
+	public const SERIAL_NUMBER = DevicesTypes\DevicePropertyIdentifier::SERIAL_NUMBER->value;
 
-	public const MODEL = MetadataTypes\DevicePropertyIdentifier::HARDWARE_MODEL;
+	public const MODEL = DevicesTypes\DevicePropertyIdentifier::HARDWARE_MODEL->value;
 
 	public function getValue(): string
 	{

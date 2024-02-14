@@ -75,7 +75,7 @@ final class DeviceConnection
 	{
 		$findDevicePropertyQuery = new Queries\Configuration\FindDeviceDynamicProperties();
 		$findDevicePropertyQuery->byDeviceId($device->getId());
-		$findDevicePropertyQuery->byIdentifier(MetadataTypes\DevicePropertyIdentifier::STATE);
+		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::STATE->value);
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findDevicePropertyQuery,
@@ -93,7 +93,7 @@ final class DeviceConnection
 					$property = $this->devicesPropertiesEntitiesManager->create(Utils\ArrayHash::from([
 						'device' => $device,
 						'entity' => Entities\Devices\Properties\Dynamic::class,
-						'identifier' => MetadataTypes\ConnectorPropertyIdentifier::STATE,
+						'identifier' => Types\ConnectorPropertyIdentifier::STATE->value,
 						'dataType' => MetadataTypes\DataType::ENUM,
 						'unit' => null,
 						'format' => [
@@ -146,7 +146,7 @@ final class DeviceConnection
 	{
 		$findDevicePropertyQuery = new Queries\Configuration\FindDeviceDynamicProperties();
 		$findDevicePropertyQuery->byDeviceId($device->getId());
-		$findDevicePropertyQuery->byIdentifier(MetadataTypes\DevicePropertyIdentifier::STATE);
+		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::STATE->value);
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findDevicePropertyQuery,
@@ -186,7 +186,7 @@ final class DeviceConnection
 	{
 		$findDevicePropertyQuery = new Queries\Configuration\FindDeviceDynamicProperties();
 		$findDevicePropertyQuery->byDeviceId($device->getId());
-		$findDevicePropertyQuery->byIdentifier(MetadataTypes\DevicePropertyIdentifier::STATE);
+		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::STATE->value);
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findDevicePropertyQuery,

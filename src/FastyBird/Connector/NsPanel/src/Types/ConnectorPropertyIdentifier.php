@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\NsPanel\Types;
 
 use Consistence;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 use function strval;
 
 /**
@@ -30,7 +30,7 @@ use function strval;
 class ConnectorPropertyIdentifier extends Consistence\Enum\Enum
 {
 
-	public const PORT = MetadataTypes\ConnectorPropertyIdentifier::PORT;
+	public const PORT = DevicesTypes\ConnectorPropertyIdentifier::PORT->value;
 
 	public const CLIENT_MODE = 'mode';
 

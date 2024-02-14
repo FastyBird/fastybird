@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\FbMqtt\Types;
 
 use Consistence;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 use function strval;
 
 /**
@@ -33,11 +33,11 @@ class ConnectorPropertyIdentifier extends Consistence\Enum\Enum
 	/**
 	 * Define device states
 	 */
-	public const SERVER = MetadataTypes\ConnectorPropertyIdentifier::SERVER;
+	public const SERVER = DevicesTypes\ConnectorPropertyIdentifier::SERVER->value;
 
-	public const PORT = MetadataTypes\ConnectorPropertyIdentifier::PORT;
+	public const PORT = DevicesTypes\ConnectorPropertyIdentifier::PORT->value;
 
-	public const SECURED_PORT = MetadataTypes\ConnectorPropertyIdentifier::SECURED_PORT;
+	public const SECURED_PORT = DevicesTypes\ConnectorPropertyIdentifier::SECURED_PORT->value;
 
 	public const USERNAME = 'username';
 

@@ -74,7 +74,7 @@ final class ConnectorConnection
 	{
 		$findConnectorPropertyQuery = new Queries\Configuration\FindConnectorDynamicProperties();
 		$findConnectorPropertyQuery->byConnectorId($connector->getId());
-		$findConnectorPropertyQuery->byIdentifier(MetadataTypes\ConnectorPropertyIdentifier::STATE);
+		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::STATE->value);
 
 		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
 			$findConnectorPropertyQuery,
@@ -92,7 +92,7 @@ final class ConnectorConnection
 					$property = $this->connectorsPropertiesEntitiesManager->create(Utils\ArrayHash::from([
 						'connector' => $connector,
 						'entity' => Entities\Connectors\Properties\Dynamic::class,
-						'identifier' => MetadataTypes\ConnectorPropertyIdentifier::STATE,
+						'identifier' => Types\ConnectorPropertyIdentifier::STATE->value,
 						'dataType' => MetadataTypes\DataType::ENUM,
 						'unit' => null,
 						'format' => [
@@ -142,7 +142,7 @@ final class ConnectorConnection
 	{
 		$findConnectorPropertyQuery = new Queries\Configuration\FindConnectorDynamicProperties();
 		$findConnectorPropertyQuery->byConnectorId($connector->getId());
-		$findConnectorPropertyQuery->byIdentifier(MetadataTypes\ConnectorPropertyIdentifier::STATE);
+		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::STATE->value);
 
 		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
 			$findConnectorPropertyQuery,
@@ -182,7 +182,7 @@ final class ConnectorConnection
 	{
 		$findDevicePropertyQuery = new Queries\Configuration\FindConnectorProperties();
 		$findDevicePropertyQuery->byConnectorId($connector->getId());
-		$findDevicePropertyQuery->byIdentifier(MetadataTypes\ConnectorPropertyIdentifier::STATE);
+		$findDevicePropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::STATE->value);
 
 		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
 			$findDevicePropertyQuery,

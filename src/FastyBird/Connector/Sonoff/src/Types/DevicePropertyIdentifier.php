@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\Sonoff\Types;
 
 use Consistence;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 use function strval;
 
 /**
@@ -33,23 +33,23 @@ class DevicePropertyIdentifier extends Consistence\Enum\Enum
 	/**
 	 * Define device states
 	 */
-	public const IP_ADDRESS = MetadataTypes\DevicePropertyIdentifier::IP_ADDRESS;
+	public const IP_ADDRESS = DevicesTypes\DevicePropertyIdentifier::IP_ADDRESS->value;
 
-	public const ADDRESS = MetadataTypes\DevicePropertyIdentifier::ADDRESS;
+	public const ADDRESS = DevicesTypes\DevicePropertyIdentifier::ADDRESS->value;
 
-	public const STATE = MetadataTypes\DevicePropertyIdentifier::STATE;
+	public const STATE = DevicesTypes\DevicePropertyIdentifier::STATE->value;
 
-	public const HARDWARE_MODEL = MetadataTypes\DevicePropertyIdentifier::HARDWARE_MODEL;
+	public const HARDWARE_MODEL = DevicesTypes\DevicePropertyIdentifier::HARDWARE_MODEL->value;
 
-	public const HARDWARE_MAC_ADDRESS = MetadataTypes\DevicePropertyIdentifier::HARDWARE_MAC_ADDRESS;
+	public const HARDWARE_MAC_ADDRESS = DevicesTypes\DevicePropertyIdentifier::HARDWARE_MAC_ADDRESS->value;
 
-	public const FIRMWARE_VERSION = MetadataTypes\DevicePropertyIdentifier::FIRMWARE_VERSION;
+	public const FIRMWARE_VERSION = DevicesTypes\DevicePropertyIdentifier::FIRMWARE_VERSION->value;
 
-	public const RSSI = MetadataTypes\DevicePropertyIdentifier::RSSI;
+	public const RSSI = DevicesTypes\DevicePropertyIdentifier::RSSI->value;
 
-	public const SSID = MetadataTypes\DevicePropertyIdentifier::SSID;
+	public const SSID = DevicesTypes\DevicePropertyIdentifier::SSID->value;
 
-	public const STATUS_LED = MetadataTypes\DevicePropertyIdentifier::STATUS_LED;
+	public const STATUS_LED = DevicesTypes\DevicePropertyIdentifier::STATUS_LED->value;
 
 	public const API_KEY = 'api_key';
 

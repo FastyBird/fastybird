@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\Modbus\Types;
 
 use Consistence;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 use function strval;
 
 /**
@@ -33,11 +33,11 @@ class DevicePropertyIdentifier extends Consistence\Enum\Enum
 	/**
 	 * Define device states
 	 */
-	public const STATE = MetadataTypes\DevicePropertyIdentifier::STATE;
+	public const STATE = DevicesTypes\DevicePropertyIdentifier::STATE->value;
 
-	public const ADDRESS = MetadataTypes\DevicePropertyIdentifier::ADDRESS;
+	public const ADDRESS = DevicesTypes\DevicePropertyIdentifier::ADDRESS->value;
 
-	public const IP_ADDRESS = MetadataTypes\DevicePropertyIdentifier::IP_ADDRESS;
+	public const IP_ADDRESS = DevicesTypes\DevicePropertyIdentifier::IP_ADDRESS->value;
 
 	public const PORT = 'port';
 

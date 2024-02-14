@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\HomeKit\Types;
 
 use Consistence;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 use function strval;
 
 /**
@@ -33,7 +33,7 @@ class ConnectorPropertyIdentifier extends Consistence\Enum\Enum
 	/**
 	 * Define connector properties identifiers
 	 */
-	public const PORT = MetadataTypes\ConnectorPropertyIdentifier::PORT;
+	public const PORT = DevicesTypes\ConnectorPropertyIdentifier::PORT->value;
 
 	public const PIN_CODE = 'pin_code';
 
