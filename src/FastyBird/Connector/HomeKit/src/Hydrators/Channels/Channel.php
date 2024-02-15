@@ -40,7 +40,7 @@ use function is_string;
  * @subpackage     Hydrators
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Channel extends DevicesHydrators\Channels\Channel
+abstract class Channel extends DevicesHydrators\Channels\Channel
 {
 
 	public function __construct(
@@ -52,14 +52,6 @@ class Channel extends DevicesHydrators\Channels\Channel
 	)
 	{
 		parent::__construct($managerRegistry, $translator, $crudReader, $cache);
-	}
-
-	/**
-	 * @return class-string<Entities\Channels\Channel>
-	 */
-	public function getEntityName(): string
-	{
-		return Entities\Channels\Channel::class;
 	}
 
 	/**

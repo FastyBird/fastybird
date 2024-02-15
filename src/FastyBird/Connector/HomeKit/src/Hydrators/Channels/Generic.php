@@ -27,7 +27,15 @@ use FastyBird\Connector\HomeKit\Entities;
  * @subpackage     Hydrators
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-abstract class Generic extends Channel
+class Generic extends Channel
 {
+
+	/**
+	 * @return class-string<Entities\Channels\Generic>
+	 */
+	public function getEntityName(): string
+	{
+		return Entities\Channels\Generic::class;
+	}
 
 }
