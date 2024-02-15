@@ -20,7 +20,6 @@ use FastyBird\Connector\HomeKit;
 use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Types;
-use FastyBird\Library\Application\Entities\Mapping as ApplicationMapping;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use Ramsey\Uuid;
@@ -31,11 +30,9 @@ use function str_replace;
 use function ucwords;
 
 #[ORM\Entity]
-#[ApplicationMapping\DiscriminatorEntry(name: self::TYPE)]
-class Channel extends DevicesEntities\Channels\Channel
+#[ORM\MappedSuperclass]
+abstract class Channel extends DevicesEntities\Channels\Channel
 {
-
-	public const TYPE = 'homekit-connector';
 
 	public const SERVICE_IDENTIFIER = '/^(?P<type>[a-z_]+)(?:_(?P<cnt>[0-9]+){1})$/';
 
@@ -47,11 +44,6 @@ class Channel extends DevicesEntities\Channels\Channel
 	)
 	{
 		parent::__construct($device, $identifier, $name, $id);
-	}
-
-	public static function getType(): string
-	{
-		return self::TYPE;
 	}
 
 	public function getSource(): MetadataTypes\Sources\Connector

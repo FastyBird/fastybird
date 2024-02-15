@@ -1,34 +1,33 @@
 <?php declare(strict_types = 1);
 
 /**
- * Channel.php
+ * Generic.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:HomeKitConnector!
- * @subpackage     Schemas
+ * @subpackage     Hydrators
  * @since          1.0.0
  *
- * @date           04.03.23
+ * @date           24.01.23
  */
 
-namespace FastyBird\Connector\HomeKit\Schemas\Channels;
+namespace FastyBird\Connector\HomeKit\Hydrators\Channels;
 
 use FastyBird\Connector\HomeKit\Entities;
-use FastyBird\Module\Devices\Schemas as DevicesSchemas;
 
 /**
- * HomeKit channel entity schema
+ * Generic channel entity hydrator
  *
- * @template T of Entities\Channels\Channel
- * @extends  DevicesSchemas\Channels\Channel<T>
+ * @template  T of Entities\Channels\Generic
+ * @extends   Channel<T>
  *
  * @package        FastyBird:HomeKitConnector!
- * @subpackage     Schemas
+ * @subpackage     Hydrators
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-abstract class Channel extends DevicesSchemas\Channels\Channel
+abstract class Generic extends Channel
 {
 
 }

@@ -115,7 +115,7 @@ final class DocumentFactory
 				));
 			}
 
-			if ($metadata->isRootDocument()) {
+			if ($metadata->isRootDocument() || $metadata->isAbstract()) {
 				$document = $discriminatorMap[$type];
 			} elseif ($metadata->getDiscriminatorValue() !== $type) {
 				throw new Exceptions\InvalidArgument(sprintf(

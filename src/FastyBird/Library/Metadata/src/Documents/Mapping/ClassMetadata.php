@@ -121,6 +121,11 @@ class ClassMetadata
 		return $this->name === $this->rootDocumentName;
 	}
 
+	public function isAbstract(): bool
+	{
+		return $this->reflectionClass->isAbstract();
+	}
+
 	/**
 	 * @param class-string<object> $owner
 	 */

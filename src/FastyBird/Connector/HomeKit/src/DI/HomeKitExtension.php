@@ -229,7 +229,7 @@ class HomeKitExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setType(Schemas\Devices\Device::class);
 
 		$builder->addDefinition($this->prefix('schemas.channel.homekit'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\Channels\Channel::class);
+			->setType(Schemas\Channels\Generic::class);
 
 		$builder->addDefinition($this->prefix('schemas.channel.lightBulb'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\Channels\LightBulb::class);
@@ -248,7 +248,7 @@ class HomeKitExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setType(Hydrators\Devices\Device::class);
 
 		$builder->addDefinition($this->prefix('hydrators.channel.homekit'), new DI\Definitions\ServiceDefinition())
-			->setType(Hydrators\Channels\Channel::class);
+			->setType(Hydrators\Channels\Generic::class);
 
 		$builder->addDefinition($this->prefix('hydrators.channel.lightBulb'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\Channels\LightBulb::class);

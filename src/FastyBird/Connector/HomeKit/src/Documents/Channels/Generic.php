@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Channel.php
+ * Generic.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -17,10 +17,15 @@ namespace FastyBird\Connector\HomeKit\Documents\Channels;
 
 use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Library\Metadata\Documents\Mapping as DOC;
-use FastyBird\Module\Devices\Documents as DevicesDocuments;
 
-#[DOC\Document(entity: Entities\Channels\Channel::class)]
-abstract class Channel extends DevicesDocuments\Channels\Channel
+#[DOC\Document(entity: Entities\Channels\Generic::class)]
+#[DOC\DiscriminatorEntry(name: Entities\Channels\Generic::TYPE)]
+class Generic extends Channel
 {
+
+	public static function getType(): string
+	{
+		return Entities\Channels\Generic::TYPE;
+	}
 
 }
