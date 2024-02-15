@@ -159,6 +159,10 @@ contributteTranslation:
     dirs:
         - %appDir%/vendor/fastybird/json-api/src/Translations
 
+fbMetadataLibrary:
+    documents:
+        mapping: []
+
 # Doctrine
 ##########
 

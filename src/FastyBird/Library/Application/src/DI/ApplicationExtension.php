@@ -134,13 +134,6 @@ class ApplicationExtension extends DI\CompilerExtension
 				new DI\Definitions\ServiceDefinition(),
 			)
 				->setType(SymfonyMonolog\Handler\ConsoleHandler::class);
-
-			$builder->addDefinition($this->prefix('subscribers.console'), new DI\Definitions\ServiceDefinition())
-				->setType(Subscribers\Console::class)
-				->setArguments([
-					'handler' => $consoleHandler,
-					'level' => $configuration->logging->console->level,
-				]);
 		}
 
 		/**
