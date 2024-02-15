@@ -173,8 +173,8 @@ final class Cloud implements Client
 									'connector' => $this->connector->getId(),
 									'identifier' => $message->getIdentifier(),
 									'state' => $message->isOnline()
-										? DevicesTypes\ConnectionState::CONNECTED->value
-										: DevicesTypes\ConnectionState::DISCONNECTED->value,
+										? DevicesTypes\ConnectionState::CONNECTED
+										: DevicesTypes\ConnectionState::DISCONNECTED,
 								],
 							),
 						);
@@ -379,8 +379,8 @@ final class Cloud implements Client
 							'connector' => $device->getConnector(),
 							'identifier' => $device->getIdentifier(),
 							'state' => $detail->getResult()->isOnline()
-								? DevicesTypes\ConnectionState::CONNECTED->value
-								: DevicesTypes\ConnectionState::DISCONNECTED->value,
+								? DevicesTypes\ConnectionState::CONNECTED
+								: DevicesTypes\ConnectionState::DISCONNECTED,
 						],
 					),
 				);
@@ -405,7 +405,7 @@ final class Cloud implements Client
 							[
 								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
-								'state' => DevicesTypes\ConnectionState::ALERT->value,
+								'state' => DevicesTypes\ConnectionState::ALERT,
 							],
 						),
 					);
@@ -416,7 +416,7 @@ final class Cloud implements Client
 							[
 								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
-								'state' => DevicesTypes\ConnectionState::DISCONNECTED->value,
+								'state' => DevicesTypes\ConnectionState::DISCONNECTED,
 							],
 						),
 					);
@@ -517,7 +517,7 @@ final class Cloud implements Client
 							[
 								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
-								'state' => DevicesTypes\ConnectionState::ALERT->value,
+								'state' => DevicesTypes\ConnectionState::ALERT,
 							],
 						),
 					);
@@ -528,7 +528,7 @@ final class Cloud implements Client
 							[
 								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
-								'state' => DevicesTypes\ConnectionState::DISCONNECTED->value,
+								'state' => DevicesTypes\ConnectionState::DISCONNECTED,
 							],
 						),
 					);

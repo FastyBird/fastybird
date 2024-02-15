@@ -296,7 +296,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					[
 						'connector' => $connector->getId(),
 						'device' => $device->getId(),
-						'state' => DevicesTypes\ConnectionState::ALERT->value,
+						'state' => DevicesTypes\ConnectionState::ALERT,
 						'source' => MetadataTypes\Sources\Connector::VIRTUAL,
 					],
 				),
@@ -373,7 +373,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						[
 							'connector' => $connector->getId(),
 							'device' => $device->getId(),
-							'state' => DevicesTypes\ConnectionState::ALERT->value,
+							'state' => DevicesTypes\ConnectionState::ALERT,
 							'source' => MetadataTypes\Sources\Connector::VIRTUAL,
 						],
 					),

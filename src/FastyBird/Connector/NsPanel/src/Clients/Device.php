@@ -130,7 +130,7 @@ final class Device implements Client
 							[
 								'connector' => $gateway->getConnector(),
 								'identifier' => $gateway->getIdentifier(),
-								'state' => DevicesTypes\ConnectionState::ALERT->value,
+								'state' => DevicesTypes\ConnectionState::ALERT,
 							],
 						),
 					);
@@ -236,7 +236,7 @@ final class Device implements Client
 							[
 								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
-								'state' => DevicesTypes\ConnectionState::ALERT->value,
+								'state' => DevicesTypes\ConnectionState::ALERT,
 							],
 						),
 					);
@@ -309,7 +309,7 @@ final class Device implements Client
 											[
 												'connector' => $device->getConnector(),
 												'identifier' => $device->getIdentifier(),
-												'state' => DevicesTypes\ConnectionState::CONNECTED->value,
+												'state' => DevicesTypes\ConnectionState::CONNECTED,
 											],
 										),
 									);
@@ -370,7 +370,7 @@ final class Device implements Client
 										[
 											'connector' => $gateway->getConnector(),
 											'identifier' => $gateway->getIdentifier(),
-											'state' => DevicesTypes\ConnectionState::DISCONNECTED->value,
+											'state' => DevicesTypes\ConnectionState::DISCONNECTED,
 										],
 									),
 								);
@@ -382,7 +382,7 @@ final class Device implements Client
 										[
 											'connector' => $gateway->getConnector(),
 											'identifier' => $gateway->getIdentifier(),
-											'state' => DevicesTypes\ConnectionState::ALERT->value,
+											'state' => DevicesTypes\ConnectionState::ALERT,
 										],
 									),
 								);
@@ -480,7 +480,7 @@ final class Device implements Client
 														[
 															'connector' => $gateway->getConnector(),
 															'identifier' => $gateway->getIdentifier(),
-															'state' => DevicesTypes\ConnectionState::DISCONNECTED->value,
+															'state' => DevicesTypes\ConnectionState::DISCONNECTED,
 														],
 													),
 												);
@@ -492,7 +492,7 @@ final class Device implements Client
 														[
 															'connector' => $gateway->getConnector(),
 															'identifier' => $gateway->getIdentifier(),
-															'state' => DevicesTypes\ConnectionState::ALERT->value,
+															'state' => DevicesTypes\ConnectionState::ALERT,
 														],
 													),
 												);
@@ -545,7 +545,7 @@ final class Device implements Client
 										[
 											'connector' => $gateway->getConnector(),
 											'identifier' => $gateway->getIdentifier(),
-											'state' => DevicesTypes\ConnectionState::DISCONNECTED->value,
+											'state' => DevicesTypes\ConnectionState::DISCONNECTED,
 										],
 									),
 								);
@@ -557,7 +557,7 @@ final class Device implements Client
 										[
 											'connector' => $gateway->getConnector(),
 											'identifier' => $gateway->getIdentifier(),
-											'state' => DevicesTypes\ConnectionState::ALERT->value,
+											'state' => DevicesTypes\ConnectionState::ALERT,
 										],
 									),
 								);
@@ -605,7 +605,7 @@ final class Device implements Client
 						[
 							'connector' => $gateway->getConnector(),
 							'identifier' => $gateway->getIdentifier(),
-							'state' => DevicesTypes\ConnectionState::ALERT->value,
+							'state' => DevicesTypes\ConnectionState::ALERT,
 						],
 					),
 				);
@@ -654,7 +654,7 @@ final class Device implements Client
 						[
 							'connector' => $gateway->getConnector(),
 							'identifier' => $device->getIdentifier(),
-							'state' => DevicesTypes\ConnectionState::DISCONNECTED->value,
+							'state' => DevicesTypes\ConnectionState::DISCONNECTED,
 						],
 					),
 				);
@@ -754,7 +754,7 @@ final class Device implements Client
 					[
 						'connector' => $gateway->getConnector(),
 						'identifier' => $gateway->getIdentifier(),
-						'state' => DevicesTypes\ConnectionState::DISCONNECTED->value,
+						'state' => DevicesTypes\ConnectionState::DISCONNECTED,
 					],
 				),
 			);

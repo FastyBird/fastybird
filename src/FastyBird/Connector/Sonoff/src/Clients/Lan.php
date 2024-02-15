@@ -131,7 +131,7 @@ final class Lan extends ClientProcess implements Client
 							[
 								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
-								'state' => DevicesTypes\ConnectionState::CONNECTED->value,
+								'state' => DevicesTypes\ConnectionState::CONNECTED,
 							],
 						),
 					);
@@ -189,7 +189,7 @@ final class Lan extends ClientProcess implements Client
 					[
 						'connector' => $device->getConnector(),
 						'identifier' => $device->getIdentifier(),
-						'state' => DevicesTypes\ConnectionState::ALERT->value,
+						'state' => DevicesTypes\ConnectionState::ALERT,
 					],
 				),
 			);
@@ -213,7 +213,7 @@ final class Lan extends ClientProcess implements Client
 							[
 								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
-								'state' => DevicesTypes\ConnectionState::CONNECTED->value,
+								'state' => DevicesTypes\ConnectionState::CONNECTED,
 							],
 						),
 					);
@@ -230,7 +230,7 @@ final class Lan extends ClientProcess implements Client
 								[
 									'connector' => $device->getConnector(),
 									'identifier' => $device->getIdentifier(),
-									'state' => DevicesTypes\ConnectionState::ALERT->value,
+									'state' => DevicesTypes\ConnectionState::ALERT,
 								],
 							),
 						);

@@ -18,9 +18,7 @@ namespace FastyBird\Connector\NsPanel\Writers;
 use FastyBird\Connector\NsPanel\Documents;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Queries;
-use FastyBird\Connector\NsPanel\Queue\Messages\StoreDeviceConnectionState;
-use FastyBird\Connector\NsPanel\Queue\Messages\WriteSubDeviceState;
-use FastyBird\Connector\NsPanel\Queue\Messages\WriteThirdPartyDeviceState;
+use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -94,7 +92,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 		if ($device instanceof Documents\Devices\SubDevice) {
 			$this->queue->append(
 				$this->messageBuilder->create(
-					WriteSubDeviceState::class,
+					Queue\Messages\WriteSubDeviceState::class,
 					[
 						'connector' => $device->getConnector(),
 						'device' => $device->getId(),
@@ -108,11 +106,11 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 			if ($this->thirdPartyDeviceHelper->getGatewayIdentifier($device) === null) {
 				$this->queue->append(
 					$this->messageBuilder->create(
-						StoreDeviceConnectionState::class,
+						Queue\Messages\StoreDeviceConnectionState::class,
 						[
 							'connector' => $device->getConnector(),
 							'identifier' => $device->getIdentifier(),
-							'state' => DevicesTypes\ConnectionState::ALERT->value,
+							'state' => DevicesTypes\ConnectionState::ALERT,
 						],
 					),
 				);
@@ -122,7 +120,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 
 			$this->queue->append(
 				$this->messageBuilder->create(
-					WriteThirdPartyDeviceState::class,
+					Queue\Messages\WriteThirdPartyDeviceState::class,
 					[
 						'connector' => $device->getConnector(),
 						'device' => $device->getId(),

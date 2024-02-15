@@ -18,8 +18,7 @@ namespace FastyBird\Connector\Sonoff\Writers;
 use FastyBird\Connector\Sonoff\Documents;
 use FastyBird\Connector\Sonoff\Exceptions;
 use FastyBird\Connector\Sonoff\Queries;
-use FastyBird\Connector\Sonoff\Queue\Messages\WriteChannelPropertyState;
-use FastyBird\Connector\Sonoff\Queue\Messages\WriteDevicePropertyState;
+use FastyBird\Connector\Sonoff\Queue;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Symfony\Component\EventDispatcher;
@@ -82,7 +81,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 
 			$this->queue->append(
 				$this->entityHelper->create(
-					WriteDevicePropertyState::class,
+					Queue\Messages\WriteDevicePropertyState::class,
 					[
 						'connector' => $this->connector->getId(),
 						'device' => $device->getId(),
@@ -119,7 +118,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 
 			$this->queue->append(
 				$this->entityHelper->create(
-					WriteChannelPropertyState::class,
+					Queue\Messages\WriteChannelPropertyState::class,
 					[
 						'connector' => $this->connector->getId(),
 						'device' => $device->getId(),

@@ -396,7 +396,7 @@ final class Http implements Server
 					[
 						'connector' => $accessory->getDevice()->getConnector(),
 						'device' => $accessory->getDevice()->getId(),
-						'state' => DevicesTypes\ConnectionState::CONNECTED->value,
+						'state' => DevicesTypes\ConnectionState::CONNECTED,
 					],
 				),
 			);

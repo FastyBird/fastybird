@@ -1008,7 +1008,7 @@ class Thermostat implements VirtualDrivers\Driver
 				[
 					'connector' => $this->device->getConnector(),
 					'device' => $this->device->getId(),
-					'state' => DevicesTypes\ConnectionState::STOPPED->value,
+					'state' => DevicesTypes\ConnectionState::STOPPED,
 					'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 				],
 			),

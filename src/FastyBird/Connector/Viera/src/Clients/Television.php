@@ -137,7 +137,7 @@ final class Television implements Client
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
-							'state' => DevicesTypes\ConnectionState::ALERT->value,
+							'state' => DevicesTypes\ConnectionState::ALERT,
 						],
 					),
 				);
@@ -262,7 +262,7 @@ final class Television implements Client
 							[
 								'connector' => $device->getConnector(),
 								'device' => $device->getId(),
-								'state' => DevicesTypes\ConnectionState::CONNECTED->value,
+								'state' => DevicesTypes\ConnectionState::CONNECTED,
 							],
 						),
 					);
@@ -291,7 +291,7 @@ final class Television implements Client
 							[
 								'connector' => $device->getConnector(),
 								'device' => $device->getId(),
-								'state' => DevicesTypes\ConnectionState::ALERT->value,
+								'state' => DevicesTypes\ConnectionState::ALERT,
 							],
 						),
 					);
@@ -319,7 +319,7 @@ final class Television implements Client
 							[
 								'connector' => $device->getConnector(),
 								'device' => $device->getId(),
-								'state' => DevicesTypes\ConnectionState::ALERT->value,
+								'state' => DevicesTypes\ConnectionState::ALERT,
 							],
 						),
 					);
@@ -354,7 +354,7 @@ final class Television implements Client
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
-							'state' => DevicesTypes\ConnectionState::DISCONNECTED->value,
+							'state' => DevicesTypes\ConnectionState::DISCONNECTED,
 						],
 					),
 				);
@@ -419,7 +419,7 @@ final class Television implements Client
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
-							'state' => DevicesTypes\ConnectionState::ALERT->value,
+							'state' => DevicesTypes\ConnectionState::ALERT,
 						],
 					),
 				);
@@ -464,7 +464,7 @@ final class Television implements Client
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
-							'state' => DevicesTypes\ConnectionState::ALERT->value,
+							'state' => DevicesTypes\ConnectionState::ALERT,
 						],
 					),
 				);
@@ -540,7 +540,7 @@ final class Television implements Client
 								[
 									'connector' => $device->getConnector(),
 									'device' => $device->getId(),
-									'state' => DevicesTypes\ConnectionState::ALERT->value,
+									'state' => DevicesTypes\ConnectionState::ALERT,
 								],
 							),
 						);
@@ -551,7 +551,7 @@ final class Television implements Client
 								[
 									'connector' => $device->getConnector(),
 									'device' => $device->getId(),
-									'state' => DevicesTypes\ConnectionState::DISCONNECTED->value,
+									'state' => DevicesTypes\ConnectionState::DISCONNECTED,
 								],
 							),
 						);
@@ -619,7 +619,7 @@ final class Television implements Client
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
-							'state' => DevicesTypes\ConnectionState::DISCONNECTED->value,
+							'state' => DevicesTypes\ConnectionState::DISCONNECTED,
 						],
 					),
 				);

@@ -292,7 +292,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 							[
 								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
-								'state' => DevicesTypes\ConnectionState::ALERT->value,
+								'state' => DevicesTypes\ConnectionState::ALERT,
 							],
 						),
 					);
@@ -373,7 +373,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					[
 						'connector' => $device->getConnector(),
 						'identifier' => $device->getIdentifier(),
-						'state' => DevicesTypes\ConnectionState::ALERT->value,
+						'state' => DevicesTypes\ConnectionState::ALERT,
 					],
 				),
 			);
@@ -466,7 +466,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 								[
 									'connector' => $device->getConnector(),
 									'identifier' => $device->getIdentifier(),
-									'state' => DevicesTypes\ConnectionState::ALERT->value,
+									'state' => DevicesTypes\ConnectionState::ALERT,
 								],
 							),
 						);
@@ -482,7 +482,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 								[
 									'connector' => $device->getConnector(),
 									'identifier' => $device->getIdentifier(),
-									'state' => DevicesTypes\ConnectionState::LOST->value,
+									'state' => DevicesTypes\ConnectionState::LOST,
 								],
 							),
 						);
@@ -494,7 +494,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 								[
 									'connector' => $device->getConnector(),
 									'identifier' => $device->getIdentifier(),
-									'state' => DevicesTypes\ConnectionState::UNKNOWN->value,
+									'state' => DevicesTypes\ConnectionState::UNKNOWN,
 								],
 							),
 						);
@@ -506,7 +506,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 							[
 								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
-								'state' => DevicesTypes\ConnectionState::ALERT->value,
+								'state' => DevicesTypes\ConnectionState::ALERT,
 							],
 						),
 					);
@@ -518,7 +518,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 							[
 								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
-								'state' => DevicesTypes\ConnectionState::LOST->value,
+								'state' => DevicesTypes\ConnectionState::LOST,
 							],
 						),
 					);

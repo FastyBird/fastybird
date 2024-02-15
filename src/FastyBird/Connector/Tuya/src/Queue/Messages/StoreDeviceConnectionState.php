@@ -34,7 +34,7 @@ final class StoreDeviceConnectionState extends Device
 	public function __construct(
 		Uuid\UuidInterface $connector,
 		string $identifier,
-		#[ObjectMapper\Rules\BackedEnumValue(class: DevicesTypes\ConnectionState::class)]
+		#[ObjectMapper\Rules\InstanceOfValue(type: DevicesTypes\ConnectionState::class)]
 		private readonly DevicesTypes\ConnectionState $state,
 	)
 	{

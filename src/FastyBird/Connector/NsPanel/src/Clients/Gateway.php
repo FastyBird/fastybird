@@ -205,7 +205,7 @@ final class Gateway implements Client
 					[
 						'connector' => $gateway->getConnector(),
 						'identifier' => $gateway->getIdentifier(),
-						'state' => DevicesTypes\ConnectionState::ALERT->value,
+						'state' => DevicesTypes\ConnectionState::ALERT,
 					],
 				),
 			);
@@ -252,7 +252,7 @@ final class Gateway implements Client
 							[
 								'connector' => $gateway->getConnector(),
 								'identifier' => $gateway->getIdentifier(),
-								'state' => DevicesTypes\ConnectionState::CONNECTED->value,
+								'state' => DevicesTypes\ConnectionState::CONNECTED,
 							],
 						),
 					);
@@ -280,7 +280,7 @@ final class Gateway implements Client
 								[
 									'connector' => $gateway->getConnector(),
 									'identifier' => $gateway->getIdentifier(),
-									'state' => DevicesTypes\ConnectionState::ALERT->value,
+									'state' => DevicesTypes\ConnectionState::ALERT,
 								],
 							),
 						);
@@ -314,7 +314,7 @@ final class Gateway implements Client
 								[
 									'connector' => $gateway->getConnector(),
 									'identifier' => $gateway->getIdentifier(),
-									'state' => DevicesTypes\ConnectionState::DISCONNECTED->value,
+									'state' => DevicesTypes\ConnectionState::DISCONNECTED,
 								],
 							),
 						);
@@ -388,7 +388,7 @@ final class Gateway implements Client
 					[
 						'connector' => $gateway->getConnector(),
 						'identifier' => $gateway->getIdentifier(),
-						'state' => DevicesTypes\ConnectionState::ALERT->value,
+						'state' => DevicesTypes\ConnectionState::ALERT,
 					],
 				),
 			);
@@ -438,7 +438,7 @@ final class Gateway implements Client
 							[
 								'connector' => $gateway->getConnector(),
 								'identifier' => $gateway->getIdentifier(),
-								'state' => DevicesTypes\ConnectionState::CONNECTED->value,
+								'state' => DevicesTypes\ConnectionState::CONNECTED,
 							],
 						),
 					);
@@ -521,7 +521,7 @@ final class Gateway implements Client
 								[
 									'connector' => $gateway->getConnector(),
 									'identifier' => $gateway->getIdentifier(),
-									'state' => DevicesTypes\ConnectionState::ALERT->value,
+									'state' => DevicesTypes\ConnectionState::ALERT,
 								],
 							),
 						);
@@ -555,7 +555,7 @@ final class Gateway implements Client
 								[
 									'connector' => $gateway->getConnector(),
 									'identifier' => $gateway->getIdentifier(),
-									'state' => DevicesTypes\ConnectionState::DISCONNECTED->value,
+									'state' => DevicesTypes\ConnectionState::DISCONNECTED,
 								],
 							),
 						);

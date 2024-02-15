@@ -130,8 +130,8 @@ final class Cloud extends ClientProcess implements Client
 									'connector' => $this->connector->getId(),
 									'identifier' => $message->getDeviceId(),
 									'state' => $message->isOnline()
-										? DevicesTypes\ConnectionState::CONNECTED->value
-										: DevicesTypes\ConnectionState::DISCONNECTED->value,
+										? DevicesTypes\ConnectionState::CONNECTED
+										: DevicesTypes\ConnectionState::DISCONNECTED,
 								],
 							),
 						);
@@ -263,8 +263,8 @@ final class Cloud extends ClientProcess implements Client
 								'connector' => $this->connector->getId(),
 								'identifier' => $device->getIdentifier(),
 								'state' => $result->isOnline()
-									? DevicesTypes\ConnectionState::CONNECTED->value
-									: DevicesTypes\ConnectionState::DISCONNECTED->value,
+									? DevicesTypes\ConnectionState::CONNECTED
+									: DevicesTypes\ConnectionState::DISCONNECTED,
 							],
 						),
 					);
@@ -294,7 +294,7 @@ final class Cloud extends ClientProcess implements Client
 								[
 									'connector' => $device->getConnector(),
 									'identifier' => $device->getIdentifier(),
-									'state' => DevicesTypes\ConnectionState::ALERT->value,
+									'state' => DevicesTypes\ConnectionState::ALERT,
 								],
 							),
 						);
@@ -384,7 +384,7 @@ final class Cloud extends ClientProcess implements Client
 												[
 													'connector' => $device->getConnector(),
 													'identifier' => $device->getIdentifier(),
-													'state' => DevicesTypes\ConnectionState::ALERT->value,
+													'state' => DevicesTypes\ConnectionState::ALERT,
 												],
 											),
 										);

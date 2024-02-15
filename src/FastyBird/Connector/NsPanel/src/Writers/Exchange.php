@@ -170,7 +170,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 							[
 								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
-								'state' => DevicesTypes\ConnectionState::ALERT->value,
+								'state' => DevicesTypes\ConnectionState::ALERT,
 							],
 						),
 					);
@@ -243,7 +243,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 							[
 								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
-								'state' => DevicesTypes\ConnectionState::ALERT->value,
+								'state' => DevicesTypes\ConnectionState::ALERT,
 							],
 						),
 					);

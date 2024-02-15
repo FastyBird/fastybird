@@ -92,9 +92,10 @@ final class Repository extends Models\Configuration\Repository
 	): Documents\Channels\Channel|null
 	{
 		try {
+			/** @phpstan-var T|null $document */
 			$document = $this->cache->load(
 				$this->createKeyOne($queryObject) . '_' . md5($type),
-				function () use ($queryObject, $type): Documents\Channels\Channel|false {
+				function () use ($queryObject, $type): Documents\Channels\Channel|null {
 					$space = $this->builder
 						->load()
 						->find('.' . Devices\Constants::DATA_STORAGE_CHANNELS_KEY . '.*');
@@ -108,22 +109,20 @@ final class Repository extends Models\Configuration\Repository
 					$result = $queryObject->fetch($space);
 
 					if (!is_array($result) || $result === []) {
-						return false;
+						return null;
 					}
 
-					return $this->documentFactory->create($type, $result[0]);
+					$document = $this->documentFactory->create($type, $result[0]);
+
+					if (!$document instanceof $type && !$metadata->isAbstract()) {
+						throw new Exceptions\InvalidState('Could not load document');
+					}
+
+					return $document;
 				},
 			);
 		} catch (Throwable $ex) {
 			throw new Exceptions\InvalidState('Could not load document', $ex->getCode(), $ex);
-		}
-
-		if ($document === false) {
-			return null;
-		}
-
-		if (!$document instanceof $type) {
-			throw new Exceptions\InvalidState('Could not load document');
 		}
 
 		return $document;
@@ -145,6 +144,7 @@ final class Repository extends Models\Configuration\Repository
 	): array
 	{
 		try {
+			/** @phpstan-var array<T> $documents */
 			$documents = $this->cache->load(
 				$this->createKeyAll($queryObject) . '_' . md5($type),
 				function () use ($queryObject, $type): array {
@@ -175,10 +175,6 @@ final class Repository extends Models\Configuration\Repository
 			);
 		} catch (Throwable $ex) {
 			throw new Exceptions\InvalidState('Could not load documents', $ex->getCode(), $ex);
-		}
-
-		if (!is_array($documents)) {
-			throw new Exceptions\InvalidState('Could not load documents');
 		}
 
 		return $documents;

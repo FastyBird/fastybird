@@ -231,6 +231,7 @@ class Devices
 										'connector' => $device->getConnector(),
 										'device' => $device->getId(),
 										'state' => DevicesTypes\ConnectionState::ALERT->value,
+										'source' => MetadataTypes\Sources\Connector::VIRTUAL,
 									],
 								),
 							);
@@ -290,7 +291,7 @@ class Devices
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
-							'state' => DevicesTypes\ConnectionState::CONNECTED->value,
+							'state' => DevicesTypes\ConnectionState::CONNECTED,
 							'source' => MetadataTypes\Sources\Connector::VIRTUAL,
 						],
 					),
@@ -320,7 +321,7 @@ class Devices
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
-							'state' => DevicesTypes\ConnectionState::ALERT->value,
+							'state' => DevicesTypes\ConnectionState::ALERT,
 							'source' => MetadataTypes\Sources\Connector::VIRTUAL,
 						],
 					),

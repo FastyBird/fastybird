@@ -128,7 +128,7 @@ class Rtu implements Client
 						[
 							'connector' => $this->connector->getId(),
 							'device' => $device->getId(),
-							'state' => DevicesTypes\ConnectionState::ALERT->value,
+							'state' => DevicesTypes\ConnectionState::ALERT,
 						],
 					),
 				);
@@ -195,7 +195,7 @@ class Rtu implements Client
 								[
 									'connector' => $this->connector->getId(),
 									'device' => $device->getId(),
-									'state' => DevicesTypes\ConnectionState::LOST->value,
+									'state' => DevicesTypes\ConnectionState::LOST,
 								],
 							),
 						);
@@ -515,7 +515,7 @@ class Rtu implements Client
 					[
 						'connector' => $this->connector->getId(),
 						'device' => $device->getId(),
-						'state' => DevicesTypes\ConnectionState::CONNECTED->value,
+						'state' => DevicesTypes\ConnectionState::CONNECTED,
 					],
 				),
 			);
@@ -576,7 +576,7 @@ class Rtu implements Client
 						[
 							'connector' => $this->connector->getId(),
 							'device' => $device->getId(),
-							'state' => DevicesTypes\ConnectionState::LOST->value,
+							'state' => DevicesTypes\ConnectionState::LOST,
 						],
 					),
 				);

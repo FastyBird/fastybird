@@ -37,7 +37,7 @@ final class StoreDeviceConnectionState implements Message
 		private readonly Uuid\UuidInterface $connector,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $device,
-		#[ObjectMapper\Rules\BackedEnumValue(class: DevicesTypes\ConnectionState::class)]
+		#[ObjectMapper\Rules\InstanceOfValue(type: DevicesTypes\ConnectionState::class)]
 		private readonly DevicesTypes\ConnectionState $state,
 		#[ObjectMapper\Rules\AnyOf([
 			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\Sources\Connector::class),

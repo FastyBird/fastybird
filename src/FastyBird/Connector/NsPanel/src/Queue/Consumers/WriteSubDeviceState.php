@@ -161,7 +161,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 					[
 						'connector' => $connector->getId(),
 						'identifier' => $gateway->getIdentifier(),
-						'state' => DevicesTypes\ConnectionState::ALERT->value,
+						'state' => DevicesTypes\ConnectionState::ALERT,
 					],
 				),
 			);
@@ -331,7 +331,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 								[
 									'connector' => $connector->getId(),
 									'identifier' => $gateway->getIdentifier(),
-									'state' => DevicesTypes\ConnectionState::DISCONNECTED->value,
+									'state' => DevicesTypes\ConnectionState::DISCONNECTED,
 								],
 							),
 						);
@@ -343,7 +343,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 								[
 									'connector' => $connector->getId(),
 									'identifier' => $gateway->getIdentifier(),
-									'state' => DevicesTypes\ConnectionState::LOST->value,
+									'state' => DevicesTypes\ConnectionState::LOST,
 								],
 							),
 						);
