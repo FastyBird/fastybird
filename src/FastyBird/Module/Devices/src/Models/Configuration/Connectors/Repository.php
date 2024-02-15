@@ -26,7 +26,6 @@ use Ramsey\Uuid;
 use stdClass;
 use Throwable;
 use function array_map;
-use function assert;
 use function is_array;
 use function md5;
 
