@@ -15,7 +15,6 @@
 
 namespace FastyBird\Connector\NsPanel\Connector;
 
-use Evenement;
 use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Clients;
 use FastyBird\Connector\NsPanel\Documents;
@@ -30,12 +29,12 @@ use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Connectors as DevicesConnectors;
-use FastyBird\Module\Devices\Constants as DevicesConstants;
 use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use Nette;
+use Psr\EventDispatcher as PsrEventDispatcher;
 use React\EventLoop;
 use React\Promise;
 use ReflectionClass;
@@ -55,7 +54,6 @@ final class Connector implements DevicesConnectors\Connector
 {
 
 	use Nette\SmartObject;
-	use Evenement\EventEmitterTrait;
 
 	private const QUEUE_PROCESSING_INTERVAL = 0.01;
 
@@ -87,6 +85,7 @@ final class Connector implements DevicesConnectors\Connector
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		private readonly EventLoop\LoopInterface $eventLoop,
+		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
 		assert($this->connector instanceof Documents\Connectors\Connector);
@@ -266,14 +265,11 @@ final class Connector implements DevicesConnectors\Connector
 		$client = $this->discoveryClientFactory->create($this->connector);
 
 		$client->on(NsPanel\Constants::EVENT_FINISHED, function (): void {
-			$this->emit(
-				DevicesConstants::EVENT_TERMINATE,
-				[
-					new DevicesEvents\TerminateConnector(
-						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::FB_MQTT),
-						'Devices discovery finished',
-					),
-				],
+			$this->dispatcher?->dispatch(
+				new DevicesEvents\TerminateConnector(
+					MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::FB_MQTT),
+					'Devices discovery finished',
+				),
 			);
 		});
 

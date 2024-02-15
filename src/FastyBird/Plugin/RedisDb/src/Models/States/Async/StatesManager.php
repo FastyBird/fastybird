@@ -15,7 +15,7 @@
 
 namespace FastyBird\Plugin\RedisDb\Models\States\Async;
 
-use Consistence;
+use BackedEnum;
 use DateTimeInterface;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
@@ -30,7 +30,6 @@ use Nette\Utils;
 use Psr\Log;
 use Ramsey\Uuid;
 use React\Promise;
-use ReflectionClass;
 use stdClass;
 use Throwable;
 use function array_keys;
@@ -264,17 +263,10 @@ class StatesManager
 							$value = $value->format(DateTimeInterface::ATOM);
 						} elseif ($value instanceof Utils\ArrayHash) {
 							$value = (array) $value;
-						} elseif ($value instanceof Consistence\Enum\Enum) {
-							$value = $value->getValue();
+						} elseif ($value instanceof BackedEnum) {
+							$value = $value->value;
 						} elseif (is_object($value)) {
-							$rc = new ReflectionClass($value);
-
-							if ($rc->isEnum()) {
-								// @phpstan-ignore-next-line
-								$value = $value->value;
-							} else {
-								$value = method_exists($value, '__toString') ? $value->__toString() : serialize($value);
-							}
+							$value = method_exists($value, '__toString') ? $value->__toString() : serialize($value);
 						}
 					} else {
 						$value = null;
@@ -368,22 +360,15 @@ class StatesManager
 							} elseif ($value instanceof Utils\ArrayHash) {
 								$value = (array) $value;
 
-							} elseif ($value instanceof Consistence\Enum\Enum) {
-								$value = $value->getValue();
+							} elseif ($value instanceof BackedEnum) {
+								$value = $value->value;
 
 							} elseif (is_object($value)) {
-								$rc = new ReflectionClass($value);
-
-								if ($rc->isEnum()) {
-									// @phpstan-ignore-next-line
-									$value = $value->value;
-								} else {
-									$value = method_exists($value, '__toString')
-										? $value->__toString()
-										: serialize(
-											$value,
-										);
-								}
+								$value = method_exists($value, '__toString')
+									? $value->__toString()
+									: serialize(
+										$value,
+									);
 							}
 
 							if (

@@ -283,18 +283,4 @@ final class Constants
 
 	public const DATA_STORAGE_CHANNELS_KEY = 'channels';
 
-	/**
-	 * MODULE SIMPLE EVENTS NAMES
-	 */
-
-	public const EVENT_ENTITY_CREATED = 'entityCreated';
-
-	public const EVENT_ENTITY_UPDATED = 'entityUpdated';
-
-	public const EVENT_ENTITY_DELETED = 'entityDeleted';
-
-	public const EVENT_TERMINATE = 'terminate';
-
-	public const EVENT_RESTART = 'restart';
-
 }

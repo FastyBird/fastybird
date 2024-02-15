@@ -15,7 +15,6 @@
 
 namespace FastyBird\Connector\Modbus\Connector;
 
-use Evenement;
 use FastyBird\Connector\Modbus;
 use FastyBird\Connector\Modbus\Clients;
 use FastyBird\Connector\Modbus\Documents;
@@ -49,7 +48,6 @@ final class Connector implements DevicesConnectors\Connector
 {
 
 	use Nette\SmartObject;
-	use Evenement\EventEmitterTrait;
 
 	private const QUEUE_PROCESSING_INTERVAL = 0.01;
 

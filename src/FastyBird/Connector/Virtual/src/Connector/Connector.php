@@ -15,7 +15,6 @@
 
 namespace FastyBird\Connector\Virtual\Connector;
 
-use Evenement;
 use FastyBird\Connector\Virtual;
 use FastyBird\Connector\Virtual\Devices;
 use FastyBird\Connector\Virtual\Documents;
@@ -45,7 +44,6 @@ final class Connector implements DevicesConnectors\Connector
 {
 
 	use Nette\SmartObject;
-	use Evenement\EventEmitterTrait;
 
 	private const QUEUE_PROCESSING_INTERVAL = 0.01;
 

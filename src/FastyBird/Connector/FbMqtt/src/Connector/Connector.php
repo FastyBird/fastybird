@@ -15,7 +15,6 @@
 
 namespace FastyBird\Connector\FbMqtt\Connector;
 
-use Evenement;
 use FastyBird\Connector\FbMqtt;
 use FastyBird\Connector\FbMqtt\Clients;
 use FastyBird\Connector\FbMqtt\Documents;
@@ -50,7 +49,6 @@ final class Connector implements DevicesConnectors\Connector
 {
 
 	use Nette\SmartObject;
-	use Evenement\EventEmitterTrait;
 
 	private const QUEUE_PROCESSING_INTERVAL = 0.01;
 

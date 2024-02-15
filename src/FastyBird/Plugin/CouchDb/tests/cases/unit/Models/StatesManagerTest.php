@@ -2,7 +2,7 @@
 
 namespace FastyBird\Plugin\CouchDb\Tests\Cases\Unit\Models;
 
-use Consistence;
+use BackedEnum;
 use DateTimeImmutable;
 use DateTimeInterface;
 use FastyBird\DateTimeFactory;
@@ -119,7 +119,7 @@ final class StatesManagerTest extends TestCase
 			->method('set')
 			->willReturnCallback(
 				static function (string $key, string|null $value = null) use ($data, &$originalData): void {
-					if ($data[$key] instanceof Consistence\Enum\Enum) {
+					if ($data[$key] instanceof BackedEnum) {
 						self::assertEquals((string) $data[$key], $value);
 
 					} else {
@@ -160,7 +160,6 @@ final class StatesManagerTest extends TestCase
 		$objectCreator = new ObjectMapper\Processing\ObjectCreator($injectorManager);
 		$ruleManager = new ObjectMapper\Rules\DefaultRuleManager();
 		$ruleManager->addRule(new ApplicationObjectMapper\Rules\UuidRule());
-		$ruleManager->addRule(new ApplicationObjectMapper\Rules\ConsistenceEnumRule());
 		$resolverFactory = new ObjectMapper\Meta\MetaResolverFactory($ruleManager, $objectCreator);
 		$cache = new ObjectMapper\Meta\Cache\ArrayMetaCache();
 		$metaLoader = new ObjectMapper\Meta\MetaLoader($cache, $sourceManager, $resolverFactory);
@@ -236,7 +235,6 @@ final class StatesManagerTest extends TestCase
 		$objectCreator = new ObjectMapper\Processing\ObjectCreator($injectorManager);
 		$ruleManager = new ObjectMapper\Rules\DefaultRuleManager();
 		$ruleManager->addRule(new ApplicationObjectMapper\Rules\UuidRule());
-		$ruleManager->addRule(new ApplicationObjectMapper\Rules\ConsistenceEnumRule());
 		$resolverFactory = new ObjectMapper\Meta\MetaResolverFactory($ruleManager, $objectCreator);
 		$cache = new ObjectMapper\Meta\Cache\ArrayMetaCache();
 		$metaLoader = new ObjectMapper\Meta\MetaLoader($cache, $sourceManager, $resolverFactory);
@@ -267,7 +265,6 @@ final class StatesManagerTest extends TestCase
 		$objectCreator = new ObjectMapper\Processing\ObjectCreator($injectorManager);
 		$ruleManager = new ObjectMapper\Rules\DefaultRuleManager();
 		$ruleManager->addRule(new ApplicationObjectMapper\Rules\UuidRule());
-		$ruleManager->addRule(new ApplicationObjectMapper\Rules\ConsistenceEnumRule());
 		$resolverFactory = new ObjectMapper\Meta\MetaResolverFactory($ruleManager, $objectCreator);
 		$cache = new ObjectMapper\Meta\Cache\ArrayMetaCache();
 		$metaLoader = new ObjectMapper\Meta\MetaLoader($cache, $sourceManager, $resolverFactory);

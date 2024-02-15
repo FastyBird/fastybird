@@ -35,9 +35,9 @@ use FastyBird\Library\Metadata\Formats as MetadataFormats;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
-use FastyBird\Module\Devices\Constants as DevicesConstants;
 use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
+use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -45,6 +45,7 @@ use FastyBird\Module\Devices\Types as DevicesTypes;
 use Hashids;
 use Nette;
 use Nette\Utils;
+use Psr\EventDispatcher as PsrEventDispatcher;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Ramsey\Uuid;
@@ -120,7 +121,6 @@ final class Http implements Server
 		private readonly Queue\Queue $queue,
 		private readonly HomeKit\Logger $logger,
 		private readonly ApplicationHelpers\Database $databaseHelper,
-		private readonly DevicesModels\Entities\Connectors\Properties\PropertiesManager $connectorsPropertiesManager,
 		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\Entities\Devices\Properties\PropertiesManager $devicesPropertiesManager,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
@@ -129,6 +129,7 @@ final class Http implements Server
 		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
 		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly EventLoop\LoopInterface $eventLoop,
+		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
 		$this->hashIds = new Hashids\Hashids();
@@ -403,9 +404,6 @@ final class Http implements Server
 		}
 	}
 
-	/**
-	 * @throws DevicesExceptions\Terminate
-	 */
 	public function connect(): void
 	{
 		try {
@@ -445,11 +443,13 @@ final class Http implements Server
 				],
 			);
 
-			throw new DevicesExceptions\Terminate(
+			$this->dispatcher?->dispatch(new DevicesEvents\TerminateConnector(
+				MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::HOMEKIT),
 				'Socket server could not be created',
-				$ex->getCode(),
 				$ex,
-			);
+			));
+
+			return;
 		}
 
 		$this->socket->on(
@@ -504,11 +504,11 @@ final class Http implements Server
 				],
 			);
 
-			throw new DevicesExceptions\Terminate(
+			$this->dispatcher?->dispatch(new DevicesEvents\TerminateConnector(
+				MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::HOMEKIT),
 				'HTTP server was terminated',
-				$ex->getCode(),
 				$ex,
-			);
+			));
 		});
 
 		$this->socket->on(HomeKit\Constants::EVENT_CLOSE, function (): void {
@@ -551,22 +551,12 @@ final class Http implements Server
 				],
 			);
 
-			throw new DevicesExceptions\Terminate(
+			$this->dispatcher?->dispatch(new DevicesEvents\TerminateConnector(
+				MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::NS_PANEL),
 				'HTTP server was terminated',
-				$ex->getCode(),
 				$ex,
-			);
+			));
 		});
-
-		$this->connectorsPropertiesManager->on(
-			DevicesConstants::EVENT_ENTITY_CREATED,
-			[$this, 'setSharedKey'],
-		);
-
-		$this->connectorsPropertiesManager->on(
-			DevicesConstants::EVENT_ENTITY_UPDATED,
-			[$this, 'setSharedKey'],
-		);
 	}
 
 	public function disconnect(): void
@@ -582,16 +572,6 @@ final class Http implements Server
 			],
 		);
 
-		$this->connectorsPropertiesManager->removeListener(
-			DevicesConstants::EVENT_ENTITY_CREATED,
-			[$this, 'setSharedKey'],
-		);
-
-		$this->connectorsPropertiesManager->removeListener(
-			DevicesConstants::EVENT_ENTITY_UPDATED,
-			[$this, 'setSharedKey'],
-		);
-
 		$this->socket?->close();
 
 		$this->socket = null;
@@ -602,16 +582,10 @@ final class Http implements Server
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function setSharedKey(
-		DevicesEntities\Connectors\Properties\Property $property,
+		DevicesEntities\Connectors\Properties\Variable $property,
 	): void
 	{
-		if (
-			(
-				$property instanceof DevicesEntities\Connectors\Properties\Variable
-				&& $property->getConnector()->getId()->equals($this->connector->getId())
-			)
-			&& $property->getIdentifier() === Types\ConnectorPropertyIdentifier::SHARED_KEY
-		) {
+		if ($property->getConnector()->getId()->equals($this->connector->getId())) {
 			$this->logger->debug(
 				'Shared key has been updated',
 				[

@@ -27,12 +27,14 @@ use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Documents as DevicesDocuments;
+use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Types as DevicesTypes;
 use Nette;
 use Nette\Utils;
+use Psr\EventDispatcher as PsrEventDispatcher;
 use React\Promise;
 use Throwable;
 use function array_diff;
@@ -73,6 +75,7 @@ final class Device implements Client
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
+		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
 		$this->lanApi = $this->lanApiFactory->create($this->connector->getIdentifier());
@@ -80,7 +83,6 @@ final class Device implements Client
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws DevicesExceptions\Terminate
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
@@ -151,7 +153,12 @@ final class Device implements Client
 						'capabilities',
 					) instanceof Utils\ArrayHash
 				) {
-					throw new DevicesExceptions\Terminate('Connector configuration is corrupted');
+					$this->dispatcher?->dispatch(new DevicesEvents\TerminateConnector(
+						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::NS_PANEL),
+						'Connector configuration is corrupted',
+					));
+
+					return;
 				}
 
 				$requiredCapabilities = (array) $categoriesMetadata[$this->thirdPartyDeviceHelper->getDisplayCategory(

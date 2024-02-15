@@ -2,7 +2,6 @@
 
 namespace FastyBird\Module\Devices\Tests\Fixtures\Dummy;
 
-use Evenement;
 use FastyBird\Module\Devices\Connectors;
 use FastyBird\Module\Devices\Exceptions;
 use Ramsey\Uuid;
@@ -10,8 +9,6 @@ use React\Promise;
 
 class DummyConnector implements Connectors\Connector
 {
-
-	use Evenement\EventEmitterTrait;
 
 	public function getId(): Uuid\UuidInterface
 	{

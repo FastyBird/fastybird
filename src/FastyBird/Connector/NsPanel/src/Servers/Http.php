@@ -21,8 +21,9 @@ use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Middleware;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use FastyBird\Module\Devices\Events as DevicesEvents;
 use Nette;
+use Psr\EventDispatcher as PsrEventDispatcher;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use React\EventLoop;
@@ -57,13 +58,11 @@ final class Http implements Server
 		private readonly Middleware\Router $routerMiddleware,
 		private readonly NsPanel\Logger $logger,
 		private readonly EventLoop\LoopInterface $eventLoop,
+		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
 	}
 
-	/**
-	 * @throws DevicesExceptions\Terminate
-	 */
 	public function connect(): void
 	{
 		try {
@@ -100,11 +99,13 @@ final class Http implements Server
 				],
 			);
 
-			throw new DevicesExceptions\Terminate(
+			$this->dispatcher?->dispatch(new DevicesEvents\TerminateConnector(
+				MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::NS_PANEL),
 				'Socket server could not be created',
-				$ex->getCode(),
 				$ex,
-			);
+			));
+
+			return;
 		}
 
 		$server = new ReactHttp\HttpServer(
@@ -134,11 +135,11 @@ final class Http implements Server
 				],
 			);
 
-			throw new DevicesExceptions\Terminate(
+			$this->dispatcher?->dispatch(new DevicesEvents\TerminateConnector(
+				MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::NS_PANEL),
 				'HTTP server was terminated',
-				$ex->getCode(),
 				$ex,
-			);
+			));
 		});
 	}
 

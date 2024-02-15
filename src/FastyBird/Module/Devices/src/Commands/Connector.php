@@ -198,30 +198,6 @@ class Connector extends Console\Command\Command
 			$this->progressBar?->finish();
 
 			return Console\Command\Command::SUCCESS;
-		} catch (Exceptions\Terminate $ex) {
-			if ($ex->getPrevious() !== null) {
-				$this->logger->error(
-					'An error occurred. Stopping connector',
-					[
-						'source' => MetadataTypes\Sources\Module::DEVICES,
-						'type' => 'connector-cmd',
-						'exception' => ApplicationHelpers\Logger::buildException($ex),
-					],
-				);
-			} else {
-				$this->logger->debug(
-					'Stopping connector',
-					[
-						'source' => MetadataTypes\Sources\Module::DEVICES,
-						'type' => 'connector-cmd',
-						'exception' => ApplicationHelpers\Logger::buildException($ex),
-					],
-				);
-			}
-
-			$this->eventLoop->stop();
-
-			return Console\Command\Command::SUCCESS;
 		} catch (Throwable $ex) {
 			// Log caught exception
 			$this->logger->error(
@@ -236,6 +212,8 @@ class Connector extends Console\Command\Command
 			if ($input->getOption('quiet') === false) {
 				$io->error($this->translator->translate('//devices-module.cmd.connector.messages.error'));
 			}
+
+			$this->eventLoop->stop();
 
 			return Console\Command\Command::FAILURE;
 		}
@@ -291,73 +269,83 @@ class Connector extends Console\Command\Command
 
 		$service = $this->serviceFactory->create($connector);
 
-		$service->on(
-			Devices\Constants::EVENT_TERMINATE,
-			function (Events\TerminateConnector $event) use ($connector, $service, $mode): void {
-				if ($event->getException() !== null) {
-					$this->logger->warning(
-						'Triggering connector termination due to some error',
-						[
-							'source' => MetadataTypes\Sources\Module::DEVICES,
-							'type' => 'connector-cmd',
-							'exception' => ApplicationHelpers\Logger::buildException($event->getException()),
-							'reason' => [
-								'source' => $event->getSource()->getValue(),
-								'message' => $event->getReason(),
-							],
+		$service->onTerminate[] = function (
+			MetadataTypes\Sources\Source $source,
+			string|null $reason,
+			Throwable|null $ex,
+		) use (
+			$service,
+			$mode,
+			$connector,
+		): void {
+			if ($ex !== null) {
+				$this->logger->warning(
+					'Triggering connector termination due to some error',
+					[
+						'source' => MetadataTypes\Sources\Module::DEVICES,
+						'type' => 'connector-cmd',
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
+						'reason' => [
+							'source' => $source->getValue(),
+							'message' => $reason,
 						],
-					);
-				} elseif ($event !== null ) {
-					$this->logger->info(
-						'Triggering connector termination',
-						[
-							'source' => MetadataTypes\Sources\Module::DEVICES,
-							'type' => 'connector-cmd',
-							'reason' => [
-								'source' => $event->getSource()->getValue(),
-								'message' => $event->getReason(),
-							],
+					],
+				);
+			} else {
+				$this->logger->info(
+					'Triggering connector termination',
+					[
+						'source' => MetadataTypes\Sources\Module::DEVICES,
+						'type' => 'connector-cmd',
+						'reason' => [
+							'source' => $source->getValue(),
+							'message' => $reason,
 						],
-					);
-				}
+					],
+				);
+			}
 
-				$this->terminate($connector, $service, $mode);
-			},
-		);
+			$this->terminate($connector, $service, $mode);
+		};
 
-		$service->on(
-			Devices\Constants::EVENT_RESTART,
-			function (Events\RestartConnector $event) use ($connector, $service, $mode): void {
-				if ($event->getException() !== null) {
-					$this->logger->warning(
-						'Triggering connector termination due to some error',
-						[
-							'source' => MetadataTypes\Sources\Module::DEVICES,
-							'type' => 'connector-cmd',
-							'exception' => ApplicationHelpers\Logger::buildException($event->getException()),
-							'reason' => [
-								'source' => $event->getSource()->getValue(),
-								'message' => $event->getReason(),
-							],
+		$service->onRestart[] = function (
+			MetadataTypes\Sources\Source $source,
+			string|null $reason,
+			Throwable|null $ex,
+		) use (
+			$service,
+			$mode,
+			$connector,
+		): void {
+			if ($ex !== null) {
+				$this->logger->warning(
+					'Triggering connector restart due to some error',
+					[
+						'source' => MetadataTypes\Sources\Module::DEVICES,
+						'type' => 'connector-cmd',
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
+						'reason' => [
+							'source' => $source->getValue(),
+							'message' => $reason,
 						],
-					);
-				} elseif ($event !== null ) {
-					$this->logger->info(
-						'Triggering connector termination',
-						[
-							'source' => MetadataTypes\Sources\Module::DEVICES,
-							'type' => 'connector-cmd',
-							'reason' => [
-								'source' => $event->getSource()->getValue(),
-								'message' => $event->getReason(),
-							],
+					],
+				);
+			} else {
+				$this->logger->info(
+					'Triggering connector restart',
+					[
+						'source' => MetadataTypes\Sources\Module::DEVICES,
+						'type' => 'connector-cmd',
+						'reason' => [
+							'source' => $source->getValue(),
+							'message' => $reason,
 						],
-					);
-				}
+					],
+				);
+			}
 
-				$this->terminate($connector, $service, $mode);
-			},
-		);
+			$this->terminate($connector, $service, $mode);
+		};
 
 		if ($mode === Types\ConnectorMode::DISCOVER) {
 			$this->progressBarTimer = $this->eventLoop->addPeriodicTimer(

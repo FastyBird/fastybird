@@ -15,7 +15,6 @@
 
 namespace FastyBird\Connector\HomeKit\Connector;
 
-use Evenement;
 use FastyBird\Connector\HomeKit;
 use FastyBird\Connector\HomeKit\Documents;
 use FastyBird\Connector\HomeKit\Exceptions;
@@ -45,7 +44,6 @@ final class Connector implements DevicesConnectors\Connector
 {
 
 	use Nette\SmartObject;
-	use Evenement\EventEmitterTrait;
 
 	private const QUEUE_PROCESSING_INTERVAL = 0.01;
 

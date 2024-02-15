@@ -46,7 +46,6 @@ final class FactoryTest extends TestCase
 		$objectCreator = new ObjectMapper\Processing\ObjectCreator($injectorManager);
 		$ruleManager = new ObjectMapper\Rules\DefaultRuleManager();
 		$ruleManager->addRule(new ApplicationObjectMapper\Rules\UuidRule());
-		$ruleManager->addRule(new ApplicationObjectMapper\Rules\ConsistenceEnumRule());
 		$resolverFactory = new ObjectMapper\Meta\MetaResolverFactory($ruleManager, $objectCreator);
 		$cache = new ObjectMapper\Meta\Cache\ArrayMetaCache();
 		$metaLoader = new ObjectMapper\Meta\MetaLoader($cache, $sourceManager, $resolverFactory);
@@ -99,7 +98,6 @@ final class FactoryTest extends TestCase
 		$objectCreator = new ObjectMapper\Processing\ObjectCreator($injectorManager);
 		$ruleManager = new ObjectMapper\Rules\DefaultRuleManager();
 		$ruleManager->addRule(new ApplicationObjectMapper\Rules\UuidRule());
-		$ruleManager->addRule(new ApplicationObjectMapper\Rules\ConsistenceEnumRule());
 		$resolverFactory = new ObjectMapper\Meta\MetaResolverFactory($ruleManager, $objectCreator);
 		$cache = new ObjectMapper\Meta\Cache\ArrayMetaCache();
 		$metaLoader = new ObjectMapper\Meta\MetaLoader($cache, $sourceManager, $resolverFactory);

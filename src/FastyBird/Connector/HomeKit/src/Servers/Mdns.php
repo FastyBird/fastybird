@@ -19,16 +19,15 @@ use FastyBird\Connector\HomeKit;
 use FastyBird\Connector\HomeKit\Documents;
 use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Helpers;
-use FastyBird\Connector\HomeKit\Types;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Module\Devices\Constants as DevicesConstants;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
+use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
-use FastyBird\Module\Devices\Models as DevicesModels;
 use Nette;
 use Nette\Utils;
+use Psr\EventDispatcher as PsrEventDispatcher;
 use React\Datagram;
 use React\Dns;
 use React\EventLoop;
@@ -94,7 +93,7 @@ final class Mdns implements Server
 		private readonly Helpers\Connector $connectorHelper,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		private readonly HomeKit\Logger $logger,
-		private readonly DevicesModels\Entities\Connectors\Properties\PropertiesManager $connectorsPropertiesManager,
+		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
 		$this->parser = new Dns\Protocol\Parser();
@@ -170,11 +169,11 @@ final class Mdns implements Server
 						],
 					);
 
-					throw new DevicesExceptions\Terminate(
+					$this->dispatcher?->dispatch(new DevicesEvents\TerminateConnector(
+						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::HOMEKIT),
 						'Discovery broadcast server was terminated',
-						$ex->getCode(),
 						$ex,
-					);
+					));
 				});
 
 				$this->socket->on('close', function (): void {
@@ -214,21 +213,6 @@ final class Mdns implements Server
 					],
 				);
 			});
-
-		$this->connectorsPropertiesManager->on(
-			DevicesConstants::EVENT_ENTITY_CREATED,
-			[$this, 'refresh'],
-		);
-
-		$this->connectorsPropertiesManager->on(
-			DevicesConstants::EVENT_ENTITY_UPDATED,
-			[$this, 'refresh'],
-		);
-
-		$this->connectorsPropertiesManager->on(
-			DevicesConstants::EVENT_ENTITY_DELETED,
-			[$this, 'refresh'],
-		);
 	}
 
 	public function disconnect(): void
@@ -244,21 +228,6 @@ final class Mdns implements Server
 			],
 		);
 
-		$this->connectorsPropertiesManager->removeListener(
-			DevicesConstants::EVENT_ENTITY_CREATED,
-			[$this, 'refresh'],
-		);
-
-		$this->connectorsPropertiesManager->removeListener(
-			DevicesConstants::EVENT_ENTITY_UPDATED,
-			[$this, 'refresh'],
-		);
-
-		$this->connectorsPropertiesManager->removeListener(
-			DevicesConstants::EVENT_ENTITY_DELETED,
-			[$this, 'refresh'],
-		);
-
 		$this->socket?->close();
 
 		$this->socket = null;
@@ -271,19 +240,10 @@ final class Mdns implements Server
 	 * @throws MetadataExceptions\InvalidState
 	 */
 	public function refresh(
-		DevicesEntities\Connectors\Properties\Property $property,
+		DevicesEntities\Connectors\Properties\Variable $property,
 	): void
 	{
-		if (
-			(
-				$property instanceof DevicesEntities\Connectors\Properties\Variable
-				&& $property->getConnector()->getId()->equals($this->connector->getId())
-			)
-			&& (
-				$property->getIdentifier() === Types\ConnectorPropertyIdentifier::PAIRED
-				|| $property->getIdentifier() === Types\ConnectorPropertyIdentifier::CONFIG_VERSION
-			)
-		) {
+		if ($property->getConnector()->getId()->equals($this->connector->getId())) {
 			$this->logger->debug(
 				'Connector configuration changed. Refreshing mDNS broadcast',
 				[

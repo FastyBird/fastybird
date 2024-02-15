@@ -117,20 +117,6 @@ class HttpServer extends Console\Command\Command
 
 			$this->eventLoop->run();
 
-		} catch (Exceptions\Terminate $ex) {
-			// Log error action reason
-			$this->logger->error(
-				'HTTP server was forced to close',
-				[
-					'source' => MetadataTypes\Sources\Plugin::WEB_SERVER,
-					'type' => 'server-command',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
-					'cmd' => $this->getName(),
-				],
-			);
-
-			$this->eventLoop->stop();
-
 		} catch (Throwable $ex) {
 			// Log error action reason
 			$this->logger->error(

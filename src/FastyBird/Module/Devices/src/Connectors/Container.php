@@ -15,13 +15,15 @@
 
 namespace FastyBird\Module\Devices\Connectors;
 
-use Evenement;
-use FastyBird\Module\Devices;
+use Closure;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Exceptions;
+use Nette\Utils;
 use React\Promise;
 use Symfony\Component\EventDispatcher;
+use Throwable;
 use function array_key_exists;
 
 /**
@@ -31,11 +33,18 @@ use function array_key_exists;
  * @subpackage     Connectors
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
+ *
+ * @method void onTerminate(MetadataTypes\Sources\Source $source, string|null $reason, Throwable|null $ex)
+ * @method void onRestart(MetadataTypes\Sources\Source $source, string|null $reason, Throwable|null $ex)
  */
 class Container implements Connector, EventDispatcher\EventSubscriberInterface
 {
 
-	use Evenement\EventEmitterTrait;
+	/** @var array<Closure(MetadataTypes\Sources\Source $source, string|null $reason, Throwable|null $ex): void> */
+	public array $onTerminate = [];
+
+	/** @var array<Closure(MetadataTypes\Sources\Source $source, string|null $reason, Throwable|null $ex): void> */
+	public array $onRestart = [];
 
 	private Connector|null $service = null;
 
@@ -59,12 +68,12 @@ class Container implements Connector, EventDispatcher\EventSubscriberInterface
 
 	public function processTermination(Events\TerminateConnector $event): void
 	{
-		$this->service?->emit(Devices\Constants::EVENT_TERMINATE, [$event]);
+		Utils\Arrays::invoke($this->onTerminate, $event->getSource(), $event->getReason(), $event->getException());
 	}
 
 	public function processRestart(Events\RestartConnector $event): void
 	{
-		$this->service?->emit(Devices\Constants::EVENT_RESTART, [$event]);
+		Utils\Arrays::invoke($this->onRestart, $event->getSource(), $event->getReason(), $event->getException());
 	}
 
 	/**
@@ -95,9 +104,12 @@ class Container implements Connector, EventDispatcher\EventSubscriberInterface
 		$this->getService($this->connector)->terminate();
 	}
 
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
 	public function hasUnfinishedTasks(): bool
 	{
-		return false;
+		return $this->getService($this->connector)->hasUnfinishedTasks();
 	}
 
 	/**
@@ -109,20 +121,6 @@ class Container implements Connector, EventDispatcher\EventSubscriberInterface
 			$factory = $this->getServiceFactory($connector);
 
 			$this->service = $factory->create($connector);
-
-			$this->service->on(
-				Devices\Constants::EVENT_TERMINATE,
-				function (Devices\Events\TerminateConnector $event): void {
-					$this->emit(Devices\Constants::EVENT_TERMINATE, [$event]);
-				},
-			);
-
-			$this->service->on(
-				Devices\Constants::EVENT_RESTART,
-				function (Devices\Events\RestartConnector $event): void {
-					$this->emit(Devices\Constants::EVENT_RESTART, [$event]);
-				},
-			);
 		}
 
 		return $this->service;

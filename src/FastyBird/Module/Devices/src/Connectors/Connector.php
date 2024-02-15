@@ -15,7 +15,6 @@
 
 namespace FastyBird\Module\Devices\Connectors;
 
-use Evenement;
 use React\Promise;
 
 /**
@@ -26,7 +25,7 @@ use React\Promise;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-interface Connector extends Evenement\EventEmitterInterface
+interface Connector
 {
 
 	/**
