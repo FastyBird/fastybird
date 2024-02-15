@@ -183,8 +183,8 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 					'1e196c5c-a469-4ec7-95e7-c4bb48d58fe0' => 17.0, // target_temperature - preset_away
 					'767ddcf6-24c5-48b0-baaa-e8c7a90d3dc0' => 20.0, // target_temperature - preset_eco
 					'15d157d1-0ec7-42a7-9683-51678de1ce9a' => 22.0, // target_temperature - preset_home
-					'a326ba38-d188-4eac-a6ad-43bdcc84a730' => Types\HvacMode::HEAT, // hvac_mode
-					'f0b8100f-5ddb-4abd-8015-d0dbf9a11aa0' => Types\Preset::MANUAL, // preset_mode
+					'a326ba38-d188-4eac-a6ad-43bdcc84a730' => Types\HvacMode::HEAT->value, // hvac_mode
+					'f0b8100f-5ddb-4abd-8015-d0dbf9a11aa0' => Types\Preset::MANUAL->value, // preset_mode
 				],
 				// Expected write entities
 				[
@@ -201,7 +201,7 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 						'device' => '552cea8a-0e81-41d9-be2f-839b079f315e',
 						'channel' => 'b453987e-bbf4-46fc-830f-6448b19d9665',
 						'property' => 'hvac_state',
-						'value' => Types\HvacState::OFF,
+						'value' => Types\HvacState::OFF->value,
 						'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 					],
 					[
@@ -240,8 +240,8 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 					'1e196c5c-a469-4ec7-95e7-c4bb48d58fe0' => 17.0, // target_temperature - preset_away
 					'767ddcf6-24c5-48b0-baaa-e8c7a90d3dc0' => 20.0, // target_temperature - preset_eco
 					'15d157d1-0ec7-42a7-9683-51678de1ce9a' => 22.0, // target_temperature - preset_home
-					'a326ba38-d188-4eac-a6ad-43bdcc84a730' => Types\HvacMode::HEAT, // hvac_mode
-					'f0b8100f-5ddb-4abd-8015-d0dbf9a11aa0' => Types\Preset::MANUAL, // preset_mode
+					'a326ba38-d188-4eac-a6ad-43bdcc84a730' => Types\HvacMode::HEAT->value, // hvac_mode
+					'f0b8100f-5ddb-4abd-8015-d0dbf9a11aa0' => Types\Preset::MANUAL->value, // preset_mode
 				],
 				// Expected write entities
 				[
@@ -258,7 +258,7 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 						'device' => '552cea8a-0e81-41d9-be2f-839b079f315e',
 						'channel' => 'b453987e-bbf4-46fc-830f-6448b19d9665',
 						'property' => 'hvac_state',
-						'value' => Types\HvacState::HEATING,
+						'value' => Types\HvacState::HEATING->value,
 						'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 					],
 					[
@@ -297,8 +297,8 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 					'1e196c5c-a469-4ec7-95e7-c4bb48d58fe0' => 17.0, // target_temperature - preset_away
 					'767ddcf6-24c5-48b0-baaa-e8c7a90d3dc0' => 20.0, // target_temperature - preset_eco
 					'15d157d1-0ec7-42a7-9683-51678de1ce9a' => 22.0, // target_temperature - preset_home
-					'a326ba38-d188-4eac-a6ad-43bdcc84a730' => Types\HvacMode::HEAT, // hvac_mode
-					'f0b8100f-5ddb-4abd-8015-d0dbf9a11aa0' => Types\Preset::MANUAL, // preset_mode
+					'a326ba38-d188-4eac-a6ad-43bdcc84a730' => Types\HvacMode::HEAT->value, // hvac_mode
+					'f0b8100f-5ddb-4abd-8015-d0dbf9a11aa0' => Types\Preset::MANUAL->value, // preset_mode
 				],
 				// Expected write entities
 				[
@@ -315,7 +315,7 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 						'device' => '552cea8a-0e81-41d9-be2f-839b079f315e',
 						'channel' => 'b453987e-bbf4-46fc-830f-6448b19d9665',
 						'property' => 'hvac_state',
-						'value' => Types\HvacState::HEATING,
+						'value' => Types\HvacState::HEATING->value,
 						'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 					],
 					[
@@ -354,8 +354,8 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 					'1e196c5c-a469-4ec7-95e7-c4bb48d58fe0' => 17.0, // target_temperature - preset_away
 					'767ddcf6-24c5-48b0-baaa-e8c7a90d3dc0' => 20.0, // target_temperature - preset_eco
 					'15d157d1-0ec7-42a7-9683-51678de1ce9a' => 22.0, // target_temperature - preset_home
-					'a326ba38-d188-4eac-a6ad-43bdcc84a730' => Types\HvacMode::HEAT, // hvac_mode
-					'f0b8100f-5ddb-4abd-8015-d0dbf9a11aa0' => Types\Preset::MANUAL, // preset_mode
+					'a326ba38-d188-4eac-a6ad-43bdcc84a730' => Types\HvacMode::HEAT->value, // hvac_mode
+					'f0b8100f-5ddb-4abd-8015-d0dbf9a11aa0' => Types\Preset::MANUAL->value, // preset_mode
 				],
 				// Expected write entities
 				[
@@ -372,7 +372,7 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 						'device' => '552cea8a-0e81-41d9-be2f-839b079f315e',
 						'channel' => 'b453987e-bbf4-46fc-830f-6448b19d9665',
 						'property' => 'hvac_state',
-						'value' => Types\HvacState::OFF,
+						'value' => Types\HvacState::OFF->value,
 						'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 					],
 					[
@@ -411,8 +411,8 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 					'1e196c5c-a469-4ec7-95e7-c4bb48d58fe0' => 17.0, // target_temperature - preset_away
 					'767ddcf6-24c5-48b0-baaa-e8c7a90d3dc0' => 20.0, // target_temperature - preset_eco
 					'15d157d1-0ec7-42a7-9683-51678de1ce9a' => 22.0, // target_temperature - preset_home
-					'a326ba38-d188-4eac-a6ad-43bdcc84a730' => Types\HvacMode::HEAT, // hvac_mode
-					'f0b8100f-5ddb-4abd-8015-d0dbf9a11aa0' => Types\Preset::MANUAL, // preset_mode
+					'a326ba38-d188-4eac-a6ad-43bdcc84a730' => Types\HvacMode::HEAT->value, // hvac_mode
+					'f0b8100f-5ddb-4abd-8015-d0dbf9a11aa0' => Types\Preset::MANUAL->value, // preset_mode
 				],
 				// Expected write entities
 				[
@@ -452,8 +452,8 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 					'1e196c5c-a469-4ec7-95e7-c4bb48d58fe0' => 17.0, // target_temperature - preset_away
 					'767ddcf6-24c5-48b0-baaa-e8c7a90d3dc0' => 20.0, // target_temperature - preset_eco
 					'15d157d1-0ec7-42a7-9683-51678de1ce9a' => 22.0, // target_temperature - preset_home
-					'a326ba38-d188-4eac-a6ad-43bdcc84a730' => Types\HvacMode::HEAT, // hvac_mode
-					'f0b8100f-5ddb-4abd-8015-d0dbf9a11aa0' => Types\Preset::MANUAL, // preset_mode
+					'a326ba38-d188-4eac-a6ad-43bdcc84a730' => Types\HvacMode::HEAT->value, // hvac_mode
+					'f0b8100f-5ddb-4abd-8015-d0dbf9a11aa0' => Types\Preset::MANUAL->value, // preset_mode
 				],
 				// Expected write entities
 				[
@@ -493,8 +493,8 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 					'1e196c5c-a469-4ec7-95e7-c4bb48d58fe0' => 17.0, // target_temperature - preset_away
 					'767ddcf6-24c5-48b0-baaa-e8c7a90d3dc0' => 20.0, // target_temperature - preset_eco
 					'15d157d1-0ec7-42a7-9683-51678de1ce9a' => 22.0, // target_temperature - preset_home
-					'a326ba38-d188-4eac-a6ad-43bdcc84a730' => Types\HvacMode::HEAT, // hvac_mode
-					'f0b8100f-5ddb-4abd-8015-d0dbf9a11aa0' => Types\Preset::MANUAL, // preset_mode
+					'a326ba38-d188-4eac-a6ad-43bdcc84a730' => Types\HvacMode::HEAT->value, // hvac_mode
+					'f0b8100f-5ddb-4abd-8015-d0dbf9a11aa0' => Types\Preset::MANUAL->value, // preset_mode
 				],
 				// Expected write entities
 				[
@@ -511,7 +511,7 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 						'device' => '552cea8a-0e81-41d9-be2f-839b079f315e',
 						'channel' => 'b453987e-bbf4-46fc-830f-6448b19d9665',
 						'property' => 'hvac_state',
-						'value' => Types\HvacState::OFF,
+						'value' => Types\HvacState::OFF->value,
 						'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 					],
 					[

@@ -19,7 +19,7 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Ramsey\Uuid;
 
 /**
- * Transformer base trait
+ * Entity base trait
  *
  * @package        FastyBird:TriggersModule!
  * @subpackage     Entities

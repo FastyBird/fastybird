@@ -15,9 +15,6 @@
 
 namespace FastyBird\Addon\VirtualThermostat\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * Opening state types
  *
@@ -26,21 +23,11 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class OpeningStatePayload extends Consistence\Enum\Enum
+enum OpeningStatePayload: string
 {
 
-	public const OPENED = 'opened';
+	case OPENED = 'opened';
 
-	public const CLOSED = 'closed';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case CLOSED = 'closed';
 
 }

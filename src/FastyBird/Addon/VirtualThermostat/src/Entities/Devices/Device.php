@@ -81,7 +81,7 @@ class Device extends VirtualEntities\Devices\Device
 		$channels = $this->channels
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Channels\Channel $channel): bool => $channel->getIdentifier() === Types\ChannelIdentifier::CONFIGURATION
+				static fn (DevicesEntities\Channels\Channel $channel): bool => $channel->getIdentifier() === Types\ChannelIdentifier::CONFIGURATION->value
 			);
 
 		if ($channels->count() !== 1) {
@@ -102,7 +102,7 @@ class Device extends VirtualEntities\Devices\Device
 		$channels = $this->channels
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Channels\Channel $channel): bool => $channel->getIdentifier() === Types\ChannelIdentifier::STATE
+				static fn (DevicesEntities\Channels\Channel $channel): bool => $channel->getIdentifier() === Types\ChannelIdentifier::STATE->value
 			);
 
 		if ($channels->count() !== 1) {
@@ -118,15 +118,15 @@ class Device extends VirtualEntities\Devices\Device
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public function getPreset(string $preset): Entities\Channels\Preset
+	public function getPreset(Types\ChannelIdentifier $preset): Entities\Channels\Preset
 	{
 		$channels = $this->channels
 			->filter(
-				static fn (DevicesEntities\Channels\Channel $channel): bool => $channel->getIdentifier() === $preset
+				static fn (DevicesEntities\Channels\Channel $channel): bool => $channel->getIdentifier() === $preset->value
 			);
 
 		if ($channels->count() !== 1) {
-			throw new Exceptions\InvalidState(sprintf('Preset channel: %s is not configured', $preset));
+			throw new Exceptions\InvalidState(sprintf('Preset channel: %s is not configured', $preset->value));
 		}
 
 		$channel = $channels->first();
@@ -156,39 +156,35 @@ class Device extends VirtualEntities\Devices\Device
 	 */
 	public function getTargetTemp(Types\Preset $preset): DevicesEntities\Channels\Properties\Dynamic|null
 	{
-		if ($preset->equalsValue(Types\Preset::AUTO)) {
+		if ($preset === Types\Preset::AUTO) {
 			return null;
 		}
 
-		if ($preset->equalsValue(Types\Preset::AWAY)) {
+		if ($preset === Types\Preset::AWAY) {
 			return $this->getPreset(Types\ChannelIdentifier::PRESET_AWAY)->getTargetTemp();
 		}
 
-		if ($preset->equalsValue(Types\Preset::ECO)) {
+		if ($preset === Types\Preset::ECO) {
 			return $this->getPreset(Types\ChannelIdentifier::PRESET_ECO)->getTargetTemp();
 		}
 
-		if ($preset->equalsValue(Types\Preset::HOME)) {
+		if ($preset === Types\Preset::HOME) {
 			return $this->getPreset(Types\ChannelIdentifier::PRESET_HOME)->getTargetTemp();
 		}
 
-		if ($preset->equalsValue(Types\Preset::COMFORT)) {
+		if ($preset === Types\Preset::COMFORT) {
 			return $this->getPreset(Types\ChannelIdentifier::PRESET_COMFORT)->getTargetTemp();
 		}
 
-		if ($preset->equalsValue(Types\Preset::SLEEP)) {
+		if ($preset === Types\Preset::SLEEP) {
 			return $this->getPreset(Types\ChannelIdentifier::PRESET_SLEEP)->getTargetTemp();
 		}
 
-		if ($preset->equalsValue(Types\Preset::ANTI_FREEZE)) {
+		if ($preset === Types\Preset::ANTI_FREEZE) {
 			return $this->getPreset(Types\ChannelIdentifier::PRESET_ANTI_FREEZE)->getTargetTemp();
 		}
 
-		if ($preset->equalsValue(Types\Preset::MANUAL)) {
-			return $this->getPreset(Types\ChannelIdentifier::PRESET_MANUAL)->getTargetTemp();
-		}
-
-		throw new Exceptions\InvalidState('Provided preset is not configured');
+		return $this->getPreset(Types\ChannelIdentifier::PRESET_MANUAL)->getTargetTemp();
 	}
 
 	/**
@@ -198,39 +194,35 @@ class Device extends VirtualEntities\Devices\Device
 	 */
 	public function getCoolingThresholdTemp(Types\Preset $preset): float|null
 	{
-		if ($preset->equalsValue(Types\Preset::AUTO)) {
+		if ($preset === Types\Preset::AUTO) {
 			return null;
 		}
 
-		if ($preset->equalsValue(Types\Preset::AWAY)) {
+		if ($preset === Types\Preset::AWAY) {
 			return $this->getPreset(Types\ChannelIdentifier::PRESET_AWAY)->getCoolingThresholdTemp();
 		}
 
-		if ($preset->equalsValue(Types\Preset::ECO)) {
+		if ($preset === Types\Preset::ECO) {
 			return $this->getPreset(Types\ChannelIdentifier::PRESET_ECO)->getCoolingThresholdTemp();
 		}
 
-		if ($preset->equalsValue(Types\Preset::HOME)) {
+		if ($preset === Types\Preset::HOME) {
 			return $this->getPreset(Types\ChannelIdentifier::PRESET_HOME)->getCoolingThresholdTemp();
 		}
 
-		if ($preset->equalsValue(Types\Preset::COMFORT)) {
+		if ($preset === Types\Preset::COMFORT) {
 			return $this->getPreset(Types\ChannelIdentifier::PRESET_COMFORT)->getCoolingThresholdTemp();
 		}
 
-		if ($preset->equalsValue(Types\Preset::SLEEP)) {
+		if ($preset === Types\Preset::SLEEP) {
 			return $this->getPreset(Types\ChannelIdentifier::PRESET_SLEEP)->getCoolingThresholdTemp();
 		}
 
-		if ($preset->equalsValue(Types\Preset::ANTI_FREEZE)) {
+		if ($preset === Types\Preset::ANTI_FREEZE) {
 			return $this->getPreset(Types\ChannelIdentifier::PRESET_ANTI_FREEZE)->getCoolingThresholdTemp();
 		}
 
-		if ($preset->equalsValue(Types\Preset::MANUAL)) {
-			return $this->getPreset(Types\ChannelIdentifier::PRESET_MANUAL)->getCoolingThresholdTemp();
-		}
-
-		throw new Exceptions\InvalidState('Provided preset is not configured');
+		return $this->getPreset(Types\ChannelIdentifier::PRESET_MANUAL)->getCoolingThresholdTemp();
 	}
 
 	/**
@@ -240,39 +232,35 @@ class Device extends VirtualEntities\Devices\Device
 	 */
 	public function getHeatingThresholdTemp(Types\Preset $preset): float|null
 	{
-		if ($preset->equalsValue(Types\Preset::AUTO)) {
+		if ($preset === Types\Preset::AUTO) {
 			return null;
 		}
 
-		if ($preset->equalsValue(Types\Preset::AWAY)) {
+		if ($preset === Types\Preset::AWAY) {
 			return $this->getPreset(Types\ChannelIdentifier::PRESET_AWAY)->getHeatingThresholdTemp();
 		}
 
-		if ($preset->equalsValue(Types\Preset::ECO)) {
+		if ($preset === Types\Preset::ECO) {
 			return $this->getPreset(Types\ChannelIdentifier::PRESET_ECO)->getHeatingThresholdTemp();
 		}
 
-		if ($preset->equalsValue(Types\Preset::HOME)) {
+		if ($preset === Types\Preset::HOME) {
 			return $this->getPreset(Types\ChannelIdentifier::PRESET_HOME)->getHeatingThresholdTemp();
 		}
 
-		if ($preset->equalsValue(Types\Preset::COMFORT)) {
+		if ($preset === Types\Preset::COMFORT) {
 			return $this->getPreset(Types\ChannelIdentifier::PRESET_COMFORT)->getHeatingThresholdTemp();
 		}
 
-		if ($preset->equalsValue(Types\Preset::SLEEP)) {
+		if ($preset === Types\Preset::SLEEP) {
 			return $this->getPreset(Types\ChannelIdentifier::PRESET_SLEEP)->getHeatingThresholdTemp();
 		}
 
-		if ($preset->equalsValue(Types\Preset::ANTI_FREEZE)) {
+		if ($preset === Types\Preset::ANTI_FREEZE) {
 			return $this->getPreset(Types\ChannelIdentifier::PRESET_ANTI_FREEZE)->getHeatingThresholdTemp();
 		}
 
-		if ($preset->equalsValue(Types\Preset::MANUAL)) {
-			return $this->getPreset(Types\ChannelIdentifier::PRESET_MANUAL)->getHeatingThresholdTemp();
-		}
-
-		throw new Exceptions\InvalidState('Provided preset is not configured');
+		return $this->getPreset(Types\ChannelIdentifier::PRESET_MANUAL)->getHeatingThresholdTemp();
 	}
 
 	/**
@@ -323,7 +311,7 @@ class Device extends VirtualEntities\Devices\Device
 		$channels = $this->channels
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Channels\Channel $channel): bool => $channel->getIdentifier() === Types\ChannelIdentifier::ACTORS
+				static fn (DevicesEntities\Channels\Channel $channel): bool => $channel->getIdentifier() === Types\ChannelIdentifier::ACTORS->value
 			);
 
 		if ($channels->count() !== 1) {
@@ -336,8 +324,14 @@ class Device extends VirtualEntities\Devices\Device
 		return array_filter(
 			$channel->getActors(),
 			static fn (DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped $property): bool =>
-				Utils\Strings::startsWith($property->getIdentifier(), Types\ChannelPropertyIdentifier::HEATER_ACTOR)
-				|| Utils\Strings::startsWith($property->getIdentifier(), Types\ChannelPropertyIdentifier::COOLER_ACTOR),
+				Utils\Strings::startsWith(
+					$property->getIdentifier(),
+					Types\ChannelPropertyIdentifier::HEATER_ACTOR->value,
+				)
+				|| Utils\Strings::startsWith(
+					$property->getIdentifier(),
+					Types\ChannelPropertyIdentifier::COOLER_ACTOR->value,
+				),
 		);
 	}
 
@@ -347,7 +341,7 @@ class Device extends VirtualEntities\Devices\Device
 			$this->getActors(),
 			static fn ($actor): bool => Utils\Strings::startsWith(
 				$actor->getIdentifier(),
-				Types\ChannelPropertyIdentifier::HEATER_ACTOR,
+				Types\ChannelPropertyIdentifier::HEATER_ACTOR->value,
 			)
 		) !== [];
 	}
@@ -358,7 +352,7 @@ class Device extends VirtualEntities\Devices\Device
 			$this->getActors(),
 			static fn ($actor): bool => Utils\Strings::startsWith(
 				$actor->getIdentifier(),
-				Types\ChannelPropertyIdentifier::COOLER_ACTOR,
+				Types\ChannelPropertyIdentifier::COOLER_ACTOR->value,
 			)
 		) !== [];
 	}
@@ -371,7 +365,7 @@ class Device extends VirtualEntities\Devices\Device
 		$channels = $this->channels
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Channels\Channel $channel): bool => $channel->getIdentifier() === Types\ChannelIdentifier::SENSORS
+				static fn (DevicesEntities\Channels\Channel $channel): bool => $channel->getIdentifier() === Types\ChannelIdentifier::SENSORS->value
 			);
 
 		if ($channels->count() !== 1) {
@@ -386,19 +380,19 @@ class Device extends VirtualEntities\Devices\Device
 			static fn (DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped $property): bool =>
 				Utils\Strings::startsWith(
 					$property->getIdentifier(),
-					Types\ChannelPropertyIdentifier::ROOM_TEMPERATURE_SENSOR,
+					Types\ChannelPropertyIdentifier::ROOM_TEMPERATURE_SENSOR->value,
 				)
 				|| Utils\Strings::startsWith(
 					$property->getIdentifier(),
-					Types\ChannelPropertyIdentifier::FLOOR_TEMPERATURE_SENSOR,
+					Types\ChannelPropertyIdentifier::FLOOR_TEMPERATURE_SENSOR->value,
 				)
 				|| Utils\Strings::startsWith(
 					$property->getIdentifier(),
-					Types\ChannelPropertyIdentifier::OPENING_SENSOR,
+					Types\ChannelPropertyIdentifier::OPENING_SENSOR->value,
 				)
 				|| Utils\Strings::startsWith(
 					$property->getIdentifier(),
-					Types\ChannelPropertyIdentifier::ROOM_HUMIDITY_SENSOR,
+					Types\ChannelPropertyIdentifier::ROOM_HUMIDITY_SENSOR->value,
 				),
 		);
 	}
@@ -409,7 +403,7 @@ class Device extends VirtualEntities\Devices\Device
 			$this->getSensors(),
 			static fn ($sensor): bool => Utils\Strings::startsWith(
 				$sensor->getIdentifier(),
-				Types\ChannelPropertyIdentifier::ROOM_TEMPERATURE_SENSOR,
+				Types\ChannelPropertyIdentifier::ROOM_TEMPERATURE_SENSOR->value,
 			)
 		) !== [];
 	}
@@ -420,7 +414,7 @@ class Device extends VirtualEntities\Devices\Device
 			$this->getSensors(),
 			static fn ($sensor): bool => Utils\Strings::startsWith(
 				$sensor->getIdentifier(),
-				Types\ChannelPropertyIdentifier::FLOOR_TEMPERATURE_SENSOR,
+				Types\ChannelPropertyIdentifier::FLOOR_TEMPERATURE_SENSOR->value,
 			)
 		) !== [];
 	}
@@ -431,7 +425,7 @@ class Device extends VirtualEntities\Devices\Device
 			$this->getSensors(),
 			static fn ($sensor): bool => Utils\Strings::startsWith(
 				$sensor->getIdentifier(),
-				Types\ChannelPropertyIdentifier::OPENING_SENSOR,
+				Types\ChannelPropertyIdentifier::OPENING_SENSOR->value,
 			)
 		) !== [];
 	}
@@ -442,13 +436,13 @@ class Device extends VirtualEntities\Devices\Device
 			$this->getSensors(),
 			static fn ($sensor): bool => Utils\Strings::startsWith(
 				$sensor->getIdentifier(),
-				Types\ChannelPropertyIdentifier::ROOM_HUMIDITY_SENSOR,
+				Types\ChannelPropertyIdentifier::ROOM_HUMIDITY_SENSOR->value,
 			)
 		) !== [];
 	}
 
 	/**
-	 * @return array<string>
+	 * @return array<Types\HvacMode>
 	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
@@ -464,13 +458,13 @@ class Device extends VirtualEntities\Devices\Device
 		}
 
 		return array_map(
-			static fn (string $item): string => Types\HvacMode::get($item)->getValue(),
+			static fn (string $item): Types\HvacMode => Types\HvacMode::from($item),
 			$format->toArray(),
 		);
 	}
 
 	/**
-	 * @return array<string>
+	 * @return array<Types\Preset>
 	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
@@ -486,7 +480,7 @@ class Device extends VirtualEntities\Devices\Device
 		}
 
 		return array_map(
-			static fn (string $item): string => Types\Preset::get($item)->getValue(),
+			static fn (string $item): Types\Preset => Types\Preset::from($item),
 			$format->toArray(),
 		);
 	}

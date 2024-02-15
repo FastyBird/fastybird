@@ -450,11 +450,7 @@ class Builder
 					$thermostat,
 					$service,
 					HomeKitTypes\CharacteristicType::get($characteristicType),
-					$mappedPropertiesTypes[$characteristicType] !== null
-						? VirtualThermostatTypes\ChannelPropertyIdentifier::get(
-							$mappedPropertiesTypes[$characteristicType],
-						)
-						: null,
+					$mappedPropertiesTypes[$characteristicType] ?? null,
 					!in_array($characteristicType, $requiredCharacteristics, true),
 				);
 			}
@@ -486,7 +482,7 @@ class Builder
 		if (
 			$propertyType !== null
 			&& in_array(
-				$propertyType->getValue(),
+				$propertyType,
 				[
 					VirtualThermostatTypes\ChannelPropertyIdentifier::CURRENT_FLOOR_TEMPERATURE,
 					VirtualThermostatTypes\ChannelPropertyIdentifier::CURRENT_ROOM_TEMPERATURE,
@@ -502,7 +498,7 @@ class Builder
 		) {
 			$findPropertyQuery = new DevicesQueries\Entities\FindChannelDynamicProperties();
 			$findPropertyQuery->forChannel($thermostat->getState());
-			$findPropertyQuery->byIdentifier($propertyType->getValue());
+			$findPropertyQuery->byIdentifier($propertyType->value);
 
 			$connectProperty = $this->channelsPropertiesRepository->findOneBy(
 				$findPropertyQuery,
@@ -777,32 +773,32 @@ class Builder
 	): array|null
 	{
 		if (
-			$property->getIdentifier() === VirtualThermostatTypes\ChannelPropertyIdentifier::HVAC_STATE
+			$property->getIdentifier() === VirtualThermostatTypes\ChannelPropertyIdentifier::HVAC_STATE->value
 			&& $characteristicType->equalsValue(HomeKitTypes\CharacteristicType::CURRENT_HEATING_COOLING_STATE)
 		) {
 			assert($property->getFormat() instanceof MetadataFormats\StringEnum);
 
 			$format = [];
 
-			if ($property->getFormat()->hasItem(VirtualThermostatTypes\HvacState::OFF)) {
+			if ($property->getFormat()->hasItem(VirtualThermostatTypes\HvacState::OFF->value)) {
 				$format[] = [
-					VirtualThermostatTypes\HvacMode::OFF,
+					VirtualThermostatTypes\HvacMode::OFF->value,
 					0,
 					0,
 				];
 			}
 
-			if ($property->getFormat()->hasItem(VirtualThermostatTypes\HvacState::HEATING)) {
+			if ($property->getFormat()->hasItem(VirtualThermostatTypes\HvacState::HEATING->value)) {
 				$format[] = [
-					VirtualThermostatTypes\HvacMode::OFF,
+					VirtualThermostatTypes\HvacMode::OFF->value,
 					1,
 					1,
 				];
 			}
 
-			if ($property->getFormat()->hasItem(VirtualThermostatTypes\HvacState::COOLING)) {
+			if ($property->getFormat()->hasItem(VirtualThermostatTypes\HvacState::COOLING->value)) {
 				$format[] = [
-					VirtualThermostatTypes\HvacMode::OFF,
+					VirtualThermostatTypes\HvacMode::OFF->value,
 					2,
 					2,
 				];
@@ -810,40 +806,40 @@ class Builder
 
 			return $format;
 		} elseif (
-			$property->getIdentifier() === VirtualThermostatTypes\ChannelPropertyIdentifier::HVAC_MODE
+			$property->getIdentifier() === VirtualThermostatTypes\ChannelPropertyIdentifier::HVAC_MODE->value
 			&& $characteristicType->equalsValue(HomeKitTypes\CharacteristicType::TARGET_HEATING_COOLING_STATE)
 		) {
 			assert($property->getFormat() instanceof MetadataFormats\StringEnum);
 
 			$format = [];
 
-			if ($property->getFormat()->hasItem(VirtualThermostatTypes\HvacMode::OFF)) {
+			if ($property->getFormat()->hasItem(VirtualThermostatTypes\HvacMode::OFF->value)) {
 				$format[] = [
-					VirtualThermostatTypes\HvacMode::OFF,
+					VirtualThermostatTypes\HvacMode::OFF->value,
 					0,
 					0,
 				];
 			}
 
-			if ($property->getFormat()->hasItem(VirtualThermostatTypes\HvacMode::HEAT)) {
+			if ($property->getFormat()->hasItem(VirtualThermostatTypes\HvacMode::HEAT->value)) {
 				$format[] = [
-					VirtualThermostatTypes\HvacMode::OFF,
+					VirtualThermostatTypes\HvacMode::OFF->value,
 					1,
 					1,
 				];
 			}
 
-			if ($property->getFormat()->hasItem(VirtualThermostatTypes\HvacMode::COOL)) {
+			if ($property->getFormat()->hasItem(VirtualThermostatTypes\HvacMode::COOL->value)) {
 				$format[] = [
-					VirtualThermostatTypes\HvacMode::OFF,
+					VirtualThermostatTypes\HvacMode::OFF->value,
 					2,
 					2,
 				];
 			}
 
-			if ($property->getFormat()->hasItem(VirtualThermostatTypes\HvacMode::AUTO)) {
+			if ($property->getFormat()->hasItem(VirtualThermostatTypes\HvacMode::AUTO->value)) {
 				$format[] = [
-					VirtualThermostatTypes\HvacMode::OFF,
+					VirtualThermostatTypes\HvacMode::OFF->value,
 					3,
 					3,
 				];
@@ -852,22 +848,22 @@ class Builder
 			return $format;
 		} elseif (
 			(
-				$property->getIdentifier() === VirtualThermostatTypes\ChannelPropertyIdentifier::CURRENT_ROOM_TEMPERATURE
+				$property->getIdentifier() === VirtualThermostatTypes\ChannelPropertyIdentifier::CURRENT_ROOM_TEMPERATURE->value
 				&& $characteristicType->equalsValue(HomeKitTypes\CharacteristicType::CURRENT_TEMPERATURE)
 			) || (
-				$property->getIdentifier() === VirtualThermostatTypes\ChannelPropertyIdentifier::TARGET_ROOM_TEMPERATURE
+				$property->getIdentifier() === VirtualThermostatTypes\ChannelPropertyIdentifier::TARGET_ROOM_TEMPERATURE->value
 				&& $characteristicType->equalsValue(HomeKitTypes\CharacteristicType::TARGET_TEMPERATURE)
 			) || (
-				$property->getIdentifier() === VirtualThermostatTypes\ChannelPropertyIdentifier::CURRENT_ROOM_HUMIDITY
+				$property->getIdentifier() === VirtualThermostatTypes\ChannelPropertyIdentifier::CURRENT_ROOM_HUMIDITY->value
 				&& $characteristicType->equalsValue(HomeKitTypes\CharacteristicType::CURRENT_RELATIVE_HUMIDITY)
 			) || (
-				$property->getIdentifier() === VirtualThermostatTypes\ChannelPropertyIdentifier::TARGET_ROOM_HUMIDITY
+				$property->getIdentifier() === VirtualThermostatTypes\ChannelPropertyIdentifier::TARGET_ROOM_HUMIDITY->value
 				&& $characteristicType->equalsValue(HomeKitTypes\CharacteristicType::TARGET_RELATIVE_HUMIDITY)
 			) || (
-				$property->getIdentifier() === VirtualThermostatTypes\ChannelPropertyIdentifier::COOLING_THRESHOLD_TEMPERATURE
+				$property->getIdentifier() === VirtualThermostatTypes\ChannelPropertyIdentifier::COOLING_THRESHOLD_TEMPERATURE->value
 				&& $characteristicType->equalsValue(HomeKitTypes\CharacteristicType::COOLING_THRESHOLD_TEMPERATURE)
 			) || (
-				$property->getIdentifier() === VirtualThermostatTypes\ChannelPropertyIdentifier::HEATING_THRESHOLD_TEMPERATURE
+				$property->getIdentifier() === VirtualThermostatTypes\ChannelPropertyIdentifier::HEATING_THRESHOLD_TEMPERATURE->value
 				&& $characteristicType->equalsValue(HomeKitTypes\CharacteristicType::HEATING_THRESHOLD_TEMPERATURE)
 			)
 		) {

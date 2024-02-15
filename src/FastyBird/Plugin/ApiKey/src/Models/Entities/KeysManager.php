@@ -40,7 +40,7 @@ final class KeysManager
 	 */
 	public function __construct(private DoctrineCrudCrud\IEntityCrud $entityCrud)
 	{
-		// Transformer CRUD for handling entities
+		// Entity CRUD for handling entities
 	}
 
 	public function create(Utils\ArrayHash $values): Entities\Key

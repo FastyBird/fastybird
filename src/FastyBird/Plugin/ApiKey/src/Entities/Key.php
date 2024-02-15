@@ -32,10 +32,11 @@ use Ramsey\Uuid;
 		'comment' => 'API Key plugin access keys',
 	],
 )]
-class Key extends Entities\Entity implements DoctrineCrud\Entities\IEntity,
+class Key implements Entities\Entity, DoctrineCrud\Entities\IEntity,
 	DoctrineTimestampable\Entities\IEntityCreated, DoctrineTimestampable\Entities\IEntityUpdated
 {
 
+	use TEntity;
 	use DoctrineTimestampable\Entities\TEntityCreated;
 	use DoctrineTimestampable\Entities\TEntityUpdated;
 

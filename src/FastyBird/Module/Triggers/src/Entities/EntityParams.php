@@ -18,7 +18,7 @@ namespace FastyBird\Module\Triggers\Entities;
 use Nette\Utils;
 
 /**
- * Transformer params field interface
+ * Entity params field interface
  *
  * @package        FastyBird:TriggersModule!
  * @subpackage     Entities

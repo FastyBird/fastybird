@@ -67,7 +67,7 @@ class Preset extends VirtualEntities\Channels\Channel
 		$property = $this->properties
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Channels\Properties\Property $property): bool => $property->getIdentifier() === Types\ChannelPropertyIdentifier::TARGET_ROOM_TEMPERATURE
+				static fn (DevicesEntities\Channels\Properties\Property $property): bool => $property->getIdentifier() === Types\ChannelPropertyIdentifier::TARGET_ROOM_TEMPERATURE->value
 			)
 			->first();
 
@@ -87,7 +87,7 @@ class Preset extends VirtualEntities\Channels\Channel
 		$property = $this->properties
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Channels\Properties\Property $property): bool => $property->getIdentifier() === Types\ChannelPropertyIdentifier::COOLING_THRESHOLD_TEMPERATURE
+				static fn (DevicesEntities\Channels\Properties\Property $property): bool => $property->getIdentifier() === Types\ChannelPropertyIdentifier::COOLING_THRESHOLD_TEMPERATURE->value
 			)
 			->first();
 
@@ -110,7 +110,7 @@ class Preset extends VirtualEntities\Channels\Channel
 		$property = $this->properties
 			->filter(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Channels\Properties\Property $property): bool => $property->getIdentifier() === Types\ChannelPropertyIdentifier::HEATING_THRESHOLD_TEMPERATURE
+				static fn (DevicesEntities\Channels\Properties\Property $property): bool => $property->getIdentifier() === Types\ChannelPropertyIdentifier::HEATING_THRESHOLD_TEMPERATURE->value
 			)
 			->first();
 

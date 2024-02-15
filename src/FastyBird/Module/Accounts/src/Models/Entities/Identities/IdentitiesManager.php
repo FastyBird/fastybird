@@ -41,7 +41,7 @@ class IdentitiesManager
 	 */
 	public function __construct(private readonly DoctrineCrudCrud\IEntityCrud $entityCrud)
 	{
-		// Transformer CRUD for handling entities
+		// Entity CRUD for handling entities
 	}
 
 	public function create(

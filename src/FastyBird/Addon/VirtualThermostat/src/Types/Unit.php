@@ -15,9 +15,6 @@
 
 namespace FastyBird\Addon\VirtualThermostat\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * Temperature unit types
  *
@@ -26,21 +23,11 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Unit extends Consistence\Enum\Enum
+enum Unit: string
 {
 
-	public const CELSIUS = '°C';
+	case CELSIUS = '°C';
 
-	public const FAHRENHEIT = '°F';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case FAHRENHEIT = '°F';
 
 }

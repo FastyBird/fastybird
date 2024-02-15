@@ -15,9 +15,6 @@
 
 namespace FastyBird\Addon\VirtualThermostat\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * HVAC state types
  *
@@ -26,23 +23,13 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class HvacState extends Consistence\Enum\Enum
+enum HvacState: string
 {
 
-	public const OFF = 'off';
+	case OFF = 'off';
 
-	public const COOLING = 'cooling';
+	case COOLING = 'cooling';
 
-	public const HEATING = 'heating';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case HEATING = 'heating';
 
 }

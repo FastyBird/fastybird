@@ -46,7 +46,7 @@ final class ConnectorsManager
 		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
-		// Transformer CRUD for handling entities
+		// Entity CRUD for handling entities
 	}
 
 	public function create(

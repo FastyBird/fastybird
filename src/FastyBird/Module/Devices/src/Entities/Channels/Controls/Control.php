@@ -68,7 +68,6 @@ class Control implements Entities\Entity,
 
 	public function __construct(string $name, Entities\Channels\Channel $channel)
 	{
-		// @phpstan-ignore-next-line
 		$this->id = Uuid\Uuid::uuid4();
 
 		$this->name = $name;

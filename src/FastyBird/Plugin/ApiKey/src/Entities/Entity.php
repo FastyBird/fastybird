@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Transformer.php
+ * Entity.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -18,21 +18,16 @@ namespace FastyBird\Plugin\ApiKey\Entities;
 use Ramsey\Uuid;
 
 /**
- * Application base entity
+ * Base entity interface
  *
  * @package        FastyBird:ApiKeyPlugin!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- *
- * @property-read Uuid\UuidInterface $id
  */
-abstract class Entity
+interface Entity
 {
 
-	public function getId(): Uuid\UuidInterface
-	{
-		return $this->id;
-	}
+	public function getId(): Uuid\UuidInterface;
 
 }

@@ -18,7 +18,7 @@ namespace FastyBird\Module\Accounts\Entities;
 use Nette\Utils;
 
 /**
- * Transformer params field interface
+ * Entity params field interface
  *
  * @package        FastyBird:AccountsModule!
  * @subpackage     Entities

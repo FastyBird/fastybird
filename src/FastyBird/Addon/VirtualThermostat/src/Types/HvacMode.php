@@ -15,9 +15,6 @@
 
 namespace FastyBird\Addon\VirtualThermostat\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * HVAC modes types
  *
@@ -26,25 +23,15 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class HvacMode extends Consistence\Enum\Enum
+enum HvacMode: string
 {
 
-	public const OFF = 'off';
+	case OFF = 'off';
 
-	public const HEAT = 'heat';
+	case HEAT = 'heat';
 
-	public const COOL = 'cool';
+	case COOL = 'cool';
 
-	public const AUTO = 'auto';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case AUTO = 'auto';
 
 }

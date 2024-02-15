@@ -1,6 +1,4 @@
 parameters:
-    phpVersion: 80100
-
     tmpDir: %currentWorkingDirectory%/var/tools/PHPStan
 
     exceptions:

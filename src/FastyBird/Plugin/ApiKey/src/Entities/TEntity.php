@@ -1,26 +1,27 @@
 <?php declare(strict_types = 1);
 
 /**
- * TEntity.php
+ * trait TEntity
+.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:DevicesModule!
+ * @package        FastyBird:ApiKeyPlugin!
  * @subpackage     Entities
  * @since          1.0.0
  *
- * @date           25.05.20
+ * @date           21.10.22
  */
 
-namespace FastyBird\Module\Devices\Entities;
+namespace FastyBird\Plugin\ApiKey\Entities;
 
 use Ramsey\Uuid;
 
 /**
  * Entity base trait
  *
- * @package        FastyBird:DevicesModule!
+ * @package        FastyBird:ApiKeyPlugin!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

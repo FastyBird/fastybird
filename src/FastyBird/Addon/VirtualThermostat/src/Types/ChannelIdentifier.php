@@ -15,9 +15,6 @@
 
 namespace FastyBird\Addon\VirtualThermostat\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * Channel identifier types
  *
@@ -26,41 +23,31 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class ChannelIdentifier extends Consistence\Enum\Enum
+enum ChannelIdentifier: string
 {
 
-	public const CONFIGURATION = 'configuration';
+	case CONFIGURATION = 'configuration';
 
-	public const STATE = 'state';
+	case STATE = 'state';
 
-	public const PRESET_MANUAL = 'preset_manual';
+	case PRESET_MANUAL = 'preset_manual';
 
-	public const PRESET_AWAY = 'preset_away';
+	case PRESET_AWAY = 'preset_away';
 
-	public const PRESET_ECO = 'preset_eco';
+	case PRESET_ECO = 'preset_eco';
 
-	public const PRESET_HOME = 'preset_home';
+	case PRESET_HOME = 'preset_home';
 
-	public const PRESET_COMFORT = 'preset_comfort';
+	case PRESET_COMFORT = 'preset_comfort';
 
-	public const PRESET_SLEEP = 'preset_sleep';
+	case PRESET_SLEEP = 'preset_sleep';
 
-	public const PRESET_ANTI_FREEZE = 'preset_anti_freeze';
+	case PRESET_ANTI_FREEZE = 'preset_anti_freeze';
 
-	public const SENSORS = 'sensors';
+	case SENSORS = 'sensors';
 
-	public const ACTORS = 'actors';
+	case ACTORS = 'actors';
 
-	public const OPENINGS = 'openings';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case OPENINGS = 'openings';
 
 }

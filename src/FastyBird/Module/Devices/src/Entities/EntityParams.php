@@ -18,7 +18,7 @@ namespace FastyBird\Module\Devices\Entities;
 use Nette\Utils;
 
 /**
- * Transformer params field interface
+ * Entity params field interface
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Entities
