@@ -18,7 +18,7 @@ namespace FastyBird\Connector\Virtual\Entities\Connectors;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Connector\Virtual\Entities;
 use FastyBird\Connector\Virtual\Exceptions;
-use FastyBird\Library\Application\Doctrine\Mapping as ApplicationMapping;
+use FastyBird\Library\Application\Entities\Mapping as ApplicationMapping;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 

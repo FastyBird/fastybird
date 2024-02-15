@@ -16,7 +16,7 @@
 namespace FastyBird\Module\Triggers\Entities\Triggers;
 
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\Library\Application\Doctrine\Mapping as ApplicationMapping;
+use FastyBird\Library\Application\Entities\Mapping as ApplicationMapping;
 
 #[ORM\Entity]
 #[ORM\Table(

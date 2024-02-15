@@ -3,7 +3,7 @@
 namespace FastyBird\Module\Devices\Tests\Fixtures\Dummy;
 
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\Library\Application\Doctrine\Mapping as ApplicationMapping;
+use FastyBird\Library\Application\Entities\Mapping as ApplicationMapping;
 use FastyBird\Module\Devices\Entities;
 
 #[ORM\Entity]

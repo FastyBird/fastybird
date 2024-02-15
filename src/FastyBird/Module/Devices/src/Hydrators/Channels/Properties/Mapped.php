@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Connector.php
+ * Mapped.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,31 +10,31 @@
  * @subpackage     Hydrators
  * @since          1.0.0
  *
- * @date           08.02.22
+ * @date           02.04.22
  */
 
-namespace FastyBird\Module\Devices\Hydrators\Properties;
+namespace FastyBird\Module\Devices\Hydrators\Channels\Properties;
 
 use FastyBird\Module\Devices\Entities;
-use FastyBird\Module\Devices\Schemas;
 
 /**
- * Connector property entity hydrator
+ * Channel property entity hydrator
  *
- * @template T of Entities\Connectors\Properties\Property
- * @extends  Property<T>
+ * @extends  Property<Entities\Channels\Properties\Mapped>
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Hydrators
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-abstract class Connector extends Property
+final class Mapped extends Property
 {
 
-	/** @var array<string> */
-	protected array $relationships
-		= [
-			Schemas\Connectors\Properties\Property::RELATIONSHIPS_CONNECTOR,
-		];
+	/**
+	 * @return class-string<Entities\Channels\Properties\Mapped>
+	 */
+	public function getEntityName(): string
+	{
+		return Entities\Channels\Properties\Mapped::class;
+	}
 
 }

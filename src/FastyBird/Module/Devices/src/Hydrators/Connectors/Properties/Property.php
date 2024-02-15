@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ConnectorDynamic.php
+ * Property.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,28 +13,29 @@
  * @date           08.02.22
  */
 
-namespace FastyBird\Module\Devices\Hydrators\Properties;
+namespace FastyBird\Module\Devices\Hydrators\Connectors\Properties;
 
 use FastyBird\Module\Devices\Entities;
+use FastyBird\Module\Devices\Hydrators;
+use FastyBird\Module\Devices\Schemas;
 
 /**
  * Connector property entity hydrator
  *
- * @extends Connector<Entities\Connectors\Properties\Dynamic>
+ * @template T of Entities\Connectors\Properties\Property
+ * @extends  Hydrators\Property<T>
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Hydrators
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ConnectorDynamic extends Connector
+abstract class Property extends Hydrators\Property
 {
 
-	/**
-	 * @return class-string<Entities\Connectors\Properties\Dynamic>
-	 */
-	public function getEntityName(): string
-	{
-		return Entities\Connectors\Properties\Dynamic::class;
-	}
+	/** @var array<string> */
+	protected array $relationships
+		= [
+			Schemas\Connectors\Properties\Property::RELATIONSHIPS_CONNECTOR,
+		];
 
 }

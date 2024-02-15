@@ -171,14 +171,14 @@ final class DevicesModuleExtensionTest extends DbTestCase
 		self::assertNotNull($this->getContainer()->getByType(Schemas\Channels\Properties\States\State::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Schemas\Channels\Controls\Control::class, false));
 
-		self::assertNotNull($this->getContainer()->getByType(Hydrators\Properties\ConnectorDynamic::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Hydrators\Properties\ConnectorVariable::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Hydrators\Properties\DeviceDynamic::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Hydrators\Properties\DeviceVariable::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Hydrators\Properties\DeviceMapped::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Hydrators\Properties\ChannelDynamic::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Hydrators\Properties\ChannelVariable::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Hydrators\Properties\ChannelMapped::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Hydrators\Connectors\Properties\Dynamic::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Hydrators\Connectors\Properties\Variable::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Hydrators\Devices\Properties\Dynamic::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Hydrators\Devices\Properties\Variable::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Hydrators\Devices\Properties\Mapped::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Hydrators\Channels\Properties\Dynamic::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Hydrators\Channels\Properties\Variable::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Hydrators\Channels\Properties\Mapped::class, false));
 
 		self::assertNotNull($this->getContainer()->getByType(Router\Validator::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Router\ApiRoutes::class, false));

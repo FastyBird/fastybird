@@ -16,7 +16,7 @@
 namespace FastyBird\Automator\DevicesModule\Entities\Conditions;
 
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\Library\Application\Doctrine\Mapping as ApplicationMapping;
+use FastyBird\Library\Application\Entities\Mapping as ApplicationMapping;
 use FastyBird\Module\Triggers\Entities as TriggersEntities;
 use FastyBird\Module\Triggers\Types as TriggersTypes;
 use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;

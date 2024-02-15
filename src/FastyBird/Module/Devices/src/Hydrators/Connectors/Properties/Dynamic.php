@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ChannelMapped.php
+ * Dynamic.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,31 +10,31 @@
  * @subpackage     Hydrators
  * @since          1.0.0
  *
- * @date           02.04.22
+ * @date           08.02.22
  */
 
-namespace FastyBird\Module\Devices\Hydrators\Properties;
+namespace FastyBird\Module\Devices\Hydrators\Connectors\Properties;
 
 use FastyBird\Module\Devices\Entities;
 
 /**
- * Channel property entity hydrator
+ * Connector property entity hydrator
  *
- * @extends  Channel<Entities\Channels\Properties\Mapped>
+ * @extends Property<Entities\Connectors\Properties\Dynamic>
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Hydrators
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ChannelMapped extends Channel
+final class Dynamic extends Property
 {
 
 	/**
-	 * @return class-string<Entities\Channels\Properties\Mapped>
+	 * @return class-string<Entities\Connectors\Properties\Dynamic>
 	 */
 	public function getEntityName(): string
 	{
-		return Entities\Channels\Properties\Mapped::class;
+		return Entities\Connectors\Properties\Dynamic::class;
 	}
 
 }

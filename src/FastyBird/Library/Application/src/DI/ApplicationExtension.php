@@ -16,7 +16,6 @@
 namespace FastyBird\Library\Application\DI;
 
 use FastyBird\Library\Application\Boot;
-use FastyBird\Library\Application\Doctrine;
 use FastyBird\Library\Application\EventLoop\Wrapper;
 use FastyBird\Library\Application\Helpers;
 use FastyBird\Library\Application\Subscribers;
@@ -101,7 +100,10 @@ class ApplicationExtension extends DI\CompilerExtension
 		$configuration = $this->getConfig();
 		assert($configuration instanceof stdClass);
 
-		// Logger handlers
+		/**
+		 * LOGGERS
+		 */
+
 		if ($configuration->logging->rotatingFile->enabled === true) {
 			$builder->addDefinition(
 				$this->prefix('logger.handler.rotatingFile'),
@@ -124,6 +126,8 @@ class ApplicationExtension extends DI\CompilerExtension
 				]);
 		}
 
+		$consoleHandler = null;
+
 		if ($configuration->logging->console->enabled) {
 			$consoleHandler = $builder->addDefinition(
 				$this->prefix('logger.handler.console'),
@@ -139,22 +143,51 @@ class ApplicationExtension extends DI\CompilerExtension
 				]);
 		}
 
+		/**
+		 * HELPERS
+		 */
+
 		$builder->addDefinition($this->prefix('helpers.eventLoop'), new DI\Definitions\ServiceDefinition())
 			->setType(Wrapper::class);
 
 		if (class_exists('\Doctrine\DBAL\Connection') && class_exists('\Doctrine\ORM\EntityManager')) {
 			$builder->addDefinition($this->prefix('helpers.database'), new DI\Definitions\ServiceDefinition())
 				->setType(Helpers\Database::class);
-
-			$builder->addDefinition(
-				$this->prefix('doctrine.mapping.discriminatorListener'),
-				new DI\Definitions\ServiceDefinition(),
-			)
-				->setType(Doctrine\Mapping\DiscriminatorListener::class);
 		}
 
+		/**
+		 * SUBSCRIBERS
+		 */
+
+		if ($configuration->logging->console->enabled) {
+			$builder->addDefinition(
+				$this->prefix('subscribers.console'),
+				new DI\Definitions\ServiceDefinition(),
+			)
+				->setType(Subscribers\Console::class)
+				->setArguments([
+					'handler' => $consoleHandler,
+					'level' => $configuration->logging->console->level,
+				]);
+		}
+
+		if (class_exists('\Doctrine\DBAL\Connection') && class_exists('\Doctrine\ORM\EntityManager')) {
+			$builder->addDefinition(
+				$this->prefix('subscribers.entityDiscriminator'),
+				new DI\Definitions\ServiceDefinition(),
+			)
+				->setType(Subscribers\EntityDiscriminator::class);
+		}
+
+		/**
+		 * SENTRY ISSUES LOGGER
+		 */
+
 		if (interface_exists('\Sentry\ClientInterface')) {
-			$builder->addDefinition($this->prefix('helpers.sentry'), new DI\Definitions\ServiceDefinition())
+			$builder->addDefinition(
+				$this->prefix('helpers.sentry'),
+				new DI\Definitions\ServiceDefinition(),
+			)
 				->setType(Helpers\Sentry::class);
 		}
 
@@ -178,7 +211,6 @@ class ApplicationExtension extends DI\CompilerExtension
 			$sentryDSN = null;
 		}
 
-		// Sentry issues logger
 		if (is_string($sentryDSN) && $sentryDSN !== '') {
 			$builder->addDefinition($this->prefix('sentry.handler'), new DI\Definitions\ServiceDefinition())
 				->setType(Sentry\Monolog\Handler::class)
@@ -211,12 +243,13 @@ class ApplicationExtension extends DI\CompilerExtension
 		$configuration = $this->getConfig();
 		assert($configuration instanceof stdClass);
 
-		$sentryHandlerServiceName = $builder->getByType(Sentry\Monolog\Handler::class);
+		/**
+		 * LOGGERS
+		 */
 
 		if (
 			$configuration->logging->rotatingFile->enabled === true
 			|| $configuration->logging->stdOut->enabled === true
-			|| $sentryHandlerServiceName !== null
 		) {
 			$monologLoggerServiceName = $builder->getByType(Monolog\Logger::class);
 			assert(is_string($monologLoggerServiceName));
@@ -235,14 +268,30 @@ class ApplicationExtension extends DI\CompilerExtension
 
 				$monologLoggerService->addSetup('?->pushHandler(?)', ['@self', $stdOutHandler]);
 			}
-
-			if ($sentryHandlerServiceName !== null) {
-				$sentryHandlerService = $builder->getDefinition($this->prefix('sentry.handler'));
-				assert($sentryHandlerService instanceof DI\Definitions\ServiceDefinition);
-
-				$monologLoggerService->addSetup('?->pushHandler(?)', ['@self', $sentryHandlerService]);
-			}
 		}
+
+		/**
+		 * SENTRY
+		 */
+
+		$sentryHandlerServiceName = $builder->getByType(Sentry\Monolog\Handler::class);
+
+		if ($sentryHandlerServiceName !== null) {
+			$monologLoggerServiceName = $builder->getByType(Monolog\Logger::class);
+			assert(is_string($monologLoggerServiceName));
+
+			$monologLoggerService = $builder->getDefinition($monologLoggerServiceName);
+			assert($monologLoggerService instanceof DI\Definitions\ServiceDefinition);
+
+			$sentryHandlerService = $builder->getDefinition($this->prefix('sentry.handler'));
+			assert($sentryHandlerService instanceof DI\Definitions\ServiceDefinition);
+
+			$monologLoggerService->addSetup('?->pushHandler(?)', ['@self', $sentryHandlerService]);
+		}
+
+		/**
+		 * DOCTRINE
+		 */
 
 		if (
 			class_exists('\Doctrine\DBAL\Connection')
@@ -255,7 +304,7 @@ class ApplicationExtension extends DI\CompilerExtension
 			$emService
 				->addSetup('?->getEventManager()->addEventSubscriber(?)', [
 					'@self',
-					$builder->getDefinitionByType(Doctrine\Mapping\DiscriminatorListener::class),
+					$builder->getDefinitionByType(Subscribers\EntityDiscriminator::class),
 				]);
 		}
 	}

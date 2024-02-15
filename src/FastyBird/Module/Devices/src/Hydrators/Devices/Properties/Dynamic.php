@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * DeviceVariable.php
+ * Dynamic.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,28 +13,28 @@
  * @date           04.01.22
  */
 
-namespace FastyBird\Module\Devices\Hydrators\Properties;
+namespace FastyBird\Module\Devices\Hydrators\Devices\Properties;
 
 use FastyBird\Module\Devices\Entities;
 
 /**
  * Device property entity hydrator
  *
- * @extends Device<Entities\Devices\Properties\Variable>
+ * @extends Property<Entities\Devices\Properties\Dynamic>
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Hydrators
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceVariable extends Device
+final class Dynamic extends Property
 {
 
 	/**
-	 * @return class-string<Entities\Devices\Properties\Variable>
+	 * @return class-string<Entities\Devices\Properties\Dynamic>
 	 */
 	public function getEntityName(): string
 	{
-		return Entities\Devices\Properties\Variable::class;
+		return Entities\Devices\Properties\Dynamic::class;
 	}
 
 }

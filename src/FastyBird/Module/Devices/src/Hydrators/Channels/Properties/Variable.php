@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ChannelVariable.php
+ * Variable.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,20 +13,20 @@
  * @date           04.01.22
  */
 
-namespace FastyBird\Module\Devices\Hydrators\Properties;
+namespace FastyBird\Module\Devices\Hydrators\Channels\Properties;
 
 use FastyBird\Module\Devices\Entities;
 
 /**
  * Channel property entity hydrator
  *
- * @extends Channel<Entities\Channels\Properties\Variable>
+ * @extends Property<Entities\Channels\Properties\Variable>
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Hydrators
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ChannelVariable extends Channel
+final class Variable extends Property
 {
 
 	/**

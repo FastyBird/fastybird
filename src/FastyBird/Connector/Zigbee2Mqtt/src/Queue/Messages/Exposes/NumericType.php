@@ -21,8 +21,6 @@ use FastyBird\Library\Metadata\Formats as MetadataFormats;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use Orisai\ObjectMapper;
-use TypeError;
-use ValueError;
 use function array_merge;
 
 /**
@@ -79,8 +77,6 @@ final class NumericType extends Type
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws TypeError
-	 * @throws ValueError
 	 */
 	public function getDataType(): MetadataTypes\DataType
 	{

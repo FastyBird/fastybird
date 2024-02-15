@@ -18,10 +18,10 @@ namespace FastyBird\Library\Metadata\Utilities;
 use FastyBird\Library\Metadata\Exceptions;
 use FastyBird\Library\Metadata\Formats;
 use FastyBird\Library\Metadata\Types;
-use TypeError;
-use ValueError;
+use Throwable;
 use function floatval;
 use function intval;
+use function sprintf;
 
 /**
  * Data type helpers
@@ -36,8 +36,6 @@ final class DataType
 
 	/**
 	 * @throws Exceptions\InvalidState
-	 * @throws TypeError
-	 * @throws ValueError
 	 */
 	public static function inferNumberDataType(
 		Formats\NumberRange $format,
@@ -109,7 +107,11 @@ final class DataType
 						)
 					)
 				) {
-					return Types\DataType::from($dataType);
+					try {
+						return Types\DataType::from($dataType);
+					} catch (Throwable) {
+						throw new Exceptions\InvalidState(sprintf('Data type: %s could not be initialized', $dataType));
+					}
 				}
 			}
 

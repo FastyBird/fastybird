@@ -13,7 +13,7 @@
  * @date           06.02.24
  */
 
-namespace FastyBird\Library\Application\Doctrine\Mapping;
+namespace FastyBird\Library\Application\Entities\Mapping;
 
 use Attribute;
 use Doctrine\ORM\Mapping as ORMMapping;

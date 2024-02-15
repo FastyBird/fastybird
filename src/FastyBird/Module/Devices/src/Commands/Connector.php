@@ -465,7 +465,7 @@ class Connector extends Console\Command\Command
 
 						// ...and ping again
 						if (!$this->database->ping()) {
-							throw new Exceptions\Terminate('Connection to database could not be re-established');
+							throw new Exceptions\Runtime('Connection to database could not be re-established');
 						}
 					}
 				}));
@@ -478,7 +478,7 @@ class Connector extends Console\Command\Command
 	}
 
 	/**
-	 * @throws Exceptions\Terminate
+	 * @throws Exceptions\Runtime
 	 */
 	private function terminate(
 		Documents\Connectors\Connector $connector,
@@ -541,7 +541,7 @@ class Connector extends Console\Command\Command
 				],
 			);
 
-			throw new Exceptions\Terminate(
+			throw new Exceptions\Runtime(
 				'Error during connector termination process',
 				$ex->getCode(),
 				$ex,

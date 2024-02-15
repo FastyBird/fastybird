@@ -83,403 +83,405 @@ final class State implements ExchangeConsumers\Consumer
 			return;
 		}
 
-		if (in_array($routingKey, self::PROPERTIES_ACTIONS_ROUTING_KEYS, true)) {
-			if ($document instanceof Documents\Actions\Properties\Connector) {
-				if ($document->getAction() === Types\PropertyAction::SET) {
-					$findConnectorPropertyQuery = new Queries\Configuration\FindConnectorDynamicProperties();
-					$findConnectorPropertyQuery->byId($document->getProperty());
+		if (!in_array($routingKey, self::PROPERTIES_ACTIONS_ROUTING_KEYS, true)) {
+			return;
+		}
 
-					$property = $this->connectorPropertiesConfigurationRepository->findOneBy(
-						$findConnectorPropertyQuery,
-						Documents\Connectors\Properties\Dynamic::class,
-					);
+		if ($document instanceof Documents\Actions\Properties\Connector) {
+			if ($document->getAction() === Types\PropertyAction::SET) {
+				$findConnectorPropertyQuery = new Queries\Configuration\FindConnectorDynamicProperties();
+				$findConnectorPropertyQuery->byId($document->getProperty());
 
-					if ($property === null) {
-						return;
-					}
+				$property = $this->connectorPropertiesConfigurationRepository->findOneBy(
+					$findConnectorPropertyQuery,
+					Documents\Connectors\Properties\Dynamic::class,
+				);
 
-					$result = null;
-					$data = [];
-
-					if ($document->getSet() !== null) {
-						if ($document->getSet()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
-							$data[States\Property::ACTUAL_VALUE_FIELD] = $document->getSet()->getActualValue();
-						}
-
-						if ($document->getSet()->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
-							$data[States\Property::EXPECTED_VALUE_FIELD] = $document->getSet()->getExpectedValue();
-						}
-
-						if ($data !== []) {
-							$result = $this->connectorPropertiesStatesManager->writeState(
-								$property,
-								Utils\ArrayHash::from($data),
-								false,
-								$source,
-							);
-						}
-					} elseif ($document->getWrite() !== null) {
-						if ($document->getWrite()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
-							$data[States\Property::ACTUAL_VALUE_FIELD] = $document->getWrite()->getActualValue();
-						}
-
-						if ($document->getWrite()->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
-							$data[States\Property::EXPECTED_VALUE_FIELD] = $document->getWrite()->getExpectedValue();
-						}
-
-						if ($data !== []) {
-							$result = $this->connectorPropertiesStatesManager->writeState(
-								$property,
-								Utils\ArrayHash::from($data),
-								true,
-								$source,
-							);
-						}
-					}
-
-					$result
-						?->then(function () use ($document, $property, $source, $routingKey, $data): void {
-							$this->logger->debug(
-								'Requested write value to connector property',
-								[
-									'source' => MetadataTypes\Sources\Module::DEVICES,
-									'type' => 'state-consumer',
-									'connector' => [
-										'id' => $document->getConnector()->toString(),
-									],
-									'property' => [
-										'id' => $property->getId()->toString(),
-										'identifier' => $property->getIdentifier(),
-									],
-									'data' => $data,
-									'message' => [
-										'routing_key' => $routingKey,
-										'source' => $source->getValue(),
-										'data' => $document->toArray(),
-									],
-								],
-							);
-						});
-				} elseif ($document->getAction() === Types\PropertyAction::GET) {
-					$findConnectorPropertyQuery = new Queries\Configuration\FindConnectorDynamicProperties();
-					$findConnectorPropertyQuery->byId($document->getProperty());
-
-					$property = $this->connectorPropertiesConfigurationRepository->findOneBy(
-						$findConnectorPropertyQuery,
-						Documents\Connectors\Properties\Dynamic::class,
-					);
-
-					if ($property === null) {
-						return;
-					}
-
-					$state = await($this->connectorPropertiesStatesManager->readState($property));
-
-					if ($state === null) {
-						return;
-					}
-
-					$this->publisher->publish(
-						MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
-						Devices\Constants::MESSAGE_BUS_CONNECTOR_PROPERTY_STATE_DOCUMENT_REPORTED_ROUTING_KEY,
-						$state,
-					)
-						->then(function () use ($document, $property, $source, $routingKey): void {
-							$this->logger->debug(
-								'Requested write value to channel property',
-								[
-									'source' => MetadataTypes\Sources\Module::DEVICES,
-									'type' => 'state-consumer',
-									'connector' => [
-										'id' => $document->getConnector()->toString(),
-									],
-									'property' => [
-										'id' => $property->getId()->toString(),
-										'identifier' => $property->getIdentifier(),
-									],
-									'message' => [
-										'routing_key' => $routingKey,
-										'source' => $source->getValue(),
-										'data' => $document->toArray(),
-									],
-								],
-							);
-						})
-						->catch(function (Throwable $ex): void {
-							$this->logger->error(
-								'Requested action could not be published for write action',
-								[
-									'source' => MetadataTypes\Sources\Module::DEVICES,
-									'type' => 'channel-properties-states',
-									'exception' => ApplicationHelpers\Logger::buildException($ex),
-								],
-							);
-						});
+				if ($property === null) {
+					return;
 				}
-			} elseif ($document instanceof Documents\Actions\Properties\Device) {
-				if ($document->getAction() === Types\PropertyAction::SET) {
-					$findConnectorPropertyQuery = new Queries\Configuration\FindDeviceProperties();
-					$findConnectorPropertyQuery->byId($document->getProperty());
 
-					$property = $this->devicePropertiesConfigurationRepository->findOneBy($findConnectorPropertyQuery);
+				$result = null;
+				$data = [];
 
-					if (
-						!$property instanceof Documents\Devices\Properties\Dynamic
-						&& !$property instanceof Documents\Devices\Properties\Mapped
-					) {
-						return;
+				if ($document->getSet() !== null) {
+					if ($document->getSet()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+						$data[States\Property::ACTUAL_VALUE_FIELD] = $document->getSet()->getActualValue();
 					}
 
-					$result = null;
-					$data = [];
-
-					if ($document->getSet() !== null) {
-						if ($document->getSet()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
-							$data[States\Property::ACTUAL_VALUE_FIELD] = $document->getSet()->getActualValue();
-						}
-
-						if ($document->getSet()->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
-							$data[States\Property::EXPECTED_VALUE_FIELD] = $document->getSet()->getExpectedValue();
-						}
-
-						if ($data !== []) {
-							$result = $this->devicePropertiesStatesManager->writeState(
-								$property,
-								Utils\ArrayHash::from($data),
-								false,
-								$source,
-							);
-						}
-					} elseif ($document->getWrite() !== null) {
-						if ($document->getWrite()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
-							$data[States\Property::ACTUAL_VALUE_FIELD] = $document->getWrite()->getActualValue();
-						}
-
-						if ($document->getWrite()->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
-							$data[States\Property::EXPECTED_VALUE_FIELD] = $document->getWrite()->getExpectedValue();
-						}
-
-						if ($data !== []) {
-							$result = $this->devicePropertiesStatesManager->writeState(
-								$property,
-								Utils\ArrayHash::from($data),
-								true,
-								$source,
-							);
-						}
+					if ($document->getSet()->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
+						$data[States\Property::EXPECTED_VALUE_FIELD] = $document->getSet()->getExpectedValue();
 					}
 
-					$result
-						?->then(function () use ($document, $property, $source, $routingKey, $data): void {
-							$this->logger->debug(
-								'Requested write value to device property',
-								[
-									'source' => MetadataTypes\Sources\Module::DEVICES,
-									'type' => 'state-consumer',
-									'device' => [
-										'id' => $document->getDevice()->toString(),
-									],
-									'property' => [
-										'id' => $property->getId()->toString(),
-										'identifier' => $property->getIdentifier(),
-									],
-									'data' => $data,
-									'message' => [
-										'routing_key' => $routingKey,
-										'source' => $source->getValue(),
-										'data' => $document->toArray(),
-									],
-								],
-							);
-						});
-				} elseif ($document->getAction() === Types\PropertyAction::GET) {
-					$findConnectorPropertyQuery = new Queries\Configuration\FindDeviceProperties();
-					$findConnectorPropertyQuery->byId($document->getProperty());
-
-					$property = $this->devicePropertiesConfigurationRepository->findOneBy($findConnectorPropertyQuery);
-
-					if (
-						!$property instanceof Documents\Devices\Properties\Dynamic
-						&& !$property instanceof Documents\Devices\Properties\Mapped
-					) {
-						return;
+					if ($data !== []) {
+						$result = $this->connectorPropertiesStatesManager->writeState(
+							$property,
+							Utils\ArrayHash::from($data),
+							false,
+							$source,
+						);
+					}
+				} elseif ($document->getWrite() !== null) {
+					if ($document->getWrite()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+						$data[States\Property::ACTUAL_VALUE_FIELD] = $document->getWrite()->getActualValue();
 					}
 
-					$state = await($this->devicePropertiesStatesManager->readState($property));
-
-					if ($state === null) {
-						return;
+					if ($document->getWrite()->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
+						$data[States\Property::EXPECTED_VALUE_FIELD] = $document->getWrite()->getExpectedValue();
 					}
 
-					$this->publisher->publish(
-						MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
-						Devices\Constants::MESSAGE_BUS_DEVICE_PROPERTY_STATE_DOCUMENT_REPORTED_ROUTING_KEY,
-						$state,
-					)
-						->then(function () use ($document, $property, $source, $routingKey): void {
-							$this->logger->debug(
-								'Requested write value to channel property',
-								[
-									'source' => MetadataTypes\Sources\Module::DEVICES,
-									'type' => 'state-consumer',
-									'device' => [
-										'id' => $document->getDevice()->toString(),
-									],
-									'property' => [
-										'id' => $property->getId()->toString(),
-										'identifier' => $property->getIdentifier(),
-									],
-									'message' => [
-										'routing_key' => $routingKey,
-										'source' => $source->getValue(),
-										'data' => $document->toArray(),
-									],
-								],
-							);
-						})
-						->catch(function (Throwable $ex): void {
-							$this->logger->error(
-								'Requested action could not be published for write action',
-								[
-									'source' => MetadataTypes\Sources\Module::DEVICES,
-									'type' => 'channel-properties-states',
-									'exception' => ApplicationHelpers\Logger::buildException($ex),
-								],
-							);
-						});
+					if ($data !== []) {
+						$result = $this->connectorPropertiesStatesManager->writeState(
+							$property,
+							Utils\ArrayHash::from($data),
+							true,
+							$source,
+						);
+					}
 				}
-			} elseif ($document instanceof Documents\Actions\Properties\Channel) {
-				if ($document->getAction() === Types\PropertyAction::SET) {
-					$findConnectorPropertyQuery = new Queries\Configuration\FindChannelProperties();
-					$findConnectorPropertyQuery->byId($document->getProperty());
 
-					$property = $this->channelPropertiesConfigurationRepository->findOneBy($findConnectorPropertyQuery);
-
-					if (
-						!$property instanceof Documents\Channels\Properties\Dynamic
-						&& !$property instanceof Documents\Channels\Properties\Mapped
-					) {
-						return;
-					}
-
-					$result = null;
-					$data = [];
-
-					if ($document->getSet() !== null) {
-						if ($document->getSet()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
-							$data[States\Property::ACTUAL_VALUE_FIELD] = $document->getSet()->getActualValue();
-						}
-
-						if ($document->getSet()->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
-							$data[States\Property::EXPECTED_VALUE_FIELD] = $document->getSet()->getExpectedValue();
-						}
-
-						if ($data !== []) {
-							$result = $this->channelPropertiesStatesManager->writeState(
-								$property,
-								Utils\ArrayHash::from($data),
-								false,
-								$source,
-							);
-						}
-					} elseif ($document->getWrite() !== null) {
-						if ($document->getWrite()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
-							$data[States\Property::ACTUAL_VALUE_FIELD] = $document->getWrite()->getActualValue();
-						}
-
-						if ($document->getWrite()->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
-							$data[States\Property::EXPECTED_VALUE_FIELD] = $document->getWrite()->getExpectedValue();
-						}
-
-						if ($data !== []) {
-							$result = $this->channelPropertiesStatesManager->writeState(
-								$property,
-								Utils\ArrayHash::from($data),
-								true,
-								$source,
-							);
-						}
-					}
-
-					$result
-						?->then(function () use ($document, $property, $source, $routingKey, $data): void {
-							$this->logger->debug(
-								'Requested write value to channel property',
-								[
-									'source' => MetadataTypes\Sources\Module::DEVICES,
-									'type' => 'state-consumer',
-									'channel' => [
-										'id' => $document->getChannel()->toString(),
-									],
-									'property' => [
-										'id' => $property->getId()->toString(),
-										'identifier' => $property->getIdentifier(),
-									],
-									'data' => $data,
-									'message' => [
-										'routing_key' => $routingKey,
-										'source' => $source->getValue(),
-										'data' => $document->toArray(),
-									],
+				$result
+					?->then(function () use ($document, $property, $source, $routingKey, $data): void {
+						$this->logger->debug(
+							'Requested write value to connector property',
+							[
+								'source' => MetadataTypes\Sources\Module::DEVICES,
+								'type' => 'state-consumer',
+								'connector' => [
+									'id' => $document->getConnector()->toString(),
 								],
-							);
-						});
-				} elseif ($document->getAction() === Types\PropertyAction::GET) {
-					$findConnectorPropertyQuery = new Queries\Configuration\FindChannelProperties();
-					$findConnectorPropertyQuery->byId($document->getProperty());
-
-					$property = $this->channelPropertiesConfigurationRepository->findOneBy($findConnectorPropertyQuery);
-
-					if (
-						!$property instanceof Documents\Channels\Properties\Dynamic
-						&& !$property instanceof Documents\Channels\Properties\Mapped
-					) {
-						return;
-					}
-
-					$state = await($this->channelPropertiesStatesManager->readState($property));
-
-					if ($state === null) {
-						return;
-					}
-
-					$this->publisher->publish(
-						MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
-						Devices\Constants::MESSAGE_BUS_CHANNEL_PROPERTY_STATE_DOCUMENT_REPORTED_ROUTING_KEY,
-						$state,
-					)
-						->then(function () use ($document, $property, $source, $routingKey): void {
-							$this->logger->debug(
-								'Requested write value to channel property',
-								[
-									'source' => MetadataTypes\Sources\Module::DEVICES,
-									'type' => 'state-consumer',
-									'channel' => [
-										'id' => $document->getChannel()->toString(),
-									],
-									'property' => [
-										'id' => $property->getId()->toString(),
-										'identifier' => $property->getIdentifier(),
-									],
-									'message' => [
-										'routing_key' => $routingKey,
-										'source' => $source->getValue(),
-										'data' => $document->toArray(),
-									],
+								'property' => [
+									'id' => $property->getId()->toString(),
+									'identifier' => $property->getIdentifier(),
 								],
-							);
-						})
-						->catch(function (Throwable $ex): void {
-							$this->logger->error(
-								'Requested action could not be published for write action',
-								[
-									'source' => MetadataTypes\Sources\Module::DEVICES,
-									'type' => 'channel-properties-states',
-									'exception' => ApplicationHelpers\Logger::buildException($ex),
+								'data' => $data,
+								'message' => [
+									'routing_key' => $routingKey,
+									'source' => $source->getValue(),
+									'data' => $document->toArray(),
 								],
-							);
-						});
+							],
+						);
+					});
+			} elseif ($document->getAction() === Types\PropertyAction::GET) {
+				$findConnectorPropertyQuery = new Queries\Configuration\FindConnectorDynamicProperties();
+				$findConnectorPropertyQuery->byId($document->getProperty());
+
+				$property = $this->connectorPropertiesConfigurationRepository->findOneBy(
+					$findConnectorPropertyQuery,
+					Documents\Connectors\Properties\Dynamic::class,
+				);
+
+				if ($property === null) {
+					return;
 				}
+
+				$state = await($this->connectorPropertiesStatesManager->readState($property));
+
+				if ($state === null) {
+					return;
+				}
+
+				$this->publisher->publish(
+					MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
+					Devices\Constants::MESSAGE_BUS_CONNECTOR_PROPERTY_STATE_DOCUMENT_REPORTED_ROUTING_KEY,
+					$state,
+				)
+					->then(function () use ($document, $property, $source, $routingKey): void {
+						$this->logger->debug(
+							'Requested write value to channel property',
+							[
+								'source' => MetadataTypes\Sources\Module::DEVICES,
+								'type' => 'state-consumer',
+								'connector' => [
+									'id' => $document->getConnector()->toString(),
+								],
+								'property' => [
+									'id' => $property->getId()->toString(),
+									'identifier' => $property->getIdentifier(),
+								],
+								'message' => [
+									'routing_key' => $routingKey,
+									'source' => $source->getValue(),
+									'data' => $document->toArray(),
+								],
+							],
+						);
+					})
+					->catch(function (Throwable $ex): void {
+						$this->logger->error(
+							'Requested action could not be published for write action',
+							[
+								'source' => MetadataTypes\Sources\Module::DEVICES,
+								'type' => 'channel-properties-states',
+								'exception' => ApplicationHelpers\Logger::buildException($ex),
+							],
+						);
+					});
+			}
+		} elseif ($document instanceof Documents\Actions\Properties\Device) {
+			if ($document->getAction() === Types\PropertyAction::SET) {
+				$findConnectorPropertyQuery = new Queries\Configuration\FindDeviceProperties();
+				$findConnectorPropertyQuery->byId($document->getProperty());
+
+				$property = $this->devicePropertiesConfigurationRepository->findOneBy($findConnectorPropertyQuery);
+
+				if (
+					!$property instanceof Documents\Devices\Properties\Dynamic
+					&& !$property instanceof Documents\Devices\Properties\Mapped
+				) {
+					return;
+				}
+
+				$result = null;
+				$data = [];
+
+				if ($document->getSet() !== null) {
+					if ($document->getSet()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+						$data[States\Property::ACTUAL_VALUE_FIELD] = $document->getSet()->getActualValue();
+					}
+
+					if ($document->getSet()->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
+						$data[States\Property::EXPECTED_VALUE_FIELD] = $document->getSet()->getExpectedValue();
+					}
+
+					if ($data !== []) {
+						$result = $this->devicePropertiesStatesManager->writeState(
+							$property,
+							Utils\ArrayHash::from($data),
+							false,
+							$source,
+						);
+					}
+				} elseif ($document->getWrite() !== null) {
+					if ($document->getWrite()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+						$data[States\Property::ACTUAL_VALUE_FIELD] = $document->getWrite()->getActualValue();
+					}
+
+					if ($document->getWrite()->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
+						$data[States\Property::EXPECTED_VALUE_FIELD] = $document->getWrite()->getExpectedValue();
+					}
+
+					if ($data !== []) {
+						$result = $this->devicePropertiesStatesManager->writeState(
+							$property,
+							Utils\ArrayHash::from($data),
+							true,
+							$source,
+						);
+					}
+				}
+
+				$result
+					?->then(function () use ($document, $property, $source, $routingKey, $data): void {
+						$this->logger->debug(
+							'Requested write value to device property',
+							[
+								'source' => MetadataTypes\Sources\Module::DEVICES,
+								'type' => 'state-consumer',
+								'device' => [
+									'id' => $document->getDevice()->toString(),
+								],
+								'property' => [
+									'id' => $property->getId()->toString(),
+									'identifier' => $property->getIdentifier(),
+								],
+								'data' => $data,
+								'message' => [
+									'routing_key' => $routingKey,
+									'source' => $source->getValue(),
+									'data' => $document->toArray(),
+								],
+							],
+						);
+					});
+			} elseif ($document->getAction() === Types\PropertyAction::GET) {
+				$findConnectorPropertyQuery = new Queries\Configuration\FindDeviceProperties();
+				$findConnectorPropertyQuery->byId($document->getProperty());
+
+				$property = $this->devicePropertiesConfigurationRepository->findOneBy($findConnectorPropertyQuery);
+
+				if (
+					!$property instanceof Documents\Devices\Properties\Dynamic
+					&& !$property instanceof Documents\Devices\Properties\Mapped
+				) {
+					return;
+				}
+
+				$state = await($this->devicePropertiesStatesManager->readState($property));
+
+				if ($state === null) {
+					return;
+				}
+
+				$this->publisher->publish(
+					MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
+					Devices\Constants::MESSAGE_BUS_DEVICE_PROPERTY_STATE_DOCUMENT_REPORTED_ROUTING_KEY,
+					$state,
+				)
+					->then(function () use ($document, $property, $source, $routingKey): void {
+						$this->logger->debug(
+							'Requested write value to channel property',
+							[
+								'source' => MetadataTypes\Sources\Module::DEVICES,
+								'type' => 'state-consumer',
+								'device' => [
+									'id' => $document->getDevice()->toString(),
+								],
+								'property' => [
+									'id' => $property->getId()->toString(),
+									'identifier' => $property->getIdentifier(),
+								],
+								'message' => [
+									'routing_key' => $routingKey,
+									'source' => $source->getValue(),
+									'data' => $document->toArray(),
+								],
+							],
+						);
+					})
+					->catch(function (Throwable $ex): void {
+						$this->logger->error(
+							'Requested action could not be published for write action',
+							[
+								'source' => MetadataTypes\Sources\Module::DEVICES,
+								'type' => 'channel-properties-states',
+								'exception' => ApplicationHelpers\Logger::buildException($ex),
+							],
+						);
+					});
+			}
+		} elseif ($document instanceof Documents\Actions\Properties\Channel) {
+			if ($document->getAction() === Types\PropertyAction::SET) {
+				$findConnectorPropertyQuery = new Queries\Configuration\FindChannelProperties();
+				$findConnectorPropertyQuery->byId($document->getProperty());
+
+				$property = $this->channelPropertiesConfigurationRepository->findOneBy($findConnectorPropertyQuery);
+
+				if (
+					!$property instanceof Documents\Channels\Properties\Dynamic
+					&& !$property instanceof Documents\Channels\Properties\Mapped
+				) {
+					return;
+				}
+
+				$result = null;
+				$data = [];
+
+				if ($document->getSet() !== null) {
+					if ($document->getSet()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+						$data[States\Property::ACTUAL_VALUE_FIELD] = $document->getSet()->getActualValue();
+					}
+
+					if ($document->getSet()->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
+						$data[States\Property::EXPECTED_VALUE_FIELD] = $document->getSet()->getExpectedValue();
+					}
+
+					if ($data !== []) {
+						$result = $this->channelPropertiesStatesManager->writeState(
+							$property,
+							Utils\ArrayHash::from($data),
+							false,
+							$source,
+						);
+					}
+				} elseif ($document->getWrite() !== null) {
+					if ($document->getWrite()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+						$data[States\Property::ACTUAL_VALUE_FIELD] = $document->getWrite()->getActualValue();
+					}
+
+					if ($document->getWrite()->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
+						$data[States\Property::EXPECTED_VALUE_FIELD] = $document->getWrite()->getExpectedValue();
+					}
+
+					if ($data !== []) {
+						$result = $this->channelPropertiesStatesManager->writeState(
+							$property,
+							Utils\ArrayHash::from($data),
+							true,
+							$source,
+						);
+					}
+				}
+
+				$result
+					?->then(function () use ($document, $property, $source, $routingKey, $data): void {
+						$this->logger->debug(
+							'Requested write value to channel property',
+							[
+								'source' => MetadataTypes\Sources\Module::DEVICES,
+								'type' => 'state-consumer',
+								'channel' => [
+									'id' => $document->getChannel()->toString(),
+								],
+								'property' => [
+									'id' => $property->getId()->toString(),
+									'identifier' => $property->getIdentifier(),
+								],
+								'data' => $data,
+								'message' => [
+									'routing_key' => $routingKey,
+									'source' => $source->getValue(),
+									'data' => $document->toArray(),
+								],
+							],
+						);
+					});
+			} elseif ($document->getAction() === Types\PropertyAction::GET) {
+				$findConnectorPropertyQuery = new Queries\Configuration\FindChannelProperties();
+				$findConnectorPropertyQuery->byId($document->getProperty());
+
+				$property = $this->channelPropertiesConfigurationRepository->findOneBy($findConnectorPropertyQuery);
+
+				if (
+					!$property instanceof Documents\Channels\Properties\Dynamic
+					&& !$property instanceof Documents\Channels\Properties\Mapped
+				) {
+					return;
+				}
+
+				$state = await($this->channelPropertiesStatesManager->readState($property));
+
+				if ($state === null) {
+					return;
+				}
+
+				$this->publisher->publish(
+					MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
+					Devices\Constants::MESSAGE_BUS_CHANNEL_PROPERTY_STATE_DOCUMENT_REPORTED_ROUTING_KEY,
+					$state,
+				)
+					->then(function () use ($document, $property, $source, $routingKey): void {
+						$this->logger->debug(
+							'Requested write value to channel property',
+							[
+								'source' => MetadataTypes\Sources\Module::DEVICES,
+								'type' => 'state-consumer',
+								'channel' => [
+									'id' => $document->getChannel()->toString(),
+								],
+								'property' => [
+									'id' => $property->getId()->toString(),
+									'identifier' => $property->getIdentifier(),
+								],
+								'message' => [
+									'routing_key' => $routingKey,
+									'source' => $source->getValue(),
+									'data' => $document->toArray(),
+								],
+							],
+						);
+					})
+					->catch(function (Throwable $ex): void {
+						$this->logger->error(
+							'Requested action could not be published for write action',
+							[
+								'source' => MetadataTypes\Sources\Module::DEVICES,
+								'type' => 'channel-properties-states',
+								'exception' => ApplicationHelpers\Logger::buildException($ex),
+							],
+						);
+					});
 			}
 		}
 	}

@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Device.php
+ * Property.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,29 +13,30 @@
  * @date           02.01.22
  */
 
-namespace FastyBird\Module\Devices\Hydrators\Properties;
+namespace FastyBird\Module\Devices\Hydrators\Channels\Properties;
 
 use FastyBird\Module\Devices\Entities;
+use FastyBird\Module\Devices\Hydrators;
 use FastyBird\Module\Devices\Schemas;
 
 /**
- * Device property entity hydrator
+ * Channel property entity hydrator
  *
- * @template T of Entities\Devices\Properties\Property
- * @extends  Property<T>
+ * @template T of Entities\Channels\Properties\Property
+ * @extends  Hydrators\Property<T>
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Hydrators
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-abstract class Device extends Property
+abstract class Property extends Hydrators\Property
 {
 
 	/** @var array<string> */
 	protected array $relationships
 		= [
-			Schemas\Devices\Properties\Property::RELATIONSHIPS_DEVICE,
-			Schemas\Devices\Properties\Property::RELATIONSHIPS_PARENT,
+			Schemas\Channels\Properties\Property::RELATIONSHIPS_CHANNEL,
+			Schemas\Channels\Properties\Property::RELATIONSHIPS_PARENT,
 		];
 
 }

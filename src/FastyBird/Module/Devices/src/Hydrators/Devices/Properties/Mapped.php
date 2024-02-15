@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * DeviceMapped.php
+ * Mapped.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,20 +13,20 @@
  * @date           02.04.22
  */
 
-namespace FastyBird\Module\Devices\Hydrators\Properties;
+namespace FastyBird\Module\Devices\Hydrators\Devices\Properties;
 
 use FastyBird\Module\Devices\Entities;
 
 /**
  * Device property entity hydrator
  *
- * @extends Device<Entities\Devices\Properties\Mapped>
+ * @extends Property<Entities\Devices\Properties\Mapped>
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Hydrators
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceMapped extends Device
+final class Mapped extends Property
 {
 
 	/**

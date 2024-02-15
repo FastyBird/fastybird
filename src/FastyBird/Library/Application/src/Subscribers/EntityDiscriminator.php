@@ -1,22 +1,23 @@
 <?php declare(strict_types = 1);
 
 /**
- * DiscriminatorListener.php
+ * EntityDiscriminator.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:Application!
- * @subpackage     Doctrine
+ * @subpackage     Subscribers
  * @since          1.0.0
  *
  * @date           06.02.24
  */
 
-namespace FastyBird\Library\Application\Doctrine\Mapping;
+namespace FastyBird\Library\Application\Subscribers;
 
 use Doctrine\Common;
 use Doctrine\ORM;
+use FastyBird\Library\Application\Entities\Mapping\DiscriminatorEntry;
 use FastyBird\Library\Application\Exceptions;
 use ReflectionClass;
 use function array_keys;
@@ -25,11 +26,11 @@ use function sprintf;
 
 /**
  * @package        FastyBird:Application!
- * @subpackage     Doctrine
+ * @subpackage     Subscribers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class DiscriminatorListener implements Common\EventSubscriber
+class EntityDiscriminator implements Common\EventSubscriber
 {
 
 	private const INHERITANCE_TYPE = 'SINGLE_TABLE';

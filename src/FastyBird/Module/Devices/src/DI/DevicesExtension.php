@@ -729,51 +729,51 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			$this->prefix('hydrators.connector.property.dynamic'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Hydrators\Properties\ConnectorDynamic::class);
+			->setType(Hydrators\Connectors\Properties\Dynamic::class);
 
 		$builder->addDefinition(
 			$this->prefix('hydrators.connector.property.variable'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Hydrators\Properties\ConnectorVariable::class);
+			->setType(Hydrators\Connectors\Properties\Variable::class);
 
 		// DEVICES
 		$builder->addDefinition(
 			$this->prefix('hydrators.device.property.dynamic'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Hydrators\Properties\DeviceDynamic::class);
+			->setType(Hydrators\Devices\Properties\Dynamic::class);
 
 		$builder->addDefinition(
 			$this->prefix('hydrators.device.property.variable'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Hydrators\Properties\DeviceVariable::class);
+			->setType(Hydrators\Devices\Properties\Variable::class);
 
 		$builder->addDefinition(
 			$this->prefix('hydrators.device.property.mapped'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Hydrators\Properties\DeviceMapped::class);
+			->setType(Hydrators\Devices\Properties\Mapped::class);
 
 		// CHANNELS
 		$builder->addDefinition(
 			$this->prefix('hydrators.channel.property.dynamic'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Hydrators\Properties\ChannelDynamic::class);
+			->setType(Hydrators\Channels\Properties\Dynamic::class);
 
 		$builder->addDefinition(
 			$this->prefix('hydrators.channel.property.variable'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Hydrators\Properties\ChannelVariable::class);
+			->setType(Hydrators\Channels\Properties\Variable::class);
 
 		$builder->addDefinition(
 			$this->prefix('hydrators.channel.property.mapped'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Hydrators\Properties\ChannelMapped::class);
+			->setType(Hydrators\Channels\Properties\Mapped::class);
 
 		/**
 		 * HELPERS
