@@ -36,7 +36,6 @@
     "php": ">=8.2.0",
     "bunny/bunny": "dev-promise-v3",
     "cweagans/composer-patches": "^1.7",
-    "evenement/evenement": "^3.0",
     "fastybird/application-library": "dev-main",
     "fastybird/datetime-factory": "^0.6",
     "fastybird/exchange-library": "dev-main",

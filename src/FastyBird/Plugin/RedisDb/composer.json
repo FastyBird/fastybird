@@ -38,7 +38,6 @@
     "php": ">=8.2.0",
     "clue/redis-react": "^3@dev",
     "cweagans/composer-patches": "^1.7",
-    "evenement/evenement": "^3.0",
     "fastybird/application-library": "dev-main",
     "fastybird/datetime-factory": "^0.6",
     "fastybird/exchange-library": "dev-main",

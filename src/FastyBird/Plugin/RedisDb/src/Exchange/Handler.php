@@ -15,14 +15,15 @@
 
 namespace FastyBird\Plugin\RedisDb\Exchange;
 
-use Evenement;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumer;
 use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Plugin\RedisDb\Events;
 use FastyBird\Plugin\RedisDb\Utilities;
 use Nette;
 use Nette\Utils;
+use Psr\EventDispatcher;
 use Psr\Log;
 use Throwable;
 use function array_key_exists;
@@ -38,13 +39,14 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Handler extends Evenement\EventEmitter
+final class Handler
 {
 
 	public function __construct(
 		private readonly Utilities\IdentifierGenerator $identifier,
 		private readonly ExchangeDocuments\DocumentFactory $documentFactory,
 		private readonly ExchangeConsumer\Container $consumer,
+		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
@@ -52,6 +54,8 @@ final class Handler extends Evenement\EventEmitter
 
 	public function handle(string $payload): void
 	{
+		$this->dispatcher?->dispatch(new Events\BeforeMessageHandled($payload));
+
 		try {
 			$data = Nette\Utils\Json::decode($payload, Nette\Utils\Json::FORCE_ARRAY);
 
@@ -89,6 +93,8 @@ final class Handler extends Evenement\EventEmitter
 				],
 			);
 		}
+
+		$this->dispatcher?->dispatch(new Events\AfterMessageHandled($payload));
 	}
 
 	private function consume(
@@ -129,9 +135,19 @@ final class Handler extends Evenement\EventEmitter
 			return;
 		}
 
+		$this->dispatcher?->dispatch(new Events\MessageReceived(
+			$source,
+			$routingKey,
+			$entity,
+		));
+
 		$this->consumer->consume($source, $routingKey, $entity);
 
-		$this->emit('message', [$source, $routingKey, $entity]);
+		$this->dispatcher?->dispatch(new Events\MessageConsumed(
+			$source,
+			$routingKey,
+			$entity,
+		));
 	}
 
 	private function validateSource(

@@ -16,7 +16,6 @@
 namespace FastyBird\Plugin\RabbitMq\Handlers;
 
 use Bunny;
-use Evenement;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumer;
 use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
@@ -26,7 +25,7 @@ use FastyBird\Plugin\RabbitMq\Exceptions;
 use FastyBird\Plugin\RabbitMq\Utilities;
 use Nette;
 use Nette\Utils;
-use Psr\EventDispatcher as PsrEventDispatcher;
+use Psr\EventDispatcher;
 use Psr\Log;
 use Throwable;
 use function assert;
@@ -41,7 +40,7 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Message extends Evenement\EventEmitter
+final class Message
 {
 
 	public const MESSAGE_ACK = 1;
@@ -56,7 +55,7 @@ final class Message extends Evenement\EventEmitter
 		private readonly Utilities\IdentifierGenerator $identifier,
 		private readonly ExchangeDocuments\DocumentFactory $documentFactory,
 		private readonly ExchangeConsumer\Container $consumer,
-		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
+		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
@@ -143,7 +142,11 @@ final class Message extends Evenement\EventEmitter
 
 			$this->consumer->consume($source, $routingKey, $entity);
 
-			$this->emit('message', [$source, $routingKey, $entity]);
+			$this->dispatcher?->dispatch(new Events\MessageConsumed(
+				$source,
+				$routingKey,
+				$entity,
+			));
 
 		} catch (Exceptions\UnprocessableMessage $ex) {
 			// Log error consume reason
