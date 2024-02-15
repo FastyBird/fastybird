@@ -58,7 +58,7 @@ final class HomeKitExtensionTest extends BaseTestCase
 			self::assertTrue(in_array(
 				$service::class,
 				[
-					Schemas\Channels\Channel::class,
+					Schemas\Channels\Generic::class,
 					Schemas\Channels\Battery::class,
 					Schemas\Channels\LightBulb::class,
 				],
@@ -74,7 +74,7 @@ final class HomeKitExtensionTest extends BaseTestCase
 			self::assertTrue(in_array(
 				$service::class,
 				[
-					Hydrators\Channels\Channel::class,
+					Hydrators\Channels\Generic::class,
 					Hydrators\Channels\Battery::class,
 					Hydrators\Channels\LightBulb::class,
 				],

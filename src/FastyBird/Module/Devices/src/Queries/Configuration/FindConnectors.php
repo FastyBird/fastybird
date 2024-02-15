@@ -45,7 +45,10 @@ class FindConnectors extends QueryObject
 		$this->filter[] = '.[?(@.id =~ /(?i).*^' . $id->toString() . '*$/)]';
 	}
 
-	public function byType(string $type): void
+	/**
+	 * @interal
+	 */
+	public function byType(string|int $type): void
 	{
 		$this->filter[] = '.[?(@.type =~ /(?i).*^' . $type . '*$/)]';
 	}

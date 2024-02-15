@@ -44,6 +44,7 @@ final class Repository extends Models\Configuration\Repository
 	public function __construct(
 		Models\Configuration\Builder $builder,
 		Cache\CacheFactory $cacheFactory,
+		private readonly MetadataDocuments\Mapping\ClassMetadataFactory $classMetadataFactory,
 		private readonly MetadataDocuments\DocumentFactory $documentFactory,
 	)
 	{
@@ -99,13 +100,10 @@ final class Repository extends Models\Configuration\Repository
 						->load()
 						->find('.' . Devices\Constants::DATA_STORAGE_PROPERTIES_KEY . '.*');
 
-					if ($type === Documents\Connectors\Properties\Dynamic::class) {
-						$space = $space->find('.[?(@.type == "' . Devices\Types\PropertyType::DYNAMIC->value . '")]');
+					$metadata = $this->classMetadataFactory->getMetadataFor($type);
 
-					} elseif ($type === Documents\Connectors\Properties\Variable::class) {
-						$space = $space->find(
-							'.[?(@.type == "' . Devices\Types\PropertyType::VARIABLE->value . '")]',
-						);
+					if ($metadata->getDiscriminatorValue() !== null) {
+						$space = $space->find('.[?(@.type == "' . $metadata->getDiscriminatorValue() . '")]');
 					}
 
 					$result = $queryObject->fetch($space);
@@ -171,13 +169,10 @@ final class Repository extends Models\Configuration\Repository
 						->load()
 						->find('.' . Devices\Constants::DATA_STORAGE_PROPERTIES_KEY . '.*');
 
-					if ($type === Documents\Connectors\Properties\Dynamic::class) {
-						$space = $space->find('.[?(@.type == "' . Devices\Types\PropertyType::DYNAMIC->value . '")]');
+					$metadata = $this->classMetadataFactory->getMetadataFor($type);
 
-					} elseif ($type === Documents\Connectors\Properties\Variable::class) {
-						$space = $space->find(
-							'.[?(@.type == "' . Devices\Types\PropertyType::VARIABLE->value . '")]',
-						);
+					if ($metadata->getDiscriminatorValue() !== null) {
+						$space = $space->find('.[?(@.type == "' . $metadata->getDiscriminatorValue() . '")]');
 					}
 
 					$result = $queryObject->fetch($space);

@@ -43,6 +43,7 @@ final class Repository extends Models\Configuration\Repository
 	public function __construct(
 		Models\Configuration\Builder $builder,
 		Cache\CacheFactory $cacheFactory,
+		private readonly MetadataDocuments\Mapping\ClassMetadataFactory $classMetadataFactory,
 		private readonly MetadataDocuments\DocumentFactory $documentFactory,
 	)
 	{
@@ -98,6 +99,12 @@ final class Repository extends Models\Configuration\Repository
 						->load()
 						->find('.' . Devices\Constants::DATA_STORAGE_CHANNELS_KEY . '.*');
 
+					$metadata = $this->classMetadataFactory->getMetadataFor($type);
+
+					if ($metadata->getDiscriminatorValue() !== null) {
+						$space = $space->find('.[?(@.type =~ /(?i).*^' . $metadata->getDiscriminatorValue() . '*$/)]');
+					}
+
 					$result = $queryObject->fetch($space);
 
 					if (!is_array($result) || $result === []) {
@@ -144,6 +151,12 @@ final class Repository extends Models\Configuration\Repository
 					$space = $this->builder
 						->load()
 						->find('.' . Devices\Constants::DATA_STORAGE_CHANNELS_KEY . '.*');
+
+					$metadata = $this->classMetadataFactory->getMetadataFor($type);
+
+					if ($metadata->getDiscriminatorValue() !== null) {
+						$space = $space->find('.[?(@.type =~ /(?i).*^' . $metadata->getDiscriminatorValue() . '*$/)]');
+					}
 
 					$result = $queryObject->fetch($space);
 
