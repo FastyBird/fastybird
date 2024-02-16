@@ -39,14 +39,14 @@ use function is_array;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Device
+readonly class Device
 {
 
 	public function __construct(
-		private readonly Documents\Connectors\Connector|Entities\Connectors\Connector $connector,
-		private readonly Zigbee2Mqtt\Logger $logger,
-		private readonly Queue\Queue $queue,
-		private readonly Helpers\MessageBuilder $messageBuilder,
+		private Documents\Connectors\Connector|Entities\Connectors\Connector $connector,
+		private Zigbee2Mqtt\Logger $logger,
+		private Queue\Queue $queue,
+		private Helpers\MessageBuilder $messageBuilder,
 	)
 	{
 	}

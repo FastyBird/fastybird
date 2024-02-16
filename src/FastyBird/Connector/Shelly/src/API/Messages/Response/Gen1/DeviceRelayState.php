@@ -26,37 +26,37 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceRelayState implements API\Messages\Message
+final readonly class DeviceRelayState implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
 		#[ObjectMapper\Modifiers\FieldName('ison')]
-		private readonly bool $state,
+		private bool $state,
 		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
 		#[ObjectMapper\Modifiers\FieldName('has_timer')]
-		private readonly bool $hasTimer,
+		private bool $hasTimer,
 		#[ObjectMapper\Rules\FloatValue()]
 		#[ObjectMapper\Modifiers\FieldName('timer_started')]
-		private readonly float $timerStarted,
+		private float $timerStarted,
 		#[ObjectMapper\Rules\FloatValue()]
 		#[ObjectMapper\Modifiers\FieldName('timer_duration')]
-		private readonly float $timerDuration,
+		private float $timerDuration,
 		#[ObjectMapper\Rules\FloatValue()]
 		#[ObjectMapper\Modifiers\FieldName('timer_remaining')]
-		private readonly float $timerRemaining,
+		private float $timerRemaining,
 		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
-		private readonly bool $overpower,
+		private bool $overpower,
 		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
-		private readonly bool $overtemperature,
+		private bool $overtemperature,
 		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
 		#[ObjectMapper\Modifiers\FieldName('is_valid')]
-		private readonly bool $valid,
+		private bool $valid,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly string|null $source,
+		private string|null $source,
 	)
 	{
 	}

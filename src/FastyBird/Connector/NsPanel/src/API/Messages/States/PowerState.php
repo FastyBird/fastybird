@@ -28,13 +28,13 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class PowerState implements State
+final readonly class PowerState implements State
 {
 
 	public function __construct(
 		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\PowerPayload::class)]
 		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::POWER_STATE)]
-		private readonly Types\PowerPayload $powerState,
+		private Types\PowerPayload $powerState,
 	)
 	{
 	}

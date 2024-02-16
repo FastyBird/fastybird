@@ -32,6 +32,8 @@ use Nette;
 use React\EventLoop;
 use React\Promise;
 use ReflectionClass;
+use TypeError;
+use ValueError;
 use function array_key_exists;
 use function assert;
 use function React\Async\async;
@@ -83,6 +85,8 @@ final class Connector implements DevicesConnectors\Connector
 	 * @throws ExchangeExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function execute(bool $standalone = true): Promise\PromiseInterface
 	{

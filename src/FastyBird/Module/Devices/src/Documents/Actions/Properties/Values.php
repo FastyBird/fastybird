@@ -33,7 +33,7 @@ use function array_merge;
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 #[DOC\Document]
-final class Values implements MetadataDocuments\Document
+final readonly class Values implements MetadataDocuments\Document
 {
 
 	public function __construct(
@@ -49,8 +49,7 @@ final class Values implements MetadataDocuments\Document
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('actual_value')]
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		private readonly bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $actualValue = MetadataConstants::VALUE_NOT_SET,
+		private bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $actualValue = MetadataConstants::VALUE_NOT_SET,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
 			new ObjectMapper\Rules\BackedEnumValue(class: MetadataTypes\Payloads\Button::class),
@@ -63,8 +62,7 @@ final class Values implements MetadataDocuments\Document
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('expected_value')]
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		private readonly bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $expectedValue = MetadataConstants::VALUE_NOT_SET,
+		private bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $expectedValue = MetadataConstants::VALUE_NOT_SET,
 	)
 	{
 	}
@@ -74,7 +72,6 @@ final class Values implements MetadataDocuments\Document
 		return $this->actualValue;
 	}
 
-	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 	public function getExpectedValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null
 	{
 		return $this->expectedValue;

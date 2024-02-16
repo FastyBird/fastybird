@@ -29,6 +29,8 @@ use IPub\DoctrineCrud;
 use Nette;
 use Nette\Utils;
 use Ramsey\Uuid;
+use TypeError;
+use ValueError;
 use function array_merge;
 use function array_unique;
 use function in_array;
@@ -106,6 +108,8 @@ final class System implements Common\EventSubscriber
 	 * @throws DoctrineCrud\Exceptions\InvalidArgumentException
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function postFlush(): void
 	{

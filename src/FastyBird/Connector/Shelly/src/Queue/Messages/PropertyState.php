@@ -25,12 +25,12 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class PropertyState implements Message
+final readonly class PropertyState implements Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $identifier,
+		private string $identifier,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\IntValue(),
@@ -38,7 +38,7 @@ final class PropertyState implements Message
 			new ObjectMapper\Rules\BoolValue(),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly float|int|string|bool|null $value,
+		private float|int|string|bool|null $value,
 	)
 	{
 	}

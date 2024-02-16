@@ -27,10 +27,10 @@ use Doctrine\ORM\Mapping as ORMMapping;
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class DiscriminatorEntry implements ORMMapping\MappingAttribute
+final readonly class DiscriminatorEntry implements ORMMapping\MappingAttribute
 {
 
-	public function __construct(public readonly string $name)
+	public function __construct(public string $name)
 	{
 	}
 

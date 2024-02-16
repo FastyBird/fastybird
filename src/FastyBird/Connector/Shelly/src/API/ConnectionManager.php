@@ -21,6 +21,8 @@ use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Nette;
+use TypeError;
+use ValueError;
 use function array_key_exists;
 
 /**
@@ -86,6 +88,8 @@ final class ConnectionManager
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getGen2WsApiConnection(
 		Entities\Devices\Device|Documents\Devices\Device $device,
@@ -108,6 +112,8 @@ final class ConnectionManager
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function getIpAddress(
 		Entities\Devices\Device|Documents\Devices\Device $device,
@@ -124,6 +130,8 @@ final class ConnectionManager
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function getDomain(
 		Entities\Devices\Device|Documents\Devices\Device $device,
@@ -140,6 +148,8 @@ final class ConnectionManager
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function getUsername(
 		Entities\Devices\Device|Documents\Devices\Device $device,
@@ -156,6 +166,8 @@ final class ConnectionManager
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function getPassword(
 		Entities\Devices\Device|Documents\Devices\Device $device,

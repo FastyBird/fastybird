@@ -29,6 +29,8 @@ use FastyBird\Module\Devices\Schemas;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use IPub\SlimRouter\Routing;
 use Neomerx\JsonApi;
+use TypeError;
+use ValueError;
 use function strval;
 
 /**
@@ -70,6 +72,8 @@ abstract class Property extends JsonApiSchemas\JsonApi
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */

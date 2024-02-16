@@ -24,6 +24,8 @@ use FastyBird\Library\Application\Entities\Mapping as ApplicationMapping;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
+use TypeError;
+use ValueError;
 use function is_numeric;
 use function is_string;
 
@@ -76,6 +78,8 @@ class Connector extends DevicesEntities\Connectors\Connector
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getClientMode(): Types\ClientMode
 	{
@@ -99,12 +103,14 @@ class Connector extends DevicesEntities\Connectors\Connector
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getByteSize(): Types\ByteSize
 	{
 		$property = $this->properties
 			->filter(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::RTU_BYTE_SIZE
 			)
 			->first();
@@ -123,12 +129,14 @@ class Connector extends DevicesEntities\Connectors\Connector
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getBaudRate(): Types\BaudRate
 	{
 		$property = $this->properties
 			->filter(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::RTU_BAUD_RATE
 			)
 			->first();
@@ -147,12 +155,14 @@ class Connector extends DevicesEntities\Connectors\Connector
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getParity(): Types\Parity
 	{
 		$property = $this->properties
 			->filter(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::RTU_PARITY
 			)
 			->first();
@@ -171,12 +181,14 @@ class Connector extends DevicesEntities\Connectors\Connector
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getStopBits(): Types\StopBits
 	{
 		$property = $this->properties
 			->filter(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::RTU_STOP_BITS
 			)
 			->first();
@@ -195,12 +207,14 @@ class Connector extends DevicesEntities\Connectors\Connector
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getRtuInterface(): string
 	{
 		$property = $this->properties
 			->filter(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::RTU_INTERFACE
 			)
 			->first();

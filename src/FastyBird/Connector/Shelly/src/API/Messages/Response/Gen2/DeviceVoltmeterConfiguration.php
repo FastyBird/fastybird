@@ -27,28 +27,28 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceVoltmeterConfiguration implements API\Messages\Message
+final readonly class DeviceVoltmeterConfiguration implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\IntValue(unsigned: true)]
-		private readonly int $id,
+		private int $id,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly string|null $name,
+		private string|null $name,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\FloatValue(castNumericString: true),
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('report_thr')]
-		private readonly float|null $reportThreshold,
+		private float|null $reportThreshold,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\MappedObjectValue(class: VoltmeterXVoltageConfigurationBlock::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		private readonly VoltmeterXVoltageConfigurationBlock|null $xvoltage,
+		private VoltmeterXVoltageConfigurationBlock|null $xvoltage,
 	)
 	{
 	}

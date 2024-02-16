@@ -23,14 +23,14 @@ namespace FastyBird\Library\Tools\Transformers;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class RgbTransformer implements Transformer
+final readonly class RgbTransformer implements Transformer
 {
 
 	public function __construct(
-		private readonly int $red,
-		private readonly int $green,
-		private readonly int $blue,
-		private readonly int|null $white = null,
+		private int      $red,
+		private int      $green,
+		private int      $blue,
+		private int|null $white = null,
 	)
 	{
 	}
@@ -73,20 +73,11 @@ final class RgbTransformer implements Transformer
 
 		$saturation = 100 * $chroma / $max;
 
-		switch ($min) {
-			case $red:
-				$hue = 3 - (($green - $blue) / $chroma);
-
-				break;
-			case $blue:
-				$hue = 1 - (($red - $green) / $chroma);
-
-				break;
-			default:
-				$hue = 5 - (($blue - $red) / $chroma);
-
-				break;
-		}
+		$hue = match ($min) {
+			$red => 3 - (($green - $blue) / $chroma),
+			$blue => 1 - (($red - $green) / $chroma),
+			default => 5 - (($blue - $red) / $chroma),
+		};
 
 		$hue = 60 * $hue;
 

@@ -24,6 +24,8 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use Ramsey\Uuid;
+use TypeError;
+use ValueError;
 use function assert;
 use function floatval;
 use function is_numeric;
@@ -66,7 +68,7 @@ class Preset extends VirtualEntities\Channels\Channel
 	{
 		$property = $this->properties
 			->filter(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				static fn (DevicesEntities\Channels\Properties\Property $property): bool => $property->getIdentifier() === Types\ChannelPropertyIdentifier::TARGET_ROOM_TEMPERATURE->value
 			)
 			->first();
@@ -81,12 +83,14 @@ class Preset extends VirtualEntities\Channels\Channel
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getCoolingThresholdTemp(): float|null
 	{
 		$property = $this->properties
 			->filter(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				static fn (DevicesEntities\Channels\Properties\Property $property): bool => $property->getIdentifier() === Types\ChannelPropertyIdentifier::COOLING_THRESHOLD_TEMPERATURE->value
 			)
 			->first();
@@ -104,12 +108,14 @@ class Preset extends VirtualEntities\Channels\Channel
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getHeatingThresholdTemp(): float|null
 	{
 		$property = $this->properties
 			->filter(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				static fn (DevicesEntities\Channels\Properties\Property $property): bool => $property->getIdentifier() === Types\ChannelPropertyIdentifier::HEATING_THRESHOLD_TEMPERATURE->value
 			)
 			->first();

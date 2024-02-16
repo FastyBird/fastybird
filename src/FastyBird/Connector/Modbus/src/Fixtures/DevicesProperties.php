@@ -24,6 +24,8 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use TypeError;
+use ValueError;
 
 /**
  * Devices properties database fixture
@@ -41,6 +43,8 @@ final class DevicesProperties extends DataFixtures\AbstractFixture implements Da
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function load(Persistence\ObjectManager $manager): void
 	{

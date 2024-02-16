@@ -26,17 +26,17 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ApplicationLogin implements API\Messages\Message
+final readonly class ApplicationLogin implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('IP')]
-		private readonly string $ipAddress,
+		private string $ipAddress,
 		#[ObjectMapper\Rules\IntValue(unsigned: true)]
-		private readonly int $port,
+		private int $port,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $domain,
+		private string $domain,
 	)
 	{
 	}

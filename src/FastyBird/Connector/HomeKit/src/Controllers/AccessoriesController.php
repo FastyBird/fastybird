@@ -31,6 +31,8 @@ use IPub\SlimRouter;
 use Nette\Utils;
 use Psr\Http\Message;
 use Ramsey\Uuid;
+use TypeError;
+use ValueError;
 use function boolval;
 use function strval;
 
@@ -101,6 +103,8 @@ final class AccessoriesController extends BaseController
 	 * @throws Exceptions\InvalidState
 	 * @throws InvalidArgumentException
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function identify(
 		Message\ServerRequestInterface $request,

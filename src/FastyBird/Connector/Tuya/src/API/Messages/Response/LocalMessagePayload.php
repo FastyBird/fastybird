@@ -28,17 +28,17 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class LocalMessagePayload implements API\Messages\Message
+final readonly class LocalMessagePayload implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\LocalDeviceCommand::class)]
-		private readonly Types\LocalDeviceCommand $command,
+		private Types\LocalDeviceCommand $command,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly string|null $payload,
+		private string|null $payload,
 	)
 	{
 	}

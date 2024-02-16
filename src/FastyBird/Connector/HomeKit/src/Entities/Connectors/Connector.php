@@ -26,6 +26,8 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
+use TypeError;
+use ValueError;
 use function is_bool;
 use function is_int;
 use function is_string;
@@ -96,6 +98,8 @@ class Connector extends DevicesEntities\Connectors\Connector
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getPort(): int
 	{
@@ -120,6 +124,8 @@ class Connector extends DevicesEntities\Connectors\Connector
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getMacAddress(): string
 	{
@@ -143,6 +149,8 @@ class Connector extends DevicesEntities\Connectors\Connector
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getVersion(): int
 	{
@@ -167,6 +175,8 @@ class Connector extends DevicesEntities\Connectors\Connector
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getSetupId(): string
 	{
@@ -191,6 +201,8 @@ class Connector extends DevicesEntities\Connectors\Connector
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getPinCode(): string
 	{
@@ -215,6 +227,8 @@ class Connector extends DevicesEntities\Connectors\Connector
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getXhmUri(): string
 	{
@@ -238,6 +252,8 @@ class Connector extends DevicesEntities\Connectors\Connector
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getServerSecret(): string|null
 	{
@@ -262,6 +278,8 @@ class Connector extends DevicesEntities\Connectors\Connector
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getHashingKey(): string|null
 	{
@@ -286,6 +304,8 @@ class Connector extends DevicesEntities\Connectors\Connector
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getClientPublicKey(): string|null
 	{
@@ -310,6 +330,8 @@ class Connector extends DevicesEntities\Connectors\Connector
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getSharedKey(): string|null
 	{
@@ -333,6 +355,8 @@ class Connector extends DevicesEntities\Connectors\Connector
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function isPaired(): bool
 	{

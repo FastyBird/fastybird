@@ -25,6 +25,8 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use Ramsey\Uuid;
+use TypeError;
+use ValueError;
 use function assert;
 use function is_int;
 use function is_string;
@@ -94,12 +96,14 @@ class Device extends DevicesEntities\Devices\Device
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getAddress(): int|null
 	{
 		$property = $this->properties
 			->filter(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::ADDRESS
 			)
 			->first();
@@ -117,12 +121,14 @@ class Device extends DevicesEntities\Devices\Device
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getIpAddress(): string|null
 	{
 		$property = $this->properties
 			->filter(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::IP_ADDRESS
 			)
 			->first();
@@ -140,12 +146,14 @@ class Device extends DevicesEntities\Devices\Device
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getPort(): int
 	{
 		$property = $this->properties
 			->filter(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::PORT
 			)
 			->first();
@@ -163,12 +171,14 @@ class Device extends DevicesEntities\Devices\Device
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getByteOrder(): Types\ByteOrder
 	{
 		$property = $this->properties
 			->filter(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::BYTE_ORDER
 			)
 			->first();
@@ -187,12 +197,14 @@ class Device extends DevicesEntities\Devices\Device
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getUnitId(): int
 	{
 		$property = $this->properties
 			->filter(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::UNIT_ID
 			)
 			->first();

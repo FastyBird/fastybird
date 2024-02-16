@@ -32,7 +32,7 @@ use function is_array;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class SyncDevicesEventPayloadEndpoint implements API\Messages\Message
+final readonly class SyncDevicesEventPayloadEndpoint implements API\Messages\Message
 {
 
 	/**
@@ -42,18 +42,18 @@ final class SyncDevicesEventPayloadEndpoint implements API\Messages\Message
 	public function __construct(
 		#[ApplicationObjectMapper\Rules\UuidValue()]
 		#[ObjectMapper\Modifiers\FieldName('third_serial_number')]
-		private readonly Uuid\UuidInterface $thirdSerialNumber,
+		private Uuid\UuidInterface $thirdSerialNumber,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $name,
+		private string $name,
 		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\Category::class)]
 		#[ObjectMapper\Modifiers\FieldName('display_category')]
-		private readonly Types\Category $displayCategory,
+		private Types\Category $displayCategory,
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(API\Messages\Capability::class),
 		)]
-		private readonly array $capabilities,
+		private array $capabilities,
 		#[ObjectMapper\Rules\MappedObjectValue(API\Messages\State::class)]
-		private readonly API\Messages\State $state,
+		private API\Messages\State $state,
 		#[ObjectMapper\Rules\ArrayOf(
 			item: new ObjectMapper\Rules\AnyOf([
 				new ObjectMapper\Rules\StringValue(),
@@ -67,19 +67,19 @@ final class SyncDevicesEventPayloadEndpoint implements API\Messages\Message
 			]),
 			key: new ObjectMapper\Rules\StringValue(),
 		)]
-		private readonly array $tags,
+		private array $tags,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $manufacturer,
+		private string $manufacturer,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $model,
+		private string $model,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('firmware_version')]
-		private readonly string $firmwareVersion,
+		private string $firmwareVersion,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('service_address')]
-		private readonly string $serviceAddress,
+		private string $serviceAddress,
 		#[ObjectMapper\Rules\BoolValue()]
-		private readonly bool $online = false,
+		private bool $online = false,
 	)
 	{
 	}

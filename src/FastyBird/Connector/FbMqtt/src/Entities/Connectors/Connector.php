@@ -104,6 +104,8 @@ class Connector extends DevicesEntities\Connectors\Connector
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getServerAddress(): string
 	{
@@ -127,6 +129,8 @@ class Connector extends DevicesEntities\Connectors\Connector
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getServerPort(): int
 	{
@@ -150,6 +154,8 @@ class Connector extends DevicesEntities\Connectors\Connector
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getServerSecuredPort(): int
 	{
@@ -173,6 +179,8 @@ class Connector extends DevicesEntities\Connectors\Connector
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getUsername(): string|null
 	{
@@ -196,6 +204,8 @@ class Connector extends DevicesEntities\Connectors\Connector
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getPassword(): string|null
 	{

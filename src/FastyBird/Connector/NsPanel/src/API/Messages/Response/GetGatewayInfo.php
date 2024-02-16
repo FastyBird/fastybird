@@ -27,16 +27,16 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class GetGatewayInfo implements API\Messages\Message
+final readonly class GetGatewayInfo implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\IntValue(unsigned: true)]
-		private readonly int $error,
+		private int $error,
 		#[ObjectMapper\Rules\MappedObjectValue(GetGatewayInfoData::class)]
-		private readonly GetGatewayInfoData $data,
+		private GetGatewayInfoData $data,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $message,
+		private string $message,
 	)
 	{
 	}

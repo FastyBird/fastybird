@@ -28,7 +28,7 @@ use function array_map;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Group implements API\Messages\Message
+final readonly class Group implements API\Messages\Message
 {
 
 	/**
@@ -36,20 +36,20 @@ final class Group implements API\Messages\Message
 	 */
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $id,
+		private string $id,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $name,
+		private string $name,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $mainDeviceId,
+		private string $mainDeviceId,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\ObjectValue(),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		private readonly API\Messages\Uiid\Uuid|null $state = null,
+		private API\Messages\Uiid\Uuid|null $state = null,
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 		)]
-		private readonly array $denyFeatures = [],
+		private array $denyFeatures = [],
 	)
 	{
 	}

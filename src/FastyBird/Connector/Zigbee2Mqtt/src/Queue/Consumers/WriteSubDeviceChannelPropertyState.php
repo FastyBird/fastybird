@@ -38,6 +38,8 @@ use Nette;
 use Nette\Utils;
 use stdClass;
 use Throwable;
+use TypeError;
+use ValueError;
 use function array_key_exists;
 use function preg_match;
 use function React\Async\await;
@@ -538,6 +540,8 @@ final class WriteSubDeviceChannelPropertyState implements Queue\Consumer
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function getClient(Documents\Connectors\Connector $connector): API\Client
 	{

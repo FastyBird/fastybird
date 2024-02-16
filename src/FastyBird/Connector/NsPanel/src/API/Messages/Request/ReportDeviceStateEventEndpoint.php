@@ -27,13 +27,13 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ReportDeviceStateEventEndpoint implements API\Messages\Message
+final readonly class ReportDeviceStateEventEndpoint implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('serial_number')]
-		private readonly string $serialNumber,
+		private string $serialNumber,
 	)
 	{
 	}

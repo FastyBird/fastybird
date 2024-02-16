@@ -27,14 +27,14 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ErrorEventPayload implements API\Messages\Message
+final readonly class ErrorEventPayload implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $type,
+		private string $type,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $description,
+		private string $description,
 	)
 	{
 	}

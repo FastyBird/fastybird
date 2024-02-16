@@ -27,7 +27,7 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class SensorRange implements API\Messages\Message
+final readonly class SensorRange implements API\Messages\Message
 {
 
 	/**
@@ -36,7 +36,7 @@ final class SensorRange implements API\Messages\Message
 	public function __construct(
 		#[ObjectMapper\Rules\BackedEnumValue(class: MetadataTypes\DataType::class)]
 		#[ObjectMapper\Modifiers\FieldName('data_type')]
-		private readonly MetadataTypes\DataType $dataType,
+		private MetadataTypes\DataType $dataType,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\ArrayOf(new ObjectMapper\Rules\StringValue(notEmpty: true)),
 			new ObjectMapper\Rules\ArrayOf(new ObjectMapper\Rules\IntValue()),
@@ -60,14 +60,14 @@ final class SensorRange implements API\Messages\Message
 			),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		private readonly array|null $format,
+		private array|null $format,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\IntValue(),
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly int|float|string|null $invalid,
+		private int|float|string|null $invalid,
 	)
 	{
 	}

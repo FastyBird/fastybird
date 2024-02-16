@@ -22,6 +22,8 @@ use FastyBird\Library\Application\Entities\Mapping as ApplicationMapping;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
+use TypeError;
+use ValueError;
 use function is_string;
 
 #[ORM\Entity]
@@ -45,12 +47,14 @@ class Bridge extends Device
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getBaseTopic(): string
 	{
 		$property = $this->properties
 			->filter(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::BASE_TOPIC
 			)
 			->first();
@@ -68,12 +72,14 @@ class Bridge extends Device
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getFirmwareVersion(): string|null
 	{
 		$property = $this->properties
 			->filter(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::VERSION
 			)
 			->first();
@@ -91,12 +97,14 @@ class Bridge extends Device
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getFirmwareCommit(): string|null
 	{
 		$property = $this->properties
 			->filter(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::COMMIT
 			)
 			->first();
@@ -115,12 +123,14 @@ class Bridge extends Device
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getIeeeAddress(): string|null
 	{
 		$property = $this->properties
 			->filter(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::IEEE_ADDRESS
 			)
 			->first();

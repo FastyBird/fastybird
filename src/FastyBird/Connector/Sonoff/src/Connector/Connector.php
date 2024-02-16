@@ -37,6 +37,8 @@ use React\EventLoop;
 use React\Promise;
 use ReflectionClass;
 use RuntimeException;
+use TypeError;
+use ValueError;
 use function array_key_exists;
 use function assert;
 use function React\Async\async;
@@ -95,6 +97,8 @@ final class Connector implements DevicesConnectors\Connector
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws RuntimeException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function execute(bool $standalone = true): Promise\PromiseInterface
 	{
@@ -233,6 +237,8 @@ final class Connector implements DevicesConnectors\Connector
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function terminate(): void
 	{

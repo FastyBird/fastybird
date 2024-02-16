@@ -27,16 +27,16 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ReportDeviceStateEvent implements API\Messages\Message
+final readonly class ReportDeviceStateEvent implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\MappedObjectValue(API\Messages\Header::class)]
-		private readonly API\Messages\Header $header,
+		private API\Messages\Header $header,
 		#[ObjectMapper\Rules\MappedObjectValue(ReportDeviceStateEventEndpoint::class)]
-		private readonly ReportDeviceStateEventEndpoint $endpoint,
+		private ReportDeviceStateEventEndpoint $endpoint,
 		#[ObjectMapper\Rules\MappedObjectValue(ReportDeviceStateEventPayload::class)]
-		private readonly ReportDeviceStateEventPayload $payload,
+		private ReportDeviceStateEventPayload $payload,
 	)
 	{
 	}

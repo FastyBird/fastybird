@@ -23,6 +23,8 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use Ramsey\Uuid;
+use TypeError;
+use ValueError;
 use function assert;
 use function floatval;
 use function is_numeric;
@@ -86,12 +88,14 @@ abstract class Device extends DevicesEntities\Devices\Device
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getStateProcessingDelay(): float
 	{
 		$property = $this->properties
 			->filter(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::STATE_PROCESSING_DELAY
 			)
 			->first();

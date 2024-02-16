@@ -27,16 +27,16 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class SetDeviceStateDirective implements API\Messages\Message
+final readonly class SetDeviceStateDirective implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\MappedObjectValue(API\Messages\Header::class)]
-		private readonly API\Messages\Header $header,
+		private API\Messages\Header $header,
 		#[ObjectMapper\Rules\MappedObjectValue(SetDeviceStateDirectiveEndpoint::class)]
-		private readonly SetDeviceStateDirectiveEndpoint $endpoint,
+		private SetDeviceStateDirectiveEndpoint $endpoint,
 		#[ObjectMapper\Rules\MappedObjectValue(SetDeviceStateDirectivePayload::class)]
-		private readonly SetDeviceStateDirectivePayload $payload,
+		private SetDeviceStateDirectivePayload $payload,
 	)
 	{
 	}

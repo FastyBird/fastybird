@@ -26,21 +26,21 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceBlockState implements API\Messages\Message
+final readonly class DeviceBlockState implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\IntValue()]
-		private readonly int $block,
+		private int $block,
 		#[ObjectMapper\Rules\IntValue()]
-		private readonly int $sensor,
+		private int $sensor,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\IntValue(),
 			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly int|float|string|null $value,
+		private int|float|string|null $value,
 	)
 	{
 	}

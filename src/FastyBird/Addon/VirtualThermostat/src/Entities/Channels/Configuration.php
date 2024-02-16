@@ -24,6 +24,8 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use Ramsey\Uuid;
+use TypeError;
+use ValueError;
 use function assert;
 use function floatval;
 use function is_numeric;
@@ -67,6 +69,8 @@ class Configuration extends VirtualEntities\Channels\Channel
 	 *
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getMaximumFloorTemp(): float
 	{
@@ -92,6 +96,8 @@ class Configuration extends VirtualEntities\Channels\Channel
 	 *
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getMinimumCycleDuration(): float|null
 	{
@@ -118,12 +124,14 @@ class Configuration extends VirtualEntities\Channels\Channel
 	 *
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getLowTargetTempTolerance(): float
 	{
 		$property = $this->properties
 			->filter(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				static fn (DevicesEntities\Channels\Properties\Property $property): bool => $property->getIdentifier() === Types\ChannelPropertyIdentifier::LOW_TARGET_TEMPERATURE_TOLERANCE->value
 			)
 			->first();
@@ -144,6 +152,8 @@ class Configuration extends VirtualEntities\Channels\Channel
 	 *
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getHighTargetTempTolerance(): float
 	{

@@ -26,6 +26,8 @@ use Flow\JSONPath;
 use Nette\Caching;
 use Orisai\DataSources;
 use Throwable;
+use TypeError;
+use ValueError;
 use function assert;
 use function is_string;
 
@@ -117,6 +119,8 @@ final class Builder
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function build(): string
 	{

@@ -27,6 +27,8 @@ use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use Nette;
 use Orisai\ObjectMapper;
+use TypeError;
+use ValueError;
 use function array_key_exists;
 use function array_map;
 use function assert;
@@ -69,6 +71,8 @@ final class ConnectionManager
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getLocalConnection(Documents\Devices\Device $device): LocalApi
 	{
@@ -121,6 +125,8 @@ final class ConnectionManager
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getCloudApiConnection(Documents\Connectors\Connector $connector): OpenApi
 	{
@@ -143,6 +149,8 @@ final class ConnectionManager
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getCloudWsConnection(Documents\Connectors\Connector $connector): OpenPulsar
 	{

@@ -27,7 +27,7 @@ use function array_map;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class CompositeExposeData implements Message
+final readonly class CompositeExposeData implements Message
 {
 
 	/**
@@ -35,9 +35,9 @@ final class CompositeExposeData implements Message
 	 */
 	public function __construct(
 		#[ObjectMapper\Rules\ArrayEnumValue(cases: [Types\ExposeDataType::COMPOSITE])]
-		private readonly string $type,
+		private string $type,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $identifier,
+		private string $identifier,
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\AnyOf([
 				new ObjectMapper\Rules\MappedObjectValue(class: SingleExposeData::class),
@@ -45,7 +45,7 @@ final class CompositeExposeData implements Message
 			]),
 			new ObjectMapper\Rules\IntValue(unsigned: true),
 		)]
-		private readonly array $states,
+		private array $states,
 	)
 	{
 	}

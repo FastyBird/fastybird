@@ -28,21 +28,21 @@ use function intval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class AccessToken implements API\Messages\Message
+final readonly class AccessToken implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $uid,
+		private string $uid,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('access_token')]
-		private readonly string $accessToken,
+		private string $accessToken,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('refresh_token')]
-		private readonly string $refreshToken,
+		private string $refreshToken,
 		#[ObjectMapper\Rules\IntValue(unsigned: true)]
 		#[ObjectMapper\Modifiers\FieldName('expire_time')]
-		private readonly int $expireTime,
+		private int $expireTime,
 	)
 	{
 	}

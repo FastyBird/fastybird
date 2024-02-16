@@ -26,10 +26,10 @@ use Attribute;
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class InheritanceType implements MappingAttribute
+final readonly class InheritanceType implements MappingAttribute
 {
 
-	public function __construct(public readonly string $type)
+	public function __construct(public string $type)
 	{
 	}
 

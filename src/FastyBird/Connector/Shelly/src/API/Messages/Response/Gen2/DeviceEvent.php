@@ -27,7 +27,7 @@ use function array_map;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceEvent implements API\Messages\Message
+final readonly class DeviceEvent implements API\Messages\Message
 {
 
 	/**
@@ -38,7 +38,7 @@ final class DeviceEvent implements API\Messages\Message
 			new ObjectMapper\Rules\MappedObjectValue(class: ComponentEvent::class),
 			new ObjectMapper\Rules\IntValue(unsigned: true),
 		)]
-		private readonly array $events = [],
+		private array $events = [],
 	)
 	{
 	}

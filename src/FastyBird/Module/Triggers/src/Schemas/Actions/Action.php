@@ -53,7 +53,7 @@ abstract class Action extends JsonApiSchemas\JsonApi
 	/**
 	 * @param T $resource
 	 *
-	 * @return iterable<string, string|bool>
+	 * @return iterable<string, string|bool|null>
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */

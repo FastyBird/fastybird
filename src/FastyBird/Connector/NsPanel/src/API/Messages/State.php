@@ -32,7 +32,7 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class State implements Message
+final readonly class State implements Message
 {
 
 	/**
@@ -44,25 +44,25 @@ final class State implements Message
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName(Types\Capability::BATTERY)]
-		private readonly States\Battery|null $battery = null,
+		private States\Battery|null $battery = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\MappedObjectValue(States\Brightness::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName(Types\Capability::BRIGHTNESS)]
-		private readonly States\Brightness|null $brightness = null,
+		private States\Brightness|null $brightness = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\MappedObjectValue(States\CameraStream::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName(Types\Capability::CAMERA_STREAM)]
-		private readonly States\CameraStream|null $cameraStream = null,
+		private States\CameraStream|null $cameraStream = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\MappedObjectValue(States\ColorRgb::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName(Types\Capability::COLOR_RGB)]
-		private readonly States\ColorRgb|null $colorRgb = null,
+		private States\ColorRgb|null $colorRgb = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\MappedObjectValue(
 				States\ColorTemperature::class,
@@ -70,19 +70,19 @@ final class State implements Message
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName(Types\Capability::COLOR_TEMPERATURE)]
-		private readonly States\ColorTemperature|null $colorTemperature = null,
+		private States\ColorTemperature|null $colorTemperature = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\MappedObjectValue(States\Detect::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName(Types\Capability::DETECT)]
-		private readonly States\Detect|null $detect = null,
+		private States\Detect|null $detect = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\MappedObjectValue(States\Humidity::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName(Types\Capability::HUMIDITY)]
-		private readonly States\Humidity|null $humidity = null,
+		private States\Humidity|null $humidity = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\MappedObjectValue(
 				States\MotorCalibration::class,
@@ -90,55 +90,55 @@ final class State implements Message
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName(Types\Capability::MOTOR_CALIBRATION)]
-		private readonly States\MotorCalibration|null $motorCalibration = null,
+		private States\MotorCalibration|null $motorCalibration = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\MappedObjectValue(States\MotorControl::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName(Types\Capability::MOTOR_CONTROL)]
-		private readonly States\MotorControl|null $motorControl = null,
+		private States\MotorControl|null $motorControl = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\MappedObjectValue(States\MotorReverse::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName(Types\Capability::MOTOR_REVERSE)]
-		private readonly States\MotorReverse|null $motorReverse = null,
+		private States\MotorReverse|null $motorReverse = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\MappedObjectValue(States\Percentage::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName(Types\Capability::PERCENTAGE)]
-		private readonly States\Percentage|null $percentage = null,
+		private States\Percentage|null $percentage = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\MappedObjectValue(States\PowerState::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName(Types\Capability::POWER)]
-		private readonly States\PowerState|null $power = null,
+		private States\PowerState|null $power = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\MappedObjectValue(States\Press::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName(Types\Capability::PRESS)]
-		private readonly States\Press|null $press = null,
+		private States\Press|null $press = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\MappedObjectValue(States\Rssi::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName(Types\Capability::RSSI)]
-		private readonly States\Rssi|null $rssi = null,
+		private States\Rssi|null $rssi = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\MappedObjectValue(States\Startup::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName(Types\Capability::STARTUP)]
-		private readonly States\Startup|null $startup = null,
+		private States\Startup|null $startup = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\MappedObjectValue(States\Temperature::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName(Types\Capability::TEMPERATURE)]
-		private readonly States\Temperature|null $temperature = null,
+		private States\Temperature|null $temperature = null,
 		#[ObjectMapper\Rules\ArrayOf(
 			item: new ObjectMapper\Rules\MappedObjectValue(States\ToggleState::class),
 			key: new ObjectMapper\Rules\AnyOf([
@@ -147,7 +147,7 @@ final class State implements Message
 			]),
 		)]
 		#[ObjectMapper\Modifiers\FieldName(Types\Capability::TOGGLE)]
-		private readonly array $toggle = [],
+		private array $toggle = [],
 	)
 	{
 	}

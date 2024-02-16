@@ -21,6 +21,8 @@ use FastyBird\Connector\Sonoff\Helpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Nette;
+use TypeError;
+use ValueError;
 
 /**
  * API connections manager
@@ -63,6 +65,8 @@ final class ConnectionManager
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getCloudApiConnection(Documents\Connectors\Connector $connector): CloudApi
 	{
@@ -84,6 +88,8 @@ final class ConnectionManager
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getCloudWsConnection(Documents\Connectors\Connector $connector): CloudWs
 	{

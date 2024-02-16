@@ -29,19 +29,19 @@ use function is_string;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class StoreDevicePropertyState implements Message
+final readonly class StoreDevicePropertyState implements Message
 {
 
 	public function __construct(
 		#[ApplicationObjectMapper\Rules\UuidValue()]
-		private readonly Uuid\UuidInterface $connector,
+		private Uuid\UuidInterface $connector,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
-		private readonly Uuid\UuidInterface $device,
+		private Uuid\UuidInterface $device,
 		#[ObjectMapper\Rules\AnyOf([
 			new ApplicationObjectMapper\Rules\UuidValue(),
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 		])]
-		private readonly Uuid\UuidInterface|string $property,
+		private Uuid\UuidInterface|string $property,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\IntValue(),
@@ -49,12 +49,12 @@ final class StoreDevicePropertyState implements Message
 			new ObjectMapper\Rules\BoolValue(),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly float|int|string|bool|null $value,
+		private float|int|string|bool|null $value,
 		#[ObjectMapper\Rules\AnyOf([
 			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\Sources\Connector::class),
 			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\Sources\Addon::class),
 		])]
-		private readonly MetadataTypes\Sources\Source $source,
+		private MetadataTypes\Sources\Source $source,
 	)
 	{
 	}

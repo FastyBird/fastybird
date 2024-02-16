@@ -31,11 +31,11 @@ use function is_bool;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class State implements Message
+readonly class State implements Message
 {
 
 	public function __construct(
-		private readonly Uuid\UuidInterface $id,
+		private Uuid\UuidInterface $id,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\BoolValue(),
 			new ObjectMapper\Rules\IntValue(),
@@ -49,8 +49,7 @@ class State implements Message
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		#[ObjectMapper\Modifiers\FieldName(DevicesStates\Property::ACTUAL_VALUE_FIELD)]
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		private readonly bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $actualValue = null,
+		private bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $actualValue = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\BoolValue(),
 			new ObjectMapper\Rules\IntValue(),
@@ -64,18 +63,17 @@ class State implements Message
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		#[ObjectMapper\Modifiers\FieldName(DevicesStates\Property::EXPECTED_VALUE_FIELD)]
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		private readonly bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $expectedValue = null,
+		private bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $expectedValue = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
 			new ObjectMapper\Rules\ObjectValue(),
 			new ObjectMapper\Rules\BoolValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName(DevicesStates\Property::PENDING_FIELD)]
-		private readonly bool|DateTimeInterface $pending = false,
+		private bool|DateTimeInterface $pending = false,
 		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
 		#[ObjectMapper\Modifiers\FieldName(DevicesStates\Property::VALID_FIELD)]
-		private readonly bool $valid = false,
+		private bool $valid = false,
 	)
 	{
 	}

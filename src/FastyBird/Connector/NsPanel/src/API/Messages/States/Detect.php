@@ -27,13 +27,13 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Detect implements State
+final readonly class Detect implements State
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\BoolValue()]
 		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::DETECT)]
-		private readonly bool $detect,
+		private bool $detect,
 	)
 	{
 	}

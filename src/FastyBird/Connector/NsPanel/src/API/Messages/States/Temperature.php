@@ -27,13 +27,13 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Temperature implements State
+final readonly class Temperature implements State
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\FloatValue(min: -40, max: 80)]
 		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::TEMPERATURE)]
-		private readonly float $temperature,
+		private float $temperature,
 	)
 	{
 	}

@@ -26,7 +26,7 @@ use function array_map;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class GroupDescription implements Message
+final readonly class GroupDescription implements Message
 {
 
 	/**
@@ -35,20 +35,20 @@ final class GroupDescription implements Message
 	 */
 	public function __construct(
 		#[ObjectMapper\Rules\IntValue(unsigned: true)]
-		private readonly int $id,
+		private int $id,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('friendly_name')]
-		private readonly string $friendlyName,
+		private string $friendlyName,
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(class: Scene::class),
 			new ObjectMapper\Rules\IntValue(unsigned: true),
 		)]
-		private readonly array $scenes,
+		private array $scenes,
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(class: BridgeGroupMember::class),
 			new ObjectMapper\Rules\IntValue(unsigned: true),
 		)]
-		private readonly array $members,
+		private array $members,
 	)
 	{
 	}

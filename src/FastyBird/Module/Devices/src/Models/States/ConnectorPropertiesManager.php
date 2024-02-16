@@ -37,6 +37,8 @@ use Orisai\ObjectMapper;
 use Psr\EventDispatcher as PsrEventDispatcher;
 use Ramsey\Uuid;
 use Throwable;
+use TypeError;
+use ValueError;
 use function array_map;
 use function array_merge;
 use function is_array;
@@ -80,6 +82,8 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function read(
 		Documents\Connectors\Properties\Dynamic $property,
@@ -118,6 +122,8 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function write(
 		Documents\Connectors\Properties\Dynamic $property,
@@ -168,6 +174,8 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function set(
 		Documents\Connectors\Properties\Dynamic $property,
@@ -220,6 +228,8 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function setValidState(
 		Documents\Connectors\Properties\Dynamic|array $property,
@@ -256,6 +266,8 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function setPendingState(
 		Documents\Connectors\Properties\Dynamic|array $property,
@@ -344,6 +356,8 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 *
 	 * @interal
 	 */
@@ -454,6 +468,8 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 *
 	 * @interal
 	 */

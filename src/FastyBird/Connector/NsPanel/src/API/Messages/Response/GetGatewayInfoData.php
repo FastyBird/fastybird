@@ -27,20 +27,20 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class GetGatewayInfoData implements API\Messages\Message
+final readonly class GetGatewayInfoData implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $ip,
+		private string $ip,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('mac')]
-		private readonly string $macAddress,
+		private string $macAddress,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $domain,
+		private string $domain,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('fw_version')]
-		private readonly string $firmwareVersion,
+		private string $firmwareVersion,
 	)
 	{
 	}

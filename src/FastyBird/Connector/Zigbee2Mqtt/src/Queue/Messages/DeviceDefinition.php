@@ -26,7 +26,7 @@ use function array_map;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceDefinition implements Message
+final readonly class DeviceDefinition implements Message
 {
 
 	/**
@@ -37,17 +37,17 @@ final class DeviceDefinition implements Message
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly string|null $model,
+		private string|null $model,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly string|null $vendor,
+		private string|null $vendor,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly string|null $description,
+		private string|null $description,
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\AnyOf([
 				new ObjectMapper\Rules\MappedObjectValue(class: Exposes\BinaryType::class),
@@ -65,10 +65,10 @@ final class DeviceDefinition implements Message
 			]),
 			new ObjectMapper\Rules\IntValue(unsigned: true),
 		)]
-		private readonly array $exposes,
+		private array $exposes,
 		#[ObjectMapper\Rules\BoolValue()]
 		#[ObjectMapper\Modifiers\FieldName('supports_ota')]
-		private readonly bool $supportsOta,
+		private bool $supportsOta,
 	)
 	{
 	}

@@ -25,14 +25,14 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class OpenApiRequestSign implements ObjectMapper\MappedObject
+final readonly class OpenApiRequestSign implements ObjectMapper\MappedObject
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $sign,
+		private string $sign,
 		#[ObjectMapper\Rules\IntValue(unsigned: true)]
-		private readonly int $timestamp,
+		private int $timestamp,
 	)
 	{
 	}

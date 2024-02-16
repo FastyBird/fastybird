@@ -27,7 +27,7 @@ use function array_map;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class UserDeviceSpecifications implements API\Messages\Message
+final readonly class UserDeviceSpecifications implements API\Messages\Message
 {
 
 	/**
@@ -36,15 +36,15 @@ final class UserDeviceSpecifications implements API\Messages\Message
 	 */
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $category,
+		private string $category,
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(UserDeviceSpecificationsFunction::class),
 		)]
-		private readonly array $functions,
+		private array $functions,
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(UserDeviceSpecificationsState::class),
 		)]
-		private readonly array $status,
+		private array $status,
 	)
 	{
 	}

@@ -27,12 +27,12 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class SetDeviceState implements API\Messages\Message
+final readonly class SetDeviceState implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\MappedObjectValue(SetDeviceStateDirective::class)]
-		private readonly SetDeviceStateDirective $directive,
+		private SetDeviceStateDirective $directive,
 	)
 	{
 	}

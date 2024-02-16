@@ -28,24 +28,24 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DiscoveredLocalDevice implements Clients\Messages\Message
+final readonly class DiscoveredLocalDevice implements Clients\Messages\Message
 {
 
 	public function __construct(
 		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\DeviceGeneration::class)]
-		private readonly Types\DeviceGeneration $generation,
+		private Types\DeviceGeneration $generation,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $id,
+		private string $id,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $type,
+		private string $type,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('ip_address')]
-		private readonly string $ipAddress,
+		private string $ipAddress,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly string|null $domain,
+		private string|null $domain,
 	)
 	{
 	}

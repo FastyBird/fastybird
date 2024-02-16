@@ -30,7 +30,7 @@ use function is_array;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class LocalDeviceMessage implements API\Messages\Message
+final readonly class LocalDeviceMessage implements API\Messages\Message
 {
 
 	/**
@@ -38,17 +38,17 @@ final class LocalDeviceMessage implements API\Messages\Message
 	 */
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $identifier,
+		private string $identifier,
 		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\LocalDeviceCommand::class)]
-		private readonly Types\LocalDeviceCommand $command,
+		private Types\LocalDeviceCommand $command,
 		#[ObjectMapper\Rules\IntValue(unsigned: true)]
-		private readonly int $sequence,
+		private int $sequence,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\IntValue(unsigned: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('return_code')]
-		private readonly int|null $returnCode,
+		private int|null $returnCode,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\MappedObjectValue(class: LocalDeviceWifiScan::class),
@@ -57,12 +57,12 @@ final class LocalDeviceMessage implements API\Messages\Message
 			),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly string|array|LocalDeviceWifiScan|null $data = null,
+		private string|array|LocalDeviceWifiScan|null $data = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\LocalDeviceError::class),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly Types\LocalDeviceError|null $error = null,
+		private Types\LocalDeviceError|null $error = null,
 	)
 	{
 	}

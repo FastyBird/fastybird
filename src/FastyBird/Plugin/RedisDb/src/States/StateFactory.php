@@ -30,11 +30,11 @@ use function is_array;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class StateFactory
+final readonly class StateFactory
 {
 
 	public function __construct(
-		private readonly ObjectMapper\Processing\Processor $stateMapper,
+		private ObjectMapper\Processing\Processor $stateMapper,
 	)
 	{
 	}

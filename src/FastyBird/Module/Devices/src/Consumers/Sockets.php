@@ -33,13 +33,13 @@ use Throwable;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Sockets implements ExchangeConsumer\Consumer
+final readonly class Sockets implements ExchangeConsumer\Consumer
 {
 
 	public function __construct(
-		private readonly Devices\Logger $logger,
-		private readonly WebSockets\Router\LinkGenerator $linkGenerator,
-		private readonly WebSocketsWAMP\Topics\IStorage $topicsStorage,
+		private Devices\Logger $logger,
+		private WebSockets\Router\LinkGenerator $linkGenerator,
+		private WebSocketsWAMP\Topics\IStorage $topicsStorage,
 	)
 	{
 	}

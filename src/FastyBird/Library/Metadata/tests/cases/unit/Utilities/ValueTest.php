@@ -9,20 +9,24 @@ use FastyBird\Library\Metadata\Types;
 use FastyBird\Library\Metadata\Utilities;
 use FastyBird\Library\Tools\Transformers as ToolsTransformers;
 use PHPUnit\Framework\TestCase;
+use TypeError;
+use ValueError;
 
 final class ValueTest extends TestCase
 {
 
 	/**
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\InvalidValue
+	 * @throws TypeError
+	 * @throws ValueError
 	 *
 	 * @dataProvider normalizeValue
 	 */
 	public function testNormalizeValue(
 		Types\DataType $dataType,
 		bool|float|int|string|DateTimeInterface|Types\Payloads\Button|Types\Payloads\Switcher|Types\Payloads\Cover|null $value,
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		Formats\StringEnum|Formats\NumberRange|Formats\CombinedEnum|null $format = null,
 		float|int|string|null $invalid = null,
 		ToolsTransformers\EquationTransformer|null $transformer = null,
@@ -42,9 +46,11 @@ final class ValueTest extends TestCase
 	}
 
 	/**
-	 * @throws Exceptions\InvalidArgument
-	 *
 	 * @return array<string, array<mixed>>
+	 * @throws TypeError
+	 * @throws ValueError
+	 *
+	 * @throws Exceptions\InvalidArgument
 	 */
 	public static function normalizeValue(): array
 	{

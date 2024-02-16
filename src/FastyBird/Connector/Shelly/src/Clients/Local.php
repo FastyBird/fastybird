@@ -42,6 +42,8 @@ use Psr\EventDispatcher as PsrEventDispatcher;
 use React\EventLoop;
 use RuntimeException;
 use Throwable;
+use TypeError;
+use ValueError;
 use function array_key_exists;
 use function count;
 use function in_array;
@@ -106,6 +108,8 @@ final class Local implements Client
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function connect(): void
 	{
@@ -286,6 +290,8 @@ final class Local implements Client
 	 * @throws MetadataExceptions\Mapping
 	 * @throws RuntimeException
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function handleCommunication(): void
 	{
@@ -315,6 +321,8 @@ final class Local implements Client
 	 * @throws MetadataExceptions\Mapping
 	 * @throws RuntimeException
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function readDeviceState(Documents\Devices\Device $device): bool
 	{
@@ -558,6 +566,8 @@ final class Local implements Client
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function createGen2DeviceWsClient(Documents\Devices\Device $device): API\Gen2WsApi
 	{
@@ -740,6 +750,8 @@ final class Local implements Client
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function processGen1DeviceGetState(
 		Documents\Devices\Device $device,
@@ -1010,6 +1022,8 @@ final class Local implements Client
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function processGen2DeviceGetState(
 		Documents\Devices\Device $device,

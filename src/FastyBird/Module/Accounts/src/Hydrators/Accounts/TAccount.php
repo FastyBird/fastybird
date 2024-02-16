@@ -200,7 +200,7 @@ trait TAccount
 			!is_scalar($attributes->get('state'))
 			|| Types\AccountState::tryFrom((string) $attributes->get('state')) === null
 			|| !in_array(
-				Types\AccountState::tryFrom((string) $attributes->get('state')),
+				Types\AccountState::from((string) $attributes->get('state')),
 				Types\AccountState::getAllowed(),
 				true,
 			)

@@ -29,7 +29,7 @@ use const SORT_REGULAR;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceBlockDescription implements API\Messages\Message
+final readonly class DeviceBlockDescription implements API\Messages\Message
 {
 
 	/**
@@ -37,13 +37,13 @@ final class DeviceBlockDescription implements API\Messages\Message
 	 */
 	public function __construct(
 		#[ObjectMapper\Rules\IntValue()]
-		private readonly int $identifier,
+		private int $identifier,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $description,
+		private string $description,
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(BlockSensorDescription::class),
 		)]
-		private readonly array $sensors = [],
+		private array $sensors = [],
 	)
 	{
 	}

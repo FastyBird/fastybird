@@ -36,6 +36,8 @@ use RuntimeException;
 use SplObjectStorage;
 use stdClass;
 use Throwable;
+use TypeError;
+use ValueError;
 use function array_key_exists;
 use function array_map;
 use function assert;
@@ -136,6 +138,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function disconnect(): void
 	{
@@ -156,6 +160,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 	 * @throws Exceptions\CloudApiError
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function discoverCloudDevices(): Promise\PromiseInterface
 	{
@@ -463,7 +469,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 							'domain' => $localConfiguration?->getDomain(),
 							'port' => $localConfiguration?->getPort(),
 							'parameters' => array_map(
-							// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 								static fn (Messages\Response\DiscoveredDeviceParameter $parameter): array => [
 									'group' => $parameter->getGroup(),
 									'identifier' => $parameter->getIdentifier(),
@@ -518,6 +523,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function getCloudApiConnection(): API\CloudApi
 	{

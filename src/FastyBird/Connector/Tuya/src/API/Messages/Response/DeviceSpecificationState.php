@@ -26,16 +26,16 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceSpecificationState implements API\Messages\Message
+final readonly class DeviceSpecificationState implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $code,
+		private string $code,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $type,
+		private string $type,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $values,
+		private string $values,
 	)
 	{
 	}

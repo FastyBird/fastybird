@@ -61,7 +61,7 @@ class WebServerExtension extends DI\CompilerExtension
 	{
 		return Schema\Expect::structure([
 			'static' => Schema\Expect::structure([
-				'publicRoot' => Schema\Expect::string(null)->nullable(),
+				'publicRoot' => Schema\Expect::string()->nullable(),
 				'enabled' => Schema\Expect::bool(false),
 			]),
 			'server' => Schema\Expect::structure([

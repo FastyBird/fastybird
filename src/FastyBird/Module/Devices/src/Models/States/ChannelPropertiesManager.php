@@ -38,6 +38,8 @@ use Orisai\ObjectMapper;
 use Psr\EventDispatcher as PsrEventDispatcher;
 use Ramsey\Uuid;
 use Throwable;
+use TypeError;
+use ValueError;
 use function array_map;
 use function array_merge;
 use function boolval;
@@ -83,6 +85,8 @@ final class ChannelPropertiesManager extends PropertiesManager
 	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function read(
 		Documents\Channels\Properties\Dynamic|Documents\Channels\Properties\Mapped $property,
@@ -121,6 +125,8 @@ final class ChannelPropertiesManager extends PropertiesManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function write(
 		Documents\Channels\Properties\Dynamic|Documents\Channels\Properties\Mapped $property,
@@ -171,6 +177,8 @@ final class ChannelPropertiesManager extends PropertiesManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function set(
 		Documents\Channels\Properties\Dynamic|Documents\Channels\Properties\Mapped $property,
@@ -223,6 +231,8 @@ final class ChannelPropertiesManager extends PropertiesManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function setValidState(
 		Documents\Channels\Properties\Dynamic|array $property,
@@ -259,6 +269,8 @@ final class ChannelPropertiesManager extends PropertiesManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function setPendingState(
 		Documents\Channels\Properties\Dynamic|array $property,
@@ -357,6 +369,8 @@ final class ChannelPropertiesManager extends PropertiesManager
 	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 *
 	 * @interal
 	 */
@@ -481,6 +495,8 @@ final class ChannelPropertiesManager extends PropertiesManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 *
 	 * @interal
 	 */

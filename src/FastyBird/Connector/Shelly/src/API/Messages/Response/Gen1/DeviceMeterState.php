@@ -30,7 +30,7 @@ use function intval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceMeterState implements API\Messages\Message
+final readonly class DeviceMeterState implements API\Messages\Message
 {
 
 	/**
@@ -38,26 +38,26 @@ final class DeviceMeterState implements API\Messages\Message
 	 */
 	public function __construct(
 		#[ObjectMapper\Rules\FloatValue()]
-		private readonly float $power,
+		private float $power,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\BoolValue(),
 		])]
-		private readonly float|bool $overpower,
+		private float|bool $overpower,
 		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
 		#[ObjectMapper\Modifiers\FieldName('is_valid')]
-		private readonly bool $valid,
+		private bool $valid,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly float|null $timestamp,
+		private float|null $timestamp,
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\FloatValue(),
 		)]
-		private readonly array $counters,
+		private array $counters,
 		#[ObjectMapper\Rules\FloatValue()]
-		private readonly float $total,
+		private float $total,
 	)
 	{
 	}

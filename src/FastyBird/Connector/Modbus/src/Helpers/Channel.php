@@ -27,6 +27,8 @@ use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
+use TypeError;
+use ValueError;
 use function assert;
 use function is_float;
 use function is_int;
@@ -55,6 +57,8 @@ final class Channel
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getAddress(Documents\Channels\Channel $channel): int|null
 	{
@@ -81,6 +85,8 @@ final class Channel
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getRegisterType(
 		Documents\Channels\Channel $channel,
@@ -109,6 +115,8 @@ final class Channel
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getReadingDelay(Documents\Channels\Channel $channel): float
 	{
@@ -135,6 +143,8 @@ final class Channel
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getConfiguration(
 		Documents\Channels\Channel $channel,

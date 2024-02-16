@@ -30,6 +30,8 @@ use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Types as DevicesTypes;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
+use TypeError;
+use ValueError;
 
 /**
  * Store device connection state message consumer
@@ -68,6 +70,8 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function consume(Queue\Messages\Message $message): bool
 	{

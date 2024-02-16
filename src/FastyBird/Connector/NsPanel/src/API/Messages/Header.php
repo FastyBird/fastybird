@@ -28,17 +28,17 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Header implements Message
+final readonly class Header implements Message
 {
 
 	public function __construct(
 		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\Header::class)]
-		private readonly Types\Header $name,
+		private Types\Header $name,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('message_id')]
-		private readonly string $messageId,
+		private string $messageId,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $version,
+		private string $version,
 	)
 	{
 	}

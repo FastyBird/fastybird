@@ -27,7 +27,7 @@ use function array_map;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Home implements API\Messages\Message
+final readonly class Home implements API\Messages\Message
 {
 
 	/**
@@ -35,19 +35,19 @@ final class Home implements API\Messages\Message
 	 */
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $id,
+		private string $id,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('apikey')]
-		private readonly string $apiKey,
+		private string $apiKey,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $name,
+		private string $name,
 		#[ObjectMapper\Rules\IntValue()]
-		private readonly int $index,
+		private int $index,
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(Room::class),
 		)]
 		#[ObjectMapper\Modifiers\FieldName('roomList')]
-		private readonly array $rooms = [],
+		private array $rooms = [],
 	)
 	{
 	}

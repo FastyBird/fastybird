@@ -45,6 +45,8 @@ use Symfony\Component\Console\Input;
 use Symfony\Component\Console\Output;
 use Symfony\Component\Console\Style;
 use Throwable;
+use TypeError;
+use ValueError;
 use function array_key_exists;
 use function array_key_first;
 use function array_search;
@@ -119,6 +121,8 @@ class Discover extends Console\Command\Command
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	protected function execute(Input\InputInterface $input, Output\OutputInterface $output): int
 	{
@@ -185,7 +189,6 @@ class Discover extends Console\Command\Command
 			);
 			usort(
 				$systemConnectors,
-				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				static fn (Documents\Connectors\Connector $a, Documents\Connectors\Connector $b): int => $a->getIdentifier() <=> $b->getIdentifier()
 			);
 
@@ -329,6 +332,8 @@ class Discover extends Console\Command\Command
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function showResults(
 		Style\SymfonyStyle $io,
@@ -418,6 +423,8 @@ class Discover extends Console\Command\Command
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function processEncryptedDevices(
 		Style\SymfonyStyle $io,

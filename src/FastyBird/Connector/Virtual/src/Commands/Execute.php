@@ -157,7 +157,6 @@ class Execute extends Console\Command\Command
 			);
 			usort(
 				$systemConnectors,
-				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				static fn (Documents\Connectors\Connector $a, Documents\Connectors\Connector $b): int => $a->getIdentifier() <=> $b->getIdentifier()
 			);
 

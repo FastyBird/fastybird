@@ -54,7 +54,6 @@ use function is_string;
 use function max;
 use function min;
 use function preg_match;
-use function strval;
 
 /**
  * Thermostat service
@@ -271,11 +270,11 @@ class Thermostat implements VirtualDrivers\Driver
 			if (
 				$state instanceof DevicesDocuments\States\Properties\Channel
 				&& Types\Preset::tryFrom(
-					strval(MetadataUtilities\Value::flattenValue($state->getGet()->getActualValue())),
+					MetadataUtilities\Value::toString($state->getGet()->getActualValue(), true),
 				) !== null
 			) {
 				$this->presetMode = Types\Preset::from(
-					strval(MetadataUtilities\Value::flattenValue($state->getGet()->getActualValue())),
+					MetadataUtilities\Value::toString($state->getGet()->getActualValue(), true),
 				);
 
 				$this->channelPropertiesStatesManager->setValidState(
@@ -295,11 +294,11 @@ class Thermostat implements VirtualDrivers\Driver
 			if (
 				$state instanceof DevicesDocuments\States\Properties\Channel
 				&& Types\HvacMode::tryFrom(
-					strval(MetadataUtilities\Value::flattenValue($state->getGet()->getActualValue())),
+					MetadataUtilities\Value::toString($state->getGet()->getActualValue(), true),
 				) !== null
 			) {
 				$this->hvacMode = Types\HvacMode::from(
-					strval(MetadataUtilities\Value::flattenValue($state->getGet()->getActualValue())),
+					MetadataUtilities\Value::toString($state->getGet()->getActualValue(), true),
 				);
 
 				$this->channelPropertiesStatesManager->setValidState(
@@ -325,6 +324,8 @@ class Thermostat implements VirtualDrivers\Driver
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws VirtualExceptions\Runtime
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function disconnect(): Promise\PromiseInterface
 	{
@@ -363,6 +364,8 @@ class Thermostat implements VirtualDrivers\Driver
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws VirtualExceptions\Runtime
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function process(): Promise\PromiseInterface
 	{
@@ -828,6 +831,8 @@ class Thermostat implements VirtualDrivers\Driver
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws VirtualExceptions\Runtime
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function setActorState(bool $heaters, bool $coolers): void
 	{
@@ -872,6 +877,8 @@ class Thermostat implements VirtualDrivers\Driver
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws VirtualExceptions\Runtime
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function setHeaterState(bool $state): void
 	{
@@ -982,6 +989,8 @@ class Thermostat implements VirtualDrivers\Driver
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function isFloorOverHeating(): bool
 	{
@@ -1035,6 +1044,8 @@ class Thermostat implements VirtualDrivers\Driver
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws VirtualExceptions\Runtime
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function stop(string $reason): void
 	{

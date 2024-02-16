@@ -26,12 +26,12 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class LightDefaultConfigurationBlock implements API\Messages\Message
+final readonly class LightDefaultConfigurationBlock implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\IntValue(min: 0, max: 100, unsigned: true)]
-		private readonly int $brightness,
+		private int $brightness,
 	)
 	{
 	}

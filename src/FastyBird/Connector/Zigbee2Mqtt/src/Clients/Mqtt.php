@@ -30,6 +30,8 @@ use FastyBird\Module\Devices\Models as DevicesModels;
 use InvalidArgumentException;
 use Nette;
 use Throwable;
+use TypeError;
+use ValueError;
 use function assert;
 use function sprintf;
 
@@ -70,6 +72,8 @@ final class Mqtt implements Client
 	 * @throws InvalidArgumentException
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function connect(): void
 	{
@@ -86,6 +90,8 @@ final class Mqtt implements Client
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function disconnect(): void
 	{
@@ -102,6 +108,8 @@ final class Mqtt implements Client
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function onConnect(): void
 	{
@@ -155,6 +163,8 @@ final class Mqtt implements Client
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function getClient(): API\Client
 	{

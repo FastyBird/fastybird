@@ -27,17 +27,17 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class LocalChild implements ObjectMapper\MappedObject
+final readonly class LocalChild implements ObjectMapper\MappedObject
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $identifier,
+		private string $identifier,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('node_id')]
-		private readonly string $nodeId,
+		private string $nodeId,
 		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\LocalDeviceType::class)]
-		private readonly Types\LocalDeviceType $type,
+		private Types\LocalDeviceType $type,
 	)
 	{
 	}

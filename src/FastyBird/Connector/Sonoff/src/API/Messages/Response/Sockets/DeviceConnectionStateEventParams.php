@@ -26,12 +26,12 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceConnectionStateEventParams implements API\Messages\Message
+final readonly class DeviceConnectionStateEventParams implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
-		private readonly bool $online,
+		private bool $online,
 	)
 	{
 	}

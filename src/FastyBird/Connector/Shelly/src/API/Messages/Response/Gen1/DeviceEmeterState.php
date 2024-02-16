@@ -26,31 +26,31 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceEmeterState implements API\Messages\Message
+final readonly class DeviceEmeterState implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\FloatValue()]
 		#[ObjectMapper\Modifiers\FieldName('power')]
-		private readonly float $activePower,
+		private float $activePower,
 		#[ObjectMapper\Rules\FloatValue()]
 		#[ObjectMapper\Modifiers\FieldName('pf')]
-		private readonly float $powerFactor,
+		private float $powerFactor,
 		#[ObjectMapper\Rules\FloatValue()]
 		#[ObjectMapper\Modifiers\FieldName('reactive')]
-		private readonly float $reactivePower,
+		private float $reactivePower,
 		#[ObjectMapper\Rules\FloatValue()]
-		private readonly float $current,
+		private float $current,
 		#[ObjectMapper\Rules\FloatValue()]
-		private readonly float $voltage,
+		private float $voltage,
 		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
 		#[ObjectMapper\Modifiers\FieldName('is_valid')]
-		private readonly bool $valid,
+		private bool $valid,
 		#[ObjectMapper\Rules\FloatValue()]
-		private readonly float $total,
+		private float $total,
 		#[ObjectMapper\Rules\FloatValue()]
 		#[ObjectMapper\Modifiers\FieldName('total_returned')]
-		private readonly float $totalReturned,
+		private float $totalReturned,
 	)
 	{
 	}

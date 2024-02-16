@@ -30,6 +30,8 @@ use Symfony\Component\Console;
 use Symfony\Component\Console\Input;
 use Symfony\Component\Console\Output;
 use Symfony\Component\Console\Style;
+use TypeError;
+use ValueError;
 use function array_key_exists;
 use function array_key_first;
 use function array_search;
@@ -94,6 +96,8 @@ class Execute extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\Logic
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	protected function execute(Input\InputInterface $input, Output\OutputInterface $output): int
 	{
@@ -160,7 +164,6 @@ class Execute extends Console\Command\Command
 			);
 			usort(
 				$systemConnectors,
-				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				static fn (Documents\Connectors\Connector $a, Documents\Connectors\Connector $b): int => $a->getIdentifier() <=> $b->getIdentifier()
 			);
 

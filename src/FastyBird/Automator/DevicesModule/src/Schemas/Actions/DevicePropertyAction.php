@@ -16,12 +16,14 @@
 namespace FastyBird\Automator\DevicesModule\Schemas\Actions;
 
 use FastyBird\Automator\DevicesModule\Entities;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Triggers\Schemas as TriggersSchemas;
 use Neomerx\JsonApi;
+use TypeError;
+use ValueError;
 use function array_merge;
-use function strval;
 
 /**
  * Trigger device state action entity schema
@@ -51,7 +53,11 @@ final class DevicePropertyAction extends TriggersSchemas\Actions\Action
 	}
 
 	/**
-	 * @return iterable<string, string|bool>
+	 * @return iterable<string, string|bool|null>
+	 *
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -63,7 +69,7 @@ final class DevicePropertyAction extends TriggersSchemas\Actions\Action
 		return array_merge((array) parent::getAttributes($resource, $context), [
 			'device' => $resource->getDevice()->toString(),
 			'property' => $resource->getProperty()->toString(),
-			'value' => strval(MetadataUtilities\Value::flattenValue($resource->getValue())),
+			'value' => MetadataUtilities\Value::toString($resource->getValue()),
 		]);
 	}
 

@@ -26,34 +26,34 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class GetDeviceInformation implements API\Messages\Message
+final readonly class GetDeviceInformation implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $id,
+		private string $id,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $mac,
+		private string $mac,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $model,
+		private string $model,
 		#[ObjectMapper\Rules\IntValue(unsigned: true)]
-		private readonly int $gen,
+		private int $gen,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('fw_id')]
-		private readonly string $fwId,
+		private string $fwId,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $ver,
+		private string $ver,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $app,
+		private string $app,
 		#[ObjectMapper\Rules\BoolValue()]
 		#[ObjectMapper\Modifiers\FieldName('auth_en')]
-		private readonly bool $authEn,
+		private bool $authEn,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('auth_domain')]
-		private readonly string|null $authDomain,
+		private string|null $authDomain,
 	)
 	{
 	}

@@ -28,20 +28,20 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class UserLogin implements API\Messages\Message
+final readonly class UserLogin implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('at')]
-		private readonly string $accessToken,
+		private string $accessToken,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('rt')]
-		private readonly string $refreshToken,
+		private string $refreshToken,
 		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\Region::class)]
-		private readonly Types\Region $region,
+		private Types\Region $region,
 		#[ObjectMapper\Rules\MappedObjectValue(User::class)]
-		private readonly User $user,
+		private User $user,
 	)
 	{
 	}

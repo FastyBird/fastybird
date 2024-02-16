@@ -28,7 +28,7 @@ use function array_map;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class SyncDevicesEventPayload implements API\Messages\Message
+final readonly class SyncDevicesEventPayload implements API\Messages\Message
 {
 
 	/**
@@ -38,7 +38,7 @@ final class SyncDevicesEventPayload implements API\Messages\Message
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(SyncDevicesEventPayloadEndpoint::class),
 		)]
-		private readonly array $endpoints,
+		private array $endpoints,
 	)
 	{
 	}

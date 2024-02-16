@@ -27,7 +27,7 @@ use function array_merge;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class TemperatureBlockState implements API\Messages\Message
+final readonly class TemperatureBlockState implements API\Messages\Message
 {
 
 	public function __construct(
@@ -36,13 +36,13 @@ final class TemperatureBlockState implements API\Messages\Message
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('tC')]
-		private readonly float|null $temperatureCelsius,
+		private float|null $temperatureCelsius,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('tF')]
-		private readonly float|null $temperatureFahrenheit,
+		private float|null $temperatureFahrenheit,
 	)
 	{
 	}

@@ -26,22 +26,22 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DiscoveredLocalDevice implements Clients\Messages\Message
+final readonly class DiscoveredLocalDevice implements Clients\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $id,
+		private string $id,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('ip_address')]
-		private readonly string $ipAddress,
+		private string $ipAddress,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('product_key')]
-		private readonly string $productKey,
+		private string $productKey,
 		#[ObjectMapper\Rules\BoolValue()]
-		private readonly bool $encrypted,
+		private bool $encrypted,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $version,
+		private string $version,
 	)
 	{
 	}

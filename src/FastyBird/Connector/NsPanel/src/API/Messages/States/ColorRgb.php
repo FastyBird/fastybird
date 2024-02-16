@@ -27,19 +27,19 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ColorRgb implements State
+final readonly class ColorRgb implements State
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\IntValue(min: 0, max: 255, unsigned: true)]
 		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::COLOR_RED)]
-		private readonly int $red,
+		private int $red,
 		#[ObjectMapper\Rules\IntValue(min: 0, max: 255, unsigned: true)]
 		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::COLOR_GREEN)]
-		private readonly int $green,
+		private int $green,
 		#[ObjectMapper\Rules\IntValue(min: 0, max: 255, unsigned: true)]
 		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::COLOR_BLUE)]
-		private readonly int $blue,
+		private int $blue,
 	)
 	{
 	}

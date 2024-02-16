@@ -21,6 +21,8 @@ use FastyBird\Connector\FbMqtt\Helpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Nette;
+use TypeError;
+use ValueError;
 
 /**
  * Client connections manager
@@ -49,6 +51,8 @@ final class ConnectionManager
 	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getConnection(Documents\Connectors\Connector $connector): Client
 	{

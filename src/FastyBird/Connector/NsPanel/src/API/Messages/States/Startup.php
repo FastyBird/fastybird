@@ -28,13 +28,13 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Startup implements State
+final readonly class Startup implements State
 {
 
 	public function __construct(
 		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\StartupPayload::class)]
 		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::STARTUP)]
-		private readonly Types\StartupPayload $startup,
+		private Types\StartupPayload $startup,
 	)
 	{
 	}

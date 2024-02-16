@@ -27,17 +27,17 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class SetDeviceStateEvent implements API\Messages\Message
+final readonly class SetDeviceStateEvent implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\MappedObjectValue(API\Messages\Header::class)]
-		private readonly API\Messages\Header $header,
+		private API\Messages\Header $header,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\MappedObjectValue(SetDeviceStateEventPayload::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		private readonly SetDeviceStateEventPayload|null $payload = null,
+		private SetDeviceStateEventPayload|null $payload = null,
 	)
 	{
 	}

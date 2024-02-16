@@ -27,12 +27,12 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class SetSubDeviceState implements API\Messages\Message
+final readonly class SetSubDeviceState implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\MappedObjectValue(API\Messages\State::class)]
-		private readonly API\Messages\State $state,
+		private API\Messages\State $state,
 	)
 	{
 	}

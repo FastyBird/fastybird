@@ -25,15 +25,15 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class CoordinatorInfo implements Message
+final readonly class CoordinatorInfo implements Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('ieee_address')]
-		private readonly string $ieeeAddress,
+		private string $ieeeAddress,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $type,
+		private string $type,
 	)
 	{
 	}

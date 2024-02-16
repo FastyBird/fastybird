@@ -16,14 +16,16 @@
 namespace FastyBird\Automator\DevicesModule\Entities\Conditions;
 
 use Doctrine\ORM\Mapping as ORM;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Triggers\Entities as TriggersEntities;
 use FastyBird\Module\Triggers\Types as TriggersTypes;
 use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use Ramsey\Uuid;
+use TypeError;
+use ValueError;
 use function array_merge;
-use function strval;
 
 #[ORM\MappedSuperclass]
 abstract class PropertyCondition extends TriggersEntities\Conditions\Condition
@@ -77,18 +79,22 @@ abstract class PropertyCondition extends TriggersEntities\Conditions\Condition
 		$this->operator = $operator;
 	}
 
+	/**
+	 * @throws TypeError
+	 * @throws ValueError
+	 */
 	public function getOperand(): string|MetadataTypes\Payloads\Payload
 	{
 		if (MetadataTypes\Payloads\Button::tryFrom($this->operand) !== null) {
-			return MetadataTypes\Payloads\Button::tryFrom($this->operand);
+			return MetadataTypes\Payloads\Button::from($this->operand);
 		}
 
 		if (MetadataTypes\Payloads\Switcher::tryFrom($this->operand) !== null) {
-			return MetadataTypes\Payloads\Switcher::tryFrom($this->operand);
+			return MetadataTypes\Payloads\Switcher::from($this->operand);
 		}
 
 		if (MetadataTypes\Payloads\Cover::tryFrom($this->operand) !== null) {
-			return MetadataTypes\Payloads\Cover::tryFrom($this->operand);
+			return MetadataTypes\Payloads\Cover::from($this->operand);
 		}
 
 		return $this->operand;
@@ -114,13 +120,17 @@ abstract class PropertyCondition extends TriggersEntities\Conditions\Condition
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function toArray(): array
 	{
 		return array_merge(parent::toArray(), [
 			'device' => $this->getDevice()->toString(),
 			'operator' => $this->getOperator()->value,
-			'operand' => strval(MetadataUtilities\Value::flattenValue($this->getOperand())),
+			'operand' => MetadataUtilities\Value::toString($this->getOperand()),
 		]);
 	}
 

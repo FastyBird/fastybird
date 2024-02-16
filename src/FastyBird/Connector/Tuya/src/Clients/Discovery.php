@@ -35,6 +35,8 @@ use React\EventLoop;
 use React\Promise;
 use SplObjectStorage;
 use Throwable;
+use TypeError;
+use ValueError;
 use function array_filter;
 use function array_key_exists;
 use function array_map;
@@ -139,6 +141,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function disconnect(): void
 	{
@@ -1033,6 +1037,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function getCloudApiConnection(): API\OpenApi
 	{

@@ -91,7 +91,6 @@ class Dynamic extends Property
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 	public function getDefault(): bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null
 	{
 		throw new Exceptions\InvalidState(

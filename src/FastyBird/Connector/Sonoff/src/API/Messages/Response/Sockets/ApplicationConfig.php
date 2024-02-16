@@ -26,16 +26,16 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ApplicationConfig implements API\Messages\Message
+final readonly class ApplicationConfig implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\IntValue(unsigned: true)]
 		#[ObjectMapper\Modifiers\FieldName('hb')]
-		private readonly int $heartbeat = 0,
+		private int $heartbeat = 0,
 		#[ObjectMapper\Rules\IntValue(unsigned: true)]
 		#[ObjectMapper\Modifiers\FieldName('hbInterval')]
-		private readonly int $heartbeatInterval = 90,
+		private int $heartbeatInterval = 90,
 	)
 	{
 	}

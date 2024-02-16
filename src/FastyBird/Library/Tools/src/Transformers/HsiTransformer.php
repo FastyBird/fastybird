@@ -23,13 +23,13 @@ namespace FastyBird\Library\Tools\Transformers;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class HsiTransformer implements Transformer
+final readonly class HsiTransformer implements Transformer
 {
 
 	public function __construct(
-		private readonly float $hue,
-		private readonly float $saturation,
-		private readonly float $intensity,
+		private float $hue,
+		private float $saturation,
+		private float $intensity,
 	)
 	{
 	}

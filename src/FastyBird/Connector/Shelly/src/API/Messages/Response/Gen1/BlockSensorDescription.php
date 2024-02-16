@@ -29,7 +29,7 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class BlockSensorDescription implements API\Messages\Message
+final readonly class BlockSensorDescription implements API\Messages\Message
 {
 
 	/**
@@ -37,19 +37,19 @@ final class BlockSensorDescription implements API\Messages\Message
 	 */
 	public function __construct(
 		#[ObjectMapper\Rules\IntValue()]
-		private readonly int $identifier,
+		private int $identifier,
 		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\SensorType::class)]
-		private readonly Types\SensorType $type,
+		private Types\SensorType $type,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $description,
+		private string $description,
 		#[ObjectMapper\Rules\BackedEnumValue(class: MetadataTypes\DataType::class)]
 		#[ObjectMapper\Modifiers\FieldName('data_type')]
-		private readonly MetadataTypes\DataType $dataType,
+		private MetadataTypes\DataType $dataType,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly string|null $unit = null,
+		private string|null $unit = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\ArrayOf(new ObjectMapper\Rules\StringValue(notEmpty: true)),
 			new ObjectMapper\Rules\ArrayOf(new ObjectMapper\Rules\IntValue()),
@@ -73,18 +73,18 @@ final class BlockSensorDescription implements API\Messages\Message
 			),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		private readonly array|null $format = null,
+		private array|null $format = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\IntValue(),
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly float|int|string|null $invalid = null,
+		private float|int|string|null $invalid = null,
 		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
-		private readonly bool $queryable = false,
+		private bool $queryable = false,
 		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
-		private readonly bool $settable = false,
+		private bool $settable = false,
 	)
 	{
 	}

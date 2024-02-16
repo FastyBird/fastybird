@@ -26,12 +26,12 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ExternalPowerStateBlock implements API\Messages\Message
+final readonly class ExternalPowerStateBlock implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\BoolValue()]
-		private readonly bool $present,
+		private bool $present,
 	)
 	{
 	}

@@ -27,7 +27,7 @@ use function array_map;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ReportDeviceState implements API\Messages\Message
+final readonly class ReportDeviceState implements API\Messages\Message
 {
 
 	/**
@@ -35,14 +35,14 @@ final class ReportDeviceState implements API\Messages\Message
 	 */
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $identifier,
+		private string $identifier,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('ip_address')]
-		private readonly string $ipAddress,
+		private string $ipAddress,
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceBlockState::class),
 		)]
-		private readonly array $states = [],
+		private array $states = [],
 	)
 	{
 	}

@@ -27,43 +27,43 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceLightConfiguration implements API\Messages\Message
+final readonly class DeviceLightConfiguration implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\IntValue(unsigned: true)]
-		private readonly int $id,
+		private int $id,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly string|null $name,
+		private string|null $name,
 		#[ObjectMapper\Rules\ArrayEnumValue(cases: ['off', 'on', 'restore_last', 'match_input'])]
 		#[ObjectMapper\Modifiers\FieldName('initial_state')]
-		private readonly string $initialState,
+		private string $initialState,
 		#[ObjectMapper\Rules\BoolValue()]
 		#[ObjectMapper\Modifiers\FieldName('auto_on')]
-		private readonly bool $autoOn,
+		private bool $autoOn,
 		#[ObjectMapper\Rules\IntValue()]
 		#[ObjectMapper\Modifiers\FieldName('auto_on_delay')]
-		private readonly int $autoOnDelay,
+		private int $autoOnDelay,
 		#[ObjectMapper\Rules\BoolValue()]
 		#[ObjectMapper\Modifiers\FieldName('auto_off')]
-		private readonly bool $autoOff,
+		private bool $autoOff,
 		#[ObjectMapper\Rules\IntValue()]
 		#[ObjectMapper\Modifiers\FieldName('auto_off_delay')]
-		private readonly int $autoOffDelay,
+		private int $autoOffDelay,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\MappedObjectValue(class: LightDefaultConfigurationBlock::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		private readonly LightDefaultConfigurationBlock|null $default,
+		private LightDefaultConfigurationBlock|null $default,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\MappedObjectValue(class: LightNightModeConfigurationBlock::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('night_mode')]
-		private readonly LightNightModeConfigurationBlock|null $nightMode,
+		private LightNightModeConfigurationBlock|null $nightMode,
 	)
 	{
 	}

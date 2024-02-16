@@ -18,21 +18,20 @@ namespace FastyBird\Connector\FbMqtt\Queries\Entities;
 use FastyBird\Connector\FbMqtt\Exceptions;
 use FastyBird\Connector\FbMqtt\Types;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use function sprintf;
 
 /**
  * Find connector variable properties entities query
  *
  * @template T of DevicesEntities\Connectors\Properties\Variable
- * @extends  DevicesQueries\Entities\FindConnectorVariableProperties<T>
+ * @extends  FindConnectorProperties<T>
  *
  * @package        FastyBird:FbMqttConnector!
  * @subpackage     Queries
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class FindConnectorVariableProperties extends DevicesQueries\Entities\FindConnectorVariableProperties
+class FindConnectorVariableProperties extends FindConnectorProperties
 {
 
 	/**

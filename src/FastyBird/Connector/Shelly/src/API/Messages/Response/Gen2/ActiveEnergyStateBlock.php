@@ -26,7 +26,7 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ActiveEnergyStateBlock implements API\Messages\Message
+final readonly class ActiveEnergyStateBlock implements API\Messages\Message
 {
 
 	/**
@@ -34,16 +34,16 @@ final class ActiveEnergyStateBlock implements API\Messages\Message
 	 */
 	public function __construct(
 		#[ObjectMapper\Rules\FloatValue()]
-		private readonly float $total,
+		private float $total,
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\IntValue(unsigned: true),
 		)]
 		#[ObjectMapper\Modifiers\FieldName('by_minute')]
-		private readonly array $byMinute,
+		private array $byMinute,
 		#[ObjectMapper\Rules\IntValue()]
 		#[ObjectMapper\Modifiers\FieldName('minute_ts')]
-		private readonly int $minuteTs,
+		private int $minuteTs,
 	)
 	{
 	}

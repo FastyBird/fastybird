@@ -28,13 +28,13 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Press implements State
+final readonly class Press implements State
 {
 
 	public function __construct(
 		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\PressPayload::class)]
 		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::PRESS)]
-		private readonly Types\PressPayload $press,
+		private Types\PressPayload $press,
 	)
 	{
 	}

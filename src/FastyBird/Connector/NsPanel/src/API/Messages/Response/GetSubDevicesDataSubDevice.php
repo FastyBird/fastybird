@@ -32,7 +32,7 @@ use function is_array;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class GetSubDevicesDataSubDevice implements API\Messages\Message
+final readonly class GetSubDevicesDataSubDevice implements API\Messages\Message
 {
 
 	/**
@@ -42,59 +42,59 @@ final class GetSubDevicesDataSubDevice implements API\Messages\Message
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('serial_number')]
-		private readonly string $serialNumber,
+		private string $serialNumber,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $name,
+		private string $name,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $manufacturer,
+		private string $manufacturer,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $model,
+		private string $model,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('firmware_version')]
-		private readonly string $firmwareVersion,
+		private string $firmwareVersion,
 		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\Category::class)]
 		#[ObjectMapper\Modifiers\FieldName('display_category')]
-		private readonly Types\Category $displayCategory,
+		private Types\Category $displayCategory,
 		#[ObjectMapper\Rules\MappedObjectValue(API\Messages\State::class)]
-		private readonly API\Messages\State $state,
+		private API\Messages\State $state,
 		#[ObjectMapper\Rules\AnyOf([
 			new ApplicationObjectMapper\Rules\UuidValue(),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('third_serial_number')]
-		private readonly Uuid\UuidInterface|null $thirdSerialNumber = null,
+		private Uuid\UuidInterface|null $thirdSerialNumber = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('service_address')]
-		private readonly string|null $serviceAddress = null,
+		private string|null $serviceAddress = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly string|null $hostname = null,
+		private string|null $hostname = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('mac_address')]
-		private readonly string|null $macAddress = null,
+		private string|null $macAddress = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('app_name')]
-		private readonly string|null $appName = null,
+		private string|null $appName = null,
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(API\Messages\Capability::class),
 		)]
-		private readonly array $capabilities = [],
+		private array $capabilities = [],
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly string|null $protocol = null,
+		private string|null $protocol = null,
 		#[ObjectMapper\Rules\ArrayOf(
 			item: new ObjectMapper\Rules\AnyOf([
 				new ObjectMapper\Rules\StringValue(),
@@ -108,14 +108,14 @@ final class GetSubDevicesDataSubDevice implements API\Messages\Message
 			]),
 			key: new ObjectMapper\Rules\StringValue(),
 		)]
-		private readonly array $tags = [],
+		private array $tags = [],
 		#[ObjectMapper\Rules\BoolValue()]
-		private readonly bool $online = false,
+		private bool $online = false,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\BoolValue(),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		private readonly bool|null $subnet = null,
+		private bool|null $subnet = null,
 	)
 	{
 	}

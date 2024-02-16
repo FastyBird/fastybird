@@ -7,14 +7,14 @@ use FastyBird\Library\Metadata\Documents\Mapping as DOC;
 use Orisai\ObjectMapper;
 
 #[DOC\Document]
-final class DummyDocument implements MetadataDocuments\Document
+final readonly class DummyDocument implements MetadataDocuments\Document
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue()]
-		private readonly string $attribute,
+		private string $attribute,
 		#[ObjectMapper\Rules\IntValue()]
-		private readonly int $value,
+		private int $value,
 	)
 	{
 	}

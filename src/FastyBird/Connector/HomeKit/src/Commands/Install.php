@@ -135,6 +135,8 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	protected function execute(Input\InputInterface $input, Output\OutputInterface $output): int
 	{
@@ -159,6 +161,8 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function createConnector(Style\SymfonyStyle $io): void
 	{
@@ -288,6 +292,8 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function editConnector(Style\SymfonyStyle $io): void
 	{
@@ -482,6 +488,8 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function manageConnector(Style\SymfonyStyle $io): void
 	{
@@ -549,6 +557,8 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function createDevice(Style\SymfonyStyle $io, Entities\Connectors\Connector $connector): void
 	{
@@ -620,7 +630,7 @@ class Install extends Console\Command\Command
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
 				'identifier' => Types\DevicePropertyIdentifier::CATEGORY,
 				'dataType' => MetadataTypes\DataType::UCHAR,
-				'value' => $category->getValue(),
+				'value' => $category->value,
 				'device' => $device,
 			]));
 
@@ -666,6 +676,8 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function editDevice(Style\SymfonyStyle $io, Entities\Connectors\Connector $connector): void
 	{
@@ -712,12 +724,12 @@ class Install extends Console\Command\Command
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
 					'identifier' => Types\DevicePropertyIdentifier::CATEGORY,
 					'dataType' => MetadataTypes\DataType::UCHAR,
-					'value' => $category->getValue(),
+					'value' => $category->value,
 					'device' => $device,
 				]));
 			} elseif ($categoryProperty instanceof DevicesEntities\Devices\Properties\Variable) {
 				$this->devicesPropertiesManager->update($categoryProperty, Utils\ArrayHash::from([
-					'value' => $category->getValue(),
+					'value' => $category->value,
 				]));
 			}
 
@@ -837,6 +849,8 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function manageDevice(Style\SymfonyStyle $io, Entities\Connectors\Connector $connector): void
 	{
@@ -855,6 +869,8 @@ class Install extends Console\Command\Command
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function listDevices(Style\SymfonyStyle $io, Entities\Connectors\Connector $connector): void
 	{
@@ -881,7 +897,7 @@ class Install extends Console\Command\Command
 				$index + 1,
 				$device->getName() ?? $device->getIdentifier(),
 				$this->translator->translate(
-					'//homekit-connector.cmd.base.category.' . $device->getAccessoryCategory()->getValue(),
+					'//homekit-connector.cmd.base.category.' . $device->getAccessoryCategory()->value,
 				),
 			]);
 		}
@@ -901,6 +917,8 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function createService(Style\SymfonyStyle $io, Entities\Devices\Device $device): void
 	{
@@ -1035,6 +1053,8 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function editService(Style\SymfonyStyle $io, Entities\Devices\Device $device): void
 	{
@@ -1278,6 +1298,8 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function manageService(Style\SymfonyStyle $io, Entities\Devices\Device $device): void
 	{
@@ -1823,6 +1845,8 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function listCharacteristics(Style\SymfonyStyle $io, Entities\Channels\Channel $channel): void
 	{
@@ -1893,6 +1917,8 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function askInstallAction(Style\SymfonyStyle $io): void
 	{
@@ -1977,6 +2003,8 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function askManageConnectorAction(
 		Style\SymfonyStyle $io,
@@ -2067,6 +2095,8 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function askManageDeviceAction(
 		Style\SymfonyStyle $io,
@@ -2157,6 +2187,8 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function askManageServiceAction(
 		Style\SymfonyStyle $io,
@@ -2233,6 +2265,8 @@ class Install extends Console\Command\Command
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function askConnectorPort(Style\SymfonyStyle $io, Entities\Connectors\Connector|null $connector = null): int
 	{
@@ -2296,6 +2330,8 @@ class Install extends Console\Command\Command
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function askDeviceCategory(
 		Style\SymfonyStyle $io,
@@ -2303,31 +2339,34 @@ class Install extends Console\Command\Command
 	): Types\AccessoryCategory
 	{
 		$categories = array_combine(
-			array_values(Types\AccessoryCategory::getValues()),
+			array_map(
+				static fn (Types\AccessoryCategory $category): int => $category->value,
+				Types\AccessoryCategory::cases(),
+			),
 			array_map(
 				fn (Types\AccessoryCategory $category): string => $this->translator->translate(
-					'//homekit-connector.cmd.base.category.' . $category->getValue(),
+					'//homekit-connector.cmd.base.category.' . $category->value,
 				),
-				(array) Types\AccessoryCategory::getAvailableEnums(),
+				Types\AccessoryCategory::cases(),
 			),
 		);
 		$categories = array_filter(
 			$categories,
 			fn (string $category): bool => $category !== $this->translator->translate(
-				'//homekit-connector.cmd.base.category.' . Types\AccessoryCategory::BRIDGE,
+				'//homekit-connector.cmd.base.category.' . Types\AccessoryCategory::BRIDGE->value,
 			)
 		);
 		asort($categories);
 
 		$default = $device !== null ? array_search(
 			$this->translator->translate(
-				'//homekit-connector.cmd.base.category.' . $device->getAccessoryCategory()->getValue(),
+				'//homekit-connector.cmd.base.category.' . $device->getAccessoryCategory()->value,
 			),
 			array_values($categories),
 			true,
 		) : array_search(
 			$this->translator->translate(
-				'//homekit-connector.cmd.base.category.' . Types\AccessoryCategory::OTHER,
+				'//homekit-connector.cmd.base.category.' . Types\AccessoryCategory::OTHER->value,
 			),
 			array_values($categories),
 			true,
@@ -2357,8 +2396,8 @@ class Install extends Console\Command\Command
 
 			$category = array_search($answer, $categories, true);
 
-			if ($category !== false && Types\AccessoryCategory::isValidValue($category)) {
-				return Types\AccessoryCategory::get(intval($category));
+			if ($category !== false) {
+				return Types\AccessoryCategory::from(intval($category));
 			}
 
 			throw new Exceptions\Runtime(
@@ -2379,6 +2418,8 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function askServiceType(
 		Style\SymfonyStyle $io,
@@ -2398,22 +2439,22 @@ class Install extends Console\Command\Command
 			throw new Exceptions\InvalidState('Device category is not configured');
 		}
 
-		if ($category->getValue() === Types\AccessoryCategory::OTHER) {
+		if ($category->getValue() === Types\AccessoryCategory::OTHER->value) {
 			$metadata = $this->loader->loadServices();
 
 			$services = array_values(array_keys((array) $metadata));
 		} else {
 			$metadata = $this->loader->loadAccessories();
 
-			if (!$metadata->offsetExists(strval(MetadataUtilities\Value::flattenValue($category->getValue())))) {
+			if (!$metadata->offsetExists(MetadataUtilities\Value::toString($category->getValue(), true))) {
 				throw new Exceptions\InvalidArgument(sprintf(
 					'Definition for accessory category: %s was not found',
-					strval(MetadataUtilities\Value::flattenValue($category->getValue())),
+					MetadataUtilities\Value::toString($category->getValue()),
 				));
 			}
 
 			$accessoryMetadata = $metadata->offsetGet(
-				strval(MetadataUtilities\Value::flattenValue($category->getValue())),
+				MetadataUtilities\Value::toString($category->getValue(), true),
 			);
 
 			if (
@@ -2610,7 +2651,6 @@ class Install extends Console\Command\Command
 				continue;
 			}
 
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 			$devices[$device->getId()->toString()] = '[' . ($device->getConnector()->getName() ?? $device->getConnector()->getIdentifier()) . '] '
 				. ($device->getName() ?? $device->getIdentifier());
 		}
@@ -2972,7 +3012,7 @@ class Install extends Console\Command\Command
 
 								return [
 									$items[0]->getDataType(),
-									strval(MetadataUtilities\Value::flattenValue($items[0]->getValue())),
+									MetadataUtilities\Value::toString($items[0]->getValue()),
 								];
 							},
 							$connectProperty->getFormat()->getItems(),
@@ -3064,6 +3104,7 @@ class Install extends Console\Command\Command
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws Nette\IOException
 	 * @throws TypeError
 	 * @throws ValueError
@@ -3122,7 +3163,7 @@ class Install extends Console\Command\Command
 				$this->translator->translate('//homekit-connector.cmd.install.questions.select.device.value'),
 				$options,
 				$value !== null ? array_key_exists(
-					strval(MetadataUtilities\Value::flattenValue($value)),
+					MetadataUtilities\Value::toString($value, true),
 					$options,
 				) : null,
 			);
@@ -3215,7 +3256,7 @@ class Install extends Console\Command\Command
 
 		$question = new Console\Question\Question(
 			$this->translator->translate('//homekit-connector.cmd.install.questions.provide.value'),
-			is_object($value) ? strval(MetadataUtilities\Value::flattenValue($value)) : $value,
+			is_object($value) ? MetadataUtilities\Value::toString($value) : $value,
 		);
 		$question->setValidator(
 			function (string|int|null $answer) use ($dataTypes, $minValue, $maxValue, $step): string|int|float {

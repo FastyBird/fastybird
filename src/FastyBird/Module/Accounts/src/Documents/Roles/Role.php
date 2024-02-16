@@ -39,30 +39,30 @@ use Ramsey\Uuid;
 	Accounts\Constants::MESSAGE_BUS_ROLE_DOCUMENT_UPDATED_ROUTING_KEY,
 	Accounts\Constants::MESSAGE_BUS_ROLE_DOCUMENT_DELETED_ROUTING_KEY,
 ])]
-final class Role implements MetadataDocuments\Document
+final readonly class Role implements MetadataDocuments\Document
 {
 
 	public function __construct(
 		#[ApplicationObjectMapper\Rules\UuidValue()]
-		private readonly Uuid\UuidInterface $id,
+		private Uuid\UuidInterface $id,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $name,
+		private string $name,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly string|null $comment = null,
+		private string|null $comment = null,
 		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
-		private readonly bool $anonymous = false,
+		private bool $anonymous = false,
 		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
-		private readonly bool $authenticated = false,
+		private bool $authenticated = false,
 		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
-		private readonly bool $administrator = false,
+		private bool $administrator = false,
 		#[ObjectMapper\Rules\AnyOf([
 			new ApplicationObjectMapper\Rules\UuidValue(),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly Uuid\UuidInterface|null $parent = null,
+		private Uuid\UuidInterface|null $parent = null,
 	)
 	{
 	}

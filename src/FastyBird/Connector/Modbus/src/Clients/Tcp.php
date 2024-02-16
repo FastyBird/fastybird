@@ -39,6 +39,8 @@ use Nette;
 use React\EventLoop;
 use React\Promise;
 use Throwable;
+use TypeError;
+use ValueError;
 use function array_key_exists;
 use function array_merge;
 use function assert;
@@ -105,6 +107,8 @@ class Tcp implements Client
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function connect(): void
 	{
@@ -157,6 +161,8 @@ class Tcp implements Client
 	 * @throws Exception
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function handleCommunication(): void
 	{
@@ -219,6 +225,8 @@ class Tcp implements Client
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function processDevice(Documents\Devices\Device $device): bool
 	{
@@ -593,6 +601,8 @@ class Tcp implements Client
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function createReadAddress(
 		Documents\Devices\Device $device,

@@ -28,7 +28,7 @@ use function array_map;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class GetSubDevicesData implements API\Messages\Message
+final readonly class GetSubDevicesData implements API\Messages\Message
 {
 
 	/**
@@ -39,7 +39,7 @@ final class GetSubDevicesData implements API\Messages\Message
 			new ObjectMapper\Rules\MappedObjectValue(GetSubDevicesDataSubDevice::class),
 		)]
 		#[ObjectMapper\Modifiers\FieldName('device_list')]
-		private readonly array $devicesList,
+		private array $devicesList,
 	)
 	{
 	}

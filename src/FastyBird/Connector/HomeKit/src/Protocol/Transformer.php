@@ -23,6 +23,8 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use Nette\Utils;
+use TypeError;
+use ValueError;
 use function array_filter;
 use function array_values;
 use function count;
@@ -56,6 +58,8 @@ final class Transformer
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public static function fromClient(
 		DevicesDocuments\Channels\Properties\Property|null $property,
@@ -139,11 +143,11 @@ final class Transformer
 
 				if (count($filtered) === 1) {
 					if ($property->getDataType() === MetadataTypes\DataType::SWITCH) {
-						return MetadataTypes\Payloads\Switcher::tryFrom(strval($transformedValue));
+						return MetadataTypes\Payloads\Switcher::from(strval($transformedValue));
 					} elseif ($property->getDataType() === MetadataTypes\DataType::BUTTON) {
-						return MetadataTypes\Payloads\Button::tryFrom(strval($transformedValue));
+						return MetadataTypes\Payloads\Button::from(strval($transformedValue));
 					} elseif ($property->getDataType() === MetadataTypes\DataType::COVER) {
-						return MetadataTypes\Payloads\Cover::tryFrom(strval($transformedValue));
+						return MetadataTypes\Payloads\Cover::from(strval($transformedValue));
 					} else {
 						return strval($transformedValue);
 					}
@@ -155,7 +159,7 @@ final class Transformer
 					$property->getFormat()->getItems(),
 					static fn (array $item): bool => $item[1] !== null
 						&& Utils\Strings::lower(
-							strval(MetadataUtilities\Value::flattenValue($item[1]->getValue())),
+							MetadataUtilities\Value::toString($item[1]->getValue(), true),
 						) === Utils\Strings::lower(
 							strval($transformedValue),
 						),
@@ -166,19 +170,19 @@ final class Transformer
 					&& $filtered[0][0] instanceof MetadataFormats\CombinedEnumItem
 				) {
 					if ($property->getDataType() === MetadataTypes\DataType::SWITCH) {
-						return MetadataTypes\Payloads\Switcher::tryFrom(
-							strval(MetadataUtilities\Value::flattenValue($filtered[0][0]->getValue())),
+						return MetadataTypes\Payloads\Switcher::from(
+							MetadataUtilities\Value::toString($filtered[0][0]->getValue(), true),
 						);
 					} elseif ($property->getDataType() === MetadataTypes\DataType::BUTTON) {
-						return MetadataTypes\Payloads\Button::tryFrom(
-							strval(MetadataUtilities\Value::flattenValue($filtered[0][0]->getValue())),
+						return MetadataTypes\Payloads\Button::from(
+							MetadataUtilities\Value::toString($filtered[0][0]->getValue(), true),
 						);
 					} elseif ($property->getDataType() === MetadataTypes\DataType::COVER) {
-						return MetadataTypes\Payloads\Cover::tryFrom(
-							strval(MetadataUtilities\Value::flattenValue($filtered[0][0]->getValue())),
+						return MetadataTypes\Payloads\Cover::from(
+							MetadataUtilities\Value::toString($filtered[0][0]->getValue(), true),
 						);
 					} else {
-						return strval(MetadataUtilities\Value::flattenValue($filtered[0][0]->getValue()));
+						return MetadataUtilities\Value::toString($filtered[0][0]->getValue(), true);
 					}
 				}
 
@@ -194,6 +198,8 @@ final class Transformer
 	 *
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public static function toClient(
 		DevicesDocuments\Channels\Properties\Property|null $property,
@@ -221,7 +227,7 @@ final class Transformer
 					$filtered = array_values(array_filter(
 						$property->getFormat()->getItems(),
 						static fn (string $item): bool => Utils\Strings::lower(
-							strval(MetadataUtilities\Value::flattenValue($value)),
+							MetadataUtilities\Value::toString($value, true),
 						) === $item,
 					));
 
@@ -233,9 +239,9 @@ final class Transformer
 						$property->getFormat()->getItems(),
 						static fn (array $item): bool => $item[0] !== null
 							&& Utils\Strings::lower(
-								strval(MetadataUtilities\Value::flattenValue($item[0]->getValue())),
+								MetadataUtilities\Value::toString($item[0]->getValue(), true),
 							) === Utils\Strings::lower(
-								strval(MetadataUtilities\Value::flattenValue($value)),
+								MetadataUtilities\Value::toString($value, true),
 							),
 					));
 
@@ -277,7 +283,7 @@ final class Transformer
 				$transformedValue = false;
 			} elseif (!is_bool($transformedValue)) {
 				$transformedValue = in_array(
-					Utils\Strings::lower(strval(MetadataUtilities\Value::flattenValue($transformedValue))),
+					Utils\Strings::lower(MetadataUtilities\Value::toString($transformedValue, true)),
 					[
 						'true',
 						't',
@@ -294,7 +300,7 @@ final class Transformer
 				$transformedValue = str_replace(
 					[' ', ','],
 					['', '.'],
-					strval(MetadataUtilities\Value::flattenValue($transformedValue)),
+					MetadataUtilities\Value::toString($transformedValue, true),
 				);
 
 				if (!is_numeric($transformedValue)) {
@@ -325,7 +331,7 @@ final class Transformer
 				$transformedValue = preg_replace(
 					'~\s~',
 					'',
-					strval(MetadataUtilities\Value::flattenValue($transformedValue)),
+					MetadataUtilities\Value::toString($transformedValue, true),
 				);
 			}
 
@@ -339,9 +345,9 @@ final class Transformer
 			$transformedValue = (int) max($minValue ?? $transformedValue, $transformedValue);
 		} elseif ($dataType->equalsValue(Types\DataType::STRING)) {
 			$transformedValue = $value !== null ? substr(
-				strval(MetadataUtilities\Value::flattenValue($value)),
+				MetadataUtilities\Value::toString($value, true),
 				0,
-				($maxLength ?? strlen(strval(MetadataUtilities\Value::flattenValue($value)))),
+				($maxLength ?? strlen(MetadataUtilities\Value::toString($value, true))),
 			) : '';
 		}
 

@@ -31,6 +31,8 @@ use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Types as DevicesTypes;
 use React\EventLoop;
+use TypeError;
+use ValueError;
 use function array_merge;
 
 /**
@@ -102,6 +104,8 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function consume(
 		MetadataTypes\Sources\Source $source,

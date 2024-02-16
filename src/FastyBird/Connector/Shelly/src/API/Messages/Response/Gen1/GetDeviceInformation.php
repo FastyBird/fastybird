@@ -26,20 +26,20 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class GetDeviceInformation implements API\Messages\Message
+final readonly class GetDeviceInformation implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $type,
+		private string $type,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $mac,
+		private string $mac,
 		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
-		private readonly bool $auth,
+		private bool $auth,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $fw,
+		private string $fw,
 		#[ObjectMapper\Rules\IntValue(unsigned: true)]
-		private readonly int $longid,
+		private int $longid,
 	)
 	{
 	}

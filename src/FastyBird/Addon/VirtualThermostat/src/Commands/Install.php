@@ -145,6 +145,8 @@ class Install extends Console\Command\Command
 	 * @throws Exceptions\Runtime
 	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function createDevice(Style\SymfonyStyle $io): void
 	{
@@ -1028,6 +1030,8 @@ class Install extends Console\Command\Command
 	 * @throws Exceptions\Runtime
 	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function editDevice(Style\SymfonyStyle $io): void
 	{
@@ -1707,6 +1711,8 @@ class Install extends Console\Command\Command
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function listDevices(Style\SymfonyStyle $io): void
 	{
@@ -1766,6 +1772,8 @@ class Install extends Console\Command\Command
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws Exception
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function createActor(Style\SymfonyStyle $io, Entities\Devices\Device $device): void
 	{
@@ -1858,6 +1866,8 @@ class Install extends Console\Command\Command
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exception
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function editActor(Style\SymfonyStyle $io, Entities\Devices\Device $device): void
 	{
@@ -2612,7 +2622,7 @@ class Install extends Console\Command\Command
 		$targetTemp = $this->askTargetTemperature(
 			$io,
 			$preset,
-			Types\Unit::from(strval(MetadataUtilities\Value::flattenValue($unitProperty->getValue()))),
+			Types\Unit::from(MetadataUtilities\Value::toString($unitProperty->getValue(), true)),
 			$device,
 		);
 
@@ -2622,14 +2632,14 @@ class Install extends Console\Command\Command
 			$heatingThresholdTemp = $this->askHeatingThresholdTemperature(
 				$io,
 				$preset,
-				Types\Unit::from(strval(MetadataUtilities\Value::flattenValue($unitProperty->getValue()))),
+				Types\Unit::from(MetadataUtilities\Value::toString($unitProperty->getValue(), true)),
 				$device,
 			);
 
 			$coolingThresholdTemp = $this->askCoolingThresholdTemperature(
 				$io,
 				$preset,
-				Types\Unit::from(strval(MetadataUtilities\Value::flattenValue($unitProperty->getValue()))),
+				Types\Unit::from(MetadataUtilities\Value::toString($unitProperty->getValue(), true)),
 				$device,
 			);
 		}
@@ -2766,6 +2776,8 @@ class Install extends Console\Command\Command
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function askThermostatModes(
 		Style\SymfonyStyle $io,
@@ -2886,6 +2898,8 @@ class Install extends Console\Command\Command
 	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function askThermostatUnits(
 		Style\SymfonyStyle $io,
@@ -2971,6 +2985,8 @@ class Install extends Console\Command\Command
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function askPresets(
 		Style\SymfonyStyle $io,
@@ -3141,6 +3157,8 @@ class Install extends Console\Command\Command
 	/**
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function askActorType(
 		Style\SymfonyStyle $io,
@@ -3188,7 +3206,7 @@ class Install extends Console\Command\Command
 				$type = array_search($answer, $types, true);
 
 				if ($type !== false) {
-					return Types\ChannelPropertyIdentifier::tryFrom($type);
+					return Types\ChannelPropertyIdentifier::from($type);
 				}
 
 				throw new Exceptions\Runtime(
@@ -3309,7 +3327,7 @@ class Install extends Console\Command\Command
 				$type = array_search($answer, $types, true);
 
 				if ($type !== false) {
-					return Types\ChannelPropertyIdentifier::tryFrom($type);
+					return Types\ChannelPropertyIdentifier::from($type);
 				}
 
 				throw new Exceptions\Runtime(
@@ -3391,6 +3409,8 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function askTargetTemperature(
 		Style\SymfonyStyle $io,
@@ -3467,6 +3487,8 @@ class Install extends Console\Command\Command
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function askMaxFloorTemperature(
 		Style\SymfonyStyle $io,
@@ -3515,6 +3537,8 @@ class Install extends Console\Command\Command
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function askHeatingThresholdTemperature(
 		Style\SymfonyStyle $io,
@@ -3564,6 +3588,8 @@ class Install extends Console\Command\Command
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function askCoolingThresholdTemperature(
 		Style\SymfonyStyle $io,
@@ -3745,7 +3771,6 @@ class Install extends Console\Command\Command
 				continue;
 			}
 
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 			$devices[$device->getId()->toString()] = '[' . ($device->getConnector()->getName() ?? $device->getConnector()->getIdentifier()) . '] '
 				. ($device->getName() ?? $device->getIdentifier());
 		}
@@ -4523,6 +4548,8 @@ class Install extends Console\Command\Command
 	/**
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function askWhichPreset(
 		Style\SymfonyStyle $io,

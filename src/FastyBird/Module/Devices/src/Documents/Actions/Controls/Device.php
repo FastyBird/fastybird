@@ -36,16 +36,16 @@ use Ramsey\Uuid;
 #[EXCHANGE\RoutingMap([
 	Devices\Constants::MESSAGE_BUS_DEVICE_CONTROL_ACTION_ROUTING_KEY,
 ])]
-final class Device implements MetadataDocuments\Document
+final readonly class Device implements MetadataDocuments\Document
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\BackedEnumValue(class: Types\ControlAction::class)]
-		private readonly Types\ControlAction $action,
+		private Types\ControlAction $action,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
-		private readonly Uuid\UuidInterface $device,
+		private Uuid\UuidInterface $device,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
-		private readonly Uuid\UuidInterface $control,
+		private Uuid\UuidInterface $control,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\BoolValue(),
 			new ObjectMapper\Rules\FloatValue(),
@@ -54,7 +54,7 @@ final class Device implements MetadataDocuments\Document
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('expected_value')]
-		private readonly bool|float|int|string|null $expectedValue = null,
+		private bool|float|int|string|null $expectedValue = null,
 	)
 	{
 	}

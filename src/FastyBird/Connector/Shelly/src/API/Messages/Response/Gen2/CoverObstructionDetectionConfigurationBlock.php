@@ -26,21 +26,21 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class CoverObstructionDetectionConfigurationBlock implements API\Messages\Message
+final readonly class CoverObstructionDetectionConfigurationBlock implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\BoolValue()]
-		private readonly bool $enable,
+		private bool $enable,
 		#[ObjectMapper\Rules\ArrayEnumValue(cases: ['open', 'closed', 'both'])]
-		private readonly string $direction,
+		private string $direction,
 		#[ObjectMapper\Rules\ArrayEnumValue(cases: ['stop', 'reverse'])]
-		private readonly string $action,
+		private string $action,
 		#[ObjectMapper\Rules\FloatValue()]
 		#[ObjectMapper\Modifiers\FieldName('power_thr')]
-		private readonly float $powerThreshold,
+		private float $powerThreshold,
 		#[ObjectMapper\Rules\FloatValue()]
-		private readonly float $holdoff,
+		private float $holdoff,
 	)
 	{
 	}

@@ -386,19 +386,10 @@ abstract class HttpApi
 			return null;
 		}
 
-		if (array_key_exists('algorithm', $serverBits)) {
-			switch (Utils\Strings::lower($serverBits['algorithm'])) {
-				case 'sha-256':
-				case 'sha256':
-					$algo = 'sha256';
-
-					break;
-				default:
-					$algo = 'md5';
-			}
-		} else {
-			$algo = 'md5';
-		}
+		$algo = array_key_exists('algorithm', $serverBits) ? match (Utils\Strings::lower($serverBits['algorithm'])) {
+				'sha-256', 'sha256' => 'sha256',
+				default => 'md5',
+		} : 'md5';
 
 		$nc = 1;
 

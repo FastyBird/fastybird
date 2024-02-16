@@ -40,6 +40,8 @@ use React\Dns;
 use React\EventLoop;
 use SplObjectStorage;
 use Throwable;
+use TypeError;
+use ValueError;
 use function array_key_exists;
 use function array_map;
 use function array_merge;
@@ -118,6 +120,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function discover(): void
 	{

@@ -30,10 +30,10 @@ use Symfony\Component\EventDispatcher;
  *
  * @author          Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Server implements EventDispatcher\EventSubscriberInterface
+readonly class Server implements EventDispatcher\EventSubscriberInterface
 {
 
-	public function __construct(private readonly ApplicationHelpers\Database $database)
+	public function __construct(private ApplicationHelpers\Database $database)
 	{
 	}
 

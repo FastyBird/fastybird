@@ -27,7 +27,7 @@ use function array_map;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class GetDevicesResult implements API\Messages\Message
+readonly class GetDevicesResult implements API\Messages\Message
 {
 
 	/**
@@ -36,16 +36,16 @@ class GetDevicesResult implements API\Messages\Message
 	public function __construct(
 		#[ObjectMapper\Rules\BoolValue()]
 		#[ObjectMapper\Modifiers\FieldName('has_more')]
-		private readonly bool $hasMore,
+		private bool $hasMore,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('last_row_key')]
-		private readonly string $lastRowKey,
+		private string $lastRowKey,
 		#[ObjectMapper\Rules\IntValue(unsigned: true)]
-		private readonly int $total,
+		private int $total,
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(Device::class),
 		)]
-		private readonly array $list,
+		private array $list,
 	)
 	{
 	}

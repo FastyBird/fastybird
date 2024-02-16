@@ -42,7 +42,7 @@ use function array_map;
 	Accounts\Constants::MESSAGE_BUS_ACCOUNT_DOCUMENT_UPDATED_ROUTING_KEY,
 	Accounts\Constants::MESSAGE_BUS_ACCOUNT_DOCUMENT_DELETED_ROUTING_KEY,
 ])]
-final class Account implements MetadataDocuments\Document
+final readonly class Account implements MetadataDocuments\Document
 {
 
 	/**
@@ -51,56 +51,56 @@ final class Account implements MetadataDocuments\Document
 	 */
 	public function __construct(
 		#[ApplicationObjectMapper\Rules\UuidValue()]
-		private readonly Uuid\UuidInterface $id,
+		private Uuid\UuidInterface $id,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('first_name')]
-		private readonly string $firstName,
+		private string $firstName,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('last_name')]
-		private readonly string $lastName,
+		private string $lastName,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $language,
+		private string $language,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\BackedEnumValue(class: Types\AccountState::class),
 			new ObjectMapper\Rules\InstanceOfValue(type: Types\AccountState::class),
 		])]
-		private readonly Types\AccountState $state,
+		private Types\AccountState $state,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('middle_name')]
-		private readonly string|null $middleName = null,
+		private string|null $middleName = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(pattern: '/^[\w\-\.]+@[\w\-\.]+\.+[\w-]{2,63}$/', notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly string|null $email = null,
+		private string|null $email = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly DateTimeInterface|null $registered = null,
+		private DateTimeInterface|null $registered = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('last_visit')]
-		private readonly DateTimeInterface|null $lastVisit = null,
+		private DateTimeInterface|null $lastVisit = null,
 		#[ObjectMapper\Rules\ArrayOf(
 			item: new ObjectMapper\Rules\StringValue(notEmpty: true),
 			minItems: 1,
 		)]
-		private readonly array $roles = [],
+		private array $roles = [],
 		#[ObjectMapper\Rules\AnyOf([
 			new ApplicationObjectMapper\Rules\UuidValue(),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly Uuid\UuidInterface|null $parent = null,
+		private Uuid\UuidInterface|null $parent = null,
 		#[ObjectMapper\Rules\ArrayOf(
 			new ApplicationObjectMapper\Rules\UuidValue(),
 		)]
-		private readonly array $children = [],
+		private array $children = [],
 	)
 	{
 	}

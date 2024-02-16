@@ -23,6 +23,8 @@ use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Schemas;
 use FastyBird\Module\Devices\Types;
 use Neomerx\JsonApi;
+use TypeError;
+use ValueError;
 use function array_merge;
 
 /**
@@ -61,6 +63,8 @@ final class Variable extends Property
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */

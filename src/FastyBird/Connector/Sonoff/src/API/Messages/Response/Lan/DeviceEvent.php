@@ -26,35 +26,35 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceEvent implements API\Messages\Message
+final readonly class DeviceEvent implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $id,
+		private string $id,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('ip_address')]
-		private readonly string $ipAddress,
+		private string $ipAddress,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $domain,
+		private string $domain,
 		#[ObjectMapper\Rules\IntValue(unsigned: true)]
-		private readonly int $port,
+		private int $port,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $type,
+		private string $type,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $seq,
+		private string $seq,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		private readonly string|null $iv,
+		private string|null $iv,
 		#[ObjectMapper\Rules\BoolValue()]
-		private readonly bool $encrypt,
+		private bool $encrypt,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\MappedObjectValue(class: DeviceEventData::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		private readonly DeviceEventData|null $data,
+		private DeviceEventData|null $data,
 	)
 	{
 	}

@@ -27,13 +27,13 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Percentage implements State
+final readonly class Percentage implements State
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\IntValue(min: 0, max: 100, unsigned: true)]
 		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::PERCENTAGE)]
-		private readonly int $percentage,
+		private int $percentage,
 	)
 	{
 	}

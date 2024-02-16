@@ -26,7 +26,7 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class BatteryStateBlock implements API\Messages\Message
+final readonly class BatteryStateBlock implements API\Messages\Message
 {
 
 	public function __construct(
@@ -35,12 +35,12 @@ final class BatteryStateBlock implements API\Messages\Message
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		)]
 		#[ObjectMapper\Modifiers\FieldName('V')]
-		private readonly float|null $voltage,
+		private float|null $voltage,
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\IntValue(),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		)]
-		private readonly int|null $percent,
+		private int|null $percent,
 	)
 	{
 	}

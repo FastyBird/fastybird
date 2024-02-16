@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Transformers;
+namespace FastyBird\Library\Tools\Tests\Cases\Unit\Transformers;
 
 use FastyBird\Library\Tools\Exceptions;
 use FastyBird\Library\Tools\Transformers;

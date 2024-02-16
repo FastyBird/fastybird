@@ -38,13 +38,13 @@ use function str_replace;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class UrlFormat implements MiddlewareInterface
+final readonly class UrlFormat implements MiddlewareInterface
 {
 
 	public function __construct(
-		private readonly bool $usePrefix,
-		private readonly Security\User $user,
-		private readonly Localization\Translator $translator,
+		private bool $usePrefix,
+		private Security\User $user,
+		private Localization\Translator $translator,
 	)
 	{
 	}

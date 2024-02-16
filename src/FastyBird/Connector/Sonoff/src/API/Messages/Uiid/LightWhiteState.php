@@ -25,16 +25,16 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class LightWhiteState implements ObjectMapper\MappedObject
+final readonly class LightWhiteState implements ObjectMapper\MappedObject
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\IntValue(min: 1, max: 100, unsigned: true, castNumericString: true)]
 		#[ObjectMapper\Modifiers\FieldName('br')]
-		private readonly int $brightness,
+		private int $brightness,
 		#[ObjectMapper\Rules\IntValue(min: 0, max: 255, unsigned: true, castNumericString: true)]
 		#[ObjectMapper\Modifiers\FieldName('ct')]
-		private readonly int $temperature,
+		private int $temperature,
 	)
 	{
 	}

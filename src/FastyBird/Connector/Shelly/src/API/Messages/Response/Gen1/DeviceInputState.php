@@ -26,23 +26,23 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceInputState implements API\Messages\Message
+final readonly class DeviceInputState implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\IntValue()]
-		private readonly int $input,
+		private int $input,
 		#[ObjectMapper\Rules\StringValue()]
-		private readonly string $event,
+		private string $event,
 		#[ObjectMapper\Rules\IntValue()]
 		#[ObjectMapper\Modifiers\FieldName('event_cnt')]
-		private readonly int $eventCount,
+		private int $eventCount,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('last_sequence')]
-		private readonly string|null $lastSequence = null,
+		private string|null $lastSequence = null,
 	)
 	{
 	}

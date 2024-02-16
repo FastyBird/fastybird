@@ -39,26 +39,26 @@ use function sprintf;
 #[EXCHANGE\RoutingMap([
 	Devices\Constants::MESSAGE_BUS_DEVICE_PROPERTY_ACTION_ROUTING_KEY,
 ])]
-final class Device implements MetadataDocuments\Document
+final readonly class Device implements MetadataDocuments\Document
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\BackedEnumValue(class: Types\PropertyAction::class)]
-		private readonly Types\PropertyAction $action,
+		private Types\PropertyAction $action,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
-		private readonly Uuid\UuidInterface $device,
+		private Uuid\UuidInterface $device,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
-		private readonly Uuid\UuidInterface $property,
+		private Uuid\UuidInterface $property,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\MappedObjectValue(class: Values::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		private readonly Values|null $set = null,
+		private Values|null $set = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\MappedObjectValue(class: Values::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		private readonly Values|null $write = null,
+		private Values|null $write = null,
 	)
 	{
 	}

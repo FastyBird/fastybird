@@ -27,13 +27,13 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Battery implements State
+final readonly class Battery implements State
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\IntValue(min: 0, max: 100, unsigned: true)]
 		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::BATTERY)]
-		private readonly int $battery,
+		private int $battery,
 	)
 	{
 	}

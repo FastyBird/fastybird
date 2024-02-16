@@ -29,21 +29,21 @@ use Ramsey\Uuid;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class StoreDeviceConnectionState implements Message
+final readonly class StoreDeviceConnectionState implements Message
 {
 
 	public function __construct(
 		#[ApplicationObjectMapper\Rules\UuidValue()]
-		private readonly Uuid\UuidInterface $connector,
+		private Uuid\UuidInterface $connector,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
-		private readonly Uuid\UuidInterface $device,
+		private Uuid\UuidInterface $device,
 		#[ObjectMapper\Rules\InstanceOfValue(type: DevicesTypes\ConnectionState::class)]
-		private readonly DevicesTypes\ConnectionState $state,
+		private DevicesTypes\ConnectionState $state,
 		#[ObjectMapper\Rules\AnyOf([
 			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\Sources\Connector::class),
 			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\Sources\Addon::class),
 		])]
-		private readonly MetadataTypes\Sources\Source $source,
+		private MetadataTypes\Sources\Source $source,
 	)
 	{
 	}

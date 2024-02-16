@@ -21,6 +21,8 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Nette;
 use Throwable;
+use TypeError;
+use ValueError;
 use function array_key_exists;
 use function assert;
 use function is_string;
@@ -52,6 +54,8 @@ final class ConnectionManager
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getConnection(Documents\Devices\Device $device): TelevisionApi
 	{

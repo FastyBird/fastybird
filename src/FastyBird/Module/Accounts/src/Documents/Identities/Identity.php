@@ -40,26 +40,26 @@ use Ramsey\Uuid;
 	Accounts\Constants::MESSAGE_BUS_IDENTITY_DOCUMENT_UPDATED_ROUTING_KEY,
 	Accounts\Constants::MESSAGE_BUS_IDENTITY_DOCUMENT_DELETED_ROUTING_KEY,
 ])]
-final class Identity implements MetadataDocuments\Document
+final readonly class Identity implements MetadataDocuments\Document
 {
 
 	public function __construct(
 		#[ApplicationObjectMapper\Rules\UuidValue()]
-		private readonly Uuid\UuidInterface $id,
+		private Uuid\UuidInterface $id,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
-		private readonly Uuid\UuidInterface $account,
+		private Uuid\UuidInterface $account,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\BackedEnumValue(class: Types\IdentityState::class),
 			new ObjectMapper\Rules\InstanceOfValue(type: Types\IdentityState::class),
 		])]
-		private readonly Types\IdentityState $state,
+		private Types\IdentityState $state,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $uid,
+		private string $uid,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly string|null $hash = null,
+		private string|null $hash = null,
 	)
 	{
 	}

@@ -37,6 +37,8 @@ use Nette;
 use Psr\EventDispatcher as PsrEventDispatcher;
 use React\EventLoop;
 use Throwable;
+use TypeError;
+use ValueError;
 use function array_key_exists;
 use function in_array;
 use function is_string;
@@ -144,6 +146,8 @@ final class Gateway implements Client
 	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function handleCommunication(): void
 	{
@@ -173,6 +177,8 @@ final class Gateway implements Client
 	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function processDevice(Documents\Devices\Gateway $device): bool
 	{
@@ -192,6 +198,8 @@ final class Gateway implements Client
 	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function readDeviceInformation(Documents\Devices\Gateway $gateway): bool
 	{
@@ -375,6 +383,8 @@ final class Gateway implements Client
 	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function readDeviceState(Documents\Devices\Gateway $gateway): bool
 	{

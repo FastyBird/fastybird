@@ -28,31 +28,31 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceInputConfiguration implements API\Messages\Message
+final readonly class DeviceInputConfiguration implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\IntValue(unsigned: true)]
-		private readonly int $id,
+		private int $id,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly string|null $name,
+		private string|null $name,
 		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\InputType::class)]
-		private readonly Types\InputType $type,
+		private Types\InputType $type,
 		#[ObjectMapper\Rules\BoolValue()]
 		#[ObjectMapper\Modifiers\FieldName('invert')]
-		private readonly bool $inverted,
+		private bool $inverted,
 		#[ObjectMapper\Rules\BoolValue()]
 		#[ObjectMapper\Modifiers\FieldName('factory_reset')]
-		private readonly bool $factoryReset,
+		private bool $factoryReset,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\IntValue(),
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('report_thr')]
-		private readonly int|null $reportThreshold,
+		private int|null $reportThreshold,
 	)
 	{
 	}

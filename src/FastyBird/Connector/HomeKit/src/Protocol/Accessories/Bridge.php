@@ -44,7 +44,7 @@ class Bridge extends Accessory
 		parent::__construct(
 			$name,
 			HomeKit\Constants::STANDALONE_AID,
-			Types\AccessoryCategory::get(Types\AccessoryCategory::BRIDGE),
+			Types\AccessoryCategory::BRIDGE,
 		);
 
 		$this->accessories = new SplObjectStorage();
@@ -65,7 +65,7 @@ class Bridge extends Accessory
 	 */
 	public function addAccessory(Accessory $accessory): void
 	{
-		if ($accessory->getCategory()->equalsValue(Types\AccessoryCategory::BRIDGE)) {
+		if ($accessory->getCategory() === Types\AccessoryCategory::BRIDGE) {
 			throw new Exceptions\InvalidArgument('Bridges cannot be bridged');
 		}
 

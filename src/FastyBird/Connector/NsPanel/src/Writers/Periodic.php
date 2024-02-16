@@ -32,6 +32,8 @@ use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Types as DevicesTypes;
 use Nette;
 use React\EventLoop;
+use TypeError;
+use ValueError;
 use function array_key_exists;
 use function array_merge;
 use function in_array;
@@ -176,6 +178,8 @@ abstract class Periodic implements Writer
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function handleCommunication(): void
 	{
@@ -204,6 +208,8 @@ abstract class Periodic implements Writer
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function writeProperty(Documents\Devices\Device $device): bool
 	{
@@ -320,6 +326,8 @@ abstract class Periodic implements Writer
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function writeThirdPartyDeviceChannelProperty(
 		Documents\Devices\ThirdPartyDevice $device,

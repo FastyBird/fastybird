@@ -66,7 +66,7 @@ class Sensors extends VirtualEntities\Channels\Channel
 		/** @var array<int, DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped> $properties */
 		$properties = $this->properties
 			->filter(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				static fn (DevicesEntities\Channels\Properties\Property $property): bool => !$property instanceof DevicesEntities\Channels\Properties\Variable,
 			)
 			->toArray();

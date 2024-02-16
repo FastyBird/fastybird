@@ -27,6 +27,8 @@ use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette\Utils;
+use TypeError;
+use ValueError;
 use function array_filter;
 use function array_map;
 use function assert;
@@ -216,6 +218,8 @@ final readonly class Device
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getCoolingThresholdTemp(
 		DevicesDocuments\Devices\Device $device,
@@ -269,6 +273,8 @@ final readonly class Device
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getHeatingThresholdTemp(
 		DevicesDocuments\Devices\Device $device,
@@ -322,6 +328,8 @@ final readonly class Device
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getMaximumFloorTemp(DevicesDocuments\Devices\Device $device): float
 	{
@@ -352,6 +360,8 @@ final readonly class Device
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getMinimumCycleDuration(DevicesDocuments\Devices\Device $device): float|null
 	{
@@ -385,6 +395,8 @@ final readonly class Device
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getLowTargetTempTolerance(DevicesDocuments\Devices\Device $device): float|null
 	{
@@ -418,6 +430,8 @@ final readonly class Device
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getHighTargetTempTolerance(DevicesDocuments\Devices\Device $device): float|null
 	{
@@ -637,6 +651,8 @@ final readonly class Device
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getHvacModes(DevicesDocuments\Devices\Device $device): array
 	{
@@ -659,6 +675,8 @@ final readonly class Device
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getPresetModes(DevicesDocuments\Devices\Device $device): array
 	{

@@ -27,13 +27,13 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Rssi implements State
+final readonly class Rssi implements State
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\IntValue(min: -200, max: 0, unsigned: false)]
 		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::RSSI)]
-		private readonly int $rssi,
+		private int $rssi,
 	)
 	{
 	}

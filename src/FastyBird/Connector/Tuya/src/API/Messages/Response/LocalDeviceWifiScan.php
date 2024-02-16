@@ -26,7 +26,7 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class LocalDeviceWifiScan implements API\Messages\Message
+final readonly class LocalDeviceWifiScan implements API\Messages\Message
 {
 
 	/**
@@ -34,11 +34,11 @@ final class LocalDeviceWifiScan implements API\Messages\Message
 	 */
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $identifier,
+		private string $identifier,
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 		)]
-		private readonly array $ssids,
+		private array $ssids,
 	)
 	{
 	}

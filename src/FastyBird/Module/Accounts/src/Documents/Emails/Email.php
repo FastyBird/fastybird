@@ -39,24 +39,24 @@ use Ramsey\Uuid;
 	Accounts\Constants::MESSAGE_BUS_EMAIL_DOCUMENT_UPDATED_ROUTING_KEY,
 	Accounts\Constants::MESSAGE_BUS_EMAIL_DOCUMENT_DELETED_ROUTING_KEY,
 ])]
-final class Email implements MetadataDocuments\Document
+final readonly class Email implements MetadataDocuments\Document
 {
 
 	public function __construct(
 		#[ApplicationObjectMapper\Rules\UuidValue()]
-		private readonly Uuid\UuidInterface $id,
+		private Uuid\UuidInterface $id,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
-		private readonly Uuid\UuidInterface $account,
+		private Uuid\UuidInterface $account,
 		#[ObjectMapper\Rules\StringValue(pattern: '/^[\w\-\.]+@[\w\-\.]+\.+[\w-]{2,63}$/', notEmpty: true)]
-		private readonly string $address,
+		private string $address,
 		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
-		private readonly bool $default = false,
+		private bool $default = false,
 		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
-		private readonly bool $verified = false,
+		private bool $verified = false,
 		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
-		private readonly bool $private = false,
+		private bool $private = false,
 		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
-		private readonly bool $public = false,
+		private bool $public = false,
 	)
 	{
 	}

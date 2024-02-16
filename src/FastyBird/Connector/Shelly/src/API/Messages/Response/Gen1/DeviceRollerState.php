@@ -26,35 +26,35 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceRollerState implements API\Messages\Message
+final readonly class DeviceRollerState implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $state,
+		private string $state,
 		#[ObjectMapper\Rules\FloatValue()]
-		private readonly float $power,
+		private float $power,
 		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
 		#[ObjectMapper\Modifiers\FieldName('is_valid')]
-		private readonly bool $valid,
+		private bool $valid,
 		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
 		#[ObjectMapper\Modifiers\FieldName('safety_switch')]
-		private readonly bool $safetySwitch,
+		private bool $safetySwitch,
 		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
-		private readonly bool $overtemperature,
+		private bool $overtemperature,
 		#[ObjectMapper\Rules\ArrayEnumValue(cases: ['normal', 'safety_switch', 'obstacle', 'overpower'])]
 		#[ObjectMapper\Modifiers\FieldName('stop_reason')]
-		private readonly string $stopReason,
+		private string $stopReason,
 		#[ObjectMapper\Rules\ArrayEnumValue(cases: ['open', 'close'])]
 		#[ObjectMapper\Modifiers\FieldName('last_direction')]
-		private readonly string $lastDirection,
+		private string $lastDirection,
 		#[ObjectMapper\Rules\IntValue(min: 0, max: 100, unsigned: true)]
 		#[ObjectMapper\Modifiers\FieldName('current_pos')]
-		private readonly int $currentPos,
+		private int $currentPos,
 		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
-		private readonly bool $calibrating,
+		private bool $calibrating,
 		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
-		private readonly bool $positioning,
+		private bool $positioning,
 	)
 	{
 	}

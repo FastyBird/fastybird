@@ -29,16 +29,16 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class SyncDevicesPayloadEndpoint implements API\Messages\Message
+final readonly class SyncDevicesPayloadEndpoint implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ApplicationObjectMapper\Rules\UuidValue()]
 		#[ObjectMapper\Modifiers\FieldName('third_serial_number')]
-		private readonly Uuid\UuidInterface $thirdSerialNumber,
+		private Uuid\UuidInterface $thirdSerialNumber,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('serial_number')]
-		private readonly string $serialNumber,
+		private string $serialNumber,
 	)
 	{
 	}

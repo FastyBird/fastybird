@@ -28,13 +28,13 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class MotorControl implements State
+final readonly class MotorControl implements State
 {
 
 	public function __construct(
 		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\MotorControlPayload::class)]
 		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::MOTOR_CONTROL)]
-		private readonly Types\MotorControlPayload $motorControl,
+		private Types\MotorControlPayload $motorControl,
 	)
 	{
 	}

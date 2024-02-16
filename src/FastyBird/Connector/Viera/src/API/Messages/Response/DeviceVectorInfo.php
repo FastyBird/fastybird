@@ -26,12 +26,12 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class DeviceVectorInfo implements API\Messages\Message
+readonly class DeviceVectorInfo implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\IntValue(unsigned: true)]
-		private readonly int $port,
+		private int $port,
 	)
 	{
 	}

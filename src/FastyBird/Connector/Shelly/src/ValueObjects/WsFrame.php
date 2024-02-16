@@ -26,7 +26,7 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class WsFrame implements ObjectMapper\MappedObject
+final readonly class WsFrame implements ObjectMapper\MappedObject
 {
 
 	/**
@@ -35,11 +35,11 @@ final class WsFrame implements ObjectMapper\MappedObject
 	 */
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $id,
+		private string $id,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $src,
+		private string $src,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $method,
+		private string $method,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\ArrayOf(
 				new ObjectMapper\Rules\MixedValue(),
@@ -47,7 +47,7 @@ final class WsFrame implements ObjectMapper\MappedObject
 			),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly array|null $params = null,
+		private array|null $params = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\ArrayOf(
 				new ObjectMapper\Rules\AnyOf([
@@ -58,7 +58,7 @@ final class WsFrame implements ObjectMapper\MappedObject
 			),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly array|null $auth = null,
+		private array|null $auth = null,
 	)
 	{
 	}

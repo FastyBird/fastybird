@@ -32,6 +32,8 @@ use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use IPub\DoctrineCrud;
 use Nette;
 use Nette\Utils;
+use TypeError;
+use ValueError;
 use function array_merge;
 
 /**
@@ -95,6 +97,8 @@ final class Properties implements Common\EventSubscriber
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DoctrineCrud\Exceptions\InvalidArgumentException
 	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function postUpdate(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
@@ -266,6 +270,8 @@ final class Properties implements Common\EventSubscriber
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DoctrineCrud\Exceptions\InvalidArgumentException
 	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function configureDeviceInputSource(DevicesEntities\Channels\Properties\Dynamic $property): void
 	{

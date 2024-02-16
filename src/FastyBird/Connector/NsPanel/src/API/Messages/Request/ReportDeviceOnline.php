@@ -27,12 +27,12 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ReportDeviceOnline implements API\Messages\Message
+final readonly class ReportDeviceOnline implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\MappedObjectValue(ReportDeviceOnlineEvent::class)]
-		private readonly ReportDeviceOnlineEvent $event,
+		private ReportDeviceOnlineEvent $event,
 	)
 	{
 	}

@@ -28,13 +28,13 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class MotorCalibration implements State
+final readonly class MotorCalibration implements State
 {
 
 	public function __construct(
 		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\MotorCalibrationPayload::class)]
 		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::MOTOR_CALIBRATION)]
-		private readonly Types\MotorCalibrationPayload $motorCalibration,
+		private Types\MotorCalibrationPayload $motorCalibration,
 	)
 	{
 	}

@@ -27,7 +27,7 @@ use function array_map;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ReportDeviceState implements API\Messages\Message
+final readonly class ReportDeviceState implements API\Messages\Message
 {
 
 	/**
@@ -35,12 +35,12 @@ final class ReportDeviceState implements API\Messages\Message
 	 */
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $identifier,
+		private string $identifier,
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DataPointState::class),
 		)]
 		#[ObjectMapper\Modifiers\FieldName('data_points')]
-		private readonly array $dataPoints,
+		private array $dataPoints,
 	)
 	{
 	}

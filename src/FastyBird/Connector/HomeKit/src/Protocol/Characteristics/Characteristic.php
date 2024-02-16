@@ -26,6 +26,8 @@ use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use Nette;
 use Ramsey\Uuid;
+use TypeError;
+use ValueError;
 use function array_merge;
 use function in_array;
 use function sprintf;
@@ -265,6 +267,8 @@ class Characteristic
 	 *
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function toHap(): array
 	{

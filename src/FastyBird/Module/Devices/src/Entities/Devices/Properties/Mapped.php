@@ -25,6 +25,8 @@ use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Types;
 use FastyBird\Module\Devices\Utilities;
 use Ramsey\Uuid;
+use TypeError;
+use ValueError;
 use function array_merge;
 use function assert;
 use function sprintf;
@@ -158,6 +160,8 @@ class Mapped extends Property
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getDefault(): bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null
 	{
@@ -201,6 +205,8 @@ class Mapped extends Property
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null
 	{
@@ -263,6 +269,8 @@ class Mapped extends Property
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function toArray(): array
 	{

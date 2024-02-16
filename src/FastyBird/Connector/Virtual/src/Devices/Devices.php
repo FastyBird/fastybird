@@ -36,6 +36,8 @@ use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use React\EventLoop;
 use Throwable;
+use TypeError;
+use ValueError;
 use function array_key_exists;
 use function in_array;
 use function React\Async\async;
@@ -136,6 +138,8 @@ class Devices
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\Mapping
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function handleDevices(): void
 	{
@@ -166,6 +170,8 @@ class Devices
 	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function processDevice(Documents\Devices\Device $device): bool
 	{

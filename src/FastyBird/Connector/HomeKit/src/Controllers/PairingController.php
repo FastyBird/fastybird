@@ -44,6 +44,8 @@ use Ramsey\Uuid;
 use RuntimeException;
 use SodiumException;
 use Throwable;
+use TypeError;
+use ValueError;
 use function array_key_exists;
 use function array_pop;
 use function array_values;
@@ -194,6 +196,8 @@ final class PairingController extends BaseController
 	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws RuntimeException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function setup(
 		Message\ServerRequestInterface $request,
@@ -315,6 +319,8 @@ final class PairingController extends BaseController
 	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws RuntimeException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function verify(
 		Message\ServerRequestInterface $request,
@@ -404,6 +410,8 @@ final class PairingController extends BaseController
 	 * @throws Exceptions\Runtime
 	 * @throws InvalidArgumentException
 	 * @throws RuntimeException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function pairings(
 		Message\ServerRequestInterface $request,
@@ -519,6 +527,8 @@ final class PairingController extends BaseController
 	 * @throws Math\Exception\NegativeNumberException
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function srpStart(Documents\Connectors\Connector $connector): array
 	{
@@ -851,6 +861,8 @@ final class PairingController extends BaseController
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function exchange(Documents\Connectors\Connector $connector, array $encryptedData): array
 	{
@@ -1234,6 +1246,8 @@ final class PairingController extends BaseController
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function verifyStart(
 		Documents\Connectors\Connector $connector,
@@ -1429,6 +1443,8 @@ final class PairingController extends BaseController
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function verifyFinish(
 		Documents\Connectors\Connector $connector,

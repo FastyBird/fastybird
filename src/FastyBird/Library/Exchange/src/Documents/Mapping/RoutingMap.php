@@ -25,13 +25,13 @@ use Attribute;
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class RoutingMap implements MappingAttribute
+final readonly class RoutingMap implements MappingAttribute
 {
 
 	/**
 	 * @param array<string> $value
 	 */
-	public function __construct(public readonly array $value)
+	public function __construct(public array $value)
 	{
 	}
 

@@ -29,7 +29,7 @@ use Symfony\Component\EventDispatcher;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Console implements EventDispatcher\EventSubscriberInterface
+readonly class Console implements EventDispatcher\EventSubscriberInterface
 {
 
 	/**
@@ -38,9 +38,9 @@ class Console implements EventDispatcher\EventSubscriberInterface
 	 * @phpstan-param value-of<Monolog\Level::VALUES>|value-of<Monolog\Level::NAMES>|Monolog\Level|LogLevel::* $level
 	 */
 	public function __construct(
-		private readonly Monolog\Logger $logger,
-		private readonly SymfonyMonolog\Handler\ConsoleHandler $handler,
-		private readonly int|string|Monolog\Level $level,
+		private Monolog\Logger $logger,
+		private SymfonyMonolog\Handler\ConsoleHandler $handler,
+		private int|string|Monolog\Level $level,
 	)
 	{
 	}

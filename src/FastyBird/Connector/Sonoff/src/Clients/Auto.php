@@ -29,6 +29,8 @@ use React\EventLoop;
 use React\Promise;
 use RuntimeException;
 use Throwable;
+use TypeError;
+use ValueError;
 use function in_array;
 use function React\Async\async;
 
@@ -75,6 +77,8 @@ final class Auto extends ClientProcess implements Client
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws RuntimeException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function connect(): void
 	{
@@ -102,6 +106,8 @@ final class Auto extends ClientProcess implements Client
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function disconnect(): void
 	{
@@ -126,6 +132,8 @@ final class Auto extends ClientProcess implements Client
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	protected function readInformation(
 		Documents\Devices\Device $device,
@@ -172,6 +180,8 @@ final class Auto extends ClientProcess implements Client
 	 * @throws Exceptions\CloudApiError
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	protected function readState(Documents\Devices\Device $device): Promise\PromiseInterface
 	{

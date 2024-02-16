@@ -28,7 +28,7 @@ use const SORT_REGULAR;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ChannelState implements Message
+final readonly class ChannelState implements Message
 {
 
 	/**
@@ -36,11 +36,11 @@ final class ChannelState implements Message
 	 */
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $identifier,
+		private string $identifier,
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(PropertyState::class),
 		)]
-		private readonly array $sensors = [],
+		private array $sensors = [],
 	)
 	{
 	}

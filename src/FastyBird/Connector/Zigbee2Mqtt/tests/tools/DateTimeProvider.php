@@ -7,10 +7,10 @@ use FastyBird\DateTimeFactory;
 use IPub\DoctrineTimestampable\Providers as DoctrineTimestampableProviders;
 use Nette\DI;
 
-class DateTimeProvider implements DoctrineTimestampableProviders\DateProvider
+readonly class DateTimeProvider implements DoctrineTimestampableProviders\DateProvider
 {
 
-	public function __construct(private readonly DI\Container $container)
+	public function __construct(private DI\Container $container)
 	{
 	}
 

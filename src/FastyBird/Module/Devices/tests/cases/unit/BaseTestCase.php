@@ -15,7 +15,6 @@ use function defined;
 use function getmypid;
 use function in_array;
 use function md5;
-use function strval;
 use function time;
 
 abstract class BaseTestCase extends TestCase
@@ -89,7 +88,7 @@ abstract class BaseTestCase extends TestCase
 		$config->setTempDirectory(FB_TEMP_DIR);
 
 		$config->addStaticParameters(
-			['container' => ['class' => 'SystemContainer_' . strval(getmypid()) . md5((string) time())]],
+			['container' => ['class' => 'SystemContainer_' . getmypid() . md5((string) time())]],
 		);
 		$config->addStaticParameters(['appDir' => $rootDir, 'wwwDir' => $rootDir, 'vendorDir' => $vendorDir]);
 

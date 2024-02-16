@@ -28,13 +28,13 @@ use FastyBird\Library\Metadata\Documents;
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class DiscriminatorMap implements MappingAttribute
+final readonly class DiscriminatorMap implements MappingAttribute
 {
 
 	/**
 	 * @param array<int|string, class-string<T>> $value
 	 */
-	public function __construct(public readonly array $value)
+	public function __construct(public array $value)
 	{
 	}
 

@@ -26,7 +26,7 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class VoltmeterXVoltageConfigurationBlock implements API\Messages\Message
+final readonly class VoltmeterXVoltageConfigurationBlock implements API\Messages\Message
 {
 
 	public function __construct(
@@ -35,12 +35,12 @@ final class VoltmeterXVoltageConfigurationBlock implements API\Messages\Message
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('expr')]
-		private readonly string|null $expression,
+		private string|null $expression,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly string|null $unit,
+		private string|null $unit,
 	)
 	{
 	}

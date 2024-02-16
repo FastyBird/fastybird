@@ -26,14 +26,14 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ReportDeviceOnline implements API\Messages\Message
+final readonly class ReportDeviceOnline implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $identifier,
+		private string $identifier,
 		#[ObjectMapper\Rules\BoolValue()]
-		private readonly bool $online,
+		private bool $online,
 	)
 	{
 	}

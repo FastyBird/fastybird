@@ -28,7 +28,7 @@ use function array_map;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Device implements API\Messages\Message
+final readonly class Device implements API\Messages\Message
 {
 
 	/**
@@ -36,51 +36,51 @@ final class Device implements API\Messages\Message
 	 */
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $name,
+		private string $name,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('deviceid')]
-		private readonly string $deviceId,
+		private string $deviceId,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('apikey')]
-		private readonly string $apiKey,
+		private string $apiKey,
 		#[ObjectMapper\Rules\MappedObjectValue(DeviceExtra::class)]
-		private readonly DeviceExtra $extra,
+		private DeviceExtra $extra,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $brandName,
+		private string $brandName,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly string|null $brandLogo,
+		private string|null $brandLogo,
 		#[ObjectMapper\Rules\BoolValue()]
-		private readonly bool $showBrand,
+		private bool $showBrand,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $productModel,
+		private string $productModel,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('devicekey')]
-		private readonly string $deviceKey,
+		private string $deviceKey,
 		#[ObjectMapper\Rules\BoolValue()]
-		private readonly bool $online,
+		private bool $online,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\MappedObjectValue(class: DeviceConfiguration::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('devConfig')]
-		private readonly DeviceConfiguration|null $configuration = null,
+		private DeviceConfiguration|null $configuration = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\MappedObjectValue(class: DeviceSettings::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		private readonly DeviceSettings|null $settings = null,
+		private DeviceSettings|null $settings = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\ObjectValue(),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		private readonly API\Messages\Uiid\Uuid|null $state = null,
+		private API\Messages\Uiid\Uuid|null $state = null,
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 		)]
-		private readonly array $denyFeatures = [],
+		private array $denyFeatures = [],
 	)
 	{
 	}

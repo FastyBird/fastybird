@@ -27,14 +27,14 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class SyncDevicesEvent implements API\Messages\Message
+final readonly class SyncDevicesEvent implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\MappedObjectValue(API\Messages\Header::class)]
-		private readonly API\Messages\Header $header,
+		private API\Messages\Header $header,
 		#[ObjectMapper\Rules\MappedObjectValue(SyncDevicesEventPayload::class)]
-		private readonly SyncDevicesEventPayload $payload,
+		private SyncDevicesEventPayload $payload,
 	)
 	{
 	}

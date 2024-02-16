@@ -53,6 +53,8 @@ use React\EventLoop;
 use React\Http as ReactHttp;
 use React\Socket;
 use Throwable;
+use TypeError;
+use ValueError;
 use z4kn4fein\SemVer;
 use function array_intersect;
 use function array_map;
@@ -151,13 +153,15 @@ final class Http implements Server
 	 * @throws Nette\IOException
 	 * @throws SemVer\SemverException
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function initialize(): void
 	{
 		$bridge = $this->buildAccessory(
 			$this->connector,
 			null,
-			Types\AccessoryCategory::get(Types\AccessoryCategory::BRIDGE),
+			Types\AccessoryCategory::BRIDGE,
 		);
 		assert($bridge instanceof Protocol\Accessories\Bridge);
 
@@ -577,6 +581,8 @@ final class Http implements Server
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function setSharedKey(
 		DevicesEntities\Connectors\Properties\Variable $property,
@@ -611,6 +617,8 @@ final class Http implements Server
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
 	 * @throws SemVer\SemverException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function buildAccessory(
 		Documents\Connectors\Connector|Documents\Devices\Device $owner,
@@ -618,9 +626,9 @@ final class Http implements Server
 		Types\AccessoryCategory|null $category = null,
 	): Protocol\Accessories\Accessory
 	{
-		$category ??= Types\AccessoryCategory::get(Types\AccessoryCategory::OTHER);
+		$category ??= Types\AccessoryCategory::OTHER;
 
-		if ($category->equalsValue(Types\AccessoryCategory::BRIDGE)) {
+		if ($category === Types\AccessoryCategory::BRIDGE) {
 			if (!$owner instanceof Documents\Connectors\Connector) {
 				throw new Exceptions\InvalidArgument('Bridge accessory owner have to be connector item instance');
 			}
@@ -894,6 +902,8 @@ final class Http implements Server
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function buildCharacteristic(
 		string $name,

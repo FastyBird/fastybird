@@ -28,13 +28,13 @@ use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DataTypeTransformer
+final readonly class DataTypeTransformer
 {
 
 	public function __construct(
-		private readonly bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $value,
-		private readonly MetadataTypes\DataType                                                      $source,
-		private readonly MetadataTypes\DataType                                                      $destination,
+		private bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $value,
+		private MetadataTypes\DataType                                                      $source,
+		private MetadataTypes\DataType                                                      $destination,
 	)
 	{
 	}

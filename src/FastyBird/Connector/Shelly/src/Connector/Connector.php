@@ -34,6 +34,8 @@ use Psr\EventDispatcher as PsrEventDispatcher;
 use React\EventLoop;
 use React\Promise;
 use ReflectionClass;
+use TypeError;
+use ValueError;
 use function array_key_exists;
 use function assert;
 use function React\Async\async;
@@ -87,6 +89,8 @@ final class Connector implements DevicesConnectors\Connector
 	 * @throws ExchangeExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function execute(bool $standalone = true): Promise\PromiseInterface
 	{
@@ -119,12 +123,9 @@ final class Connector implements DevicesConnectors\Connector
 		}
 
 		if (
-			$this->client === null
-			|| (
-				!$this->client instanceof Clients\Local
-				&& !$this->client instanceof Clients\Cloud
-				&& !$this->client instanceof Clients\Mqtt
-			)
+			!$this->client instanceof Clients\Local
+			&& !$this->client instanceof Clients\Cloud
+			&& !$this->client instanceof Clients\Mqtt
 		) {
 			return Promise\reject(new Exceptions\InvalidState('Connector client is not configured'));
 		}
@@ -174,6 +175,8 @@ final class Connector implements DevicesConnectors\Connector
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function discover(): Promise\PromiseInterface
 	{

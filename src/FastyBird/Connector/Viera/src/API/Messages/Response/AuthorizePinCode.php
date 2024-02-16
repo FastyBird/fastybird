@@ -26,7 +26,7 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class AuthorizePinCode implements API\Messages\Message
+readonly class AuthorizePinCode implements API\Messages\Message
 {
 
 	public function __construct(
@@ -35,13 +35,13 @@ class AuthorizePinCode implements API\Messages\Message
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('app_id')]
-		private readonly string|null $appId = null,
+		private string|null $appId = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('encryption_key')]
-		private readonly string|null $encryptionKey = null,
+		private string|null $encryptionKey = null,
 	)
 	{
 	}

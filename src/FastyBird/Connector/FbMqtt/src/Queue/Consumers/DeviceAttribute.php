@@ -80,6 +80,8 @@ final class DeviceAttribute implements Queue\Consumer
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function consume(Queue\Messages\Message $message): bool
 	{
@@ -106,7 +108,7 @@ final class DeviceAttribute implements Queue\Consumer
 
 				$this->deviceConnectionManager->setState(
 					$device,
-					DevicesTypes\ConnectionState::tryFrom($message->getValue()),
+					DevicesTypes\ConnectionState::from($message->getValue()),
 				);
 			}
 		} else {

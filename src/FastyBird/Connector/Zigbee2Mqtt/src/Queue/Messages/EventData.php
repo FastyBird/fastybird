@@ -28,23 +28,23 @@ use function array_merge;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class EventData implements Message
+final readonly class EventData implements Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('friendly_name')]
-		private readonly string $friendlyName,
+		private string $friendlyName,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('ieee_address')]
-		private readonly string $ieeeAddress,
+		private string $ieeeAddress,
 		#[ObjectMapper\Rules\AnyOf([
 			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\BridgeEvent::class),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly Types\EventStatus|null $status = null,
+		private Types\EventStatus|null $status = null,
 		#[ObjectMapper\Rules\BoolValue()]
-		private readonly bool|null $supported = null,
+		private bool|null $supported = null,
 	)
 	{
 	}

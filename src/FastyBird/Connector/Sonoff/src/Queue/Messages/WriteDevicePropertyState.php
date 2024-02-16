@@ -27,21 +27,21 @@ use Ramsey\Uuid;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class WriteDevicePropertyState implements Message
+final readonly class WriteDevicePropertyState implements Message
 {
 
 	public function __construct(
 		#[ApplicationObjectMapper\Rules\UuidValue()]
-		private readonly Uuid\UuidInterface $connector,
+		private Uuid\UuidInterface $connector,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
-		private readonly Uuid\UuidInterface $device,
+		private Uuid\UuidInterface $device,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
-		private readonly Uuid\UuidInterface $property,
+		private Uuid\UuidInterface $property,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\MappedObjectValue(class: State::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		private readonly State|null $state,
+		private State|null $state,
 	)
 	{
 	}

@@ -29,7 +29,7 @@ use function implode;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Cors
+final readonly class Cors
 {
 
 	/**
@@ -37,11 +37,11 @@ final class Cors
 	 * @param array<string> $allowHeaders
 	 */
 	public function __construct(
-		private readonly bool $enabled,
-		private readonly string $allowOrigin,
-		private readonly array $allowMethods,
-		private readonly bool $allowCredentials,
-		private readonly array $allowHeaders,
+		private bool $enabled,
+		private string $allowOrigin,
+		private array $allowMethods,
+		private bool $allowCredentials,
+		private array $allowHeaders,
 	)
 	{
 	}

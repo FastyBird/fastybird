@@ -27,7 +27,7 @@ use function array_map;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class GetDeviceState implements API\Messages\Message
+final readonly class GetDeviceState implements API\Messages\Message
 {
 
 	/**
@@ -42,32 +42,32 @@ final class GetDeviceState implements API\Messages\Message
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceRelayState::class),
 		)]
-		private readonly array $relays = [],
+		private array $relays = [],
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceRollerState::class),
 		)]
-		private readonly array $rollers = [],
+		private array $rollers = [],
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceInputState::class),
 		)]
-		private readonly array $inputs = [],
+		private array $inputs = [],
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceLightState::class),
 		)]
-		private readonly array $lights = [],
+		private array $lights = [],
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceMeterState::class),
 		)]
-		private readonly array $meters = [],
+		private array $meters = [],
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceEmeterState::class),
 		)]
-		private readonly array $emeters = [],
+		private array $emeters = [],
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\MappedObjectValue(WifiStaState::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		private readonly WifiStaState|null $wifi = null,
+		private WifiStaState|null $wifi = null,
 	)
 	{
 	}

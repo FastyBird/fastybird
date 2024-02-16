@@ -25,6 +25,8 @@ use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Types;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
+use TypeError;
+use ValueError;
 use function array_map;
 use function array_merge;
 
@@ -116,6 +118,8 @@ class Dynamic extends Property
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function toArray(): array
 	{

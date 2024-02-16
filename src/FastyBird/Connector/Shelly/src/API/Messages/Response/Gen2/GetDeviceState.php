@@ -30,7 +30,7 @@ use function array_merge;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class GetDeviceState implements API\Messages\Message
+final readonly class GetDeviceState implements API\Messages\Message
 {
 
 	/**
@@ -50,64 +50,64 @@ final class GetDeviceState implements API\Messages\Message
 			new ObjectMapper\Rules\MappedObjectValue(DeviceSwitchState::class),
 		)]
 		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::SWITCH)]
-		private readonly array $switches = [],
+		private array $switches = [],
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceCoverState::class),
 		)]
 		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::COVER)]
-		private readonly array $covers = [],
+		private array $covers = [],
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceInputState::class),
 		)]
 		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::INPUT)]
-		private readonly array $inputs = [],
+		private array $inputs = [],
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceLightState::class),
 		)]
 		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::LIGHT)]
-		private readonly array $lights = [],
+		private array $lights = [],
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceTemperatureState::class),
 		)]
 		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::TEMPERATURE)]
-		private readonly array $temperature = [],
+		private array $temperature = [],
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceHumidityState::class),
 		)]
 		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::HUMIDITY)]
-		private readonly array $humidity = [],
+		private array $humidity = [],
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceDevicePowerState::class),
 		)]
 		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::DEVICE_POWER)]
-		private readonly array $devicePower = [],
+		private array $devicePower = [],
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceScriptState::class),
 		)]
 		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::SCRIPT)]
-		private readonly array $scripts = [],
+		private array $scripts = [],
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceSmokeState::class),
 		)]
 		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::SMOKE)]
-		private readonly array $smoke = [],
+		private array $smoke = [],
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceVoltmeterState::class),
 		)]
 		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::VOLTMETER)]
-		private readonly array $voltmeters = [],
+		private array $voltmeters = [],
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\MappedObjectValue(class: EthernetState::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::ETHERNET)]
-		private readonly EthernetState|null $ethernet = null,
+		private EthernetState|null $ethernet = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\MappedObjectValue(class: WifiState::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::WIFI)]
-		private readonly WifiState|null $wifi = null,
+		private WifiState|null $wifi = null,
 	)
 	{
 	}
@@ -328,30 +328,19 @@ final class GetDeviceState implements API\Messages\Message
 
 	public function findComponent(Types\ComponentType $type, int $id): DeviceState|null
 	{
-		switch ($type->getValue()) {
-			case Types\ComponentType::SWITCH:
-				return $this->findSwitch($id);
-			case Types\ComponentType::COVER:
-				return $this->findCover($id);
-			case Types\ComponentType::LIGHT:
-				return $this->findLight($id);
-			case Types\ComponentType::INPUT:
-				return $this->findInput($id);
-			case Types\ComponentType::TEMPERATURE:
-				return $this->findTemperature($id);
-			case Types\ComponentType::HUMIDITY:
-				return $this->findHumidity($id);
-			case Types\ComponentType::VOLTMETER:
-				return $this->findVoltmeter($id);
-			case Types\ComponentType::SCRIPT:
-				return $this->findScript($id);
-			case Types\ComponentType::DEVICE_POWER:
-				return $this->findDevicePower($id);
-			case Types\ComponentType::SMOKE:
-				return $this->findSmoke($id);
-		}
-
-		return null;
+		return match ($type->getValue()) {
+			Types\ComponentType::SWITCH => $this->findSwitch($id),
+			Types\ComponentType::COVER => $this->findCover($id),
+			Types\ComponentType::LIGHT => $this->findLight($id),
+			Types\ComponentType::INPUT => $this->findInput($id),
+			Types\ComponentType::TEMPERATURE => $this->findTemperature($id),
+			Types\ComponentType::HUMIDITY => $this->findHumidity($id),
+			Types\ComponentType::VOLTMETER => $this->findVoltmeter($id),
+			Types\ComponentType::SCRIPT => $this->findScript($id),
+			Types\ComponentType::DEVICE_POWER => $this->findDevicePower($id),
+			Types\ComponentType::SMOKE => $this->findSmoke($id),
+			default => null,
+		};
 	}
 
 	public function getEthernet(): EthernetState|null

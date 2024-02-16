@@ -83,6 +83,8 @@ final readonly class Connector
 	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getServerAddress(Documents\Connectors\Connector $connector): string
 	{
@@ -110,6 +112,8 @@ final readonly class Connector
 	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getServerPort(Documents\Connectors\Connector $connector): int
 	{
@@ -137,6 +141,8 @@ final readonly class Connector
 	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getServerSecuredPort(Documents\Connectors\Connector $connector): int
 	{
@@ -164,6 +170,8 @@ final readonly class Connector
 	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getUsername(Documents\Connectors\Connector $connector): string|null
 	{
@@ -191,6 +199,8 @@ final readonly class Connector
 	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getPassword(Documents\Connectors\Connector $connector): string|null
 	{

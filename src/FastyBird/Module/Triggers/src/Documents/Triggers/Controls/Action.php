@@ -36,16 +36,16 @@ use Ramsey\Uuid;
 #[EXCHANGE\RoutingMap([
 	Triggers\Constants::MESSAGE_BUS_TRIGGER_CONTROL_ACTION_ROUTING_KEY,
 ])]
-final class Action implements MetadataDocuments\Document
+final readonly class Action implements MetadataDocuments\Document
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\BackedEnumValue(class: Types\TriggerAction::class)]
-		private readonly Types\TriggerAction $action,
+		private Types\TriggerAction $action,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
-		private readonly Uuid\UuidInterface $trigger,
+		private Uuid\UuidInterface $trigger,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
-		private readonly Uuid\UuidInterface $control,
+		private Uuid\UuidInterface $control,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\BoolValue(),
 			new ObjectMapper\Rules\FloatValue(),
@@ -54,7 +54,7 @@ final class Action implements MetadataDocuments\Document
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('expected_value')]
-		private readonly bool|float|int|string|null $expectedValue = null,
+		private bool|float|int|string|null $expectedValue = null,
 	)
 	{
 	}

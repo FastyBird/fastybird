@@ -25,15 +25,15 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class BridgeGroupMember implements Message
+final readonly class BridgeGroupMember implements Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('ieee_address')]
-		private readonly string $ieeeAddress,
+		private string $ieeeAddress,
 		#[ObjectMapper\Rules\IntValue(unsigned: true)]
-		private readonly int $endpoint,
+		private int $endpoint,
 	)
 	{
 	}

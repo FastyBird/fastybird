@@ -19,6 +19,8 @@ use FastyBird\Library\Metadata\Exceptions;
 use FastyBird\Library\Metadata\Types;
 use Nette;
 use Nette\Utils;
+use TypeError;
+use ValueError;
 use function array_map;
 use function count;
 use function explode;
@@ -56,6 +58,8 @@ final class NumberRange
 	 * @param string|array<int, string|int|float|array<int, string|int|float>|null> $format
 	 *
 	 * @throws Exceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function __construct(string|array $format)
 	{
@@ -74,7 +78,7 @@ final class NumberRange
 					}
 
 					$this->min = $parts[1] !== null && trim($parts[1]) !== '' ? floatval($parts[1]) : null;
-					$this->minDataType = Types\DataTypeShort::tryFrom(Utils\Strings::lower($parts[0]));
+					$this->minDataType = Types\DataTypeShort::from(Utils\Strings::lower($parts[0]));
 
 				} elseif (trim($items[0]) !== '') {
 					$this->min = floatval($items[0]);
@@ -100,7 +104,7 @@ final class NumberRange
 					}
 
 					$this->max = $parts[1] !== null && trim($parts[1]) !== '' ? floatval($parts[1]) : null;
-					$this->maxDataType = Types\DataTypeShort::tryFrom(Utils\Strings::lower($parts[0]));
+					$this->maxDataType = Types\DataTypeShort::from(Utils\Strings::lower($parts[0]));
 
 				} elseif (trim($items[1]) !== '') {
 					$this->max = floatval($items[1]);
@@ -121,14 +125,14 @@ final class NumberRange
 			}
 
 			if (is_array($format[0]) && count($format[0]) === 2) {
-				$this->minDataType = Types\DataTypeShort::tryFrom(Utils\Strings::lower(strval($format[0][0])));
+				$this->minDataType = Types\DataTypeShort::from(Utils\Strings::lower(strval($format[0][0])));
 				$this->min = is_numeric($format[0][1]) ? floatval($format[0][1]) : null;
 			} else {
 				$this->min = is_numeric($format[0]) ? floatval($format[0]) : null;
 			}
 
 			if (is_array($format[1]) && count($format[1]) === 2) {
-				$this->maxDataType = Types\DataTypeShort::tryFrom(Utils\Strings::lower(strval($format[1][0])));
+				$this->maxDataType = Types\DataTypeShort::from(Utils\Strings::lower(strval($format[1][0])));
 				$this->max = is_numeric($format[1][1]) ? floatval($format[1][1]) : null;
 			} else {
 				$this->max = is_numeric($format[1]) ? floatval($format[1]) : null;

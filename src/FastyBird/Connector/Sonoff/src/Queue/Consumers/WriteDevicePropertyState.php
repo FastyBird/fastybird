@@ -38,6 +38,8 @@ use Nette;
 use React\Promise;
 use RuntimeException;
 use Throwable;
+use TypeError;
+use ValueError;
 use function array_merge;
 use function strval;
 
@@ -77,6 +79,8 @@ final class WriteDevicePropertyState implements Queue\Consumer
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws RuntimeException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function consume(Queue\Messages\Message $message): bool
 	{

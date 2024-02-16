@@ -27,6 +27,8 @@ use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use React\EventLoop;
 use React\Promise;
+use TypeError;
+use ValueError;
 use function array_key_exists;
 use function in_array;
 use function React\Async\async;
@@ -83,6 +85,8 @@ abstract class ClientProcess
 	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	protected function handleCommunication(): void
 	{
@@ -111,6 +115,8 @@ abstract class ClientProcess
 	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	protected function processDevice(Documents\Devices\Device $device): bool
 	{
@@ -129,6 +135,8 @@ abstract class ClientProcess
 	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	protected function readDeviceInformation(Documents\Devices\Device $device): bool
 	{
@@ -176,6 +184,8 @@ abstract class ClientProcess
 	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	protected function readDeviceState(Documents\Devices\Device $device): bool
 	{

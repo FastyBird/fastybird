@@ -30,18 +30,18 @@ use function intval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ComponentEvent implements API\Messages\Message
+final readonly class ComponentEvent implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $component,
+		private string $component,
 		#[ObjectMapper\Rules\IntValue(unsigned: true)]
-		private readonly int $id,
+		private int $id,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $event,
+		private string $event,
 		#[ObjectMapper\Rules\FloatValue(unsigned: true)]
-		private readonly float $timestamp,
+		private float $timestamp,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\IntValue(),
 			new ObjectMapper\Rules\FloatValue(),
@@ -49,7 +49,7 @@ final class ComponentEvent implements API\Messages\Message
 			new ObjectMapper\Rules\StringValue(),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		private readonly int|float|bool|string|null $data = null,
+		private int|float|bool|string|null $data = null,
 	)
 	{
 	}

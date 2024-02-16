@@ -27,6 +27,8 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use Nette\Utils;
 use Ramsey\Uuid;
+use TypeError;
+use ValueError;
 use function array_filter;
 use function array_map;
 use function assert;
@@ -80,7 +82,7 @@ class Device extends VirtualEntities\Devices\Device
 	{
 		$channels = $this->channels
 			->filter(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				static fn (DevicesEntities\Channels\Channel $channel): bool => $channel->getIdentifier() === Types\ChannelIdentifier::CONFIGURATION->value
 			);
 
@@ -101,7 +103,6 @@ class Device extends VirtualEntities\Devices\Device
 	{
 		$channels = $this->channels
 			->filter(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				static fn (DevicesEntities\Channels\Channel $channel): bool => $channel->getIdentifier() === Types\ChannelIdentifier::STATE->value
 			);
 
@@ -191,6 +192,8 @@ class Device extends VirtualEntities\Devices\Device
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getCoolingThresholdTemp(Types\Preset $preset): float|null
 	{
@@ -229,6 +232,8 @@ class Device extends VirtualEntities\Devices\Device
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getHeatingThresholdTemp(Types\Preset $preset): float|null
 	{
@@ -267,6 +272,8 @@ class Device extends VirtualEntities\Devices\Device
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getMaximumFloorTemp(): float
 	{
@@ -277,6 +284,8 @@ class Device extends VirtualEntities\Devices\Device
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getMinimumCycleDuration(): float|null
 	{
@@ -287,6 +296,8 @@ class Device extends VirtualEntities\Devices\Device
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getLowTargetTempTolerance(): float|null
 	{
@@ -297,6 +308,8 @@ class Device extends VirtualEntities\Devices\Device
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getHighTargetTempTolerance(): float|null
 	{
@@ -310,7 +323,6 @@ class Device extends VirtualEntities\Devices\Device
 	{
 		$channels = $this->channels
 			->filter(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				static fn (DevicesEntities\Channels\Channel $channel): bool => $channel->getIdentifier() === Types\ChannelIdentifier::ACTORS->value
 			);
 
@@ -364,7 +376,6 @@ class Device extends VirtualEntities\Devices\Device
 	{
 		$channels = $this->channels
 			->filter(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				static fn (DevicesEntities\Channels\Channel $channel): bool => $channel->getIdentifier() === Types\ChannelIdentifier::SENSORS->value
 			);
 
@@ -446,6 +457,8 @@ class Device extends VirtualEntities\Devices\Device
 	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getHvacModes(): array
 	{
@@ -468,6 +481,8 @@ class Device extends VirtualEntities\Devices\Device
 	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getPresetModes(): array
 	{

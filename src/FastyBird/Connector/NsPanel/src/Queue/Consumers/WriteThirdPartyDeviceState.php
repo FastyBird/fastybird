@@ -33,6 +33,8 @@ use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Types as DevicesTypes;
 use Nette;
 use Throwable;
+use TypeError;
+use ValueError;
 use function array_merge;
 use function strval;
 
@@ -79,6 +81,8 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function consume(Queue\Messages\Message $message): bool
 	{

@@ -38,6 +38,8 @@ use Nette;
 use Psr\EventDispatcher as PsrEventDispatcher;
 use React\EventLoop;
 use Throwable;
+use TypeError;
+use ValueError;
 use function array_key_exists;
 use function array_map;
 use function in_array;
@@ -97,6 +99,8 @@ final class Cloud implements Client
 	 * @throws Exceptions\OpenApiError
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function connect(): void
 	{
@@ -257,6 +261,8 @@ final class Cloud implements Client
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function disconnect(): void
 	{
@@ -284,6 +290,8 @@ final class Cloud implements Client
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\Mapping
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function handleCommunication(): void
 	{
@@ -315,6 +323,8 @@ final class Cloud implements Client
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\Mapping
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function processDevice(Documents\Devices\Device $device): bool
 	{
@@ -335,6 +345,8 @@ final class Cloud implements Client
 	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function readDeviceInformation(Documents\Devices\Device $device): bool
 	{
@@ -443,6 +455,8 @@ final class Cloud implements Client
 	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function readDeviceState(Documents\Devices\Device $device): bool
 	{

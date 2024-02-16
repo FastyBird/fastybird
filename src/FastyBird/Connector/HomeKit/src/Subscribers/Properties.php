@@ -31,6 +31,8 @@ use FastyBird\Module\Devices\Queries;
 use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
 use Nette;
 use Nette\Utils;
+use TypeError;
+use ValueError;
 use function assert;
 
 /**
@@ -68,6 +70,8 @@ final class Properties implements Common\EventSubscriber
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function postPersist(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
@@ -193,7 +197,7 @@ final class Properties implements Common\EventSubscriber
 				$xhmUri = Helpers\Protocol::getXhmUri(
 					$entity->getPinCode(),
 					$entity->getSetupId(),
-					Types\AccessoryCategory::get(Types\AccessoryCategory::BRIDGE),
+					Types\AccessoryCategory::BRIDGE,
 				);
 
 				$this->propertiesManager->create(Utils\ArrayHash::from([
@@ -217,6 +221,8 @@ final class Properties implements Common\EventSubscriber
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function postUpdate(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
@@ -233,7 +239,7 @@ final class Properties implements Common\EventSubscriber
 				$xhmUri = Helpers\Protocol::getXhmUri(
 					$connector->getPinCode(),
 					$connector->getSetupId(),
-					Types\AccessoryCategory::get(Types\AccessoryCategory::BRIDGE),
+					Types\AccessoryCategory::BRIDGE,
 				);
 
 				$findConnectorPropertyQuery = new Queries\Entities\FindConnectorProperties();

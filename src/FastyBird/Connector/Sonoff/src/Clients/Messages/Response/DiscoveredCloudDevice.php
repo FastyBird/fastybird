@@ -27,7 +27,7 @@ use function array_map;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DiscoveredCloudDevice implements Clients\Messages\Message
+final readonly class DiscoveredCloudDevice implements Clients\Messages\Message
 {
 
 	/**
@@ -35,38 +35,38 @@ final class DiscoveredCloudDevice implements Clients\Messages\Message
 	 */
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $id,
+		private string $id,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $apiKey,
+		private string $apiKey,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $deviceKey,
+		private string $deviceKey,
 		#[ObjectMapper\Rules\IntValue(unsigned: true)]
-		private readonly int $uiid,
+		private int $uiid,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $name,
+		private string $name,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly string|null $description,
+		private string|null $description,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $brandName,
+		private string $brandName,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly string|null $brandLogo,
+		private string|null $brandLogo,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $productModel,
+		private string $productModel,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $model,
+		private string $model,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $mac,
+		private string $mac,
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(class: DiscoveredDeviceParameter::class),
 			new ObjectMapper\Rules\IntValue(unsigned: true),
 		)]
-		private readonly array $parameters,
+		private array $parameters,
 	)
 	{
 	}

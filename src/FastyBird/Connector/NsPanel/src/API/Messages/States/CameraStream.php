@@ -27,13 +27,13 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class CameraStream implements State
+final readonly class CameraStream implements State
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\MappedObjectValue(CameraStreamConfiguration::class)]
 		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::CONFIGURATION)]
-		private readonly CameraStreamConfiguration $configuration,
+		private CameraStreamConfiguration $configuration,
 	)
 	{
 	}

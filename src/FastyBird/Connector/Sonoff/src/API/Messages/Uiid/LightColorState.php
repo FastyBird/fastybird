@@ -25,22 +25,22 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class LightColorState implements ObjectMapper\MappedObject
+final readonly class LightColorState implements ObjectMapper\MappedObject
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\IntValue(min: 1, max: 100, unsigned: true, castNumericString: true)]
 		#[ObjectMapper\Modifiers\FieldName('br')]
-		private readonly int $brightness,
+		private int $brightness,
 		#[ObjectMapper\Rules\IntValue(min: 0, max: 255, unsigned: true, castNumericString: true)]
 		#[ObjectMapper\Modifiers\FieldName('r')]
-		private readonly int $red,
+		private int $red,
 		#[ObjectMapper\Rules\IntValue(min: 0, max: 255, unsigned: true, castNumericString: true)]
 		#[ObjectMapper\Modifiers\FieldName('g')]
-		private readonly int $green,
+		private int $green,
 		#[ObjectMapper\Rules\IntValue(min: 0, max: 255, unsigned: true, castNumericString: true)]
 		#[ObjectMapper\Modifiers\FieldName('b')]
-		private readonly int $blue,
+		private int $blue,
 	)
 	{
 	}

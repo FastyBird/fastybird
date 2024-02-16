@@ -28,19 +28,19 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Capability implements Message
+final readonly class Capability implements Message
 {
 
 	public function __construct(
 		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\Capability::class)]
-		private readonly Types\Capability $capability,
+		private Types\Capability $capability,
 		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\Permission::class)]
-		private readonly Types\Permission $permission,
+		private Types\Permission $permission,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly string|null $name = null,
+		private string|null $name = null,
 	)
 	{
 	}

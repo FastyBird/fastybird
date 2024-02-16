@@ -26,16 +26,16 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class UserRefresh implements API\Messages\Message
+final readonly class UserRefresh implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('at')]
-		private readonly string $accessToken,
+		private string $accessToken,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('rt')]
-		private readonly string $refreshToken,
+		private string $refreshToken,
 	)
 	{
 	}

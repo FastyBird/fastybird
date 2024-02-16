@@ -27,13 +27,13 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class MotorReverse implements State
+final readonly class MotorReverse implements State
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\BoolValue()]
 		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::MOTOR_REVERSE)]
-		private readonly bool $motorReverse,
+		private bool $motorReverse,
 	)
 	{
 	}

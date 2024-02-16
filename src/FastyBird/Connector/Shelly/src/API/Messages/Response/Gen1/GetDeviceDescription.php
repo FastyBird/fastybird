@@ -29,7 +29,7 @@ use const SORT_REGULAR;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class GetDeviceDescription implements API\Messages\Message
+final readonly class GetDeviceDescription implements API\Messages\Message
 {
 
 	/**
@@ -39,7 +39,7 @@ final class GetDeviceDescription implements API\Messages\Message
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceBlockDescription::class),
 		)]
-		private readonly array $blocks,
+		private array $blocks,
 	)
 	{
 	}

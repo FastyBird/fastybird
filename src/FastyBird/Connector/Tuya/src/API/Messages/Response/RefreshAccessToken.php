@@ -26,12 +26,12 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class RefreshAccessToken implements API\Messages\Message
+readonly class RefreshAccessToken implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\MappedObjectValue(AccessToken::class)]
-		private readonly AccessToken $result,
+		private AccessToken $result,
 	)
 	{
 	}

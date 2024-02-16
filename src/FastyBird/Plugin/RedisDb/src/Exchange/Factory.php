@@ -33,15 +33,15 @@ use Throwable;
  * @subpackage     Exchange
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Factory implements ExchangeExchange\Factory
+final readonly class Factory implements ExchangeExchange\Factory
 {
 
 	public function __construct(
-		private readonly string $channel,
-		private readonly Connections\Configuration $connection,
-		private readonly Handler $messagesHandler,
-		private readonly EventLoop\LoopInterface|null $eventLoop = null,
-		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
+		private string $channel,
+		private Connections\Configuration $connection,
+		private Handler $messagesHandler,
+		private EventLoop\LoopInterface|null $eventLoop = null,
+		private EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
 	}

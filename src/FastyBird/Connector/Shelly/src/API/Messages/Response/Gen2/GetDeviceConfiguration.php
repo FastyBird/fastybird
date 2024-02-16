@@ -28,7 +28,7 @@ use function array_map;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class GetDeviceConfiguration implements API\Messages\Message
+final readonly class GetDeviceConfiguration implements API\Messages\Message
 {
 
 	/**
@@ -48,52 +48,52 @@ final class GetDeviceConfiguration implements API\Messages\Message
 			new ObjectMapper\Rules\MappedObjectValue(DeviceSwitchConfiguration::class),
 		)]
 		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::SWITCH)]
-		private readonly array $switches = [],
+		private array $switches = [],
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceCoverConfiguration::class),
 		)]
 		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::COVER)]
-		private readonly array $covers = [],
+		private array $covers = [],
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceInputConfiguration::class),
 		)]
 		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::INPUT)]
-		private readonly array $inputs = [],
+		private array $inputs = [],
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceLightConfiguration::class),
 		)]
 		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::LIGHT)]
-		private readonly array $lights = [],
+		private array $lights = [],
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceTemperatureConfiguration::class),
 		)]
 		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::TEMPERATURE)]
-		private readonly array $temperature = [],
+		private array $temperature = [],
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceHumidityConfiguration::class),
 		)]
 		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::HUMIDITY)]
-		private readonly array $humidity = [],
+		private array $humidity = [],
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceDevicePowerConfiguration::class),
 		)]
 		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::DEVICE_POWER)]
-		private readonly array $devicePower = [],
+		private array $devicePower = [],
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceScriptConfiguration::class),
 		)]
 		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::SCRIPT)]
-		private readonly array $scripts = [],
+		private array $scripts = [],
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceSmokeConfiguration::class),
 		)]
 		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::SMOKE)]
-		private readonly array $smoke = [],
+		private array $smoke = [],
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceVoltmeterConfiguration::class),
 		)]
 		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::VOLTMETER)]
-		private readonly array $voltmeters = [],
+		private array $voltmeters = [],
 	)
 	{
 	}

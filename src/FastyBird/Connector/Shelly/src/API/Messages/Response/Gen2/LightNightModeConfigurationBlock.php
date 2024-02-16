@@ -26,7 +26,7 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class LightNightModeConfigurationBlock implements API\Messages\Message
+final readonly class LightNightModeConfigurationBlock implements API\Messages\Message
 {
 
 	/**
@@ -34,15 +34,15 @@ final class LightNightModeConfigurationBlock implements API\Messages\Message
 	 */
 	public function __construct(
 		#[ObjectMapper\Rules\BoolValue()]
-		private readonly bool $enable,
+		private bool $enable,
 		#[ObjectMapper\Rules\IntValue(min: 0, max: 100, unsigned: true)]
-		private readonly int $brightness,
+		private int $brightness,
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\IntValue(unsigned: true),
 		)]
 		#[ObjectMapper\Modifiers\FieldName('active_between')]
-		private readonly array $activeBetween,
+		private array $activeBetween,
 	)
 	{
 	}

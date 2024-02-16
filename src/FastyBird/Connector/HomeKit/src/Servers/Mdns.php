@@ -32,6 +32,8 @@ use React\Datagram;
 use React\Dns;
 use React\EventLoop;
 use Throwable;
+use TypeError;
+use ValueError;
 use function array_filter;
 use function array_map;
 use function array_merge;
@@ -105,6 +107,8 @@ final class Mdns implements Server
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function initialize(): void
 	{
@@ -238,6 +242,8 @@ final class Mdns implements Server
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function refresh(
 		DevicesEntities\Connectors\Properties\Variable $property,
@@ -300,6 +306,8 @@ final class Mdns implements Server
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function createZone(): void
 	{
@@ -394,7 +402,7 @@ final class Mdns implements Server
 				'c#=' . $this->connectorHelper->getVersion($this->connector),
 				's#=1', // Accessory state
 				'ff=0',
-				'ci=' . HomeKit\Types\AccessoryCategory::BRIDGE,
+				'ci=' . HomeKit\Types\AccessoryCategory::BRIDGE->value,
 				// 'sf == 1' means "discoverable by HomeKit iOS clients"
 				'sf=' . ($this->connectorHelper->isPaired($this->connector) ? 0 : 1),
 				'sh=' . $setupHash,

@@ -32,6 +32,8 @@ use IPub\WebSockets;
 use IPub\WebSocketsWAMP;
 use Nette\Utils;
 use Throwable;
+use TypeError;
+use ValueError;
 use function array_key_exists;
 use function is_array;
 
@@ -180,6 +182,8 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws Utils\JsonException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function actionCall(
 		array $args,
@@ -256,6 +260,8 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws Utils\JsonException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function handleConnectorAction(
 		WebSocketsWAMP\Entities\Clients\IClient $client,
@@ -343,6 +349,8 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws Utils\JsonException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function handleDeviceAction(
 		WebSocketsWAMP\Entities\Clients\IClient $client,
@@ -433,6 +441,8 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws Utils\JsonException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function handleChannelAction(
 		WebSocketsWAMP\Entities\Clients\IClient $client,

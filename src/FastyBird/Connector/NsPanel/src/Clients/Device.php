@@ -37,6 +37,8 @@ use Nette\Utils;
 use Psr\EventDispatcher as PsrEventDispatcher;
 use React\Promise;
 use Throwable;
+use TypeError;
+use ValueError;
 use function array_diff;
 use function array_key_exists;
 use function array_merge;
@@ -88,6 +90,8 @@ final class Device implements Client
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function connect(): void
 	{
@@ -625,6 +629,8 @@ final class Device implements Client
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function disconnect(): void
 	{

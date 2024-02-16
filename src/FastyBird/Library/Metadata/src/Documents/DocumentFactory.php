@@ -34,12 +34,12 @@ use function sprintf;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DocumentFactory
+final readonly class DocumentFactory
 {
 
 	public function __construct(
-		private readonly Mapping\ClassMetadataFactory $classMetadataFactory,
-		private readonly ObjectMapper\Processing\Processor $documentMapper,
+		private Mapping\ClassMetadataFactory $classMetadataFactory,
+		private ObjectMapper\Processing\Processor $documentMapper,
 	)
 	{
 	}

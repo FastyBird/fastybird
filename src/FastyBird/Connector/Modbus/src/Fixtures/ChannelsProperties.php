@@ -24,6 +24,8 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use TypeError;
+use ValueError;
 use function strval;
 
 /**
@@ -42,6 +44,8 @@ final class ChannelsProperties extends DataFixtures\AbstractFixture implements D
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function load(Persistence\ObjectManager $manager): void
 	{

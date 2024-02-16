@@ -26,18 +26,18 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ApplicationHandshake implements API\Messages\Message
+final readonly class ApplicationHandshake implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('apikey')]
-		private readonly string $apiKey,
+		private string $apiKey,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\MappedObjectValue(class: ApplicationConfig::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		private readonly ApplicationConfig|null $config = null,
+		private ApplicationConfig|null $config = null,
 	)
 	{
 	}

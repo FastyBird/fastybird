@@ -35,6 +35,8 @@ use Psr\EventDispatcher as PsrEventDispatcher;
 use React\EventLoop;
 use React\Promise;
 use ReflectionClass;
+use TypeError;
+use ValueError;
 use function array_key_exists;
 use function assert;
 use function React\Async\async;
@@ -89,6 +91,8 @@ final class Connector implements DevicesConnectors\Connector
 	 * @throws InvalidArgumentException
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function execute(bool $standalone = true): Promise\PromiseInterface
 	{
@@ -175,6 +179,8 @@ final class Connector implements DevicesConnectors\Connector
 	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function discover(): Promise\PromiseInterface
 	{
@@ -231,6 +237,8 @@ final class Connector implements DevicesConnectors\Connector
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function terminate(): void
 	{

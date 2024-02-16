@@ -24,6 +24,8 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use Ramsey\Uuid;
+use TypeError;
+use ValueError;
 use function assert;
 use function is_int;
 
@@ -92,6 +94,8 @@ class Device extends DevicesEntities\Devices\Device
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getAccessoryCategory(): Types\AccessoryCategory
 	{
@@ -105,17 +109,19 @@ class Device extends DevicesEntities\Devices\Device
 		if (
 			$property instanceof DevicesEntities\Devices\Properties\Variable
 			&& is_int($property->getValue())
-			&& Types\AccessoryCategory::isValidValue($property->getValue())
+			&& Types\AccessoryCategory::tryFrom($property->getValue()) !== null
 		) {
-			return Types\AccessoryCategory::get($property->getValue());
+			return Types\AccessoryCategory::from($property->getValue());
 		}
 
-		return Types\AccessoryCategory::get(Types\AccessoryCategory::OTHER);
+		return Types\AccessoryCategory::OTHER;
 	}
 
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getAccessoryType(): Types\AccessoryType
 	{
@@ -129,12 +135,12 @@ class Device extends DevicesEntities\Devices\Device
 		if (
 			$property instanceof DevicesEntities\Devices\Properties\Variable
 			&& is_int($property->getValue())
-			&& Types\AccessoryType::isValidValue($property->getValue())
+			&& Types\AccessoryType::tryFrom($property->getValue()) !== null
 		) {
-			return Types\AccessoryType::get($property->getValue());
+			return Types\AccessoryType::from($property->getValue());
 		}
 
-		return Types\AccessoryType::get(Types\AccessoryType::GENERIC);
+		return Types\AccessoryType::GENERIC;
 	}
 
 	/**

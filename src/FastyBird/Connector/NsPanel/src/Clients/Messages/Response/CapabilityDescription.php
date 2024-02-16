@@ -28,19 +28,19 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class CapabilityDescription implements Clients\Messages\Message
+final readonly class CapabilityDescription implements Clients\Messages\Message
 {
 
 	public function __construct(
 		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\Capability::class)]
-		private readonly Types\Capability $capability,
+		private Types\Capability $capability,
 		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\Permission::class)]
-		private readonly Types\Permission $permission,
+		private Types\Permission $permission,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly string|null $name = null,
+		private string|null $name = null,
 	)
 	{
 	}

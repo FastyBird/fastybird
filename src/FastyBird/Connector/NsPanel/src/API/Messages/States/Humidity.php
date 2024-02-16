@@ -27,13 +27,13 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Humidity implements State
+final readonly class Humidity implements State
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\IntValue(min: 0, max: 100, unsigned: true)]
 		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::HUMIDITY)]
-		private readonly int $humidity,
+		private int $humidity,
 	)
 	{
 	}

@@ -20,6 +20,8 @@ use FastyBird\Library\Metadata\Exceptions;
 use FastyBird\Library\Metadata\Types;
 use Nette;
 use Nette\Utils;
+use TypeError;
+use ValueError;
 use function count;
 use function explode;
 use function floatval;
@@ -51,6 +53,8 @@ final class CombinedEnumItem
 	 * @param string|array<int, string|int|float|bool|null> $item
 	 *
 	 * @throws Exceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function __construct(string|array $item)
 	{
@@ -64,7 +68,7 @@ final class CombinedEnumItem
 					throw new Exceptions\InvalidArgument('Provided format is not valid for combined enum format');
 				}
 
-				$dataType = Types\DataTypeShort::tryFrom(Utils\Strings::lower($parts[0]));
+				$dataType = Types\DataTypeShort::from(Utils\Strings::lower($parts[0]));
 				$this->value = trim(strval($parts[1]));
 			} else {
 				$this->value = trim($item);
@@ -75,7 +79,7 @@ final class CombinedEnumItem
 					throw new Exceptions\InvalidArgument('Provided format is not valid for combined enum format');
 				}
 
-				$dataType = Types\DataTypeShort::tryFrom(Utils\Strings::lower($item[0]));
+				$dataType = Types\DataTypeShort::from(Utils\Strings::lower($item[0]));
 			}
 
 			if ($item[1] === null) {
@@ -100,6 +104,8 @@ final class CombinedEnumItem
 
 	/**
 	 * @throws Exceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getValue(): float|bool|int|string|Types\Payloads\Payload
 	{
@@ -124,19 +130,19 @@ final class CombinedEnumItem
 			return in_array(Utils\Strings::lower(strval($this->value)), ['true', 't', 'yes', 'y', '1', 'on'], true);
 		} elseif ($this->dataType === Types\DataTypeShort::BUTTON) {
 			if (Types\Payloads\Button::tryFrom(Utils\Strings::lower(strval($this->value))) !== null) {
-				return Types\Payloads\Button::tryFrom(Utils\Strings::lower(strval($this->value)));
+				return Types\Payloads\Button::from(Utils\Strings::lower(strval($this->value)));
 			}
 
 			throw new Exceptions\InvalidState('Combined enum value is not valid');
 		} elseif ($this->dataType === Types\DataTypeShort::SWITCH) {
 			if (Types\Payloads\Switcher::tryFrom(Utils\Strings::lower(strval($this->value))) !== null) {
-				return Types\Payloads\Switcher::tryFrom(Utils\Strings::lower(strval($this->value)));
+				return Types\Payloads\Switcher::from(Utils\Strings::lower(strval($this->value)));
 			}
 
 			throw new Exceptions\InvalidState('Combined enum value is not valid');
 		} elseif ($this->dataType === Types\DataTypeShort::COVER) {
 			if (Types\Payloads\Cover::tryFrom(Utils\Strings::lower(strval($this->value))) !== null) {
-				return Types\Payloads\Cover::tryFrom(Utils\Strings::lower(strval($this->value)));
+				return Types\Payloads\Cover::from(Utils\Strings::lower(strval($this->value)));
 			}
 
 			throw new Exceptions\InvalidState('Combined enum value is not valid');
@@ -154,6 +160,8 @@ final class CombinedEnumItem
 	 * @return array<int, string|int|float|bool>
 	 *
 	 * @throws Exceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function toArray(): array
 	{
@@ -193,6 +201,8 @@ final class CombinedEnumItem
 
 	/**
 	 * @throws Exceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function __toString(): string
 	{

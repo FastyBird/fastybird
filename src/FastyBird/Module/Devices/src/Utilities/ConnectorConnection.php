@@ -31,8 +31,9 @@ use FastyBird\Module\Devices\States;
 use FastyBird\Module\Devices\Types;
 use Nette;
 use Nette\Utils;
+use TypeError;
+use ValueError;
 use function assert;
-use function strval;
 
 /**
  * Connector connection states manager
@@ -66,6 +67,8 @@ final class ConnectorConnection
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function setState(
 		Entities\Connectors\Connector|Documents\Connectors\Connector $connector,
@@ -135,6 +138,8 @@ final class ConnectorConnection
 	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getState(
 		Entities\Connectors\Connector|Documents\Connectors\Connector $connector,
@@ -155,11 +160,11 @@ final class ConnectorConnection
 			if (
 				$state?->getRead()->getActualValue() !== null
 				&& Types\ConnectionState::tryFrom(
-					strval(MetadataUtilities\Value::flattenValue($state->getRead()->getActualValue())),
+					MetadataUtilities\Value::toString($state->getRead()->getActualValue(), true),
 				) !== null
 			) {
-				return Types\ConnectionState::tryFrom(
-					strval(MetadataUtilities\Value::flattenValue($state->getRead()->getActualValue())),
+				return Types\ConnectionState::from(
+					MetadataUtilities\Value::toString($state->getRead()->getActualValue(), true),
 				);
 			}
 		}
@@ -175,6 +180,8 @@ final class ConnectorConnection
 	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function isRunning(
 		Entities\Devices\Device|Documents\Connectors\Connector $connector,
@@ -195,7 +202,7 @@ final class ConnectorConnection
 			if (
 				$state?->getRead()->getActualValue() !== null
 				&& Types\ConnectionState::tryFrom(
-					strval(MetadataUtilities\Value::flattenValue($state->getRead()->getActualValue())),
+					MetadataUtilities\Value::toString($state->getRead()->getActualValue(), true),
 				) !== null
 				&& $state->getRead()->getActualValue() === Types\ConnectionState::RUNNING->value
 			) {

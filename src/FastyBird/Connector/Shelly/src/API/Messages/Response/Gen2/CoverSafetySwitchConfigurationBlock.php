@@ -26,22 +26,22 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class CoverSafetySwitchConfigurationBlock implements API\Messages\Message
+final readonly class CoverSafetySwitchConfigurationBlock implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\BoolValue()]
-		private readonly bool $enable,
+		private bool $enable,
 		#[ObjectMapper\Rules\ArrayEnumValue(cases: ['open', 'closed', 'both'])]
-		private readonly string $direction,
+		private string $direction,
 		#[ObjectMapper\Rules\ArrayEnumValue(cases: ['stop', 'reverse', 'pause'])]
-		private readonly string $action,
+		private string $action,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\ArrayEnumValue(cases: ['reverse']),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('allowed_move')]
-		private readonly string|null $allowedMove,
+		private string|null $allowedMove,
 	)
 	{
 	}

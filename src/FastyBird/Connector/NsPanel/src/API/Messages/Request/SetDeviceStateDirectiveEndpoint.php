@@ -30,7 +30,7 @@ use function is_array;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class SetDeviceStateDirectiveEndpoint implements API\Messages\Message
+final readonly class SetDeviceStateDirectiveEndpoint implements API\Messages\Message
 {
 
 	/**
@@ -39,10 +39,10 @@ final class SetDeviceStateDirectiveEndpoint implements API\Messages\Message
 	public function __construct(
 		#[ApplicationObjectMapper\Rules\UuidValue()]
 		#[ObjectMapper\Modifiers\FieldName('third_serial_number')]
-		private readonly Uuid\UuidInterface $thirdSerialNumber,
+		private Uuid\UuidInterface $thirdSerialNumber,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('serial_number')]
-		private readonly string $serialNumber,
+		private string $serialNumber,
 		#[ObjectMapper\Rules\ArrayOf(
 			item: new ObjectMapper\Rules\AnyOf([
 				new ObjectMapper\Rules\StringValue(),
@@ -56,7 +56,7 @@ final class SetDeviceStateDirectiveEndpoint implements API\Messages\Message
 			]),
 			key: new ObjectMapper\Rules\StringValue(),
 		)]
-		private readonly array $tags = [],
+		private array $tags = [],
 	)
 	{
 	}

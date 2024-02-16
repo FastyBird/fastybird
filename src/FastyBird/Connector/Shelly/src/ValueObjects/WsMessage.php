@@ -28,7 +28,7 @@ use React\Promise;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class WsMessage implements ObjectMapper\MappedObject
+final readonly class WsMessage implements ObjectMapper\MappedObject
 {
 
 	/**
@@ -36,17 +36,17 @@ final class WsMessage implements ObjectMapper\MappedObject
 	 */
 	public function __construct(
 		#[ObjectMapper\Rules\InstanceOfValue(WsFrame::class)]
-		private readonly WsFrame $frame,
+		private WsFrame $frame,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\InstanceOfValue(Promise\Deferred::class),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly Promise\Deferred|null $deferred = null,
+		private Promise\Deferred|null $deferred = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\InstanceOfValue(EventLoop\TimerInterface::class),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly EventLoop\TimerInterface|null $timer = null,
+		private EventLoop\TimerInterface|null $timer = null,
 	)
 	{
 	}

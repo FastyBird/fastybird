@@ -26,29 +26,29 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class User implements API\Messages\Message
+final readonly class User implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\IntValue()]
-		private readonly int $accountLevel,
+		private int $accountLevel,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $countryCode,
+		private string $countryCode,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $email,
+		private string $email,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('apikey')]
-		private readonly string $apiKey,
+		private string $apiKey,
 		#[ObjectMapper\Rules\BoolValue()]
-		private readonly bool $accountConsult,
+		private bool $accountConsult,
 		#[ObjectMapper\Rules\BoolValue()]
-		private readonly bool $appForumEnterHide,
+		private bool $appForumEnterHide,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $appVersion,
+		private string $appVersion,
 		#[ObjectMapper\Rules\BoolValue()]
-		private readonly bool $denyRecharge,
+		private bool $denyRecharge,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $ipCountry,
+		private string $ipCountry,
 	)
 	{
 	}

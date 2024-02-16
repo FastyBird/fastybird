@@ -27,61 +27,61 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceCoverConfiguration implements API\Messages\Message
+final readonly class DeviceCoverConfiguration implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\IntValue(unsigned: true)]
-		private readonly int $id,
+		private int $id,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly string|null $name,
+		private string|null $name,
 		#[ObjectMapper\Rules\ArrayEnumValue(cases: ['single', 'dual', 'detached'])]
 		#[ObjectMapper\Modifiers\FieldName('in_mode')]
-		private readonly string $mode,
+		private string $mode,
 		#[ObjectMapper\Rules\ArrayEnumValue(cases: ['open', 'closed', 'stopped'])]
 		#[ObjectMapper\Modifiers\FieldName('initial_state')]
-		private readonly string $initialState,
+		private string $initialState,
 		#[ObjectMapper\Rules\FloatValue()]
 		#[ObjectMapper\Modifiers\FieldName('power_limit')]
-		private readonly float $powerLimit,
+		private float $powerLimit,
 		#[ObjectMapper\Rules\FloatValue()]
 		#[ObjectMapper\Modifiers\FieldName('voltage_limit')]
-		private readonly float $voltageLimit,
+		private float $voltageLimit,
 		#[ObjectMapper\Rules\FloatValue()]
 		#[ObjectMapper\Modifiers\FieldName('current_limit')]
-		private readonly float $currentLimit,
+		private float $currentLimit,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\MappedObjectValue(class: CoverMotorConfigurationBlock::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		private readonly CoverMotorConfigurationBlock|null $motor,
+		private CoverMotorConfigurationBlock|null $motor,
 		#[ObjectMapper\Rules\FloatValue()]
 		#[ObjectMapper\Modifiers\FieldName('maxtime_open')]
-		private readonly float $maximumOpeningTime,
+		private float $maximumOpeningTime,
 		#[ObjectMapper\Rules\FloatValue()]
 		#[ObjectMapper\Modifiers\FieldName('maxtime_close')]
-		private readonly float $maximumClosingTime,
+		private float $maximumClosingTime,
 		#[ObjectMapper\Rules\BoolValue()]
 		#[ObjectMapper\Modifiers\FieldName('swap_inputs')]
-		private readonly bool $swappedInput,
+		private bool $swappedInput,
 		#[ObjectMapper\Rules\BoolValue()]
 		#[ObjectMapper\Modifiers\FieldName('invert_directions')]
-		private readonly bool $invertedDirections,
+		private bool $invertedDirections,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\MappedObjectValue(class: CoverObstructionDetectionConfigurationBlock::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('obstruction_detection')]
-		private readonly CoverObstructionDetectionConfigurationBlock|null $obstructionDetection,
+		private CoverObstructionDetectionConfigurationBlock|null $obstructionDetection,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\MappedObjectValue(class: CoverSafetySwitchConfigurationBlock::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('safety_switch')]
-		private readonly CoverSafetySwitchConfigurationBlock|null $safetySwitch,
+		private CoverSafetySwitchConfigurationBlock|null $safetySwitch,
 	)
 	{
 	}

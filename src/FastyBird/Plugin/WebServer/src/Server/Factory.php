@@ -34,15 +34,15 @@ use function str_replace;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Factory
+final readonly class Factory
 {
 
 	public function __construct(
-		private readonly Middleware\Cors $corsMiddleware,
-		private readonly Middleware\StaticFiles $staticFilesMiddleware,
-		private readonly Middleware\Router $routerMiddleware,
-		private readonly EventLoop\LoopInterface $eventLoop,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
+		private Middleware\Cors $corsMiddleware,
+		private Middleware\StaticFiles $staticFilesMiddleware,
+		private Middleware\Router $routerMiddleware,
+		private EventLoop\LoopInterface $eventLoop,
+		private Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
 	}

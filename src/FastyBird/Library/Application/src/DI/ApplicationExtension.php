@@ -87,7 +87,7 @@ class ApplicationExtension extends DI\CompilerExtension
 			),
 			'sentry' => Schema\Expect::structure(
 				[
-					'dsn' => Schema\Expect::string(null)->nullable(),
+					'dsn' => Schema\Expect::string()->nullable(),
 					'level' => Schema\Expect::int(Monolog\Level::Warning),
 				],
 			),

@@ -31,6 +31,8 @@ use FastyBird\Module\Devices\Types as DevicesTypes;
 use IPub\DoctrineCrud;
 use Nette;
 use Nette\Utils;
+use TypeError;
+use ValueError;
 use function sprintf;
 
 /**
@@ -68,6 +70,8 @@ final class Properties implements Common\EventSubscriber
 	 * @throws DoctrineCrud\Exceptions\InvalidArgumentException
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function postPersist(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{

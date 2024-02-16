@@ -6,6 +6,8 @@ use FastyBird\Library\Metadata\Exceptions;
 use FastyBird\Library\Metadata\Formats;
 use FastyBird\Library\Metadata\Tests\Cases\Unit\BaseTestCase;
 use FastyBird\Library\Metadata\Types;
+use TypeError;
+use ValueError;
 use function strval;
 
 final class CombinedEnumFormatTest extends BaseTestCase
@@ -13,6 +15,8 @@ final class CombinedEnumFormatTest extends BaseTestCase
 
 	/**
 	 * @throws Exceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function testFromString(): void
 	{

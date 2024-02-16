@@ -31,11 +31,11 @@ use Lcobucci\JWT;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class IdentityFactory implements SimpleAuthSecurity\IIdentityFactory
+readonly class IdentityFactory implements SimpleAuthSecurity\IIdentityFactory
 {
 
 	public function __construct(
-		private readonly SimpleAuthModels\Tokens\TokenRepository $tokenRepository,
+		private SimpleAuthModels\Tokens\TokenRepository $tokenRepository,
 	)
 	{
 	}

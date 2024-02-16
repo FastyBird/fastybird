@@ -61,7 +61,7 @@ abstract class Periodic implements Writer
 
 	/** @var array<string, Documents\Devices\Device>  */
 	private array $devices = [];
-	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+
 	/** @var array<string, array<string, DevicesDocuments\Devices\Properties\Dynamic|DevicesDocuments\Channels\Properties\Dynamic>>  */
 	private array $properties = [];
 

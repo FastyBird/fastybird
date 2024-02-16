@@ -32,8 +32,9 @@ use FastyBird\Module\Devices\States;
 use FastyBird\Module\Devices\Types;
 use Nette;
 use Nette\Utils;
+use TypeError;
+use ValueError;
 use function assert;
-use function strval;
 
 /**
  * Device connection states manager
@@ -67,6 +68,8 @@ final class DeviceConnection
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function setState(
 		Entities\Devices\Device|Documents\Devices\Device $device,
@@ -139,6 +142,8 @@ final class DeviceConnection
 	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getState(
 		Entities\Devices\Device|Documents\Devices\Device $device,
@@ -159,11 +164,11 @@ final class DeviceConnection
 			if (
 				$state?->getRead()->getActualValue() !== null
 				&& Types\ConnectionState::tryFrom(
-					strval(MetadataUtilities\Value::flattenValue($state->getRead()->getActualValue())),
+					MetadataUtilities\Value::toString($state->getRead()->getActualValue(), true),
 				) !== null
 			) {
-				return Types\ConnectionState::tryFrom(
-					strval(MetadataUtilities\Value::flattenValue($state->getRead()->getActualValue())),
+				return Types\ConnectionState::from(
+					MetadataUtilities\Value::toString($state->getRead()->getActualValue(), true),
 				);
 			}
 		}
@@ -179,6 +184,8 @@ final class DeviceConnection
 	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getLostAt(
 		Entities\Devices\Device|Documents\Devices\Device $device,
@@ -199,7 +206,7 @@ final class DeviceConnection
 			if (
 				$state?->getRead()->getActualValue() !== null
 				&& Types\ConnectionState::tryFrom(
-					strval(MetadataUtilities\Value::flattenValue($state->getRead()->getActualValue())),
+					MetadataUtilities\Value::toString($state->getRead()->getActualValue(), true),
 				) !== null
 				&& $state->getRead()->getActualValue() === Types\ConnectionState::LOST->value
 			) {

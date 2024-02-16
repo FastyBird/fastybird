@@ -29,14 +29,14 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class CapabilityState implements Message
+final readonly class CapabilityState implements Message
 {
 
 	public function __construct(
 		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\Capability::class)]
-		private readonly Types\Capability $capability,
+		private Types\Capability $capability,
 		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\Protocol::class)]
-		private readonly Types\Protocol $protocol,
+		private Types\Protocol $protocol,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\IntValue(),
@@ -51,13 +51,13 @@ final class CapabilityState implements Message
 			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		                                  // phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		private readonly int|float|string|bool|Types\MotorCalibrationPayload|Types\MotorControlPayload|Types\PowerPayload|Types\PressPayload|Types\StartupPayload|Types\TogglePayload|null $value,
+		                         // phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+		private int|float|string|bool|Types\MotorCalibrationPayload|Types\MotorControlPayload|Types\PowerPayload|Types\PressPayload|Types\StartupPayload|Types\TogglePayload|null $value,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly string|null $identifier = null,
+		private string|null $identifier = null,
 	)
 	{
 	}

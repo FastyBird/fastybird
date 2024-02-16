@@ -27,12 +27,12 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class GetGatewayAccessTokenData implements API\Messages\Message
+final readonly class GetGatewayAccessTokenData implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $token,
+		private string $token,
 	)
 	{
 	}

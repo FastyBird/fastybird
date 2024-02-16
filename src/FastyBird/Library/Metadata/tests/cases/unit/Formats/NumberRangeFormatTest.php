@@ -5,6 +5,8 @@ namespace FastyBird\Library\Metadata\Tests\Cases\Unit\Formats;
 use FastyBird\Library\Metadata\Exceptions;
 use FastyBird\Library\Metadata\Formats;
 use FastyBird\Library\Metadata\Tests\Cases\Unit\BaseTestCase;
+use TypeError;
+use ValueError;
 use function strval;
 
 final class NumberRangeFormatTest extends BaseTestCase
@@ -13,6 +15,8 @@ final class NumberRangeFormatTest extends BaseTestCase
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function testFromString(): void
 	{
@@ -62,6 +66,8 @@ final class NumberRangeFormatTest extends BaseTestCase
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function testFromArray(): void
 	{

@@ -28,6 +28,8 @@ use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\States;
 use FastyBird\Module\Devices\Utilities;
 use Orisai\ObjectMapper;
+use TypeError;
+use ValueError;
 use function array_merge;
 use function is_float;
 use function is_int;
@@ -69,6 +71,8 @@ abstract class PropertiesManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	protected function convertStoredState($property, $mappedProperty, $state, bool $forReading)
 	{
@@ -190,6 +194,8 @@ abstract class PropertiesManager
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidValue
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	protected function convertReadValue(
 		bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $value,
@@ -302,6 +308,8 @@ abstract class PropertiesManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidValue
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	protected function convertWriteActualValue(
 		bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $value,
@@ -345,6 +353,8 @@ abstract class PropertiesManager
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidValue
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	protected function convertWriteExpectedValue(
 		bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $value,

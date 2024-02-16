@@ -28,6 +28,8 @@ use FastyBird\Module\Devices\Router;
 use Fig\Http\Message\StatusCodeInterface;
 use Psr\Http\Message;
 use Ramsey\Uuid;
+use TypeError;
+use ValueError;
 use function strval;
 
 /**
@@ -64,6 +66,8 @@ final class ConnectorPropertyStateV1 extends BaseV1
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function read(
 		Message\ServerRequestInterface $request,

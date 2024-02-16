@@ -27,7 +27,7 @@ use function array_merge;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Uiid1770 implements Uuid
+final readonly class Uiid1770 implements Uuid
 {
 
 	public function __construct(
@@ -35,17 +35,17 @@ final class Uiid1770 implements Uuid
 			new ObjectMapper\Rules\IntValue(castNumericString: true),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		private readonly int|null $temperature,
+		private int|null $temperature,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\IntValue(min: 0, max: 10_000, unsigned: true, castNumericString: true),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		private readonly int|null $humidity,
+		private int|null $humidity,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\IntValue(min: 0, max: 100, unsigned: true, castNumericString: true),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		private readonly int|null $battery,
+		private int|null $battery,
 	)
 	{
 	}

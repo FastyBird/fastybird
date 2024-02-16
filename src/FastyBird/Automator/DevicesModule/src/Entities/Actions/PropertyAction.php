@@ -16,13 +16,15 @@
 namespace FastyBird\Automator\DevicesModule\Entities\Actions;
 
 use Doctrine\ORM\Mapping as ORM;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Triggers\Entities as TriggersEntities;
 use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use Ramsey\Uuid;
+use TypeError;
+use ValueError;
 use function array_merge;
-use function strval;
 
 #[ORM\MappedSuperclass]
 abstract class PropertyAction extends TriggersEntities\Actions\Action
@@ -49,18 +51,22 @@ abstract class PropertyAction extends TriggersEntities\Actions\Action
 		$this->value = $value;
 	}
 
+	/**
+	 * @throws TypeError
+	 * @throws ValueError
+	 */
 	public function getValue(): string|MetadataTypes\Payloads\Payload
 	{
 		if (MetadataTypes\Payloads\Button::tryFrom($this->value) !== null) {
-			return MetadataTypes\Payloads\Button::tryFrom($this->value);
+			return MetadataTypes\Payloads\Button::from($this->value);
 		}
 
 		if (MetadataTypes\Payloads\Switcher::tryFrom($this->value) !== null) {
-			return MetadataTypes\Payloads\Switcher::tryFrom($this->value);
+			return MetadataTypes\Payloads\Switcher::from($this->value);
 		}
 
 		if (MetadataTypes\Payloads\Cover::tryFrom($this->value) !== null) {
-			return MetadataTypes\Payloads\Cover::tryFrom($this->value);
+			return MetadataTypes\Payloads\Cover::from($this->value);
 		}
 
 		return $this->value;
@@ -78,12 +84,16 @@ abstract class PropertyAction extends TriggersEntities\Actions\Action
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function toArray(): array
 	{
 		return array_merge(parent::toArray(), [
 			'device' => $this->getDevice()->toString(),
-			'value' => strval(MetadataUtilities\Value::flattenValue($this->getValue())),
+			'value' => MetadataUtilities\Value::toString($this->getValue()),
 		]);
 	}
 

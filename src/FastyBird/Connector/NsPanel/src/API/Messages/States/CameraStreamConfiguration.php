@@ -27,13 +27,13 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class CameraStreamConfiguration implements ObjectMapper\MappedObject
+final readonly class CameraStreamConfiguration implements ObjectMapper\MappedObject
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::STREAM_URL)]
-		private readonly string $streamUrl,
+		private string $streamUrl,
 	)
 	{
 	}

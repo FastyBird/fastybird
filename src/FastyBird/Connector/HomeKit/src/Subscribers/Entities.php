@@ -24,6 +24,8 @@ use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Nette;
 use Symfony\Component\EventDispatcher;
+use TypeError;
+use ValueError;
 
 /**
  * Doctrine entities events
@@ -59,6 +61,8 @@ final class Entities implements EventDispatcher\EventSubscriberInterface
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function entityCreated(DevicesEvents\EntityCreated $event): void
 	{
@@ -81,6 +85,8 @@ final class Entities implements EventDispatcher\EventSubscriberInterface
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function entityUpdated(DevicesEvents\EntityCreated $event): void
 	{
@@ -103,6 +109,8 @@ final class Entities implements EventDispatcher\EventSubscriberInterface
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function entityDeleted(DevicesEvents\EntityCreated $event): void
 	{

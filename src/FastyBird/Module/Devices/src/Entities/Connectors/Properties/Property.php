@@ -22,6 +22,8 @@ use FastyBird\Module\Devices\Exceptions;
 use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use Nette\Utils;
 use Ramsey\Uuid;
+use TypeError;
+use ValueError;
 use function array_merge;
 
 #[ORM\Entity]
@@ -95,6 +97,8 @@ abstract class Property extends Entities\Property
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Utils\JsonException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function __toString(): string
 	{

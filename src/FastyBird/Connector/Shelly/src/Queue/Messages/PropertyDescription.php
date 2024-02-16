@@ -26,7 +26,7 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class PropertyDescription implements Message
+final readonly class PropertyDescription implements Message
 {
 
 	/**
@@ -34,20 +34,20 @@ final class PropertyDescription implements Message
 	 */
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $identifier,
+		private string $identifier,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly string|null $name,
+		private string|null $name,
 		#[ObjectMapper\Rules\BackedEnumValue(class: MetadataTypes\DataType::class)]
 		#[ObjectMapper\Modifiers\FieldName('data_type')]
-		private readonly MetadataTypes\DataType $dataType,
+		private MetadataTypes\DataType $dataType,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly string|null $unit = null,
+		private string|null $unit = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\ArrayOf(new ObjectMapper\Rules\StringValue(notEmpty: true)),
 			new ObjectMapper\Rules\ArrayOf(new ObjectMapper\Rules\IntValue()),
@@ -71,18 +71,18 @@ final class PropertyDescription implements Message
 			),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		private readonly array|null $format = null,
+		private array|null $format = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\IntValue(),
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly float|int|string|null $invalid = null,
+		private float|int|string|null $invalid = null,
 		#[ObjectMapper\Rules\BoolValue()]
-		private readonly bool $queryable = false,
+		private bool $queryable = false,
 		#[ObjectMapper\Rules\BoolValue()]
-		private readonly bool $settable = false,
+		private bool $settable = false,
 	)
 	{
 	}

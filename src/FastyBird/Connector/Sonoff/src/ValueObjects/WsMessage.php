@@ -29,7 +29,7 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class WsMessage implements ObjectMapper\MappedObject
+final readonly class WsMessage implements ObjectMapper\MappedObject
 {
 
 	/**
@@ -37,19 +37,19 @@ final class WsMessage implements ObjectMapper\MappedObject
 	 */
 	public function __construct(
 		#[ObjectMapper\Rules\InstanceOfValue(type: stdClass::class)]
-		private readonly stdClass $payload,
+		private stdClass $payload,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $action,
+		private string $action,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\InstanceOfValue(type: Promise\Deferred::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		private readonly Promise\Deferred|null $deferred = null,
+		private Promise\Deferred|null $deferred = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\InstanceOfValue(type: EventLoop\TimerInterface::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		private readonly EventLoop\TimerInterface|null $timer = null,
+		private EventLoop\TimerInterface|null $timer = null,
 	)
 	{
 	}

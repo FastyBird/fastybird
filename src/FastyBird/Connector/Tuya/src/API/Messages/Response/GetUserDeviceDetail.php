@@ -26,12 +26,12 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class GetUserDeviceDetail implements API\Messages\Message
+readonly class GetUserDeviceDetail implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\MappedObjectValue(UserDevice::class)]
-		private readonly UserDevice $result,
+		private UserDevice $result,
 	)
 	{
 	}

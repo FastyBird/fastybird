@@ -28,11 +28,11 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class MessageBuilder
+final readonly class MessageBuilder
 {
 
 	public function __construct(
-		private readonly ObjectMapper\Processing\Processor $processor,
+		private ObjectMapper\Processing\Processor $processor,
 	)
 	{
 	}

@@ -65,7 +65,6 @@ final class StoreParametersStates extends Device
 	{
 		return array_merge(parent::toArray(), [
 			'parameters' => array_map(
-				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				static fn (States\DeviceParameterState|States\ChannelParameterState $parameter): array => $parameter->toArray(),
 				$this->getParameters(),
 			),

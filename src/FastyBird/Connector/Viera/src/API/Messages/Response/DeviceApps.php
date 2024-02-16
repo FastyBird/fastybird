@@ -27,7 +27,7 @@ use function array_map;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class DeviceApps implements API\Messages\Message
+readonly class DeviceApps implements API\Messages\Message
 {
 
 	/**
@@ -37,7 +37,7 @@ class DeviceApps implements API\Messages\Message
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(Application::class),
 		)]
-		private readonly array $apps = [],
+		private array $apps = [],
 	)
 	{
 	}

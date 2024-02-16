@@ -143,6 +143,8 @@ class Install extends Console\Command\Command
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws RuntimeException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	protected function execute(Input\InputInterface $input, Output\OutputInterface $output): int
 	{
@@ -167,6 +169,8 @@ class Install extends Console\Command\Command
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws RuntimeException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function createConnector(Style\SymfonyStyle $io): void
 	{
@@ -312,6 +316,8 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws RuntimeException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function editConnector(Style\SymfonyStyle $io): void
 	{
@@ -543,6 +549,8 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws RuntimeException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function manageConnector(Style\SymfonyStyle $io): void
 	{
@@ -562,6 +570,8 @@ class Install extends Console\Command\Command
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function listConnectors(Style\SymfonyStyle $io): void
 	{
@@ -630,6 +640,8 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws RuntimeException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function createGateway(
 		Style\SymfonyStyle $io,
@@ -837,6 +849,8 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
 	 * @throws RuntimeException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function editGateway(
 		Style\SymfonyStyle $io,
@@ -1176,6 +1190,8 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
 	 * @throws RuntimeException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function manageGateway(
 		Style\SymfonyStyle $io,
@@ -1198,6 +1214,8 @@ class Install extends Console\Command\Command
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function listGateways(Style\SymfonyStyle $io, Entities\Connectors\Connector $connector): void
 	{
@@ -1256,6 +1274,8 @@ class Install extends Console\Command\Command
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function discoverDevices(Style\SymfonyStyle $io, Entities\Connectors\Connector $connector): void
 	{
@@ -1363,6 +1383,8 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function createDevice(
 		Style\SymfonyStyle $io,
@@ -1487,6 +1509,8 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function editDevice(
 		Style\SymfonyStyle $io,
@@ -1561,6 +1585,8 @@ class Install extends Console\Command\Command
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function deleteDevice(
 		Style\SymfonyStyle $io,
@@ -1678,6 +1704,8 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function manageDevice(
 		Style\SymfonyStyle $io,
@@ -1713,6 +1741,8 @@ class Install extends Console\Command\Command
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function listDevices(Style\SymfonyStyle $io, Entities\Devices\Gateway $gateway): void
 	{
@@ -1776,6 +1806,8 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function createCapability(
 		Style\SymfonyStyle $io,
@@ -1911,6 +1943,8 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function editCapability(Style\SymfonyStyle $io, Entities\Devices\ThirdPartyDevice $device): void
 	{
@@ -2039,6 +2073,8 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function manageCapability(
 		Style\SymfonyStyle $io,
@@ -2343,6 +2379,8 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function editProtocol(Style\SymfonyStyle $io, Entities\Channels\Channel $channel): void
 	{
@@ -2542,6 +2580,8 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function deleteProtocol(Style\SymfonyStyle $io, Entities\Channels\Channel $channel): void
 	{
@@ -2623,6 +2663,8 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function listProtocols(Style\SymfonyStyle $io, Entities\Channels\Channel $channel): void
 	{
@@ -2697,6 +2739,8 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws RuntimeException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function askInstallAction(Style\SymfonyStyle $io): void
 	{
@@ -2779,6 +2823,8 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws RuntimeException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function askManageConnectorAction(
 		Style\SymfonyStyle $io,
@@ -2899,6 +2945,8 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function askManageGatewayAction(
 		Style\SymfonyStyle $io,
@@ -3110,6 +3158,8 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function askManageDeviceAction(
 		Style\SymfonyStyle $io,
@@ -3197,6 +3247,8 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function askProtocolAction(
 		Style\SymfonyStyle $io,
@@ -3347,6 +3399,8 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function askDeviceCategory(
 		Style\SymfonyStyle $io,
@@ -3428,6 +3482,8 @@ class Install extends Console\Command\Command
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function askCapabilityType(
 		Style\SymfonyStyle $io,
@@ -3744,7 +3800,6 @@ class Install extends Console\Command\Command
 				continue;
 			}
 
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 			$devices[$device->getId()->toString()] = '[' . ($device->getConnector()->getName() ?? $device->getConnector()->getIdentifier()) . '] '
 				. ($device->getName() ?? $device->getIdentifier());
 		}
@@ -4103,7 +4158,7 @@ class Install extends Console\Command\Command
 
 									return [
 										$items[0]->getDataType(),
-										strval(MetadataUtilities\Value::flattenValue($items[0]->getValue())),
+										MetadataUtilities\Value::toString($items[0]->getValue(), true),
 									];
 								},
 								$connectProperty->getFormat()->getItems(),
@@ -4196,6 +4251,7 @@ class Install extends Console\Command\Command
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws Nette\IOException
 	 * @throws TypeError
 	 * @throws ValueError
@@ -4240,7 +4296,7 @@ class Install extends Console\Command\Command
 				$this->translator->translate('//ns-panel-connector.cmd.install.questions.select.device.value'),
 				$options,
 				$value !== null ? array_key_exists(
-					strval(MetadataUtilities\Value::flattenValue($value)),
+					MetadataUtilities\Value::toString($value, true),
 					$options,
 				) : null,
 			);
@@ -4324,7 +4380,7 @@ class Install extends Console\Command\Command
 
 		$question = new Console\Question\Question(
 			$this->translator->translate('//ns-panel-connector.cmd.install.questions.provide.value'),
-			is_object($value) ? strval(MetadataUtilities\Value::flattenValue($value)) : $value,
+			is_object($value) ? MetadataUtilities\Value::toString($value) : $value,
 		);
 		$question->setValidator(
 			function (string|int|null $answer) use ($dataType, $minValue, $maxValue, $step): string|int|float {
@@ -4514,6 +4570,8 @@ class Install extends Console\Command\Command
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function askWhichPanel(
 		Style\SymfonyStyle $io,
@@ -4892,7 +4950,7 @@ class Install extends Console\Command\Command
 			$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 			function (string|int|null $answer) use ($channel, $properties): DevicesEntities\Channels\Properties\Variable|DevicesEntities\Channels\Properties\Mapped {
 				if ($answer === null) {
 					throw new Exceptions\Runtime(
@@ -4918,7 +4976,7 @@ class Install extends Console\Command\Command
 
 					if ($property !== null) {
 						assert(
-						// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+							// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 							$property instanceof DevicesEntities\Channels\Properties\Variable || $property instanceof DevicesEntities\Channels\Properties\Mapped,
 						);
 
@@ -4937,7 +4995,7 @@ class Install extends Console\Command\Command
 
 		$property = $io->askQuestion($question);
 		assert(
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 			$property instanceof DevicesEntities\Channels\Properties\Variable || $property instanceof DevicesEntities\Channels\Properties\Mapped,
 		);
 

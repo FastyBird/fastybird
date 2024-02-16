@@ -26,16 +26,16 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class CoverMotorConfigurationBlock implements API\Messages\Message
+final readonly class CoverMotorConfigurationBlock implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\FloatValue()]
 		#[ObjectMapper\Modifiers\FieldName('idle_power_thr')]
-		private readonly float $idlePowerThreshold,
+		private float $idlePowerThreshold,
 		#[ObjectMapper\Rules\FloatValue()]
 		#[ObjectMapper\Modifiers\FieldName('idle_confirm_period')]
-		private readonly float $idleConfirmPeriod,
+		private float $idleConfirmPeriod,
 	)
 	{
 	}

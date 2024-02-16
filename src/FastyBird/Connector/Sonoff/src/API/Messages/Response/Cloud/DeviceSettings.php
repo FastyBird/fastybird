@@ -26,7 +26,7 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceSettings implements API\Messages\Message
+final readonly class DeviceSettings implements API\Messages\Message
 {
 
 	public function __construct(
@@ -34,17 +34,17 @@ final class DeviceSettings implements API\Messages\Message
 			new ObjectMapper\Rules\IntValue(),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly int|null $opsNotify = null,
+		private int|null $opsNotify = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\IntValue(),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly int|null $opsHistory = null,
+		private int|null $opsHistory = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\IntValue(),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly int|null $alarmNotify = null,
+		private int|null $alarmNotify = null,
 	)
 	{
 	}

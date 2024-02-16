@@ -26,7 +26,7 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceConfiguration implements API\Messages\Message
+final readonly class DeviceConfiguration implements API\Messages\Message
 {
 
 	public function __construct(
@@ -34,18 +34,18 @@ final class DeviceConfiguration implements API\Messages\Message
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly string|null $p2pServerName = null,
+		private string|null $p2pServerName = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('p2pAccout')]
-		private readonly string|null $p2pAccount = null,
+		private string|null $p2pAccount = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly string|null $p2pLicense = null,
+		private string|null $p2pLicense = null,
 	)
 	{
 	}

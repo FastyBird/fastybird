@@ -32,10 +32,10 @@ use Psr\Http\Server\RequestHandlerInterface;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Access implements MiddlewareInterface
+final readonly class Access implements MiddlewareInterface
 {
 
-	public function __construct(private readonly Localization\Translator $translator)
+	public function __construct(private Localization\Translator $translator)
 	{
 	}
 

@@ -27,16 +27,16 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class GetSubDevices implements API\Messages\Message
+final readonly class GetSubDevices implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\IntValue(unsigned: true)]
-		private readonly int $error,
+		private int $error,
 		#[ObjectMapper\Rules\MappedObjectValue(GetSubDevicesData::class)]
-		private readonly GetSubDevicesData $data,
+		private GetSubDevicesData $data,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $message,
+		private string $message,
 	)
 	{
 	}

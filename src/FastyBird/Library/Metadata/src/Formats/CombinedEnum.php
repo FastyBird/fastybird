@@ -103,7 +103,7 @@ final class CombinedEnum implements IteratorAggregate
 					if ($part instanceof CombinedEnumItem) {
 						return $part->getDataType() !== null
 							? $part->toArray()
-							: strval(Utilities\Value::flattenValue($part->getValue()));
+							: Utilities\Value::toString($part->getValue());
 					}
 
 					return $part;

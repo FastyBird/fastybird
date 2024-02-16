@@ -49,7 +49,6 @@ use function is_numeric;
 use function React\Async\async;
 use function React\Async\await;
 use function sprintf;
-use function strval;
 
 /**
  * Write state to device message consumer
@@ -614,7 +613,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					$this->logger->error(
 						sprintf(
 							'Unsupported value data type: %s',
-							strval($valueToWrite->getDataType()->value),
+							$valueToWrite->getDataType()->value,
 						),
 						[
 							'source' => MetadataTypes\Sources\Connector::MODBUS,
@@ -947,7 +946,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				$this->logger->error(
 					sprintf(
 						'Unsupported value data type: %s',
-						strval($valueToWrite->getDataType()->value),
+						$valueToWrite->getDataType()->value,
 					),
 					[
 						'source' => MetadataTypes\Sources\Connector::MODBUS,

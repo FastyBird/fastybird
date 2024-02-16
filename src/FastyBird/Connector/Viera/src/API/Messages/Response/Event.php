@@ -26,7 +26,7 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Event implements API\Messages\Message
+readonly class Event implements API\Messages\Message
 {
 
 	public function __construct(
@@ -35,13 +35,13 @@ class Event implements API\Messages\Message
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('screen_state')]
-		private readonly bool|null $screenState,
+		private bool|null $screenState,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('input_mode')]
-		private readonly string|null $inputMode,
+		private string|null $inputMode,
 	)
 	{
 	}

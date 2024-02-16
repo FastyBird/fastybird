@@ -29,6 +29,8 @@ use FastyBird\Module\Devices\Types;
 use FastyBird\Module\Devices\Utilities;
 use Nette;
 use Symfony\Component\EventDispatcher;
+use TypeError;
+use ValueError;
 
 /**
  * Devices state entities events
@@ -77,6 +79,8 @@ final class Connector implements EventDispatcher\EventSubscriberInterface
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function executionStarting(Events\BeforeConnectorExecutionStart $event): void
 	{
@@ -95,6 +99,8 @@ final class Connector implements EventDispatcher\EventSubscriberInterface
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function executionStarted(Events\AfterConnectorExecutionStart $event): void
 	{
@@ -113,6 +119,8 @@ final class Connector implements EventDispatcher\EventSubscriberInterface
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function executionTerminated(Events\AfterConnectorExecutionTerminate $event): void
 	{
@@ -136,6 +144,8 @@ final class Connector implements EventDispatcher\EventSubscriberInterface
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function resetConnector(
 		Documents\Connectors\Connector $connector,
@@ -177,6 +187,8 @@ final class Connector implements EventDispatcher\EventSubscriberInterface
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function resetDevice(
 		Documents\Devices\Device $device,

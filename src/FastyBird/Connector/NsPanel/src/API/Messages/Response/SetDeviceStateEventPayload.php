@@ -28,12 +28,12 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class SetDeviceStateEventPayload implements API\Messages\Message
+final readonly class SetDeviceStateEventPayload implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\ServerStatus::class)]
-		private readonly Types\ServerStatus $type,
+		private Types\ServerStatus $type,
 	)
 	{
 	}

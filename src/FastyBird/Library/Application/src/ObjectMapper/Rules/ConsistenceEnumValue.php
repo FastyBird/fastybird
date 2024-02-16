@@ -20,7 +20,7 @@ use Consistence\Enum\Enum;
 use Orisai\ObjectMapper;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class ConsistenceEnumValue implements ObjectMapper\Rules\RuleDefinition
+final readonly class ConsistenceEnumValue implements ObjectMapper\Rules\RuleDefinition
 {
 
 	/**
@@ -28,9 +28,9 @@ final class ConsistenceEnumValue implements ObjectMapper\Rules\RuleDefinition
 	 * @param array<mixed>|null $allowedValues
 	 */
 	public function __construct(
-		private readonly string $class,
-		private readonly bool $allowUnknown = false,
-		private readonly array|null $allowedValues = null,
+		private string $class,
+		private bool $allowUnknown = false,
+		private array|null $allowedValues = null,
 	)
 	{
 	}

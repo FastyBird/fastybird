@@ -25,6 +25,8 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use Nette;
 use Nette\Utils;
+use TypeError;
+use ValueError;
 use function array_filter;
 use function array_reverse;
 use function array_unique;
@@ -57,11 +59,13 @@ final class Transformer
 	private bool|null $machineUsingLittleEndian = null;
 
 	/**
+	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function transformValueToDevice(
 		MetadataTypes\DataType $dataType,
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		MetadataFormats\StringEnum|MetadataFormats\NumberRange|MetadataFormats\CombinedEnum|null $format,
 		bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $value,
 	): ValueObjects\DeviceData|null
@@ -112,7 +116,7 @@ final class Transformer
 			return new ValueObjects\DeviceData(
 				$value instanceof DateTimeInterface
 					? $value->format(DateTimeInterface::ATOM)
-					: strval(MetadataUtilities\Value::flattenValue($value)),
+					: MetadataUtilities\Value::toString($value),
 				$dataType,
 			);
 		}
@@ -126,7 +130,7 @@ final class Transformer
 				$filtered = array_values(array_filter(
 					$format->getItems(),
 					static fn (string $item): bool => Utils\Strings::lower(
-						strval(MetadataUtilities\Value::flattenValue($value)),
+						MetadataUtilities\Value::toString($value, true),
 					) === $item,
 				));
 
@@ -143,9 +147,9 @@ final class Transformer
 					$format->getItems(),
 					static fn (array $item): bool => $item[0] !== null
 							&& Utils\Strings::lower(
-								strval(MetadataUtilities\Value::flattenValue($item[0]->getValue())),
+								MetadataUtilities\Value::toString($item[0]->getValue(), true),
 							) === Utils\Strings::lower(
-								strval(MetadataUtilities\Value::flattenValue($value)),
+								MetadataUtilities\Value::toString($value, true),
 							),
 				));
 
@@ -187,7 +191,6 @@ final class Transformer
 
 	public function determineDeviceReadDataType(
 		MetadataTypes\DataType $dataType,
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		MetadataFormats\StringEnum|MetadataFormats\NumberRange|MetadataFormats\CombinedEnum|null $format,
 	): MetadataTypes\DataType
 	{
@@ -222,7 +225,6 @@ final class Transformer
 
 	public function determineDeviceWriteDataType(
 		MetadataTypes\DataType $dataType,
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		MetadataFormats\StringEnum|MetadataFormats\NumberRange|MetadataFormats\CombinedEnum|null $format,
 	): MetadataTypes\DataType
 	{

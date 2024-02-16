@@ -26,37 +26,37 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceExtra implements API\Messages\Message
+final readonly class DeviceExtra implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $model,
+		private string $model,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $ui,
+		private string $ui,
 		#[ObjectMapper\Rules\IntValue(unsigned: true)]
-		private readonly int $uiid,
+		private int $uiid,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly string|null $description,
+		private string|null $description,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $manufacturer,
+		private string $manufacturer,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $mac,
+		private string $mac,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $apmac,
+		private string $apmac,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $modelInfo,
+		private string $modelInfo,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $brandId,
+		private string $brandId,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('chipid')]
-		private readonly string|null $chipId = null,
+		private string|null $chipId = null,
 	)
 	{
 	}

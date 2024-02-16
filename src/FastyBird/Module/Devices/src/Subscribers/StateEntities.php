@@ -29,7 +29,6 @@ use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\States;
 use IPub\Phone\Exceptions as PhoneExceptions;
 use Nette;
-use Nette\Utils;
 use React\Promise;
 use Symfony\Component\EventDispatcher;
 
@@ -80,7 +79,6 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\Logic
 	 * @throws MetadataExceptions\MalformedInput
-	 * @throws Utils\JsonException
 	 * @throws PhoneExceptions\NoValidCountryException
 	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
@@ -105,7 +103,6 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\Logic
 	 * @throws MetadataExceptions\MalformedInput
-	 * @throws Utils\JsonException
 	 * @throws PhoneExceptions\NoValidCountryException
 	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
@@ -141,7 +138,6 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\Logic
 	 * @throws MetadataExceptions\MalformedInput
-	 * @throws Utils\JsonException
 	 * @throws PhoneExceptions\NoValidCountryException
 	 * @throws PhoneExceptions\NoValidPhoneException
 	 */

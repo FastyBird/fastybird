@@ -38,6 +38,8 @@ use React\EventLoop;
 use React\Promise;
 use stdClass;
 use Throwable;
+use TypeError;
+use ValueError;
 use function assert;
 use function sprintf;
 
@@ -89,6 +91,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function discover(Documents\Devices\Bridge|null $onlyBridge = null): void
 	{
@@ -111,6 +115,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function disconnect(): void
 	{
@@ -130,6 +136,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 	 * @throws InvalidArgumentException
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function onConnect(): void
 	{
@@ -194,6 +202,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function discoverSubDevices(
 		Documents\Devices\Bridge $bridge,
@@ -265,6 +275,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function isRunning(): bool
 	{
@@ -277,6 +289,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function publishDiscoveryRequest(
 		Documents\Devices\Bridge $bridge,
@@ -314,6 +328,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function getClient(): API\Client
 	{

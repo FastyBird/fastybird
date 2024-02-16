@@ -242,13 +242,13 @@ class Builder
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
 					'identifier' => HomeKitTypes\DevicePropertyIdentifier::CATEGORY,
 					'dataType' => MetadataTypes\DataType::UCHAR,
-					'value' => HomeKitTypes\AccessoryCategory::get(HomeKitTypes\AccessoryCategory::THERMOSTAT),
+					'value' => HomeKitTypes\AccessoryCategory::THERMOSTAT->value,
 					'device' => $accessory,
 				]));
 			} else {
 				$this->devicesPropertiesManager->update($categoryProperty, Utils\ArrayHash::from([
 					'dataType' => MetadataTypes\DataType::UCHAR,
-					'value' => HomeKitTypes\AccessoryCategory::get(HomeKitTypes\AccessoryCategory::THERMOSTAT),
+					'value' => HomeKitTypes\AccessoryCategory::THERMOSTAT->value,
 				]));
 			}
 
@@ -766,6 +766,8 @@ class Builder
 	 *
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function mapPropertyFormat(
 		DevicesEntities\Channels\Properties\Dynamic $property,

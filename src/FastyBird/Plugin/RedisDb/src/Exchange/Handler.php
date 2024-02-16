@@ -39,15 +39,15 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Handler
+final readonly class Handler
 {
 
 	public function __construct(
-		private readonly Utilities\IdentifierGenerator $identifier,
-		private readonly ExchangeDocuments\DocumentFactory $documentFactory,
-		private readonly ExchangeConsumer\Container $consumer,
-		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
+		private Utilities\IdentifierGenerator $identifier,
+		private ExchangeDocuments\DocumentFactory $documentFactory,
+		private ExchangeConsumer\Container $consumer,
+		private EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
+		private Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
 	}

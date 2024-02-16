@@ -38,6 +38,8 @@ use React\EventLoop;
 use React\Promise;
 use RuntimeException;
 use Throwable;
+use TypeError;
+use ValueError;
 use function in_array;
 use function React\Async\async;
 
@@ -82,6 +84,8 @@ final class Lan extends ClientProcess implements Client
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws RuntimeException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function connect(): void
 	{
@@ -177,6 +181,8 @@ final class Lan extends ClientProcess implements Client
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	protected function readInformation(
 		Documents\Devices\Device $device,

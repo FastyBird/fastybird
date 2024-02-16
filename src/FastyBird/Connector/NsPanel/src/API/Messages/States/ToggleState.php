@@ -28,19 +28,19 @@ use stdClass;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ToggleState implements State
+final readonly class ToggleState implements State
 {
 
 	public function __construct(
 		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\TogglePayload::class)]
 		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::TOGGLE_STATE)]
-		private readonly Types\TogglePayload $toggleState,
+		private Types\TogglePayload $toggleState,
 		#[ObjectMapper\Rules\AnyOf([
 			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\StartupPayload::class),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::STARTUP)]
-		private readonly Types\StartupPayload|null $startup = null,
+		private Types\StartupPayload|null $startup = null,
 	)
 	{
 	}

@@ -23,6 +23,8 @@ use FastyBird\Library\Metadata\Exceptions;
 use FastyBird\Library\Metadata\Formats;
 use FastyBird\Library\Metadata\Types;
 use Nette\Utils;
+use TypeError;
+use ValueError;
 use function array_filter;
 use function array_map;
 use function array_values;
@@ -60,8 +62,11 @@ final class Value
 	/**
 	 * Purpose of this method is to convert value to defined data type
 	 *
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\InvalidValue
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public static function normalizeValue(
 		bool|int|float|string|DateTimeInterface|Types\Payloads\Payload|null $value,
@@ -98,8 +103,8 @@ final class Value
 				throw new Exceptions\InvalidValue(sprintf(
 					'Provided value: "%d" is out of allowed value range: [%s, %s]',
 					$value,
-					strval(self::flattenValue($format->getMin())),
-					strval(self::flattenValue($format->getMax())),
+					self::toString($format->getMin()),
+					self::toString($format->getMax()),
 				));
 			}
 
@@ -122,17 +127,17 @@ final class Value
 				throw new Exceptions\InvalidValue(sprintf(
 					'Provided value: "%f" is out of allowed value range: [%s, %s]',
 					$value,
-					strval(self::flattenValue($format->getMin())),
-					strval(self::flattenValue($format->getMax())),
+					self::toString($format->getMin()),
+					self::toString($format->getMax()),
 				));
 			}
 
 			return $value;
 		} elseif ($dataType === Types\DataType::STRING) {
-			return strval(self::flattenValue($value));
+			return self::toString($value);
 		} elseif ($dataType === Types\DataType::BOOLEAN) {
 			return in_array(
-				Utils\Strings::lower(strval(self::flattenValue($value))),
+				Utils\Strings::lower(self::toString($value, true)),
 				self::BOOL_TRUE_VALUES,
 				true,
 			);
@@ -141,7 +146,7 @@ final class Value
 				return $value;
 			}
 
-			$value = Utils\DateTime::createFromFormat(self::DATE_FORMAT, strval(self::flattenValue($value)));
+			$value = Utils\DateTime::createFromFormat(self::DATE_FORMAT, self::toString($value, true));
 
 			return $value === false ? null : $value;
 		} elseif ($dataType === Types\DataType::TIME) {
@@ -149,7 +154,7 @@ final class Value
 				return $value;
 			}
 
-			$value = Utils\DateTime::createFromFormat(self::TIME_FORMAT, strval(self::flattenValue($value)));
+			$value = Utils\DateTime::createFromFormat(self::TIME_FORMAT, self::toString($value, true));
 
 			return $value === false ? null : $value;
 		} elseif ($dataType === Types\DataType::DATETIME) {
@@ -157,12 +162,12 @@ final class Value
 				return $value;
 			}
 
-			$formatted = Utils\DateTime::createFromFormat(DateTimeInterface::ATOM, strval(self::flattenValue($value)));
+			$formatted = Utils\DateTime::createFromFormat(DateTimeInterface::ATOM, self::toString($value, true));
 
 			if ($formatted === false) {
 				$formatted = Utils\DateTime::createFromFormat(
 					DateTimeInterface::RFC3339_EXTENDED,
-					strval(self::flattenValue($value)),
+					self::toString($value, true),
 				);
 			}
 
@@ -197,13 +202,13 @@ final class Value
 							|| $dataType === Types\DataType::SWITCH
 							|| $dataType === Types\DataType::COVER
 						)
-					 ? $payloadClass::tryFrom(strval(self::flattenValue($value))) : strval(self::flattenValue($value));
+					 ? $payloadClass::from(self::toString($value, true)) : self::toString($value, true);
 				}
 
 				throw new Exceptions\InvalidValue(
 					sprintf(
 						'Provided value: "%s" is not in valid rage: [%s]',
-						strval(self::flattenValue($value)),
+						self::toString($value),
 						implode(', ', $format->toArray()),
 					),
 				);
@@ -234,17 +239,17 @@ final class Value
 							|| $dataType === Types\DataType::COVER
 						)
 					) {
-						return $payloadClass::tryFrom(strval(self::flattenValue($filtered[0][0]->getValue())));
+						return $payloadClass::from(self::toString($filtered[0][0]->getValue(), true));
 					}
 
-					return strval(self::flattenValue($filtered[0][0]->getValue()));
+					return self::toString($filtered[0][0]->getValue());
 				}
 
 				try {
 					throw new Exceptions\InvalidValue(
 						sprintf(
 							'Provided value: "%s" is not in valid rage: [%s]',
-							strval(self::flattenValue($value)),
+							self::toString($value),
 							Utils\Json::encode($format->toArray()),
 						),
 					);
@@ -252,7 +257,7 @@ final class Value
 					throw new Exceptions\InvalidValue(
 						sprintf(
 							'Provided value: "%s" is not in valid rage. Value format could not be converted to error',
-							strval(self::flattenValue($value)),
+							self::toString($value),
 						),
 						$ex->getCode(),
 						$ex,
@@ -267,14 +272,14 @@ final class Value
 						|| $dataType === Types\DataType::COVER
 					)
 				) {
-					if ($payloadClass::tryFrom(strval(self::flattenValue($value))) !== null) {
-						return $payloadClass::tryFrom(strval(self::flattenValue($value)));
+					if ($payloadClass::tryFrom(self::toString($value, true)) !== null) {
+						return $payloadClass::from(self::toString($value, true));
 					}
 
 					throw new Exceptions\InvalidValue(
 						sprintf(
 							'Provided value: "%s" is not in valid rage: [%s]',
-							strval(self::flattenValue($value)),
+							self::toString($value),
 							implode(
 								', ',
 								array_map(
@@ -286,7 +291,7 @@ final class Value
 					);
 				}
 
-				return strval(self::flattenValue($value));
+				return self::toString($value);
 			}
 		}
 
@@ -294,7 +299,10 @@ final class Value
 	}
 
 	/**
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public static function transformValueFromDevice(
 		bool|int|float|string|null $value,
@@ -361,7 +369,7 @@ final class Value
 							|| $dataType === Types\DataType::COVER
 						)
 					) {
-						return $payloadClass::tryFrom(strval(self::flattenValue($value)));
+						return $payloadClass::from(self::toString($value, true));
 					}
 
 					return strval($value);
@@ -395,16 +403,16 @@ final class Value
 							|| $dataType === Types\DataType::COVER
 						)
 					) {
-						return $payloadClass::tryFrom(strval(self::flattenValue($filtered[0][0]->getValue())));
+						return $payloadClass::from(self::toString($filtered[0][0]->getValue(), true));
 					}
 
-					return strval(self::flattenValue($filtered[0][0]->getValue()));
+					return self::toString($filtered[0][0]->getValue());
 				}
 
 				return null;
 			} else {
-				if ($payloadClass !== null && $payloadClass::tryFrom(strval(self::flattenValue($value))) !== null) {
-					return $payloadClass::tryFrom(strval(self::flattenValue($value)));
+				if ($payloadClass !== null && $payloadClass::tryFrom(self::toString($value, true)) !== null) {
+					return $payloadClass::from(self::toString($value, true));
 				}
 			}
 		}
@@ -413,7 +421,10 @@ final class Value
 	}
 
 	/**
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public static function transformValueToDevice(
 		bool|int|float|string|DateTimeInterface|Types\Payloads\Payload|null $value,
@@ -469,7 +480,7 @@ final class Value
 				return $value->format(self::DATE_FORMAT);
 			}
 
-			$value = Utils\DateTime::createFromFormat(self::DATE_FORMAT, strval(self::flattenValue($value)));
+			$value = Utils\DateTime::createFromFormat(self::DATE_FORMAT, self::toString($value, true));
 
 			return $value === false ? null : $value->format(self::DATE_FORMAT);
 		}
@@ -479,7 +490,7 @@ final class Value
 				return $value->format(self::TIME_FORMAT);
 			}
 
-			$value = Utils\DateTime::createFromFormat(self::TIME_FORMAT, strval(self::flattenValue($value)));
+			$value = Utils\DateTime::createFromFormat(self::TIME_FORMAT, self::toString($value, true));
 
 			return $value === false ? null : $value->format(self::TIME_FORMAT);
 		}
@@ -489,12 +500,12 @@ final class Value
 				return $value->format(DateTimeInterface::ATOM);
 			}
 
-			$formatted = Utils\DateTime::createFromFormat(DateTimeInterface::ATOM, strval(self::flattenValue($value)));
+			$formatted = Utils\DateTime::createFromFormat(DateTimeInterface::ATOM, self::toString($value, true));
 
 			if ($formatted === false) {
 				$formatted = Utils\DateTime::createFromFormat(
 					DateTimeInterface::RFC3339_EXTENDED,
-					strval(self::flattenValue($value)),
+					self::toString($value, true),
 				);
 			}
 
@@ -525,7 +536,7 @@ final class Value
 				));
 
 				if (count($filtered) === 1) {
-					return strval(self::flattenValue($value));
+					return self::toString($value);
 				}
 
 				return null;
@@ -558,8 +569,8 @@ final class Value
 						return $value->value;
 					}
 
-					return $payloadClass::tryFrom(strval(self::flattenValue($value))) !== null
-						? strval(self::flattenValue($value))
+					return $payloadClass::tryFrom(self::toString($value, true)) !== null
+						? self::toString($value)
 						: null;
 				}
 			}
@@ -677,6 +688,25 @@ final class Value
 		return $value;
 	}
 
+	/**
+	 * @return ($throw is true ? string : string|null)
+	 *
+	 * @throws Exceptions\InvalidArgument
+	 */
+	public static function toString(
+		bool|int|float|string|DateTimeInterface|BackedEnum|Enum|null $value,
+		bool $throw = false,
+	): string|null
+	{
+		$value = self::flattenValue($value);
+
+		if ($throw && $value === null) {
+			throw new Exceptions\InvalidArgument('Nullable value could not be converted to string.');
+		}
+
+		return $value !== null ? strval($value) : null;
+	}
+
 	public static function transformDataType(
 		bool|int|float|string|null $value,
 		Types\DataType $dataType,
@@ -712,6 +742,9 @@ final class Value
 		return strval($value);
 	}
 
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 */
 	private static function normalizeEnumItemValue(
 		bool|int|float|string|DateTimeInterface|Types\Payloads\Payload|null $value,
 		Types\DataTypeShort|null $dataType,
@@ -733,10 +766,10 @@ final class Value
 		} elseif ($dataType === Types\DataTypeShort::FLOAT) {
 			return floatval(self::flattenValue($value));
 		} elseif ($dataType === Types\DataTypeShort::STRING) {
-			return strval(self::flattenValue($value));
+			return self::toString($value);
 		} elseif ($dataType === Types\DataTypeShort::BOOLEAN) {
 			return in_array(
-				Utils\Strings::lower(strval(self::flattenValue($value))),
+				Utils\Strings::lower(self::toString($value, true)),
 				self::BOOL_TRUE_VALUES,
 				true,
 			);
@@ -745,25 +778,25 @@ final class Value
 				return $value;
 			}
 
-			return Types\Payloads\Button::tryFrom(strval(self::flattenValue($value))) ?? false;
+			return Types\Payloads\Button::tryFrom(self::toString($value, true)) ?? false;
 		} elseif ($dataType === Types\DataTypeShort::SWITCH) {
 			if ($value instanceof Types\Payloads\Switcher) {
 				return $value;
 			}
 
-			return Types\Payloads\Switcher::tryFrom(strval(self::flattenValue($value))) ?? false;
+			return Types\Payloads\Switcher::tryFrom(self::toString($value, true)) ?? false;
 		} elseif ($dataType === Types\DataTypeShort::COVER) {
 			if ($value instanceof Types\Payloads\Cover) {
 				return $value;
 			}
 
-			return Types\Payloads\Cover::tryFrom(strval(self::flattenValue($value))) ?? false;
+			return Types\Payloads\Cover::tryFrom(self::toString($value, true)) ?? false;
 		} elseif ($dataType === Types\DataTypeShort::DATE) {
 			if ($value instanceof DateTime) {
 				return $value;
 			}
 
-			$value = Utils\DateTime::createFromFormat(self::DATE_FORMAT, strval(self::flattenValue($value)));
+			$value = Utils\DateTime::createFromFormat(self::DATE_FORMAT, self::toString($value, true));
 
 			return $value === false ? null : $value;
 		} elseif ($dataType === Types\DataTypeShort::TIME) {
@@ -771,7 +804,7 @@ final class Value
 				return $value;
 			}
 
-			$value = Utils\DateTime::createFromFormat(self::TIME_FORMAT, strval(self::flattenValue($value)));
+			$value = Utils\DateTime::createFromFormat(self::TIME_FORMAT, self::toString($value, true));
 
 			return $value === false ? null : $value;
 		} elseif ($dataType === Types\DataTypeShort::DATETIME) {
@@ -779,12 +812,12 @@ final class Value
 				return $value;
 			}
 
-			$formatted = Utils\DateTime::createFromFormat(DateTimeInterface::ATOM, strval(self::flattenValue($value)));
+			$formatted = Utils\DateTime::createFromFormat(DateTimeInterface::ATOM, self::toString($value, true));
 
 			if ($formatted === false) {
 				$formatted = Utils\DateTime::createFromFormat(
 					DateTimeInterface::RFC3339_EXTENDED,
-					strval(self::flattenValue($value)),
+					self::toString($value, true),
 				);
 			}
 
@@ -794,6 +827,9 @@ final class Value
 		return $value;
 	}
 
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 */
 	private static function compareValues(
 		bool|int|float|string|DateTimeInterface|Types\Payloads\Payload|null $left,
 		bool|int|float|string|DateTimeInterface|Types\Payloads\Payload|null $right,
@@ -803,8 +839,8 @@ final class Value
 			return true;
 		}
 
-		$left = Utils\Strings::lower(strval(self::flattenValue($left)));
-		$right = Utils\Strings::lower(strval(self::flattenValue($right)));
+		$left = Utils\Strings::lower(self::toString($left, true));
+		$right = Utils\Strings::lower(self::toString($right, true));
 
 		return $left === $right;
 	}

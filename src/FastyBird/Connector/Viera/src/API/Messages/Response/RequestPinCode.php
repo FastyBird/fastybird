@@ -26,7 +26,7 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class RequestPinCode implements API\Messages\Message
+readonly class RequestPinCode implements API\Messages\Message
 {
 
 	public function __construct(
@@ -35,7 +35,7 @@ class RequestPinCode implements API\Messages\Message
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('challenge_key')]
-		private readonly string|null $challengeKey = null,
+		private string|null $challengeKey = null,
 	)
 	{
 	}

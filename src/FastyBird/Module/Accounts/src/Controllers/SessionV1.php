@@ -143,21 +143,19 @@ final class SessionV1 extends BaseV1
 					$this->translator->translate('//accounts-module.session.messages.unknownAccount.message'),
 				);
 			} elseif ($ex instanceof Exceptions\AuthenticationFailed) {
-				switch ($ex->getCode()) {
-					case Security\Authenticator::ACCOUNT_PROFILE_BLOCKED:
-					case Security\Authenticator::ACCOUNT_PROFILE_DELETED:
-						throw new JsonApiExceptions\JsonApiError(
-							StatusCodeInterface::STATUS_FORBIDDEN,
-							$this->translator->translate('//accounts-module.base.messages.forbidden.heading'),
-							$this->translator->translate('//accounts-module.base.messages.forbidden.message'),
-						);
-					default:
-						throw new JsonApiExceptions\JsonApiError(
-							StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-							$this->translator->translate('//accounts-module.session.messages.unknownAccount.heading'),
-							$this->translator->translate('//accounts-module.session.messages.unknownAccount.message'),
-						);
-				}
+				throw match ($ex->getCode()) {
+					// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+					Security\Authenticator::ACCOUNT_PROFILE_BLOCKED, Security\Authenticator::ACCOUNT_PROFILE_DELETED => new JsonApiExceptions\JsonApiError(
+						StatusCodeInterface::STATUS_FORBIDDEN,
+						$this->translator->translate('//accounts-module.base.messages.forbidden.heading'),
+						$this->translator->translate('//accounts-module.base.messages.forbidden.message'),
+					),
+					default => new JsonApiExceptions\JsonApiError(
+						StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
+						$this->translator->translate('//accounts-module.session.messages.unknownAccount.heading'),
+						$this->translator->translate('//accounts-module.session.messages.unknownAccount.message'),
+					),
+				};
 			} else {
 				// Log caught exception
 				$this->logger->error(

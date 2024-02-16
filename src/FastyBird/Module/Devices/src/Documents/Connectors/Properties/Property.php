@@ -30,6 +30,8 @@ use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Types;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
+use TypeError;
+use ValueError;
 use function array_map;
 use function implode;
 use function in_array;
@@ -139,7 +141,7 @@ abstract class Property implements MetadataDocuments\Document, MetadataDocuments
 					new ObjectMapper\Rules\ArrayOf(
 						item: new ObjectMapper\Rules\AnyOf([
 							new ObjectMapper\Rules\ArrayEnumValue(
-							// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+								// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 								cases: [MetadataTypes\DataTypeShort::CHAR->value, MetadataTypes\DataTypeShort::UCHAR->value, MetadataTypes\DataTypeShort::SHORT->value, MetadataTypes\DataTypeShort::USHORT->value, MetadataTypes\DataTypeShort::INT->value, MetadataTypes\DataTypeShort::UINT->value, MetadataTypes\DataTypeShort::FLOAT->value],
 							),
 							new ObjectMapper\Rules\IntValue(),
@@ -243,8 +245,9 @@ abstract class Property implements MetadataDocuments\Document, MetadataDocuments
 
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 	public function getFormat(): MetadataFormats\StringEnum|MetadataFormats\NumberRange|MetadataFormats\CombinedEnum|null
 	{
 		return $this->buildFormat($this->format);
@@ -307,6 +310,8 @@ abstract class Property implements MetadataDocuments\Document, MetadataDocuments
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function toArray(): array
 	{
@@ -335,6 +340,8 @@ abstract class Property implements MetadataDocuments\Document, MetadataDocuments
 	 * @param string|array<int, string>|array<int, bool|string|int|float|array<int, bool|string|int|float>|null>|array<int, array<int, string|array<int, string|int|float|bool>|null>>|null $format
 	 *
 	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function buildFormat(
 		array|string|null $format,

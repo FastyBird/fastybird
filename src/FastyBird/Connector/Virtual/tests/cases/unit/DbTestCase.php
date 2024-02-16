@@ -31,7 +31,6 @@ use function rtrim;
 use function set_time_limit;
 use function sprintf;
 use function strlen;
-use function strval;
 use function substr;
 use function time;
 use function trim;
@@ -133,7 +132,7 @@ abstract class DbTestCase extends TestCase
 		$config->setTempDirectory(FB_TEMP_DIR);
 
 		$config->addStaticParameters(
-			['container' => ['class' => 'SystemContainer_' . strval(getmypid()) . md5((string) time())]],
+			['container' => ['class' => 'SystemContainer_' . getmypid() . md5((string) time())]],
 		);
 		$config->addStaticParameters(['appDir' => $rootDir, 'wwwDir' => $rootDir, 'vendorDir' => $vendorDir]);
 

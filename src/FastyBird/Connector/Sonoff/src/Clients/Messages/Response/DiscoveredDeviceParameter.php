@@ -29,7 +29,7 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DiscoveredDeviceParameter implements Clients\Messages\Message
+final readonly class DiscoveredDeviceParameter implements Clients\Messages\Message
 {
 
 	/**
@@ -37,15 +37,15 @@ final class DiscoveredDeviceParameter implements Clients\Messages\Message
 	 */
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $group,
+		private string $group,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $identifier,
+		private string $identifier,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $name,
+		private string $name,
 		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\ParameterType::class)]
-		private readonly Types\ParameterType $type,
+		private Types\ParameterType $type,
 		#[ObjectMapper\Rules\BackedEnumValue(class: MetadataTypes\DataType::class)]
-		private readonly MetadataTypes\DataType $dataType,
+		private MetadataTypes\DataType $dataType,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\ArrayOf(
 				new ObjectMapper\Rules\StringValue(),
@@ -69,16 +69,16 @@ final class DiscoveredDeviceParameter implements Clients\Messages\Message
 			),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly array|null $format,
+		private array|null $format,
 		#[ObjectMapper\Rules\BoolValue()]
-		private readonly bool $settable,
+		private bool $settable,
 		#[ObjectMapper\Rules\BoolValue()]
-		private readonly bool $queryable,
+		private bool $queryable,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\IntValue(unsigned: true),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		private readonly int|null $scale,
+		private int|null $scale,
 	)
 	{
 	}

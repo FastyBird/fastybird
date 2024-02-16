@@ -38,6 +38,8 @@ use Orisai\ObjectMapper;
 use Psr\EventDispatcher as PsrEventDispatcher;
 use Ramsey\Uuid;
 use Throwable;
+use TypeError;
+use ValueError;
 use function array_map;
 use function array_merge;
 use function is_array;
@@ -82,6 +84,8 @@ final class DevicePropertiesManager extends PropertiesManager
 	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function read(
 		Documents\Devices\Properties\Dynamic|Documents\Devices\Properties\Mapped $property,
@@ -120,6 +124,8 @@ final class DevicePropertiesManager extends PropertiesManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function write(
 		Documents\Devices\Properties\Dynamic|Documents\Devices\Properties\Mapped $property,
@@ -170,6 +176,8 @@ final class DevicePropertiesManager extends PropertiesManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function set(
 		Documents\Devices\Properties\Dynamic|Documents\Devices\Properties\Mapped $property,
@@ -222,6 +230,8 @@ final class DevicePropertiesManager extends PropertiesManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function setValidState(
 		Documents\Devices\Properties\Dynamic|array $property,
@@ -258,6 +268,8 @@ final class DevicePropertiesManager extends PropertiesManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function setPendingState(
 		Documents\Devices\Properties\Dynamic|array $property,
@@ -356,6 +368,8 @@ final class DevicePropertiesManager extends PropertiesManager
 	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 *
 	 * @interal
 	 */
@@ -480,6 +494,8 @@ final class DevicePropertiesManager extends PropertiesManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 *
 	 * @interal
 	 */

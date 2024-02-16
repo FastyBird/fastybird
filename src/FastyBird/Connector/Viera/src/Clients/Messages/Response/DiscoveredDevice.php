@@ -27,7 +27,7 @@ use function array_map;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DiscoveredDevice implements Clients\Messages\Message
+final readonly class DiscoveredDevice implements Clients\Messages\Message
 {
 
 	/**
@@ -35,39 +35,39 @@ final class DiscoveredDevice implements Clients\Messages\Message
 	 */
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $identifier,
+		private string $identifier,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('ip_address')]
-		private readonly string $ipAddress,
+		private string $ipAddress,
 		#[ObjectMapper\Rules\IntValue(unsigned: true)]
-		private readonly int $port,
+		private int $port,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		private readonly string|null $name,
+		private string|null $name,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		private readonly string|null $model,
+		private string|null $model,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		private readonly string|null $manufacturer,
+		private string|null $manufacturer,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('serial_number')]
-		private readonly string|null $serialNumber,
+		private string|null $serialNumber,
 		#[ObjectMapper\Rules\BoolValue()]
-		private readonly bool $encrypted,
+		private bool $encrypted,
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceApplication::class),
 		)]
-		private readonly array $applications,
+		private array $applications,
 	)
 	{
 	}

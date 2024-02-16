@@ -37,6 +37,8 @@ use Psr\EventDispatcher;
 use Psr\Http\Message;
 use Ramsey\Uuid;
 use RuntimeException;
+use TypeError;
+use ValueError;
 use function array_key_exists;
 use function array_merge;
 use function explode;
@@ -76,6 +78,8 @@ final class CharacteristicsController extends BaseController
 	 * @throws InvalidArgumentException
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Utils\JsonException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function index(
 		Message\ServerRequestInterface $request,
@@ -197,6 +201,8 @@ final class CharacteristicsController extends BaseController
 	 * @throws InvalidArgumentException
 	 * @throws RuntimeException
 	 * @throws Utils\JsonException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function update(
 		Message\ServerRequestInterface $request,
@@ -420,6 +426,8 @@ final class CharacteristicsController extends BaseController
 	 *
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function readCharacteristic(
 		Uuid\UuidInterface $connectorId,
@@ -503,6 +511,8 @@ final class CharacteristicsController extends BaseController
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function writeCharacteristic(
 		Uuid\UuidInterface $connectorId,

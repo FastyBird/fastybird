@@ -32,6 +32,8 @@ use FastyBird\Module\Devices\Models as DevicesModels;
 use Nette;
 use React\Promise;
 use Throwable;
+use TypeError;
+use ValueError;
 use function array_key_exists;
 use function array_merge;
 
@@ -65,6 +67,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function discover(Documents\Devices\Gateway|null $onlyGateway = null): void
 	{
@@ -144,6 +148,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function discoverSubDevices(
 		Documents\Devices\Gateway $gateway,

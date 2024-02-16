@@ -27,7 +27,7 @@ use function array_merge;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Uiid195 implements Uuid
+final readonly class Uiid195 implements Uuid
 {
 
 	public function __construct(
@@ -36,12 +36,12 @@ final class Uiid195 implements Uuid
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('fwVersion')]
-		private readonly string|null $firmwareVersion,
+		private string|null $firmwareVersion,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\FloatValue(castNumericString: true),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		private readonly float|null $temperature,
+		private float|null $temperature,
 	)
 	{
 	}

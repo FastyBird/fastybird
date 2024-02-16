@@ -30,12 +30,10 @@ use React\Socket;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class WebSocketClientFactory
+readonly class WebSocketClientFactory
 {
 
-	public function __construct(
-		private readonly EventLoop\LoopInterface $eventLoop,
-	)
+	public function __construct(private EventLoop\LoopInterface $eventLoop)
 	{
 	}
 

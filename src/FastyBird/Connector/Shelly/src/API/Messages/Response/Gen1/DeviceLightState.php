@@ -26,48 +26,48 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceLightState implements API\Messages\Message
+final readonly class DeviceLightState implements API\Messages\Message
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
 		#[ObjectMapper\Modifiers\FieldName('ison')]
-		private readonly bool $state,
+		private bool $state,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $source,
+		private string $source,
 		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
 		#[ObjectMapper\Modifiers\FieldName('has_timer')]
-		private readonly bool $hasTimer,
+		private bool $hasTimer,
 		#[ObjectMapper\Rules\FloatValue()]
 		#[ObjectMapper\Modifiers\FieldName('timer_started')]
-		private readonly float $timerStarted,
+		private float $timerStarted,
 		#[ObjectMapper\Rules\FloatValue()]
 		#[ObjectMapper\Modifiers\FieldName('timer_duration')]
-		private readonly float $timerDuration,
+		private float $timerDuration,
 		#[ObjectMapper\Rules\FloatValue()]
 		#[ObjectMapper\Modifiers\FieldName('timer_remaining')]
-		private readonly float $timerRemaining,
+		private float $timerRemaining,
 		#[ObjectMapper\Rules\ArrayEnumValue(cases: ['color', 'white'])]
-		private readonly string $mode,
+		private string $mode,
 		#[ObjectMapper\Rules\IntValue(min: 0, max: 255, unsigned: true)]
-		private readonly int $red,
+		private int $red,
 		#[ObjectMapper\Rules\IntValue(min: 0, max: 255, unsigned: true)]
-		private readonly int $green,
+		private int $green,
 		#[ObjectMapper\Rules\IntValue(min: 0, max: 255, unsigned: true)]
-		private readonly int $blue,
+		private int $blue,
 		#[ObjectMapper\Rules\IntValue(min: 0, max: 255, unsigned: true)]
-		private readonly int $white,
+		private int $white,
 		#[ObjectMapper\Rules\IntValue(min: 0, max: 255, unsigned: true)]
-		private readonly int $gain,
+		private int $gain,
 		#[ObjectMapper\Rules\IntValue(min: 2_700, max: 6_500, unsigned: true)]
 		#[ObjectMapper\Modifiers\FieldName('temp')]
-		private readonly int $temperature,
+		private int $temperature,
 		#[ObjectMapper\Rules\IntValue(min: 0, max: 100, unsigned: true)]
-		private readonly int $brightness,
+		private int $brightness,
 		#[ObjectMapper\Rules\IntValue()]
-		private readonly int $effect,
+		private int $effect,
 		#[ObjectMapper\Rules\IntValue()]
-		private readonly int $transition,
+		private int $transition,
 	)
 	{
 	}

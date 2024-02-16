@@ -26,10 +26,10 @@ use Attribute;
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class DiscriminatorEntry implements MappingAttribute
+final readonly class DiscriminatorEntry implements MappingAttribute
 {
 
-	public function __construct(public readonly string $name)
+	public function __construct(public string $name)
 	{
 	}
 
