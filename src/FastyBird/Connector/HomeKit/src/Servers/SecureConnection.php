@@ -46,11 +46,11 @@ use function unpack;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class SecureConnection implements Evenement\EventEmitterInterface
+final class SecureConnection implements Socket\ConnectionInterface
 {
 
-	use Evenement\EventEmitterTrait;
 	use Nette\SmartObject;
+	use Evenement\EventEmitterTrait;
 
 	private const ENCRYPTED_DATA_LENGTH = 2;
 
@@ -139,7 +139,7 @@ final class SecureConnection implements Evenement\EventEmitterInterface
 		return $this->connection->isWritable();
 	}
 
-	public function write(string|null $data): bool
+	public function write($data): bool
 	{
 		if (is_string($data) && $this->securedRequest) {
 			$data = $this->encodeData($data);
@@ -166,7 +166,7 @@ final class SecureConnection implements Evenement\EventEmitterInterface
 		$this->connection->resume();
 	}
 
-	public function end(string|null $data = null): void
+	public function end($data = null): void
 	{
 		$this->connection->end($data);
 	}

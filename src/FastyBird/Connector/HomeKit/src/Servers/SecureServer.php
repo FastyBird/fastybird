@@ -20,7 +20,6 @@ use FastyBird\Connector\HomeKit\Documents;
 use Nette;
 use React\Socket;
 use SplObjectStorage;
-use Throwable;
 use function str_replace;
 
 /**
@@ -34,8 +33,8 @@ use function str_replace;
 final class SecureServer implements Socket\ServerInterface
 {
 
-	use Evenement\EventEmitterTrait;
 	use Nette\SmartObject;
+	use Evenement\EventEmitterTrait;
 
 	/** @var SplObjectStorage<SecureConnection, null> */
 	private SplObjectStorage $activeConnections;
@@ -67,7 +66,7 @@ final class SecureServer implements Socket\ServerInterface
 			});
 		});
 
-		$this->server->on('error', function (Throwable $error): void {
+		$this->server->on('error', function ($error): void {
 			$this->emit('error', [$error]);
 		});
 	}
