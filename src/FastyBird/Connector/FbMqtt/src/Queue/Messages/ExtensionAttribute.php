@@ -54,7 +54,7 @@ final class ExtensionAttribute implements Message
 		private readonly Uuid\UuidInterface $connector,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private readonly string $device,
-		#[ObjectMapper\Rules\BackedEnumValue(class: Types\ExtensionType::class)]
+		#[ObjectMapper\Rules\InstanceOfValue(type: Types\ExtensionType::class)]
 		private readonly Types\ExtensionType $extension,
 		#[ObjectMapper\Rules\ArrayEnumValue(cases: self::ALLOWED_PARAMETERS)]
 		private readonly string $parameter,

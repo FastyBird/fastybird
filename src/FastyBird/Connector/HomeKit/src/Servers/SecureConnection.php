@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\HomeKit\Servers;
 
-use Evenement;
+use Closure;
 use FastyBird\Connector\HomeKit;
 use FastyBird\Connector\HomeKit\Documents;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
@@ -46,7 +46,7 @@ use function unpack;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class SecureConnection extends Evenement\EventEmitter implements Socket\ConnectionInterface
+final class SecureConnection
 {
 
 	use Nette\SmartObject;
@@ -62,6 +62,12 @@ final class SecureConnection extends Evenement\EventEmitter implements Socket\Co
 	private const INFO_CONTROL_READ = 'Control-Read-Encryption-Key';
 
 	private const ENCRYPTED_CHUNK_MAX_SIZE = 1_024;
+
+	/** @var array<Closure(string $data): void> */
+	public array $onData = [];
+
+	/** @var array<Closure(string $data): void> */
+	public array $onClose = [];
 
 	private int $securedRequestCnt = 0;
 
@@ -87,11 +93,16 @@ final class SecureConnection extends Evenement\EventEmitter implements Socket\Co
 			function (string $data): void {
 				$this->securedRequest = false;
 
-				$this->emit(HomeKit\Constants::EVENT_DATA, [$this->decodeData($data)]);
+				Nette\Utils\Arrays::invoke($this->onData, $this->decodeData($data));
 			},
 		);
 
-		Stream\Util::forwardEvents($connection, $this, ['end', 'error', 'close', 'pipe', 'drain']);
+		$connection->on(
+			'close',
+			function (): void {
+				Nette\Utils\Arrays::invoke($this->onClose);
+			},
+		);
 	}
 
 	public function setSharedKey(string|null $sharedKey): void
@@ -138,7 +149,7 @@ final class SecureConnection extends Evenement\EventEmitter implements Socket\Co
 		return $this->connection->isWritable();
 	}
 
-	public function write($data): bool
+	public function write(string|null $data): bool
 	{
 		if (is_string($data) && $this->securedRequest) {
 			$data = $this->encodeData($data);
@@ -165,7 +176,7 @@ final class SecureConnection extends Evenement\EventEmitter implements Socket\Co
 		$this->connection->resume();
 	}
 
-	public function end($data = null): void
+	public function end(string|null $data = null): void
 	{
 		$this->connection->end($data);
 	}

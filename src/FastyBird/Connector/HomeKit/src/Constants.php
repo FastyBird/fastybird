@@ -54,12 +54,4 @@ final class Constants
 
 	public const SERVICE_IDENTIFIER = '/^(?P<type>[a-z_]+)(?:_(?P<cnt>[0-9]+){1})$/';
 
-	public const EVENT_DATA = 'data';
-
-	public const EVENT_CONNECTION = 'connection';
-
-	public const EVENT_CLOSE = 'close';
-
-	public const EVENT_ERROR = 'error';
-
 }

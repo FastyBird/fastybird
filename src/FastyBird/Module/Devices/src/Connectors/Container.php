@@ -33,9 +33,6 @@ use function array_key_exists;
  * @subpackage     Connectors
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- *
- * @method void onTerminate(MetadataTypes\Sources\Source $source, string|null $reason, Throwable|null $ex)
- * @method void onRestart(MetadataTypes\Sources\Source $source, string|null $reason, Throwable|null $ex)
  */
 class Container implements Connector, EventDispatcher\EventSubscriberInterface
 {

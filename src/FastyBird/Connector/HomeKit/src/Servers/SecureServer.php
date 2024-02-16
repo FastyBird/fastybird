@@ -15,12 +15,14 @@
 
 namespace FastyBird\Connector\HomeKit\Servers;
 
-use Evenement\EventEmitter;
-use FastyBird\Connector\HomeKit;
+use Closure;
+use Evenement;
 use FastyBird\Connector\HomeKit\Documents;
 use Nette;
+use Nette\Utils;
 use React\Socket;
 use SplObjectStorage;
+use Throwable;
 use function str_replace;
 
 /**
@@ -31,10 +33,23 @@ use function str_replace;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class SecureServer extends EventEmitter implements Socket\ServerInterface
+final class SecureServer implements Socket\ServerInterface
 {
 
+	use Evenement\EventEmitterTrait;
 	use Nette\SmartObject;
+
+	/** @var array<Closure(Socket\ConnectionInterface $connection): void> */
+	public array $onConnection = [];
+
+	/** @var array<Closure(): void> */
+	public array $onClose = [];
+
+	/** @var array<Closure(string $data): void> */
+	public array $onData = [];
+
+	/** @var array<Closure(Throwable $error): void> */
+	public array $onError = [];
 
 	/** @var SplObjectStorage<SecureConnection, null> */
 	private SplObjectStorage $activeConnections;
@@ -55,19 +70,31 @@ final class SecureServer extends EventEmitter implements Socket\ServerInterface
 				$connection,
 			);
 
-			$this->emit(HomeKit\Constants::EVENT_CONNECTION, [$securedConnection]);
+			Utils\Arrays::invoke($this->onConnection, $securedConnection);
+
+			$this->emit('connection', [$securedConnection]);
 
 			$this->activeConnections->attach($securedConnection);
 
-			$securedConnection->on('close', function () use ($securedConnection): void {
+			$securedConnection->onClose[] = function () use ($securedConnection): void {
 				$this->activeConnections->detach($securedConnection);
 
-				$this->emit(HomeKit\Constants::EVENT_CLOSE);
-			});
+				Utils\Arrays::invoke($this->onClose);
+
+				$this->emit('close');
+			};
+
+			$securedConnection->onData[] = function (string $data): void {
+				Utils\Arrays::invoke($this->onData, $data);
+
+				$this->emit('data', [$data]);
+			};
 		});
 
-		$this->server->on('error', function ($error): void {
-			$this->emit(HomeKit\Constants::EVENT_ERROR, [$error]);
+		$this->server->on('error', function (Throwable $error): void {
+			Utils\Arrays::invoke($this->onError, $error);
+
+			$this->emit('error', [$error]);
 		});
 	}
 

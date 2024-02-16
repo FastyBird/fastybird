@@ -49,7 +49,7 @@ readonly class State implements Message
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		#[ObjectMapper\Modifiers\FieldName(DevicesStates\Property::ACTUAL_VALUE_FIELD)]
-		                               // phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		private bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $actualValue = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\BoolValue(),
@@ -64,7 +64,7 @@ readonly class State implements Message
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		#[ObjectMapper\Modifiers\FieldName(DevicesStates\Property::EXPECTED_VALUE_FIELD)]
-		                               // phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		private bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $expectedValue = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),

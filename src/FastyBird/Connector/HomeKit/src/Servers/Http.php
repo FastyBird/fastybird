@@ -92,7 +92,7 @@ final class Http implements Server
 
 	private const LISTENING_ADDRESS = '0.0.0.0';
 
-	private SecureServer|null $socket = null;
+	private SecureServer|null $secureServer = null;
 
 	private Hashids\Hashids $hashIds;
 
@@ -422,7 +422,7 @@ final class Http implements Server
 				],
 			);
 
-			$this->socket = $this->secureServerFactory->create(
+			$this->secureServer = $this->secureServerFactory->create(
 				$this->connector,
 				new Socket\SocketServer(
 					self::LISTENING_ADDRESS . ':' . $this->connectorHelper->getPort($this->connector),
@@ -452,11 +452,26 @@ final class Http implements Server
 			return;
 		}
 
-		$this->socket->on(
-			HomeKit\Constants::EVENT_CONNECTION,
-			function (Socket\ConnectionInterface $connection): void {
+		$this->secureServer->onConnection[] = function (Socket\ConnectionInterface $connection): void {
+			$this->logger->debug(
+				'New client has connected to server',
+				[
+					'source' => MetadataTypes\Sources\Connector::HOMEKIT,
+					'type' => 'http-server',
+					'connector' => [
+						'id' => $this->connector->getId()->toString(),
+					],
+					'client' => [
+						'address' => $connection->getRemoteAddress(),
+					],
+				],
+			);
+
+			$this->subscriber->registerConnection($connection);
+
+			$connection->on('close', function () use ($connection): void {
 				$this->logger->debug(
-					'New client has connected to server',
+					'Connected client has closed connection',
 					[
 						'source' => MetadataTypes\Sources\Connector::HOMEKIT,
 						'type' => 'http-server',
@@ -469,29 +484,11 @@ final class Http implements Server
 					],
 				);
 
-				$this->subscriber->registerConnection($connection);
+				$this->subscriber->unregisterConnection($connection);
+			});
+		};
 
-				$connection->on('close', function () use ($connection): void {
-					$this->logger->debug(
-						'Connected client has closed connection',
-						[
-							'source' => MetadataTypes\Sources\Connector::HOMEKIT,
-							'type' => 'http-server',
-							'connector' => [
-								'id' => $this->connector->getId()->toString(),
-							],
-							'client' => [
-								'address' => $connection->getRemoteAddress(),
-							],
-						],
-					);
-
-					$this->subscriber->unregisterConnection($connection);
-				});
-			},
-		);
-
-		$this->socket->on(HomeKit\Constants::EVENT_ERROR, function (Throwable $ex): void {
+		$this->secureServer->onError[] = function (Throwable $ex): void {
 			$this->logger->error(
 				'An error occurred during socket handling',
 				[
@@ -509,9 +506,9 @@ final class Http implements Server
 				'HTTP server was terminated',
 				$ex,
 			));
-		});
+		};
 
-		$this->socket->on(HomeKit\Constants::EVENT_CLOSE, function (): void {
+		$this->secureServer->onClose[] = function (): void {
 			$this->logger->info(
 				'Server was closed',
 				[
@@ -522,7 +519,7 @@ final class Http implements Server
 					],
 				],
 			);
-		});
+		};
 
 		$server = new ReactHttp\HttpServer(
 			$this->eventLoop,
@@ -536,7 +533,7 @@ final class Http implements Server
 			},
 			$this->routerMiddleware,
 		);
-		$server->listen($this->socket);
+		$server->listen($this->secureServer);
 
 		$server->on('error', function (Throwable $ex): void {
 			$this->logger->error(
@@ -572,9 +569,9 @@ final class Http implements Server
 			],
 		);
 
-		$this->socket?->close();
+		$this->secureServer?->close();
 
-		$this->socket = null;
+		$this->secureServer = null;
 	}
 
 	/**
@@ -597,7 +594,7 @@ final class Http implements Server
 				],
 			);
 
-			$this->socket?->setSharedKey(
+			$this->secureServer?->setSharedKey(
 				is_string($property->getValue()) ? (string) hex2bin($property->getValue()) : null,
 			);
 		}
