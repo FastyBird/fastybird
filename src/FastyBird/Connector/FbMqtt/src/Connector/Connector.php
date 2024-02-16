@@ -33,6 +33,8 @@ use Nette;
 use React\EventLoop;
 use React\Promise;
 use ReflectionClass;
+use TypeError;
+use ValueError;
 use function array_key_exists;
 use function assert;
 use function React\Async\async;
@@ -85,6 +87,8 @@ final class Connector implements DevicesConnectors\Connector
 	 * @throws InvalidArgumentException
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function execute(bool $standalone = true): Promise\PromiseInterface
 	{
@@ -110,7 +114,7 @@ final class Connector implements DevicesConnectors\Connector
 
 			if (
 				array_key_exists(Clients\ClientFactory::VERSION_CONSTANT_NAME, $constants)
-				&& $version->equalsValue($constants[Clients\ClientFactory::VERSION_CONSTANT_NAME])
+				&& $version === $constants[Clients\ClientFactory::VERSION_CONSTANT_NAME]
 			) {
 				$this->client = $clientFactory->create($this->connector);
 			}

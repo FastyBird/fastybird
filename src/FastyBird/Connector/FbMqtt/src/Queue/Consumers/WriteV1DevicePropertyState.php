@@ -23,6 +23,7 @@ use FastyBird\Connector\FbMqtt\Exceptions;
 use FastyBird\Connector\FbMqtt\Helpers;
 use FastyBird\Connector\FbMqtt\Queries;
 use FastyBird\Connector\FbMqtt\Queue;
+use FastyBird\Connector\FbMqtt\Types;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -35,6 +36,8 @@ use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
 use RuntimeException;
 use Throwable;
+use TypeError;
+use ValueError;
 use function strval;
 
 /**
@@ -65,11 +68,14 @@ final class WriteV1DevicePropertyState implements Queue\Consumer
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws RuntimeException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function consume(Queue\Messages\Message $message): bool
 	{
@@ -107,9 +113,7 @@ final class WriteV1DevicePropertyState implements Queue\Consumer
 			return true;
 		}
 
-		if (!$this->connectorHelper->getProtocolVersion($connector)->equalsValue(
-			FbMqtt\Types\ProtocolVersion::VERSION_1,
-		)) {
+		if ($this->connectorHelper->getProtocolVersion($connector) !== Types\ProtocolVersion::VERSION_1) {
 			return false;
 		}
 

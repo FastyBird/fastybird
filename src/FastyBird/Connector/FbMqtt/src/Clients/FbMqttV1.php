@@ -79,14 +79,19 @@ final class FbMqttV1 implements Client
 	{
 		$client = $this->connectionManager->getConnection($this->connector);
 
-		$client->on(FbMqtt\Constants::EVENT_CONNECT, [$this, 'onConnect']);
-		$client->on(FbMqtt\Constants::EVENT_MESSAGE, [$this, 'onMessage']);
+		$client->onConnect[] = function (Mqtt\Connection $connection): void {
+			$this->onConnect($connection);
+		};
+		$client->onMessage[] = function (Mqtt\Message $message): void {
+			$this->onMessage($message);
+		};
 
 		$client->connect();
 	}
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */
@@ -95,13 +100,11 @@ final class FbMqttV1 implements Client
 		$client = $this->connectionManager->getConnection($this->connector);
 
 		$client->disconnect();
-
-		$client->removeListener('connect', [$this, 'onConnect']);
-		$client->removeListener('message', [$this, 'onMessage']);
 	}
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 */

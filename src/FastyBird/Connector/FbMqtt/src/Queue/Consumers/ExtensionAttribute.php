@@ -18,6 +18,7 @@ namespace FastyBird\Connector\FbMqtt\Queue\Consumers;
 use Doctrine\DBAL;
 use FastyBird\Connector\FbMqtt;
 use FastyBird\Connector\FbMqtt\Entities;
+use FastyBird\Connector\FbMqtt\Exceptions;
 use FastyBird\Connector\FbMqtt\Queries;
 use FastyBird\Connector\FbMqtt\Queue;
 use FastyBird\Connector\FbMqtt\Types;
@@ -25,7 +26,6 @@ use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
 use Nette\Utils;
 use function sprintf;
@@ -57,6 +57,7 @@ final class ExtensionAttribute implements Queue\Consumer
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws ApplicationExceptions\Runtime
 	 * @throws DBAL\Exception
+	 * @throws Exceptions\InvalidArgument
 	 */
 	public function consume(Queue\Messages\Message $message): bool
 	{
@@ -92,44 +93,44 @@ final class ExtensionAttribute implements Queue\Consumer
 
 		// HARDWARE INFO
 		if (
-			$message->getExtension()->equalsValue(Types\ExtensionType::FASTYBIRD_HARDWARE)
+			$message->getExtension() === Types\ExtensionType::FASTYBIRD_HARDWARE
 			&& $message->getParameter() === Queue\Messages\ExtensionAttribute::MANUFACTURER
 		) {
 			$propertyIdentifier = Types\DevicePropertyIdentifier::HARDWARE_MANUFACTURER;
 
 		} elseif (
-			$message->getExtension()->equalsValue(Types\ExtensionType::FASTYBIRD_HARDWARE)
+			$message->getExtension() === Types\ExtensionType::FASTYBIRD_HARDWARE
 			&& $message->getParameter() === Queue\Messages\ExtensionAttribute::MODEL
 		) {
 			$propertyIdentifier = Types\DevicePropertyIdentifier::HARDWARE_MODEL;
 
 		} elseif (
-			$message->getExtension()->equalsValue(Types\ExtensionType::FASTYBIRD_HARDWARE)
+			$message->getExtension() === Types\ExtensionType::FASTYBIRD_HARDWARE
 			&& $message->getParameter() === Queue\Messages\ExtensionAttribute::VERSION
 		) {
 			$propertyIdentifier = Types\DevicePropertyIdentifier::HARDWARE_VERSION;
 
 		} elseif (
-			$message->getExtension()->equalsValue(Types\ExtensionType::FASTYBIRD_HARDWARE)
+			$message->getExtension() === Types\ExtensionType::FASTYBIRD_HARDWARE
 			&& $message->getParameter() === Queue\Messages\ExtensionAttribute::MAC_ADDRESS
 		) {
 			$propertyIdentifier = Types\DevicePropertyIdentifier::HARDWARE_MAC_ADDRESS;
 
 			// FIRMWARE INFO
 		} elseif (
-			$message->getExtension()->equalsValue(Types\ExtensionType::FASTYBIRD_FIRMWARE)
+			$message->getExtension() === Types\ExtensionType::FASTYBIRD_FIRMWARE
 			&& $message->getParameter() === Queue\Messages\ExtensionAttribute::MANUFACTURER
 		) {
 			$propertyIdentifier = Types\DevicePropertyIdentifier::FIRMWARE_MANUFACTURER;
 
 		} elseif (
-			$message->getExtension()->equalsValue(Types\ExtensionType::FASTYBIRD_FIRMWARE)
+			$message->getExtension() === Types\ExtensionType::FASTYBIRD_FIRMWARE
 			&& $message->getParameter() === Queue\Messages\ExtensionAttribute::NAME
 		) {
 			$propertyIdentifier = Types\DevicePropertyIdentifier::FIRMWARE_NAME;
 
 		} elseif (
-			$message->getExtension()->equalsValue(Types\ExtensionType::FASTYBIRD_FIRMWARE)
+			$message->getExtension() === Types\ExtensionType::FASTYBIRD_FIRMWARE
 			&& $message->getParameter() === Queue\Messages\ExtensionAttribute::VERSION
 		) {
 			$propertyIdentifier = Types\DevicePropertyIdentifier::FIRMWARE_VERSION;
@@ -139,7 +140,7 @@ final class ExtensionAttribute implements Queue\Consumer
 			return true;
 		}
 
-		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
+		$findDevicePropertyQuery = new Queries\Entities\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($device);
 		$findDevicePropertyQuery->byIdentifier($propertyIdentifier);
 

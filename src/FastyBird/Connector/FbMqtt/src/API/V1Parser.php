@@ -150,7 +150,7 @@ final class V1Parser
 		return [
 			'connector' => $connector,
 			'device' => $device,
-			'extension' => Types\ExtensionType::FASTYBIRD_HARDWARE,
+			'extension' => Types\ExtensionType::FASTYBIRD_HARDWARE->value,
 			'parameter' => $hardware,
 			'value' => Helpers\Payload::cleanName(strtolower($payload)),
 		];
@@ -171,7 +171,7 @@ final class V1Parser
 		return [
 			'connector' => $connector,
 			'device' => $device,
-			'extension' => Types\ExtensionType::FASTYBIRD_FIRMWARE,
+			'extension' => Types\ExtensionType::FASTYBIRD_FIRMWARE->value,
 			'parameter' => $firmware,
 			'value' => Helpers\Payload::cleanName(strtolower($payload)),
 		];

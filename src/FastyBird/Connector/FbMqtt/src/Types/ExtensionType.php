@@ -15,9 +15,6 @@
 
 namespace FastyBird\Connector\FbMqtt\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * Extension types
  *
@@ -26,24 +23,11 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class ExtensionType extends Consistence\Enum\Enum
+enum ExtensionType: string
 {
 
-	/**
-	 * Define states
-	 */
-	public const FASTYBIRD_HARDWARE = 'com.fastybird.hardware';
+	case FASTYBIRD_HARDWARE = 'com.fastybird.hardware';
 
-	public const FASTYBIRD_FIRMWARE = 'com.fastybird.firmware';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return strval(self::getValue());
-	}
+	case FASTYBIRD_FIRMWARE = 'com.fastybird.firmware';
 
 }

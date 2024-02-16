@@ -21,6 +21,7 @@ use FastyBird\Connector\FbMqtt\Documents;
 use FastyBird\Connector\FbMqtt\Exceptions;
 use FastyBird\Connector\FbMqtt\Queries;
 use FastyBird\Connector\FbMqtt\Queue;
+use FastyBird\Connector\FbMqtt\Types;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -30,7 +31,6 @@ use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\States as DevicesStates;
 use Nette;
 use Nette\Utils;
@@ -111,9 +111,9 @@ final class DeviceProperty implements Queue\Consumer
 			return true;
 		}
 
-		$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceProperties();
+		$findDevicePropertyQuery = new Queries\Configuration\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($device);
-		$findDevicePropertyQuery->byIdentifier($message->getProperty());
+		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::from($message->getProperty()));
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy($findDevicePropertyQuery);
 

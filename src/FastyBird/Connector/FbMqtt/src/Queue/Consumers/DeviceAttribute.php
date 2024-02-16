@@ -18,6 +18,7 @@ namespace FastyBird\Connector\FbMqtt\Queue\Consumers;
 use Doctrine\DBAL;
 use FastyBird\Connector\FbMqtt;
 use FastyBird\Connector\FbMqtt\Entities;
+use FastyBird\Connector\FbMqtt\Exceptions;
 use FastyBird\Connector\FbMqtt\Queries;
 use FastyBird\Connector\FbMqtt\Queue;
 use FastyBird\Connector\FbMqtt\Types;
@@ -35,6 +36,8 @@ use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
 use Nette;
 use Nette\Utils;
+use TypeError;
+use ValueError;
 use function assert;
 use function in_array;
 use function is_array;
@@ -182,9 +185,12 @@ final class DeviceAttribute implements Queue\Consumer
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function setDeviceProperties(
 		DevicesEntities\Devices\Device $device,
@@ -192,20 +198,20 @@ final class DeviceAttribute implements Queue\Consumer
 	): void
 	{
 		foreach ($properties as $propertyName) {
-			if ($propertyName === Types\DevicePropertyIdentifier::STATE) {
+			if ($propertyName === Types\DevicePropertyIdentifier::STATE->value) {
 				$this->deviceConnectionManager->setState(
 					$device,
 					DevicesTypes\ConnectionState::UNKNOWN,
 				);
 			} else {
-				$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
+				$findDevicePropertyQuery = new Queries\Entities\FindDeviceProperties();
 				$findDevicePropertyQuery->forDevice($device);
-				$findDevicePropertyQuery->byIdentifier($propertyName);
+				$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::from($propertyName));
 
 				if ($this->devicePropertiesRepository->findOneBy($findDevicePropertyQuery) === null) {
 					if (in_array($propertyName, [
-						Types\DevicePropertyIdentifier::IP_ADDRESS,
-						Types\DevicePropertyIdentifier::STATUS_LED,
+						Types\DevicePropertyIdentifier::IP_ADDRESS->value,
+						Types\DevicePropertyIdentifier::STATUS_LED->value,
 					], true)) {
 						$this->devicePropertiesManager->create(Utils\ArrayHash::from([
 							'entity' => DevicesEntities\Devices\Properties\Dynamic::class,
@@ -218,11 +224,11 @@ final class DeviceAttribute implements Queue\Consumer
 						]));
 
 					} elseif (in_array($propertyName, [
-						Types\DevicePropertyIdentifier::UPTIME,
-						Types\DevicePropertyIdentifier::FREE_HEAP,
-						Types\DevicePropertyIdentifier::CPU_LOAD,
-						Types\DevicePropertyIdentifier::VCC,
-						Types\DevicePropertyIdentifier::RSSI,
+						Types\DevicePropertyIdentifier::UPTIME->value,
+						Types\DevicePropertyIdentifier::FREE_HEAP->value,
+						Types\DevicePropertyIdentifier::CPU_LOAD->value,
+						Types\DevicePropertyIdentifier::VCC->value,
+						Types\DevicePropertyIdentifier::RSSI->value,
 					], true)) {
 						$this->devicePropertiesManager->create(Utils\ArrayHash::from([
 							'entity' => DevicesEntities\Devices\Properties\Dynamic::class,
@@ -248,7 +254,7 @@ final class DeviceAttribute implements Queue\Consumer
 			}
 		}
 
-		$findDevicePropertiesQuery = new DevicesQueries\Entities\FindDeviceProperties();
+		$findDevicePropertiesQuery = new Queries\Entities\FindDeviceProperties();
 		$findDevicePropertiesQuery->forDevice($device);
 
 		// Cleanup for unused properties
@@ -263,6 +269,7 @@ final class DeviceAttribute implements Queue\Consumer
 	 * @param Utils\ArrayHash<string> $extensions
 	 *
 	 * @throws ApplicationExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 */
 	private function setDeviceExtensions(
 		DevicesEntities\Devices\Device $device,
@@ -270,14 +277,14 @@ final class DeviceAttribute implements Queue\Consumer
 	): void
 	{
 		foreach ($extensions as $extensionName) {
-			if ($extensionName === Types\ExtensionType::FASTYBIRD_HARDWARE) {
+			if ($extensionName === Types\ExtensionType::FASTYBIRD_HARDWARE->value) {
 				foreach ([
 					Types\DevicePropertyIdentifier::HARDWARE_MAC_ADDRESS,
 					Types\DevicePropertyIdentifier::HARDWARE_MANUFACTURER,
 					Types\DevicePropertyIdentifier::HARDWARE_MODEL,
 					Types\DevicePropertyIdentifier::HARDWARE_VERSION,
 				] as $propertyName) {
-					$findPropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
+					$findPropertyQuery = new Queries\Entities\FindDeviceProperties();
 					$findPropertyQuery->forDevice($device);
 					$findPropertyQuery->byIdentifier($propertyName);
 
@@ -285,18 +292,18 @@ final class DeviceAttribute implements Queue\Consumer
 						$this->devicePropertiesManager->create(Utils\ArrayHash::from([
 							'entity' => DevicesEntities\Devices\Properties\Variable::class,
 							'device' => $device,
-							'identifier' => $propertyName,
+							'identifier' => $propertyName->value,
 							'dataType' => MetadataTypes\DataType::STRING,
 						]));
 					}
 				}
-			} elseif ($extensionName === Types\ExtensionType::FASTYBIRD_FIRMWARE) {
+			} elseif ($extensionName === Types\ExtensionType::FASTYBIRD_FIRMWARE->value) {
 				foreach ([
 					Types\DevicePropertyIdentifier::FIRMWARE_MANUFACTURER,
 					Types\DevicePropertyIdentifier::FIRMWARE_NAME,
 					Types\DevicePropertyIdentifier::FIRMWARE_VERSION,
 				] as $propertyName) {
-					$findPropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
+					$findPropertyQuery = new Queries\Entities\FindDeviceProperties();
 					$findPropertyQuery->forDevice($device);
 					$findPropertyQuery->byIdentifier($propertyName);
 
@@ -304,7 +311,7 @@ final class DeviceAttribute implements Queue\Consumer
 						$this->devicePropertiesManager->create(Utils\ArrayHash::from([
 							'entity' => DevicesEntities\Devices\Properties\Variable::class,
 							'device' => $device,
-							'identifier' => $propertyName,
+							'identifier' => $propertyName->value,
 							'dataType' => MetadataTypes\DataType::STRING,
 						]));
 					}

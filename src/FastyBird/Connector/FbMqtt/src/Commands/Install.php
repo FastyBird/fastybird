@@ -29,7 +29,6 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette\Localization;
 use Nette\Utils;
 use Symfony\Component\Console;
@@ -37,6 +36,8 @@ use Symfony\Component\Console\Input;
 use Symfony\Component\Console\Output;
 use Symfony\Component\Console\Style;
 use Throwable;
+use TypeError;
+use ValueError;
 use function array_key_exists;
 use function array_search;
 use function array_values;
@@ -96,6 +97,8 @@ class Install extends Console\Command\Command
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	protected function execute(Input\InputInterface $input, Output\OutputInterface $output): int
 	{
@@ -198,15 +201,15 @@ class Install extends Console\Command\Command
 
 			$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-				'identifier' => Types\ConnectorPropertyIdentifier::PROTOCOL_VERSION,
+				'identifier' => Types\ConnectorPropertyIdentifier::PROTOCOL_VERSION->value,
 				'dataType' => MetadataTypes\DataType::STRING,
-				'value' => $protocol->getValue(),
+				'value' => $protocol->value,
 				'connector' => $connector,
 			]));
 
 			$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-				'identifier' => Types\ConnectorPropertyIdentifier::SERVER,
+				'identifier' => Types\ConnectorPropertyIdentifier::SERVER->value,
 				'dataType' => MetadataTypes\DataType::STRING,
 				'value' => $serverAddress,
 				'connector' => $connector,
@@ -214,7 +217,7 @@ class Install extends Console\Command\Command
 
 			$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-				'identifier' => Types\ConnectorPropertyIdentifier::PORT,
+				'identifier' => Types\ConnectorPropertyIdentifier::PORT->value,
 				'dataType' => MetadataTypes\DataType::UINT,
 				'value' => $serverPort,
 				'connector' => $connector,
@@ -222,7 +225,7 @@ class Install extends Console\Command\Command
 
 			$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-				'identifier' => Types\ConnectorPropertyIdentifier::SECURED_PORT,
+				'identifier' => Types\ConnectorPropertyIdentifier::SECURED_PORT->value,
 				'dataType' => MetadataTypes\DataType::UINT,
 				'value' => $serverSecuredPort,
 				'connector' => $connector,
@@ -231,7 +234,7 @@ class Install extends Console\Command\Command
 			if ($username !== null) {
 				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::USERNAME,
+					'identifier' => Types\ConnectorPropertyIdentifier::USERNAME->value,
 					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => $username,
 					'connector' => $connector,
@@ -241,7 +244,7 @@ class Install extends Console\Command\Command
 			if ($password !== null) {
 				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::PASSWORD,
+					'identifier' => Types\ConnectorPropertyIdentifier::PASSWORD->value,
 					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => $password,
 					'connector' => $connector,
@@ -325,7 +328,7 @@ class Install extends Console\Command\Command
 			return;
 		}
 
-		$findConnectorPropertyQuery = new DevicesQueries\Entities\FindConnectorProperties();
+		$findConnectorPropertyQuery = new Queries\Entities\FindConnectorProperties();
 		$findConnectorPropertyQuery->forConnector($connector);
 		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::PROTOCOL_VERSION);
 
@@ -379,31 +382,31 @@ class Install extends Console\Command\Command
 		$username = $this->askConnectorUsername($io, $connector);
 		$password = $this->askConnectorPassword($io, $connector);
 
-		$findConnectorPropertyQuery = new DevicesQueries\Entities\FindConnectorProperties();
+		$findConnectorPropertyQuery = new Queries\Entities\FindConnectorProperties();
 		$findConnectorPropertyQuery->forConnector($connector);
 		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::SERVER);
 
 		$serverAddressProperty = $this->connectorsPropertiesRepository->findOneBy($findConnectorPropertyQuery);
 
-		$findConnectorPropertyQuery = new DevicesQueries\Entities\FindConnectorProperties();
+		$findConnectorPropertyQuery = new Queries\Entities\FindConnectorProperties();
 		$findConnectorPropertyQuery->forConnector($connector);
 		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::PORT);
 
 		$serverPortProperty = $this->connectorsPropertiesRepository->findOneBy($findConnectorPropertyQuery);
 
-		$findConnectorPropertyQuery = new DevicesQueries\Entities\FindConnectorProperties();
+		$findConnectorPropertyQuery = new Queries\Entities\FindConnectorProperties();
 		$findConnectorPropertyQuery->forConnector($connector);
 		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::SECURED_PORT);
 
 		$serverSecuredProperty = $this->connectorsPropertiesRepository->findOneBy($findConnectorPropertyQuery);
 
-		$findConnectorPropertyQuery = new DevicesQueries\Entities\FindConnectorProperties();
+		$findConnectorPropertyQuery = new Queries\Entities\FindConnectorProperties();
 		$findConnectorPropertyQuery->forConnector($connector);
 		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::USERNAME);
 
 		$usernameProperty = $this->connectorsPropertiesRepository->findOneBy($findConnectorPropertyQuery);
 
-		$findConnectorPropertyQuery = new DevicesQueries\Entities\FindConnectorProperties();
+		$findConnectorPropertyQuery = new Queries\Entities\FindConnectorProperties();
 		$findConnectorPropertyQuery->forConnector($connector);
 		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::PASSWORD);
 
@@ -426,21 +429,21 @@ class Install extends Console\Command\Command
 
 				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::PROTOCOL_VERSION,
+					'identifier' => Types\ConnectorPropertyIdentifier::PROTOCOL_VERSION->value,
 					'dataType' => MetadataTypes\DataType::STRING,
-					'value' => $protocol->getValue(),
+					'value' => $protocol->value,
 					'connector' => $connector,
 				]));
 			} elseif ($protocol !== null) {
 				$this->connectorsPropertiesManager->update($protocolProperty, Utils\ArrayHash::from([
-					'value' => $protocol->getValue(),
+					'value' => $protocol->value,
 				]));
 			}
 
 			if ($serverAddressProperty === null) {
 				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::SERVER,
+					'identifier' => Types\ConnectorPropertyIdentifier::SERVER->value,
 					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => $serverAddress,
 					'connector' => $connector,
@@ -454,7 +457,7 @@ class Install extends Console\Command\Command
 			if ($serverPortProperty === null) {
 				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::PORT,
+					'identifier' => Types\ConnectorPropertyIdentifier::PORT->value,
 					'dataType' => MetadataTypes\DataType::UINT,
 					'value' => $serverPort,
 					'connector' => $connector,
@@ -468,7 +471,7 @@ class Install extends Console\Command\Command
 			if ($serverSecuredProperty === null) {
 				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::SECURED_PORT,
+					'identifier' => Types\ConnectorPropertyIdentifier::SECURED_PORT->value,
 					'dataType' => MetadataTypes\DataType::UINT,
 					'value' => $serverSecuredPort,
 					'connector' => $connector,
@@ -483,7 +486,7 @@ class Install extends Console\Command\Command
 				if ($usernameProperty === null) {
 					$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-						'identifier' => Types\ConnectorPropertyIdentifier::USERNAME,
+						'identifier' => Types\ConnectorPropertyIdentifier::USERNAME->value,
 						'dataType' => MetadataTypes\DataType::STRING,
 						'value' => $username,
 						'connector' => $connector,
@@ -501,7 +504,7 @@ class Install extends Console\Command\Command
 				if ($passwordProperty === null) {
 					$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-						'identifier' => Types\ConnectorPropertyIdentifier::PASSWORD,
+						'identifier' => Types\ConnectorPropertyIdentifier::PASSWORD->value,
 						'dataType' => MetadataTypes\DataType::STRING,
 						'value' => $password,
 						'connector' => $connector,
@@ -662,6 +665,8 @@ class Install extends Console\Command\Command
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function listConnectors(Style\SymfonyStyle $io): void
 	{
@@ -696,7 +701,7 @@ class Install extends Console\Command\Command
 				$index + 1,
 				$connector->getName() ?? $connector->getIdentifier(),
 				$this->translator->translate(
-					'//fb-mqtt-connector.cmd.base.protocol.' . $connector->getProtocolVersion()->getValue(),
+					'//fb-mqtt-connector.cmd.base.protocol.' . $connector->getProtocolVersion()->value,
 				),
 				count($devices),
 			]);
@@ -991,6 +996,8 @@ class Install extends Console\Command\Command
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function askInstallAction(Style\SymfonyStyle $io): void
 	{
@@ -1167,7 +1174,7 @@ class Install extends Console\Command\Command
 				)
 				|| $answer === '0'
 			) {
-				return Types\ProtocolVersion::get(Types\ProtocolVersion::VERSION_1);
+				return Types\ProtocolVersion::VERSION_1;
 			}
 
 			throw new Exceptions\Runtime(
