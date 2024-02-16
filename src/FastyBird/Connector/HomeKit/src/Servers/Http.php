@@ -452,7 +452,7 @@ final class Http implements Server
 			return;
 		}
 
-		$this->secureServer->onConnection[] = function (Socket\ConnectionInterface $connection): void {
+		$this->secureServer->on('connection', function (Socket\ConnectionInterface $connection): void {
 			$this->logger->debug(
 				'New client has connected to server',
 				[
@@ -486,9 +486,9 @@ final class Http implements Server
 
 				$this->subscriber->unregisterConnection($connection);
 			});
-		};
+		});
 
-		$this->secureServer->onError[] = function (Throwable $ex): void {
+		$this->secureServer->on('error', function (Throwable $ex): void {
 			$this->logger->error(
 				'An error occurred during socket handling',
 				[
@@ -506,9 +506,9 @@ final class Http implements Server
 				'HTTP server was terminated',
 				$ex,
 			));
-		};
+		});
 
-		$this->secureServer->onClose[] = function (): void {
+		$this->secureServer->on('close', function (): void {
 			$this->logger->info(
 				'Server was closed',
 				[
@@ -519,7 +519,7 @@ final class Http implements Server
 					],
 				],
 			);
-		};
+		});
 
 		$server = new ReactHttp\HttpServer(
 			$this->eventLoop,

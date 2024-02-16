@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\HomeKit\Servers;
 
-use Closure;
+use Evenement;
 use FastyBird\Connector\HomeKit;
 use FastyBird\Connector\HomeKit\Documents;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
@@ -46,9 +46,10 @@ use function unpack;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class SecureConnection
+final class SecureConnection implements Evenement\EventEmitterInterface
 {
 
+	use Evenement\EventEmitterTrait;
 	use Nette\SmartObject;
 
 	private const ENCRYPTED_DATA_LENGTH = 2;
@@ -62,12 +63,6 @@ final class SecureConnection
 	private const INFO_CONTROL_READ = 'Control-Read-Encryption-Key';
 
 	private const ENCRYPTED_CHUNK_MAX_SIZE = 1_024;
-
-	/** @var array<Closure(string $data): void> */
-	public array $onData = [];
-
-	/** @var array<Closure(string $data): void> */
-	public array $onClose = [];
 
 	private int $securedRequestCnt = 0;
 
@@ -93,16 +88,11 @@ final class SecureConnection
 			function (string $data): void {
 				$this->securedRequest = false;
 
-				Nette\Utils\Arrays::invoke($this->onData, $this->decodeData($data));
+				$this->emit('data', [$this->decodeData($data)]);
 			},
 		);
 
-		$connection->on(
-			'close',
-			function (): void {
-				Nette\Utils\Arrays::invoke($this->onClose);
-			},
-		);
+		Stream\Util::forwardEvents($connection, $this, ['end', 'error', 'close', 'pipe', 'drain']);
 	}
 
 	public function setSharedKey(string|null $sharedKey): void
