@@ -158,11 +158,8 @@ final class Transformer
 				$filtered = array_values(array_filter(
 					$property->getFormat()->getItems(),
 					static fn (array $item): bool => $item[1] !== null
-						&& Utils\Strings::lower(
-							MetadataUtilities\Value::toString($item[1]->getValue(), true),
-						) === Utils\Strings::lower(
-							strval($transformedValue),
-						),
+						&& Utils\Strings::lower(MetadataUtilities\Value::toString($item[1]->getValue(), true))
+							=== Utils\Strings::lower(strval($transformedValue)),
 				));
 
 				if (
@@ -238,11 +235,8 @@ final class Transformer
 					$filtered = array_values(array_filter(
 						$property->getFormat()->getItems(),
 						static fn (array $item): bool => $item[0] !== null
-							&& Utils\Strings::lower(
-								MetadataUtilities\Value::toString($item[0]->getValue(), true),
-							) === Utils\Strings::lower(
-								MetadataUtilities\Value::toString($value, true),
-							),
+							&& Utils\Strings::lower(MetadataUtilities\Value::toString($item[0]->getValue(), true))
+								=== Utils\Strings::lower(MetadataUtilities\Value::toString($value, true)),
 					));
 
 					if (
@@ -296,7 +290,9 @@ final class Transformer
 				);
 			}
 		} elseif ($dataType->equalsValue(Types\DataType::FLOAT)) {
-			if (!is_numeric($transformedValue)) {
+			if ($transformedValue === null) {
+				$transformedValue = 0.0;
+			} elseif (!is_numeric($transformedValue)) {
 				$transformedValue = str_replace(
 					[' ', ','],
 					['', '.'],
