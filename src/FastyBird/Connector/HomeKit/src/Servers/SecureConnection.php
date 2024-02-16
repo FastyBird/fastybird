@@ -46,11 +46,10 @@ use function unpack;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class SecureConnection implements Socket\ConnectionInterface
+final class SecureConnection extends Evenement\EventEmitter implements Socket\ConnectionInterface
 {
 
 	use Nette\SmartObject;
-	use Evenement\EventEmitterTrait;
 
 	private const ENCRYPTED_DATA_LENGTH = 2;
 

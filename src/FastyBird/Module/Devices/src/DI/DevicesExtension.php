@@ -44,6 +44,7 @@ use Nette\PhpGenerator;
 use Nette\Schema;
 use Nettrine\ORM as NettrineORM;
 use Orisai\DataSources;
+use Psr\EventDispatcher;
 use stdClass;
 use function array_keys;
 use function array_pop;
@@ -1020,7 +1021,10 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		);
 		$connectorsManagerService->setBody(
 			'return new ' . Models\Entities\Connectors\ConnectorsManager::class
-			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Connectors\Connector::class . '\'));',
+			. '('
+			. '$this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Connectors\Connector::class . '\'), '
+			. '$this->getByType(\'' . EventDispatcher\EventDispatcherInterface::class . '\', false)'
+			. ');',
 		);
 
 		$connectorsPropertiesManagerService = $class->getMethod(
@@ -1028,7 +1032,10 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		);
 		$connectorsPropertiesManagerService->setBody(
 			'return new ' . Models\Entities\Connectors\Properties\PropertiesManager::class
-			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Connectors\Properties\Property::class . '\'));',
+			. '('
+			. '$this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Connectors\Properties\Property::class . '\'), '
+			. '$this->getByType(\'' . EventDispatcher\EventDispatcherInterface::class . '\', false)'
+			. ');',
 		);
 
 		$connectorsControlsManagerService = $class->getMethod(
@@ -1036,7 +1043,10 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		);
 		$connectorsControlsManagerService->setBody(
 			'return new ' . Models\Entities\Connectors\Controls\ControlsManager::class
-			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Connectors\Controls\Control::class . '\'));',
+			. '('
+			. '$this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Connectors\Controls\Control::class . '\'), '
+			. '$this->getByType(\'' . EventDispatcher\EventDispatcherInterface::class . '\', false)'
+			. ');',
 		);
 
 		$devicesManagerService = $class->getMethod(
@@ -1044,7 +1054,10 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		);
 		$devicesManagerService->setBody(
 			'return new ' . Models\Entities\Devices\DevicesManager::class
-			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Devices\Device::class . '\'));',
+			. '('
+			. '$this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Devices\Device::class . '\'), '
+			. '$this->getByType(\'' . EventDispatcher\EventDispatcherInterface::class . '\', false)'
+			. ');',
 		);
 
 		$devicesPropertiesManagerService = $class->getMethod(
@@ -1052,7 +1065,10 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		);
 		$devicesPropertiesManagerService->setBody(
 			'return new ' . Models\Entities\Devices\Properties\PropertiesManager::class
-			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Devices\Properties\Property::class . '\'));',
+			. '('
+			. '$this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Devices\Properties\Property::class . '\'), '
+			. '$this->getByType(\'' . EventDispatcher\EventDispatcherInterface::class . '\', false)'
+			. ');',
 		);
 
 		$devicesControlsManagerService = $class->getMethod(
@@ -1060,7 +1076,10 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		);
 		$devicesControlsManagerService->setBody(
 			'return new ' . Models\Entities\Devices\Controls\ControlsManager::class
-			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Devices\Controls\Control::class . '\'));',
+			. '('
+			. '$this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Devices\Controls\Control::class . '\'), '
+			. '$this->getByType(\'' . EventDispatcher\EventDispatcherInterface::class . '\', false)'
+			. ');',
 		);
 
 		$channelsManagerService = $class->getMethod(
@@ -1068,7 +1087,10 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		);
 		$channelsManagerService->setBody(
 			'return new ' . Models\Entities\Channels\ChannelsManager::class
-			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Channels\Channel::class . '\'));',
+			. '('
+			. '$this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Channels\Channel::class . '\'), '
+			. '$this->getByType(\'' . EventDispatcher\EventDispatcherInterface::class . '\', false)'
+			. ');',
 		);
 
 		$channelsPropertiesManagerService = $class->getMethod(
@@ -1076,7 +1098,10 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		);
 		$channelsPropertiesManagerService->setBody(
 			'return new ' . Models\Entities\Channels\Properties\PropertiesManager::class
-			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Channels\Properties\Property::class . '\'));',
+			. '('
+			. '$this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Channels\Properties\Property::class . '\'), '
+			. '$this->getByType(\'' . EventDispatcher\EventDispatcherInterface::class . '\', false)'
+			. ');',
 		);
 
 		$channelsControlsManagerService = $class->getMethod(
@@ -1084,7 +1109,10 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		);
 		$channelsControlsManagerService->setBody(
 			'return new ' . Models\Entities\Channels\Controls\ControlsManager::class
-			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Channels\Controls\Control::class . '\'));',
+			. '('
+			. '$this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Channels\Controls\Control::class . '\'), '
+			. '$this->getByType(\'' . EventDispatcher\EventDispatcherInterface::class . '\', false)'
+			. ');',
 		);
 	}
 

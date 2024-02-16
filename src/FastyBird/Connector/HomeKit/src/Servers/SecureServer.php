@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\HomeKit\Servers;
 
-use Evenement;
+use Evenement\EventEmitter;
 use FastyBird\Connector\HomeKit\Documents;
 use Nette;
 use React\Socket;
@@ -30,11 +30,10 @@ use function str_replace;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class SecureServer implements Socket\ServerInterface
+final class SecureServer extends EventEmitter implements Socket\ServerInterface
 {
 
 	use Nette\SmartObject;
-	use Evenement\EventEmitterTrait;
 
 	/** @var SplObjectStorage<SecureConnection, null> */
 	private SplObjectStorage $activeConnections;
@@ -61,8 +60,6 @@ final class SecureServer implements Socket\ServerInterface
 
 			$securedConnection->on('close', function () use ($securedConnection): void {
 				$this->activeConnections->detach($securedConnection);
-
-				$this->emit('close');
 			});
 		});
 

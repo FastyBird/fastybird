@@ -19,6 +19,7 @@ use FastyBird\Connector\HomeKit;
 use FastyBird\Connector\HomeKit\Documents;
 use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Helpers;
+use FastyBird\Connector\HomeKit\Subscribers;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -93,6 +94,7 @@ final class Mdns implements Server
 	public function __construct(
 		private readonly Documents\Connectors\Connector $connector,
 		private readonly Helpers\Connector $connectorHelper,
+		private readonly Subscribers\Entities $entitiesSubscriber,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		private readonly HomeKit\Logger $logger,
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
@@ -127,6 +129,10 @@ final class Mdns implements Server
 				],
 			],
 		);
+
+		$this->entitiesSubscriber->onRefresh[] = function (DevicesEntities\Connectors\Properties\Variable $property): void {
+			$this->refresh($property);
+		};
 
 		$factory = new Datagram\Factory($this->eventLoop);
 
@@ -245,7 +251,7 @@ final class Mdns implements Server
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
-	public function refresh(
+	private function refresh(
 		DevicesEntities\Connectors\Properties\Variable $property,
 	): void
 	{

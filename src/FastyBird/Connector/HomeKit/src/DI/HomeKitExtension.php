@@ -218,6 +218,9 @@ class HomeKitExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		$builder->addDefinition($this->prefix('subscribers.system'), new DI\Definitions\ServiceDefinition())
 			->setType(Subscribers\System::class);
 
+		$builder->addDefinition($this->prefix('subscribers.entities'), new DI\Definitions\ServiceDefinition())
+			->setType(Subscribers\Entities::class);
+
 		/**
 		 * JSON-API SCHEMAS
 		 */

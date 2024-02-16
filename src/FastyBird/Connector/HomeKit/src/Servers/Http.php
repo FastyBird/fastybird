@@ -27,6 +27,7 @@ use FastyBird\Connector\HomeKit\Middleware;
 use FastyBird\Connector\HomeKit\Protocol;
 use FastyBird\Connector\HomeKit\Queries;
 use FastyBird\Connector\HomeKit\Queue;
+use FastyBird\Connector\HomeKit\Subscribers;
 use FastyBird\Connector\HomeKit\Types;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
@@ -94,7 +95,7 @@ final class Http implements Server
 
 	private const LISTENING_ADDRESS = '0.0.0.0';
 
-	private SecureServer|null $secureServer = null;
+	private SecureServer|null $socket = null;
 
 	private Hashids\Hashids $hashIds;
 
@@ -122,6 +123,7 @@ final class Http implements Server
 		private readonly Helpers\Loader $loader,
 		private readonly Queue\Queue $queue,
 		private readonly HomeKit\Logger $logger,
+		private readonly Subscribers\Entities $entitiesSubscriber,
 		private readonly ApplicationHelpers\Database $databaseHelper,
 		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\Entities\Devices\Properties\PropertiesManager $devicesPropertiesManager,
@@ -406,6 +408,10 @@ final class Http implements Server
 				),
 			);
 		}
+
+		$this->entitiesSubscriber->onUpdateSharedKey[] = function (DevicesEntities\Connectors\Properties\Variable $property): void {
+			$this->setSharedKey($property);
+		};
 	}
 
 	public function connect(): void
@@ -426,7 +432,7 @@ final class Http implements Server
 				],
 			);
 
-			$this->secureServer = $this->secureServerFactory->create(
+			$this->socket = $this->secureServerFactory->create(
 				$this->connector,
 				new Socket\SocketServer(
 					self::LISTENING_ADDRESS . ':' . $this->connectorHelper->getPort($this->connector),
@@ -456,7 +462,7 @@ final class Http implements Server
 			return;
 		}
 
-		$this->secureServer->on('connection', function (Socket\ConnectionInterface $connection): void {
+		$this->socket->on('connection', function (Socket\ConnectionInterface $connection): void {
 			$this->logger->debug(
 				'New client has connected to server',
 				[
@@ -492,7 +498,7 @@ final class Http implements Server
 			});
 		});
 
-		$this->secureServer->on('error', function (Throwable $ex): void {
+		$this->socket->on('error', function (Throwable $ex): void {
 			$this->logger->error(
 				'An error occurred during socket handling',
 				[
@@ -512,7 +518,7 @@ final class Http implements Server
 			));
 		});
 
-		$this->secureServer->on('close', function (): void {
+		$this->socket->on('close', function (): void {
 			$this->logger->info(
 				'Server was closed',
 				[
@@ -537,7 +543,7 @@ final class Http implements Server
 			},
 			$this->routerMiddleware,
 		);
-		$server->listen($this->secureServer);
+		$server->listen($this->socket);
 
 		$server->on('error', function (Throwable $ex): void {
 			$this->logger->error(
@@ -553,7 +559,7 @@ final class Http implements Server
 			);
 
 			$this->dispatcher?->dispatch(new DevicesEvents\TerminateConnector(
-				MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::NS_PANEL),
+				MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::HOMEKIT),
 				'HTTP server was terminated',
 				$ex,
 			));
@@ -573,9 +579,9 @@ final class Http implements Server
 			],
 		);
 
-		$this->secureServer?->close();
+		$this->socket?->close();
 
-		$this->secureServer = null;
+		$this->socket = null;
 	}
 
 	/**
@@ -584,11 +590,14 @@ final class Http implements Server
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
-	public function setSharedKey(
+	private function setSharedKey(
 		DevicesEntities\Connectors\Properties\Variable $property,
 	): void
 	{
-		if ($property->getConnector()->getId()->equals($this->connector->getId())) {
+		if (
+			$property->getConnector()->getId()->equals($this->connector->getId())
+			&& $property->getIdentifier() === Types\ConnectorPropertyIdentifier::SHARED_KEY
+		) {
 			$this->logger->debug(
 				'Shared key has been updated',
 				[
@@ -600,7 +609,7 @@ final class Http implements Server
 				],
 			);
 
-			$this->secureServer?->setSharedKey(
+			$this->socket?->setSharedKey(
 				is_string($property->getValue()) ? (string) hex2bin($property->getValue()) : null,
 			);
 		}
