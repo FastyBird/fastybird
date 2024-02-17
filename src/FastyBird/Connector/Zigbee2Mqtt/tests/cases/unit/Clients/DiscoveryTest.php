@@ -74,41 +74,6 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 
 		$apiClient = $this->createMock(API\Client::class);
 		$apiClient
-			->expects(self::exactly(2))
-			->method('on')
-			->with(
-				self::callback(static function (string $event): bool {
-					self::assertTrue(in_array($event, ['connect', 'message'], true));
-
-					return true;
-				}),
-				self::callback(static function ($callback): bool {
-					if ($callback[1] === 'onConnect') {
-						$callback();
-					} elseif ($callback[1] === 'onMessage') {
-						$message = new NetMqtt\DefaultMessage(
-							'zigbee2mqtt/bridge/devices',
-							Utils\FileSystem::read(__DIR__ . '/../../../fixtures/Clients/Messages/bridge_devices.json'),
-						);
-
-						$callback($message);
-					}
-
-					return true;
-				}),
-			);
-		$apiClient
-			->expects(self::exactly(2))
-			->method('removeListener')
-			->with(
-				self::callback(static function (string $event): bool {
-					self::assertTrue(in_array($event, ['connect', 'message'], true));
-
-					return true;
-				}),
-				self::callback(static fn (): bool => true),
-			);
-		$apiClient
 			->method('subscribe')
 			->willReturn($subscribePromise);
 		$apiClient
@@ -157,6 +122,20 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 		$client->discover();
 
 		$eventLoop = $this->getContainer()->getByType(EventLoop\LoopInterface::class);
+
+		$eventLoop->addTimer(0.1, static function () use ($apiClient): void {
+			self::assertCount(1, $apiClient->onConnect);
+			self::assertCount(1, $apiClient->onMessage);
+
+			Utils\Arrays::invoke($apiClient->onConnect);
+			Utils\Arrays::invoke(
+				$apiClient->onMessage,
+				new NetMqtt\DefaultMessage(
+					'zigbee2mqtt/bridge/devices',
+					Utils\FileSystem::read(__DIR__ . '/../../../fixtures/Clients/Messages/bridge_devices.json'),
+				)
+			);
+		});
 
 		$eventLoop->addTimer(1, static function () use ($eventLoop, $client): void {
 			$client->disconnect();
