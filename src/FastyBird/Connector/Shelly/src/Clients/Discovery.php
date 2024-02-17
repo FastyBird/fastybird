@@ -299,6 +299,7 @@ final class Discovery
 						$this->handleFoundLocalDevice(
 							Types\DeviceGeneration::get($generation),
 							Utils\Strings::lower($matches['id']),
+							Utils\Strings::lower($matches['type']),
 							$serviceIpAddress,
 							$serviceDomain,
 						);
@@ -342,13 +343,16 @@ final class Discovery
 
 	private function handleFoundLocalDevice(
 		Types\DeviceGeneration $generation,
-		string $identifier,
+		string $id,
+		string $type,
 		string $ipAddress,
 		string|null $domain,
 	): void
 	{
 		$gen1HttpApi = $this->gen1HttpApiFactory->create();
 		$gen2HttpApi = $this->gen2HttpApiFactory->create();
+
+		$identifier = $id . '-' . $type;
 
 		if ($generation->equalsValue(Types\DeviceGeneration::UNKNOWN)) {
 			try {
