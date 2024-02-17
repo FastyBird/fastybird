@@ -69,7 +69,7 @@ final class Tlv
 
 		foreach ($objects as $entry) {
 			if ($cnt > 0) {
-				$row = pack('C1', Types\TlvCode::SEPARATOR);
+				$row = pack('C1', Types\TlvCode::SEPARATOR->value);
 				$row .= pack('C1', 0); // Length of separator is 0
 
 				$data[] = $row;
