@@ -116,6 +116,11 @@ readonly class Device
 											'connector' => [
 												'id' => $this->connector->getId()->toString(),
 											],
+											'message' => [
+												'topic' => $message->getTopic(),
+												'payload' => $message->getPayload(),
+												'qos' => $message->getQosLevel(),
+											],
 										],
 									);
 
@@ -141,6 +146,11 @@ readonly class Device
 										'connector' => [
 											'id' => $this->connector->getId()->toString(),
 										],
+										'message' => [
+											'topic' => $message->getTopic(),
+											'payload' => $message->getPayload(),
+											'qos' => $message->getQosLevel(),
+										],
 									],
 								);
 
@@ -153,9 +163,13 @@ readonly class Device
 								[
 									'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
 									'type' => 'device-messages-subscriber',
-									'payload' => $message->getPayload(),
 									'connector' => [
 										'id' => $this->connector->getId()->toString(),
+									],
+									'message' => [
+										'topic' => $message->getTopic(),
+										'payload' => $message->getPayload(),
+										'qos' => $message->getQosLevel(),
 									],
 								],
 							);
@@ -171,6 +185,11 @@ readonly class Device
 									'type' => 'device-messages-subscriber',
 									'connector' => [
 										'id' => $this->connector->getId()->toString(),
+									],
+									'message' => [
+										'topic' => $message->getTopic(),
+										'payload' => $message->getPayload(),
+										'qos' => $message->getQosLevel(),
 									],
 								],
 							);
@@ -195,6 +214,11 @@ readonly class Device
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'connector' => [
 							'id' => $this->connector->getId()->toString(),
+						],
+						'message' => [
+							'topic' => $message->getTopic(),
+							'payload' => $message->getPayload(),
+							'qos' => $message->getQosLevel(),
 						],
 					],
 				);
@@ -244,6 +268,11 @@ readonly class Device
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
+					],
+					'message' => [
+						'topic' => $message->getTopic(),
+						'payload' => $message->getPayload(),
+						'qos' => $message->getQosLevel(),
 					],
 				],
 			);

@@ -36,17 +36,21 @@ final class ActionsManager
 
 	use Nette\SmartObject;
 
+	/** @var DoctrineCrudCrud\IEntityCrud<Entities\Actions\Action>|null */
+	private DoctrineCrudCrud\IEntityCrud|null $entityCrud = null;
+
 	/**
-	 * @param DoctrineCrudCrud\IEntityCrud<Entities\Actions\Action> $entityCrud
+	 * @param DoctrineCrudCrud\IEntityCrudFactory<Entities\Actions\Action> $entityCrudFactory
 	 */
-	public function __construct(private readonly DoctrineCrudCrud\IEntityCrud $entityCrud)
+	public function __construct(
+		private readonly DoctrineCrudCrud\IEntityCrudFactory $entityCrudFactory,
+	)
 	{
-		// Entity CRUD for handling entities
 	}
 
 	public function create(Utils\ArrayHash $values): Entities\Actions\Action
 	{
-		$entity = $this->entityCrud->getEntityCreator()->create($values);
+		$entity = $this->getEntityCrud()->getEntityCreator()->create($values);
 		assert($entity instanceof Entities\Actions\Action);
 
 		return $entity;
@@ -60,7 +64,7 @@ final class ActionsManager
 		Utils\ArrayHash $values,
 	): Entities\Actions\Action
 	{
-		$entity = $this->entityCrud->getEntityUpdater()->update($values, $entity);
+		$entity = $this->getEntityCrud()->getEntityUpdater()->update($values, $entity);
 		assert($entity instanceof Entities\Actions\Action);
 
 		return $entity;
@@ -72,7 +76,19 @@ final class ActionsManager
 	public function delete(Entities\Actions\Action $entity): bool
 	{
 		// Delete entity from database
-		return $this->entityCrud->getEntityDeleter()->delete($entity);
+		return $this->getEntityCrud()->getEntityDeleter()->delete($entity);
+	}
+
+	/**
+	 * @return DoctrineCrudCrud\IEntityCrud<Entities\Actions\Action>
+	 */
+	public function getEntityCrud(): DoctrineCrudCrud\IEntityCrud
+	{
+		if ($this->entityCrud === null) {
+			$this->entityCrud = $this->entityCrudFactory->create(Entities\Actions\Action::class);
+		}
+
+		return $this->entityCrud;
 	}
 
 }

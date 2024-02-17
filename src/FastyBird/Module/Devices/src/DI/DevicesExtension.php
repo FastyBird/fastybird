@@ -28,7 +28,6 @@ use FastyBird\Module\Devices\Commands;
 use FastyBird\Module\Devices\Connectors;
 use FastyBird\Module\Devices\Consumers;
 use FastyBird\Module\Devices\Controllers;
-use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Hydrators;
 use FastyBird\Module\Devices\Middleware;
 use FastyBird\Module\Devices\Models;
@@ -36,22 +35,18 @@ use FastyBird\Module\Devices\Router;
 use FastyBird\Module\Devices\Schemas;
 use FastyBird\Module\Devices\Subscribers;
 use FastyBird\Module\Devices\Utilities;
-use IPub\DoctrineCrud;
 use IPub\SlimRouter\Routing as SlimRouterRouting;
 use Nette;
 use Nette\DI;
-use Nette\PhpGenerator;
 use Nette\Schema;
 use Nettrine\ORM as NettrineORM;
 use Orisai\DataSources;
-use Psr\EventDispatcher;
 use stdClass;
 use function array_keys;
 use function array_pop;
 use function assert;
 use function class_exists;
 use function is_string;
-use function ucfirst;
 use const DIRECTORY_SEPARATOR;
 
 /**
@@ -135,8 +130,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			$this->prefix('models.entities.managers.connectors'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Entities\Connectors\ConnectorsManager::class)
-			->setArgument('entityCrud', '__placeholder__');
+			->setType(Models\Entities\Connectors\ConnectorsManager::class);
 
 		$builder->addDefinition(
 			$this->prefix('models.entities.repositories.connectorsProperties'),
@@ -148,8 +142,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			$this->prefix('models.entities.managers.connectorsProperties'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Entities\Connectors\Properties\PropertiesManager::class)
-			->setArgument('entityCrud', '__placeholder__');
+			->setType(Models\Entities\Connectors\Properties\PropertiesManager::class);
 
 		$builder->addDefinition(
 			$this->prefix('models.entities.repositories.connectorsControls'),
@@ -161,8 +154,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			$this->prefix('models.entities.managers.connectorsControls'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Entities\Connectors\Controls\ControlsManager::class)
-			->setArgument('entityCrud', '__placeholder__');
+			->setType(Models\Entities\Connectors\Controls\ControlsManager::class);
 
 		// DEVICES
 		$builder->addDefinition(
@@ -175,8 +167,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			$this->prefix('models.entities.managers.devices'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Entities\Devices\DevicesManager::class)
-			->setArgument('entityCrud', '__placeholder__');
+			->setType(Models\Entities\Devices\DevicesManager::class);
 
 		$builder->addDefinition(
 			$this->prefix('models.entities.repositories.devicesProperties'),
@@ -188,8 +179,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			$this->prefix('models.entities.managers.devicesProperties'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Entities\Devices\Properties\PropertiesManager::class)
-			->setArgument('entityCrud', '__placeholder__');
+			->setType(Models\Entities\Devices\Properties\PropertiesManager::class);
 
 		$builder->addDefinition(
 			$this->prefix('models.entities.repositories.devicesControls'),
@@ -201,8 +191,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			$this->prefix('models.entities.managers.devicesControls'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Entities\Devices\Controls\ControlsManager::class)
-			->setArgument('entityCrud', '__placeholder__');
+			->setType(Models\Entities\Devices\Controls\ControlsManager::class);
 
 		// CHANNELS
 		$builder->addDefinition(
@@ -215,8 +204,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			$this->prefix('models.entities.managers.channels'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Entities\Channels\ChannelsManager::class)
-			->setArgument('entityCrud', '__placeholder__');
+			->setType(Models\Entities\Channels\ChannelsManager::class);
 
 		$builder->addDefinition(
 			$this->prefix('models.entities.repositories.channelsProperties'),
@@ -228,8 +216,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			$this->prefix('models.entities.managers.channelsProperties'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Entities\Channels\Properties\PropertiesManager::class)
-			->setArgument('entityCrud', '__placeholder__');
+			->setType(Models\Entities\Channels\Properties\PropertiesManager::class);
 
 		$builder->addDefinition(
 			$this->prefix('models.entities.repositories.channelsControls'),
@@ -241,8 +228,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			$this->prefix('models.entities.managers.channelsControls'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Entities\Channels\Controls\ControlsManager::class)
-			->setArgument('entityCrud', '__placeholder__');
+			->setType(Models\Entities\Channels\Controls\ControlsManager::class);
 
 		/**
 		 * MODELS - CONFIGURATION
@@ -1005,115 +991,6 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 				// Extension is not registered
 			}
 		}
-	}
-
-	/**
-	 * @throws Nette\DI\MissingServiceException
-	 */
-	public function afterCompile(PhpGenerator\ClassType $class): void
-	{
-		$builder = $this->getContainerBuilder();
-
-		$entityFactoryServiceName = $builder->getByType(DoctrineCrud\Crud\IEntityCrudFactory::class, true);
-
-		$connectorsManagerService = $class->getMethod(
-			'createService' . ucfirst($this->name) . '__models__entities__managers__connectors',
-		);
-		$connectorsManagerService->setBody(
-			'return new ' . Models\Entities\Connectors\ConnectorsManager::class
-			. '('
-			. '$this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Connectors\Connector::class . '\'), '
-			. '$this->getByType(\'' . EventDispatcher\EventDispatcherInterface::class . '\', false)'
-			. ');',
-		);
-
-		$connectorsPropertiesManagerService = $class->getMethod(
-			'createService' . ucfirst($this->name) . '__models__entities__managers__connectorsProperties',
-		);
-		$connectorsPropertiesManagerService->setBody(
-			'return new ' . Models\Entities\Connectors\Properties\PropertiesManager::class
-			. '('
-			. '$this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Connectors\Properties\Property::class . '\'), '
-			. '$this->getByType(\'' . EventDispatcher\EventDispatcherInterface::class . '\', false)'
-			. ');',
-		);
-
-		$connectorsControlsManagerService = $class->getMethod(
-			'createService' . ucfirst($this->name) . '__models__entities__managers__connectorsControls',
-		);
-		$connectorsControlsManagerService->setBody(
-			'return new ' . Models\Entities\Connectors\Controls\ControlsManager::class
-			. '('
-			. '$this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Connectors\Controls\Control::class . '\'), '
-			. '$this->getByType(\'' . EventDispatcher\EventDispatcherInterface::class . '\', false)'
-			. ');',
-		);
-
-		$devicesManagerService = $class->getMethod(
-			'createService' . ucfirst($this->name) . '__models__entities__managers__devices',
-		);
-		$devicesManagerService->setBody(
-			'return new ' . Models\Entities\Devices\DevicesManager::class
-			. '('
-			. '$this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Devices\Device::class . '\'), '
-			. '$this->getByType(\'' . EventDispatcher\EventDispatcherInterface::class . '\', false)'
-			. ');',
-		);
-
-		$devicesPropertiesManagerService = $class->getMethod(
-			'createService' . ucfirst($this->name) . '__models__entities__managers__devicesProperties',
-		);
-		$devicesPropertiesManagerService->setBody(
-			'return new ' . Models\Entities\Devices\Properties\PropertiesManager::class
-			. '('
-			. '$this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Devices\Properties\Property::class . '\'), '
-			. '$this->getByType(\'' . EventDispatcher\EventDispatcherInterface::class . '\', false)'
-			. ');',
-		);
-
-		$devicesControlsManagerService = $class->getMethod(
-			'createService' . ucfirst($this->name) . '__models__entities__managers__devicesControls',
-		);
-		$devicesControlsManagerService->setBody(
-			'return new ' . Models\Entities\Devices\Controls\ControlsManager::class
-			. '('
-			. '$this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Devices\Controls\Control::class . '\'), '
-			. '$this->getByType(\'' . EventDispatcher\EventDispatcherInterface::class . '\', false)'
-			. ');',
-		);
-
-		$channelsManagerService = $class->getMethod(
-			'createService' . ucfirst($this->name) . '__models__entities__managers__channels',
-		);
-		$channelsManagerService->setBody(
-			'return new ' . Models\Entities\Channels\ChannelsManager::class
-			. '('
-			. '$this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Channels\Channel::class . '\'), '
-			. '$this->getByType(\'' . EventDispatcher\EventDispatcherInterface::class . '\', false)'
-			. ');',
-		);
-
-		$channelsPropertiesManagerService = $class->getMethod(
-			'createService' . ucfirst($this->name) . '__models__entities__managers__channelsProperties',
-		);
-		$channelsPropertiesManagerService->setBody(
-			'return new ' . Models\Entities\Channels\Properties\PropertiesManager::class
-			. '('
-			. '$this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Channels\Properties\Property::class . '\'), '
-			. '$this->getByType(\'' . EventDispatcher\EventDispatcherInterface::class . '\', false)'
-			. ');',
-		);
-
-		$channelsControlsManagerService = $class->getMethod(
-			'createService' . ucfirst($this->name) . '__models__entities__managers__channelsControls',
-		);
-		$channelsControlsManagerService->setBody(
-			'return new ' . Models\Entities\Channels\Controls\ControlsManager::class
-			. '('
-			. '$this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Channels\Controls\Control::class . '\'), '
-			. '$this->getByType(\'' . EventDispatcher\EventDispatcherInterface::class . '\', false)'
-			. ');',
-		);
 	}
 
 	/**

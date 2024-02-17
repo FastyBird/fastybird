@@ -36,17 +36,21 @@ final class AccountsManager
 
 	use Nette\SmartObject;
 
+	/** @var DoctrineCrudCrud\IEntityCrud<Entities\Accounts\Account>|null */
+	private DoctrineCrudCrud\IEntityCrud|null $entityCrud = null;
+
 	/**
-	 * @param DoctrineCrudCrud\IEntityCrud<Entities\Accounts\Account> $entityCrud
+	 * @param DoctrineCrudCrud\IEntityCrudFactory<Entities\Accounts\Account> $entityCrudFactory
 	 */
-	public function __construct(private readonly DoctrineCrudCrud\IEntityCrud $entityCrud)
+	public function __construct(
+		private readonly DoctrineCrudCrud\IEntityCrudFactory $entityCrudFactory,
+	)
 	{
-		// Entity CRUD for handling entities
 	}
 
 	public function create(Utils\ArrayHash $values): Entities\Accounts\Account
 	{
-		$entity = $this->entityCrud->getEntityCreator()->create($values);
+		$entity = $this->getEntityCrud()->getEntityCreator()->create($values);
 		assert($entity instanceof Entities\Accounts\Account);
 
 		return $entity;
@@ -60,7 +64,7 @@ final class AccountsManager
 		Utils\ArrayHash $values,
 	): Entities\Accounts\Account
 	{
-		$entity = $this->entityCrud->getEntityUpdater()->update($values, $entity);
+		$entity = $this->getEntityCrud()->getEntityUpdater()->update($values, $entity);
 		assert($entity instanceof Entities\Accounts\Account);
 
 		return $entity;
@@ -72,7 +76,19 @@ final class AccountsManager
 	public function delete(Entities\Accounts\Account $entity): bool
 	{
 		// Delete entity from database
-		return $this->entityCrud->getEntityDeleter()->delete($entity);
+		return $this->getEntityCrud()->getEntityDeleter()->delete($entity);
+	}
+
+	/**
+	 * @return DoctrineCrudCrud\IEntityCrud<Entities\Accounts\Account>
+	 */
+	public function getEntityCrud(): DoctrineCrudCrud\IEntityCrud
+	{
+		if ($this->entityCrud === null) {
+			$this->entityCrud = $this->entityCrudFactory->create(Entities\Accounts\Account::class);
+		}
+
+		return $this->entityCrud;
 	}
 
 }

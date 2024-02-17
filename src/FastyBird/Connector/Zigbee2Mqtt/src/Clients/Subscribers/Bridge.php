@@ -98,6 +98,11 @@ readonly class Bridge
 										'connector' => [
 											'id' => $this->connector->getId()->toString(),
 										],
+										'message' => [
+											'topic' => $message->getTopic(),
+											'payload' => $message->getPayload(),
+											'qos' => $message->getQosLevel(),
+										],
 									],
 								);
 
@@ -135,6 +140,11 @@ readonly class Bridge
 											'connector' => [
 												'id' => $this->connector->getId()->toString(),
 											],
+											'message' => [
+												'topic' => $message->getTopic(),
+												'payload' => $message->getPayload(),
+												'qos' => $message->getQosLevel(),
+											],
 										],
 									);
 
@@ -159,6 +169,11 @@ readonly class Bridge
 										'type' => 'bridge-messages-subscriber',
 										'connector' => [
 											'id' => $this->connector->getId()->toString(),
+										],
+										'message' => [
+											'topic' => $message->getTopic(),
+											'payload' => $message->getPayload(),
+											'qos' => $message->getQosLevel(),
 										],
 									],
 								);
@@ -185,6 +200,11 @@ readonly class Bridge
 										'connector' => [
 											'id' => $this->connector->getId()->toString(),
 										],
+										'message' => [
+											'topic' => $message->getTopic(),
+											'payload' => $message->getPayload(),
+											'qos' => $message->getQosLevel(),
+										],
 									],
 								);
 
@@ -209,6 +229,11 @@ readonly class Bridge
 										'type' => 'bridge-messages-subscriber',
 										'connector' => [
 											'id' => $this->connector->getId()->toString(),
+										],
+										'message' => [
+											'topic' => $message->getTopic(),
+											'payload' => $message->getPayload(),
+											'qos' => $message->getQosLevel(),
 										],
 									],
 								);
@@ -235,6 +260,11 @@ readonly class Bridge
 										'connector' => [
 											'id' => $this->connector->getId()->toString(),
 										],
+										'message' => [
+											'topic' => $message->getTopic(),
+											'payload' => $message->getPayload(),
+											'qos' => $message->getQosLevel(),
+										],
 									],
 								);
 
@@ -260,6 +290,11 @@ readonly class Bridge
 										'connector' => [
 											'id' => $this->connector->getId()->toString(),
 										],
+										'message' => [
+											'topic' => $message->getTopic(),
+											'payload' => $message->getPayload(),
+											'qos' => $message->getQosLevel(),
+										],
 									],
 								);
 
@@ -283,6 +318,11 @@ readonly class Bridge
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'connector' => [
 							'id' => $this->connector->getId()->toString(),
+						],
+						'message' => [
+							'topic' => $message->getTopic(),
+							'payload' => $message->getPayload(),
+							'qos' => $message->getQosLevel(),
 						],
 					],
 				);
@@ -308,6 +348,11 @@ readonly class Bridge
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
+					],
+					'message' => [
+						'topic' => $message->getTopic(),
+						'payload' => $message->getPayload(),
+						'qos' => $message->getQosLevel(),
 					],
 				],
 			);

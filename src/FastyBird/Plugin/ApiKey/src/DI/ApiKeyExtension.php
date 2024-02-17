@@ -18,17 +18,13 @@ namespace FastyBird\Plugin\ApiKey\DI;
 use Doctrine\Persistence;
 use FastyBird\Library\Application\Boot as ApplicationBoot;
 use FastyBird\Plugin\ApiKey\Commands;
-use FastyBird\Plugin\ApiKey\Entities;
 use FastyBird\Plugin\ApiKey\Middleware;
 use FastyBird\Plugin\ApiKey\Models;
-use IPub\DoctrineCrud;
 use Nette;
 use Nette\DI;
-use Nette\PhpGenerator;
 use Nettrine\ORM as NettrineORM;
 use function array_keys;
 use function array_pop;
-use function ucfirst;
 use const DIRECTORY_SEPARATOR;
 
 /**
@@ -65,8 +61,7 @@ class ApiKeyExtension extends DI\CompilerExtension
 			->setType(Models\Entities\KeyRepository::class);
 
 		$builder->addDefinition($this->prefix('models.keysManager'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Entities\KeysManager::class)
-			->setArgument('entityCrud', '__placeholder__');
+			->setType(Models\Entities\KeysManager::class);
 
 		$builder->addDefinition($this->prefix('commands.create'), new DI\Definitions\ServiceDefinition())
 			->setType(Commands\Create::class);
@@ -114,22 +109,6 @@ class ApiKeyExtension extends DI\CompilerExtension
 				}
 			}
 		}
-	}
-
-	/**
-	 * @throws Nette\DI\MissingServiceException
-	 */
-	public function afterCompile(PhpGenerator\ClassType $class): void
-	{
-		$builder = $this->getContainerBuilder();
-
-		$entityFactoryServiceName = $builder->getByType(DoctrineCrud\Crud\IEntityCrudFactory::class, true);
-
-		$devicesManagerService = $class->getMethod('createService' . ucfirst($this->name) . '__models__keysManager');
-		$devicesManagerService->setBody(
-			'return new ' . Models\Entities\KeysManager::class
-			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Key::class . '\'));',
-		);
 	}
 
 }

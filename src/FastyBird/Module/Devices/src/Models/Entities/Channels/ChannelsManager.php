@@ -38,20 +38,22 @@ final class ChannelsManager
 
 	use Nette\SmartObject;
 
+	/** @var DoctrineCrudCrud\IEntityCrud<Entities\Channels\Channel>|null */
+	private DoctrineCrudCrud\IEntityCrud|null $entityCrud = null;
+
 	/**
-	 * @param DoctrineCrudCrud\IEntityCrud<Entities\Channels\Channel> $entityCrud
+	 * @param DoctrineCrudCrud\IEntityCrudFactory<Entities\Channels\Channel> $entityCrudFactory
 	 */
 	public function __construct(
-		private readonly DoctrineCrudCrud\IEntityCrud $entityCrud,
+		private readonly DoctrineCrudCrud\IEntityCrudFactory $entityCrudFactory,
 		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
-		// Entity CRUD for handling entities
 	}
 
 	public function create(Utils\ArrayHash $values): Entities\Channels\Channel
 	{
-		$entity = $this->entityCrud->getEntityCreator()->create($values);
+		$entity = $this->getEntityCrud()->getEntityCreator()->create($values);
 		assert($entity instanceof Entities\Channels\Channel);
 
 		$this->dispatcher?->dispatch(new Events\EntityCreated($entity));
@@ -67,7 +69,7 @@ final class ChannelsManager
 		Utils\ArrayHash $values,
 	): Entities\Channels\Channel
 	{
-		$entity = $this->entityCrud->getEntityUpdater()->update($values, $entity);
+		$entity = $this->getEntityCrud()->getEntityUpdater()->update($values, $entity);
 		assert($entity instanceof Entities\Channels\Channel);
 
 		$this->dispatcher?->dispatch(new Events\EntityUpdated($entity));
@@ -81,13 +83,25 @@ final class ChannelsManager
 	public function delete(Entities\Channels\Channel $entity): bool
 	{
 		// Delete entity from database
-		$result = $this->entityCrud->getEntityDeleter()->delete($entity);
+		$result = $this->getEntityCrud()->getEntityDeleter()->delete($entity);
 
 		if ($result) {
 			$this->dispatcher?->dispatch(new Events\EntityDeleted($entity));
 		}
 
 		return $result;
+	}
+
+	/**
+	 * @return DoctrineCrudCrud\IEntityCrud<Entities\Channels\Channel>
+	 */
+	public function getEntityCrud(): DoctrineCrudCrud\IEntityCrud
+	{
+		if ($this->entityCrud === null) {
+			$this->entityCrud = $this->entityCrudFactory->create(Entities\Channels\Channel::class);
+		}
+
+		return $this->entityCrud;
 	}
 
 }

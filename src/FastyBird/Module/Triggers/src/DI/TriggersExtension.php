@@ -22,25 +22,21 @@ use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Module\Triggers\Commands;
 use FastyBird\Module\Triggers\Controllers;
-use FastyBird\Module\Triggers\Entities;
 use FastyBird\Module\Triggers\Hydrators;
 use FastyBird\Module\Triggers\Middleware;
 use FastyBird\Module\Triggers\Models;
 use FastyBird\Module\Triggers\Router;
 use FastyBird\Module\Triggers\Schemas;
 use FastyBird\Module\Triggers\Subscribers;
-use IPub\DoctrineCrud;
 use IPub\SlimRouter\Routing as SlimRouterRouting;
 use Nette;
 use Nette\DI;
-use Nette\PhpGenerator;
 use Nette\Schema;
 use Nettrine\ORM as NettrineORM;
 use stdClass;
 use function array_keys;
 use function array_pop;
 use function assert;
-use function ucfirst;
 use const DIRECTORY_SEPARATOR;
 
 /**
@@ -113,24 +109,19 @@ class TriggersExtension extends DI\CompilerExtension implements Translation\DI\T
 			->setType(Models\Entities\Notifications\NotificationsRepository::class);
 
 		$builder->addDefinition($this->prefix('models.triggersManager'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Entities\Triggers\TriggersManager::class)
-			->setArgument('entityCrud', '__placeholder__');
+			->setType(Models\Entities\Triggers\TriggersManager::class);
 
 		$builder->addDefinition($this->prefix('models.triggersControlsManager'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Entities\Triggers\Controls\ControlsManager::class)
-			->setArgument('entityCrud', '__placeholder__');
+			->setType(Models\Entities\Triggers\Controls\ControlsManager::class);
 
 		$builder->addDefinition($this->prefix('models.actionsManager'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Entities\Actions\ActionsManager::class)
-			->setArgument('entityCrud', '__placeholder__');
+			->setType(Models\Entities\Actions\ActionsManager::class);
 
 		$builder->addDefinition($this->prefix('models.conditionsManager'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Entities\Conditions\ConditionsManager::class)
-			->setArgument('entityCrud', '__placeholder__');
+			->setType(Models\Entities\Conditions\ConditionsManager::class);
 
 		$builder->addDefinition($this->prefix('models.notificationsManager'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Entities\Notifications\NotificationsManager::class)
-			->setArgument('entityCrud', '__placeholder__');
+			->setType(Models\Entities\Notifications\NotificationsManager::class);
 
 		$builder->addDefinition($this->prefix('subscribers.notificationEntity'), new DI\Definitions\ServiceDefinition())
 			->setType(Subscribers\NotificationEntity::class);
@@ -284,54 +275,6 @@ class TriggersExtension extends DI\CompilerExtension implements Translation\DI\T
 				[$builder->getDefinitionByType(Router\ApiRoutes::class), $routerService],
 			);
 		}
-	}
-
-	/**
-	 * @throws Nette\DI\MissingServiceException
-	 */
-	public function afterCompile(PhpGenerator\ClassType $class): void
-	{
-		$builder = $this->getContainerBuilder();
-
-		$entityFactoryServiceName = $builder->getByType(DoctrineCrud\Crud\IEntityCrudFactory::class, true);
-
-		$triggersManagerService = $class->getMethod(
-			'createService' . ucfirst($this->name) . '__models__triggersManager',
-		);
-		$triggersManagerService->setBody(
-			'return new ' . Models\Entities\Triggers\TriggersManager::class
-			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Triggers\Trigger::class . '\'));',
-		);
-
-		$triggersControlsManagerService = $class->getMethod(
-			'createService' . ucfirst($this->name) . '__models__triggersControlsManager',
-		);
-		$triggersControlsManagerService->setBody(
-			'return new ' . Models\Entities\Triggers\Controls\ControlsManager::class
-			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Triggers\Controls\Control::class . '\'));',
-		);
-
-		$actionsManagerService = $class->getMethod('createService' . ucfirst($this->name) . '__models__actionsManager');
-		$actionsManagerService->setBody(
-			'return new ' . Models\Entities\Actions\ActionsManager::class
-			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Actions\Action::class . '\'));',
-		);
-
-		$conditionsManagerService = $class->getMethod(
-			'createService' . ucfirst($this->name) . '__models__conditionsManager',
-		);
-		$conditionsManagerService->setBody(
-			'return new ' . Models\Entities\Conditions\ConditionsManager::class
-			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Conditions\Condition::class . '\'));',
-		);
-
-		$notificationsManagerService = $class->getMethod(
-			'createService' . ucfirst($this->name) . '__models__notificationsManager',
-		);
-		$notificationsManagerService->setBody(
-			'return new ' . Models\Entities\Notifications\NotificationsManager::class
-			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Notifications\Notification::class . '\'));',
-		);
 	}
 
 	/**

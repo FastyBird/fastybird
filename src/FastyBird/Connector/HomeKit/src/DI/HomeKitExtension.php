@@ -366,8 +366,7 @@ class HomeKitExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setType(Models\Entities\Clients\ClientsRepository::class);
 
 		$builder->addDefinition($this->prefix('models.clientsManager'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Entities\Clients\ClientsManager::class)
-			->setArgument('entityCrud', '__placeholder__');
+			->setType(Models\Entities\Clients\ClientsManager::class);
 
 		/**
 		 * COMMANDS
@@ -495,22 +494,6 @@ class HomeKitExtension extends DI\CompilerExtension implements Translation\DI\Tr
 				$characteristicsFactories,
 			);
 		}
-	}
-
-	/**
-	 * @throws DI\MissingServiceException
-	 */
-	public function afterCompile(PhpGenerator\ClassType $class): void
-	{
-		$builder = $this->getContainerBuilder();
-
-		$entityFactoryServiceName = $builder->getByType(DoctrineCrud\Crud\IEntityCrudFactory::class, true);
-
-		$devicesManagerService = $class->getMethod('createService' . ucfirst($this->name) . '__models__clientsManager');
-		$devicesManagerService->setBody(
-			'return new ' . Models\Entities\Clients\ClientsManager::class
-			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Clients\Client::class . '\'));',
-		);
 	}
 
 	/**

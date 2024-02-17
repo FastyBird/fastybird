@@ -38,22 +38,24 @@ final class PropertiesManager
 
 	use Nette\SmartObject;
 
+	/** @var DoctrineCrudCrud\IEntityCrud<Entities\Devices\Properties\Property>|null */
+	private DoctrineCrudCrud\IEntityCrud|null $entityCrud = null;
+
 	/**
-	 * @param DoctrineCrudCrud\IEntityCrud<Entities\Devices\Properties\Property> $entityCrud
+	 * @param DoctrineCrudCrud\IEntityCrudFactory<Entities\Devices\Properties\Property> $entityCrudFactory
 	 */
 	public function __construct(
-		private readonly DoctrineCrudCrud\IEntityCrud $entityCrud,
+		private readonly DoctrineCrudCrud\IEntityCrudFactory $entityCrudFactory,
 		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
-		// Entity CRUD for handling entities
 	}
 
 	public function create(
 		Utils\ArrayHash $values,
 	): Entities\Devices\Properties\Property
 	{
-		$entity = $this->entityCrud->getEntityCreator()->create($values);
+		$entity = $this->getEntityCrud()->getEntityCreator()->create($values);
 		assert($entity instanceof Entities\Devices\Properties\Property);
 
 		$this->dispatcher?->dispatch(new Events\EntityCreated($entity));
@@ -69,7 +71,7 @@ final class PropertiesManager
 		Utils\ArrayHash $values,
 	): Entities\Devices\Properties\Property
 	{
-		$entity = $this->entityCrud->getEntityUpdater()->update($values, $entity);
+		$entity = $this->getEntityCrud()->getEntityUpdater()->update($values, $entity);
 		assert($entity instanceof Entities\Devices\Properties\Property);
 
 		$this->dispatcher?->dispatch(new Events\EntityUpdated($entity));
@@ -83,13 +85,25 @@ final class PropertiesManager
 	public function delete(Entities\Devices\Properties\Property $entity): bool
 	{
 		// Delete entity from database
-		$result = $this->entityCrud->getEntityDeleter()->delete($entity);
+		$result = $this->getEntityCrud()->getEntityDeleter()->delete($entity);
 
 		if ($result) {
 			$this->dispatcher?->dispatch(new Events\EntityDeleted($entity));
 		}
 
 		return $result;
+	}
+
+	/**
+	 * @return DoctrineCrudCrud\IEntityCrud<Entities\Devices\Properties\Property>
+	 */
+	public function getEntityCrud(): DoctrineCrudCrud\IEntityCrud
+	{
+		if ($this->entityCrud === null) {
+			$this->entityCrud = $this->entityCrudFactory->create(Entities\Devices\Properties\Property::class);
+		}
+
+		return $this->entityCrud;
 	}
 
 }

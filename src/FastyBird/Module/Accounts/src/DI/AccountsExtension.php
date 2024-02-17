@@ -22,7 +22,6 @@ use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Module\Accounts\Commands;
 use FastyBird\Module\Accounts\Controllers;
-use FastyBird\Module\Accounts\Entities;
 use FastyBird\Module\Accounts\Helpers;
 use FastyBird\Module\Accounts\Hydrators;
 use FastyBird\Module\Accounts\Middleware;
@@ -31,17 +30,14 @@ use FastyBird\Module\Accounts\Router;
 use FastyBird\Module\Accounts\Schemas;
 use FastyBird\Module\Accounts\Security;
 use FastyBird\Module\Accounts\Subscribers;
-use IPub\DoctrineCrud;
 use IPub\SlimRouter\Routing as SlimRouterRouting;
 use Nette\DI;
-use Nette\PhpGenerator;
 use Nette\Schema;
 use Nettrine\ORM as NettrineORM;
 use stdClass;
 use function array_keys;
 use function array_pop;
 use function assert;
-use function ucfirst;
 use const DIRECTORY_SEPARATOR;
 
 /**
@@ -118,20 +114,16 @@ class AccountsExtension extends DI\CompilerExtension implements Translation\DI\T
 
 		// Database managers
 		$builder->addDefinition($this->prefix('models.accountsManager'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Entities\Accounts\AccountsManager::class)
-			->setArgument('entityCrud', '__placeholder__');
+			->setType(Models\Entities\Accounts\AccountsManager::class);
 
 		$builder->addDefinition($this->prefix('models.emailsManager'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Entities\Emails\EmailsManager::class)
-			->setArgument('entityCrud', '__placeholder__');
+			->setType(Models\Entities\Emails\EmailsManager::class);
 
 		$builder->addDefinition($this->prefix('models.identitiesManager'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Entities\Identities\IdentitiesManager::class)
-			->setArgument('entityCrud', '__placeholder__');
+			->setType(Models\Entities\Identities\IdentitiesManager::class);
 
 		$builder->addDefinition($this->prefix('models.rolesManager'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Entities\Roles\RolesManager::class)
-			->setArgument('entityCrud', '__placeholder__');
+			->setType(Models\Entities\Roles\RolesManager::class);
 
 		$builder->addDefinition($this->prefix('subscribers.entities'), new DI\Definitions\ServiceDefinition())
 			->setType(Subscribers\ModuleEntities::class);
@@ -311,44 +303,6 @@ class AccountsExtension extends DI\CompilerExtension implements Translation\DI\T
 				[$builder->getDefinitionByType(Router\ApiRoutes::class), $routerService],
 			);
 		}
-	}
-
-	/**
-	 * @throws DI\MissingServiceException
-	 */
-	public function afterCompile(PhpGenerator\ClassType $class): void
-	{
-		$builder = $this->getContainerBuilder();
-
-		$entityFactoryServiceName = $builder->getByType(DoctrineCrud\Crud\IEntityCrudFactory::class, true);
-
-		$accountsManagerService = $class->getMethod(
-			'createService' . ucfirst($this->name) . '__models__accountsManager',
-		);
-		$accountsManagerService->setBody(
-			'return new ' . Models\Entities\Accounts\AccountsManager::class
-			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Accounts\Account::class . '\'));',
-		);
-
-		$emailsManagerService = $class->getMethod('createService' . ucfirst($this->name) . '__models__emailsManager');
-		$emailsManagerService->setBody(
-			'return new ' . Models\Entities\Emails\EmailsManager::class
-			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Emails\Email::class . '\'));',
-		);
-
-		$identitiesManagerService = $class->getMethod(
-			'createService' . ucfirst($this->name) . '__models__identitiesManager',
-		);
-		$identitiesManagerService->setBody(
-			'return new ' . Models\Entities\Identities\IdentitiesManager::class
-			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Identities\Identity::class . '\'));',
-		);
-
-		$rolesManagerService = $class->getMethod('createService' . ucfirst($this->name) . '__models__rolesManager');
-		$rolesManagerService->setBody(
-			'return new ' . Models\Entities\Roles\RolesManager::class
-			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Roles\Role::class . '\'));',
-		);
 	}
 
 	/**
