@@ -24,7 +24,6 @@ use React;
 use React\EventLoop;
 use RuntimeException;
 use function array_diff;
-use function in_array;
 use function sprintf;
 
 final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
@@ -133,7 +132,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 				new NetMqtt\DefaultMessage(
 					'zigbee2mqtt/bridge/devices',
 					Utils\FileSystem::read(__DIR__ . '/../../../fixtures/Clients/Messages/bridge_devices.json'),
-				)
+				),
 			);
 		});
 
