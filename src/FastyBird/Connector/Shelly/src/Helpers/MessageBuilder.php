@@ -16,7 +16,6 @@
 namespace FastyBird\Connector\Shelly\Helpers;
 
 use FastyBird\Connector\Shelly\API;
-use FastyBird\Connector\Shelly\Clients;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Queue;
 use Orisai\ObjectMapper;
@@ -39,7 +38,7 @@ final readonly class MessageBuilder
 	}
 
 	/**
-	 * @template T of API\Messages\Message|Clients\Messages\Message|Queue\Messages\Message
+	 * @template T of API\Messages\Message|Queue\Messages\Message
 	 *
 	 * @param class-string<T> $message
 	 * @param array<mixed> $data
@@ -51,7 +50,7 @@ final readonly class MessageBuilder
 	public function create(
 		string $message,
 		array $data,
-	): API\Messages\Message|Clients\Messages\Message|Queue\Messages\Message
+	): API\Messages\Message|Queue\Messages\Message
 	{
 		try {
 			$options = new ObjectMapper\Processing\Options();

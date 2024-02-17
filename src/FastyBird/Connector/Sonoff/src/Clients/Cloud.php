@@ -314,9 +314,7 @@ final class Cloud extends ClientProcess implements Client
 					) {
 						$this->dispatcher?->dispatch(
 							new DevicesEvents\TerminateConnector(
-								MetadataTypes\Sources\Connector::get(
-									MetadataTypes\Sources\Connector::SONOFF,
-								),
+								MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::SONOFF),
 								'Could not call eWelink api',
 								$ex,
 							),
@@ -446,9 +444,7 @@ final class Cloud extends ClientProcess implements Client
 						if (!$ex instanceof Exceptions\CloudApiCall) {
 							$this->dispatcher?->dispatch(
 								new DevicesEvents\TerminateConnector(
-									MetadataTypes\Sources\Connector::get(
-										MetadataTypes\Sources\Connector::SONOFF,
-									),
+									MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::SONOFF),
 									'Could not call eWelink api',
 									$ex,
 								),

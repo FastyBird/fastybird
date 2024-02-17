@@ -39,7 +39,6 @@ use Psr\EventDispatcher as PsrEventDispatcher;
 use React\Datagram;
 use React\Dns;
 use React\EventLoop;
-use SplObjectStorage;
 use Throwable;
 use TypeError;
 use ValueError;
@@ -47,7 +46,6 @@ use function array_key_exists;
 use function array_map;
 use function array_merge;
 use function assert;
-use function count;
 use function explode;
 use function is_array;
 use function is_bool;
@@ -83,9 +81,6 @@ final class Discovery
 	private const MATCH_IP_ADDRESS = '/^((?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])[.]){3}(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$/';
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 	private const MATCH_IP_ADDRESS_PORT = '/^(?P<address>((?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])[.]){3}(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]))(:(?P<port>[0-9]{1,5}))?$/';
-
-	/** @var SplObjectStorage<Messages\Response\DiscoveredLocalDevice, null> */
-	private SplObjectStorage $discoveredLocalDevices;
 
 	private Storages\MdnsResultStorage $searchResult;
 
@@ -126,8 +121,6 @@ final class Discovery
 	 */
 	public function discover(): void
 	{
-		$this->discoveredLocalDevices = new SplObjectStorage();
-
 		$mode = $this->connectorHelper->getClientMode($this->connector);
 
 		if ($mode->equalsValue(Types\ClientMode::CLOUD)) {
@@ -303,17 +296,11 @@ final class Discovery
 							$generation = Types\DeviceGeneration::GENERATION_1;
 						}
 
-						$this->discoveredLocalDevices->attach(
-							$this->messageBuilder->create(
-								Messages\Response\DiscoveredLocalDevice::class,
-								[
-									'generation' => $generation,
-									'id' => Utils\Strings::lower($matches['id']),
-									'type' => Utils\Strings::lower($matches['type']),
-									'ip_address' => $serviceIpAddress,
-									'domain' => $serviceDomain,
-								],
-							),
+						$this->handleFoundLocalDevice(
+							Types\DeviceGeneration::get($generation),
+							Utils\Strings::lower($matches['id']),
+							$serviceIpAddress,
+							$serviceDomain,
 						);
 					}
 				}
@@ -338,20 +325,6 @@ final class Discovery
 			async(function (): void {
 				$this->server?->close();
 
-				$this->discoveredLocalDevices->rewind();
-
-				$devices = [];
-
-				foreach ($this->discoveredLocalDevices as $device) {
-					$devices[] = $device;
-				}
-
-				$this->discoveredLocalDevices = new SplObjectStorage();
-
-				if (count($devices) > 0) {
-					$this->handleFoundLocalDevices($devices);
-				}
-
 				$this->dispatcher?->dispatch(
 					new DevicesEvents\TerminateConnector(
 						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::SHELLY),
@@ -367,202 +340,230 @@ final class Discovery
 		// TODO: Implement cloud discovery
 	}
 
-	/**
-	 * @param array<Messages\Response\DiscoveredLocalDevice> $devices
-	 */
-	private function handleFoundLocalDevices(array $devices): void
+	private function handleFoundLocalDevice(
+		Types\DeviceGeneration $generation,
+		string $identifier,
+		string $ipAddress,
+		string|null $domain,
+	): void
 	{
 		$gen1HttpApi = $this->gen1HttpApiFactory->create();
 		$gen2HttpApi = $this->gen2HttpApiFactory->create();
 
-		foreach ($devices as $device) {
-			if ($device->getGeneration()->equalsValue(Types\DeviceGeneration::UNKNOWN)) {
+		if ($generation->equalsValue(Types\DeviceGeneration::UNKNOWN)) {
+			try {
+				$deviceInformation = await($gen2HttpApi->getDeviceInformation($ipAddress));
+				$generation = Types\DeviceGeneration::get(Types\DeviceGeneration::GENERATION_2);
+			} catch (Throwable) {
 				try {
-					$deviceInformation = await($gen2HttpApi->getDeviceInformation($device->getIpAddress()));
-					$generation = Types\DeviceGeneration::get(Types\DeviceGeneration::GENERATION_2);
+					$deviceInformation = await($gen1HttpApi->getDeviceInformation($ipAddress));
+					$generation = Types\DeviceGeneration::get(Types\DeviceGeneration::GENERATION_1);
 				} catch (Throwable) {
-					try {
-						$deviceInformation = await($gen1HttpApi->getDeviceInformation($device->getIpAddress()));
-						$generation = Types\DeviceGeneration::get(Types\DeviceGeneration::GENERATION_1);
-					} catch (Throwable) {
-						continue;
-					}
-				}
-			} else {
-				try {
-					if ($device->getGeneration()->equalsValue(Types\DeviceGeneration::GENERATION_1)) {
-						$deviceInformation = await($gen1HttpApi->getDeviceInformation($device->getIpAddress()));
-						$generation = Types\DeviceGeneration::get(Types\DeviceGeneration::GENERATION_1);
-					} elseif ($device->getGeneration()->equalsValue(Types\DeviceGeneration::GENERATION_2)) {
-						$deviceInformation = await($gen2HttpApi->getDeviceInformation($device->getIpAddress()));
-						$generation = Types\DeviceGeneration::get(Types\DeviceGeneration::GENERATION_2);
-					} else {
-						continue;
-					}
-				} catch (Throwable $ex) {
-					$this->logger->error(
-						'Could not load device basic information',
-						[
-							'source' => MetadataTypes\Sources\Connector::SHELLY,
-							'type' => 'discovery-client',
-							'exception' => ApplicationHelpers\Logger::buildException($ex),
-							'connector' => [
-								'id' => $this->connector->getId()->toString(),
-							],
-							'device' => [
-								'identifier' => $device->getIdentifier(),
-								'ip_address' => $device->getIpAddress(),
-								'domain' => $device->getDomain(),
-								'generation' => $device->getGeneration()->getValue(),
-							],
-						],
-					);
-
-					continue;
+					return;
 				}
 			}
-
-			$deviceDescription = $deviceConfiguration = $deviceStatus = null;
-
+		} else {
 			try {
 				if ($generation->equalsValue(Types\DeviceGeneration::GENERATION_1)) {
-					$deviceDescription = await($gen1HttpApi->getDeviceDescription($device->getIpAddress(), null, null));
+					$deviceInformation = await($gen1HttpApi->getDeviceInformation($ipAddress));
+					$generation = Types\DeviceGeneration::get(Types\DeviceGeneration::GENERATION_1);
 				} elseif ($generation->equalsValue(Types\DeviceGeneration::GENERATION_2)) {
-					$deviceConfiguration = await(
-						$gen2HttpApi->getDeviceConfiguration($device->getIpAddress(), null, null),
-					);
-					$deviceStatus = await($gen2HttpApi->getDeviceState($device->getIpAddress(), null, null));
+					$deviceInformation = await($gen2HttpApi->getDeviceInformation($ipAddress));
+					$generation = Types\DeviceGeneration::get(Types\DeviceGeneration::GENERATION_2);
 				} else {
-					continue;
+					return;
 				}
 			} catch (Throwable $ex) {
-				if (
-					$ex instanceof Exceptions\HttpApiCall
-					&& $ex->getCode() === StatusCodeInterface::STATUS_UNAUTHORIZED
-				) {
-					$this->logger->error(
-						'Device is password protected and could not be accessed',
-						[
-							'source' => MetadataTypes\Sources\Connector::SHELLY,
-							'type' => 'discovery-client',
-							'exception' => ApplicationHelpers\Logger::buildException($ex),
-							'connector' => [
-								'id' => $this->connector->getId()->toString(),
-							],
-							'device' => [
-								'identifier' => $device->getIdentifier(),
-								'ip_address' => $device->getIpAddress(),
-								'domain' => $device->getDomain(),
-								'generation' => $generation->getValue(),
-							],
+				$this->logger->error(
+					'Could not load device basic information',
+					[
+						'source' => MetadataTypes\Sources\Connector::SHELLY,
+						'type' => 'discovery-client',
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
+						'connector' => [
+							'id' => $this->connector->getId()->toString(),
 						],
-					);
-				} else {
-					$this->logger->error(
-						'Could not load device description or configuration',
-						[
-							'source' => MetadataTypes\Sources\Connector::SHELLY,
-							'type' => 'discovery-client',
-							'exception' => ApplicationHelpers\Logger::buildException($ex),
-							'connector' => [
-								'id' => $this->connector->getId()->toString(),
-							],
-							'device' => [
-								'identifier' => $device->getIdentifier(),
-								'ip_address' => $device->getIpAddress(),
-								'domain' => $device->getDomain(),
-								'generation' => $generation->getValue(),
-							],
+						'device' => [
+							'identifier' => $identifier,
+							'ip_address' => $ipAddress,
+							'domain' => $domain,
+							'generation' => $generation->getValue(),
 						],
-					);
-				}
+					],
+				);
 
-				continue;
+				return;
+			}
+		}
+
+		$deviceDescription = $deviceConfiguration = $deviceStatus = null;
+
+		try {
+			if ($generation->equalsValue(Types\DeviceGeneration::GENERATION_1)) {
+				$deviceDescription = await($gen1HttpApi->getDeviceDescription($ipAddress, null, null));
+			} elseif ($generation->equalsValue(Types\DeviceGeneration::GENERATION_2)) {
+				$deviceConfiguration = await(
+					$gen2HttpApi->getDeviceConfiguration($ipAddress, null, null),
+				);
+				$deviceStatus = await($gen2HttpApi->getDeviceState($ipAddress, null, null));
+			} else {
+				return;
+			}
+		} catch (Throwable $ex) {
+			if (
+				$ex instanceof Exceptions\HttpApiCall
+				&& $ex->getCode() === StatusCodeInterface::STATUS_UNAUTHORIZED
+			) {
+				$this->logger->error(
+					'Device is password protected and could not be accessed',
+					[
+						'source' => MetadataTypes\Sources\Connector::SHELLY,
+						'type' => 'discovery-client',
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
+						'connector' => [
+							'id' => $this->connector->getId()->toString(),
+						],
+						'device' => [
+							'identifier' => $identifier,
+							'ip_address' => $ipAddress,
+							'domain' => $domain,
+							'generation' => $generation->getValue(),
+						],
+					],
+				);
+			} else {
+				$this->logger->error(
+					'Could not load device description or configuration',
+					[
+						'source' => MetadataTypes\Sources\Connector::SHELLY,
+						'type' => 'discovery-client',
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
+						'connector' => [
+							'id' => $this->connector->getId()->toString(),
+						],
+						'device' => [
+							'identifier' => $identifier,
+							'ip_address' => $ipAddress,
+							'domain' => $domain,
+							'generation' => $generation->getValue(),
+						],
+					],
+				);
 			}
 
-			try {
-				if (
-					$generation->equalsValue(Types\DeviceGeneration::GENERATION_1)
-					&& $deviceDescription !== null
-				) {
-					$message = $this->messageBuilder->create(
-						Queue\Messages\StoreLocalDevice::class,
-						[
-							'connector' => $this->connector->getId(),
-							'identifier' => $device->getIdentifier(),
-							'generation' => $generation,
-							'ip_address' => $device->getIpAddress(),
-							'domain' => $device->getDomain(),
-							'model' => $deviceInformation->getModel(),
-							'mac_address' => $deviceInformation->getMacAddress(),
-							'auth_enabled' => $deviceInformation->hasAuthentication(),
-							'firmware_version' => $deviceInformation->getFirmware(),
-							'channels' => array_map(
-								static fn (API\Messages\Response\Gen1\DeviceBlockDescription $block): array => [
-									'identifier' => $block->getIdentifier() . '_' . $block->getDescription(),
-									'name' => DevicesUtilities\Name::createName($block->getDescription()),
-									'properties' => array_map(
-										static fn (API\Messages\Response\Gen1\BlockSensorDescription $sensor): array => [
-											'identifier' => (
-												$sensor->getIdentifier()
-												. '_'
-												. $sensor->getType()->getValue()
-												. '_'
-												. $sensor->getDescription()
-											),
-											'name' => DevicesUtilities\Name::createName($sensor->getDescription()),
-											'data_type' => $sensor->getDataType()->value,
-											'unit' => $sensor->getUnit(),
-											'format' => $sensor->getFormat(),
-											'invalid' => $sensor->getInvalid(),
-											'queryable' => $sensor->isQueryable(),
-											'settable' => $sensor->isSettable(),
-										],
-										$block->getSensors(),
-									),
-								],
-								$deviceDescription->getBlocks(),
-							),
-						],
-					);
-				} elseif (
-					$generation->equalsValue(Types\DeviceGeneration::GENERATION_2)
-					&& $deviceConfiguration !== null
-				) {
-					$message = $this->messageBuilder->create(
-						Queue\Messages\StoreLocalDevice::class,
-						[
-							'connector' => $this->connector->getId(),
-							'identifier' => $device->getIdentifier(),
-							'generation' => $generation,
-							'ip_address' => $device->getIpAddress(),
-							'domain' => $device->getDomain(),
-							'model' => $deviceInformation->getModel(),
-							'mac_address' => $deviceInformation->getMacAddress(),
-							'auth_enabled' => $deviceInformation->hasAuthentication(),
-							'firmware_version' => $deviceInformation->getFirmware(),
-							'channels' => array_map(
-								function ($component) use ($deviceStatus): array {
-									$channel = [
-										'identifier' => $component->getType()->getValue() . '_' . $component->getId(),
-										'name' => $component->getName() ?? DevicesUtilities\Name::createName(
-											strval($component->getType()->getValue()),
+			return;
+		}
+
+		try {
+			if (
+				$generation->equalsValue(Types\DeviceGeneration::GENERATION_1)
+				&& $deviceDescription !== null
+			) {
+				$message = $this->messageBuilder->create(
+					Queue\Messages\StoreLocalDevice::class,
+					[
+						'connector' => $this->connector->getId(),
+						'identifier' => $identifier,
+						'generation' => $generation,
+						'ip_address' => $ipAddress,
+						'domain' => $domain,
+						'model' => $deviceInformation->getModel(),
+						'mac_address' => $deviceInformation->getMacAddress(),
+						'auth_enabled' => $deviceInformation->hasAuthentication(),
+						'firmware_version' => $deviceInformation->getFirmware(),
+						'channels' => array_map(
+							static fn (API\Messages\Response\Gen1\DeviceBlockDescription $block): array => [
+								'identifier' => $block->getIdentifier() . '_' . $block->getDescription(),
+								'name' => DevicesUtilities\Name::createName($block->getDescription()),
+								'properties' => array_map(
+									static fn (API\Messages\Response\Gen1\BlockSensorDescription $sensor): array => [
+										'identifier' => (
+											$sensor->getIdentifier()
+											. '_'
+											. $sensor->getType()->getValue()
+											. '_'
+											. $sensor->getDescription()
 										),
-										'properties' => [],
-									];
+										'name' => DevicesUtilities\Name::createName($sensor->getDescription()),
+										'data_type' => $sensor->getDataType()->value,
+										'unit' => $sensor->getUnit(),
+										'format' => $sensor->getFormat(),
+										'invalid' => $sensor->getInvalid(),
+										'queryable' => $sensor->isQueryable(),
+										'settable' => $sensor->isSettable(),
+									],
+									$block->getSensors(),
+								),
+							],
+							$deviceDescription->getBlocks(),
+						),
+					],
+				);
+			} elseif (
+				$generation->equalsValue(Types\DeviceGeneration::GENERATION_2)
+				&& $deviceConfiguration !== null
+			) {
+				$message = $this->messageBuilder->create(
+					Queue\Messages\StoreLocalDevice::class,
+					[
+						'connector' => $this->connector->getId(),
+						'identifier' => $identifier,
+						'generation' => $generation,
+						'ip_address' => $ipAddress,
+						'domain' => $domain,
+						'model' => $deviceInformation->getModel(),
+						'mac_address' => $deviceInformation->getMacAddress(),
+						'auth_enabled' => $deviceInformation->hasAuthentication(),
+						'firmware_version' => $deviceInformation->getFirmware(),
+						'channels' => array_map(
+							function ($component) use ($deviceStatus): array {
+								$channel = [
+									'identifier' => $component->getType()->getValue() . '_' . $component->getId(),
+									'name' => $component->getName() ?? DevicesUtilities\Name::createName(
+										strval($component->getType()->getValue()),
+									),
+									'properties' => [],
+								];
 
-									$gen2metadata = $this->loader->loadGen2Components();
+								$gen2metadata = $this->loader->loadGen2Components();
 
-									if ($gen2metadata->offsetExists($component->getType()->getValue())) {
-										$componentMetadata = $gen2metadata->offsetGet(
-											$component->getType()->getValue(),
-										);
-										assert($componentMetadata instanceof Utils\ArrayHash);
+								if ($gen2metadata->offsetExists($component->getType()->getValue())) {
+									$componentMetadata = $gen2metadata->offsetGet(
+										$component->getType()->getValue(),
+									);
+									assert($componentMetadata instanceof Utils\ArrayHash);
 
-										if ($component instanceof API\Messages\Response\Gen2\DeviceInputConfiguration) {
-											$inputType = $component->getInputType()->getValue();
+									if ($component instanceof API\Messages\Response\Gen2\DeviceInputConfiguration) {
+										$inputType = $component->getInputType()->getValue();
 
-											if ($componentMetadata->offsetExists($inputType)) {
+										if ($componentMetadata->offsetExists($inputType)) {
+											$channel['properties'][] = array_merge(
+												[
+													'identifier' => (
+														$component->getType()->getValue()
+														. '_'
+														. $component->getId()
+														. '_'
+														. $inputType
+													),
+												],
+												(array) Utils\Json::decode(
+													Utils\Json::encode(
+														(array) $componentMetadata->offsetGet($inputType),
+													),
+													Utils\Json::FORCE_ARRAY,
+												),
+											);
+										}
+									} else {
+										foreach ($componentMetadata as $type => $configuration) {
+											assert(
+												$configuration instanceof Utils\ArrayHash
+												&& $configuration->offsetExists('optional')
+												&& is_bool($configuration->offsetGet('optional')),
+											);
+
+											if (!$configuration->offsetGet('optional')) {
 												$channel['properties'][] = array_merge(
 													[
 														'identifier' => (
@@ -570,26 +571,29 @@ final class Discovery
 															. '_'
 															. $component->getId()
 															. '_'
-															. $inputType
+															. $type
 														),
 													],
 													(array) Utils\Json::decode(
-														Utils\Json::encode(
-															(array) $componentMetadata->offsetGet($inputType),
-														),
+														Utils\Json::encode((array) $configuration),
 														Utils\Json::FORCE_ARRAY,
 													),
 												);
-											}
-										} else {
-											foreach ($componentMetadata as $type => $configuration) {
-												assert(
-													$configuration instanceof Utils\ArrayHash
-													&& $configuration->offsetExists('optional')
-													&& is_bool($configuration->offsetGet('optional')),
+											} else {
+												$status = $deviceStatus?->findComponent(
+													$component->getType(),
+													$component->getId(),
 												);
 
-												if (!$configuration->offsetGet('optional')) {
+												$status = $status?->toArray();
+
+												if (
+													$status === null
+													|| (
+														array_key_exists($type, $status)
+														&& $status[$type] !== Shelly\Constants::VALUE_NOT_AVAILABLE
+													)
+												) {
 													$channel['properties'][] = array_merge(
 														[
 															'identifier' => (
@@ -605,85 +609,52 @@ final class Discovery
 															Utils\Json::FORCE_ARRAY,
 														),
 													);
-												} else {
-													$status = $deviceStatus?->findComponent(
-														$component->getType(),
-														$component->getId(),
-													);
-
-													$status = $status?->toArray();
-
-													if (
-														$status === null
-														|| (
-															array_key_exists($type, $status)
-															&& $status[$type] !== Shelly\Constants::VALUE_NOT_AVAILABLE
-														)
-													) {
-														$channel['properties'][] = array_merge(
-															[
-																'identifier' => (
-																	$component->getType()->getValue()
-																	. '_'
-																	. $component->getId()
-																	. '_'
-																	. $type
-																),
-															],
-															(array) Utils\Json::decode(
-																Utils\Json::encode((array) $configuration),
-																Utils\Json::FORCE_ARRAY,
-															),
-														);
-													}
 												}
 											}
 										}
 									}
+								}
 
-									return $channel;
-								},
-								array_merge(
-									$deviceConfiguration->getSwitches(),
-									$deviceConfiguration->getCovers(),
-									$deviceConfiguration->getLights(),
-									$deviceConfiguration->getInputs(),
-									$deviceConfiguration->getTemperature(),
-									$deviceConfiguration->getHumidity(),
-									$deviceConfiguration->getDevicePower(),
-									$deviceConfiguration->getScripts(),
-									$deviceConfiguration->getSmoke(),
-									$deviceConfiguration->getVoltmeters(),
-								),
+								return $channel;
+							},
+							array_merge(
+								$deviceConfiguration->getSwitches(),
+								$deviceConfiguration->getCovers(),
+								$deviceConfiguration->getLights(),
+								$deviceConfiguration->getInputs(),
+								$deviceConfiguration->getTemperature(),
+								$deviceConfiguration->getHumidity(),
+								$deviceConfiguration->getDevicePower(),
+								$deviceConfiguration->getScripts(),
+								$deviceConfiguration->getSmoke(),
+								$deviceConfiguration->getVoltmeters(),
 							),
-						],
-					);
-				} else {
-					continue;
-				}
-
-				$this->queue->append($message);
-			} catch (Throwable $ex) {
-				$this->logger->error(
-					'Could not create discovered device',
-					[
-						'source' => MetadataTypes\Sources\Connector::SHELLY,
-						'type' => 'discovery-client',
-						'exception' => ApplicationHelpers\Logger::buildException($ex),
-						'connector' => [
-							'id' => $this->connector->getId()->toString(),
-						],
-						'device' => [
-							'identifier' => $device->getIdentifier(),
-							'ip_address' => $device->getIpAddress(),
-							'domain' => $device->getDomain(),
-							'generation' => $device->getGeneration()->getValue(),
-						],
+						),
 					],
 				);
-
-				continue;
+			} else {
+				return;
 			}
+
+			$this->queue->append($message);
+		} catch (Throwable $ex) {
+			$this->logger->error(
+				'Could not create discovered device',
+				[
+					'source' => MetadataTypes\Sources\Connector::SHELLY,
+					'type' => 'discovery-client',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'connector' => [
+						'id' => $this->connector->getId()->toString(),
+					],
+					'device' => [
+						'identifier' => $identifier,
+						'ip_address' => $ipAddress,
+						'domain' => $domain,
+						'generation' => $generation->getValue(),
+					],
+				],
+			);
 		}
 	}
 

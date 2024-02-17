@@ -290,9 +290,7 @@ final class Lan extends ClientProcess implements Client
 
 						$this->dispatcher?->dispatch(
 							new DevicesEvents\TerminateConnector(
-								MetadataTypes\Sources\Connector::get(
-									MetadataTypes\Sources\Connector::SONOFF,
-								),
+								MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::SONOFF),
 								'Could not call device lan api',
 								$ex,
 							),

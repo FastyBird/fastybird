@@ -204,7 +204,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->client->on('finished', function (): void {
 			$this->dispatcher?->dispatch(
 				new DevicesEvents\TerminateConnector(
-					MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::FB_MQTT),
+					MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::SONOFF),
 					'Devices discovery finished',
 				),
 			);
