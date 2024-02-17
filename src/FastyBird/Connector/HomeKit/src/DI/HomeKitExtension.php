@@ -39,14 +39,11 @@ use FastyBird\Library\Exchange\DI as ExchangeDI;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Module\Devices\DI as DevicesDI;
-use IPub\DoctrineCrud;
 use Nette\DI;
-use Nette\PhpGenerator;
 use Nettrine\ORM as NettrineORM;
 use function array_keys;
 use function array_pop;
 use function assert;
-use function ucfirst;
 use const DIRECTORY_SEPARATOR;
 
 /**

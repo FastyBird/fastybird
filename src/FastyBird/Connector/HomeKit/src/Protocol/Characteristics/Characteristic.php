@@ -28,6 +28,7 @@ use Nette;
 use Ramsey\Uuid;
 use TypeError;
 use ValueError;
+use function array_map;
 use function array_merge;
 use function in_array;
 use function sprintf;
@@ -73,7 +74,7 @@ class Characteristic
 	private bool $valid = true;
 
 	/**
-	 * @param array<string> $permissions
+	 * @param array<Types\CharacteristicPermission> $permissions
 	 * @param array<int>|null $validValues
 	 *
 	 * @throws Exceptions\InvalidArgument
@@ -114,7 +115,7 @@ class Characteristic
 	}
 
 	/**
-	 * @return array<string>
+	 * @return array<Types\CharacteristicPermission>
 	 */
 	public function getPermissions(): array
 	{
@@ -218,41 +219,41 @@ class Characteristic
 	public function getMeta(): array
 	{
 		$meta = [
-			Types\Representation::FORMAT => strval($this->dataType->getValue()),
+			Types\Representation::FORMAT->value => $this->dataType->value,
 		];
 
 		if (
-			$this->dataType->equalsValue(Types\DataType::INT)
-			|| $this->dataType->equalsValue(Types\DataType::UINT8)
-			|| $this->dataType->equalsValue(Types\DataType::UINT16)
-			|| $this->dataType->equalsValue(Types\DataType::UINT32)
-			|| $this->dataType->equalsValue(Types\DataType::UINT64)
-			|| $this->dataType->equalsValue(Types\DataType::FLOAT)
+			$this->dataType === Types\DataType::INT
+			|| $this->dataType === Types\DataType::UINT8
+			|| $this->dataType === Types\DataType::UINT16
+			|| $this->dataType === Types\DataType::UINT32
+			|| $this->dataType === Types\DataType::UINT64
+			|| $this->dataType === Types\DataType::FLOAT
 		) {
 			if ($this->maxValue !== null) {
-				$meta[Types\Representation::MAX_VALUE] = $this->maxValue;
+				$meta[Types\Representation::MAX_VALUE->value] = $this->maxValue;
 			}
 
 			if ($this->minValue !== null) {
-				$meta[Types\Representation::MIN_VALUE] = $this->minValue;
+				$meta[Types\Representation::MIN_VALUE->value] = $this->minValue;
 			}
 
 			if ($this->minStep !== null) {
-				$meta[Types\Representation::MIN_STEP] = $this->minStep;
+				$meta[Types\Representation::MIN_STEP->value] = $this->minStep;
 			}
 
 			if ($this->unit !== null) {
-				$meta[Types\Representation::UNIT] = strval($this->unit->getValue());
+				$meta[Types\Representation::UNIT->value] = strval($this->unit->value);
 			}
 		}
 
 		if ($this->validValues !== null) {
-			$meta[Types\Representation::VALID_VALUES] = $this->validValues;
+			$meta[Types\Representation::VALID_VALUES->value] = $this->validValues;
 		}
 
-		if ($this->dataType->equalsValue(Types\DataType::STRING) && $this->maxLength !== null) {
+		if ($this->dataType === Types\DataType::STRING && $this->maxLength !== null) {
 			if ($this->maxLength !== self::DEFAULT_MAX_LENGTH) {
-				$meta[Types\Representation::MAX_LEN] = $this->maxLength;
+				$meta[Types\Representation::MAX_LEN->value] = $this->maxLength;
 			}
 		}
 
@@ -273,16 +274,19 @@ class Characteristic
 	public function toHap(): array
 	{
 		$hapRepresentation = [
-			Types\Representation::IID => $this->service->getAccessory()->getIidManager()->getIid($this),
-			Types\Representation::TYPE => Helpers\Protocol::uuidToHapType($this->typeId),
-			Types\Representation::PERM => $this->permissions,
-			Types\Representation::FORMAT => strval($this->dataType->getValue()),
+			Types\Representation::IID->value => $this->service->getAccessory()->getIidManager()->getIid($this),
+			Types\Representation::TYPE->value => Helpers\Protocol::uuidToHapType($this->typeId),
+			Types\Representation::PERM->value => array_map(
+				static fn (Types\CharacteristicPermission $permission): string => $permission->value,
+				$this->permissions,
+			),
+			Types\Representation::FORMAT->value => $this->dataType->value,
 		];
 
 		$hapRepresentation = array_merge($hapRepresentation, $this->getMeta());
 
 		if (in_array(Types\CharacteristicPermission::READ, $this->permissions, true)) {
-			$hapRepresentation[Types\Representation::VALUE] = Protocol\Transformer::toClient(
+			$hapRepresentation[Types\Representation::VALUE->value] = Protocol\Transformer::toClient(
 				$this->property,
 				$this->dataType,
 				$this->validValues,
@@ -294,7 +298,7 @@ class Characteristic
 			);
 		}
 
-		$hapRepresentation[Types\CharacteristicPermission::NOTIFY] = in_array(
+		$hapRepresentation[Types\CharacteristicPermission::NOTIFY->value] = in_array(
 			Types\CharacteristicPermission::NOTIFY,
 			$this->permissions,
 			true,
@@ -309,8 +313,11 @@ class Characteristic
 	public function __toString(): string
 	{
 		$properties = [
-			'permissions' => $this->permissions,
-			'format' => $this->dataType->getValue(),
+			'permissions' => array_map(
+				static fn (Types\CharacteristicPermission $permission): string => $permission->value,
+				$this->permissions,
+			),
+			'format' => $this->dataType->value,
 		];
 
 		if ($this->validValues !== null) {
@@ -330,7 +337,7 @@ class Characteristic
 		}
 
 		if ($this->unit !== null) {
-			$properties['unit'] = $this->unit->getValue();
+			$properties['unit'] = $this->unit->value;
 		}
 
 		return sprintf(

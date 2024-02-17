@@ -29,7 +29,6 @@ use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\States as DevicesStates;
 use Nette;
 use Nette\Utils;
@@ -109,7 +108,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceProperties();
+		$findDevicePropertyQuery = new Queries\Configuration\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($device);
 		$findDevicePropertyQuery->byId($message->getProperty());
 
@@ -164,7 +163,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 				MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::HOMEKIT),
 			));
 		} elseif ($property instanceof DevicesDocuments\Devices\Properties\Mapped) {
-			$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceProperties();
+			$findDevicePropertyQuery = new Queries\Configuration\FindDeviceProperties();
 			$findDevicePropertyQuery->byId($property->getParent());
 
 			$parent = $this->devicesPropertiesConfigurationRepository->findOneBy($findDevicePropertyQuery);

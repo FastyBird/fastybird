@@ -112,7 +112,7 @@ abstract class Periodic
 				$this->properties[$device->getId()->toString()] = [];
 			}
 
-			$findDevicePropertiesQuery = new DevicesQueries\Configuration\FindDeviceProperties();
+			$findDevicePropertiesQuery = new Queries\Configuration\FindDeviceProperties();
 			$findDevicePropertiesQuery->forDevice($device);
 
 			$properties = $this->devicesPropertiesConfigurationRepository->findAllBy($findDevicePropertiesQuery);
@@ -308,7 +308,7 @@ abstract class Periodic
 					$characteristicValue = $state->getGet()->getExpectedValue() ?? ($state->isValid() ? $state->getGet()->getActualValue() : null);
 				}
 			} elseif ($property instanceof DevicesDocuments\Devices\Properties\Variable) {
-				$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+				$findDevicePropertyQuery = new Queries\Configuration\FindDeviceVariableProperties();
 				$findDevicePropertyQuery->byId($property->getId());
 
 				$property = $this->devicesPropertiesConfigurationRepository->findOneBy(

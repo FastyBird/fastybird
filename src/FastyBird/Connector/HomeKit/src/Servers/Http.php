@@ -181,7 +181,7 @@ final class Http implements Server
 		);
 
 		foreach ($devices as $device) {
-			$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+			$findDevicePropertyQuery = new Queries\Configuration\FindDeviceVariableProperties();
 			$findDevicePropertyQuery->forDevice($device);
 			$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::AID);
 
@@ -227,7 +227,7 @@ final class Http implements Server
 					$format = $property->getFormat();
 
 					$characteristic = $this->buildCharacteristic(
-						$property->getIdentifier(),
+						Types\ChannelPropertyIdentifier::from($property->getIdentifier()),
 						$service,
 						$property,
 						$format instanceof MetadataFormats\StringEnum
@@ -237,8 +237,10 @@ final class Http implements Server
 						$format instanceof MetadataFormats\NumberRange ? $format->getMin() : null,
 						$format instanceof MetadataFormats\NumberRange ? $format->getMax() : null,
 						$property->getStep(),
-						$property->getUnit() !== null && Types\CharacteristicUnit::isValidValue($property->getUnit())
-							? Types\CharacteristicUnit::get($property->getUnit())
+						$property->getUnit() !== null && Types\CharacteristicUnit::tryFrom(
+							$property->getUnit(),
+						) !== null
+							? Types\CharacteristicUnit::from($property->getUnit())
 							: null,
 					);
 
@@ -273,7 +275,7 @@ final class Http implements Server
 		foreach ($bridgedAccessories as $accessory) {
 			$this->accessoriesDriver->addBridgedAccessory($accessory);
 
-			$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+			$findDevicePropertyQuery = new Queries\Configuration\FindDeviceVariableProperties();
 			$findDevicePropertyQuery->forDevice($accessory->getDevice());
 			$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::AID);
 
@@ -293,7 +295,7 @@ final class Http implements Server
 
 						$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 							'entity' => DevicesEntities\Devices\Properties\Variable::class,
-							'identifier' => Types\DevicePropertyIdentifier::AID,
+							'identifier' => Types\DevicePropertyIdentifier::AID->value,
 							'dataType' => MetadataTypes\DataType::UCHAR,
 							'value' => $accessory->getAid(),
 							'device' => $device,
@@ -596,7 +598,7 @@ final class Http implements Server
 	{
 		if (
 			$property->getConnector()->getId()->equals($this->connector->getId())
-			&& $property->getIdentifier() === Types\ConnectorPropertyIdentifier::SHARED_KEY
+			&& $property->getIdentifier() === Types\ConnectorPropertyIdentifier::SHARED_KEY->value
 		) {
 			$this->logger->debug(
 				'Shared key has been updated',
@@ -673,7 +675,7 @@ final class Http implements Server
 		 */
 
 		$accessoryInformation = $this->buildService(
-			Types\ServiceType::get(Types\ServiceType::ACCESSORY_INFORMATION),
+			Types\ServiceType::ACCESSORY_INFORMATION,
 			$accessory,
 		);
 
@@ -713,7 +715,7 @@ final class Http implements Server
 
 						$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 							'entity' => DevicesEntities\Devices\Properties\Variable::class,
-							'identifier' => Types\DevicePropertyIdentifier::SERIAL_NUMBER,
+							'identifier' => Types\DevicePropertyIdentifier::SERIAL_NUMBER->value,
 							'dataType' => MetadataTypes\DataType::STRING,
 							'value' => $serialNumber,
 							'device' => $device,
@@ -758,7 +760,7 @@ final class Http implements Server
 
 						$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 							'entity' => DevicesEntities\Devices\Properties\Variable::class,
-							'identifier' => Types\DevicePropertyIdentifier::VERSION,
+							'identifier' => Types\DevicePropertyIdentifier::VERSION->value,
 							'dataType' => MetadataTypes\DataType::STRING,
 							'value' => strval($firmwareVersion),
 							'device' => $device,
@@ -818,7 +820,7 @@ final class Http implements Server
 		if ($accessory instanceof Protocol\Accessories\Bridge) {
 			$accessoryProtocolInformation = new Protocol\Services\Service(
 				Uuid\Uuid::fromString(Protocol\Services\Service::HAP_PROTOCOL_INFORMATION_SERVICE_UUID),
-				Types\ServiceType::get(Types\ServiceType::PROTOCOL_INFORMATION),
+				Types\ServiceType::PROTOCOL_INFORMATION,
 				$accessory,
 				null,
 				['Version'],
@@ -851,14 +853,14 @@ final class Http implements Server
 	{
 		$metadata = $this->loader->loadServices();
 
-		if (!$metadata->offsetExists(strval($type->getValue()))) {
+		if (!$metadata->offsetExists(strval($type->value))) {
 			throw new Exceptions\InvalidArgument(sprintf(
 				'Definition for service: %s was not found',
-				strval($type->getValue()),
+				$type->value,
 			));
 		}
 
-		$serviceMetadata = $metadata->offsetGet(strval($type->getValue()));
+		$serviceMetadata = $metadata->offsetGet($type->value);
 
 		if (
 			!$serviceMetadata instanceof Utils\ArrayHash
@@ -876,7 +878,7 @@ final class Http implements Server
 					$channel !== null
 					&& $channel::getType() === $serviceFactory->getEntityClass()::getType()
 				) || (
-					$type->equalsValue(Types\ServiceType::ACCESSORY_INFORMATION)
+					$type === Types\ServiceType::ACCESSORY_INFORMATION
 					&& $serviceFactory instanceof Protocol\Services\GenericFactory
 				)
 			) {
@@ -915,7 +917,7 @@ final class Http implements Server
 	 * @throws ValueError
 	 */
 	public function buildCharacteristic(
-		string $name,
+		Types\ChannelPropertyIdentifier $name,
 		Protocol\Services\Service $service,
 		DevicesDocuments\Channels\Properties\Property|null $property = null,
 		array|null $validValues = [],
@@ -926,7 +928,7 @@ final class Http implements Server
 		Types\CharacteristicUnit|null $unit = null,
 	): Protocol\Characteristics\Characteristic
 	{
-		$name = str_replace(' ', '', ucwords(str_replace('_', ' ', $name)));
+		$name = str_replace(' ', '', ucwords(str_replace('_', ' ', $name->value)));
 
 		$metadata = $this->loader->loadCharacteristics();
 
@@ -945,7 +947,7 @@ final class Http implements Server
 			|| !is_string($characteristicsMetadata->offsetGet('UUID'))
 			|| !$characteristicsMetadata->offsetExists('Format')
 			|| !is_string($characteristicsMetadata->offsetGet('Format'))
-			|| !Types\DataType::isValidValue($characteristicsMetadata->offsetGet('Format'))
+			|| Types\DataType::tryFrom($characteristicsMetadata->offsetGet('Format')) === null
 			|| !$characteristicsMetadata->offsetExists('Permissions')
 			|| !$characteristicsMetadata->offsetGet('Permissions') instanceof Utils\ArrayHash
 		) {
@@ -955,9 +957,9 @@ final class Http implements Server
 		if (
 			$unit === null
 			&& $characteristicsMetadata->offsetExists('Unit')
-			&& Types\CharacteristicUnit::isValidValue($characteristicsMetadata->offsetGet('Unit'))
+			&& Types\CharacteristicUnit::tryFrom(strval($characteristicsMetadata->offsetGet('Unit'))) !== null
 		) {
-			$unit = Types\CharacteristicUnit::get($characteristicsMetadata->offsetGet('Unit'));
+			$unit = Types\CharacteristicUnit::from(strval($characteristicsMetadata->offsetGet('Unit')));
 		}
 
 		if ($minValue === null && $characteristicsMetadata->offsetExists('MinValue')) {
@@ -1040,8 +1042,13 @@ final class Http implements Server
 				return $characteristicFactory->create(
 					Helpers\Protocol::hapTypeToUuid(strval($characteristicsMetadata->offsetGet('UUID'))),
 					$name,
-					Types\DataType::get($characteristicsMetadata->offsetGet('Format')),
-					(array) $characteristicsMetadata->offsetGet('Permissions'),
+					Types\DataType::from($characteristicsMetadata->offsetGet('Format')),
+					array_map(
+						static fn (string $permission): Types\CharacteristicPermission => Types\CharacteristicPermission::from(
+							$permission,
+						),
+						(array) $characteristicsMetadata->offsetGet('Permissions'),
+					),
 					$service,
 					$property,
 					$validValues,

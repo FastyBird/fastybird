@@ -142,7 +142,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 					return;
 				}
 
-				$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceProperties();
+				$findPropertyQuery = new Queries\Configuration\FindDeviceProperties();
 				$findPropertyQuery->byId($document->getId());
 				$findPropertyQuery->forDevice($device);
 
@@ -350,8 +350,8 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 			}
 
 			if (
-				$document->getIdentifier() === Types\ConnectorPropertyIdentifier::PAIRED
-				|| $document->getIdentifier() === Types\ConnectorPropertyIdentifier::CONFIG_VERSION
+				$document->getIdentifier() === Types\ConnectorPropertyIdentifier::PAIRED->value
+				|| $document->getIdentifier() === Types\ConnectorPropertyIdentifier::CONFIG_VERSION->value
 			) {
 				$this->dispatcher?->dispatch(
 					new DevicesEvents\TerminateConnector(
@@ -361,7 +361,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 				);
 			}
 
-			if ($document->getIdentifier() === Types\ConnectorPropertyIdentifier::SHARED_KEY) {
+			if ($document->getIdentifier() === Types\ConnectorPropertyIdentifier::SHARED_KEY->value) {
 				$this->dispatcher?->dispatch(
 					new DevicesEvents\TerminateConnector(
 						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::HOMEKIT),

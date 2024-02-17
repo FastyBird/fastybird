@@ -85,7 +85,7 @@ class Service
 
 	public function getName(): string
 	{
-		return $this->getType()->getValue();
+		return $this->getType()->value;
 	}
 
 	public function getAccessory(): Protocol\Accessories\Accessory
@@ -146,12 +146,12 @@ class Service
 		$this->characteristics->attach($characteristic);
 	}
 
-	public function hasCharacteristic(string $name): bool
+	public function hasCharacteristic(Types\CharacteristicType $name): bool
 	{
 		$this->characteristics->rewind();
 
 		foreach ($this->characteristics as $characteristic) {
-			if ($characteristic->getName() === $name) {
+			if ($characteristic->getName() === $name->value) {
 				return true;
 			}
 		}
@@ -159,12 +159,12 @@ class Service
 		return false;
 	}
 
-	public function findCharacteristic(string $name): Protocol\Characteristics\Characteristic|null
+	public function findCharacteristic(Types\CharacteristicType $name): Protocol\Characteristics\Characteristic|null
 	{
 		$this->characteristics->rewind();
 
 		foreach ($this->characteristics as $characteristic) {
-			if ($characteristic->getName() === $name) {
+			if ($characteristic->getName() === $name->value) {
 				return $characteristic;
 			}
 		}
@@ -214,17 +214,17 @@ class Service
 	public function toHap(): array
 	{
 		return [
-			Types\Representation::IID => $this->accessory->getIidManager()->getIid($this),
-			Types\Representation::TYPE => Helpers\Protocol::uuidToHapType($this->getTypeId()),
-			Types\Representation::CHARS => array_map(
+			Types\Representation::IID->value => $this->accessory->getIidManager()->getIid($this),
+			Types\Representation::TYPE->value => Helpers\Protocol::uuidToHapType($this->getTypeId()),
+			Types\Representation::CHARS->value => array_map(
 				static fn (Protocol\Characteristics\Characteristic $characteristic): array => $characteristic->toHap(),
 				array_values(array_filter(
 					$this->getCharacteristics(),
 					static fn (Protocol\Characteristics\Characteristic $characteristic): bool => !$characteristic->isVirtual()
 				)),
 			),
-			Types\Representation::PRIMARY => $this->primary,
-			Types\Representation::HIDDEN => $this->hidden,
+			Types\Representation::PRIMARY->value => $this->primary,
+			Types\Representation::HIDDEN->value => $this->hidden,
 		];
 	}
 

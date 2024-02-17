@@ -54,13 +54,13 @@ final class Entities implements EventDispatcher\EventSubscriberInterface
 	public function entityCreated(DevicesEvents\EntityCreated $event): void
 	{
 		if ($event->getEntity() instanceof DevicesEntities\Connectors\Properties\Variable) {
-			if ($event->getEntity()->getIdentifier() === Types\ConnectorPropertyIdentifier::SHARED_KEY) {
+			if ($event->getEntity()->getIdentifier() === Types\ConnectorPropertyIdentifier::SHARED_KEY->value) {
 				Utils\Arrays::invoke($this->onUpdateSharedKey, $event->getEntity());
 			}
 
 			if (
-				$event->getEntity()->getIdentifier() === Types\ConnectorPropertyIdentifier::PAIRED
-				|| $event->getEntity()->getIdentifier() === Types\ConnectorPropertyIdentifier::CONFIG_VERSION
+				$event->getEntity()->getIdentifier() === Types\ConnectorPropertyIdentifier::PAIRED->value
+				|| $event->getEntity()->getIdentifier() === Types\ConnectorPropertyIdentifier::CONFIG_VERSION->value
 			) {
 				Utils\Arrays::invoke($this->onRefresh, $event->getEntity());
 			}
@@ -70,13 +70,13 @@ final class Entities implements EventDispatcher\EventSubscriberInterface
 	public function entityUpdated(DevicesEvents\EntityUpdated $event): void
 	{
 		if ($event->getEntity() instanceof DevicesEntities\Connectors\Properties\Variable) {
-			if ($event->getEntity()->getIdentifier() === Types\ConnectorPropertyIdentifier::SHARED_KEY) {
+			if ($event->getEntity()->getIdentifier() === Types\ConnectorPropertyIdentifier::SHARED_KEY->value) {
 				Utils\Arrays::invoke($this->onUpdateSharedKey, $event->getEntity());
 			}
 
 			if (
-				$event->getEntity()->getIdentifier() === Types\ConnectorPropertyIdentifier::PAIRED
-				|| $event->getEntity()->getIdentifier() === Types\ConnectorPropertyIdentifier::CONFIG_VERSION
+				$event->getEntity()->getIdentifier() === Types\ConnectorPropertyIdentifier::PAIRED->value
+				|| $event->getEntity()->getIdentifier() === Types\ConnectorPropertyIdentifier::CONFIG_VERSION->value
 			) {
 				Utils\Arrays::invoke($this->onRefresh, $event->getEntity());
 			}
@@ -87,8 +87,8 @@ final class Entities implements EventDispatcher\EventSubscriberInterface
 	{
 		if ($event->getEntity() instanceof DevicesEntities\Connectors\Properties\Variable) {
 			if (
-				$event->getEntity()->getIdentifier() === Types\ConnectorPropertyIdentifier::PAIRED
-				|| $event->getEntity()->getIdentifier() === Types\ConnectorPropertyIdentifier::CONFIG_VERSION
+				$event->getEntity()->getIdentifier() === Types\ConnectorPropertyIdentifier::PAIRED->value
+				|| $event->getEntity()->getIdentifier() === Types\ConnectorPropertyIdentifier::CONFIG_VERSION->value
 			) {
 				Utils\Arrays::invoke($this->onRefresh, $event->getEntity());
 			}

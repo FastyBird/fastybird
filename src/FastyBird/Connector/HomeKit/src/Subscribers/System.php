@@ -18,13 +18,14 @@ namespace FastyBird\Connector\HomeKit\Subscribers;
 use Doctrine\Common;
 use Doctrine\ORM;
 use FastyBird\Connector\HomeKit\Entities;
+use FastyBird\Connector\HomeKit\Exceptions;
+use FastyBird\Connector\HomeKit\Queries;
 use FastyBird\Connector\HomeKit\Types;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use IPub\DoctrineCrud;
 use Nette;
 use Nette\Utils;
@@ -106,6 +107,7 @@ final class System implements Common\EventSubscriber
 	/**
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DoctrineCrud\Exceptions\InvalidArgumentException
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError
@@ -118,7 +120,7 @@ final class System implements Common\EventSubscriber
 				continue;
 			}
 
-			$findConnectorPropertyQuery = new DevicesQueries\Entities\FindConnectorProperties();
+			$findConnectorPropertyQuery = new Queries\Entities\FindConnectorProperties();
 			$findConnectorPropertyQuery->byConnectorId(Uuid\Uuid::fromString($connectorId));
 			$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::CONFIG_VERSION);
 

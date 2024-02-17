@@ -35,7 +35,7 @@ class DynamicPropertyFactory implements CharacteristicFactory
 {
 
 	/**
-	 * @param array<string> $permissions
+	 * @param array<Types\CharacteristicPermission> $permissions
 	 * @param array<int>|null $validValues
 	 *
 	 * @throws Exceptions\InvalidArgument

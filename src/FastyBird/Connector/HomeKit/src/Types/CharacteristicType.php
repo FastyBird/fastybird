@@ -15,9 +15,6 @@
 
 namespace FastyBird\Connector\HomeKit\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * HAP service characteristic type types
  *
@@ -26,56 +23,43 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class CharacteristicType extends Consistence\Enum\Enum
+enum CharacteristicType: string
 {
 
-	/**
-	 * Define statuses
-	 */
-	public const BRIGHTNESS = 'Brightness';
+	case BRIGHTNESS = 'Brightness';
 
-	public const HUE = 'Hue';
+	case HUE = 'Hue';
 
-	public const SATURATION = 'Saturation';
+	case SATURATION = 'Saturation';
 
-	public const NAME = 'Name';
+	case NAME = 'Name';
 
-	public const ON = 'On';
+	case ON = 'On';
 
-	public const COLOR_RED = 'ColorRed';
+	case COLOR_RED = 'ColorRed';
 
-	public const COLOR_GREEN = 'ColorGreen';
+	case COLOR_GREEN = 'ColorGreen';
 
-	public const COLOR_BLUE = 'ColorBlue';
+	case COLOR_BLUE = 'ColorBlue';
 
-	public const COLOR_WHITE = 'ColorWhite';
+	case COLOR_WHITE = 'ColorWhite';
 
-	public const CURRENT_HEATING_COOLING_STATE = 'CurrentHeatingCoolingState';
+	case CURRENT_HEATING_COOLING_STATE = 'CurrentHeatingCoolingState';
 
-	public const TARGET_HEATING_COOLING_STATE = 'TargetHeatingCoolingState';
+	case TARGET_HEATING_COOLING_STATE = 'TargetHeatingCoolingState';
 
-	public const CURRENT_TEMPERATURE = 'CurrentTemperature';
+	case CURRENT_TEMPERATURE = 'CurrentTemperature';
 
-	public const TARGET_TEMPERATURE = 'TargetTemperature';
+	case TARGET_TEMPERATURE = 'TargetTemperature';
 
-	public const TEMPERATURE_DISPLAY_UNITS = 'TemperatureDisplayUnits';
+	case TEMPERATURE_DISPLAY_UNITS = 'TemperatureDisplayUnits';
 
-	public const CURRENT_RELATIVE_HUMIDITY = 'CurrentRelativeHumidity';
+	case CURRENT_RELATIVE_HUMIDITY = 'CurrentRelativeHumidity';
 
-	public const TARGET_RELATIVE_HUMIDITY = 'TargetRelativeHumidity';
+	case TARGET_RELATIVE_HUMIDITY = 'TargetRelativeHumidity';
 
-	public const COOLING_THRESHOLD_TEMPERATURE = 'CoolingThresholdTemperature';
+	case COOLING_THRESHOLD_TEMPERATURE = 'CoolingThresholdTemperature';
 
-	public const HEATING_THRESHOLD_TEMPERATURE = 'HeatingThresholdTemperature';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return strval(self::getValue());
-	}
+	case HEATING_THRESHOLD_TEMPERATURE = 'HeatingThresholdTemperature';
 
 }

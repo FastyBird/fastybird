@@ -19,6 +19,8 @@ use FastyBird\Connector\HomeKit\Documents;
 use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Types;
+use TypeError;
+use ValueError;
 use function array_key_exists;
 use function preg_match;
 use function str_replace;
@@ -37,6 +39,8 @@ final class Channel
 
 	/**
 	 * @throws Exceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getServiceType(Documents\Channels\Channel $channel): Types\ServiceType
 	{
@@ -48,11 +52,11 @@ final class Channel
 
 		$type = str_replace(' ', '', ucwords(str_replace('_', ' ', $matches['type'])));
 
-		if (!Types\ServiceType::isValidValue($type)) {
+		if (Types\ServiceType::tryFrom($type) === null) {
 			throw new Exceptions\InvalidState('Device channel has invalid identifier');
 		}
 
-		return Types\ServiceType::get($type);
+		return Types\ServiceType::from($type);
 	}
 
 }

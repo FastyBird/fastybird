@@ -15,9 +15,7 @@
 
 namespace FastyBird\Connector\HomeKit\Types;
 
-use Consistence;
 use FastyBird\Module\Devices\Types as DevicesTypes;
-use function strval;
 
 /**
  * Device property identifier types
@@ -27,34 +25,21 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class DevicePropertyIdentifier extends Consistence\Enum\Enum
+enum DevicePropertyIdentifier: string
 {
 
-	/**
-	 * Define device properties identifiers
-	 */
-	public const CATEGORY = 'category';
+	case CATEGORY = 'category';
 
-	public const TYPE = 'type';
+	case TYPE = 'type';
 
-	public const AID = 'aid';
+	case AID = 'aid';
 
-	public const MANUFACTURER = DevicesTypes\DevicePropertyIdentifier::FIRMWARE_MANUFACTURER->value;
+	case MANUFACTURER = DevicesTypes\DevicePropertyIdentifier::FIRMWARE_MANUFACTURER->value;
 
-	public const VERSION = DevicesTypes\DevicePropertyIdentifier::FIRMWARE_VERSION->value;
+	case VERSION = DevicesTypes\DevicePropertyIdentifier::FIRMWARE_VERSION->value;
 
-	public const SERIAL_NUMBER = DevicesTypes\DevicePropertyIdentifier::SERIAL_NUMBER->value;
+	case SERIAL_NUMBER = DevicesTypes\DevicePropertyIdentifier::SERIAL_NUMBER->value;
 
-	public const MODEL = DevicesTypes\DevicePropertyIdentifier::HARDWARE_MODEL->value;
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return strval(self::getValue());
-	}
+	case MODEL = DevicesTypes\DevicePropertyIdentifier::HARDWARE_MODEL->value;
 
 }

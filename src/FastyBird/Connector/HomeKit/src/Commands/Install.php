@@ -342,7 +342,7 @@ class Install extends Console\Command\Command
 
 		$port = $this->askConnectorPort($io, $connector);
 
-		$findConnectorPropertyQuery = new DevicesQueries\Entities\FindConnectorProperties();
+		$findConnectorPropertyQuery = new Queries\Entities\FindConnectorProperties();
 		$findConnectorPropertyQuery->forConnector($connector);
 		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::PORT);
 
@@ -628,7 +628,7 @@ class Install extends Console\Command\Command
 
 			$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
-				'identifier' => Types\DevicePropertyIdentifier::CATEGORY,
+				'identifier' => Types\DevicePropertyIdentifier::CATEGORY->value,
 				'dataType' => MetadataTypes\DataType::UCHAR,
 				'value' => $category->value,
 				'device' => $device,
@@ -702,7 +702,7 @@ class Install extends Console\Command\Command
 
 		$name = $this->askDeviceName($io, $device);
 
-		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
+		$findDevicePropertyQuery = new Queries\Entities\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($device);
 		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::CATEGORY);
 
@@ -722,7 +722,7 @@ class Install extends Console\Command\Command
 			if ($categoryProperty === null) {
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
-					'identifier' => Types\DevicePropertyIdentifier::CATEGORY,
+					'identifier' => Types\DevicePropertyIdentifier::CATEGORY->value,
 					'dataType' => MetadataTypes\DataType::UCHAR,
 					'value' => $category->value,
 					'device' => $device,
@@ -1087,14 +1087,14 @@ class Install extends Console\Command\Command
 
 		$metadata = $this->loader->loadServices();
 
-		if (!$metadata->offsetExists($type->getValue())) {
+		if (!$metadata->offsetExists($type->value)) {
 			throw new Exceptions\InvalidArgument(sprintf(
 				'Definition for service: %s was not found',
-				$type->getValue(),
+				$type->value,
 			));
 		}
 
-		$serviceMetadata = $metadata->offsetGet($type->getValue());
+		$serviceMetadata = $metadata->offsetGet($type->value);
 
 		if (
 			!$serviceMetadata instanceof Utils\ArrayHash
@@ -1325,6 +1325,8 @@ class Install extends Console\Command\Command
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function listServices(Style\SymfonyStyle $io, Entities\Devices\Device $device): void
 	{
@@ -1354,7 +1356,7 @@ class Install extends Console\Command\Command
 			$table->addRow([
 				$index + 1,
 				$channel->getName() ?? $channel->getIdentifier(),
-				$channel->getServiceType()->getValue(),
+				$channel->getServiceType()->value,
 				implode(
 					', ',
 					array_map(
@@ -1457,7 +1459,7 @@ class Install extends Console\Command\Command
 				$connectProperty = $this->askProperty(
 					$io,
 					null,
-					in_array(Types\CharacteristicPermission::WRITE, $permissions, true),
+					in_array(Types\CharacteristicPermission::WRITE->value, $permissions, true),
 				);
 
 				$format = $this->askFormat($io, $characteristic, $connectProperty);
@@ -1640,7 +1642,7 @@ class Install extends Console\Command\Command
 							? $property->getParent()
 							: null
 					),
-					in_array(Types\CharacteristicPermission::WRITE, $permissions, true),
+					in_array(Types\CharacteristicPermission::WRITE->value, $permissions, true),
 				);
 
 				$format = $this->askFormat($io, $type, $connectProperty);
@@ -2284,7 +2286,7 @@ class Install extends Console\Command\Command
 				);
 			}
 
-			$findConnectorPropertiesQuery = new DevicesQueries\Entities\FindConnectorProperties();
+			$findConnectorPropertiesQuery = new Queries\Entities\FindConnectorProperties();
 			$findConnectorPropertiesQuery->byIdentifier(Types\ConnectorPropertyIdentifier::PORT);
 
 			$properties = $this->connectorsPropertiesRepository->findAllBy(
@@ -2426,7 +2428,7 @@ class Install extends Console\Command\Command
 		Entities\Devices\Device $device,
 	): string
 	{
-		$findPropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
+		$findPropertyQuery = new Queries\Entities\FindDeviceProperties();
 		$findPropertyQuery->forDevice($device);
 		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::CATEGORY);
 
@@ -2517,10 +2519,10 @@ class Install extends Console\Command\Command
 	{
 		$metadata = $this->loader->loadServices();
 
-		if (!$metadata->offsetExists($service->getValue())) {
+		if (!$metadata->offsetExists($service->value)) {
 			throw new Exceptions\InvalidArgument(sprintf(
 				'Definition for service: %s was not found',
-				$service->getValue(),
+				$service->value,
 			));
 		}
 

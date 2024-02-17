@@ -21,13 +21,13 @@ use Doctrine\Persistence;
 use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Helpers;
+use FastyBird\Connector\HomeKit\Queries;
 use FastyBird\Connector\HomeKit\Types;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries;
 use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
 use Nette;
 use Nette\Utils;
@@ -67,6 +67,7 @@ final class Properties implements Common\EventSubscriber
 	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
 	 *
 	 * @throws ApplicationExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -218,6 +219,7 @@ final class Properties implements Common\EventSubscriber
 	 *
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -230,8 +232,8 @@ final class Properties implements Common\EventSubscriber
 
 		if ($entity instanceof DevicesEntities\Connectors\Properties\Variable) {
 			if (
-				$entity->getIdentifier() === Types\ConnectorPropertyIdentifier::PIN_CODE
-				|| $entity->getIdentifier() === Types\ConnectorPropertyIdentifier::SETUP_ID
+				$entity->getIdentifier() === Types\ConnectorPropertyIdentifier::PIN_CODE->value
+				|| $entity->getIdentifier() === Types\ConnectorPropertyIdentifier::SETUP_ID->value
 			) {
 				$connector = $entity->getConnector();
 				assert($connector instanceof Entities\Connectors\Connector);

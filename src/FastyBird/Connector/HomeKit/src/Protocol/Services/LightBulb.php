@@ -41,17 +41,17 @@ final class LightBulb extends Generic
 		$updatePropertyType = $fromDevice ? DevicesTypes\PropertyType::DYNAMIC : DevicesTypes\PropertyType::MAPPED;
 
 		if (
-			$characteristic->getName() === Types\CharacteristicType::COLOR_RED
-			|| $characteristic->getName() === Types\CharacteristicType::COLOR_GREEN
-			|| $characteristic->getName() === Types\CharacteristicType::COLOR_BLUE
-			|| $characteristic->getName() === Types\CharacteristicType::COLOR_WHITE
+			$characteristic->getName() === Types\CharacteristicType::COLOR_RED->value
+			|| $characteristic->getName() === Types\CharacteristicType::COLOR_GREEN->value
+			|| $characteristic->getName() === Types\CharacteristicType::COLOR_BLUE->value
+			|| $characteristic->getName() === Types\CharacteristicType::COLOR_WHITE->value
 		) {
 			$this->calculateRgbToHsb($updatePropertyType);
 
 		} elseif (
-			$characteristic->getName() === Types\CharacteristicType::HUE
-			|| $characteristic->getName() === Types\CharacteristicType::SATURATION
-			|| $characteristic->getName() === Types\CharacteristicType::BRIGHTNESS
+			$characteristic->getName() === Types\CharacteristicType::HUE->value
+			|| $characteristic->getName() === Types\CharacteristicType::SATURATION->value
+			|| $characteristic->getName() === Types\CharacteristicType::BRIGHTNESS->value
 		) {
 			$this->calculateHsbToRgb($updatePropertyType);
 		}

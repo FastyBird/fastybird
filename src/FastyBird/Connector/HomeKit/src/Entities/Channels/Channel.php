@@ -23,6 +23,8 @@ use FastyBird\Connector\HomeKit\Types;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use Ramsey\Uuid;
+use TypeError;
+use ValueError;
 use function array_key_exists;
 use function assert;
 use function preg_match;
@@ -60,6 +62,8 @@ abstract class Channel extends DevicesEntities\Channels\Channel
 
 	/**
 	 * @throws Exceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getServiceType(): Types\ServiceType
 	{
@@ -71,11 +75,11 @@ abstract class Channel extends DevicesEntities\Channels\Channel
 
 		$type = str_replace(' ', '', ucwords(str_replace('_', ' ', $matches['type'])));
 
-		if (!Types\ServiceType::isValidValue($type)) {
+		if (Types\ServiceType::tryFrom($type) === null) {
 			throw new Exceptions\InvalidState('Device channel has invalid identifier');
 		}
 
-		return Types\ServiceType::get($type);
+		return Types\ServiceType::from($type);
 	}
 
 }

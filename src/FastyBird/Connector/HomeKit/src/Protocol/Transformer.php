@@ -71,7 +71,7 @@ final class Transformer
 
 		// HAP transformation
 
-		if ($dataType->equalsValue(Types\DataType::BOOLEAN)) {
+		if ($dataType === Types\DataType::BOOLEAN) {
 			if ($value === null) {
 				$transformedValue = false;
 			} elseif (!is_bool($value)) {
@@ -86,7 +86,7 @@ final class Transformer
 			} else {
 				$transformedValue = $value;
 			}
-		} elseif ($dataType->equalsValue(Types\DataType::FLOAT)) {
+		} elseif ($dataType === Types\DataType::FLOAT) {
 			if (is_float($value)) {
 				$transformedValue = $value;
 			} elseif (is_numeric($value)) {
@@ -101,11 +101,11 @@ final class Transformer
 				$transformedValue = (float) $transformedValue;
 			}
 		} elseif (
-			$dataType->equalsValue(Types\DataType::INT)
-			|| $dataType->equalsValue(Types\DataType::UINT8)
-			|| $dataType->equalsValue(Types\DataType::UINT16)
-			|| $dataType->equalsValue(Types\DataType::UINT32)
-			|| $dataType->equalsValue(Types\DataType::UINT64)
+			$dataType === Types\DataType::INT
+			|| $dataType === Types\DataType::UINT8
+			|| $dataType === Types\DataType::UINT16
+			|| $dataType === Types\DataType::UINT32
+			|| $dataType === Types\DataType::UINT64
 		) {
 			if (is_int($value)) {
 				$transformedValue = $value;
@@ -115,7 +115,7 @@ final class Transformer
 				$transformedValue = preg_replace('~\s~', '', (string) $value);
 				$transformedValue = (int) $transformedValue;
 			}
-		} elseif ($dataType->equalsValue(Types\DataType::STRING)) {
+		} elseif ($dataType === Types\DataType::STRING) {
 			$transformedValue = strval($value);
 		}
 
@@ -272,7 +272,7 @@ final class Transformer
 
 		// HAP transformation
 
-		if ($dataType->equalsValue(Types\DataType::BOOLEAN)) {
+		if ($dataType === Types\DataType::BOOLEAN) {
 			if ($transformedValue === null) {
 				$transformedValue = false;
 			} elseif (!is_bool($transformedValue)) {
@@ -289,7 +289,7 @@ final class Transformer
 					true,
 				);
 			}
-		} elseif ($dataType->equalsValue(Types\DataType::FLOAT)) {
+		} elseif ($dataType === Types\DataType::FLOAT) {
 			if ($transformedValue === null) {
 				$transformedValue = 0.0;
 			} elseif (!is_numeric($transformedValue)) {
@@ -313,11 +313,11 @@ final class Transformer
 			$transformedValue = min($maxValue ?? $transformedValue, $transformedValue);
 			$transformedValue = max($minValue ?? $transformedValue, $transformedValue);
 		} elseif (
-			$dataType->equalsValue(Types\DataType::INT)
-			|| $dataType->equalsValue(Types\DataType::UINT8)
-			|| $dataType->equalsValue(Types\DataType::UINT16)
-			|| $dataType->equalsValue(Types\DataType::UINT32)
-			|| $dataType->equalsValue(Types\DataType::UINT64)
+			$dataType === Types\DataType::INT
+			|| $dataType === Types\DataType::UINT8
+			|| $dataType === Types\DataType::UINT16
+			|| $dataType === Types\DataType::UINT32
+			|| $dataType === Types\DataType::UINT64
 		) {
 			if (is_bool($transformedValue)) {
 				$transformedValue = $transformedValue ? 1 : 0;
@@ -339,7 +339,7 @@ final class Transformer
 
 			$transformedValue = (int) min($maxValue ?? $transformedValue, $transformedValue);
 			$transformedValue = (int) max($minValue ?? $transformedValue, $transformedValue);
-		} elseif ($dataType->equalsValue(Types\DataType::STRING)) {
+		} elseif ($dataType === Types\DataType::STRING) {
 			$transformedValue = $value !== null ? substr(
 				MetadataUtilities\Value::toString($value, true),
 				0,

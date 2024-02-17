@@ -119,7 +119,7 @@ class Builder
 			$this->createService(
 				$thermostat,
 				$updated,
-				HomeKitTypes\ServiceType::get(HomeKitTypes\ServiceType::THERMOSTAT),
+				HomeKitTypes\ServiceType::THERMOSTAT,
 			);
 		} catch (Throwable $ex) {
 			if ($updated !== null && $accessory === null) {
@@ -182,7 +182,7 @@ class Builder
 			} else {
 				$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
 				$findDevicePropertyQuery->forDevice($accessory);
-				$findDevicePropertyQuery->byIdentifier(HomeKitTypes\DevicePropertyIdentifier::CATEGORY);
+				$findDevicePropertyQuery->byIdentifier(HomeKitTypes\DevicePropertyIdentifier::CATEGORY->value);
 
 				$categoryProperty = $this->devicesPropertiesRepository->findOneBy($findDevicePropertyQuery);
 
@@ -197,7 +197,7 @@ class Builder
 
 				$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
 				$findDevicePropertyQuery->forDevice($accessory);
-				$findDevicePropertyQuery->byIdentifier(HomeKitTypes\DevicePropertyIdentifier::MODEL);
+				$findDevicePropertyQuery->byIdentifier(HomeKitTypes\DevicePropertyIdentifier::MODEL->value);
 
 				$modelProperty = $this->devicesPropertiesRepository->findOneBy($findDevicePropertyQuery);
 
@@ -209,7 +209,7 @@ class Builder
 
 				$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
 				$findDevicePropertyQuery->forDevice($accessory);
-				$findDevicePropertyQuery->byIdentifier(HomeKitTypes\DevicePropertyIdentifier::MANUFACTURER);
+				$findDevicePropertyQuery->byIdentifier(HomeKitTypes\DevicePropertyIdentifier::MANUFACTURER->value);
 
 				$manufacturerProperty = $this->devicesPropertiesRepository->findOneBy($findDevicePropertyQuery);
 
@@ -240,7 +240,7 @@ class Builder
 			if ($categoryProperty === null) {
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
-					'identifier' => HomeKitTypes\DevicePropertyIdentifier::CATEGORY,
+					'identifier' => HomeKitTypes\DevicePropertyIdentifier::CATEGORY->value,
 					'dataType' => MetadataTypes\DataType::UCHAR,
 					'value' => HomeKitTypes\AccessoryCategory::THERMOSTAT->value,
 					'device' => $accessory,
@@ -255,7 +255,7 @@ class Builder
 			if ($modelProperty === null) {
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
-					'identifier' => HomeKitTypes\DevicePropertyIdentifier::MODEL,
+					'identifier' => HomeKitTypes\DevicePropertyIdentifier::MODEL->value,
 					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => VirtualThermostatAddonHomeKitConnector\Constants::MODEL,
 					'device' => $accessory,
@@ -270,7 +270,7 @@ class Builder
 			if ($manufacturerProperty === null) {
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
-					'identifier' => HomeKitTypes\DevicePropertyIdentifier::MANUFACTURER,
+					'identifier' => HomeKitTypes\DevicePropertyIdentifier::MANUFACTURER->value,
 					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => VirtualThermostatAddonHomeKitConnector\Constants::MANUFACTURER,
 					'device' => $accessory,
@@ -324,14 +324,14 @@ class Builder
 	{
 		$metadata = $this->loader->loadServices();
 
-		if (!$metadata->offsetExists($type->getValue())) {
+		if (!$metadata->offsetExists($type->value)) {
 			throw new Exceptions\InvalidArgument(sprintf(
 				'Definition for service: %s was not found',
-				$type->getValue(),
+				$type->value,
 			));
 		}
 
-		$serviceMetadata = $metadata->offsetGet($type->getValue());
+		$serviceMetadata = $metadata->offsetGet($type->value);
 
 		if (
 			!$serviceMetadata instanceof Utils\ArrayHash
@@ -349,7 +349,7 @@ class Builder
 					preg_replace(
 						'/(?<!^)[A-Z]/',
 						'_$0',
-						$type->getValue(),
+						$type->value,
 					),
 				),
 			) . '_1';
@@ -401,7 +401,7 @@ class Builder
 			throw new Exceptions\InvalidState(
 				sprintf(
 					'HomeKit service: %s could not be created',
-					$type->getValue(),
+					$type->value,
 				),
 				$ex->getCode(),
 				$ex,
@@ -426,18 +426,20 @@ class Builder
 		}
 
 		$mappedPropertiesTypes = [
-			HomeKitTypes\CharacteristicType::NAME => null,
-			HomeKitTypes\CharacteristicType::CURRENT_HEATING_COOLING_STATE => VirtualThermostatTypes\ChannelPropertyIdentifier::HVAC_STATE,
-			HomeKitTypes\CharacteristicType::TARGET_HEATING_COOLING_STATE => VirtualThermostatTypes\ChannelPropertyIdentifier::HVAC_MODE,
-			HomeKitTypes\CharacteristicType::CURRENT_TEMPERATURE => VirtualThermostatTypes\ChannelPropertyIdentifier::CURRENT_ROOM_TEMPERATURE,
-			HomeKitTypes\CharacteristicType::TARGET_TEMPERATURE => VirtualThermostatTypes\ChannelPropertyIdentifier::TARGET_ROOM_TEMPERATURE,
-			HomeKitTypes\CharacteristicType::TEMPERATURE_DISPLAY_UNITS => null,
-			HomeKitTypes\CharacteristicType::CURRENT_RELATIVE_HUMIDITY => VirtualThermostatTypes\ChannelPropertyIdentifier::CURRENT_ROOM_HUMIDITY,
-			HomeKitTypes\CharacteristicType::TARGET_RELATIVE_HUMIDITY => VirtualThermostatTypes\ChannelPropertyIdentifier::TARGET_ROOM_HUMIDITY,
+			HomeKitTypes\CharacteristicType::NAME->value => null,
+			HomeKitTypes\CharacteristicType::CURRENT_HEATING_COOLING_STATE->value => VirtualThermostatTypes\ChannelPropertyIdentifier::HVAC_STATE,
+			HomeKitTypes\CharacteristicType::TARGET_HEATING_COOLING_STATE->value => VirtualThermostatTypes\ChannelPropertyIdentifier::HVAC_MODE,
+			HomeKitTypes\CharacteristicType::CURRENT_TEMPERATURE->value => VirtualThermostatTypes\ChannelPropertyIdentifier::CURRENT_ROOM_TEMPERATURE,
+			HomeKitTypes\CharacteristicType::TARGET_TEMPERATURE->value => VirtualThermostatTypes\ChannelPropertyIdentifier::TARGET_ROOM_TEMPERATURE,
+			HomeKitTypes\CharacteristicType::TEMPERATURE_DISPLAY_UNITS->value => null,
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-			HomeKitTypes\CharacteristicType::COOLING_THRESHOLD_TEMPERATURE => VirtualThermostatTypes\ChannelPropertyIdentifier::COOLING_THRESHOLD_TEMPERATURE,
+			HomeKitTypes\CharacteristicType::CURRENT_RELATIVE_HUMIDITY->value => VirtualThermostatTypes\ChannelPropertyIdentifier::CURRENT_ROOM_HUMIDITY,
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-			HomeKitTypes\CharacteristicType::HEATING_THRESHOLD_TEMPERATURE => VirtualThermostatTypes\ChannelPropertyIdentifier::HEATING_THRESHOLD_TEMPERATURE,
+			HomeKitTypes\CharacteristicType::TARGET_RELATIVE_HUMIDITY->value => VirtualThermostatTypes\ChannelPropertyIdentifier::TARGET_ROOM_HUMIDITY,
+			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+			HomeKitTypes\CharacteristicType::COOLING_THRESHOLD_TEMPERATURE->value => VirtualThermostatTypes\ChannelPropertyIdentifier::COOLING_THRESHOLD_TEMPERATURE,
+			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+			HomeKitTypes\CharacteristicType::HEATING_THRESHOLD_TEMPERATURE->value => VirtualThermostatTypes\ChannelPropertyIdentifier::HEATING_THRESHOLD_TEMPERATURE,
 		];
 
 		foreach (array_merge(
@@ -449,7 +451,7 @@ class Builder
 				$this->createCharacteristic(
 					$thermostat,
 					$service,
-					HomeKitTypes\CharacteristicType::get($characteristicType),
+					HomeKitTypes\CharacteristicType::from($characteristicType),
 					$mappedPropertiesTypes[$characteristicType] ?? null,
 					!in_array($characteristicType, $requiredCharacteristics, true),
 				);
@@ -513,14 +515,14 @@ class Builder
 
 		$metadata = $this->loader->loadCharacteristics();
 
-		if (!$metadata->offsetExists($characteristicType->getValue())) {
+		if (!$metadata->offsetExists($characteristicType->value)) {
 			throw new Exceptions\InvalidArgument(sprintf(
 				'Definition for characteristic: %s was not found',
-				$characteristicType->getValue(),
+				$characteristicType->value,
 			));
 		}
 
-		$characteristicMetadata = $metadata->offsetGet($characteristicType->getValue());
+		$characteristicMetadata = $metadata->offsetGet($characteristicType->value);
 
 		if (
 			!$characteristicMetadata instanceof Utils\ArrayHash
@@ -570,7 +572,7 @@ class Builder
 		} else {
 			$entity = DevicesEntities\Channels\Properties\Dynamic::class;
 
-			if ($characteristicType->equalsValue(HomeKitTypes\CharacteristicType::NAME)) {
+			if ($characteristicType === HomeKitTypes\CharacteristicType::NAME) {
 				$entity = DevicesEntities\Channels\Properties\Variable::class;
 
 				$value = $thermostat->getName() ?? $thermostat->getIdentifier();
@@ -585,7 +587,7 @@ class Builder
 			) {
 				$permissions = (array) $characteristicMetadata->offsetGet('Permissions');
 
-				$settable = in_array(HomeKitTypes\CharacteristicPermission::WRITE, $permissions, true);
+				$settable = in_array(HomeKitTypes\CharacteristicPermission::WRITE->value, $permissions, true);
 			}
 
 			if (
@@ -636,7 +638,7 @@ class Builder
 					preg_replace(
 						'/(?<!^)[A-Z]/',
 						'_$0',
-						$characteristicType->getValue(),
+						$characteristicType->value,
 					),
 				),
 			);
@@ -698,7 +700,7 @@ class Builder
 						],
 						'characteristic' => [
 							'id' => $characteristic->getId()->toString(),
-							'type' => $characteristicType->getValue(),
+							'type' => $characteristicType->value,
 						],
 					],
 				);
@@ -742,7 +744,7 @@ class Builder
 						],
 						'characteristic' => [
 							'id' => $characteristic->getId()->toString(),
-							'type' => $characteristicType->getValue(),
+							'type' => $characteristicType->value,
 						],
 					],
 				);
@@ -753,7 +755,7 @@ class Builder
 			throw new Exceptions\InvalidState(
 				sprintf(
 					'HomeKit service: %s could not be created',
-					$characteristicType->getValue(),
+					$characteristicType->value,
 				),
 				$ex->getCode(),
 				$ex,
@@ -776,7 +778,7 @@ class Builder
 	{
 		if (
 			$property->getIdentifier() === VirtualThermostatTypes\ChannelPropertyIdentifier::HVAC_STATE->value
-			&& $characteristicType->equalsValue(HomeKitTypes\CharacteristicType::CURRENT_HEATING_COOLING_STATE)
+			&& $characteristicType === HomeKitTypes\CharacteristicType::CURRENT_HEATING_COOLING_STATE
 		) {
 			assert($property->getFormat() instanceof MetadataFormats\StringEnum);
 
@@ -809,7 +811,7 @@ class Builder
 			return $format;
 		} elseif (
 			$property->getIdentifier() === VirtualThermostatTypes\ChannelPropertyIdentifier::HVAC_MODE->value
-			&& $characteristicType->equalsValue(HomeKitTypes\CharacteristicType::TARGET_HEATING_COOLING_STATE)
+			&& $characteristicType === HomeKitTypes\CharacteristicType::TARGET_HEATING_COOLING_STATE
 		) {
 			assert($property->getFormat() instanceof MetadataFormats\StringEnum);
 
@@ -851,22 +853,22 @@ class Builder
 		} elseif (
 			(
 				$property->getIdentifier() === VirtualThermostatTypes\ChannelPropertyIdentifier::CURRENT_ROOM_TEMPERATURE->value
-				&& $characteristicType->equalsValue(HomeKitTypes\CharacteristicType::CURRENT_TEMPERATURE)
+				&& $characteristicType === HomeKitTypes\CharacteristicType::CURRENT_TEMPERATURE
 			) || (
 				$property->getIdentifier() === VirtualThermostatTypes\ChannelPropertyIdentifier::TARGET_ROOM_TEMPERATURE->value
-				&& $characteristicType->equalsValue(HomeKitTypes\CharacteristicType::TARGET_TEMPERATURE)
+				&& $characteristicType === HomeKitTypes\CharacteristicType::TARGET_TEMPERATURE
 			) || (
 				$property->getIdentifier() === VirtualThermostatTypes\ChannelPropertyIdentifier::CURRENT_ROOM_HUMIDITY->value
-				&& $characteristicType->equalsValue(HomeKitTypes\CharacteristicType::CURRENT_RELATIVE_HUMIDITY)
+				&& $characteristicType === HomeKitTypes\CharacteristicType::CURRENT_RELATIVE_HUMIDITY
 			) || (
 				$property->getIdentifier() === VirtualThermostatTypes\ChannelPropertyIdentifier::TARGET_ROOM_HUMIDITY->value
-				&& $characteristicType->equalsValue(HomeKitTypes\CharacteristicType::TARGET_RELATIVE_HUMIDITY)
+				&& $characteristicType === HomeKitTypes\CharacteristicType::TARGET_RELATIVE_HUMIDITY
 			) || (
 				$property->getIdentifier() === VirtualThermostatTypes\ChannelPropertyIdentifier::COOLING_THRESHOLD_TEMPERATURE->value
-				&& $characteristicType->equalsValue(HomeKitTypes\CharacteristicType::COOLING_THRESHOLD_TEMPERATURE)
+				&& $characteristicType === HomeKitTypes\CharacteristicType::COOLING_THRESHOLD_TEMPERATURE
 			) || (
 				$property->getIdentifier() === VirtualThermostatTypes\ChannelPropertyIdentifier::HEATING_THRESHOLD_TEMPERATURE->value
-				&& $characteristicType->equalsValue(HomeKitTypes\CharacteristicType::HEATING_THRESHOLD_TEMPERATURE)
+				&& $characteristicType === HomeKitTypes\CharacteristicType::HEATING_THRESHOLD_TEMPERATURE
 			)
 		) {
 			assert(

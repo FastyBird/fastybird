@@ -33,7 +33,7 @@ interface CharacteristicFactory
 {
 
 	/**
-	 * @param array<string> $permissions
+	 * @param array<Types\CharacteristicPermission> $permissions
 	 * @param array<int>|null $validValues
 	 */
 	public function create(

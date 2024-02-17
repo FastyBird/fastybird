@@ -102,7 +102,7 @@ class Device extends DevicesEntities\Devices\Device
 		$property = $this->properties
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::CATEGORY
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::CATEGORY->value
 			)
 			->first();
 
@@ -128,7 +128,7 @@ class Device extends DevicesEntities\Devices\Device
 		$property = $this->properties
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::TYPE
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::TYPE->value
 			)
 			->first();
 
@@ -147,6 +147,8 @@ class Device extends DevicesEntities\Devices\Device
 	 * @return array<Entities\Channels\Channel>
 	 *
 	 * @throws Exceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function findChannelsByType(Types\ServiceType $type): array
 	{
@@ -157,7 +159,7 @@ class Device extends DevicesEntities\Devices\Device
 				continue;
 			}
 
-			if ($channel->getServiceType()->equals($type)) {
+			if ($channel->getServiceType() === $type) {
 				$channels[] = $channel;
 			}
 		}

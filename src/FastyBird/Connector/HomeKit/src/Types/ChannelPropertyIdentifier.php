@@ -15,9 +15,6 @@
 
 namespace FastyBird\Connector\HomeKit\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * Channel property identifier types
  *
@@ -26,34 +23,21 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class ChannelPropertyIdentifier extends Consistence\Enum\Enum
+enum ChannelPropertyIdentifier: string
 {
 
-	/**
-	 * Define channel properties identifiers
-	 */
-	public const VERSION = 'version';
+	case VERSION = 'version';
 
-	public const NAME = 'name';
+	case NAME = 'name';
 
-	public const SERIAL_NUMBER = 'serial_number';
+	case SERIAL_NUMBER = 'serial_number';
 
-	public const FIRMWARE_REVISION = 'firmware_revision';
+	case FIRMWARE_REVISION = 'firmware_revision';
 
-	public const MANUFACTURER = 'manufacturer';
+	case MANUFACTURER = 'manufacturer';
 
-	public const MODEL = 'model';
+	case MODEL = 'model';
 
-	public const IDENTIFY = 'identify';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return strval(self::getValue());
-	}
+	case IDENTIFY = 'identify';
 
 }
