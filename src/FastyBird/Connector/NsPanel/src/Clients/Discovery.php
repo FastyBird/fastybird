@@ -15,10 +15,8 @@
 
 namespace FastyBird\Connector\NsPanel\Clients;
 
-use Evenement;
 use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\API;
-use FastyBird\Connector\NsPanel\Clients\Messages\Response\DiscoveredSubDevice;
 use FastyBird\Connector\NsPanel\Documents;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
@@ -27,14 +25,15 @@ use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use Nette;
+use Psr\EventDispatcher as PsrEventDispatcher;
 use React\Promise;
 use Throwable;
 use TypeError;
 use ValueError;
-use function array_key_exists;
 use function array_merge;
 
 /**
@@ -45,11 +44,10 @@ use function array_merge;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Discovery implements Evenement\EventEmitterInterface
+final class Discovery
 {
 
 	use Nette\SmartObject;
-	use Evenement\EventEmitterTrait;
 
 	public function __construct(
 		private readonly Documents\Connectors\Connector $connector,
@@ -59,6 +57,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 		private readonly Helpers\Devices\Gateway $gatewayHelper,
 		private readonly NsPanel\Logger $logger,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
+		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
 	}
@@ -117,23 +116,22 @@ final class Discovery implements Evenement\EventEmitterInterface
 		}
 
 		Promise\all($promises)
-			->then(function (array $results): void {
-				$foundSubDevices = [];
-
-				foreach ($results as $result) {
-					foreach ($result as $device) {
-						if (!array_key_exists($device->getParent()->toString(), $foundSubDevices)) {
-							$foundSubDevices[$device->getParent()->toString()] = [];
-						}
-
-						$foundSubDevices[$device->getParent()->toString()][] = $device;
-					}
-				}
-
-				$this->emit(NsPanel\Constants::EVENT_FINISHED, [$foundSubDevices]);
+			->then(function (): void {
+				$this->dispatcher?->dispatch(
+					new DevicesEvents\TerminateConnector(
+						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::FB_MQTT),
+						'Devices discovery finished',
+					),
+				);
 			})
-			->catch(function (): void {
-				$this->emit(NsPanel\Constants::EVENT_FINISHED, [[]]);
+			->catch(function (Throwable $ex): void {
+				$this->dispatcher?->dispatch(
+					new DevicesEvents\TerminateConnector(
+						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::FB_MQTT),
+						'Devices discovery failed',
+						$ex,
+					),
+				);
 			});
 	}
 
@@ -143,7 +141,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @return Promise\PromiseInterface<array<DiscoveredSubDevice>>
+	 * @return Promise\PromiseInterface<true>
 	 *
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
@@ -174,7 +172,9 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$this->gatewayHelper->getAccessToken($gateway),
 			)
 				->then(function (API\Messages\Response\GetSubDevices $response) use ($deferred, $gateway): void {
-					$deferred->resolve($this->handleFoundSubDevices($gateway, $response));
+					$this->handleFoundSubDevices($gateway, $response);
+
+					$deferred->resolve(true);
 				})
 				->catch(static function (Throwable $ex) use ($deferred): void {
 					$deferred->reject($ex);
@@ -201,16 +201,11 @@ final class Discovery implements Evenement\EventEmitterInterface
 		return $deferred->promise();
 	}
 
-	/**
-	 * @return array<DiscoveredSubDevice>
-	 */
 	private function handleFoundSubDevices(
 		Documents\Devices\Gateway $gateway,
 		API\Messages\Response\GetSubDevices $subDevices,
-	): array
+	): void
 	{
-		$processedSubDevices = [];
-
 		foreach ($subDevices->getData()->getDevicesList() as $subDevice) {
 			// Ignore third-party sub-devices (registered as virtual devices via connector)
 			if ($subDevice->getThirdSerialNumber() !== null) {
@@ -218,16 +213,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 			}
 
 			try {
-				$processedSubDevices[] = $this->messageBuilder->create(
-					Messages\Response\DiscoveredSubDevice::class,
-					array_merge(
-						$subDevice->toArray(),
-						[
-							'parent' => $gateway->getId(),
-						],
-					),
-				);
-
 				$this->queue->append(
 					$this->messageBuilder->create(
 						Queue\Messages\StoreSubDevice::class,
@@ -257,8 +242,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 				);
 			}
 		}
-
-		return $processedSubDevices;
 	}
 
 }

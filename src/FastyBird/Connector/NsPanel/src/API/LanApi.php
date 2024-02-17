@@ -15,7 +15,6 @@
 
 namespace FastyBird\Connector\NsPanel\API;
 
-use Evenement;
 use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
@@ -54,7 +53,6 @@ final class LanApi
 {
 
 	use Nette\SmartObject;
-	use Evenement\EventEmitterTrait;
 
 	public const GATEWAY_PORT = 8_081;
 

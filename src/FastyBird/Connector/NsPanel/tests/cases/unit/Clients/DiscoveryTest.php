@@ -93,69 +93,6 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 
 		$client = $clientFactory->create($connector);
 
-		$client->on('finished', static function (array $foundSubDevices): void {
-			self::assertCount(1, $foundSubDevices);
-
-			$data = [];
-
-			foreach ($foundSubDevices as $gatewaySubDevices) {
-				self::assertCount(1, $gatewaySubDevices);
-
-				foreach ($gatewaySubDevices as $subDevice) {
-					self::assertInstanceOf(Clients\Messages\Response\DiscoveredSubDevice::class, $subDevice);
-
-					$data[] = $subDevice->toArray();
-				}
-			}
-
-			self::assertSame(
-				[
-					[
-						'serial_number' => 'a480062416',
-						'third_serial_number' => null,
-						'service_address' => null,
-						'name' => 'Temperature/Humidity Sensor',
-						'manufacturer' => 'eWeLink',
-						'model' => 'TH01',
-						'firmware_version' => '0.5',
-						'hostname' => null,
-						'mac_address' => '00124b002a5d75b1',
-						'app_name' => null,
-						'display_category' => 'temperatureAndHumiditySensor',
-						'capabilities' => [
-							[
-								'capability' => 'temperature',
-								'permission' => 'read',
-								'name' => null,
-							],
-							[
-								'capability' => 'humidity',
-								'permission' => 'read',
-								'name' => null,
-							],
-							[
-								'capability' => 'battery',
-								'permission' => 'read',
-								'name' => null,
-							],
-							[
-								'capability' => 'rssi',
-								'permission' => 'read',
-								'name' => null,
-							],
-						],
-						'protocol' => 'zigbee',
-						'tags' => [
-							'temperature_unit' => 'c',
-						],
-						'online' => true,
-						'subnet' => true,
-					],
-				],
-				$data,
-			);
-		});
-
 		$client->discover();
 
 		$eventLoop = $this->getContainer()->getByType(EventLoop\LoopInterface::class);
