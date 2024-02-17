@@ -585,56 +585,53 @@ final class Television implements Client
 
 		$client = $this->connectionManager->getConnection($device);
 
-		$client->on(
-			Viera\Constants::EVENT_EVENT_DATA,
-			function (API\Messages\Response\Event $event) use ($device): void {
-				if ($event->getScreenState() !== null) {
-					$this->queue->append(
-						$this->messageBuilder->create(
-							Queue\Messages\StoreChannelPropertyState::class,
-							[
-								'connector' => $device->getConnector(),
-								'device' => $device->getId(),
-								'channel' => Types\ChannelType::TELEVISION,
-								'property' => Types\ChannelPropertyIdentifier::STATE,
-								'value' => $event->getScreenState(),
-							],
-						),
-					);
-				}
-			},
-		);
-
-		$client->on(
-			Viera\Constants::EVENT_EVENT_ERROR,
-			function (Throwable $ex) use ($device): void {
-				$this->logger->warning(
-					'Event subscription with device failed',
-					[
-						'source' => MetadataTypes\Sources\Connector::VIERA,
-						'type' => 'television-client',
-						'exception' => ApplicationHelpers\Logger::buildException($ex),
-						'connector' => [
-							'id' => $this->connector->getId()->toString(),
-						],
-						'device' => [
-							'id' => $device->getId()->toString(),
-						],
-					],
-				);
-
+		$client->onMessage[] = function (API\Messages\Message $message) use ($device): void {
+			if (
+				$message instanceof API\Messages\Response\Event
+				&& $message->getScreenState() !== null
+			) {
 				$this->queue->append(
 					$this->messageBuilder->create(
-						Queue\Messages\StoreDeviceConnectionState::class,
+						Queue\Messages\StoreChannelPropertyState::class,
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
-							'state' => DevicesTypes\ConnectionState::DISCONNECTED,
+							'channel' => Types\ChannelType::TELEVISION,
+							'property' => Types\ChannelPropertyIdentifier::STATE,
+							'value' => $message->getScreenState(),
 						],
 					),
 				);
-			},
-		);
+			}
+		};
+
+		$client->onError[] = function (Throwable $ex) use ($device): void {
+			$this->logger->warning(
+				'Event subscription with device failed',
+				[
+					'source' => MetadataTypes\Sources\Connector::VIERA,
+					'type' => 'television-client',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'connector' => [
+						'id' => $this->connector->getId()->toString(),
+					],
+					'device' => [
+						'id' => $device->getId()->toString(),
+					],
+				],
+			);
+
+			$this->queue->append(
+				$this->messageBuilder->create(
+					Queue\Messages\StoreDeviceConnectionState::class,
+					[
+						'connector' => $device->getConnector(),
+						'device' => $device->getId(),
+						'state' => DevicesTypes\ConnectionState::DISCONNECTED,
+					],
+				),
+			);
+		};
 
 		$this->devicesClients[$device->getId()->toString()] = $client;
 	}

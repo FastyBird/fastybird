@@ -15,8 +15,8 @@
 
 namespace FastyBird\Connector\Viera\API;
 
+use Closure;
 use DateTimeInterface;
-use Evenement;
 use FastyBird\Connector\Viera;
 use FastyBird\Connector\Viera\Exceptions;
 use FastyBird\Connector\Viera\Helpers;
@@ -82,11 +82,10 @@ use function unpack;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class TelevisionApi implements Evenement\EventEmitterInterface
+final class TelevisionApi
 {
 
 	use Nette\SmartObject;
-	use Evenement\EventEmitterTrait;
 
 	private const EVENTS_TIMEOUT = 10;
 
@@ -103,6 +102,12 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 	private const URL_CONTROL_NRC_DDD = '/nrc/ddd.xml';
 
 	private const URL_CONTROL_NRC_DEF = '/nrc/sdd_0.xml';
+
+	/** @var array<Closure(Messages\Message $message): void> */
+	public array $onMessage = [];
+
+	/** @var array<Closure(Throwable $ex): void> */
+	public array $onError = [];
 
 	private bool $isEncrypted;
 
@@ -1035,12 +1040,11 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 
 		$result = false;
 
-		$this->on(
-			Viera\Constants::EVENT_EVENT_DATA,
-			function (Messages\Response\Event $event) use ($deferred, $runLoop, &$result): void {
-				if ($event->getScreenState() !== null) {
-					$deferred->resolve($event->getScreenState());
-					$result = $event->getScreenState();
+		$this->onMessage[] = function (Messages\Message $message) use ($deferred, $runLoop, &$result): void {
+			if ($message instanceof Messages\Response\Event) {
+				if ($message->getScreenState() !== null) {
+					$deferred->resolve($message->getScreenState());
+					$result = $message->getScreenState();
 				} else {
 					$deferred->resolve(false);
 					$result = false;
@@ -1049,17 +1053,17 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 				if ($runLoop) {
 					$this->eventLoop->stop();
 				}
-			},
-		);
+			}
+		};
 
-		$this->on(Viera\Constants::EVENT_EVENT_ERROR, function () use ($deferred, $runLoop, &$result): void {
+		$this->onError[] = function () use ($deferred, $runLoop, &$result): void {
 			$deferred->resolve(false);
 			$result = false;
 
 			if ($runLoop) {
 				$this->eventLoop->stop();
 			}
-		});
+		};
 
 		$doUnsubscribe = false;
 
@@ -1393,17 +1397,15 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 						}
 					}
 
-					$this->emit(
-						Viera\Constants::EVENT_EVENT_DATA,
-						[
-							$this->createMessage(
-								Messages\Response\Event::class,
-								[
-									'screen_state' => $this->screenState,
-									'input_mode' => $inputMode,
-								],
-							),
-						],
+					Utils\Arrays::invoke(
+						$this->onMessage,
+						$this->createMessage(
+							Messages\Response\Event::class,
+							[
+								'screen_state' => $this->screenState,
+								'input_mode' => $inputMode,
+							],
+						),
 					);
 
 					$connection->write(
@@ -1424,7 +1426,7 @@ final class TelevisionApi implements Evenement\EventEmitterInterface
 						],
 					);
 
-					$this->emit(Viera\Constants::EVENT_EVENT_ERROR, [$ex]);
+					Utils\Arrays::invoke($this->onError, $ex);
 				});
 			},
 		);

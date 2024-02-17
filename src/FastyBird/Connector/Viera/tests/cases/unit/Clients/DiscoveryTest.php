@@ -248,10 +248,6 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 
 		$client = $clientFactory->create($connector);
 
-		$client->on('finished', static function (array $foundDevices): void {
-			self::assertCount(1, $foundDevices);
-		});
-
 		$client->discover();
 
 		$eventLoop = $this->getContainer()->getByType(EventLoop\LoopInterface::class);

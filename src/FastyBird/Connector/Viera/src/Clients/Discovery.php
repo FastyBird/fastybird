@@ -15,7 +15,6 @@
 
 namespace FastyBird\Connector\Viera\Clients;
 
-use Evenement;
 use FastyBird\Connector\Viera;
 use FastyBird\Connector\Viera\API;
 use FastyBird\Connector\Viera\Documents;
@@ -26,15 +25,15 @@ use FastyBird\Connector\Viera\Queue;
 use FastyBird\Connector\Viera\Services;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Events as DevicesEvents;
 use Nette;
+use Psr\EventDispatcher as PsrEventDispatcher;
 use React\Datagram;
 use React\EventLoop;
 use RuntimeException;
-use SplObjectStorage;
 use Throwable;
 use function array_key_exists;
 use function array_map;
-use function count;
 use function is_array;
 use function parse_url;
 use function preg_match;
@@ -52,11 +51,10 @@ use function trim;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Discovery implements Evenement\EventEmitterInterface
+final class Discovery
 {
 
 	use Nette\SmartObject;
-	use Evenement\EventEmitterTrait;
 
 	private const MCAST_HOST = '239.255.255.250';
 
@@ -67,9 +65,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 	private const MATCH_DEVICE_LOCATION = '/LOCATION:\s(?<location>[\da-zA-Z:\/.]+)/';
 
 	private const MATCH_DEVICE_ID = '/USN:\suuid:(?<usn>[\da-zA-Z-]+)::urn/';
-
-	/** @var SplObjectStorage<Messages\Response\DiscoveredDevice, null> */
-	private SplObjectStorage $discoveredLocalDevices;
 
 	private EventLoop\TimerInterface|null $handlerTimer = null;
 
@@ -83,15 +78,13 @@ final class Discovery implements Evenement\EventEmitterInterface
 		private readonly Viera\Logger $logger,
 		private readonly Services\MulticastFactory $multicastFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
+		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
-		$this->discoveredLocalDevices = new SplObjectStorage();
 	}
 
 	public function discover(): void
 	{
-		$this->discoveredLocalDevices = new SplObjectStorage();
-
 		$this->logger->debug(
 			'Starting devices discovery',
 			[
@@ -147,21 +140,12 @@ final class Discovery implements Evenement\EventEmitterInterface
 			async(function (): void {
 				$this->sender?->close();
 
-				$this->discoveredLocalDevices->rewind();
-
-				$devices = [];
-
-				foreach ($this->discoveredLocalDevices as $device) {
-					$devices[] = $device;
-				}
-
-				$this->discoveredLocalDevices = new SplObjectStorage();
-
-				if (count($devices) > 0) {
-					$this->handleFoundLocalDevices($devices);
-				}
-
-				$this->emit(Viera\Constants::EVENT_FINISHED, [$devices]);
+				$this->dispatcher?->dispatch(
+					new DevicesEvents\TerminateConnector(
+						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::VIERA),
+						'Devices discovery finished',
+					),
+				);
 			}),
 		);
 
@@ -294,10 +278,11 @@ final class Discovery implements Evenement\EventEmitterInterface
 			return;
 		}
 
-		$this->discoveredLocalDevices->attach(
+		$this->queue->append(
 			$this->messageBuilder->create(
-				Messages\Response\DiscoveredDevice::class,
+				Queue\Messages\StoreDevice::class,
 				[
+					'connector' => $this->connector->getId(),
 					'identifier' => $id,
 					'ip_address' => $host,
 					'port' => $port,
@@ -305,7 +290,11 @@ final class Discovery implements Evenement\EventEmitterInterface
 					'model' => trim(sprintf('%s %s', $specs->getModelName(), $specs->getModelNumber())),
 					'manufacturer' => $specs->getManufacturer(),
 					'serial_number' => $specs->getSerialNumber(),
+					'mac_address' => null,
 					'encrypted' => $needsAuthorization,
+					'app_id' => null,
+					'encryption_key' => null,
+					'hdmi' => [],
 					'applications' => $apps !== null
 						? array_map(
 							static fn (API\Messages\Response\Application $application): array => [
@@ -318,44 +307,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 				],
 			),
 		);
-	}
-
-	/**
-	 * @param array<Messages\Response\DiscoveredDevice> $devices
-	 *
-	 * @throws Exceptions\Runtime
-	 */
-	private function handleFoundLocalDevices(array $devices): void
-	{
-		foreach ($devices as $device) {
-			$this->queue->append(
-				$this->messageBuilder->create(
-					Queue\Messages\StoreDevice::class,
-					[
-						'connector' => $this->connector->getId(),
-						'identifier' => $device->getIdentifier(),
-						'ip_address' => $device->getIpAddress(),
-						'port' => $device->getPort(),
-						'name' => $device->getName(),
-						'model' => $device->getModel(),
-						'manufacturer' => $device->getManufacturer(),
-						'serial_number' => $device->getSerialNumber(),
-						'mac_address' => null,
-						'encrypted' => $device->isEncrypted(),
-						'app_id' => null,
-						'encryption_key' => null,
-						'hdmi' => [],
-						'applications' => array_map(
-							static fn (Messages\Response\DeviceApplication $application): array => [
-								'id' => $application->getId(),
-								'name' => $application->getName(),
-							],
-							$device->getApplications(),
-						),
-					],
-				),
-			);
-		}
 	}
 
 }
