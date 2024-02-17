@@ -23,11 +23,14 @@ use FastyBird\Connector\Modbus\Types;
 use FastyBird\Library\Application\Entities\Mapping as ApplicationMapping;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use TypeError;
 use ValueError;
+use function intval;
 use function is_numeric;
 use function is_string;
+use function strval;
 
 #[ORM\Entity]
 #[ApplicationMapping\DiscriminatorEntry(name: self::TYPE)]
@@ -86,15 +89,16 @@ class Connector extends DevicesEntities\Connectors\Connector
 		$property = $this->properties
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::CLIENT_MODE
+				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::CLIENT_MODE->value
 			)
 			->first();
 
 		if (
 			$property instanceof DevicesEntities\Connectors\Properties\Variable
-			&& Types\ClientMode::isValidValue($property->getValue())
+			&& is_string($property->getValue())
+			&& Types\ClientMode::tryFrom(strval(MetadataUtilities\Value::flattenValue($property->getValue()))) !== null
 		) {
-			return Types\ClientMode::get($property->getValue());
+			return Types\ClientMode::from(strval(MetadataUtilities\Value::flattenValue($property->getValue())));
 		}
 
 		throw new Exceptions\InvalidState('Connector mode is not configured');
@@ -111,19 +115,19 @@ class Connector extends DevicesEntities\Connectors\Connector
 		$property = $this->properties
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::RTU_BYTE_SIZE
+				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::RTU_BYTE_SIZE->value
 			)
 			->first();
 
 		if (
 			$property instanceof DevicesEntities\Connectors\Properties\Variable
 			&& is_numeric($property->getValue())
-			&& Types\ByteSize::isValidValue($property->getValue())
+			&& Types\ByteSize::tryFrom(intval(MetadataUtilities\Value::flattenValue($property->getValue()))) !== null
 		) {
-			return Types\ByteSize::get($property->getValue());
+			return Types\ByteSize::from(intval(MetadataUtilities\Value::flattenValue($property->getValue())));
 		}
 
-		return Types\ByteSize::get(Types\ByteSize::SIZE_8);
+		return Types\ByteSize::SIZE_8;
 	}
 
 	/**
@@ -137,19 +141,19 @@ class Connector extends DevicesEntities\Connectors\Connector
 		$property = $this->properties
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::RTU_BAUD_RATE
+				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::RTU_BAUD_RATE->value
 			)
 			->first();
 
 		if (
 			$property instanceof DevicesEntities\Connectors\Properties\Variable
-			&& is_numeric($property->getValue())
-			&& Types\BaudRate::isValidValue($property->getValue())
+			&& !is_numeric($property->getValue())
+			&& Types\BaudRate::tryFrom(intval(MetadataUtilities\Value::flattenValue($property->getValue()))) !== null
 		) {
-			return Types\BaudRate::get($property->getValue());
+			return Types\BaudRate::from(intval(MetadataUtilities\Value::flattenValue($property->getValue())));
 		}
 
-		return Types\BaudRate::get(Types\BaudRate::RATE_9600);
+		return Types\BaudRate::RATE_9600;
 	}
 
 	/**
@@ -163,19 +167,19 @@ class Connector extends DevicesEntities\Connectors\Connector
 		$property = $this->properties
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::RTU_PARITY
+				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::RTU_PARITY->value
 			)
 			->first();
 
 		if (
 			$property instanceof DevicesEntities\Connectors\Properties\Variable
 			&& is_numeric($property->getValue())
-			&& Types\Parity::isValidValue($property->getValue())
+			&& Types\Parity::tryFrom(intval(MetadataUtilities\Value::flattenValue($property->getValue()))) !== null
 		) {
-			return Types\Parity::get($property->getValue());
+			return Types\Parity::from(intval(MetadataUtilities\Value::flattenValue($property->getValue())));
 		}
 
-		return Types\Parity::get(Types\Parity::NONE);
+		return Types\Parity::NONE;
 	}
 
 	/**
@@ -189,19 +193,19 @@ class Connector extends DevicesEntities\Connectors\Connector
 		$property = $this->properties
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::RTU_STOP_BITS
+				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::RTU_STOP_BITS->value
 			)
 			->first();
 
 		if (
 			$property instanceof DevicesEntities\Connectors\Properties\Variable
-			&& is_numeric($property->getValue())
-			&& Types\StopBits::isValidValue($property->getValue())
+			&& !is_numeric($property->getValue())
+			&& Types\StopBits::tryFrom(intval(MetadataUtilities\Value::flattenValue($property->getValue()))) !== null
 		) {
-			return Types\StopBits::get($property->getValue());
+			return Types\StopBits::from(intval(MetadataUtilities\Value::flattenValue($property->getValue())));
 		}
 
-		return Types\StopBits::get(Types\StopBits::ONE);
+		return Types\StopBits::ONE;
 	}
 
 	/**
@@ -215,7 +219,7 @@ class Connector extends DevicesEntities\Connectors\Connector
 		$property = $this->properties
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::RTU_INTERFACE
+				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::RTU_INTERFACE->value
 			)
 			->first();
 

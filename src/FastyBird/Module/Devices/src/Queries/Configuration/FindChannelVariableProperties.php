@@ -21,7 +21,7 @@ use FastyBird\Module\Devices\Types;
 use Ramsey\Uuid;
 
 /**
- * Find channel variable properties entities query
+ * Find channel variable properties configuration query
  *
  * @template T of Documents\Channels\Properties\Variable
  * @extends  FindChannelProperties<T>

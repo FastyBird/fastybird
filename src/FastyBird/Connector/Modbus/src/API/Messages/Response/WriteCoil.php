@@ -59,7 +59,7 @@ final class WriteCoil implements API\Messages\Message
 	{
 		return [
 			'station' => $this->getStation(),
-			'function' => $this->getFunction()->getValue(),
+			'function' => $this->getFunction()->value,
 			'value' => $this->getValue(),
 		];
 	}

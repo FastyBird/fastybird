@@ -19,7 +19,7 @@ use Doctrine\ORM;
 use FastyBird\Module\Devices\Entities;
 
 /**
- * Find channel dynamic properties entities query
+ * Find channel variable properties entities query
  *
  * @template T of Entities\Channels\Properties\Variable
  * @extends  FindChannelProperties<T>

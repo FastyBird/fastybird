@@ -81,7 +81,7 @@ final class ReadDigitalInputs implements API\Messages\Message
 	{
 		return [
 			'station' => $this->getStation(),
-			'function' => $this->getFunction()->getValue(),
+			'function' => $this->getFunction()->value,
 			'count' => $this->getCount(),
 			'registers' => $this->getRegisters(),
 		];

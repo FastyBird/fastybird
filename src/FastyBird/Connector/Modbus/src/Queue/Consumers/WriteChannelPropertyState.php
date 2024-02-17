@@ -329,7 +329,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 
 		$mode = $this->connectorHelper->getClientMode($connector);
 
-		if ($mode->equalsValue(Types\ClientMode::RTU)) {
+		if ($mode === Types\ClientMode::RTU) {
 			$station = $this->deviceHelper->getAddress($device);
 
 			if (!is_numeric($station)) {
@@ -663,7 +663,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 
 				return true;
 			}
-		} elseif ($mode->equalsValue(Types\ClientMode::TCP)) {
+		} else {
 			$ipAddress = $this->deviceHelper->getIpAddress($device);
 
 			if ($ipAddress === null) {
@@ -1006,33 +1006,6 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					);
 				},
 			);
-
-		} else {
-			$this->resetExpected($property);
-
-			$this->logger->error(
-				'Client mode is not supported',
-				[
-					'source' => MetadataTypes\Sources\Connector::MODBUS,
-					'type' => 'write-channel-property-state-message-consumer',
-					'connector' => [
-						'id' => $message->getConnector()->toString(),
-					],
-					'device' => [
-						'id' => $device->getId()->toString(),
-					],
-					'channel' => [
-						'id' => $channel->getId()->toString(),
-					],
-					'property' => [
-						'id' => $property->getId()->toString(),
-					],
-					'mode' => $mode->getValue(),
-					'data' => $message->toArray(),
-				],
-			);
-
-			return true;
 		}
 
 		$this->logger->debug(

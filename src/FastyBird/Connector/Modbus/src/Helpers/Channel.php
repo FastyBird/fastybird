@@ -18,6 +18,8 @@ namespace FastyBird\Connector\Modbus\Helpers;
 use DateTimeInterface;
 use FastyBird\Connector\Modbus;
 use FastyBird\Connector\Modbus\Documents;
+use FastyBird\Connector\Modbus\Exceptions;
+use FastyBird\Connector\Modbus\Queries;
 use FastyBird\Connector\Modbus\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -25,7 +27,6 @@ use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
 use TypeError;
 use ValueError;
@@ -33,6 +34,7 @@ use function assert;
 use function is_float;
 use function is_int;
 use function is_string;
+use function strval;
 
 /**
  * Useful channel helpers
@@ -55,6 +57,7 @@ final class Channel
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError
@@ -62,7 +65,7 @@ final class Channel
 	 */
 	public function getAddress(Documents\Channels\Channel $channel): int|null
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindChannelVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindChannelVariableProperties();
 		$findPropertyQuery->forChannel($channel);
 		$findPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::ADDRESS);
 
@@ -83,6 +86,7 @@ final class Channel
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError
@@ -92,7 +96,7 @@ final class Channel
 		Documents\Channels\Channel $channel,
 	): Types\ChannelType|null
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindChannelVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindChannelVariableProperties();
 		$findPropertyQuery->forChannel($channel);
 		$findPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::TYPE);
 
@@ -101,18 +105,20 @@ final class Channel
 			DevicesDocuments\Channels\Properties\Variable::class,
 		);
 
-		if ($property === null || !Types\ChannelType::isValidValue($property->getValue())) {
+		if (
+			$property?->getValue() === null
+			|| !is_string($property->getValue())
+			|| Types\ChannelType::tryFrom($property->getValue()) === null
+		) {
 			return null;
 		}
 
-		$value = $property->getValue();
-		assert(is_string($value));
-
-		return Types\ChannelType::get($value);
+		return Types\ChannelType::from($property->getValue());
 	}
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError
@@ -120,7 +126,7 @@ final class Channel
 	 */
 	public function getReadingDelay(Documents\Channels\Channel $channel): float
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindChannelVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindChannelVariableProperties();
 		$findPropertyQuery->forChannel($channel);
 		$findPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::READING_DELAY);
 
@@ -141,6 +147,7 @@ final class Channel
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError
@@ -151,9 +158,9 @@ final class Channel
 		Types\ChannelPropertyIdentifier $type,
 	): float|bool|int|string|MetadataTypes\Payloads\Payload|DateTimeInterface|null
 	{
-		$findChannelPropertyQuery = new DevicesQueries\Configuration\FindChannelVariableProperties();
+		$findChannelPropertyQuery = new Queries\Configuration\FindChannelVariableProperties();
 		$findChannelPropertyQuery->forChannel($channel);
-		$findChannelPropertyQuery->byIdentifier($type->getValue());
+		$findChannelPropertyQuery->byIdentifier($type);
 
 		$configuration = $this->channelsPropertiesConfigurationRepository->findOneBy(
 			$findChannelPropertyQuery,
@@ -161,12 +168,14 @@ final class Channel
 		);
 
 		if ($configuration instanceof DevicesDocuments\Channels\Properties\Variable) {
-			if ($type->getValue() === Types\ChannelPropertyIdentifier::ADDRESS) {
+			if ($type === Types\ChannelPropertyIdentifier::ADDRESS) {
 				return is_int($configuration->getValue()) ? $configuration->getValue() : null;
 			}
 
-			if ($type->getValue() === Types\ChannelPropertyIdentifier::TYPE) {
-				if (Types\ChannelType::isValidValue($configuration->getValue())) {
+			if ($type === Types\ChannelPropertyIdentifier::TYPE) {
+				if (Types\ChannelType::tryFrom(
+					strval(MetadataUtilities\Value::flattenValue($configuration->getValue())),
+				) !== null) {
 					return MetadataUtilities\Value::flattenValue($configuration->getValue());
 				}
 

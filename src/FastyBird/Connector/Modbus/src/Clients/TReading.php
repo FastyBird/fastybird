@@ -22,6 +22,7 @@ use FastyBird\Connector\Modbus\Documents;
 use FastyBird\Connector\Modbus\Exceptions;
 use FastyBird\Connector\Modbus\Helpers;
 use FastyBird\Connector\Modbus\Helpers\MessageBuilder;
+use FastyBird\Connector\Modbus\Queries;
 use FastyBird\Connector\Modbus\Queue;
 use FastyBird\Connector\Modbus\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -29,7 +30,6 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use TypeError;
 use ValueError;
 use function array_splice;
@@ -144,6 +144,7 @@ trait TReading
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
@@ -162,14 +163,14 @@ trait TReading
 				$channel = $this->deviceHelper->findChannelByType(
 					$device,
 					$address,
-					Types\ChannelType::get(Types\ChannelType::COIL),
+					Types\ChannelType::COIL,
 				);
 
 			} elseif ($request instanceof Messages\Request\ReadDiscreteInputs) {
 				$channel = $this->deviceHelper->findChannelByType(
 					$device,
 					$address,
-					Types\ChannelType::get(Types\ChannelType::DISCRETE_INPUT),
+					Types\ChannelType::DISCRETE_INPUT,
 				);
 
 			} else {
@@ -182,7 +183,7 @@ trait TReading
 				);
 			}
 
-			$findChannelPropertyQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
+			$findChannelPropertyQuery = new Queries\Configuration\FindChannelDynamicProperties();
 			$findChannelPropertyQuery->forChannel($channel);
 			$findChannelPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::VALUE);
 
@@ -214,6 +215,7 @@ trait TReading
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
@@ -234,13 +236,13 @@ trait TReading
 				$channel = $this->deviceHelper->findChannelByType(
 					$device,
 					$requestAddress->getAddress(),
-					Types\ChannelType::get(Types\ChannelType::HOLDING_REGISTER),
+					Types\ChannelType::HOLDING_REGISTER,
 				);
 			} elseif ($request instanceof Messages\Request\ReadInputsRegisters) {
 				$channel = $this->deviceHelper->findChannelByType(
 					$device,
 					$requestAddress->getAddress(),
-					Types\ChannelType::get(Types\ChannelType::INPUT_REGISTER),
+					Types\ChannelType::INPUT_REGISTER,
 				);
 			} else {
 				continue;
@@ -252,7 +254,7 @@ trait TReading
 				);
 			}
 
-			$findChannelPropertyQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
+			$findChannelPropertyQuery = new Queries\Configuration\FindChannelDynamicProperties();
 			$findChannelPropertyQuery->forChannel($channel);
 			$findChannelPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::VALUE);
 

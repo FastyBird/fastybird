@@ -30,7 +30,6 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette\Localization;
 use Nette\Utils;
 use RuntimeException;
@@ -48,6 +47,7 @@ use function array_search;
 use function array_values;
 use function assert;
 use function count;
+use function in_array;
 use function intval;
 use function is_array;
 use function is_int;
@@ -207,7 +207,7 @@ class Install extends Console\Command\Command
 
 		$interface = $baudRate = $byteSize = $dataParity = $stopBits = null;
 
-		if ($mode->equalsValue(Types\ClientMode::RTU)) {
+		if ($mode === Types\ClientMode::RTU) {
 			$interface = $this->askConnectorInterface($io);
 			$baudRate = $this->askConnectorBaudRate($io);
 			$byteSize = $this->askConnectorByteSize($io);
@@ -228,16 +228,16 @@ class Install extends Console\Command\Command
 
 			$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-				'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE,
+				'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE->value,
 				'dataType' => MetadataTypes\DataType::STRING,
-				'value' => $mode->getValue(),
+				'value' => $mode->value,
 				'connector' => $connector,
 			]));
 
-			if ($mode->equalsValue(Types\ClientMode::RTU)) {
+			if ($mode === Types\ClientMode::RTU) {
 				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::RTU_INTERFACE,
+					'identifier' => Types\ConnectorPropertyIdentifier::RTU_INTERFACE->value,
 					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => $interface,
 					'connector' => $connector,
@@ -245,33 +245,33 @@ class Install extends Console\Command\Command
 
 				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::RTU_BAUD_RATE,
+					'identifier' => Types\ConnectorPropertyIdentifier::RTU_BAUD_RATE->value,
 					'dataType' => MetadataTypes\DataType::UINT,
-					'value' => $baudRate?->getValue(),
+					'value' => $baudRate?->value,
 					'connector' => $connector,
 				]));
 
 				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::RTU_BYTE_SIZE,
+					'identifier' => Types\ConnectorPropertyIdentifier::RTU_BYTE_SIZE->value,
 					'dataType' => MetadataTypes\DataType::UCHAR,
-					'value' => $byteSize?->getValue(),
+					'value' => $byteSize?->value,
 					'connector' => $connector,
 				]));
 
 				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::RTU_PARITY,
+					'identifier' => Types\ConnectorPropertyIdentifier::RTU_PARITY->value,
 					'dataType' => MetadataTypes\DataType::UCHAR,
-					'value' => $dataParity?->getValue(),
+					'value' => $dataParity?->value,
 					'connector' => $connector,
 				]));
 
 				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::RTU_STOP_BITS,
+					'identifier' => Types\ConnectorPropertyIdentifier::RTU_STOP_BITS->value,
 					'dataType' => MetadataTypes\DataType::UCHAR,
-					'value' => $stopBits?->getValue(),
+					'value' => $stopBits?->value,
 					'connector' => $connector,
 				]));
 			}
@@ -356,7 +356,7 @@ class Install extends Console\Command\Command
 			return;
 		}
 
-		$findConnectorPropertyQuery = new DevicesQueries\Entities\FindConnectorProperties();
+		$findConnectorPropertyQuery = new Queries\Entities\FindConnectorProperties();
 		$findConnectorPropertyQuery->forConnector($connector);
 		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::CLIENT_MODE);
 
@@ -407,8 +407,8 @@ class Install extends Console\Command\Command
 		$interface = $baudRate = $byteSize = $dataParity = $stopBits = null;
 
 		if (
-			$modeProperty?->getValue() === Types\ClientMode::RTU
-			|| $mode?->getValue() === Types\ClientMode::RTU
+			$modeProperty?->getValue() === Types\ClientMode::RTU->value
+			|| $mode === Types\ClientMode::RTU
 		) {
 			$interface = $this->askConnectorInterface($io, $connector);
 			$baudRate = $this->askConnectorBaudRate($io, $connector);
@@ -417,31 +417,31 @@ class Install extends Console\Command\Command
 			$stopBits = $this->askConnectorStopBits($io, $connector);
 		}
 
-		$findConnectorPropertyQuery = new DevicesQueries\Entities\FindConnectorProperties();
+		$findConnectorPropertyQuery = new Queries\Entities\FindConnectorProperties();
 		$findConnectorPropertyQuery->forConnector($connector);
 		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::RTU_INTERFACE);
 
 		$interfaceProperty = $this->connectorsPropertiesRepository->findOneBy($findConnectorPropertyQuery);
 
-		$findConnectorPropertyQuery = new DevicesQueries\Entities\FindConnectorProperties();
+		$findConnectorPropertyQuery = new Queries\Entities\FindConnectorProperties();
 		$findConnectorPropertyQuery->forConnector($connector);
 		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::RTU_BAUD_RATE);
 
 		$baudRateProperty = $this->connectorsPropertiesRepository->findOneBy($findConnectorPropertyQuery);
 
-		$findConnectorPropertyQuery = new DevicesQueries\Entities\FindConnectorProperties();
+		$findConnectorPropertyQuery = new Queries\Entities\FindConnectorProperties();
 		$findConnectorPropertyQuery->forConnector($connector);
 		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::RTU_BYTE_SIZE);
 
 		$byteSizeProperty = $this->connectorsPropertiesRepository->findOneBy($findConnectorPropertyQuery);
 
-		$findConnectorPropertyQuery = new DevicesQueries\Entities\FindConnectorProperties();
+		$findConnectorPropertyQuery = new Queries\Entities\FindConnectorProperties();
 		$findConnectorPropertyQuery->forConnector($connector);
 		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::RTU_PARITY);
 
 		$dataParityProperty = $this->connectorsPropertiesRepository->findOneBy($findConnectorPropertyQuery);
 
-		$findConnectorPropertyQuery = new DevicesQueries\Entities\FindConnectorProperties();
+		$findConnectorPropertyQuery = new Queries\Entities\FindConnectorProperties();
 		$findConnectorPropertyQuery->forConnector($connector);
 		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::RTU_STOP_BITS);
 
@@ -464,9 +464,9 @@ class Install extends Console\Command\Command
 
 				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE,
+					'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE->value,
 					'dataType' => MetadataTypes\DataType::ENUM,
-					'value' => $mode->getValue(),
+					'value' => $mode->value,
 					'format' => [
 						Types\ClientMode::RTU,
 						Types\ClientMode::TCP,
@@ -475,18 +475,18 @@ class Install extends Console\Command\Command
 				]));
 			} elseif ($mode !== null) {
 				$this->connectorsPropertiesManager->update($modeProperty, Utils\ArrayHash::from([
-					'value' => $mode->getValue(),
+					'value' => $mode->value,
 				]));
 			}
 
 			if (
-				$modeProperty?->getValue() === Types\ClientMode::RTU
-				|| $mode?->getValue() === Types\ClientMode::RTU
+				$modeProperty?->getValue() === Types\ClientMode::RTU->value
+				|| $mode === Types\ClientMode::RTU
 			) {
 				if ($interfaceProperty === null) {
 					$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-						'identifier' => Types\ConnectorPropertyIdentifier::RTU_INTERFACE,
+						'identifier' => Types\ConnectorPropertyIdentifier::RTU_INTERFACE->value,
 						'dataType' => MetadataTypes\DataType::STRING,
 						'value' => $interface,
 						'connector' => $connector,
@@ -500,56 +500,56 @@ class Install extends Console\Command\Command
 				if ($baudRateProperty === null) {
 					$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-						'identifier' => Types\ConnectorPropertyIdentifier::RTU_BAUD_RATE,
+						'identifier' => Types\ConnectorPropertyIdentifier::RTU_BAUD_RATE->value,
 						'dataType' => MetadataTypes\DataType::UINT,
-						'value' => $baudRate?->getValue(),
+						'value' => $baudRate?->value,
 						'connector' => $connector,
 					]));
 				} elseif ($baudRateProperty instanceof DevicesEntities\Connectors\Properties\Variable) {
 					$this->connectorsPropertiesManager->update($baudRateProperty, Utils\ArrayHash::from([
-						'value' => $baudRate?->getValue(),
+						'value' => $baudRate?->value,
 					]));
 				}
 
 				if ($byteSizeProperty === null) {
 					$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-						'identifier' => Types\ConnectorPropertyIdentifier::RTU_BYTE_SIZE,
+						'identifier' => Types\ConnectorPropertyIdentifier::RTU_BYTE_SIZE->value,
 						'dataType' => MetadataTypes\DataType::UCHAR,
-						'value' => $byteSize?->getValue(),
+						'value' => $byteSize?->value,
 						'connector' => $connector,
 					]));
 				} elseif ($byteSizeProperty instanceof DevicesEntities\Connectors\Properties\Variable) {
 					$this->connectorsPropertiesManager->update($byteSizeProperty, Utils\ArrayHash::from([
-						'value' => $byteSize?->getValue(),
+						'value' => $byteSize?->value,
 					]));
 				}
 
 				if ($dataParityProperty === null) {
 					$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-						'identifier' => Types\ConnectorPropertyIdentifier::RTU_PARITY,
+						'identifier' => Types\ConnectorPropertyIdentifier::RTU_PARITY->value,
 						'dataType' => MetadataTypes\DataType::UCHAR,
-						'value' => $dataParity?->getValue(),
+						'value' => $dataParity?->value,
 						'connector' => $connector,
 					]));
 				} elseif ($dataParityProperty instanceof DevicesEntities\Connectors\Properties\Variable) {
 					$this->connectorsPropertiesManager->update($dataParityProperty, Utils\ArrayHash::from([
-						'value' => $dataParity?->getValue(),
+						'value' => $dataParity?->value,
 					]));
 				}
 
 				if ($stopBitsProperty === null) {
 					$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-						'identifier' => Types\ConnectorPropertyIdentifier::RTU_STOP_BITS,
+						'identifier' => Types\ConnectorPropertyIdentifier::RTU_STOP_BITS->value,
 						'dataType' => MetadataTypes\DataType::UCHAR,
-						'value' => $stopBits?->getValue(),
+						'value' => $stopBits?->value,
 						'connector' => $connector,
 					]));
 				} elseif ($stopBitsProperty instanceof DevicesEntities\Connectors\Properties\Variable) {
 					$this->connectorsPropertiesManager->update($stopBitsProperty, Utils\ArrayHash::from([
-						'value' => $stopBits?->getValue(),
+						'value' => $stopBits?->value,
 					]));
 				}
 			} else {
@@ -758,7 +758,7 @@ class Install extends Console\Command\Command
 				$index + 1,
 				$connector->getName() ?? $connector->getIdentifier(),
 				$this->translator->translate(
-					'//modbus-connector.cmd.base.mode.' . $connector->getClientMode()->getValue(),
+					'//modbus-connector.cmd.base.mode.' . $connector->getClientMode()->value,
 				),
 				count($devices),
 			]);
@@ -835,11 +835,11 @@ class Install extends Console\Command\Command
 
 		$address = $ipAddress = $port = $unitId = null;
 
-		if ($connector->getClientMode()->equalsValue(Types\ClientMode::RTU)) {
+		if ($connector->getClientMode() === Types\ClientMode::RTU) {
 			$address = $this->askDeviceAddress($io, $connector);
 		}
 
-		if ($connector->getClientMode()->equalsValue(Types\ClientMode::TCP)) {
+		if ($connector->getClientMode() === Types\ClientMode::TCP) {
 			$ipAddress = $this->askDeviceIpAddress($io);
 
 			if (
@@ -870,20 +870,20 @@ class Install extends Console\Command\Command
 			]));
 			assert($device instanceof Entities\Devices\Device);
 
-			if ($connector->getClientMode()->equalsValue(Types\ClientMode::RTU)) {
+			if ($connector->getClientMode() === Types\ClientMode::RTU) {
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
-					'identifier' => Types\DevicePropertyIdentifier::ADDRESS,
+					'identifier' => Types\DevicePropertyIdentifier::ADDRESS->value,
 					'dataType' => MetadataTypes\DataType::UCHAR,
 					'value' => $address,
 					'device' => $device,
 				]));
 			}
 
-			if ($connector->getClientMode()->equalsValue(Types\ClientMode::TCP)) {
+			if ($connector->getClientMode() === Types\ClientMode::TCP) {
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
-					'identifier' => Types\DevicePropertyIdentifier::IP_ADDRESS,
+					'identifier' => Types\DevicePropertyIdentifier::IP_ADDRESS->value,
 					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => $ipAddress,
 					'device' => $device,
@@ -891,7 +891,7 @@ class Install extends Console\Command\Command
 
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
-					'identifier' => Types\DevicePropertyIdentifier::PORT,
+					'identifier' => Types\DevicePropertyIdentifier::PORT->value,
 					'dataType' => MetadataTypes\DataType::UINT,
 					'value' => $port,
 					'device' => $device,
@@ -899,7 +899,7 @@ class Install extends Console\Command\Command
 
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
-					'identifier' => Types\DevicePropertyIdentifier::UNIT_ID,
+					'identifier' => Types\DevicePropertyIdentifier::UNIT_ID->value,
 					'dataType' => MetadataTypes\DataType::UCHAR,
 					'value' => $unitId,
 					'device' => $device,
@@ -908,9 +908,9 @@ class Install extends Console\Command\Command
 
 			$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
-				'identifier' => Types\DevicePropertyIdentifier::BYTE_ORDER,
+				'identifier' => Types\DevicePropertyIdentifier::BYTE_ORDER->value,
 				'dataType' => MetadataTypes\DataType::STRING,
-				'value' => $byteOrder->getValue(),
+				'value' => $byteOrder->value,
 				'device' => $device,
 			]));
 
@@ -998,41 +998,41 @@ class Install extends Console\Command\Command
 
 		$address = $ipAddress = $port = $unitId = null;
 
-		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
+		$findDevicePropertyQuery = new Queries\Entities\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($device);
 		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::ADDRESS);
 
 		$addressProperty = $this->devicesPropertiesRepository->findOneBy($findDevicePropertyQuery);
 
-		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
+		$findDevicePropertyQuery = new Queries\Entities\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($device);
 		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IP_ADDRESS);
 
 		$ipAddressProperty = $this->devicesPropertiesRepository->findOneBy($findDevicePropertyQuery);
 
-		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
+		$findDevicePropertyQuery = new Queries\Entities\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($device);
 		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::PORT);
 
 		$portProperty = $this->devicesPropertiesRepository->findOneBy($findDevicePropertyQuery);
 
-		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
+		$findDevicePropertyQuery = new Queries\Entities\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($device);
 		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::UNIT_ID);
 
 		$unitIdProperty = $this->devicesPropertiesRepository->findOneBy($findDevicePropertyQuery);
 
-		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
+		$findDevicePropertyQuery = new Queries\Entities\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($device);
 		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::BYTE_ORDER);
 
 		$byteOrderProperty = $this->devicesPropertiesRepository->findOneBy($findDevicePropertyQuery);
 
-		if ($connector->getClientMode()->equalsValue(Types\ClientMode::RTU)) {
+		if ($connector->getClientMode() === Types\ClientMode::RTU) {
 			$address = $this->askDeviceAddress($io, $connector, $device);
 		}
 
-		if ($connector->getClientMode()->equalsValue(Types\ClientMode::TCP)) {
+		if ($connector->getClientMode() === Types\ClientMode::TCP) {
 			$ipAddress = $this->askDeviceIpAddress($io, $device);
 
 			if (
@@ -1060,11 +1060,11 @@ class Install extends Console\Command\Command
 			]));
 			assert($device instanceof Entities\Devices\Device);
 
-			if ($connector->getClientMode()->equalsValue(Types\ClientMode::RTU)) {
+			if ($connector->getClientMode() === Types\ClientMode::RTU) {
 				if ($addressProperty === null) {
 					$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Devices\Properties\Variable::class,
-						'identifier' => Types\DevicePropertyIdentifier::ADDRESS,
+						'identifier' => Types\DevicePropertyIdentifier::ADDRESS->value,
 						'dataType' => MetadataTypes\DataType::UCHAR,
 						'value' => $address,
 						'device' => $device,
@@ -1078,11 +1078,11 @@ class Install extends Console\Command\Command
 				$this->devicesPropertiesManager->delete($addressProperty);
 			}
 
-			if ($connector->getClientMode()->equalsValue(Types\ClientMode::TCP)) {
+			if ($connector->getClientMode() === Types\ClientMode::TCP) {
 				if ($ipAddressProperty === null) {
 					$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Devices\Properties\Variable::class,
-						'identifier' => Types\DevicePropertyIdentifier::IP_ADDRESS,
+						'identifier' => Types\DevicePropertyIdentifier::IP_ADDRESS->value,
 						'dataType' => MetadataTypes\DataType::STRING,
 						'value' => $ipAddress,
 						'device' => $device,
@@ -1096,7 +1096,7 @@ class Install extends Console\Command\Command
 				if ($portProperty === null) {
 					$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Devices\Properties\Variable::class,
-						'identifier' => Types\DevicePropertyIdentifier::PORT,
+						'identifier' => Types\DevicePropertyIdentifier::PORT->value,
 						'dataType' => MetadataTypes\DataType::STRING,
 						'value' => $port,
 						'device' => $device,
@@ -1110,7 +1110,7 @@ class Install extends Console\Command\Command
 				if ($unitIdProperty === null) {
 					$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Devices\Properties\Variable::class,
-						'identifier' => Types\DevicePropertyIdentifier::UNIT_ID,
+						'identifier' => Types\DevicePropertyIdentifier::UNIT_ID->value,
 						'dataType' => MetadataTypes\DataType::UCHAR,
 						'value' => $unitId,
 						'device' => $device,
@@ -1137,14 +1137,14 @@ class Install extends Console\Command\Command
 			if ($byteOrderProperty === null) {
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
-					'identifier' => Types\DevicePropertyIdentifier::BYTE_ORDER,
+					'identifier' => Types\DevicePropertyIdentifier::BYTE_ORDER->value,
 					'dataType' => MetadataTypes\DataType::STRING,
-					'value' => $byteOrder->getValue(),
+					'value' => $byteOrder->value,
 					'device' => $device,
 				]));
 			} elseif ($byteOrderProperty instanceof DevicesEntities\Devices\Properties\Variable) {
 				$this->devicesPropertiesManager->update($byteOrderProperty, Utils\ArrayHash::from([
-					'value' => $byteOrder->getValue(),
+					'value' => $byteOrder->value,
 				]));
 			}
 
@@ -1335,13 +1335,13 @@ class Install extends Console\Command\Command
 
 			foreach ($channels as $channel) {
 				if ($channel->getRegisterType() !== null) {
-					if ($channel->getRegisterType()->equalsValue(Types\ChannelType::DISCRETE_INPUT)) {
+					if ($channel->getRegisterType() === Types\ChannelType::DISCRETE_INPUT) {
 						++$discreteInputRegisters;
-					} elseif ($channel->getRegisterType()->equalsValue(Types\ChannelType::COIL)) {
+					} elseif ($channel->getRegisterType() === Types\ChannelType::COIL) {
 						++$coilRegisters;
-					} elseif ($channel->getRegisterType()->equalsValue(Types\ChannelType::INPUT_REGISTER)) {
+					} elseif ($channel->getRegisterType() === Types\ChannelType::INPUT_REGISTER) {
 						++$inputRegisters;
-					} elseif ($channel->getRegisterType()->equalsValue(Types\ChannelType::HOLDING_REGISTER)) {
+					} elseif ($channel->getRegisterType() === Types\ChannelType::HOLDING_REGISTER) {
 						++$holdingRegisters;
 					}
 				}
@@ -1350,7 +1350,7 @@ class Install extends Console\Command\Command
 			$table->addRow([
 				$index + 1,
 				$device->getName() ?? $device->getIdentifier(),
-				$connector->getClientMode()->equalsValue(Types\ClientMode::RTU)
+				$connector->getClientMode() === Types\ClientMode::RTU
 					? $device->getAddress()
 					: $device->getIpAddress() . ':' . $device->getPort(),
 				$discreteInputRegisters,
@@ -1413,7 +1413,7 @@ class Install extends Console\Command\Command
 			foreach (range($addresses[0], $addresses[1]) as $address) {
 				$channel = $this->channelsManager->create(Utils\ArrayHash::from([
 					'entity' => Entities\Channels\Channel::class,
-					'identifier' => $type . '_' . $address,
+					'identifier' => $type->value . '_' . $address,
 					'name' => $name,
 					'device' => $device,
 				]));
@@ -1430,7 +1430,7 @@ class Install extends Console\Command\Command
 					'entity' => DevicesEntities\Channels\Properties\Variable::class,
 					'identifier' => Types\ChannelPropertyIdentifier::TYPE,
 					'dataType' => MetadataTypes\DataType::STRING,
-					'value' => $type->getValue(),
+					'value' => $type->value,
 					'channel' => $channel,
 				]));
 
@@ -1448,8 +1448,8 @@ class Install extends Console\Command\Command
 					'dataType' => $dataType,
 					'format' => $format,
 					'settable' => (
-						$type->equalsValue(Types\ChannelType::COIL)
-						|| $type->equalsValue(Types\ChannelType::HOLDING_REGISTER)
+						$type === Types\ChannelType::COIL
+						|| $type === Types\ChannelType::HOLDING_REGISTER
 					),
 					'queryable' => true,
 					'channel' => $channel,
@@ -1575,25 +1575,25 @@ class Install extends Console\Command\Command
 			$format = $this->askRegisterFormat($io, $dataType, $channel);
 		}
 
-		$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
+		$findChannelPropertyQuery = new Queries\Entities\FindChannelProperties();
 		$findChannelPropertyQuery->forChannel($channel);
 		$findChannelPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::ADDRESS);
 
 		$addressProperty = $this->channelsPropertiesRepository->findOneBy($findChannelPropertyQuery);
 
-		$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
+		$findChannelPropertyQuery = new Queries\Entities\FindChannelProperties();
 		$findChannelPropertyQuery->forChannel($channel);
 		$findChannelPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::TYPE);
 
 		$typeProperty = $this->channelsPropertiesRepository->findOneBy($findChannelPropertyQuery);
 
-		$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
+		$findChannelPropertyQuery = new Queries\Entities\FindChannelProperties();
 		$findChannelPropertyQuery->forChannel($channel);
 		$findChannelPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::READING_DELAY);
 
 		$readingDelayProperty = $this->channelsPropertiesRepository->findOneBy($findChannelPropertyQuery);
 
-		$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
+		$findChannelPropertyQuery = new Queries\Entities\FindChannelProperties();
 		$findChannelPropertyQuery->forChannel($channel);
 		$findChannelPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::VALUE);
 
@@ -1626,7 +1626,7 @@ class Install extends Console\Command\Command
 					'entity' => DevicesEntities\Channels\Properties\Variable::class,
 					'identifier' => Types\ChannelPropertyIdentifier::TYPE,
 					'dataType' => MetadataTypes\DataType::STRING,
-					'value' => $type->getValue(),
+					'value' => $type->value,
 					'channel' => $channel,
 				]));
 			}
@@ -1652,8 +1652,8 @@ class Install extends Console\Command\Command
 					'dataType' => $dataType,
 					'format' => $format,
 					'settable' => (
-						$type->equalsValue(Types\ChannelType::COIL)
-						|| $type->equalsValue(Types\ChannelType::HOLDING_REGISTER)
+						$type === Types\ChannelType::COIL
+						|| $type === Types\ChannelType::HOLDING_REGISTER
 					),
 					'queryable' => true,
 					'channel' => $channel,
@@ -1663,8 +1663,8 @@ class Install extends Console\Command\Command
 					'dataType' => $dataType,
 					'format' => $format,
 					'settable' => (
-						$type->equalsValue(Types\ChannelType::COIL)
-						|| $type->equalsValue(Types\ChannelType::HOLDING_REGISTER)
+						$type === Types\ChannelType::COIL
+						|| $type === Types\ChannelType::HOLDING_REGISTER
 					),
 				]));
 			}
@@ -1781,6 +1781,7 @@ class Install extends Console\Command\Command
 
 	/**
 	 * @throws ApplicationExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -1811,7 +1812,7 @@ class Install extends Console\Command\Command
 		]);
 
 		foreach ($deviceChannels as $index => $channel) {
-			$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelDynamicProperties();
+			$findChannelPropertyQuery = new Queries\Entities\FindChannelDynamicProperties();
 			$findChannelPropertyQuery->forChannel($channel);
 			$findChannelPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::VALUE);
 
@@ -1825,7 +1826,7 @@ class Install extends Console\Command\Command
 				$channel->getName() ?? $channel->getIdentifier(),
 				$channel->getRegisterType() !== null
 					? $this->translator->translate(
-						'//modbus-connector.cmd.base.registerType.' . $channel->getRegisterType()->getValue(),
+						'//modbus-connector.cmd.base.registerType.' . $channel->getRegisterType()->value,
 					)
 					: 'N/A',
 				$channel->getAddress(),
@@ -2102,9 +2103,9 @@ class Install extends Console\Command\Command
 		$default = null;
 
 		if ($connector !== null) {
-			if ($connector->getClientMode()->equalsValue(Types\ClientMode::RTU)) {
+			if ($connector->getClientMode() === Types\ClientMode::RTU) {
 				$default = 0;
-			} elseif ($connector->getClientMode()->equalsValue(Types\ClientMode::TCP)) {
+			} elseif ($connector->getClientMode() === Types\ClientMode::TCP) {
 				$default = 1;
 			}
 		}
@@ -2137,7 +2138,7 @@ class Install extends Console\Command\Command
 				)
 				|| $answer === '0'
 			) {
-				return Types\ClientMode::get(Types\ClientMode::RTU);
+				return Types\ClientMode::RTU;
 			}
 
 			if (
@@ -2146,7 +2147,7 @@ class Install extends Console\Command\Command
 				)
 				|| $answer === '1'
 			) {
-				return Types\ClientMode::get(Types\ClientMode::TCP);
+				return Types\ClientMode::TCP;
 			}
 
 			throw new Exceptions\Runtime(
@@ -2217,11 +2218,14 @@ class Install extends Console\Command\Command
 		Entities\Connectors\Connector|null $connector = null,
 	): Types\BaudRate
 	{
-		$default = $connector?->getBaudRate()->getValue() ?? Types\BaudRate::RATE_9600;
+		$default = $connector?->getBaudRate()->value ?? Types\BaudRate::RATE_9600->value;
 
 		$baudRates = array_combine(
-			array_values(Types\BaudRate::getValues()),
-			array_map(static fn (int $item): string => strval($item), array_values(Types\BaudRate::getValues())),
+			array_map(static fn (Types\BaudRate $item): int => $item->value, array_values(Types\BaudRate::cases())),
+			array_map(
+				static fn (Types\BaudRate $item): string => strval($item->value),
+				array_values(Types\BaudRate::cases()),
+			),
 		);
 
 		$question = new Console\Question\ChoiceQuestion(
@@ -2249,8 +2253,8 @@ class Install extends Console\Command\Command
 
 			$baudRate = array_search($answer, $baudRates, true);
 
-			if ($baudRate !== false && Types\BaudRate::isValidValue($baudRate)) {
-				return Types\BaudRate::get(intval($baudRate));
+			if ($baudRate !== false) {
+				return Types\BaudRate::from(intval($baudRate));
 			}
 
 			throw new Exceptions\Runtime(
@@ -2275,11 +2279,14 @@ class Install extends Console\Command\Command
 		Entities\Connectors\Connector|null $connector = null,
 	): Types\ByteSize
 	{
-		$default = $connector?->getByteSize()->getValue() ?? Types\ByteSize::SIZE_8;
+		$default = $connector?->getByteSize()->value ?? Types\ByteSize::SIZE_8->value;
 
 		$byteSizes = array_combine(
-			array_values(Types\ByteSize::getValues()),
-			array_map(static fn (int $item): string => strval($item), array_values(Types\ByteSize::getValues())),
+			array_map(static fn (Types\ByteSize $item): int => $item->value, array_values(Types\ByteSize::cases())),
+			array_map(
+				static fn (Types\ByteSize $item): string => strval($item->value),
+				array_values(Types\ByteSize::cases()),
+			),
 		);
 
 		$question = new Console\Question\ChoiceQuestion(
@@ -2307,8 +2314,8 @@ class Install extends Console\Command\Command
 
 			$byteSize = array_search($answer, $byteSizes, true);
 
-			if ($byteSize !== false && Types\ByteSize::isValidValue($byteSize)) {
-				return Types\ByteSize::get(intval($byteSize));
+			if ($byteSize !== false) {
+				return Types\ByteSize::from(intval($byteSize));
 			}
 
 			throw new Exceptions\Runtime(
@@ -2335,7 +2342,7 @@ class Install extends Console\Command\Command
 	{
 		$default = 0;
 
-		switch ($connector?->getParity()->getValue()) {
+		switch ($connector?->getParity()) {
 			case Types\Parity::ODD:
 				$default = 1;
 
@@ -2375,7 +2382,7 @@ class Install extends Console\Command\Command
 				)
 				|| $answer === '0'
 			) {
-				return Types\Parity::get(Types\Parity::NONE);
+				return Types\Parity::NONE;
 			}
 
 			if (
@@ -2384,7 +2391,7 @@ class Install extends Console\Command\Command
 				)
 				|| $answer === '1'
 			) {
-				return Types\Parity::get(Types\Parity::ODD);
+				return Types\Parity::ODD;
 			}
 
 			if (
@@ -2393,7 +2400,7 @@ class Install extends Console\Command\Command
 				)
 				|| $answer === '2'
 			) {
-				return Types\Parity::get(Types\Parity::EVEN);
+				return Types\Parity::EVEN;
 			}
 
 			throw new Exceptions\Runtime(
@@ -2418,11 +2425,14 @@ class Install extends Console\Command\Command
 		Entities\Connectors\Connector|null $connector = null,
 	): Types\StopBits
 	{
-		$default = $connector?->getStopBits()->getValue() ?? Types\StopBits::ONE;
+		$default = $connector?->getStopBits()->value ?? Types\StopBits::ONE->value;
 
 		$stopBits = array_combine(
-			array_values(Types\StopBits::getValues()),
-			array_map(static fn (int $item): string => strval($item), array_values(Types\StopBits::getValues())),
+			array_map(static fn (Types\StopBits $item): int => $item->value, array_values(Types\StopBits::cases())),
+			array_map(
+				static fn (Types\StopBits $item): string => strval($item->value),
+				array_values(Types\StopBits::cases()),
+			),
 		);
 
 		$question = new Console\Question\ChoiceQuestion(
@@ -2450,8 +2460,8 @@ class Install extends Console\Command\Command
 
 			$stopBit = array_search($answer, $stopBits, true);
 
-			if ($stopBit !== false && Types\StopBits::isValidValue($stopBit)) {
-				return Types\StopBits::get(intval($stopBit));
+			if ($stopBit !== false) {
+				return Types\StopBits::from(intval($stopBit));
 			}
 
 			throw new Exceptions\Runtime(
@@ -2664,11 +2674,11 @@ class Install extends Console\Command\Command
 		$default = 0;
 
 		if ($device !== null) {
-			if ($device->getByteOrder()->equalsValue(Types\ByteOrder::BIG_SWAP)) {
+			if ($device->getByteOrder() === Types\ByteOrder::BIG_SWAP) {
 				$default = 1;
-			} elseif ($device->getByteOrder()->equalsValue(Types\ByteOrder::LITTLE)) {
+			} elseif ($device->getByteOrder() === Types\ByteOrder::LITTLE) {
 				$default = 2;
-			} elseif ($device->getByteOrder()->equalsValue(Types\ByteOrder::LITTLE_SWAP)) {
+			} elseif ($device->getByteOrder() === Types\ByteOrder::LITTLE_SWAP) {
 				$default = 3;
 			}
 		}
@@ -2701,28 +2711,28 @@ class Install extends Console\Command\Command
 				$answer === $this->translator->translate('//modbus-connector.cmd.install.answers.endian.big')
 				|| $answer === '0'
 			) {
-				return Types\ByteOrder::get(Types\ByteOrder::BIG);
+				return Types\ByteOrder::BIG;
 			}
 
 			if (
 				$answer === $this->translator->translate('//modbus-connector.cmd.install.answers.endian.bigSwap')
 				|| $answer === '1'
 			) {
-				return Types\ByteOrder::get(Types\ByteOrder::BIG_SWAP);
+				return Types\ByteOrder::BIG_SWAP;
 			}
 
 			if (
 				$answer === $this->translator->translate('//modbus-connector.cmd.install.answers.endian.little')
 				|| $answer === '2'
 			) {
-				return Types\ByteOrder::get(Types\ByteOrder::LITTLE);
+				return Types\ByteOrder::LITTLE;
 			}
 
 			if (
 				$answer === $this->translator->translate('//modbus-connector.cmd.install.answers.endian.littleSwap')
 				|| $answer === '3'
 			) {
-				return Types\ByteOrder::get(Types\ByteOrder::LITTLE_SWAP);
+				return Types\ByteOrder::LITTLE_SWAP;
 			}
 
 			throw new Exceptions\Runtime(
@@ -2755,11 +2765,11 @@ class Install extends Console\Command\Command
 
 			$default = 0;
 
-			if ($type !== null && $type->equalsValue(Types\ChannelType::COIL)) {
+			if ($type !== null && $type === Types\ChannelType::COIL) {
 				$default = 1;
-			} elseif ($type !== null && $type->equalsValue(Types\ChannelType::INPUT_REGISTER)) {
+			} elseif ($type !== null && $type === Types\ChannelType::INPUT_REGISTER) {
 				$default = 2;
-			} elseif ($type !== null && $type->equalsValue(Types\ChannelType::HOLDING_REGISTER)) {
+			} elseif ($type !== null && $type === Types\ChannelType::HOLDING_REGISTER) {
 				$default = 3;
 			}
 
@@ -2805,14 +2815,14 @@ class Install extends Console\Command\Command
 				)
 				|| $answer === '0'
 			) {
-				return Types\ChannelType::get(Types\ChannelType::DISCRETE_INPUT);
+				return Types\ChannelType::DISCRETE_INPUT;
 			}
 
 			if (
 				$answer === $this->translator->translate('//modbus-connector.cmd.install.answers.registerType.coil')
 				|| $answer === '1'
 			) {
-				return Types\ChannelType::get(Types\ChannelType::COIL);
+				return Types\ChannelType::COIL;
 			}
 
 			if (
@@ -2821,7 +2831,7 @@ class Install extends Console\Command\Command
 				)
 				|| $answer === '2'
 			) {
-				return Types\ChannelType::get(Types\ChannelType::INPUT_REGISTER);
+				return Types\ChannelType::INPUT_REGISTER;
 			}
 
 			if (
@@ -2830,7 +2840,7 @@ class Install extends Console\Command\Command
 				)
 				|| $answer === '3'
 			) {
-				return Types\ChannelType::get(Types\ChannelType::HOLDING_REGISTER);
+				return Types\ChannelType::HOLDING_REGISTER;
 			}
 
 			throw new Exceptions\Runtime(
@@ -3000,13 +3010,25 @@ class Install extends Console\Command\Command
 		$default = null;
 
 		if (
-			$type->equalsValue(Types\ChannelType::DISCRETE_INPUT)
-			|| $type->equalsValue(Types\ChannelType::COIL)
+			in_array(
+				$type,
+				[
+					Types\ChannelType::DISCRETE_INPUT,
+					Types\ChannelType::COIL,
+				],
+				true,
+			)
 		) {
 			return MetadataTypes\DataType::BOOLEAN;
 		} elseif (
-			$type->equalsValue(Types\ChannelType::HOLDING_REGISTER)
-			|| $type->equalsValue(Types\ChannelType::INPUT_REGISTER)
+			in_array(
+				$type,
+				[
+					Types\ChannelType::HOLDING_REGISTER,
+					Types\ChannelType::INPUT_REGISTER,
+				],
+				true,
+			)
 		) {
 			$dataTypes = [
 				MetadataTypes\DataType::CHAR->value,
@@ -3019,12 +3041,12 @@ class Install extends Console\Command\Command
 				MetadataTypes\DataType::STRING->value,
 			];
 
-			$dataTypes[] = $type->equalsValue(Types\ChannelType::HOLDING_REGISTER)
+			$dataTypes[] = $type === Types\ChannelType::HOLDING_REGISTER
 				? MetadataTypes\DataType::SWITCH->value
 				: MetadataTypes\DataType::BUTTON->value;
 
 			if ($channel !== null) {
-				$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
+				$findChannelPropertyQuery = new Queries\Entities\FindChannelProperties();
 				$findChannelPropertyQuery->forChannel($channel);
 				$findChannelPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::VALUE);
 
@@ -3124,6 +3146,7 @@ class Install extends Console\Command\Command
 	 * @return array<int, array<int, array<int, string>>>|null
 	 *
 	 * @throws ApplicationExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError
@@ -3178,6 +3201,7 @@ class Install extends Console\Command\Command
 	 * @return array<int, array<int, string>>|null
 	 *
 	 * @throws ApplicationExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError
@@ -3194,7 +3218,7 @@ class Install extends Console\Command\Command
 		$existingProperty = null;
 
 		if ($channel !== null) {
-			$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
+			$findChannelPropertyQuery = new Queries\Entities\FindChannelProperties();
 			$findChannelPropertyQuery->forChannel($channel);
 			$findChannelPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::VALUE);
 
@@ -3432,6 +3456,7 @@ class Install extends Console\Command\Command
 	 * @return array<int, array<int, string>>|null
 	 *
 	 * @throws ApplicationExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError
@@ -3448,7 +3473,7 @@ class Install extends Console\Command\Command
 		$existingProperty = null;
 
 		if ($channel !== null) {
-			$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
+			$findChannelPropertyQuery = new Queries\Entities\FindChannelProperties();
 			$findChannelPropertyQuery->forChannel($channel);
 			$findChannelPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::VALUE);
 
@@ -3952,7 +3977,7 @@ class Install extends Console\Command\Command
 			$channels[$channel->getIdentifier()] = sprintf(
 				'%s, Type: %s, Address: %d',
 				($channel->getName() ?? $channel->getIdentifier()),
-				$channel->getRegisterType()?->getValue(),
+				$channel->getRegisterType()?->value,
 				$channel->getAddress(),
 			);
 		}

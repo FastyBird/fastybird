@@ -405,50 +405,50 @@ final class Transformer
 	{
 		if (count($bytes) === 2) {
 			if (
-				$byteOrder->equalsValue(Types\ByteOrder::BIG_SWAP)
-				|| $byteOrder->equalsValue(Types\ByteOrder::BIG_LOW_WORD_FIRST)
+				$byteOrder === Types\ByteOrder::BIG_SWAP
+				|| $byteOrder === Types\ByteOrder::BIG_LOW_WORD_FIRST
 			) {
-				$byteOrder = Types\ByteOrder::get(Types\ByteOrder::BIG);
+				$byteOrder = Types\ByteOrder::BIG;
 			} elseif (
-				$byteOrder->equalsValue(Types\ByteOrder::LITTLE_SWAP)
-				|| $byteOrder->equalsValue(Types\ByteOrder::LITTLE_LOW_WORD_FIRST)
+				$byteOrder === Types\ByteOrder::LITTLE_SWAP
+				|| $byteOrder === Types\ByteOrder::LITTLE_LOW_WORD_FIRST
 			) {
-				$byteOrder = Types\ByteOrder::get(Types\ByteOrder::LITTLE);
+				$byteOrder = Types\ByteOrder::LITTLE;
 			}
 		} elseif (count($bytes) === 4) {
 			if (
-				$byteOrder->equalsValue(Types\ByteOrder::BIG_SWAP)
-				|| $byteOrder->equalsValue(Types\ByteOrder::LITTLE_SWAP)
+				$byteOrder === Types\ByteOrder::BIG_SWAP
+				|| $byteOrder === Types\ByteOrder::LITTLE_SWAP
 			) {
 				$bytes = [$bytes[1], $bytes[0], $bytes[3], $bytes[2]];
 
 			} elseif (
-				$byteOrder->equalsValue(Types\ByteOrder::BIG_LOW_WORD_FIRST)
-				|| $byteOrder->equalsValue(Types\ByteOrder::LITTLE_LOW_WORD_FIRST)
+				$byteOrder === Types\ByteOrder::BIG_LOW_WORD_FIRST
+				|| $byteOrder === Types\ByteOrder::LITTLE_LOW_WORD_FIRST
 			) {
 				$bytes = [$bytes[2], $bytes[3], $bytes[0], $bytes[1]];
 			}
 
 			if (
-				$byteOrder->equalsValue(Types\ByteOrder::BIG_SWAP)
-				|| $byteOrder->equalsValue(Types\ByteOrder::BIG_LOW_WORD_FIRST)
+				$byteOrder === Types\ByteOrder::BIG_SWAP
+				|| $byteOrder === Types\ByteOrder::BIG_LOW_WORD_FIRST
 			) {
-				$byteOrder = Types\ByteOrder::get(Types\ByteOrder::BIG);
+				$byteOrder = Types\ByteOrder::BIG;
 			} elseif (
-				$byteOrder->equalsValue(Types\ByteOrder::LITTLE_SWAP)
-				|| $byteOrder->equalsValue(Types\ByteOrder::LITTLE_LOW_WORD_FIRST)
+				$byteOrder === Types\ByteOrder::LITTLE_SWAP
+				|| $byteOrder === Types\ByteOrder::LITTLE_LOW_WORD_FIRST
 			) {
-				$byteOrder = Types\ByteOrder::get(Types\ByteOrder::LITTLE);
+				$byteOrder = Types\ByteOrder::LITTLE;
 			}
 		}
 
 		if (
 			(
 				$this->isLittleEndian()
-				&& $byteOrder->equalsValue(Types\ByteOrder::LITTLE)
+				&& $byteOrder === Types\ByteOrder::LITTLE
 			) || (
 				!$this->isLittleEndian()
-				&& $byteOrder->equalsValue(Types\ByteOrder::BIG)
+				&& $byteOrder === Types\ByteOrder::BIG
 			)
 		) {
 			// If machine is using same byte order as device
@@ -457,10 +457,10 @@ final class Transformer
 		} elseif (
 			(
 				!$this->isLittleEndian()
-				&& $byteOrder->equalsValue(Types\ByteOrder::LITTLE)
+				&& $byteOrder === Types\ByteOrder::LITTLE
 			) || (
 				$this->isLittleEndian()
-				&& $byteOrder->equalsValue(Types\ByteOrder::BIG)
+				&& $byteOrder === Types\ByteOrder::BIG
 			)
 		) {
 			// If machine is using different byte order than device, do byte order swap
@@ -500,9 +500,9 @@ final class Transformer
 
 		// For all little byte orders, perform bytes order swap
 		if (
-			$byteOrder->equalsValue(Types\ByteOrder::LITTLE)
-			|| $byteOrder->equalsValue(Types\ByteOrder::LITTLE_SWAP)
-			|| $byteOrder->equalsValue(Types\ByteOrder::LITTLE_LOW_WORD_FIRST)
+			$byteOrder === Types\ByteOrder::LITTLE
+			|| $byteOrder === Types\ByteOrder::LITTLE_SWAP
+			|| $byteOrder === Types\ByteOrder::LITTLE_LOW_WORD_FIRST
 		) {
 			$bytearray = array_reverse($bytearray);
 		}
@@ -510,8 +510,8 @@ final class Transformer
 		if (
 			$bytes === 4
 			&& (
-				$byteOrder->equalsValue(Types\ByteOrder::BIG_SWAP)
-				|| $byteOrder->equalsValue(Types\ByteOrder::LITTLE_SWAP)
+				$byteOrder === Types\ByteOrder::BIG_SWAP
+				|| $byteOrder === Types\ByteOrder::LITTLE_SWAP
 			)
 		) {
 			$bytearray = [$bytearray[1], $bytearray[0], $bytearray[3], $bytearray[2]];
@@ -519,8 +519,8 @@ final class Transformer
 		} elseif (
 			$bytes === 4
 			&& (
-				$byteOrder->equalsValue(Types\ByteOrder::BIG_LOW_WORD_FIRST)
-				|| $byteOrder->equalsValue(Types\ByteOrder::LITTLE_LOW_WORD_FIRST)
+				$byteOrder === Types\ByteOrder::BIG_LOW_WORD_FIRST
+				|| $byteOrder === Types\ByteOrder::LITTLE_LOW_WORD_FIRST
 			)
 		) {
 			$bytearray = [$bytearray[2], $bytearray[3], $bytearray[0], $bytearray[1]];

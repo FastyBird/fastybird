@@ -53,7 +53,7 @@ final class WriteHoldingRegister implements API\Messages\Message
 	{
 		return [
 			'station' => $this->getStation(),
-			'function' => $this->getFunction()->getValue(),
+			'function' => $this->getFunction()->value,
 		];
 	}
 

@@ -15,9 +15,7 @@
 
 namespace FastyBird\Connector\Modbus\Types;
 
-use Consistence;
 use FastyBird\Module\Devices\Types as DevicesTypes;
-use function strval;
 
 /**
  * Device property identifier types
@@ -27,32 +25,19 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class DevicePropertyIdentifier extends Consistence\Enum\Enum
+enum DevicePropertyIdentifier: string
 {
 
-	/**
-	 * Define device states
-	 */
-	public const STATE = DevicesTypes\DevicePropertyIdentifier::STATE->value;
+	case STATE = DevicesTypes\DevicePropertyIdentifier::STATE->value;
 
-	public const ADDRESS = DevicesTypes\DevicePropertyIdentifier::ADDRESS->value;
+	case ADDRESS = DevicesTypes\DevicePropertyIdentifier::ADDRESS->value;
 
-	public const IP_ADDRESS = DevicesTypes\DevicePropertyIdentifier::IP_ADDRESS->value;
+	case IP_ADDRESS = DevicesTypes\DevicePropertyIdentifier::IP_ADDRESS->value;
 
-	public const PORT = 'port';
+	case PORT = 'port';
 
-	public const BYTE_ORDER = 'byte_order';
+	case BYTE_ORDER = 'byte_order';
 
-	public const UNIT_ID = 'unit_id';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return strval(self::getValue());
-	}
+	case UNIT_ID = 'unit_id';
 
 }

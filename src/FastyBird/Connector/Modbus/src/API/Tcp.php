@@ -96,7 +96,7 @@ class Tcp
 	{
 		return $this->readDigitalRegisters(
 			$uri,
-			Types\ModbusFunction::get(Types\ModbusFunction::READ_COIL),
+			Types\ModbusFunction::READ_COIL,
 			$station,
 			$startingAddress,
 			$quantity,
@@ -125,7 +125,7 @@ class Tcp
 	{
 		return $this->readDigitalRegisters(
 			$uri,
-			Types\ModbusFunction::get(Types\ModbusFunction::READ_DISCRETE),
+			Types\ModbusFunction::READ_DISCRETE,
 			$station,
 			$startingAddress,
 			$quantity,
@@ -154,7 +154,7 @@ class Tcp
 	{
 		return $this->readAnalogRegisters(
 			$uri,
-			Types\ModbusFunction::get(Types\ModbusFunction::READ_HOLDINGS_REGISTERS),
+			Types\ModbusFunction::READ_HOLDINGS_REGISTERS,
 			$station,
 			$startingAddress,
 			$quantity,
@@ -183,7 +183,7 @@ class Tcp
 	{
 		return $this->readAnalogRegisters(
 			$uri,
-			Types\ModbusFunction::get(Types\ModbusFunction::READ_INPUTS_REGISTERS),
+			Types\ModbusFunction::READ_INPUTS_REGISTERS,
 			$station,
 			$startingAddress,
 			$quantity,
@@ -210,7 +210,7 @@ class Tcp
 		bool $raw = false,
 	): Promise\PromiseInterface
 	{
-		$functionCode = Types\ModbusFunction::get(Types\ModbusFunction::WRITE_SINGLE_COIL);
+		$functionCode = Types\ModbusFunction::WRITE_SINGLE_COIL;
 
 		$deferred = new Promise\Deferred();
 
@@ -229,7 +229,7 @@ class Tcp
 			self::PROTOCOL_ID,
 			6, // By default, for writing coil
 			$station,
-			$functionCode->getValue(),
+			$functionCode->value,
 			$coilAddress,
 		);
 		// Pack value (transform to binary)
@@ -301,12 +301,8 @@ class Tcp
 		}
 
 		$functionCode = count($value) === 2
-			? Types\ModbusFunction::get(
-				Types\ModbusFunction::WRITE_SINGLE_HOLDING_REGISTER,
-			)
-			: Types\ModbusFunction::get(
-				Types\ModbusFunction::WRITE_MULTIPLE_HOLDINGS_REGISTERS,
-			);
+			? Types\ModbusFunction::WRITE_SINGLE_HOLDING_REGISTER
+			: Types\ModbusFunction::WRITE_MULTIPLE_HOLDINGS_REGISTERS;
 
 		// Pack header (transform to binary)
 		$request = pack(
@@ -315,7 +311,7 @@ class Tcp
 			self::PROTOCOL_ID,
 			6, // By default, for writing coil
 			$station,
-			$functionCode->getValue(),
+			$functionCode->value,
 			$registerAddress,
 		);
 
@@ -395,7 +391,7 @@ class Tcp
 			self::PROTOCOL_ID,
 			6, // By default, for reading
 			$station,
-			$functionCode->getValue(),
+			$functionCode->value,
 			$startingAddress,
 			$quantity,
 		);
@@ -482,7 +478,7 @@ class Tcp
 			self::PROTOCOL_ID,
 			6, // By default, for reading
 			$station,
-			$functionCode->getValue(),
+			$functionCode->value,
 			$startingAddress,
 			$quantity,
 		);

@@ -146,7 +146,7 @@ class Rtu
 	): string|Messages\Response\ReadDigitalInputs
 	{
 		return $this->readDigitalRegisters(
-			Types\ModbusFunction::get(Types\ModbusFunction::READ_COIL),
+			Types\ModbusFunction::READ_COIL,
 			$station,
 			$startingAddress,
 			$quantity,
@@ -170,7 +170,7 @@ class Rtu
 	): string|Messages\Response\ReadDigitalInputs
 	{
 		return $this->readDigitalRegisters(
-			Types\ModbusFunction::get(Types\ModbusFunction::READ_DISCRETE),
+			Types\ModbusFunction::READ_DISCRETE,
 			$station,
 			$startingAddress,
 			$quantity,
@@ -194,7 +194,7 @@ class Rtu
 	): string|Messages\Response\ReadAnalogInputs
 	{
 		return $this->readAnalogRegisters(
-			Types\ModbusFunction::get(Types\ModbusFunction::READ_HOLDINGS_REGISTERS),
+			Types\ModbusFunction::READ_HOLDINGS_REGISTERS,
 			$station,
 			$startingAddress,
 			$quantity,
@@ -218,7 +218,7 @@ class Rtu
 	): string|Messages\Response\ReadAnalogInputs
 	{
 		return $this->readAnalogRegisters(
-			Types\ModbusFunction::get(Types\ModbusFunction::READ_INPUTS_REGISTERS),
+			Types\ModbusFunction::READ_INPUTS_REGISTERS,
 			$station,
 			$startingAddress,
 			$quantity,
@@ -241,10 +241,10 @@ class Rtu
 		bool $raw = false,
 	): string|Messages\Response\WriteCoil
 	{
-		$functionCode = Types\ModbusFunction::get(Types\ModbusFunction::WRITE_SINGLE_COIL);
+		$functionCode = Types\ModbusFunction::WRITE_SINGLE_COIL;
 
 		// Pack header (transform to binary)
-		$request = pack('C2n1', $station, $functionCode->getValue(), $coilAddress);
+		$request = pack('C2n1', $station, $functionCode->value, $coilAddress);
 		// Pack value (transform to binary)
 		$request .= pack('n1', $value ? 0xFF00 : 0x0000);
 		// Append CRC check
@@ -293,15 +293,11 @@ class Rtu
 	): string|Messages\Response\WriteHoldingRegister
 	{
 		$functionCode = count($value) === 2
-			? Types\ModbusFunction::get(
-				Types\ModbusFunction::WRITE_SINGLE_HOLDING_REGISTER,
-			)
-			: Types\ModbusFunction::get(
-				Types\ModbusFunction::WRITE_MULTIPLE_HOLDINGS_REGISTERS,
-			);
+			? Types\ModbusFunction::WRITE_SINGLE_HOLDING_REGISTER
+			: Types\ModbusFunction::WRITE_MULTIPLE_HOLDINGS_REGISTERS;
 
 		// Pack header (transform to binary)
-		$request = pack('C2n1', $station, $functionCode->getValue(), $registerAddress);
+		$request = pack('C2n1', $station, $functionCode->value, $registerAddress);
 
 		if (count($value) === 2) {
 			// Pack value (transform to binary)
@@ -423,7 +419,7 @@ class Rtu
 		bool $raw = false,
 	): string|Messages\Response\ReadDigitalInputs
 	{
-		$request = pack('C2n2', $station, $functionCode->getValue(), $startingAddress, $quantity);
+		$request = pack('C2n2', $station, $functionCode->value, $startingAddress, $quantity);
 		// Append CRC check
 		$request .= $this->crc16($request);
 
@@ -476,7 +472,7 @@ class Rtu
 		bool $raw = false,
 	): string|Messages\Response\ReadAnalogInputs
 	{
-		$request = pack('C2n2', $station, $functionCode->getValue(), $startingAddress, $quantity);
+		$request = pack('C2n2', $station, $functionCode->value, $startingAddress, $quantity);
 		// Append CRC check
 		$request .= $this->crc16($request);
 

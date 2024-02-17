@@ -133,7 +133,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 				);
 
 				foreach ($properties as $property) {
-					if ($property->getIdentifier() === Modbus\Types\DevicePropertyIdentifier::STATE) {
+					if ($property->getIdentifier() === Modbus\Types\DevicePropertyIdentifier::STATE->value) {
 						continue;
 					}
 

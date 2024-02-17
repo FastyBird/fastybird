@@ -21,7 +21,7 @@ use FastyBird\Module\Devices\Types;
 use Ramsey\Uuid;
 
 /**
- * Find device variable properties entities query
+ * Find device variable properties configuration query
  *
  * @template T of Documents\Devices\Properties\Variable
  * @extends  FindDeviceProperties<T>

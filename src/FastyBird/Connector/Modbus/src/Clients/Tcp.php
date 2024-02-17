@@ -104,6 +104,7 @@ class Tcp implements Client
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -366,25 +367,25 @@ class Tcp implements Client
 					$channel = $this->deviceHelper->findChannelByType(
 						$device,
 						$requestAddress->getAddress(),
-						Types\ChannelType::get(Types\ChannelType::COIL),
+						Types\ChannelType::COIL,
 					);
 				} elseif ($request instanceof Messages\Request\ReadDiscreteInputs) {
 					$channel = $this->deviceHelper->findChannelByType(
 						$device,
 						$requestAddress->getAddress(),
-						Types\ChannelType::get(Types\ChannelType::DISCRETE_INPUT),
+						Types\ChannelType::DISCRETE_INPUT,
 					);
 				} elseif ($request instanceof Messages\Request\ReadHoldingsRegisters) {
 					$channel = $this->deviceHelper->findChannelByType(
 						$device,
 						$requestAddress->getAddress(),
-						Types\ChannelType::get(Types\ChannelType::HOLDING_REGISTER),
+						Types\ChannelType::HOLDING_REGISTER,
 					);
 				} elseif ($request instanceof Messages\Request\ReadInputsRegisters) {
 					$channel = $this->deviceHelper->findChannelByType(
 						$device,
 						$requestAddress->getAddress(),
-						Types\ChannelType::get(Types\ChannelType::INPUT_REGISTER),
+						Types\ChannelType::INPUT_REGISTER,
 					);
 				} else {
 					continue;
@@ -450,14 +451,14 @@ class Tcp implements Client
 							$channel = $this->deviceHelper->findChannelByType(
 								$device,
 								$address,
-								Types\ChannelType::get(Types\ChannelType::HOLDING_REGISTER),
+								Types\ChannelType::HOLDING_REGISTER,
 							);
 
 						} elseif ($request instanceof Messages\Request\ReadInputsRegisters) {
 							$channel = $this->deviceHelper->findChannelByType(
 								$device,
 								$address,
-								Types\ChannelType::get(Types\ChannelType::INPUT_REGISTER),
+								Types\ChannelType::INPUT_REGISTER,
 							);
 
 						} else {
@@ -478,32 +479,32 @@ class Tcp implements Client
 								$channel = $this->deviceHelper->findChannelByType(
 									$device,
 									$requestAddress->getAddress(),
-									Types\ChannelType::get(Types\ChannelType::COIL),
+									Types\ChannelType::COIL,
 								);
 							} elseif ($request instanceof Messages\Request\ReadDiscreteInputs) {
 								$channel = $this->deviceHelper->findChannelByType(
 									$device,
 									$requestAddress->getAddress(),
-									Types\ChannelType::get(Types\ChannelType::DISCRETE_INPUT),
+									Types\ChannelType::DISCRETE_INPUT,
 								);
 							} elseif ($request instanceof Messages\Request\ReadHoldingsRegisters) {
 								$channel = $this->deviceHelper->findChannelByType(
 									$device,
 									$requestAddress->getAddress(),
-									Types\ChannelType::get(Types\ChannelType::HOLDING_REGISTER),
+									Types\ChannelType::HOLDING_REGISTER,
 								);
 							} else {
 								$channel = $this->deviceHelper->findChannelByType(
 									$device,
 									$requestAddress->getAddress(),
-									Types\ChannelType::get(Types\ChannelType::INPUT_REGISTER),
+									Types\ChannelType::INPUT_REGISTER,
 								);
 							}
 
 							if ($channel !== null) {
 								$this->processedReadRegister[$channel->getIdentifier()] = $now;
 
-								$findChannelPropertyQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
+								$findChannelPropertyQuery = new Queries\Configuration\FindChannelDynamicProperties();
 								$findChannelPropertyQuery->forChannel($channel);
 								$findChannelPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::VALUE);
 
@@ -599,6 +600,7 @@ class Tcp implements Client
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError
@@ -611,7 +613,7 @@ class Tcp implements Client
 	{
 		$now = $this->dateTimeFactory->getNow();
 
-		$findChannelPropertyQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
+		$findChannelPropertyQuery = new Queries\Configuration\FindChannelDynamicProperties();
 		$findChannelPropertyQuery->forChannel($channel);
 		$findChannelPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::VALUE);
 

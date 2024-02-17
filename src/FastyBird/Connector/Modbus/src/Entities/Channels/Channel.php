@@ -22,6 +22,7 @@ use FastyBird\Connector\Modbus\Types;
 use FastyBird\Library\Application\Entities\Mapping as ApplicationMapping;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use Ramsey\Uuid;
 use TypeError;
@@ -30,6 +31,7 @@ use function assert;
 use function is_float;
 use function is_int;
 use function is_string;
+use function strval;
 
 #[ORM\Entity]
 #[ApplicationMapping\DiscriminatorEntry(name: self::TYPE)]
@@ -76,7 +78,7 @@ class Channel extends DevicesEntities\Channels\Channel
 		$property = $this->properties
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Channels\Properties\Property $property): bool => $property->getIdentifier() === Types\ChannelPropertyIdentifier::ADDRESS
+				static fn (DevicesEntities\Channels\Properties\Property $property): bool => $property->getIdentifier() === Types\ChannelPropertyIdentifier::ADDRESS->value
 			)
 			->first();
 
@@ -101,16 +103,16 @@ class Channel extends DevicesEntities\Channels\Channel
 		$property = $this->properties
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Channels\Properties\Property $property): bool => $property->getIdentifier() === Types\ChannelPropertyIdentifier::TYPE
+				static fn (DevicesEntities\Channels\Properties\Property $property): bool => $property->getIdentifier() === Types\ChannelPropertyIdentifier::TYPE->value
 			)
 			->first();
 
 		if (
 			$property instanceof DevicesEntities\Channels\Properties\Variable
 			&& is_string($property->getValue())
-			&& Types\ChannelType::isValidValue($property->getValue())
+			&& Types\ChannelType::tryFrom(strval(MetadataUtilities\Value::flattenValue($property->getValue()))) !== null
 		) {
-			return Types\ChannelType::get($property->getValue());
+			return Types\ChannelType::from(strval(MetadataUtilities\Value::flattenValue($property->getValue())));
 		}
 
 		return null;
@@ -127,7 +129,7 @@ class Channel extends DevicesEntities\Channels\Channel
 		$property = $this->properties
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Channels\Properties\Property $property): bool => $property->getIdentifier() === Types\ChannelPropertyIdentifier::READING_DELAY
+				static fn (DevicesEntities\Channels\Properties\Property $property): bool => $property->getIdentifier() === Types\ChannelPropertyIdentifier::READING_DELAY->value
 			)
 			->first();
 

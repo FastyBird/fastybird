@@ -17,13 +17,13 @@ namespace FastyBird\Connector\Modbus\Helpers;
 
 use FastyBird\Connector\Modbus;
 use FastyBird\Connector\Modbus\Documents;
+use FastyBird\Connector\Modbus\Exceptions;
 use FastyBird\Connector\Modbus\Queries;
 use FastyBird\Connector\Modbus\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use TypeError;
 use ValueError;
 use function assert;
@@ -51,6 +51,7 @@ final readonly class Device
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError
@@ -73,7 +74,7 @@ final readonly class Device
 		foreach ($channels as $channel) {
 			if (
 				$this->channelHelper->getRegisterType($channel) !== null
-				&& $this->channelHelper->getRegisterType($channel)->equals($type)
+				&& $this->channelHelper->getRegisterType($channel) === $type
 				&& $this->channelHelper->getAddress($channel) === $address
 			) {
 				return $channel;
@@ -85,6 +86,7 @@ final readonly class Device
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError
@@ -92,7 +94,7 @@ final readonly class Device
 	 */
 	public function getAddress(Documents\Devices\Device $device): int|null
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
 		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::ADDRESS);
 
@@ -113,6 +115,7 @@ final readonly class Device
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError
@@ -120,7 +123,7 @@ final readonly class Device
 	 */
 	public function getIpAddress(Documents\Devices\Device $device): string|null
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
 		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IP_ADDRESS);
 
@@ -141,6 +144,7 @@ final readonly class Device
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError
@@ -148,7 +152,7 @@ final readonly class Device
 	 */
 	public function getPort(Documents\Devices\Device $device): int
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
 		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::PORT);
 
@@ -169,6 +173,7 @@ final readonly class Device
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError
@@ -176,7 +181,7 @@ final readonly class Device
 	 */
 	public function getByteOrder(Documents\Devices\Device $device): Types\ByteOrder
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
 		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::BYTE_ORDER);
 
@@ -185,18 +190,20 @@ final readonly class Device
 			DevicesDocuments\Devices\Properties\Variable::class,
 		);
 
-		if ($property?->getValue() === null || !Types\ByteOrder::isValidValue($property->getValue())) {
-			return Types\ByteOrder::get(Types\ByteOrder::BIG);
+		if (
+			$property?->getValue() === null
+			|| !is_string($property->getValue())
+			|| Types\ByteOrder::tryFrom($property->getValue()) === null
+		) {
+			return Types\ByteOrder::BIG;
 		}
 
-		$value = $property->getValue();
-		assert(is_string($value));
-
-		return Types\ByteOrder::get($value);
+		return Types\ByteOrder::from($property->getValue());
 	}
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError
@@ -204,7 +211,7 @@ final readonly class Device
 	 */
 	public function getUnitId(Documents\Devices\Device $device): int
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
 		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::UNIT_ID);
 

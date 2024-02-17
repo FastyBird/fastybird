@@ -19,21 +19,25 @@ use Doctrine\Common;
 use Doctrine\ORM;
 use Doctrine\Persistence;
 use FastyBird\Connector\Modbus\Entities;
+use FastyBird\Connector\Modbus\Exceptions;
+use FastyBird\Connector\Modbus\Queries;
 use FastyBird\Connector\Modbus\Types;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Types as DevicesTypes;
 use IPub\DoctrineCrud;
 use Nette;
 use Nette\Utils;
 use TypeError;
 use ValueError;
+use function intval;
 use function sprintf;
+use function strval;
 
 /**
  * Doctrine entities events
@@ -66,6 +70,7 @@ final class Properties implements Common\EventSubscriber
 	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
 	 *
 	 * @throws ApplicationExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DoctrineCrud\Exceptions\InvalidArgumentException
 	 * @throws MetadataExceptions\InvalidArgument
@@ -80,7 +85,7 @@ final class Properties implements Common\EventSubscriber
 
 		// Check for valid entity
 		if ($entity instanceof Entities\Devices\Device) {
-			$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
+			$findDevicePropertyQuery = new Queries\Entities\FindDeviceProperties();
 			$findDevicePropertyQuery->forDevice($entity);
 			$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::STATE);
 
@@ -110,7 +115,7 @@ final class Properties implements Common\EventSubscriber
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'device' => $entity,
 					'entity' => DevicesEntities\Devices\Properties\Dynamic::class,
-					'identifier' => Types\DevicePropertyIdentifier::STATE,
+					'identifier' => Types\DevicePropertyIdentifier::STATE->value,
 					'dataType' => MetadataTypes\DataType::ENUM,
 					'unit' => null,
 					'format' => [
@@ -130,20 +135,30 @@ final class Properties implements Common\EventSubscriber
 		) {
 			if (
 				(
-					$entity->getIdentifier() === Types\ConnectorPropertyIdentifier::CLIENT_MODE
-					&& !Types\ClientMode::isValidValue($entity->getValue())
+					$entity->getIdentifier() === Types\ConnectorPropertyIdentifier::CLIENT_MODE->value
+					&& Types\ClientMode::tryFrom(
+						strval(MetadataUtilities\Value::flattenValue($entity->getValue())),
+					) === null
 				) || (
-					$entity->getIdentifier() === Types\ConnectorPropertyIdentifier::RTU_BYTE_SIZE
-					&& !Types\ByteSize::isValidValue($entity->getValue())
+					$entity->getIdentifier() === Types\ConnectorPropertyIdentifier::RTU_BYTE_SIZE->value
+					&& Types\ByteSize::tryFrom(
+						intval(MetadataUtilities\Value::flattenValue($entity->getValue())),
+					) === null
 				) || (
-					$entity->getIdentifier() === Types\ConnectorPropertyIdentifier::RTU_BAUD_RATE
-					&& !Types\BaudRate::isValidValue($entity->getValue())
+					$entity->getIdentifier() === Types\ConnectorPropertyIdentifier::RTU_BAUD_RATE->value
+					&& Types\BaudRate::tryFrom(
+						intval(MetadataUtilities\Value::flattenValue($entity->getValue())),
+					) === null
 				) || (
-					$entity->getIdentifier() === Types\ConnectorPropertyIdentifier::RTU_PARITY
-					&& !Types\Parity::isValidValue($entity->getValue())
+					$entity->getIdentifier() === Types\ConnectorPropertyIdentifier::RTU_PARITY->value
+					&& Types\Parity::tryFrom(
+						intval(MetadataUtilities\Value::flattenValue($entity->getValue())),
+					) === null
 				) || (
-					$entity->getIdentifier() === Types\ConnectorPropertyIdentifier::RTU_STOP_BITS
-					&& !Types\StopBits::isValidValue($entity->getValue())
+					$entity->getIdentifier() === Types\ConnectorPropertyIdentifier::RTU_STOP_BITS->value
+					&& Types\StopBits::tryFrom(
+						intval(MetadataUtilities\Value::flattenValue($entity->getValue())),
+					) === null
 				)
 			) {
 				throw new DevicesExceptions\InvalidArgument(sprintf(
@@ -157,8 +172,10 @@ final class Properties implements Common\EventSubscriber
 		) {
 			if (
 				(
-					$entity->getIdentifier() === Types\DevicePropertyIdentifier::BYTE_ORDER
-					&& !Types\ByteOrder::isValidValue($entity->getValue())
+					$entity->getIdentifier() === Types\DevicePropertyIdentifier::BYTE_ORDER->value
+					&& Types\ByteOrder::tryFrom(
+						strval(MetadataUtilities\Value::flattenValue($entity->getValue())),
+					) === null
 				)
 			) {
 				throw new DevicesExceptions\InvalidArgument(sprintf(
