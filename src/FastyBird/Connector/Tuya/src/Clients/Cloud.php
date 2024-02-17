@@ -164,64 +164,65 @@ final class Cloud implements Client
 				);
 			});
 
-		$this->connectionManager
-			->getCloudWsConnection($this->connector)
-			->on(
-				Tuya\Constants::EVENT_MESSAGE,
-				function (API\Messages\Response\ReportDeviceState|API\Messages\Response\ReportDeviceOnline $message): void {
-					if ($message instanceof API\Messages\Response\ReportDeviceOnline) {
-						$this->queue->append(
-							$this->messageBuilder->create(
-								Queue\Messages\StoreDeviceConnectionState::class,
-								[
-									'connector' => $this->connector->getId(),
-									'identifier' => $message->getIdentifier(),
-									'state' => $message->isOnline()
-										? DevicesTypes\ConnectionState::CONNECTED
-										: DevicesTypes\ConnectionState::DISCONNECTED,
-								],
-							),
-						);
-					} else {
-						$this->queue->append(
-							$this->messageBuilder->create(
-								Queue\Messages\StoreChannelPropertyState::class,
-								[
-									'connector' => $this->connector->getId(),
-									'identifier' => $message->getIdentifier(),
-									'data_points' => array_map(
-										static fn (API\Messages\Response\DataPointState $dps): array => [
-											'code' => $dps->getCode(),
-											'value' => $dps->getValue(),
-										],
-										$message->getDataPoints(),
-									),
-								],
-							),
-						);
-					}
-				},
-			)
-			->on(Tuya\Constants::EVENT_ERROR, function (Throwable $ex): void {
-				$this->logger->error(
-					'An error occurred in Tuya cloud WS client',
-					[
-						'source' => MetadataTypes\Sources\Connector::TUYA,
-						'type' => 'cloud-client',
-						'exception' => ApplicationHelpers\Logger::buildException($ex),
-						'connector' => [
-							'id' => $this->connector->getId()->toString(),
-						],
-					],
-				);
+		$wsClient = $this->connectionManager
+			->getCloudWsConnection($this->connector);
 
-				$this->dispatcher?->dispatch(
-					new DevicesEvents\TerminateConnector(
-						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::TUYA),
-						'An error occurred in Tuya cloud WS client',
+		$wsClient->onMessage[] = function (API\Messages\Message $message): void {
+			if ($message instanceof API\Messages\Response\ReportDeviceOnline) {
+				$this->queue->append(
+					$this->messageBuilder->create(
+						Queue\Messages\StoreDeviceConnectionState::class,
+						[
+							'connector' => $this->connector->getId(),
+							'identifier' => $message->getIdentifier(),
+							'state' => $message->isOnline()
+								? DevicesTypes\ConnectionState::CONNECTED
+								: DevicesTypes\ConnectionState::DISCONNECTED,
+						],
 					),
 				);
-			})
+			} elseif ($message instanceof API\Messages\Response\ReportDeviceState) {
+				$this->queue->append(
+					$this->messageBuilder->create(
+						Queue\Messages\StoreChannelPropertyState::class,
+						[
+							'connector' => $this->connector->getId(),
+							'identifier' => $message->getIdentifier(),
+							'data_points' => array_map(
+								static fn (API\Messages\Response\DataPointState $dps): array => [
+									'code' => $dps->getCode(),
+									'value' => $dps->getValue(),
+								],
+								$message->getDataPoints(),
+							),
+						],
+					),
+				);
+			}
+		};
+
+		$wsClient->onError[] = function (Throwable $ex): void {
+			$this->logger->error(
+				'An error occurred in Tuya cloud WS client',
+				[
+					'source' => MetadataTypes\Sources\Connector::TUYA,
+					'type' => 'cloud-client',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'connector' => [
+						'id' => $this->connector->getId()->toString(),
+					],
+				],
+			);
+
+			$this->dispatcher?->dispatch(
+				new DevicesEvents\TerminateConnector(
+					MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::TUYA),
+					'An error occurred in Tuya cloud WS client',
+				),
+			);
+		};
+
+		$wsClient
 			->connect()
 			->then(function (): void {
 				$this->logger->debug(

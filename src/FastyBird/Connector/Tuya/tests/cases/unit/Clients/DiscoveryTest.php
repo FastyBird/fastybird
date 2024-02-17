@@ -182,15 +182,11 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 
 		$client = $clientFactory->create($connector);
 
-		$client->on('finished', static function (array $foundDevices): void {
-			self::assertCount(1, $foundDevices);
-		});
-
 		$client->discover();
 
 		$eventLoop = $this->getContainer()->getByType(EventLoop\LoopInterface::class);
 
-		$eventLoop->addTimer(6, static function () use ($eventLoop): void {
+		$eventLoop->addTimer(1, static function () use ($eventLoop): void {
 			$eventLoop->stop();
 		});
 
@@ -481,15 +477,11 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 
 		$client = $clientFactory->create($connector);
 
-		$client->on('finished', static function (array $foundDevices): void {
-			self::assertCount(1, $foundDevices);
-		});
-
 		$client->discover();
 
 		$eventLoop = $this->getContainer()->getByType(EventLoop\LoopInterface::class);
 
-		$eventLoop->addTimer(10, static function () use ($eventLoop): void {
+		$eventLoop->addTimer(1, static function () use ($eventLoop): void {
 			$eventLoop->stop();
 		});
 

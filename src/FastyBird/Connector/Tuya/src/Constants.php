@@ -38,6 +38,4 @@ final class Constants
 
 	public const EVENT_LOST = 'lost';
 
-	public const EVENT_FINISHED = 'finished';
-
 }

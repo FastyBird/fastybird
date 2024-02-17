@@ -16,8 +16,8 @@
 namespace FastyBird\Connector\Tuya\API;
 
 use Brick\Math;
+use Closure;
 use DateTimeInterface;
-use Evenement;
 use FastyBird\Connector\Tuya;
 use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Helpers;
@@ -77,11 +77,10 @@ use const OPENSSL_RAW_DATA;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class LocalApi implements Evenement\EventEmitterInterface
+final class LocalApi
 {
 
 	use Nette\SmartObject;
-	use Evenement\EventEmitterTrait;
 
 	public const DP_QUERY_MESSAGE_SCHEMA_FILENAME = 'localapi_dp_query.json';
 
@@ -112,6 +111,21 @@ final class LocalApi implements Evenement\EventEmitterInterface
 		Types\LocalDeviceCommand::SESS_KEY_NEG_RESP,
 		Types\LocalDeviceCommand::SESS_KEY_NEG_FINISH,
 	];
+
+	/** @var array<Closure(): void> */
+	public array $onConnected = [];
+
+	/** @var array<Closure(): void> */
+	public array $onDisconnected = [];
+
+	/** @var array<Closure(): void> */
+	public array $onLost = [];
+
+	/** @var array<Closure(Messages\Message $message): void> */
+	public array $onMessage = [];
+
+	/** @var array<Closure(Throwable $error): void> */
+	public array $onError = [];
 
 	private Types\LocalDeviceType $deviceType;
 
@@ -290,18 +304,18 @@ final class LocalApi implements Evenement\EventEmitterInterface
 								);
 							}
 
-							$this->emit(Tuya\Constants::EVENT_MESSAGE, [$message]);
+							Utils\Arrays::invoke($this->onMessage, $message);
 						}
 					});
 
 					$this->connection->on('error', function (Throwable $ex): void {
-						$this->emit(
-							Tuya\Constants::EVENT_ERROR,
-							[new Exceptions\LocalApiError(
+						Utils\Arrays::invoke(
+							$this->onError,
+							new Exceptions\LocalApiError(
 								'An error occurred on device connection',
 								$ex->getCode(),
 								$ex,
-							)],
+							),
 						);
 
 						$this->lost();
@@ -321,7 +335,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 
 						$this->disconnect();
 
-						$this->emit(Tuya\Constants::EVENT_DISCONNECTED);
+						Utils\Arrays::invoke($this->onDisconnected);
 					});
 
 					$this->heartBeatTimer = $this->eventLoop->addPeriodicTimer(
@@ -356,7 +370,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 						}),
 					);
 
-					$this->emit(Tuya\Constants::EVENT_CONNECTED);
+					Utils\Arrays::invoke($this->onConnected);
 
 					if (
 						$this->deviceType->equalsValue(Types\LocalDeviceType::DEVICE_22)
@@ -646,7 +660,7 @@ final class LocalApi implements Evenement\EventEmitterInterface
 
 	private function lost(): void
 	{
-		$this->emit(Tuya\Constants::EVENT_LOST);
+		Utils\Arrays::invoke($this->onLost);
 
 		$this->lost = $this->dateTimeFactory->getNow();
 

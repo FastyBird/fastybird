@@ -408,97 +408,88 @@ final class Local implements Client
 
 		$client = $this->connectionManager->getLocalConnection($device);
 
-		$client->on(
-			Tuya\Constants::EVENT_MESSAGE,
-			function (API\Messages\Message $message): void {
-				if (
-					$message instanceof API\Messages\Response\LocalDeviceMessage
-					&& $message->getCommand()->equalsValue(Types\LocalDeviceCommand::STATUS)
-					&& is_array($message->getData())
-				) {
-					$dataPointsStatuses = [];
+		$client->onMessage[] = function (API\Messages\Message $message): void {
+			if (
+				$message instanceof API\Messages\Response\LocalDeviceMessage
+				&& $message->getCommand()->equalsValue(Types\LocalDeviceCommand::STATUS)
+				&& is_array($message->getData())
+			) {
+				$dataPointsStatuses = [];
 
-					foreach ($message->getData() as $dataPoint) {
-						$dataPointsStatuses[] = [
-							'code' => $dataPoint->getCode(),
-							'value' => $dataPoint->getValue(),
-						];
-					}
-
-					$this->queue->append(
-						$this->messageBuilder->create(
-							Queue\Messages\StoreChannelPropertyState::class,
-							[
-								'connector' => $this->connector->getId(),
-								'identifier' => $message->getIdentifier(),
-								'data_points' => $dataPointsStatuses,
-							],
-						),
-					);
+				foreach ($message->getData() as $dataPoint) {
+					$dataPointsStatuses[] = [
+						'code' => $dataPoint->getCode(),
+						'value' => $dataPoint->getValue(),
+					];
 				}
-			},
-		);
-
-		$client->on(
-			Tuya\Constants::EVENT_CONNECTED,
-			function () use ($device): void {
-				$this->logger->debug(
-					'Connected to device',
-					[
-						'source' => MetadataTypes\Sources\Connector::TUYA,
-						'type' => 'local-client',
-						'connector' => [
-							'id' => $this->connector->getId()->toString(),
-						],
-						'device' => [
-							'id' => $device->getId()->toString(),
-						],
-					],
-				);
 
 				$this->queue->append(
 					$this->messageBuilder->create(
-						Queue\Messages\StoreDeviceConnectionState::class,
+						Queue\Messages\StoreChannelPropertyState::class,
 						[
-							'connector' => $device->getConnector(),
-							'identifier' => $device->getIdentifier(),
-							'state' => DevicesTypes\ConnectionState::CONNECTED,
+							'connector' => $this->connector->getId(),
+							'identifier' => $message->getIdentifier(),
+							'data_points' => $dataPointsStatuses,
 						],
 					),
 				);
-			},
-		);
+			}
+		};
 
-		$client->on(
-			Tuya\Constants::EVENT_ERROR,
-			function (Throwable $ex) use ($device): void {
-				$this->logger->warning(
-					'An error occurred in Tuya local device client',
-					[
-						'source' => MetadataTypes\Sources\Connector::TUYA,
-						'type' => 'local-client',
-						'exception' => ApplicationHelpers\Logger::buildException($ex),
-						'connector' => [
-							'id' => $this->connector->getId()->toString(),
-						],
-						'device' => [
-							'id' => $device->getId()->toString(),
-						],
+		$client->onConnected[] = function () use ($device): void {
+			$this->logger->debug(
+				'Connected to device',
+				[
+					'source' => MetadataTypes\Sources\Connector::TUYA,
+					'type' => 'local-client',
+					'connector' => [
+						'id' => $this->connector->getId()->toString(),
 					],
-				);
+					'device' => [
+						'id' => $device->getId()->toString(),
+					],
+				],
+			);
 
-				$this->queue->append(
-					$this->messageBuilder->create(
-						Queue\Messages\StoreDeviceConnectionState::class,
-						[
-							'connector' => $device->getConnector(),
-							'identifier' => $device->getIdentifier(),
-							'state' => DevicesTypes\ConnectionState::LOST,
-						],
-					),
-				);
-			},
-		);
+			$this->queue->append(
+				$this->messageBuilder->create(
+					Queue\Messages\StoreDeviceConnectionState::class,
+					[
+						'connector' => $device->getConnector(),
+						'identifier' => $device->getIdentifier(),
+						'state' => DevicesTypes\ConnectionState::CONNECTED,
+					],
+				),
+			);
+		};
+
+		$client->onError[] = function (Throwable $ex) use ($device): void {
+			$this->logger->warning(
+				'An error occurred in Tuya local device client',
+				[
+					'source' => MetadataTypes\Sources\Connector::TUYA,
+					'type' => 'local-client',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'connector' => [
+						'id' => $this->connector->getId()->toString(),
+					],
+					'device' => [
+						'id' => $device->getId()->toString(),
+					],
+				],
+			);
+
+			$this->queue->append(
+				$this->messageBuilder->create(
+					Queue\Messages\StoreDeviceConnectionState::class,
+					[
+						'connector' => $device->getConnector(),
+						'identifier' => $device->getIdentifier(),
+						'state' => DevicesTypes\ConnectionState::LOST,
+					],
+				),
+			);
+		};
 
 		$this->devicesClients[$device->getId()->toString()] = $client;
 	}

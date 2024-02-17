@@ -15,8 +15,8 @@
 
 namespace FastyBird\Connector\Tuya\API;
 
+use Closure;
 use DateTimeInterface;
-use Evenement;
 use FastyBird\Connector\Tuya;
 use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Helpers;
@@ -54,11 +54,10 @@ use const OPENSSL_RAW_DATA;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class OpenPulsar implements Evenement\EventEmitterInterface
+final class OpenPulsar
 {
 
 	use Nette\SmartObject;
-	use Evenement\EventEmitterTrait;
 
 	private const PING_INTERVAL = 30;
 
@@ -67,6 +66,21 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 	public const WS_MESSAGE_PAYLOAD_SCHEMA_FILENAME = 'openpulsar_payload.json';
 
 	public const WS_MESSAGE_PAYLOAD_DATA_SCHEMA_FILENAME = 'openpulsar_data.json';
+
+	/** @var array<Closure(): void> */
+	public array $onConnected = [];
+
+	/** @var array<Closure(): void> */
+	public array $onDisconnected = [];
+
+	/** @var array<Closure(): void> */
+	public array $onLost = [];
+
+	/** @var array<Closure(Messages\Message $message): void> */
+	public array $onMessage = [];
+
+	/** @var array<Closure(Throwable $error): void> */
+	public array $onError = [];
 
 	private bool $connecting = false;
 
@@ -150,14 +164,14 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 					try {
 						$this->handleWsMessage($message->getPayload());
 					} catch (Exceptions\OpenPulsarError $ex) {
-						$this->emit(Tuya\Constants::EVENT_ERROR, [$ex]);
+						Utils\Arrays::invoke($this->onError, $ex);
 					}
 				});
 
 				$connection->on('error', function (Throwable $ex): void {
 					$this->lost();
 
-					$this->emit(Tuya\Constants::EVENT_ERROR, [$ex]);
+					Utils\Arrays::invoke($this->onError, $ex);
 				});
 
 				$connection->on('close', function ($code = null, $reason = null): void {
@@ -178,7 +192,7 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 
 					$this->disconnect();
 
-					$this->emit(Tuya\Constants::EVENT_DISCONNECTED);
+					Utils\Arrays::invoke($this->onDisconnected);
 				});
 
 				$this->pingTimer = $this->eventLoop->addPeriodicTimer(
@@ -192,7 +206,7 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 					}),
 				);
 
-				$this->emit(Tuya\Constants::EVENT_CONNECTED);
+				Utils\Arrays::invoke($this->onConnected);
 
 				$deferred->resolve(true);
 			})
@@ -256,7 +270,7 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 	{
 		$this->lost = $this->dateTimeFactory->getNow();
 
-		$this->emit(Tuya\Constants::EVENT_LOST);
+		Utils\Arrays::invoke($this->onLost);
 
 		$this->disconnect();
 	}
@@ -410,17 +424,15 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 			}
 
 			try {
-				$this->emit(
-					Tuya\Constants::EVENT_MESSAGE,
-					[
-						$this->messageBuilder->create(
-							Messages\Response\ReportDeviceState::class,
-							[
-								'identifier' => $decryptedData->devId,
-								'data_points' => $dataPointsStatuses,
-							],
-						),
-					],
+				Utils\Arrays::invoke(
+					$this->onMessage,
+					$this->messageBuilder->create(
+						Messages\Response\ReportDeviceState::class,
+						[
+							'identifier' => $decryptedData->devId,
+							'data_points' => $dataPointsStatuses,
+						],
+					),
 				);
 			} catch (Exceptions\Runtime $ex) {
 				throw new Exceptions\OpenPulsarError(
@@ -441,19 +453,17 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 			)
 		) {
 			try {
-				$this->emit(
-					Tuya\Constants::EVENT_MESSAGE,
-					[
-						$this->messageBuilder->create(
-							Messages\Response\ReportDeviceOnline::class,
-							[
-								'identifier' => $decryptedData->devId,
-								'online' => $decryptedData->offsetGet(
-									'bizCode',
-								) === Types\OpenPulsarMessageType::ONLINE,
-							],
-						),
-					],
+				Utils\Arrays::invoke(
+					$this->onMessage,
+					$this->messageBuilder->create(
+						Messages\Response\ReportDeviceOnline::class,
+						[
+							'identifier' => $decryptedData->devId,
+							'online' => $decryptedData->offsetGet(
+								'bizCode',
+							) === Types\OpenPulsarMessageType::ONLINE,
+						],
+					),
 				);
 			} catch (Exceptions\Runtime $ex) {
 				throw new Exceptions\OpenPulsarError(
