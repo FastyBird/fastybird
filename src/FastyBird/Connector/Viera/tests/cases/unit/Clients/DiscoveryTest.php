@@ -252,8 +252,10 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 
 		$eventLoop = $this->getContainer()->getByType(EventLoop\LoopInterface::class);
 
-		$eventLoop->addTimer(1, static function () use ($eventLoop): void {
+		$eventLoop->addTimer(2, static function () use ($eventLoop, $client): void {
 			$eventLoop->stop();
+
+			$client->disconnect();
 		});
 
 		$eventLoop->run();
