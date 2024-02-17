@@ -344,9 +344,7 @@ final class Gateway implements Client
 
 						$this->dispatcher?->dispatch(
 							new DevicesEvents\TerminateConnector(
-								MetadataTypes\Sources\Connector::get(
-									MetadataTypes\Sources\Connector::NS_PANEL,
-								),
+								MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::NS_PANEL),
 								'Unhandled error occur',
 							),
 						);
@@ -587,9 +585,7 @@ final class Gateway implements Client
 
 						$this->dispatcher?->dispatch(
 							new DevicesEvents\TerminateConnector(
-								MetadataTypes\Sources\Connector::get(
-									MetadataTypes\Sources\Connector::NS_PANEL,
-								),
+								MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::NS_PANEL),
 								'Unhandled error occur',
 							),
 						);

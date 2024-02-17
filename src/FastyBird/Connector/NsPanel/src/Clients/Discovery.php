@@ -119,7 +119,7 @@ final class Discovery
 			->then(function (): void {
 				$this->dispatcher?->dispatch(
 					new DevicesEvents\TerminateConnector(
-						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::FB_MQTT),
+						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::NS_PANEL),
 						'Devices discovery finished',
 					),
 				);
@@ -127,7 +127,7 @@ final class Discovery
 			->catch(function (Throwable $ex): void {
 				$this->dispatcher?->dispatch(
 					new DevicesEvents\TerminateConnector(
-						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::FB_MQTT),
+						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::NS_PANEL),
 						'Devices discovery failed',
 						$ex,
 					),

@@ -17,7 +17,6 @@ namespace FastyBird\Connector\HomeKit\Controllers;
 
 use FastyBird\Connector\HomeKit\Clients;
 use FastyBird\Connector\HomeKit\Constants;
-use FastyBird\Connector\HomeKit\Events;
 use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Helpers;
 use FastyBird\Connector\HomeKit\Protocol;
@@ -33,7 +32,6 @@ use Fig\Http\Message\StatusCodeInterface;
 use InvalidArgumentException;
 use IPub\SlimRouter;
 use Nette\Utils;
-use Psr\EventDispatcher;
 use Psr\Http\Message;
 use Ramsey\Uuid;
 use RuntimeException;
@@ -68,7 +66,6 @@ final class CharacteristicsController extends BaseController
 		private readonly Protocol\Driver $accessoryDriver,
 		private readonly Clients\Subscriber $subscriber,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
-		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
 	}
@@ -576,8 +573,6 @@ final class CharacteristicsController extends BaseController
 		}
 
 		if ($valueToWrite !== null) {
-			$this->dispatcher?->dispatch(new Events\ClientWriteCharacteristic($characteristic, $valueToWrite));
-
 			if ($characteristic->getProperty() === null) {
 				$this->logger->warning(
 					'Accessory characteristic is not connected to any property',

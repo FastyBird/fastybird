@@ -51,8 +51,10 @@ class Container implements Connector, EventDispatcher\EventSubscriberInterface
 	public function __construct(
 		private readonly array $factories,
 		private readonly Documents\Connectors\Connector $connector,
+		EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
+		$dispatcher?->addSubscriber($this);
 	}
 
 	public static function getSubscribedEvents(): array

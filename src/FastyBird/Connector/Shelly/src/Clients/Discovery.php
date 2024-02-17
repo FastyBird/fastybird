@@ -15,7 +15,6 @@
 
 namespace FastyBird\Connector\Shelly\Clients;
 
-use Evenement;
 use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\API;
 use FastyBird\Connector\Shelly\Documents;
@@ -28,6 +27,7 @@ use FastyBird\Connector\Shelly\Types;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Fig\Http\Message\StatusCodeInterface;
@@ -35,6 +35,7 @@ use InvalidArgumentException;
 use Nette;
 use Nette\Utils;
 use Orisai\ObjectMapper;
+use Psr\EventDispatcher as PsrEventDispatcher;
 use React\Datagram;
 use React\Dns;
 use React\EventLoop;
@@ -64,11 +65,10 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Discovery implements Evenement\EventEmitterInterface
+final class Discovery
 {
 
 	use Nette\SmartObject;
-	use Evenement\EventEmitterTrait;
 
 	private const MDNS_ADDRESS = '224.0.0.251';
 
@@ -107,6 +107,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 		private readonly Shelly\Logger $logger,
 		private readonly ObjectMapper\Processing\Processor $objectMapper,
 		private readonly EventLoop\LoopInterface $eventLoop,
+		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
 		$this->searchResult = new Storages\MdnsResultStorage();
@@ -351,7 +352,12 @@ final class Discovery implements Evenement\EventEmitterInterface
 					$this->handleFoundLocalDevices($devices);
 				}
 
-				$this->emit(Shelly\Constants::EVENT_FINISHED, [$devices]);
+				$this->dispatcher?->dispatch(
+					new DevicesEvents\TerminateConnector(
+						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::SHELLY),
+						'Devices discovery finished',
+					),
+				);
 			}),
 		);
 	}

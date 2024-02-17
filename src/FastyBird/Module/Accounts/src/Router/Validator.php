@@ -45,8 +45,7 @@ class Validator
 	 */
 	public function validate(string $link, string $method = RequestMethodInterface::METHOD_GET): bool
 	{
-		$results = $this->getRouterDispatcher()
-			->dispatch($method, $link);
+		$results = $this->getRouterDispatcher()->dispatch($method, $link);
 
 		return $results[0] === SlimRouterRouting\RoutingResults::FOUND;
 	}

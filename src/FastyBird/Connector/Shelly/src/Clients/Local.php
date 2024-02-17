@@ -123,14 +123,13 @@ final class Local implements Client
 
 			$gen1CoapClient->connect();
 
-			$gen1CoapClient->on(
-				Shelly\Constants::EVENT_MESSAGE,
-				function (API\Messages\Response\Gen1\ReportDeviceState $message): void {
+			$gen1CoapClient->onMessage[] = function (API\Messages\Message $message): void {
+				if ($message instanceof API\Messages\Response\Gen1\ReportDeviceState) {
 					$this->processGen1DeviceReportedStatus($message);
-				},
-			);
+				}
+			};
 
-			$gen1CoapClient->on(Shelly\Constants::EVENT_ERROR, function (Throwable $ex): void {
+			$gen1CoapClient->onError[] = function (Throwable $ex): void {
 				$this->logger->error(
 					'An error occur in CoAP connection',
 					[
@@ -151,7 +150,7 @@ final class Local implements Client
 						),
 					);
 				}
-			});
+			};
 		} catch (Throwable $ex) {
 			$this->logger->error(
 				'CoAP client could not be started',
@@ -579,39 +578,16 @@ final class Local implements Client
 
 		$client = $this->connectionManager->getGen2WsApiConnection($device);
 
-		$client->on(
-			Shelly\Constants::EVENT_MESSAGE,
-			function (API\Messages\Response\Gen2\GetDeviceState|API\Messages\Response\Gen2\DeviceEvent $message) use ($device): void {
-				try {
-					if ($message instanceof API\Messages\Response\Gen2\GetDeviceState) {
-						$this->processGen2DeviceGetState($device, $message);
-					} elseif ($message instanceof API\Messages\Response\Gen2\DeviceEvent) {
-						$this->processGen2DeviceEvent($device, $message);
-					}
-				} catch (Throwable $ex) {
-					$this->logger->error(
-						'Received message could not be handled',
-						[
-							'source' => MetadataTypes\Sources\Connector::SHELLY,
-							'type' => 'local-client',
-							'exception' => ApplicationHelpers\Logger::buildException($ex),
-							'connector' => [
-								'id' => $this->connector->getId()->toString(),
-							],
-							'device' => [
-								'id' => $device->getId()->toString(),
-							],
-						],
-					);
+		$client->onMessage[] = function (API\Messages\Message $message) use ($device): void {
+			try {
+				if ($message instanceof API\Messages\Response\Gen2\GetDeviceState) {
+					$this->processGen2DeviceGetState($device, $message);
+				} elseif ($message instanceof API\Messages\Response\Gen2\DeviceEvent) {
+					$this->processGen2DeviceEvent($device, $message);
 				}
-			},
-		);
-
-		$client->on(
-			Shelly\Constants::EVENT_ERROR,
-			function (Throwable $ex) use ($device): void {
-				$this->logger->warning(
-					'Connection with Gen 2 device failed',
+			} catch (Throwable $ex) {
+				$this->logger->error(
+					'Received message could not be handled',
 					[
 						'source' => MetadataTypes\Sources\Connector::SHELLY,
 						'type' => 'local-client',
@@ -624,111 +600,122 @@ final class Local implements Client
 						],
 					],
 				);
+			}
+		};
 
-				$this->queue->append(
-					$this->messageBuilder->create(
-						Queue\Messages\StoreDeviceConnectionState::class,
-						[
-							'connector' => $device->getConnector(),
-							'identifier' => $device->getIdentifier(),
-							'state' => DevicesTypes\ConnectionState::DISCONNECTED,
-						],
-					),
-				);
-			},
-		);
-
-		$client->on(
-			Shelly\Constants::EVENT_CONNECTED,
-			function () use ($client, $device): void {
-				$this->logger->debug(
-					'Connected to Gen 2 device',
-					[
-						'source' => MetadataTypes\Sources\Connector::SHELLY,
-						'type' => 'local-client',
-						'connector' => [
-							'id' => $this->connector->getId()->toString(),
-						],
-						'device' => [
-							'id' => $device->getId()->toString(),
-						],
+		$client->onError[] = function (Throwable $ex) use ($device): void {
+			$this->logger->warning(
+				'Connection with Gen 2 device failed',
+				[
+					'source' => MetadataTypes\Sources\Connector::SHELLY,
+					'type' => 'local-client',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'connector' => [
+						'id' => $this->connector->getId()->toString(),
 					],
-				);
+					'device' => [
+						'id' => $device->getId()->toString(),
+					],
+				],
+			);
 
-				$this->queue->append(
-					$this->messageBuilder->create(
-						Queue\Messages\StoreDeviceConnectionState::class,
-						[
-							'connector' => $device->getConnector(),
-							'identifier' => $device->getIdentifier(),
-							'state' => DevicesTypes\ConnectionState::CONNECTED,
-						],
-					),
-				);
+			$this->queue->append(
+				$this->messageBuilder->create(
+					Queue\Messages\StoreDeviceConnectionState::class,
+					[
+						'connector' => $device->getConnector(),
+						'identifier' => $device->getIdentifier(),
+						'state' => DevicesTypes\ConnectionState::DISCONNECTED,
+					],
+				),
+			);
+		};
 
-				$client->readStates()
-					->then(function (API\Messages\Response\Gen2\GetDeviceState $state) use ($device): void {
-						$this->processGen2DeviceGetState($device, $state);
-					})
-					->catch(function (Throwable $ex) use ($device): void {
-						$this->queue->append(
-							$this->messageBuilder->create(
-								Queue\Messages\StoreDeviceConnectionState::class,
-								[
-									'connector' => $device->getConnector(),
-									'identifier' => $device->getIdentifier(),
-									'state' => DevicesTypes\ConnectionState::DISCONNECTED,
-								],
-							),
-						);
+		$client->onConnected[] = function () use ($client, $device): void {
+			$this->logger->debug(
+				'Connected to Gen 2 device',
+				[
+					'source' => MetadataTypes\Sources\Connector::SHELLY,
+					'type' => 'local-client',
+					'connector' => [
+						'id' => $this->connector->getId()->toString(),
+					],
+					'device' => [
+						'id' => $device->getId()->toString(),
+					],
+				],
+			);
 
-						$this->logger->error(
-							'An error occurred on initial Gen 2 device state reading',
+			$this->queue->append(
+				$this->messageBuilder->create(
+					Queue\Messages\StoreDeviceConnectionState::class,
+					[
+						'connector' => $device->getConnector(),
+						'identifier' => $device->getIdentifier(),
+						'state' => DevicesTypes\ConnectionState::CONNECTED,
+					],
+				),
+			);
+
+			$client->readStates()
+				->then(function (API\Messages\Response\Gen2\GetDeviceState $state) use ($device): void {
+					$this->processGen2DeviceGetState($device, $state);
+				})
+				->catch(function (Throwable $ex) use ($device): void {
+					$this->queue->append(
+						$this->messageBuilder->create(
+							Queue\Messages\StoreDeviceConnectionState::class,
 							[
-								'source' => MetadataTypes\Sources\Connector::SHELLY,
-								'type' => 'local-client',
-								'exception' => ApplicationHelpers\Logger::buildException($ex),
-								'connector' => [
-									'id' => $this->connector->getId()->toString(),
-								],
-								'device' => [
-									'id' => $device->getId()->toString(),
-								],
+								'connector' => $device->getConnector(),
+								'identifier' => $device->getIdentifier(),
+								'state' => DevicesTypes\ConnectionState::DISCONNECTED,
 							],
-						);
-					});
-			},
-		);
+						),
+					);
 
-		$client->on(
-			Shelly\Constants::EVENT_DISCONNECTED,
-			function () use ($device): void {
-				$this->logger->debug(
-					'Disconnected from Gen 2 device',
-					[
-						'source' => MetadataTypes\Sources\Connector::SHELLY,
-						'type' => 'local-client',
-						'connector' => [
-							'id' => $this->connector->getId()->toString(),
-						],
-						'device' => [
-							'id' => $device->getId()->toString(),
-						],
-					],
-				);
-
-				$this->queue->append(
-					$this->messageBuilder->create(
-						Queue\Messages\StoreDeviceConnectionState::class,
+					$this->logger->error(
+						'An error occurred on initial Gen 2 device state reading',
 						[
-							'connector' => $device->getConnector(),
-							'identifier' => $device->getIdentifier(),
-							'state' => DevicesTypes\ConnectionState::DISCONNECTED,
+							'source' => MetadataTypes\Sources\Connector::SHELLY,
+							'type' => 'local-client',
+							'exception' => ApplicationHelpers\Logger::buildException($ex),
+							'connector' => [
+								'id' => $this->connector->getId()->toString(),
+							],
+							'device' => [
+								'id' => $device->getId()->toString(),
+							],
 						],
-					),
-				);
-			},
-		);
+					);
+				});
+		};
+
+		$client->onDisconnected[] = function () use ($device): void {
+			$this->logger->debug(
+				'Disconnected from Gen 2 device',
+				[
+					'source' => MetadataTypes\Sources\Connector::SHELLY,
+					'type' => 'local-client',
+					'connector' => [
+						'id' => $this->connector->getId()->toString(),
+					],
+					'device' => [
+						'id' => $device->getId()->toString(),
+					],
+				],
+			);
+
+			$this->queue->append(
+				$this->messageBuilder->create(
+					Queue\Messages\StoreDeviceConnectionState::class,
+					[
+						'connector' => $device->getConnector(),
+						'identifier' => $device->getIdentifier(),
+						'state' => DevicesTypes\ConnectionState::DISCONNECTED,
+					],
+				),
+			);
+		};
 
 		$this->gen2DevicesWsClients[$device->getId()->toString()] = $client;
 

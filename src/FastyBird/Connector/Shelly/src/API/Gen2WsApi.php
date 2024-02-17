@@ -15,8 +15,8 @@
 
 namespace FastyBird\Connector\Shelly\API;
 
+use Closure;
 use DateTimeInterface;
-use Evenement;
 use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Helpers;
@@ -64,11 +64,10 @@ use const DIRECTORY_SEPARATOR;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Gen2WsApi implements Evenement\EventEmitterInterface
+final class Gen2WsApi
 {
 
 	use Nette\SmartObject;
-	use Evenement\EventEmitterTrait;
 
 	private const REQUEST_SRC = 'fb_ws_client';
 
@@ -101,6 +100,21 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 	private const PROPERTY_COMPONENT = '/^(?P<component>[a-zA-Z]+)_(?P<identifier>[0-9]+)(_(?P<attribute>[a-zA-Z0-9]+))?$/';
 
 	private const COMPONENT_KEY = '/^(?P<component>[a-zA-Z]+)(:(?P<channel>[0-9_]+))?$/';
+
+	/** @var array<Closure(): void> */
+	public array $onConnected = [];
+
+	/** @var array<Closure(): void> */
+	public array $onDisconnected = [];
+
+	/** @var array<Closure(Messages\Message $message): void> */
+	public array $onMessage = [];
+
+	/** @var array<Closure(): void> */
+	public array $onLost = [];
+
+	/** @var array<Closure(Throwable $error): void> */
+	public array $onError = [];
 
 	private bool $connecting = false;
 
@@ -221,7 +235,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 									],
 								);
 
-								$this->emit(Shelly\Constants::EVENT_ERROR, [$ex]);
+								Utils\Arrays::invoke($this->onError, $ex);
 
 								return;
 							}
@@ -243,7 +257,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 											Utils\Json::encode($payload->params),
 										);
 
-										$this->emit(Shelly\Constants::EVENT_MESSAGE, [$message]);
+										Utils\Arrays::invoke($this->onMessage, $message);
 									} catch (Exceptions\WsCall | Exceptions\WsError $ex) {
 										$this->logger->error(
 											'Could not handle received device status message',
@@ -261,7 +275,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 											],
 										);
 
-										$this->emit(Shelly\Constants::EVENT_ERROR, [$ex]);
+										Utils\Arrays::invoke($this->onError, $ex);
 									}
 								} elseif ($payload->method === self::NOTIFY_EVENT_METHOD) {
 									try {
@@ -269,7 +283,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 											Utils\Json::encode($payload->params),
 										);
 
-										$this->emit(Shelly\Constants::EVENT_MESSAGE, [$message]);
+										Utils\Arrays::invoke($this->onMessage, $message);
 									} catch (Exceptions\WsCall | Exceptions\WsError $ex) {
 										$this->logger->error(
 											'Could not handle received event message',
@@ -287,7 +301,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 											],
 										);
 
-										$this->emit(Shelly\Constants::EVENT_ERROR, [$ex]);
+										Utils\Arrays::invoke($this->onError, $ex);
 									}
 								} else {
 									$this->logger->warning(
@@ -510,7 +524,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 
 						$this->lost();
 
-						$this->emit(Shelly\Constants::EVENT_ERROR, [$ex]);
+						Utils\Arrays::invoke($this->onError, $ex);
 					});
 
 					$connection->on('close', function ($code = null, $reason = null): void {
@@ -531,10 +545,10 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 
 						$this->disconnect();
 
-						$this->emit(Shelly\Constants::EVENT_DISCONNECTED);
+						Utils\Arrays::invoke($this->onDisconnected);
 					});
 
-					$this->emit(Shelly\Constants::EVENT_CONNECTED);
+					Utils\Arrays::invoke($this->onConnected);
 
 					$deferred->resolve(true);
 				})
@@ -556,7 +570,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 					$this->connecting = false;
 					$this->connected = false;
 
-					$this->emit(Shelly\Constants::EVENT_ERROR, [$ex]);
+					Utils\Arrays::invoke($this->onError, $ex);
 
 					$deferred->reject($ex);
 				});
@@ -578,7 +592,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 				],
 			);
 
-			$this->emit(Shelly\Constants::EVENT_ERROR, [$ex]);
+			Utils\Arrays::invoke($this->onError, $ex);
 
 			$deferred->reject($ex);
 		}
@@ -758,7 +772,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 	{
 		$this->lost = $this->dateTimeFactory->getNow();
 
-		$this->emit(Shelly\Constants::EVENT_LOST);
+		Utils\Arrays::invoke($this->onLost);
 
 		$this->disconnect();
 	}

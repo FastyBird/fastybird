@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\Shelly\API;
 
 use BadMethodCallException;
-use Evenement;
+use Closure;
 use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Helpers;
@@ -50,15 +50,23 @@ use const DIRECTORY_SEPARATOR;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Gen1Coap implements Evenement\EventEmitterInterface
+final class Gen1Coap
 {
 
 	use Nette\SmartObject;
-	use Evenement\EventEmitterTrait;
 
 	private const STATE_MESSAGE_CODE = 30;
 
 	private const STATE_MESSAGE_SCHEMA_FILENAME = 'gen1_coap_state.json';
+
+	/** @var array<Closure(Messages\Message $message): void> */
+	public array $onMessage = [];
+
+	/** @var array<Closure(): void> */
+	public array $onClosed = [];
+
+	/** @var array<Closure(Throwable $error): void> */
+	public array $onError = [];
 
 	/** @var array<string, string> */
 	private array $validationSchemas = [];
@@ -90,7 +98,7 @@ final class Gen1Coap implements Evenement\EventEmitterInterface
 		});
 
 		$this->server->on('error', function (Throwable $ex): void {
-			$this->emit(Shelly\Constants::EVENT_ERROR, [$ex]);
+			Utils\Arrays::invoke($this->onError, $ex);
 		});
 
 		$this->server->on('close', function (): void {
@@ -102,7 +110,7 @@ final class Gen1Coap implements Evenement\EventEmitterInterface
 				],
 			);
 
-			$this->emit(Shelly\Constants::EVENT_CLOSED);
+			Utils\Arrays::invoke($this->onClosed);
 		});
 	}
 
@@ -213,7 +221,7 @@ final class Gen1Coap implements Evenement\EventEmitterInterface
 				try {
 					$this->handleStatusMessage($deviceIdentifier, $message, $remote);
 				} catch (Exceptions\CoapError | Exceptions\InvalidState $ex) {
-					$this->emit(Shelly\Constants::EVENT_ERROR, [$ex]);
+					Utils\Arrays::invoke($this->onError, $ex);
 				}
 			}
 		}
@@ -265,7 +273,8 @@ final class Gen1Coap implements Evenement\EventEmitterInterface
 		}
 
 		try {
-			$this->emit(Shelly\Constants::EVENT_MESSAGE, [
+			Utils\Arrays::invoke(
+				$this->onMessage,
 				$this->messageBuilder->create(
 					Messages\Response\Gen1\ReportDeviceState::class,
 					[
@@ -274,7 +283,7 @@ final class Gen1Coap implements Evenement\EventEmitterInterface
 						'states' => $statuses,
 					],
 				),
-			]);
+			);
 		} catch (Exceptions\Runtime $ex) {
 			throw new Exceptions\InvalidState('Could not map payload to message', $ex->getCode(), $ex);
 		}
