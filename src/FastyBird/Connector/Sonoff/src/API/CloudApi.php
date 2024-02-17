@@ -16,7 +16,6 @@
 namespace FastyBird\Connector\Sonoff\API;
 
 use DateTimeInterface;
-use Evenement;
 use FastyBird\Connector\Sonoff;
 use FastyBird\Connector\Sonoff\API;
 use FastyBird\Connector\Sonoff\Exceptions;
@@ -58,11 +57,10 @@ use const DIRECTORY_SEPARATOR;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class CloudApi implements Evenement\EventEmitterInterface
+final class CloudApi
 {
 
 	use Nette\SmartObject;
-	use Evenement\EventEmitterTrait;
 
 	private const USER_LOGIN_API_ENDPOINT = '/v2/user/login';
 

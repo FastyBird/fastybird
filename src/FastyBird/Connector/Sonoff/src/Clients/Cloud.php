@@ -123,29 +123,26 @@ final class Cloud extends ClientProcess implements Client
 		) {
 			$cloudWs = $this->connectionManager->getCloudWsConnection($this->connector);
 
-			$cloudWs->on(
-				'message',
-				function (API\Messages\Response\Sockets\DeviceConnectionStateEvent|API\Messages\Response\Sockets\DeviceStateEvent $message): void {
-					if ($message instanceof API\Messages\Response\Sockets\DeviceConnectionStateEvent) {
-						$this->queue->append(
-							$this->entityHelper->create(
-								Queue\Messages\StoreDeviceConnectionState::class,
-								[
-									'connector' => $this->connector->getId(),
-									'identifier' => $message->getDeviceId(),
-									'state' => $message->isOnline()
-										? DevicesTypes\ConnectionState::CONNECTED
-										: DevicesTypes\ConnectionState::DISCONNECTED,
-								],
-							),
-						);
-					} else {
-						$this->handleDeviceState($message);
-					}
-				},
-			);
+			$cloudWs->onMessage[] = function (API\Messages\Message $message): void {
+				if ($message instanceof API\Messages\Response\Sockets\DeviceConnectionStateEvent) {
+					$this->queue->append(
+						$this->entityHelper->create(
+							Queue\Messages\StoreDeviceConnectionState::class,
+							[
+								'connector' => $this->connector->getId(),
+								'identifier' => $message->getDeviceId(),
+								'state' => $message->isOnline()
+									? DevicesTypes\ConnectionState::CONNECTED
+									: DevicesTypes\ConnectionState::DISCONNECTED,
+							],
+						),
+					);
+				} elseif ($message instanceof API\Messages\Response\Sockets\DeviceStateEvent) {
+					$this->handleDeviceState($message);
+				}
+			};
 
-			$cloudWs->on('error', function (Throwable $ex): void {
+			$cloudWs->onError[] = function (Throwable $ex): void {
 				$this->logger->error(
 					'An error occurred in eWelink cloud websockets client',
 					[
@@ -165,7 +162,7 @@ final class Cloud extends ClientProcess implements Client
 						$ex,
 					),
 				);
-			});
+			};
 
 			$cloudWs->connect()
 				->then(function (): void {

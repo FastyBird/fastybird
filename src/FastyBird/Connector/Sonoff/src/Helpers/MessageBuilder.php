@@ -17,7 +17,6 @@ namespace FastyBird\Connector\Sonoff\Helpers;
 
 use FastyBird\Connector\Sonoff;
 use FastyBird\Connector\Sonoff\API;
-use FastyBird\Connector\Sonoff\Clients;
 use FastyBird\Connector\Sonoff\Exceptions;
 use FastyBird\Connector\Sonoff\Queue;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -57,7 +56,7 @@ final class MessageBuilder
 	}
 
 	/**
-	 * @template T of API\Messages\Message|Clients\Messages\Message|Queue\Messages\Message
+	 * @template T of API\Messages\Message|Queue\Messages\Message
 	 *
 	 * @param class-string<T> $message
 	 * @param array<mixed> $data
@@ -69,7 +68,7 @@ final class MessageBuilder
 	public function create(
 		string $message,
 		array $data,
-	): API\Messages\Message|Clients\Messages\Message|Queue\Messages\Message
+	): API\Messages\Message|Queue\Messages\Message
 	{
 		if (
 			(

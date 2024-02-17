@@ -81,9 +81,7 @@ final readonly class StoreDevice implements Message
 		])]
 		private int|null $port,
 		#[ObjectMapper\Rules\ArrayOf(
-			new ObjectMapper\Rules\MappedObjectValue(
-				class: Parameters\DiscoveredDeviceParameter::class,
-			),
+			new ObjectMapper\Rules\MappedObjectValue(class: Parameters\DiscoveredDeviceParameter::class),
 			new ObjectMapper\Rules\IntValue(unsigned: true),
 		)]
 		private array $parameters,

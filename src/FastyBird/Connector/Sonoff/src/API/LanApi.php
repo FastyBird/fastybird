@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\Sonoff\API;
 
 use BadMethodCallException;
-use Evenement;
+use Closure;
 use FastyBird\Connector\Sonoff;
 use FastyBird\Connector\Sonoff\Exceptions;
 use FastyBird\Connector\Sonoff\Helpers;
@@ -71,7 +71,6 @@ final class LanApi
 {
 
 	use Nette\SmartObject;
-	use Evenement\EventEmitterTrait;
 
 	public const DEVICE_PORT = 8_081;
 
@@ -90,12 +89,15 @@ final class LanApi
 	private const MATCH_NAME = '/^(?:[a-zA-Z]+)_(?P<id>[0-9A-Za-z]+)._ewelink._tcp.local$/';
 
 	private const MATCH_DOMAIN = '/^(?:[a-zA-Z]+)_(?P<id>[0-9A-Za-z]+).local$/';
-	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+    // phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 	private const MATCH_IP_ADDRESS = '/^((?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])[.]){3}(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$/';
 
 	private const GET_DEVICE_INFO_MESSAGE_SCHEMA_FILENAME = 'lan_api_get_device_info.json';
 
 	private const SET_DEVICE_STATE_MESSAGE_SCHEMA_FILENAME = 'lan_api_set_device_state.json';
+
+	/** @var array<Closure(Messages\Message $message): void> */
+	public array $onMessage = [];
 
 	/** @var array<string, string> */
 	private array $encodeKeys = [];
@@ -228,47 +230,43 @@ final class LanApi
 					$data = Utils\Json::decode(implode($data), Utils\Json::FORCE_ARRAY);
 					assert(is_array($data));
 
-					$this->emit(
-						'message',
-						[
-							$this->createEntity(
-								Messages\Response\Lan\DeviceEvent::class,
-								Utils\ArrayHash::from([
-									'id' => $deviceData['id'],
-									'ip_address' => $deviceIpAddress,
-									'domain' => $deviceDomain,
-									'port' => $devicePort,
-									'type' => $deviceData['type'],
-									'seq' => $deviceData['seq'],
-									'iv' => array_key_exists('iv', $deviceData) ? $deviceData['iv'] : null,
-									'encrypt' => $dataEncrypted,
-									'data' => $this->createEntity(
-										Messages\Response\Lan\DeviceEventData::class,
-										Utils\ArrayHash::from($data),
-									),
-								]),
-							),
-						],
+					Utils\Arrays::invoke(
+						$this->onMessage,
+						$this->createEntity(
+							Messages\Response\Lan\DeviceEvent::class,
+							Utils\ArrayHash::from([
+								'id' => $deviceData['id'],
+								'ip_address' => $deviceIpAddress,
+								'domain' => $deviceDomain,
+								'port' => $devicePort,
+								'type' => $deviceData['type'],
+								'seq' => $deviceData['seq'],
+								'iv' => array_key_exists('iv', $deviceData) ? $deviceData['iv'] : null,
+								'encrypt' => $dataEncrypted,
+								'data' => $this->createEntity(
+									Messages\Response\Lan\DeviceEventData::class,
+									Utils\ArrayHash::from($data),
+								),
+							]),
+						),
 					);
 				} else {
-					$this->emit(
-						'message',
-						[
-							$this->createEntity(
-								Messages\Response\Lan\DeviceEvent::class,
-								Utils\ArrayHash::from([
-									'id' => $deviceData['id'],
-									'ip_address' => $deviceIpAddress,
-									'domain' => $deviceDomain,
-									'port' => $devicePort,
-									'type' => $deviceData['type'],
-									'seq' => $deviceData['seq'],
-									'iv' => array_key_exists('iv', $deviceData) ? $deviceData['iv'] : null,
-									'encrypt' => true,
-									'data' => null,
-								]),
-							),
-						],
+					Utils\Arrays::invoke(
+						$this->onMessage,
+						$this->createEntity(
+							Messages\Response\Lan\DeviceEvent::class,
+							Utils\ArrayHash::from([
+								'id' => $deviceData['id'],
+								'ip_address' => $deviceIpAddress,
+								'domain' => $deviceDomain,
+								'port' => $devicePort,
+								'type' => $deviceData['type'],
+								'seq' => $deviceData['seq'],
+								'iv' => array_key_exists('iv', $deviceData) ? $deviceData['iv'] : null,
+								'encrypt' => true,
+								'data' => null,
+							]),
+						),
 					);
 				}
 			}

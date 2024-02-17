@@ -15,8 +15,8 @@
 
 namespace FastyBird\Connector\Sonoff\API;
 
+use Closure;
 use DateTimeInterface;
-use Evenement;
 use FastyBird\Connector\Sonoff;
 use FastyBird\Connector\Sonoff\Exceptions;
 use FastyBird\Connector\Sonoff\Helpers;
@@ -62,11 +62,10 @@ use const DIRECTORY_SEPARATOR;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class CloudWs implements Evenement\EventEmitterInterface
+final class CloudWs
 {
 
 	use Nette\SmartObject;
-	use Evenement\EventEmitterTrait;
 
 	private const SOCKETS_LOGIN_API_ENDPOINT = '/dispatch/app';
 
@@ -89,6 +88,21 @@ final class CloudWs implements Evenement\EventEmitterInterface
 	private const QUERY_ACTION = 'query';
 
 	private const WAIT_FOR_REPLY_TIMEOUT = 15.0;
+
+	/** @var array<Closure(): void> */
+	public array $onConnected = [];
+
+	/** @var array<Closure(): void> */
+	public array $onDisconnected = [];
+
+	/** @var array<Closure(): void> */
+	public array $onLost = [];
+
+	/** @var array<Closure(Messages\Message $message): void> */
+	public array $onMessage = [];
+
+	/** @var array<Closure(Throwable $error): void> */
+	public array $onError = [];
 
 	private bool $connecting = false;
 
@@ -194,15 +208,13 @@ final class CloudWs implements Evenement\EventEmitterInterface
 							$this->connecting = false;
 							$this->connected = false;
 
-							$this->emit(
-								'error',
-								[
-									new Exceptions\InvalidState(
-										'Handshake with Sonoff sockets server failed',
-										$ex->getCode(),
-										$ex,
-									),
-								],
+							Utils\Arrays::invoke(
+								$this->onError,
+								new Exceptions\InvalidState(
+									'Handshake with Sonoff sockets server failed',
+									$ex->getCode(),
+									$ex,
+								),
 							);
 						},
 					);
@@ -214,15 +226,13 @@ final class CloudWs implements Evenement\EventEmitterInterface
 				$connection->on('error', function (Throwable $ex): void {
 					$this->lost();
 
-					$this->emit(
-						'error',
-						[
-							new Exceptions\InvalidState(
-								'An error occurred on Sonoff sockets server connection',
-								$ex->getCode(),
-								$ex,
-							),
-						],
+					Utils\Arrays::invoke(
+						$this->onError,
+						new Exceptions\InvalidState(
+							'An error occurred on Sonoff sockets server connection',
+							$ex->getCode(),
+							$ex,
+						),
 					);
 				});
 
@@ -241,10 +251,10 @@ final class CloudWs implements Evenement\EventEmitterInterface
 
 					$this->disconnect();
 
-					$this->emit('disconnected');
+					Utils\Arrays::invoke($this->onDisconnected);
 				});
 
-				$this->emit('connected');
+				Utils\Arrays::invoke($this->onConnected);
 
 				$deferred->resolve(true);
 			})
@@ -254,7 +264,7 @@ final class CloudWs implements Evenement\EventEmitterInterface
 				$this->connecting = false;
 				$this->connected = false;
 
-				$this->emit('error', [$ex]);
+				Utils\Arrays::invoke($this->onError, $ex);
 
 				$deferred->reject(
 					new Exceptions\InvalidState(
@@ -442,7 +452,7 @@ final class CloudWs implements Evenement\EventEmitterInterface
 	{
 		$this->lost = $this->dateTimeFactory->getNow();
 
-		$this->emit('lost');
+		Utils\Arrays::invoke($this->onLost);
 
 		$this->disconnect();
 	}
@@ -464,7 +474,7 @@ final class CloudWs implements Evenement\EventEmitterInterface
 				],
 			);
 
-			$this->emit('error', [$ex]);
+			Utils\Arrays::invoke($this->onError, $ex);
 
 			return;
 		}
@@ -488,7 +498,7 @@ final class CloudWs implements Evenement\EventEmitterInterface
 				);
 
 				if ($entity !== null) {
-					$this->emit('message', [$entity]);
+					Utils\Arrays::invoke($this->onMessage, $entity);
 				}
 			}
 		}
@@ -553,7 +563,7 @@ final class CloudWs implements Evenement\EventEmitterInterface
 			}
 
 			if ($message?->getDeferred() === null && $entity !== null) {
-				$this->emit('message', [$entity]);
+				Utils\Arrays::invoke($this->onMessage, $entity);
 			}
 
 			unset($this->messages[$sequence]);
@@ -572,7 +582,7 @@ final class CloudWs implements Evenement\EventEmitterInterface
 			);
 
 			if ($message?->getDeferred() === null && $entity !== null) {
-				$this->emit('message', [$entity]);
+				Utils\Arrays::invoke($this->onMessage, $entity);
 			}
 
 			unset($this->messages[$sequence]);

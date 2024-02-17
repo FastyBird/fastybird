@@ -16,7 +16,6 @@
 namespace FastyBird\Connector\Sonoff\Clients;
 
 use BadMethodCallException;
-use Evenement;
 use FastyBird\Connector\Sonoff;
 use FastyBird\Connector\Sonoff\API;
 use FastyBird\Connector\Sonoff\Documents;
@@ -27,13 +26,14 @@ use FastyBird\Connector\Sonoff\Types;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Nette;
 use Nette\Utils;
+use Psr\EventDispatcher as PsrEventDispatcher;
 use React\EventLoop;
 use React\Promise;
 use RuntimeException;
-use SplObjectStorage;
 use stdClass;
 use Throwable;
 use TypeError;
@@ -61,20 +61,16 @@ use const DIRECTORY_SEPARATOR;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Discovery implements Evenement\EventEmitterInterface
+final class Discovery
 {
 
 	use Nette\SmartObject;
-	use Evenement\EventEmitterTrait;
 
 	private const LAN_SEARCH_TIMEOUT = 60;
 
 	private EventLoop\TimerInterface|null $handlerTimer = null;
 
-	/** @var SplObjectStorage<Messages\Response\DiscoveredCloudDevice, null> */
-	private SplObjectStorage $discoveredDevices;
-
-	/** @var array<string, Messages\Response\DiscoveredLocalDevice> */
+	/** @var array<string, array<string, string|int>> */
 	private array $foundLocalDevices = [];
 
 	private API\LanApi|null $lanApiConnection = null;
@@ -90,9 +86,9 @@ final class Discovery implements Evenement\EventEmitterInterface
 		private readonly Queue\Queue $queue,
 		private readonly Sonoff\Logger $logger,
 		private readonly EventLoop\LoopInterface $eventLoop,
+		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
-		$this->discoveredDevices = new SplObjectStorage();
 	}
 
 	/**
@@ -104,8 +100,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 	 */
 	public function discover(): void
 	{
-		$this->discoveredDevices = new SplObjectStorage();
-
 		$this->discoverCloudDevices()
 			->then(async(function (): void {
 				$mode = $this->connectorHelper->getClientMode($this->connector);
@@ -117,20 +111,20 @@ final class Discovery implements Evenement\EventEmitterInterface
 					await($this->discoverLanDevices());
 				}
 
-				$this->handleFoundDevices();
-
-				$this->discoveredDevices->rewind();
-
-				$devices = [];
-
-				foreach ($this->discoveredDevices as $device) {
-					$devices[] = $device;
-				}
-
-				$this->emit('finished', [$devices]);
+				$this->dispatcher?->dispatch(
+					new DevicesEvents\TerminateConnector(
+						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::SONOFF),
+						'Devices discovery finished',
+					),
+				);
 			}))
 			->catch(function (): void {
-				$this->emit('failed');
+				$this->dispatcher?->dispatch(
+					new DevicesEvents\TerminateConnector(
+						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::SONOFF),
+						'Devices discovery failed',
+					),
+				);
 			});
 	}
 
@@ -251,19 +245,15 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 		$apiClient = $this->getLanConnection();
 
-		$apiClient->on(
-			'message',
-			function (API\Messages\Response\Lan\DeviceEvent $message): void {
-				$this->foundLocalDevices[$message->getId()] = $this->entityHelper->create(
-					Messages\Response\DiscoveredLocalDevice::class,
-					[
-						'ipAddress' => $message->getIpAddress(),
-						'domain' => $message->getDomain(),
-						'port' => $message->getPort(),
-					],
-				);
-			},
-		);
+		$apiClient->onMessage[] = function (API\Messages\Message $message): void {
+			if ($message instanceof API\Messages\Response\Lan\DeviceEvent) {
+				$this->foundLocalDevices[$message->getId()] = [
+					'ipAddress' => $message->getIpAddress(),
+					'domain' => $message->getDomain(),
+					'port' => $message->getPort(),
+				];
+			}
+		};
 
 		// Searching timeout
 		$this->handlerTimer = $this->eventLoop->addTimer(
@@ -280,9 +270,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 		return $deferred->promise();
 	}
 
-	/**
-	 * @throws Exceptions\Runtime
-	 */
 	private function handleFoundCloudDevices(API\Messages\Response\Cloud\Things $things): void
 	{
 		foreach ($things->getDevices() as $device) {
@@ -415,37 +402,10 @@ final class Discovery implements Evenement\EventEmitterInterface
 				}
 			}
 
-			$this->discoveredDevices->attach(
-				$this->entityHelper->create(
-					Messages\Response\DiscoveredCloudDevice::class,
-					[
-						'id' => $device->getDeviceId(),
-						'apiKey' => $device->getApiKey(),
-						'deviceKey' => $device->getDeviceKey(),
-						'uiid' => $device->getExtra()->getUiid(),
-						'name' => $device->getName(),
-						'description' => $device->getExtra()->getDescription(),
-						'brandName' => $device->getBrandName(),
-						'brandLogo' => $device->getBrandLogo(),
-						'productModel' => $device->getProductModel(),
-						'model' => $device->getExtra()->getModel(),
-						'mac' => $device->getExtra()->getMac(),
-						'parameters' => $parameters,
-					],
-				),
-			);
-		}
-	}
-
-	private function handleFoundDevices(): void
-	{
-		$this->discoveredDevices->rewind();
-
-		foreach ($this->discoveredDevices as $device) {
 			$localConfiguration = null;
 
-			if (array_key_exists($device->getId(), $this->foundLocalDevices)) {
-				$localConfiguration = $this->foundLocalDevices[$device->getId()];
+			if (array_key_exists($device->getDeviceId(), $this->foundLocalDevices)) {
+				$localConfiguration = $this->foundLocalDevices[$device->getDeviceId()];
 			}
 
 			try {
@@ -454,33 +414,33 @@ final class Discovery implements Evenement\EventEmitterInterface
 						Queue\Messages\StoreDevice::class,
 						[
 							'connector' => $this->connector->getId(),
-							'id' => $device->getId(),
+							'id' => $device->getDeviceId(),
 							'apiKey' => $device->getApiKey(),
 							'deviceKey' => $device->getDeviceKey(),
-							'uiid' => $device->getUiid(),
+							'uiid' => $device->getExtra()->getUiid(),
 							'name' => $device->getName(),
-							'description' => $device->getDescription(),
+							'description' => $device->getExtra()->getDescription(),
 							'brandName' => $device->getBrandName(),
 							'brandLogo' => $device->getBrandLogo(),
 							'productModel' => $device->getProductModel(),
-							'model' => $device->getModel(),
-							'mac' => $device->getMac(),
-							'ipAddress' => $localConfiguration?->getIpAddress(),
-							'domain' => $localConfiguration?->getDomain(),
-							'port' => $localConfiguration?->getPort(),
+							'model' => $device->getExtra()->getModel(),
+							'mac' => $device->getExtra()->getMac(),
+							'ipAddress' => $localConfiguration !== null ? $localConfiguration['ipAddress'] : null,
+							'domain' => $localConfiguration !== null ? $localConfiguration['domain'] : null,
+							'port' => $localConfiguration !== null ? $localConfiguration['port'] : null,
 							'parameters' => array_map(
-								static fn (Messages\Response\DiscoveredDeviceParameter $parameter): array => [
-									'group' => $parameter->getGroup(),
-									'identifier' => $parameter->getIdentifier(),
-									'name' => $parameter->getName(),
-									'type' => $parameter->getType(),
-									'dataType' => $parameter->getDataType()->value,
-									'format' => $parameter->getFormat(),
-									'settable' => $parameter->isSettable(),
-									'queryable' => $parameter->isQueryable(),
-									'scale' => $parameter->getScale(),
+								static fn (array $parameter): array => [
+									'group' => $parameter['group'],
+									'identifier' => $parameter['identifier'],
+									'name' => $parameter['name'],
+									'type' => $parameter['type'],
+									'dataType' => $parameter['dataType'],
+									'format' => $parameter['format'],
+									'settable' => $parameter['settable'],
+									'queryable' => $parameter['queryable'],
+									'scale' => $parameter['scale'],
 								],
-								$device->getParameters(),
+								$parameters,
 							),
 						],
 					),
