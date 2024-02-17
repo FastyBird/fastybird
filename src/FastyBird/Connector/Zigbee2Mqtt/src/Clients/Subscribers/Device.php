@@ -53,12 +53,9 @@ readonly class Device
 
 	public function subscribe(API\Client $client): void
 	{
-		$client->on(Zigbee2Mqtt\Constants::EVENT_MESSAGE, [$this, 'onMessage']);
-	}
-
-	public function unsubscribe(API\Client $client): void
-	{
-		$client->removeListener('message', [$this, 'onMessage']);
+		$client->onMessage[] = function (NetMqtt\Message $message): void {
+			$this->onMessage($message);
+		};
 	}
 
 	/**

@@ -17,7 +17,6 @@ namespace FastyBird\Connector\Zigbee2Mqtt\API;
 
 use BinSoul\Net\Mqtt;
 use Closure;
-use Evenement;
 use FastyBird\Connector\Zigbee2Mqtt;
 use FastyBird\Connector\Zigbee2Mqtt\Clients;
 use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
@@ -25,6 +24,7 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use InvalidArgumentException;
 use Nette;
+use Nette\Utils;
 use React\EventLoop;
 use React\Promise;
 use React\Socket;
@@ -59,11 +59,37 @@ use function sprintf;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Client implements Evenement\EventEmitterInterface
+final class Client
 {
 
 	use Nette\SmartObject;
-	use Evenement\EventEmitterTrait;
+
+	/** @var array<Closure(Mqtt\Connection $connection): void> */
+	public array $onConnect = [];
+
+	/** @var array<Closure(): void> */
+	public array $onDisconnect = [];
+
+	/** @var array<Closure(): void> */
+	public array $onClose = [];
+
+	/** @var array<Closure(Mqtt\Message $message): void> */
+	public array $onMessage = [];
+
+	/** @var array<Closure(Mqtt\Message $message): void> */
+	public array $onPublish = [];
+
+	/** @var array<Closure(Mqtt\Subscription $subscription): void> */
+	public array $onSubscribe = [];
+
+	/** @var array<Closure(Mqtt\Subscription $subscription): void> */
+	public array $onUnsubscribe = [];
+
+	/** @var array<Closure(Throwable $error): void> */
+	public array $onWarning = [];
+
+	/** @var array<Closure(Throwable $error): void> */
+	public array $onError = [];
 
 	private bool $isConnected = false;
 
@@ -178,7 +204,7 @@ final class Client implements Evenement\EventEmitterInterface
 							],
 						);
 
-						$this->emit(Zigbee2Mqtt\Constants::EVENT_CONNECT);
+						Utils\Arrays::invoke($this->onConnect);
 
 						$deferred->resolve($result ?? $connection);
 					})
@@ -241,7 +267,7 @@ final class Client implements Evenement\EventEmitterInterface
 						],
 					);
 
-					$this->emit(Zigbee2Mqtt\Constants::EVENT_DISCONNECT);
+					Utils\Arrays::invoke($this->onDisconnect);
 				}
 
 				$deferred->resolve($flowResult ?? $connection);
@@ -597,7 +623,7 @@ final class Client implements Evenement\EventEmitterInterface
 				],
 			);
 
-			$this->emit(Zigbee2Mqtt\Constants::EVENT_CLOSE);
+			Utils\Arrays::invoke($this->onClose);
 		}
 	}
 
@@ -622,7 +648,7 @@ final class Client implements Evenement\EventEmitterInterface
 			],
 		);
 
-		$this->emit(Zigbee2Mqtt\Constants::EVENT_WARNING, [$error]);
+		Utils\Arrays::invoke($this->onWarning, $error);
 	}
 
 	/**
@@ -646,7 +672,7 @@ final class Client implements Evenement\EventEmitterInterface
 			],
 		);
 
-		$this->emit(Zigbee2Mqtt\Constants::EVENT_ERROR, [$error]);
+		Utils\Arrays::invoke($this->onError, $error);
 	}
 
 	/**
@@ -743,7 +769,7 @@ final class Client implements Evenement\EventEmitterInterface
 							],
 						);
 
-						$this->emit(Zigbee2Mqtt\Constants::EVENT_CONNECT);
+						Utils\Arrays::invoke($this->onConnect);
 
 						break;
 					case 'disconnect':
@@ -763,7 +789,7 @@ final class Client implements Evenement\EventEmitterInterface
 							],
 						);
 
-						$this->emit(Zigbee2Mqtt\Constants::EVENT_DISCONNECT);
+						Utils\Arrays::invoke($this->onDisconnect);
 
 						break;
 					case 'message':
@@ -792,28 +818,28 @@ final class Client implements Evenement\EventEmitterInterface
 							],
 						);
 
-						$this->emit(Zigbee2Mqtt\Constants::EVENT_MESSAGE, [$result]);
+						Utils\Arrays::invoke($this->onMessage, $result);
 
 						break;
 					case 'publish':
 						$result = $flow->getResult();
 						assert($result instanceof Mqtt\Message);
 
-						$this->emit(Zigbee2Mqtt\Constants::EVENT_PUBLISH, [$result]);
+						Utils\Arrays::invoke($this->onPublish, $result);
 
 						break;
 					case 'subscribe':
 						$result = $flow->getResult();
 						assert($result instanceof Mqtt\Subscription);
 
-						$this->emit(Zigbee2Mqtt\Constants::EVENT_SUBSCRIBE, [$result]);
+						Utils\Arrays::invoke($this->onSubscribe, $result);
 
 						break;
 					case 'unsubscribe':
 						/** @var array<Mqtt\Subscription> $result */
 						$result = $flow->getResult();
 
-						$this->emit(Zigbee2Mqtt\Constants::EVENT_UNSUBSCRIBE, [$result]);
+						Utils\Arrays::invoke($this->onUnsubscribe, $result);
 
 						break;
 				}

@@ -71,6 +71,4 @@ final class Constants
 
 	public const EVENT_UNSUBSCRIBE = 'unsubscribe';
 
-	public const EVENT_FINISHED = 'finished';
-
 }

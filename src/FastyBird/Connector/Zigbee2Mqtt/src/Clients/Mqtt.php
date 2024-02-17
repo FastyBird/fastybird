@@ -78,7 +78,9 @@ final class Mqtt implements Client
 	public function connect(): void
 	{
 		$client = $this->getClient();
-		$client->on(Zigbee2Mqtt\Constants::EVENT_CONNECT, [$this, 'onConnect']);
+		$client->onConnect[] = function (): void {
+			$this->onConnect();
+		};
 
 		$this->bridgeSubscriber->subscribe($client);
 		$this->deviceSubscriber->subscribe($client);
@@ -96,10 +98,6 @@ final class Mqtt implements Client
 	public function disconnect(): void
 	{
 		$client = $this->getClient();
-		$client->removeListener('connect', [$this, 'onConnect']);
-
-		$this->bridgeSubscriber->unsubscribe($client);
-		$this->deviceSubscriber->unsubscribe($client);
 
 		$client->disconnect();
 	}

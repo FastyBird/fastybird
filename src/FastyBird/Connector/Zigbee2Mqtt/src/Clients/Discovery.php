@@ -16,7 +16,6 @@
 namespace FastyBird\Connector\Zigbee2Mqtt\Clients;
 
 use BinSoul\Net\Mqtt as NetMqtt;
-use Evenement;
 use FastyBird\Connector\Zigbee2Mqtt;
 use FastyBird\Connector\Zigbee2Mqtt\API;
 use FastyBird\Connector\Zigbee2Mqtt\Clients;
@@ -28,12 +27,14 @@ use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use InvalidArgumentException;
 use Nette;
 use Nette\Utils;
+use Psr\EventDispatcher as PsrEventDispatcher;
 use React\EventLoop;
 use React\Promise;
 use stdClass;
@@ -51,11 +52,10 @@ use function sprintf;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Discovery implements Evenement\EventEmitterInterface
+final class Discovery
 {
 
 	use Nette\SmartObject;
-	use Evenement\EventEmitterTrait;
 
 	private const DISCOVERY_TIMEOUT = 100;
 
@@ -77,6 +77,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		private readonly DevicesUtilities\ConnectorConnection $connectorConnectionManager,
 		private readonly EventLoop\LoopInterface $eventLoop,
+		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
 		$this->bridgeSubscriber = $this->bridgeSubscriberFactory->create($this->connector);
@@ -99,8 +100,9 @@ final class Discovery implements Evenement\EventEmitterInterface
 		$this->onlyBridge = $onlyBridge;
 
 		$client = $this->getClient();
-
-		$client->on(Zigbee2Mqtt\Constants::EVENT_CONNECT, [$this, 'onConnect']);
+		$client->onConnect[] = function (): void {
+			$this->onConnect();
+		};
 
 		if (!$this->isRunning()) {
 			$this->bridgeSubscriber->subscribe($client);
@@ -123,12 +125,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 		$client = $this->getClient();
 
 		$client->disconnect();
-
-		$client->removeListener('connect', [$this, 'onConnect']);
-
-		if ($this->subscribed) {
-			$this->bridgeSubscriber->unsubscribe($client);
-		}
 	}
 
 	/**
@@ -188,11 +184,21 @@ final class Discovery implements Evenement\EventEmitterInterface
 		Promise\all($promises)
 			->then(function (): void {
 				$this->eventLoop->addTimer(self::DISCOVERY_TIMEOUT, function (): void {
-					$this->emit(Zigbee2Mqtt\Constants::EVENT_FINISHED);
+					$this->dispatcher?->dispatch(
+						new DevicesEvents\TerminateConnector(
+							MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::ZIGBEE2MQTT),
+							'Devices discovery failed',
+						),
+					);
 				});
 			})
 			->catch(function (): void {
-				$this->emit(Zigbee2Mqtt\Constants::EVENT_FINISHED);
+				$this->dispatcher?->dispatch(
+					new DevicesEvents\TerminateConnector(
+						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::ZIGBEE2MQTT),
+						'Devices discovery failed',
+					),
+				);
 			});
 	}
 
