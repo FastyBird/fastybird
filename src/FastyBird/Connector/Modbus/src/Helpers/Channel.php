@@ -34,7 +34,6 @@ use function assert;
 use function is_float;
 use function is_int;
 use function is_string;
-use function strval;
 
 /**
  * Useful channel helpers
@@ -174,7 +173,7 @@ final class Channel
 
 			if ($type === Types\ChannelPropertyIdentifier::TYPE) {
 				if (Types\ChannelType::tryFrom(
-					strval(MetadataUtilities\Value::flattenValue($configuration->getValue())),
+					MetadataUtilities\Value::toString($configuration->getValue(), true),
 				) !== null) {
 					return MetadataUtilities\Value::flattenValue($configuration->getValue());
 				}

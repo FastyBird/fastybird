@@ -18,6 +18,7 @@ namespace FastyBird\Connector\NsPanel\Queue\Consumers;
 use Doctrine\DBAL;
 use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Entities;
+use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Queue;
@@ -63,6 +64,7 @@ final class StoreSubDevice implements Queue\Consumer
 	/**
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws ApplicationExceptions\Runtime
+	 * @throws Exceptions\InvalidArgument
 	 * @throws DBAL\Exception
 	 */
 	public function consume(Queue\Messages\Message $message): bool
@@ -170,35 +172,35 @@ final class StoreSubDevice implements Queue\Consumer
 			$message->getManufacturer(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::MANUFACTURER,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MANUFACTURER),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MANUFACTURER->value),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$message->getModel(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::MODEL,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MODEL),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MODEL->value),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$message->getFirmwareVersion(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::FIRMWARE_VERSION,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::FIRMWARE_VERSION),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::FIRMWARE_VERSION->value),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
-			$message->getDisplayCategory()->getValue(),
+			$message->getDisplayCategory()->value,
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::CATEGORY,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::CATEGORY),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::CATEGORY->value),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$message->getMacAddress(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::MAC_ADDRESS,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MAC_ADDRESS),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MAC_ADDRESS->value),
 		);
 
 		foreach ($message->getCapabilities() as $capability) {
@@ -206,7 +208,7 @@ final class StoreSubDevice implements Queue\Consumer
 				$identifier = Helpers\Name::convertCapabilityToChannel($capability->getCapability());
 
 				if (
-					$capability->getCapability()->equalsValue(Types\Capability::TOGGLE)
+					$capability->getCapability() === Types\Capability::TOGGLE
 					&& $capability->getName() !== null
 				) {
 					$identifier .= '_' . $capability->getName();
@@ -251,13 +253,13 @@ final class StoreSubDevice implements Queue\Consumer
 		}
 
 		foreach ($message->getTags() as $tag => $value) {
-			if ($tag === Types\Capability::TOGGLE && is_array($value)) {
+			if ($tag === Types\Capability::TOGGLE->value && is_array($value)) {
 				$this->databaseHelper->transaction(function () use ($message, $device, $value): void {
 					foreach ($value as $key => $name) {
 						$findChannelQuery = new Queries\Entities\FindChannels();
 						$findChannelQuery->byIdentifier(
 							Helpers\Name::convertCapabilityToChannel(
-								Types\Capability::get(Types\Capability::TOGGLE),
+								Types\Capability::TOGGLE,
 								$key,
 							),
 						);

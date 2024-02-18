@@ -15,9 +15,6 @@
 
 namespace FastyBird\Connector\NsPanel\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * Capability permission types
  *
@@ -26,23 +23,13 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Permission extends Consistence\Enum\Enum
+enum Permission: string
 {
 
-	public const READ = 'read';
+	case READ = 'read';
 
-	public const WRITE = 'write';
+	case WRITE = 'write';
 
-	public const READ_WRITE = 'readWrite';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case READ_WRITE = 'readWrite';
 
 }

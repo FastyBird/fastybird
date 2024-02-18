@@ -140,6 +140,7 @@ final class Gateway implements Client
 	/**
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -171,6 +172,7 @@ final class Gateway implements Client
 	/**
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -192,6 +194,7 @@ final class Gateway implements Client
 	/**
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -375,6 +378,7 @@ final class Gateway implements Client
 	/**
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -464,8 +468,8 @@ final class Gateway implements Client
 									'connector' => $gateway->getConnector(),
 									'identifier' => $subDevice->getSerialNumber(),
 									'state' => $subDevice->isOnline()
-										? DevicesTypes\ConnectionState::CONNECTED->value
-										: DevicesTypes\ConnectionState::DISCONNECTED->value,
+										? DevicesTypes\ConnectionState::CONNECTED
+										: DevicesTypes\ConnectionState::DISCONNECTED,
 								],
 							),
 						);
@@ -485,7 +489,7 @@ final class Gateway implements Client
 
 							foreach ($item->getProtocols() as $protocol => $value) {
 								$state[] = [
-									'capability' => $item->getType()->getValue(),
+									'capability' => $item->getType()->value,
 									'protocol' => $protocol,
 									'value' => $value,
 									'identifier' => $identifier,

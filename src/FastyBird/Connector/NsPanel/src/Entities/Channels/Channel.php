@@ -24,6 +24,8 @@ use FastyBird\Library\Application\Entities\Mapping as ApplicationMapping;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use Ramsey\Uuid;
+use TypeError;
+use ValueError;
 use function array_key_exists;
 use function assert;
 use function preg_match;
@@ -65,6 +67,8 @@ class Channel extends DevicesEntities\Channels\Channel
 
 	/**
 	 * @throws Exceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getCapability(): Types\Capability
 	{
@@ -76,11 +80,11 @@ class Channel extends DevicesEntities\Channels\Channel
 
 		$type = str_replace(' ', '', str_replace('_', '-', $matches['type']));
 
-		if (!Types\Capability::isValidValue($type)) {
+		if (Types\Capability::tryFrom($type) === null) {
 			throw new Exceptions\InvalidState('Device channel has invalid identifier');
 		}
 
-		return Types\Capability::get($type);
+		return Types\Capability::from($type);
 	}
 
 }

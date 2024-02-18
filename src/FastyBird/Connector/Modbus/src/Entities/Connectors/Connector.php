@@ -30,7 +30,6 @@ use ValueError;
 use function intval;
 use function is_numeric;
 use function is_string;
-use function strval;
 
 #[ORM\Entity]
 #[ApplicationMapping\DiscriminatorEntry(name: self::TYPE)]
@@ -96,9 +95,9 @@ class Connector extends DevicesEntities\Connectors\Connector
 		if (
 			$property instanceof DevicesEntities\Connectors\Properties\Variable
 			&& is_string($property->getValue())
-			&& Types\ClientMode::tryFrom(strval(MetadataUtilities\Value::flattenValue($property->getValue()))) !== null
+			&& Types\ClientMode::tryFrom(MetadataUtilities\Value::toString($property->getValue(), true)) !== null
 		) {
-			return Types\ClientMode::from(strval(MetadataUtilities\Value::flattenValue($property->getValue())));
+			return Types\ClientMode::from(MetadataUtilities\Value::toString($property->getValue(), true));
 		}
 
 		throw new Exceptions\InvalidState('Connector mode is not configured');

@@ -85,6 +85,7 @@ final class Device implements Client
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
@@ -127,7 +128,7 @@ final class Device implements Client
 
 			foreach ($devices as $device) {
 				if (!array_key_exists(
-					$this->thirdPartyDeviceHelper->getDisplayCategory($device)->getValue(),
+					$this->thirdPartyDeviceHelper->getDisplayCategory($device)->value,
 					(array) $categoriesMetadata,
 				)) {
 					$this->queue->append(
@@ -147,13 +148,13 @@ final class Device implements Client
 				if (
 					!$categoriesMetadata[$this->thirdPartyDeviceHelper->getDisplayCategory(
 						$device,
-					)->getValue()] instanceof Utils\ArrayHash
+					)->value] instanceof Utils\ArrayHash
 					|| !$categoriesMetadata[$this->thirdPartyDeviceHelper->getDisplayCategory(
 						$device,
-					)->getValue()]->offsetExists('capabilities')
+					)->value]->offsetExists('capabilities')
 					|| !$categoriesMetadata[$this->thirdPartyDeviceHelper->getDisplayCategory(
 						$device,
-					)->getValue()]->offsetGet(
+					)->value]->offsetGet(
 						'capabilities',
 					) instanceof Utils\ArrayHash
 				) {
@@ -167,7 +168,7 @@ final class Device implements Client
 
 				$requiredCapabilities = (array) $categoriesMetadata[$this->thirdPartyDeviceHelper->getDisplayCategory(
 					$device,
-				)->getValue()]->offsetGet('capabilities');
+				)->value]->offsetGet('capabilities');
 				$deviceCapabilities = [];
 
 				$capabilities = [];
@@ -182,7 +183,7 @@ final class Device implements Client
 				);
 
 				foreach ($channels as $channel) {
-					$deviceCapabilities[] = $this->channelHelper->getCapability($channel)->getValue();
+					$deviceCapabilities[] = $this->channelHelper->getCapability($channel)->value;
 
 					$capabilityName = null;
 
@@ -194,12 +195,12 @@ final class Device implements Client
 					}
 
 					$capabilities[] = [
-						'capability' => $this->channelHelper->getCapability($channel)->getValue(),
-						'permission' => Types\Permission::get(
+						'capability' => $this->channelHelper->getCapability($channel)->value,
+						'permission' => (
 							$this->channelHelper->getCapability($channel)->hasReadWritePermission()
 								? Types\Permission::READ_WRITE
-								: Types\Permission::READ,
-						)->getValue(),
+								: Types\Permission::READ
+						)->value,
 						'name' => $capabilityName,
 					];
 
@@ -227,7 +228,7 @@ final class Device implements Client
 
 					if (
 						$capabilityName !== null
-						&& $this->channelHelper->getCapability($channel)->equalsValue(Types\Capability::TOGGLE)
+						&& $this->channelHelper->getCapability($channel) === Types\Capability::TOGGLE
 					) {
 						if (!array_key_exists('toggle', $tags)) {
 							$tags['toggle'] = [];
@@ -258,7 +259,7 @@ final class Device implements Client
 				$syncDevices[] = [
 					'third_serial_number' => $device->getId()->toString(),
 					'name' => $device->getName() ?? $device->getIdentifier(),
-					'display_category' => $this->thirdPartyDeviceHelper->getDisplayCategory($device)->getValue(),
+					'display_category' => $this->thirdPartyDeviceHelper->getDisplayCategory($device)->value,
 					'capabilities' => $capabilities,
 					'state' => [],
 					'tags' => $tags,
@@ -626,6 +627,7 @@ final class Device implements Client
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState

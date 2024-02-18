@@ -39,7 +39,7 @@ final class HeaderTest extends Tests\Cases\Unit\BaseTestCase
 			Header::class,
 		);
 
-		self::assertSame(Types\Header::ERROR_RESPONSE, $message->getName()->getValue());
+		self::assertSame(Types\Header::ERROR_RESPONSE, $message->getName());
 		self::assertSame($id->toString(), $message->getMessageId());
 		self::assertSame('1', $message->getVersion());
 	}

@@ -32,7 +32,7 @@ final readonly class Battery implements State
 
 	public function __construct(
 		#[ObjectMapper\Rules\IntValue(min: 0, max: 100, unsigned: true)]
-		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::BATTERY)]
+		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::BATTERY->value)]
 		private int $battery,
 	)
 	{
@@ -40,13 +40,13 @@ final readonly class Battery implements State
 
 	public function getType(): Types\Capability
 	{
-		return Types\Capability::get(Types\Capability::BATTERY);
+		return Types\Capability::BATTERY;
 	}
 
 	public function getProtocols(): array
 	{
 		return [
-			Types\Protocol::BATTERY => $this->battery,
+			Types\Protocol::BATTERY->value => $this->battery,
 		];
 	}
 
@@ -63,7 +63,7 @@ final readonly class Battery implements State
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Protocol::BATTERY} = $this->battery;
+		$json->{Types\Protocol::BATTERY->value} = $this->battery;
 
 		return $json;
 	}

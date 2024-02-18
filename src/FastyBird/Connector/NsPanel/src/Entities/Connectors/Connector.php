@@ -27,6 +27,7 @@ use FastyBird\Module\Devices\Entities as DevicesEntities;
 use TypeError;
 use ValueError;
 use function is_int;
+use function is_string;
 
 #[ORM\Entity]
 #[ApplicationMapping\DiscriminatorEntry(name: self::TYPE)]
@@ -84,7 +85,7 @@ class Connector extends DevicesEntities\Connectors\Connector
 		$property = $this->properties
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::PORT
+				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::PORT->value
 			)
 			->first();
 
@@ -110,15 +111,16 @@ class Connector extends DevicesEntities\Connectors\Connector
 		$property = $this->properties
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::CLIENT_MODE
+				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::CLIENT_MODE->value
 			)
 			->first();
 
 		if (
 			$property instanceof DevicesEntities\Connectors\Properties\Variable
-			&& Types\ClientMode::isValidValue($property->getValue())
+			&& is_string($property->getValue())
+			&& Types\ClientMode::tryFrom($property->getValue()) !== null
 		) {
-			return Types\ClientMode::get($property->getValue());
+			return Types\ClientMode::from($property->getValue());
 		}
 
 		throw new Exceptions\InvalidState('Connector mode is not configured');

@@ -18,6 +18,7 @@ namespace FastyBird\Connector\NsPanel\Queue\Consumers;
 use Doctrine\DBAL;
 use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Entities;
+use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Connector\NsPanel\Types;
@@ -55,6 +56,7 @@ final class StoreThirdPartyDevice implements Queue\Consumer
 	/**
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws ApplicationExceptions\Runtime
+	 * @throws Exceptions\InvalidArgument
 	 * @throws DBAL\Exception
 	 */
 	public function consume(Queue\Messages\Message $message): bool
@@ -96,7 +98,7 @@ final class StoreThirdPartyDevice implements Queue\Consumer
 			$message->getGatewayIdentifier(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::GATEWAY_IDENTIFIER,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::GATEWAY_IDENTIFIER),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::GATEWAY_IDENTIFIER->value),
 		);
 
 		$this->logger->debug(

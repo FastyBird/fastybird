@@ -16,7 +16,6 @@
 namespace FastyBird\Connector\NsPanel\API\Messages;
 
 use FastyBird\Connector\NsPanel\Types;
-use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 use stdClass;
 
@@ -32,7 +31,7 @@ final readonly class Header implements Message
 {
 
 	public function __construct(
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\Header::class)]
+		#[ObjectMapper\Rules\BackedEnumValue(class: Types\Header::class)]
 		private Types\Header $name,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('message_id')]
@@ -64,7 +63,7 @@ final readonly class Header implements Message
 	public function toArray(): array
 	{
 		return [
-			'name' => $this->getName()->getValue(),
+			'name' => $this->getName()->value,
 			'message_id' => $this->getMessageId(),
 			'version' => $this->getVersion(),
 		];
@@ -73,7 +72,7 @@ final readonly class Header implements Message
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->name = $this->getName()->getValue();
+		$json->name = $this->getName()->value;
 		$json->message_id = $this->getMessageId();
 		$json->version = $this->getVersion();
 

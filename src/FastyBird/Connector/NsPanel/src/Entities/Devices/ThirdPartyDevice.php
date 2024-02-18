@@ -77,19 +77,19 @@ class ThirdPartyDevice extends Entities\Devices\Device
 		$property = $this->properties
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::CATEGORY
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::CATEGORY->value
 			)
 			->first();
 
 		if (
 			$property instanceof DevicesEntities\Devices\Properties\Variable
 			&& is_string($property->getValue())
-			&& Types\Category::isValidValue($property->getValue())
+			&& Types\Category::tryFrom($property->getValue()) !== null
 		) {
-			return Types\Category::get($property->getValue());
+			return Types\Category::from($property->getValue());
 		}
 
-		return Types\Category::get(Types\Category::UNKNOWN);
+		return Types\Category::UNKNOWN;
 	}
 
 	/**
@@ -103,7 +103,7 @@ class ThirdPartyDevice extends Entities\Devices\Device
 		$property = $this->properties
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::MANUFACTURER
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::MANUFACTURER->value
 			)
 			->first();
 
@@ -128,7 +128,7 @@ class ThirdPartyDevice extends Entities\Devices\Device
 		$property = $this->properties
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::MODEL
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::MODEL->value
 			)
 			->first();
 
@@ -153,7 +153,7 @@ class ThirdPartyDevice extends Entities\Devices\Device
 		$property = $this->properties
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::FIRMWARE_VERSION
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::FIRMWARE_VERSION->value
 			)
 			->first();
 
@@ -178,7 +178,7 @@ class ThirdPartyDevice extends Entities\Devices\Device
 		$property = $this->properties
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::GATEWAY_IDENTIFIER
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::GATEWAY_IDENTIFIER->value
 			)
 			->first();
 

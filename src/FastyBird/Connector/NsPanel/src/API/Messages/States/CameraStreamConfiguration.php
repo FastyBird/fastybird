@@ -32,7 +32,7 @@ final readonly class CameraStreamConfiguration implements ObjectMapper\MappedObj
 
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::STREAM_URL)]
+		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::STREAM_URL->value)]
 		private string $streamUrl,
 	)
 	{
@@ -56,7 +56,7 @@ final readonly class CameraStreamConfiguration implements ObjectMapper\MappedObj
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Protocol::STREAM_URL} = $this->getStreamUrl();
+		$json->{Types\Protocol::STREAM_URL->value} = $this->getStreamUrl();
 
 		return $json;
 	}

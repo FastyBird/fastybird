@@ -16,7 +16,6 @@
 namespace FastyBird\Connector\NsPanel\API\Messages\States;
 
 use FastyBird\Connector\NsPanel\Types;
-use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 use stdClass;
 
@@ -32,25 +31,25 @@ final readonly class ToggleState implements State
 {
 
 	public function __construct(
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\TogglePayload::class)]
-		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::TOGGLE_STATE)]
-		private Types\TogglePayload $toggleState,
+		#[ObjectMapper\Rules\BackedEnumValue(class: Types\Payloads\TogglePayload::class)]
+		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::TOGGLE_STATE->value)]
+		private Types\Payloads\TogglePayload $toggleState,
 		#[ObjectMapper\Rules\AnyOf([
-			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\StartupPayload::class),
+			new ObjectMapper\Rules\BackedEnumValue(class: Types\Payloads\StartupPayload::class),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::STARTUP)]
-		private Types\StartupPayload|null $startup = null,
+		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::STARTUP->value)]
+		private Types\Payloads\StartupPayload|null $startup = null,
 	)
 	{
 	}
 
 	public function getType(): Types\Capability
 	{
-		return Types\Capability::get(Types\Capability::TOGGLE);
+		return Types\Capability::TOGGLE;
 	}
 
-	public function getStartup(): Types\StartupPayload|null
+	public function getStartup(): Types\Payloads\StartupPayload|null
 	{
 		return $this->startup;
 	}
@@ -58,8 +57,8 @@ final readonly class ToggleState implements State
 	public function getProtocols(): array
 	{
 		return [
-			Types\Protocol::TOGGLE_STATE => $this->toggleState,
-			Types\Protocol::STARTUP => $this->getStartup(),
+			Types\Protocol::TOGGLE_STATE->value => $this->toggleState,
+			Types\Protocol::STARTUP->value => $this->getStartup(),
 		];
 	}
 
@@ -69,18 +68,18 @@ final readonly class ToggleState implements State
 	public function toArray(): array
 	{
 		return [
-			'value' => $this->toggleState->getValue(),
-			'startup' => $this->getStartup()?->getValue(),
+			'value' => $this->toggleState->value,
+			'startup' => $this->getStartup()?->value,
 		];
 	}
 
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Protocol::TOGGLE_STATE} = $this->toggleState->getValue();
+		$json->{Types\Protocol::TOGGLE_STATE->value} = $this->toggleState->value;
 
 		if ($this->getStartup() !== null) {
-			$json->{Types\Protocol::STARTUP} = $this->getStartup()->getValue();
+			$json->{Types\Protocol::STARTUP->value} = $this->getStartup()->value;
 		}
 
 		return $json;

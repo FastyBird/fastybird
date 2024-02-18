@@ -17,7 +17,6 @@ namespace FastyBird\Connector\NsPanel\Queue\Messages;
 
 use DateTimeInterface;
 use FastyBird\Connector\NsPanel\Types;
-use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use Orisai\ObjectMapper;
 
@@ -33,26 +32,25 @@ final readonly class CapabilityState implements Message
 {
 
 	public function __construct(
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\Capability::class)]
+		#[ObjectMapper\Rules\BackedEnumValue(class: Types\Capability::class)]
 		private Types\Capability $capability,
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\Protocol::class)]
+		#[ObjectMapper\Rules\BackedEnumValue(class: Types\Protocol::class)]
 		private Types\Protocol $protocol,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\IntValue(),
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\BoolValue(),
-			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\MotorCalibrationPayload::class),
-			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\MotorControlPayload::class),
-			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\PowerPayload::class),
-			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\PressPayload::class),
-			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\StartupPayload::class),
-			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\TogglePayload::class),
+			new ObjectMapper\Rules\BackedEnumValue(class: Types\Payloads\MotorCalibrationPayload::class),
+			new ObjectMapper\Rules\BackedEnumValue(class: Types\Payloads\MotorControlPayload::class),
+			new ObjectMapper\Rules\BackedEnumValue(class: Types\Payloads\PowerPayload::class),
+			new ObjectMapper\Rules\BackedEnumValue(class: Types\Payloads\PressPayload::class),
+			new ObjectMapper\Rules\BackedEnumValue(class: Types\Payloads\StartupPayload::class),
+			new ObjectMapper\Rules\BackedEnumValue(class: Types\Payloads\TogglePayload::class),
 			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		                         // phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		private int|float|string|bool|Types\MotorCalibrationPayload|Types\MotorControlPayload|Types\PowerPayload|Types\PressPayload|Types\StartupPayload|Types\TogglePayload|null $value,
+		private int|float|string|bool|Types\Payloads\MotorCalibrationPayload|Types\Payloads\Payload|null $value,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
@@ -72,8 +70,7 @@ final readonly class CapabilityState implements Message
 		return $this->protocol;
 	}
 
-	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-	public function getValue(): int|float|string|bool|Types\MotorCalibrationPayload|Types\MotorControlPayload|Types\PowerPayload|Types\PressPayload|Types\StartupPayload|Types\TogglePayload|null
+	public function getValue(): int|float|string|bool|Types\Payloads\Payload|null
 	{
 		return $this->value;
 	}
@@ -89,8 +86,8 @@ final readonly class CapabilityState implements Message
 	public function toArray(): array
 	{
 		return [
-			'capability' => $this->getCapability()->getValue(),
-			'protocol' => $this->getProtocol()->getValue(),
+			'capability' => $this->getCapability()->value,
+			'protocol' => $this->getProtocol()->value,
 			'value' => MetadataUtilities\Value::flattenValue($this->getValue()),
 			'identifier' => $this->getIdentifier(),
 		];

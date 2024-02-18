@@ -129,7 +129,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 		self::assertInstanceOf(Documents\Devices\SubDevice::class, $device);
 		self::assertSame(
 			Types\Category::TEMPERATURE_HUMIDITY_SENSOR,
-			$deviceHelper->getDisplayCategory($device)->getValue(),
+			$deviceHelper->getDisplayCategory($device),
 		);
 		self::assertSame('eWeLink', $deviceHelper->getManufacturer($device));
 		self::assertSame('TH01', $deviceHelper->getModel($device));
@@ -152,7 +152,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 
 		foreach ($channels as $channel) {
 			self::assertContains(
-				$channelHelper->getCapability($channel)->getValue(),
+				$channelHelper->getCapability($channel),
 				[
 					Types\Capability::TEMPERATURE,
 					Types\Capability::HUMIDITY,

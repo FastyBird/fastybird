@@ -13,10 +13,7 @@
  * @date           09.07.23
  */
 
-namespace FastyBird\Connector\NsPanel\Types;
-
-use Consistence;
-use function strval;
+namespace FastyBird\Connector\NsPanel\Types\Payloads;
 
 /**
  * Button press capability supported payload types
@@ -26,23 +23,13 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class PressPayload extends Consistence\Enum\Enum
+enum PressPayload: string implements Payload
 {
 
-	public const SINGLE_PRESS = 'singlePress';
+	case SINGLE_PRESS = 'singlePress';
 
-	public const DOUBLE_PRESS = 'doublePress';
+	case DOUBLE_PRESS = 'doublePress';
 
-	public const LONG_PRESS = 'longPress';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case LONG_PRESS = 'longPress';
 
 }

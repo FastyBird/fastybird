@@ -32,7 +32,7 @@ final readonly class CameraStream implements State
 
 	public function __construct(
 		#[ObjectMapper\Rules\MappedObjectValue(CameraStreamConfiguration::class)]
-		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::CONFIGURATION)]
+		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::CONFIGURATION->value)]
 		private CameraStreamConfiguration $configuration,
 	)
 	{
@@ -40,13 +40,13 @@ final readonly class CameraStream implements State
 
 	public function getType(): Types\Capability
 	{
-		return Types\Capability::get(Types\Capability::CAMERA_STREAM);
+		return Types\Capability::CAMERA_STREAM;
 	}
 
 	public function getProtocols(): array
 	{
 		return [
-			Types\Protocol::STREAM_URL => $this->configuration->getStreamUrl(),
+			Types\Protocol::STREAM_URL->value => $this->configuration->getStreamUrl(),
 		];
 	}
 
@@ -63,7 +63,7 @@ final readonly class CameraStream implements State
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Protocol::CONFIGURATION} = $this->configuration->toJson();
+		$json->{Types\Protocol::CONFIGURATION->value} = $this->configuration->toJson();
 
 		return $json;
 	}

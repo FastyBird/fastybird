@@ -16,7 +16,6 @@
 namespace FastyBird\Connector\NsPanel\API\Messages\States;
 
 use FastyBird\Connector\NsPanel\Types;
-use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 use stdClass;
 
@@ -32,22 +31,22 @@ final readonly class MotorCalibration implements State
 {
 
 	public function __construct(
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\MotorCalibrationPayload::class)]
-		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::MOTOR_CALIBRATION)]
-		private Types\MotorCalibrationPayload $motorCalibration,
+		#[ObjectMapper\Rules\BackedEnumValue(class: Types\Payloads\MotorCalibrationPayload::class)]
+		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::MOTOR_CALIBRATION->value)]
+		private Types\Payloads\MotorCalibrationPayload $motorCalibration,
 	)
 	{
 	}
 
 	public function getType(): Types\Capability
 	{
-		return Types\Capability::get(Types\Capability::MOTOR_CALIBRATION);
+		return Types\Capability::MOTOR_CALIBRATION;
 	}
 
 	public function getProtocols(): array
 	{
 		return [
-			Types\Protocol::MOTOR_CALIBRATION => $this->motorCalibration,
+			Types\Protocol::MOTOR_CALIBRATION->value => $this->motorCalibration,
 		];
 	}
 
@@ -57,14 +56,14 @@ final readonly class MotorCalibration implements State
 	public function toArray(): array
 	{
 		return [
-			'value' => $this->motorCalibration->getValue(),
+			'value' => $this->motorCalibration->value,
 		];
 	}
 
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Protocol::MOTOR_CALIBRATION} = $this->motorCalibration->getValue();
+		$json->{Types\Protocol::MOTOR_CALIBRATION->value} = $this->motorCalibration->value;
 
 		return $json;
 	}

@@ -52,7 +52,7 @@ final readonly class GetSubDevicesDataSubDevice implements API\Messages\Message
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('firmware_version')]
 		private string $firmwareVersion,
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\Category::class)]
+		#[ObjectMapper\Rules\BackedEnumValue(class: Types\Category::class)]
 		#[ObjectMapper\Modifiers\FieldName('display_category')]
 		private Types\Category $displayCategory,
 		#[ObjectMapper\Rules\MappedObjectValue(API\Messages\State::class)]
@@ -230,7 +230,7 @@ final readonly class GetSubDevicesDataSubDevice implements API\Messages\Message
 			'hostname' => $this->getHostname(),
 			'mac_address' => $this->getMacAddress(),
 			'app_name' => $this->getAppName(),
-			'display_category' => $this->getDisplayCategory()->getValue(),
+			'display_category' => $this->getDisplayCategory()->value,
 			'capabilities' => array_map(
 				static fn (API\Messages\Capability $capability): array => $capability->toArray(),
 				$this->getCapabilities(),
@@ -282,7 +282,7 @@ final readonly class GetSubDevicesDataSubDevice implements API\Messages\Message
 			$json->app_name = $this->getAppName();
 		}
 
-		$json->display_category = $this->getDisplayCategory()->getValue();
+		$json->display_category = $this->getDisplayCategory()->value;
 		$json->capabilities = array_map(
 			static fn (API\Messages\Capability $capability): object => $capability->toJson(),
 			$this->getCapabilities(),

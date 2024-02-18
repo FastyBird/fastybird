@@ -16,7 +16,6 @@
 namespace FastyBird\Connector\NsPanel\API\Messages\States;
 
 use FastyBird\Connector\NsPanel\Types;
-use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 use stdClass;
 
@@ -32,22 +31,22 @@ final readonly class Startup implements State
 {
 
 	public function __construct(
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\StartupPayload::class)]
-		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::STARTUP)]
-		private Types\StartupPayload $startup,
+		#[ObjectMapper\Rules\BackedEnumValue(class: Types\Payloads\StartupPayload::class)]
+		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::STARTUP->value)]
+		private Types\Payloads\StartupPayload $startup,
 	)
 	{
 	}
 
 	public function getType(): Types\Capability
 	{
-		return Types\Capability::get(Types\Capability::STARTUP);
+		return Types\Capability::STARTUP;
 	}
 
 	public function getProtocols(): array
 	{
 		return [
-			Types\Protocol::STARTUP => $this->startup,
+			Types\Protocol::STARTUP->value => $this->startup,
 		];
 	}
 
@@ -57,14 +56,14 @@ final readonly class Startup implements State
 	public function toArray(): array
 	{
 		return [
-			'value' => $this->startup->getValue(),
+			'value' => $this->startup->value,
 		];
 	}
 
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Protocol::STARTUP} = $this->startup->getValue();
+		$json->{Types\Protocol::STARTUP->value} = $this->startup->value;
 
 		return $json;
 	}

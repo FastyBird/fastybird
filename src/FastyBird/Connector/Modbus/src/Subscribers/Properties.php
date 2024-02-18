@@ -37,7 +37,6 @@ use TypeError;
 use ValueError;
 use function intval;
 use function sprintf;
-use function strval;
 
 /**
  * Doctrine entities events
@@ -136,9 +135,7 @@ final class Properties implements Common\EventSubscriber
 			if (
 				(
 					$entity->getIdentifier() === Types\ConnectorPropertyIdentifier::CLIENT_MODE->value
-					&& Types\ClientMode::tryFrom(
-						strval(MetadataUtilities\Value::flattenValue($entity->getValue())),
-					) === null
+					&& Types\ClientMode::tryFrom(MetadataUtilities\Value::toString($entity->getValue(), true)) === null
 				) || (
 					$entity->getIdentifier() === Types\ConnectorPropertyIdentifier::RTU_BYTE_SIZE->value
 					&& Types\ByteSize::tryFrom(
@@ -173,9 +170,7 @@ final class Properties implements Common\EventSubscriber
 			if (
 				(
 					$entity->getIdentifier() === Types\DevicePropertyIdentifier::BYTE_ORDER->value
-					&& Types\ByteOrder::tryFrom(
-						strval(MetadataUtilities\Value::flattenValue($entity->getValue())),
-					) === null
+					&& Types\ByteOrder::tryFrom(MetadataUtilities\Value::toString($entity->getValue(), true)) === null
 				)
 			) {
 				throw new DevicesExceptions\InvalidArgument(sprintf(

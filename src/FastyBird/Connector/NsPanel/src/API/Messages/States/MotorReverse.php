@@ -32,7 +32,7 @@ final readonly class MotorReverse implements State
 
 	public function __construct(
 		#[ObjectMapper\Rules\BoolValue()]
-		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::MOTOR_REVERSE)]
+		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::MOTOR_REVERSE->value)]
 		private bool $motorReverse,
 	)
 	{
@@ -40,13 +40,13 @@ final readonly class MotorReverse implements State
 
 	public function getType(): Types\Capability
 	{
-		return Types\Capability::get(Types\Capability::MOTOR_REVERSE);
+		return Types\Capability::MOTOR_REVERSE;
 	}
 
 	public function getProtocols(): array
 	{
 		return [
-			Types\Protocol::MOTOR_REVERSE => $this->motorReverse,
+			Types\Protocol::MOTOR_REVERSE->value => $this->motorReverse,
 		];
 	}
 
@@ -63,7 +63,7 @@ final readonly class MotorReverse implements State
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Protocol::MOTOR_REVERSE} = $this->motorReverse;
+		$json->{Types\Protocol::MOTOR_REVERSE->value} = $this->motorReverse;
 
 		return $json;
 	}

@@ -110,11 +110,12 @@ final class Properties implements Common\EventSubscriber
 
 	/**
 	 * @throws ApplicationExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws DoctrineCrud\Exceptions\InvalidArgumentException
 	 */
 	private function processDeviceProperties(Entities\Devices\Device $device): void
 	{
-		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
+		$findDevicePropertyQuery = new Queries\Entities\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($device);
 		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::STATE);
 
@@ -143,8 +144,8 @@ final class Properties implements Common\EventSubscriber
 			$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 				'device' => $device,
 				'entity' => DevicesEntities\Devices\Properties\Dynamic::class,
-				'identifier' => Types\DevicePropertyIdentifier::STATE,
-				'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::STATE),
+				'identifier' => Types\DevicePropertyIdentifier::STATE->value,
+				'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::STATE->value),
 				'dataType' => MetadataTypes\DataType::ENUM,
 				'unit' => null,
 				'format' => [
@@ -175,7 +176,7 @@ final class Properties implements Common\EventSubscriber
 		$findChannelQuery = new Queries\Entities\FindChannels();
 		$findChannelQuery->forDevice($device);
 		$findChannelQuery->byIdentifier(
-			Helpers\Name::convertCapabilityToChannel(Types\Capability::get(Types\Capability::RSSI)),
+			Helpers\Name::convertCapabilityToChannel(Types\Capability::RSSI),
 		);
 
 		$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\Channels\Channel::class);
@@ -183,7 +184,7 @@ final class Properties implements Common\EventSubscriber
 		if ($channel === null) {
 			$channel = $this->channelsManager->create(Utils\ArrayHash::from([
 				'entity' => Entities\Channels\Channel::class,
-				'identifier' => Helpers\Name::convertCapabilityToChannel(Types\Capability::get(Types\Capability::RSSI)),
+				'identifier' => Helpers\Name::convertCapabilityToChannel(Types\Capability::RSSI),
 				'name' => 'RSSI',
 				'device' => $device,
 			]));
@@ -206,20 +207,20 @@ final class Properties implements Common\EventSubscriber
 	{
 		$metadata = $this->loader->loadCapabilities();
 
-		if (!$metadata->offsetExists($channel->getCapability()->getValue())) {
+		if (!$metadata->offsetExists($channel->getCapability()->value)) {
 			throw new Exceptions\InvalidArgument(sprintf(
 				'Definition for capability: %s was not found',
-				$channel->getCapability()->getValue(),
+				$channel->getCapability()->value,
 			));
 		}
 
-		$capabilityMetadata = $metadata->offsetGet($channel->getCapability()->getValue());
+		$capabilityMetadata = $metadata->offsetGet($channel->getCapability()->value);
 
 		if (
 			!$capabilityMetadata instanceof Utils\ArrayHash
 			|| !$capabilityMetadata->offsetExists('permission')
 			|| !is_string($capabilityMetadata->offsetGet('permission'))
-			|| !Types\Permission::isValidValue($capabilityMetadata->offsetGet('permission'))
+			|| Types\Permission::tryFrom($capabilityMetadata->offsetGet('permission')) === null
 			|| !$capabilityMetadata->offsetExists('protocol')
 			|| !$capabilityMetadata->offsetGet('protocol') instanceof Utils\ArrayHash
 		) {
@@ -251,7 +252,7 @@ final class Properties implements Common\EventSubscriber
 
 			$dataType = MetadataTypes\DataType::from($protocolMetadata->offsetGet('data_type'));
 
-			$permission = Types\Permission::get($capabilityMetadata->offsetGet('permission'));
+			$permission = Types\Permission::from($capabilityMetadata->offsetGet('permission'));
 
 			$format = null;
 
@@ -291,15 +292,11 @@ final class Properties implements Common\EventSubscriber
 
 			$this->processChannelProperty(
 				$channel,
-				Types\Protocol::get($protocol),
+				Types\Protocol::from($protocol),
 				$dataType,
 				$format,
-				$permission->equalsValue(Types\Permission::READ_WRITE) || $permission->equalsValue(
-					Types\Permission::WRITE,
-				),
-				$permission->equalsValue(Types\Permission::READ_WRITE) || $permission->equalsValue(
-					Types\Permission::READ,
-				),
+				$permission === Types\Permission::READ_WRITE || $permission === Types\Permission::WRITE,
+				$permission === Types\Permission::READ_WRITE || $permission === Types\Permission::READ,
 				$protocolMetadata->offsetExists('unit') ? strval($protocolMetadata->offsetGet('unit')) : null,
 				$protocolMetadata->offsetExists('invalid_value')
 					? strval($protocolMetadata->offsetGet('invalid_value'))
@@ -347,7 +344,7 @@ final class Properties implements Common\EventSubscriber
 				'invalid' => $invalidValue,
 			]));
 		} else {
-			if ($protocol->equalsValue(Types\Protocol::RSSI)) {
+			if ($protocol === Types\Protocol::RSSI) {
 				$this->channelsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Channels\Properties\Variable::class,
 					'identifier' => Helpers\Name::convertProtocolToProperty($protocol),

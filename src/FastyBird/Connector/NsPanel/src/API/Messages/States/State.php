@@ -32,7 +32,7 @@ interface State extends API\Messages\Message
 	public function getType(): Types\Capability;
 
 	/**
-	 * @return array<string, int|float|string|bool|Types\MotorCalibrationPayload|Types\MotorControlPayload|Types\PowerPayload|Types\PressPayload|Types\StartupPayload|Types\TogglePayload|null>
+	 * @return array<string, int|float|string|bool|Types\Payloads\Payload|null>
 	 */
 	public function getProtocols(): array;
 

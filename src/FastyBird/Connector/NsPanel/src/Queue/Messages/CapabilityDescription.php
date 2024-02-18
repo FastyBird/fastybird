@@ -16,7 +16,6 @@
 namespace FastyBird\Connector\NsPanel\Queue\Messages;
 
 use FastyBird\Connector\NsPanel\Types;
-use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 use stdClass;
 
@@ -32,9 +31,9 @@ final readonly class CapabilityDescription implements Message
 {
 
 	public function __construct(
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\Capability::class)]
+		#[ObjectMapper\Rules\BackedEnumValue(class: Types\Capability::class)]
 		private Types\Capability $capability,
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\Permission::class)]
+		#[ObjectMapper\Rules\BackedEnumValue(class: Types\Permission::class)]
 		private Types\Permission $permission,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
@@ -66,8 +65,8 @@ final readonly class CapabilityDescription implements Message
 	public function toArray(): array
 	{
 		return [
-			'capability' => $this->getCapability()->getValue(),
-			'permission' => $this->getPermission()->getValue(),
+			'capability' => $this->getCapability()->value,
+			'permission' => $this->getPermission()->value,
 			'name' => $this->getName(),
 		];
 	}
@@ -75,8 +74,8 @@ final readonly class CapabilityDescription implements Message
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->capability = $this->getCapability()->getValue();
-		$json->permission = $this->getPermission()->getValue();
+		$json->capability = $this->getCapability()->value;
+		$json->permission = $this->getPermission()->value;
 
 		if ($this->getName() !== null) {
 			$json->name = $this->getName();

@@ -94,6 +94,7 @@ final class Connector implements DevicesConnectors\Connector
 	 * @return Promise\PromiseInterface<bool>
 	 *
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws ExchangeExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
@@ -126,8 +127,8 @@ final class Connector implements DevicesConnectors\Connector
 			if (
 				(
 					array_key_exists(Clients\ClientFactory::MODE_CONSTANT_NAME, $constants)
-					&& $mode->equalsValue($constants[Clients\ClientFactory::MODE_CONSTANT_NAME])
-				) || $mode->equalsValue(NsPanel\Types\ClientMode::BOTH)
+					&& $mode === $constants[Clients\ClientFactory::MODE_CONSTANT_NAME]
+				) || $mode === NsPanel\Types\ClientMode::BOTH
 			) {
 				$client = $clientFactory->create($this->connector);
 				$client->connect();
@@ -137,8 +138,8 @@ final class Connector implements DevicesConnectors\Connector
 		}
 
 		if (
-			$mode->equalsValue(NsPanel\Types\ClientMode::BOTH)
-			|| $mode->equalsValue(NsPanel\Types\ClientMode::DEVICE)
+			$mode === NsPanel\Types\ClientMode::BOTH
+			|| $mode === NsPanel\Types\ClientMode::DEVICE
 		) {
 			$this->server = $this->serverFactory->create($this->connector);
 			$this->server->connect();
@@ -167,8 +168,8 @@ final class Connector implements DevicesConnectors\Connector
 		);
 
 		if (
-			$mode->equalsValue(NsPanel\Types\ClientMode::BOTH)
-			|| $mode->equalsValue(NsPanel\Types\ClientMode::DEVICE)
+			$mode === NsPanel\Types\ClientMode::BOTH
+			|| $mode === NsPanel\Types\ClientMode::DEVICE
 		) {
 			$this->eventLoop->addTimer(1, async(function (): void {
 				$findDevicesQuery = new Queries\Configuration\FindThirdPartyDevices();
@@ -245,6 +246,7 @@ final class Connector implements DevicesConnectors\Connector
 	 * @return Promise\PromiseInterface<bool>
 	 *
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError

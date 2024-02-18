@@ -198,7 +198,7 @@ final class LanApi
 			Utils\ArrayHash::from([
 				'event' => [
 					'header' => [
-						'name' => NsPanel\Types\Header::DISCOVERY_REQUEST,
+						'name' => NsPanel\Types\Header::DISCOVERY_REQUEST->value,
 						'message_id' => Uuid\Uuid::uuid4()->toString(),
 						'version' => NsPanel\Constants::NS_PANEL_API_VERSION_V1,
 					],
@@ -285,7 +285,7 @@ final class LanApi
 			Utils\ArrayHash::from([
 				'event' => [
 					'header' => [
-						'name' => NsPanel\Types\Header::DEVICE_STATES_CHANGE_REPORT,
+						'name' => NsPanel\Types\Header::DEVICE_STATES_CHANGE_REPORT->value,
 						'message_id' => Uuid\Uuid::uuid4()->toString(),
 						'version' => NsPanel\Constants::NS_PANEL_API_VERSION_V1,
 					],
@@ -373,7 +373,7 @@ final class LanApi
 			Utils\ArrayHash::from([
 				'event' => [
 					'header' => [
-						'name' => NsPanel\Types\Header::DEVICE_ONLINE_CHANGE_REPORT,
+						'name' => NsPanel\Types\Header::DEVICE_ONLINE_CHANGE_REPORT->value,
 						'message_id' => Uuid\Uuid::uuid4()->toString(),
 						'version' => NsPanel\Constants::NS_PANEL_API_VERSION_V1,
 					],

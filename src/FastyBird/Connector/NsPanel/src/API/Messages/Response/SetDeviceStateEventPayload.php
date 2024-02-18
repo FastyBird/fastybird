@@ -17,7 +17,7 @@ namespace FastyBird\Connector\NsPanel\API\Messages\Response;
 
 use FastyBird\Connector\NsPanel\API;
 use FastyBird\Connector\NsPanel\Types;
-use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
+use Orisai\ObjectMapper\Rules\BackedEnumValue;
 use stdClass;
 
 /**
@@ -32,7 +32,7 @@ final readonly class SetDeviceStateEventPayload implements API\Messages\Message
 {
 
 	public function __construct(
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\ServerStatus::class)]
+		#[BackedEnumValue(class: Types\ServerStatus::class)]
 		private Types\ServerStatus $type,
 	)
 	{
@@ -49,14 +49,14 @@ final readonly class SetDeviceStateEventPayload implements API\Messages\Message
 	public function toArray(): array
 	{
 		return [
-			'type' => $this->getType()->getValue(),
+			'type' => $this->getType()->value,
 		];
 	}
 
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->type = $this->getType()->getValue();
+		$json->type = $this->getType()->value;
 
 		return $json;
 	}

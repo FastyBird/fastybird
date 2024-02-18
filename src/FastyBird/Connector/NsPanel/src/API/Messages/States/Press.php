@@ -16,7 +16,6 @@
 namespace FastyBird\Connector\NsPanel\API\Messages\States;
 
 use FastyBird\Connector\NsPanel\Types;
-use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 use stdClass;
 
@@ -32,22 +31,22 @@ final readonly class Press implements State
 {
 
 	public function __construct(
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\PressPayload::class)]
-		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::PRESS)]
-		private Types\PressPayload $press,
+		#[ObjectMapper\Rules\BackedEnumValue(class: Types\Payloads\PressPayload::class)]
+		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::PRESS->value)]
+		private Types\Payloads\PressPayload $press,
 	)
 	{
 	}
 
 	public function getType(): Types\Capability
 	{
-		return Types\Capability::get(Types\Capability::PRESS);
+		return Types\Capability::PRESS;
 	}
 
 	public function getProtocols(): array
 	{
 		return [
-			Types\Protocol::PRESS => $this->press,
+			Types\Protocol::PRESS->value => $this->press,
 		];
 	}
 
@@ -57,14 +56,14 @@ final readonly class Press implements State
 	public function toArray(): array
 	{
 		return [
-			'value' => $this->press->getValue(),
+			'value' => $this->press->value,
 		];
 	}
 
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Protocol::PRESS} = $this->press->getValue();
+		$json->{Types\Protocol::PRESS->value} = $this->press->value;
 
 		return $json;
 	}

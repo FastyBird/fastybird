@@ -31,7 +31,6 @@ use function assert;
 use function is_float;
 use function is_int;
 use function is_string;
-use function strval;
 
 #[ORM\Entity]
 #[ApplicationMapping\DiscriminatorEntry(name: self::TYPE)]
@@ -110,9 +109,9 @@ class Channel extends DevicesEntities\Channels\Channel
 		if (
 			$property instanceof DevicesEntities\Channels\Properties\Variable
 			&& is_string($property->getValue())
-			&& Types\ChannelType::tryFrom(strval(MetadataUtilities\Value::flattenValue($property->getValue()))) !== null
+			&& Types\ChannelType::tryFrom(MetadataUtilities\Value::toString($property->getValue(), true)) !== null
 		) {
-			return Types\ChannelType::from(strval(MetadataUtilities\Value::flattenValue($property->getValue())));
+			return Types\ChannelType::from(MetadataUtilities\Value::toString($property->getValue(), true));
 		}
 
 		return null;

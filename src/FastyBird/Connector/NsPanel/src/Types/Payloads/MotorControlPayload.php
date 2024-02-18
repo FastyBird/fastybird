@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * MotorCalibrationPayload.php
+ * MotorControlPayload.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,34 +13,25 @@
  * @date           09.07.23
  */
 
-namespace FastyBird\Connector\NsPanel\Types;
-
-use Consistence;
-use function strval;
+namespace FastyBird\Connector\NsPanel\Types\Payloads;
 
 /**
- * Motor calibration capability supported payload types
+ * Motor control capability supported payload types
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Types
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class MotorCalibrationPayload extends Consistence\Enum\Enum
+enum MotorControlPayload: string implements Payload
 {
 
-	public const CALIBRATION = 'calibration';
+	case OPEN = 'open';
 
-	public const NORMAL = 'normal';
+	case CLOSE = 'close';
 
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
+	case STOP = 'stop';
 
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case LOCK = 'lock';
 
 }

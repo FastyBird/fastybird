@@ -16,7 +16,6 @@
 namespace FastyBird\Connector\NsPanel\API\Messages\States;
 
 use FastyBird\Connector\NsPanel\Types;
-use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 use stdClass;
 
@@ -32,22 +31,22 @@ final readonly class PowerState implements State
 {
 
 	public function __construct(
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\PowerPayload::class)]
-		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::POWER_STATE)]
-		private Types\PowerPayload $powerState,
+		#[ObjectMapper\Rules\BackedEnumValue(class: Types\Payloads\PowerPayload::class)]
+		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::POWER_STATE->value)]
+		private Types\Payloads\PowerPayload $powerState,
 	)
 	{
 	}
 
 	public function getType(): Types\Capability
 	{
-		return Types\Capability::get(Types\Capability::POWER);
+		return Types\Capability::POWER;
 	}
 
 	public function getProtocols(): array
 	{
 		return [
-			Types\Protocol::POWER_STATE => $this->powerState,
+			Types\Protocol::POWER_STATE->value => $this->powerState,
 		];
 	}
 
@@ -57,14 +56,14 @@ final readonly class PowerState implements State
 	public function toArray(): array
 	{
 		return [
-			'value' => $this->powerState->getValue(),
+			'value' => $this->powerState->value,
 		];
 	}
 
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Protocol::POWER_STATE} = $this->powerState->getValue();
+		$json->{Types\Protocol::POWER_STATE->value} = $this->powerState->value;
 
 		return $json;
 	}

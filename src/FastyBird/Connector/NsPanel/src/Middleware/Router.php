@@ -118,12 +118,12 @@ final class Router
 			$response = $response->withBody(SlimRouter\Http\Stream::fromBodyString(Utils\Json::encode([
 				'event' => [
 					'header' => [
-						'name' => Types\Header::ERROR_RESPONSE,
+						'name' => Types\Header::ERROR_RESPONSE->value,
 						'message_id' => $this->getMessageId($request),
 						'version' => '1',
 					],
 					'payload' => [
-						'type' => Types\ServerStatus::INTERNAL_ERROR,
+						'type' => Types\ServerStatus::INTERNAL_ERROR->value,
 					],
 				],
 			])));
@@ -147,12 +147,12 @@ final class Router
 			$response = $response->withBody(SlimRouter\Http\Stream::fromBodyString(Utils\Json::encode([
 				'event' => [
 					'header' => [
-						'name' => Types\Header::ERROR_RESPONSE,
+						'name' => Types\Header::ERROR_RESPONSE->value,
 						'message_id' => $this->getMessageId($request),
 						'version' => '1',
 					],
 					'payload' => [
-						'type' => Types\ServerStatus::INTERNAL_ERROR,
+						'type' => Types\ServerStatus::INTERNAL_ERROR->value,
 					],
 				],
 			])));
@@ -172,12 +172,12 @@ final class Router
 			$response = $response->withBody(SlimRouter\Http\Stream::fromBodyString(Utils\Json::encode([
 				'event' => [
 					'header' => [
-						'name' => Types\Header::ERROR_RESPONSE,
+						'name' => Types\Header::ERROR_RESPONSE->value,
 						'message_id' => $this->getMessageId($request),
 						'version' => '1',
 					],
 					'payload' => [
-						'type' => Types\ServerStatus::INTERNAL_ERROR,
+						'type' => Types\ServerStatus::INTERNAL_ERROR->value,
 					],
 				],
 			])));

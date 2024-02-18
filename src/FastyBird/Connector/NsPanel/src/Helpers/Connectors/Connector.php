@@ -18,12 +18,12 @@ namespace FastyBird\Connector\NsPanel\Helpers\Connectors;
 use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Documents;
 use FastyBird\Connector\NsPanel\Exceptions;
+use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use TypeError;
 use ValueError;
 use function assert;
@@ -49,6 +49,7 @@ final readonly class Connector
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -57,7 +58,7 @@ final readonly class Connector
 	 */
 	public function getClientMode(Documents\Connectors\Connector $connector): Types\ClientMode
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindConnectorVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindConnectorVariableProperties();
 		$findPropertyQuery->forConnector($connector);
 		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::CLIENT_MODE);
 
@@ -68,8 +69,8 @@ final readonly class Connector
 
 		$value = $property?->getValue();
 
-		if (is_string($value) && Types\ClientMode::isValidValue($value)) {
-			return Types\ClientMode::get($value);
+		if (is_string($value) && Types\ClientMode::tryFrom($value) !== null) {
+			return Types\ClientMode::from($value);
 		}
 
 		throw new Exceptions\InvalidState('Connector mode is not configured');
@@ -77,6 +78,7 @@ final readonly class Connector
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError
@@ -84,7 +86,7 @@ final readonly class Connector
 	 */
 	public function getPort(Documents\Connectors\Connector $connector): int
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindConnectorVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindConnectorVariableProperties();
 		$findPropertyQuery->forConnector($connector);
 		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::PORT);
 

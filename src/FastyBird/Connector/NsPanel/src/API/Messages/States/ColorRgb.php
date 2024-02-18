@@ -32,13 +32,13 @@ final readonly class ColorRgb implements State
 
 	public function __construct(
 		#[ObjectMapper\Rules\IntValue(min: 0, max: 255, unsigned: true)]
-		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::COLOR_RED)]
+		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::COLOR_RED->value)]
 		private int $red,
 		#[ObjectMapper\Rules\IntValue(min: 0, max: 255, unsigned: true)]
-		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::COLOR_GREEN)]
+		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::COLOR_GREEN->value)]
 		private int $green,
 		#[ObjectMapper\Rules\IntValue(min: 0, max: 255, unsigned: true)]
-		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::COLOR_BLUE)]
+		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::COLOR_BLUE->value)]
 		private int $blue,
 	)
 	{
@@ -46,15 +46,15 @@ final readonly class ColorRgb implements State
 
 	public function getType(): Types\Capability
 	{
-		return Types\Capability::get(Types\Capability::COLOR_RGB);
+		return Types\Capability::COLOR_RGB;
 	}
 
 	public function getProtocols(): array
 	{
 		return [
-			Types\Protocol::COLOR_RED => $this->red,
-			Types\Protocol::COLOR_GREEN => $this->green,
-			Types\Protocol::COLOR_BLUE => $this->blue,
+			Types\Protocol::COLOR_RED->value => $this->red,
+			Types\Protocol::COLOR_GREEN->value => $this->green,
+			Types\Protocol::COLOR_BLUE->value => $this->blue,
 		];
 	}
 
@@ -73,9 +73,9 @@ final readonly class ColorRgb implements State
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Protocol::COLOR_RED} = $this->red;
-		$json->{Types\Protocol::COLOR_GREEN} = $this->green;
-		$json->{Types\Protocol::COLOR_BLUE} = $this->blue;
+		$json->{Types\Protocol::COLOR_RED->value} = $this->red;
+		$json->{Types\Protocol::COLOR_GREEN->value} = $this->green;
+		$json->{Types\Protocol::COLOR_BLUE->value} = $this->blue;
 
 		return $json;
 	}

@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * TogglePayload.php
+ * StartupPayload.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,36 +13,23 @@
  * @date           09.07.23
  */
 
-namespace FastyBird\Connector\NsPanel\Types;
-
-use Consistence;
-use function strval;
+namespace FastyBird\Connector\NsPanel\Types\Payloads;
 
 /**
- * Toggle capability supported payload types
+ * Power on state capability supported payload types
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Types
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class TogglePayload extends Consistence\Enum\Enum
+enum StartupPayload: string implements Payload
 {
 
-	public const ON = 'on';
+	case ON = 'on';
 
-	public const OFF = 'off';
+	case OFF = 'off';
 
-	public const TOGGLE = 'toggle';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case STAY = 'stay';
 
 }

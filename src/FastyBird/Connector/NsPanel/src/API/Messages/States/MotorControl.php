@@ -16,7 +16,6 @@
 namespace FastyBird\Connector\NsPanel\API\Messages\States;
 
 use FastyBird\Connector\NsPanel\Types;
-use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 use stdClass;
 
@@ -32,22 +31,22 @@ final readonly class MotorControl implements State
 {
 
 	public function __construct(
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\MotorControlPayload::class)]
-		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::MOTOR_CONTROL)]
-		private Types\MotorControlPayload $motorControl,
+		#[ObjectMapper\Rules\BackedEnumValue(class: Types\Payloads\MotorControlPayload::class)]
+		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::MOTOR_CONTROL->value)]
+		private Types\Payloads\MotorControlPayload $motorControl,
 	)
 	{
 	}
 
 	public function getType(): Types\Capability
 	{
-		return Types\Capability::get(Types\Capability::MOTOR_CONTROL);
+		return Types\Capability::MOTOR_CONTROL;
 	}
 
 	public function getProtocols(): array
 	{
 		return [
-			Types\Protocol::MOTOR_CONTROL => $this->motorControl,
+			Types\Protocol::MOTOR_CONTROL->value => $this->motorControl,
 		];
 	}
 
@@ -57,14 +56,14 @@ final readonly class MotorControl implements State
 	public function toArray(): array
 	{
 		return [
-			'value' => $this->motorControl->getValue(),
+			'value' => $this->motorControl->value,
 		];
 	}
 
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Protocol::MOTOR_CONTROL} = $this->motorControl->getValue();
+		$json->{Types\Protocol::MOTOR_CONTROL->value} = $this->motorControl->value;
 
 		return $json;
 	}

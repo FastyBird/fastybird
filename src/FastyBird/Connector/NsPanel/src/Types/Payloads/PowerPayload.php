@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ClientMode.php
+ * PowerPayload.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,26 +10,24 @@
  * @subpackage     Types
  * @since          1.0.0
  *
- * @date           05.08.23
+ * @date           09.07.23
  */
 
-namespace FastyBird\Connector\NsPanel\Types;
+namespace FastyBird\Connector\NsPanel\Types\Payloads;
 
 /**
- * Connector client modes
+ * Power state capability supported payload types
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Types
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-enum ClientMode: string
+enum PowerPayload: string implements Payload
 {
 
-	case GATEWAY = 'gateway';
+	case ON = 'on';
 
-	case DEVICE = 'device';
-
-	case BOTH = 'both';
+	case OFF = 'off';
 
 }

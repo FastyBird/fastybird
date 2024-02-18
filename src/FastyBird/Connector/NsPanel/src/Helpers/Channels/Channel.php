@@ -19,6 +19,8 @@ use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Documents;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Types;
+use TypeError;
+use ValueError;
 use function array_key_exists;
 use function preg_match;
 use function str_replace;
@@ -36,6 +38,8 @@ final class Channel
 
 	/**
 	 * @throws Exceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getCapability(Documents\Channels\Channel $channel): Types\Capability
 	{
@@ -47,11 +51,11 @@ final class Channel
 
 		$type = str_replace(' ', '', str_replace('_', '-', $matches['type']));
 
-		if (!Types\Capability::isValidValue($type)) {
+		if (Types\Capability::tryFrom($type) === null) {
 			throw new Exceptions\InvalidState('Device channel has invalid identifier');
 		}
 
-		return Types\Capability::get($type);
+		return Types\Capability::from($type);
 	}
 
 }

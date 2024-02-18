@@ -45,7 +45,7 @@ final readonly class SyncDevicesEventPayloadEndpoint implements API\Messages\Mes
 		private Uuid\UuidInterface $thirdSerialNumber,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private string $name,
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\Category::class)]
+		#[ObjectMapper\Rules\BackedEnumValue(class: Types\Category::class)]
 		#[ObjectMapper\Modifiers\FieldName('display_category')]
 		private Types\Category $displayCategory,
 		#[ObjectMapper\Rules\ArrayOf(
@@ -156,7 +156,7 @@ final readonly class SyncDevicesEventPayloadEndpoint implements API\Messages\Mes
 		return [
 			'third_serial_number' => $this->getThirdSerialNumber()->toString(),
 			'name' => $this->getName(),
-			'display_category' => $this->getDisplayCategory()->getValue(),
+			'display_category' => $this->getDisplayCategory()->value,
 			'capabilities' => array_map(
 				static fn (API\Messages\Capability $capability): array => $capability->toArray(),
 				$this->getCapabilities(),
@@ -190,7 +190,7 @@ final readonly class SyncDevicesEventPayloadEndpoint implements API\Messages\Mes
 		$json = new stdClass();
 		$json->third_serial_number = $this->getThirdSerialNumber();
 		$json->name = $this->getName();
-		$json->display_category = $this->getDisplayCategory()->getValue();
+		$json->display_category = $this->getDisplayCategory()->value;
 		$json->capabilities = array_map(
 			static fn (API\Messages\Capability $capability): object => $capability->toJson(),
 			$this->getCapabilities(),

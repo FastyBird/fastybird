@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ClientMode.php
+ * Payload.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,26 +10,22 @@
  * @subpackage     Types
  * @since          1.0.0
  *
- * @date           05.08.23
+ * @date           17.02.24
  */
 
-namespace FastyBird\Connector\NsPanel\Types;
+namespace FastyBird\Connector\NsPanel\Types\Payloads;
+
+use BackedEnum;
 
 /**
- * Connector client modes
+ * Base payload interface
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Types
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-enum ClientMode: string
+interface Payload extends BackedEnum
 {
-
-	case GATEWAY = 'gateway';
-
-	case DEVICE = 'device';
-
-	case BOTH = 'both';
 
 }

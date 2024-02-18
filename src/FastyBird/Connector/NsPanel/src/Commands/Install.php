@@ -247,13 +247,13 @@ class Install extends Console\Command\Command
 
 			$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-				'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE,
+				'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE->value,
 				'dataType' => MetadataTypes\DataType::ENUM,
-				'value' => $mode->getValue(),
+				'value' => $mode->value,
 				'format' => [
-					Types\ClientMode::GATEWAY,
-					Types\ClientMode::DEVICE,
-					Types\ClientMode::BOTH,
+					Types\ClientMode::GATEWAY->value,
+					Types\ClientMode::DEVICE->value,
+					Types\ClientMode::BOTH->value,
 				],
 				'connector' => $connector,
 			]));
@@ -340,7 +340,7 @@ class Install extends Console\Command\Command
 			return;
 		}
 
-		$findConnectorPropertyQuery = new DevicesQueries\Entities\FindConnectorProperties();
+		$findConnectorPropertyQuery = new Queries\Entities\FindConnectorProperties();
 		$findConnectorPropertyQuery->forConnector($connector);
 		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::CLIENT_MODE);
 
@@ -405,15 +405,15 @@ class Install extends Console\Command\Command
 
 				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE,
+					'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE->value,
 					'dataType' => MetadataTypes\DataType::ENUM,
-					'value' => $mode->getValue(),
-					'format' => [Types\ClientMode::GATEWAY, Types\ClientMode::DEVICE, Types\ClientMode::BOTH],
+					'value' => $mode->value,
+					'format' => [Types\ClientMode::GATEWAY->value, Types\ClientMode::DEVICE->value, Types\ClientMode::BOTH->value],
 					'connector' => $connector,
 				]));
 			} elseif ($mode !== null) {
 				$this->connectorsPropertiesManager->update($modeProperty, Utils\ArrayHash::from([
-					'value' => $mode->getValue(),
+					'value' => $mode->value,
 				]));
 			}
 
@@ -618,7 +618,7 @@ class Install extends Console\Command\Command
 				$index + 1,
 				$connector->getName() ?? $connector->getIdentifier(),
 				$this->translator->translate(
-					'//ns-panel-connector.cmd.base.mode.' . $connector->getClientMode()->getValue(),
+					'//ns-panel-connector.cmd.base.mode.' . $connector->getClientMode()->value,
 				),
 				count($nsPanels),
 				count($subDevices),
@@ -748,7 +748,7 @@ class Install extends Console\Command\Command
 
 			$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
-				'identifier' => Types\DevicePropertyIdentifier::IP_ADDRESS,
+				'identifier' => Types\DevicePropertyIdentifier::IP_ADDRESS->value,
 				'dataType' => MetadataTypes\DataType::STRING,
 				'value' => $panelInfo->getData()->getIpAddress(),
 				'device' => $gateway,
@@ -756,7 +756,7 @@ class Install extends Console\Command\Command
 
 			$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
-				'identifier' => Types\DevicePropertyIdentifier::DOMAIN,
+				'identifier' => Types\DevicePropertyIdentifier::DOMAIN->value,
 				'dataType' => MetadataTypes\DataType::STRING,
 				'value' => $panelInfo->getData()->getDomain(),
 				'device' => $gateway,
@@ -764,7 +764,7 @@ class Install extends Console\Command\Command
 
 			$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
-				'identifier' => Types\DevicePropertyIdentifier::MAC_ADDRESS,
+				'identifier' => Types\DevicePropertyIdentifier::MAC_ADDRESS->value,
 				'dataType' => MetadataTypes\DataType::STRING,
 				'value' => $panelInfo->getData()->getMacAddress(),
 				'device' => $gateway,
@@ -772,7 +772,7 @@ class Install extends Console\Command\Command
 
 			$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
-				'identifier' => Types\DevicePropertyIdentifier::FIRMWARE_VERSION,
+				'identifier' => Types\DevicePropertyIdentifier::FIRMWARE_VERSION->value,
 				'dataType' => MetadataTypes\DataType::STRING,
 				'value' => $panelInfo->getData()->getFirmwareVersion(),
 				'device' => $gateway,
@@ -780,7 +780,7 @@ class Install extends Console\Command\Command
 
 			$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
-				'identifier' => Types\DevicePropertyIdentifier::ACCESS_TOKEN,
+				'identifier' => Types\DevicePropertyIdentifier::ACCESS_TOKEN->value,
 				'dataType' => MetadataTypes\DataType::STRING,
 				'value' => $accessToken->getData()->getAccessToken(),
 				'device' => $gateway,
@@ -819,8 +819,8 @@ class Install extends Console\Command\Command
 		}
 
 		if (
-			$connector->getClientMode()->equalsValue(Types\ClientMode::DEVICE)
-			|| $connector->getClientMode()->equalsValue(Types\ClientMode::BOTH)
+			$connector->getClientMode() === Types\ClientMode::DEVICE
+			|| $connector->getClientMode() === Types\ClientMode::BOTH
 		) {
 			$question = new Console\Question\ConfirmationQuestion(
 				$this->translator->translate('//ns-panel-connector.cmd.install.questions.create.devices'),
@@ -880,7 +880,7 @@ class Install extends Console\Command\Command
 
 		$panelInfo = $this->askWhichPanel($io, $connector, $gateway);
 
-		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceVariableProperties();
+		$findDevicePropertyQuery = new Queries\Entities\FindDeviceVariableProperties();
 		$findDevicePropertyQuery->forDevice($gateway);
 		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IP_ADDRESS);
 
@@ -889,7 +889,7 @@ class Install extends Console\Command\Command
 			DevicesEntities\Devices\Properties\Variable::class,
 		);
 
-		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceVariableProperties();
+		$findDevicePropertyQuery = new Queries\Entities\FindDeviceVariableProperties();
 		$findDevicePropertyQuery->forDevice($gateway);
 		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::DOMAIN);
 
@@ -898,7 +898,7 @@ class Install extends Console\Command\Command
 			DevicesEntities\Devices\Properties\Variable::class,
 		);
 
-		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceVariableProperties();
+		$findDevicePropertyQuery = new Queries\Entities\FindDeviceVariableProperties();
 		$findDevicePropertyQuery->forDevice($gateway);
 		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::MAC_ADDRESS);
 
@@ -907,7 +907,7 @@ class Install extends Console\Command\Command
 			DevicesEntities\Devices\Properties\Variable::class,
 		);
 
-		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceVariableProperties();
+		$findDevicePropertyQuery = new Queries\Entities\FindDeviceVariableProperties();
 		$findDevicePropertyQuery->forDevice($gateway);
 		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::FIRMWARE_VERSION);
 
@@ -966,7 +966,7 @@ class Install extends Console\Command\Command
 			}
 		}
 
-		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceVariableProperties();
+		$findDevicePropertyQuery = new Queries\Entities\FindDeviceVariableProperties();
 		$findDevicePropertyQuery->forDevice($gateway);
 		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::ACCESS_TOKEN);
 
@@ -987,7 +987,7 @@ class Install extends Console\Command\Command
 			if ($ipAddressProperty === null) {
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
-					'identifier' => Types\DevicePropertyIdentifier::IP_ADDRESS,
+					'identifier' => Types\DevicePropertyIdentifier::IP_ADDRESS->value,
 					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => $panelInfo->getData()->getIpAddress(),
 					'device' => $gateway,
@@ -1001,7 +1001,7 @@ class Install extends Console\Command\Command
 			if ($domainProperty === null) {
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
-					'identifier' => Types\DevicePropertyIdentifier::DOMAIN,
+					'identifier' => Types\DevicePropertyIdentifier::DOMAIN->value,
 					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => $panelInfo->getData()->getDomain(),
 					'device' => $gateway,
@@ -1015,7 +1015,7 @@ class Install extends Console\Command\Command
 			if ($macAddressProperty === null) {
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
-					'identifier' => Types\DevicePropertyIdentifier::MAC_ADDRESS,
+					'identifier' => Types\DevicePropertyIdentifier::MAC_ADDRESS->value,
 					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => $panelInfo->getData()->getMacAddress(),
 					'device' => $gateway,
@@ -1029,7 +1029,7 @@ class Install extends Console\Command\Command
 			if ($firmwareVersionProperty === null) {
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
-					'identifier' => Types\DevicePropertyIdentifier::FIRMWARE_VERSION,
+					'identifier' => Types\DevicePropertyIdentifier::FIRMWARE_VERSION->value,
 					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => $panelInfo->getData()->getFirmwareVersion(),
 					'device' => $gateway,
@@ -1044,7 +1044,7 @@ class Install extends Console\Command\Command
 				if ($accessTokenProperty === null) {
 					$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Devices\Properties\Variable::class,
-						'identifier' => Types\DevicePropertyIdentifier::ACCESS_TOKEN,
+						'identifier' => Types\DevicePropertyIdentifier::ACCESS_TOKEN->value,
 						'dataType' => MetadataTypes\DataType::STRING,
 						'value' => $accessToken->getData()->getAccessToken(),
 						'device' => $gateway,
@@ -1212,6 +1212,7 @@ class Install extends Console\Command\Command
 	/**
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError
@@ -1240,7 +1241,7 @@ class Install extends Console\Command\Command
 		]);
 
 		foreach ($devices as $index => $device) {
-			$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceVariableProperties();
+			$findDevicePropertyQuery = new Queries\Entities\FindDeviceVariableProperties();
 			$findDevicePropertyQuery->forDevice($device);
 			$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IP_ADDRESS);
 
@@ -1452,9 +1453,9 @@ class Install extends Console\Command\Command
 
 			$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
-				'identifier' => Types\DevicePropertyIdentifier::CATEGORY,
+				'identifier' => Types\DevicePropertyIdentifier::CATEGORY->value,
 				'dataType' => MetadataTypes\DataType::STRING,
-				'value' => $category->getValue(),
+				'value' => $category->value,
 				'device' => $device,
 			]));
 
@@ -1778,13 +1779,13 @@ class Install extends Console\Command\Command
 				$index + 1,
 				$device->getName() ?? $device->getIdentifier(),
 				$this->translator->translate(
-					'//ns-panel-connector.cmd.base.deviceType.' . $device->getDisplayCategory()->getValue(),
+					'//ns-panel-connector.cmd.base.deviceType.' . $device->getDisplayCategory()->value,
 				),
 				implode(
 					', ',
 					array_map(
 						fn (Entities\Channels\Channel $channel): string => $this->translator->translate(
-							'//ns-panel-connector.cmd.base.capability.' . $channel->getCapability()->getValue(),
+							'//ns-panel-connector.cmd.base.capability.' . $channel->getCapability()->value,
 						),
 						$this->channelsRepository->findAllBy($findChannelsQuery, Entities\Channels\Channel::class),
 					),
@@ -1822,20 +1823,20 @@ class Install extends Console\Command\Command
 
 		$metadata = $this->loader->loadCapabilities();
 
-		if (!$metadata->offsetExists($capability->getValue())) {
+		if (!$metadata->offsetExists($capability->value)) {
 			throw new Exceptions\InvalidArgument(sprintf(
 				'Definition for capability: %s was not found',
-				$capability->getValue(),
+				$capability->value,
 			));
 		}
 
-		$capabilityMetadata = $metadata->offsetGet($capability->getValue());
+		$capabilityMetadata = $metadata->offsetGet($capability->value);
 
 		if (
 			!$capabilityMetadata instanceof Utils\ArrayHash
 			|| !$capabilityMetadata->offsetExists('permission')
 			|| !is_string($capabilityMetadata->offsetGet('permission'))
-			|| !Types\Permission::isValidValue($capabilityMetadata->offsetGet('permission'))
+			|| Types\Permission::tryFrom($capabilityMetadata->offsetGet('permission')) === null
 			|| !$capabilityMetadata->offsetExists('protocol')
 			|| !$capabilityMetadata->offsetGet('protocol') instanceof Utils\ArrayHash
 			|| !$capabilityMetadata->offsetExists('multiple')
@@ -1847,7 +1848,7 @@ class Install extends Console\Command\Command
 		$allowMultiple = $capabilityMetadata->offsetGet('multiple');
 
 		if ($allowMultiple) {
-			$identifier = $this->findNextChannelIdentifier($device, $capability->getValue());
+			$identifier = $this->findNextChannelIdentifier($device, $capability->value);
 
 		} else {
 			$identifier = Helpers\Name::convertCapabilityToChannel($capability);
@@ -1880,7 +1881,7 @@ class Install extends Console\Command\Command
 				'entity' => Entities\Channels\Channel::class,
 				'identifier' => $identifier,
 				'name' => $this->translator->translate(
-					'//ns-panel-connector.cmd.base.capability.' . $capability->getValue(),
+					'//ns-panel-connector.cmd.base.capability.' . $capability->value,
 				) . (array_key_exists(
 					'key',
 					$matches,
@@ -1973,20 +1974,20 @@ class Install extends Console\Command\Command
 
 		$metadata = $this->loader->loadCapabilities();
 
-		if (!$metadata->offsetExists($type->getValue())) {
+		if (!$metadata->offsetExists($type->value)) {
 			throw new Exceptions\InvalidArgument(sprintf(
 				'Definition for capability: %s was not found',
-				$type->getValue(),
+				$type->value,
 			));
 		}
 
-		$capabilityMetadata = $metadata->offsetGet($type->getValue());
+		$capabilityMetadata = $metadata->offsetGet($type->value);
 
 		if (
 			!$capabilityMetadata instanceof Utils\ArrayHash
 			|| !$capabilityMetadata->offsetExists('permission')
 			|| !is_string($capabilityMetadata->offsetGet('permission'))
-			|| !Types\Permission::isValidValue($capabilityMetadata->offsetGet('permission'))
+			|| Types\Permission::tryFrom($capabilityMetadata->offsetGet('permission')) === null
 			|| !$capabilityMetadata->offsetExists('protocol')
 			|| !$capabilityMetadata->offsetGet('protocol') instanceof Utils\ArrayHash
 			|| !$capabilityMetadata->offsetExists('multiple')
@@ -2003,7 +2004,7 @@ class Install extends Console\Command\Command
 			$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
 			$findChannelPropertyQuery->forChannel($channel);
 			$findChannelPropertyQuery->byIdentifier(
-				Helpers\Name::convertProtocolToProperty(Types\Protocol::get($protocol)),
+				Helpers\Name::convertProtocolToProperty(Types\Protocol::from($protocol)),
 			);
 
 			$property = $this->channelsPropertiesRepository->findOneBy($findChannelPropertyQuery);
@@ -2183,6 +2184,8 @@ class Install extends Console\Command\Command
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function listCapabilities(Style\SymfonyStyle $io, Entities\Devices\ThirdPartyDevice $device): void
 	{
@@ -2214,7 +2217,7 @@ class Install extends Console\Command\Command
 				$index + 1,
 				$channel->getName() ?? $channel->getIdentifier(),
 				$this->translator->translate(
-					'//ns-panel-connector.cmd.base.capability.' . $channel->getCapability()->getValue(),
+					'//ns-panel-connector.cmd.base.capability.' . $channel->getCapability()->value,
 				),
 				implode(
 					', ',
@@ -2222,7 +2225,7 @@ class Install extends Console\Command\Command
 						fn (DevicesEntities\Channels\Properties\Property $property): string => $this->translator->translate(
 							'//ns-panel-connector.cmd.base.protocol.' . Helpers\Name::convertPropertyToProtocol(
 								$property->getIdentifier(),
-							)->getValue(),
+							)->value,
 						),
 						$this->channelsPropertiesRepository->findAllBy($findChannelPropertiesQuery),
 					),
@@ -2254,20 +2257,20 @@ class Install extends Console\Command\Command
 	{
 		$capabilitiesMetadata = $this->loader->loadCapabilities();
 
-		if (!$capabilitiesMetadata->offsetExists($channel->getCapability()->getValue())) {
+		if (!$capabilitiesMetadata->offsetExists($channel->getCapability()->value)) {
 			throw new Exceptions\InvalidArgument(sprintf(
 				'Definition for capability: %s was not found',
-				$channel->getCapability()->getValue(),
+				$channel->getCapability()->value,
 			));
 		}
 
-		$capabilityMetadata = $capabilitiesMetadata->offsetGet($channel->getCapability()->getValue());
+		$capabilityMetadata = $capabilitiesMetadata->offsetGet($channel->getCapability()->value);
 
 		if (
 			!$capabilityMetadata instanceof Utils\ArrayHash
 			|| !$capabilityMetadata->offsetExists('permission')
 			|| !is_string($capabilityMetadata->offsetGet('permission'))
-			|| !Types\Permission::isValidValue($capabilityMetadata->offsetGet('permission'))
+			|| Types\Permission::tryFrom($capabilityMetadata->offsetGet('permission')) === null
 			|| !$capabilityMetadata->offsetExists('protocol')
 			|| !$capabilityMetadata->offsetGet('protocol') instanceof Utils\ArrayHash
 			|| !$capabilityMetadata->offsetExists('multiple')
@@ -2286,14 +2289,14 @@ class Install extends Console\Command\Command
 
 		$metadata = $this->loader->loadProtocols();
 
-		if (!$metadata->offsetExists($protocol->getValue())) {
+		if (!$metadata->offsetExists($protocol->value)) {
 			throw new Exceptions\InvalidArgument(sprintf(
 				'Definition for protocol: %s was not found',
-				$protocol->getValue(),
+				$protocol->value,
 			));
 		}
 
-		$protocolMetadata = $metadata->offsetGet($protocol->getValue());
+		$protocolMetadata = $metadata->offsetGet($protocol->value);
 
 		if (
 			!$protocolMetadata instanceof Utils\ArrayHash
@@ -2318,7 +2321,11 @@ class Install extends Console\Command\Command
 			$connectProperty = $this->askProperty(
 				$io,
 				null,
-				in_array($capabilityPermission, [Types\Permission::WRITE, Types\Permission::READ_WRITE], true),
+				in_array(
+					$capabilityPermission,
+					[Types\Permission::WRITE->value, Types\Permission::READ_WRITE->value],
+					true,
+				),
 			);
 
 			$format = $this->askFormat($io, $protocol, $connectProperty);
@@ -2335,7 +2342,7 @@ class Install extends Console\Command\Command
 					'parent' => $connectProperty,
 					'identifier' => Helpers\Name::convertProtocolToProperty($protocol),
 					'name' => $this->translator->translate(
-						'//ns-panel-connector.cmd.base.protocol.' . $protocol->getValue(),
+						'//ns-panel-connector.cmd.base.protocol.' . $protocol->value,
 					),
 					'channel' => $channel,
 					'dataType' => $dataType,
@@ -2354,7 +2361,7 @@ class Install extends Console\Command\Command
 				'entity' => DevicesEntities\Channels\Properties\Variable::class,
 				'identifier' => Helpers\Name::convertProtocolToProperty($protocol),
 				'name' => $this->translator->translate(
-					'//ns-panel-connector.cmd.base.protocol.' . $protocol->getValue(),
+					'//ns-panel-connector.cmd.base.protocol.' . $protocol->value,
 				),
 				'channel' => $channel,
 				'dataType' => $dataType,
@@ -2386,20 +2393,20 @@ class Install extends Console\Command\Command
 	{
 		$capabilitiesMetadata = $this->loader->loadCapabilities();
 
-		if (!$capabilitiesMetadata->offsetExists($channel->getCapability()->getValue())) {
+		if (!$capabilitiesMetadata->offsetExists($channel->getCapability()->value)) {
 			throw new Exceptions\InvalidArgument(sprintf(
 				'Definition for capability: %s was not found',
-				$channel->getCapability()->getValue(),
+				$channel->getCapability()->value,
 			));
 		}
 
-		$capabilityMetadata = $capabilitiesMetadata->offsetGet($channel->getCapability()->getValue());
+		$capabilityMetadata = $capabilitiesMetadata->offsetGet($channel->getCapability()->value);
 
 		if (
 			!$capabilityMetadata instanceof Utils\ArrayHash
 			|| !$capabilityMetadata->offsetExists('permission')
 			|| !is_string($capabilityMetadata->offsetGet('permission'))
-			|| !Types\Permission::isValidValue($capabilityMetadata->offsetGet('permission'))
+			|| Types\Permission::tryFrom($capabilityMetadata->offsetGet('permission')) === null
 			|| !$capabilityMetadata->offsetExists('protocol')
 			|| !$capabilityMetadata->offsetGet('protocol') instanceof Utils\ArrayHash
 			|| !$capabilityMetadata->offsetExists('multiple')
@@ -2422,14 +2429,14 @@ class Install extends Console\Command\Command
 
 		$metadata = $this->loader->loadProtocols();
 
-		if (!$metadata->offsetExists($protocol->getValue())) {
+		if (!$metadata->offsetExists($protocol->value)) {
 			throw new Exceptions\InvalidArgument(sprintf(
 				'Definition for protocol: %s was not found',
-				$protocol->getValue(),
+				$protocol->value,
 			));
 		}
 
-		$protocolMetadata = $metadata->offsetGet($protocol->getValue());
+		$protocolMetadata = $metadata->offsetGet($protocol->value);
 
 		if (
 			!$protocolMetadata instanceof Utils\ArrayHash
@@ -2462,7 +2469,11 @@ class Install extends Console\Command\Command
 							? $property->getParent()
 							: null
 					),
-					in_array($capabilityPermission, [Types\Permission::WRITE, Types\Permission::READ_WRITE], true),
+					in_array(
+						$capabilityPermission,
+						[Types\Permission::WRITE->value, Types\Permission::READ_WRITE->value],
+						true,
+					),
 				);
 
 				$format = $this->askFormat($io, $protocol, $connectProperty);
@@ -2487,7 +2498,7 @@ class Install extends Console\Command\Command
 							'parent' => $connectProperty,
 							'identifier' => $property->getIdentifier(),
 							'name' => $this->translator->translate(
-								'//ns-panel-connector.cmd.base.protocol.' . $protocol->getValue(),
+								'//ns-panel-connector.cmd.base.protocol.' . $protocol->value,
 							),
 							'channel' => $channel,
 							'dataType' => $dataType,
@@ -2522,7 +2533,7 @@ class Install extends Console\Command\Command
 						'entity' => DevicesEntities\Channels\Properties\Variable::class,
 						'identifier' => $property->getIdentifier(),
 						'name' => $this->translator->translate(
-							'//ns-panel-connector.cmd.base.protocol.' . $protocol->getValue(),
+							'//ns-panel-connector.cmd.base.protocol.' . $protocol->value,
 						),
 						'channel' => $channel,
 						'dataType' => $dataType,
@@ -2696,14 +2707,14 @@ class Install extends Console\Command\Command
 
 			if (
 				$property->getDataType() === MetadataTypes\DataType::ENUM
-				&& $metadata->offsetExists($type->getValue())
-				&& $metadata->offsetGet($type->getValue()) instanceof Utils\ArrayHash
-				&& $metadata->offsetGet($type->getValue())->offsetExists('valid_values')
-				&& $metadata->offsetGet($type->getValue())->offsetGet('valid_values') instanceof Utils\ArrayHash
+				&& $metadata->offsetExists($type->value)
+				&& $metadata->offsetGet($type->value) instanceof Utils\ArrayHash
+				&& $metadata->offsetGet($type->value)->offsetExists('valid_values')
+				&& $metadata->offsetGet($type->value)->offsetGet('valid_values') instanceof Utils\ArrayHash
 			) {
 				$enumValue = array_search(
 					intval(MetadataUtilities\Value::flattenValue($value)),
-					(array) $metadata->offsetGet($type->getValue())->offsetGet('valid_values'),
+					(array) $metadata->offsetGet($type->value)->offsetGet('valid_values'),
 					true,
 				);
 
@@ -2718,7 +2729,7 @@ class Install extends Console\Command\Command
 				$this->translator->translate(
 					'//ns-panel-connector.cmd.base.protocol.' . Helpers\Name::convertPropertyToProtocol(
 						$property->getIdentifier(),
-					)->getValue(),
+					)->value,
 				),
 				$value,
 			]);
@@ -2832,8 +2843,8 @@ class Install extends Console\Command\Command
 	): void
 	{
 		$question
-			= $connector->getClientMode()->equalsValue(Types\ClientMode::GATEWAY)
-			|| $connector->getClientMode()->equalsValue(Types\ClientMode::BOTH)
+			= $connector->getClientMode() === Types\ClientMode::GATEWAY
+			|| $connector->getClientMode() === Types\ClientMode::BOTH
 		? new Console\Question\ChoiceQuestion(
 			$this->translator->translate('//ns-panel-connector.cmd.base.questions.whatToDo'),
 			[
@@ -2918,8 +2929,8 @@ class Install extends Console\Command\Command
 		}
 
 		if (
-			$connector->getClientMode()->equalsValue(Types\ClientMode::GATEWAY)
-			|| $connector->getClientMode()->equalsValue(Types\ClientMode::BOTH)
+			$connector->getClientMode() === Types\ClientMode::GATEWAY
+			|| $connector->getClientMode() === Types\ClientMode::BOTH
 		) {
 			if (
 				$whatToDo === $this->translator->translate(
@@ -2954,7 +2965,7 @@ class Install extends Console\Command\Command
 		Entities\Devices\Gateway $gateway,
 	): void
 	{
-		if ($connector->getClientMode()->equalsValue(Types\ClientMode::DEVICE)) {
+		if ($connector->getClientMode() === Types\ClientMode::DEVICE) {
 			$question = new Console\Question\ChoiceQuestion(
 				$this->translator->translate('//ns-panel-connector.cmd.base.questions.whatToDo'),
 				[
@@ -2968,7 +2979,7 @@ class Install extends Console\Command\Command
 				5,
 			);
 
-		} elseif ($connector->getClientMode()->equalsValue(Types\ClientMode::GATEWAY)) {
+		} elseif ($connector->getClientMode() === Types\ClientMode::GATEWAY) {
 			$question = new Console\Question\ChoiceQuestion(
 				$this->translator->translate('//ns-panel-connector.cmd.base.questions.whatToDo'),
 				[
@@ -3002,7 +3013,7 @@ class Install extends Console\Command\Command
 
 		$whatToDo = $io->askQuestion($question);
 
-		if ($connector->getClientMode()->equalsValue(Types\ClientMode::DEVICE)) {
+		if ($connector->getClientMode() === Types\ClientMode::DEVICE) {
 			if (
 				$whatToDo === $this->translator->translate(
 					'//ns-panel-connector.cmd.install.actions.create.device',
@@ -3053,7 +3064,7 @@ class Install extends Console\Command\Command
 
 				$this->askManageGatewayAction($io, $connector, $gateway);
 			}
-		} elseif ($connector->getClientMode()->equalsValue(Types\ClientMode::GATEWAY)) {
+		} elseif ($connector->getClientMode() === Types\ClientMode::GATEWAY) {
 			if (
 				$whatToDo === $this->translator->translate(
 					'//ns-panel-connector.cmd.install.actions.update.device',
@@ -3335,7 +3346,7 @@ class Install extends Console\Command\Command
 				)
 				|| $answer === '0'
 			) {
-				return Types\ClientMode::get(Types\ClientMode::GATEWAY);
+				return Types\ClientMode::GATEWAY;
 			}
 
 			if (
@@ -3344,7 +3355,7 @@ class Install extends Console\Command\Command
 				)
 				|| $answer === '1'
 			) {
-				return Types\ClientMode::get(Types\ClientMode::DEVICE);
+				return Types\ClientMode::DEVICE;
 			}
 
 			if (
@@ -3353,7 +3364,7 @@ class Install extends Console\Command\Command
 				)
 				|| $answer === '2'
 			) {
-				return Types\ClientMode::get(Types\ClientMode::BOTH);
+				return Types\ClientMode::BOTH;
 			}
 
 			throw new Exceptions\Runtime(
@@ -3431,7 +3442,7 @@ class Install extends Console\Command\Command
 
 		$default = $device !== null ? array_search(
 			$this->translator->translate(
-				'//ns-panel-connector.cmd.base.deviceType.' . $device->getDisplayCategory()->getValue(),
+				'//ns-panel-connector.cmd.base.deviceType.' . $device->getDisplayCategory()->value,
 			),
 			array_values($categories),
 			true,
@@ -3461,8 +3472,8 @@ class Install extends Console\Command\Command
 
 			$category = array_search($answer, $categories, true);
 
-			if ($category !== false && Types\Category::isValidValue($category)) {
-				return Types\Category::get($category);
+			if ($category !== false && Types\Category::tryFrom($category) !== null) {
+				return Types\Category::from($category);
 			}
 
 			throw new Exceptions\Runtime(
@@ -3492,11 +3503,11 @@ class Install extends Console\Command\Command
 	{
 		$metadata = $this->loader->loadCategories();
 
-		if (!array_key_exists($device->getDisplayCategory()->getValue(), (array) $metadata)) {
+		if (!array_key_exists($device->getDisplayCategory()->value, (array) $metadata)) {
 			return null;
 		}
 
-		$categoryMetadata = $metadata[$device->getDisplayCategory()->getValue()];
+		$categoryMetadata = $metadata[$device->getDisplayCategory()->value];
 
 		$capabilities = [];
 
@@ -3523,7 +3534,7 @@ class Install extends Console\Command\Command
 					$findChannelQuery = new Queries\Entities\FindChannels();
 					$findChannelQuery->forDevice($device);
 					$findChannelQuery->byIdentifier(
-						Helpers\Name::convertCapabilityToChannel(Types\Capability::get($type)),
+						Helpers\Name::convertCapabilityToChannel(Types\Capability::from(strval($type))),
 					);
 
 					$channel = $this->channelsRepository->findOneBy(
@@ -3533,7 +3544,7 @@ class Install extends Console\Command\Command
 
 					if ($channel === null || $allowMultiple) {
 						$capabilities[$type] = $this->translator->translate(
-							'//ns-panel-connector.cmd.base.capability.' . Types\Capability::get($type)->getValue(),
+							'//ns-panel-connector.cmd.base.capability.' . Types\Capability::from(strval($type))->value,
 						);
 					}
 				}
@@ -3554,7 +3565,7 @@ class Install extends Console\Command\Command
 						$findChannelQuery = new Queries\Entities\FindChannels();
 						$findChannelQuery->forDevice($device);
 						$findChannelQuery->byIdentifier(
-							Helpers\Name::convertCapabilityToChannel(Types\Capability::get($type)),
+							Helpers\Name::convertCapabilityToChannel(Types\Capability::from(strval($type))),
 						);
 
 						$channel = $this->channelsRepository->findOneBy(
@@ -3564,7 +3575,9 @@ class Install extends Console\Command\Command
 
 						if ($channel === null || $allowMultiple) {
 							$capabilities[$type] = $this->translator->translate(
-								'//ns-panel-connector.cmd.base.capability.' . Types\Capability::get($type)->getValue(),
+								'//ns-panel-connector.cmd.base.capability.' . Types\Capability::from(
+									strval($type),
+								)->value,
 							);
 						}
 					}
@@ -3607,8 +3620,8 @@ class Install extends Console\Command\Command
 				return null;
 			}
 
-			if ($capability !== false && Types\Capability::isValidValue($capability)) {
-				return Types\Capability::get($capability);
+			if ($capability !== false) {
+				return Types\Capability::from($capability);
 			}
 
 			throw new Exceptions\Runtime(
@@ -3627,6 +3640,8 @@ class Install extends Console\Command\Command
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function askProtocolType(
 		Style\SymfonyStyle $io,
@@ -3635,20 +3650,20 @@ class Install extends Console\Command\Command
 	{
 		$metadata = $this->loader->loadCapabilities();
 
-		if (!$metadata->offsetExists($channel->getCapability()->getValue())) {
+		if (!$metadata->offsetExists($channel->getCapability()->value)) {
 			throw new Exceptions\InvalidArgument(sprintf(
 				'Definition for capability: %s was not found',
-				$channel->getCapability()->getValue(),
+				$channel->getCapability()->value,
 			));
 		}
 
-		$capabilityMetadata = $metadata->offsetGet($channel->getCapability()->getValue());
+		$capabilityMetadata = $metadata->offsetGet($channel->getCapability()->value);
 
 		if (
 			!$capabilityMetadata instanceof Utils\ArrayHash
 			|| !$capabilityMetadata->offsetExists('permission')
 			|| !is_string($capabilityMetadata->offsetGet('permission'))
-			|| !Types\Permission::isValidValue($capabilityMetadata->offsetGet('permission'))
+			|| Types\Permission::tryFrom($capabilityMetadata->offsetGet('permission')) === null
 			|| !$capabilityMetadata->offsetExists('protocol')
 			|| !$capabilityMetadata->offsetGet('protocol') instanceof Utils\ArrayHash
 			|| !$capabilityMetadata->offsetExists('multiple')
@@ -3671,14 +3686,14 @@ class Install extends Console\Command\Command
 				$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
 				$findChannelPropertyQuery->forChannel($channel);
 				$findChannelPropertyQuery->byIdentifier(
-					Helpers\Name::convertProtocolToProperty(Types\Protocol::get($type)),
+					Helpers\Name::convertProtocolToProperty(Types\Protocol::from($type)),
 				);
 
 				$property = $this->channelsPropertiesRepository->findOneBy($findChannelPropertyQuery);
 
 				if ($property === null) {
 					$protocols[$type] = $this->translator->translate(
-						'//ns-panel-connector.cmd.base.protocol.' . Types\Protocol::get($type)->getValue(),
+						'//ns-panel-connector.cmd.base.protocol.' . Types\Protocol::from($type)->value,
 					);
 				}
 			}
@@ -3713,8 +3728,8 @@ class Install extends Console\Command\Command
 
 			$protocol = array_search($answer, $protocols, true);
 
-			if ($protocol !== false && Types\Protocol::isValidValue($protocol)) {
-				return Types\Protocol::get($protocol);
+			if ($protocol !== false && Types\Protocol::tryFrom($protocol) !== null) {
+				return Types\Protocol::from($protocol);
 			}
 
 			throw new Exceptions\Runtime(
@@ -4069,14 +4084,14 @@ class Install extends Console\Command\Command
 	{
 		$metadata = $this->loader->loadProtocols();
 
-		if (!$metadata->offsetExists($protocol->getValue())) {
+		if (!$metadata->offsetExists($protocol->value)) {
 			throw new Exceptions\InvalidArgument(sprintf(
 				'Definition for protocol: %s was not found',
-				$protocol->getValue(),
+				$protocol->value,
 			));
 		}
 
-		$protocolMetadata = $metadata->offsetGet($protocol->getValue());
+		$protocolMetadata = $metadata->offsetGet($protocol->value);
 
 		if (
 			!$protocolMetadata instanceof Utils\ArrayHash
@@ -4264,14 +4279,14 @@ class Install extends Console\Command\Command
 	{
 		$metadata = $this->loader->loadProtocols();
 
-		if (!$metadata->offsetExists($protocol->getValue())) {
+		if (!$metadata->offsetExists($protocol->value)) {
 			throw new Exceptions\InvalidArgument(sprintf(
 				'Definition for protocol: %s was not found',
-				$protocol->getValue(),
+				$protocol->value,
 			));
 		}
 
-		$protocolMetadata = $metadata->offsetGet($protocol->getValue());
+		$protocolMetadata = $metadata->offsetGet($protocol->value);
 
 		if (
 			!$protocolMetadata instanceof Utils\ArrayHash
@@ -5028,11 +5043,13 @@ class Install extends Console\Command\Command
 	/**
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function findNextChannelIdentifier(Entities\Devices\ThirdPartyDevice $device, string $type): string
 	{
 		for ($i = 1; $i <= 100; $i++) {
-			$identifier = Helpers\Name::convertCapabilityToChannel(Types\Capability::get($type), $i);
+			$identifier = Helpers\Name::convertCapabilityToChannel(Types\Capability::from($type), $i);
 
 			$findChannelQuery = new Queries\Entities\FindChannels();
 			$findChannelQuery->forDevice($device);

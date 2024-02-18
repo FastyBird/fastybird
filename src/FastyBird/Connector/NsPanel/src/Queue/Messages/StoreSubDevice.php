@@ -53,7 +53,7 @@ final readonly class StoreSubDevice implements Message
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('firmware_version')]
 		private string $firmwareVersion,
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\Category::class)]
+		#[ObjectMapper\Rules\BackedEnumValue(class: Types\Category::class)]
 		#[ObjectMapper\Modifiers\FieldName('display_category')]
 		private Types\Category $displayCategory,
 		#[ObjectMapper\Rules\AnyOf([
@@ -231,7 +231,7 @@ final readonly class StoreSubDevice implements Message
 			'hostname' => $this->getHostname(),
 			'mac_address' => $this->getMacAddress(),
 			'app_name' => $this->getAppName(),
-			'display_category' => $this->getDisplayCategory()->getValue(),
+			'display_category' => $this->getDisplayCategory()->value,
 			'capabilities' => array_map(
 				static fn (CapabilityDescription $capability): array => $capability->toArray(),
 				$this->getCapabilities(),

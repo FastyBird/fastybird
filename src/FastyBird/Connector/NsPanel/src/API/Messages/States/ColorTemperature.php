@@ -32,7 +32,7 @@ final readonly class ColorTemperature implements State
 
 	public function __construct(
 		#[ObjectMapper\Rules\IntValue(min: 0, max: 100, unsigned: true)]
-		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::COLOR_TEMPERATURE)]
+		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::COLOR_TEMPERATURE->value)]
 		private int $colorTemperature,
 	)
 	{
@@ -40,13 +40,13 @@ final readonly class ColorTemperature implements State
 
 	public function getType(): Types\Capability
 	{
-		return Types\Capability::get(Types\Capability::COLOR_TEMPERATURE);
+		return Types\Capability::COLOR_TEMPERATURE;
 	}
 
 	public function getProtocols(): array
 	{
 		return [
-			Types\Protocol::COLOR_TEMPERATURE => $this->colorTemperature,
+			Types\Protocol::COLOR_TEMPERATURE->value => $this->colorTemperature,
 		];
 	}
 
@@ -63,7 +63,7 @@ final readonly class ColorTemperature implements State
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Protocol::COLOR_TEMPERATURE} = $this->colorTemperature;
+		$json->{Types\Protocol::COLOR_TEMPERATURE->value} = $this->colorTemperature;
 
 		return $json;
 	}

@@ -20,10 +20,10 @@ use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use TypeError;
 use ValueError;
 use function assert;
@@ -72,6 +72,7 @@ final readonly class SubDevice
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError
@@ -79,7 +80,7 @@ final readonly class SubDevice
 	 */
 	public function getDisplayCategory(Documents\Devices\SubDevice $device): Types\Category
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
 		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::CATEGORY);
 
@@ -89,21 +90,22 @@ final readonly class SubDevice
 		);
 
 		if ($property?->getValue() === null) {
-			return Types\Category::get(Types\Category::UNKNOWN);
+			return Types\Category::UNKNOWN;
 		}
 
 		$value = $property->getValue();
 		assert(is_string($value));
 
-		if (!Types\Category::isValidValue($value)) {
-			return Types\Category::get(Types\Category::UNKNOWN);
+		if (Types\Category::tryFrom($value) === null) {
+			return Types\Category::UNKNOWN;
 		}
 
-		return Types\Category::get($property->getValue());
+		return Types\Category::from(MetadataUtilities\Value::toString($property->getValue(), true));
 	}
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError
@@ -111,7 +113,7 @@ final readonly class SubDevice
 	 */
 	public function getManufacturer(Documents\Devices\SubDevice $device): string
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
 		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::MANUFACTURER);
 
@@ -132,6 +134,7 @@ final readonly class SubDevice
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError
@@ -139,7 +142,7 @@ final readonly class SubDevice
 	 */
 	public function getModel(Documents\Devices\SubDevice $device): string
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
 		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::MODEL);
 

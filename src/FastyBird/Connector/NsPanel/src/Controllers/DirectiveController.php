@@ -95,7 +95,7 @@ final class DirectiveController extends BaseController
 		if (!Uuid\Uuid::isValid($connectorId)) {
 			throw new Exceptions\ServerRequestError(
 				$request,
-				Types\ServerStatus::get(Types\ServerStatus::INTERNAL_ERROR),
+				Types\ServerStatus::INTERNAL_ERROR,
 				'Connector id could not be determined',
 			);
 		}
@@ -120,7 +120,7 @@ final class DirectiveController extends BaseController
 		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
 			throw new Exceptions\ServerRequestError(
 				$request,
-				Types\ServerStatus::get(Types\ServerStatus::INVALID_DIRECTIVE),
+				Types\ServerStatus::INVALID_DIRECTIVE,
 				'Could not validate received response payload',
 				$ex->getCode(),
 				$ex,
@@ -128,7 +128,7 @@ final class DirectiveController extends BaseController
 		} catch (Exceptions\InvalidArgument $ex) {
 			throw new Exceptions\ServerRequestError(
 				$request,
-				Types\ServerStatus::get(Types\ServerStatus::INTERNAL_ERROR),
+				Types\ServerStatus::INTERNAL_ERROR,
 				'Could not validate received response payload',
 				$ex->getCode(),
 				$ex,
@@ -143,7 +143,7 @@ final class DirectiveController extends BaseController
 		} catch (Exceptions\Runtime $ex) {
 			throw new Exceptions\ServerRequestError(
 				$request,
-				Types\ServerStatus::get(Types\ServerStatus::INVALID_DIRECTIVE),
+				Types\ServerStatus::INVALID_DIRECTIVE,
 				'Could not map data to request message',
 				$ex->getCode(),
 				$ex,
@@ -151,7 +151,7 @@ final class DirectiveController extends BaseController
 		} catch (Utils\JsonException $ex) {
 			throw new Exceptions\ServerRequestError(
 				$request,
-				Types\ServerStatus::get(Types\ServerStatus::INVALID_DIRECTIVE),
+				Types\ServerStatus::INVALID_DIRECTIVE,
 				'Request data are not valid JSON data',
 				$ex->getCode(),
 				$ex,
@@ -173,7 +173,7 @@ final class DirectiveController extends BaseController
 
 			foreach ($item->getProtocols() as $protocol => $value) {
 				$state[] = [
-					'capability' => $item->getType()->getValue(),
+					'capability' => $item->getType()->value,
 					'protocol' => $protocol,
 					'value' => MetadataUtilities\Value::flattenValue($value),
 					'identifier' => $identifier,
@@ -199,7 +199,7 @@ final class DirectiveController extends BaseController
 				[
 					'event' => [
 						'header' => [
-							'name' => Types\Header::UPDATE_DEVICE_STATES_RESPONSE,
+							'name' => Types\Header::UPDATE_DEVICE_STATES_RESPONSE->value,
 							'message_id' => $requestData->getDirective()->getHeader()->getMessageId(),
 							'version' => NsPanel\Constants::NS_PANEL_API_VERSION_V1,
 						],
@@ -211,7 +211,7 @@ final class DirectiveController extends BaseController
 		} catch (Exceptions\Runtime $ex) {
 			throw new Exceptions\ServerRequestError(
 				$request,
-				Types\ServerStatus::get(Types\ServerStatus::INTERNAL_ERROR),
+				Types\ServerStatus::INTERNAL_ERROR,
 				'Could not map data to response message',
 				$ex->getCode(),
 				$ex,
@@ -219,7 +219,7 @@ final class DirectiveController extends BaseController
 		} catch (Utils\JsonException $ex) {
 			throw new Exceptions\ServerRequestError(
 				$request,
-				Types\ServerStatus::get(Types\ServerStatus::INTERNAL_ERROR),
+				Types\ServerStatus::INTERNAL_ERROR,
 				'Response data are not valid JSON data',
 				$ex->getCode(),
 				$ex,
@@ -227,7 +227,7 @@ final class DirectiveController extends BaseController
 		} catch (RuntimeException $ex) {
 			throw new Exceptions\ServerRequestError(
 				$request,
-				Types\ServerStatus::get(Types\ServerStatus::INTERNAL_ERROR),
+				Types\ServerStatus::INTERNAL_ERROR,
 				'Could not write data to response',
 				$ex->getCode(),
 				$ex,
@@ -261,14 +261,14 @@ final class DirectiveController extends BaseController
 			if ($gateway === null) {
 				throw new Exceptions\ServerRequestError(
 					$request,
-					Types\ServerStatus::get(Types\ServerStatus::ENDPOINT_UNREACHABLE),
+					Types\ServerStatus::ENDPOINT_UNREACHABLE,
 					'Device gateway could could not be found',
 				);
 			}
 		} catch (Uuid\Exception\InvalidUuidStringException) {
 			throw new Exceptions\ServerRequestError(
 				$request,
-				Types\ServerStatus::get(Types\ServerStatus::ENDPOINT_UNREACHABLE),
+				Types\ServerStatus::ENDPOINT_UNREACHABLE,
 				'Device gateway could could not be found',
 			);
 		}
@@ -302,14 +302,14 @@ final class DirectiveController extends BaseController
 			if ($device === null) {
 				throw new Exceptions\ServerRequestError(
 					$request,
-					Types\ServerStatus::get(Types\ServerStatus::ENDPOINT_UNREACHABLE),
+					Types\ServerStatus::ENDPOINT_UNREACHABLE,
 					'Device could could not be found',
 				);
 			}
 		} catch (Uuid\Exception\InvalidUuidStringException) {
 			throw new Exceptions\ServerRequestError(
 				$request,
-				Types\ServerStatus::get(Types\ServerStatus::ENDPOINT_UNREACHABLE),
+				Types\ServerStatus::ENDPOINT_UNREACHABLE,
 				'Device could could not be found',
 			);
 		}
