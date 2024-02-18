@@ -61,7 +61,7 @@ final readonly class DeviceTemperatureConfiguration implements API\Messages\Mess
 
 	public function getType(): Types\ComponentType
 	{
-		return Types\ComponentType::get(Types\ComponentType::TEMPERATURE);
+		return Types\ComponentType::TEMPERATURE;
 	}
 
 	public function getName(): string|null
@@ -86,7 +86,7 @@ final readonly class DeviceTemperatureConfiguration implements API\Messages\Mess
 	{
 		return [
 			'id' => $this->getId(),
-			'type' => $this->getType()->getValue(),
+			'type' => $this->getType()->value,
 			'name' => $this->getName(),
 			'report_threshold' => $this->getReportThreshold(),
 			'offset' => $this->getOffset(),

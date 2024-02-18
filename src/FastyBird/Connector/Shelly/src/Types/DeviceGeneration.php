@@ -15,9 +15,6 @@
 
 namespace FastyBird\Connector\Shelly\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * Device generations
  *
@@ -26,23 +23,15 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class DeviceGeneration extends Consistence\Enum\Enum
+enum DeviceGeneration: string
 {
 
-	public const UNKNOWN = 'unknown';
+	case UNKNOWN = 'unknown';
 
-	public const GENERATION_1 = 'gen1';
+	case GENERATION_1 = 'gen1';
 
-	public const GENERATION_2 = 'gen2';
+	case GENERATION_2 = 'gen2';
 
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case GENERATION_3 = 'gen3';
 
 }

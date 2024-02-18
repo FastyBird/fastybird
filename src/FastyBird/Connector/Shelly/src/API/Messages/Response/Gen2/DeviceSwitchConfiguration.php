@@ -91,7 +91,7 @@ final readonly class DeviceSwitchConfiguration implements API\Messages\Message
 
 	public function getType(): Types\ComponentType
 	{
-		return Types\ComponentType::get(Types\ComponentType::SWITCH);
+		return Types\ComponentType::SWITCH;
 	}
 
 	public function getName(): string|null
@@ -156,7 +156,7 @@ final readonly class DeviceSwitchConfiguration implements API\Messages\Message
 	{
 		return [
 			'id' => $this->getId(),
-			'type' => $this->getType()->getValue(),
+			'type' => $this->getType()->value,
 			'name' => $this->getName(),
 			'mode' => $this->getMode(),
 			'initial_state' => $this->getInitialState(),

@@ -93,7 +93,7 @@ final readonly class DeviceCoverConfiguration implements API\Messages\Message
 
 	public function getType(): Types\ComponentType
 	{
-		return Types\ComponentType::get(Types\ComponentType::COVER);
+		return Types\ComponentType::COVER;
 	}
 
 	public function getName(): string|null
@@ -168,7 +168,7 @@ final readonly class DeviceCoverConfiguration implements API\Messages\Message
 	{
 		return [
 			'id' => $this->getId(),
-			'type' => $this->getType()->getValue(),
+			'type' => $this->getType()->value,
 			'name' => $this->getName(),
 			'mode' => $this->getMode(),
 			'initial_state' => $this->getInitialState(),

@@ -44,7 +44,7 @@ final class EthernetState extends DeviceState implements API\Messages\Message
 
 	public function getType(): Types\ComponentType
 	{
-		return Types\ComponentType::get(Types\ComponentType::ETHERNET);
+		return Types\ComponentType::ETHERNET;
 	}
 
 	public function getIp(): string|null

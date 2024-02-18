@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * BlockDescription.php
+ * Payload.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,34 +10,22 @@
  * @subpackage     Types
  * @since          1.0.0
  *
- * @date           03.01.23
+ * @date           18.01.24
  */
 
-namespace FastyBird\Connector\Shelly\Types;
+namespace FastyBird\Connector\Shelly\Types\Payloads;
+
+use BackedEnum;
 
 /**
- * Block descriptions
+ * Component payload interface
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Types
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-enum BlockDescription: string
+interface Payload extends BackedEnum
 {
-
-	case RELAY = 'relay';
-
-	case ROLLER = 'roller';
-
-	case LIGHT = 'light';
-
-	case INPUT = 'input';
-
-	case METER = 'meter';
-
-	case EMETER = 'emeter';
-
-	case DEVICE = 'device';
 
 }

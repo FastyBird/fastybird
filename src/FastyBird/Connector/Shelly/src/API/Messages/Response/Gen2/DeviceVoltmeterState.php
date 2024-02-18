@@ -58,7 +58,7 @@ final class DeviceVoltmeterState extends DeviceState implements API\Messages\Mes
 
 	public function getType(): Types\ComponentType
 	{
-		return Types\ComponentType::get(Types\ComponentType::VOLTMETER);
+		return Types\ComponentType::VOLTMETER;
 	}
 
 	public function getVoltage(): float|string|null

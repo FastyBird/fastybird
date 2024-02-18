@@ -52,7 +52,7 @@ final readonly class DeviceScriptConfiguration implements API\Messages\Message
 
 	public function getType(): Types\ComponentType
 	{
-		return Types\ComponentType::get(Types\ComponentType::SCRIPT);
+		return Types\ComponentType::SCRIPT;
 	}
 
 	public function getName(): string|null
@@ -72,7 +72,7 @@ final readonly class DeviceScriptConfiguration implements API\Messages\Message
 	{
 		return [
 			'id' => $this->getId(),
-			'type' => $this->getType()->getValue(),
+			'type' => $this->getType()->value,
 			'name' => $this->getName(),
 			'enabled' => $this->isEnabled(),
 		];

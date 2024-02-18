@@ -17,7 +17,6 @@ namespace FastyBird\Connector\Shelly\API\Messages\Response\Gen2;
 
 use FastyBird\Connector\Shelly\API;
 use FastyBird\Connector\Shelly\Types;
-use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 
 /**
@@ -39,7 +38,7 @@ final readonly class DeviceInputConfiguration implements API\Messages\Message
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		private string|null $name,
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\InputType::class)]
+		#[ObjectMapper\Rules\BackedEnumValue(class: Types\InputType::class)]
 		private Types\InputType $type,
 		#[ObjectMapper\Rules\BoolValue()]
 		#[ObjectMapper\Modifiers\FieldName('invert')]
@@ -64,7 +63,7 @@ final readonly class DeviceInputConfiguration implements API\Messages\Message
 
 	public function getType(): Types\ComponentType
 	{
-		return Types\ComponentType::get(Types\ComponentType::INPUT);
+		return Types\ComponentType::INPUT;
 	}
 
 	public function getName(): string|null
@@ -99,9 +98,9 @@ final readonly class DeviceInputConfiguration implements API\Messages\Message
 	{
 		return [
 			'id' => $this->getId(),
-			'type' => $this->getType()->getValue(),
+			'type' => $this->getType()->value,
 			'name' => $this->getName(),
-			'input_type' => $this->getInputType()->getValue(),
+			'input_type' => $this->getInputType()->value,
 			'inverted' => $this->isInverted(),
 			'factory_reset' => $this->hasFactoryReset(),
 			'report_threshold' => $this->getReportThreshold(),

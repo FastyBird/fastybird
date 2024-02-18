@@ -282,7 +282,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		);
 
 		try {
-			if ($this->connectorHelper->getClientMode($connector)->equalsValue(Types\ClientMode::LOCAL)) {
+			if ($this->connectorHelper->getClientMode($connector) === Types\ClientMode::LOCAL) {
 				$address = $this->deviceHelper->getLocalAddress($device);
 
 				if ($address === null) {
@@ -328,7 +328,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				}
 
 				if (
-					$this->deviceHelper->getGeneration($device)->equalsValue(Types\DeviceGeneration::GENERATION_2)
+					$this->deviceHelper->getGeneration($device) === Types\DeviceGeneration::GENERATION_2
 				) {
 					$result = $this->connectionManager->getGen2HttpApiConnection()->setDeviceState(
 						$address,
@@ -338,7 +338,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						$expectedValue,
 					);
 				} elseif (
-					$this->deviceHelper->getGeneration($device)->equalsValue(Types\DeviceGeneration::GENERATION_1)
+					$this->deviceHelper->getGeneration($device) === Types\DeviceGeneration::GENERATION_1
 				) {
 					$result = $this->connectionManager->getGen1HttpApiConnection()->setDeviceState(
 						$address,

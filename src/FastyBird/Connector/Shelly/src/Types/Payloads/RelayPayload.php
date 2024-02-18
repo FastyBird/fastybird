@@ -13,10 +13,7 @@
  * @date           17.07.22
  */
 
-namespace FastyBird\Connector\Shelly\Types;
-
-use Consistence;
-use function strval;
+namespace FastyBird\Connector\Shelly\Types\Payloads;
 
 /**
  * Relay payload values
@@ -26,23 +23,13 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class RelayPayload extends Consistence\Enum\Enum
+enum RelayPayload: string implements Payload
 {
 
-	public const ON = 'on';
+	case ON = 'on';
 
-	public const OFF = 'off';
+	case OFF = 'off';
 
-	public const TOGGLE = 'toggle';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case TOGGLE = 'toggle';
 
 }

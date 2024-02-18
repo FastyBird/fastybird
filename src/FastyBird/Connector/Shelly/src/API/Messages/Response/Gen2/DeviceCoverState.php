@@ -20,7 +20,6 @@ use Exception;
 use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\API;
 use FastyBird\Connector\Shelly\Types;
-use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Nette\Utils;
 use Orisai\ObjectMapper;
 use function array_filter;
@@ -51,10 +50,10 @@ final class DeviceCoverState extends DeviceState implements API\Messages\Message
 		])]
 		private readonly string|null $source,
 		#[ObjectMapper\Rules\AnyOf([
-			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\CoverPayload::class),
+			new ObjectMapper\Rules\BackedEnumValue(class: Types\Payloads\CoverPayload::class),
 			new ObjectMapper\Rules\ArrayEnumValue(cases: [Shelly\Constants::VALUE_NOT_AVAILABLE]),
 		])]
-		private readonly Types\CoverPayload|string $state,
+		private readonly Types\Payloads\CoverPayload|string $state,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\ArrayEnumValue(cases: [Shelly\Constants::VALUE_NOT_AVAILABLE]),
@@ -134,7 +133,7 @@ final class DeviceCoverState extends DeviceState implements API\Messages\Message
 
 	public function getType(): Types\ComponentType
 	{
-		return Types\ComponentType::get(Types\ComponentType::COVER);
+		return Types\ComponentType::COVER;
 	}
 
 	public function getSource(): string|null
@@ -142,7 +141,7 @@ final class DeviceCoverState extends DeviceState implements API\Messages\Message
 		return $this->source;
 	}
 
-	public function getState(): Types\CoverPayload|string
+	public function getState(): Types\Payloads\CoverPayload|string
 	{
 		return $this->state;
 	}
@@ -225,7 +224,7 @@ final class DeviceCoverState extends DeviceState implements API\Messages\Message
 			parent::toArray(),
 			[
 				'source' => $this->getSource(),
-				'state' => is_string($this->getState()) ? $this->getState() : $this->getState()->getValue(),
+				'state' => is_string($this->getState()) ? $this->getState() : $this->getState()->value,
 				'active_power' => $this->getActivePower(),
 				'voltage' => $this->getVoltage(),
 				'current' => $this->getCurrent(),
@@ -252,7 +251,7 @@ final class DeviceCoverState extends DeviceState implements API\Messages\Message
 			array_merge(
 				parent::toArray(),
 				[
-					'state' => is_string($this->getState()) ? $this->getState() : $this->getState()->getValue(),
+					'state' => is_string($this->getState()) ? $this->getState() : $this->getState()->value,
 					'current_position' => $this->getCurrentPosition(),
 					'target_position' => $this->getTargetPosition(),
 					'active_power' => $this->getActivePower(),

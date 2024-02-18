@@ -96,6 +96,7 @@ class Discover extends Console\Command\Command
 	 * @throws Console\Exception\ExceptionInterface
 	 * @throws Console\Exception\InvalidArgumentException
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -306,6 +307,7 @@ class Discover extends Console\Command\Command
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -355,7 +357,7 @@ class Discover extends Console\Command\Command
 					$this->translator->translate(
 						'//shelly-connector.cmd.install.answers.generation.' . $this->deviceHelper->getGeneration(
 							$device,
-						)->getValue(),
+						)->value,
 					),
 					$this->deviceHelper->getModel($device) ?? 'N/A',
 					$this->deviceHelper->getLocalAddress($device) ?? 'N/A',

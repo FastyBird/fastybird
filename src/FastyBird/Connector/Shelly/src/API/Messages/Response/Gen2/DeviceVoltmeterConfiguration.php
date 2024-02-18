@@ -60,7 +60,7 @@ final readonly class DeviceVoltmeterConfiguration implements API\Messages\Messag
 
 	public function getType(): Types\ComponentType
 	{
-		return Types\ComponentType::get(Types\ComponentType::VOLTMETER);
+		return Types\ComponentType::VOLTMETER;
 	}
 
 	public function getName(): string|null
@@ -85,7 +85,7 @@ final readonly class DeviceVoltmeterConfiguration implements API\Messages\Messag
 	{
 		return [
 			'id' => $this->getId(),
-			'type' => $this->getType()->getValue(),
+			'type' => $this->getType()->value,
 			'name' => $this->getName(),
 			'report_threshold' => $this->getReportThreshold(),
 			'xvoltage' => $this->getXvoltage()?->toArray(),

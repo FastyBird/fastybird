@@ -67,7 +67,7 @@ abstract class DeviceState implements API\Messages\Message
 	{
 		return [
 			'id' => $this->getId(),
-			'type' => $this->getType()->getValue(),
+			'type' => $this->getType()->value,
 			'errors' => $this->getErrors(),
 		];
 	}

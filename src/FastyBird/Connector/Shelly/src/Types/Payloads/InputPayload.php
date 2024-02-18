@@ -13,10 +13,7 @@
  * @date           25.12.22
  */
 
-namespace FastyBird\Connector\Shelly\Types;
-
-use Consistence;
-use function strval;
+namespace FastyBird\Connector\Shelly\Types\Payloads;
 
 /**
  * Input component payload values
@@ -26,29 +23,19 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class InputPayload extends Consistence\Enum\Enum
+enum InputPayload: string implements Payload
 {
 
-	public const PRESS = 'btn_down';
+	case PRESS = 'btn_down';
 
-	public const RELEASE = 'btn_up';
+	case RELEASE = 'btn_up';
 
-	public const SINGLE_PUSH = 'single_push';
+	case SINGLE_PUSH = 'single_push';
 
-	public const DOUBLE_PUSH = 'double_push';
+	case DOUBLE_PUSH = 'double_push';
 
-	public const TRIPLE_PUSH = 'triple_push';
+	case TRIPLE_PUSH = 'triple_push';
 
-	public const LONG_PUSH = 'long_push';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case LONG_PUSH = 'long_push';
 
 }

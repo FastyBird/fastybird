@@ -60,7 +60,7 @@ final class DeviceTemperatureState extends DeviceState implements API\Messages\M
 
 	public function getType(): Types\ComponentType
 	{
-		return Types\ComponentType::get(Types\ComponentType::TEMPERATURE);
+		return Types\ComponentType::TEMPERATURE;
 	}
 
 	public function getTemperatureCelsius(): float|string|null

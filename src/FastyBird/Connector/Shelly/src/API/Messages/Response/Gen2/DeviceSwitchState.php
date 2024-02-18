@@ -112,7 +112,7 @@ final class DeviceSwitchState extends DeviceState implements API\Messages\Messag
 
 	public function getType(): Types\ComponentType
 	{
-		return Types\ComponentType::get(Types\ComponentType::SWITCH);
+		return Types\ComponentType::SWITCH;
 	}
 
 	public function getSource(): string|null

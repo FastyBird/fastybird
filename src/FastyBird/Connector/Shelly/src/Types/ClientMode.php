@@ -15,9 +15,6 @@
 
 namespace FastyBird\Connector\Shelly\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * Connector client modes
  *
@@ -26,25 +23,15 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class ClientMode extends Consistence\Enum\Enum
+enum ClientMode: string
 {
 
-	public const LOCAL = 'local';
+	case LOCAL = 'local';
 
-	public const CLOUD = 'cloud';
+	case CLOUD = 'cloud';
 
-	public const INTEGRATOR = 'integrator';
+	case INTEGRATOR = 'integrator';
 
-	public const MQTT = 'mqtt';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case MQTT = 'mqtt';
 
 }

@@ -15,9 +15,6 @@
 
 namespace FastyBird\Connector\Shelly\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * Sensor descriptions
  *
@@ -26,75 +23,65 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class SensorDescription extends Consistence\Enum\Enum
+enum SensorDescription: string
 {
 
-	public const MODE = 'mode';
+	case MODE = 'mode';
 
-	public const OUTPUT = 'output';
+	case OUTPUT = 'output';
 
-	public const ROLLER = 'roller';
+	case ROLLER = 'roller';
 
-	public const ROLLER_POSITION = 'rollerPos';
+	case ROLLER_POSITION = 'rollerPos';
 
-	public const ROLLER_STOP_REASON = 'rollerStopReason';
+	case ROLLER_STOP_REASON = 'rollerStopReason';
 
-	public const ROLLER_POWER = 'rollerPower';
+	case ROLLER_POWER = 'rollerPower';
 
-	public const ROLLER_ENERGY = 'rollerEnergy';
+	case ROLLER_ENERGY = 'rollerEnergy';
 
-	public const RED = 'red';
+	case RED = 'red';
 
-	public const GREEN = 'green';
+	case GREEN = 'green';
 
-	public const BLUE = 'blue';
+	case BLUE = 'blue';
 
-	public const WHITE = 'white';
+	case WHITE = 'white';
 
-	public const WHITE_LEVEL = 'whiteLevel';
+	case WHITE_LEVEL = 'whiteLevel';
 
-	public const GAIN = 'gain';
+	case GAIN = 'gain';
 
-	public const COLOR_TEMP = 'colorTemp';
+	case COLOR_TEMP = 'colorTemp';
 
-	public const BRIGHTNESS = 'brightness';
+	case BRIGHTNESS = 'brightness';
 
-	public const EFFECT = 'effect';
+	case EFFECT = 'effect';
 
-	public const OVERPOWER = 'overpower';
+	case OVERPOWER = 'overpower';
 
-	public const OVERPOWER_VALUE = 'overpowerValue';
+	case OVERPOWER_VALUE = 'overpowerValue';
 
-	public const OVERTEMPERATURE = 'overtemp';
+	case OVERTEMPERATURE = 'overtemp';
 
-	public const INPUT = 'input';
+	case INPUT = 'input';
 
-	public const INPUT_EVENT = 'inputEvent';
+	case INPUT_EVENT = 'inputEvent';
 
-	public const INPUT_EVENT_COUNT = 'inputEventCnt';
+	case INPUT_EVENT_COUNT = 'inputEventCnt';
 
-	public const ACTIVE_POWER = 'power';
+	case ACTIVE_POWER = 'power';
 
-	public const REACTIVE_POWER = 'reactive';
+	case REACTIVE_POWER = 'reactive';
 
-	public const ENERGY = 'energy';
+	case ENERGY = 'energy';
 
-	public const ENERGY_RETURNED = 'energyReturned';
+	case ENERGY_RETURNED = 'energyReturned';
 
-	public const VOLTAGE = 'voltage';
+	case VOLTAGE = 'voltage';
 
-	public const CURRENT = 'current';
+	case CURRENT = 'current';
 
-	public const POWER_FACTOR = 'powerFactor';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case POWER_FACTOR = 'powerFactor';
 
 }

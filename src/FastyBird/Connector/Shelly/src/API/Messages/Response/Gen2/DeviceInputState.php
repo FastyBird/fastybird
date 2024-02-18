@@ -18,7 +18,6 @@ namespace FastyBird\Connector\Shelly\API\Messages\Response\Gen2;
 use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\API;
 use FastyBird\Connector\Shelly\Types;
-use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 use function array_filter;
 use function array_merge;
@@ -42,12 +41,12 @@ final class DeviceInputState extends DeviceState implements API\Messages\Message
 	public function __construct(
 		int $id,
 		#[ObjectMapper\Rules\AnyOf([
-			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\InputPayload::class),
+			new ObjectMapper\Rules\BackedEnumValue(class: Types\Payloads\InputPayload::class),
 			new ObjectMapper\Rules\BoolValue(),
 			new ObjectMapper\Rules\ArrayEnumValue(cases: [Shelly\Constants::VALUE_NOT_AVAILABLE]),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly Types\InputPayload|bool|string|null $state,
+		private readonly Types\Payloads\InputPayload|bool|string|null $state,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\IntValue(min: 0, max: 100, unsigned: true),
 			new ObjectMapper\Rules\ArrayEnumValue(cases: [Shelly\Constants::VALUE_NOT_AVAILABLE]),
@@ -62,10 +61,10 @@ final class DeviceInputState extends DeviceState implements API\Messages\Message
 
 	public function getType(): Types\ComponentType
 	{
-		return Types\ComponentType::get(Types\ComponentType::INPUT);
+		return Types\ComponentType::INPUT;
 	}
 
-	public function getState(): Types\InputPayload|bool|string|null
+	public function getState(): Types\Payloads\InputPayload|bool|string|null
 	{
 		return $this->state;
 	}
@@ -83,7 +82,7 @@ final class DeviceInputState extends DeviceState implements API\Messages\Message
 		return array_merge(
 			parent::toArray(),
 			[
-				'state' => $this->getState() instanceof Types\InputPayload ? $this->getState()->getValue() : $this->getState(),
+				'state' => $this->getState() instanceof Types\Payloads\InputPayload ? $this->getState()->value : $this->getState(),
 				'percent' => $this->getPercent(),
 			],
 		);
@@ -97,7 +96,7 @@ final class DeviceInputState extends DeviceState implements API\Messages\Message
 		return array_filter(
 			array_merge(
 				parent::toState(),
-				$this->getState() instanceof Types\InputPayload ? ['button' => $this->getState()->getValue()] : [],
+				$this->getState() instanceof Types\Payloads\InputPayload ? ['button' => $this->getState()->value] : [],
 				is_bool($this->getState()) ? ['switch' => $this->getState()] : [],
 				is_int($this->getPercent()) ? ['analog' => $this->getPercent()] : [],
 			),

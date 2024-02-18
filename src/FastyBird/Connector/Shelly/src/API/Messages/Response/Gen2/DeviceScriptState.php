@@ -51,7 +51,7 @@ final class DeviceScriptState extends DeviceState implements API\Messages\Messag
 
 	public function getType(): Types\ComponentType
 	{
-		return Types\ComponentType::get(Types\ComponentType::SCRIPT);
+		return Types\ComponentType::SCRIPT;
 	}
 
 	public function getRunning(): bool|string

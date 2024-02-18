@@ -56,7 +56,7 @@ final class DeviceDevicePowerState extends DeviceState implements API\Messages\M
 
 	public function getType(): Types\ComponentType
 	{
-		return Types\ComponentType::get(Types\ComponentType::DEVICE_POWER);
+		return Types\ComponentType::DEVICE_POWER;
 	}
 
 	public function getBattery(): BatteryStateBlock|string

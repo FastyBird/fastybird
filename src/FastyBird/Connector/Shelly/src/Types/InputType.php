@@ -15,9 +15,6 @@
 
 namespace FastyBird\Connector\Shelly\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * Input component input types
  *
@@ -26,23 +23,13 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class InputType extends Consistence\Enum\Enum
+enum InputType: string
 {
 
-	public const SWITCH = 'switch';
+	case SWITCH = 'switch';
 
-	public const BUTTON = 'button';
+	case BUTTON = 'button';
 
-	public const ANALOG = 'analog';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case ANALOG = 'analog';
 
 }

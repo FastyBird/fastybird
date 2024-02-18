@@ -17,7 +17,6 @@ namespace FastyBird\Connector\Shelly\API\Messages\Response\Gen1;
 
 use FastyBird\Connector\Shelly\API;
 use FastyBird\Connector\Shelly\Types;
-use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Orisai\ObjectMapper;
 
@@ -38,7 +37,7 @@ final readonly class BlockSensorDescription implements API\Messages\Message
 	public function __construct(
 		#[ObjectMapper\Rules\IntValue()]
 		private int $identifier,
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\SensorType::class)]
+		#[ObjectMapper\Rules\BackedEnumValue(class: Types\SensorType::class)]
 		private Types\SensorType $type,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private string $description,
@@ -144,7 +143,7 @@ final readonly class BlockSensorDescription implements API\Messages\Message
 	{
 		return [
 			'identifier' => $this->getIdentifier(),
-			'type' => $this->getType()->getValue(),
+			'type' => $this->getType()->value,
 			'description' => $this->getDescription(),
 			'data_type' => $this->getDataType()->value,
 			'unit' => $this->getUnit(),

@@ -31,7 +31,6 @@ use FastyBird\Module\Devices\Commands as DevicesCommands;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Types as DevicesTypes;
 use Nette\Localization;
 use Nette\Utils;
@@ -199,7 +198,7 @@ class Install extends Console\Command\Command
 		$cloudAuthKey = null;
 		$cloudServer = null;
 
-		if ($mode->getValue() === Types\ClientMode::CLOUD) {
+		if ($mode === Types\ClientMode::CLOUD) {
 			$cloudAuthKey = $this->askConnectorCloudAuthenticationKey($io);
 			$cloudServer = $this->askConnectorCloudServerAddress($io);
 		}
@@ -217,22 +216,22 @@ class Install extends Console\Command\Command
 
 			$this->propertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-				'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE,
+				'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE->value,
 				'dataType' => MetadataTypes\DataType::ENUM,
-				'value' => $mode->getValue(),
+				'value' => $mode->value,
 				'format' => [
-					Types\ClientMode::LOCAL,
-					Types\ClientMode::CLOUD,
-					Types\ClientMode::MQTT,
-					Types\ClientMode::INTEGRATOR,
+					Types\ClientMode::LOCAL->value,
+					Types\ClientMode::CLOUD->value,
+					Types\ClientMode::MQTT->value,
+					Types\ClientMode::INTEGRATOR->value,
 				],
 				'connector' => $connector,
 			]));
 
-			if ($mode->getValue() === Types\ClientMode::CLOUD) {
+			if ($mode === Types\ClientMode::CLOUD) {
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::CLOUD_AUTH_KEY,
+					'identifier' => Types\ConnectorPropertyIdentifier::CLOUD_AUTH_KEY->value,
 					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => $cloudAuthKey,
 					'connector' => $connector,
@@ -240,7 +239,7 @@ class Install extends Console\Command\Command
 
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::CLOUD_SERVER,
+					'identifier' => Types\ConnectorPropertyIdentifier::CLOUD_SERVER->value,
 					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => $cloudServer,
 					'connector' => $connector,
@@ -284,6 +283,7 @@ class Install extends Console\Command\Command
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -311,7 +311,7 @@ class Install extends Console\Command\Command
 			return;
 		}
 
-		$findConnectorPropertyQuery = new DevicesQueries\Entities\FindConnectorProperties();
+		$findConnectorPropertyQuery = new Queries\Entities\FindConnectorProperties();
 		$findConnectorPropertyQuery->forConnector($connector);
 		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::CLIENT_MODE);
 
@@ -365,10 +365,10 @@ class Install extends Console\Command\Command
 		$cloudServerProperty = null;
 
 		if (
-			$modeProperty?->getValue() === Types\ClientMode::CLOUD
-			|| $mode?->getValue() === Types\ClientMode::CLOUD
+			$modeProperty?->getValue() === Types\ClientMode::CLOUD->value
+			|| $mode === Types\ClientMode::CLOUD
 		) {
-			$findConnectorPropertyQuery = new DevicesQueries\Entities\FindConnectorProperties();
+			$findConnectorPropertyQuery = new Queries\Entities\FindConnectorProperties();
 			$findConnectorPropertyQuery->forConnector($connector);
 			$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::CLOUD_AUTH_KEY);
 
@@ -389,7 +389,7 @@ class Install extends Console\Command\Command
 				$cloudAuthKey = $this->askConnectorCloudAuthenticationKey($io, $connector);
 			}
 
-			$findConnectorPropertyQuery = new DevicesQueries\Entities\FindConnectorProperties();
+			$findConnectorPropertyQuery = new Queries\Entities\FindConnectorProperties();
 			$findConnectorPropertyQuery->forConnector($connector);
 			$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::CLOUD_SERVER);
 
@@ -430,26 +430,26 @@ class Install extends Console\Command\Command
 
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE,
+					'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE->value,
 					'dataType' => MetadataTypes\DataType::ENUM,
-					'value' => $mode->getValue(),
+					'value' => $mode->value,
 					'format' => [
-						Types\ClientMode::LOCAL,
-						Types\ClientMode::CLOUD,
-						Types\ClientMode::MQTT,
-						Types\ClientMode::INTEGRATOR,
+						Types\ClientMode::LOCAL->value,
+						Types\ClientMode::CLOUD->value,
+						Types\ClientMode::MQTT->value,
+						Types\ClientMode::INTEGRATOR->value,
 					],
 					'connector' => $connector,
 				]));
 			} elseif ($mode !== null) {
 				$this->propertiesManager->update($modeProperty, Utils\ArrayHash::from([
-					'value' => $mode->getValue(),
+					'value' => $mode->value,
 				]));
 			}
 
 			if (
-				$modeProperty?->getValue() === Types\ClientMode::CLOUD
-				|| $mode?->getValue() === Types\ClientMode::CLOUD
+				$modeProperty?->getValue() === Types\ClientMode::CLOUD->value
+				|| $mode === Types\ClientMode::CLOUD
 			) {
 				if ($cloudAuthKeyProperty !== null) {
 					$this->propertiesManager->update($cloudAuthKeyProperty, Utils\ArrayHash::from([
@@ -458,7 +458,7 @@ class Install extends Console\Command\Command
 				} else {
 					$this->propertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-						'identifier' => Types\ConnectorPropertyIdentifier::CLOUD_AUTH_KEY,
+						'identifier' => Types\ConnectorPropertyIdentifier::CLOUD_AUTH_KEY->value,
 						'dataType' => MetadataTypes\DataType::STRING,
 						'value' => $cloudAuthKey,
 						'connector' => $connector,
@@ -472,7 +472,7 @@ class Install extends Console\Command\Command
 				} else {
 					$this->propertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-						'identifier' => Types\ConnectorPropertyIdentifier::CLOUD_SERVER,
+						'identifier' => Types\ConnectorPropertyIdentifier::CLOUD_SERVER->value,
 						'dataType' => MetadataTypes\DataType::STRING,
 						'value' => $cloudServer,
 						'connector' => $connector,
@@ -651,7 +651,7 @@ class Install extends Console\Command\Command
 				$index + 1,
 				$connector->getName() ?? $connector->getIdentifier(),
 				$this->translator->translate(
-					'//shelly-connector.cmd.base.mode.' . $connector->getClientMode()->getValue(),
+					'//shelly-connector.cmd.base.mode.' . $connector->getClientMode()->value,
 				),
 				count($devices),
 			]);
@@ -828,7 +828,7 @@ class Install extends Console\Command\Command
 				$index + 1,
 				$device->getName() ?? $device->getIdentifier(),
 				$this->translator->translate(
-					'//shelly-connector.cmd.install.answers.generation.' . $device->getGeneration()->getValue(),
+					'//shelly-connector.cmd.install.answers.generation.' . $device->getGeneration()->value,
 				),
 				$device->getModel(),
 				$device->getLocalAddress(),
@@ -918,7 +918,7 @@ class Install extends Console\Command\Command
 					$device->getId()->toString(),
 					$device->getName() ?? $device->getIdentifier(),
 					$this->translator->translate(
-						'//shelly-connector.cmd.install.answers.generation.' . $device->getGeneration()->getValue(),
+						'//shelly-connector.cmd.install.answers.generation.' . $device->getGeneration()->value,
 					),
 					$device->getModel() ?? 'N/A',
 					$device->getLocalAddress() ?? 'N/A',
@@ -1136,7 +1136,7 @@ class Install extends Console\Command\Command
 				)
 				|| $answer === '0'
 			) {
-				return Types\ClientMode::get(Types\ClientMode::LOCAL);
+				return Types\ClientMode::LOCAL;
 			}
 
 			if (
@@ -1145,7 +1145,7 @@ class Install extends Console\Command\Command
 				)
 				|| $answer === '1'
 			) {
-				return Types\ClientMode::get(Types\ClientMode::CLOUD);
+				return Types\ClientMode::CLOUD;
 			}
 
 			throw new Exceptions\Runtime(

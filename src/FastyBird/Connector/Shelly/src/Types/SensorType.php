@@ -15,9 +15,6 @@
 
 namespace FastyBird\Connector\Shelly\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * Sensor types
  *
@@ -26,43 +23,33 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class SensorType extends Consistence\Enum\Enum
+enum SensorType: string
 {
 
-	public const ALARM = 'A';
+	case ALARM = 'A';
 
-	public const BATTERY_LEVEL = 'B';
+	case BATTERY_LEVEL = 'B';
 
-	public const CONCENTRATION = 'C';
+	case CONCENTRATION = 'C';
 
-	public const ENERGY = 'E';
+	case ENERGY = 'E';
 
-	public const EVENT = 'EV';
+	case EVENT = 'EV';
 
-	public const EVENT_COUNTER = 'EVC';
+	case EVENT_COUNTER = 'EVC';
 
-	public const HUMIDITY = 'H';
+	case HUMIDITY = 'H';
 
-	public const CURRENT = 'I';
+	case CURRENT = 'I';
 
-	public const LUMINOSITY = 'L';
+	case LUMINOSITY = 'L';
 
-	public const POWER = 'P';
+	case POWER = 'P';
 
-	public const STATUS = 'S';
+	case STATUS = 'S';
 
-	public const TEMPERATURE = 'T';
+	case TEMPERATURE = 'T';
 
-	public const VOLTAGE = 'V';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case VOLTAGE = 'V';
 
 }

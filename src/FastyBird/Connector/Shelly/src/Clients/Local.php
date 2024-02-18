@@ -33,7 +33,6 @@ use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Types as DevicesTypes;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Fig\Http\Message\StatusCodeInterface;
@@ -106,6 +105,7 @@ final class Local implements Client
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError
@@ -183,7 +183,7 @@ final class Local implements Client
 		foreach ($devices as $device) {
 			$this->devices[$device->getId()->toString()] = $device;
 
-			$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+			$findDevicePropertyQuery = new Queries\Configuration\FindDeviceVariableProperties();
 			$findDevicePropertyQuery->forDevice($device);
 			$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::GENERATION);
 
@@ -194,7 +194,7 @@ final class Local implements Client
 
 			if (
 				$generationProperty !== null
-				&& $generationProperty->getValue() === Types\DeviceGeneration::GENERATION_2
+				&& $generationProperty->getValue() === Types\DeviceGeneration::GENERATION_2->value
 			) {
 				try {
 					$client = $this->createGen2DeviceWsClient($device);
@@ -282,8 +282,9 @@ final class Local implements Client
 
 	/**
 	 * @throws DevicesExceptions\InvalidArgument
-	 * @throws Exceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\Mapping
@@ -314,6 +315,7 @@ final class Local implements Client
 	/**
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -353,7 +355,7 @@ final class Local implements Client
 			return false;
 		}
 
-		if ($this->deviceHelper->getGeneration($device)->equalsValue(Types\DeviceGeneration::GENERATION_2)) {
+		if ($this->deviceHelper->getGeneration($device) === Types\DeviceGeneration::GENERATION_2) {
 			$client = $this->getGen2DeviceWsClient($device);
 
 			if ($client === null) {
@@ -442,7 +444,7 @@ final class Local implements Client
 					);
 				});
 
-		} elseif ($this->deviceHelper->getGeneration($device)->equalsValue(Types\DeviceGeneration::GENERATION_1)) {
+		} elseif ($this->deviceHelper->getGeneration($device) === Types\DeviceGeneration::GENERATION_1) {
 			$address = $this->deviceHelper->getLocalAddress($device);
 
 			if ($address === null) {
@@ -562,6 +564,7 @@ final class Local implements Client
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -734,6 +737,7 @@ final class Local implements Client
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -750,18 +754,18 @@ final class Local implements Client
 		if ($state->getInputs() !== []) {
 			foreach ($state->getInputs() as $index => $input) {
 				$states[] = [
-					'identifier' => '_' . Types\BlockDescription::INPUT . '_' . $index,
+					'identifier' => '_' . Types\BlockDescription::INPUT->value . '_' . $index,
 					'sensors' => [
 						[
-							'identifier' => '_' . Types\SensorDescription::INPUT,
+							'identifier' => '_' . Types\SensorDescription::INPUT->value,
 							'value' => $input->getInput(),
 						],
 						[
-							'identifier' => '_' . Types\SensorDescription::INPUT_EVENT,
+							'identifier' => '_' . Types\SensorDescription::INPUT_EVENT->value,
 							'value' => $input->getEvent(),
 						],
 						[
-							'identifier' => '_' . Types\SensorDescription::INPUT_EVENT_COUNT,
+							'identifier' => '_' . Types\SensorDescription::INPUT_EVENT_COUNT->value,
 							'value' => $input->getEventCnt(),
 						],
 					],
@@ -772,30 +776,30 @@ final class Local implements Client
 		if ($state->getMeters() !== []) {
 			foreach ($state->getMeters() as $index => $meter) {
 				$states[] = [
-					'identifier' => '_' . Types\BlockDescription::METER . '_' . $index,
+					'identifier' => '_' . Types\BlockDescription::METER->value . '_' . $index,
 					'sensors' => [
 						[
-							'identifier' => '_' . Types\SensorDescription::ACTIVE_POWER,
+							'identifier' => '_' . Types\SensorDescription::ACTIVE_POWER->value,
 							'value' => $meter->getPower(),
 						],
 						[
-							'identifier' => '_' . Types\SensorDescription::ROLLER_POWER,
+							'identifier' => '_' . Types\SensorDescription::ROLLER_POWER->value,
 							'value' => $meter->getPower(),
 						],
 						[
-							'identifier' => '_' . Types\SensorDescription::OVERPOWER,
+							'identifier' => '_' . Types\SensorDescription::OVERPOWER->value,
 							'value' => $meter->getOverpower(),
 						],
 						[
-							'identifier' => '_' . Types\SensorDescription::OVERPOWER_VALUE,
+							'identifier' => '_' . Types\SensorDescription::OVERPOWER_VALUE->value,
 							'value' => $meter->getOverpower(),
 						],
 						[
-							'identifier' => '_' . Types\SensorDescription::ENERGY,
+							'identifier' => '_' . Types\SensorDescription::ENERGY->value,
 							'value' => $meter->getTotal(),
 						],
 						[
-							'identifier' => '_' . Types\SensorDescription::ROLLER_ENERGY,
+							'identifier' => '_' . Types\SensorDescription::ROLLER_ENERGY->value,
 							'value' => $meter->getTotal(),
 						],
 					],
@@ -806,24 +810,24 @@ final class Local implements Client
 		if ($state->getRelays() !== []) {
 			foreach ($state->getRelays() as $index => $relay) {
 				$states[] = [
-					'identifier' => '_' . Types\BlockDescription::RELAY . '_' . $index,
+					'identifier' => '_' . Types\BlockDescription::RELAY->value . '_' . $index,
 					'sensors' => [
 						[
-							'identifier' => '_' . Types\SensorDescription::OUTPUT,
+							'identifier' => '_' . Types\SensorDescription::OUTPUT->value,
 							'value' => $relay->getState(),
 						],
 						[
-							'identifier' => '_' . Types\SensorDescription::OVERPOWER,
+							'identifier' => '_' . Types\SensorDescription::OVERPOWER->value,
 							'value' => $relay->hasOverpower(),
 						],
 					],
 				];
 
 				$states[] = [
-					'identifier' => '_' . Types\BlockDescription::DEVICE,
+					'identifier' => '_' . Types\BlockDescription::DEVICE->value,
 					'sensors' => [
 						[
-							'identifier' => '_' . Types\SensorDescription::OVERTEMPERATURE,
+							'identifier' => '_' . Types\SensorDescription::OVERTEMPERATURE->value,
 							'value' => $relay->hasOvertemperature(),
 						],
 					],
@@ -834,28 +838,28 @@ final class Local implements Client
 		if ($state->getRollers() !== []) {
 			foreach ($state->getRollers() as $index => $roller) {
 				$states[] = [
-					'identifier' => '_' . Types\BlockDescription::ROLLER . '_' . $index,
+					'identifier' => '_' . Types\BlockDescription::ROLLER->value . '_' . $index,
 					'sensors' => [
 						[
-							'identifier' => '_' . Types\SensorDescription::ROLLER,
+							'identifier' => '_' . Types\SensorDescription::ROLLER->value,
 							'value' => $roller->getState(),
 						],
 						[
-							'identifier' => '_' . Types\SensorDescription::ROLLER_POSITION,
+							'identifier' => '_' . Types\SensorDescription::ROLLER_POSITION->value,
 							'value' => $roller->getCurrentPosition(),
 						],
 						[
-							'identifier' => '_' . Types\SensorDescription::ROLLER_STOP_REASON,
+							'identifier' => '_' . Types\SensorDescription::ROLLER_STOP_REASON->value,
 							'value' => $roller->getStopReason(),
 						],
 					],
 				];
 
 				$states[] = [
-					'identifier' => '_' . Types\BlockDescription::DEVICE,
+					'identifier' => '_' . Types\BlockDescription::DEVICE->value,
 					'sensors' => [
 						[
-							'identifier' => '_' . Types\SensorDescription::OVERTEMPERATURE,
+							'identifier' => '_' . Types\SensorDescription::OVERTEMPERATURE->value,
 							'value' => $roller->hasOvertemperature(),
 						],
 					],
@@ -866,42 +870,42 @@ final class Local implements Client
 		if ($state->getLights() !== []) {
 			foreach ($state->getLights() as $index => $light) {
 				$states[] = [
-					'identifier' => '_' . Types\BlockDescription::LIGHT . '_' . $index,
+					'identifier' => '_' . Types\BlockDescription::LIGHT->value . '_' . $index,
 					'sensors' => [
 						[
-							'identifier' => '_' . Types\SensorDescription::RED,
+							'identifier' => '_' . Types\SensorDescription::RED->value,
 							'value' => $light->getGreen(),
 						],
 						[
-							'identifier' => '_' . Types\SensorDescription::GREEN,
+							'identifier' => '_' . Types\SensorDescription::GREEN->value,
 							'value' => $light->getGreen(),
 						],
 						[
-							'identifier' => '_' . Types\SensorDescription::BLUE,
+							'identifier' => '_' . Types\SensorDescription::BLUE->value,
 							'value' => $light->getBlue(),
 						],
 						[
-							'identifier' => '_' . Types\SensorDescription::GAIN,
+							'identifier' => '_' . Types\SensorDescription::GAIN->value,
 							'value' => $light->getGain(),
 						],
 						[
-							'identifier' => '_' . Types\SensorDescription::WHITE,
+							'identifier' => '_' . Types\SensorDescription::WHITE->value,
 							'value' => $light->getWhite(),
 						],
 						[
-							'identifier' => '_' . Types\SensorDescription::WHITE_LEVEL,
+							'identifier' => '_' . Types\SensorDescription::WHITE_LEVEL->value,
 							'value' => $light->getWhite(),
 						],
 						[
-							'identifier' => '_' . Types\SensorDescription::EFFECT,
+							'identifier' => '_' . Types\SensorDescription::EFFECT->value,
 							'value' => $light->getEffect(),
 						],
 						[
-							'identifier' => '_' . Types\SensorDescription::BRIGHTNESS,
+							'identifier' => '_' . Types\SensorDescription::BRIGHTNESS->value,
 							'value' => $light->getBrightness(),
 						],
 						[
-							'identifier' => '_' . Types\SensorDescription::OUTPUT,
+							'identifier' => '_' . Types\SensorDescription::OUTPUT->value,
 							'value' => $light->getState(),
 						],
 					],
@@ -912,34 +916,34 @@ final class Local implements Client
 		if ($state->getEmeters() !== []) {
 			foreach ($state->getEmeters() as $index => $emeter) {
 				$states[] = [
-					'identifier' => '_' . Types\BlockDescription::ROLLER . '_' . $index,
+					'identifier' => '_' . Types\BlockDescription::ROLLER->value . '_' . $index,
 					'sensors' => [
 						[
-							'identifier' => '_' . Types\SensorDescription::ACTIVE_POWER,
+							'identifier' => '_' . Types\SensorDescription::ACTIVE_POWER->value,
 							'value' => $emeter->getActivePower(),
 						],
 						[
-							'identifier' => '_' . Types\SensorDescription::REACTIVE_POWER,
+							'identifier' => '_' . Types\SensorDescription::REACTIVE_POWER->value,
 							'value' => $emeter->getReactivePower(),
 						],
 						[
-							'identifier' => '_' . Types\SensorDescription::POWER_FACTOR,
+							'identifier' => '_' . Types\SensorDescription::POWER_FACTOR->value,
 							'value' => $emeter->getPowerFactor(),
 						],
 						[
-							'identifier' => '_' . Types\SensorDescription::CURRENT,
+							'identifier' => '_' . Types\SensorDescription::CURRENT->value,
 							'value' => $emeter->getCurrent(),
 						],
 						[
-							'identifier' => '_' . Types\SensorDescription::VOLTAGE,
+							'identifier' => '_' . Types\SensorDescription::VOLTAGE->value,
 							'value' => $emeter->getVoltage(),
 						],
 						[
-							'identifier' => '_' . Types\SensorDescription::ENERGY,
+							'identifier' => '_' . Types\SensorDescription::ENERGY->value,
 							'value' => $emeter->getTotal(),
 						],
 						[
-							'identifier' => '_' . Types\SensorDescription::ENERGY_RETURNED,
+							'identifier' => '_' . Types\SensorDescription::ENERGY_RETURNED->value,
 							'value' => $emeter->getTotalReturned(),
 						],
 					],
@@ -1006,6 +1010,7 @@ final class Local implements Client
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -1023,7 +1028,7 @@ final class Local implements Client
 			foreach ($component->toState() as $key => $value) {
 				$states[] = [
 					'identifier' => (
-						$component->getType()->getValue()
+						$component->getType()->value
 						. '_'
 						. $component->getId()
 						. '_'
@@ -1052,6 +1057,8 @@ final class Local implements Client
 
 	/**
 	 * @throws Exceptions\Runtime
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function processGen2DeviceEvent(
 		Documents\Devices\Device $device,
@@ -1061,14 +1068,14 @@ final class Local implements Client
 		foreach ($notification->getEvents() as $event) {
 			if (
 				preg_match(self::COMPONENT_KEY, $event->getComponent(), $componentMatches) === 1
-				&& Types\ComponentType::isValidValue($componentMatches['component'])
+				&& Types\ComponentType::tryFrom($componentMatches['component']) !== null
 				&& array_key_exists('channel', $componentMatches)
 			) {
-				$component = Types\ComponentType::get($componentMatches['component']);
+				$component = Types\ComponentType::from($componentMatches['component']);
 
 				if (
-					$component->equalsValue(Types\ComponentType::SCRIPT)
-					&& $event->getEvent() === Types\ComponentEvent::RESULT
+					$component === Types\ComponentType::SCRIPT
+					&& $event->getEvent() === Types\ComponentEvent::RESULT->value
 					&& $event->getData() !== null
 				) {
 					$this->queue->append(
@@ -1081,11 +1088,11 @@ final class Local implements Client
 								'states' => [
 									[
 										'identifier' => (
-											$component->getValue()
+											$component->value
 											. '_'
 											. $event->getId()
 											. '_'
-											. Types\ComponentAttributeType::RESULT
+											. Types\ComponentAttributeType::RESULT->value
 										),
 										'value' => $event->getData(),
 									],

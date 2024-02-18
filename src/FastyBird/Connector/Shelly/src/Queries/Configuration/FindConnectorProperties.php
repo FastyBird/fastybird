@@ -1,37 +1,38 @@
 <?php declare(strict_types = 1);
 
 /**
- * FindConnectorVariableProperties.php
+ * FindConnectorProperties.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:HomeKitConnector!
+ * @package        FastyBird:ShellyConnector!
  * @subpackage     Queries
  * @since          1.0.0
  *
- * @date           16.02.24
+ * @date           18.02.24
  */
 
-namespace FastyBird\Connector\HomeKit\Queries\Entities;
+namespace FastyBird\Connector\Shelly\Queries\Configuration;
 
-use FastyBird\Connector\HomeKit\Exceptions;
-use FastyBird\Connector\HomeKit\Types;
-use FastyBird\Module\Devices\Entities as DevicesEntities;
+use FastyBird\Connector\Shelly\Exceptions;
+use FastyBird\Connector\Shelly\Types;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use function sprintf;
 
 /**
- * Find connector variable properties entities query
+ * Find connectors properties configuration query
  *
- * @template T of DevicesEntities\Connectors\Properties\Variable
- * @extends  FindConnectorProperties<T>
+ * @template T of DevicesDocuments\Connectors\Properties\Property
+ * @extends  DevicesQueries\Configuration\FindConnectorProperties<T>
  *
- * @package        FastyBird:HomeKitConnector!
+ * @package        FastyBird:ShellyConnector!
  * @subpackage     Queries
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class FindConnectorVariableProperties extends FindConnectorProperties
+class FindConnectorProperties extends DevicesQueries\Configuration\FindConnectorProperties
 {
 
 	/**

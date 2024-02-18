@@ -47,52 +47,52 @@ final readonly class GetDeviceConfiguration implements API\Messages\Message
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceSwitchConfiguration::class),
 		)]
-		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::SWITCH)]
+		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::SWITCH->value)]
 		private array $switches = [],
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceCoverConfiguration::class),
 		)]
-		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::COVER)]
+		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::COVER->value)]
 		private array $covers = [],
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceInputConfiguration::class),
 		)]
-		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::INPUT)]
+		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::INPUT->value)]
 		private array $inputs = [],
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceLightConfiguration::class),
 		)]
-		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::LIGHT)]
+		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::LIGHT->value)]
 		private array $lights = [],
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceTemperatureConfiguration::class),
 		)]
-		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::TEMPERATURE)]
+		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::TEMPERATURE->value)]
 		private array $temperature = [],
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceHumidityConfiguration::class),
 		)]
-		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::HUMIDITY)]
+		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::HUMIDITY->value)]
 		private array $humidity = [],
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceDevicePowerConfiguration::class),
 		)]
-		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::DEVICE_POWER)]
+		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::DEVICE_POWER->value)]
 		private array $devicePower = [],
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceScriptConfiguration::class),
 		)]
-		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::SCRIPT)]
+		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::SCRIPT->value)]
 		private array $scripts = [],
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceSmokeConfiguration::class),
 		)]
-		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::SMOKE)]
+		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::SMOKE->value)]
 		private array $smoke = [],
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceVoltmeterConfiguration::class),
 		)]
-		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::VOLTMETER)]
+		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::VOLTMETER->value)]
 		private array $voltmeters = [],
 	)
 	{
@@ -184,43 +184,43 @@ final readonly class GetDeviceConfiguration implements API\Messages\Message
 	public function toArray(): array
 	{
 		return [
-			Types\ComponentType::SWITCH => array_map(
+			Types\ComponentType::SWITCH->value => array_map(
 				static fn (DeviceSwitchConfiguration $configuration): array => $configuration->toArray(),
 				$this->getSwitches(),
 			),
-			Types\ComponentType::COVER => array_map(
+			Types\ComponentType::COVER->value => array_map(
 				static fn (DeviceCoverConfiguration $configuration): array => $configuration->toArray(),
 				$this->getCovers(),
 			),
-			Types\ComponentType::INPUT => array_map(
+			Types\ComponentType::INPUT->value => array_map(
 				static fn (DeviceInputConfiguration $configuration): array => $configuration->toArray(),
 				$this->getInputs(),
 			),
-			Types\ComponentType::LIGHT => array_map(
+			Types\ComponentType::LIGHT->value => array_map(
 				static fn (DeviceLightConfiguration $configuration): array => $configuration->toArray(),
 				$this->getLights(),
 			),
-			Types\ComponentType::TEMPERATURE => array_map(
+			Types\ComponentType::TEMPERATURE->value => array_map(
 				static fn (DeviceTemperatureConfiguration $configuration): array => $configuration->toArray(),
 				$this->getTemperature(),
 			),
-			Types\ComponentType::HUMIDITY => array_map(
+			Types\ComponentType::HUMIDITY->value => array_map(
 				static fn (DeviceHumidityConfiguration $configuration): array => $configuration->toArray(),
 				$this->getHumidity(),
 			),
-			Types\ComponentType::DEVICE_POWER => array_map(
+			Types\ComponentType::DEVICE_POWER->value => array_map(
 				static fn (DeviceDevicePowerConfiguration $configuration): array => $configuration->toArray(),
 				$this->getDevicePower(),
 			),
-			Types\ComponentType::SCRIPT => array_map(
+			Types\ComponentType::SCRIPT->value => array_map(
 				static fn (DeviceScriptConfiguration $configuration): array => $configuration->toArray(),
 				$this->getScripts(),
 			),
-			Types\ComponentType::SMOKE => array_map(
+			Types\ComponentType::SMOKE->value => array_map(
 				static fn (DeviceSmokeConfiguration $configuration): array => $configuration->toArray(),
 				$this->getSmoke(),
 			),
-			Types\ComponentType::VOLTMETER => array_map(
+			Types\ComponentType::VOLTMETER->value => array_map(
 				static fn (DeviceVoltmeterConfiguration $configuration): array => $configuration->toArray(),
 				$this->getVoltmeters(),
 			),

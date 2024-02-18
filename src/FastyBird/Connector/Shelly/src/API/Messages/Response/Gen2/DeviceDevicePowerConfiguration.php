@@ -49,7 +49,7 @@ final readonly class DeviceDevicePowerConfiguration implements API\Messages\Mess
 
 	public function getType(): Types\ComponentType
 	{
-		return Types\ComponentType::get(Types\ComponentType::DEVICE_POWER);
+		return Types\ComponentType::DEVICE_POWER;
 	}
 
 	public function getName(): string|null
@@ -64,7 +64,7 @@ final readonly class DeviceDevicePowerConfiguration implements API\Messages\Mess
 	{
 		return [
 			'id' => $this->getId(),
-			'type' => $this->getType()->getValue(),
+			'type' => $this->getType()->value,
 			'name' => $this->getName(),
 		];
 	}

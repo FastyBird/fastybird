@@ -113,6 +113,7 @@ final class Discovery
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -123,10 +124,10 @@ final class Discovery
 	{
 		$mode = $this->connectorHelper->getClientMode($this->connector);
 
-		if ($mode->equalsValue(Types\ClientMode::CLOUD)) {
+		if ($mode === Types\ClientMode::CLOUD) {
 			$this->discoverCloudDevices();
 
-		} elseif ($mode->equalsValue(Types\ClientMode::LOCAL)) {
+		} elseif ($mode === Types\ClientMode::LOCAL) {
 			$this->discoverLocalDevices();
 		}
 	}
@@ -297,7 +298,7 @@ final class Discovery
 						}
 
 						$this->handleFoundLocalDevice(
-							Types\DeviceGeneration::get($generation),
+							$generation,
 							Utils\Strings::lower($matches['id']),
 							Utils\Strings::lower($matches['type']),
 							$serviceIpAddress,
@@ -354,26 +355,24 @@ final class Discovery
 
 		$identifier = $id . '-' . $type;
 
-		if ($generation->equalsValue(Types\DeviceGeneration::UNKNOWN)) {
+		if ($generation === Types\DeviceGeneration::UNKNOWN) {
 			try {
 				$deviceInformation = await($gen2HttpApi->getDeviceInformation($ipAddress));
-				$generation = Types\DeviceGeneration::get(Types\DeviceGeneration::GENERATION_2);
+				$generation = Types\DeviceGeneration::GENERATION_2;
 			} catch (Throwable) {
 				try {
 					$deviceInformation = await($gen1HttpApi->getDeviceInformation($ipAddress));
-					$generation = Types\DeviceGeneration::get(Types\DeviceGeneration::GENERATION_1);
+					$generation = Types\DeviceGeneration::GENERATION_1;
 				} catch (Throwable) {
 					return;
 				}
 			}
 		} else {
 			try {
-				if ($generation->equalsValue(Types\DeviceGeneration::GENERATION_1)) {
+				if ($generation === Types\DeviceGeneration::GENERATION_1) {
 					$deviceInformation = await($gen1HttpApi->getDeviceInformation($ipAddress));
-					$generation = Types\DeviceGeneration::get(Types\DeviceGeneration::GENERATION_1);
-				} elseif ($generation->equalsValue(Types\DeviceGeneration::GENERATION_2)) {
+				} elseif ($generation === Types\DeviceGeneration::GENERATION_2) {
 					$deviceInformation = await($gen2HttpApi->getDeviceInformation($ipAddress));
-					$generation = Types\DeviceGeneration::get(Types\DeviceGeneration::GENERATION_2);
 				} else {
 					return;
 				}
@@ -391,7 +390,7 @@ final class Discovery
 							'identifier' => $identifier,
 							'ip_address' => $ipAddress,
 							'domain' => $domain,
-							'generation' => $generation->getValue(),
+							'generation' => $generation->value,
 						],
 					],
 				);
@@ -403,15 +402,11 @@ final class Discovery
 		$deviceDescription = $deviceConfiguration = $deviceStatus = null;
 
 		try {
-			if ($generation->equalsValue(Types\DeviceGeneration::GENERATION_1)) {
+			if ($generation === Types\DeviceGeneration::GENERATION_1) {
 				$deviceDescription = await($gen1HttpApi->getDeviceDescription($ipAddress, null, null));
-			} elseif ($generation->equalsValue(Types\DeviceGeneration::GENERATION_2)) {
-				$deviceConfiguration = await(
-					$gen2HttpApi->getDeviceConfiguration($ipAddress, null, null),
-				);
-				$deviceStatus = await($gen2HttpApi->getDeviceState($ipAddress, null, null));
 			} else {
-				return;
+				$deviceConfiguration = await($gen2HttpApi->getDeviceConfiguration($ipAddress, null, null));
+				$deviceStatus = await($gen2HttpApi->getDeviceState($ipAddress, null, null));
 			}
 		} catch (Throwable $ex) {
 			if (
@@ -431,7 +426,7 @@ final class Discovery
 							'identifier' => $identifier,
 							'ip_address' => $ipAddress,
 							'domain' => $domain,
-							'generation' => $generation->getValue(),
+							'generation' => $generation->value,
 						],
 					],
 				);
@@ -449,7 +444,7 @@ final class Discovery
 							'identifier' => $identifier,
 							'ip_address' => $ipAddress,
 							'domain' => $domain,
-							'generation' => $generation->getValue(),
+							'generation' => $generation->value,
 						],
 					],
 				);
@@ -460,7 +455,7 @@ final class Discovery
 
 		try {
 			if (
-				$generation->equalsValue(Types\DeviceGeneration::GENERATION_1)
+				$generation === Types\DeviceGeneration::GENERATION_1
 				&& $deviceDescription !== null
 			) {
 				$message = $this->messageBuilder->create(
@@ -468,7 +463,7 @@ final class Discovery
 					[
 						'connector' => $this->connector->getId(),
 						'identifier' => $identifier,
-						'generation' => $generation,
+						'generation' => $generation->value,
 						'ip_address' => $ipAddress,
 						'domain' => $domain,
 						'model' => $deviceInformation->getModel(),
@@ -484,7 +479,7 @@ final class Discovery
 										'identifier' => (
 											$sensor->getIdentifier()
 											. '_'
-											. $sensor->getType()->getValue()
+											. $sensor->getType()->value
 											. '_'
 											. $sensor->getDescription()
 										),
@@ -504,7 +499,7 @@ final class Discovery
 					],
 				);
 			} elseif (
-				$generation->equalsValue(Types\DeviceGeneration::GENERATION_2)
+				$generation === Types\DeviceGeneration::GENERATION_2
 				&& $deviceConfiguration !== null
 			) {
 				$message = $this->messageBuilder->create(
@@ -512,7 +507,7 @@ final class Discovery
 					[
 						'connector' => $this->connector->getId(),
 						'identifier' => $identifier,
-						'generation' => $generation,
+						'generation' => $generation->value,
 						'ip_address' => $ipAddress,
 						'domain' => $domain,
 						'model' => $deviceInformation->getModel(),
@@ -522,29 +517,29 @@ final class Discovery
 						'channels' => array_map(
 							function ($component) use ($deviceStatus): array {
 								$channel = [
-									'identifier' => $component->getType()->getValue() . '_' . $component->getId(),
+									'identifier' => $component->getType()->value . '_' . $component->getId(),
 									'name' => $component->getName() ?? DevicesUtilities\Name::createName(
-										strval($component->getType()->getValue()),
+										strval($component->getType()->value),
 									),
 									'properties' => [],
 								];
 
 								$gen2metadata = $this->loader->loadGen2Components();
 
-								if ($gen2metadata->offsetExists($component->getType()->getValue())) {
+								if ($gen2metadata->offsetExists($component->getType()->value)) {
 									$componentMetadata = $gen2metadata->offsetGet(
-										$component->getType()->getValue(),
+										$component->getType()->value,
 									);
 									assert($componentMetadata instanceof Utils\ArrayHash);
 
 									if ($component instanceof API\Messages\Response\Gen2\DeviceInputConfiguration) {
-										$inputType = $component->getInputType()->getValue();
+										$inputType = $component->getInputType()->value;
 
 										if ($componentMetadata->offsetExists($inputType)) {
 											$channel['properties'][] = array_merge(
 												[
 													'identifier' => (
-														$component->getType()->getValue()
+														$component->getType()->value
 														. '_'
 														. $component->getId()
 														. '_'
@@ -571,7 +566,7 @@ final class Discovery
 												$channel['properties'][] = array_merge(
 													[
 														'identifier' => (
-															$component->getType()->getValue()
+															$component->getType()->value
 															. '_'
 															. $component->getId()
 															. '_'
@@ -601,7 +596,7 @@ final class Discovery
 													$channel['properties'][] = array_merge(
 														[
 															'identifier' => (
-																$component->getType()->getValue()
+																$component->getType()->value
 																. '_'
 																. $component->getId()
 																. '_'
@@ -655,7 +650,7 @@ final class Discovery
 						'identifier' => $identifier,
 						'ip_address' => $ipAddress,
 						'domain' => $domain,
-						'generation' => $generation->getValue(),
+						'generation' => $generation->value,
 					],
 				],
 			);

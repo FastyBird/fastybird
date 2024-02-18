@@ -13,10 +13,7 @@
  * @date           26.12.22
  */
 
-namespace FastyBird\Connector\Shelly\Types;
-
-use Consistence;
-use function strval;
+namespace FastyBird\Connector\Shelly\Types\Payloads;
 
 /**
  * Roller payload values
@@ -26,23 +23,13 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class RollerPayload extends Consistence\Enum\Enum
+enum RollerPayload: string implements Payload
 {
 
-	public const STOP = 'stop';
+	case STOP = 'stop';
 
-	public const OPEN = 'open';
+	case OPEN = 'open';
 
-	public const CLOSE = 'close';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case CLOSE = 'close';
 
 }

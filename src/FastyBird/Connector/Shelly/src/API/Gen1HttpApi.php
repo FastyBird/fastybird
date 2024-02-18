@@ -15,7 +15,6 @@
 
 namespace FastyBird\Connector\Shelly\API;
 
-use FastyBird\Connector\Shelly\API;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -89,17 +88,17 @@ final class Gen1HttpApi extends HttpApi
 	];
 
 	private const WRITABLE_SENSORS = [
-		Types\SensorDescription::MODE,
-		Types\SensorDescription::OUTPUT,
-		Types\SensorDescription::ROLLER,
-		Types\SensorDescription::RED,
-		Types\SensorDescription::GREEN,
-		Types\SensorDescription::BLUE,
-		Types\SensorDescription::WHITE,
-		Types\SensorDescription::WHITE_LEVEL,
-		Types\SensorDescription::GAIN,
-		Types\SensorDescription::BRIGHTNESS,
-		Types\SensorDescription::COLOR_TEMP,
+		Types\SensorDescription::MODE->value,
+		Types\SensorDescription::OUTPUT->value,
+		Types\SensorDescription::ROLLER->value,
+		Types\SensorDescription::RED->value,
+		Types\SensorDescription::GREEN->value,
+		Types\SensorDescription::BLUE->value,
+		Types\SensorDescription::WHITE->value,
+		Types\SensorDescription::WHITE_LEVEL->value,
+		Types\SensorDescription::GAIN->value,
+		Types\SensorDescription::BRIGHTNESS->value,
+		Types\SensorDescription::COLOR_TEMP->value,
 	];
 
 	/**
@@ -814,15 +813,15 @@ final class Gen1HttpApi extends HttpApi
 	): MetadataTypes\DataType
 	{
 		if (
-			Utils\Strings::startsWith($block, Types\BlockDescription::RELAY)
-			&& Utils\Strings::lower($description) === Types\SensorDescription::OUTPUT
+			Utils\Strings::startsWith($block, Types\BlockDescription::RELAY->value)
+			&& Utils\Strings::lower($description) === Types\SensorDescription::OUTPUT->value
 		) {
 			return MetadataTypes\DataType::SWITCH;
 		}
 
 		if (
-			Utils\Strings::startsWith($block, Types\BlockDescription::LIGHT)
-			&& Utils\Strings::lower($description) === Types\SensorDescription::OUTPUT
+			Utils\Strings::startsWith($block, Types\BlockDescription::LIGHT->value)
+			&& Utils\Strings::lower($description) === Types\SensorDescription::OUTPUT->value
 		) {
 			return MetadataTypes\DataType::SWITCH;
 		}
@@ -842,80 +841,80 @@ final class Gen1HttpApi extends HttpApi
 	): array|null
 	{
 		if (
-			Utils\Strings::startsWith($block, Types\BlockDescription::RELAY)
-			&& Utils\Strings::lower($description) === Types\SensorDescription::OUTPUT
+			Utils\Strings::startsWith($block, Types\BlockDescription::RELAY->value)
+			&& Utils\Strings::lower($description) === Types\SensorDescription::OUTPUT->value
 		) {
 			return [
 				[
 					[MetadataTypes\DataTypeShort::SWITCH->value, MetadataTypes\Payloads\Switcher::ON->value],
 					[MetadataTypes\DataTypeShort::BOOLEAN->value, true],
-					[MetadataTypes\DataTypeShort::STRING->value, Types\RelayPayload::ON],
+					[MetadataTypes\DataTypeShort::STRING->value, Types\Payloads\RelayPayload::ON->value],
 				],
 				[
 					[MetadataTypes\DataTypeShort::SWITCH->value, MetadataTypes\Payloads\Switcher::OFF->value],
 					[MetadataTypes\DataTypeShort::BOOLEAN->value, false],
-					[MetadataTypes\DataTypeShort::STRING->value, Types\RelayPayload::OFF],
+					[MetadataTypes\DataTypeShort::STRING->value, Types\Payloads\RelayPayload::OFF->value],
 				],
 				[
 					[MetadataTypes\DataTypeShort::SWITCH->value, MetadataTypes\Payloads\Switcher::TOGGLE->value],
 					null,
-					[MetadataTypes\DataTypeShort::STRING->value, Types\RelayPayload::TOGGLE],
+					[MetadataTypes\DataTypeShort::STRING->value, Types\Payloads\RelayPayload::TOGGLE->value],
 				],
 			];
 		}
 
 		if (
-			Utils\Strings::startsWith($block, Types\BlockDescription::ROLLER)
-			&& Utils\Strings::lower($description) === Types\SensorDescription::ROLLER
+			Utils\Strings::startsWith($block, Types\BlockDescription::ROLLER->value)
+			&& Utils\Strings::lower($description) === Types\SensorDescription::ROLLER->value
 		) {
 			return [
 				[
 					[MetadataTypes\DataTypeShort::COVER->value, MetadataTypes\Payloads\Cover::OPEN->value],
-					[MetadataTypes\DataTypeShort::STRING->value, Types\RollerPayload::OPEN],
+					[MetadataTypes\DataTypeShort::STRING->value, Types\Payloads\RollerPayload::OPEN->value],
 					null,
 				],
 				[
 					[MetadataTypes\DataTypeShort::COVER->value, MetadataTypes\Payloads\Cover::OPENED->value],
 					null,
-					[MetadataTypes\DataTypeShort::STRING->value, Types\RollerPayload::OPEN],
+					[MetadataTypes\DataTypeShort::STRING->value, Types\Payloads\RollerPayload::OPEN->value],
 				],
 				[
 					[MetadataTypes\DataTypeShort::COVER->value, MetadataTypes\Payloads\Cover::CLOSE->value],
-					[MetadataTypes\DataTypeShort::STRING->value, Types\RollerPayload::CLOSE],
+					[MetadataTypes\DataTypeShort::STRING->value, Types\Payloads\RollerPayload::CLOSE->value],
 					null,
 				],
 				[
 					[MetadataTypes\DataTypeShort::COVER->value, MetadataTypes\Payloads\Cover::CLOSED->value],
 					null,
-					[MetadataTypes\DataTypeShort::STRING->value, Types\RollerPayload::CLOSE],
+					[MetadataTypes\DataTypeShort::STRING->value, Types\Payloads\RollerPayload::CLOSE->value],
 				],
 				[
 					[MetadataTypes\DataTypeShort::COVER->value, MetadataTypes\Payloads\Cover::STOP->value],
-					[MetadataTypes\DataTypeShort::STRING->value, Types\RollerPayload::STOP],
+					[MetadataTypes\DataTypeShort::STRING->value, Types\Payloads\RollerPayload::STOP->value],
 					null,
 				],
 			];
 		}
 
 		if (
-			Utils\Strings::startsWith($block, Types\BlockDescription::LIGHT)
-			&& Utils\Strings::lower($description) === Types\SensorDescription::OUTPUT
+			Utils\Strings::startsWith($block, Types\BlockDescription::LIGHT->value)
+			&& Utils\Strings::lower($description) === Types\SensorDescription::OUTPUT->value
 		) {
 			return [
 				[
 					[MetadataTypes\DataTypeShort::SWITCH->value, MetadataTypes\Payloads\Switcher::ON->value],
 					[MetadataTypes\DataTypeShort::BOOLEAN->value, true],
-					[MetadataTypes\DataTypeShort::STRING->value, Types\LightSwitchPayload::ON],
+					[MetadataTypes\DataTypeShort::STRING->value, Types\Payloads\LightSwitchPayload::ON->value],
 				],
 				[
 					[MetadataTypes\DataTypeShort::SWITCH->value, MetadataTypes\Payloads\Switcher::OFF->value],
 					[MetadataTypes\DataTypeShort::BOOLEAN->value, false],
-					[MetadataTypes\DataTypeShort::STRING->value, Types\LightSwitchPayload::OFF],
+					[MetadataTypes\DataTypeShort::STRING->value, Types\Payloads\LightSwitchPayload::OFF->value],
 				],
 				[
 					[MetadataTypes\DataTypeShort::SWITCH->value, MetadataTypes\Payloads\Switcher::TOGGLE->value],
 					null,
-					[MetadataTypes\DataTypeShort::STRING->value, Types\LightSwitchPayload::TOGGLE],
+					[MetadataTypes\DataTypeShort::STRING->value, Types\Payloads\LightSwitchPayload::TOGGLE->value],
 				],
 			];
 		}
@@ -940,19 +939,19 @@ final class Gen1HttpApi extends HttpApi
 			throw new Exceptions\InvalidState('Property identifier is not valid');
 		}
 
-		if ($propertyMatches['description'] === Types\SensorDescription::OUTPUT) {
+		if ($propertyMatches['description'] === Types\SensorDescription::OUTPUT->value) {
 			return 'turn';
 		}
 
-		if ($propertyMatches['description'] === Types\SensorDescription::ROLLER) {
+		if ($propertyMatches['description'] === Types\SensorDescription::ROLLER->value) {
 			return 'go';
 		}
 
-		if ($propertyMatches['description'] === Types\SensorDescription::COLOR_TEMP) {
+		if ($propertyMatches['description'] === Types\SensorDescription::COLOR_TEMP->value) {
 			return 'temp';
 		}
 
-		if ($propertyMatches['description'] === Types\SensorDescription::WHITE_LEVEL) {
+		if ($propertyMatches['description'] === Types\SensorDescription::WHITE_LEVEL->value) {
 			return 'white';
 		}
 

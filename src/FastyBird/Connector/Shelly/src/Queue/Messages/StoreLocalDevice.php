@@ -16,7 +16,6 @@
 namespace FastyBird\Connector\Shelly\Queue\Messages;
 
 use FastyBird\Connector\Shelly\Types;
-use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_map;
@@ -41,7 +40,7 @@ final class StoreLocalDevice extends Device
 	public function __construct(
 		Uuid\UuidInterface $connector,
 		string $identifier,
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\DeviceGeneration::class)]
+		#[ObjectMapper\Rules\BackedEnumValue(class: Types\DeviceGeneration::class)]
 		private readonly Types\DeviceGeneration $generation,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('ip_address')]
@@ -120,7 +119,7 @@ final class StoreLocalDevice extends Device
 	public function toArray(): array
 	{
 		return array_merge(parent::toArray(), [
-			'generation' => $this->getGeneration()->getValue(),
+			'generation' => $this->getGeneration()->value,
 			'ip_address' => $this->getIpAddress(),
 			'domain' => $this->getDomain(),
 			'model' => $this->getModel(),

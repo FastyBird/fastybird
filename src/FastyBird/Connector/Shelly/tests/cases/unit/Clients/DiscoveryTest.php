@@ -237,7 +237,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 		$deviceHelper = $this->getContainer()->getByType(Helpers\Device::class);
 
 		self::assertInstanceOf(Documents\Devices\Device::class, $device);
-		self::assertSame(Types\DeviceGeneration::GENERATION_1, $deviceHelper->getGeneration($device)->getValue());
+		self::assertSame(Types\DeviceGeneration::GENERATION_1, $deviceHelper->getGeneration($device));
 		self::assertSame('10.10.0.239', $deviceHelper->getIpAddress($device));
 		self::assertSame('shellyrgbw2-C45BBEE4C926.local', $deviceHelper->getDomain($device));
 		self::assertFalse($deviceHelper->hasAuthentication($device));
@@ -451,7 +451,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 		$deviceHelper = $this->getContainer()->getByType(Helpers\Device::class);
 
 		self::assertInstanceOf(Documents\Devices\Device::class, $device);
-		self::assertSame(Types\DeviceGeneration::GENERATION_2, $deviceHelper->getGeneration($device)->getValue());
+		self::assertSame(Types\DeviceGeneration::GENERATION_2, $deviceHelper->getGeneration($device));
 		self::assertSame('10.10.0.37', $deviceHelper->getIpAddress($device));
 		self::assertSame('ShellyPlus2PM-441793AD07E8.local', $deviceHelper->getDomain($device));
 		self::assertFalse($deviceHelper->hasAuthentication($device));

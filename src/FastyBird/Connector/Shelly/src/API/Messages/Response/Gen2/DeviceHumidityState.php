@@ -53,7 +53,7 @@ final class DeviceHumidityState extends DeviceState implements API\Messages\Mess
 
 	public function getType(): Types\ComponentType
 	{
-		return Types\ComponentType::get(Types\ComponentType::HUMIDITY);
+		return Types\ComponentType::HUMIDITY;
 	}
 
 	public function getRelativeHumidity(): float|string|null

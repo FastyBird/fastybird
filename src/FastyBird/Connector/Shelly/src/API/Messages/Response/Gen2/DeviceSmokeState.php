@@ -56,7 +56,7 @@ final class DeviceSmokeState extends DeviceState implements API\Messages\Message
 
 	public function getType(): Types\ComponentType
 	{
-		return Types\ComponentType::get(Types\ComponentType::SMOKE);
+		return Types\ComponentType::SMOKE;
 	}
 
 	public function getAlarm(): bool|string

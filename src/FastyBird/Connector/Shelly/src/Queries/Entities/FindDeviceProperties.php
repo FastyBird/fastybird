@@ -6,33 +6,33 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:ModbusConnector!
+ * @package        FastyBird:ShellyConnector!
  * @subpackage     Queries
  * @since          1.0.0
  *
- * @date           07.12.23
+ * @date           18.02.24
  */
 
-namespace FastyBird\Connector\Modbus\Queries\Configuration;
+namespace FastyBird\Connector\Shelly\Queries\Entities;
 
-use FastyBird\Connector\Modbus\Exceptions;
-use FastyBird\Connector\Modbus\Types;
-use FastyBird\Module\Devices\Documents as DevicesDocuments;
+use FastyBird\Connector\Shelly\Exceptions;
+use FastyBird\Connector\Shelly\Types;
+use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use function sprintf;
 
 /**
- * Find devices properties configuration query
+ * Find device properties entities query
  *
- * @template T of DevicesDocuments\Devices\Properties\Property
- * @extends  DevicesQueries\Configuration\FindDeviceProperties<T>
+ * @template T of DevicesEntities\Devices\Properties\Property
+ * @extends  DevicesQueries\Entities\FindDeviceProperties<T>
  *
- * @package        FastyBird:ModbusConnector!
+ * @package        FastyBird:ShellyConnector!
  * @subpackage     Queries
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class FindDeviceProperties extends DevicesQueries\Configuration\FindDeviceProperties
+class FindDeviceProperties extends DevicesQueries\Entities\FindDeviceProperties
 {
 
 	/**

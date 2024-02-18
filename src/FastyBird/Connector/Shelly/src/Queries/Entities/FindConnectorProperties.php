@@ -1,37 +1,38 @@
 <?php declare(strict_types = 1);
 
 /**
- * FindConnectorVariableProperties.php
+ * FindConnectorProperties.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:FbMqttConnector!
+ * @package        FastyBird:ShellyConnector!
  * @subpackage     Queries
  * @since          1.0.0
  *
- * @date           16.02.24
+ * @date           18.02.24
  */
 
-namespace FastyBird\Connector\FbMqtt\Queries\Entities;
+namespace FastyBird\Connector\Shelly\Queries\Entities;
 
-use FastyBird\Connector\FbMqtt\Exceptions;
-use FastyBird\Connector\FbMqtt\Types;
+use FastyBird\Connector\Shelly\Exceptions;
+use FastyBird\Connector\Shelly\Types;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use function sprintf;
 
 /**
- * Find connector variable properties entities query
+ * Find connector properties entities query
  *
- * @template T of DevicesEntities\Connectors\Properties\Variable
- * @extends  FindConnectorProperties<T>
+ * @template T of DevicesEntities\Connectors\Properties\Property
+ * @extends  DevicesQueries\Entities\FindConnectorProperties<T>
  *
- * @package        FastyBird:FbMqttConnector!
+ * @package        FastyBird:ShellyConnector!
  * @subpackage     Queries
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class FindConnectorVariableProperties extends FindConnectorProperties
+class FindConnectorProperties extends DevicesQueries\Entities\FindConnectorProperties
 {
 
 	/**

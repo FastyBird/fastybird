@@ -18,6 +18,7 @@ namespace FastyBird\Connector\Shelly\Queue\Consumers;
 use Doctrine\DBAL;
 use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\Entities;
+use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Queries;
 use FastyBird\Connector\Shelly\Queue;
 use FastyBird\Connector\Shelly\Types;
@@ -34,7 +35,6 @@ use Nette;
 use Nette\Utils;
 use function assert;
 use function in_array;
-use function strval;
 
 /**
  * Store locally found device details message consumer
@@ -73,6 +73,7 @@ final class StoreLocalDevice implements Queue\Consumer
 	 * @throws DBAL\Exception
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 */
 	public function consume(Queue\Messages\Message $message): bool
 	{
@@ -132,50 +133,50 @@ final class StoreLocalDevice implements Queue\Consumer
 			$message->getIpAddress(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::IP_ADDRESS,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::IP_ADDRESS),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::IP_ADDRESS->value),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$message->getDomain(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::DOMAIN,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::DOMAIN),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::DOMAIN->value),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
-			strval($message->getGeneration()->getValue()),
+			$message->getGeneration()->value,
 			MetadataTypes\DataType::ENUM,
 			Types\DevicePropertyIdentifier::GENERATION,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::GENERATION),
-			[Types\DeviceGeneration::GENERATION_1, Types\DeviceGeneration::GENERATION_2],
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::GENERATION->value),
+			[Types\DeviceGeneration::GENERATION_1->value, Types\DeviceGeneration::GENERATION_2->value],
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$message->isAuthEnabled(),
 			MetadataTypes\DataType::BOOLEAN,
 			Types\DevicePropertyIdentifier::AUTH_ENABLED,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::AUTH_ENABLED),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::AUTH_ENABLED->value),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$message->getModel(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::MODEL,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MODEL),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MODEL->value),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$message->getMacAddress(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::MAC_ADDRESS,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MAC_ADDRESS),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MAC_ADDRESS->value),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$message->getFirmwareVersion(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::FIRMWARE_VERSION,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::FIRMWARE_VERSION),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::FIRMWARE_VERSION->value),
 		);
 
 		foreach ($message->getChannels() as $channelDescription) {

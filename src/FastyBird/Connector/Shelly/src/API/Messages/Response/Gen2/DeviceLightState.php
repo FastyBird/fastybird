@@ -78,7 +78,7 @@ final class DeviceLightState extends DeviceState implements API\Messages\Message
 
 	public function getType(): Types\ComponentType
 	{
-		return Types\ComponentType::get(Types\ComponentType::LIGHT);
+		return Types\ComponentType::LIGHT;
 	}
 
 	public function getSource(): string|null

@@ -49,64 +49,64 @@ final readonly class GetDeviceState implements API\Messages\Message
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceSwitchState::class),
 		)]
-		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::SWITCH)]
+		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::SWITCH->value)]
 		private array $switches = [],
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceCoverState::class),
 		)]
-		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::COVER)]
+		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::COVER->value)]
 		private array $covers = [],
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceInputState::class),
 		)]
-		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::INPUT)]
+		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::INPUT->value)]
 		private array $inputs = [],
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceLightState::class),
 		)]
-		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::LIGHT)]
+		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::LIGHT->value)]
 		private array $lights = [],
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceTemperatureState::class),
 		)]
-		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::TEMPERATURE)]
+		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::TEMPERATURE->value)]
 		private array $temperature = [],
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceHumidityState::class),
 		)]
-		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::HUMIDITY)]
+		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::HUMIDITY->value)]
 		private array $humidity = [],
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceDevicePowerState::class),
 		)]
-		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::DEVICE_POWER)]
+		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::DEVICE_POWER->value)]
 		private array $devicePower = [],
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceScriptState::class),
 		)]
-		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::SCRIPT)]
+		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::SCRIPT->value)]
 		private array $scripts = [],
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceSmokeState::class),
 		)]
-		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::SMOKE)]
+		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::SMOKE->value)]
 		private array $smoke = [],
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(DeviceVoltmeterState::class),
 		)]
-		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::VOLTMETER)]
+		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::VOLTMETER->value)]
 		private array $voltmeters = [],
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\MappedObjectValue(class: EthernetState::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::ETHERNET)]
+		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::ETHERNET->value)]
 		private EthernetState|null $ethernet = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\MappedObjectValue(class: WifiState::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::WIFI)]
+		#[ObjectMapper\Modifiers\FieldName(Types\ComponentType::WIFI->value)]
 		private WifiState|null $wifi = null,
 	)
 	{
@@ -328,7 +328,7 @@ final readonly class GetDeviceState implements API\Messages\Message
 
 	public function findComponent(Types\ComponentType $type, int $id): DeviceState|null
 	{
-		return match ($type->getValue()) {
+		return match ($type) {
 			Types\ComponentType::SWITCH => $this->findSwitch($id),
 			Types\ComponentType::COVER => $this->findCover($id),
 			Types\ComponentType::LIGHT => $this->findLight($id),
@@ -359,48 +359,48 @@ final readonly class GetDeviceState implements API\Messages\Message
 	public function toArray(): array
 	{
 		return [
-			Types\ComponentType::SWITCH => array_map(
+			Types\ComponentType::SWITCH->value => array_map(
 				static fn (DeviceSwitchState $state): array => $state->toArray(),
 				$this->getSwitches(),
 			),
-			Types\ComponentType::COVER => array_map(
+			Types\ComponentType::COVER->value => array_map(
 				static fn (DeviceCoverState $state): array => $state->toArray(),
 				$this->getCovers(),
 			),
-			Types\ComponentType::INPUT => array_map(
+			Types\ComponentType::INPUT->value => array_map(
 				static fn (DeviceInputState $state): array => $state->toArray(),
 				$this->getInputs(),
 			),
-			Types\ComponentType::LIGHT => array_map(
+			Types\ComponentType::LIGHT->value => array_map(
 				static fn (DeviceLightState $state): array => $state->toArray(),
 				$this->getLights(),
 			),
-			Types\ComponentType::TEMPERATURE => array_map(
+			Types\ComponentType::TEMPERATURE->value => array_map(
 				static fn (DeviceTemperatureState $state): array => $state->toArray(),
 				$this->getTemperature(),
 			),
-			Types\ComponentType::HUMIDITY => array_map(
+			Types\ComponentType::HUMIDITY->value => array_map(
 				static fn (DeviceHumidityState $state): array => $state->toArray(),
 				$this->getHumidity(),
 			),
-			Types\ComponentType::DEVICE_POWER => array_map(
+			Types\ComponentType::DEVICE_POWER->value => array_map(
 				static fn (DeviceDevicePowerState $state): array => $state->toArray(),
 				$this->getDevicePower(),
 			),
-			Types\ComponentType::SCRIPT => array_map(
+			Types\ComponentType::SCRIPT->value => array_map(
 				static fn (DeviceScriptState $state): array => $state->toArray(),
 				$this->getScripts(),
 			),
-			Types\ComponentType::SMOKE => array_map(
+			Types\ComponentType::SMOKE->value => array_map(
 				static fn (DeviceSmokeState $state): array => $state->toArray(),
 				$this->getSmoke(),
 			),
-			Types\ComponentType::VOLTMETER => array_map(
+			Types\ComponentType::VOLTMETER->value => array_map(
 				static fn (DeviceVoltmeterState $state): array => $state->toArray(),
 				$this->getVoltmeters(),
 			),
-			Types\ComponentType::ETHERNET => $this->getEthernet()?->toArray(),
-			Types\ComponentType::WIFI => $this->getWifi()?->toArray(),
+			Types\ComponentType::ETHERNET->value => $this->getEthernet()?->toArray(),
+			Types\ComponentType::WIFI->value => $this->getWifi()?->toArray(),
 		];
 	}
 

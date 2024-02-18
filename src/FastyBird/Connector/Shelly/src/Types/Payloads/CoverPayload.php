@@ -13,10 +13,7 @@
  * @date           25.12.22
  */
 
-namespace FastyBird\Connector\Shelly\Types;
-
-use Consistence;
-use function strval;
+namespace FastyBird\Connector\Shelly\Types\Payloads;
 
 /**
  * Cover component payload values
@@ -26,29 +23,19 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class CoverPayload extends Consistence\Enum\Enum
+enum CoverPayload: string implements Payload
 {
 
-	public const OPEN = 'open';
+	case OPEN = 'open';
 
-	public const CLOSED = 'closed';
+	case CLOSED = 'closed';
 
-	public const OPENING = 'opening';
+	case OPENING = 'opening';
 
-	public const CLOSING = 'closing';
+	case CLOSING = 'closing';
 
-	public const STOPPED = 'stopped';
+	case STOPPED = 'stopped';
 
-	public const CALIBRATING = 'calibrating';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case CALIBRATING = 'calibrating';
 
 }
