@@ -32,7 +32,7 @@ final class HeaderTest extends Tests\Cases\Unit\BaseTestCase
 
 		$message = $processor->process(
 			[
-				'name' => Types\Header::ERROR_RESPONSE,
+				'name' => Types\Header::ERROR_RESPONSE->value,
 				'message_id' => $id->toString(),
 				'version' => '1',
 			],
