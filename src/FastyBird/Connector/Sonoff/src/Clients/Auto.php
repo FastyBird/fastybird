@@ -103,6 +103,7 @@ final class Auto extends ClientProcess implements Client
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -125,6 +126,7 @@ final class Auto extends ClientProcess implements Client
 	 * @return Promise\PromiseInterface<bool>
 	 *
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\CloudApiCall
 	 * @throws Exceptions\CloudApiError
 	 * @throws Exceptions\LanApiCall
@@ -175,6 +177,7 @@ final class Auto extends ClientProcess implements Client
 	 * @return Promise\PromiseInterface<bool>
 	 *
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\CloudApiCall
 	 * @throws Exceptions\CloudApiError

@@ -39,26 +39,26 @@ trait TSwitch
 	public function toStates(): array
 	{
 		return [
-			Types\ParameterType::CHANNEL => [
+			Types\ParameterType::CHANNEL->value => [
 				[
-					Types\PropertyParameter::NAME => Types\Parameter::SWITCH,
-					Types\PropertyParameter::VALUE => $this->getSwitch(),
-					Types\PropertyParameter::GROUP => Types\ParameterGroup::SWITCH,
+					Types\PropertyParameter::NAME->value => Types\Parameter::SWITCH->value,
+					Types\PropertyParameter::VALUE->value => $this->getSwitch(),
+					Types\PropertyParameter::GROUP->value => Types\ParameterGroup::SWITCH->value,
 				],
 				[
-					Types\PropertyParameter::NAME => Types\Parameter::STARTUP,
-					Types\PropertyParameter::VALUE => $this->getStartup(),
-					Types\PropertyParameter::GROUP => Types\ParameterGroup::SWITCH,
+					Types\PropertyParameter::NAME->value => Types\Parameter::STARTUP->value,
+					Types\PropertyParameter::VALUE->value => $this->getStartup(),
+					Types\PropertyParameter::GROUP->value => Types\ParameterGroup::SWITCH->value,
 				],
 				[
-					Types\PropertyParameter::NAME => Types\Parameter::PULSE,
-					Types\PropertyParameter::VALUE => $this->getPulse(),
-					Types\PropertyParameter::GROUP => Types\ParameterGroup::SWITCH,
+					Types\PropertyParameter::NAME->value => Types\Parameter::PULSE->value,
+					Types\PropertyParameter::VALUE->value => $this->getPulse(),
+					Types\PropertyParameter::GROUP->value => Types\ParameterGroup::SWITCH->value,
 				],
 				[
-					Types\PropertyParameter::NAME => Types\Parameter::PULSE_WIDTH,
-					Types\PropertyParameter::VALUE => $this->getPulseWidth(),
-					Types\PropertyParameter::GROUP => Types\ParameterGroup::SWITCH,
+					Types\PropertyParameter::NAME->value => Types\Parameter::PULSE_WIDTH->value,
+					Types\PropertyParameter::VALUE->value => $this->getPulseWidth(),
+					Types\PropertyParameter::GROUP->value => Types\ParameterGroup::SWITCH->value,
 				],
 			],
 		];

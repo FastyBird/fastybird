@@ -74,6 +74,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
@@ -243,7 +244,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 		$parameter = Helpers\Transformer::devicePropertyToParameter($property->getIdentifier());
 
 		try {
-			if ($this->connectorHelper->getClientMode($connector)->equalsValue(Types\ClientMode::AUTO)) {
+			if ($this->connectorHelper->getClientMode($connector) === Types\ClientMode::AUTO) {
 				$deferred = new Promise\Deferred();
 
 				if ($this->deviceHelper->getIpAddress($device) !== null) {
@@ -299,7 +300,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 				}
 
 				$result = $deferred->promise();
-			} elseif ($this->connectorHelper->getClientMode($connector)->equalsValue(Types\ClientMode::CLOUD)) {
+			} elseif ($this->connectorHelper->getClientMode($connector) === Types\ClientMode::CLOUD) {
 				$client = $this->connectionManager->getCloudApiConnection($connector);
 
 				if (!$client->isConnected()) {
@@ -313,7 +314,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 					$group,
 					$outlet,
 				);
-			} elseif ($this->connectorHelper->getClientMode($connector)->equalsValue(Types\ClientMode::LAN)) {
+			} elseif ($this->connectorHelper->getClientMode($connector) === Types\ClientMode::LAN) {
 				if ($this->deviceHelper->getIpAddress($device) === null) {
 					throw new Exceptions\InvalidState('Device IP address is not configured');
 				}

@@ -133,16 +133,16 @@ final class Uiid44 implements Uuid
 		return array_merge(
 			$this->toDeviceState(),
 			[
-				Types\ParameterType::CHANNEL => [
+				Types\ParameterType::CHANNEL->value => [
 					[
-						Types\PropertyParameter::NAME => Types\Parameter::STATE,
-						Types\PropertyParameter::VALUE => $this->getSwitch(),
-						Types\PropertyParameter::GROUP => Types\ParameterGroup::LIGHT,
+						Types\PropertyParameter::NAME->value => Types\Parameter::STATE->value,
+						Types\PropertyParameter::VALUE->value => $this->getSwitch(),
+						Types\PropertyParameter::GROUP->value => Types\ParameterGroup::LIGHT->value,
 					],
 					[
-						Types\PropertyParameter::NAME => Types\Parameter::BRIGHTNESS_2,
-						Types\PropertyParameter::VALUE => $this->getBrightness(),
-						Types\PropertyParameter::GROUP => Types\ParameterGroup::LIGHT,
+						Types\PropertyParameter::NAME->value => Types\Parameter::BRIGHTNESS_2,
+						Types\PropertyParameter::VALUE->value => $this->getBrightness(),
+						Types\PropertyParameter::GROUP->value => Types\ParameterGroup::LIGHT->value,
 					],
 				],
 			],

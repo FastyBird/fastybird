@@ -81,21 +81,21 @@ final readonly class Uiid1770 implements Uuid
 	{
 		return array_merge(
 			[
-				Types\ParameterType::CHANNEL => [
+				Types\ParameterType::CHANNEL->value => [
 					[
-						Types\PropertyParameter::NAME => Types\Parameter::TEMPERATURE,
-						Types\PropertyParameter::VALUE => $this->getTemperature(),
-						Types\PropertyParameter::GROUP => Types\ParameterGroup::SENSOR,
+						Types\PropertyParameter::NAME->value => Types\Parameter::TEMPERATURE->value,
+						Types\PropertyParameter::VALUE->value => $this->getTemperature(),
+						Types\PropertyParameter::GROUP->value => Types\ParameterGroup::SENSOR->value,
 					],
 					[
-						Types\PropertyParameter::NAME => Types\Parameter::HUMIDITY,
-						Types\PropertyParameter::VALUE => $this->getHumidity(),
-						Types\PropertyParameter::GROUP => Types\ParameterGroup::SENSOR,
+						Types\PropertyParameter::NAME->value => Types\Parameter::HUMIDITY->value,
+						Types\PropertyParameter::VALUE->value => $this->getHumidity(),
+						Types\PropertyParameter::GROUP->value => Types\ParameterGroup::SENSOR->value,
 					],
 					[
-						Types\PropertyParameter::NAME => Types\Parameter::BATTERY,
-						Types\PropertyParameter::VALUE => $this->getBattery(),
-						Types\PropertyParameter::GROUP => Types\ParameterGroup::SENSOR,
+						Types\PropertyParameter::NAME->value => Types\Parameter::BATTERY->value,
+						Types\PropertyParameter::VALUE->value => $this->getBattery(),
+						Types\PropertyParameter::GROUP->value => Types\ParameterGroup::SENSOR->value,
 					],
 				],
 			],

@@ -149,21 +149,21 @@ final class Uiid28 implements Uuid
 		return array_merge(
 			$this->toDeviceState(),
 			[
-				Types\ParameterType::CHANNEL => [
+				Types\ParameterType::CHANNEL->value => [
 					[
-						Types\PropertyParameter::NAME => Types\Parameter::REMOTE_TYPE,
-						Types\PropertyParameter::VALUE => $this->getRemoteType(),
-						Types\PropertyParameter::GROUP => Types\ParameterGroup::BRIDGE,
+						Types\PropertyParameter::NAME->value => Types\Parameter::REMOTE_TYPE->value,
+						Types\PropertyParameter::VALUE->value => $this->getRemoteType(),
+						Types\PropertyParameter::GROUP->value => Types\ParameterGroup::BRIDGE->value,
 					],
 					[
-						Types\PropertyParameter::NAME => Types\Parameter::COMMAND,
-						Types\PropertyParameter::VALUE => $this->getCommand(),
-						Types\PropertyParameter::GROUP => Types\ParameterGroup::BRIDGE,
+						Types\PropertyParameter::NAME->value => Types\Parameter::COMMAND->value,
+						Types\PropertyParameter::VALUE->value => $this->getCommand(),
+						Types\PropertyParameter::GROUP->value => Types\ParameterGroup::BRIDGE->value,
 					],
 					[
-						Types\PropertyParameter::NAME => Types\Parameter::RF_CHANNEL,
-						Types\PropertyParameter::VALUE => $this->getRfChannel(),
-						Types\PropertyParameter::GROUP => Types\ParameterGroup::BRIDGE,
+						Types\PropertyParameter::NAME->value => Types\Parameter::RF_CHANNEL->value,
+						Types\PropertyParameter::VALUE->value => $this->getRfChannel(),
+						Types\PropertyParameter::GROUP->value => Types\ParameterGroup::BRIDGE->value,
 					],
 				],
 			],

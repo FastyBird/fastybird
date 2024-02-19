@@ -17,7 +17,6 @@ namespace FastyBird\Connector\Sonoff\Queue\Messages\Parameters;
 
 use FastyBird\Connector\Sonoff\Queue;
 use FastyBird\Connector\Sonoff\Types;
-use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Orisai\ObjectMapper;
 
@@ -42,7 +41,7 @@ final readonly class DiscoveredDeviceParameter implements Queue\Messages\Message
 		private string $identifier,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private string $name,
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\ParameterType::class)]
+		#[ObjectMapper\Rules\BackedEnumValue(class: Types\ParameterType::class)]
 		private Types\ParameterType $type,
 		#[ObjectMapper\Rules\BackedEnumValue(class: MetadataTypes\DataType::class)]
 		private MetadataTypes\DataType $dataType,
@@ -140,7 +139,7 @@ final readonly class DiscoveredDeviceParameter implements Queue\Messages\Message
 			'group' => $this->getGroup(),
 			'identifier' => $this->getIdentifier(),
 			'name' => $this->getName(),
-			'type' => $this->getType()->getValue(),
+			'type' => $this->getType()->value,
 			'data_type' => $this->getDataType()->value,
 			'format' => $this->getFormat(),
 			'settable' => $this->isSettable(),

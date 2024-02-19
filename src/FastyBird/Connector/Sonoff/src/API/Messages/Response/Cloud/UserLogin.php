@@ -17,7 +17,6 @@ namespace FastyBird\Connector\Sonoff\API\Messages\Response\Cloud;
 
 use FastyBird\Connector\Sonoff\API;
 use FastyBird\Connector\Sonoff\Types;
-use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 
 /**
@@ -38,7 +37,7 @@ final readonly class UserLogin implements API\Messages\Message
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('rt')]
 		private string $refreshToken,
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\Region::class)]
+		#[ObjectMapper\Rules\BackedEnumValue(class: Types\Region::class)]
 		private Types\Region $region,
 		#[ObjectMapper\Rules\MappedObjectValue(User::class)]
 		private User $user,
@@ -74,7 +73,7 @@ final readonly class UserLogin implements API\Messages\Message
 		return [
 			'access_token' => $this->getAccessToken(),
 			'refresh_token' => $this->getRefreshToken(),
-			'region' => $this->getRegion()->getValue(),
+			'region' => $this->getRegion()->value,
 			'user' => $this->getUser()->toArray(),
 		];
 	}

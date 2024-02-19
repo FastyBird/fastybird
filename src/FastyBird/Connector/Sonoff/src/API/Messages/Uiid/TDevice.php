@@ -39,22 +39,22 @@ trait TDevice
 	public function toStates(): array
 	{
 		return [
-			Types\ParameterType::DEVICE => [
+			Types\ParameterType::DEVICE->value => [
 				[
-					Types\PropertyParameter::NAME => Types\Parameter::STATUS_LED,
-					Types\PropertyParameter::VALUE => $this->getStatusLed(),
+					Types\PropertyParameter::NAME->value => Types\Parameter::STATUS_LED->value,
+					Types\PropertyParameter::VALUE->value => $this->getStatusLed(),
 				],
 				[
-					Types\PropertyParameter::NAME => Types\Parameter::FIRMWARE_VERSION,
-					Types\PropertyParameter::VALUE => $this->getFirmwareVersion(),
+					Types\PropertyParameter::NAME->value => Types\Parameter::FIRMWARE_VERSION->value,
+					Types\PropertyParameter::VALUE->value => $this->getFirmwareVersion(),
 				],
 				[
-					Types\PropertyParameter::NAME => Types\Parameter::SSID,
-					Types\PropertyParameter::VALUE => $this->getSsid(),
+					Types\PropertyParameter::NAME->value => Types\Parameter::SSID->value,
+					Types\PropertyParameter::VALUE->value => $this->getSsid(),
 				],
 				[
-					Types\PropertyParameter::NAME => Types\Parameter::RSSI,
-					Types\PropertyParameter::VALUE => $this->getRssi(),
+					Types\PropertyParameter::NAME->value => Types\Parameter::RSSI->value,
+					Types\PropertyParameter::VALUE->value => $this->getRssi(),
 				],
 			],
 		];

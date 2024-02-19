@@ -105,8 +105,8 @@ final class Discovery
 				$mode = $this->connectorHelper->getClientMode($this->connector);
 
 				if (
-					$mode->equalsValue(Types\ClientMode::LAN)
-					|| $mode->equalsValue(Types\ClientMode::AUTO)
+					$mode === Types\ClientMode::LAN
+					|| $mode === Types\ClientMode::AUTO
 				) {
 					await($this->discoverLanDevices());
 				}
@@ -130,6 +130,7 @@ final class Discovery
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError
@@ -150,6 +151,7 @@ final class Discovery
 	 * @return Promise\PromiseInterface<bool>
 	 *
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\CloudApiCall
 	 * @throws Exceptions\CloudApiError
 	 * @throws MetadataExceptions\InvalidArgument
@@ -314,7 +316,7 @@ final class Discovery
 			foreach (get_object_vars($mappingConfiguration) as $identifier => $configuration) {
 				assert($configuration instanceof stdClass);
 
-				if ($identifier === Types\ChannelGroup::RF_LIST) {
+				if ($identifier === Types\ChannelGroup::RF_LIST->value) {
 					// TODO: Not supported now
 				} else {
 					if (property_exists($configuration, 'properties') && property_exists($configuration, 'length')) {
@@ -324,7 +326,7 @@ final class Discovery
 
 						$count = intval($configuration->length);
 
-						if ($identifier === Types\ChannelGroup::SWITCHES) {
+						if ($identifier === Types\ChannelGroup::SWITCHES->value) {
 							$count = intval($configuration->length);
 
 							if ($device->getState() !== null) {
@@ -378,7 +380,7 @@ final class Discovery
 						if (
 							in_array($identifier, $device->getDenyFeatures(), true)
 							|| (
-								$identifier === Types\Parameter::STATUS_LED
+								$identifier === Types\Parameter::STATUS_LED->value
 								&& in_array('sled', $device->getDenyFeatures(), true)
 							)
 						) {
@@ -481,6 +483,7 @@ final class Discovery
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError

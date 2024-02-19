@@ -201,41 +201,41 @@ final class Uiid22 implements Uuid
 		return array_merge(
 			$this->toDeviceState(),
 			[
-				Types\ParameterType::CHANNEL => [
+				Types\ParameterType::CHANNEL->value => [
 					[
-						Types\PropertyParameter::NAME => Types\Parameter::CHANNEL_0,
-						Types\PropertyParameter::VALUE => $this->getChannel0(),
-						Types\PropertyParameter::GROUP => Types\ParameterGroup::LIGHT,
+						Types\PropertyParameter::NAME->value => Types\Parameter::CHANNEL_0->value,
+						Types\PropertyParameter::VALUE->value => $this->getChannel0(),
+						Types\PropertyParameter::GROUP->value => Types\ParameterGroup::LIGHT->value,
 					],
 					[
-						Types\PropertyParameter::NAME => Types\Parameter::CHANNEL_1,
-						Types\PropertyParameter::VALUE => $this->getChannel1(),
-						Types\PropertyParameter::GROUP => Types\ParameterGroup::LIGHT,
+						Types\PropertyParameter::NAME->value => Types\Parameter::CHANNEL_1->value,
+						Types\PropertyParameter::VALUE->value => $this->getChannel1(),
+						Types\PropertyParameter::GROUP->value => Types\ParameterGroup::LIGHT->value,
 					],
 					[
-						Types\PropertyParameter::NAME => Types\Parameter::CHANNEL_2,
-						Types\PropertyParameter::VALUE => $this->getChannel2(),
-						Types\PropertyParameter::GROUP => Types\ParameterGroup::LIGHT,
+						Types\PropertyParameter::NAME->value => Types\Parameter::CHANNEL_2->value,
+						Types\PropertyParameter::VALUE->value => $this->getChannel2(),
+						Types\PropertyParameter::GROUP->value => Types\ParameterGroup::LIGHT->value,
 					],
 					[
-						Types\PropertyParameter::NAME => Types\Parameter::CHANNEL_3,
-						Types\PropertyParameter::VALUE => $this->getChannel3(),
-						Types\PropertyParameter::GROUP => Types\ParameterGroup::LIGHT,
+						Types\PropertyParameter::NAME->value => Types\Parameter::CHANNEL_3->value,
+						Types\PropertyParameter::VALUE->value => $this->getChannel3(),
+						Types\PropertyParameter::GROUP->value => Types\ParameterGroup::LIGHT->value,
 					],
 					[
-						Types\PropertyParameter::NAME => Types\Parameter::CHANNEL_4,
-						Types\PropertyParameter::VALUE => $this->getChannel4(),
-						Types\PropertyParameter::GROUP => Types\ParameterGroup::LIGHT,
+						Types\PropertyParameter::NAME->value => Types\Parameter::CHANNEL_4->value,
+						Types\PropertyParameter::VALUE->value => $this->getChannel4(),
+						Types\PropertyParameter::GROUP->value => Types\ParameterGroup::LIGHT->value,
 					],
 					[
-						Types\PropertyParameter::NAME => Types\Parameter::TYPE,
-						Types\PropertyParameter::VALUE => $this->getType(),
-						Types\PropertyParameter::GROUP => Types\ParameterGroup::LIGHT,
+						Types\PropertyParameter::NAME->value => Types\Parameter::TYPE->value,
+						Types\PropertyParameter::VALUE->value => $this->getType(),
+						Types\PropertyParameter::GROUP->value => Types\ParameterGroup::LIGHT->value,
 					],
 					[
-						Types\PropertyParameter::NAME => Types\Parameter::MODE,
-						Types\PropertyParameter::VALUE => $this->getMode(),
-						Types\PropertyParameter::GROUP => Types\ParameterGroup::LIGHT,
+						Types\PropertyParameter::NAME->value => Types\Parameter::MODE->value,
+						Types\PropertyParameter::VALUE->value => $this->getMode(),
+						Types\PropertyParameter::GROUP->value => Types\ParameterGroup::LIGHT->value,
 					],
 				],
 			],

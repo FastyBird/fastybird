@@ -17,6 +17,7 @@ namespace FastyBird\Connector\Sonoff\Clients;
 
 use DateTimeInterface;
 use FastyBird\Connector\Sonoff\Documents;
+use FastyBird\Connector\Sonoff\Exceptions;
 use FastyBird\Connector\Sonoff\Helpers;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -80,6 +81,7 @@ abstract class ClientProcess
 	/**
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\Mapping
@@ -110,6 +112,7 @@ abstract class ClientProcess
 	/**
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\Mapping
@@ -130,6 +133,7 @@ abstract class ClientProcess
 	/**
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\Mapping
@@ -179,6 +183,7 @@ abstract class ClientProcess
 	/**
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\Mapping

@@ -155,26 +155,26 @@ final class Uiid17 implements Uuid
 		return array_merge(
 			$this->toDeviceState(),
 			[
-				Types\ParameterType::CHANNEL => [
+				Types\ParameterType::CHANNEL->value => [
 					[
-						Types\PropertyParameter::NAME => Types\Parameter::FAN,
-						Types\PropertyParameter::VALUE => $this->getFan(),
-						Types\PropertyParameter::GROUP => Types\ParameterGroup::FAN,
+						Types\PropertyParameter::NAME->value => Types\Parameter::FAN->value,
+						Types\PropertyParameter::VALUE->value => $this->getFan(),
+						Types\PropertyParameter::GROUP->value => Types\ParameterGroup::FAN->value,
 					],
 					[
-						Types\PropertyParameter::NAME => Types\Parameter::SPEED,
-						Types\PropertyParameter::VALUE => $this->getSpeed(),
-						Types\PropertyParameter::GROUP => Types\ParameterGroup::FAN,
+						Types\PropertyParameter::NAME->value => Types\Parameter::SPEED->value,
+						Types\PropertyParameter::VALUE->value => $this->getSpeed(),
+						Types\PropertyParameter::GROUP->value => Types\ParameterGroup::FAN->value,
 					],
 					[
-						Types\PropertyParameter::NAME => Types\Parameter::MODE,
-						Types\PropertyParameter::VALUE => $this->getMode(),
-						Types\PropertyParameter::GROUP => Types\ParameterGroup::FAN,
+						Types\PropertyParameter::NAME->value => Types\Parameter::MODE->value,
+						Types\PropertyParameter::VALUE->value => $this->getMode(),
+						Types\PropertyParameter::GROUP->value => Types\ParameterGroup::FAN->value,
 					],
 					[
-						Types\PropertyParameter::NAME => Types\Parameter::SHAKE,
-						Types\PropertyParameter::VALUE => $this->getShake(),
-						Types\PropertyParameter::GROUP => Types\ParameterGroup::FAN,
+						Types\PropertyParameter::NAME->value => Types\Parameter::SHAKE->value,
+						Types\PropertyParameter::VALUE->value => $this->getShake(),
+						Types\PropertyParameter::GROUP->value => Types\ParameterGroup::FAN->value,
 					],
 				],
 			],

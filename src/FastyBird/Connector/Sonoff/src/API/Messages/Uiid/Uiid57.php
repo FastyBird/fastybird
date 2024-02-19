@@ -133,16 +133,16 @@ final class Uiid57 implements Uuid
 		return array_merge(
 			$this->toDeviceState(),
 			[
-				Types\ParameterType::CHANNEL => [
+				Types\ParameterType::CHANNEL->value => [
 					[
-						Types\PropertyParameter::NAME => Types\Parameter::STATE,
-						Types\PropertyParameter::VALUE => $this->getState(),
-						Types\PropertyParameter::GROUP => Types\ParameterGroup::LIGHT,
+						Types\PropertyParameter::NAME->value => Types\Parameter::STATE->value,
+						Types\PropertyParameter::VALUE->value => $this->getState(),
+						Types\PropertyParameter::GROUP->value => Types\ParameterGroup::LIGHT->value,
 					],
 					[
-						Types\PropertyParameter::NAME => Types\Parameter::CHANNEL_0,
-						Types\PropertyParameter::VALUE => $this->getChannel0(),
-						Types\PropertyParameter::GROUP => Types\ParameterGroup::LIGHT,
+						Types\PropertyParameter::NAME->value => Types\Parameter::CHANNEL_0->value,
+						Types\PropertyParameter::VALUE->value => $this->getChannel0(),
+						Types\PropertyParameter::GROUP->value => Types\ParameterGroup::LIGHT->value,
 					],
 				],
 			],

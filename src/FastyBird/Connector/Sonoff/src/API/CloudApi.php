@@ -36,6 +36,8 @@ use React\Promise;
 use RuntimeException;
 use stdClass;
 use Throwable;
+use TypeError;
+use ValueError;
 use function array_key_exists;
 use function assert;
 use function base64_encode;
@@ -118,12 +120,14 @@ final class CloudApi
 		Types\Region|null $region = null,
 	)
 	{
-		$this->region = $region ?? Types\Region::get(Types\Region::EUROPE);
+		$this->region = $region ?? Types\Region::EUROPE;
 	}
 
 	/**
 	 * @throws Exceptions\CloudApiCall
 	 * @throws Exceptions\CloudApiError
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function connect(): void
 	{
@@ -175,6 +179,8 @@ final class CloudApi
 	 *
 	 * @throws Exceptions\CloudApiCall
 	 * @throws Exceptions\CloudApiError
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getFamily(
 		bool $async = true,
@@ -229,6 +235,8 @@ final class CloudApi
 	 *
 	 * @throws Exceptions\CloudApiCall
 	 * @throws Exceptions\CloudApiError
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getFamilyThings(
 		string $familyId,
@@ -288,6 +296,8 @@ final class CloudApi
 	 *
 	 * @throws Exceptions\CloudApiCall
 	 * @throws Exceptions\CloudApiError
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getThing(
 		string $id,
@@ -375,6 +385,8 @@ final class CloudApi
 	 *
 	 * @throws Exceptions\CloudApiCall
 	 * @throws Exceptions\CloudApiError
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getThingState(
 		string $id,
@@ -435,12 +447,14 @@ final class CloudApi
 	 *
 	 * @throws Exceptions\CloudApiCall
 	 * @throws Exceptions\CloudApiError
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function setThingState(
 		string $id,
 		string $parameter,
 		string|int|float|bool $value,
-		string|null $group = null,
+		Types\ChannelGroup|null $group = null,
 		int|null $outlet = null,
 		int $itemType = 1,
 		bool $async = true,
@@ -459,7 +473,7 @@ final class CloudApi
 			$item->{$parameter} = $value;
 			$item->outlet = $outlet;
 
-			$params->{$group} = [
+			$params->{$group->value} = [
 				$item,
 			];
 
@@ -539,6 +553,8 @@ final class CloudApi
 	 *
 	 * @throws Exceptions\CloudApiCall
 	 * @throws Exceptions\CloudApiError
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function addThirdPartyDevice(
 		string $id,
@@ -626,6 +642,8 @@ final class CloudApi
 	/**
 	 * @throws Exceptions\CloudApiCall
 	 * @throws Exceptions\CloudApiError
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function login(bool $redirect = false): Messages\Response\Cloud\UserLogin
 	{
@@ -681,7 +699,7 @@ final class CloudApi
 				throw new Exceptions\CloudApiCall('Could not login to user region', $request, $response);
 			}
 
-			$this->region = Types\Region::get($data->offsetGet('region'));
+			$this->region = Types\Region::from(strval($data->offsetGet('region')));
 
 			return $this->login(true);
 		}
@@ -1302,19 +1320,19 @@ final class CloudApi
 
 	private function getApiEndpoint(): Types\CloudApiEndpoint
 	{
-		if ($this->region->equalsValue(Types\Region::EUROPE)) {
-			return Types\CloudApiEndpoint::get(Types\CloudApiEndpoint::EUROPE);
+		if ($this->region === Types\Region::EUROPE) {
+			return Types\CloudApiEndpoint::EUROPE;
 		}
 
-		if ($this->region->equalsValue(Types\Region::AMERICA)) {
-			return Types\CloudApiEndpoint::get(Types\CloudApiEndpoint::AMERICA);
+		if ($this->region === Types\Region::AMERICA) {
+			return Types\CloudApiEndpoint::AMERICA;
 		}
 
-		if ($this->region->equalsValue(Types\Region::ASIA)) {
-			return Types\CloudApiEndpoint::get(Types\CloudApiEndpoint::ASIA);
+		if ($this->region === Types\Region::ASIA) {
+			return Types\CloudApiEndpoint::ASIA;
 		}
 
-		return Types\CloudApiEndpoint::get(Types\CloudApiEndpoint::CHINA);
+		return Types\CloudApiEndpoint::CHINA;
 	}
 
 	/**
@@ -1352,7 +1370,7 @@ final class CloudApi
 		string|null $body = null,
 	): Request
 	{
-		$url = $this->getApiEndpoint()->getValue() . $path;
+		$url = $this->getApiEndpoint()->value . $path;
 
 		if (count($params) > 0) {
 			$url .= '?';

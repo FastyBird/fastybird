@@ -40,37 +40,37 @@ trait TSwitches
 	public function toStates(): array
 	{
 		return [
-			Types\ParameterType::CHANNEL => [
+			Types\ParameterType::CHANNEL->value => [
 				array_merge(
 					array_map(
 						static fn (SwitchState $state): array => [
-							Types\PropertyParameter::NAME => Types\Parameter::SWITCH,
-							Types\PropertyParameter::VALUE => $state->getSwitch(),
-							Types\PropertyParameter::GROUP => Types\ParameterGroup::SWITCH . '_' . $state->getOutlet(),
+							Types\PropertyParameter::NAME->value => Types\Parameter::SWITCH->value,
+							Types\PropertyParameter::VALUE->value => $state->getSwitch(),
+							Types\PropertyParameter::GROUP->value => Types\ParameterGroup::SWITCH->value . '_' . $state->getOutlet(),
 						],
 						$this->getSwitches(),
 					),
 					array_map(
 						static fn (SwitchConfiguration $state): array => [
-							Types\PropertyParameter::NAME => Types\Parameter::STARTUP,
-							Types\PropertyParameter::VALUE => $state->getStartup(),
-							Types\PropertyParameter::GROUP => Types\ParameterGroup::SWITCH . '_' . $state->getOutlet(),
+							Types\PropertyParameter::NAME->value => Types\Parameter::STARTUP->value,
+							Types\PropertyParameter::VALUE->value => $state->getStartup(),
+							Types\PropertyParameter::GROUP->value => Types\ParameterGroup::SWITCH->value . '_' . $state->getOutlet(),
 						],
 						$this->getConfiguration(),
 					),
 					array_map(
 						static fn (SwitchPulse $state): array => [
-							Types\PropertyParameter::NAME => Types\Parameter::PULSE,
-							Types\PropertyParameter::VALUE => $state->getPulse(),
-							Types\PropertyParameter::GROUP => Types\ParameterGroup::SWITCH . '_' . $state->getOutlet(),
+							Types\PropertyParameter::NAME->value => Types\Parameter::PULSE->value,
+							Types\PropertyParameter::VALUE->value => $state->getPulse(),
+							Types\PropertyParameter::GROUP->value => Types\ParameterGroup::SWITCH->value . '_' . $state->getOutlet(),
 						],
 						$this->getPulses(),
 					),
 					array_map(
 						static fn (SwitchPulse $state): array => [
-							Types\PropertyParameter::NAME => Types\Parameter::PULSE_WIDTH,
-							Types\PropertyParameter::VALUE => $state->getWidth(),
-							Types\PropertyParameter::GROUP => Types\ParameterGroup::SWITCH . '_' . $state->getOutlet(),
+							Types\PropertyParameter::NAME->value => Types\Parameter::PULSE_WIDTH->value,
+							Types\PropertyParameter::VALUE->value => $state->getWidth(),
+							Types\PropertyParameter::GROUP->value => Types\ParameterGroup::SWITCH->value . '_' . $state->getOutlet(),
 						],
 						$this->getPulses(),
 					),

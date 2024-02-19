@@ -20,8 +20,8 @@ use Closure;
 use FastyBird\Connector\Sonoff;
 use FastyBird\Connector\Sonoff\Exceptions;
 use FastyBird\Connector\Sonoff\Helpers;
-use FastyBird\Connector\Sonoff\Helpers\Transformer;
 use FastyBird\Connector\Sonoff\Services;
+use FastyBird\Connector\Sonoff\Types;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
@@ -219,7 +219,7 @@ final class LanApi
 				) {
 					if ($dataEncrypted) {
 						foreach ($data as $index => $row) {
-							$data[$index] = Transformer::decryptMessage(
+							$data[$index] = Helpers\Transformer::decryptMessage(
 								$row,
 								$this->encodeKeys[$deviceData['id']],
 								array_key_exists('iv', $deviceData) ? strval($deviceData['iv']) : '',
@@ -320,7 +320,7 @@ final class LanApi
 			if (array_key_exists($id, $this->encodeKeys)) {
 				$iv = random_bytes(16);
 
-				$encrypted = Transformer::encryptMessage(
+				$encrypted = Helpers\Transformer::encryptMessage(
 					Utils\Json::encode($payload->data),
 					$this->encodeKeys[$id],
 					base64_encode($iv),
@@ -395,7 +395,7 @@ final class LanApi
 		int $port,
 		string $parameter,
 		string|int|float|bool $value,
-		string|null $group = null,
+		Types\ChannelGroup|null $group = null,
 		int|null $outlet = null,
 		bool $async = true,
 	): Promise\PromiseInterface|bool
@@ -409,7 +409,7 @@ final class LanApi
 			$item->{$parameter} = $value;
 			$item->outlet = $outlet;
 
-			$params->{$group} = [
+			$params->{$group->value} = [
 				$item,
 			];
 
@@ -427,7 +427,7 @@ final class LanApi
 			if (array_key_exists($id, $this->encodeKeys)) {
 				$iv = random_bytes(16);
 
-				$encrypted = Transformer::encryptMessage(
+				$encrypted = Helpers\Transformer::encryptMessage(
 					Utils\Json::encode($payload->data),
 					$this->encodeKeys[$id],
 					base64_encode($iv),
@@ -463,7 +463,7 @@ final class LanApi
 
 		$request = $this->createRequest(
 			RequestMethodInterface::METHOD_POST,
-			sprintf('http://%s:%d/zeroconf/%s', $ipAddress, $port, ($group ?? $parameter)),
+			sprintf('http://%s:%d/zeroconf/%s', $ipAddress, $port, ($group?->value ?? $parameter)),
 			[
 				'Connection' => 'close',
 			],

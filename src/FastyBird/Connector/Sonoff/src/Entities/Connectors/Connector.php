@@ -23,6 +23,7 @@ use FastyBird\Connector\Sonoff\Types;
 use FastyBird\Library\Application\Entities\Mapping as ApplicationMapping;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use TypeError;
 use ValueError;
@@ -85,15 +86,15 @@ class Connector extends DevicesEntities\Connectors\Connector
 		$property = $this->properties
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::CLIENT_MODE
+				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::CLIENT_MODE->value
 			)
 			->first();
 
 		if (
 			$property instanceof DevicesEntities\Connectors\Properties\Variable
-			&& Types\ClientMode::isValidValue($property->getValue())
+			&& Types\ClientMode::tryFrom(MetadataUtilities\Value::toString($property->getValue(), true)) !== null
 		) {
-			return Types\ClientMode::get($property->getValue());
+			return Types\ClientMode::from(MetadataUtilities\Value::toString($property->getValue(), true));
 		}
 
 		throw new Exceptions\InvalidState('Connector mode is not configured');
@@ -110,7 +111,7 @@ class Connector extends DevicesEntities\Connectors\Connector
 		$property = $this->properties
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::USERNAME
+				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::USERNAME->value
 			)
 			->first();
 
@@ -135,7 +136,7 @@ class Connector extends DevicesEntities\Connectors\Connector
 		$property = $this->properties
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::PASSWORD
+				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::PASSWORD->value
 			)
 			->first();
 
@@ -158,14 +159,14 @@ class Connector extends DevicesEntities\Connectors\Connector
 	 */
 	public function getAppId(): string
 	{
-		if ($this->getClientMode()->equalsValue(Types\ClientMode::GATEWAY)) {
+		if ($this->getClientMode() === Types\ClientMode::GATEWAY) {
 			return Sonoff\Constants::COOLKIT_APP_ID;
 		}
 
 		$property = $this->properties
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::APP_ID
+				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::APP_ID->value
 			)
 			->first();
 
@@ -188,14 +189,14 @@ class Connector extends DevicesEntities\Connectors\Connector
 	 */
 	public function getAppSecret(): string
 	{
-		if ($this->getClientMode()->equalsValue(Types\ClientMode::GATEWAY)) {
+		if ($this->getClientMode() === Types\ClientMode::GATEWAY) {
 			return Sonoff\Constants::COOLKIT_APP_SECRET;
 		}
 
 		$property = $this->properties
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::APP_SECRET
+				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::APP_SECRET->value
 			)
 			->first();
 
@@ -220,19 +221,19 @@ class Connector extends DevicesEntities\Connectors\Connector
 		$property = $this->properties
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::REGION
+				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::REGION->value
 			)
 			->first();
 
 		if (
 			$property instanceof DevicesEntities\Connectors\Properties\Variable
 			&& is_string($property->getValue())
-			&& Types\Region::isValidValue($property->getValue())
+			&& Types\Region::tryFrom($property->getValue()) !== null
 		) {
-			return Types\Region::get($property->getValue());
+			return Types\Region::from($property->getValue());
 		}
 
-		return Types\Region::get(Types\Region::EUROPE);
+		return Types\Region::EUROPE;
 	}
 
 	/**
@@ -246,7 +247,7 @@ class Connector extends DevicesEntities\Connectors\Connector
 		$property = $this->properties
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::GATEWAY_ID
+				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::GATEWAY_ID->value
 			)
 			->first();
 
@@ -271,7 +272,7 @@ class Connector extends DevicesEntities\Connectors\Connector
 		$property = $this->properties
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::GATEWAY_API_KEY
+				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::GATEWAY_API_KEY->value
 			)
 			->first();
 

@@ -71,19 +71,19 @@ final readonly class Uiid195 implements Uuid
 	{
 		return array_merge(
 			[
-				Types\ParameterType::DEVICE => [
+				Types\ParameterType::DEVICE->value => [
 					[
-						Types\PropertyParameter::NAME => Types\Parameter::FIRMWARE_VERSION,
-						Types\PropertyParameter::VALUE => $this->getFirmwareVersion(),
+						Types\PropertyParameter::NAME->value => Types\Parameter::FIRMWARE_VERSION->value,
+						Types\PropertyParameter::VALUE->value => $this->getFirmwareVersion(),
 					],
 				],
 			],
 			[
-				Types\ParameterType::CHANNEL => [
+				Types\ParameterType::CHANNEL->value => [
 					[
-						Types\PropertyParameter::NAME => Types\Parameter::TEMPERATURE,
-						Types\PropertyParameter::VALUE => $this->getTemperature(),
-						Types\PropertyParameter::GROUP => Types\ParameterGroup::SENSOR,
+						Types\PropertyParameter::NAME->value => Types\Parameter::TEMPERATURE->value,
+						Types\PropertyParameter::VALUE->value => $this->getTemperature(),
+						Types\PropertyParameter::GROUP->value => Types\ParameterGroup::SENSOR->value,
 					],
 				],
 			],

@@ -167,35 +167,35 @@ final class Uiid102 implements Uuid
 			array_merge(
 				$this->toDeviceState(),
 				[
-					Types\ParameterType::DEVICE => [
+					Types\ParameterType::DEVICE->value => [
 						[
-							Types\PropertyParameter::NAME => Types\Parameter::BATTERY,
-							Types\PropertyParameter::VALUE => $this->getBattery(),
+							Types\PropertyParameter::NAME->value => Types\Parameter::BATTERY->value,
+							Types\PropertyParameter::VALUE->value => $this->getBattery(),
 						],
 					],
 				],
 			),
 			[
-				Types\ParameterType::CHANNEL => [
+				Types\ParameterType::CHANNEL->value => [
 					[
-						Types\PropertyParameter::NAME => Types\Parameter::SWITCH,
-						Types\PropertyParameter::VALUE => $this->getSwitch(),
-						Types\PropertyParameter::GROUP => Types\ParameterGroup::SENSOR,
+						Types\PropertyParameter::NAME->value => Types\Parameter::SWITCH->value,
+						Types\PropertyParameter::VALUE->value => $this->getSwitch(),
+						Types\PropertyParameter::GROUP->value => Types\ParameterGroup::SENSOR->value,
 					],
 					[
-						Types\PropertyParameter::NAME => Types\Parameter::TYPE,
-						Types\PropertyParameter::VALUE => $this->getType(),
-						Types\PropertyParameter::GROUP => Types\ParameterGroup::SENSOR,
+						Types\PropertyParameter::NAME->value => Types\Parameter::TYPE->value,
+						Types\PropertyParameter::VALUE->value => $this->getType(),
+						Types\PropertyParameter::GROUP->value => Types\ParameterGroup::SENSOR->value,
 					],
 					[
-						Types\PropertyParameter::NAME => Types\Parameter::LAST_UPDATE_TIME,
-						Types\PropertyParameter::VALUE => $this->getLastUpdateTime(),
-						Types\PropertyParameter::GROUP => Types\ParameterGroup::SENSOR,
+						Types\PropertyParameter::NAME->value => Types\Parameter::LAST_UPDATE_TIME->value,
+						Types\PropertyParameter::VALUE->value => $this->getLastUpdateTime(),
+						Types\PropertyParameter::GROUP->value => Types\ParameterGroup::SENSOR->value,
 					],
 					[
-						Types\PropertyParameter::NAME => Types\Parameter::ACTION_TIME,
-						Types\PropertyParameter::VALUE => $this->getActionTime(),
-						Types\PropertyParameter::GROUP => Types\ParameterGroup::SENSOR,
+						Types\PropertyParameter::NAME->value => Types\Parameter::ACTION_TIME->value,
+						Types\PropertyParameter::VALUE->value => $this->getActionTime(),
+						Types\PropertyParameter::GROUP->value => Types\ParameterGroup::SENSOR->value,
 					],
 				],
 			],

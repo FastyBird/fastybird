@@ -31,7 +31,6 @@ use FastyBird\Module\Devices\Commands as DevicesCommands;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Types as DevicesTypes;
 use Nette\Localization;
 use Nette\Utils;
@@ -215,16 +214,16 @@ class Install extends Console\Command\Command
 
 			$this->propertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-				'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE,
+				'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE->value,
 				'dataType' => MetadataTypes\DataType::ENUM,
-				'value' => $mode->getValue(),
-				'format' => [Types\ClientMode::LAN, Types\ClientMode::CLOUD, Types\ClientMode::AUTO],
+				'value' => $mode->value,
+				'format' => [Types\ClientMode::LAN->value, Types\ClientMode::CLOUD->value, Types\ClientMode::AUTO->value],
 				'connector' => $connector,
 			]));
 
 			$this->propertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-				'identifier' => Types\ConnectorPropertyIdentifier::USERNAME,
+				'identifier' => Types\ConnectorPropertyIdentifier::USERNAME->value,
 				'dataType' => MetadataTypes\DataType::STRING,
 				'value' => $username,
 				'connector' => $connector,
@@ -232,7 +231,7 @@ class Install extends Console\Command\Command
 
 			$this->propertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-				'identifier' => Types\ConnectorPropertyIdentifier::PASSWORD,
+				'identifier' => Types\ConnectorPropertyIdentifier::PASSWORD->value,
 				'dataType' => MetadataTypes\DataType::STRING,
 				'value' => $password,
 				'connector' => $connector,
@@ -240,9 +239,9 @@ class Install extends Console\Command\Command
 
 			$this->propertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-				'identifier' => Types\ConnectorPropertyIdentifier::REGION,
+				'identifier' => Types\ConnectorPropertyIdentifier::REGION->value,
 				'dataType' => MetadataTypes\DataType::ENUM,
-				'value' => $dataCentre->getValue(),
+				'value' => $dataCentre->value,
 				'format' => [
 					Types\CloudApiEndpoint::CHINA,
 					Types\CloudApiEndpoint::AMERICA,
@@ -289,6 +288,7 @@ class Install extends Console\Command\Command
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -316,7 +316,7 @@ class Install extends Console\Command\Command
 			return;
 		}
 
-		$findConnectorPropertyQuery = new DevicesQueries\Entities\FindConnectorProperties();
+		$findConnectorPropertyQuery = new Queries\Entities\FindConnectorProperties();
 		$findConnectorPropertyQuery->forConnector($connector);
 		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::CLIENT_MODE);
 
@@ -366,7 +366,7 @@ class Install extends Console\Command\Command
 
 		$username = $password = null;
 
-		$findConnectorPropertyQuery = new DevicesQueries\Entities\FindConnectorProperties();
+		$findConnectorPropertyQuery = new Queries\Entities\FindConnectorProperties();
 		$findConnectorPropertyQuery->forConnector($connector);
 		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::USERNAME);
 
@@ -388,7 +388,7 @@ class Install extends Console\Command\Command
 			$username = $this->askConnectorUsername($io);
 		}
 
-		$findConnectorPropertyQuery = new DevicesQueries\Entities\FindConnectorProperties();
+		$findConnectorPropertyQuery = new Queries\Entities\FindConnectorProperties();
 		$findConnectorPropertyQuery->forConnector($connector);
 		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::PASSWORD);
 
@@ -427,15 +427,15 @@ class Install extends Console\Command\Command
 
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE,
+					'identifier' => Types\ConnectorPropertyIdentifier::CLIENT_MODE->value,
 					'dataType' => MetadataTypes\DataType::ENUM,
-					'value' => $mode->getValue(),
-					'format' => [Types\ClientMode::LAN, Types\ClientMode::CLOUD, Types\ClientMode::AUTO],
+					'value' => $mode->value,
+					'format' => [Types\ClientMode::LAN->value, Types\ClientMode::CLOUD->value, Types\ClientMode::AUTO->value],
 					'connector' => $connector,
 				]));
 			} elseif ($mode !== null) {
 				$this->propertiesManager->update($modeProperty, Utils\ArrayHash::from([
-					'value' => $mode->getValue(),
+					'value' => $mode->value,
 				]));
 			}
 
@@ -446,7 +446,7 @@ class Install extends Console\Command\Command
 
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::USERNAME,
+					'identifier' => Types\ConnectorPropertyIdentifier::USERNAME->value,
 					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => $username,
 					'connector' => $connector,
@@ -464,7 +464,7 @@ class Install extends Console\Command\Command
 
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::PASSWORD,
+					'identifier' => Types\ConnectorPropertyIdentifier::PASSWORD->value,
 					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => $password,
 					'connector' => $connector,
@@ -646,7 +646,7 @@ class Install extends Console\Command\Command
 				$index + 1,
 				$connector->getName() ?? $connector->getIdentifier(),
 				$this->translator->translate(
-					'//sonoff-connector.cmd.base.mode.' . $connector->getClientMode()->getValue(),
+					'//sonoff-connector.cmd.base.mode.' . $connector->getClientMode()->value,
 				),
 				count($devices),
 			]);
@@ -1124,7 +1124,7 @@ class Install extends Console\Command\Command
 				)
 				|| $answer === '0'
 			) {
-				return Types\ClientMode::get(Types\ClientMode::AUTO);
+				return Types\ClientMode::AUTO;
 			}
 
 			if (
@@ -1133,7 +1133,7 @@ class Install extends Console\Command\Command
 				)
 				|| $answer === '1'
 			) {
-				return Types\ClientMode::get(Types\ClientMode::LAN);
+				return Types\ClientMode::LAN;
 			}
 
 			if (
@@ -1142,7 +1142,7 @@ class Install extends Console\Command\Command
 				)
 				|| $answer === '2'
 			) {
-				return Types\ClientMode::get(Types\ClientMode::CLOUD);
+				return Types\ClientMode::CLOUD;
 			}
 
 			throw new Exceptions\Runtime(
@@ -1254,7 +1254,7 @@ class Install extends Console\Command\Command
 				)
 				|| $answer === '0'
 			) {
-				return Types\CloudApiEndpoint::get(Types\CloudApiEndpoint::EUROPE);
+				return Types\CloudApiEndpoint::EUROPE;
 			}
 
 			if (
@@ -1263,21 +1263,21 @@ class Install extends Console\Command\Command
 				)
 				|| $answer === '1'
 			) {
-				return Types\CloudApiEndpoint::get(Types\CloudApiEndpoint::AMERICA);
+				return Types\CloudApiEndpoint::AMERICA;
 			}
 
 			if (
 				$answer === $this->translator->translate('//sonoff-connector.cmd.install.answers.dataCentre.china')
 				|| $answer === '2'
 			) {
-				return Types\CloudApiEndpoint::get(Types\CloudApiEndpoint::CHINA);
+				return Types\CloudApiEndpoint::CHINA;
 			}
 
 			if (
 				$answer === $this->translator->translate('//sonoff-connector.cmd.install.answers.dataCentre.asia')
 				|| $answer === '3'
 			) {
-				return Types\CloudApiEndpoint::get(Types\CloudApiEndpoint::ASIA);
+				return Types\CloudApiEndpoint::ASIA;
 			}
 
 			throw new Exceptions\Runtime(

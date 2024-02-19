@@ -892,19 +892,19 @@ final class CloudWs
 
 	private function getSocketsEndpoint(): Types\CloudSocketsEndpoint
 	{
-		if ($this->region->equalsValue(Types\Region::EUROPE)) {
-			return Types\CloudSocketsEndpoint::get(Types\CloudSocketsEndpoint::EUROPE);
+		if ($this->region === Types\Region::EUROPE) {
+			return Types\CloudSocketsEndpoint::EUROPE;
 		}
 
-		if ($this->region->equalsValue(Types\Region::AMERICA)) {
-			return Types\CloudSocketsEndpoint::get(Types\CloudSocketsEndpoint::AMERICA);
+		if ($this->region === Types\Region::AMERICA) {
+			return Types\CloudSocketsEndpoint::AMERICA;
 		}
 
-		if ($this->region->equalsValue(Types\Region::ASIA)) {
-			return Types\CloudSocketsEndpoint::get(Types\CloudSocketsEndpoint::ASIA);
+		if ($this->region === Types\Region::ASIA) {
+			return Types\CloudSocketsEndpoint::ASIA;
 		}
 
-		return Types\CloudSocketsEndpoint::get(Types\CloudSocketsEndpoint::CHINA);
+		return Types\CloudSocketsEndpoint::CHINA;
 	}
 
 	/**
@@ -942,7 +942,7 @@ final class CloudWs
 		string|null $body = null,
 	): Request
 	{
-		$url = $this->getSocketsEndpoint()->getValue() . $path;
+		$url = $this->getSocketsEndpoint()->value . $path;
 
 		if (count($params) > 0) {
 			$url .= '?';

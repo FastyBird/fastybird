@@ -18,6 +18,7 @@ namespace FastyBird\Connector\Sonoff\Queue\Consumers;
 use Doctrine\DBAL;
 use FastyBird\Connector\Sonoff;
 use FastyBird\Connector\Sonoff\Entities;
+use FastyBird\Connector\Sonoff\Exceptions;
 use FastyBird\Connector\Sonoff\Helpers;
 use FastyBird\Connector\Sonoff\Queries;
 use FastyBird\Connector\Sonoff\Queue;
@@ -68,6 +69,7 @@ final class StoreDevice implements Queue\Consumer
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws ApplicationExceptions\Runtime
 	 * @throws DBAL\Exception
+	 * @throws Exceptions\InvalidArgument
 	 */
 	public function consume(Queue\Messages\Message $message): bool
 	{
@@ -129,81 +131,81 @@ final class StoreDevice implements Queue\Consumer
 			$message->getApiKey(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::API_KEY,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::API_KEY),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::API_KEY->value),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$message->getDeviceKey(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::DEVICE_KEY,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::DEVICE_KEY),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::DEVICE_KEY->value),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$message->getUiid(),
 			MetadataTypes\DataType::UCHAR,
 			Types\DevicePropertyIdentifier::UIID,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::UIID),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::UIID->value),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$message->getBrandName(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::BRAND_NAME,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::BRAND_NAME),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::BRAND_NAME->value),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$message->getBrandLogo(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::BRAND_LOGO,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::BRAND_LOGO),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::BRAND_LOGO->value),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$message->getProductModel(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::PRODUCT_MODEL,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::PRODUCT_MODEL),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::PRODUCT_MODEL->value),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$message->getModel(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::HARDWARE_MODEL,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::HARDWARE_MODEL),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::HARDWARE_MODEL->value),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$message->getMac(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::HARDWARE_MAC_ADDRESS,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::HARDWARE_MAC_ADDRESS),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::HARDWARE_MAC_ADDRESS->value),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$message->getIpAddress(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::IP_ADDRESS,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::IP_ADDRESS),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::IP_ADDRESS->value),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$message->getDomain(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::ADDRESS,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::ADDRESS),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::ADDRESS->value),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$message->getPort(),
 			MetadataTypes\DataType::UINT,
 			Types\DevicePropertyIdentifier::PORT,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::PORT),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::PORT->value),
 		);
 
 		foreach ($message->getParameters() as $parameter) {
-			if ($parameter->getType()->equalsValue(Types\ParameterType::DEVICE)) {
+			if ($parameter->getType() === Types\ParameterType::DEVICE) {
 				$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
 				$findDevicePropertyQuery->forDevice($device);
 				$findDevicePropertyQuery->byIdentifier($parameter->getIdentifier());
@@ -296,7 +298,7 @@ final class StoreDevice implements Queue\Consumer
 
 		$this->databaseHelper->transaction(function () use ($message, $device): bool {
 			foreach ($message->getParameters() as $parameter) {
-				if ($parameter->getType()->equalsValue(Types\ParameterType::CHANNEL)) {
+				if ($parameter->getType() === Types\ParameterType::CHANNEL) {
 					$findChannelQuery = new Queries\Entities\FindChannels();
 					$findChannelQuery->byIdentifier($parameter->getGroup());
 					$findChannelQuery->forDevice($device);

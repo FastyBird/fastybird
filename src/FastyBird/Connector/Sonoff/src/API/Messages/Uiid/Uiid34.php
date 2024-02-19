@@ -132,12 +132,12 @@ final class Uiid34 implements Uuid
 		return array_merge(
 			$this->toDeviceState(),
 			[
-				Types\ParameterType::CHANNEL => [
+				Types\ParameterType::CHANNEL->value => [
 					array_map(
 						static fn (SwitchState $state): array => [
-							Types\PropertyParameter::NAME => Types\Parameter::SWITCH,
-							Types\PropertyParameter::VALUE => $state->getSwitch(),
-							Types\PropertyParameter::GROUP => Types\ParameterGroup::SWITCH . '_' . $state->getOutlet(),
+							Types\PropertyParameter::NAME->value => Types\Parameter::SWITCH->value,
+							Types\PropertyParameter::VALUE->value => $state->getSwitch(),
+							Types\PropertyParameter::GROUP->value => Types\ParameterGroup::SWITCH->value . '_' . $state->getOutlet(),
 						],
 						$this->getSwitches(),
 					),

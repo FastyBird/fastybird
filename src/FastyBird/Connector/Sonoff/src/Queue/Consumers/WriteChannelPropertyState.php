@@ -78,6 +78,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
@@ -298,18 +299,21 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			}
 
 			if ($outlet !== null) {
-				if ($parameter === Types\Parameter::SWITCH) {
+				if ($parameter === Types\Parameter::SWITCH->value) {
 					$group = Types\ChannelGroup::SWITCHES;
-				} elseif ($parameter === Types\Parameter::STARTUP) {
+				} elseif ($parameter === Types\Parameter::STARTUP->value) {
 					$group = Types\ChannelGroup::CONFIGURE;
-				} elseif ($parameter === Types\Parameter::PULSE || $parameter === Types\Parameter::PULSE_WIDTH) {
+				} elseif (
+					$parameter === Types\Parameter::PULSE->value
+					|| $parameter === Types\Parameter::PULSE_WIDTH->value
+				) {
 					$group = Types\ChannelGroup::PULSES;
 				}
 			}
 		}
 
 		try {
-			if ($this->connectorHelper->getClientMode($connector)->equalsValue(Types\ClientMode::AUTO)) {
+			if ($this->connectorHelper->getClientMode($connector) === Types\ClientMode::AUTO) {
 				$deferred = new Promise\Deferred();
 
 				if ($this->deviceHelper->getIpAddress($device) !== null) {
@@ -365,7 +369,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				}
 
 				$result = $deferred->promise();
-			} elseif ($this->connectorHelper->getClientMode($connector)->equalsValue(Types\ClientMode::CLOUD)) {
+			} elseif ($this->connectorHelper->getClientMode($connector) === Types\ClientMode::CLOUD) {
 				$client = $this->connectionManager->getCloudApiConnection($connector);
 
 				if (!$client->isConnected()) {
@@ -379,7 +383,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					$group,
 					$outlet,
 				);
-			} elseif ($this->connectorHelper->getClientMode($connector)->equalsValue(Types\ClientMode::LAN)) {
+			} elseif ($this->connectorHelper->getClientMode($connector) === Types\ClientMode::LAN) {
 				if ($this->deviceHelper->getIpAddress($device) === null) {
 					throw new Exceptions\InvalidState('Device IP address is not configured');
 				}

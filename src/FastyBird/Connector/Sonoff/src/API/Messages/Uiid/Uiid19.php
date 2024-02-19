@@ -177,36 +177,36 @@ final class Uiid19 implements Uuid
 		return array_merge(
 			$this->toDeviceState(),
 			[
-				Types\ParameterType::CHANNEL => [
+				Types\ParameterType::CHANNEL->value => [
 					[
-						Types\PropertyParameter::NAME => Types\Parameter::SWITCH,
-						Types\PropertyParameter::VALUE => $this->getSwitch(),
-						Types\PropertyParameter::GROUP => Types\ParameterGroup::HUMIDIFIER,
+						Types\PropertyParameter::NAME->value => Types\Parameter::SWITCH->value,
+						Types\PropertyParameter::VALUE->value => $this->getSwitch(),
+						Types\PropertyParameter::GROUP->value => Types\ParameterGroup::HUMIDIFIER->value,
 					],
 					[
-						Types\PropertyParameter::NAME => Types\Parameter::STATE,
-						Types\PropertyParameter::VALUE => $this->getState(),
-						Types\PropertyParameter::GROUP => Types\ParameterGroup::HUMIDIFIER,
+						Types\PropertyParameter::NAME->value => Types\Parameter::STATE->value,
+						Types\PropertyParameter::VALUE->value => $this->getState(),
+						Types\PropertyParameter::GROUP->value => Types\ParameterGroup::HUMIDIFIER->value,
 					],
 					[
-						Types\PropertyParameter::NAME => Types\Parameter::MODE,
-						Types\PropertyParameter::VALUE => $this->getMode(),
-						Types\PropertyParameter::GROUP => Types\ParameterGroup::HUMIDIFIER,
+						Types\PropertyParameter::NAME->value => Types\Parameter::MODE->value,
+						Types\PropertyParameter::VALUE->value => $this->getMode(),
+						Types\PropertyParameter::GROUP->value => Types\ParameterGroup::HUMIDIFIER->value,
 					],
 					[
-						Types\PropertyParameter::NAME => Types\Parameter::WATER,
-						Types\PropertyParameter::VALUE => $this->getWater(),
-						Types\PropertyParameter::GROUP => Types\ParameterGroup::HUMIDIFIER,
+						Types\PropertyParameter::NAME->value => Types\Parameter::WATER->value,
+						Types\PropertyParameter::VALUE->value => $this->getWater(),
+						Types\PropertyParameter::GROUP->value => Types\ParameterGroup::HUMIDIFIER->value,
 					],
 					[
-						Types\PropertyParameter::NAME => Types\Parameter::TEMPERATURE,
-						Types\PropertyParameter::VALUE => $this->getTemperature(),
-						Types\PropertyParameter::GROUP => Types\ParameterGroup::HUMIDIFIER,
+						Types\PropertyParameter::NAME->value => Types\Parameter::TEMPERATURE->value,
+						Types\PropertyParameter::VALUE->value => $this->getTemperature(),
+						Types\PropertyParameter::GROUP->value => Types\ParameterGroup::HUMIDIFIER->value,
 					],
 					[
-						Types\PropertyParameter::NAME => Types\Parameter::HUMIDITY,
-						Types\PropertyParameter::VALUE => $this->getHumidity(),
-						Types\PropertyParameter::GROUP => Types\ParameterGroup::HUMIDIFIER,
+						Types\PropertyParameter::NAME->value => Types\Parameter::HUMIDITY->value,
+						Types\PropertyParameter::VALUE->value => $this->getHumidity(),
+						Types\PropertyParameter::GROUP->value => Types\ParameterGroup::HUMIDIFIER->value,
 					],
 				],
 			],

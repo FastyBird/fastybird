@@ -166,31 +166,31 @@ final class Uiid18 implements Uuid
 		return array_merge(
 			$this->toDeviceState(),
 			[
-				Types\ParameterType::CHANNEL => [
+				Types\ParameterType::CHANNEL->value => [
 					[
-						Types\PropertyParameter::NAME => Types\Parameter::DUSTY,
-						Types\PropertyParameter::VALUE => $this->getDusty(),
-						Types\PropertyParameter::GROUP => Types\ParameterGroup::SENSOR,
+						Types\PropertyParameter::NAME->value => Types\Parameter::DUSTY->value,
+						Types\PropertyParameter::VALUE->value => $this->getDusty(),
+						Types\PropertyParameter::GROUP->value => Types\ParameterGroup::SENSOR->value,
 					],
 					[
-						Types\PropertyParameter::NAME => Types\Parameter::NOISE,
-						Types\PropertyParameter::VALUE => $this->getNoise(),
-						Types\PropertyParameter::GROUP => Types\ParameterGroup::SENSOR,
+						Types\PropertyParameter::NAME->value => Types\Parameter::NOISE->value,
+						Types\PropertyParameter::VALUE->value => $this->getNoise(),
+						Types\PropertyParameter::GROUP->value => Types\ParameterGroup::SENSOR->value,
 					],
 					[
-						Types\PropertyParameter::NAME => Types\Parameter::LIGHT,
-						Types\PropertyParameter::VALUE => $this->getLight(),
-						Types\PropertyParameter::GROUP => Types\ParameterGroup::SENSOR,
+						Types\PropertyParameter::NAME->value => Types\Parameter::LIGHT->value,
+						Types\PropertyParameter::VALUE->value => $this->getLight(),
+						Types\PropertyParameter::GROUP->value => Types\ParameterGroup::SENSOR->value,
 					],
 					[
-						Types\PropertyParameter::NAME => Types\Parameter::TEMPERATURE,
-						Types\PropertyParameter::VALUE => $this->getTemperature(),
-						Types\PropertyParameter::GROUP => Types\ParameterGroup::SENSOR,
+						Types\PropertyParameter::NAME->value => Types\Parameter::TEMPERATURE->value,
+						Types\PropertyParameter::VALUE->value => $this->getTemperature(),
+						Types\PropertyParameter::GROUP->value => Types\ParameterGroup::SENSOR->value,
 					],
 					[
-						Types\PropertyParameter::NAME => Types\Parameter::HUMIDITY,
-						Types\PropertyParameter::VALUE => $this->getHumidity(),
-						Types\PropertyParameter::GROUP => Types\ParameterGroup::SENSOR,
+						Types\PropertyParameter::NAME->value => Types\Parameter::HUMIDITY->value,
+						Types\PropertyParameter::VALUE->value => $this->getHumidity(),
+						Types\PropertyParameter::GROUP->value => Types\ParameterGroup::SENSOR->value,
 					],
 				],
 			],
