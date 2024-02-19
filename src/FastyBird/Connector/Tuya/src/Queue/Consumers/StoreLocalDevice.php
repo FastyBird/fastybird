@@ -280,7 +280,7 @@ final class StoreLocalDevice implements Queue\Consumer
 					$channel = $this->channelsManager->create(Utils\ArrayHash::from([
 						'entity' => Entities\Channels\Channel::class,
 						'device' => $device,
-						'identifier' => Types\DataPoint::LOCAL,
+						'identifier' => Types\DataPoint::LOCAL->value,
 					]));
 
 					$this->logger->debug(
