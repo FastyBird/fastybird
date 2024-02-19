@@ -89,7 +89,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 			'testing-connector',
 			self::ACCESS_ID,
 			self::ACCESS_SECRET,
-			Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::EUROPE),
+			Types\OpenApiEndpoint::EUROPE,
 		);
 
 		$userDevices = $openApi->getUserDevices('userid123', false);
@@ -297,7 +297,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 			'testing-connector',
 			self::ACCESS_ID,
 			self::ACCESS_SECRET,
-			Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::EUROPE),
+			Types\OpenApiEndpoint::EUROPE,
 		);
 
 		$userDevicesInfos = $openApi->getUserDevicesFactoryInfos(
@@ -388,7 +388,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 			'testing-connector',
 			self::ACCESS_ID,
 			self::ACCESS_SECRET,
-			Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::EUROPE),
+			Types\OpenApiEndpoint::EUROPE,
 		);
 
 		$userDeviceDetail = $openApi->getUserDeviceDetail('bf3e9d85a52b163f940wgx', false);
@@ -493,7 +493,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 			'testing-connector',
 			self::ACCESS_ID,
 			self::ACCESS_SECRET,
-			Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::EUROPE),
+			Types\OpenApiEndpoint::EUROPE,
 		);
 
 		$userDeviceSpecifications = $openApi->getUserDeviceSpecifications('bf3e9d85a52b163f940wgx', false);
@@ -593,7 +593,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 			'testing-connector',
 			self::ACCESS_ID,
 			self::ACCESS_SECRET,
-			Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::EUROPE),
+			Types\OpenApiEndpoint::EUROPE,
 		);
 
 		$userDeviceSpecifications = $openApi->getUserDeviceState('bf3e9d85a52b163f940wgx', false);
@@ -678,7 +678,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 			'testing-connector',
 			self::ACCESS_ID,
 			self::ACCESS_SECRET,
-			Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::EUROPE),
+			Types\OpenApiEndpoint::EUROPE,
 		);
 
 		$userDeviceChildren = $openApi->getUserDeviceChildren('bfa1a65b1d7f75a9aenvkc', false);
@@ -769,7 +769,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 			'testing-connector',
 			self::ACCESS_ID,
 			self::ACCESS_SECRET,
-			Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::EUROPE),
+			Types\OpenApiEndpoint::EUROPE,
 		);
 
 		$devices = $openApi->getDevices([
@@ -954,7 +954,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 			'testing-connector',
 			self::ACCESS_ID,
 			self::ACCESS_SECRET,
-			Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::EUROPE),
+			Types\OpenApiEndpoint::EUROPE,
 		);
 
 		$devicesInfos = $openApi->getDevicesFactoryInfos(
@@ -1045,7 +1045,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 			'testing-connector',
 			self::ACCESS_ID,
 			self::ACCESS_SECRET,
-			Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::EUROPE),
+			Types\OpenApiEndpoint::EUROPE,
 		);
 
 		$device = $openApi->getDeviceDetail('bf3e9d85a52b163f940wgx', false);
@@ -1143,7 +1143,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 			'testing-connector',
 			self::ACCESS_ID,
 			self::ACCESS_SECRET,
-			Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::EUROPE),
+			Types\OpenApiEndpoint::EUROPE,
 		);
 
 		$deviceSpecification = $openApi->getDeviceSpecification(
@@ -1247,7 +1247,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 			'testing-connector',
 			self::ACCESS_ID,
 			self::ACCESS_SECRET,
-			Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::EUROPE),
+			Types\OpenApiEndpoint::EUROPE,
 		);
 
 		$deviceState = $openApi->getDeviceState('bf3e9d85a52b163f940wgx', false);
@@ -1332,7 +1332,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 			'testing-connector',
 			self::ACCESS_ID,
 			self::ACCESS_SECRET,
-			Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::EUROPE),
+			Types\OpenApiEndpoint::EUROPE,
 		);
 
 		$result = $openApi->setDeviceState('bf3e9d85a52b163f940wgx', 'switch_1', false, false);
@@ -1404,7 +1404,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 			'testing-connector',
 			self::ACCESS_ID,
 			self::ACCESS_SECRET,
-			Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::EUROPE),
+			Types\OpenApiEndpoint::EUROPE,
 		);
 
 		$openApi->connect(false);

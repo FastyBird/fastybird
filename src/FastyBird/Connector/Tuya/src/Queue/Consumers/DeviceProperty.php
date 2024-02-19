@@ -18,12 +18,14 @@ namespace FastyBird\Connector\Tuya\Queue\Consumers;
 use Doctrine\DBAL;
 use FastyBird\Connector\Tuya;
 use FastyBird\Connector\Tuya\Entities;
+use FastyBird\Connector\Tuya\Exceptions;
+use FastyBird\Connector\Tuya\Queries;
+use FastyBird\Connector\Tuya\Types;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette\Utils;
 use Ramsey\Uuid;
 
@@ -50,17 +52,18 @@ trait DeviceProperty
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws ApplicationExceptions\Runtime
 	 * @throws DBAL\Exception
+	 * @throws Exceptions\InvalidArgument
 	 */
 	private function setDeviceProperty(
 		Uuid\UuidInterface $deviceId,
 		string|bool|int|null $value,
 		MetadataTypes\DataType $dataType,
-		string $identifier,
+		Types\DevicePropertyIdentifier $identifier,
 		string|null $name = null,
 		array|string|null $format = null,
 	): void
 	{
-		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
+		$findDevicePropertyQuery = new Queries\Entities\FindDeviceProperties();
 		$findDevicePropertyQuery->byDeviceId($deviceId);
 		$findDevicePropertyQuery->byIdentifier($identifier);
 
@@ -101,7 +104,7 @@ trait DeviceProperty
 						],
 						'property' => [
 							'id' => $property->getId()->toString(),
-							'identifier' => $identifier,
+							'identifier' => $identifier->value,
 						],
 					],
 				);
@@ -126,7 +129,7 @@ trait DeviceProperty
 							'id' => $deviceId->toString(),
 						],
 						'property' => [
-							'identifier' => $identifier,
+							'identifier' => $identifier->value,
 						],
 					],
 				);
@@ -139,7 +142,7 @@ trait DeviceProperty
 					Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Devices\Properties\Variable::class,
 						'device' => $device,
-						'identifier' => $identifier,
+						'identifier' => $identifier->value,
 						'name' => $name,
 						'dataType' => $dataType,
 						'value' => $value,
@@ -158,7 +161,7 @@ trait DeviceProperty
 					],
 					'property' => [
 						'id' => $property->getId()->toString(),
-						'identifier' => $identifier,
+						'identifier' => $identifier->value,
 					],
 				],
 			);
@@ -185,7 +188,7 @@ trait DeviceProperty
 					],
 					'property' => [
 						'id' => $property->getId()->toString(),
-						'identifier' => $identifier,
+						'identifier' => $identifier->value,
 					],
 				],
 			);

@@ -96,6 +96,7 @@ final class Local implements Client
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -175,6 +176,7 @@ final class Local implements Client
 	/**
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
@@ -385,6 +387,7 @@ final class Local implements Client
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -411,7 +414,7 @@ final class Local implements Client
 		$client->onMessage[] = function (API\Messages\Message $message): void {
 			if (
 				$message instanceof API\Messages\Response\LocalDeviceMessage
-				&& $message->getCommand()->equalsValue(Types\LocalDeviceCommand::STATUS)
+				&& $message->getCommand() === Types\LocalDeviceCommand::STATUS
 				&& is_array($message->getData())
 			) {
 				$dataPointsStatuses = [];

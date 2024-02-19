@@ -15,10 +15,6 @@
 
 namespace FastyBird\Connector\Tuya\Types;
 
-use Consistence;
-use function intval;
-use function strval;
-
 /**
  * Local device command codes
  *
@@ -27,85 +23,75 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class LocalDeviceCommand extends Consistence\Enum\Enum
+enum LocalDeviceCommand: int
 {
 
-	public const UDP = 0;
+	case UDP = 0;
 
-	public const AP_CONFIG = 1;
+	case AP_CONFIG = 1;
 
-	public const ACTIVE = 2;
+	case ACTIVE = 2;
 
-	public const SESS_KEY_NEG_START = 3;
+	case SESS_KEY_NEG_START = 3;
 
-	public const SESS_KEY_NEG_RESP = 4;
+	case SESS_KEY_NEG_RESP = 4;
 
-	public const SESS_KEY_NEG_FINISH = 5;
+	case SESS_KEY_NEG_FINISH = 5;
 
-	public const UNBIND = 6;
+	case UNBIND = 6;
 
-	public const CONTROL = 7;
+	case CONTROL = 7;
 
-	public const STATUS = 8;
+	case STATUS = 8;
 
-	public const HEART_BEAT = 9;
+	case HEART_BEAT = 9;
 
-	public const DP_QUERY = 10;
+	case DP_QUERY = 10;
 
-	public const QUERY_WIFI = 11;
+	case QUERY_WIFI = 11;
 
-	public const TOKEN_BIND = 12;
+	case TOKEN_BIND = 12;
 
-	public const CONTROL_NEW = 13;
+	case CONTROL_NEW = 13;
 
-	public const ENABLE_WIFI = 14;
+	case ENABLE_WIFI = 14;
 
-	public const DP_QUERY_NEW = 16;
+	case DP_QUERY_NEW = 16;
 
-	public const SCENE_EXECUTE = 17;
+	case SCENE_EXECUTE = 17;
 
-	public const UPDATE_DPS = 18;
+	case UPDATE_DPS = 18;
 
-	public const UDP_NEW = 19;
+	case UDP_NEW = 19;
 
-	public const AP_CONFIG_NEW = 20;
+	case AP_CONFIG_NEW = 20;
 
-	public const LAN_GW_ACTIVE = 240;
+	case LAN_GW_ACTIVE = 240;
 
-	public const LAN_SUB_DEV_REQUEST = 241;
+	case LAN_SUB_DEV_REQUEST = 241;
 
-	public const LAN_DELETE_SUB_DEV = 242;
+	case LAN_DELETE_SUB_DEV = 242;
 
-	public const LAN_REPORT_SUB_DEV = 243;
+	case LAN_REPORT_SUB_DEV = 243;
 
-	public const LAN_SCENE = 244;
+	case LAN_SCENE = 244;
 
-	public const LAN_PUBLISH_CLOUD_CONFIG = 245;
+	case LAN_PUBLISH_CLOUD_CONFIG = 245;
 
-	public const LAN_PUBLISH_APP_CONFIG = 246;
+	case LAN_PUBLISH_APP_CONFIG = 246;
 
-	public const LAN_EXPORT_APP_CONFIG = 247;
+	case LAN_EXPORT_APP_CONFIG = 247;
 
-	public const LAN_PUBLISH_SCENE_PANEL = 248;
+	case LAN_PUBLISH_SCENE_PANEL = 248;
 
-	public const LAN_REMOVE_GW = 249;
+	case LAN_REMOVE_GW = 249;
 
-	public const LAN_CHECK_GW_UPDATE = 250;
+	case LAN_CHECK_GW_UPDATE = 250;
 
-	public const LAN_GW_UPDATE = 251;
+	case LAN_GW_UPDATE = 251;
 
-	public const LAN_SET_GW_CHANNEL = 252;
+	case LAN_SET_GW_CHANNEL = 252;
 
-	public const UNKNOWN = -1;
-
-	public function getValue(): int
-	{
-		return intval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return strval(self::getValue());
-	}
+	case UNKNOWN = -1;
 
 }

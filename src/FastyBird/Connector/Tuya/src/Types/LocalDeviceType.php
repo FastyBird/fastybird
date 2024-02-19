@@ -15,9 +15,6 @@
 
 namespace FastyBird\Connector\Tuya\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * Local device types
  *
@@ -26,32 +23,22 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class LocalDeviceType extends Consistence\Enum\Enum
+enum LocalDeviceType: string
 {
 
-	public const DEFAULT = 'default';
+	case DEFAULT = 'default';
 
 	/**
 	 * Special Case Device with 22 character ID - Some of these devices
 	 * Require the 0d command as the DP_QUERY status request and the list of
 	 * dps requested payload
 	 */
-	public const DEVICE_22 = 'device22';
+	case DEVICE_22 = 'device22';
 
-	public const DEVICE_V34 = 'device_v3.4';
+	case DEVICE_V34 = 'device_v3.4';
 
-	public const ZIGBEE = 'zigbee';
+	case ZIGBEE = 'zigbee';
 
-	public const GATEWAY = 'gateway';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case GATEWAY = 'gateway';
 
 }

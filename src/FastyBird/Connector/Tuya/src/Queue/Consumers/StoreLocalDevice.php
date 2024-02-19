@@ -71,6 +71,7 @@ final class StoreLocalDevice implements Queue\Consumer
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws ApplicationExceptions\Runtime
 	 * @throws DBAL\Exception
+	 * @throws Exceptions\InvalidArgument
 	 */
 	public function consume(Queue\Messages\Message $message): bool
 	{
@@ -159,20 +160,20 @@ final class StoreLocalDevice implements Queue\Consumer
 			$message->getIpAddress(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::IP_ADDRESS,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::IP_ADDRESS),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::IP_ADDRESS->value),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$message->getVersion(),
 			MetadataTypes\DataType::ENUM,
 			Types\DevicePropertyIdentifier::PROTOCOL_VERSION,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::PROTOCOL_VERSION),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::PROTOCOL_VERSION->value),
 			[
-				Types\DeviceProtocolVersion::V31,
-				Types\DeviceProtocolVersion::V32,
-				Types\DeviceProtocolVersion::V33,
-				Types\DeviceProtocolVersion::V34,
-				Types\DeviceProtocolVersion::V32_PLUS,
+				Types\DeviceProtocolVersion::V31->value,
+				Types\DeviceProtocolVersion::V32->value,
+				Types\DeviceProtocolVersion::V33->value,
+				Types\DeviceProtocolVersion::V34->value,
+				Types\DeviceProtocolVersion::V32_PLUS->value,
 			],
 		);
 		$this->setDeviceProperty(
@@ -180,91 +181,91 @@ final class StoreLocalDevice implements Queue\Consumer
 			$message->getLocalKey(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::LOCAL_KEY,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::LOCAL_KEY),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::LOCAL_KEY->value),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$message->getNodeId(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::NODE_ID,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::NODE_ID),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::NODE_ID->value),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$message->getGateway(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::GATEWAY_ID,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::GATEWAY_ID),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::GATEWAY_ID->value),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$message->getCategory(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::CATEGORY,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::CATEGORY),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::CATEGORY->value),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$message->getIcon(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::ICON,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::ICON),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::ICON->value),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$message->getLatitude(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::LATITUDE,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::LATITUDE),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::LATITUDE->value),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$message->getLongitude(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::LONGITUDE,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::LONGITUDE),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::LONGITUDE->value),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$message->getProductId(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::PRODUCT_ID,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::PRODUCT_ID),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::PRODUCT_ID->value),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$message->getProductName(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::PRODUCT_NAME,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::PRODUCT_NAME),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::PRODUCT_NAME->value),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$message->isEncrypted(),
 			MetadataTypes\DataType::BOOLEAN,
 			Types\DevicePropertyIdentifier::ENCRYPTED,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::ENCRYPTED),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::ENCRYPTED->value),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$message->getModel(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::MODEL,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MODEL),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MODEL->value),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$message->getMac(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::MAC_ADDRESS,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MAC_ADDRESS),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MAC_ADDRESS->value),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$message->getSn(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::SERIAL_NUMBER,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::SERIAL_NUMBER),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::SERIAL_NUMBER->value),
 		);
 
 		if (count($message->getDataPoints()) > 0) {

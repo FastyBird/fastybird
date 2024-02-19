@@ -17,7 +17,6 @@ namespace FastyBird\Connector\Tuya\API\Messages\Response;
 
 use FastyBird\Connector\Tuya\API;
 use FastyBird\Connector\Tuya\Types;
-use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 
 /**
@@ -32,7 +31,7 @@ final readonly class LocalMessagePayload implements API\Messages\Message
 {
 
 	public function __construct(
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\LocalDeviceCommand::class)]
+		#[ObjectMapper\Rules\BackedEnumValue(class: Types\LocalDeviceCommand::class)]
 		private Types\LocalDeviceCommand $command,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
@@ -59,7 +58,7 @@ final readonly class LocalMessagePayload implements API\Messages\Message
 	public function toArray(): array
 	{
 		return [
-			'command' => $this->getCommand()->getValue(),
+			'command' => $this->getCommand()->value,
 			'payload' => $this->getPayload(),
 		];
 	}

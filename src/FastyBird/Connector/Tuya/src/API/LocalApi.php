@@ -34,6 +34,8 @@ use React\EventLoop;
 use React\Promise;
 use React\Socket;
 use Throwable;
+use TypeError;
+use ValueError;
 use function array_filter;
 use function array_key_exists;
 use function array_map;
@@ -47,7 +49,6 @@ use function crc32;
 use function current;
 use function hash_hmac;
 use function in_array;
-use function intval;
 use function is_array;
 use function is_bool;
 use function is_int;
@@ -181,22 +182,19 @@ final class LocalApi
 	)
 	{
 		$this->deviceType = $this->nodeId !== null
-			? Types\LocalDeviceType::get(Types\LocalDeviceType::ZIGBEE)
-			: Types\LocalDeviceType::get(Types\LocalDeviceType::DEFAULT);
+			? Types\LocalDeviceType::ZIGBEE
+			: Types\LocalDeviceType::DEFAULT;
 
-		if ($this->protocolVersion->equalsValue(Types\DeviceProtocolVersion::V32)) {
+		if ($this->protocolVersion === Types\DeviceProtocolVersion::V32) {
 			// 3.2 behaves like 3.3 with device22
-			$this->deviceType = Types\LocalDeviceType::get(Types\LocalDeviceType::DEVICE_22);
+			$this->deviceType = Types\LocalDeviceType::DEVICE_22;
 
-		} elseif ($this->protocolVersion->equalsValue(Types\DeviceProtocolVersion::V34)) {
-			$this->deviceType = Types\LocalDeviceType::get(Types\LocalDeviceType::DEVICE_V34);
-
-		} elseif ($this->deviceType->equalsValue(Types\LocalDeviceType::DEVICE_V34)) {
-			$this->deviceType = Types\LocalDeviceType::get(Types\LocalDeviceType::DEFAULT);
+		} elseif ($this->protocolVersion === Types\DeviceProtocolVersion::V34) {
+			$this->deviceType = Types\LocalDeviceType::DEVICE_V34;
 		}
 
 		if ($this->children !== []) {
-			$this->deviceType = Types\LocalDeviceType::get(Types\LocalDeviceType::GATEWAY);
+			$this->deviceType = Types\LocalDeviceType::GATEWAY;
 		}
 	}
 
@@ -239,8 +237,8 @@ final class LocalApi
 						if ($message !== null) {
 							if (
 								$message->getError() !== null
-								&& $message->getError()->equalsValue(Types\LocalDeviceError::DEVICE_TYPE)
-								&& $message->getCommand()->equalsValue(Types\LocalDeviceCommand::DP_QUERY)
+								&& $message->getError() === Types\LocalDeviceError::DEVICE_TYPE
+								&& $message->getCommand() === Types\LocalDeviceCommand::DP_QUERY
 							) {
 								$this->logger->debug(
 									'Rebuilding payload for device22',
@@ -273,7 +271,7 @@ final class LocalApi
 								return;
 							}
 
-							if ($message->getCommand()->equalsValue(Types\LocalDeviceCommand::HEART_BEAT)) {
+							if ($message->getCommand() === Types\LocalDeviceCommand::HEART_BEAT) {
 								$this->lastHeartbeat = $this->dateTimeFactory->getNow();
 
 								$this->logger->debug(
@@ -288,7 +286,7 @@ final class LocalApi
 								);
 							}
 
-							if ($message->getCommand()->equalsValue(Types\LocalDeviceCommand::STATUS)) {
+							if ($message->getCommand() === Types\LocalDeviceCommand::STATUS) {
 								$this->logger->debug(
 									'Device has reported its state',
 									[
@@ -362,7 +360,7 @@ final class LocalApi
 								);
 
 								$this->sendRequest(
-									Types\LocalDeviceCommand::get(Types\LocalDeviceCommand::HEART_BEAT),
+									Types\LocalDeviceCommand::HEART_BEAT,
 									null,
 									self::HEARTBEAT_SEQ_NO,
 								);
@@ -373,7 +371,7 @@ final class LocalApi
 					Utils\Arrays::invoke($this->onConnected);
 
 					if (
-						$this->deviceType->equalsValue(Types\LocalDeviceType::DEVICE_22)
+						$this->deviceType === Types\LocalDeviceType::DEVICE_22
 						&& $this->dpsToRequest === []
 					) {
 						// Try to find device's dps for special device type
@@ -482,7 +480,7 @@ final class LocalApi
 
 		try {
 			$sequenceNr = $this->sendRequest(
-				Types\LocalDeviceCommand::get(Types\LocalDeviceCommand::DP_QUERY),
+				Types\LocalDeviceCommand::DP_QUERY,
 				null,
 				null,
 				$localChild,
@@ -548,7 +546,7 @@ final class LocalApi
 
 		try {
 			$sequenceNr = $this->sendRequest(
-				Types\LocalDeviceCommand::get(Types\LocalDeviceCommand::CONTROL),
+				Types\LocalDeviceCommand::CONTROL,
 				$states,
 				null,
 				$localChild,
@@ -619,7 +617,7 @@ final class LocalApi
 				}
 			}
 
-			if ($this->deviceType->equalsValue(Types\LocalDeviceType::DEFAULT)) {
+			if ($this->deviceType === Types\LocalDeviceType::DEFAULT) {
 				$this->dpsToRequest = $dpsCache;
 
 				return $dpsCache;
@@ -699,7 +697,7 @@ final class LocalApi
 					'identifier' => $this->identifier,
 				],
 				'message' => [
-					'command' => $command->getValue(),
+					'command' => $command->value,
 					'data' => $data,
 					'sequence' => $sequenceNr,
 				],
@@ -733,14 +731,14 @@ final class LocalApi
 		$gatewayId = $child !== null ? $this->identifier : $this->gateway;
 		$nodeId = $child?->getNodeId() ?? $this->nodeId;
 
-		if ($this->protocolVersion->equalsValue(Types\DeviceProtocolVersion::V31)) {
+		if ($this->protocolVersion === Types\DeviceProtocolVersion::V31) {
 			$message = $this->generateData($command, $deviceId, $gatewayId, $deviceType, $nodeId, $data);
 
 			if ($message->getPayload() === null) {
 				throw new Exceptions\LocalApiError('Payload could not be prepared');
 			}
 
-			if ($message->getCommand()->equalsValue(Types\LocalDeviceCommand::CONTROL)) {
+			if ($message->getCommand() === Types\LocalDeviceCommand::CONTROL) {
 				$payload = openssl_encrypt(
 					$message->getPayload(),
 					'AES-128-ECB',
@@ -758,7 +756,7 @@ final class LocalApi
 					(array) unpack('C*', 'data='),
 					(array) unpack('C*', $payload),
 					(array) unpack('C*', '||lpv='),
-					(array) unpack('C*', Types\DeviceProtocolVersion::V31 . '||'),
+					(array) unpack('C*', Types\DeviceProtocolVersion::V31->value . '||'),
 					(array) unpack('C*', $this->localKey),
 				);
 
@@ -767,7 +765,7 @@ final class LocalApi
 				$hexDigest = Utils\Strings::substring($hexDigest, 0, 16);
 
 				$header = array_merge(
-					(array) unpack('C*', Types\DeviceProtocolVersion::V31),
+					(array) unpack('C*', Types\DeviceProtocolVersion::V31->value),
 					(array) unpack('C*', $hexDigest),
 				);
 
@@ -783,9 +781,9 @@ final class LocalApi
 
 			return $this->stitchPayload($sequenceNr, $payload, $command, $hmacKey);
 		} elseif (
-			$this->protocolVersion->equalsValue(Types\DeviceProtocolVersion::V32)
-			|| $this->protocolVersion->equalsValue(Types\DeviceProtocolVersion::V33)
-			|| $this->protocolVersion->equalsValue(Types\DeviceProtocolVersion::V34)
+			$this->protocolVersion === Types\DeviceProtocolVersion::V32
+			|| $this->protocolVersion === Types\DeviceProtocolVersion::V33
+			|| $this->protocolVersion === Types\DeviceProtocolVersion::V34
 		) {
 			$message = $this->generateData($command, $deviceId, $gatewayId, $deviceType, $nodeId, $data);
 
@@ -793,10 +791,10 @@ final class LocalApi
 				throw new Exceptions\LocalApiError('Payload could not be prepared');
 			}
 
-			if ($this->protocolVersion->equalsValue(Types\DeviceProtocolVersion::V34)) {
-				if (!in_array($message->getCommand()->getValue(), self::NO_PROTOCOL_HEADER_COMMANDS, true)) {
+			if ($this->protocolVersion === Types\DeviceProtocolVersion::V34) {
+				if (!in_array($message->getCommand(), self::NO_PROTOCOL_HEADER_COMMANDS, true)) {
 					$header = array_merge(
-						(array) unpack('C*', $this->protocolVersion->getValue()),
+						(array) unpack('C*', $this->protocolVersion->value),
 						[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 					);
 				}
@@ -830,9 +828,9 @@ final class LocalApi
 					throw new Exceptions\LocalApiError('Payload could not be encrypted');
 				}
 
-				if (!in_array($message->getCommand()->getValue(), self::NO_PROTOCOL_HEADER_COMMANDS, true)) {
+				if (!in_array($message->getCommand(), self::NO_PROTOCOL_HEADER_COMMANDS, true)) {
 					$header = array_merge(
-						(array) unpack('C*', $this->protocolVersion->getValue()),
+						(array) unpack('C*', $this->protocolVersion->value),
 						[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 					);
 				}
@@ -844,13 +842,15 @@ final class LocalApi
 		}
 
 		throw new Exceptions\LocalApiError(
-			sprintf('Unknown protocol %s', $this->protocolVersion->getValue()),
+			sprintf('Unknown protocol %s', $this->protocolVersion->value),
 		);
 	}
 
 	/**
 	 * @throws Exceptions\LocalApiCall
 	 * @throws Exceptions\LocalApiError
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function decodePayload(string $data): Messages\Response\LocalDeviceMessage|null
 	{
@@ -859,7 +859,7 @@ final class LocalApi
 
 		$useHmac = false;
 
-		if ($this->protocolVersion->equalsValue(Types\DeviceProtocolVersion::V34)) {
+		if ($this->protocolVersion === Types\DeviceProtocolVersion::V34) {
 			$footerLength = 36; // 32B CRC check + 4B suffix
 
 			$useHmac = true;
@@ -906,11 +906,11 @@ final class LocalApi
 			);
 		}
 
-		if (!Types\LocalDeviceCommand::isValidValue($command)) {
+		if (Types\LocalDeviceCommand::tryFrom($command) === null) {
 			throw new Exceptions\LocalApiCall('Received unknown command');
 		}
 
-		$command = Types\LocalDeviceCommand::get($command);
+		$command = Types\LocalDeviceCommand::from($command);
 
 		if (count($buffer) < $headerLength + $footerLength) {
 			throw new Exceptions\LocalApiCall('Not enough data to unpack payload');
@@ -949,7 +949,7 @@ final class LocalApi
 
 		$dataPart = array_values(array_slice($buffer, 20, $dataLength + $footerLength - 20));
 
-		if ($this->protocolVersion->equalsValue(Types\DeviceProtocolVersion::V34)) {
+		if ($this->protocolVersion === Types\DeviceProtocolVersion::V34) {
 			$dataPart = openssl_decrypt(
 				pack('C*', ...$dataPart),
 				'AES-128-ECB',
@@ -964,7 +964,7 @@ final class LocalApi
 			$dataPart = (array) unpack('C*', $dataPart);
 		}
 
-		if ($this->protocolVersion->equalsValue(Types\DeviceProtocolVersion::V31)) {
+		if ($this->protocolVersion === Types\DeviceProtocolVersion::V31) {
 			$payload = null;
 
 			if (
@@ -974,7 +974,7 @@ final class LocalApi
 				$payload = pack('C*', ...$dataPart);
 			} elseif (
 				count($dataPart) > 3
-				&& unpack('C*', Types\DeviceProtocolVersion::V31) === [$dataPart[0], $dataPart[1], $dataPart[2]]
+				&& unpack('C*', Types\DeviceProtocolVersion::V31->value) === [$dataPart[0], $dataPart[1], $dataPart[2]]
 			) {
 				$this->logger->info(
 					'Received message from device in version 3.1. This code is untested',
@@ -1004,9 +1004,9 @@ final class LocalApi
 				}
 			}
 		} elseif (
-			$this->protocolVersion->equalsValue(Types\DeviceProtocolVersion::V32)
-			|| $this->protocolVersion->equalsValue(Types\DeviceProtocolVersion::V33)
-			|| $this->protocolVersion->equalsValue(Types\DeviceProtocolVersion::V34)
+			$this->protocolVersion === Types\DeviceProtocolVersion::V32
+			|| $this->protocolVersion === Types\DeviceProtocolVersion::V33
+			|| $this->protocolVersion === Types\DeviceProtocolVersion::V34
 		) {
 			$payload = null;
 
@@ -1014,24 +1014,24 @@ final class LocalApi
 				if (
 					array_values((array) unpack(
 						'C*',
-						Types\DeviceProtocolVersion::V32,
+						Types\DeviceProtocolVersion::V32->value,
 					)) === [$dataPart[0], $dataPart[1], $dataPart[2]]
 					|| array_values((array) unpack(
 						'C*',
-						Types\DeviceProtocolVersion::V33,
+						Types\DeviceProtocolVersion::V33->value,
 					)) === [$dataPart[0], $dataPart[1], $dataPart[2]]
 					|| array_values((array) unpack(
 						'C*',
-						Types\DeviceProtocolVersion::V34,
+						Types\DeviceProtocolVersion::V34->value,
 					)) === [$dataPart[0], $dataPart[1], $dataPart[2]]
 				) {
 					$dataPart = array_slice($dataPart, 3); // Remove version header
-				} elseif ($this->deviceType->equalsValue(Types\LocalDeviceType::DEVICE_22)) {
+				} elseif ($this->deviceType === Types\LocalDeviceType::DEVICE_22) {
 					$dataPart = array_slice($dataPart, 3); // Remove version header
 				}
 
-				if (!$this->protocolVersion->equalsValue(Types\DeviceProtocolVersion::V34)) {
-					if ($command->equalsValue(Types\LocalDeviceCommand::STATUS)) {
+				if ($this->protocolVersion !== Types\DeviceProtocolVersion::V34) {
+					if ($command === Types\LocalDeviceCommand::STATUS) {
 						$dataPart = array_slice($dataPart, 12);
 					}
 
@@ -1051,18 +1051,18 @@ final class LocalApi
 			if (
 				is_string($payload)
 				&& Utils\Strings::contains(Utils\Strings::lower($payload), 'data unvalid')
-				&& !$this->deviceType->equalsValue(Types\LocalDeviceType::DEVICE_22)
+				&& $this->deviceType !== Types\LocalDeviceType::DEVICE_22
 			) {
-				if ($this->deviceType->equalsValue(Types\LocalDeviceType::GATEWAY)) {
+				if ($this->deviceType === Types\LocalDeviceType::GATEWAY) {
 					$payload = null;
-				} elseif ($this->deviceType->equalsValue(Types\LocalDeviceType::DEFAULT)) {
-					$this->deviceType = Types\LocalDeviceType::get(Types\LocalDeviceType::DEVICE_22);
+				} elseif ($this->deviceType === Types\LocalDeviceType::DEFAULT) {
+					$this->deviceType = Types\LocalDeviceType::DEVICE_22;
 					$this->dpsToRequest = ['1' => null];
 
 					$this->logger->info(
 						sprintf(
 							'"data unvalid" error detected: switching to "%s" device type',
-							$this->deviceType->getValue(),
+							$this->deviceType->value,
 						),
 						[
 							'source' => MetadataTypes\Sources\Connector::TUYA,
@@ -1077,11 +1077,11 @@ final class LocalApi
 						Messages\Response\LocalDeviceMessage::class,
 						Utils\ArrayHash::from([
 							'identifier' => $this->identifier,
-							'command' => $command->getValue(),
+							'command' => $command->value,
 							'sequence' => $sequenceNr,
 							'return_code' => $hasReturnCode ? $returnCode : null,
 							'data' => null,
-							'error' => Types\LocalDeviceError::DEVICE_TYPE,
+							'error' => Types\LocalDeviceError::DEVICE_TYPE->value,
 						]),
 					);
 				}
@@ -1098,11 +1098,11 @@ final class LocalApi
 					Messages\Response\LocalDeviceMessage::class,
 					Utils\ArrayHash::from([
 						'identifier' => $this->identifier,
-						'command' => $command->getValue(),
+						'command' => $command->value,
 						'sequence' => $sequenceNr,
 						'return_code' => $hasReturnCode ? $returnCode : null,
 						'data' => 'Data received from device are invalid',
-						'error' => Types\LocalDeviceError::PAYLOAD,
+						'error' => Types\LocalDeviceError::PAYLOAD->value,
 					]),
 				);
 			}
@@ -1116,7 +1116,7 @@ final class LocalApi
 						'identifier' => $this->identifier,
 					],
 					'message' => [
-						'command' => $command->getValue(),
+						'command' => $command->value,
 						'sequence' => $sequenceNr,
 						'returnCode' => $returnCode,
 					],
@@ -1135,7 +1135,7 @@ final class LocalApi
 					'identifier' => $this->identifier,
 				],
 				'message' => [
-					'command' => $command->getValue(),
+					'command' => $command->value,
 					'data' => $payload,
 					'sequence' => $sequenceNr,
 					'returnCode' => $returnCode,
@@ -1145,12 +1145,12 @@ final class LocalApi
 
 		if (
 			(
-				$command->equalsValue(Types\LocalDeviceCommand::STATUS)
-				|| $command->equalsValue(Types\LocalDeviceCommand::DP_QUERY)
-				|| $command->equalsValue(Types\LocalDeviceCommand::DP_QUERY_NEW)
+				$command === Types\LocalDeviceCommand::STATUS
+				|| $command === Types\LocalDeviceCommand::DP_QUERY
+				|| $command === Types\LocalDeviceCommand::DP_QUERY_NEW
 			) && $payload !== null
 		) {
-			$parsedMessage = $command->equalsValue(Types\LocalDeviceCommand::STATUS)
+			$parsedMessage = $command === Types\LocalDeviceCommand::STATUS
 				? $this->validateData($payload, self::DP_QUERY_MESSAGE_SCHEMA_FILENAME)
 				: $this->validateData($payload, self::DP_STATE_MESSAGE_SCHEMA_FILENAME);
 
@@ -1175,7 +1175,7 @@ final class LocalApi
 				}
 			}
 		} elseif (
-			$command->equalsValue(Types\LocalDeviceCommand::QUERY_WIFI)
+			$command === Types\LocalDeviceCommand::QUERY_WIFI
 			&& $payload !== null
 		) {
 			$parsedMessage = $this->validateData($payload, self::WIFI_QUERY_MESSAGE_SCHEMA_FILENAME);
@@ -1195,7 +1195,7 @@ final class LocalApi
 			Messages\Response\LocalDeviceMessage::class,
 			Utils\ArrayHash::from([
 				'identifier' => $this->identifier,
-				'command' => $command->getValue(),
+				'command' => $command->value,
 				'sequence' => $sequenceNr,
 				'return_code' => $hasReturnCode ? $returnCode : null,
 				'data' => $messageData,
@@ -1220,8 +1220,8 @@ final class LocalApi
 	): Messages\Response\LocalMessagePayload
 	{
 		$templates = [
-			Types\LocalDeviceType::DEFAULT => [
-				Types\LocalDeviceCommand::AP_CONFIG => [
+			Types\LocalDeviceType::DEFAULT->value => [
+				Types\LocalDeviceCommand::AP_CONFIG->value => [
 					'template' => [
 						'gwId' => '',
 						'devId' => '',
@@ -1229,26 +1229,26 @@ final class LocalApi
 						't' => '',
 					],
 				],
-				Types\LocalDeviceCommand::CONTROL => [
+				Types\LocalDeviceCommand::CONTROL->value => [
 					'template' => [
 						'devId' => '',
 						'uid' => '',
 						't' => '',
 					],
 				],
-				Types\LocalDeviceCommand::STATUS => [
+				Types\LocalDeviceCommand::STATUS->value => [
 					'template' => [
 						'gwId' => '',
 						'devId' => '',
 					],
 				],
-				Types\LocalDeviceCommand::HEART_BEAT => [
+				Types\LocalDeviceCommand::HEART_BEAT->value => [
 					'template' => [
 						'gwId' => '',
 						'devId' => '',
 					],
 				],
-				Types\LocalDeviceCommand::DP_QUERY => [
+				Types\LocalDeviceCommand::DP_QUERY->value => [
 					'template' => [
 						'gwId' => '',
 						'devId' => '',
@@ -1256,28 +1256,28 @@ final class LocalApi
 						't' => '',
 					],
 				],
-				Types\LocalDeviceCommand::CONTROL_NEW => [
+				Types\LocalDeviceCommand::CONTROL_NEW->value => [
 					'template' => [
 						'devId' => '',
 						'uid' => '',
 						't' => '',
 					],
 				],
-				Types\LocalDeviceCommand::DP_QUERY_NEW => [
+				Types\LocalDeviceCommand::DP_QUERY_NEW->value => [
 					'template' => [
 						'devId' => '',
 						'uid' => '',
 						't' => '',
 					],
 				],
-				Types\LocalDeviceCommand::UPDATE_DPS => [
+				Types\LocalDeviceCommand::UPDATE_DPS->value => [
 					'template' => [
 						'dpId' => [18, 19, 20],
 					],
 				],
 			],
-			Types\LocalDeviceType::DEVICE_22 => [
-				Types\LocalDeviceCommand::DP_QUERY => [
+			Types\LocalDeviceType::DEVICE_22->value => [
+				Types\LocalDeviceCommand::DP_QUERY->value => [
 					'override' => Types\LocalDeviceCommand::CONTROL_NEW,
 					'template' => [
 						'devId' => '',
@@ -1286,8 +1286,8 @@ final class LocalApi
 					],
 				],
 			],
-			Types\LocalDeviceType::DEVICE_V34 => [
-				Types\LocalDeviceCommand::CONTROL => [
+			Types\LocalDeviceType::DEVICE_V34->value => [
+				Types\LocalDeviceCommand::CONTROL->value => [
 					'override' => Types\LocalDeviceCommand::CONTROL_NEW,
 					'template' => [
 						'protocol' => 5,
@@ -1295,12 +1295,12 @@ final class LocalApi
 						'data' => '',
 					],
 				],
-				Types\LocalDeviceCommand::DP_QUERY => [
+				Types\LocalDeviceCommand::DP_QUERY->value => [
 					'override' => Types\LocalDeviceCommand::DP_QUERY_NEW,
 				],
 			],
-			Types\LocalDeviceType::ZIGBEE => [
-				Types\LocalDeviceCommand::CONTROL => [
+			Types\LocalDeviceType::ZIGBEE->value => [
+				Types\LocalDeviceCommand::CONTROL->value => [
 					'template' => [
 						't' => '',
 					],
@@ -1312,29 +1312,26 @@ final class LocalApi
 		$commandOverride = null;
 
 		if (
-			array_key_exists($deviceType->getValue(), $templates)
-			&& array_key_exists($command->getValue(), $templates[$deviceType->getValue()])
+			array_key_exists($deviceType->value, $templates)
+			&& array_key_exists($command->value, $templates[$deviceType->value])
 		) {
-			$payloadConfiguration = $templates[$deviceType->getValue()][$command->getValue()];
+			$payloadConfiguration = $templates[$deviceType->value][$command->value];
 
 			if (array_key_exists('template', $payloadConfiguration)) {
 				$result = $payloadConfiguration['template'];
 			}
 
-			if (
-				array_key_exists('override', $payloadConfiguration)
-				&& Types\LocalDeviceCommand::isValidValue($payloadConfiguration['override'])
-			) {
-				$commandOverride = Types\LocalDeviceCommand::get($payloadConfiguration['override']);
+			if (array_key_exists('override', $payloadConfiguration)) {
+				$commandOverride = $payloadConfiguration['override'];
 			}
 		}
 
-		if (!$deviceType->equalsValue(Types\LocalDeviceType::DEFAULT)) {
+		if ($deviceType !== Types\LocalDeviceType::DEFAULT) {
 			if (
 				$result === null
-				&& array_key_exists(intval($command->getValue()), $templates[Types\LocalDeviceType::DEFAULT])
+				&& array_key_exists($command->value, $templates[Types\LocalDeviceType::DEFAULT->value])
 			) {
-				$payloadConfiguration = $templates[Types\LocalDeviceType::DEFAULT][intval($command->getValue())];
+				$payloadConfiguration = $templates[Types\LocalDeviceType::DEFAULT->value][$command->value];
 
 				$result = $payloadConfiguration['template'];
 			}
@@ -1372,7 +1369,7 @@ final class LocalApi
 				: (string) $this->dateTimeFactory->getNow()->getTimestamp();
 		}
 
-		if ($command->equalsValue(Types\LocalDeviceCommand::CONTROL_NEW)) {
+		if ($command === Types\LocalDeviceCommand::CONTROL_NEW) {
 			$result['dps'] = ['1' => null, '2' => null, '3' => null];
 		}
 
@@ -1387,8 +1384,8 @@ final class LocalApi
 				$result['dps'] = $data;
 			}
 		} elseif (
-			$deviceType->equalsValue(Types\LocalDeviceType::DEVICE_22)
-			&& $command->equalsValue(Types\LocalDeviceCommand::DP_QUERY)
+			$deviceType === Types\LocalDeviceType::DEVICE_22
+			&& $command === Types\LocalDeviceCommand::DP_QUERY
 		) {
 			$result['dps'] = $this->dpsToRequest;
 		}
@@ -1397,7 +1394,7 @@ final class LocalApi
 			return $this->createMessage(
 				Messages\Response\LocalMessagePayload::class,
 				Utils\ArrayHash::from([
-					'command' => $commandOverride->getValue(),
+					'command' => $commandOverride->value,
 					'payload' => str_replace(' ', '', Utils\Json::encode($result)),
 				]),
 			);
@@ -1423,10 +1420,10 @@ final class LocalApi
 	): array
 	{
 		$commandHb = [
-			($command->getValue() >> 24) & 0xFF,
-			($command->getValue() >> 16) & 0xFF,
-			($command->getValue() >> 8) & 0xFF,
-			($command->getValue() >> 0) & 0xFF,
+			($command->value >> 24) & 0xFF,
+			($command->value >> 16) & 0xFF,
+			($command->value >> 8) & 0xFF,
+			($command->value >> 0) & 0xFF,
 		];
 
 		$requestCntHb = [

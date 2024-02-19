@@ -76,6 +76,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
@@ -288,7 +289,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		);
 
 		try {
-			if ($this->connectorHelper->getClientMode($connector)->equalsValue(Types\ClientMode::CLOUD)) {
+			if ($this->connectorHelper->getClientMode($connector) === Types\ClientMode::CLOUD) {
 				$client = $this->connectionManager->getCloudApiConnection($connector);
 
 				if (!$client->isConnected()) {
@@ -300,7 +301,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					$property->getIdentifier(),
 					$expectedValue,
 				);
-			} elseif ($this->connectorHelper->getClientMode($connector)->equalsValue(Types\ClientMode::LOCAL)) {
+			} else {
 				$client = $this->connectionManager->getLocalConnection($device);
 
 				$result = $client->writeState(
@@ -308,14 +309,6 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					$expectedValue,
 					$this->deviceHelper->getGateway($device) !== null ? $device->getIdentifier() : null,
 				);
-			} else {
-				$this->channelPropertiesStatesManager->setPendingState(
-					$property,
-					false,
-					MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::TUYA),
-				);
-
-				return true;
 			}
 		} catch (Exceptions\InvalidState $ex) {
 			$this->queue->append(

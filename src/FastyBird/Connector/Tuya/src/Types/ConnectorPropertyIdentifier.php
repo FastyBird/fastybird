@@ -15,9 +15,6 @@
 
 namespace FastyBird\Connector\Tuya\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * Connector property identifier types
  *
@@ -26,31 +23,21 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class ConnectorPropertyIdentifier extends Consistence\Enum\Enum
+enum ConnectorPropertyIdentifier: string
 {
 
-	public const CLIENT_MODE = 'mode';
+	case CLIENT_MODE = 'mode';
 
-	public const ACCESS_ID = 'access_id';
+	case ACCESS_ID = 'access_id';
 
-	public const ACCESS_SECRET = 'access_secret';
+	case ACCESS_SECRET = 'access_secret';
 
-	public const UID = 'uid';
+	case UID = 'uid';
 
-	public const OPENAPI_ENDPOINT = 'openapi_endpoint';
+	case OPENAPI_ENDPOINT = 'openapi_endpoint';
 
-	public const OPENPULSAR_ENDPOINT = 'openpulsar_endpoint';
+	case OPENPULSAR_ENDPOINT = 'openpulsar_endpoint';
 
-	public const OPENPULSAR_TOPIC = 'openpulsar_topic';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case OPENPULSAR_TOPIC = 'openpulsar_topic';
 
 }

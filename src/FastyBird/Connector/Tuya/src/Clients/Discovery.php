@@ -75,8 +75,8 @@ final class Discovery
 	private const UDP_BIND_IP = '0.0.0.0';
 
 	private const UDP_PORT = [
-		Types\DeviceProtocolVersion::V31 => 6_666,
-		Types\DeviceProtocolVersion::V32_PLUS => 6_667,
+		Types\DeviceProtocolVersion::V31->value => 6_666,
+		Types\DeviceProtocolVersion::V32_PLUS->value => 6_667,
 	];
 
 	private const UDP_TIMEOUT = 5;
@@ -123,16 +123,17 @@ final class Discovery
 	{
 		$mode = $this->connectorHelper->getClientMode($this->connector);
 
-		if ($mode->equalsValue(Types\ClientMode::CLOUD)) {
+		if ($mode === Types\ClientMode::CLOUD) {
 			$this->discoverCloudDevices();
 
-		} elseif ($mode->equalsValue(Types\ClientMode::LOCAL)) {
+		} elseif ($mode === Types\ClientMode::LOCAL) {
 			$this->discoverLocalDevices();
 		}
 	}
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError
@@ -165,13 +166,13 @@ final class Discovery
 				[
 					'source' => MetadataTypes\Sources\Connector::TUYA,
 					'type' => 'discovery-client',
-					'protocol' => $protocolVersion,
+					'protocol' => $protocolVersion->value,
 				],
 			);
 
 			$deferred = new Promise\Deferred();
 
-			$server = $this->datagramFactory->create(self::UDP_BIND_IP, self::UDP_PORT[$protocolVersion]);
+			$server = $this->datagramFactory->create(self::UDP_BIND_IP, self::UDP_PORT[$protocolVersion->value]);
 
 			$server
 				->then(function (Datagram\Socket $client) use ($deferred, $protocolVersion): void {
@@ -180,13 +181,13 @@ final class Discovery
 					}));
 
 					// Searching timeout
-					$this->handlerTimer[$protocolVersion] = $this->eventLoop->addTimer(
+					$this->handlerTimer[$protocolVersion->value] = $this->eventLoop->addTimer(
 						self::UDP_TIMEOUT,
 						async(function () use ($deferred, $protocolVersion): void {
-							if (array_key_exists($protocolVersion, $this->handlerTimer)) {
-								$this->eventLoop->cancelTimer($this->handlerTimer[$protocolVersion]);
+							if (array_key_exists($protocolVersion->value, $this->handlerTimer)) {
+								$this->eventLoop->cancelTimer($this->handlerTimer[$protocolVersion->value]);
 
-								unset($this->handlerTimer[$protocolVersion]);
+								unset($this->handlerTimer[$protocolVersion->value]);
 							}
 
 							$deferred->resolve(true);
@@ -200,7 +201,7 @@ final class Discovery
 							'source' => MetadataTypes\Sources\Connector::TUYA,
 							'type' => 'discovery-client',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
-							'protocol' => $protocolVersion,
+							'protocol' => $protocolVersion->value,
 						],
 					);
 
@@ -363,6 +364,7 @@ final class Discovery
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError
@@ -458,6 +460,7 @@ final class Discovery
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError
@@ -528,7 +531,7 @@ final class Discovery
 			$deviceInformation->getId(),
 			$deviceInformation->getLocalKey(),
 			$ipAddress,
-			Types\DeviceProtocolVersion::get($version),
+			Types\DeviceProtocolVersion::from($version),
 		);
 
 		try {
@@ -628,7 +631,7 @@ final class Discovery
 					$child->getId(),
 					$deviceInformation->getLocalKey(),
 					$ipAddress,
-					Types\DeviceProtocolVersion::get($version),
+					Types\DeviceProtocolVersion::from($version),
 					$id,
 					$child->getNodeId(),
 				);
@@ -1006,6 +1009,7 @@ final class Discovery
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError

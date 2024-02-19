@@ -18,6 +18,7 @@ namespace FastyBird\Connector\Tuya\Queue\Consumers;
 use Doctrine\DBAL;
 use FastyBird\Connector\Tuya;
 use FastyBird\Connector\Tuya\Entities;
+use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Queries;
 use FastyBird\Connector\Tuya\Queue;
 use FastyBird\Connector\Tuya\Types;
@@ -68,6 +69,7 @@ final class StoreCloudDevice implements Queue\Consumer
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws ApplicationExceptions\Runtime
 	 * @throws DBAL\Exception
+	 * @throws Exceptions\InvalidArgument
 	 */
 	public function consume(Queue\Messages\Message $message): bool
 	{
@@ -128,56 +130,56 @@ final class StoreCloudDevice implements Queue\Consumer
 			$message->getLocalKey(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::LOCAL_KEY,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::LOCAL_KEY),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::LOCAL_KEY->value),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$message->getIpAddress(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::IP_ADDRESS,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::IP_ADDRESS),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::IP_ADDRESS->value),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$message->getCategory(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::CATEGORY,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::CATEGORY),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::CATEGORY->value),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$message->getIcon(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::ICON,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::ICON),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::ICON->value),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$message->getLatitude(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::LATITUDE,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::LATITUDE),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::LATITUDE->value),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$message->getLongitude(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::LONGITUDE,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::LONGITUDE),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::LONGITUDE->value),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$message->getProductId(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::PRODUCT_ID,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::PRODUCT_ID),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::PRODUCT_ID->value),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$message->getProductName(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::PRODUCT_NAME,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::PRODUCT_NAME),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::PRODUCT_NAME->value),
 		);
 
 		$this->setDeviceProperty(
@@ -185,21 +187,21 @@ final class StoreCloudDevice implements Queue\Consumer
 			$message->getModel(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::MODEL,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MODEL),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MODEL->value),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$message->getMac(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::MAC_ADDRESS,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MAC_ADDRESS),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MAC_ADDRESS->value),
 		);
 		$this->setDeviceProperty(
 			$device->getId(),
 			$message->getSn(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::SERIAL_NUMBER,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::SERIAL_NUMBER),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::SERIAL_NUMBER->value),
 		);
 
 		$this->databaseHelper->transaction(function () use ($message, $device): bool {
@@ -213,7 +215,7 @@ final class StoreCloudDevice implements Queue\Consumer
 				$channel = $this->channelsManager->create(Utils\ArrayHash::from([
 					'entity' => Entities\Channels\Channel::class,
 					'device' => $device,
-					'identifier' => Types\DataPoint::CLOUD,
+					'identifier' => Types\DataPoint::CLOUD->value,
 				]));
 
 				$this->logger->debug(

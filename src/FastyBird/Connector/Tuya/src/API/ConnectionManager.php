@@ -68,6 +68,7 @@ final class ConnectionManager
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -106,7 +107,7 @@ final class ConnectionManager
 							[
 								'identifier' => $child->getIdentifier(),
 								'node_id' => $this->deviceHelper->getNodeId($child),
-								'type' => Types\LocalDeviceType::ZIGBEE,
+								'type' => Types\LocalDeviceType::ZIGBEE->value,
 							],
 							ValueObjects\LocalChild::class,
 						);
@@ -123,6 +124,7 @@ final class ConnectionManager
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError
@@ -147,6 +149,7 @@ final class ConnectionManager
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError

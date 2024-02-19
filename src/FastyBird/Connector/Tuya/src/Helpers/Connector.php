@@ -17,12 +17,12 @@ namespace FastyBird\Connector\Tuya\Helpers;
 
 use FastyBird\Connector\Tuya\Documents;
 use FastyBird\Connector\Tuya\Exceptions;
+use FastyBird\Connector\Tuya\Queries;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use TypeError;
 use ValueError;
 use function assert;
@@ -47,6 +47,7 @@ final readonly class Connector
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -55,7 +56,7 @@ final readonly class Connector
 	 */
 	public function getClientMode(Documents\Connectors\Connector $connector): Types\ClientMode
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindConnectorVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindConnectorVariableProperties();
 		$findPropertyQuery->forConnector($connector);
 		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::CLIENT_MODE);
 
@@ -66,8 +67,8 @@ final readonly class Connector
 
 		$value = $property?->getValue();
 
-		if (is_string($value) && Types\ClientMode::isValidValue($value)) {
-			return Types\ClientMode::get($value);
+		if (is_string($value) && Types\ClientMode::tryFrom($value) !== null) {
+			return Types\ClientMode::from($value);
 		}
 
 		throw new Exceptions\InvalidState('Connector mode is not configured');
@@ -75,6 +76,7 @@ final readonly class Connector
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError
@@ -84,7 +86,7 @@ final readonly class Connector
 		DevicesDocuments\Connectors\Connector $connector,
 	): Types\OpenApiEndpoint
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindConnectorVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindConnectorVariableProperties();
 		$findPropertyQuery->forConnector($connector);
 		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::OPENAPI_ENDPOINT);
 
@@ -95,15 +97,16 @@ final readonly class Connector
 
 		$value = $property?->getValue();
 
-		if (is_string($value) && Types\OpenApiEndpoint::isValidValue($value)) {
-			return Types\OpenApiEndpoint::get($value);
+		if (is_string($value) && Types\OpenApiEndpoint::tryFrom($value) !== null) {
+			return Types\OpenApiEndpoint::from($value);
 		}
 
-		return Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::EUROPE);
+		return Types\OpenApiEndpoint::EUROPE;
 	}
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError
@@ -113,7 +116,7 @@ final readonly class Connector
 		DevicesDocuments\Connectors\Connector $connector,
 	): Types\OpenPulsarEndpoint
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindConnectorVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindConnectorVariableProperties();
 		$findPropertyQuery->forConnector($connector);
 		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::OPENPULSAR_ENDPOINT);
 
@@ -124,31 +127,30 @@ final readonly class Connector
 
 		$value = $property?->getValue();
 
-		if (is_string($value) && Types\OpenPulsarEndpoint::isValidValue($value)) {
-			return Types\OpenPulsarEndpoint::get($value);
+		if (is_string($value) && Types\OpenPulsarEndpoint::tryFrom($value) !== null) {
+			return Types\OpenPulsarEndpoint::from($value);
 		}
 
 		if (
-			$this->getOpenApiEndpoint($connector)->equalsValue(Types\OpenApiEndpoint::EUROPE)
-			|| $this->getOpenApiEndpoint($connector)->equalsValue(Types\OpenApiEndpoint::EUROPE_MS)
+			$this->getOpenApiEndpoint($connector) === Types\OpenApiEndpoint::EUROPE
+			|| $this->getOpenApiEndpoint($connector) === Types\OpenApiEndpoint::EUROPE_MS
 		) {
-			return Types\OpenPulsarEndpoint::get(Types\OpenPulsarEndpoint::EUROPE);
+			return Types\OpenPulsarEndpoint::EUROPE;
 		} elseif (
-			$this->getOpenApiEndpoint($connector)->equalsValue(Types\OpenApiEndpoint::AMERICA)
-			|| $this->getOpenApiEndpoint($connector)->equalsValue(Types\OpenApiEndpoint::AMERICA_AZURE)
+			$this->getOpenApiEndpoint($connector) === Types\OpenApiEndpoint::AMERICA
+			|| $this->getOpenApiEndpoint($connector) === Types\OpenApiEndpoint::AMERICA_AZURE
 		) {
-			return Types\OpenPulsarEndpoint::get(Types\OpenPulsarEndpoint::AMERICA);
-		} elseif ($this->getOpenApiEndpoint($connector)->equalsValue(Types\OpenApiEndpoint::CHINA)) {
-			return Types\OpenPulsarEndpoint::get(Types\OpenPulsarEndpoint::CHINA);
-		} elseif ($this->getOpenApiEndpoint($connector)->equalsValue(Types\OpenApiEndpoint::INDIA)) {
-			return Types\OpenPulsarEndpoint::get(Types\OpenPulsarEndpoint::INDIA);
+			return Types\OpenPulsarEndpoint::AMERICA;
+		} elseif ($this->getOpenApiEndpoint($connector) === Types\OpenApiEndpoint::CHINA) {
+			return Types\OpenPulsarEndpoint::CHINA;
+		} else {
+			return Types\OpenPulsarEndpoint::INDIA;
 		}
-
-		return Types\OpenPulsarEndpoint::get(Types\OpenPulsarEndpoint::EUROPE);
 	}
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError
@@ -158,7 +160,7 @@ final readonly class Connector
 		DevicesDocuments\Connectors\Connector $connector,
 	): Types\OpenPulsarTopic
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindConnectorVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindConnectorVariableProperties();
 		$findPropertyQuery->forConnector($connector);
 		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::OPENPULSAR_TOPIC);
 
@@ -169,15 +171,16 @@ final readonly class Connector
 
 		$value = $property?->getValue();
 
-		if (is_string($value) && Types\OpenPulsarTopic::isValidValue($value)) {
-			return Types\OpenPulsarTopic::get($value);
+		if (is_string($value) && Types\OpenPulsarTopic::tryFrom($value) !== null) {
+			return Types\OpenPulsarTopic::from($value);
 		}
 
-		return Types\OpenPulsarTopic::get(Types\OpenPulsarTopic::PROD);
+		return Types\OpenPulsarTopic::PROD;
 	}
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError
@@ -185,7 +188,7 @@ final readonly class Connector
 	 */
 	public function getAccessId(Documents\Connectors\Connector $connector): string|null
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindConnectorVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindConnectorVariableProperties();
 		$findPropertyQuery->forConnector($connector);
 		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::ACCESS_ID);
 
@@ -206,6 +209,7 @@ final readonly class Connector
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError
@@ -213,7 +217,7 @@ final readonly class Connector
 	 */
 	public function getAccessSecret(Documents\Connectors\Connector $connector): string|null
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindConnectorVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindConnectorVariableProperties();
 		$findPropertyQuery->forConnector($connector);
 		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::ACCESS_SECRET);
 
@@ -234,6 +238,7 @@ final readonly class Connector
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError
@@ -241,7 +246,7 @@ final readonly class Connector
 	 */
 	public function getUid(Documents\Connectors\Connector $connector): string|null
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindConnectorVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindConnectorVariableProperties();
 		$findPropertyQuery->forConnector($connector);
 		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::UID);
 

@@ -15,9 +15,6 @@
 
 namespace FastyBird\Connector\Tuya\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * Local device communication error types
  *
@@ -26,21 +23,11 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class LocalDeviceError extends Consistence\Enum\Enum
+enum LocalDeviceError: string
 {
 
-	public const PAYLOAD = 'payload';
+	case PAYLOAD = 'payload';
 
-	public const DEVICE_TYPE = 'device_type';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case DEVICE_TYPE = 'device_type';
 
 }

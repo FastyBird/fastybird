@@ -448,8 +448,8 @@ final class OpenPulsar
 		if (
 			$decryptedData->offsetExists('bizCode')
 			&& (
-				$decryptedData->offsetGet('bizCode') === Types\OpenPulsarMessageType::ONLINE
-				|| $decryptedData->offsetGet('bizCode') === Types\OpenPulsarMessageType::OFFLINE
+				$decryptedData->offsetGet('bizCode') === Types\OpenPulsarMessageType::ONLINE->value
+				|| $decryptedData->offsetGet('bizCode') === Types\OpenPulsarMessageType::OFFLINE->value
 			)
 		) {
 			try {
@@ -459,9 +459,7 @@ final class OpenPulsar
 						Messages\Response\ReportDeviceOnline::class,
 						[
 							'identifier' => $decryptedData->devId,
-							'online' => $decryptedData->offsetGet(
-								'bizCode',
-							) === Types\OpenPulsarMessageType::ONLINE,
+							'online' => $decryptedData->offsetGet('bizCode') === Types\OpenPulsarMessageType::ONLINE->value,
 						],
 					),
 				);
@@ -477,8 +475,8 @@ final class OpenPulsar
 
 	private function buildWsTopicUrl(): string
 	{
-		return $this->endpoint->getValue() . 'ws/v2/consumer/persistent/'
-			. $this->accessId . '/out/' . $this->topic->getValue() . '/'
+		return $this->endpoint->value . 'ws/v2/consumer/persistent/'
+			. $this->accessId . '/out/' . $this->topic->value . '/'
 			. $this->accessId . '-sub?ackTimeoutMillis=3000&subscriptionType=Failover';
 	}
 

@@ -15,9 +15,6 @@
 
 namespace FastyBird\Connector\Tuya\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * OpenAPI endpoint types
  *
@@ -26,29 +23,19 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class OpenApiEndpoint extends Consistence\Enum\Enum
+enum OpenApiEndpoint: string
 {
 
-	public const CHINA = 'https://openapi.tuyacn.com';
+	case CHINA = 'https://openapi.tuyacn.com';
 
-	public const AMERICA = 'https://openapi.tuyaus.com';
+	case AMERICA = 'https://openapi.tuyaus.com';
 
-	public const AMERICA_AZURE = 'https://openapi-ueaz.tuyaus.com';
+	case AMERICA_AZURE = 'https://openapi-ueaz.tuyaus.com';
 
-	public const EUROPE = 'https://openapi.tuyaeu.com';
+	case EUROPE = 'https://openapi.tuyaeu.com';
 
-	public const EUROPE_MS = 'https://openapi-weaz.tuyaeu.com';
+	case EUROPE_MS = 'https://openapi-weaz.tuyaeu.com';
 
-	public const INDIA = 'https://openapi.tuyain.com';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case INDIA = 'https://openapi.tuyain.com';
 
 }

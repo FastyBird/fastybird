@@ -1242,7 +1242,7 @@ final class OpenApi
 		string|null $body = null,
 	): Request
 	{
-		$url = $this->endpoint->getValue() . $path;
+		$url = $this->endpoint->value . $path;
 
 		if (count($params) > 0) {
 			$url .= '?';

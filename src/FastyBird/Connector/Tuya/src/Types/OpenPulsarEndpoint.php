@@ -15,9 +15,6 @@
 
 namespace FastyBird\Connector\Tuya\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * OpenPulsar endpoint types
  *
@@ -26,25 +23,15 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class OpenPulsarEndpoint extends Consistence\Enum\Enum
+enum OpenPulsarEndpoint: string
 {
 
-	public const CHINA = 'wss://mqe.tuyacn.com:8285/';
+	case CHINA = 'wss://mqe.tuyacn.com:8285/';
 
-	public const AMERICA = 'wss://mqe.tuyaus.com:8285/';
+	case AMERICA = 'wss://mqe.tuyaus.com:8285/';
 
-	public const EUROPE = 'wss://mqe.tuyaeu.com:8285/';
+	case EUROPE = 'wss://mqe.tuyaeu.com:8285/';
 
-	public const INDIA = 'wss://mqe.tuyain.com:8285/';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case INDIA = 'wss://mqe.tuyain.com:8285/';
 
 }

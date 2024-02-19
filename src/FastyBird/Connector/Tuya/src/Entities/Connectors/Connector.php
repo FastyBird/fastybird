@@ -22,6 +22,7 @@ use FastyBird\Connector\Tuya\Types;
 use FastyBird\Library\Application\Entities\Mapping as ApplicationMapping;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use TypeError;
 use ValueError;
@@ -84,15 +85,15 @@ class Connector extends DevicesEntities\Connectors\Connector
 		$property = $this->properties
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::CLIENT_MODE
+				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::CLIENT_MODE->value
 			)
 			->first();
 
 		if (
 			$property instanceof DevicesEntities\Connectors\Properties\Variable
-			&& Types\ClientMode::isValidValue($property->getValue())
+			&& Types\ClientMode::tryFrom(MetadataUtilities\Value::toString($property->getValue(), true)) !== null
 		) {
-			return Types\ClientMode::get($property->getValue());
+			return Types\ClientMode::from(MetadataUtilities\Value::toString($property->getValue(), true));
 		}
 
 		throw new Exceptions\InvalidState('Connector mode is not configured');
@@ -109,19 +110,19 @@ class Connector extends DevicesEntities\Connectors\Connector
 		$property = $this->properties
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::OPENAPI_ENDPOINT
+				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::OPENAPI_ENDPOINT->value
 			)
 			->first();
 
 		if (
 			$property instanceof DevicesEntities\Connectors\Properties\Variable
 			&& is_string($property->getValue())
-			&& Types\OpenApiEndpoint::isValidValue($property->getValue())
+			&& Types\OpenApiEndpoint::tryFrom($property->getValue()) !== null
 		) {
-			return Types\OpenApiEndpoint::get($property->getValue());
+			return Types\OpenApiEndpoint::from($property->getValue());
 		}
 
-		return Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::EUROPE);
+		return Types\OpenApiEndpoint::EUROPE;
 	}
 
 	/**
@@ -135,35 +136,33 @@ class Connector extends DevicesEntities\Connectors\Connector
 		$property = $this->properties
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::OPENPULSAR_ENDPOINT
+				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::OPENPULSAR_ENDPOINT->value
 			)
 			->first();
 
 		if (
 			$property instanceof DevicesEntities\Connectors\Properties\Variable
 			&& is_string($property->getValue())
-			&& Types\OpenPulsarEndpoint::isValidValue($property->getValue())
+			&& Types\OpenPulsarEndpoint::tryFrom($property->getValue()) !== null
 		) {
-			return Types\OpenPulsarEndpoint::get($property->getValue());
+			return Types\OpenPulsarEndpoint::from($property->getValue());
 		}
 
 		if (
-			$this->getOpenApiEndpoint()->equalsValue(Types\OpenApiEndpoint::EUROPE)
-			|| $this->getOpenApiEndpoint()->equalsValue(Types\OpenApiEndpoint::EUROPE_MS)
+			$this->getOpenApiEndpoint() === Types\OpenApiEndpoint::EUROPE
+			|| $this->getOpenApiEndpoint() === Types\OpenApiEndpoint::EUROPE_MS
 		) {
-			return Types\OpenPulsarEndpoint::get(Types\OpenPulsarEndpoint::EUROPE);
+			return Types\OpenPulsarEndpoint::EUROPE;
 		} elseif (
-			$this->getOpenApiEndpoint()->equalsValue(Types\OpenApiEndpoint::AMERICA)
-			|| $this->getOpenApiEndpoint()->equalsValue(Types\OpenApiEndpoint::AMERICA_AZURE)
+			$this->getOpenApiEndpoint() === Types\OpenApiEndpoint::AMERICA
+			|| $this->getOpenApiEndpoint() === Types\OpenApiEndpoint::AMERICA_AZURE
 		) {
-			return Types\OpenPulsarEndpoint::get(Types\OpenPulsarEndpoint::AMERICA);
-		} elseif ($this->getOpenApiEndpoint()->equalsValue(Types\OpenApiEndpoint::CHINA)) {
-			return Types\OpenPulsarEndpoint::get(Types\OpenPulsarEndpoint::CHINA);
-		} elseif ($this->getOpenApiEndpoint()->equalsValue(Types\OpenApiEndpoint::INDIA)) {
-			return Types\OpenPulsarEndpoint::get(Types\OpenPulsarEndpoint::INDIA);
+			return Types\OpenPulsarEndpoint::AMERICA;
+		} elseif ($this->getOpenApiEndpoint() === Types\OpenApiEndpoint::CHINA) {
+			return Types\OpenPulsarEndpoint::CHINA;
+		} else {
+			return Types\OpenPulsarEndpoint::INDIA;
 		}
-
-		return Types\OpenPulsarEndpoint::get(Types\OpenPulsarEndpoint::EUROPE);
 	}
 
 	/**
@@ -177,19 +176,19 @@ class Connector extends DevicesEntities\Connectors\Connector
 		$property = $this->properties
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::OPENPULSAR_TOPIC
+				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::OPENPULSAR_TOPIC->value
 			)
 			->first();
 
 		if (
 			$property instanceof DevicesEntities\Connectors\Properties\Variable
 			&& is_string($property->getValue())
-			&& Types\OpenPulsarTopic::isValidValue($property->getValue())
+			&& Types\OpenPulsarTopic::tryFrom($property->getValue()) !== null
 		) {
-			return Types\OpenPulsarTopic::get($property->getValue());
+			return Types\OpenPulsarTopic::from($property->getValue());
 		}
 
-		return Types\OpenPulsarTopic::get(Types\OpenPulsarTopic::PROD);
+		return Types\OpenPulsarTopic::PROD;
 	}
 
 	/**
@@ -203,7 +202,7 @@ class Connector extends DevicesEntities\Connectors\Connector
 		$property = $this->properties
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::ACCESS_ID
+				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::ACCESS_ID->value
 			)
 			->first();
 
@@ -228,7 +227,7 @@ class Connector extends DevicesEntities\Connectors\Connector
 		$property = $this->properties
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::ACCESS_SECRET
+				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::ACCESS_SECRET->value
 			)
 			->first();
 
@@ -253,7 +252,7 @@ class Connector extends DevicesEntities\Connectors\Connector
 		$property = $this->properties
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::UID
+				static fn (DevicesEntities\Connectors\Properties\Property $property): bool => $property->getIdentifier() === Types\ConnectorPropertyIdentifier::UID->value
 			)
 			->first();
 

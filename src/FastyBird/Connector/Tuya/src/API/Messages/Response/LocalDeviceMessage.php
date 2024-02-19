@@ -17,7 +17,6 @@ namespace FastyBird\Connector\Tuya\API\Messages\Response;
 
 use FastyBird\Connector\Tuya\API;
 use FastyBird\Connector\Tuya\Types;
-use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 use function array_map;
 use function is_array;
@@ -39,7 +38,7 @@ final readonly class LocalDeviceMessage implements API\Messages\Message
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private string $identifier,
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\LocalDeviceCommand::class)]
+		#[ObjectMapper\Rules\BackedEnumValue(class: Types\LocalDeviceCommand::class)]
 		private Types\LocalDeviceCommand $command,
 		#[ObjectMapper\Rules\IntValue(unsigned: true)]
 		private int $sequence,
@@ -59,7 +58,7 @@ final readonly class LocalDeviceMessage implements API\Messages\Message
 		])]
 		private string|array|LocalDeviceWifiScan|null $data = null,
 		#[ObjectMapper\Rules\AnyOf([
-			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\LocalDeviceError::class),
+			new ObjectMapper\Rules\BackedEnumValue(class: Types\LocalDeviceError::class),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		private Types\LocalDeviceError|null $error = null,
@@ -107,7 +106,7 @@ final readonly class LocalDeviceMessage implements API\Messages\Message
 	{
 		return [
 			'identifier' => $this->getIdentifier(),
-			'command' => $this->getCommand()->getValue(),
+			'command' => $this->getCommand()->value,
 			'sequence' => $this->getSequence(),
 			'return_code' => $this->getReturnCode(),
 			'data' => $this->getData() instanceof API\Messages\Message ? $this->getData()->toArray() : (is_array(
@@ -118,7 +117,7 @@ final readonly class LocalDeviceMessage implements API\Messages\Message
 				): array => $message->toArray(),
 				$this->getData(),
 			) : $this->getData()),
-			'error' => $this->getError()?->getValue(),
+			'error' => $this->getError()?->value,
 		];
 	}
 
