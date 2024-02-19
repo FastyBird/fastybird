@@ -20,13 +20,14 @@ use Doctrine\ORM;
 use Doctrine\Persistence;
 use FastyBird\Connector\Virtual;
 use FastyBird\Connector\Virtual\Entities;
+use FastyBird\Connector\Virtual\Exceptions;
 use FastyBird\Connector\Virtual\Helpers;
+use FastyBird\Connector\Virtual\Queries;
 use FastyBird\Connector\Virtual\Types;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Types as DevicesTypes;
 use IPub\DoctrineCrud;
 use Nette;
@@ -64,6 +65,7 @@ final class Properties implements Common\EventSubscriber
 	 *
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DoctrineCrud\Exceptions\InvalidArgumentException
+	 * @throws Exceptions\InvalidArgument
 	 */
 	public function postPersist(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
@@ -75,7 +77,7 @@ final class Properties implements Common\EventSubscriber
 			return;
 		}
 
-		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
+		$findDevicePropertyQuery = new Queries\Entities\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($entity);
 		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::STATE);
 
@@ -105,7 +107,7 @@ final class Properties implements Common\EventSubscriber
 			$this->propertiesManager->create(Utils\ArrayHash::from([
 				'device' => $entity,
 				'entity' => DevicesEntities\Devices\Properties\Dynamic::class,
-				'identifier' => Types\DevicePropertyIdentifier::STATE,
+				'identifier' => Types\DevicePropertyIdentifier::STATE->value,
 				'dataType' => MetadataTypes\DataType::ENUM,
 				'unit' => null,
 				'format' => [
@@ -120,7 +122,7 @@ final class Properties implements Common\EventSubscriber
 			]));
 		}
 
-		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
+		$findDevicePropertyQuery = new Queries\Entities\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($entity);
 		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::MANUFACTURER);
 
@@ -139,7 +141,7 @@ final class Properties implements Common\EventSubscriber
 			$this->propertiesManager->create(Utils\ArrayHash::from([
 				'device' => $entity,
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
-				'identifier' => Types\DevicePropertyIdentifier::MANUFACTURER,
+				'identifier' => Types\DevicePropertyIdentifier::MANUFACTURER->value,
 				'dataType' => MetadataTypes\DataType::STRING,
 				'unit' => null,
 				'format' => null,
@@ -147,7 +149,7 @@ final class Properties implements Common\EventSubscriber
 			]));
 		}
 
-		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
+		$findDevicePropertyQuery = new Queries\Entities\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($entity);
 		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::MAC_ADDRESS);
 
@@ -166,7 +168,7 @@ final class Properties implements Common\EventSubscriber
 			$this->propertiesManager->create(Utils\ArrayHash::from([
 				'device' => $entity,
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
-				'identifier' => Types\DevicePropertyIdentifier::MAC_ADDRESS,
+				'identifier' => Types\DevicePropertyIdentifier::MAC_ADDRESS->value,
 				'dataType' => MetadataTypes\DataType::STRING,
 				'unit' => null,
 				'format' => null,

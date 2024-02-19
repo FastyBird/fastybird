@@ -17,12 +17,13 @@ namespace FastyBird\Connector\Virtual\Helpers;
 
 use FastyBird\Connector\Virtual\Documents;
 use FastyBird\Connector\Virtual\Entities;
+use FastyBird\Connector\Virtual\Exceptions;
+use FastyBird\Connector\Virtual\Queries;
 use FastyBird\Connector\Virtual\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use TypeError;
 use ValueError;
 use function assert;
@@ -48,6 +49,7 @@ final readonly class Device
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError
@@ -55,7 +57,7 @@ final readonly class Device
 	 */
 	public function getStateProcessingDelay(Documents\Devices\Device $device): float
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
 		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::STATE_PROCESSING_DELAY);
 

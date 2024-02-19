@@ -234,7 +234,7 @@ class Install extends Console\Command\Command
 
 			$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
-				'identifier' => VirtualTypes\DevicePropertyIdentifier::MODEL,
+				'identifier' => VirtualTypes\DevicePropertyIdentifier::MODEL->value,
 				'device' => $device,
 				'dataType' => MetadataTypes\DataType::STRING,
 				'value' => Entities\Devices\Device::TYPE,
@@ -1056,7 +1056,7 @@ class Install extends Console\Command\Command
 			return;
 		}
 
-		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
+		$findDevicePropertyQuery = new VirtualQueries\Entities\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($device);
 		$findDevicePropertyQuery->byIdentifier(VirtualTypes\DevicePropertyIdentifier::MODEL);
 
@@ -1197,7 +1197,7 @@ class Install extends Console\Command\Command
 			if ($deviceModelProperty === null) {
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
-					'identifier' => VirtualTypes\DevicePropertyIdentifier::MODEL,
+					'identifier' => VirtualTypes\DevicePropertyIdentifier::MODEL->value,
 					'device' => $device,
 					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => Entities\Devices\Device::TYPE,
