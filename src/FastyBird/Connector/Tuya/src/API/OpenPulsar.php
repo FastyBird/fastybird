@@ -459,7 +459,9 @@ final class OpenPulsar
 						Messages\Response\ReportDeviceOnline::class,
 						[
 							'identifier' => $decryptedData->devId,
-							'online' => $decryptedData->offsetGet('bizCode') === Types\OpenPulsarMessageType::ONLINE->value,
+							'online' => $decryptedData->offsetGet(
+								'bizCode',
+							) === Types\OpenPulsarMessageType::ONLINE->value,
 						],
 					),
 				);
