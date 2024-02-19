@@ -18,6 +18,7 @@ namespace FastyBird\Connector\Viera\Queue\Consumers;
 use Doctrine\DBAL;
 use FastyBird\Connector\Viera;
 use FastyBird\Connector\Viera\Entities;
+use FastyBird\Connector\Viera\Exceptions;
 use FastyBird\Connector\Viera\Helpers;
 use FastyBird\Connector\Viera\Queries;
 use FastyBird\Connector\Viera\Queue;
@@ -69,6 +70,7 @@ final class StoreDevice implements Queue\Consumer
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws ApplicationExceptions\Runtime
 	 * @throws DBAL\Exception
+	 * @throws Exceptions\InvalidArgument
 	 */
 	public function consume(Queue\Messages\Message $message): bool
 	{
@@ -130,7 +132,7 @@ final class StoreDevice implements Queue\Consumer
 			$message->getIpAddress(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::IP_ADDRESS,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::IP_ADDRESS),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::IP_ADDRESS->value),
 		);
 		$this->setDeviceProperty(
 			DevicesEntities\Devices\Properties\Variable::class,
@@ -138,7 +140,7 @@ final class StoreDevice implements Queue\Consumer
 			$message->getPort(),
 			MetadataTypes\DataType::UINT,
 			Types\DevicePropertyIdentifier::PORT,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::PORT),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::PORT->value),
 		);
 		$this->setDeviceProperty(
 			DevicesEntities\Devices\Properties\Variable::class,
@@ -146,7 +148,7 @@ final class StoreDevice implements Queue\Consumer
 			$message->getModel(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::MODEL,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MODEL),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MODEL->value),
 		);
 		$this->setDeviceProperty(
 			DevicesEntities\Devices\Properties\Variable::class,
@@ -154,7 +156,7 @@ final class StoreDevice implements Queue\Consumer
 			$message->getManufacturer(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::MANUFACTURER,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MANUFACTURER),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MANUFACTURER->value),
 		);
 		$this->setDeviceProperty(
 			DevicesEntities\Devices\Properties\Variable::class,
@@ -162,7 +164,7 @@ final class StoreDevice implements Queue\Consumer
 			$message->getSerialNumber(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::SERIAL_NUMBER,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::SERIAL_NUMBER),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::SERIAL_NUMBER->value),
 		);
 		$this->setDeviceProperty(
 			DevicesEntities\Devices\Properties\Variable::class,
@@ -170,7 +172,7 @@ final class StoreDevice implements Queue\Consumer
 			$message->getMacAddress(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::MAC_ADDRESS,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MAC_ADDRESS),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MAC_ADDRESS->value),
 		);
 		$this->setDeviceProperty(
 			DevicesEntities\Devices\Properties\Variable::class,
@@ -178,7 +180,7 @@ final class StoreDevice implements Queue\Consumer
 			$message->isEncrypted(),
 			MetadataTypes\DataType::BOOLEAN,
 			Types\DevicePropertyIdentifier::ENCRYPTED,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::ENCRYPTED),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::ENCRYPTED->value),
 		);
 		$this->setDeviceProperty(
 			DevicesEntities\Devices\Properties\Variable::class,
@@ -186,7 +188,7 @@ final class StoreDevice implements Queue\Consumer
 			$message->getAppId(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::APP_ID,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::APP_ID),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::APP_ID->value),
 		);
 		$this->setDeviceProperty(
 			DevicesEntities\Devices\Properties\Variable::class,
@@ -194,7 +196,7 @@ final class StoreDevice implements Queue\Consumer
 			$message->getEncryptionKey(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::ENCRYPTION_KEY,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::ENCRYPTION_KEY),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::ENCRYPTION_KEY->value),
 		);
 
 		$this->databaseHelper->transaction(function () use ($message, $device): bool {
@@ -208,7 +210,7 @@ final class StoreDevice implements Queue\Consumer
 				$channel = $this->channelsManager->create(Utils\ArrayHash::from([
 					'entity' => Entities\Channels\Channel::class,
 					'device' => $device,
-					'identifier' => Types\ChannelType::TELEVISION,
+					'identifier' => Types\ChannelType::TELEVISION->value,
 				]));
 
 				$this->logger->debug(
@@ -236,7 +238,7 @@ final class StoreDevice implements Queue\Consumer
 				null,
 				MetadataTypes\DataType::BOOLEAN,
 				Types\ChannelPropertyIdentifier::STATE,
-				DevicesUtilities\Name::createName(Types\ChannelPropertyIdentifier::STATE),
+				DevicesUtilities\Name::createName(Types\ChannelPropertyIdentifier::STATE->value),
 				null,
 				true,
 				true,
@@ -248,7 +250,7 @@ final class StoreDevice implements Queue\Consumer
 				null,
 				MetadataTypes\DataType::UCHAR,
 				Types\ChannelPropertyIdentifier::VOLUME,
-				DevicesUtilities\Name::createName(Types\ChannelPropertyIdentifier::VOLUME),
+				DevicesUtilities\Name::createName(Types\ChannelPropertyIdentifier::VOLUME->value),
 				[
 					0,
 					100,
@@ -263,7 +265,7 @@ final class StoreDevice implements Queue\Consumer
 				null,
 				MetadataTypes\DataType::BOOLEAN,
 				Types\ChannelPropertyIdentifier::MUTE,
-				DevicesUtilities\Name::createName(Types\ChannelPropertyIdentifier::MUTE),
+				DevicesUtilities\Name::createName(Types\ChannelPropertyIdentifier::MUTE->value),
 				null,
 				true,
 				true,
@@ -275,7 +277,7 @@ final class StoreDevice implements Queue\Consumer
 				null,
 				MetadataTypes\DataType::ENUM,
 				Types\ChannelPropertyIdentifier::HDMI,
-				DevicesUtilities\Name::createName(Types\ChannelPropertyIdentifier::HDMI),
+				DevicesUtilities\Name::createName(Types\ChannelPropertyIdentifier::HDMI->value),
 				$message->getHdmi() !== [] ? array_map(
 					static fn (Queue\Messages\DeviceHdmi|Queue\Messages\DeviceApplication $item): array => [
 						Helpers\Name::sanitizeEnumName($item->getName()),
@@ -293,7 +295,7 @@ final class StoreDevice implements Queue\Consumer
 				null,
 				MetadataTypes\DataType::ENUM,
 				Types\ChannelPropertyIdentifier::APPLICATION,
-				DevicesUtilities\Name::createName(Types\ChannelPropertyIdentifier::APPLICATION),
+				DevicesUtilities\Name::createName(Types\ChannelPropertyIdentifier::APPLICATION->value),
 				$message->getApplications() !== [] ? array_map(
 					static fn (Queue\Messages\DeviceHdmi|Queue\Messages\DeviceApplication $item): array => [
 						Helpers\Name::sanitizeEnumName($item->getName()),
@@ -311,7 +313,7 @@ final class StoreDevice implements Queue\Consumer
 				null,
 				MetadataTypes\DataType::ENUM,
 				Types\ChannelPropertyIdentifier::INPUT_SOURCE,
-				DevicesUtilities\Name::createName(Types\ChannelPropertyIdentifier::INPUT_SOURCE),
+				DevicesUtilities\Name::createName(Types\ChannelPropertyIdentifier::INPUT_SOURCE->value),
 				array_merge(
 					[
 						[

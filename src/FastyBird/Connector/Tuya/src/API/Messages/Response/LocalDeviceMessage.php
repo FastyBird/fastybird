@@ -22,7 +22,7 @@ use function array_map;
 use function is_array;
 
 /**
- * Local api device raw message message
+ * Local api device raw message
  *
  * @package        FastyBird:TuyaConnector!
  * @subpackage     API

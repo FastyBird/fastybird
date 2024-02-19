@@ -334,42 +334,42 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			}
 
 			switch ($property->getIdentifier()) {
-				case Types\ChannelPropertyIdentifier::STATE:
+				case Types\ChannelPropertyIdentifier::STATE->value:
 					$result = $expectedValue === true ? $client->turnOn() : $client->turnOff();
 
 					break;
-				case Types\ChannelPropertyIdentifier::VOLUME:
+				case Types\ChannelPropertyIdentifier::VOLUME->value:
 					$result = $client->setVolume(intval($expectedValue));
 
 					break;
-				case Types\ChannelPropertyIdentifier::MUTE:
+				case Types\ChannelPropertyIdentifier::MUTE->value:
 					$result = $client->setMute(boolval($expectedValue));
 
 					break;
-				case Types\ChannelPropertyIdentifier::INPUT_SOURCE:
+				case Types\ChannelPropertyIdentifier::INPUT_SOURCE->value:
 					if (intval($expectedValue) < 100) {
 						$result = $client->sendKey('NRC_HDMI' . $expectedValue . '-ONOFF');
 					} elseif (intval($expectedValue) === 500) {
-						$result = $client->sendKey(Types\ActionKey::get(Types\ActionKey::AD_CHANGE));
+						$result = $client->sendKey(Types\ActionKey::AD_CHANGE);
 					} else {
 						$result = $client->launchApplication(strval($expectedValue));
 					}
 
 					break;
-				case Types\ChannelPropertyIdentifier::APPLICATION:
+				case Types\ChannelPropertyIdentifier::APPLICATION->value:
 					$result = $client->launchApplication(strval($expectedValue));
 
 					break;
-				case Types\ChannelPropertyIdentifier::HDMI:
+				case Types\ChannelPropertyIdentifier::HDMI->value:
 					$result = $client->sendKey('NRC_HDMI' . $expectedValue . '-ONOFF');
 
 					break;
 				default:
 					if (
-						Types\ChannelPropertyIdentifier::isValidValue($property->getIdentifier())
+						Types\ChannelPropertyIdentifier::tryFrom($property->getIdentifier()) !== null
 						&& $property->getDataType() === MetadataTypes\DataType::BUTTON
 					) {
-						$result = $client->sendKey(Types\ActionKey::get($expectedValue));
+						$result = $client->sendKey(Types\ActionKey::from(strval($expectedValue)));
 					} else {
 						$this->channelPropertiesStatesManager->setPendingState(
 							$property,
@@ -560,12 +560,12 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				);
 
 				switch ($property->getIdentifier()) {
-					case Types\ChannelPropertyIdentifier::STATE:
-					case Types\ChannelPropertyIdentifier::VOLUME:
-					case Types\ChannelPropertyIdentifier::MUTE:
-					case Types\ChannelPropertyIdentifier::INPUT_SOURCE:
-					case Types\ChannelPropertyIdentifier::APPLICATION:
-					case Types\ChannelPropertyIdentifier::HDMI:
+					case Types\ChannelPropertyIdentifier::STATE->value:
+					case Types\ChannelPropertyIdentifier::VOLUME->value:
+					case Types\ChannelPropertyIdentifier::MUTE->value:
+					case Types\ChannelPropertyIdentifier::INPUT_SOURCE->value:
+					case Types\ChannelPropertyIdentifier::APPLICATION->value:
+					case Types\ChannelPropertyIdentifier::HDMI->value:
 						$this->queue->append(
 							$this->messageBuilder->create(
 								Queue\Messages\StoreChannelPropertyState::class,
@@ -582,7 +582,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						break;
 					default:
 						if (
-							Types\ChannelPropertyIdentifier::isValidValue($property->getIdentifier())
+							Types\ChannelPropertyIdentifier::tryFrom($property->getIdentifier()) !== null
 							&& $property->getDataType() === MetadataTypes\DataType::BUTTON
 						) {
 							$this->queue->append(
@@ -602,7 +602,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						break;
 				}
 
-				if ($property->getIdentifier() === Types\ChannelPropertyIdentifier::INPUT_SOURCE) {
+				if ($property->getIdentifier() === Types\ChannelPropertyIdentifier::INPUT_SOURCE->value) {
 					$this->queue->append(
 						$this->messageBuilder->create(
 							Queue\Messages\StoreChannelPropertyState::class,
@@ -631,10 +631,10 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				}
 
 				if (
-					$property->getIdentifier() === Types\ChannelPropertyIdentifier::APPLICATION
-					|| $property->getIdentifier() === Types\ChannelPropertyIdentifier::HDMI
+					$property->getIdentifier() === Types\ChannelPropertyIdentifier::APPLICATION->value
+					|| $property->getIdentifier() === Types\ChannelPropertyIdentifier::HDMI->value
 				) {
-					if ($property->getIdentifier() === Types\ChannelPropertyIdentifier::HDMI) {
+					if ($property->getIdentifier() === Types\ChannelPropertyIdentifier::HDMI->value) {
 						$this->queue->append(
 							$this->messageBuilder->create(
 								Queue\Messages\StoreChannelPropertyState::class,
@@ -649,7 +649,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						);
 					}
 
-					if ($property->getIdentifier() === Types\ChannelPropertyIdentifier::APPLICATION) {
+					if ($property->getIdentifier() === Types\ChannelPropertyIdentifier::APPLICATION->value) {
 						$this->queue->append(
 							$this->messageBuilder->create(
 								Queue\Messages\StoreChannelPropertyState::class,

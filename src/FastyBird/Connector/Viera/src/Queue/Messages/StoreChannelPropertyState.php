@@ -15,13 +15,14 @@
 
 namespace FastyBird\Connector\Viera\Queue\Messages;
 
+use FastyBird\Connector\Viera\Types;
 use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_merge;
 
 /**
- * Channel property state message message
+ * Channel property state message
  *
  * @package        FastyBird:VieraConnector!
  * @subpackage     Queue
@@ -36,14 +37,14 @@ final class StoreChannelPropertyState extends Device
 		Uuid\UuidInterface $device,
 		#[ObjectMapper\Rules\AnyOf([
 			new ApplicationObjectMapper\Rules\UuidValue(),
-			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\InstanceOfValue(type: Types\ChannelType::class),
 		])]
-		private readonly Uuid\UuidInterface|string $channel,
+		private readonly Uuid\UuidInterface|Types\ChannelType $channel,
 		#[ObjectMapper\Rules\AnyOf([
 			new ApplicationObjectMapper\Rules\UuidValue(),
-			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\InstanceOfValue(type: Types\ChannelPropertyIdentifier::class),
 		])]
-		private readonly Uuid\UuidInterface|string $property,
+		private readonly Uuid\UuidInterface|Types\ChannelPropertyIdentifier $property,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\BoolValue(),
 			new ObjectMapper\Rules\FloatValue(),
@@ -57,12 +58,12 @@ final class StoreChannelPropertyState extends Device
 		parent::__construct($connector, $device);
 	}
 
-	public function getChannel(): Uuid\UuidInterface|string
+	public function getChannel(): Uuid\UuidInterface|Types\ChannelType
 	{
 		return $this->channel;
 	}
 
-	public function getProperty(): Uuid\UuidInterface|string
+	public function getProperty(): Uuid\UuidInterface|Types\ChannelPropertyIdentifier
 	{
 		return $this->property;
 	}
@@ -78,8 +79,8 @@ final class StoreChannelPropertyState extends Device
 	public function toArray(): array
 	{
 		return array_merge(parent::toArray(), [
-			'channel' => $this->getChannel() instanceof Uuid\UuidInterface ? $this->getChannel()->toString() : $this->getChannel(),
-			'property' => $this->getProperty() instanceof Uuid\UuidInterface ? $this->getProperty()->toString() : $this->getProperty(),
+			'channel' => $this->getChannel() instanceof Uuid\UuidInterface ? $this->getChannel()->toString() : $this->getChannel()->value,
+			'property' => $this->getProperty() instanceof Uuid\UuidInterface ? $this->getProperty()->toString() : $this->getProperty()->value,
 			'value' => $this->getValue(),
 		]);
 	}

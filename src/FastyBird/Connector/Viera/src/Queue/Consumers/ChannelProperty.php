@@ -17,12 +17,14 @@ namespace FastyBird\Connector\Viera\Queue\Consumers;
 
 use Doctrine\DBAL;
 use FastyBird\Connector\Viera;
+use FastyBird\Connector\Viera\Exceptions;
+use FastyBird\Connector\Viera\Queries;
+use FastyBird\Connector\Viera\Types;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette\Utils;
 use Ramsey\Uuid;
 use function array_merge;
@@ -51,20 +53,21 @@ trait ChannelProperty
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws ApplicationExceptions\Runtime
 	 * @throws DBAL\Exception
+	 * @throws Exceptions\InvalidArgument
 	 */
 	private function setChannelProperty(
 		string $type,
 		Uuid\UuidInterface $channelId,
 		string|bool|int|null $value,
 		MetadataTypes\DataType $dataType,
-		string $identifier,
+		Types\ChannelPropertyIdentifier $identifier,
 		string|null $name = null,
 		array|string|null $format = null,
 		bool $settable = false,
 		bool $queryable = false,
 	): void
 	{
-		$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
+		$findChannelPropertyQuery = new Queries\Entities\FindChannelProperties();
 		$findChannelPropertyQuery->byChannelId($channelId);
 		$findChannelPropertyQuery->byIdentifier($identifier);
 
@@ -99,7 +102,7 @@ trait ChannelProperty
 					],
 					'property' => [
 						'id' => $property->getId()->toString(),
-						'identifier' => $identifier,
+						'identifier' => $identifier->value,
 					],
 				],
 			);
@@ -120,7 +123,7 @@ trait ChannelProperty
 							'id' => $channelId->toString(),
 						],
 						'property' => [
-							'identifier' => $identifier,
+							'identifier' => $identifier->value,
 						],
 					],
 				);
@@ -134,7 +137,7 @@ trait ChannelProperty
 						[
 							'entity' => $type,
 							'channel' => $channel,
-							'identifier' => $identifier,
+							'identifier' => $identifier->value,
 							'name' => $name,
 							'dataType' => $dataType,
 							'format' => $format,
@@ -161,7 +164,7 @@ trait ChannelProperty
 					],
 					'property' => [
 						'id' => $property->getId()->toString(),
-						'identifier' => $identifier,
+						'identifier' => $identifier->value,
 					],
 				],
 			);
@@ -197,7 +200,7 @@ trait ChannelProperty
 					],
 					'property' => [
 						'id' => $property->getId()->toString(),
-						'identifier' => $identifier,
+						'identifier' => $identifier->value,
 					],
 				],
 			);

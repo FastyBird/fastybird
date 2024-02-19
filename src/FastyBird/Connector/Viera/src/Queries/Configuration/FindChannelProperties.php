@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * FindChannels.php
+ * FindConnectorVariableProperties.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,41 +10,41 @@
  * @subpackage     Queries
  * @since          1.0.0
  *
- * @date           07.01.24
+ * @date           18.02.24
  */
 
 namespace FastyBird\Connector\Viera\Queries\Configuration;
 
-use FastyBird\Connector\Viera\Documents;
 use FastyBird\Connector\Viera\Exceptions;
 use FastyBird\Connector\Viera\Types;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use function sprintf;
 
 /**
- * Find device channels entities query
+ * Find channels properties configuration query
  *
- * @template T of Documents\Channels\Channel
- * @extends  DevicesQueries\Configuration\FindChannels<T>
+ * @template T of DevicesDocuments\Channels\Properties\Property
+ * @extends  DevicesQueries\Configuration\FindChannelProperties<T>
  *
  * @package        FastyBird:VieraConnector!
  * @subpackage     Queries
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class FindChannels extends DevicesQueries\Configuration\FindChannels
+class FindChannelProperties extends DevicesQueries\Configuration\FindChannelProperties
 {
 
 	/**
-	 * @phpstan-param Types\ChannelType $identifier
+	 * @phpstan-param Types\ChannelPropertyIdentifier $identifier
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 */
-	public function byIdentifier(Types\ChannelType|string $identifier): void
+	public function byIdentifier(Types\ChannelPropertyIdentifier|string $identifier): void
 	{
-		if (!$identifier instanceof Types\ChannelType) {
+		if (!$identifier instanceof Types\ChannelPropertyIdentifier) {
 			throw new Exceptions\InvalidArgument(
-				sprintf('Only instances of: %s are allowed', Types\ChannelType::class),
+				sprintf('Only instances of: %s are allowed', Types\ChannelPropertyIdentifier::class),
 			);
 		}
 

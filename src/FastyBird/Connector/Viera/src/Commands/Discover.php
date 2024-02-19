@@ -33,7 +33,6 @@ use FastyBird\Module\Devices\Commands as DevicesCommands;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Types as DevicesTypes;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
@@ -119,6 +118,7 @@ class Discover extends Console\Command\Command
 	 * @throws Console\Exception\InvalidArgumentException
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError
@@ -330,6 +330,7 @@ class Discover extends Console\Command\Command
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError
@@ -421,6 +422,7 @@ class Discover extends Console\Command\Command
 	 *
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError
@@ -577,7 +579,7 @@ class Discover extends Console\Command\Command
 
 				$authorization = $this->askPinCode($io, $connector, $televisionApi);
 
-				$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
+				$findDevicePropertyQuery = new Queries\Entities\FindDeviceProperties();
 				$findDevicePropertyQuery->byDeviceId($device->getId());
 				$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::APP_ID);
 
@@ -587,8 +589,8 @@ class Discover extends Console\Command\Command
 					$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Devices\Properties\Variable::class,
 						'device' => $device,
-						'identifier' => Types\DevicePropertyIdentifier::APP_ID,
-						'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::APP_ID),
+						'identifier' => Types\DevicePropertyIdentifier::APP_ID->value,
+						'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::APP_ID->value),
 						'dataType' => MetadataTypes\DataType::STRING,
 						'value' => $authorization->getAppId(),
 						'format' => null,
@@ -599,7 +601,7 @@ class Discover extends Console\Command\Command
 					]));
 				}
 
-				$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
+				$findDevicePropertyQuery = new Queries\Entities\FindDeviceProperties();
 				$findDevicePropertyQuery->byDeviceId($device->getId());
 				$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::ENCRYPTION_KEY);
 
@@ -609,9 +611,9 @@ class Discover extends Console\Command\Command
 					$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Devices\Properties\Variable::class,
 						'device' => $device,
-						'identifier' => Types\DevicePropertyIdentifier::ENCRYPTION_KEY,
+						'identifier' => Types\DevicePropertyIdentifier::ENCRYPTION_KEY->value,
 						'name' => DevicesUtilities\Name::createName(
-							Types\DevicePropertyIdentifier::ENCRYPTION_KEY,
+							Types\DevicePropertyIdentifier::ENCRYPTION_KEY->value,
 						),
 						'dataType' => MetadataTypes\DataType::STRING,
 						'value' => $authorization->getEncryptionKey(),

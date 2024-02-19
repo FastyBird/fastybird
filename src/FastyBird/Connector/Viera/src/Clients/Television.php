@@ -101,6 +101,7 @@ final class Television implements Client
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -195,6 +196,7 @@ final class Television implements Client
 	/**
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -226,6 +228,7 @@ final class Television implements Client
 	/**
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -407,15 +410,15 @@ final class Television implements Client
 
 			try {
 				switch ($property->getIdentifier()) {
-					case Types\ChannelPropertyIdentifier::STATE:
+					case Types\ChannelPropertyIdentifier::STATE->value:
 						$result = $client->isTurnedOn();
 
 						break;
-					case Types\ChannelPropertyIdentifier::VOLUME:
+					case Types\ChannelPropertyIdentifier::VOLUME->value:
 						$result = $client->getVolume();
 
 						break;
-					case Types\ChannelPropertyIdentifier::MUTE:
+					case Types\ChannelPropertyIdentifier::MUTE->value:
 						$result = $client->getMute();
 
 						break;
@@ -572,6 +575,7 @@ final class Television implements Client
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError

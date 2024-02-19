@@ -19,7 +19,7 @@ use FastyBird\Connector\Tuya\API;
 use Orisai\ObjectMapper;
 
 /**
- * Report device online state message message
+ * Report device online state message
  *
  * @package        FastyBird:TuyaConnector!
  * @subpackage     API

@@ -20,7 +20,7 @@ use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 
 /**
- * Write updated channel property state to hardware message message
+ * Write updated channel property state to hardware message
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Queue

@@ -21,7 +21,7 @@ use function array_map;
 use function array_merge;
 
 /**
- * Device status message message
+ * Device status message
  *
  * @package        FastyBird:TuyaConnector!
  * @subpackage     Queue

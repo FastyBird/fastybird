@@ -15,8 +15,10 @@
 
 namespace FastyBird\Connector\Viera\Queue\Consumers;
 
+use BackedEnum;
 use FastyBird\Connector\Viera;
 use FastyBird\Connector\Viera\Documents;
+use FastyBird\Connector\Viera\Exceptions;
 use FastyBird\Connector\Viera\Queries;
 use FastyBird\Connector\Viera\Queue;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -31,7 +33,6 @@ use Nette;
 use Nette\Utils;
 use Ramsey\Uuid;
 use function array_merge;
-use function is_string;
 use function React\Async\await;
 
 /**
@@ -60,6 +61,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 	/**
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
@@ -92,12 +94,13 @@ final class StoreChannelPropertyState implements Queue\Consumer
 						'id' => $message->getDevice()->toString(),
 					],
 					'channel' => array_merge(
-						is_string($message->getChannel()) ? ['identifier' => $message->getChannel()] : [],
-						!is_string($message->getChannel()) ? ['id' => $message->getChannel()->toString()] : [],
+						$message->getChannel() instanceof BackedEnum ? ['identifier' => $message->getChannel()->value] : [],
+						!$message->getChannel() instanceof BackedEnum ? ['id' => $message->getChannel()->toString()] : [],
 					),
-					'property' => [
-						'identifier' => $message->getProperty(),
-					],
+					'property' => array_merge(
+						$message->getProperty() instanceof BackedEnum ? ['identifier' => $message->getProperty()->value] : [],
+						!$message->getProperty() instanceof BackedEnum ? ['id' => $message->getProperty()->toString()] : [],
+					),
 					'data' => $message->toArray(),
 				],
 			);
@@ -132,12 +135,13 @@ final class StoreChannelPropertyState implements Queue\Consumer
 						'id' => $device->getId()->toString(),
 					],
 					'channel' => array_merge(
-						is_string($message->getChannel()) ? ['identifier' => $message->getChannel()] : [],
-						!is_string($message->getChannel()) ? ['id' => $message->getChannel()->toString()] : [],
+						$message->getChannel() instanceof BackedEnum ? ['identifier' => $message->getChannel()->value] : [],
+						!$message->getChannel() instanceof BackedEnum ? ['id' => $message->getChannel()->toString()] : [],
 					),
-					'property' => [
-						'identifier' => $message->getProperty(),
-					],
+					'property' => array_merge(
+						$message->getProperty() instanceof BackedEnum ? ['identifier' => $message->getProperty()->value] : [],
+						!$message->getProperty() instanceof BackedEnum ? ['id' => $message->getProperty()->toString()] : [],
+					),
 					'data' => $message->toArray(),
 				],
 			);
@@ -150,7 +154,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 		if ($message->getProperty() instanceof Uuid\UuidInterface) {
 			$findChannelPropertyQuery->byId($message->getProperty());
 		} else {
-			$findChannelPropertyQuery->byIdentifier($message->getProperty());
+			$findChannelPropertyQuery->byIdentifier($message->getProperty()->value);
 		}
 
 		$property = $this->channelsPropertiesConfigurationRepository->findOneBy(
@@ -218,12 +222,14 @@ final class StoreChannelPropertyState implements Queue\Consumer
 				'device' => [
 					'id' => $device->getId()->toString(),
 				],
-				'channel' => [
-					'id' => $channel->getId()->toString(),
-				],
-				'property' => [
-					'id' => $property->getId()->toString(),
-				],
+				'channel' => array_merge(
+					$message->getChannel() instanceof BackedEnum ? ['identifier' => $message->getChannel()->value] : [],
+					!$message->getChannel() instanceof BackedEnum ? ['id' => $message->getChannel()->toString()] : [],
+				),
+				'property' => array_merge(
+					$message->getProperty() instanceof BackedEnum ? ['identifier' => $message->getProperty()->value] : [],
+					!$message->getProperty() instanceof BackedEnum ? ['id' => $message->getProperty()->toString()] : [],
+				),
 				'data' => $message->toArray(),
 			],
 		);

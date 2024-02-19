@@ -20,7 +20,7 @@ use FastyBird\Connector\Tuya\Types;
 use Orisai\ObjectMapper;
 
 /**
- * Local API device message message
+ * Local API device message
  *
  * @package        FastyBird:TuyaConnector!
  * @subpackage     API

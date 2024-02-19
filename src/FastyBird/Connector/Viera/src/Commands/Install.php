@@ -34,7 +34,6 @@ use FastyBird\Module\Devices\Commands as DevicesCommands;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Types as DevicesTypes;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
@@ -810,8 +809,8 @@ class Install extends Console\Command\Command
 
 			$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
-				'identifier' => Types\DevicePropertyIdentifier::IP_ADDRESS,
-				'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::IP_ADDRESS),
+				'identifier' => Types\DevicePropertyIdentifier::IP_ADDRESS->value,
+				'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::IP_ADDRESS->value),
 				'dataType' => MetadataTypes\DataType::STRING,
 				'value' => $ipAddress,
 				'device' => $device,
@@ -819,8 +818,8 @@ class Install extends Console\Command\Command
 
 			$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
-				'identifier' => Types\DevicePropertyIdentifier::PORT,
-				'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::PORT),
+				'identifier' => Types\DevicePropertyIdentifier::PORT->value,
+				'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::PORT->value),
 				'dataType' => MetadataTypes\DataType::UINT,
 				'value' => Entities\Devices\Device::DEFAULT_PORT,
 				'device' => $device,
@@ -828,8 +827,8 @@ class Install extends Console\Command\Command
 
 			$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
-				'identifier' => Types\DevicePropertyIdentifier::MODEL,
-				'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MODEL),
+				'identifier' => Types\DevicePropertyIdentifier::MODEL->value,
+				'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MODEL->value),
 				'dataType' => MetadataTypes\DataType::STRING,
 				'value' => trim(sprintf('%s %s', $specs->getModelName(), $specs->getModelNumber())),
 				'device' => $device,
@@ -837,8 +836,8 @@ class Install extends Console\Command\Command
 
 			$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
-				'identifier' => Types\DevicePropertyIdentifier::MANUFACTURER,
-				'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MANUFACTURER),
+				'identifier' => Types\DevicePropertyIdentifier::MANUFACTURER->value,
+				'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MANUFACTURER->value),
 				'dataType' => MetadataTypes\DataType::STRING,
 				'value' => $specs->getManufacturer(),
 				'device' => $device,
@@ -846,8 +845,8 @@ class Install extends Console\Command\Command
 
 			$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
-				'identifier' => Types\DevicePropertyIdentifier::SERIAL_NUMBER,
-				'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::SERIAL_NUMBER),
+				'identifier' => Types\DevicePropertyIdentifier::SERIAL_NUMBER->value,
+				'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::SERIAL_NUMBER->value),
 				'dataType' => MetadataTypes\DataType::STRING,
 				'value' => $specs->getSerialNumber(),
 				'device' => $device,
@@ -856,8 +855,8 @@ class Install extends Console\Command\Command
 			if ($macAddress !== null) {
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
-					'identifier' => Types\DevicePropertyIdentifier::MAC_ADDRESS,
-					'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MAC_ADDRESS),
+					'identifier' => Types\DevicePropertyIdentifier::MAC_ADDRESS->value,
+					'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MAC_ADDRESS->value),
 					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => $macAddress,
 					'device' => $device,
@@ -866,8 +865,8 @@ class Install extends Console\Command\Command
 
 			$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Devices\Properties\Variable::class,
-				'identifier' => Types\DevicePropertyIdentifier::ENCRYPTED,
-				'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::ENCRYPTED),
+				'identifier' => Types\DevicePropertyIdentifier::ENCRYPTED->value,
+				'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::ENCRYPTED->value),
 				'dataType' => MetadataTypes\DataType::BOOLEAN,
 				'value' => $specs->isRequiresEncryption(),
 				'device' => $device,
@@ -876,8 +875,8 @@ class Install extends Console\Command\Command
 			if ($authorization !== null) {
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
-					'identifier' => Types\DevicePropertyIdentifier::APP_ID,
-					'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::APP_ID),
+					'identifier' => Types\DevicePropertyIdentifier::APP_ID->value,
+					'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::APP_ID->value),
 					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => $authorization->getAppId(),
 					'device' => $device,
@@ -885,8 +884,8 @@ class Install extends Console\Command\Command
 
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
-					'identifier' => Types\DevicePropertyIdentifier::ENCRYPTION_KEY,
-					'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::ENCRYPTION_KEY),
+					'identifier' => Types\DevicePropertyIdentifier::ENCRYPTION_KEY->value,
+					'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::ENCRYPTION_KEY->value),
 					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => $authorization->getEncryptionKey(),
 					'device' => $device,
@@ -896,13 +895,13 @@ class Install extends Console\Command\Command
 			$channel = $this->channelsManager->create(Utils\ArrayHash::from([
 				'entity' => Entities\Channels\Channel::class,
 				'device' => $device,
-				'identifier' => Types\ChannelType::TELEVISION,
+				'identifier' => Types\ChannelType::TELEVISION->value,
 			]));
 
 			$this->channelsPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
-				'identifier' => Types\ChannelPropertyIdentifier::STATE,
-				'name' => DevicesUtilities\Name::createName(Types\ChannelPropertyIdentifier::STATE),
+				'identifier' => Types\ChannelPropertyIdentifier::STATE->value,
+				'name' => DevicesUtilities\Name::createName(Types\ChannelPropertyIdentifier::STATE->value),
 				'dataType' => MetadataTypes\DataType::BOOLEAN,
 				'settable' => true,
 				'queryable' => true,
@@ -912,8 +911,8 @@ class Install extends Console\Command\Command
 
 			$this->channelsPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
-				'identifier' => Types\ChannelPropertyIdentifier::VOLUME,
-				'name' => DevicesUtilities\Name::createName(Types\ChannelPropertyIdentifier::VOLUME),
+				'identifier' => Types\ChannelPropertyIdentifier::VOLUME->value,
+				'name' => DevicesUtilities\Name::createName(Types\ChannelPropertyIdentifier::VOLUME->value),
 				'dataType' => MetadataTypes\DataType::UCHAR,
 				'settable' => true,
 				'queryable' => true,
@@ -926,8 +925,8 @@ class Install extends Console\Command\Command
 
 			$this->channelsPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
-				'identifier' => Types\ChannelPropertyIdentifier::MUTE,
-				'name' => DevicesUtilities\Name::createName(Types\ChannelPropertyIdentifier::MUTE),
+				'identifier' => Types\ChannelPropertyIdentifier::MUTE->value,
+				'name' => DevicesUtilities\Name::createName(Types\ChannelPropertyIdentifier::MUTE->value),
 				'dataType' => MetadataTypes\DataType::BOOLEAN,
 				'settable' => true,
 				'queryable' => true,
@@ -937,8 +936,8 @@ class Install extends Console\Command\Command
 
 			$this->channelsPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
-				'identifier' => Types\ChannelPropertyIdentifier::HDMI,
-				'name' => DevicesUtilities\Name::createName(Types\ChannelPropertyIdentifier::HDMI),
+				'identifier' => Types\ChannelPropertyIdentifier::HDMI->value,
+				'name' => DevicesUtilities\Name::createName(Types\ChannelPropertyIdentifier::HDMI->value),
 				'dataType' => MetadataTypes\DataType::ENUM,
 				'settable' => true,
 				'queryable' => false,
@@ -948,8 +947,8 @@ class Install extends Console\Command\Command
 
 			$this->channelsPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
-				'identifier' => Types\ChannelPropertyIdentifier::APPLICATION,
-				'name' => DevicesUtilities\Name::createName(Types\ChannelPropertyIdentifier::APPLICATION),
+				'identifier' => Types\ChannelPropertyIdentifier::APPLICATION->value,
+				'name' => DevicesUtilities\Name::createName(Types\ChannelPropertyIdentifier::APPLICATION->value),
 				'dataType' => MetadataTypes\DataType::ENUM,
 				'settable' => true,
 				'queryable' => false,
@@ -966,8 +965,8 @@ class Install extends Console\Command\Command
 
 			$this->channelsPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
-				'identifier' => Types\ChannelPropertyIdentifier::INPUT_SOURCE,
-				'name' => DevicesUtilities\Name::createName(Types\ChannelPropertyIdentifier::INPUT_SOURCE),
+				'identifier' => Types\ChannelPropertyIdentifier::INPUT_SOURCE->value,
+				'name' => DevicesUtilities\Name::createName(Types\ChannelPropertyIdentifier::INPUT_SOURCE->value),
 				'dataType' => MetadataTypes\DataType::ENUM,
 				'settable' => true,
 				'queryable' => false,
@@ -1028,6 +1027,7 @@ class Install extends Console\Command\Command
 	/**
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws RuntimeException
@@ -1065,7 +1065,7 @@ class Install extends Console\Command\Command
 
 		$name = $this->askDeviceName($io, $device);
 
-		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
+		$findDevicePropertyQuery = new Queries\Entities\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($device);
 		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IP_ADDRESS);
 
@@ -1089,7 +1089,7 @@ class Install extends Console\Command\Command
 			$ipAddress = $this->askDeviceIpAddress($io, $device);
 		}
 
-		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
+		$findDevicePropertyQuery = new Queries\Entities\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($device);
 		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::PORT);
 
@@ -1116,7 +1116,7 @@ class Install extends Console\Command\Command
 		$hdmiProperty = null;
 
 		if ($channel !== null) {
-			$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
+			$findChannelPropertyQuery = new Queries\Entities\FindChannelProperties();
 			$findChannelPropertyQuery->forChannel($channel);
 			$findChannelPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::HDMI);
 
@@ -1165,38 +1165,38 @@ class Install extends Console\Command\Command
 		$appsProperty = null;
 
 		if ($channel !== null) {
-			$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
+			$findChannelPropertyQuery = new Queries\Entities\FindChannelProperties();
 			$findChannelPropertyQuery->forChannel($channel);
 			$findChannelPropertyQuery->byIdentifier(Types\ChannelPropertyIdentifier::APPLICATION);
 
 			$appsProperty = $this->channelsPropertiesRepository->findOneBy($findChannelPropertyQuery);
 		}
 
-		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
+		$findDevicePropertyQuery = new Queries\Entities\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($device);
 		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::APP_ID);
 
 		$appIdProperty = $this->devicesPropertiesRepository->findOneBy($findDevicePropertyQuery);
 
-		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
+		$findDevicePropertyQuery = new Queries\Entities\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($device);
 		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::ENCRYPTION_KEY);
 
 		$encryptionKeyProperty = $this->devicesPropertiesRepository->findOneBy($findDevicePropertyQuery);
 
-		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
+		$findDevicePropertyQuery = new Queries\Entities\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($device);
 		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::MODEL);
 
 		$hardwareModelProperty = $this->devicesPropertiesRepository->findOneBy($findDevicePropertyQuery);
 
-		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
+		$findDevicePropertyQuery = new Queries\Entities\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($device);
 		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::MANUFACTURER);
 
 		$hardwareManufacturerProperty = $this->devicesPropertiesRepository->findOneBy($findDevicePropertyQuery);
 
-		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
+		$findDevicePropertyQuery = new Queries\Entities\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($device);
 		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::MAC_ADDRESS);
 
@@ -1436,8 +1436,8 @@ class Install extends Console\Command\Command
 			if ($ipAddressProperty === null) {
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
-					'identifier' => Types\DevicePropertyIdentifier::IP_ADDRESS,
-					'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::IP_ADDRESS),
+					'identifier' => Types\DevicePropertyIdentifier::IP_ADDRESS->value,
+					'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::IP_ADDRESS->value),
 					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => $ipAddress,
 					'device' => $device,
@@ -1451,8 +1451,8 @@ class Install extends Console\Command\Command
 			if ($portProperty === null) {
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
-					'identifier' => Types\DevicePropertyIdentifier::PORT,
-					'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::PORT),
+					'identifier' => Types\DevicePropertyIdentifier::PORT->value,
+					'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::PORT->value),
 					'dataType' => MetadataTypes\DataType::UINT,
 					'value' => $port,
 					'device' => $device,
@@ -1466,8 +1466,8 @@ class Install extends Console\Command\Command
 			if ($appIdProperty === null && $authorization !== null && $authorization !== false) {
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
-					'identifier' => Types\DevicePropertyIdentifier::APP_ID,
-					'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::APP_ID),
+					'identifier' => Types\DevicePropertyIdentifier::APP_ID->value,
+					'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::APP_ID->value),
 					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => $authorization->getAppId(),
 					'device' => $device,
@@ -1483,8 +1483,8 @@ class Install extends Console\Command\Command
 			if ($encryptionKeyProperty === null && $authorization !== null && $authorization !== false) {
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
-					'identifier' => Types\DevicePropertyIdentifier::ENCRYPTION_KEY,
-					'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::ENCRYPTION_KEY),
+					'identifier' => Types\DevicePropertyIdentifier::ENCRYPTION_KEY->value,
+					'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::ENCRYPTION_KEY->value),
 					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => $authorization->getEncryptionKey(),
 					'device' => $device,
@@ -1500,8 +1500,8 @@ class Install extends Console\Command\Command
 			if ($hardwareModelProperty === null) {
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
-					'identifier' => Types\DevicePropertyIdentifier::MODEL,
-					'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MODEL),
+					'identifier' => Types\DevicePropertyIdentifier::MODEL->value,
+					'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MODEL->value),
 					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => trim(sprintf('%s %s', $specs->getModelName(), $specs->getModelNumber())),
 					'device' => $device,
@@ -1515,9 +1515,9 @@ class Install extends Console\Command\Command
 			if ($hardwareManufacturerProperty === null) {
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
-					'identifier' => Types\DevicePropertyIdentifier::MODEL,
+					'identifier' => Types\DevicePropertyIdentifier::MODEL->value,
 					'name' => DevicesUtilities\Name::createName(
-						Types\DevicePropertyIdentifier::MANUFACTURER,
+						Types\DevicePropertyIdentifier::MANUFACTURER->value,
 					),
 					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => $specs->getManufacturer(),
@@ -1532,8 +1532,8 @@ class Install extends Console\Command\Command
 			if ($macAddressProperty === null) {
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
-					'identifier' => Types\DevicePropertyIdentifier::MAC_ADDRESS,
-					'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MAC_ADDRESS),
+					'identifier' => Types\DevicePropertyIdentifier::MAC_ADDRESS->value,
+					'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MAC_ADDRESS->value),
 					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => $macAddress,
 					'device' => $device,
@@ -1556,8 +1556,8 @@ class Install extends Console\Command\Command
 				if ($hdmiProperty === null) {
 					$this->channelsPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
-						'identifier' => Types\ChannelPropertyIdentifier::HDMI,
-						'name' => DevicesUtilities\Name::createName(Types\ChannelPropertyIdentifier::HDMI),
+						'identifier' => Types\ChannelPropertyIdentifier::HDMI->value,
+						'name' => DevicesUtilities\Name::createName(Types\ChannelPropertyIdentifier::HDMI->value),
 						'dataType' => MetadataTypes\DataType::ENUM,
 						'settable' => true,
 						'queryable' => false,
@@ -1583,8 +1583,10 @@ class Install extends Console\Command\Command
 				if ($appsProperty === null) {
 					$this->channelsPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
-						'identifier' => Types\ChannelPropertyIdentifier::APPLICATION,
-						'name' => DevicesUtilities\Name::createName(Types\ChannelPropertyIdentifier::APPLICATION),
+						'identifier' => Types\ChannelPropertyIdentifier::APPLICATION->value,
+						'name' => DevicesUtilities\Name::createName(
+							Types\ChannelPropertyIdentifier::APPLICATION->value,
+						),
 						'dataType' => MetadataTypes\DataType::ENUM,
 						'settable' => true,
 						'queryable' => false,
@@ -1765,6 +1767,7 @@ class Install extends Console\Command\Command
 	 * @throws Console\Exception\ExceptionInterface
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -2430,6 +2433,7 @@ class Install extends Console\Command\Command
 	 *
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError
@@ -2571,7 +2575,7 @@ class Install extends Console\Command\Command
 					return;
 				}
 
-				$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
+				$findDevicePropertyQuery = new Queries\Entities\FindDeviceProperties();
 				$findDevicePropertyQuery->byDeviceId($device->getId());
 				$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::APP_ID);
 
@@ -2581,8 +2585,8 @@ class Install extends Console\Command\Command
 					$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Devices\Properties\Variable::class,
 						'device' => $device,
-						'identifier' => Types\DevicePropertyIdentifier::APP_ID,
-						'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::APP_ID),
+						'identifier' => Types\DevicePropertyIdentifier::APP_ID->value,
+						'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::APP_ID->value),
 						'dataType' => MetadataTypes\DataType::STRING,
 						'value' => $authorization->getAppId(),
 						'format' => null,
@@ -2593,7 +2597,7 @@ class Install extends Console\Command\Command
 					]));
 				}
 
-				$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
+				$findDevicePropertyQuery = new Queries\Entities\FindDeviceProperties();
 				$findDevicePropertyQuery->byDeviceId($device->getId());
 				$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::ENCRYPTION_KEY);
 
@@ -2603,9 +2607,9 @@ class Install extends Console\Command\Command
 					$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Devices\Properties\Variable::class,
 						'device' => $device,
-						'identifier' => Types\DevicePropertyIdentifier::ENCRYPTION_KEY,
+						'identifier' => Types\DevicePropertyIdentifier::ENCRYPTION_KEY->value,
 						'name' => DevicesUtilities\Name::createName(
-							Types\DevicePropertyIdentifier::ENCRYPTION_KEY,
+							Types\DevicePropertyIdentifier::ENCRYPTION_KEY->value,
 						),
 						'dataType' => MetadataTypes\DataType::STRING,
 						'value' => $authorization->getEncryptionKey(),

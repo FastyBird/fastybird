@@ -21,7 +21,7 @@ use function array_map;
 use function array_merge;
 
 /**
- * Device state message message
+ * Device state message
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Queue

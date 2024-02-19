@@ -734,7 +734,7 @@ final class TelevisionApi
 				self::URL_CONTROL_NRC,
 				self::URN_REMOTE_CONTROL,
 				'X_SendKey',
-				sprintf('<X_KeyEvent>%s</X_KeyEvent>', is_string($key) ? $key : $key->getValue()),
+				sprintf('<X_KeyEvent>%s</X_KeyEvent>', is_string($key) ? $key : $key->value),
 				'u',
 			);
 		} catch (Exceptions\Encrypt $ex) {
@@ -864,7 +864,7 @@ final class TelevisionApi
 								});
 
 						} else {
-							$this->sendKey(Types\ActionKey::get(Types\ActionKey::POWER))
+							$this->sendKey(Types\ActionKey::POWER)
 								->then(static function () use ($deferred): void {
 									$deferred->resolve(true);
 								})
@@ -897,7 +897,7 @@ final class TelevisionApi
 					if ($status === false) {
 						$deferred->resolve(true);
 					} else {
-						$this->sendKey(Types\ActionKey::get(Types\ActionKey::POWER))
+						$this->sendKey(Types\ActionKey::POWER)
 							->then(static function () use ($deferred): void {
 								$deferred->resolve(true);
 							})

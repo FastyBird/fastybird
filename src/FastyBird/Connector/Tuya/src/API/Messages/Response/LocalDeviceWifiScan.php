@@ -19,7 +19,7 @@ use FastyBird\Connector\Tuya\API;
 use Orisai\ObjectMapper;
 
 /**
- * Device wifi scan result message message
+ * Device wifi scan result message
  *
  * @package        FastyBird:TuyaConnector!
  * @subpackage     API

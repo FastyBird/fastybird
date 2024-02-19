@@ -20,7 +20,7 @@ use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 
 /**
- * Base device message message
+ * Base device message
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Queue
