@@ -18,20 +18,21 @@ namespace FastyBird\Connector\Shelly\Queries\Configuration;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\Module\Devices\Documents as DevicesDocuments;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use function sprintf;
 
 /**
  * Find connector variable properties entities query
  *
  * @template T of DevicesDocuments\Connectors\Properties\Variable
- * @extends  FindConnectorProperties<T>
+ * @extends  DevicesQueries\Configuration\FindConnectorProperties<T>
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     Queries
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class FindConnectorVariableProperties extends FindConnectorProperties
+class FindConnectorVariableProperties extends DevicesQueries\Configuration\FindConnectorProperties
 {
 
 	/**
