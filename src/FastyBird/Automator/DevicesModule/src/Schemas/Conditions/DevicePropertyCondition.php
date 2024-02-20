@@ -40,6 +40,7 @@ final class DevicePropertyCondition extends TriggersSchemas\Conditions\Condition
 	/**
 	 * Define entity schema type string
 	 */
+	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 	public const SCHEMA_TYPE = MetadataTypes\Sources\Automator::DEVICE_MODULE->value . '/condition/' . Entities\Conditions\DevicePropertyCondition::TYPE;
 
 	public function getType(): string
